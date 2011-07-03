@@ -1,156 +1,44 @@
-XCOMM $Id: Imakefile,v 1.4 2009/06/10 18:34:26 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.158 2008/06/19 14:57:43 gdsjaar Exp $
 
-XCOMM Definitions for options program
-SRCS = main.c alloca.c getopt.c getopt1.c
-OBJS = $(SRCS:.c=.o)
-
-XCOMM C-Shell script files passed through cpp and sed to generate
-XCOMM scripts for ACCESS codes
-PLOT     = plot
-ANALYSIS = analysis
-TRANS    = translate
-POST     = post
-UTIL     = loadbal
-
-XCOMM The platform standard cpp defines are removed while creating script 
-#if defined(GnuCpp)
-STD_CPP_DEFINES = -$$ -traditional
-#else
-STD_CPP_DEFINES = 
-#endif
-
-XCOMM Some platforms need to use cp instead of ln -s
-#if UseCpInScripts == YES
-LNCMD = cp
-#else
-LNCMD = ln -s 
-#endif
-
-#if Build64BitAccess == YES
-EXOIIFORANALYSIS = $(EXOIIV2FOR32)
-NEMFORANALYSIS   = $(NEMESISF32)
-
-#else
-EXOIIFORANALYSIS = $(EXOIIV2FOR)
-NEMFORANALYSIS   = $(NEMESISF)
-#endif
-
-XCOMM CPP_DEFS are passed to the script files through cpp to try to 
-XCOMM remove some system-dependent coding from the .csh files.
-XCOMM Each of the following $(DEFINITION) variable needs to be 
-XCOMM defined in the Makefile (or Imake.tmpl/Project.ptmpl)
-
-#ifndef CrossCompiling
-CPP_DEFS = \
--D$(SYSTEM) \
--D_ACCESSDIR='$(ACCESSDIR)' \
--D_ACCESSSRC='$(ACCESSSRC)' \
--D_ALLDEFINES='$(ALLDEFINES)' \
--D_LIBREF='$(LIBREF)' \
--D_LIBPATH='$(LIBPATH)' \
--D_PLIBPATH='$(PLIBPATH)' \
--D_LIBDIR='$(LIBDIR)' \
--D_PLIBDIR='$(PLIBDIR)' \
--D_EXETMP='$(TEMPDIR)' \
--D_SERIALDEBUGCMD='$(SERIALDEBUGCMD)' \
--D_FC='$(FC)' \
--D_F90C='$(F90C)' \
--D_CC='$(CC)' \
--D_CDEBUGFLAGS='$(CDEBUGFLAGS)' \
--D_CDEBUG='$(CDEBUG)' \
--D_CCOPTIONS='$(CCOPTIONS)' \
--D_F77DEBUG='$(F77DEBUG)' \
--D_F77DEBUGFLAGS='$(F77DEBUGFLAGS)' \
--D_F77OPTIONS='$(F77OPTIONS)' \
--D_F77PRECOPTIONS='$(F77PRECOPTIONS)' \
--D_F77STATICFLAGS='$(F77STATICFLAGS)' \
--D_F90DEBUG='$(F90DEBUG)' \
--D_F90DEBUGFLAGS='$(F90DEBUGFLAGS)' \
--D_F90OPTIONS='$(F90OPTIONS)' \
--D_F90EXTRALDOPTIONS='$(F90EXTRALDOPTIONS)' \
--D_F90STATICFLAGS='$(F90STATICFLAGS)' \
--D_SUPES='$(SUPES)' \
--D_SUPLIB='$(SUPLIB)' \
--D_SUPESDP='$(SUPESDP)' \
--D_PLT='$(PLT)' \
--D_NETCDF='$(NETCDF)' \
--D_RPCLIB='$(RPCLIB)' \
--D_EXOIIV2FOR='$(EXOIIV2FOR)' \
--D_EXOIIV2FORANALYSIS='$(EXOIIFORANALYSIS)' \
--D_NEMFORANALYSIS='$(NEMFORANALYSIS)' \
--D_EXOIIV2C='$(EXOIIV2C)' \
--D_NEMESISF='$(NEMESISF)' \
--D_NEMESISC='$(NEMESISC)' \
--D_PROJECT_INCLUDES='$(PROJECT_INCLUDES)' \
--D_EXTRA_LDOPTIONS='$(EXTRA_LDOPTIONS)' \
--D_ALTLIBPATH='$(ALTLIBPATH)' \
--D_EXTRA_LIBRARIES='$(EXTRA_LIBRARIES)' \
--D_LNCMD='$(LNCMD)' 
-
-DEFINES = $(ALLOCA_DEFINES)
-XCOMM Build the program that parses long options
-NormalCTarget(options,$(OBJS),NullParameter,NullParameter,NullParameter)
-InstallProgram(options,$(BINDIR))
-
-XCOMM Build the program to test if exodusii file
-EXTRA_DEFINES = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE 
-NormalCTarget(exo-test-ver,exo-test-ver.o,NullParameter,NullParameter,$(EXOIIV2C) $(NETCDF))
-InstallProgram(exo-test-ver,$(BINDIR))
+NormalCTarget(zpad,zpad.o,NullParameter,NullParameter,NullParameter)
+InstallProgram(zpad,$(BINDIR))
 
 audit.log::
 	touch audit.log
+	chmod 666 audit.log
 
-XCOMM Set up aliases for some of the scripts
+all:: decomp blot fastq post loadbal
+clean::
+	rm -f decomp blot fastq post loadbal
 
-PLOTLIST = blot
+loadbal: loadbal.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ loadbal.in > loadbal
+	chmod +x loadbal
 
-plot:: $(PLOTLIST)
+decomp: decomp.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ decomp.in > decomp
+	chmod +x decomp
 
-TRNSLIST = exotxt txtexo algebra conex 
+blot: blot.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ blot.in > blot
+	chmod +x blot
 
-translate:: $(TRNSLIST)
+fastq: fastq.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ fastq.in > fastq
+	chmod +x fastq
 
+post: post.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ post.in > post
+	chmod +x post
 
-PREPOSTLIST = grope
+XCOMM Install plot scripts
+InstallProgram(blot,        $(ETCDIR))
+InstallProgram(fastq,       $(ETCDIR))
+InstallProgram(post,        $(ETCDIR))
+InstallProgram(loadbal,     $(ETCDIR))
+InstallProgram(decomp,      $(ETCDIR))
+InstallProgram(sfmakedepend,$(ETCDIR))
 
-prepost:: $(PREPOSTLIST)
-
-UTILLIST = loadbal buildSEACAS
-
-util:: $(UTILLIST)
-
-INCLUDELIST =  subop.h arguments.h rmscr.h environment.h log.h run.h usage.h format.h parse.h setio.h variables.h
-
-AccessScripts(loadbal,$(UTIL),-DLOADBAL=1 $(CPP_DEFS),NullParameter)
-AccessScripts(blot, $(PLOT),-DBLOT=1  $(CPP_DEFS),$(INCLUDELIST))
-
-XCOMM Generate the translator scripts
-AccessScripts(algebra,  $(TRANS),-DALGEBRA=1   $(CPP_DEFS),$(INCLUDELIST))
-AccessScripts(exotxt,   $(TRANS),-DEXOTXT=1    $(CPP_DEFS),$(INCLUDELIST))
-AccessScripts(txtexo,   $(TRANS),-DTXTEXO=1    $(CPP_DEFS),$(INCLUDELIST))
-AccessScripts(conex,    $(TRANS),-DCONEX=1     $(CPP_DEFS),$(INCLUDELIST))
-
-AccessScripts(grope,    $(TRANS),-DGROPE=1     $(CPP_DEFS),$(INCLUDELIST))
-AccessScripts(mapvar,   $(ANALYSIS),-DMAPVAR=1    $(CPP_DEFS),$(INCLUDELIST))
-AccessScripts(mapvar-kd,$(ANALYSIS),-DMAPVARKD=1  $(CPP_DEFS),$(INCLUDELIST))
-
-XCOMM Now do the install rules:
-
-InstallProgram(blot,     $(ETCDIR))
-InstallProgram(algebra,  $(ETCDIR))
-InstallProgram(exotxt,   $(ETCDIR))
-InstallProgram(txtexo,   $(ETCDIR))
-InstallProgram(conex,    $(ETCDIR))
-
-InstallProgram(grope,    $(ETCDIR))
-InstallProgram(mapvar,   $(ETCDIR))
-InstallProgram(mapvar-kd,$(ETCDIR))
-#endif
-
-InstallProgram(loadbal,    $(ETCDIR))
 InstallProgram(buildSEACAS,$(ETCDIR))
 
-InstallTargets(install.translate,$(TRNSLIST), $(INSTETCFLAGS),$(ETCDIR))
-InstallTargets(install.prepost,  $(PREPOSTLIST), $(INSTETCFLAGS),$(ETCDIR))
-InstallTargets(install.util,     $(UTILLIST), $(INSTETCFLAGS),$(ETCDIR))
 

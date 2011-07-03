@@ -1,38 +1,37 @@
-XCOMM!/bin/csh -f
+#!/bin/csh -f
 
-XCOMM $Id: loadbal.c,v 1.3 2009/06/10 04:21:03 gdsjaar Exp $
-XCOMM**************************************************************************
-XCOMM**************************************************************************
-XCOMM**
-XCOMM**  SCRIPT: loadbal
-XCOMM**
-XCOMM**************************************************************************
-XCOMM**************************************************************************
+# $Id: loadbal.c,v 1.57 2008/05/19 12:29:22 gdsjaar Exp $
+#**************************************************************************
+#**************************************************************************
+#**
+#**  SCRIPT: loadbal
+#**
+#**************************************************************************
+#**************************************************************************
 
-XCOMM Determine ACCESS based on the location of the script
+# Determine ACCESS based on the location of the script
 if ("`echo $0 | sed 's/\///'`" != "$0") then
-XCOMM Location of the script found
+# Location of the script found
    if ("`ls -l $0 | sed 's/^l.*/l/'`" != "l") then
-XCOMM Script is not a softlink
+# Script is not a softlink
       setenv ACCESS `echo $0 | sed 's/\/etc\/.*//'`
       if (! -e $ACCESS/config/site.def) then
-         setenv ACCESS _ACCESSDIR
+         setenv ACCESS @ACCESSDIR@
       endif
    else
-XCOMM Script is a softlink
-      setenv ACCESS _ACCESSDIR
+# Script is a softlink
+      setenv ACCESS @ACCESSDIR@
    endif
 else
-XCOMM Determining the location of the script failed, use default values
-   setenv ACCESS _ACCESSDIR
+# Determining the location of the script failed, use default values
+   setenv ACCESS @ACCESSDIR@
 endif
 
-XCOMM initialize variables
+# initialize variables
 
-#define TRANSLATOR 1
 echo "==========================================================="
 echo "| Sandia Engineering Analysis Access procedure for: loadbal"
-echo '| $Revision: 1.3 $, $Date: 2009/06/10 04:21:03 $'
+echo '| $Revision: 1.57 $, $Date: 2008/05/19 12:29:22 $'
 echo "==========================================================="
 set codename=loadbal
 set runid=DEFAULT
@@ -62,7 +61,7 @@ set default_offset = 1
 set input_suffix   = i
 set genesis_suffix = g
 set exodus_suffix  = e
-set spread_suffix  = g
+set spread_suffix  = par
 set spreadit       = "NO"
   
 env >! JUNK
@@ -75,7 +74,7 @@ if($alegra_rc == 0) then
 endif
 /bin/rm -rf JUNK JUNK2
 
-XCOMM Parse command line so that it can be used by the options program
+# Parse command line so that it can be used by the options program
 if ($#argv == 0) goto USAGE
 if ($#argv == 1 && "$argv[1]" == "-h") goto USAGE
 @ i = 1
@@ -116,26 +115,26 @@ while ($i < $#argv)
     @ i++
 end
 
-XCOMM Parse command line
+# Parse command line
 set argv  = (`$ACCESS/bin/options $*`)
 
-XCOMM Set options exit condition
+# Set options exit condition
 set errflg = $status
-XCOMM echo command line input
+# echo command line input
 echo "Input options: $argv"
-XCOMM Check errflg - nonzero indicates error in options, print usage and exit:
+# Check errflg - nonzero indicates error in options, print usage and exit:
 if ($errflg != 0) then
         goto USAGE
 endif
-XCOMM Process options for this code
-XCOMM Check for basename argument (Will follow "--" in argument list)
+# Process options for this code
+# Check for basename argument (Will follow "--" in argument list)
 set temp = ($argv)
 while ("$temp[1]" != "--")
         shift temp
 end
-XCOMM temp points to --
+# temp points to --
 shift temp
-XCOMM Set the basename
+# Set the basename
 if ($#temp <= 0) then
         echo "ERROR:******************************************************************"
         echo "ERROR:******************************************************************"
@@ -146,7 +145,7 @@ if ($#temp <= 0) then
         goto USAGE
 endif
 set runid = $temp[1]
-XCOMM Check for arguments and set corresponding variables 
+# Check for arguments and set corresponding variables 
 while ("$argv[1]" != "--")
         switch ($argv[1])
         case -help:
@@ -271,8 +270,8 @@ else
   goto EXECUTE_LBD
 endif
 
-XCOMM *************************************************************************
-XCOMM *************************************************************************
+# *************************************************************************
+# *************************************************************************
 
 EXECUTE_LBD:
 
@@ -286,9 +285,6 @@ echo "*    .... begining decomposition ...."
 echo "*         see $output for current status"
 
 
-if(-f $pexsh) then
-  /bin/rm -rf $pexsh
-endif
 
 echo $mesh_opt >! DUMMY
 sed -e 's/\x/\*/g' < DUMMY >! DUMMY2
@@ -305,7 +301,7 @@ set prob_dir = `pwd | sed "s/.*\///g"`
 
 echo "===========================================================" >! $output
 echo "| Sandia Engineering Analysis Access procedure for: loadbal" >> $output
-echo '| $Revision: 1.3 $, $Date: 2009/06/10 04:21:03 $'                                      >> $output   
+echo '| $Revision: 1.57 $, $Date: 2008/05/19 12:29:22 $'                                      >> $output   
 echo "===========================================================" >> $output
 
 echo "Executing:"
@@ -324,8 +320,8 @@ else
   goto LAN
 endif
 
-XCOMM *************************************************************************
-XCOMM *************************************************************************
+# *************************************************************************
+# *************************************************************************
 
 CONFIG:
 
@@ -367,12 +363,35 @@ echo "*          $config"
 echo "*"
 echo "***************************************************"
 echo " "
-/* Log information */
-#include "log.h"
+
+if ($?SEACAS_NO_LOGGING) then
+  echo "SEACAS Audit logging disabled via SEACAS_NO_LOGGING setting"
+else
+
+# Echo audit information to ${ACCESS}/etc/audit.log
+set time_used=`time`
+
+# Get name of user running code
+if (${?USER}) then
+	set username = ${USER}
+else
+	if (${?LOGNAME}) then
+		set username = ${LOGNAME}
+	else
+		set username = "UNKNOWN"
+	endif
+endif
+
+# Write info to audit.log file
+if (-w ${ACCESS}/etc/audit.log) then
+  echo ${codename} ${username} `date` ${time_used} `hostname` >>${ACCESS}/etc/audit.log
+endif
+endif
+
 exit $load_rc
 
-XCOMM *************************************************************************
-XCOMM *************************************************************************
+# *************************************************************************
+# *************************************************************************
 
 LAN:
 
@@ -407,20 +426,29 @@ endif
 set zero = "zeros"
 set stage =
 
+if(-f $pexsh) then
+  /bin/rm -rf $pexsh
+endif
+
+echo "Creating $pexsh"
+echo "Input FEM file                   = $genesis"                  >! $pexsh
+echo "LB file                          = $nemesis"                  >> $pexsh
+echo "File Extension for Spread Files  = .$spread_suffix"           >> $pexsh
+echo "Parallel Results file base name  = $exodus "                  >> $pexsh
+echo "Number of Processors             = $numproc "                 >> $pexsh
+echo "Use Scalar Mesh File             = $scalar_mesh "             >> $pexsh
+echo "------------------------------------------------------------" >> $pexsh
+echo "                Parallel I/O section"                         >> $pexsh
+echo "------------------------------------------------------------" >> $pexsh
+echo "Parallel Disk Info= number=$raids, offset=$offset $stage, $zero $do_sub" >> $pexsh
+echo "Parallel file location = root=$rootdir, subdir=$subdir"       >> $pexsh
+
+if(-f $spreed) then
+  /bin/rm -rf $spreed
+endif
+
+echo "Creating $spreed"
 echo "#\!/bin/csh -f"                                               >! $spreed
-echo "cat << 'EOF' >! $pexsh"                                       >> $spreed
-echo "Input FEM file                   = $genesis"                  >> $spreed
-echo "LB file                          = $nemesis"                  >> $spreed
-echo "File Extension for Spread Files  = .$spread_suffix"           >> $spreed
-echo "Parallel Results file base name  = $exodus "                  >> $spreed
-echo "Number of Processors             = $numproc "                 >> $spreed
-echo "Use Scalar Mesh File             = $scalar_mesh "             >> $spreed
-echo "------------------------------------------------------------" >> $spreed
-echo "                Parallel I/O section"                         >> $spreed
-echo "------------------------------------------------------------" >> $spreed
-echo "Parallel Disk Info= number=$raids, offset=$offset $stage, $zero $do_sub" >> $spreed
-echo "Parallel file location = root=$rootdir, subdir=$subdir"       >> $spreed
-echo "'EOF'"                                                        >> $spreed
 echo ""                                                             >> $spreed
 if ($subdirectory == "yes") then
   echo "set root = $rootdir"                                        >> $spreed
@@ -460,8 +488,8 @@ echo "$pexcmd $pexsh"                                               >> $spreed
 
 goto CONFIG 
 
-XCOMM *************************************************************************
-XCOMM *************************************************************************
+# *************************************************************************
+# *************************************************************************
 
 BOMBED:
 
@@ -479,20 +507,20 @@ cat $error
 echo ""
 exit $load_rc 
 
-XCOMM *************************************************************************
-XCOMM *************************************************************************
+# *************************************************************************
+# *************************************************************************
 
 USAGE:
 cat << 'EOF'
-Version: $Id: loadbal.c,v 1.3 2009/06/10 04:21:03 gdsjaar Exp $
-@@
+Version: $Id: loadbal.c,v 1.57 2008/05/19 12:29:22 gdsjaar Exp $
+
 Usage:  loadbal [-h] -p <processor layout> [-n <nemslice options>]
                 [-r <number of disks>] [-o <disk offset>] [-slit]
                 [-R <root directory>] [-S <sub directory] [-spread]
                 [-multikl] [-spectral] [-inertial] [-linear]
                 [-rcb] [-rib] [-hsfc] [-random] [-scattered]
                 [...others...] meshfile_basename
-@@
+
 Decomposition methods: [0..3] = speed ranking 0=fastest
   -multikl:   [3] Multilevel KL. Gives high quality partitions.
 		  Slow, high memory use.
@@ -511,12 +539,12 @@ Decomposition methods: [0..3] = speed ranking 0=fastest
                   going to whichever set is smallest.
   -brick      [-] special decomposition method; not useful for general use.
   -zpinch     [-] special decomposition method; not useful for general use.
-      (See http://jal.sandia.gov/SEACAS/Documentation/chaco.pdf and 
-           http://www.cs.sandia.gov/Zoltan/ug_html/ug.html for details)
-@@
+      (See jal.sandia.gov/SEACAS/Documentation/chaco.pdf and 
+           www.cs.sandia.gov/Zoltan/ug_html/ug.html for details)
+
 Other options:
 -slit           Do not flag error if mesh contains slit/crack/sipe 
-                (two quad faces sharing 3 nodes) [set by default now]
+                (two quad faces sharing 3 nodes) [Set by default now]
 -spread         Execute the {runid}.spd file automatically as part of the
                 loadbal process.
 -h              print this message
@@ -530,14 +558,16 @@ Other options:
 -R root_dir     root directory to begin the path to on the separate disks
 -S sub_dir      continuation of the path on the separate disks to the files
 -suffix_mesh suf      file extension on input mesh file (default = g)
--suffix_spread suf    file extension on spread files (default = g)
+-suffix_spread suf    file extension on spread files (default = par)
 -suffix_transient suf file extension on results files (default = e)
 -No_scalar_mesh       Do not use the scalar mesh in nem_join; 
                       use only results files.
 -No_subdirectory      Do not create the 01 subdirectory; 
                       write files in root_dir/sub_dir.
-@@
-   help-email: gsjaardema@gmail.com (code, script)
+
+   help-email: SEACAS@-HELPsandia.gov (code, script)
+  Information: www.jal.sandia.gov/SEACAS/SEACAS.html (IRN)
+               ${ACCESS}/doc/index.html     (local)
 'EOF'
 exit 11
 
