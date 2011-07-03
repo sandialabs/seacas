@@ -1,87 +1,50 @@
-XCOMM $Id: Imakefile,v 1.4 2009/06/09 21:22:28 gdsjaar Exp $
 
-XCOMM       netcdf-4.X is the current SEACAS default.
- V_BASE = 4
- V_NUM = netcdf-4.0.1
+#if UseNetcdf4
+#define USE_HDF5
+#endif
+
+#if defined(USE_HDF5)
+V_BASE = 4.hdf5
+#else
+V_BASE = 4
+#endif
+V_NUM = netcdf-4.3.1
 
 TRUE_NETCDF = $(V_NUM)
 
-#if defined(__APPLE__)
-NETDEFS=darwin
-#elif defined(CrayArchitecture)
-NETDEFS=cray
-#elif defined(SunArchitecture)
-#if Build64BitAccess == YES
-NETDEFS=sun64
+#if BuildSharedExodusLibrary
+SHARED = --enable-shared
 #else
-NETDEFS=sun
-#endif
-#elif defined(SGIArchitecture)
-#if Build64BitAccess == YES
-NETDEFS=sgi64
-#else
-NETDEFS=sgi
-#endif
-#elif defined(HPArchitecture)
-NETDEFS=hp
-#elif defined(LinuxArchitecture)
-#if Build64BitAccess == YES
-#if defined(x86_64Architecture)
-NETDEFS=linux_x86_64
-#elif defined(ia64Architecture)
-NETDEFS=linux_ia64
-#else
-NETDEFS=linux64
-#endif
-#else
-#ifndef CrossCompiling
-NETDEFS=linux
-#else
-NETDEFS=linuxcross
-#endif
-#endif
-#elif defined(InterixArchitecture)
-NETDEFS=interix
-#elif defined(cygwinArchitecture)
-NETDEFS=cygwin
-#elif defined(IBMArchitecture)
-#if Build64BitAccess == YES
-NETDEFS=ibm64
-#else
-NETDEFS=ibm
-#endif
-#elif defined(OSF1Architecture)
-NETDEFS=osf1
-#else
-NETDEFS=orig
+SHARED = --disable-shared
 #endif
 
-#ifdef CrossCompiling
-all:: Makefiles
-	cd $(TRUE_NETCDF); make
-	make install
+XCOMM Process to install netcdf from ACCESS directory
+XCOMM 1) generate ACCESS/Makefile
+XCOMM 2) make Makefiles - runs configure to generate makefiles
+XCOMM 3) make makeincludes - installs netcdf.h in $(INCDIR)
+XCOMM 4) make all - builds netcdf distribuiton and installs libraries
+XCOMM               and executable 
+XCOMM    make all MUST install the libraries because exodusII needs to
+XCOMM    link to them in $(LIBDIR) to build its libraries
+XCOMM
+XCOMM Building the netcdf distribution without installing the libraries
+XCOMM 1) generate ACCESS/Makefile
+XCOMM 2) make noinstall 
+XCOMM 3) Decided to install - make install
 
-$(TRUE_NETCDF)/macros.make: $(TRUE_NETCDF)/macros.make.$(NETDEFS)
-	$(ETCDIR)/msub +R"@<" -R">@" $(TRUE_NETCDF)/macros.make.$(NETDEFS) > $(TRUE_NETCDF)/macros.make
-
-Makefiles:: $(TRUE_NETCDF)/macros.make 
-	cp $(TRUE_NETCDF)/config.h.$(NETDEFS) $(TRUE_NETCDF)/config.h
-
-#else
 runconfigure: $(TRUE_NETCDF)/runconfigure
 
-$(TRUE_NETCDF)/runconfigure: runconfigure.in.$(V_BASE) Imakefile
-	$(ETCDIR)/msub runconfigure.in.$(V_BASE) > $(TRUE_NETCDF)/runconfigure
+$(TRUE_NETCDF)/runconfigure: runconfigure.in.$(V_BASE) Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd runconfigure.in.$(V_BASE) > $(TRUE_NETCDF)/runconfigure
 	chmod +x $(TRUE_NETCDF)/runconfigure
 
-MakeNetcdfMakefiles($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
+MakeNetcdfMakefiles($(TRUE_NETCDF),$(ACCESSDIR))
 MakeNetcdfmakeincludes($(TRUE_NETCDF),$(ACCESSDIR))
-MakeNetcdfNoinstall($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
-MakeNetcdfAll($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
-#endif
+MakeNetcdfNoinstall($(TRUE_NETCDF),$(ACCESSDIR))
+MakeNetcdfAll($(TRUE_NETCDF),$(ACCESSDIR))
 
 MakeNetcdfTest($(TRUE_NETCDF))
-MakeNetcdfInstall($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
+MakeNetcdfInstall($(TRUE_NETCDF),$(ACCESSDIR))
 MakeNetcdfClean($(TRUE_NETCDF))
 
 ExtraStuffToClean($(TRUE_NETCDF)/runconfigure)

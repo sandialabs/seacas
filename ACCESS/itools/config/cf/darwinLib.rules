@@ -1,0 +1,106 @@
+XCOMM $XFree86: xc/config/cf/darwinLib.rules,v 1.8 2003/10/09 22:43:18 herrb Exp $
+/*
+ * Darwin/Mac OS X shared library rules
+ */
+
+#ifndef LinkBuildLibrary
+#ifdef UseInstalled
+#define LinkBuildLibrary(lib) $(_NULLCMD_)
+#else
+#define LinkBuildLibrary(lib) MakeDir($(BUILDLIBDIR))                   @@\
+        RemoveFile($(BUILDLIBDIR)/lib)                                  @@\
+        cd $(BUILDLIBDIR) && $(LN) $(BUILDLIBTOP)/$(CURRENT_DIR)/lib .
+#endif
+#endif /* LinkBuildLibrary */
+
+#ifndef LinkBuildSonameLibrary
+#ifdef UseInstalled
+#define LinkBuildSonameLibrary(lib) true
+#else
+#define LinkBuildSonameLibrary(lib) MakeDirInline($(BUILDLIBDIR));\     @@\
+        (set -x; RemoveFile($(BUILDLIBDIR)/lib);\                       @@\
+        (cd $(BUILDLIBDIR) && $(LN) $(BUILDLIBTOP)/$(CURRENT_DIR)/lib .))
+#endif
+#endif /* LinkBuildSonameLibrary */
+
+#ifndef LinkBuildLibraryInline
+#define LinkBuildLibraryInline(lib) LinkBuildSonameLibrary(lib)
+#endif /* LinkBuildLibraryInline */
+#ifndef UseElfFormat
+#define UseElfFormat NO
+#endif
+#ifndef HasSharedLibraries
+#define HasSharedLibraries YES
+#endif
+#ifndef ForceNormalLib
+#define ForceNormalLib YES
+#endif
+
+#ifndef SharedDataSeparation
+#define SharedDataSeparation NO
+#endif
+#ifndef SharedCodeDef
+#define SharedCodeDef /**/
+#endif
+#ifndef SharedLibraryDef
+#define SharedLibraryDef /**/
+#endif
+#ifndef ShLibIncludeFile
+#define ShLibIncludeFile <darwinLib.tmpl>
+#endif
+#ifndef SharedLibraryLoadFlags
+#define SharedLibraryLoadFlags -dynamiclib -headerpad_max_install_names
+#endif
+#ifndef PositionIndependentCFlags
+#define PositionIndependentCFlags -fPIC
+#endif
+#ifndef ExtraLoadFlags
+#define ExtraLoadFlags /**/
+#endif
+
+/*
+ * InstallSharedLibrary - generate rules to install the shared library.
+ */
+#ifndef InstallSharedLibrary
+#define InstallSharedLibrary(libname,rev,dest)				@@\
+install:: Concat(lib,libname.rev.dylib)					@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTALLFLAGS) $(INSTLIBFLAGS) Concat(lib,libname.rev.dylib) $(DESTDIR)dest @@\
+	$(RM) Concat($(DESTDIR)dest/lib,libname.dylib) @@\
+	$(LN) Concat($(DESTDIR)/dest/lib,libname.rev.dylib) Concat($(DESTDIR)dest/lib,libname.dylib)
+#endif /* InstallSharedLibrary */
+
+/*
+ * SharedLibraryTarget - generate rules to create a shared library;
+ * build it into a different name so that we do not hose people by having
+ * the library gone for long periods.
+ */
+#ifndef SharedLibraryTarget
+# define SharedLibraryTarget(libname,rev,solist,down,up)		@@\
+AllTarget(Concat(lib,libname.rev.dylib))				@@\
+									@@\
+Concat(lib,libname.rev.dylib):  solist $(EXTRALIBRARYDEPS)		@@\
+	$(RM) $@~							@@\
+	(cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -install_name $(USRLIBDIR)/$@ solist $(REQUIREDLIBS)); \ @@\
+	$(RM) $@							@@\
+	$(MV) $@~ $@							@@\
+	$(RM) Concat(lib,libname.dylib)					@@\
+	$(LN) $@ Concat(lib,libname.dylib)				@@\
+	LinkBuildLibrary($@)						@@\
+	LinkBuildLibrary(Concat(lib,libname.dylib))			@@\
+									@@\
+clean::									@@\
+	$(RM) Concat(lib,libname.rev.dylib) Concat(lib,libname.dylib)
+
+#endif /* SharedLibraryTarget */
+
+/*
+ * SharedLibraryDataTarget - generate rules to create shlib data file;
+ */
+#ifndef SharedLibraryDataTarget
+#define SharedLibraryDataTarget(libname,rev,salist)
+#endif /* SharedLibraryDataTarget */
+
+#ifndef InstallSharedLibraryData
+#define InstallSharedLibraryData(libname,rev,dest)
+#endif /* InstallSharedLibraryData */
