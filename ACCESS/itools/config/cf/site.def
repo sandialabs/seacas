@@ -1,14 +1,27 @@
 XCOMM site.def file for SNL ACCESS System
 
-#define Owner seacas
-#define Group seacas
+#define Owner gdsjaar
+#define Group _developer
 
 /*
  * AccessRoot should specify the path to the ACCESS source directory
  */
-#ifndef AccessRoot
-#define AccessRoot /MAKE_THIS_A_VALID_PATH/a/path/that/does/not/exist/and/will/cause/an/error/
+#define AccessRoot /Users/gdsjaar/src/SEACAS-SF
+
+#ifndef BuildSharedExodusLibrary
+#define BuildSharedExodusLibrary YES
 #endif
+
+/* Change to YES to enable hdf5-based netcdf build */
+#define UseNetcdf4 NO
+
+/*
+ * For most cases, leave the Platform define as "normal"; however,
+ * if building on "interix", define it as interix;
+ * if building for "redstorm", define it as redstorm;
+ * if need to enter BootsStrapCFlags, define as "prompt"
+ */
+#define Platform normal
 
 /*
  *Project identification - name and release level

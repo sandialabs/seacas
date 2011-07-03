@@ -297,7 +297,7 @@ $(DEPENDFLAGS) -- $(ALLDEFINES) $(DEPEND_DEFINES) -- srcs1 srcs2 srcs3	@@\
 Avoid.Error dirs: FRC							@@\
 	@cd $@								@@\
 	@echo making all in $(CURRENT_DIR)/$@...			@@\
-	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
+	$(MAKE) $(MFLAGS) PassDebugFlags all				@@\
 	cd ..								@@\
 									@@\
 FRC:
