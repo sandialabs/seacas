@@ -32,26 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE CKNONE (NVAL, ISSEL, VALNAM, *)
 C=======================================================================
-C$Id: cknone.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: cknone.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:12:11  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:12:10  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:04  gdsjaar
-c Initial revision
-c 
 
 C   --*** CKNONE *** (ETCLIB) Check number of values is zero
 C   --   Written by Amy Gilkey - revised 12/23/87
@@ -67,7 +47,7 @@ C   --   * - return statement if error
       LOGICAL ISSEL
       CHARACTER*(*) VALNAM
 
-      CHARACTER*80 ERRMSG
+      CHARACTER*1024 ERRMSG
 
       IF (NVAL .LE. 0) THEN
          IF (ISSEL) THEN

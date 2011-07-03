@@ -74,7 +74,7 @@ double    eigtol;		/* tolerance on eigenvectors */
     double    prev_srestol;	/* SRESTOL value above this routine */
 
     double    seconds();
-    void      coarsen(), lanczos_FO(), lanczos_SO(), vecout();
+    void      coarsen(), lanczos_FO(), lanczos_SO(), vecout(), vecnorm();
     void      lanczos_SO_float(), strout();
     void      perturb_init(), perturb_clear(), x2y(), y2x();
     int       lanczos_ext(), lanczos_ext_float();
@@ -302,6 +302,15 @@ fclose(file);
 	if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0) {
 	    perturb_clear();
 	}
+    }
+
+    /* This is an attempt to reduce some machine-to-machine
+     * variance. If the first value in the eigenvector is negative,
+     * reflect the eigenvector...  This may not be needed following
+     * the addition of the standard random number generator in util/random.c
+     */
+    for (nstep = 1; nstep <= ndims; nstep++) {
+      vecnorm(yvecs[nstep], 1, nvtxs);
     }
 
     if (DEBUG_EVECS > 4) {

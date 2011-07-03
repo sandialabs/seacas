@@ -155,7 +155,9 @@ int Ioss::ParallelUtils::parallel_size() const
 {
   int my_size = 1;
 #ifdef HAVE_MPI
-  MPI_Comm_size(communicator_, &my_size);
+  if (communicator_ != MPI_COMM_NULL) {
+    MPI_Comm_size(communicator_, &my_size);
+  }
 #endif
   return my_size;
 }
@@ -164,7 +166,9 @@ int Ioss::ParallelUtils::parallel_rank() const
 {
   int my_rank = 0;
 #ifdef HAVE_MPI
-  MPI_Comm_rank(communicator_, &my_rank);
+  if (communicator_ != MPI_COMM_NULL) {
+    MPI_Comm_rank(communicator_, &my_rank);
+  }
 #endif
   return my_rank;
 }
@@ -325,6 +329,24 @@ unsigned int Ioss::ParallelUtils::global_minmax(unsigned int local_minmax, Ioss:
   return minmax;
 }
 
+void Ioss::ParallelUtils::global_array_minmax(std::vector<int> &local_minmax,  MinMax which) const
+{
+  if (!local_minmax.empty())
+    global_array_minmax(&local_minmax[0], local_minmax.size(), which);
+}
+
+void Ioss::ParallelUtils::global_array_minmax(std::vector<double> &local_minmax,  MinMax which) const
+{
+  if (!local_minmax.empty())
+    global_array_minmax(&local_minmax[0], local_minmax.size(), which);
+}
+
+void Ioss::ParallelUtils::global_array_minmax(std::vector<unsigned int> &local_minmax,  MinMax which) const
+{
+  if (!local_minmax.empty())
+    global_array_minmax(&local_minmax[0], local_minmax.size(), which);
+}
+
 void Ioss::ParallelUtils::global_array_minmax(int *local_minmax, size_t count, Ioss::ParallelUtils::MinMax which) const
 {
 #ifdef HAVE_MPI
@@ -459,8 +481,8 @@ void Ioss::ParallelUtils::gather(std::vector<int> &my_values, std::vector<int> &
   }
 #ifdef HAVE_MPI
   if (parallel_size() > 1) {
-    const int success = MPI_Gather((void*)&my_values[0],  count, MPI_INT,
-				   (void*)&result[0], count, MPI_INT,
+    const int success = MPI_Gather((void*)TOPTR(my_values),  count, MPI_INT,
+				   (void*)TOPTR(result), count, MPI_INT,
 				   0, communicator_);
     if (success !=  MPI_SUCCESS) {
       std::ostringstream errmsg;

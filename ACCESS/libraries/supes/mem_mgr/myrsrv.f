@@ -37,7 +37,7 @@ C
      *   LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This routine finds space to service a non-negative space request.
 C     If zero space is requested, a valid pointer of 1 will be

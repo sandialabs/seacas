@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE STRTUP (QAINFO)
 C=======================================================================
-C$Id: strtup.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: strtup.f,v 1.4 2009/03/25 12:46:02 gdsjaar Exp $
 C
 C   --*** STRTUP *** (ETCLIB) Startup program
 C   --   Written by Amy Gilkey - revised 11/24/87

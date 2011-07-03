@@ -33,7 +33,7 @@
  * 
  */
 /* 
- * $Id: excpus.c,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+ * $Id: excpus.c,v 1.26 2008/03/14 13:22:35 gdsjaar Exp $
  */
 
 /*
@@ -48,55 +48,32 @@
 
 #include "fortranc.h"
 
-#if defined (hpux)
-#include<sys/time.h>
-#include<sys/resource.h>
-     void excpus( FTNREAL *cpusec )
-#endif             /* hpux */
-
-#if defined (aix)
-#include<sys/time.h>
-#include<sys/resource.h>
-     void excpus( FTNREAL *cpusec )
-#endif             /* aix */
-
 #if defined (interix)
-#include<time.h>
+#include <time.h>
      void excpus_(FTNREAL *cpusec)
 #undef linux
-# endif             /* interix */
+#endif             /* interix */
 
-#if defined (sun) || defined (sgi) || defined (__osf__) || defined(linux) || defined (__APPLE__) || defined(__CYGWIN__)
+#if defined(aix) || defined(__VACPP__) || defined(hpux) || defined (sun) || defined (sgi) || defined (__osf__) || defined(linux) || defined (__APPLE__) || defined(__CYGWIN__) || defined(p6)
 
 #if defined(__NO_CYGWIN_OPTION__)
 #include <windows.h>
 #else
-#include<sys/time.h>
-#include<sys/resource.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #endif
+#if defined ADDC_       
      void excpus_(FTNREAL *cpusec)
-#endif
-
-#if defined (paragon) || defined (pumagon)
-
-#include<sys/time.h>
-#include<sys/resource.h>
-#include <nx.h>
-     void excpus_(FTNREAL *cpusec)
-#endif
-
-#if defined (p6)
-
-#include<sys/time.h>
-#include<sys/resource.h>
+#else
      void excpus(FTNREAL *cpusec)
+#endif       
 #endif
 
-#if defined (cougar)
+#if defined (paragon) || defined (pumagon) || defined(cougar)
 
 #include <stdio.h>
-#include<sys/time.h>
-#include<sys/resource.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <nx.h>
      void excpus_(FTNREAL *cpusec)
 #endif
@@ -137,7 +114,7 @@
   }
 #endif
 
-#if defined (sun) || defined (sgi) || defined (__osf__) || defined(linux) || defined(aix) || defined(paragon) || defined(hpux) || defined(__APPLE__)
+#if defined (sun) || defined (sgi) || defined (__osf__) || defined(linux) || defined(aix) || defined(__VACPP__) || defined(paragon) || defined(hpux) || defined(__APPLE__)
   struct rusage rusage;
   int secs,mics;
 

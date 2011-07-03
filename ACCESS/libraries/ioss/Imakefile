@@ -46,7 +46,12 @@ LIBDIR     = $(PLIBDIR)
 #endif
 
 CXXEXTRA_INCLUDES = -I.
-CXXEXTRA_DEFINES = -DNO_MPI
+#if defined SGIArchitecture
+CXXETRA_DEFINES = -ptused -DNO_MPI -DNO_PAMGEN_SUPPORT
+#else
+CXXEXTRA_DEFINES = -DNO_MPI -DNO_PAMGEN_SUPPORT
+#endif
+
 
 LIBRARY = libIoss.a
 SUBDIRS = exodusII generated init transform heartbeat main 
@@ -63,13 +68,11 @@ Ioss_Edge2.C \
 Ioss_Edge2D2.C \
 Ioss_Edge2D3.C \
 Ioss_Edge3.C \
-Ioss_EdgeBlock.C \
-Ioss_EdgeSet.C \
 Ioss_ElementBlock.C \
 Ioss_ElementTopology.C \
 Ioss_EntityBlock.C \
-Ioss_FaceBlock.C \
-Ioss_FaceSet.C \
+Ioss_SideBlock.C \
+Ioss_SideSet.C \
 Ioss_Field.C \
 Ioss_FieldManager.C \
 Ioss_FileInfo.C \
@@ -102,10 +105,12 @@ Ioss_Sphere.C \
 Ioss_Super.C \
 Ioss_Tet10.C \
 Ioss_Tet4.C \
+Ioss_Tet7.C \
 Ioss_Tet8.C \
 Ioss_Transform.C \
 Ioss_Tri3.C \
 Ioss_Tri4.C \
+Ioss_Tri4a.C \
 Ioss_Tri6.C \
 Ioss_TriShell3.C \
 Ioss_TriShell6.C \
@@ -113,26 +118,26 @@ Ioss_Unknown.C \
 Ioss_Utils.C \
 Ioss_VariableType.C \
 Ioss_Wedge15.C \
-Ioss_Wedge6.C 
+Ioss_Wedge6.C \
+tokenize.C
 
 OBJS = ${SRCS:.C=.o}
 
-all:: libIoex.a libIoss.a libIotr.a libIonit.a libIogn.a libIohb.a
+all:: libIoex.a libIoss.a libIotr.a libIonit.a libIogn.a libIohb.a Trios_config.h
 
 INCLIST = \
+	Trios_config.h \
 	Ioss_CodeTypes.h \
 	Ioss_CommSet.h \
 	Ioss_ConcreteVariableType.h \
 	Ioss_DBUsage.h \
 	Ioss_DatabaseIO.h \
-	Ioss_EdgeBlock.h \
-	Ioss_EdgeSet.h \
 	Ioss_ElementBlock.h \
 	Ioss_ElementTopology.h \
 	Ioss_EntityBlock.h \
 	Ioss_EntityType.h \
-	Ioss_FaceBlock.h \
-	Ioss_FaceSet.h \
+	Ioss_SideBlock.h \
+	Ioss_SideSet.h \
 	Ioss_Field.h \
 	Ioss_FieldManager.h \
 	Ioss_FileInfo.h \
@@ -151,6 +156,14 @@ INCLIST = \
 	Ioss_Transform.h \
 	Ioss_VariableType.h \
 	Ioss_Utils.h 
+
+# Can be empty.  Is used in Trilinos, so just create dummy here.
+Trios_config.h:
+	touch Trios_config.h
+
+makeincludes:: Trios_config.h
+install:: Trios_config.h
+
 
 NormalLibraryTarget(Ioss,$(OBJS))
 NamedTargetSubdirs(libIoex.a,  exodusII,  "making Ioss/exodusII",  PassDebugFlags ExtraOptions,libIoex.a)

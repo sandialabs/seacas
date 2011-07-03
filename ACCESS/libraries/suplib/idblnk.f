@@ -32,27 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       INTEGER FUNCTION IDBLNK (IELBLK, IEL, IXELB, NUMLNK)
 C=======================================================================
-C$Id: idblnk.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: idblnk.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:14:52  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:14:51  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:29  gdsjaar
-c Initial revision
-c 
-
 C   --*** IDBLNK *** (EXOLIB) Return link index
 C   --   Written by Amy Gilkey - revised 12/03/87
 C   --
@@ -81,11 +60,10 @@ C   --   NUMLNK - IN - the number of nodes per element
          IELBLK = IELB
       END IF
 
-      IDBLNK = 1
-      DO 110 IELB = 1, IELBLK-1
-         NEL = IXELB(IELB) - IXELB(IELB-1)
-         IDBLNK = IDBLNK + NEL * NUMLNK(IELB)
-  110 CONTINUE
+        DO 110 IELB = 1, IELBLK-1
+          NEL = IXELB(IELB) - IXELB(IELB-1)
+          IDBLNK = IDBLNK + NEL * NUMLNK(IELB)
+ 110    CONTINUE
       IF (IEL .GT. 0) THEN
          NEL = IEL - IXELB(IELBLK-1) - 1
          IDBLNK = IDBLNK + NEL * NUMLNK(IELBLK)

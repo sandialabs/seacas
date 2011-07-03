@@ -224,5 +224,5 @@ c      OPEN (8, STATUS='unknown',FILE=CV(1)(1:LEN))
          WRITE (8,10000) 'UNKNOWN COMMAND'
       END IF
       GO TO 100
-10000 FORMAT ((1X,A,I12))
+10000 FORMAT ((1X,A,I32))
       END

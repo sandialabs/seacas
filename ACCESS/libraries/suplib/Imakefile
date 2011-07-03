@@ -29,7 +29,7 @@ XCOMM THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 XCOMM (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 XCOMM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-XCOMM $Id: Imakefile,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.28 2009/03/25 12:46:01 gdsjaar Exp $
 
 #ifdef PARALLEL
 CCOPTIONS  = ParallelCCOptions
@@ -39,7 +39,9 @@ LIBDIR     = $(PLIBDIR)
 
 LIB = suplib
 
-OBJSc  = c_xhelp.o do_help.o help_c.o scanner.o util.o addlog.o
+INCLIST = f2kcli.inc
+
+OBJSc  = c_xhelp.o do_help.o help_c.o scanner.o util.o addlog.o wildcmp.o
 
 OBJSf1 = abrstr.o addv.o   banner.o bannr2.o batch.o  ckexod.o \
          cknone.o ckwhol.o copint.o cpuifc.o cpyint.o cpylog.o \
@@ -58,14 +60,16 @@ OBJSf1 = abrstr.o addv.o   banner.o bannr2.o batch.o  ckexod.o \
          memerr.o minmax.o minmxl.o minmxs.o num2ix.o numeqi.o \
          numeql.o numstr.o okabrt.o opnfil.o packt.o  pcklab.o \
          pckstr.o pltond.o pltone.o prterr.o scneof.o shocmd.o \
-         sqzstr.o strtup.o subv.o   wrapup.o iowdsz.o screrr.o
+         sqzstr.o strtup.o subv.o   wrapup.o iowdsz.o screrr.o \
+	 f2kcli.o indexr.o
+
 OBJSF = help.o
 
 #ifndef CrayArchitecture
-#if HasFlush == YES
-OBJSf2 = ismax.o  ismin.o  wheneq.o
-#else
+#if NeedsFortranFlush == YES
 OBJSf2 = flush.o  ismax.o  ismin.o  wheneq.o
+#else
+OBJSf2 = ismax.o  ismin.o  wheneq.o
 #endif
 #else
 OBJSf2 =
@@ -80,6 +84,9 @@ SRCSF = ${OBJSF:.o=.F}
 #if defined(CougarArchitecture)
 OBJS = $(OBJSf1) $(OBJSf2) $(OBJSF)
 SRCS = $(SRCf1) $(SRCf2) $(SRCSF)
+#elif defined PPCArchitecture && !defined DarwinArchitecture
+OBJS = $(OBJSc) $(OBJSf1) $(OBJSf2) $(OBJSF)
+SRCS = $(SRCc) $(SRCf1) $(SRCf2) $(SRCSF)
 #else
 DEFINES = -DHELPFILE=\"$(ETCDIR)/xhelp.gih\"
 STD_CPP_DEFINES = StandardCppDefines -DUSEHELP
@@ -88,6 +95,9 @@ SRCS = $(SRCc) $(SRCf1) $(SRCf2) $(SRCSF)
 #endif
 
 NormalLibraryTarget($(LIB),$(OBJS))
+
+InstallIncludeList(makeincludes,$(INCLIST),$(INCDIR))
+InstallIncludeList(install,$(INCLIST),$(INCDIR))
 
 InstallLibrary($(LIB),$(LIBDIR))
 

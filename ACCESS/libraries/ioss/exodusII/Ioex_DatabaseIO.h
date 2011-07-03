@@ -55,11 +55,10 @@ namespace Ioss {
    class Region;
    class EntityBlock;
    class NodeBlock;
-   class FaceBlock;
+   class SideBlock;
    class ElementBlock;
    class NodeSet;
-   class EdgeSet;
-   class FaceSet;
+   class SideSet;
    class CommSet;
    class ElementTopology;
 }
@@ -93,8 +92,7 @@ namespace Ioex {
 
       // Check capabilities of input/output database...
       bool supports_nodal_fields()    const {return true;}
-      bool supports_edge_fields()     const {return true;}
-      bool supports_face_fields()     const {return true;}
+      bool supports_side_fields()     const {return true;}
       bool supports_element_fields()  const {return true;}
       bool supports_nodelist_fields() const {return true;}
 
@@ -120,15 +118,13 @@ namespace Ioex {
       std::string title()               const     {return databaseTitle;}
       int    spatial_dimension()   const     {return spatialDimension;}
       int    node_count()          const     {return nodeCount;}
-      int    edge_count()          const     {return 0;}
-      int    face_count()          const     {return 0;}
+      int    side_count()          const     {return 0;}
       int    element_count()       const     {return elementCount;}
       int    node_block_count()    const     {return nodeBlockCount;}
       int    element_block_count() const     {return elementBlockCount;}
-      int    faceset_count()       const     {return sidesetCount;}
-      int    edgeset_count()       const     {return 0;}
+      int    sideset_count()       const     {return sidesetCount;}
       int    nodeset_count()       const     {return nodesetCount;}
-      int    maximum_symbol_length() const {return 32;}
+      int    maximum_symbol_length() const   {return maximumNameLength;}
 
       void get_block_adjacencies(const Ioss::ElementBlock *eb,
 				 std::vector<std::string> &block_adjacency) const;
@@ -143,18 +139,14 @@ namespace Ioex {
 
       int get_field_internal(const Ioss::ElementBlock* eb, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
-      int get_field_internal(const Ioss::FaceBlock* fb, const Ioss::Field& field,
-			     void *data, size_t data_size) const;
-      int get_field_internal(const Ioss::EdgeBlock* eb, const Ioss::Field& field,
+      int get_field_internal(const Ioss::SideBlock* fb, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
       int get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
 
       int get_field_internal(const Ioss::NodeSet* ns, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
-      int get_field_internal(const Ioss::EdgeSet* es, const Ioss::Field& field,
-			     void *data, size_t data_size) const;
-      int get_field_internal(const Ioss::FaceSet* fs, const Ioss::Field& field,
+      int get_field_internal(const Ioss::SideSet* fs, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
       int get_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
@@ -164,18 +156,14 @@ namespace Ioex {
 
       int put_field_internal(const Ioss::ElementBlock* eb, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
-      int put_field_internal(const Ioss::FaceBlock* fb, const Ioss::Field& field,
-			     void *data, size_t data_size) const;
-      int put_field_internal(const Ioss::EdgeBlock* eb, const Ioss::Field& field,
+      int put_field_internal(const Ioss::SideBlock* fb, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
       int put_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
 
       int put_field_internal(const Ioss::NodeSet* ns, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
-      int put_field_internal(const Ioss::EdgeSet* es, const Ioss::Field& field,
-			     void *data, size_t data_size) const;
-      int put_field_internal(const Ioss::FaceSet* fs, const Ioss::Field& field,
+      int put_field_internal(const Ioss::SideSet* fs, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
       int put_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
 			     void *data, size_t data_size) const;
@@ -195,12 +183,14 @@ namespace Ioex {
       int get_file_pointer() const; // Open file and set exodusFilePtr.
       int free_file_pointer() const; // Close file and set exodusFilePtr.
 
+      int get_current_state() const; // Get current state with error checks and usage message.
       void put_qa();
       void put_info();
       int read_nodal_coordinates();
       void read_elements(const Ioss::ElementBlock& block);
 
       void compute_block_adjacencies() const;
+      void compute_node_status() const;
 
       // Metadata-related functions.
       void read_meta_data();
@@ -210,10 +200,10 @@ namespace Ioex {
 			       const Ioss::GroupingEntity *ge,
 			       void *variables) const;
 
-      // Handles subsetting of edge/face blocks.
+      // Handles subsetting of side blocks.
       int read_ss_transient_field(const Ioss::Field& field,
 				  int id, void *variables,
-				  std::vector<int> &is_valid_face) const;
+				  std::vector<int> &is_valid_side) const;
 
       // Should be made more generic again so can rejoin with write_element_transient field
       void write_nodal_transient_field(ex_entity_type type, const Ioss::Field& field,
@@ -241,9 +231,7 @@ namespace Ioex {
       void read_region();
       void get_nodeblocks();
       void get_elemblocks();
-      void get_facesets();
-      void get_edgesets();
-      void get_edge_face_sets(int topology_dimension);
+      void get_sidesets();
       void get_nodesets();
       void get_commsets();
 
@@ -261,10 +249,10 @@ namespace Ioex {
 
       int add_results_fields(ex_entity_type type, Ioss::GroupingEntity *entity,
 			     int count, int position=0);
-      int get_face_connectivity(const Ioss::EntityBlock* fb, int id, int face_count,
+      int get_side_connectivity(const Ioss::EntityBlock* fb, int id, int side_count,
 				int *fconnect, size_t data_size) const;
-      int get_face_distributions(const Ioss::EntityBlock* fb, int id,
-				 int face_count, double *dist_fact, size_t data_size) const;
+      int get_side_distributions(const Ioss::EntityBlock* fb, int id,
+				 int side_count, double *dist_fact, size_t data_size) const;
 
       void add_region_fields();
       void store_reduction_field(ex_entity_type type,
@@ -279,12 +267,12 @@ namespace Ioex {
       void write_reduction_fields() const;
       void read_reduction_fields() const;
 
-      int get_face_edge_field(const Ioss::EntityBlock* ef_blk,
-			      const Ioss::Field& field,
-			      void *data, size_t data_size) const;
-      int put_face_edge_field(const Ioss::EntityBlock* fb,
-			      const Ioss::Field& field,
-			      void *data, size_t data_size) const;
+      int get_side_field(const Ioss::SideBlock* ef_blk,
+			 const Ioss::Field& field,
+			 void *data, size_t data_size) const;
+      int put_side_field(const Ioss::SideBlock* fb,
+			 const Ioss::Field& field,
+			 void *data, size_t data_size) const;
 
       // Handle special output time requests -- primarily restart (cycle, keep, overwrite)
       // Given the global region step, return the step on the database...
@@ -303,6 +291,7 @@ namespace Ioex {
       std::string databaseTitle;
       int exodusMode;
 
+      mutable int maximumNameLength;
       int spatialDimension;
       int nodeCount;
       int elementCount;
@@ -361,18 +350,11 @@ namespace Ioex {
       VariableNameMap sidesetVariables;
       VariableNameMap globalVariables;
 
-      // Similar for entity attributes (currently only element blocks); however, the
-      // names are not mapped to the individual components.
-      // The other difference is that that name stored in the map is a
-      // combination of the entity-block name and the attribute name
-      // so we can use a single VariableNameMap for the region instead
-      // of one-per entity block.
-      VariableNameMap attributeNames;
-
       mutable ValueContainer  globalValues;
 
       mutable std::vector<std::vector<bool> > blockAdjacency;
-
+      mutable std::vector<unsigned char> nodeConnectivityStatus;
+      
       time_t timeLastFlush;
 
       mutable bool sequentialNG2L; // true if reverse node map is sequential
@@ -383,6 +365,8 @@ namespace Ioex {
 
       mutable bool blockAdjacenciesCalculated; // True if the lazy creation of
                                               // block adjacencies has been calculated.
+      mutable bool nodeConnectivityStatusCalculated; // True if the lazy creation of
+                                                    // nodeConnectivityStatus has been calculated.
     };
 
   // ------------------------------------------------------------------------

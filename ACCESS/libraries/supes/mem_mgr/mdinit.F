@@ -206,7 +206,7 @@ C     will not overrun and the character stuff will use a value of 2 for
 C     for the second dimension.  The mixed vs. nonmixed mode is
 C     indicated by the variable CHRCOL. (1 = mixed, 2 = nonmixed)
 C
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
       DIMENSION ERRVEC(NERVEC)
 C
 C     Internal base vectors.

@@ -32,19 +32,13 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE CPYRGT (NOUT, YEAR)
 C=======================================================================
-C $Id: cpyrgt.f,v 1.3 2009/03/25 14:32:40 gdsjaar Exp $
+C $Id: cpyrgt.f,v 1.4 2009/03/25 14:31:47 gdsjaar Exp $
 C $Log: cpyrgt.f,v $
-C Revision 1.3  2009/03/25 14:32:40  gdsjaar
+C Revision 1.4  2009/03/25 14:31:47  gdsjaar
 C Update copyright info
 C
-C Revision 1.2  2009/03/25 04:47:54  gdsjaar
-C Added blotII2 source since Copyright was asserted.
-C
-C Update copyright notice in suplib.
-C
-C Add blotII2 to config files.  Note that blot will not build yet since
-C it requires some libraries that are still being reviewed for copyright
-C assertion.
+C Revision 1.3  2009/03/25 12:46:01  gdsjaar
+C Add copyright and license notice to all files.
 C
 C Revision 1.2  1993/07/06 21:57:53  gdsjaar
 C Updated copyright output information based on latest memo from Art Silva

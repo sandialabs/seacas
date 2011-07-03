@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+
 static int nmalloc = 0;		/* number of calls to malloc */
 static int nfree = 0;		/* number of calls to free */
 static int bytes_used = 0;	/* current dynamic memory usage */
@@ -38,15 +39,22 @@ void *smalloc(size_t n)
 
   nmalloc++;
   if (n == 0) {
-    message("ERROR: Non-positive argument to smalloc (%u).\n", n, Output_File);
+#if __STDC_VERSION__ >= 1999901
+    message("ERROR: Non-positive argument to smalloc (%zu).\n", n, Output_File);
+#else
+    message("ERROR: Non-positive argument to smalloc (%lu).\n", (unsigned long)n, Output_File);
+#endif
     bail(NULL, 1);
   }
 
   ptr = malloc(n);
 
   if (ptr == NULL) {
-    message("Program out of space while attempting to allocate %u.  Sorry!\n", n,
-	    Output_File);
+#if __STDC_VERSION__ >= 1999901
+    message("Program out of space while attempting to allocate %zu.\n", n, Output_File);
+#else
+    message("Program out of space while attempting to allocate %lu.\n", (unsigned long)n, Output_File);
+#endif
     bail(NULL, 1);
   }
 
@@ -55,7 +63,11 @@ void *smalloc(size_t n)
       malloc(sizeof(struct smalloc_debug_data));
 
     if (new == NULL) {
-      message("WARNING: No space for malloc_debug %u.\n", n, Output_File);
+#if __STDC_VERSION__ >= 1999901
+      message("WARNING: No space for malloc_debug %zu.\n", n, Output_File);
+#else
+      message("WARNING: No space for malloc_debug %lu.\n", (unsigned long)n, Output_File);
+#endif
       return(ptr);
     }
 
@@ -71,7 +83,11 @@ void *smalloc(size_t n)
   }
 
   if (DEBUG_MEMORY > 2) {
-    printf(" order=%d, size=%u, location=%p\n", nmalloc, n, ptr);
+#if __STDC_VERSION__ >= 1999901
+    printf(" order=%d, size=%zu, location=%p\n", nmalloc, n, ptr);
+#else
+    printf(" order=%d, size=%lu, location=%p\n", nmalloc, (unsigned long)n, ptr);
+#endif
   }
 
   return (ptr);
@@ -90,7 +106,7 @@ void *smalloc_ret(size_t n)
 
   ptr = NULL;
   if (n == 0) {
-    message("ERROR: Non-positive argument to smalloc_ret (%u).\n", n, Output_File);
+    message("ERROR: Non-positive argument to smalloc_ret (%zu).\n", n, Output_File);
     bail(NULL, 1);
   }
 
@@ -100,7 +116,7 @@ void *smalloc_ret(size_t n)
 
     if (ptr == NULL) {
       nmalloc--;
-      message("\nERROR: Unable to allocate %u bytes of memory.\n", n, Output_File);
+      message("\nERROR: Unable to allocate %zu bytes of memory.\n", n, Output_File);
     }
     else {
 
@@ -109,7 +125,7 @@ void *smalloc_ret(size_t n)
 	  malloc(sizeof(struct smalloc_debug_data));
 
 	if (new == NULL) {
-	  message("WARNING: No space for malloc_debug %u.\n", n, Output_File);
+	  message("WARNING: No space for malloc_debug %zu.\n", n, Output_File);
 	  return(ptr);
 	}
 
@@ -125,7 +141,11 @@ void *smalloc_ret(size_t n)
       }
 
       if (DEBUG_MEMORY > 2) {
-	printf(" order=%d, size=%u, location=%p\n", nmalloc, n, ptr);
+#if __STDC_VERSION__ >= 1999901
+    printf(" order=%d, size=%zu, location=%p\n", nmalloc, n, ptr);
+#else
+    printf(" order=%d, size=%lu, location=%p\n", nmalloc, (unsigned long)n, ptr);
+#endif
       }
 
     }
@@ -179,7 +199,7 @@ void *srealloc(void *ptr, size_t n)
   }
 
   if (p == NULL) {
-    message("Program out of space while attempting to reallocate %u.\n", n, Output_File);
+    message("Program out of space while attempting to reallocate %zu.\n", n, Output_File);
     bail(NULL, 1);
   }
   return (p);
@@ -230,7 +250,7 @@ void *srealloc_ret(void *ptr, size_t n)
   }
 
   if (p == NULL && DEBUG_MEMORY > 0) {
-    message("WARNING: Program out of space while attempting to reallocate %u.\n", n,
+    message("WARNING: Program out of space while attempting to reallocate %zu.\n", n,
 	    Output_File);
   }
   return (p);
@@ -292,8 +312,13 @@ void smalloc_stats(void)
 	if (top != NULL) {
 	    printf("Remaining allocations:\n");
 	    for (dbptr = top; dbptr != NULL; dbptr = dbptr->next) {
-		printf(" order=%d, size=%u, location=%p\n", dbptr->order,
-		       dbptr->size, dbptr->ptr);
+#if __STDC_VERSION__ >= 1999901
+		printf(" order=%d, size=%zu, location=%p\n", dbptr->order,
+		       dbptr->size, (void*)dbptr->ptr);
+#else
+		printf(" order=%d, size=%lu, location=%p\n", dbptr->order,
+		       (unsigned long)dbptr->size, (void*)dbptr->ptr);
+#endif
 	    }
 	}
     }

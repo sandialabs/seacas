@@ -34,7 +34,7 @@ C
      *   LVOID, NVOIDS, CHRCOL, LASTER, MYLOC, MYCLOC)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This routine removes a name from the dictionary and returns the
 C     available space to the void table.

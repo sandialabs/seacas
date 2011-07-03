@@ -1,4 +1,4 @@
-/* $Id: util.c,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $ */
+/* $Id: util.c,v 1.10 2009/03/25 12:46:02 gdsjaar Exp $ */
 
 /* GNUPLOT - util.c */
 /*

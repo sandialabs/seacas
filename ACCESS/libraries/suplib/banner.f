@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE BANNER (NOUT, QAINFO, LINE1, LINE2, LINE3)
 C=======================================================================
-C$Id: banner.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: banner.f,v 1.5 2009/03/25 12:46:01 gdsjaar Exp $
 
 C   --*** BANNER *** (ETCLIB) Print program banner
 C   --   Written by Amy Gilkey - revised 11/24/87

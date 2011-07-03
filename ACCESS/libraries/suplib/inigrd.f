@@ -33,16 +33,10 @@ C=======================================================================
       SUBROUTINE INIGRD (FROM, TO, GRAD, NINT, NPTS, ARRAY)
 C=======================================================================
 
-C   $Id: inigrd.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C   $Id: inigrd.f,v 1.4 2009/03/25 12:46:02 gdsjaar Exp $
 C   $Log: inigrd.f,v $
-C   Revision 1.2  2009/03/25 04:47:54  gdsjaar
-C   Added blotII2 source since Copyright was asserted.
-C
-C   Update copyright notice in suplib.
-C
-C   Add blotII2 to config files.  Note that blot will not build yet since
-C   it requires some libraries that are still being reviewed for copyright
-C   assertion.
+C   Revision 1.4  2009/03/25 12:46:02  gdsjaar
+C   Add copyright and license notice to all files.
 C
 C   Revision 1.3  1992/01/02 18:55:16  gdsjaar
 C   Moved from gen3d to here, overwrite old one

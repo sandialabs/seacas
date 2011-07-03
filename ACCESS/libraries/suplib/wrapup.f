@@ -32,26 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE WRAPUP (PROG)
 C=======================================================================
-C$Id: wrapup.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: wrapup.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:16:28  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:16:26  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:46  gdsjaar
-c Initial revision
-c 
 
 C   --*** WRAPUP *** (ETCLIB) Wrapup program
 C   --   Written by Amy Gilkey - revised 04/23/86

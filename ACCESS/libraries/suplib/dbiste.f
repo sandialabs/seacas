@@ -34,16 +34,10 @@ C=======================================================================
      &   NVARHI, NVARGL, NVARNP, NUMNP, NVAREL, NELBLK, NUMELB, ISEVOK,
      &   TIME, WHOTIM, VARHI, VARGL, VARNP, VAREL, *)
 C=======================================================================
-C$Id: dbiste.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbiste.f,v 1.6 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiste.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.6  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.5  1997/03/20 19:40:12  caforsy
 CUpdated Imakefile for Imake 6.1.  Changed printing routines to handle

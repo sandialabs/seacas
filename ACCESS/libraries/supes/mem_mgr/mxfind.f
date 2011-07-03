@@ -34,7 +34,7 @@ C
      *   CHRCOL, LASTER, ROW)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C***********************************************************************
 C

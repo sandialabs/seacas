@@ -44,6 +44,7 @@
 #include <stdexcept>
 #include <cstdlib>
 
+#define TOPTR(x) (x.empty() ? NULL : &x[0])
 #define IOSS_ERROR(errmsg) throw std::runtime_error(errmsg.str())
 #define IOSS_WARNING std::cerr
 
@@ -75,6 +76,25 @@ namespace Ioss {
     static int    decode_entity_name(const std::string &entity_name);
     static std::string encode_entity_name(const std::string &entity_type, int id);
 
+    /*!
+     * Convert 'name' to lowercase and convert spaces to '_'
+     */
+    static void fixup_name(char *name);
+    static void fixup_name(std::string &name);
+    
+    /*!
+     * Process the base element type 'base' which has
+     * 'nodes_per_element' nodes and a spatial dimension of 'spatial'
+     * into a form that the IO system can (hopefully) recognize.
+     * Lowercases the name; converts spaces to '_', adds
+     * nodes_per_element at end of name (if not already there), and
+     * does some other transformations to remove some exodusII ambiguity.
+     */
+    static std::string fixup_element_type(const std::string &base, int nodes_per_element, int spatial);
+
+    static std::string uppercase(const std::string &name);
+    static std::string lowercase(const std::string &name);
+
     static int case_strcmp(const std::string &s1, const std::string &s2);
     /*!
      * Return a string containing information about the current :
@@ -103,7 +123,7 @@ namespace Ioss {
     static int field_warning(const Ioss::GroupingEntity *ge,
 			     const Ioss::Field &field, const std::string& inout);
 
-    static void calculate_faceblock_membership(IntVector &face_is_member,
+    static void calculate_sideblock_membership(IntVector &face_is_member,
 					       const EntityBlock *ef_blk,
 					       const int *element, const int *sides,
 					       int number_sides,
@@ -125,6 +145,26 @@ namespace Ioss {
 	os << t;
 	return os.str();
       }
-  };
+    
+    /*!
+     * Many databases have a maximum length for variable names which can
+     * cause a problem with variable name length.
+     *
+     * This routine tries to shorten long variable names to an acceptable
+     * length ('max_var_len' characters max).  If the name is already less than this
+     * length, it is returned unchanged...
+     *
+     * Since there is a (good) chance that two shortened names will match,
+     * a 2-letter 'hash' code is appended to the end of the variable name.
+     *
+     * So, we shorten the name to a maximum of 'max_var_len'-3 characters and append a
+     * 2 character hash+separator.
+     *
+     * It also converts name to lowercase and converts spaces to '_'
+     */
+    static std::string variable_name_kluge(const std::string &name,
+					   size_t component_count, size_t copies,
+					   size_t max_var_len);
+      };
 }
 #endif

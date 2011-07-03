@@ -32,26 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE SQZSTR (STRING, LSTR)
 C=======================================================================
-C$Id: sqzstr.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: sqzstr.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:16:22  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:16:21  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:45  gdsjaar
-c Initial revision
-c 
 
 C   --*** SQZSTR *** (STRLIB) Remove extra blanks from string
 C   --   Written by Amy Gilkey - revised 06/02/87
@@ -61,7 +41,7 @@ C   --To prevent problems, an empty string is returned with a length of 1.
 C   --
 C   --Parameters:
 C   --   STRING - IN/OUT - the string to be compressed, returned, may be
-C   --      up to 132 characters long
+C   --      up to 1024 characters long
 C   --   LSTR - OUT - the new string length
 
 C   --Routines Called:
@@ -70,11 +50,16 @@ C   --   LENSTR - (STRLIB) Find string length
       CHARACTER*(*) STRING
       INTEGER LSTR
 
-      CHARACTER*132 TMPSTR
+      PARAMETER (MXSTR = 1024)
+      CHARACTER*(MXSTR) TMPSTR
 
       IF (STRING .EQ. ' ') RETURN
 
       LSTR = LENSTR (STRING)
+      if (lstr .gt. MXSTR) then
+        call prterr ('PROGRAM', 'String is too long in SQZSTR')
+        return
+      end if
 
       IBLK = INDEX (STRING, '  ')
   100 CONTINUE

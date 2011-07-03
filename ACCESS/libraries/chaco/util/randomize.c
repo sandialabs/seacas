@@ -2,9 +2,7 @@
  * at Sandia National Laboratories under US Department of Energy        *
  * contract DE-AC04-76DP00789 and is copyrighted by Sandia Corporation. */
 
-#include	<stdlib.h>
-
-int       RAND_MAXIMUM;		/* largest value returnable from rand() */
+#include "chaco_random.h"
 
 /* Randomly permute elements of an array. */
 void      randomize(int *array, int n)
@@ -26,41 +24,13 @@ void      randomize(int *array, int n)
     }
 }
 
-
-
 double    drandom(void)
 {
-    extern int RAND_MAXIMUM;	/* Largest value rand can return */
-    int       val;
-
-    val = rand();
-    while (val > RAND_MAXIMUM)
-	RAND_MAXIMUM = 2 * RAND_MAXIMUM + 1;
-
-    return (((double) val) / (1.0 + RAND_MAXIMUM));
+  return rand_rect_port();
 }
-
-
-/*
-int       irandom()
-{
-    extern int RAND_MAXIMUM;
-    int       val;
-
-    val = rand();
-    while (val > RAND_MAXIMUM)
-	RAND_MAXIMUM = 2 * RAND_MAXIMUM + 1;
-
-    return (val);
-}
-*/
-
 
 void      setrandom(long int seed)
 {
-    int       iseed;
-
-    iseed = (int) seed;
-
-    srand(iseed);
+    init_rand_port(seed);
 }
+

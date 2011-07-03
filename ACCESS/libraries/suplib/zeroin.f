@@ -29,16 +29,10 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Id: zeroin.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C $Id: zeroin.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C $Log: zeroin.f,v $
-C Revision 1.2  2009/03/25 04:47:54  gdsjaar
-C Added blotII2 source since Copyright was asserted.
-C
-C Update copyright notice in suplib.
-C
-C Add blotII2 to config files.  Note that blot will not build yet since
-C it requires some libraries that are still being reviewed for copyright
-C assertion.
+C Revision 1.2  2009/03/25 12:46:02  gdsjaar
+C Add copyright and license notice to all files.
 C
 C Revision 1.1  1995/01/18 17:09:12  gdsjaar
 C Added zeroin subroutine which searches for a zero of a function.

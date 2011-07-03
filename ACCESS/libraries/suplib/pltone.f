@@ -60,12 +60,12 @@ C        PACKT -  Remove multiple blanks from a character string
 C                 The string:     "This   is    the    title" 
 C                 Is returned as: "This is the title"
 C
-      CHARACTER*80 TITLE(*)
-      CHARACTER*40 XLAB,YLAB
+      CHARACTER*(*) TITLE(*)
+      CHARACTER*(*) XLAB,YLAB
       DIMENSION XX(1), YY(1)
 C
       LOGICAL MONO, TPLOT
-      CHARACTER*16 CURVE
+      CHARACTER*(*) CURVE
       CHARACTER*11 BEGIN
       CHARACTER*9 ECURVE
       CHARACTER*1 COMMA,AUX
@@ -113,8 +113,8 @@ C
          CALL PACKT (TITLE(I),80)
          WRITE (MD, 60) TITLE(I)
    30    CONTINUE
-      CALL PACKT (XLAB,40)
-      CALL PACKT (YLAB,40)
+      CALL PACKT (XLAB,lenstr(xlab))
+      CALL PACKT (YLAB,lenstr(ylab))
       WRITE (MD, 70) XLAB
       WRITE (MD, 70) YLAB
       WRITE (MD, 80) XMN,COMMA,XMX,COMMA,YMN,COMMA,YMX,COMMA,           
@@ -134,8 +134,8 @@ C
 C
    40 FORMAT (A11,A1,A16)
    50 FORMAT (I1,A1,A80)
-   60 FORMAT (A80)
-   70 FORMAT (A40)
+   60 FORMAT (A)
+   70 FORMAT (A)
    80 FORMAT (1PE15.7,A1,1PE15.7,A1,1PE15.7,A1,1PE15.7,A1,I5,A1,A1)
    90 FORMAT (A4,A1,A4,A1)
   100 FORMAT (1PE15.7,A1,1PE15.7)

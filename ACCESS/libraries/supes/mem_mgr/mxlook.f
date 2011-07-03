@@ -33,7 +33,7 @@ C
       SUBROUTINE MXLOOK (MNGET, VOID, LVOID, NVOIDS, VROW, LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This routine looks for space in the void table.
 C

@@ -32,24 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE GSLIBV (STRING)
 C=======================================================================
-C$Id: gslibv.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: gslibv.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.2  1996/02/29 15:39:30  caforsy
-CChanged string length.
-C
-CRevision 1.1  1996/02/26 17:47:43  caforsy
-CAdded subroutine gslibv.f.  Returns current version number of suplib.
-C
-C
+
 C***********************************************************************
 C
 C     *** GSLIBV *** Returns current version number of the suplib library
@@ -68,7 +51,7 @@ C***********************************************************************
       CHARACTER*32 STRING
 
 C     Version Format: 'major.minor.bug_fix'
-      STRING = '1.0.0'
+      STRING = '1.1.0'
 
       RETURN
       END

@@ -37,15 +37,14 @@
 
 #include <exodusII.h>
 #include <vector>
+#include <string>
 #include <cstring>
 
 namespace Ioss {
   class ElementBlock;
   class NodeSet;
-  class FaceBlock;
-  class EdgeBlock;
-  class FaceSet;
-  class EdgeSet;
+  class SideBlock;
+  class SideSet;
 }
   /*!
    * This set of classes provides a thin wrapper around the exodusII
@@ -105,19 +104,17 @@ namespace Ioex {
 
   struct Block
   {
-    Block() : id(0), elementCount(0), nodesPerElement(0), attributeCount(0),
+    Block() : name(""), id(0), elementCount(0), nodesPerElement(0), attributeCount(0),
 	      offset_(-1)
     {
       std::strcpy(elType, "");
-      std::strcpy(name, "");
     }
 
-    Block(const Block &other) : id(other.id), elementCount(other.elementCount),
+    Block(const Block &other) : name(other.name), id(other.id), elementCount(other.elementCount),
 				nodesPerElement(other.nodesPerElement),
 				attributeCount(other.attributeCount), offset_(other.offset_)
     {
       std::strcpy(elType, other.elType);
-      std::strcpy(name,   other.name);
     }
 
     Block(const Ioss::ElementBlock &other);
@@ -130,7 +127,7 @@ namespace Ioex {
     bool operator!=(const Block& other) const {return !(*this == other);}
 
     char elType[MAX_STR_LENGTH+1];
-    char name[MAX_STR_LENGTH+1];
+    std::string name;
     int id;
     int elementCount;
     int nodesPerElement;
@@ -141,15 +138,12 @@ namespace Ioex {
 
   struct NodeSet
   {
-    NodeSet() : id(0), nodeCount(0), dfCount(0)
-    {
-      std::strcpy(name, "");
-    }
+    NodeSet() : name(""), id(0), nodeCount(0), dfCount(0) { }
     NodeSet(const Ioss::NodeSet &other);
     bool operator==(const NodeSet&) const;
     bool operator!=(const NodeSet& other) const {return !(*this == other);}
 
-    char name[MAX_STR_LENGTH+1];
+    std::string name;
     int id;
     int nodeCount;
     int dfCount;
@@ -157,18 +151,13 @@ namespace Ioex {
 
   struct SideSet
   {
-    SideSet() : id(0), sideCount(0), dfCount(0)
-    {
-      std::strcpy(name, "");
-    }
-    SideSet(const Ioss::FaceBlock &other); // 3D
-    SideSet(const Ioss::EdgeBlock &other); // 2D
-    SideSet(const Ioss::FaceSet   &other); // 3D
-    SideSet(const Ioss::EdgeSet   &other); // 2D
+    SideSet() : name(""), id(0), sideCount(0), dfCount(0) { }
+    SideSet(const Ioss::SideBlock &other); // 3D
+    SideSet(const Ioss::SideSet   &other); // 3D
     bool operator==(const SideSet&) const;
     bool operator!=(const SideSet& other) const {return !(*this == other);}
 
-    char name[MAX_STR_LENGTH+1];
+    std::string name;
     int id;
     int sideCount;
     int dfCount;
@@ -224,7 +213,7 @@ namespace Ioex {
   class Internals
   {
   public:
-    explicit Internals(int exoid);
+    Internals(int exoid, int maximum_name_length);
 
     int write_meta_data(const Mesh &mesh,
 			const std::vector<Block>   &blocks,
@@ -263,11 +252,14 @@ namespace Ioex {
     int put_non_define_data(const std::vector<NodeSet> &nodesets);
     int put_non_define_data(const std::vector<SideSet> &sidesets);
 
+    int max_name_length() const {return maximumNameLength;}
+    
     int exodusFilePtr;
     int nodeMapVarID[3];
     int elementMapVarID[2];
     int commIndexVar;
     int elemCommIndexVar;
+    int maximumNameLength; 
   };
 }
 #endif /* IOSS_Ioex_Internals_h */

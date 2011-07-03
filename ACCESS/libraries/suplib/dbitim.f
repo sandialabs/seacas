@@ -35,16 +35,10 @@ C=======================================================================
      &   NVARNP, NELBLK, NVAREL, ISEVOK,
      &   NSTEPS, NSTEPW, A, KTIMES, KWHOLE, *)
 C=======================================================================
-C$Id: dbitim.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbitim.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbitim.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.3  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.2  1990/10/11 16:46:39  gdsjaar
 CFixed problem with singly/doubly dimensioned array
