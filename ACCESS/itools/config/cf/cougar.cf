@@ -1,0 +1,68 @@
+XCOMM Configuration file for tinyflop
+
+#ifndef OSMajorVersion
+#define OSMajorVersion		1
+#endif
+
+#ifndef OSMinorVersion
+#define OSMinorVersion		0
+#endif
+
+#ifndef OSTeenyVersion
+#define OSTeenyVersion		4
+#endif
+
+#define System COUGAR
+#define InstallCmd installbsd
+#define NeedsGetSubopt YES
+#define NeedsDoubleEscape YES
+#define NeedsParallelnem_join YES
+#define NeedsParallelnem_spread YES
+#define TempDir /tmp
+#define NumProcs 4
+#define SerialDebugCmd "debug"
+
+#define BootstrapCFlags -Dcougar
+#define CppNoLineInfoOption -P
+#define CcCmd icc
+#define CplusplusCmd iCC
+#define CplusplusOptions -rwstl
+#define ArCmd ar cr
+#define FortranCmd if77
+#define Fortran90Cmd if90
+#define F90ExtraLdOptions -lf
+#define CppCmd /usr/mach/lib/cpp
+#define PreProcessCmd /usr/mach/lib/cpp
+#define DoRanlibCmd NO
+#define StandardDefines -Dcougar -DADDC_
+
+#define DefaultF77DebugFlags -O2
+#define DefaultF90DebugFlags -O2
+#define DefaultCDebugFlags -O2
+
+#define DefaultCCOptions
+#define DefaultF77Options
+#define DefaultF90Options
+#define ExtraLoadOptions
+
+#define ParallelCCOptions -cougar
+#define ParallelF77Options -cougar
+#define ParallelF90Options -cougar
+#define ParallelExtraLoadOptions -cougar
+
+#define NPCmd -sz
+#define ParRunCmd "yod"
+#define ParFLibs -lmpi
+#define ParCLibs -lmpi
+#define ParDebugCmdSngl "debug"
+#define ParDebugCmdMult "debug"
+
+#ifndef Use32BitAddress
+#define Use32BitAddress YES
+#endif
+
+#define HasMPI YES
+#define MPIIncludePath /cougar/include
+#define MPILibPath /cougar/lib/puma
+
+#define ExtraNetcdfLib  -lnx

@@ -1,0 +1,33 @@
+Newsgroups: comp.os.msdos.desqview
+Path: saimiri.primate.wisc.edu!sdd.hp.com!spool.mu.edu!agate!doc.ic.ac.uk!pipex!uunet!mcsun!dkuug!oldk1!storner
+From: storner@olivetti.dk (Henrik Storner)
+Subject: Imake for DV/X (DJGPP, really) uploaded to SIMTEL20 and qdeck.com
+Message-ID: <CBIC5y.191@olivetti.dk>
+Keywords: DV/X, DJGPP, Imake
+Organization: Olivetti Denmark A/S
+Date: Mon, 9 Aug 1993 19:44:20 GMT
+Lines: 23
+
+In case you didn't see the announcement on comp.archives.msdos.announce, I
+have recently uploaded a port of Imake for MS-DOS + DJGPP to 
+wsmr-simtel20.army.mil and oak.oakland.edu. (Directory: pd1:<msdos.dv-x>
+and /pub/msdos/dv-x, respectively. Filename: imakedvx.zip).
+
+The same file will be uploaded in a few minutes to Quarterdeck's BBS - 
+I hope their sysop will get it to the ftp server shortly. (I don't have
+direct ftp access).
+
+The port of Imake is workable, but not complete: Some configuration files
+used by Imake needs to be modified in order to provide a seamless integra-
+tion with DJGPP and Quarterdeck's qmake make-utility. However, due to a 
+change of job I will not have the time to get this done. By releasing 
+the program in a working state, hopefully someone else will get the con-
+figuration files all setup.
+
+If you wish to contact me, please use my new mail-address: storner@olicom.dk.
+Mail to my old address will be forwarded for some time, though.
+
+-- 
+Henrik Storner (storner@olicom.dk)
+System Engineering
+Olicom Denmark

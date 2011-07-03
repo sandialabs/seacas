@@ -1,0 +1,9 @@
+XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+
+SRCS =	\
+ffistr.f frefld.f getinp.f quoted.f stripb.f gsupev.f
+
+OBJS = ${SRCS:.f=.o}
+
+LibraryTargetSubdirs(libsupes.a,$(OBJS),../)
+

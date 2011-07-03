@@ -1,0 +1,87 @@
+XCOMM $Id: Imakefile,v 1.4 2009/06/09 21:22:28 gdsjaar Exp $
+
+XCOMM       netcdf-4.X is the current SEACAS default.
+ V_BASE = 4
+ V_NUM = netcdf-4.0.1
+
+TRUE_NETCDF = $(V_NUM)
+
+#if defined(__APPLE__)
+NETDEFS=darwin
+#elif defined(CrayArchitecture)
+NETDEFS=cray
+#elif defined(SunArchitecture)
+#if Build64BitAccess == YES
+NETDEFS=sun64
+#else
+NETDEFS=sun
+#endif
+#elif defined(SGIArchitecture)
+#if Build64BitAccess == YES
+NETDEFS=sgi64
+#else
+NETDEFS=sgi
+#endif
+#elif defined(HPArchitecture)
+NETDEFS=hp
+#elif defined(LinuxArchitecture)
+#if Build64BitAccess == YES
+#if defined(x86_64Architecture)
+NETDEFS=linux_x86_64
+#elif defined(ia64Architecture)
+NETDEFS=linux_ia64
+#else
+NETDEFS=linux64
+#endif
+#else
+#ifndef CrossCompiling
+NETDEFS=linux
+#else
+NETDEFS=linuxcross
+#endif
+#endif
+#elif defined(InterixArchitecture)
+NETDEFS=interix
+#elif defined(cygwinArchitecture)
+NETDEFS=cygwin
+#elif defined(IBMArchitecture)
+#if Build64BitAccess == YES
+NETDEFS=ibm64
+#else
+NETDEFS=ibm
+#endif
+#elif defined(OSF1Architecture)
+NETDEFS=osf1
+#else
+NETDEFS=orig
+#endif
+
+#ifdef CrossCompiling
+all:: Makefiles
+	cd $(TRUE_NETCDF); make
+	make install
+
+$(TRUE_NETCDF)/macros.make: $(TRUE_NETCDF)/macros.make.$(NETDEFS)
+	$(ETCDIR)/msub +R"@<" -R">@" $(TRUE_NETCDF)/macros.make.$(NETDEFS) > $(TRUE_NETCDF)/macros.make
+
+Makefiles:: $(TRUE_NETCDF)/macros.make 
+	cp $(TRUE_NETCDF)/config.h.$(NETDEFS) $(TRUE_NETCDF)/config.h
+
+#else
+runconfigure: $(TRUE_NETCDF)/runconfigure
+
+$(TRUE_NETCDF)/runconfigure: runconfigure.in.$(V_BASE) Imakefile
+	$(ETCDIR)/msub runconfigure.in.$(V_BASE) > $(TRUE_NETCDF)/runconfigure
+	chmod +x $(TRUE_NETCDF)/runconfigure
+
+MakeNetcdfMakefiles($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
+MakeNetcdfmakeincludes($(TRUE_NETCDF),$(ACCESSDIR))
+MakeNetcdfNoinstall($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
+MakeNetcdfAll($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
+#endif
+
+MakeNetcdfTest($(TRUE_NETCDF))
+MakeNetcdfInstall($(TRUE_NETCDF),$(ACCESSDIR),NETDEFS)
+MakeNetcdfClean($(TRUE_NETCDF))
+
+ExtraStuffToClean($(TRUE_NETCDF)/runconfigure)

@@ -1,0 +1,37 @@
+XCOMM $Id: Imakefile,v 1.2 2010/08/10 16:28:19 gdsjaar Exp $
+XCOMM Imakefile for ACCESS/libraries directory
+
+XCOMM The ACCESS/libraries directory has subdirectories 
+#define IHaveSubdirs
+
+#define PassDebugFlags  "CDEBUGFLAGS=$(CDEBUGFLAGS)" \
+			"F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
+
+SUBDIRS = \
+$(SUPESSRC) \
+$(SUPLIBSRC) \
+$(EXODUSIISRC) \
+$(VDI_DRIVERSSRC) \
+$(PLTSRC) \
+$(NEMESISSRC) \
+$(CHACOSRC) \
+$(ZOLTANSRC) \
+$(IOSSSRC) \
+$(XHELPSRC)
+
+makeincludes::
+	@if test -d $(EXODUSIISRC) ;  then \
+	(cd $(EXODUSIISRC)/cbind/include   && $(MAKE) install) ; \
+	(cd $(EXODUSIISRC)/forbind/include && $(MAKE) install) ; \
+	fi; \
+	if test -d $(NEMESISSRC) ; \
+	then \
+	(cd $(NEMESISSRC) && $(MAKE) makeincludes) ; \
+	fi;
+	if test -d $(ZOLTANSRC) ; \
+	then \
+	(cd $(ZOLTANSRC) && $(MAKE) makeincludes) ; \
+	fi;
+
+MakeAllLibraries($(SUBDIRS),PassDebugFlags)
+

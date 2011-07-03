@@ -1,0 +1,39 @@
+XCOMM $XConsortium: Imakefile /main/8 1996/09/28 16:14:12 rws $
+
+XCOMM Some compilers generate fatal errors if an -L directory does
+XCOMM not exist.  Since BUILDLIBDIR may not exist yet suppress its use.
+         LDPRELIB =
+        LDPRELIBS =
+
+DEPLIBS = 
+
+CC = $(NATIVECC)
+INCLUDES = -I$(TOP)/include
+CPP_PROGRAM = CppCmd
+CPP_DEFINES = -DCPP_PROGRAM="\"$(CPP_PROGRAM)\""
+DEFINES = $(SIGNAL_DEFINES) $(BOOTSTRAPCFLAGS) $(CPP_DEFINES)
+CFLAGS = $(CCOPTIONS) $(CCEXTRAOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) $(PROJECT_INCLUDES)
+
+#if defined(MacIIArchitecture) || defined(SequentArchitecture)
+XBSDLIB = /**/
+#endif
+
+#undef ImakeDependency
+#define ImakeDependency(dummy) @@\
+Makefile::  ProgramTargetName(imake)
+
+SimpleProgramTarget(imake)
+
+#if HasClearmake
+bootstrapdepend: depend
+#else
+bootstrapdepend:
+#endif
+
+clean::
+	RemoveFile(ProgramTargetName(ccimake))
+#if defined(Win32Architecture)
+    if exist bootstrap RmTreeCmd bootstrap
+#else
+	$(RM) -r bootstrap
+#endif

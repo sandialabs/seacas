@@ -1,0 +1,73 @@
+#!/bin/sh
+unalias rm
+DEFS="$1"
+CC="$2"
+CFLAGS="$3"
+F90CFLAGS="$4"
+INCLUDE_PATH="$5"
+PARMETIS_FLAG="${6:+-DZOLTAN_PARMETIS}"
+PARMETIS_INCPATH="$7"
+JOSTLE_FLAG="${8:+-DZOLTAN_JOSTLE}"
+JOSTLE_INCPATH="$9"
+shift 9
+AR="$1"
+RANLIB="$2"
+ZOLTAN_ARCH="${3:-generic}"
+ZOLTAN_LIB_DIR="$4"
+MPI_INCPATH="$5"
+CCOMP="$CC $CFLAGS $F90CFLAGS $INCLUDE_PATH $MPI_INCPATH $PARMETIS_INCPATH $JOSTLE_INCPATH"
+GDEFINES="$PARMETIS_FLAG $JOSTLE_FLAG"
+ZOLTAN_OBJ_DIR="Obj_$ZOLTAN_ARCH"
+if [ ! -d $ZOLTAN_OBJ_DIR ]; 
+then mkdir $ZOLTAN_OBJ_DIR ;
+fi
+rm -f $ZOLTAN_OBJ_DIR/*
+cd $ZOLTAN_OBJ_DIR
+echo 'Zoltan:  Compiling Utilities/Memory'
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Memory/mem.c
+echo Zoltan:  Linking libzoltan_mem.a
+$AR libzoltan_mem.a mem.o
+$RANLIB libzoltan_mem.a
+echo 'Zoltan:  Compiling Utilities/Communication'
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_create.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_do.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_do_reverse.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_destroy.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_info.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_invert_plan.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_invert_map.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_exchange_sizes.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_resize.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Communication/comm_sort_ints.c
+echo Zoltan:  Linking libzoltan_comm.a
+$AR libzoltan_comm.a comm_create.o comm_do.o comm_do_reverse.o comm_destroy.o comm_info.o comm_invert_plan.o comm_invert_map.o comm_exchange_sizes.o comm_resize.o comm_sort_ints.o
+$RANLIB libzoltan_comm.a
+echo 'Zoltan:  Compiling Utilities/DDirectory'
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Create.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Destroy.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Find.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Remove.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Update.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Set_Hash_Fn.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Hash2.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Stats.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Print.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Set_Neighbor_Hash_Fn1.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Set_Neighbor_Hash_Fn2.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../DDirectory/DD_Set_Neighbor_Hash_Fn3.c
+echo 'Zoltan:  Compiling Utilities/Timer'
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Timer/zoltan_timer.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../Timer/timer.c
+echo 'Zoltan:  Compiling Utilities/shared'
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../shared/zoltan_id.c
+$CCOMP -I../../include -I../shared -I../Memory -I../Communication -I../DDirectory -I../Timer -c $GDEFINES $DEFS ../shared/zoltan_align.c
+echo Zoltan:  Linking libzoltan_dd.a
+$AR libzoltan_dd.a DD_Create.o DD_Destroy.o DD_Find.o DD_Remove.o DD_Update.o DD_Set_Hash_Fn.o DD_Hash2.o DD_Stats.o DD_Print.o DD_Set_Neighbor_Hash_Fn1.o DD_Set_Neighbor_Hash_Fn2.o DD_Set_Neighbor_Hash_Fn3.o zoltan_id.o zoltan_align.o
+$RANLIB libzoltan_dd.a
+echo Zoltan:  Linking libzoltan_timer.a
+$AR libzoltan_timer.a zoltan_timer.o timer.o
+$RANLIB libzoltan_timer.a
+echo Zoltan:  Linking libzoltan.a
+$AR libzoltan.a mem.o comm_create.o comm_do.o comm_do_reverse.o comm_destroy.o comm_info.o comm_invert_plan.o comm_invert_map.o comm_exchange_sizes.o comm_resize.o comm_sort_ints.o DD_Create.o DD_Destroy.o DD_Find.o DD_Remove.o DD_Update.o DD_Set_Hash_Fn.o DD_Hash2.o DD_Stats.o DD_Print.o DD_Set_Neighbor_Hash_Fn1.o DD_Set_Neighbor_Hash_Fn2.o DD_Set_Neighbor_Hash_Fn3.o zoltan_timer.o timer.o zoltan_id.o zoltan_align.o
+$RANLIB libzoltan.a
+cd ..

@@ -1,0 +1,34 @@
+XCOMM site.def file for SNL ACCESS System
+
+#define Owner seacas
+#define Group seacas
+
+/*
+ * AccessRoot should specify the path to the ACCESS source directory
+ */
+#ifndef AccessRoot
+#define AccessRoot /MAKE_THIS_A_VALID_PATH/a/path/that/does/not/exist/and/will/cause/an/error/
+#endif
+
+/*
+ *Project identification - name and release level
+ */
+
+#define TopLevelProject	ACCESS
+#define ProjectName "SNLA ACCESS"
+#define ProjectRelease "1.0"
+#define ProjectRoot AccessRoot
+
+/*
+ * Path to installation directories: bin, config, etc, inc, lib, mats, svdi
+ */
+#ifndef AccessInstall
+#define AccessInstall AccessRoot
+#endif
+
+#define InstAccBin 775
+#define InstAccLib 775
+#define InstAccInc 775
+#define InstAccEtc 775
+#define InstAccPlib 775
+#define InstAccSvdi 775

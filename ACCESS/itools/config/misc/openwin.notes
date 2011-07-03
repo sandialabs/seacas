@@ -1,0 +1,41 @@
+If you're on a Sun running Open Windows, then you probably have xmkmf and
+imake installed already (e.g., in /usr/openwin/bin).  Unfortunately, both
+of them are also probably broken, unless they've been fixed recently.
+
+The procedure for working around this is described on pp. 168-169 of the
+imake book.  This requires that you use imboot.
+
+Alternatively, you can use xmkmf by installing standard versions of
+imake and xmkmf:
+i) toss the openwin xmkmf and imake entirely and install standard versions, or
+ii) leave the openwin xmkmf and imake alone but install standard versions in
+a directory that's searched BEFORE your openwin directories.
+If you do this, you'll need to point xmkmf at your openwin
+configuration directory (e.g., /usr/openwin/lib/config) so it'll use
+the configuration files that are already installed on your machine.
+
+In any case, the openwin configuration files files are broken slightly,
+so you'll need to add the following to either site.def or sun.cf.
+(Edit pathnames as appropriate for your system first.)
+
+#ifndef OpenWinHome
+#define OpenWinHome /usr/openwin
+#endif
+
+#ifndef LibDir
+#define LibDir $(OPENWINHOME)/lib
+#endif
+
+#ifndef IncRoot
+#define IncRoot $(OPENWINHOME)/include
+#endif
+
+#ifndef StandardIncludes
+#define StandardIncludes -I$(INCROOT)
+#endif
+
+#ifndef DefaultCCOptions
+#define DefaultCCOptions -L$(OPENWINHOME)/lib
+#endif
+
+OPENWINHOME = OpenWinHome

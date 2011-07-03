@@ -1,0 +1,8 @@
+
+DEFS 			= 
+RANLIB			= @RANLIB@
+AR			= @AR@
+
+CC			= @ACCESSDIR@/siMPI/bin/mpicc
+CFLAGS 			= @CFLAGS@
+

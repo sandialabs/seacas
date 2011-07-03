@@ -1,0 +1,160 @@
+XCOMM $Id: darwin.cf,v 1.1 2008/06/18 16:23:13 gdsjaar Exp $
+XCOMM
+XCOMM NOTE: This was copied from the X11 distribution and modified. 
+XCOMM       It includes several symbols that are not used in ACCESS.
+XCOMM
+XCOMM NOTE: The default flags do not do very aggressive optimization;
+XCOMM       You can change this if you want (possibly) faster execution.
+XCOMM
+XCOMM Contact seacas@sandia.gov if you have any questions
+XCOMM
+/* ========================================================================
+/* ======================================================================== */
+/* Replace the following with values appropriate for your distribution */
+#define OSVendor		Unknown
+
+/* These are typically set to the kernel version, not the distribution */
+#define	OSMajorVersion		7
+#define OSMinorVersion		9
+#define OSTeenyVersion		0
+
+#define X11Includes -I/usr/X11R6/include
+#define X11Lib -L/usr/X11R6/lib -lX11
+
+/* Most users should not need to change anything below here. */
+
+#ifndef OSName
+#define OSName			Darwin
+#endif
+
+#ifndef OSVendor
+#define OSVendor		Apple
+#endif
+
+#ifndef OSMajorVersion
+#define OSMajorVersion		DefaultOSMajorVersion
+#endif
+
+#ifndef OSMinorVersion
+#define OSMinorVersion		DefaultOSMinorVersion
+#endif
+
+#ifndef OSTeenyVersion
+#define OSTeenyVersion		DefaultOSTeenyVersion
+#endif
+
+
+XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
+
+/* 
+ * Uncomment the following if you need parallel nem_join and nem_spread
+ * 
+ *#if Parallel
+ *#define NeedsParallelnem_join YES
+ *#define NeedsParallelnem_spread YES
+ *#endif
+ *
+*/
+
+/* For ACCESS/prepost/spiff */
+#define TermcapLibrary -lncurses
+#define TermcapDefine  -DM_TERMINFO
+
+#define HasFlush YES
+
+/* ABSOFT Fortran Compiler, GCC C/C++
+ * (This has not been tested very much as of 11/14/2001)
+ */
+#if defined(ABSOFT)
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+#define FortranCmd		/usr/absoft/bin/f77
+#define Fortran90Cmd		/usr/absoft/bin/f90
+#define OptimizedCDebugFlags	-O
+#define OptimizedCplusplusDebugFlags	-O
+#define DefaultF77Options		-f -B108 -N22
+#define StandardDefines		-DADDC_
+#define NeedsDoubleEscape	NO
+#define HasGcc			YES
+#define HasGcc2			YES
+#define HasGcc2ForCplusplus	NO
+#define GccUsesGas		NO
+#define UseGas			NO
+#endif
+
+#if defined (__GNUC__)
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+#define StandardDefines		-DADDC_
+#define NeedsDoubleEscape	YES
+#define HasGcc			YES
+#define HasGcc2			YES
+#define HasGcc2ForCplusplus	YES
+#define GccUsesGas		YES
+#define UseGas			YES
+#define FortranCmd		/sierra_build/sandia/bin/g77
+#define Fortran90Cmd		/sierra_build/sandia/bin/g77
+#define GnuCpp			YES
+#define CppCmd			/usr/bin/cpp
+#define PreProcessCmd		CppCmd -P
+#define ExtraLoadOptions	-L/usr/lib/gcc/darwin/3.3
+/* 
+ * Search web for 'restFP saveFP' for documentation about the following
+ */
+#define ExtraLibraries	-lcc_dynamic
+#endif
+
+#if Parallel
+#define ParRunCmd "mpirun"
+#define NPCmd -n
+#define F90PrecOptions
+#define F77PrecOptions
+#define ParallelCCOptions 
+#define ParallelF77Options 
+#define ParallelF90Options 
+#endif
+
+/* compaq fort on alpha */
+#if defined(GCCFORT)
+#define FortranCmd              fort
+#define Fortran90Cmd		fort
+#define DefaultF77DebugFlags	-g
+#define DefaultF77Options	-Wp,-C
+#endif
+
+#define MkdirHierCmd		mkdir -p
+
+#define UseCCMakeDepend		YES
+
+#ifndef NeedsDoubleEscape
+#define NeedsDoubleEscape	YES
+#endif
+
+#define ArCmd			ar cr
+
+/* Following are left over from X11 use */
+#define LdCombineFlags		-r
+#define StandardCppDefines	-traditional StandardDefines
+
+#define PerlCmd			/usr/bin/perl
+#define System			Darwin
+#define TempDir			/tmp
+
+#define UseElfFormat		NO
+#define Use32BitAddress		YES
+#define HasShadowPasswd		NO
+
+#define HasPutenv		YES
+#define HasShm			YES
+#define HasSockets		YES
+
+#define AvoidNullMakeCommand	YES
+#define CompressAllFonts	YES
+#define Malloc0ReturnsNull	YES
+#define NeedConstPrototypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	NO
+#define SetTtyGroup		YES
+

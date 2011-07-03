@@ -1,0 +1,77 @@
+XCOMM $Id: crossredstorm.cf,v 1.1 2008/06/18 16:23:13 gdsjaar Exp $
+XCOMM
+
+#define CROSSCOMPILERS 1
+#define PORTLAND 1
+
+/* ======================================================================== */
+#define OSName 			"Redstorm Catamount"
+#define OSMajorVersion		0
+#define OSMinorVersion		0
+#define OSTeenyVersion		0
+
+#define System CATAMOUNT
+#define NativeCC /usr/bin/gcc
+
+XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
+
+#define ExcludeGraphics 
+#define ExcludeSpiff
+#define ExcludeXHelp
+
+/* C and C++ Compilers */
+
+/* Cross compilers */
+#if defined(CROSSCOMPILERS)
+#define Build64BitAccess YES 
+#define CcCmd                   cc
+#define CplusplusCmd            CC
+#define OptimizedCDebugFlags    -O2
+#define OptimizedCplusplusDebugFlags    -fast -Mframe
+#define StandardDefines         -DBuild64 -DADDC_
+
+#define FortranCmd              ftn
+#define Fortran90Cmd		ftn
+#define DefaultF77Options	-fast
+#define DefaultF90Options	-fast
+#define F90ExtraLibraries       
+
+#define ParFLibs
+#define ParCLibs
+
+#define HasGcc			NO
+#define HasGcc2			NO
+#define HasGcc2ForCplusplus	NO
+#define GccUsesGas		NO
+#define UseGas			NO
+
+#endif
+
+#define AsmDefines		-D__ELF__
+
+
+#define MkdirHierCmd		mkdir -p
+
+
+#define GnuCpp			NO
+#define CppCmd			/lib/cpp
+#define PreProcessCmd		CppCmd -P
+
+#define LdCombineFlags		-r
+#define StandardCppDefines	-C StandardDefines
+
+/* Special defines for the cross compile */
+#define BootstrapCFlags -DCrossCompiling -Dcrossredstorm
+
+#define CrossCC mpicc
+
+#define HasMPI YES
+
+#define CrossAccessRoot  /projects/seacas/redstorm-compute/2005-07-13
+
+#define CrossAllDefines  -I$(CROSSACCESSROOT)/inc -DADDC_
+
+#define ParRunCmd yod
+#define NPCmd -size
+#define HasFlush YES
+#define NumProcs 4

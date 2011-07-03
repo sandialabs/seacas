@@ -1,0 +1,36 @@
+XCOMM Top level Imake file for ACCESS system
+
+#define IHaveSubdirs
+
+#define PassDebugFlags	"CDEBUGFLAGS=$(CDEBUGFLAGS)" \
+			"F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
+
+XCOMM test for existance of top level ACCESS directories
+SUBDIRS = \
+$(NETCDFSRC) \
+$(SERIALMPISRC) \
+$(LIBRARIESSRC) \
+$(SVDISRC) \
+$(APPLICATIONSRC) \
+$(SCRIPTSSRC)
+
+MakeAllTargets($(SUBDIRS),PassDebugFlags)
+
+XCOMM Install ExodusII include files 
+makeincludes::
+	@if test -d $(LIBRARIESSRC) ; \
+	then \
+	(cd $(LIBRARIESSRC) && make makeincludes) ; \
+	fi;
+	@if test -d $(NETCDFSRC) ; \
+	then \
+	(cd $(NETCDFSRC) && make makeincludes) ; \
+	fi;
+
+MakeTarget(netcdf,$(NETCDFSRC),PassDebugFlags)
+MakeTarget(serial_mpi, $(SERIALMPISRC), PassDebugFlags)
+MakeTarget(libraries,$(LIBRARIESSRC),PassDebugFlags)
+MakeTarget(svdi,$(SVDISRC),PassDebugFlags)
+MakeTarget(applications,$(APPLICATIONSRC),PassDebugFlags)
+MakeTarget(scripts,$(SCRIPTSSRC),PassDebugFlags)
+

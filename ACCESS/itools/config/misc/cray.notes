@@ -1,0 +1,16 @@
+InstallCmd is defined like this in cray.cf:
+
+#define InstallCmd              sh $(SCRIPTSRC)/install.sh
+
+That's not helpful unless you have the X11 distribution around, since
+SCRIPTSRC points there.  What you can do instead is define InstallCmd
+like this:
+
+#ifdef UseInstalled
+#define InstallCmd              install.sh
+#else
+#define InstallCmd              sh $(SCRIPTSRC)/install.sh
+#endif
+
+Then "install.sh" (from util/scripts) in a directory in your search path.
+Don't forget to make it executable.

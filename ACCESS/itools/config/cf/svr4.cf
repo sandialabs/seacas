@@ -1,0 +1,145 @@
+XCOMM $XConsortium: svr4.cf /main/16 1996/09/28 16:13:41 rws $
+/*
+ * A default OS name
+ */
+#ifndef OSName
+#ifdef i386Architecture
+#define	OSName	UNIX System V/386 Release 4
+#else
+#define	OSName	UNIX System V Release 4
+#endif
+#endif
+#ifndef OSVendor
+#define OSVendor /**/
+#endif
+
+/*
+ * The default version will be 4.0.0 which should be
+ * the least common denominator of all SVR4
+ */
+
+#ifndef OSMajorVersion
+#define	OSMajorVersion	4
+#endif
+#ifndef OSMinorVersion
+#define	OSMinorVersion	0
+#endif
+#ifndef OSTeenyVersion
+#define	OSTeenyVersion	0
+#endif
+#ifndef BootstrapCFlags
+#ifdef i386Architecture
+#define BootstrapCFlags		-DSVR4 -Di386
+#else
+#ifdef SYSV386
+#define BootstrapCFlags		-DSVR4 -Di386
+#else
+#define BootstrapCFlags		-DSVR4
+#endif
+#endif
+#endif
+
+/* Some stuff that all SVR4s should have */
+
+#define SystemV4		YES
+#ifndef HasLdRunPath
+#define HasLdRunPath		YES
+#endif
+#define HasPoll			YES
+#ifndef SVR4Architecture
+#define SVR4Architecture
+#endif
+#ifndef PatheticCpp
+#define PatheticCpp		YES
+#endif
+#define Malloc0ReturnsNull	YES		/* in case -lmalloc used */
+
+/*
+ * Here are the default paths to use to pick up tools for building.
+ */
+#ifndef ArCmdBase
+#define	ArCmdBase	ar
+#endif
+#ifndef AsCmd
+#define	AsCmd	as
+#endif
+#ifndef CppCmd
+#define	CppCmd	cpp
+#endif
+#ifndef LdCmd
+#define	LdCmd	ld
+#endif
+#ifndef LexCmd
+#define	LexCmd	lex
+#endif
+#ifndef MakeCmd
+#define	MakeCmd	make
+#endif
+#ifndef YaccCmd
+#define	YaccCmd	yacc
+#endif
+
+#if (OSMinorVersion == 0)
+#ifndef XawI18nDefines
+#define XawI18nDefines		-DUSE_XWCHAR_STRING
+#endif
+#endif
+
+#ifdef i386Architecture
+#ifndef StandardDefines
+#define StandardDefines		-DSVR4 -Di386
+#endif
+#ifndef ToolkitStringsABIOptions
+#define ToolkitStringsABIOptions -intelabi
+#endif
+#ifndef DefaultCCOptions
+#if HasGcc2
+#if !defined(SunArchitecture)
+#define DefaultCCOptions -ansi
+#endif
+#else
+#define DefaultCCOptions -Xa -Dasm=__asm
+#endif
+#endif
+#ifndef DefaultCDebugFlags
+#if HasGcc2
+#ifdef i386Architecture
+#define DefaultCDebugFlags -m486 -O2 -fno-strength-reduce
+#else
+#define DefaultCDebugFlags -O2
+#endif
+#else
+#define DefaultCDebugFlags -O
+#endif
+#endif
+#ifndef ServerOSDefines
+#define ServerOSDefines -DDDXTIME XFree86ServerOSDefines
+#endif
+#endif
+
+/*
+ * The TLI interface is more robust on most SVR4s, so it will be the default.
+ */
+#if !defined(SunArchitecture)
+#ifndef ConnectionFlags
+#define ConnectionFlags	-DSTREAMSCONN -DUNIXCONN -DLOCALCONN
+#endif
+#endif
+
+#ifndef ManSuffix
+#define ManSuffix               1x
+#define ManDir			$(MANSOURCEPATH)1
+#endif
+#ifndef LibManSuffix
+#define LibManSuffix            3x
+#define LibmanDir		$(MANSOURCEPATH)3
+#endif
+#ifndef FileManSuffix
+#define FileManSuffix           4
+#endif
+
+#ifdef i386Architecture
+#include <xfree86.cf>
+#endif
+
+#include <sv4Lib.rules>
