@@ -26,11 +26,12 @@ osfLib.rules \
 sgiLib.rules \
 sunLib.rules \
 sv4Lib.rules \
+darwinLib.rules \
 Win32.rules \
 xf86.rules \
 noop.rules \
-ProjectRulesFile1 \
-ProjectTestrulesFile1
+ProjectRulesFile1
+
 
 TMPLFILES = \
 Imake.tmpl \

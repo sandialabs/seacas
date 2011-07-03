@@ -4,9 +4,23 @@
 #
 
 # Script version:
+
 ScriptVersion="3.1"
 
+# Text color variables
+txtund=$(tput sgr 0 1)    # Underline
+txtbld=$(tput bold)       # Bold
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+txtblu=$(tput setaf 4)    # Blue
+txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
 # Print prompt line:
+
 PromptLine() {
 if [ "`echo -n`" = "-n" ]; then
    echo "$1 \c"
@@ -18,178 +32,142 @@ fi
 # Clear the screen:
 
 ClearScreen() {
-clear 2>/dev/null ||
-tput clear 2 > /dev/null ||
-for i in 1 2 3 4 5 6 7 8 9 10
-do 
-   echo
-done  
+    clear 2>/dev/null ||
+    tput clear 2 > /dev/null ||
+    for i in 1 2 3 4 5 6 7 8 9 10
+      do 
+      echo
+    done  
 }
 
-# Function for editing site.def and *.cf"
 SetupAccess() {
-ClearScreen
-counter=0
-UseCurrentConfigFiles=YES
-counter=`expr $counter + 1`
-echo ""
-echo ""
-echo " $counter) Please enter the SEACAS root directory."
-PromptLine "    Press <RETURN> for  $DefaultAccessRootDir: "
-while :
-do
-   read LocalAccessRootDir
-   test "$LocalAccessRootDir" || LocalAccessRootDir=$DefaultAccessRootDir
-   if [ ! -d $LocalAccessRootDir ]; then
-      echo "    $LocalAccessRootDir does not exist! "
-      PromptLine "    Please try again: "
-   else 
-      break
-   fi   
-done
-LocalAccessRootDirSet=YES
+    ClearScreen
+    GetDefaultAccessRootDir
+}  
 
-if [ ! -d $LocalAccessRootDir/ACCESS/itools/config/cf ]; then
-   echo ""
-   echo "\"$LocalAccessRootDir/ACCESS/itools/config/cf\" does not exist!"
-   echo "The basic SEACAS directory structure is not setup correctly!"
-   echo "Exiting the script..."
-   echo ""
-   exit
+# Function for reading in BOOTSTRAPCFLAGS:
+
+GetLocalBootStrapCFlags() {
+Platform=`grep "define Platform" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
+if [ $? -eq 1 ]; then
+  Platform="prompt"
 fi
-if [ ! -f $LocalAccessRootDir/ACCESS/itools/config/cf/site.def ]; then
+
+echo "Platform = $Platform"
+
+if [ "$Platform" = "interix" ]; then
+    LocalBootStrapCFlags="-Dinterix"
+    LocalConfigFile=interix
+    LocalExtraBootStrapCFlags="CC=gcc" 
+elif [ "$Platform" = "redstorm" ]; then
+    LocalBootStrapCFlags="-DCrossCompiling -Dcrossredstorm" 
+    LocalConfigFile=crossredstorm
+    LocalExtraBootStrapCFlags="CC=gcc" 
+elif [ "$Platform" = "prompt" ]; then
+    echo ""
+    if [ "$UseCurrentConfigFiles" = "YES" ]; then
+	echo " Please choose the BOOTSTRAPCFLAGS needed for building the Imake tools by"
+    else
+	if [ "$InCommandMenu" = "YES" ]; then
+	    echo "    Please choose the BOOTSTRAPCFLAGS needed for building the Imake tools by"
+	else
+	    echo " Please choose the BOOTSTRAPCFLAGS needed for building the Imake tools by"
+	fi
+    fi
+    echo "    selecting your machine type/operating system from the menu below or by"
+    echo "    entering the bootstrap flags directly:" 
+    echo ""
+    echo "      0. Any system not listed below..."
+    echo ""
+    echo "      1. Sandia REDSTORM (cross compiling)"
+    echo "      2. PC/Interix"
+    echo "      3. Enter BOOTSTRAPCFLAGS"
+    echo ""
+    if [ "$InCommandMenu" = "YES" ]; then
+	echo "      4. Return to the command menu"
+    else
+	echo "      4. Return to the main menu"
+    fi
+    echo ""
+    echo "    Please enter the number corresponding to your choice: "
+    PromptLine "Press <RETURN> for \"Any system not listed below...\": "
+    while :
+      do
+      read LocalBootStrapCFlags
+      test "$LocalBootStrapCFlags" || LocalBootStrapCFlags=0
+      case "$LocalBootStrapCFlags" in
+	  0 ) LocalBootStrapCFlags=""
+              break ;;
+	  1 ) LocalBootStrapCFlags="-DCrossCompiling -Dcrossredstorm" 
+	      LocalConfigFile=crossredstorm
+	      LocalExtraBootStrapCFlags="CC=gcc" 
+	      break ;;
+	  2 ) LocalBootStrapCFlags="-Dinterix" 
+	      LocalConfigFile=interix
+	      LocalExtraBootStrapCFlags="CC=gcc" 
+	      break ;;
+          3 ) PromptLine "    Please enter the BOOTSTRAPCFLAGS you want to use: "
+	      read LocalBootStrapCFlags
+	      break ;;
+          4 ) ReturnToMenu=YES
+	      break ;;
+	  * ) PromptLine "    Please try again: " 
+	      ;;
+      esac
+    done
+fi
+}
+
+
+# Function for getting the SEACAS root directory and other settings from
+# the ACCESS/itools/config/cf/site.def file
+
+GetDefaultAccessRootDir() {
+DefaultAccessRootDir=`/bin/pwd`
+SiteConfig="ACCESS/itools/config/cf/site.def"    
+
+if [ ! -d $DefaultAccessRootDir/ACCESS/itools/config/cf ]; then
+    echo ""
+    echo "\"$DefaultAccessRootDir/ACCESS/itools/config/cf\" does not exist!"
+    echo "The basic SEACAS directory structure is not setup correctly"
+    echo "or you are running the script from the wrong directory!"
+    echo "Exiting the script..."
+    echo ""
+    exit
+fi
+
+if [ ! -f $DefaultAccessRootDir/$SiteConfig ]; then
    echo ""
-   echo "\"$LocalAccessRootDir/ACCESS/itools/config/cf/site.def\" does not exist!"
+   echo "\"$DefaultAccessRootDir/$SiteConfig\" does \
+not exist!"
    echo "One of the main SEACAS configuration files is missing!"
    echo "Exiting the script..."
    echo ""
    exit
 fi
 
-if [ "$LocalGroupSet" != "YES" ]; then
-   counter=`expr $counter + 1`
-   echo ""
-   echo " $counter) Please enter the group id you want to use."
-   PromptLine "    Press <RETURN> for  $DefaultGroup: "
-   read LocalGroup
-   test "$LocalGroup" || LocalGroup=$DefaultGroup
-   LocalGroupSet=YES
+# Check that DefaultAccessRootDir (pwd for script execution) and the
+# value in site.def match...
+# The cd wierdness is that sometimes two strings don't match, but they
+# refer to the same path...
+FileAccessRootDir=`grep "define AccessRoot" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
+cd $FileAccessRootDir; FileAccessRootDir=`/bin/pwd`; cd $DefaultAccessRootDir
+if [ $DefaultAccessRootDir != $FileAccessRootDir ]; then
+    echo "Settings conflict:"
+    echo "  Your current working directory $DefaultAccessRootDir"
+    echo "  Must match the AccessRoot setting in site.def: $FileAccessRootDir"
+    echo ""
+    echo "The script will now exit so you can correct this problem."
+    exit
 fi
+
+DefaultAccessRootDirSet=YES
+ACCESS=$DefaultAccessRootDir; export ACCESS
+PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
+
+DefaultGroup=`grep "define Group" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
 }
 
-# Function for reading in BOOTSTRAPCFLAGS:
-
-GetLocalBootStrapCFlags() {
-counter=`expr $counter + 1`
-echo ""
-if [ "$UseCurrentConfigFiles" = "YES" ]; then
-   echo " $counter) Please choose the BOOTSTRAPCFLAGS needed for building the Imake tools by"
-else
-   if [ "$InCommandMenu" = "YES" ]; then
-      echo "    Please choose the BOOTSTRAPCFLAGS needed for building the Imake tools by"
-   else
-      echo "$counter) Please choose the BOOTSTRAPCFLAGS needed for building the Imake tools by"
-   fi
-fi
-echo "    selecting your machine type/operating system from the menu below or by"
-echo "    entering the bootstrap flags directly:" 
-echo ""
-echo "      1. SGI with IRIX/IRIX64 3.x or 4.x"
-echo "      2. SGI with IRIX/IRIX64 5.x or up"
-echo "      3. SUN with SunOS/Solaris before 4.1"
-echo "      4. SUN with SunOS/Solaris 4.1 and higher 4.x"
-echo "      5. SUN with SunOS/Solaris 5.0 and up"
-echo ""
-echo "      8. PC/Interix"
-echo "     10. Other system, not listed above (e.g. LINUX, DEC/OSF1, Cray, HP)"
-echo "     11. Enter BOOTSTRAPCFLAGS"
-echo ""
-if [ "$InCommandMenu" = "YES" ]; then
-echo "     12. Return to the command menu"
-else
-echo "     12. Return to the main menu"
-fi
-echo ""
-PromptLine "    Please enter the number corresponding to your choice: "
-while :
-do
-   read LocalBootStrapCFlags
-   case "$LocalBootStrapCFlags" in
-       1 ) LocalBootStrapCFlags="-DSYSV" 
-           LocalConfigFile=sgi
-           break ;;
-       2 ) LocalBootStrapCFlags="-DSVR4" 
-           LocalConfigFile=sgi
-           break ;;
-       3 ) LocalBootStrapCFlags="-Dsun -DNOSTDHDRS" 
-           break ;;
-       4 ) LocalBootStrapCFlags="-Dsun" 
-           break ;;
-       5 ) LocalBootStrapCFlags="-Dsun -DSVR4" 
-           break ;;
-       8 ) LocalBootStrapCFlags="-Dinterix" 
-           LocalConfigFile=interix
-           LocalExtraBootStrapCFlags="CC=gcc" 
-           break ;;
-      10 ) LocalBootStrapCFlags=""
-           break ;;
-      11 ) PromptLine "    Please enter the BOOTSTRAPCFLAGS you want to use: "
-           read LocalBootStrapCFlags
-           break ;;
-      12 ) ReturnToMenu=YES
-           break ;;
-       * ) PromptLine "    Please try again: " 
-           ;;
-   esac
-done
-}
-
-
-# Function for reading in the SEACAS root directory:
-
-GetLocalAccessRootDir() {
-if [ "$LocalAccessRootDirSet" != "YES" ]; then
-   echo ""
-   echo "Please enter the SEACAS root directory."
-   PromptLine "Press <RETURN> for \"$DefaultAccessRootDir\": "
-   while :
-   do
-      read LocalAccessRootDir
-      test "$LocalAccessRootDir" || LocalAccessRootDir=$DefaultAccessRootDir
-      if [ ! -d $LocalAccessRootDir ]; then
-         echo "$LocalAccessRootDir does not exist! "
-         PromptLine "Please try again: "
-      else 
-         break
-      fi   
-   done
-   if [ ! -d $LocalAccessRootDir/ACCESS/itools/config/cf ]; then
-      echo ""
-      echo "\"$LocalAccessRootDir/ACCESS/itools/config/cf\" does not exist!"
-      echo "The basic SEACAS directory structure is not setup correctly!"
-      echo "Exiting the script..."
-      echo ""
-      exit
-   fi
-   LocalAccessRootDirSet=YES
-   ACCESS=$LocalAccessRootDir; export ACCESS
-   PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
-fi
-}
-
-
-# Function for reading in the group id:
-
-GetLocalGroup(){
-if [ "$LocalGroupSet" != "YES" ]; then
-   echo ""
-   echo "Please enter the group id you want to use."
-   PromptLine "Press <RETURN> for \"$DefaultGroup\": "
-   read LocalGroup
-   test "$LocalGroup" || LocalGroup=$DefaultGroup
-   LocalGroupSet=YES
-fi
-}
 
 # Command execution function:
 
@@ -199,7 +177,7 @@ LogFile=$2
 DirName=$3
 LocalBootStrapCFlags=$4
 NextCommand=$5
-if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crosslinux" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
+if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
    LocalExtraBootStrapCFlags=$6
 fi
 
@@ -212,19 +190,19 @@ cd $DirName
 
 echo ""
 if [ "$Command" = "make World" ]; then
-if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crosslinux" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
+if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
       echo "Executing '$Command  BOOTSTRAPCFLAGS=\"$LocalBootStrapCFlags\" EXTRA_BOOTSTRAPCFLAGS=\"$LocalExtraBootStrapCFlags\"' in $DirName"
    else
       if [ "$NoBootStrapCFlags" = "YES" ]; then
-         echo "Executing '$Command' in $DirName"
+         echo "Executing ${txtpur}'$Command'${txtrst} in $DirName"
       else
          echo "Executing '$Command  BOOTSTRAPCFLAGS=\"$LocalBootStrapCFlags\"' in $DirName"
       fi
    fi
 else
-   echo "Executing '$Command' in $DirName"
+   echo "Executing ${txtpur}'$Command'${txtrst} in $DirName"
 fi
-echo "Command output is saved in $DirName/$LogFile"
+echo "   Command output is saved in $DirName/$LogFile"
 
 if [ -f $LogFile ]; then
         i=1
@@ -233,11 +211,11 @@ if [ -f $LogFile ]; then
            i=`expr $i + 1`
         done
         mv $LogFile $LogFile.$i
-        echo "Previous log file moved to "$LogFile"."$i""
+        echo "   Previous log file moved to "$LogFile"."$i""
 fi
 
 if [ "$Command" = "make World" ]; then
-if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crosslinux" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
+if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
       (make World BOOTSTRAPCFLAGS="$LocalBootStrapCFlags" EXTRA_BOOTSTRAPCFLAGS="$LocalExtraBootStrapCFlags" 2>&1) > $LogFile
    else
       if [ "$NoBootStrapCFlags" = "YES" ]; then
@@ -251,36 +229,54 @@ else
 fi
 
 PossibleError=NO
-grep ERROR $LogFile |grep -v MPI_ERRORS > /dev/null 
+err_chk=0
+srch_for=""
+grep ERROR $LogFile |grep -v MPI_ERRORS |grep -v warning: > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} ERROR"
+   err_chk=`expr $err_chk + 1`
    PossibleError=YES
 fi
-grep Error $LogFile |grep -v MPI_Error |grep -v ignored > /dev/null 
+grep Error $LogFile |grep -v MPI_Error |grep -v ignored |grep -v PrintErrorStackOn > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} Error"
+   err_chk=`expr $err_chk + 2`
    PossibleError=YES
 fi
 grep "error:" $LogFile > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} error:"
+   err_chk=`expr $err_chk + 4`
    PossibleError=YES
 fi
 grep -i "can't" $LogFile > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} can't"
+   err_chk=`expr $err_chk + 8`
    PossibleError=YES
 fi
-grep -i cannot $LogFile > /dev/null 
+grep -i cannot $LogFile |grep -v optimize > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} cannot"
+   err_chk=`expr $err_chk + 16`
    PossibleError=YES
 fi
 grep -i "don't" $LogFile > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} don't"
+   err_chk=`expr $err_chk + 32`
    PossibleError=YES
 fi
-grep -i "not found" $LogFile > /dev/null 
+grep -i "not found" $LogFile |grep -v warning > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} not found"
+   err_chk=`expr $err_chk + 64`
    PossibleError=YES
 fi
 grep -i "no space" $LogFile > /dev/null 
 if [ $? -eq 0 ]; then
+   srch_for="${srch_for} no space"
+   err_chk=`expr $err_chk + 128`
    PossibleError=YES
 fi
 
@@ -289,8 +285,7 @@ SkipIt=NO
 
 if [ "$PossibleError" = "YES" ]; then
    echo ""
-   echo ""
-   echo "An error might have occured!"
+   echo "   ${txtred}An error might have occured! (Code=${err_chk})${txtrst}"
    echo ""
    echo "Please enter 'e' to exit and return to the menu, or enter 'v'"
    echo "to inspect the log file $LogFile in the vi editor and"
@@ -298,9 +293,9 @@ if [ "$PossibleError" = "YES" ]; then
    if [ "$InCommandMenu" = "NO" ]; then
       if [ \( "$Command" = "make install" \) -a \
            \( "$BuildItoolsOnly" = "YES"  \) ]; then
-         PromptLine "error, stop, can't, cannot, usage, don't, not found, no space: " 
+         PromptLine "${txtred}${srch_for}${txtrst} " 
       else
-         echo "error, stop, can't, cannot, usage, don't, not found, no space." 
+         echo "${txtred}${srch_for}${txtrst}." 
          echo "Otherwise, enter 'c' to continue (without inspecting the log file)"
          HasOptionC=YES
          if [ "$Command" = "make clean" ]; then
@@ -319,23 +314,23 @@ if [ "$PossibleError" = "YES" ]; then
 # in the command menu:
       if [ "$Command" = "make clean" ]; then
          if [ "$MakeCleanSelected" = "NO" ]; then
-            echo "error, stop, can't, cannot, usage, don't, not found, no space." 
+            echo "${txtred}${srch_for}${txtrst}." 
             HasOptionC=YES
             PromptLine "Otherwise, enter 'c' to continue (without inspecting the log file): "
          else
-            PromptLine "error, stop, can't, cannot, usage, don't, not found, no space: " 
+            PromptLine "${txtred}${srch_for}${txtrst}: " 
          fi
       elif [ "$Command" = "make install" ]; then
           if [ "$InDoMakeInstallAccess" = "YES" ]; then
-            echo "error, stop, can't, cannot, usage, don't, not found, no space." 
+            echo "${txtred}${srch_for}${txtrst}." 
             echo "Otherwise, enter 'c' to continue (without inspecting the log file)"
             HasOptionC=YES
             PromptLine "with setting the group privileges :"
           else
-            PromptLine "error, stop, can't, cannot, usage, don't, not found, no space: " 
+            PromptLine "${txtred}${srch_for}${txtrst}: " 
           fi
       else
-         PromptLine "error, stop, can't, cannot, usage, don't, not found, no space: " 
+         PromptLine "${txtred}${srch_for}${txtrst}: " 
       fi
    fi
 # read the user input now:
@@ -429,48 +424,20 @@ else
 # if the script got here, no error has occured
    echo ""
    if [ "$Command" = "make World" ]; then
-if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crosslinux" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
-         echo "Command '$Command  BOOTSTRAPCFLAGS=\"$LocalBootStrapCFlags\" EXTRA_BOOTSTRAPCFLAGS=\"$LocalExtraBootStrapCFlags\"' executed successfully."
+if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crossredstorm" \) ]; then 
+         echo "   Command '$Command  BOOTSTRAPCFLAGS=\"$LocalBootStrapCFlags\" EXTRA_BOOTSTRAPCFLAGS=\"$LocalExtraBootStrapCFlags\"' executed successfully."
       else
          if [ "$NoBootStrapCFlags" = "YES" ]; then
-            echo "Command '$Command' executed successfully."
+            echo "${txtgrn}   Command '$Command' executed successfully.${txtrst}"
          else
-            echo "Command '$Command  BOOTSTRAPCFLAGS=\"$LocalBootStrapCFlags\"' executed successfully."
+            echo "${txtgrn}   Command '$Command  BOOTSTRAPCFLAGS=\"$LocalBootStrapCFlags\"' executed successfully.${txtrst}"
          fi
       fi
    else
-      echo "Command '$Command' executed successfully."
+      echo "${txtgrn}   Command '$Command' executed successfully.${txtrst}"
    fi
-   echo ""
    if [ "$InCommandMenu" = "NO" ]; then
-      if [ "$Command" = "make install" ]; then
-         if [ "$InDoMakeInstallItools" = "YES" ]; then
-            if [ "$BuildItoolsOnly" = "YES" ]; then
-               PromptLine "Press <RETURN> to return to the menu... "
-               read Response2
-               SkipIt=YES
-            else 
-               echo "Enter 'e' to exit and return to the menu or any other key to continue"
-               PromptLine "$NextCommand: "
-            fi
-         else
-            echo "Enter 'e' to exit and return to the menu or any other key to continue"
-            PromptLine "with setting the group privileges: "
-         fi
-      elif [ "$Command" = "make clean" ]; then
-         SkipIt=YES
-      else
-         echo "Enter 'e' to exit and return to the menu or any other key to continue"
-         PromptLine "$NextCommand: "
-      fi
-      if [ "$SkipIt" = "NO" ]; then
-         read Response
-         case "$Response" in
-              e | E ) ReturnToMenu=YES
-                      break ;;
-                  * ) : ;;
-         esac
-      fi
+       SkipIt=YES
    else
 # in the command menu:
       if [ "$Command" = "make install" ]; then
@@ -506,8 +473,8 @@ fi
 
 DoMakeWorld() {
 ExecuteCommand "make World" "makeWorld.log" \
-               "$LocalAccessRootDir/ACCESS/itools" "$LocalBootStrapCFlags" \
-               "with 'make install' in $LocalAccessRootDir/ACCESS/itools" \
+               "$DefaultAccessRootDir/ACCESS/itools" "$LocalBootStrapCFlags" \
+               "with 'make install' in $DefaultAccessRootDir/ACCESS/itools" \
                "$LocalExtraBootStrapCFlags"
 }
 
@@ -518,10 +485,10 @@ DoMakeInstallItools() {
 InDoMakeInstallAccess=NO
 InDoMakeInstallItools=YES
 ExecuteCommand "make install" "makeinstall.log" \
-               "$LocalAccessRootDir/ACCESS/itools" "" \
-               "with 'accmkmf' in $LocalAccessRootDir/ACCESS/"
+               "$DefaultAccessRootDir/ACCESS/itools" "" \
+               "with 'accmkmf' in $DefaultAccessRootDir/ACCESS/"
 
-ACCESS=$LocalAccessRootDir; export ACCESS
+ACCESS=$DefaultAccessRootDir; export ACCESS
 PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
 InDoMakeInstallItools=NO
 }
@@ -530,8 +497,8 @@ InDoMakeInstallItools=NO
 # Function for executing "accmkmf" in ACCESS:
 
 DoAccmkmf() {
-ExecuteCommand "accmkmf" "accmkmf.log" "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make Makefiles'"
+   ExecuteCommand "accmkmf" "accmkmf.log" "$DefaultAccessRootDir/ACCESS" "" \
+                  "with 'make Makefiles'"
 }
 
 
@@ -539,7 +506,7 @@ ExecuteCommand "accmkmf" "accmkmf.log" "$LocalAccessRootDir/ACCESS" "" \
 
 DoMakeMakefiles() {
 ExecuteCommand "make Makefiles" "makeMakefiles.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make makeincludes'"
 }
 
@@ -547,7 +514,7 @@ ExecuteCommand "make Makefiles" "makeMakefiles.log" \
 
 DoMakeMakeincludes() {
 ExecuteCommand "make makeincludes" "makemakeincludes.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make clean'"
                
 }
@@ -561,56 +528,73 @@ ExecuteCommand "make clean" "makeclean.log" "$1" "" ""
 # Making netCDF:
 
 DoMakeNetcdf() {
-ExecuteCommand "make netcdf" "makenetcdf.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make serial_mpi'"
+   ExecuteCommand "make netcdf" "makenetcdf.log" \
+                  "$DefaultAccessRootDir/ACCESS" "" \
+                  "with 'make hdf5'"
 }
 
-# Make serial_mpi
-DoMakeSerialMpi() {
-ExecuteCommand "make serial_mpi" "makeserial_mpi.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
+# Making serial_mpi:
+
+DoMakeSIMPI() {
+ExecuteCommand "make serial_mpi" "makeserialmpi.log" \
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make hdf5'"
+}
+
+# Making hdf5:
+
+DoMakeHDF5() {
+ExecuteCommand "make hdf5" "makehdf5.log" \
+               "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make libraries'"
 }
 
 # Making libraries:
 
 DoMakeLibraries() {
-ExecuteCommand "make libraries" "makelibraries.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make svdi'"
+   ExecuteCommand "make libraries" "makelibraries.log" \
+                  "$DefaultAccessRootDir/ACCESS" "" \
+                  "with 'make applications'"
 }
 
-# Making svdi:
-
-DoMakeSvdi() {
-ExecuteCommand "make svdi" "makesvdi.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make applications'"
-}
-
-# Making applications codes:
+# Making application codes:
 
 DoMakeApplications() {
 ExecuteCommand "make applications" "makeapplications.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make scriptse'"
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make scripts'"
 }
 
 # Making scripts:
 
 DoMakeScripts() {
 ExecuteCommand "make scripts" "makescripts.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make install' in $LocalAccessRootDir/ACCESS"
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make matlab'"              
+}
+
+# Making matlab connection:
+
+DoMakeMatlab() {
+ExecuteCommand "make matlab" "makematlab.log" \
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make analysis'"              
+}
+
+# Making analysis codes:
+
+DoMakeAnalysis() {
+ExecuteCommand "make analysis" "makeanalysis.log" \
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make install' in $DefaultAccessRootDir/ACCESS"
 }
 
 # Making all SEACAS codes:
 
 DoMakeAll() {
 ExecuteCommand "make all" "makeall.log" \
-               "$LocalAccessRootDir/ACCESS" "" \
-               "with 'make install' in $LocalAccessRootDir/ACCESS"
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make install' in $DefaultAccessRootDir/ACCESS"
 }
 
 # Installing the SEACAS codes:
@@ -618,57 +602,36 @@ ExecuteCommand "make all" "makeall.log" \
 DoMakeInstallAccess() {
 InDoMakeInstallItools=NO
 InDoMakeInstallAccess=YES
+ExecuteCommand "make install" "makeinstall.log" \
+    "$DefaultAccessRootDir/ACCESS" "" ""
 echo ""
-echo "This final step will install all the SEACAS codes in the user area."
-echo "The group id of all files will be set to \"$LocalGroup\", and the group"
-echo "will be given read and write privileges on all files. This step should"
-echo "only be taken if there has been no problem in building SEACAS."
 echo ""
-PromptLine "Enter 'c' to continue or 'e' to exit and return to the menu: "
-while :
-do
-   read Response
-   case "$Response" in
-      c | C ) break ;;
-      e | E ) ReturnToMenu=YES
-              break ;;
-          * ) PromptLine "Please try again: "
-              ;;
-   esac
-done
-if [ "$ReturnToMenu" != "YES" ]; then
-   ExecuteCommand "make install" "makeinstall.log" \
-                  "$LocalAccessRootDir/ACCESS" "" ""
-   if [ "$ReturnToMenu" != "YES" ]; then
-      echo ""
-      echo ""
-      echo "Setting the group id of all files to \"$LocalGroup\"..."
-      cd $LocalAccessRootDir
-      chgrp -R $LocalGroup *
-      echo ""
-      echo ""
-      echo "Giving the \"$LocalGroup\" group read and write permission on all SEACAS files..."
-      cd $LocalAccessRootDir
-      chmod -R g+rw *
-      echo ""
-      echo ""
-      cd $LocalAccessRootDir/bin
-      chmod 775 *
-      cd $LocalAccessRootDir/etc
-      chmod 775 *
-      if [ -f $LocalAccessRootDir/etc/audit.log ]; then
-         cd $LocalAccessRootDir/etc
-         chmod 666 audit.log
-      else
-         cd $LocalAccessRootDir/etc
-         touch audit.log
-         chmod 666 audit.log 
-      fi
-      cd $LocalAccessRootDir
-      PromptLine "Press <RETURN> to return to the menu... "
-      read Response
-   fi
+echo "Setting the group id of all files to \"$DefaultGroup\"..."
+cd $DefaultAccessRootDir
+chgrp -R $DefaultGroup *
+echo ""
+echo ""
+echo "Giving the \"$DefaultGroup\" group read and write permission on all SEACAS files..."
+cd $DefaultAccessRootDir
+find . -type d -exec chmod 775 {} \;
+chmod -R g+rw *
+echo ""
+echo ""
+cd $DefaultAccessRootDir/bin
+chmod 775 *
+cd $DefaultAccessRootDir/etc
+chmod 775 *
+if [ -f $DefaultAccessRootDir/etc/audit.log ]; then
+    cd $DefaultAccessRootDir/etc
+    chmod 666 audit.log
+else
+    cd $DefaultAccessRootDir/etc
+    touch audit.log
+    chmod 666 audit.log 
 fi
+cd $DefaultAccessRootDir
+PromptLine "Press <RETURN> to return to the menu... "
+read Response
 
 InDoMakeInstallAccess=NO
 }
@@ -695,37 +658,17 @@ done
 # Making all SEACAS codes and installing them:
 
 DoMakeAllDoMakeInstall() {
-echo ""
-echo "Enter 'e' to exit and return to the menu. Enter 's' to build the"
-echo "rest of SEACAS in a single step (executing 'make all'), or enter 'm'"
-PromptLine "to build SEACAS in multiple steps (starting with 'make netcdf'): "
-while :
-do
-   read Response
-   case "$Response" in
-      e | E ) ReturnToMenu=YES
-              break ;;
-      s | S ) DoMakeAll
-              if [ "$ReturnToMenu" = "YES" ]; then break; fi
-              DoMakeInstallAccess
-              ReturnToMenu=YES
-              break ;;
-      m | M ) break ;;
-          * ) PromptLine "Please try again: "
-              ;;
-   esac
-done
+    DoMakeAll
+    DoMakeInstallAccess
+    ReturnToMenu=YES
 }
 
 # User menu function:
 
 CommandMenu() {
 echo ""
-if [ "$LocalAccessRootDirSet" != "YES" ]; then
-   GetLocalAccessRootDir
-fi
-if [ "$LocalGroupSet" != "YES" ]; then
-   GetLocalGroup
+if [ "$DefaultAccessRootDirSet" != "YES" ]; then
+   GetDefaultAccessRootDir
 fi
 while :
 do
@@ -735,21 +678,19 @@ do
    echo "            *** Command Selection ***"
    echo ""
    echo ""
-   echo "In $LocalAccessRootDir/ACCESS/itools:" 
+   echo "In $DefaultAccessRootDir/ACCESS/itools:" 
    echo ""
    echo " 1) make World                   2) make install"
    echo ""
-   echo "In $LocalAccessRootDir/ACCESS:"
+   echo "In $DefaultAccessRootDir/ACCESS:"
    echo ""
-   echo " 3) accmkmf                      4) (deleted)"
+   echo " 3) accmkmf             "         
    echo " 5) make Makefiles               6) make makeincludes" 
    echo " 7) make clean                   8) make netcdf"
-   echo " 9) make serial_mpi             10) make libraries"
-   echo "11) (deleted)                   12) make svdi"
-   echo "13) make applications           14) (deleted)"
-   echo "15) (deleted)                   16) make scripts"
-   echo "17) (deleted)                   18) (deleted)"
-   echo "19) (deleted)                   20) make all"
+   echo "                                10) make libraries"
+   echo "15) make applications           16) make scripts"
+   echo "17) (deleted)                   18) make matlab"
+   echo "19) make analysis               20) make all"
    echo "21) make install"
    echo ""
    echo "22) Return to the main menu"
@@ -761,8 +702,7 @@ do
    do
       read Response
       case "$Response" in
-          1 ) counter=0
-              GetLocalBootStrapCFlags
+          1 ) GetLocalBootStrapCFlags
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeWorld
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -780,40 +720,38 @@ do
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
           7 ) MakeCleanSelected=YES
-              DoMakeClean "$LocalAccessRootDir/ACCESS"
+              DoMakeClean "$DefaultAccessRootDir/ACCESS"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-          8 ) CheckMakeClean "$LocalAccessRootDir/ACCESS/netcdf"
+          8 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/netcdf"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeNetcdf
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-          9 ) CheckMakeClean "$LocalAccessRootDir/ACCESS/serial_mpi"
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              DoMakeSerialMpi
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              break ;;
-         10 ) CheckMakeClean "$LocalAccessRootDir/ACCESS/libraries"
+         10 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/libraries"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeLibraries
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         12 ) CheckMakeClean "$LocalAccessRootDir/ACCESS/svdi"
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              DoMakeSvdi
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              break ;;
-         13 ) CheckMakeClean "$LocalAccessRootDir/ACCESS/applications"
+         15 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/applications"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeApplications
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         16 ) CheckMakeClean "$LocalAccessRootDir/ACCESS/scripts"
+         16 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/scripts"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeScripts
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         20 ) CheckMakeClean "$LocalAccessRootDir/ACCESS"
+         18 ) DoMakeMatlab
+              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+              break ;;
+         19 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/analysis"
+              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+              DoMakeAnalysis
+              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+              break ;;
+         20 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeAll
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -862,11 +800,6 @@ read Response
 ClearScreen
 echo ""
 echo ""
-echo "4) Modify the configuration files only"
-echo ""
-echo "   Choose this options if you want to modify only the configuration"
-echo "   files (site.def and your_system.cf)."
-echo ""
 echo "5) Execute a specific command"
 echo ""
 echo "   This option will allow you to run a single command out of the"
@@ -890,10 +823,7 @@ read Response
 # Set default values:
  
 # Default setting for $ACCESS:
-DefaultAccessRootDir=`pwd`
-DefaultGroup=`id | sed "s%^.*gid%%" | sed "s%).*%%" | sed "s%^.*(%%" | sed "s%.*+%%"`
-LocalGroupSet=NO
-LocalAccessRootDirSet=NO
+GetDefaultAccessRootDir
 
 while :
 do
@@ -906,19 +836,27 @@ do
    echo "1) Build all of SEACAS (including the Imake tools)"
    echo "2) Build only the Imake tools"
    echo "3) Build all of SEACAS except for the Imake tools"
-   echo "4) Modify the configuration files only"
    echo "5) Execute a specific command"
-   echo "6) Exit"
+   echo "6) Exit/Quit"
    echo ""
-   echo "Please make sure before continuing that you have your"
-   echo "group ID and your file protections set to what you want."
-   echo "Current group:  $DefaultGroup       Current umask:  "`umask`
+   echo "This script assumes that you have already modified the configuration files"
+   echo "\"site.def\" and \"your-system.cf\" (for example \"linux.cf\") required for"
+   echo "this build. The files are in ACCESS/itools/config/cf."
+   echo "" 
+   echo "Please make sure before continuing that the settings below"
+   echo "are set to what you want:"
    echo ""
-   echo "Please enter the number corresponding to your choice"
-   PromptLine "or enter 'h' for help on the options: "
+   echo "   SEACAS Root:        ${txtpur}$DefaultAccessRootDir${txtrst}"
+   echo "   Install group:      ${txtpur}$DefaultGroup${txtrst}"
+   echo "   Current umask:      ${txtpur}`umask`${txtrst}"
+   echo ""
+   echo "If you have not modified the files, or the settings are wrong,"
+   echo "enter 'q' to exit this script."
+   echo ""
+   echo "Please enter the number (1-6) corresponding to your choice"
+   PromptLine "   'q' to quit, or 'h' for help on the options: "
 
    UseCurrentConfigFiles=NO
-   ModifyConfigFilesOnly=NO 
    ReturnToMenu=NO
    InCommandMenu=NO
    BuildItoolsOnly=NO
@@ -941,21 +879,25 @@ do
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeMakeincludes
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeClean "$LocalAccessRootDir/ACCESS"
+             DoMakeClean "$DefaultAccessRootDir/ACCESS"
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAllDoMakeInstall
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeNetcdf
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeSerialMpi
+	     DoMakeSIMPI
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+	     DoMakeHDF5
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeLibraries
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeSvdi
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeApplications 
+             DoMakeApplications
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeScripts
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             DoMakeMatlab
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             DoMakeAnalysis
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeInstallAccess
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -973,11 +915,8 @@ do
              break 
              ;;
          3 ) ClearScreen
-             if [ "$LocalAccessRootDirSet" != "YES" ]; then
-                GetLocalAccessRootDir
-             fi
-             if [ "$LocalGroupSet" != "YES" ]; then
-                GetLocalGroup
+             if [ "$DefaultAccessRootDirSet" != "YES" ]; then
+                GetDefaultAccessRootDir
              fi
              DoAccmkmf
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -985,7 +924,7 @@ do
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeMakeincludes
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeClean "$LocalAccessRootDir/ACCESS"
+             DoMakeClean "$DefaultAccessRootDir/ACCESS"
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAllDoMakeInstall
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -993,28 +932,25 @@ do
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeLibraries
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeSvdi
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeApplications
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeScripts
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             DoMakeMatlab
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             DoMakeAnalysis
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeInstallAccess
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              break 
              ;;
-         4 ) ModifyConfigFilesOnly=YES
-             SetupAccess
-             ModifyConfigFilesOnly=NO
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             break ;;
          5 ) ClearScreen
              InCommandMenu=YES
              CommandMenu
              InCommandMenu=NO
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              break ;;
-         6 ) exit
+     q|Q|6 ) exit
              ;;
        h|H ) ClearScreen
              HelpMenu
