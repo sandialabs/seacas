@@ -5,7 +5,7 @@ XCOMM $XConsortium: Imakefile /main/137 1996/10/08 07:38:14 swick $
 CDEBUGFLAGS = -O
 #endif
 
-#define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
+#define PassDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
 
 DIST_NAME = "itools distribution"
 
@@ -18,8 +18,6 @@ RELEASE = "Release 6.3"
 
 MakeSubdirs($(SUBDIRS))
 
-DependSubdirs($(SUBDIRS))
-
 #define IHaveSpecialMakefileTarget
 
 #ifndef Win32Architecture
@@ -28,12 +26,15 @@ VerifyOS::
 #if defined(LinuxArchitecture)
 	@echo Building on OSName -- LinuxArchitecture
 #else
-	@echo Building on "OSName".
+	@echo Building on OSName
 #endif
 	@echo ""
 
 includes::
 	MakeDir($(BUILDINCDIR))
+	MakeDir($(USRLIBDIR))
+	MakeDir($(SHLIBDIR))
+	$(LN) -f $(BUILDINCDIR) $(ACCESSDIR)/include
 
 /*
 XCOMM
@@ -60,7 +61,6 @@ Everything::
 	$(MAKE) $(MFLAGS) xmakefile
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) Makefiles
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) includes
-	$(MAKE) $(MFLAGS) $(MAKE_OPTS) depend
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) $(WORLDOPTS)
 	@echo ""
 	@date
@@ -103,7 +103,6 @@ Everything::
 	$(MAKE) $(MFLAGS) xmakefile
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) Makefiles
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) includes
-	$(MAKE) $(MFLAGS) $(MAKE_OPTS) depend
 	$(MAKE) $(MFLAGS) $(MAKE_OPTS) $(WORLDOPTS)
 	@echo :
 	@echo :
@@ -133,7 +132,7 @@ xmakefile-exists::
 
 #undef BootstrapCleanSubdirs
 #define BootstrapCleanSubdirs BOOTSTRAPSUBDIRS="$(BOOTSTRAPSUBDIRS)"
-BOOTSTRAPSUBDIRS = imake makedepend
+BOOTSTRAPSUBDIRS = imake 
 
 README:
 	groff -mgs tmac.wrprc README.ms > README.ps

@@ -55,7 +55,6 @@ World:
 	$(MAKE_CMD) $(MFLAGS) Makefiles
 	$(MAKE_CMD) $(MFLAGS) clean BOOTSTRAPSUBDIRS=
 	$(MAKE_CMD) $(MFLAGS) includes
-	$(MAKE_CMD) $(MFLAGS) depend
 	$(MAKE_CMD) $(MFLAGS) $(WORLDOPTS)
 	@echo ""
 	@date
