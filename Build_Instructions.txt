@@ -1,0 +1,134 @@
+
+Instructions for building ACCESS
+(See the bottom of the file for contact information)
+
+The ACCESS system uses imake to generate Makefiles for each of its
+modules.  To build the ACCESS system you must first build and install
+imake and its associated tools, set your ACCESS environment variable
+and path, then generate Makefiles for ACCESS to build and install
+ACCESS.
+
+1) Unpack the ACCESS distribution
+   % tar -zxvf seams.tar.gz
+   % ls ACCESS
+
+2) Download netcdf.  The most recent released version (currently 4.3.1) is recommended. 
+
+   * cd ACCESS/netcdf
+   * Download netcdf-4.3.1.tar.gz from 
+       http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-4.3.1.tar.gz
+   * tar zxvf netcdf-4.3.1.tar.gz
+   * If the untar does not create a netcdf-4.3.1 directory, modify the
+     Imakefile in the current directory such that V_NUM specifies the
+     correct name
+   * Modify the following defines in include/netcdf.h
+
+#define NC_MAX_DIMS     65536    /* max dimensions per file */
+#define NC_MAX_VARS     524288   /* max variables per file */
+#define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
+
+2) cd back to the top-level 'seams' subdirectory
+   -- You can also rename 'seams' to any other name you desire.
+
+3) The current directory (seams unless you renamed if) will be your
+   ACCESS root.  Set the environment variable ACCESS to point to this
+   area. 
+   -- setenv ACCESS `pwd`  (csh/tcsh)
+   -- export ACCESS=`pwd`  (sh/bash)
+
+   If you do an 'ls $ACCESS', you should see something similar to:
+
+Imakefile application doc-source  itools        netcdf      serial_mpi
+Makefile  deprecated  hdf5        libraries     scripts     
+
+4) Move into the $ACCESS/ACCESS/itools/config/cf directory and edit
+   the 'site.def' and the configuration file associated with your
+   platform (e.g. linux.cf for linux OS; darwin.cf for MacOS)
+
+   ------------------------------------------------------------------------
+   a) The 'site.def' file contains settings that determine where ACCESS
+      is going to be installed, who owns the source, and where the
+      X11 libraries and includes files are located on your system
+      The following setting should be entered in the site.def file:
+
+   #define AccessRoot - path to ACCESS source directory
+      It should be the same directory path as you set as the ACCESS
+      environment variable.
+
+   #define        Owner owner_username
+   #define        Group group_name 
+      The owner and group name of the user installing the code should
+      be set.  We have created a group called seacas on our systems for
+      the support staff that installs and maintains the ACCESS system
+      Example 2
+                   #define        Owner gdsjaar
+                   #define        Group seacas 
+
+   #define BuildSharedExodusLibrary YES
+      Leave this set to YES unless there are problems building
+      shared libraries on your system.
+
+   #define UseNetcdf4 NO or YES
+      Set to YES to use the new hdf5-based netcdf-4;
+      leave as NO to use the classic netcdf-4.
+      
+   #define ExcludeAnalysis 
+   #define Parallel 0
+      The above parallel setting is used for building and installing
+      the analysis codes on parallel machines.  This should be set to
+      0 unless you are building and installing the jas3d or pronto3d
+      analysis codes on a parallel machine; in that case, it should be
+      set to 2
+
+   #define Platform normal
+      For most cases, leave the Platform define as "normal"; however,
+       * if building on "interix", define it as interix;
+       * if building for "redstorm", define it as redstorm;
+       * if you need to enter BootsStrapCFlags, define as "prompt"
+
+   #define HasMatlab NO
+      If the system has Matlab libraries and includes, change the definition of 
+      HasMatlab in the following line from NO to YES, and check the definition 
+      of MatlabLibraries and MatlabIncludes down below.
+
+   ------------------------------------------------------------------------
+   b) platform.cf (platform=hardware or os type) [linux.cf, darwin.cf, ?.cf]
+      The platform.cf configuration file contains system-specific settings; in
+      particular compiler paths.  The linux.cf file is the most complicated
+      due to the multitude of compilers available.  Pick the define corresponding
+      to the compilers you will be using and then search for that #if block
+      and make sure paths are correct; the paths typically only need changing for
+      parallel compiles and if your system has multiple versions of compilers.
+
+      If you are building on a 64-bit system, define Build64BitAccess YES.
+
+      NOTE: If you are using a gcc version prior to 4.1, then you
+      cannot build the fortran-based utilities for 64-bit systems; you
+      must do a 32-bit build. I can tell you the details if you
+      want...  If you are using a non-gnu compiler or using gcc-4.1.0
+      or later (which gfortran as the fortran compiler), you can do a
+      64-bit build.
+
+      NOTE: If you are building on MacOS and using the Mac ports
+      compilers, then define USE_MACPORTS as the version number of the
+      compiler (4.4, 4.5, 4.6, ...)
+
+5) Use the script ACCESS/scripts/buildSEACAS, which enters the commands
+   for you.  You should be in the directory specified as your AccessRoot
+   in step 3 above. Then enter:
+
+      sh ACCESS/scripts/buildSEACAS
+
+   and follow the prompts.
+
+6) If you have any problems, send an email to 'gdsjaar@sandia.gov'.
+   Include any log files that were created during your attempted build.
+   These will be in ACCESS and in ACCESS/itools.  Also include the
+   site.def and platform.cf (e.g. linux.cf, darwin.cf).  The subject of
+   your email should include "SEACAS build error".
+
+   You can call me, but I will probably just tell you to email the
+   information in the previous paragraph.
+
+   -- Greg Sjaardema  (gsjaardema@gmail.com,  gdsjaar@sandia.gov)
+      
