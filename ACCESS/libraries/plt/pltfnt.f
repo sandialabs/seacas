@@ -31,11 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: pltfnt.f,v 1.1 1993/07/16 16:48:09 gdsjaar Exp $ 
-C $Log: pltfnt.f,v $
-C Revision 1.1  1993/07/16 16:48:09  gdsjaar
-C Changed plt to library rather than single source file.
-C 
 C=======================================================================
       SUBROUTINE PLTFNT(FILENM)
       REAL DEVCAP(23)
@@ -83,7 +78,7 @@ C=======================================================================
 
       OPEN (UNIT=IUNIT,FILE=LOCFIL(1:L),FORM='unformatted',STATUS='old',
      *  IOSTAT=IOS)
-      if (iostat .ne. 0) then
+      if (ios .ne. 0) then
 C ... See if environment variable ACCESS is set.  If so, then
 C     search for file in "$ACCESS/bin/LOCFIL"        
         call getenv('ACCESS', ACCESS)
