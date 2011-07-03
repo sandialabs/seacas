@@ -44,7 +44,7 @@ C
 C     SUBROUTINE FREFLD IS PART OF THE EXTERNAL "SUPES"
 C     LIBRARY (SAND86-0911)
 C
-C     Calls subroutines BANNER, ERROR
+C     Calls subroutines BANNR2, ERROR
 C
 C     Called by MAPVAR
 C
@@ -53,17 +53,16 @@ C
       include 'exodusII.inc'
       CHARACTER*10 CVAL
 C
-      CHARACTER*(MXSTLN) QAINFO(6)
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /RUNDAT/ QAINFO
-      COMMON /SCHDAT/ TOLSHL,TOLQAD,TOLHEX,TOLTET,NISS,NRSS
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      common /DEBG/   idebug
-      COMMON /INIVAL/ valini
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'contrl.blk'
+      include 'ex2tp.blk'
+      include 'rundat.blk'
+      include 'schdat.blk'
+      include 'steps.blk'
+      include 'tapes.blk'
+      include 'debg.blk'
+      include 'inival.blk'
 C
       DIMENSION KVALUE(8),CVAL(8),IVALUE(8),RVALUE(8)
       DIMENSION TIMES(*),IDA(*),IDB(*),MP(3,*)
@@ -77,8 +76,8 @@ C     PRINT RUN-TIME DATA
 C
       WRITE (NOUT, 1000)
       WRITE (NTPOUT, 1000)
-      CALL BANNER (84,QAINFO(1),NOUT)
-      CALL BANNER (84,QAINFO(1),NTPOUT)
+      CALL BANNR2 (84,QAINFO(1),NOUT)
+      CALL BANNR2 (84,QAINFO(1),NTPOUT)
       WRITE (NOUT, 1010)
       WRITE (NTPOUT, 1010)
       WRITE (NOUT, 1020) QAINFO(3)

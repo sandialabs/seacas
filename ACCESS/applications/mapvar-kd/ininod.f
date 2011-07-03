@@ -65,13 +65,12 @@ C
 C *********************************************************************
 C
       include 'exodusII.inc'
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR,NAME
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /INIVAL/ VALINI
+      include 'aexds1.blk'
+      include 'bmesh.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'inival.blk'
 C
       DIMENSION SOLNB(NODESB,NVARNP), TIMES(*), NDLSTB(*) 
       DIMENSION XB(*), YB(*), ZB(*)

@@ -96,7 +96,7 @@ C  P     IERR     -/O    ERROR FLAG
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'tapes.blk'
 C
 C INPUT/OUTPUT ARRAYS
 C

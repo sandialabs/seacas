@@ -32,36 +32,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: rf_fem.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 
 /*
-*
-*
-*
-*
 *	Include file for globally occuring parameters and flags
 *	specific to the FEM problem.
-*
-*
-*	Author:		John Shadid	(SNL, 1421)
-*			Harry Moffat
-*	Date:		11/13/92
-*	Revised:	11/17/92
-*
 */
 
 /* Geometric Paramters  */

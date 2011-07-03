@@ -211,7 +211,7 @@ C                          CLSFIL
 C
 C
 C SUPES CALLS:
-C              EXDATE, EXNAM,  EXTIME, FREFLD, MDDEL, MDEROR, MDGET,
+C              EXDATE, EXTIME, FREFLD, MDDEL, MDEROR, MDGET,
 C              MDINIT, MDRSRV, MDSTAT, STRIPB
 C
 C EXODUSII CALLS:
@@ -234,32 +234,28 @@ C     ******************************************************************
 C
 C     COMPUTER CODE MANAGEMENT SYSTEM INFORMATION --
 C
-C     CURRENT VERSION DESIGNATOR- $Revision: 1.1 $
+C     CURRENT VERSION DESIGNATOR- $Revision: 1.12 $
 C
 C     ******************************************************************
 C
       include 'exodusII.inc'
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR,TYP
-      CHARACTER*(MXSTLN) QAINFO(6)
-      CHARACTER*80 HED
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AEXDS2/ QALINE(4,240),NAMECO(3),NAMVAR(512)
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-C      COMMON /ELMDAT/ NNELM(13)
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /HEADER/ HED
-      COMMON /NTPDAT/ IFILES(5)
-      COMMON /RUNDAT/ QAINFO
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /SCHDAT/ TOLSHL,TOLQAD,TOLHEX,LBLK,NISS,NRSS
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /TOLDAT/ TOL,EPS,STRLMT,ITERMX
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
-      COMMON /VAREPT/ ISXX,ISYY,ISZZ,ISXY,ISYZ,ISZX,IELMS,IDENS
+      include 'aexds1.blk'
+      include 'aexds2.blk'
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'contrl.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'header.blk'
+      include 'ntpdat.blk'
+      include 'rundat.blk'
+      include 'steps.blk'
+      include 'schdat.blk'
+      include 'tapes.blk'
+      include 'toldat.blk'
+      include 'varnpt.blk'
+      include 'varept.blk'
 C
       EXTERNAL INITLZ
 C
@@ -1604,12 +1600,14 @@ C
 C     CLOSE FILES AND STOP
 C
 c
-      CALL BANNER(84,'NORMAL',NTPOUT)
-      CALL BANNER(84,'EXIT',NTPOUT)
+      CALL BANNR2(84,'NORMAL',NTPOUT)
+      CALL BANNR2(84,'EXIT',NTPOUT)
 c      write(nout,1063)
 c      write(ntpout,1063)
       CALL CLSFIL
 C
+      call addlog (qainfo(1))
+      call wrapup(qainfo(1))
       STOP
 C
   210 FORMAT (//,3X,'DATA FOR RECTANGULAR GRID USED IN COARSE SEARCH -',

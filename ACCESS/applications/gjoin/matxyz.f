@@ -33,7 +33,7 @@ C
 
 C     -*- Mode: fortran -*-
 C=======================================================================
-C     $Id: matxyz.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C     $Id: matxyz.f,v 1.2 2002/06/24 16:09:29 gdsjaar Exp $
 
       SUBROUTINE MATXYZ (NDIM,
      &     MATNS1, MATNS2, NNNPS, IXNNPS, LTNNPS,

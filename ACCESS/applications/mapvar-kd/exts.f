@@ -71,10 +71,10 @@ C  F      REAL  The load vector for the least squares fit
 C
 C************************************************************************
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'aexds1.blk'
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
+      include 'tapes.blk'
 C
       DIMENSION INVCN(MAXLN,*),XA(*),YA(*),ZA(*)
       DIMENSION CNTRA(NUMEBA,*),SOLEA(NUMEBA,*)

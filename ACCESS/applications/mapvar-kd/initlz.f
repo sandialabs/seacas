@@ -44,25 +44,22 @@ C     ******************************************************************
 C
 C...NOTE: Cannot include exodusII.inc in a block data routine.      
       PARAMETER (MXSTLN=32)
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR
 c      CHARACTER*10 ELTYPE
-      CHARACTER*80 HED
 C
-      COMMON /HEADER/ HED
-      COMMON /NTPDAT/ IFILES(5)
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AEXDS2/ QALINE(4,240),NAMECO(3),NAMVAR(512)
-C      COMMON /ELMDAT/ NNELM(13)
-      COMMON /SCHDAT/ TOLSHL,TOLQAD,TOLHEX,TOLTET,NISS,NRSS
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /TOLDAT/ TOL,EPS,STRLMT,ITERMX
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
-      COMMON /VAREPT/ ISXX,ISYY,ISZZ,ISXY,ISYZ,ISZX,IELMS,IDENS
-      common /DEBG/  idebug
-      COMMON /INIVAL/ valini
+      include 'header.blk'
+      include 'ntpdat.blk'
+      include 'contrl.blk'
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'aexds1.blk'
+      include 'aexds2.blk'
+      include 'schdat.blk'
+      include 'tapes.blk'
+      include 'toldat.blk'
+      include 'varnpt.blk'
+      include 'varept.blk'
+      include 'debg.blk'
+      include 'inival.blk'
 C
       DATA HED/' '/
       DATA NOUT,NTPOUT,NTP2,NTP3,NTP4/                      

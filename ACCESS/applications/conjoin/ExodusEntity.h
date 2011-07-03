@@ -179,6 +179,10 @@ namespace Excn {
     
     IntVector  elems;
     IntVector  sides;
+
+    // For conjoin only. Maps the location (of elems, sides, vars) within this sideset into
+    // the location in the corresponding global sideset
+    IntVector  elemOrderMap; 
     DistVector distFactors;
     
     size_t entity_count() const {return sideCount;}

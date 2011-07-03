@@ -83,8 +83,8 @@ C  P     IERR     -/O    ERROR FLAG
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /DEBG/   IDEBUG
+      include 'tapes.blk'
+      include 'debg.blk'
 C
 C INPUT/OUTPUT ARRAYS
 C

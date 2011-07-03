@@ -37,69 +37,104 @@
 #include "Vector3.h"
 
 #include <iosfwd>
-namespace Excn {
-  class SystemInterface
-    {
-    public:
-      SystemInterface();
-      ~SystemInterface();
+class SystemInterface
+{
+ public:
+  SystemInterface();
+  ~SystemInterface();
 
-      bool parse_options(int argc, char **argv);
+  bool parse_options(int argc, char **argv);
   
-      int debug() const {return debugLevel_;}
-      int screen_width() const {return screenWidth_;}
+  int debug() const {return debugLevel_;}
+  int screen_width() const {return screenWidth_;}
       
-      double tolerance() const {return tolerance_;}
-      bool match_node_ids() const {return matchNodeIds_;}
-      bool match_xyz() const {return matchXYZ_;}
-      bool omit_nodesets() const {return omitNodesets_;}
-      bool omit_sidesets() const {return omitSidesets_;}
+  double tolerance() const {return tolerance_;}
+  bool match_node_ids() const {return matchNodeIds_;}
+  bool match_node_xyz() const {return matchNodeXYZ_;}
+  bool match_elem_ids() const {return matchElemIds_;}
+  bool match_elem_xyz() const {return matchElemXYZ_;}
+  bool omit_nodesets() const {return omitNodesets_;}
+  bool omit_sidesets() const {return omitSidesets_;}
+  bool convert_nodes_to_nodesets(int part_number) const;
+  bool disable_field_recognition() const {return disableFieldRecognition_;}
   
-      Vector3 offset() const {return offset_;}
-      StringIdVector global_var_names() const {return globalVarNames_;}
-      StringIdVector node_var_names() const {return nodeVarNames_;}
-      StringIdVector elem_var_names() const {return elemVarNames_;}
-      StringIdVector nset_var_names() const {return nsetVarNames_;}
-      StringIdVector sset_var_names() const {return ssetVarNames_;}
+  int step_min() const {return stepMin_;}
+  int step_max() const {return stepMax_;}
+  int step_interval() const {return stepInterval_;}
 
-      const std::string &element_status_variable() const {return elementStatusVariable_;}
-      const std::string &nodal_status_variable()   const {return nodalStatusVariable_;}
+  Vector3 offset() const {return offset_;}
+  std::vector<int> node_nodeset_conversions() const {return nodesetConvertParts_;}
+  StringIdVector global_var_names() const {return globalVarNames_;}
+  StringIdVector node_var_names() const {return nodeVarNames_;}
+  StringIdVector elem_var_names() const {return elemVarNames_;}
+  StringIdVector nset_var_names() const {return nsetVarNames_;}
+  StringIdVector sset_var_names() const {return ssetVarNames_;}
 
-      //! Dumps representation of data in this class to cerr
-      void dump(std::ostream &str) const;
+  const Omissions &block_omissions() const {return blockOmissions_;}
+  const Omissions &nset_omissions() const {return nsetOmissions_;}
+  const Omissions &sset_omissions() const {return ssetOmissions_;}
   
-      static void show_version();
+  const std::string &element_status_variable() const {return elementStatusVariable_;}
+  const std::string &nodal_status_variable()   const {return nodalStatusVariable_;}
+
+  //! Dumps representation of data in this class to cerr
+  void dump(std::ostream &str) const;
   
-      // Make this private eventually...
-      StringVector   inputFiles_;
-      std::string outputName_;
+  static void show_version();
+  
+  // Make this private eventually...
+  StringVector   inputFiles_;
+  std::string outputName_;
 
-    private:
-      void enroll_options();
-      bool decompose_filename(const std::string &cs);
-      void parse_exclude(const char *list);
+ private:
+  void enroll_options();
+  bool decompose_filename(const std::string &cs);
+  void parse_exclude(const char *list);
 
-      GetLongOpt options_; //!< Options parsing
+  /*! The defined formats for the count attribute are:<br>
+    - <missing> -- default -- 1 <= count <= oo  (all steps)
+    - "X"                  -- X <= count <= X  (just step X) (if X == -1, do last step only)
+    - "X:Y"                -- X to Y by 1
+    - "X:"                 -- X to oo by 1
+    - ":Y"                 -- 1 to Y by 1
+    - "::Z"                -- 1 to oo by Z
+
+    The count and step must always be >= 0
+  */
+  void parse_step_option(const char *token);
+
+  GetLongOpt options_; //!< Options parsing
   
 
-      int debugLevel_;
-      int screenWidth_;
-      bool omitNodesets_;
-      bool omitSidesets_;
-      bool matchNodeIds_;
-      bool matchXYZ_;
+  int debugLevel_;
+  int screenWidth_;
+  int stepMin_;
+  int stepMax_;
+  int stepInterval_;
+  bool omitNodesets_;
+  bool omitSidesets_;
+  bool matchNodeIds_;
+  bool matchNodeXYZ_;
+  bool matchElemIds_;
+  bool matchElemXYZ_;
+  bool disableFieldRecognition_;
+  
+  std::string elementStatusVariable_;
+  std::string nodalStatusVariable_;
+
+  Vector3 offset_;
+  double tolerance_;
       
-      std::string elementStatusVariable_;
-      std::string nodalStatusVariable_;
+  Omissions blockOmissions_;
+  Omissions nsetOmissions_;
+  Omissions ssetOmissions_;
 
-      Vector3 offset_;
-      double tolerance_;
-      
-      StringIdVector globalVarNames_;
-      StringIdVector nodeVarNames_;
-      StringIdVector elemVarNames_;
-      StringIdVector nsetVarNames_;
-      StringIdVector ssetVarNames_;
-    };
-}
+  std::vector<int> nodesetConvertParts_;
+
+  StringIdVector globalVarNames_;
+  StringIdVector nodeVarNames_;
+  StringIdVector elemVarNames_;
+  StringIdVector nsetVarNames_;
+  StringIdVector ssetVarNames_;
+};
 #endif

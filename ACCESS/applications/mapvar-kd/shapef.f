@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: shapef.f,v 1.1 2008/10/31 05:04:13 gdsjaar Exp $ 
+C $Id: shapef.f,v 1.3 2007/10/17 18:43:50 gdsjaar Exp $ 
       SUBROUTINE SHAPEF (ITYPE,SP,TP,RP,SOLN,BVALUE)
 C
 C     ******************************************************************

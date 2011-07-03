@@ -51,12 +51,12 @@ C  IZDIS  INT  Pointer to z-displ nodal variable
 C
 C     ******************************************************************
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
+      include 'aexds1.blk'
+      include 'bmesh.blk'
+      include 'contrl.blk'
+      include 'ex2tp.blk'
+      include 'steps.blk'
+      include 'varnpt.blk'
       include 'exodusII.inc'
 C     
       DIMENSION SOLNB(NODESB,NVARNP)

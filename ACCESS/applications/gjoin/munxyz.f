@@ -34,11 +34,8 @@ C
 C=======================================================================
       SUBROUTINE MUNXYZ (NDIM, NUMNP2, NUMNP1, IXNP2, XN2, YN2, ZN2)
 C=======================================================================
-C $Id: munxyz.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: munxyz.f,v 1.1 1999/01/18 19:21:24 gdsjaar Exp $
 C $Log: munxyz.f,v $
-C Revision 1.1  2009/06/09 19:01:22  gdsjaar
-C mAdd gjoin (access gjoin2) based on copyright assertion paperwork coming through.
-C
 C Revision 1.1  1999/01/18 19:21:24  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear
 C

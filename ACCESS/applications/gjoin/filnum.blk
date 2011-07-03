@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: filnum.blk,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: filnum.blk,v 1.1 1999/01/18 19:21:21 gdsjaar Exp $
 C
       COMMON /FILNUM/ KLOG
 C --	KLOG = Unit number for log file. =99 if interactive, 0 if batch

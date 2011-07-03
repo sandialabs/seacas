@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: dbmir1.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: dbmir1.f,v 1.4 2006/02/13 20:01:58 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBMIR1 (IELB, NUMELB, NUMLNK, LINK, NAME, NDIM, NONQUD)
 C=======================================================================

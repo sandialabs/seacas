@@ -33,8 +33,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-char rcsid[] = "aprepro.y,v 1.22 1993/06/01 22:22:48 gdsjaar Exp";
-#include "aprepro.h"
+#include "my_aprepro.h"
 #include <stdlib.h>
 
 void undefined_warning(char* var);
@@ -56,9 +55,13 @@ symrec *format;
 
 %token	<val>	NUM		/* Simple double precision number	*/
 %token	<string> QSTRING	/* Quoted string			*/
-%token	<tptr>	UNDVAR VAR FNCT	/* Variable and function		*/
-%token	<tptr>	SVAR SFNCT	/* String Variable and function		*/
-%type	<val>	exp bool
+%token	<tptr>	UNDVAR 	/* Variable and function		*/
+%token  <tptr>  VAR
+%token	<tptr>	SVAR 	/* String Variable and function		*/
+%token  <tptr>  FNCT
+%token  <tptr>  SFNCT
+%type	<val>	exp 
+%type   <val>   bool
 %type	<string>	sexp
 
 /* Precedence (Lowest to Highest) and associativity */
@@ -100,6 +103,8 @@ bool:     exp '<' exp           { $$ = $1 < $3;                         }
         | exp GE  exp           { $$ = $1 >= $3;                        }
         | exp EQ  exp           { $$ = $1 == $3;                        }
         | exp NE  exp           { $$ = $1 != $3;                        }
+        | exp LOR exp           { $$ = $1 || $3;                        }
+        | exp LAND exp          { $$ = $1 && $3;                        }
         | bool LOR bool         { $$ = $1 || $3;                        }
         | bool LAND bool        { $$ = $1 && $3;                        }
         | '(' bool ')'          { $$ = $2;                              }
@@ -123,31 +128,33 @@ sexp:     QSTRING		{ $$ = $1;				}
 				  $1->value.svar= $3;
 				  redefined_warning($1->name);          
 				  $1->type = SVAR; 		}
-	| SFNCT '(' ')'		{ $$ = (*($1->value.strfnct))();	}
         | SFNCT '(' sexp ')'	{ $$ = (*($1->value.strfnct))($3);	}
+	| SFNCT '(' ')'		{ $$ = (*($1->value.strfnct))();	}
         | SFNCT '(' exp  ')'	{ $$ = (*($1->value.strfnct))($3);	}
         | sexp CONCAT sexp	{ int len1 = strlen($1);
 				  int len3 = strlen($3);
 				  ALLOC($$, len1+len3+1, char *);
-				  BCOPY($1, $$, len1+1);
-				  (void *)strcat($$, $3); }
+				  memcpy($$, $1, len1+1);
+				  strcat($$, $3); }
         | SFNCT '(' exp ',' sexp ',' sexp ',' sexp ',' sexp ')'
 				{ $$ = (*($1->value.strfnct))($3, $5, $7, $9, $11); }
         | SFNCT '(' exp ',' sexp ',' sexp  ')'
+				{ $$ = (*($1->value.strfnct))($3, $5, $7); }
+        | SFNCT '(' sexp ',' sexp ',' sexp  ')'
 				{ $$ = (*($1->value.strfnct))($3, $5, $7); }
         | bool '?' sexp ':' sexp  { $$ = ($1) ? ($3) : ($5);              }
 
 exp:	  NUM			{ $$ = $1; 				}
         | INC NUM		{ $$ = $2 + 1;				}
         | DEC NUM		{ $$ = $2 - 1;				}
-	    | VAR			{ $$ = $1->value.var;			}
-	    | INC VAR		{ $$ = ++($2->value.var);		}
-	    | DEC VAR		{ $$ = --($2->value.var);		}
-	    | VAR INC		{ $$ = ($1->value.var)++;		}
-	    | VAR DEC		{ $$ = ($1->value.var)--;		}
-	    | VAR '=' exp		{ $$ = $3; $1->value.var = $3;
+        | VAR			{ $$ = $1->value.var;			}
+	| INC VAR		{ $$ = ++($2->value.var);		}
+	| DEC VAR		{ $$ = --($2->value.var);		}
+	| VAR INC		{ $$ = ($1->value.var)++;		}
+	| VAR DEC		{ $$ = ($1->value.var)--;		}
+	| VAR '=' exp		{ $$ = $3; $1->value.var = $3;
 				  redefined_warning($1->name);          }
-	    | SVAR '=' exp		{ $$ = $3; $1->value.var = $3;
+	| SVAR '=' exp		{ $$ = $3; $1->value.var = $3;
 				  redefined_warning($1->name);          
 				  $1->type = VAR;			}
 	| VAR EQ_PLUS exp	{ $1->value.var += $3; $$ = $1->value.var; }

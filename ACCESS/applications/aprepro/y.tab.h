@@ -1,67 +1,119 @@
-/* 
- * Copyright 2006 Sandia Corporation. Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
- * retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of Sandia Corporation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+/* A Bison parser, made by GNU Bison 2.4.3.  */
 
-typedef union {
+/* Skeleton interface for Bison's Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+   2009, 2010 Free Software Foundation, Inc.
+   
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+   
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     NUM = 258,
+     QSTRING = 259,
+     UNDVAR = 260,
+     VAR = 261,
+     SVAR = 262,
+     FNCT = 263,
+     SFNCT = 264,
+     EQ_MINUS = 265,
+     EQ_PLUS = 266,
+     EQ_DIV = 267,
+     EQ_TIME = 268,
+     EQ_POW = 269,
+     LOR = 270,
+     LAND = 271,
+     NE = 272,
+     EQ = 273,
+     GE = 274,
+     LE = 275,
+     NOT = 276,
+     UNARY = 277,
+     POW = 278,
+     DEC = 279,
+     INC = 280,
+     CONCAT = 281
+   };
+#endif
+/* Tokens.  */
+#define NUM 258
+#define QSTRING 259
+#define UNDVAR 260
+#define VAR 261
+#define SVAR 262
+#define FNCT 263
+#define SFNCT 264
+#define EQ_MINUS 265
+#define EQ_PLUS 266
+#define EQ_DIV 267
+#define EQ_TIME 268
+#define EQ_POW 269
+#define LOR 270
+#define LAND 271
+#define NE 272
+#define EQ 273
+#define GE 274
+#define LE 275
+#define NOT 276
+#define UNARY 277
+#define POW 278
+#define DEC 279
+#define INC 280
+#define CONCAT 281
+
+
+
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
+{
+
+/* Line 1685 of yacc.c  */
+#line 50 "aprepro.y"
+
   double  val;		/* For returning numbers.		*/
   symrec *tptr;		/* For returning symbol-table pointers	*/
   char   *string;	/* For returning quoted strings		*/
-} YYSTYPE;
-#define	NUM	257
-#define	QSTRING	258
-#define	UNDVAR	259
-#define	VAR	260
-#define	FNCT	261
-#define	SVAR	262
-#define	SFNCT	263
-#define	EQ_PLUS	264
-#define	EQ_MINUS	265
-#define	EQ_TIME	266
-#define	EQ_DIV	267
-#define	EQ_POW	268
-#define	LOR	269
-#define	LAND	270
-#define	LE	271
-#define	GE	272
-#define	EQ	273
-#define	NE	274
-#define	UNARY	275
-#define	NOT	276
-#define	POW	277
-#define	INC	278
-#define	DEC	279
-#define	CONCAT	280
 
+
+
+/* Line 1685 of yacc.c  */
+#line 111 "y.tab.h"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
+#endif
 
 extern YYSTYPE yylval;
+
+

@@ -83,9 +83,9 @@ C  P     IERR     -/O    ERROR FLAG
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /DEBG/   IDEBUG
+      include 'amesh.blk'
+      include 'tapes.blk'
+      include 'debg.blk'
 C
 C INPUT/OUTPUT ARRAYS
 C

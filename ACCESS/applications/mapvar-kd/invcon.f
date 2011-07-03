@@ -53,9 +53,8 @@ C
 C************************************************************************
 C
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-C      COMMON /ELMDAT/ NNELM(13)
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
 C
       DIMENSION INVLN(*),INVCN(MAXLN,*),ICONA(nelnda,*)
 C

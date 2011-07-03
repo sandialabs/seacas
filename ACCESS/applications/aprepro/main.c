@@ -33,8 +33,6 @@
  *
  */
 
-/* $Id: main.c,v 1.2 2009/06/10 04:30:12 gdsjaar Exp $ */
-
 /* Aprepro: Algebraic Preprocessor for Text files.
  *
  * Author:  Greg Sjaardema,
@@ -48,34 +46,41 @@
 /* NOTE: Must update version number manually; not done via cvs anymore */
 static char *qainfo[] =
 {
-  "Aprepro ",
-  "$Date: 2009/06/10 04:30:12 $",
-  "Revision: 2.06",
+  "Aprepro",
+  "Date: 2011/05/05",
+  "Revision: 2.23"
 };
 
 #include <stdlib.h>
 #include <ctype.h>
 #include "getopt.h"
-#include "aprepro.h"
+#include "my_aprepro.h"
 #include "y.tab.h"
 #include <sys/types.h>
 #include <time.h>
 
-/* Default value of comment character */
-char comment = '$';
-char *include_path = NULL;
+aprepro_options ap_options;
 
-int end_on_exit;
-int warning_msg = True;
-int info_msg = False;
-int copyright = False;
-int quiet = False;
-int debugging = False;
-int statistics = False;
+void initialize_options(aprepro_options *ap_options)
+{
+  /* Default value of comment character */
+  ap_options->comment = '$';
+  ap_options->include_path = NULL;
 
+  ap_options->end_on_exit = False;
+  ap_options->warning_msg = True;
+  ap_options->info_msg = False;
+  ap_options->copyright = False;
+  ap_options->quiet = False;
+  ap_options->debugging = False;
+  ap_options->statistics = False;
+  ap_options->interactive = False;
+}
+
+extern symrec *getsym(char *sym_name);
 extern void yyparse(void);
 static void usage(void);
-extern void dumpsym(void);
+extern void dumpsym(int type, int doInternal);
 extern void pstats(void);
 extern void init_table(char comment);
 static void copyright_output(void);
@@ -88,45 +93,35 @@ char *myname;
 int main (int argc, char *argv[])
 {
   char *version_string = "Algebraic Preprocessor (Aprepro)";
-  int interactive = False;
   int c;
   time_t time_val;
   struct tm *time_structure;
   char *asc_time;
 
+#define NO_ARG 0
+#define IS_ARG 1
+#define OP_ARG 2
+
   static struct option long_options[] =
-  {
-    {"debug", 0, 0, 'd'},
-    {"statistics", 0, 0, 's'},
-    {"copyright", 0, 0, 'C'},
-    {"comment", 1, 0, 'c'},
-    {"version", 0, 0, 'v'},
-    {"interactive", 0, 0, 'i'},
-    {"include", 0, 0, 'I'},
-    {"exit_on", 0, 0, 'e'},
-    {"help", 0, 0, 'h'},
-    {"nowarning", 0, 0, 'W'},
-    {"messages", 0, 0, 'M'},
-    {"quiet", 0, 0, 'q'},
-    {NULL, 0, NULL, 0}
-  };
+    {
+      {"debug",       NO_ARG, 0, 'd'},
+      {"statistics",  NO_ARG, 0, 's'},
+      {"copyright",   NO_ARG, 0, 'C'},
+      {"comment",     IS_ARG, 0, 'c'},
+      {"version",     NO_ARG, 0, 'v'},
+      {"interactive", NO_ARG, 0, 'i'},
+      {"include",     IS_ARG, 0, 'I'},
+      {"exit_on",     NO_ARG, 0, 'e'},
+      {"help",        NO_ARG, 0, 'h'},
+      {"nowarning",   NO_ARG, 0, 'W'},
+      {"messages",    NO_ARG, 0, 'M'},
+      {"quiet",       NO_ARG, 0, 'q'},
+      {NULL,          NO_ARG, NULL, 0}
+    };
 
   int  option_index = 0;
   extern int optind;
   extern char *optarg;
-
-#ifdef DEBUG_MALLOC
-  unsigned long histid1, histid2, orig_size, current_size;
-  union dbmalloptarg m;
-  m.i = M_HANDLE_CORE | M_HANDLE_DUMP;
-  dbmallopt (MALLOC_WARN, &m);
-
-  m.i = M_HANDLE_ABORT;
-  dbmallopt (MALLOC_FATAL, &m);
-
-  m.str = "malloc_log";
-  dbmallopt (MALLOC_ERRFILE, &m);
-#endif
 
   myname = strrchr (argv[0], '/');
   if (myname == NULL)
@@ -134,31 +129,33 @@ int main (int argc, char *argv[])
   else
     myname++;
 
-/* Process command line options */
-  end_on_exit = False;
+  /* Process command line options */
+  initialize_options(&ap_options);
+  
+  ap_options.end_on_exit = False;
   while ((c = getopt_long (argc, argv, "c:dDsSvViI:eEwWmMhHCq",
 			   long_options, &option_index)) != EOF)
     {
       switch (c)
 	{
 	case 'c':
-	  comment = *optarg;
+	  ap_options.comment = *optarg;
 	  break;
 
 	case 'd':
 	case 'D':
-	  debugging = True;
-	  info_msg = True;
-	  warning_msg = True;
+	  ap_options.debugging = True;
+	  ap_options.info_msg = True;
+	  ap_options.warning_msg = True;
 	  break;
 
 	case 's':
 	case 'S':		/* Print hash statistics */
-	  statistics = True;
+	  ap_options.statistics = True;
 	  break;
 
 	case 'C':		/* Print copyright message */
-	  copyright = True;
+	  ap_options.copyright = True;
 	  break;
 
 	case 'v':
@@ -167,28 +164,28 @@ int main (int argc, char *argv[])
 	  break;
 
 	case 'i':
-	  interactive = True;
+	  ap_options.interactive = True;
 	  break;
 
 	case 'I':
-	  NEWSTR(include_path, optarg);
+	  NEWSTR(optarg, ap_options.include_path);
 	  break;
 	  
 	case 'e':
 	case 'E':
-	  end_on_exit = True;
+	  ap_options.end_on_exit = True;
 	  break;
 
 	case 'W':
-	  warning_msg = False;
+	  ap_options.warning_msg = False;
 	  break;
 
 	case 'q':
-	  quiet = True;
+	  ap_options.quiet = True;
 	  break;
 
 	case 'M':
-	  info_msg = True;
+	  ap_options.info_msg = True;
 	  break;
 
 	case 'h':
@@ -206,84 +203,70 @@ int main (int argc, char *argv[])
 	}
     }
 
-/* Process remaining options.  If '=' in word, then it is of the form
- * var=value.  Set the value.  If '=' not found, process remaining
- * options as input and output files
- */
-  while (optind < argc && strchr(argv[optind], '=') && !strchr(argv[optind], '/'))
-    {
-      char *var, *val;
-      double value;
-      symrec *s;
+  /* Process remaining options.  If '=' in word, then it is of the form
+   * var=value.  Set the value.  If '=' not found, process remaining
+   * options as input and output files
+   */
+  while (optind < argc && strchr(argv[optind], '=') && !strchr(argv[optind], '/')) {
+    char *var, *val;
+    double value;
+    symrec *s;
 
-      var = argv[optind++];
-      val = strchr (var, '=');
-      *val++ = '\0';
-      if (strchr(val, '"') != NULL) /* Should be a string variable */
-      {
-        char *pt = strrchr(val, '"');
-	val++;
-	*pt = '\0';
-	s = putsym(var, SVAR);
-	NEWSTR(val, s->value.svar);
-      }
-      else
-	{
-	  sscanf (val, "%lf", &value);
-	  s = putsym (var, VAR);
-	  s->value.var = value;
-	}
+    var = argv[optind++];
+    val = strchr (var, '=');
+    *val++ = '\0';
+    if (strchr(val, '"') != NULL) { /* Should be a string variable */
+      char *pt = strrchr(val, '"');
+      val++;
+      *pt = '\0';
+      s = putsym(var, SVAR, 0);
+      NEWSTR(val, s->value.svar);
     }
-  if (copyright == True)
+    else {
+      sscanf (val, "%lf", &value);
+      s = putsym (var, VAR, 0);
+      s->value.var = value;
+    }
+  }
+
+  if (ap_options.copyright == True)
     copyright_output();
   /* Assume stdin, recopy if and when it is changed */
   yyin = stdin;
   yyout = stdout;
 
-  if (argc > optind)
-    {
-      yyin = open_file(argv[optind], "r");
-      NEWSTR (argv[optind], ap_file_list[0].name);
-      SET_FILE_LIST (0, 0, False, 1);
-    }
-  else
-    {
-      NEWSTR ("stdin", ap_file_list[0].name);
-      SET_FILE_LIST (0, 0, False, 1);
-    }
-  if (argc > ++optind)
-    {
-      yyout = open_file(argv[optind], "w");
-    }
-  else
-    /* Writing to stdout */
-    {
-      if (interactive)
-	setbuf (yyout, (char *) NULL);
-    }
+  if (argc > optind) {
+    yyin = open_file(argv[optind], "r");
+    NEWSTR (argv[optind], ap_file_list[0].name);
+    SET_FILE_LIST (0, 0, False, 1);
+  }
+  else {
+    NEWSTR ("stdin", ap_file_list[0].name);
+    SET_FILE_LIST (0, 0, False, 1);
+  }
+  if (argc > ++optind) {
+    yyout = open_file(argv[optind], "w");
+  }
+  else {  /* Writing to stdout */
+    if (ap_options.interactive)
+      setbuf (yyout, (char *) NULL);
+  }
 
   time_val = time ((time_t*)NULL);
   time_structure = localtime (&time_val);
   asc_time = asctime (time_structure);
 
   /* NOTE: asc_time includes \n at end of string */
-  if (!quiet)
-    fprintf (yyout, "%c Aprepro (%s) %s", comment, qainfo[2], asc_time);
+  if (!ap_options.quiet)
+    fprintf (yyout, "%c Aprepro (%s) %s", ap_options.comment, qainfo[2], asc_time);
 
-  init_table (comment);
-#ifdef DEBUG_MALLOC
-  orig_size = malloc_inuse (&histid1);
-#endif
+  srand((unsigned)time_val);
+  
+  init_table (ap_options.comment);
   yyparse ();
-#ifdef DEBUG_MALLOC
-  current_size = malloc_inuse (&histid2);
-  if (current_size != orig_size)
-    malloc_list (2, histid1, histid2);
-  malloc_chain_check (0);
-#endif
-  if (debugging > 0)
-    dumpsym ();
-  if (statistics > 0)
+  if (ap_options.debugging > 0)
+    dumpsym (VAR, 0);
+  if (ap_options.statistics > 0)
     pstats ();
   add_to_log(myname);
   return (EXIT_SUCCESS);
@@ -291,7 +274,7 @@ int main (int argc, char *argv[])
 
 
 #define ECHO(s) fprintf(stderr, s)
-#define ECHOC(s) fprintf(stderr, s, comment)
+#define ECHOC(s) fprintf(stderr, s, ap_options.comment)
 static void 
 usage (void)
 {
@@ -311,6 +294,10 @@ usage (void)
    ECHO("    --copyright or -C: Print copyright message                 \n");
    ECHO("        --quiet or -q: Do not anything extra to stdout         \n");
    ECHO("              var=val: Assign value 'val' to variable 'var'  \n\n");
+   ECHO("\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n");
+   ECHO("\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n");
+   ECHO("\t->->-> Send email to seacas-help@sandia.gov for aprepro support.\n\n");
+
  } 
 
 static void 
@@ -393,4 +380,6 @@ void version(char *vstring)
  *-fix so getenv with null string doesn't seg fault
  *-add rand_normal, rand_lognormal, rand_weibull
  *-fix parsing of \{ and \} in skipped if block
+ *-add : as valid character in a variable name. (Dakota request)
+ *-modify || and && to work with expressions and not just booleans
  */

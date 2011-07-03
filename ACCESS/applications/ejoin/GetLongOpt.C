@@ -33,14 +33,14 @@
 #include <GetLongOpt.h>
 #include <string.h>
 
-Excn::GetLongOpt::GetLongOpt(const char optmark)
+GetLongOpt::GetLongOpt(const char optmark)
   : table(NULL), ustring(NULL), pname(NULL), last(NULL),
     enroll_done(0), optmarker(optmark)
 {
    ustring = "[valid options and arguments]";
 }
 
-Excn::GetLongOpt::~GetLongOpt()
+GetLongOpt::~GetLongOpt()
 {
    Cell *t = table;
 
@@ -52,7 +52,7 @@ Excn::GetLongOpt::~GetLongOpt()
 }
 
 char *
-Excn::GetLongOpt::basename(char * const pathname)
+GetLongOpt::basename(char * const pathname)
 {
    char *s;
 
@@ -64,7 +64,7 @@ Excn::GetLongOpt::basename(char * const pathname)
 }
 
 int
-Excn::GetLongOpt::enroll(const char * const opt, const OptType t,
+GetLongOpt::enroll(const char * const opt, const OptType t,
 const char * const desc, const char * const val)
 {
    if ( enroll_done ) return 0;
@@ -88,7 +88,7 @@ const char * const desc, const char * const val)
 }
 
 const char *
-Excn::GetLongOpt::retrieve(const char * const opt) const
+GetLongOpt::retrieve(const char * const opt) const
 {
    Cell *t;
    for ( t = table; t != 0; t = t->next ) {
@@ -101,7 +101,7 @@ Excn::GetLongOpt::retrieve(const char * const opt) const
 }
 
 int
-Excn::GetLongOpt::parse(int argc, char * const *argv)
+GetLongOpt::parse(int argc, char * const *argv)
 {
    int my_optind = 1;
 
@@ -185,7 +185,7 @@ Excn::GetLongOpt::parse(int argc, char * const *argv)
 }
 
 int
-Excn::GetLongOpt::parse(char * const str, char * const p)
+GetLongOpt::parse(char * const str, char * const p)
 {
    enroll_done = 1;
    char *token = strtok(str, " \t");
@@ -256,7 +256,7 @@ GetLongOpt::setcell returns
 ------------------------------------------------------------------- */
 
 int
-Excn::GetLongOpt::setcell(Cell *c, char *valtoken, char *nexttoken, const char *name)
+GetLongOpt::setcell(Cell *c, char *valtoken, char *nexttoken, const char *name)
 {
    if ( c == 0 ) return -1;
 
@@ -306,7 +306,7 @@ Excn::GetLongOpt::setcell(Cell *c, char *valtoken, char *nexttoken, const char *
 }
 
 void
-Excn::GetLongOpt::usage(std::ostream &outfile) const
+GetLongOpt::usage(std::ostream &outfile) const
 {
    Cell *t;
 

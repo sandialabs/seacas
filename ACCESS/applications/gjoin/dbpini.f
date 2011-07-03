@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C$Id: dbpini.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C$Id: dbpini.f,v 1.2 2001/06/26 17:38:54 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE DBPINI (OPTION, NDB, TITLE, NDIM, NUMNP, NUMEL, NELBLK,
      &                   NUMNPS, LNPSNL, LNPSDF, NUMESS, LESSEL, 

@@ -64,7 +64,7 @@ int read_exo_weights(PROB_INFO_PTR prob,
   int    dum1, dum2;
   int    neblks, *eblk_ids, *eblk_ecnts;
   float  version, *values, minval = 1.0f;
-  char   ctemp[MAX_ERR_MSG+1], elem_name[MAX_STR_LENGTH+1];
+  char   ctemp[MAX_ERR_MSG+1], elem_type[MAX_STR_LENGTH+1];
 /*---------------------------Execution Begins--------------------------------*/
 
   /* Open the ExodusII file containing the weights */
@@ -171,7 +171,7 @@ int read_exo_weights(PROB_INFO_PTR prob,
     /* Get the count of elements in each element block */
     for(cnt=0; cnt < neblks; cnt++)
     {
-      if(ex_get_elem_block(exoid, eblk_ids[cnt], elem_name,
+      if(ex_get_elem_block(exoid, eblk_ids[cnt], elem_type,
                            &(eblk_ecnts[cnt]), &dum1, &dum2) < 0)
       {
         Gen_Error(0, "fatal: unable to get element block");
@@ -242,7 +242,7 @@ int read_mesh_params(char exo_file[],
   int    exoid, idum, num_elems, cnt, nodes_in_elem, cpu_ws=0, io_ws=0;
   int   *el_blk_ids;
   float  version;
-  char   elem_name[MAX_STR_LENGTH+1];
+  char   elem_type[MAX_STR_LENGTH+1];
 /*---------------------------Execution Begins--------------------------------*/
 
   /* Open the ExodusII geometry file */
@@ -314,7 +314,7 @@ int read_mesh_params(char exo_file[],
   mesh->max_np_elem = 0;
   for(cnt=0; cnt < mesh->num_el_blks; cnt++)
   {
-    if(ex_get_elem_block(exoid, el_blk_ids[cnt], elem_name,
+    if(ex_get_elem_block(exoid, el_blk_ids[cnt], elem_type,
                          &num_elems, &nodes_in_elem, &idum) < 0)
     {
       Gen_Error(0, "fatal: unable to get element block");
@@ -325,7 +325,7 @@ int read_mesh_params(char exo_file[],
     if(cnt == 0)
       sphere->end[0] = num_elems;
 
-    if(get_elem_type(elem_name, nodes_in_elem, mesh->num_dims) == SPHERE && problem->no_sph != 1) {
+    if(get_elem_type(elem_type, nodes_in_elem, mesh->num_dims) == SPHERE && problem->no_sph != 1) {
       sphere->num  += num_elems;
       sphere->adjust[cnt] = 0;
     }
@@ -347,7 +347,6 @@ int read_mesh_params(char exo_file[],
   if(ex_close(exoid) < 0)
     Gen_Error(1, "warning: unable to close ExodusII file");
 
-#ifdef PRINT_INFO
   printf("ExodusII mesh information\n");
   if(strlen(mesh->title) > 0)
     printf("\ttitle: %s\n", mesh->title);
@@ -357,7 +356,6 @@ int read_mesh_params(char exo_file[],
   printf("\tnumber of element blocks: %d\n", mesh->num_el_blks);
   printf("\tnumber of node sets: %d\tnumber of side sets: %d\n",
          mesh->num_node_sets, mesh->num_side_sets);
-#endif
 
   return 1;
 
@@ -382,7 +380,7 @@ int read_mesh(char exo_file[],
   int   *el_blk_ids, *el_blk_cnts, *blk_connect;
   int    wgt;
   float  version, *xptr, *yptr, *zptr;
-  char   elem_name[MAX_STR_LENGTH+1];
+  char   elem_type[MAX_STR_LENGTH+1];
   E_Type blk_elem_type;
   
    /*---------------------------Execution Begins--------------------------------*/
@@ -436,7 +434,7 @@ int read_mesh(char exo_file[],
   /* Read the element connectivity */
   for(cnt=0; cnt < mesh->num_el_blks; cnt++)
   {
-    if(ex_get_elem_block(exoid, el_blk_ids[cnt], elem_name,
+    if(ex_get_elem_block(exoid, el_blk_ids[cnt], elem_type,
                          &(el_blk_cnts[cnt]), &nodes_per_elem,
                          &num_attr) < 0)
     {
@@ -444,7 +442,7 @@ int read_mesh(char exo_file[],
       return 0;
     }
 
-    blk_elem_type = get_elem_type(elem_name, nodes_per_elem, mesh->num_dims);
+    blk_elem_type = get_elem_type(elem_type, nodes_per_elem, mesh->num_dims);
 
     blk_connect = malloc(sizeof(int)*el_blk_cnts[cnt]*nodes_per_elem);
     if(!blk_connect)
@@ -498,7 +496,7 @@ int read_mesh(char exo_file[],
 	if (node < 0) {
 	  char ctemp[MAX_ERR_MSG+1];
 	  sprintf(ctemp, "fatal: Invalid connectivity (%d) for block %d, element %d, local node %d.",
-		  node, el_blk_ids[cnt], cnt2+1, cnt3+1);
+		  node, el_blk_ids[cnt], (int)cnt2+1, (int)cnt3+1);
 	  Gen_Error(0, ctemp);
 	  return 0;
 	}

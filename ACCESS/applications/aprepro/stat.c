@@ -1,4 +1,3 @@
-/* $Id: stat.c,v 1.1 2008/10/31 05:04:04 gdsjaar Exp $ */
 /*
  * Copyright 2006 Sandia Corporation. Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
@@ -49,6 +48,7 @@
 void newsample(int);
 double mean(void);
 double deviation(void);
+double variance(void);
 void reset_mean(void);
 
 static long Numnums = 0;
@@ -59,12 +59,13 @@ void newsample (int n)
 {
   double TMean;
 
+  /* See Knuth, TAOCP vol 2, 3rd edition, page 232 */
   TMean = Mean;
   Numnums++;
-  Mean = Mean + (n - TMean) / Numnums;
+  Mean = TMean + (n - TMean) / Numnums;
 
   if (Numnums > 1)
-    StdDev = (StdDev*(Numnums-2) + (n - TMean) * (n - Mean))/(Numnums-1);
+    StdDev += (n - TMean) * (n - Mean);
 }
 
 double mean (void)
@@ -72,9 +73,14 @@ double mean (void)
   return Mean;
 }
 
+double variance (void)
+{
+  return (Numnums > 1) ? StdDev/(Numnums-1) : 0.0;
+}
+
 double deviation (void)
 {
-  return sqrt(StdDev/(Numnums-1));
+  return sqrt(variance());
 }
 
 void reset_mean (void)

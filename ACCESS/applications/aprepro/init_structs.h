@@ -4,12 +4,16 @@ struct init
   {
     char *fname;
     double (*fnct)();
+    char *syntax;
+    char *description;
   };
 
 struct str_init
   {
     char *fname;
     char *(*fnct)();
+    char *syntax;
+    char *description;
   };
 
 struct var_init

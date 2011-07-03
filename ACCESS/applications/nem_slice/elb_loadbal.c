@@ -56,7 +56,10 @@
 #define M_PI_2 (M_PI/2.0)
 #endif
 
+#ifdef USE_ZOLTAN
 #include <mpi.h>           /* Needed for ZOLTAN_RCB, ZOLTAN_RIB, ZOLTAN_HSFC */
+#include "zoltan.h"        /* Needed for ZOLTAN_RCB, ZOLTAN_RIB, ZOLTAN_HSFC */
+#endif
 #include "elb_const.h"
 #include "elb_loadbal_const.h"
 #include "elb_err_const.h"
@@ -64,7 +67,6 @@
 #include "elb_util_const.h"
 #include "elb_groups_const.h"
 #include "elb_graph_const.h"
-#include "zoltan.h"        /* Needed for ZOLTAN_RCB, ZOLTAN_RIB, ZOLTAN_HSFC */
 #include "chaco.h"
 int is_hex(E_Type etype)
 {
@@ -107,10 +109,11 @@ static int ZPINCH_assign(MACHINE_PTR, int, float *, float *, float *,
 static int BRICK_assign(MACHINE_PTR, int, float *, float *, float *, 
                         int *);
 
+#ifdef USE_ZOLTAN
 /* ZOLTAN_RCB partitioning interface */
 static int ZOLTAN_assign(char *, int, int, int *, float *, float *, float *,
                          int *, int, char **);
-
+#endif
 static void BALANCE_STATS(MACHINE_PTR, int *, int, int *);
 /*****************************************************************************/
 /*****************************************************************************/
@@ -668,6 +671,7 @@ int generate_loadbal(MACHINE_PTR machine,
         flag = BRICK_assign(machine, tmp_nv, tmp_x, tmp_y, tmp_z,tmp_v2p);
         BALANCE_STATS(machine, NULL, tmp_nv, tmp_v2p); 
       }
+#ifdef USE_ZOLTAN
       else if (lb->type == ZOLTAN_RCB) {
         flag = ZOLTAN_assign("RCB", totalproc, tmp_nv, tmp_vwgts,
                              tmp_x, tmp_y, tmp_z, tmp_v2p, argc, argv);
@@ -683,6 +687,7 @@ int generate_loadbal(MACHINE_PTR machine,
                              tmp_x, tmp_y, tmp_z, tmp_v2p, argc, argv);
         BALANCE_STATS(machine, tmp_vwgts, tmp_nv, tmp_v2p);
       }
+#endif
       else {
         printf("===================Call Chaco===========================\n");
         time1 = get_time();
@@ -1253,470 +1258,461 @@ int elemental_dist(LB_INFO_PTR lb,
   lb->e_cmap_neigh = lb->e_cmap_procs + machine->num_procs;
 
   num_intn_alloc = malloc(4 * machine->num_procs * sizeof(int));
-  if(!num_intn_alloc)
-    {
-      Gen_Error(0, "fatal: insufficient memory");
-      return 0;
-    }
+  if(!num_intn_alloc) {
+    Gen_Error(0, "fatal: insufficient memory");
+    return 0;
+  }
   num_born_alloc = num_intn_alloc + machine->num_procs;
   num_inte_alloc = num_born_alloc + machine->num_procs;
   num_bore_alloc = num_inte_alloc + machine->num_procs;
 
   lb->num_int_nodes = malloc(4 * machine->num_procs * sizeof(int));
-  if(!(lb->num_int_nodes))
-    {
-      Gen_Error(0, "fatal: insufficient memory");
-      return 0;
-    }
+  if(!(lb->num_int_nodes)) {
+    Gen_Error(0, "fatal: insufficient memory");
+    return 0;
+  }
   lb->num_bor_nodes = lb->num_int_nodes + machine->num_procs;
   lb->num_int_elems = lb->num_bor_nodes + machine->num_procs;
   lb->num_bor_elems = lb->num_int_elems + machine->num_procs;
 
-  for(ecnt=0; ecnt < machine->num_procs; ecnt++)
-    {
-      lb->int_nodes[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->bor_nodes[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->ext_procs[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->int_elems[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->bor_elems[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->e_cmap_elems[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->e_cmap_sides[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->e_cmap_procs[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      lb->e_cmap_neigh[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
-      if(!(lb->int_nodes[ecnt]) || !(lb->bor_nodes[ecnt]) ||
-	 !(lb->int_elems[ecnt]) || !(lb->bor_elems[ecnt]) ||
-	 !(lb->ext_procs[ecnt]) )
-	{
-	  Gen_Error(0, "fatal: insufficient memory");
-	  return 0;
-	}
-
-      lb->num_int_nodes[ecnt] = 0;
-      lb->num_bor_nodes[ecnt] = 0;
-      lb->num_int_elems[ecnt] = 0;
-      lb->num_bor_elems[ecnt] = 0;
-      lb->e_cmap_size[ecnt] = 0;
-
-      num_intn_alloc[ecnt] = MEM_CHUNK_SIZE;
-      num_born_alloc[ecnt] = MEM_CHUNK_SIZE;
-      num_inte_alloc[ecnt] = MEM_CHUNK_SIZE;
-      num_bore_alloc[ecnt] = MEM_CHUNK_SIZE;
-      num_cmap_alloc[ecnt] = MEM_CHUNK_SIZE;
-
-    }
-
-  /* allocate space to hold info about surounding elements */
-  pt_list   = malloc(graph->max_nsur * sizeof(int));
-  hold_elem = malloc(graph->max_nsur * sizeof(int));
-  if(!(pt_list) || !(hold_elem))
-    {
+  for(ecnt=0; ecnt < machine->num_procs; ecnt++) {
+    lb->int_nodes[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->bor_nodes[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->ext_procs[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->int_elems[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->bor_elems[ecnt]     = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->e_cmap_elems[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->e_cmap_sides[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->e_cmap_procs[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    lb->e_cmap_neigh[ecnt]  = malloc(MEM_CHUNK_SIZE * sizeof(int));
+    if(!(lb->int_nodes[ecnt]) || !(lb->bor_nodes[ecnt]) ||
+       !(lb->int_elems[ecnt]) || !(lb->bor_elems[ecnt]) ||
+       !(lb->ext_procs[ecnt]) ) {
       Gen_Error(0, "fatal: insufficient memory");
       return 0;
     }
 
+    lb->num_int_nodes[ecnt] = 0;
+    lb->num_bor_nodes[ecnt] = 0;
+    lb->num_int_elems[ecnt] = 0;
+    lb->num_bor_elems[ecnt] = 0;
+    lb->e_cmap_size[ecnt] = 0;
+
+    num_intn_alloc[ecnt] = MEM_CHUNK_SIZE;
+    num_born_alloc[ecnt] = MEM_CHUNK_SIZE;
+    num_inte_alloc[ecnt] = MEM_CHUNK_SIZE;
+    num_bore_alloc[ecnt] = MEM_CHUNK_SIZE;
+    num_cmap_alloc[ecnt] = MEM_CHUNK_SIZE;
+
+  }
+
+  /* allocate space to hold info about surounding elements */
+  pt_list   = malloc(graph->max_nsur * sizeof(int));
+  hold_elem = malloc(graph->max_nsur * sizeof(int));
+  if(!(pt_list) || !(hold_elem)) {
+    Gen_Error(0, "fatal: insufficient memory");
+    return 0;
+  }
+
   /* Find the internal and border elements */
   time1 = get_time();
 
-  for(ecnt=0; ecnt < mesh->num_elems; ecnt++)
-    {
-      proc = lb->vertex2proc[ecnt];
-      internal = 1;
-      flag     = 0;
-      etype    = mesh->elem_type[ecnt];
-      dim1     = get_elem_info(NDIM, etype);
+  for(ecnt=0; ecnt < mesh->num_elems; ecnt++) {
+    proc = lb->vertex2proc[ecnt];
+    internal = 1;
+    flag     = 0;
+    etype    = mesh->elem_type[ecnt];
+    dim1     = get_elem_info(NDIM, etype);
 
-      /* need to check for hex's or tet's */
-      hflag1 = is_hex(etype);
+    /* need to check for hex's or tet's */
+    hflag1 = is_hex(etype);
 
-      /* a TET10 cannot connect to a HEX */
-      tflag1 = is_tet(etype);
+    /* a TET10 cannot connect to a HEX */
+    tflag1 = is_tet(etype);
 
-      nsides   = get_elem_info(NSIDES, etype);
+    nsides   = get_elem_info(NSIDES, etype);
 
-      /* check each side of this element */
+    /* check each side of this element */
 
-      for (nscnt = 0; nscnt < nsides; nscnt++) {
+    for (nscnt = 0; nscnt < nsides; nscnt++) {
 
-	/* get the list of nodes on this side set */
+      /* get the list of nodes on this side set */
 
-	side_cnt = ss_to_node_list(etype, mesh->connect[ecnt], (nscnt+1),
-				   side_nodes);
+      side_cnt = ss_to_node_list(etype, mesh->connect[ecnt], (nscnt+1),
+				 side_nodes);
 
-	/*
-	 * now I need to determine how many side set nodes I
-	 * need to use to determine if there is an element
-	 * connected to this side.
-	 *
-	 * 2-D - need two nodes, so find one intersection
-	 * 3-D - need three nodes, so find two intersections
-	 * NOTE: must check to make sure that this number is not
-	 *       larger than the number of nodes on the sides (ie - SHELL).
-	 */
+      /*
+       * now I need to determine how many side set nodes I
+       * need to use to determine if there is an element
+       * connected to this side.
+       *
+       * 2-D - need two nodes, so find one intersection
+       * 3-D - need three nodes, so find two intersections
+       * NOTE: must check to make sure that this number is not
+       *       larger than the number of nodes on the sides (ie - SHELL).
+       */
 
-	nnodes = mesh->num_dims;
-	if (side_cnt < nnodes)   nnodes = side_cnt;
-	nnodes--;    /* decrement to find the number of intersections needed */
+      nnodes = mesh->num_dims;
+      if (side_cnt < nnodes)   nnodes = side_cnt;
+      nnodes--;    /* decrement to find the number of intersections needed */
 
 
-	nelem = 0;   /* reset this in case no intersections are needed */
+      nelem = 0;   /* reset this in case no intersections are needed */
 
-	/*
-	 * need to handle hex's differently because of
-	 * the tet/hex combination
-	 */
+      /*
+       * need to handle hex's differently because of
+       * the tet/hex combination
+       */
 
-	if (!hflag1) { /* Not a hex */
+      if (!hflag1) { /* Not a hex */
 
-	  /* ignore degenerate bars */
+	/* ignore degenerate bars */
 
-	  if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
+	if (!((etype == BAR2 || etype == SHELL2) && side_nodes[0] == side_nodes[1])) {
 
-	    nhold = graph->nsur_elem[side_nodes[0]];
-	    for (ncnt = 0; ncnt < nhold; ncnt++)
-	      hold_elem[ncnt] = graph->sur_elem[side_nodes[0]][ncnt];
+	  nhold = graph->nsur_elem[side_nodes[0]];
+	  for (ncnt = 0; ncnt < nhold; ncnt++)
+	    hold_elem[ncnt] = graph->sur_elem[side_nodes[0]][ncnt];
 
-	    for (ncnt = 0; ncnt < nnodes; ncnt++) {
-	      /* Find elements connnected to both node '0' and node 'ncnt+1' */
-	      nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt+1)]],
-				 nhold, graph->nsur_elem[side_nodes[(ncnt+1)]],
-				 2, pt_list);
+	  for (ncnt = 0; ncnt < nnodes; ncnt++) {
+	    /* Find elements connnected to both node '0' and node 'ncnt+1' */
+	    nelem = find_inter(hold_elem, graph->sur_elem[side_nodes[(ncnt+1)]],
+			       nhold, graph->nsur_elem[side_nodes[(ncnt+1)]],
+			       2, pt_list);
 
-	      if (nelem < 2)
-		break;
-	      else {
-		nhold = nelem;
-		for (ncnt2 = 0; ncnt2 < nelem; ncnt2++)
-		  hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
-	      }
+	    if (nelem < 2)
+	      break;
+	    else {
+	      nhold = nelem;
+	      for (ncnt2 = 0; ncnt2 < nelem; ncnt2++)
+		hold_elem[ncnt2] = hold_elem[pt_list[ncnt2]];
 	    }
-	  }
-	  else {
-	    printf("WARNING: Element = %d is a DEGENERATE BAR\n", ecnt+1);
 	  }
 	}
-	else { /* Is a hex */
+	else {
+	  printf("WARNING: Element = %d is a DEGENERATE BAR\n", ecnt+1);
+	}
+      }
+      else { /* Is a hex */
 
+	/*
+	 * Hex faces are fairly complicated now. There are two
+	 * exceptions to the standard case:
+	 *   1. it is a degenerate hex (mimics a wedge). this has
+	 *      two special faces, the first is a triangle, and the
+	 *      second is a 2d line
+	 *   2. two tets are connected to this hex face 
+	 */
+
+	/* first need to check for a degenerate element */
+	dflag = 0;
+	if (side_nodes[0] == side_nodes[1] || side_nodes[0] == side_nodes[3])
+	  dflag++;
+	if (side_nodes[2] == side_nodes[1] || side_nodes[2] == side_nodes[3])
+	  dflag++;
+
+	/*
+	 * if both flags are set, then this face is the 2d line,
+	 * and should be ignored with respect to elemental
+	 * communication maps
+	 */
+	if (dflag == 2) {
+	  nelem = 1;
+
+	} else {
 	  /*
-	   * Hex faces are fairly complicated now. There are two
-	   * exceptions to the standard case:
-	   *   1. it is a degenerate hex (mimics a wedge). this has
-	   *      two special faces, the first is a triangle, and the
-	   *      second is a 2d line
-	   *   2. two tets are connected to this hex face 
+	   * In order to check for two tets connected to this face,
+	   * check the intersection of opposite corners of this face.
+	   * Both tets should show up in the intersection of one of the
+	   * sets of opposite corners (nothing should show up in the
+	   * other).
 	   */
 
-	  /* first need to check for a degenerate element */
-	  dflag = 0;
-	  if (side_nodes[0] == side_nodes[1] || side_nodes[0] == side_nodes[3])
-	    dflag++;
-	  if (side_nodes[2] == side_nodes[1] || side_nodes[2] == side_nodes[3])
-	    dflag++;
-
 	  /*
-	   * if both flags are set, then this face is the 2d line,
-	   * and should be ignored with respect to elemental
-	   * communication maps
+	   * Initial check is side nodes 0 and 2 which are
+	   * diagonally opposite
 	   */
-	  if (dflag == 2) {
-	    nelem = 1;
+	  inode = 0;
+	  node  = 2; 
+	  nhold = 0;
+	  for (ncnt = 0; ncnt < nnodes; ncnt++) {
+	    /* Find elements connnected to both node 'inode' and node 'node' */
+	    nelem = find_inter(graph->sur_elem[side_nodes[inode]],
+			       graph->sur_elem[side_nodes[node]],
+			       graph->nsur_elem[side_nodes[inode]],
+			       graph->nsur_elem[side_nodes[node]],
+			       2, pt_list);
 
-	  } else {
-	    /*
-	     * In order to check for two tets connected to this face,
-	     * check the intersection of opposite corners of this face.
-	     * Both tets should show up in the intersection of one of the
-	     * sets of opposite corners (nothing should show up in the
-	     * other).
-	     */
+	    if (nelem > 1) {
+	      if (ncnt == 0) {
+		nhold = nelem;
+		for (ncnt2 = 0; ncnt2 < nelem; ncnt2++)
+		  hold_elem[ncnt2] = graph->sur_elem[side_nodes[inode]][pt_list[ncnt2]];
 
-	    /*
-	     * Initial check is side nodes 0 and 2 which are
-	     * diagonally opposite
-	     */
-	    inode = 0;
-	    node  = 2; 
-	    nhold = 0;
-	    for (ncnt = 0; ncnt < nnodes; ncnt++) {
-	      /* Find elements connnected to both node 'inode' and node 'node' */
-	      nelem = find_inter(graph->sur_elem[side_nodes[inode]],
-				 graph->sur_elem[side_nodes[node]],
-				 graph->nsur_elem[side_nodes[inode]],
-				 graph->nsur_elem[side_nodes[node]],
-				 2, pt_list);
-
-	      if (nelem > 1) {
-		if (ncnt == 0) {
-		  nhold = nelem;
-		  for (ncnt2 = 0; ncnt2 < nelem; ncnt2++)
-		    hold_elem[ncnt2] = graph->sur_elem[side_nodes[inode]][pt_list[ncnt2]];
-
-		  if (dflag) {
-		    /*
-		     * in this case, need to get an intersection with
-		     * another (unique) point since nodes 0 and 2
-		     * may represent an edge and not the diagonal
-		     */
-		    if (side_nodes[1] != side_nodes[0] &&
-			side_nodes[1] != side_nodes[2])
-		      node = 1;
-		    else
-		      node = 3;
-		  } else {
-		    /*
-		     * in the non-degenerate case, if an element is connected
-		     * to two opposite nodes, then it must share a face.
-		     */
-		    break;
-		  }
-		  
+		if (dflag) {
+		  /*
+		   * in this case, need to get an intersection with
+		   * another (unique) point since nodes 0 and 2
+		   * may represent an edge and not the diagonal
+		   */
+		  if (side_nodes[1] != side_nodes[0] &&
+		      side_nodes[1] != side_nodes[2])
+		    node = 1;
+		  else
+		    node = 3;
 		} else {
-		  if (!dflag) {
-		    fprintf(stderr, "Possible corrupted mesh detected at element %d, strange connectivity.\n", ecnt);
-		  } 
-		  /* This is the second or later time through this
-		     loop and each time through, there have been two
-		     or more elements that are connected to 'node'
-		     (which changes) and 'inode'.  We want to make
-		     sure that the elements matched this time through
-		     were also in the list the first time through so
-		     that the elements contain nodes 0 1 2 of the face
-		     and not just 0 1 and 0 2...
-		     So, this time, only put an element in the list if
-		     it was in the list before.
-		  */
-		  for (ncnt2 = 0; ncnt2 < nhold; ncnt2++)
-		    hold_elem[ncnt2] = -hold_elem[ncnt2];
-		  for (ncnt3 = 0; ncnt3 < nelem; ncnt3++) {
-		    for (ncnt2 = 0; ncnt2 < nhold; ncnt2++) {
-		      if (-hold_elem[ncnt2] == graph->sur_elem[side_nodes[inode]][pt_list[ncnt3]]) {
-			hold_elem[ncnt2] = graph->sur_elem[side_nodes[inode]][pt_list[ncnt3]];
-			break;
-		      }
-		    }
-		  }
-		  /* Now, go through list and cull out element < 0 */
-		  ncnt3 = 0;
-		  for (ncnt2 = 0; ncnt2 < nhold; ncnt2++) {
-		    if (hold_elem[ncnt2] >= 0) {
-		      hold_elem[ncnt3] = hold_elem[ncnt2];
-		      ncnt3++;
-		    }
-		  }
-		  nelem = ncnt3;
+		  /*
+		   * in the non-degenerate case, if an element is connected
+		   * to two opposite nodes, then it must share a face.
+		   */
+		  break;
 		}
-	      }
-	      else { /* nelem == 1 or 0 */
+		  
+	      } else {
 		if (!dflag) {
-		  nhold = graph->nsur_elem[side_nodes[1]];
-		  for (ncnt2 = 0; ncnt2 < nhold; ncnt2++)
-		    hold_elem[ncnt2] = graph->sur_elem[side_nodes[1]][ncnt2];
+		  fprintf(stderr, "Possible corrupted mesh detected at element %d, strange connectivity.\n", ecnt);
+		} 
+		/* This is the second or later time through this
+		   loop and each time through, there have been two
+		   or more elements that are connected to 'node'
+		   (which changes) and 'inode'.  We want to make
+		   sure that the elements matched this time through
+		   were also in the list the first time through so
+		   that the elements contain nodes 0 1 2 of the face
+		   and not just 0 1 and 0 2...
+		   So, this time, only put an element in the list if
+		   it was in the list before.
+		*/
+		for (ncnt2 = 0; ncnt2 < nhold; ncnt2++)
+		  hold_elem[ncnt2] = -hold_elem[ncnt2];
+		for (ncnt3 = 0; ncnt3 < nelem; ncnt3++) {
+		  for (ncnt2 = 0; ncnt2 < nhold; ncnt2++) {
+		    if (-hold_elem[ncnt2] == graph->sur_elem[side_nodes[inode]][pt_list[ncnt3]]) {
+		      hold_elem[ncnt2] = graph->sur_elem[side_nodes[inode]][pt_list[ncnt3]];
+		      break;
+		    }
+		  }
 		}
-		inode = 1;
-		node = 3; /* The node diagonally opposite node 1 */
+		/* Now, go through list and cull out element < 0 */
+		ncnt3 = 0;
+		for (ncnt2 = 0; ncnt2 < nhold; ncnt2++) {
+		  if (hold_elem[ncnt2] >= 0) {
+		    hold_elem[ncnt3] = hold_elem[ncnt2];
+		    ncnt3++;
+		  }
+		}
+		nelem = ncnt3;
 	      }
 	    }
+	    else { /* nelem == 1 or 0 */
+	      if (!dflag) {
+		nhold = graph->nsur_elem[side_nodes[1]];
+		for (ncnt2 = 0; ncnt2 < nhold; ncnt2++)
+		  hold_elem[ncnt2] = graph->sur_elem[side_nodes[1]][ncnt2];
+	      }
+	      inode = 1;
+	      node = 3; /* The node diagonally opposite node 1 */
+	    }
 	  }
-	} /* "if (!hflag1)" */
+	}
+      } /* "if (!hflag1)" */
 	
 	/*
 	 * if there is an element on this side of ecnt, then there
 	 * will be at least two elements in the intersection (one
 	 * will be ecnt)
 	 */
-	if (nelem > 1) {
+      if (nelem > 1) {
 
-	  /*
-	   * now go through and check each element in the list to see
-	   * if it on a different processor than ecnt.  Don't need to
-	   * worry about ecnt (which is in the list) since it is on
-	   * the same processor as itself.  Note that due to filtering
-	   * done above, we are guaranteed to either have an element
-	   * on a different processor or elem==ecnt.
-	   */
-	  for (ncnt = 0; ncnt < nelem; ncnt++) {
+	/*
+	 * now go through and check each element in the list to see
+	 * if it on a different processor than ecnt.  Don't need to
+	 * worry about ecnt (which is in the list) since it is on
+	 * the same processor as itself.  Note that due to filtering
+	 * done above, we are guaranteed to either have an element
+	 * on a different processor or elem==ecnt.
+	 */
+	for (ncnt = 0; ncnt < nelem; ncnt++) {
 
-	    elem   = hold_elem[ncnt];
-	    proc2  = lb->vertex2proc[elem];
+	  elem   = hold_elem[ncnt];
+	  proc2  = lb->vertex2proc[elem];
 
-	    if (proc != proc2) {
+	  if (proc != proc2) {
 
-	      etype2 = mesh->elem_type[elem];
+	    etype2 = mesh->elem_type[elem];
 
-	      dim2 = get_elem_info(NDIM, etype2);
+	    dim2 = get_elem_info(NDIM, etype2);
 
-	      diff = abs(dim1 - dim2);  
+	    diff = abs(dim1 - dim2);  
 
-	      /* 
-	       * hex's to shells - ok
-	       * shells to bar - ok
-	       * hex to bar - BAD since a BAR will see a HEX but a HEX will not
-	       *              see a BAR
-	       */
+	    /* 
+	     * hex's to shells - ok
+	     * shells to bar - ok
+	     * hex to bar - BAD since a BAR will see a HEX but a HEX will not
+	     *              see a BAR
+	     */
 
-	      if(diff < 2) { 
+	    if(diff < 2) { 
 
-		/* need to check for hex's */
-		hflag2 = is_hex(etype2);
-		tflag2 = is_tet(etype2);
+	      /* need to check for hex's */
+	      hflag2 = is_hex(etype2);
+	      tflag2 = is_tet(etype2);
 
-		/* check here for tet/hex combinations */
-		if ((tflag1 && hflag2) || (hflag1 && tflag2)) {
-		  /*
-		   * have to call a special function to get the side id
-		   * in these cases. In both cases, the number of side
-		   * nodes for the element will not be consistent with
-		   * side_cnt, and:
-		   *
-		   * TET/HEX - side_nodes only contains three of the
-		   *           the side nodes of the hex.
-		   *
-		   * HEX/TET - Have to check that this tet shares a side
-		   *           with the hex.
-		   */
-		  sid = get_side_id_hex_tet(mesh->elem_type[elem],
-					    mesh->connect[elem],
-					    side_cnt, side_nodes);
-		} else {
-		  /*
-		   * get the side id of elem. Make sure that ecnt is
-		   * trying to communicate to a valid side of elem
-		   */
-		  side_cnt = get_ss_mirror(etype, side_nodes, (nscnt+1),
-					   mirror_nodes);
+	      /* check here for tet/hex combinations */
+	      if ((tflag1 && hflag2) || (hflag1 && tflag2)) {
+		/*
+		 * have to call a special function to get the side id
+		 * in these cases. In both cases, the number of side
+		 * nodes for the element will not be consistent with
+		 * side_cnt, and:
+		 *
+		 * TET/HEX - side_nodes only contains three of the
+		 *           the side nodes of the hex.
+		 *
+		 * HEX/TET - Have to check that this tet shares a side
+		 *           with the hex.
+		 */
+		sid = get_side_id_hex_tet(mesh->elem_type[elem],
+					  mesh->connect[elem],
+					  side_cnt, side_nodes);
+	      } else {
+		/*
+		 * get the side id of elem. Make sure that ecnt is
+		 * trying to communicate to a valid side of elem
+		 */
+		side_cnt = get_ss_mirror(etype, side_nodes, (nscnt+1),
+					 mirror_nodes);
 
-		  /*
-		   * small kludge to handle 6 node faces butted up against
-		   * 4 node faces
-		   */
-		  if (etype == HEXSHELL && side_cnt == 6) side_cnt = 4;
+		/*
+		 * small kludge to handle 6 node faces butted up against
+		 * 4 node faces
+		 */
+		if (etype == HEXSHELL && side_cnt == 6) side_cnt = 4;
 
-		  /*
-		   * in order to get the correct side order for elem,
-		   * get the mirror of the side of ecnt
-		   */
-		  sid = get_side_id(mesh->elem_type[elem], mesh->connect[elem],
-				    side_cnt, mirror_nodes, problem->skip_checks,
-				    problem->partial_adj);
+		/*
+		 * in order to get the correct side order for elem,
+		 * get the mirror of the side of ecnt
+		 */
+		sid = get_side_id(mesh->elem_type[elem], mesh->connect[elem],
+				  side_cnt, mirror_nodes, problem->skip_checks,
+				  problem->partial_adj);
 		  
-		}
+	      }
 
-		if (sid > 0) {
-		  /* Element is a border element */
-		  internal = 0;
-		  if(!flag) {
-		    flag = 1;
-		    lb->num_bor_elems[proc]++;
-		    if(lb->num_bor_elems[proc] > num_bore_alloc[proc])
-		      {
-			num_bore_alloc[proc] *= MEM_GROWTH;
-			lb->bor_elems[proc] = realloc(lb->bor_elems[proc],
-						      num_bore_alloc[proc] *
-						      sizeof(int));
-			if(!(lb->bor_elems[proc]))
-			  {
-			    sprintf(cmesg,
-				    "fatal: attempt to allocate %d bytes of memory unsuccessful",
-				    num_bore_alloc[proc]*sizeof(int));
-			    Gen_Error(0, cmesg);
-			    return 0;
-			  }
-		      }
-		    lb->bor_elems[proc][(lb->num_bor_elems[proc])-1] = ecnt;
-		  }
-
-		  /* now put ecnt into proc2's communications map */
-		  lb->e_cmap_size[proc2]++;
-		  if(lb->e_cmap_size[proc2] > num_cmap_alloc[proc2])
+	      if (sid > 0) {
+		/* Element is a border element */
+		internal = 0;
+		if(!flag) {
+		  flag = 1;
+		  lb->num_bor_elems[proc]++;
+		  if(lb->num_bor_elems[proc] > num_bore_alloc[proc])
 		    {
-		      num_cmap_alloc[proc2] *= MEM_GROWTH;
-		      lb->e_cmap_elems[proc2] = realloc(lb->e_cmap_elems[proc2],
-							num_cmap_alloc[proc2] *
-							sizeof(int));
-		      lb->e_cmap_sides[proc2] = realloc(lb->e_cmap_sides[proc2],
-							num_cmap_alloc[proc2] *
-							sizeof(int));
-		      lb->e_cmap_procs[proc2] = realloc(lb->e_cmap_procs[proc2],
-							num_cmap_alloc[proc2] *
-							sizeof(int));
-		      lb->e_cmap_neigh[proc2] = realloc(lb->e_cmap_neigh[proc2],
-							num_cmap_alloc[proc2] *
-							sizeof(int));
-		      if(!(lb->e_cmap_elems[proc2]) || !(lb->e_cmap_sides[proc2]) ||
-			 !(lb->e_cmap_procs[proc2]) || !(lb->e_cmap_neigh[proc2]))
+		      num_bore_alloc[proc] *= MEM_GROWTH;
+		      lb->bor_elems[proc] = realloc(lb->bor_elems[proc],
+						    num_bore_alloc[proc] *
+						    sizeof(int));
+		      if(!(lb->bor_elems[proc]))
 			{
-			  Gen_Error(0, "fatal: insufficient memory");
+			  sprintf(cmesg,
+				  "fatal: attempt to allocate %lu bytes of memory unsuccessful",
+				  num_bore_alloc[proc]*sizeof(int));
+			  Gen_Error(0, cmesg);
 			  return 0;
 			}
 		    }
-		  lb->e_cmap_elems[proc2][(lb->e_cmap_size[proc2])-1] = elem;
-		  lb->e_cmap_sides[proc2][(lb->e_cmap_size[proc2])-1] = sid;
-		  lb->e_cmap_procs[proc2][(lb->e_cmap_size[proc2])-1] = proc;
-		  lb->e_cmap_neigh[proc2][(lb->e_cmap_size[proc2])-1] = ecnt;
-
-		} else if ((sid < 0) && (!problem->skip_checks)) {
-		  /*
-		   * too many errors with bad meshes, print out
-		   * more information here for diagnostics
-		   */
-		  sprintf(cmesg,
-			  "Error returned while getting side id for communication map.");
-		  Gen_Error(0, cmesg);
-		  sprintf(cmesg, "Element 1: %d", (ecnt+1));
-		  Gen_Error(0, cmesg);
-		  nnodes = get_elem_info(NNODES, etype);
-		  strcpy(cmesg, "connect table:");
-		  for (i = 0; i < nnodes; i++) {
-		    sprintf(tmpstr, " %d", (mesh->connect[ecnt][i]+1));
-		    strcat(cmesg, tmpstr);
-		  }
-		  Gen_Error(0, cmesg);
-		  sprintf(cmesg, "side id: %d", (nscnt+1));
-		  Gen_Error(0, cmesg);
-		  strcpy(cmesg, "side nodes:");
-		  for (i = 0; i < side_cnt; i++) {
-		    sprintf(tmpstr, " %d", (side_nodes[i]+1));
-		    strcat(cmesg, tmpstr);
-		  }
-		  Gen_Error(0, cmesg);
-		  sprintf(cmesg, "Element 2: %d", (elem+1));
-		  Gen_Error(0, cmesg);
-		  nnodes = get_elem_info(NNODES, etype2);
-		  strcpy(cmesg, "connect table:");
-		  for (i = 0; i < nnodes; i++) {
-		    sprintf(tmpstr, " %d", (mesh->connect[elem][i]+1));
-		    strcat(cmesg, tmpstr);
-		  }
-		  Gen_Error(0, cmesg);
-
-		  return 0; /* and get out of here */
-
-		} /* End "if sid < 0 && !problem>skip_checks" */
-	      } /* End "if (sid > 0)" */
-	    } /* End "if (proc != proc2)" */
-	  } /* End "for (ncnt = 0; ncnt < nelem; ncnt++)" */
-	} /* End "if (nelem > 1)" */
-      } /* End "for (nscnt = 0; nscnt < nsides; nscnt++)" */
-
-      if(internal)
-	{
-	  /* "ecnt" is an internal element */
-	  lb->num_int_elems[proc]++;
-	  if(lb->num_int_elems[proc] > num_inte_alloc[proc])
-	    {
-	      num_inte_alloc[proc] *= MEM_GROWTH;
-	      lb->int_elems[proc] = realloc(lb->int_elems[proc],
-					    num_inte_alloc[proc] *
-					    sizeof(int));
-	      if(!(lb->int_elems[proc]))
-		{
-		  Gen_Error(0, "fatal: insufficient memory");
-		  return 0;
+		  lb->bor_elems[proc][(lb->num_bor_elems[proc])-1] = ecnt;
 		}
-	    }
-	  lb->int_elems[proc][(lb->num_int_elems[proc])-1] = ecnt;
-	}
 
-    } /* End "for(ecnt=0; ecnt < mesh->num_elems; ecnt++)" */
+		/* now put ecnt into proc2's communications map */
+		lb->e_cmap_size[proc2]++;
+		if(lb->e_cmap_size[proc2] > num_cmap_alloc[proc2])
+		  {
+		    num_cmap_alloc[proc2] *= MEM_GROWTH;
+		    lb->e_cmap_elems[proc2] = realloc(lb->e_cmap_elems[proc2],
+						      num_cmap_alloc[proc2] *
+						      sizeof(int));
+		    lb->e_cmap_sides[proc2] = realloc(lb->e_cmap_sides[proc2],
+						      num_cmap_alloc[proc2] *
+						      sizeof(int));
+		    lb->e_cmap_procs[proc2] = realloc(lb->e_cmap_procs[proc2],
+						      num_cmap_alloc[proc2] *
+						      sizeof(int));
+		    lb->e_cmap_neigh[proc2] = realloc(lb->e_cmap_neigh[proc2],
+						      num_cmap_alloc[proc2] *
+						      sizeof(int));
+		    if(!(lb->e_cmap_elems[proc2]) || !(lb->e_cmap_sides[proc2]) ||
+		       !(lb->e_cmap_procs[proc2]) || !(lb->e_cmap_neigh[proc2]))
+		      {
+			Gen_Error(0, "fatal: insufficient memory");
+			return 0;
+		      }
+		  }
+		lb->e_cmap_elems[proc2][(lb->e_cmap_size[proc2])-1] = elem;
+		lb->e_cmap_sides[proc2][(lb->e_cmap_size[proc2])-1] = sid;
+		lb->e_cmap_procs[proc2][(lb->e_cmap_size[proc2])-1] = proc;
+		lb->e_cmap_neigh[proc2][(lb->e_cmap_size[proc2])-1] = ecnt;
+
+	      } else if ((sid < 0) && (!problem->skip_checks)) {
+		/*
+		 * too many errors with bad meshes, print out
+		 * more information here for diagnostics
+		 */
+		sprintf(cmesg,
+			"Error returned while getting side id for communication map.");
+		Gen_Error(0, cmesg);
+		sprintf(cmesg, "Element 1: %d", (ecnt+1));
+		Gen_Error(0, cmesg);
+		nnodes = get_elem_info(NNODES, etype);
+		strcpy(cmesg, "connect table:");
+		for (i = 0; i < nnodes; i++) {
+		  sprintf(tmpstr, " %d", (mesh->connect[ecnt][i]+1));
+		  strcat(cmesg, tmpstr);
+		}
+		Gen_Error(0, cmesg);
+		sprintf(cmesg, "side id: %d", (nscnt+1));
+		Gen_Error(0, cmesg);
+		strcpy(cmesg, "side nodes:");
+		for (i = 0; i < side_cnt; i++) {
+		  sprintf(tmpstr, " %d", (side_nodes[i]+1));
+		  strcat(cmesg, tmpstr);
+		}
+		Gen_Error(0, cmesg);
+		sprintf(cmesg, "Element 2: %d", (elem+1));
+		Gen_Error(0, cmesg);
+		nnodes = get_elem_info(NNODES, etype2);
+		strcpy(cmesg, "connect table:");
+		for (i = 0; i < nnodes; i++) {
+		  sprintf(tmpstr, " %d", (mesh->connect[elem][i]+1));
+		  strcat(cmesg, tmpstr);
+		}
+		Gen_Error(0, cmesg);
+
+		return 0; /* and get out of here */
+
+	      } /* End "if sid < 0 && !problem>skip_checks" */
+	    } /* End "if (sid > 0)" */
+	  } /* End "if (proc != proc2)" */
+	} /* End "for (ncnt = 0; ncnt < nelem; ncnt++)" */
+      } /* End "if (nelem > 1)" */
+    } /* End "for (nscnt = 0; nscnt < nsides; nscnt++)" */
+
+    if(internal) {
+      /* "ecnt" is an internal element */
+      lb->num_int_elems[proc]++;
+      if(lb->num_int_elems[proc] > num_inte_alloc[proc]) {
+	num_inte_alloc[proc] *= MEM_GROWTH;
+	lb->int_elems[proc] = realloc(lb->int_elems[proc],
+				      num_inte_alloc[proc] *
+				      sizeof(int));
+	if(!(lb->int_elems[proc])) {
+	  Gen_Error(0, "fatal: insufficient memory");
+	  return 0;
+	}
+      }
+      lb->int_elems[proc][(lb->num_int_elems[proc])-1] = ecnt;
+    }
+
+  } /* End "for(ecnt=0; ecnt < mesh->num_elems; ecnt++)" */
 
   /* free up memory */
   free (pt_list);
@@ -1728,102 +1724,90 @@ int elemental_dist(LB_INFO_PTR lb,
   /* Find the internal and border nodes */
 
   time1 = get_time();
-  for(ncnt=0; ncnt < mesh->num_nodes; ncnt++)
-    {
-      internal = 1;
-      flag = 0;
-      proc = 0;
+  for(ncnt=0; ncnt < mesh->num_nodes; ncnt++) {
+    internal = 1;
+    flag = 0;
+    proc = 0;
 
-      /* If a node is not connected to any elements (graph->nsur_elem[ncnt] == 0),
-	 then it will be assigned to processor 0.
-      */
-      if(graph->nsur_elem[ncnt]) {
-	elem = graph->sur_elem[ncnt][0];
+    /* If a node is not connected to any elements (graph->nsur_elem[ncnt] == 0),
+       then it will be assigned to processor 0.
+    */
+    if(graph->nsur_elem[ncnt]) {
+      elem = graph->sur_elem[ncnt][0];
 
-	proc = lb->vertex2proc[elem];
-	for(ecnt=1; ecnt < graph->nsur_elem[ncnt]; ecnt++)
-	  {
-	    proc2 = lb->vertex2proc[graph->sur_elem[ncnt][ecnt]];
-	    /* check if the processor for any two surrounding elems differ */
-	    if (proc != proc2)
-	      {
-		/* ncnt is a border node  of proc */
-		internal = 0;
-		/* first, I have to deal with node being border for proc */
-		if (!flag)
-		  {
-		    flag = 1;                 /* only want to do this once */
-		    lb->num_bor_nodes[proc]++;
-		    if(lb->num_bor_nodes[proc] > num_born_alloc[proc])
-		      {
-			num_born_alloc[proc] *= MEM_GROWTH;
-			lb->bor_nodes[proc] = realloc(lb->bor_nodes[proc],
-						      num_born_alloc[proc] *
-						      sizeof(int));
-			if(!(lb->bor_nodes[proc]))
-			  {
-			    Gen_Error(0, "fatal: insufficient memory");
-			    return 0;
-			  }
-		      }
-		    lb->bor_nodes[proc][(lb->num_bor_nodes[proc])-1] = ncnt;
-		  }
-
-		/*
-		 * now I have to put ncnt in the border list for proc2
-		 * I need to check to make sure that this node has not
-		 * already been added to this list. If it has, then it
-		 * is in the last position in the array
-		 */
-		if ((lb->num_bor_nodes[proc2] == 0) ||
-		    (ncnt != lb->bor_nodes[proc2][lb->num_bor_nodes[proc2]-1]))
-		  {
-		    lb->num_bor_nodes[proc2]++;
-		    if(lb->num_bor_nodes[proc2] > num_born_alloc[proc2])
-		      {
-			num_born_alloc[proc2] *= MEM_GROWTH;
-			lb->bor_nodes[proc2] = realloc(lb->bor_nodes[proc2],
-						       num_born_alloc[proc2] *
-						       sizeof(int));
-			if(!(lb->bor_nodes[proc2]))
-			  {
-			    Gen_Error(0, "fatal: insufficient memory");
-			    return 0;
-			  }
-		      }
-		    lb->bor_nodes[proc2][(lb->num_bor_nodes[proc2])-1] = ncnt;
-		  }
-
-	      } /* if (proc != lb->vertex2proc[graph->sur_elem[ncnt][ecnt]]) */
-
-	  }   /* for(ecnt=1; ecnt < graph->nsur_elem[ncnt]; ecnt++) */
-    
-      } /* if(graph->nsur_elem[ncnt]) */
-
-
-      if (internal)
-	{
-	  /*
-	   * NOTE: if all of the processors above were the same, then
-	   * the one held in proc is the correct one
-	   */
-	  lb->num_int_nodes[proc]++;
-	  if(lb->num_int_nodes[proc] > num_intn_alloc[proc])
-	    {
-	      num_intn_alloc[proc] *= MEM_GROWTH;
-	      lb->int_nodes[proc] = realloc(lb->int_nodes[proc],
-					    num_intn_alloc[proc] *
+      proc = lb->vertex2proc[elem];
+      for(ecnt=1; ecnt < graph->nsur_elem[ncnt]; ecnt++) {
+	proc2 = lb->vertex2proc[graph->sur_elem[ncnt][ecnt]];
+	/* check if the processor for any two surrounding elems differ */
+	if (proc != proc2) {
+	  /* ncnt is a border node  of proc */
+	  internal = 0;
+	  /* first, I have to deal with node being border for proc */
+	  if (!flag) {
+	    flag = 1;                 /* only want to do this once */
+	    lb->num_bor_nodes[proc]++;
+	    if(lb->num_bor_nodes[proc] > num_born_alloc[proc]) {
+	      num_born_alloc[proc] *= MEM_GROWTH;
+	      lb->bor_nodes[proc] = realloc(lb->bor_nodes[proc],
+					    num_born_alloc[proc] *
 					    sizeof(int));
-	      if(!(lb->int_nodes[proc]))
-		{
-		  Gen_Error(0, "fatal: insufficient memory");
-		  return 0;
-		}
+	      if(!(lb->bor_nodes[proc])) {
+		Gen_Error(0, "fatal: insufficient memory");
+		return 0;
+	      }
 	    }
-	  lb->int_nodes[proc][(lb->num_int_nodes[proc])-1] = ncnt;
-	}
+	    lb->bor_nodes[proc][(lb->num_bor_nodes[proc])-1] = ncnt;
+	  }
 
-    }  /* for(ncnt=0; ncnt < machine->num_nodes; ncnt++) */
+	  /*
+	   * now I have to put ncnt in the border list for proc2
+	   * I need to check to make sure that this node has not
+	   * already been added to this list. If it has, then it
+	   * is in the last position in the array
+	   */
+	  if ((lb->num_bor_nodes[proc2] == 0) ||
+	      (ncnt != lb->bor_nodes[proc2][lb->num_bor_nodes[proc2]-1])) {
+	    lb->num_bor_nodes[proc2]++;
+	    if(lb->num_bor_nodes[proc2] > num_born_alloc[proc2]) {
+	      num_born_alloc[proc2] *= MEM_GROWTH;
+	      lb->bor_nodes[proc2] = realloc(lb->bor_nodes[proc2],
+					     num_born_alloc[proc2] *
+					     sizeof(int));
+	      if(!(lb->bor_nodes[proc2])) {
+		Gen_Error(0, "fatal: insufficient memory");
+		return 0;
+	      }
+	    }
+	    lb->bor_nodes[proc2][(lb->num_bor_nodes[proc2])-1] = ncnt;
+	  }
+
+	} /* if (proc != lb->vertex2proc[graph->sur_elem[ncnt][ecnt]]) */
+
+      }   /* for(ecnt=1; ecnt < graph->nsur_elem[ncnt]; ecnt++) */
+    
+    } /* if(graph->nsur_elem[ncnt]) */
+
+
+    if (internal) {
+      /*
+       * NOTE: if all of the processors above were the same, then
+       * the one held in proc is the correct one
+       */
+      lb->num_int_nodes[proc]++;
+      if(lb->num_int_nodes[proc] > num_intn_alloc[proc]) {
+	num_intn_alloc[proc] *= MEM_GROWTH;
+	lb->int_nodes[proc] = realloc(lb->int_nodes[proc],
+				      num_intn_alloc[proc] *
+				      sizeof(int));
+	if(!(lb->int_nodes[proc])) {
+	  Gen_Error(0, "fatal: insufficient memory");
+	  return 0;
+	}
+      }
+      lb->int_nodes[proc][(lb->num_int_nodes[proc])-1] = ncnt;
+    }
+
+  }  /* for(ncnt=0; ncnt < machine->num_nodes; ncnt++) */
 
   time2 = get_time();
   printf("Nodal categorization: %fs\n", time2-time1);
@@ -1833,90 +1817,75 @@ int elemental_dist(LB_INFO_PTR lb,
   free(num_cmap_alloc);
 
   num_born_proc_alloc = malloc(machine->num_procs * sizeof(int *));
-  if(!num_born_proc_alloc)
-    {
-      Gen_Error(0, "fatal: insufficient memory");
-      return 0;
-    }
+  if(!num_born_proc_alloc) {
+    Gen_Error(0, "fatal: insufficient memory");
+    return 0;
+  }
 
   /* Allocate memory for the border node processor IDs */
-  for(proc=0; proc < machine->num_procs; proc++)
-    {
-      if (lb->num_bor_nodes[proc] > 0) {
-	lb->born_procs[proc]      = malloc((lb->num_bor_nodes[proc]) *
-					   sizeof(int *));
-	lb->born_proc_cnts[proc]  = malloc((lb->num_bor_nodes[proc]) *
-					   sizeof(int));
-	num_born_proc_alloc[proc] = malloc((lb->num_bor_nodes[proc]) *
-					   sizeof(int));
-	if(!(lb->born_procs[proc]) || !(lb->born_proc_cnts[proc]) ||
-	   !(num_born_proc_alloc[proc]) )
-	  {
-	    Gen_Error(0, "fatal: insufficient memory");
-	    return 0;
-	  }
-	for(node=0; node < lb->num_bor_nodes[proc]; node++)
-	  {
-	    lb->born_procs[proc][node] = malloc((MEM_CHUNK_SIZE/2)*sizeof(int));
-	    if(!(lb->born_procs[proc][node]))
-	      {
-		Gen_Error(0, "fatal: insufficient memory");
-		return 0;
-	      }
-	    num_born_proc_alloc[proc][node] = MEM_CHUNK_SIZE/2;
-	    lb->born_proc_cnts[proc][node]  = 0;
-	  }
+  for(proc=0; proc < machine->num_procs; proc++) {
+    if (lb->num_bor_nodes[proc] > 0) {
+      lb->born_procs[proc]      = malloc((lb->num_bor_nodes[proc]) *
+					 sizeof(int *));
+      lb->born_proc_cnts[proc]  = malloc((lb->num_bor_nodes[proc]) *
+					 sizeof(int));
+      num_born_proc_alloc[proc] = malloc((lb->num_bor_nodes[proc]) *
+					 sizeof(int));
+      if(!(lb->born_procs[proc]) || !(lb->born_proc_cnts[proc]) ||
+	 !(num_born_proc_alloc[proc]) ) {
+	Gen_Error(0, "fatal: insufficient memory");
+	return 0;
       }
-      else {
-	lb->born_procs[proc]      = NULL;
-	lb->born_proc_cnts[proc]  = NULL;
-	num_born_proc_alloc[proc] = NULL;
+      for(node=0; node < lb->num_bor_nodes[proc]; node++) {
+	lb->born_procs[proc][node] = malloc((MEM_CHUNK_SIZE/2)*sizeof(int));
+	if(!(lb->born_procs[proc][node])) {
+	  Gen_Error(0, "fatal: insufficient memory");
+	  return 0;
+	}
+	num_born_proc_alloc[proc][node] = MEM_CHUNK_SIZE/2;
+	lb->born_proc_cnts[proc][node]  = 0;
       }
     }
+    else {
+      lb->born_procs[proc]      = NULL;
+      lb->born_proc_cnts[proc]  = NULL;
+      num_born_proc_alloc[proc] = NULL;
+    }
+  }
 
   /* Now find the processor(s) associated with each border node */
   time1 = get_time();
-  for(pcnt=0; pcnt < machine->num_procs; pcnt++)
-    {
-      for(ncnt=0; ncnt < lb->num_bor_nodes[pcnt]; ncnt++)
-	{
-	  node = lb->bor_nodes[pcnt][ncnt];
+  for(pcnt=0; pcnt < machine->num_procs; pcnt++) {
+    for(ncnt=0; ncnt < lb->num_bor_nodes[pcnt]; ncnt++) {
+      node = lb->bor_nodes[pcnt][ncnt];
 
-	  for(ecnt=0; ecnt < graph->nsur_elem[node]; ecnt++)
-	    {
-	      elem = graph->sur_elem[node][ecnt];
-	      proc = lb->vertex2proc[elem];
-	      if(proc != pcnt)
-		{
-		  if(in_list(proc, lb->born_proc_cnts[pcnt][ncnt],
-			     lb->born_procs[pcnt][ncnt]) < 0)
-		    {
-		      lb->born_proc_cnts[pcnt][ncnt]++;
-		      if(lb->born_proc_cnts[pcnt][ncnt] >
-			 num_born_proc_alloc[pcnt][ncnt])
-			{
-			  num_born_proc_alloc[pcnt][ncnt] *= MEM_GROWTH;
-			  lb->born_procs[pcnt][ncnt] =
-			    realloc(lb->born_procs[pcnt][ncnt],
-				    num_born_proc_alloc[pcnt][ncnt] *
-				    sizeof(int));
-			  if(!(lb->born_procs[pcnt][ncnt]))
-			    {
-			      Gen_Error(0, "fatal: insufficient memory");
-			      return 0;
-			    }
-			}
-		      lb->born_procs[pcnt][ncnt][(lb->born_proc_cnts[pcnt][ncnt])-1] =
-			proc;
-		    }
+      for(ecnt=0; ecnt < graph->nsur_elem[node]; ecnt++) {
+	elem = graph->sur_elem[node][ecnt];
+	proc = lb->vertex2proc[elem];
+	if(proc != pcnt) {
+	  if(in_list(proc, lb->born_proc_cnts[pcnt][ncnt],
+		     lb->born_procs[pcnt][ncnt]) < 0) {
+	    lb->born_proc_cnts[pcnt][ncnt]++;
+	    if(lb->born_proc_cnts[pcnt][ncnt] >
+	       num_born_proc_alloc[pcnt][ncnt]) {
+	      num_born_proc_alloc[pcnt][ncnt] *= MEM_GROWTH;
+	      lb->born_procs[pcnt][ncnt] =
+		realloc(lb->born_procs[pcnt][ncnt],
+			num_born_proc_alloc[pcnt][ncnt] *
+			sizeof(int));
+	      if(!(lb->born_procs[pcnt][ncnt])) {
+		Gen_Error(0, "fatal: insufficient memory");
+		return 0;
+	      }
+	    }
+	    lb->born_procs[pcnt][ncnt][(lb->born_proc_cnts[pcnt][ncnt])-1] =
+	      proc;
+	  }
 
-		} /* End "if(proc != pcnt)" */
-
-	    } /* End "for(ecnt=0; ecnt < graph->nsur_elems[node]; ecnt++)" */
-
-	} /* End "for(ncnt=0; ncnt < lb->num_bor_nodes[pcnt]; ncnt++)" */
-
-    } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
+	} /* End "if(proc != pcnt)" */
+      } /* End "for(ecnt=0; ecnt < graph->nsur_elems[node]; ecnt++)" */
+    } /* End "for(ncnt=0; ncnt < lb->num_bor_nodes[pcnt]; ncnt++)" */
+  } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
 
   time2 = get_time();
   printf("Find procs for border nodes: %fs\n", time2-time1);
@@ -1929,15 +1898,14 @@ int elemental_dist(LB_INFO_PTR lb,
 
   /* Order the element communication maps by processor */
   time1 = get_time();
-  for(pcnt=0; pcnt < machine->num_procs; pcnt++)
-    {
-      /* Note that this sort is multi-key */
-      qsort4((lb->e_cmap_procs[pcnt]),   /* 1st key */
-	     (lb->e_cmap_elems[pcnt]),   /* 2nd key */
-	     (lb->e_cmap_neigh[pcnt]),   /* 3rd key */
-	     (lb->e_cmap_sides[pcnt]),   /* 4th key */
-	     (lb->e_cmap_size[pcnt]));   /* Size */
-    }
+  for(pcnt=0; pcnt < machine->num_procs; pcnt++) {
+    /* Note that this sort is multi-key */
+    qsort4((lb->e_cmap_procs[pcnt]),   /* 1st key */
+	   (lb->e_cmap_elems[pcnt]),   /* 2nd key */
+	   (lb->e_cmap_neigh[pcnt]),   /* 3rd key */
+	   (lb->e_cmap_sides[pcnt]),   /* 4th key */
+	   (lb->e_cmap_size[pcnt]));   /* Size */
+  }
   /*
    * At this point, each processors arrays are sorted on three keys:
    * [processor, element, neighbor]
@@ -1951,61 +1919,102 @@ int elemental_dist(LB_INFO_PTR lb,
    * consistent between processors.
    */
   time1 = get_time();
-  for(pcnt=1; pcnt < machine->num_procs; pcnt++)
-    {
-      for(pcnt2=0; pcnt2 < pcnt; pcnt2++)
-	{
+  for(pcnt=1; pcnt < machine->num_procs; pcnt++) {
+    int save_fv1 = 0;
+    int size = lb->e_cmap_size[pcnt];       /* Define shortcuts size and procs */
+    int *procs = lb->e_cmap_procs[pcnt];
 
-	  /*
-	   * Find the first and last entries for processor "pcnt2" in
-	   * the list of processor "pcnt".
-	   */
-	  find_first_last(pcnt2, lb->e_cmap_size[pcnt], lb->e_cmap_procs[pcnt],
-			  &fv1, &lv1);
-	  if(fv1 >= 0)
-	    {
-	      /* Sort based on neighbor element */
-	      sort3_int_int_int(lv1-fv1+1,
-				(&lb->e_cmap_neigh[pcnt][fv1]),
-				(&lb->e_cmap_elems[pcnt][fv1]),
-				(&lb->e_cmap_sides[pcnt][fv1]));
-	      /*
-	       * Find the first and last entries for processor "pcnt" in
-	       * the list of processor "pcnt2".
-	       */
-	      find_first_last(pcnt, lb->e_cmap_size[pcnt2], lb->e_cmap_procs[pcnt2],
-			      &fv2, &lv2);
-#if 1
-	      if (lv2-fv2 != lv1-fv1) {
-		fprintf(stderr, "%d: %d to %d\n", pcnt2, fv1, lv1);
-		for (i=fv1; i <= lv1; i++)
-		  fprintf(stderr, "%d: %d\t%d\t%d\t%d\n", i, lb->e_cmap_elems[pcnt][i], lb->e_cmap_neigh[pcnt][i], lb->e_cmap_procs[pcnt][i], lb->e_cmap_sides[pcnt][i]);
-		fprintf(stderr, "%d: %d to %d\n", pcnt, fv2, lv2);
-		for (i=fv2; i <= lv2; i++)
-		  fprintf(stderr, "%d: %d\t%d\t%d\t%d\n", i, lb->e_cmap_elems[pcnt2][i], lb->e_cmap_neigh[pcnt2][i], lb->e_cmap_procs[pcnt2][i], lb->e_cmap_sides[pcnt2][i]);
-	      }
-#endif
-	      assert(lv2-fv2 == lv1-fv1);
-		
-	      /* Sort based on element -- This will then match order of
-	       * the fv1->lv1 arrays.
-	       */
-	      sort3_int_int_int(lv2-fv2+1,
-				(&lb->e_cmap_elems[pcnt2][fv2]),
-				(&lb->e_cmap_neigh[pcnt2][fv2]),
-				(&lb->e_cmap_sides[pcnt2][fv2]));
+    fv1 = -1;
+    lv1 = -1;
+      
+    for(pcnt2=0; pcnt2 < pcnt; pcnt2++) {
+
+      /*
+       * Find the first and last entries for processor "pcnt2" in
+       * the list of processor "pcnt".
+       */
+
+      /* lb->c_cmap_procs[pcnt] is sorted based on processor.
+       * From point 'save_fv1' search for 'pcnt2'
+       * If not found, value is -1; else search for !pcnt2 from
+       * that point forward.
+       */
+      i = save_fv1;
+      while (i < size && procs[i] < pcnt2)
+	i++;
+      if (i >= size || procs[i] != pcnt2) {
+	fv1 = -1;
+	lv1 = -1;
+      }
+      else {
+	fv1 = i;
+	assert(procs[i] == pcnt2);
+	for (lv1 = fv1; lv1 < size; lv1++) {
+	  if (procs[lv1] != pcnt2) {
+	    lv1 = lv1 - 1;
+	    assert(procs[lv1] == pcnt2);
+	    break;
+	  }
+	}
+      }
+	    
+      if (lv1 >= size)
+	lv1 = size-1;
 	  
-	    } /* End "if(fv1 >= 0)" */
+      if (lv1 != -1)
+	save_fv1 = lv1+1;
 
-	} /* End "for(pcnt2=0; pcnt2 < pcnt; pcnt2++)" */
-
-    } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
+#if 0
+      /* Old method -- can use for verification by uncommenting this if block  */
+      {
+	int tst_fv1, tst_lv1;
+	find_first_last(pcnt2, size, procs, &tst_fv1, &tst_lv1);
+	assert(tst_fv1 == fv1);
+	assert(tst_lv1 == lv1);
+      }
+#endif
+	  
+      if(fv1 >= 0) {
+	/* Sort based on neighbor element */
+	sort3_int_int_int(lv1-fv1+1,
+			  (&lb->e_cmap_neigh[pcnt][fv1]),
+			  (&lb->e_cmap_elems[pcnt][fv1]),
+			  (&lb->e_cmap_sides[pcnt][fv1]));
+	/*
+	 * Find the first and last entries for processor "pcnt" in
+	 * the list of processor "pcnt2".
+	 */
+	fv2 = -1; lv2 = -1;
+	find_first_last(pcnt, lb->e_cmap_size[pcnt2], lb->e_cmap_procs[pcnt2],
+			&fv2, &lv2);
+#if 1
+	if (lv2-fv2 != lv1-fv1) {
+	  fprintf(stderr, "%d: %d to %d\n", pcnt2, fv1, lv1);
+	  for (i=fv1; i <= lv1; i++)
+	    fprintf(stderr, "%d: %d\t%d\t%d\t%d\n", i, lb->e_cmap_elems[pcnt][i], lb->e_cmap_neigh[pcnt][i], lb->e_cmap_procs[pcnt][i], lb->e_cmap_sides[pcnt][i]);
+	  fprintf(stderr, "%d: %d to %d\n", pcnt, fv2, lv2);
+	  for (i=fv2; i <= lv2; i++)
+	    fprintf(stderr, "%d: %d\t%d\t%d\t%d\n", i, lb->e_cmap_elems[pcnt2][i], lb->e_cmap_neigh[pcnt2][i], lb->e_cmap_procs[pcnt2][i], lb->e_cmap_sides[pcnt2][i]);
+	}
+#endif
+	assert(lv2-fv2 == lv1-fv1);
+		
+	/* Sort based on element -- This will then match order of
+	 * the fv1->lv1 arrays.
+	 */
+	sort3_int_int_int(lv2-fv2+1,
+			  (&lb->e_cmap_elems[pcnt2][fv2]),
+			  (&lb->e_cmap_neigh[pcnt2][fv2]),
+			  (&lb->e_cmap_sides[pcnt2][fv2]));
+	  
+      } /* End "if(fv1 >= 0)" */
+    } /* End "for(pcnt2=0; pcnt2 < pcnt; pcnt2++)" */
+  } /* End "for(pcnt=0; pcnt < machine->num_procs; pcnt++)" */
 
   time2 = get_time();
   printf("Make cmaps consistent: %fs\n", time2-time1);
 
   return 1;
-
 } /*--------------------------End elemental_dist()---------------------------*/
 
 /*****************************************************************************/
@@ -2916,6 +2925,7 @@ double *slices_z;          /* max z value in each slice. */
   return 0;
 }
 
+#ifdef USE_ZOLTAN
 /*****************************************************************************/
 /***** Global data structure used by Zoltan callbacks.                   *****/
 /***** Could implement Zoltan callbacks without global data structure,   *****/
@@ -3051,7 +3061,7 @@ int i, changes;
                 (ZOLTAN_VOID_FN *) zoltan_geom, NULL);
 
   /* Set parameters for Zoltan */
-  sprintf(str, "%d\0", totalproc);
+  sprintf(str, "%d", totalproc);
   Zoltan_Set_Param(zz, "NUM_GLOBAL_PARTITIONS", str);
   Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "0");
   Zoltan_Set_Param(zz, "LB_METHOD", method);
@@ -3089,6 +3099,7 @@ End:
   if (ierr) exit(-1);
   return 0;
 }
+#endif
 
 /*****************************************************************************/
 static void BALANCE_STATS(

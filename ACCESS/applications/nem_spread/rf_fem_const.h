@@ -32,33 +32,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: rf_fem_const.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
 /*
 *
 *    Definition of globally occurring constants relating
 *    to the details of the FEM problem.
-*
-*
-*	    Author:         John Shadid     (SNL, 1421)
-*		            Harry Moffat    (SNL, ?   )
-*	    Date:           %H%
-*	    Revised:        $Date: 2009/06/09 13:32:43 $
-*
 */
 
 /* Geometric parameters */

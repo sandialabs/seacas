@@ -32,7 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/* $Id: el_exoII_io.h,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $ */
 #include "exodusII.h"
 
 /*-----------------------------------------------------------------------------

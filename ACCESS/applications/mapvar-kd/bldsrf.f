@@ -41,7 +41,7 @@ C Called by MAPVAR
 C
 C***********************************************************************
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
+      include 'amesh.blk'
 C
       DIMENSION XA(*),YA(*),ZA(*)
       DIMENSION XYZSRF(NODESA,3)

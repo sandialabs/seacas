@@ -34,42 +34,42 @@ Test max, min, sign, dim, abs
 
 $ Test ifdef lines
 {ifyes = 1} {ifno = 0}
-{Ifdef(ifyes)}
+	{Ifdef(ifyes)}
 This line should be echoed. (a)
-{Endif}
+ {Endif}
 This line should be echoed. (b)
-{Ifdef(ifno)}
+     {Ifdef(ifno)}
 This line should not be echoed
-{Endif}
+ 	 {Endif}
 This line should be echoed. (c)
-{Ifdef(ifundefined)}
+  {Ifdef(ifundefined)}
 This line should not be echoed
-{Endif}
+        {Endif}
 This line should be echoed. (d)
 
 $ Test if - else lines
-{Ifdef(ifyes)}
+             {Ifdef(ifyes)}
 This line should be echoed. (1)
-{Else}
+			{Else}
 This line should not be echoed (2)
-{Endif}
-{Ifdef(ifno)}
+	{Endif}
+		{Ifdef(ifno)}
 This line should not be echoed. (3)
-{Else}
+ {Else}
 This line should be echoed (4)
-{Endif}
+   {Endif}
 
 $ Test if - else lines
-{Ifndef(ifyes)}
+ {Ifndef(ifyes)}
 This line should not be echoed. (5)
-{Else}
+  {Else}
 This line should be echoed (6)
-{Endif}
-{Ifndef(ifno)}
+   {Endif}
+    {Ifndef(ifno)}
 This line should be echoed. (7)
-{Else}
+ {Else}
 This line should not be echoed (8)
-{Endif}
+  {Endif}
 $ Lines a, b, c, d, 1, 4, 6, 7 should be echoed
 $ Check line counting -- should be on line 74: {Parse Error}
 {ifdef(ifyes)} {This should be an error}
@@ -129,9 +129,9 @@ delimiter "{_delm = " ,"}"
 word count = { iwords = word_count(_string,_delm)}
 
 {_n = 0}
-{loop(iwords)}
+	{loop(iwords)}
 word {++_n} = "{get_word(_n,_string,_delm)}"
-{endloop}
+   {endloop}
 
 $ Check parsing of escaped braces...
 \{ int a = b + {PI/2} \}

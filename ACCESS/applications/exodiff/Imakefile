@@ -1,4 +1,3 @@
-XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:04:08 gdsjaar Exp $
 XCOMM Tool for finding differences between two ExodusII files
 
 CODE = exodiff
@@ -11,8 +10,8 @@ LIBS = $(EXOIIV2C) $(NETCDF) -lm
 
 SRCS = exoII_read.C  exo_block.C  exodiff.C Specifications.C \
        initialize.C  node_set.C   side_set.C    stringx.C \
-       create_file.C map.C smart_assert.C exo_entity.C \
-       add_to_log.C Tolerance.C   iqsort.C  check.C parsing.C
+       create_file.C map.C smart_assert.C exo_entity.C FileInfo.C \
+       add_to_log.C Tolerance.C   iqsort.C  check.C parsing.C util.C
 
 OBJS = $(SRCS:.C=.o)
 

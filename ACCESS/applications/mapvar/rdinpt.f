@@ -54,15 +54,14 @@ C
       include 'exodusII.inc'
       CHARACTER*10 CVALUE
 C
-      CHARACTER*(MXSTLN) QAINFO(6)
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /RUNDAT/ QAINFO
-      COMMON /SCHDAT/ TOLSHL,TOLQAD,TOLHEX,LBLK,NISS,NRSS
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'contrl.blk'
+      include 'ex2tp.blk'
+      include 'rundat.blk'
+      include 'schdat.blk'
+      include 'steps.blk'
+      include 'tapes.blk'
 C
       DIMENSION KVALUE(6),CVALUE(6),IVALUE(6),RVALUE(6)
       DIMENSION TIMES(*),IDA(*),IDB(*),MP(3,*)
@@ -74,8 +73,8 @@ C     PRINT RUN-TIME DATA
 C
       WRITE (NOUT, 1000)
       WRITE (NTPOUT, 1000)
-      CALL BANNER (84,QAINFO(1),NOUT)
-      CALL BANNER (84,QAINFO(1),NTPOUT)
+      CALL BANNR2 (84,QAINFO(1),NOUT)
+      CALL BANNR2 (84,QAINFO(1),NTPOUT)
       WRITE (NOUT, 1010)
       WRITE (NTPOUT, 1010)
       WRITE (NOUT, 1020) QAINFO(3)

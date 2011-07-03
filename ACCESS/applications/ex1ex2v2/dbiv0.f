@@ -34,13 +34,8 @@ C
 C=======================================================================
       SUBROUTINE DBIV0 (NQAREC, NINFO)
 C=======================================================================
-C$Id: dbiv0.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag
 C
@@ -133,13 +128,8 @@ C   --Save the input parameters
 C=======================================================================
       ENTRY DBIV1 (NELBLK, NVARHI, NVARGL, NVARNP, NVAREL, ISEVOK)
 C=======================================================================
-C$Id: dbiv0.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag
 C
@@ -224,13 +214,8 @@ C   --Set NREC0 = the number of records before the time steps
 C=======================================================================
       ENTRY DBIVIN (REWDB)
 C=======================================================================
-C$Id: dbiv0.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag
 C
@@ -278,13 +263,8 @@ C=======================================================================
       ENTRY DBIVAR (NDB, NUMVAR, IVAR, ISTEP, LENVAR, IELBLK,
      &   NELBLK, NUMELB, ISEVOK, VAR, *)
 C=======================================================================
-C$Id: dbiv0.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.2  1994/02/11 22:52:28  vryarbe
 Cfixed bug causing compiler error w/optimize flag
 C

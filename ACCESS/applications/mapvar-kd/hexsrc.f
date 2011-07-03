@@ -77,8 +77,8 @@ C  P     IELT     I/U    SURFACE PAIRED WITH POINT LISTED IN IPT
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /TOLDAT/ TOL,EPS,STRLMT,ITERMX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'toldat.blk'
+      include 'tapes.blk'
 C
 C INPUT/OUTPUT ARRAYS
       DIMENSION

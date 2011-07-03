@@ -43,7 +43,7 @@ namespace Excn {
   typedef std::vector<int>  IntVector;
   
   struct Variables {
-    Variables(ObjectType otype, bool add_status=false) : objectType(otype), outputCount(0), addStatus(add_status)
+    Variables(ObjectType otype, bool arg_add_status=false) : objectType(otype), outputCount(0), addStatus(arg_add_status)
     {
       SMART_ASSERT(otype == EBLK || otype == NSET || otype == SSET || otype == NODE || otype == GLOBAL);
     }

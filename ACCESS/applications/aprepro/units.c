@@ -1,16 +1,16 @@
 #include <string.h> 
 #include "init_structs.h"
-#include "aprepro.h"
+#include "my_aprepro.h"
 #include "y.tab.h"
-extern char  comment;
 extern int   echo;
 
 extern void conv_string (char *string);
+extern symrec *getsym(char *symbol);
 void load_conversion(struct var_init *base, struct svar_init *label);
 
 #define DEFINE_VAR(name, val, label) do {	\
     if ((ptr = getsym((name))) == NULL) \
-      ptr = putsym((name), VAR);	\
+      ptr = putsym((name), VAR, 1);	\
     ptr->value.var = (val);		\
     if (echo) fprintf(stdout, "%c 1 %-10s\t= %14.7g  %s\n", comment, name, val, label); \
   } while(0)
@@ -291,14 +291,14 @@ char *do_Units(char *type)
     /* Found a match */
     for (j = 0; systems[i].label[j].vname != 0; j++) {
       if ((ptr = getsym(systems[i].label[j].vname)) == NULL) {
-	ptr = putsym(systems[i].label[j].vname, SVAR);
+	ptr = putsym(systems[i].label[j].vname, SVAR, 1);
       }
       ptr->value.svar = systems[i].label[j].value;
     }
 
     for (j = 0; systems[i].base[j].vname != 0; j++) {
       if ((ptr = getsym(systems[i].base[j].vname)) == NULL) {
-	ptr = putsym(systems[i].base[j].vname, VAR);
+	ptr = putsym(systems[i].base[j].vname, VAR, 1);
       }
       ptr->value.var = systems[i].base[j].value;
     }
@@ -337,6 +337,8 @@ void load_conversion(struct var_init *base, struct svar_init *label)
   
   double foot = m * 0.3048;
   double inch = foot / 12.0;
+
+  char comment = getsym("_C_")->value.svar[0];
 
   if (echo) {
     fprintf(stdout, "\n%c%c%c Outputs\n", comment, comment, comment);

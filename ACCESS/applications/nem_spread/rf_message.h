@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: rf_message.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 /*
 *
 *
@@ -151,7 +136,7 @@ extern void brdcst        (int node, int Num_Proc, char *buf, int len,
                            int sender);
 extern void brdcst_maxlen (const int node, const int Num_Proc,
                            char *buf, int len, int sender);
-extern void sync          (int node, int Num_Proc);
+extern void psync         (int node, int Num_Proc);
 extern void print_sync_start (int node, int Dim, int do_print_line);
 extern void print_sync_end   (int node, int Dim, int do_print_line);
 

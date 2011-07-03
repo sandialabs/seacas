@@ -31,14 +31,14 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: mirss.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: mirss.f,v 1.7 2008/04/28 16:00:59 gdsjaar Exp $
 c 
 C=======================================================================
       SUBROUTINE MIRSS (NUMESS, LESSEL, LESSDL, IDESS, NEESS, NEDSS,
      *     IXEESS, IXEDSS, LTEESS, LTSSS, LTSNC, FAC, USESDF, NONQUAD,
      *     COMTOP)
 C=======================================================================
-C $Id: mirss.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: mirss.f,v 1.7 2008/04/28 16:00:59 gdsjaar Exp $
 
 C   --*** MIRSS *** (GJOIN) Mirror element side sets
 C   --   Written by Greg Sjaardema

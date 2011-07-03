@@ -36,11 +36,8 @@ C=======================================================================
      &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS,
      &   LTNX, FACX, IXNPS, NNX, ISCR, NODSCR, NUMNP)
 C=======================================================================
-C $Id: munnps.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: munnps.f,v 1.2 2008/07/31 20:15:56 gdsjaar Exp $
 C $Log: munnps.f,v $
-C Revision 1.1  2009/06/09 19:01:22  gdsjaar
-C mAdd gjoin (access gjoin2) based on copyright assertion paperwork coming through.
-C
 C Revision 1.2  2008/07/31 20:15:56  gdsjaar
 C Change the way the nodal point node membership is calculated. For some
 C reason, the locint calls used in the old method became a bottleneck on

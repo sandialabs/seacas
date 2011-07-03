@@ -37,13 +37,8 @@ C=======================================================================
      &   NAMECO, NAMELB, VNAMES, IXHV, IXGV, IXNV, IXEV,
      &   IA, KIEVOK, EXODUS, *)
 C=======================================================================
-C$Id: dbinam.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbinam.f,v 1.3 1999/02/19 15:57:33 rwstotz Exp $
 C$Log: dbinam.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.3  1999/02/19 15:57:33  rwstotz
 CChanges necessary to prevent error of having too many element block names in the database (L.Schoof)
 C

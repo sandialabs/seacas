@@ -34,13 +34,8 @@ C
 C=======================================================================
       SUBROUTINE MEMERR
 C=======================================================================
-C$Id: memerr.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: memerr.f,v 1.1 1994/01/24 23:00:53 vryarbe Exp $
 C$Log: memerr.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.1  1994/01/24 23:00:53  vryarbe
 CInitial revision
 C

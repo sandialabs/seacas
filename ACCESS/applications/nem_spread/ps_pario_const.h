@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: ps_pario_const.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 
 #include "rf_io_const.h"
 
@@ -121,7 +106,7 @@ extern char    Par_Nem_File_Name[];        /* The parallel nemesis file name */
 
 
 /* Function prototypes. */
-extern void     write_parExo_data(int, int, int, int, char **, int, char **,
+extern void     write_parExo_data(int, int, int, int, int, char **, int, char **,
                                   char **, int *,
                                   int *, int *, int *, int *, int *,
                                   ELEM_COMM_MAP *, NODE_COMM_MAP *,

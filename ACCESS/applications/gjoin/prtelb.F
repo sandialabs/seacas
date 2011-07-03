@@ -35,11 +35,8 @@ C=======================================================================
       SUBROUTINE PRTELB (ISTAT, NELBL1, NELBL2,
      &   IDELB, NUMELB, NUMLNK, NUMATR, ISCR)
 C=======================================================================
-C $Id: prtelb.F,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: prtelb.F,v 1.2 1999/03/23 15:56:43 gdsjaar Exp $
 C $Log: prtelb.F,v $
-C Revision 1.1  2009/06/09 19:01:22  gdsjaar
-C mAdd gjoin (access gjoin2) based on copyright assertion paperwork coming through.
-C
 C Revision 1.2  1999/03/23 15:56:43  gdsjaar
 C Upped format fields to accomodate larger element block ids
 C

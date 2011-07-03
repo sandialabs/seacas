@@ -64,15 +64,15 @@ C
 C     ******************************************************************
 C
       include 'exodusII.inc'
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'aexds1.blk'
+      include 'contrl.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'steps.blk'
+      include 'varnpt.blk'
+      include 'tapes.blk'
 C     
       DIMENSION XB(*), YB(*), ZB(*), TIMES(*)
       DIMENSION ICONA(NELNDA,*), SOLNA(NODESA,NVARNP)

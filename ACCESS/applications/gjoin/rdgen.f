@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: rdgen.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: rdgen.f,v 1.14 2004/08/12 20:46:08 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE RDGEN (A, IA, C, FIRST, FILNAM,
      &   TITLE, NDIM, NUMNP, NUMEL, NELBLK,
@@ -398,15 +398,17 @@ C   --Read the side sets
             call exerr ('gjoin2', 'Error from exgcss', exlmsg)
             goto 960
          endif
+
+         call exgcssc(netid, ia(kltsnc+lold2), nerr)
+         if (nerr .lt. 0) then
+           call exerr ('gjoin2', 'Error from exgcssc', exlmsg)
+           goto 960
+         endif
+
          ioff = 0
          ntot = 0
          do 90 iess = 1, numess
            id = ia(kidss+lold+iess-1)
-           call exgssc(netid, id, ia(kltsnc+lold2+ioff), nerr)
-           if (nerr .lt. 0) then
-             call exerr ('gjoin2', 'Error from exgssc', exlmsg)
-             goto 960
-           endif
            call chksnc(ia(kltsnc+lold2+ioff), ia(kness+lold+iess-1),
      *       ncnt)
            if (ncnt .ne. ia(kndss+lold+iess-1) .and.
