@@ -317,3 +317,5 @@ XCOMM Default location for linux systems if not redefined above
 #ifndef HasFlush
 #define HasFlush YES
 #endif
+
+#include <lnxLib.rules>
