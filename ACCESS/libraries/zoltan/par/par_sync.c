@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: par_sync.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.8 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -22,6 +22,7 @@ extern "C" {
 #include <stdlib.h>
 #include "zoltan_util.h"
 #include "par_const.h"
+#include "zz_const.h"
 
 
 #define PRINT_SYNC 5000   /* definition needed for print sync */

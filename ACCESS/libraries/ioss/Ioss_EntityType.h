@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 1999-2010,2011
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -34,16 +34,21 @@
 #define IOSS_Ioss_EntityType_H
 
 namespace Ioss {
-  enum EntityType {NODEBLOCK    =   1,
-		   ELEMENTBLOCK =   2,
-		   NODESET      =   4,
-		   EDGESET      =   8,
-		   FACESET      =  16,
-		   SURFACE      =  16, //: Same as faceset
-		   COMMSET      =  32,
-		   EDGEBLOCK    =  64,
-		   FACEBLOCK    = 128,
-                   REGION       = 256,
-                   SUPERELEMENT = 512};
+  enum EntityType {NODEBLOCK    =    1,
+		   EDGEBLOCK    =    2,
+		   FACEBLOCK    =    4,
+		   ELEMENTBLOCK =    8,
+		   NODESET      =   16,
+		   EDGESET      =   32,
+		   FACESET      =   64,
+		   ELEMENTSET   =  128,
+		   SIDESET      =  256,
+		   SURFACE      =  256, //: Same as sideset
+		   SIDEBLOCK    =  512,
+		   COMMSET      = 1024,
+                   REGION       = 2048,
+                   SUPERELEMENT = 4096,
+		   
+                   INVALID_TYPE = 8192};
 }
 #endif

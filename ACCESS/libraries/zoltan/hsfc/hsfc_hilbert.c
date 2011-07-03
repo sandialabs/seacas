@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: hsfc_hilbert.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.15 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -18,6 +18,7 @@ extern "C" {
 #include <stdio.h>
 #include "hsfc_hilbert_const.h"  /* contains state tables and documentation */
 #include "hsfc.h"
+#include "zz_const.h"
 
 /* see maintenance note at the end of this file for information about extending
 the precision of these routines. */

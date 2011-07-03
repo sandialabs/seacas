@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: perm.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -20,11 +20,12 @@ extern "C" {
 #include "zz_const.h"
 #include "order_const.h"
 
+#include <stdio.h>
+
 /* MPI tags */
 #define TAG1 32111
 #define TAG2 32112
 
-static int owner(int *, int, int);
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -46,7 +47,7 @@ static int owner(int *, int, int);
  */
 int Zoltan_Get_Distribution(ZZ *zz, int **vtxdist)
 {
-  int ierr, num_obj;
+  int ierr = ZOLTAN_OK, num_obj;
   char *yo = "Zoltan_Get_Distribution";
 
   num_obj = zz->Get_Num_Obj(zz->Get_Num_Obj_Data, &ierr);
@@ -124,7 +125,7 @@ int Zoltan_Inverse_Perm(
     for (i=0; i<num_obj; i++){
       sendlist[2*i] = offset+i;
       sendlist[2*i+1] = perm[i];
-      proclist[i] = owner(vtxdist, zz->Num_Proc, perm[i]);
+      proclist[i] =  Zoltan_Get_Processor_Graph(vtxdist, zz->Num_Proc, perm[i]);
     }
     ierr = Zoltan_Comm_Create(&comm_plan, num_obj, proclist, 
              zz->Communicator, TAG1, &nrecv);
@@ -176,7 +177,7 @@ error:
 
 
 /* Find out which proc owns a certain index by binary search */
-static int owner(int *vtxdist, int p, int index)
+int Zoltan_Get_Processor_Graph(int *vtxdist, int p, int index)
 {
   int lo, hi, mid;
 
@@ -186,7 +187,7 @@ static int owner(int *vtxdist, int p, int index)
   /* Check for values out of range */
   if (index<vtxdist[0] || index>=vtxdist[p])
     return (-1);
-  
+
   /* Binary search */
   while(hi > lo+1){
     mid = (lo+hi)/2;

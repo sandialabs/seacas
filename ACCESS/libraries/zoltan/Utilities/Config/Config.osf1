@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.osf1,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.2 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -38,7 +38,7 @@ SPPR_HEAD               = spprinc.64bit
 F90_MODULE_PREFIX       = -I
 FARG                    = farg_typical
 
-MPI_LIB			= -lmpi
+MPI_LIBS			= -lmpi
 MPI_LIBPATH		=
 
 #PARMETIS_LIBPATH 	= -L../../ParMETIS

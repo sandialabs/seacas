@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: comm_create.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.17 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <stdio.h>
@@ -47,12 +47,12 @@ int      *pnvals_recv)		/* returned # vals I own after communication */
     int      *starts_from=NULL;	/* pointers for where to put recv data */
     int       my_proc;		/* my processor tag in communicator */
     int       nprocs;		/* number of  processors in communicator */
-    int       max_send_size;	/* size of longest message I send */
-    int       total_recv_size;/* total size of messages I recv */
+    int       max_send_size =0;	/* size of longest message I send */
+    int       total_recv_size;  /* total size of messages I recv */
     int       no_send_buff;	/* is data nicely grouped by processor? */
-    int       nactive;		/* number of values to remap */
-    int       self_msg;		/* do I have data for myself? */
-    int       nsends;		/* # procs I'll send to (including self) */
+    int       nactive = 0;	/* number of values to remap */
+    int       self_msg = 0;	/* do I have data for myself? */
+    int       nsends=0;		/* # procs I'll send to (including self) */
     int       nrecvs=0;		/* # procs I'll recv from (including self) */
     int       proc;		/* processor I communicate with */
     int       prev_proc;	/* processor on previous loop pass */
@@ -287,16 +287,34 @@ Mem_Err:
     plan->self_msg = self_msg;
     plan->max_send_size = max_send_size;
     plan->total_recv_size = total_recv_size;
+    plan->maxed_recvs = 0;
     plan->comm = comm;
 
-    plan->request = (MPI_Request *) ZOLTAN_MALLOC(plan->nrecvs * sizeof(MPI_Request));
-    plan->status = (MPI_Status *) ZOLTAN_MALLOC(plan->nrecvs * sizeof(MPI_Status));
+    if (MPI_RECV_LIMIT > 0){
+      /* If we have a limit to the number of posted receives we are allowed,
+      ** and our plan has exceeded that, then switch to an MPI_Alltoallv so
+      ** that we will have fewer receives posted when we do the communication.
+      */
+      MPI_Allreduce(&nrecvs, &i, 1, MPI_INT, MPI_MAX, comm);
+      if (i > MPI_RECV_LIMIT){
+        plan->maxed_recvs = 1;
+      }
+    }
 
-    if (plan->nrecvs && ((plan->request == NULL) || (plan->status == NULL))) 
+    if (plan->maxed_recvs){
+      plan->request = NULL;
+      plan->status = NULL;
+    }
+    else{
+      plan->request = (MPI_Request *) ZOLTAN_MALLOC(plan->nrecvs * sizeof(MPI_Request));
+      plan->status = (MPI_Status *) ZOLTAN_MALLOC(plan->nrecvs * sizeof(MPI_Status));
+      if (plan->nrecvs && ((plan->request == NULL) || (plan->status == NULL))) 
         comm_flag = ZOLTAN_MEMERR;
+    }
 
     *pnvals_recv = total_recv_size;
     *cobj = plan;
+
     return (comm_flag);
 }
 #define COPY_BUFFER(buf, type, num) \

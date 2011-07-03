@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: assign_param_vals.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.27 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -24,6 +24,7 @@ extern "C" {
 #include "params_const.h"
 #include "zoltan_types.h"
 #include "zoltan_util.h"
+#include "zz_const.h"
 
 /*****************************************************************************/
 /***   Function prototypes:                                                ***/

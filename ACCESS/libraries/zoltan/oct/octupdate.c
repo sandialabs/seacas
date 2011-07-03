@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: octupdate.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.77 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -135,7 +135,12 @@ int error = FALSE;            /* error flag                                 */
 
   /* Set oct_wgtflag based on the "key" parameter Obj_Weight_Dim */
   oct_wgtflag = (zz->Obj_Weight_Dim > 0);
-
+  if (zz->Obj_Weight_Dim > 1) {
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+            "OBJ_WEIGHT_DIM > 1 not yet implemented in OCTPART.  "
+            "Try a different LB_METHOD.");
+    error = TRUE;
+  }
   /* Initialization in case of early exit */
   *num_import = -1;  /* We don't compute any import data */
   *num_export = -1;
@@ -685,7 +690,7 @@ static void Zoltan_Oct_get_bounds(ZZ *zz, pRegion *ptr1, int *num_objs,
                           to initialize_regions when NUM_LID_ENTRIES == 0. */
   int num_dim;
   int i;
-  pRegion tmp, ptr;
+  pRegion tmp=NULL, ptr;
   COORD global_min, global_max;
   double PADDING = 0.0000001;
   int ierr = 0;

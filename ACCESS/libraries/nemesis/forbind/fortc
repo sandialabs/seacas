@@ -1,0 +1,106 @@
+#!/bin/sh
+# Copyright (c) 1998 Sandia Corporation. Under the terms of Contract
+# DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+# retains certain rights in this software.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+# 
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.  
+# 
+#     * Neither the name of Sandia Corporation nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+
+# fortc - make Fortran-callable C source
+# usage: fortc [-L LibDir] [-O OperSys] [file ...]
+
+#set -x
+
+InFiles=
+LibDir=/usr/local/ldm/lib
+
+while [ $# -gt 0 ]; do
+    case $1 in
+    -P) shift; ADDRMODE=$1; shift;;
+    -P*)
+        ADDRMODE=`echo $1 | sed 's/-.//'`; shift;;
+    -L)	shift; LibDir=$1; shift;;
+    -L*)
+	LibDir=`echo $1 | sed 's/-.//'`; shift;;
+    -O)	shift; OS=$1; shift;;
+    -O*)
+	OS=`echo $1 | sed 's/-.//'`; shift;;
+    -*)	echo 1>&2 "Option '$1' is unknown"; exit 1;;
+    *)	InFiles="$InFiles $1"; shift;;
+    esac
+done
+
+case "$ADDRMODE" in
+    64)
+    TYPE=double;;
+    32)
+    TYPE=float;;
+esac
+
+# Default is invalid file if does not support 64-bit mode.
+# If is supported, use fortc3.sed if no underscore on name,
+# or use fortc3_.sed if underscore on function name.
+TO64=invalid.sed
+
+case "$OS" in
+    aix*)
+	OS=aix;TO64=fortc3.sed;;
+    hp*)
+	OS=hp;TO64=fortc3.sed;;
+    msoft*)
+	OS=msoft;;
+    next*)
+	OS=next;;
+    sun*)
+	OS=sunos;TO64=fortc3_.sed;;
+    ultrix*)
+	OS=ultrix;;
+    unicos*)
+	OS=unicos;;
+    linux*)
+	OS=linux;TO64=fortc3_.sed;;
+    catamount*)
+	OS=catamount;TO64=fortc3_.sed;;
+    irix*)
+	OS=irix;TO64=fortc3_.sed;;
+    darwin*)
+	OS=darwin;;
+    vms*)
+	OS=vms;;
+    "")	echo 1>&2 \
+	    "$0: Operating-system not defined: environmental-variable OS not" \
+	    "set or option \"-O<system>\" not specified."
+	exit 2;;
+esac
+
+sed -f $LibDir/fortc1.sed $InFiles |
+    m4 $LibDir/common.m4 $LibDir/$OS.m4 - |
+    sed -f $LibDir/fortc2.sed |
+    sed s/real/$TYPE/g |
+    (test "$ADDRMODE" -eq 64 && sed -f $LibDir/$TO64 || cat)

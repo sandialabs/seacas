@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: mem.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.20 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -22,6 +22,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include "zoltan_mem.h"
+#include "zoltan_util.h"
 
 #ifdef __STDC__
 #include <stdarg.h>
@@ -32,6 +33,10 @@ extern "C" {
 static int DEBUG_MEMORY = 0;	/* Flag for detecting memory leaks */
 static size_t bytes_used = 0;	/* Sum of active allocations */
 static size_t bytes_max = 0;	/* Largest total of active allocations */
+
+#ifdef REALLOC_BUG
+static size_t max_alloc = 0;	/* Largest single allocation */
+#endif
 
 static int nmalloc = 0;         /* number of calls to malloc */
 static int nfree = 0;           /* number of calls to free */
@@ -281,23 +286,39 @@ double *Zoltan_Malloc(size_t n, char *filename, int lineno)
   struct malloc_debug_data *new_ptr;     /* data structure for malloc data */
   int       proc;             /* processor ID for debugging msg */
   double *pntr;           /* return value */
+  char *basefile;
 
   if (n > 0) {
+
+#ifdef REALLOC_BUG
+    if (n > max_alloc){
+      max_alloc = n;
+    }
+    n += sizeof(double);
+#endif
+
     pntr = (double *) malloc(n);
     if (pntr == NULL) {
       GET_RANK(&proc);
       fprintf(stderr, "%s (from %s,%d) No space on proc %d - number of bytes "
-              "requested = %z\n", yo, filename, lineno, proc, n);
+              "requested = %lu\n", yo, filename, lineno, proc,
+              (unsigned long) n);
       return ((double *) NULL);
     }
     nmalloc++;
+
+#ifdef REALLOC_BUG
+    pntr[0] = (double)(n - sizeof(double));
+    ++pntr;
+#endif
   }
   else if (n == 0)
     pntr = NULL;
   else {		/* n < 0 */
     GET_RANK(&proc);
     fprintf(stderr, "%s (from %s,%d) ERROR on proc %d: "
-	    "Negative malloc argument. (%z)\n", yo, filename, lineno, proc, n);
+	    "Negative malloc argument. (%lu)\n", yo, filename, lineno, proc, 
+            (unsigned long) n);
     return ((double *) NULL);
   }
 
@@ -308,15 +329,21 @@ double *Zoltan_Malloc(size_t n, char *filename, int lineno)
 
     if (new_ptr == NULL) {
       GET_RANK(&proc);
-      fprintf(stderr, "WARNING: No space on proc %d for malloc_debug %z.\n",
-	proc, n);
+      fprintf(stderr, "WARNING: No space on proc %d for malloc_debug %lu.\n",
+	proc, (unsigned long) n);
       return (pntr);
     }
 
     new_ptr->order = nmalloc;
     new_ptr->size = n;
     new_ptr->ptr = pntr;
-    strncpy(new_ptr->file, filename, MAX_STRING_LEN);
+#ifdef SHORT_FILE
+    basefile = strrchr(filename, '/');
+    basefile = ((basefile != NULL)?basefile:filename-1)+1;
+#else
+    basefile = filename;
+#endif /* SHORT_FILE */
+    strncpy(new_ptr->file, basefile, MAX_STRING_LEN);
     new_ptr->line = lineno;
     new_ptr->next = top;
     top = new_ptr;
@@ -329,10 +356,11 @@ double *Zoltan_Malloc(size_t n, char *filename, int lineno)
   if (DEBUG_MEMORY > 2) {
     /* Print out details of allocation. */
     GET_RANK(&proc);
-    fprintf(stderr, "Proc %d: order=%d, size=%z, location=0x%lx, "
+    fprintf(stderr, "Proc %d: order=%d, size=%lu, location=0x%lx, "
       "file=%s, line=%d\n",
-      proc, nmalloc, n, (long) pntr, filename, lineno);
+      proc, nmalloc, (unsigned long) n, (long) pntr, filename, lineno);
   }
+
 
   return pntr;
 
@@ -346,6 +374,9 @@ double *Zoltan_Realloc(void *ptr, size_t n, char *filename, int lineno)
   struct malloc_debug_data *dbptr;   /* loops through debug list */
   int       proc;             /* processor ID */
   double   *p;                /* returned pointer */
+#ifdef REALLOC_BUG
+  int n_old;
+#endif
 
   if (ptr == NULL) {	/* Previous allocation not important */
     if (n == 0) {
@@ -361,6 +392,36 @@ double *Zoltan_Realloc(void *ptr, size_t n, char *filename, int lineno)
       p = NULL;
     }
     else {
+#ifdef REALLOC_BUG
+      /* Feb 10, 2010: Several platforms show a realloc bug where realloc
+       * either fails to allocate memory when there is sufficient memory
+       * or it crashes.  If realloc shows this failure, then build Zoltan
+       * with REALLOC_BUG, and we will call malloc/memcpy/free instead.
+       */
+      p = (double *)ptr;
+      p--;
+      n_old = p[0];
+
+      if ((n_old < 1) || (n_old > max_alloc)){  /* sanity check */
+        GET_RANK(&proc);
+        fprintf(stderr, "%s (from %s,%d) Zoltan_Realloc called on a pointer "
+                        "that was not returned by Zoltan_Malloc (proc %d)\n",
+    		        yo, filename, lineno, proc);
+        return NULL;
+      }
+
+      p = (double *) Zoltan_Malloc(n, filename, lineno);
+
+      if (p){
+        if (n > n_old){
+          memcpy(p, ptr, n_old);
+        }
+        else if (n <= n_old){
+          memcpy(p, ptr, n);
+        }
+        Zoltan_Free((void **) &ptr, filename, lineno);
+      }
+#else
       p = (double *) realloc((char *) ptr, n);
 
       if (DEBUG_MEMORY > 1) {
@@ -386,9 +447,10 @@ double *Zoltan_Realloc(void *ptr, size_t n, char *filename, int lineno)
       if (p == NULL) {
         GET_RANK(&proc);
         fprintf(stderr, "%s (from %s,%d) No space on proc %d - "
-		"number of bytes requested = %z\n",
-		yo, filename, lineno, proc, n);
+		"number of bytes requested = %lu\n",
+		yo, filename, lineno, proc, (unsigned long) n);
       }
+#endif
     }
   }
 
@@ -405,6 +467,10 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
   struct malloc_debug_data *dbptr;   /* loops through debug list */
   struct malloc_debug_data **prev;   /* holds previous pointer */
   int       proc;             /* processor ID */
+
+#ifdef REALLOC_BUG
+  double *p=NULL;
+#endif
 
 /*
  *  This version of free calls the system's free function.  It doesn't call
@@ -433,10 +499,21 @@ void Zoltan_Free (void **ptr, char *filename, int lineno)
        *prev = dbptr->next;
        bytes_used -= dbptr->size;
        free((char *) dbptr);
+
+      if (DEBUG_MEMORY > 2){
+        GET_RANK(&proc);
+        fprintf(stderr, "Proc %d: free, address (0x%lx) "
+  	"File=%s, line=%d.\n", proc, (long) *ptr, filename, lineno);
        }
+     }
    }
- 
+
+#ifdef REALLOC_BUG
+  p = (double *)*ptr;
+  free(p-1);
+#else
   free(*ptr);
+#endif
  
   /* Set value of ptr to NULL, to flag further references to it. */
   *ptr = NULL;
@@ -503,8 +580,9 @@ void Zoltan_Memory_Stats()
     else if (DEBUG_MEMORY > 1) {
         GET_RANK(&proc);
 	fprintf(stderr, "Proc %d: Calls to malloc = %d,  Calls to free = %d, "
-                        "Max bytes = %z, total bytes = %z\n", 
-                         proc, nmalloc, nfree, bytes_max, bytes_used);
+                        "Max bytes = %lu, total bytes = %lu\n", 
+                         proc, nmalloc, nfree,
+                         (unsigned long) bytes_max, (unsigned long) bytes_used);
         if (nmalloc > nfree) 
           fprintf(stderr, "Proc %d: Possible memory error: "
                           "# malloc > # free.\n", proc);
@@ -514,9 +592,10 @@ void Zoltan_Memory_Stats()
 	if (top != NULL) {
 	    fprintf(stderr, "Proc %d: Remaining allocations:\n", proc);
 	    for (dbptr = top; dbptr != NULL; dbptr = dbptr->next) {
-		fprintf(stderr, " order=%d, size=%z, location=0x%lx, "
+		fprintf(stderr, " order=%d, size=%lu, location=0x%lx, "
                   "file=%s, line=%d\n", 
-                  dbptr->order, dbptr->size, (long) dbptr->ptr,
+                  dbptr->order, (unsigned long) (dbptr->size),
+                  (long) dbptr->ptr,
                   dbptr->file, dbptr->line);
 	    }
 	}
@@ -540,6 +619,18 @@ size_t Zoltan_Memory_Usage (int type)
 
    return bytes_max ;
 }
+
+void Zoltan_Memory_Reset (int type)
+{
+/* Reset total bytes used currently or maximum bytes used at any point 
+   to zero. */
+
+   if (type == ZOLTAN_MEM_STAT_TOTAL)
+      bytes_used = 0;
+   else
+      bytes_max = 0;
+}
+
 
 /*****************************************************************************/
 /*                      END of mem.c                                         */

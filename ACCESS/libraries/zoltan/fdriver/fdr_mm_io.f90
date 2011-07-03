@@ -4,10 +4,10 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  CVS File Information :
-!     $RCSfile: fdr_mm_io.f90,v $
-!     $Author: gdsjaar $
-!     $Date: 2009/06/09 18:37:57 $
-!     Revision: 1.7.2.2 $
+!     $RCSfile$
+!     $Author$
+!     $Date$
+!     $Revision$
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 module dr_mm_io
@@ -54,9 +54,11 @@ type(PARIO_INFO) :: pio_info
   double precision, pointer :: mm_rval(:)
   complex, pointer :: mm_cval(:)
 
-  integer(Zoltan_INT) :: fp, iostat, allocstat, ierr, status
+  integer(Zoltan_INT) :: fp, iostat, allocstat, ierr
+  integer ::  status(MPI_STATUS_SIZE)
   integer(Zoltan_INT), pointer ::  vtxdist(:) ! vertex distribution data
   integer(Zoltan_INT), pointer ::  pindist(:) ! pin distribution data
+  integer :: sendsize
 ! Local values
   integer(Zoltan_INT) :: npins, nedges, nvtxs
   integer(Zoltan_INT), allocatable ::  iidx(:) ! pin data
@@ -69,6 +71,11 @@ type(PARIO_INFO) :: pio_info
 !/***************************** BEGIN EXECUTION ******************************/
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! Set appropriate callbacks for this file type.
+  Test_Hypergraph_Callbacks = 1
+  Test_Graph_Callbacks = 0
+
 ! Read the MatrixMarket file.
 
   if (Proc == 0) then
@@ -88,6 +95,14 @@ type(PARIO_INFO) :: pio_info
 
 !   read the matrix in on processor 0.
     nullify(mm_ival, mm_cval)
+!KDD  Valgrind reports some errors if mm_ival and mm_cval are not allocated,
+!KDD  but we don't need them.   32-bit runs fail on the Mac if we don't
+!KDD  allocate them.  The error seems to occur in gfortran as it prepares
+!KDD  to call mmread.  So we'll allocate them and then deallocate them below.
+!KDD  It may be possible to allocate them smaller if needed, but these sizes
+!KDD  are OK for our nightly tests.
+    allocate(mm_ival(0:mm_nnz-1), stat=allocstat) !KDD
+    allocate(mm_cval(0:mm_nnz-1), stat=allocstat) !KDD
     allocate(mm_iidx(0:mm_nnz-1), stat=allocstat)
     allocate(mm_jidx(0:mm_nnz-1), stat=allocstat)
     allocate(mm_rval(0:mm_nnz-1), stat=allocstat)
@@ -103,6 +118,8 @@ type(PARIO_INFO) :: pio_info
     call mmread(fp, mm_rep, mm_field, mm_symm, mm_nrow, mm_ncol, mm_nnz, &
                 mm_max, mm_iidx, mm_jidx, mm_ival, mm_rval, mm_cval)
 
+    if (associated(mm_ival)) deallocate(mm_ival) !KDD
+    if (associated(mm_cval)) deallocate(mm_cval) !KDD
 !   Don't need the numerical values.
     if (associated(mm_rval)) deallocate(mm_rval)
 
@@ -269,16 +286,18 @@ type(PARIO_INFO) :: pio_info
 ! Allocate arrays to receive pins.
   call MPI_Bcast(pindist, Num_Proc+1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr);
   npins = pindist(Proc+1) - pindist(Proc)
-  allocate(iidx(0:npins-1),jidx(0:npins-1),stat=allocstat)
+  allocate(iidx(0:npins-1),stat=allocstat)
+  allocate(jidx(0:npins-1),stat=allocstat)
 
   if (Proc == 0) then
 
 !   Fill communication buffer with pins to be sent.
 !   Assume INITIAL_LINEAR edge distribution.
     do i = 1, Num_Proc-1
-      call MPI_Send(mm_iidx(pindist(i)), (pindist(i+1)-pindist(i)), MPI_INTEGER, &
+      sendsize = pindist(i+1)-pindist(i)
+      call MPI_Send(mm_iidx(pindist(i)), sendsize, MPI_INTEGER, &
                     i, 1, MPI_COMM_WORLD, ierr)
-      call MPI_Send(mm_jidx(pindist(i)), (pindist(i+1)-pindist(i)), MPI_INTEGER, &
+      call MPI_Send(mm_jidx(pindist(i)), sendsize, MPI_INTEGER, &
                     i, 2, MPI_COMM_WORLD, ierr)
     enddo
 !   Copy Proc zero's pins.
@@ -294,8 +313,10 @@ type(PARIO_INFO) :: pio_info
   endif
      
   if (associated(pindist)) deallocate(pindist)
-  if (associated(mm_iidx)) deallocate(mm_iidx)
-  if (associated(mm_jidx)) deallocate(mm_jidx)
+  if (Proc == 0) then
+    if (associated(mm_iidx)) deallocate(mm_iidx)
+    if (associated(mm_jidx)) deallocate(mm_jidx)
+  endif
 
 ! KDDKDD We assume the MatrixMarket file is sorted by row numbers.
 ! KDDKDD This sort was done on a single processor.

@@ -4,10 +4,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: mpistring.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.7 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -15,7 +15,7 @@
 /* Wrapper for MPI routines that take string arguments, to avoid the
    difference between how Fortran compilers pass strings */
 #include <mpi.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */

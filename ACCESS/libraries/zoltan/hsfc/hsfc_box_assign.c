@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: hsfc_box_assign.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.24 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -18,6 +18,7 @@ extern "C" {
 #endif
 
 #include "hsfc.h"
+#include "zz_const.h"
 #include "zz_util_const.h"
 #include <math.h>
 
@@ -42,7 +43,7 @@ int Zoltan_HSFC_Box_Assign (
    int       *proc_array = NULL;
    HSFC_Data *d;                    /* HFSC's portion of Zoltan data structure */
    int        n, i, loop;                 /* loop counters */
-   int        tmp, dim;
+   int        tmp, dim = 0;
    int        first_proc, last_proc;
    double     fsfc, starting;
    double lo[3], hi[3];
@@ -267,12 +268,12 @@ End:
 static double next_query_2d (ZZ *zz, double *lquerybox, double *hquerybox,
  double s)
    {
-   int state, newstate, savelevel, prune, backtrack;
+   int state, newstate=0, savelevel, prune, backtrack;
    unsigned int temp, x, y;
-   unsigned int savestate, savequad, savenpt;  /* saved info for backtracking */
+   unsigned int savestate=0, savequad=0, savenpt=0;  /* saved info for backtracking */
    unsigned int qlox, qloy, qhix, qhiy;        /* query box bounds */
-   unsigned int nptx, npty, keyx, keyy, newnpt;
-   unsigned int start[2], startbits;
+   unsigned int nptx, npty, keyx, keyy, newnpt=0;
+   unsigned int start[2], startbits=0;
    unsigned int intersect_hi, intersect_lo;
    double t;
    int level, quadrant, i;                    /* loop counters */
@@ -395,12 +396,12 @@ static double next_query_2d (ZZ *zz, double *lquerybox, double *hquerybox,
 static double next_query_3d (ZZ *zz, double *lquerybox, double *hquerybox,
  double s)
    {
-   int state, newstate, savelevel, prune, backtrack;
+   int state, newstate = 0, savelevel, prune, backtrack;
    unsigned int temp, x, y, z;
-   unsigned int savestate, savequad, savenpt;
+   unsigned int savestate = 0, savequad = 0, savenpt = 0;
    unsigned int qlox, qloy, qloz, qhix, qhiy, qhiz;
-   unsigned int nptx, npty, nptz, keyx, keyy, keyz, newnpt;
-   unsigned int start[2], startbits;
+   unsigned int nptx, npty, nptz, keyx, keyy, keyz, newnpt = 0;
+   unsigned int start[2], startbits = 0;
    unsigned int intersect_hi, intersect_lo;
    double t;
    int level, quadrant, i;

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: point_assign.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.27 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -37,7 +37,7 @@ int      *part                  /* partition that point lands in;
    by the recursive bisection algorithm chosen. */
 
      char             *yo = "Zoltan_RB_Point_Assign";
-     int               partmid; /* 1st partition in upper half */
+     int           partmid = 0; /* 1st partition in upper half */
      RCB_STRUCT        *rcb;    /* Pointer to data structures for RCB.  */
      struct rcb_tree   *treept; /* tree of RCB cuts */
      RIB_STRUCT        *rib;    /* Pointer to data structures for RIB. */

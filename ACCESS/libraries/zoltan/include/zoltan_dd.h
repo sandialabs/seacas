@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zoltan_dd.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef ZOLTAN_DD_DDIRECTORY_H
@@ -33,17 +33,6 @@ struct Zoltan_DD_Struct;
 typedef struct Zoltan_DD_Struct Zoltan_DD_Directory;
 
 
-/* The following are used as return value error codes */
-#define ZOLTAN_DD_NORMAL_RETURN         ZOLTAN_OK
-#define ZOLTAN_DD_INPUT_ERROR           ZOLTAN_WARN
-#define ZOLTAN_DD_MEMORY_ERROR          ZOLTAN_MEMERR
-#define ZOLTAN_DD_MPI_ERROR             ZOLTAN_FATAL
-#define ZOLTAN_DD_COMM_ERROR            ZOLTAN_FATAL
-#define ZOLTAN_DD_GID_ADDED             ZOLTAN_WARN
-#define ZOLTAN_DD_GID_NOT_FOUND_ERROR   ZOLTAN_WARN
-#define ZOLTAN_DD_GID_REDEFINED_ERROR   ZOLTAN_FATAL
-
-
 /***********  Distributed Directory Function Prototypes ************/
 
 int Zoltan_DD_Create (Zoltan_DD_Directory **dd, MPI_Comm comm, int num_gid,
@@ -60,6 +49,8 @@ int Zoltan_DD_Update (Zoltan_DD_Directory *dd, ZOLTAN_ID_PTR gid,
 int Zoltan_DD_Find (Zoltan_DD_Directory *dd, ZOLTAN_ID_PTR gid,
  ZOLTAN_ID_PTR lid, ZOLTAN_ID_PTR data, int *partition, int count,
  int *owner) ;
+
+int Zoltan_DD_GetLocalKeys(Zoltan_DD_Directory *dd, ZOLTAN_ID_PTR* gid, int* size);
 
 int Zoltan_DD_Remove (Zoltan_DD_Directory *dd, ZOLTAN_ID_PTR gid,
  int count) ;

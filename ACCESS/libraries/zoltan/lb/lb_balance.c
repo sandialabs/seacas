@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: lb_balance.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.41 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -24,6 +24,9 @@ extern "C" {
 #include "key_params.h"
 #include "ha_const.h"
 #include "all_allo_const.h"
+#ifdef ZOLTAN_DRUM
+#include "ha_drum.h"
+#endif
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -117,7 +120,7 @@ int Zoltan_LB_Balance(
 /*
  * Wrapper around Zoltan_LB for backward compatibility with
  * previous Zoltan versions.  
- * Appropriate only when (# requested partitions == # processors), uniformly
+ * Appropriate only when (# requested parts == # processors), uniformly
  * distributed.
  * Arguments correspond directly with arguments of Zoltan_LB.
  */
@@ -129,14 +132,14 @@ int *export_to_part = NULL;    /* Array used as dummy arg in partitioning. */
 
   ZOLTAN_TRACE_ENTER(zz, yo);
 
-  /* Determine whether partition parameters were set.  Report error if
+  /* Determine whether part parameters were set.  Report error if
    * values are unreasonable. */
   if ((zz->LB.Num_Global_Parts_Param != -1 && 
        zz->LB.Num_Global_Parts_Param != zz->Num_Proc) ||
       (zz->LB.Num_Local_Parts_Param != -1 &&
        zz->LB.Num_Local_Parts_Param != 1)) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
-      "Non-uniform distribution of partitions over processors is specified; "
+      "Non-uniform distribution of parts over processors is specified; "
       "use Zoltan_LB_Partition.");
     ierr = ZOLTAN_FATAL;
     goto End;
@@ -150,12 +153,12 @@ int *export_to_part = NULL;    /* Array used as dummy arg in partitioning. */
 
 
 End:
-  /* Not returning import/export partition information; free it if allocated. */
+  /* Not returning import/export part information; free it if allocated. */
   if (import_to_part != NULL) 
-    Zoltan_Special_Free(zz, (void **) &import_to_part, 
+    Zoltan_Special_Free(zz, (void **)(void*) &import_to_part, 
                         ZOLTAN_SPECIAL_MALLOC_INT);
   if (export_to_part != NULL) 
-    Zoltan_Special_Free(zz, (void **) &export_to_part, 
+    Zoltan_Special_Free(zz, (void **)(void*) &export_to_part, 
                         ZOLTAN_SPECIAL_MALLOC_INT);
   ZOLTAN_TRACE_EXIT(zz, yo);
   return(ierr);
@@ -169,7 +172,7 @@ End:
 static int Zoltan_LB(
   ZZ *zz, 
   int include_parts,             /* Flag indicating whether to generate
-                                    partition informtion;
+                                    part informtion;
                                     0 if called by Zoltan_LB_Balance,
                                     1 if called by Zoltan_LB_Partition.       */
   int *changes,                  /* Set to zero or one depending on if 
@@ -244,13 +247,13 @@ static int Zoltan_LB(
 char *yo = "Zoltan_LB";
 int gmax;    /* Maximum number of imported/exported objects 
                 over all processors.                       */
-int error;    /* Error code */
+int error = ZOLTAN_OK;    /* Error code */
 double start_time, end_time;
 double lb_time[2] = {0.0,0.0};
 char msg[256];
 int comm[3],gcomm[3]; 
 float *part_sizes = NULL, *fdummy = NULL;
-int part_dim;
+int wgt_dim, part_dim;
 int all_num_obj, i, ts, idIdx;
 struct Hash_Node **ht;
 int *export_all_procs, *export_all_to_part, *parts=NULL;
@@ -263,6 +266,14 @@ ZOLTAN_ID_PTR gid;
     Zoltan_Print_Key_Params(zz);
 
   start_time = Zoltan_Time(zz->Timer);
+
+#ifdef ZOLTAN_DRUM
+  /* initialize DRUM if needed */
+  Zoltan_Drum_Create_Model(zz);
+
+  /* stop DRUM monitors */
+  Zoltan_Drum_Stop_Monitors(zz);
+#endif
 
   /* 
    * Compute Max number of array entries per ID over all processors.
@@ -296,18 +307,16 @@ ZOLTAN_ID_PTR gid;
    *  communicator.
    */
 
-  if (ZOLTAN_PROC_NOT_IN_COMMUNICATOR(zz)) {
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (ZOLTAN_OK);
-  }
+  if (ZOLTAN_PROC_NOT_IN_COMMUNICATOR(zz)) 
+    goto End;
 
   if (zz->LB.Method == NONE) {
     if (zz->Proc == zz->Debug_Proc && zz->Debug_Level >= ZOLTAN_DEBUG_PARAMS)
       printf("%s Balancing method selected == NONE; no balancing performed\n",
               yo);
 
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (ZOLTAN_WARN);
+    error = ZOLTAN_WARN;
+    goto End;
   }
 
   /*
@@ -322,21 +331,18 @@ ZOLTAN_ID_PTR gid;
 
   error = Zoltan_Build_Machine_Desc(zz);
 
-  if (error == ZOLTAN_FATAL){
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (error);
-  }
+  if (error == ZOLTAN_FATAL)
+    goto End;
 
   ZOLTAN_TRACE_DETAIL(zz, yo, "Done machine description");
 
   /* Since generating a new partition, need to free old mapping vector */
-  ZOLTAN_FREE(&zz->LB.Remap);
+  zz->LB.OldRemap = zz->LB.Remap;
+  zz->LB.Remap = NULL;
 
   error = Zoltan_LB_Build_PartDist(zz);
-  if (error != ZOLTAN_OK && error != ZOLTAN_WARN) {
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (error);
-  }
+  if (error != ZOLTAN_OK && error != ZOLTAN_WARN)
+    goto End;
 
   if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL) {
     int i, np, fp;
@@ -348,19 +354,26 @@ ZOLTAN_ID_PTR gid;
   }
 
   /*
-   * Generate partitions sizes.
+   * Generate parts sizes.
    */
-  part_dim = ((zz->Obj_Weight_Dim > 0) ? zz->Obj_Weight_Dim : 1);
+
+#ifdef ZOLTAN_DRUM
+  /* set part sizes computed by DRUM, if requested */
+  Zoltan_Drum_Set_Part_Sizes(zz);
+#endif
+
+  wgt_dim = zz->Obj_Weight_Dim;
+  part_dim = ((wgt_dim > 0) ? wgt_dim : 1);
 
   part_sizes = (float *) ZOLTAN_MALLOC(sizeof(float) * part_dim 
                                      * zz->LB.Num_Global_Parts);
   if (part_sizes == NULL) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error.");
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (ZOLTAN_MEMERR);
+    error = ZOLTAN_MEMERR;
+    goto End;
   }
 
-  /* Get partition sizes. */
+  /* Get part sizes. */
   Zoltan_LB_Get_Part_Sizes(zz, zz->LB.Num_Global_Parts, part_dim,
     part_sizes);
 
@@ -379,8 +392,7 @@ ZOLTAN_ID_PTR gid;
   if (error == ZOLTAN_FATAL || error == ZOLTAN_MEMERR){
     sprintf(msg, "Partitioning routine returned code %d.", error);
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (error);
+    goto End;
   }
   else if (error){
     if (zz->Debug_Level >ZOLTAN_DEBUG_NONE) {
@@ -390,6 +402,12 @@ ZOLTAN_ID_PTR gid;
   }
 
   ZOLTAN_TRACE_DETAIL(zz, yo, "Done partitioning");
+
+#ifdef ZOLTAN_DRUM
+  /* restart DRUM monitors -- should happen later but there are a lot
+     of ways out of Zoltan_LB and we want to make sure they do start */
+  Zoltan_Drum_Start_Monitors(zz);
+#endif
 
   if (*num_import_objs >= 0)
     MPI_Allreduce(num_import_objs, &gmax, 1, MPI_INT, MPI_MAX, 
@@ -421,19 +439,23 @@ ZOLTAN_ID_PTR gid;
        * This parameter setting requires that all local objects
        * and their assignments appear in the export list.
        */
-      error= Zoltan_Get_Obj_List(zz, num_export_objs, 
+      error= Zoltan_Get_Obj_List_Special_Malloc(zz, num_export_objs, 
                export_global_ids, export_local_ids,
-               0, &fdummy, export_to_part);
+               wgt_dim, &fdummy, export_to_part);
 
-      *export_procs = (int *)ZOLTAN_MALLOC(*num_export_objs * sizeof(int));
-
-      for (i=0; i<*num_export_objs; i++){
-        (*export_procs)[i] = zz->Proc;
+      if (error == ZOLTAN_OK){
+        ZOLTAN_FREE(&fdummy);
+        if (Zoltan_Special_Malloc(zz, (void **)export_procs, *num_export_objs,
+                            ZOLTAN_SPECIAL_MALLOC_INT)){
+          for (i=0; i<*num_export_objs; i++)
+            (*export_procs)[i] = zz->Proc;
+        }
+        else{
+          error = ZOLTAN_MEMERR;
+        }
       }
     }
-
-    ZOLTAN_TRACE_EXIT(zz, yo);
-    return (ZOLTAN_OK);
+    goto End;
   }
 
   /*
@@ -447,22 +469,19 @@ ZOLTAN_ID_PTR gid;
    *
    *  Unless we were given both maps, compute the inverse map.
    */
+  if (zz->LB.Return_Lists == ZOLTAN_LB_NO_LISTS) {
+    if (*num_import_objs >= 0) 
+      Zoltan_LB_Special_Free_Part(zz, import_global_ids, import_local_ids, 
+                                  import_procs, import_to_part);
+    if (*num_export_objs >= 0) 
+      Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids, 
+                                  export_procs, export_to_part);
+    *num_import_objs = *num_export_objs = -1;
+  }
 
   if (*num_import_objs >= 0){
     if (*num_export_objs >= 0) {
       /* Both maps already available; nothing to do. */;
-
-      if (zz->LB.Return_Lists == ZOLTAN_LB_NO_LISTS) {
-        /* This condition should never happen!! */
-        /* Methods should not return arrays if no lists are requested. */
-        *num_import_objs = *num_export_objs = -1;
-        Zoltan_LB_Free_Part(import_global_ids, import_local_ids, import_procs,
-                            import_to_part);
-        Zoltan_LB_Free_Part(export_global_ids, export_local_ids, export_procs,
-                            export_to_part);
-        ZOLTAN_PRINT_WARN(zz->Proc, yo, 
-                      "Method returned lists, but no lists requested.");
-      }
     }
     else if (zz->LB.Return_Lists == ZOLTAN_LB_ALL_LISTS || 
              zz->LB.Return_Lists == ZOLTAN_LB_EXPORT_LISTS ||
@@ -478,16 +497,15 @@ ZOLTAN_ID_PTR gid;
         sprintf(msg, "Error building return arguments; "
                      "%d returned by Zoltan_Compute_Destinations\n", error);
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
-        ZOLTAN_TRACE_EXIT(zz, yo);
-        return error;
+        goto End;
       }
       if (zz->LB.Return_Lists == ZOLTAN_LB_EXPORT_LISTS ||
           zz->LB.Return_Lists == ZOLTAN_LB_COMPLETE_EXPORT_LISTS) {
         /* Method returned import lists, but only export lists were desired. */
         /* Import lists not needed; free them. */
         *num_import_objs = -1;
-        Zoltan_LB_Free_Part(import_global_ids, import_local_ids, import_procs,
-                            import_to_part);
+        Zoltan_LB_Special_Free_Part(zz, import_global_ids, import_local_ids, 
+                            import_procs, import_to_part);
       }
     }
   }
@@ -508,15 +526,14 @@ ZOLTAN_ID_PTR gid;
           sprintf(msg, "Error building return arguments; "
                        "%d returned by Zoltan_Compute_Destinations\n", error);
           ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
-          ZOLTAN_TRACE_EXIT(zz, yo);
-          return error;
+          goto End;
         }
         if (zz->LB.Return_Lists == ZOLTAN_LB_IMPORT_LISTS) {
           /* Method returned export lists, but only import lists are desired. */
           /* Export lists not needed; free them. */
           *num_export_objs = -1;
-          Zoltan_LB_Free_Part(export_global_ids, export_local_ids, export_procs,
-                             export_to_part);
+          Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids, 
+                              export_procs, export_to_part);
         }
       }
     }
@@ -525,8 +542,8 @@ ZOLTAN_ID_PTR gid;
         /* No map at all available */
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Load-balancing function returned "
                "neither import nor export data.");
-        ZOLTAN_TRACE_EXIT(zz, yo);
-        return ZOLTAN_WARN;
+        error = ZOLTAN_WARN;
+        goto End;
       }
     }
   }
@@ -535,23 +552,32 @@ ZOLTAN_ID_PTR gid;
     /*
      * Normally, Zoltan_LB returns in the export lists all local
      * objects that are moving off processor, or that are assigned
-     * to a partition on the local processor that is not the
-     * default partition.  This setting of Return_Lists requests
+     * to a part on the local processor that is not the
+     * default part.  This setting of Return_Lists requests
      * that all local objects be included in the export list.
      */
 
     if (*num_export_objs == 0){
       /* all local objects are remaining on processor */
-       
-      Zoltan_Get_Obj_List(zz, num_export_objs, 
+
+      error= Zoltan_Get_Obj_List_Special_Malloc(zz, num_export_objs,
                export_global_ids, export_local_ids,
-               0, &fdummy, export_to_part);
+               wgt_dim, &fdummy, export_to_part);
 
-      *export_procs = (int *)ZOLTAN_MALLOC(*num_export_objs * sizeof(int));
-
-      for (i=0; i<*num_export_objs; i++){
-        (*export_procs)[i] = zz->Proc;
+      if (error == ZOLTAN_OK){
+        ZOLTAN_FREE(&fdummy);
+        if (*num_export_objs) {
+          if (Zoltan_Special_Malloc(zz, (void **)export_procs, *num_export_objs,
+                                    ZOLTAN_SPECIAL_MALLOC_INT)){
+            for (i=0; i<*num_export_objs; i++)
+              (*export_procs)[i] = zz->Proc;
+          }
+          else{
+            error = ZOLTAN_MEMERR;
+          }
+        }
       }
+      if ((error != ZOLTAN_OK) && (error != ZOLTAN_WARN)) goto End;
     }
     else{
       all_num_obj = zz->Get_Num_Obj(zz->Get_Num_Obj_Data, &error);
@@ -569,22 +595,29 @@ ZOLTAN_ID_PTR gid;
   
         ht = create_hash_table(zz, *export_global_ids, *num_export_objs, ts);
   
-        /* Create a list of all gids, lids and partitions */
+        /* Create a list of all gids, lids and parts */
   
-        error= Zoltan_Get_Obj_List(zz, &all_num_obj, 
+        error= Zoltan_Get_Obj_List_Special_Malloc(zz, &all_num_obj, 
                  &all_global_ids, &all_local_ids,
-                 0, &fdummy, &parts);
+                 wgt_dim, &fdummy, &parts);
+
+        if ((error == ZOLTAN_OK) || (error == ZOLTAN_WARN)){
+          ZOLTAN_FREE(&fdummy);
+          if ((Zoltan_Special_Malloc(zz, (void **)(void*)&export_all_procs, 
+                 all_num_obj, ZOLTAN_SPECIAL_MALLOC_INT)==0) ||
+              (Zoltan_Special_Malloc(zz, (void **)(void*)&export_all_to_part, 
+                 all_num_obj, ZOLTAN_SPECIAL_MALLOC_INT)==0)){
+
+            error = ZOLTAN_MEMERR;
+          }
+        }
   
         if ((error != ZOLTAN_OK) && (error != ZOLTAN_WARN)){
           sprintf(msg, "Error building complete export list; "
                        "%d returned by Zoltan_Get_Obj_List\n", error);
           ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
-          ZOLTAN_TRACE_EXIT(zz, yo);
-          return error;
+          goto End;
         }
-  
-        export_all_procs = (int *)ZOLTAN_MALLOC(all_num_obj * sizeof(int));
-        export_all_to_part = (int *)ZOLTAN_MALLOC(all_num_obj * sizeof(int));
   
         gid = all_global_ids;
   
@@ -593,6 +626,7 @@ ZOLTAN_ID_PTR gid;
           idIdx = search_hash_table(zz, gid, ht, ts);
   
           if (idIdx >= 0){
+
             export_all_procs[i] = (*export_procs)[idIdx];
             export_all_to_part[i] = (*export_to_part)[idIdx];
           }
@@ -603,12 +637,11 @@ ZOLTAN_ID_PTR gid;
         }
   
         free_hash_table(ht, ts);
-  
-        ZOLTAN_FREE(export_global_ids); 
-        ZOLTAN_FREE(export_local_ids); 
-        ZOLTAN_FREE(export_procs);
-        ZOLTAN_FREE(export_to_part);
-        ZOLTAN_FREE(&parts);
+
+        Zoltan_LB_Special_Free_Part(zz, export_global_ids, export_local_ids, 
+                            export_procs, export_to_part);
+        Zoltan_Special_Free(zz, (void **)(void*)&parts, 
+                            ZOLTAN_SPECIAL_MALLOC_INT);
   
         *export_global_ids = all_global_ids;
         *export_local_ids = all_local_ids;
@@ -631,7 +664,7 @@ ZOLTAN_ID_PTR gid;
     for (i = 0; i < *num_import_objs; i++) {
       printf("    Obj: ");
       ZOLTAN_PRINT_GID(zz, &((*import_global_ids)[i*zz->Num_GID]));
-      printf("  To partition: %4d", 
+      printf("  To part: %4d", 
              (*import_to_part != NULL ? (*import_to_part)[i] 
                                       : zz->Proc));
       printf("  From processor: %4d\n", (*import_procs)[i]);
@@ -641,7 +674,7 @@ ZOLTAN_ID_PTR gid;
     for (i = 0; i < *num_export_objs; i++) {
       printf("    Obj: ");
       ZOLTAN_PRINT_GID(zz, &((*export_global_ids)[i*zz->Num_GID]));
-      printf("  To partition: %4d",
+      printf("  To part: %4d",
              (*export_to_part != NULL ? (*export_to_part)[i] 
                                       : (*export_procs)[i]));
       printf("  To processor: %4d\n", (*export_procs)[i]);
@@ -666,8 +699,7 @@ ZOLTAN_ID_PTR gid;
       sprintf(msg, "Error in auto-migration; %d returned from "
                     "Zoltan_Help_Migrate\n", error);
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, msg);
-      ZOLTAN_TRACE_EXIT(zz, yo);
-      return error;
+      goto End;
     }
     end_time = Zoltan_Time(zz->Timer);
     lb_time[1] = end_time - start_time;
@@ -689,11 +721,9 @@ ZOLTAN_ID_PTR gid;
 
   *changes = 1;
 
+End:
   ZOLTAN_TRACE_EXIT(zz, yo);
-  if (error)
-    return (error);
-  else
-    return (ZOLTAN_OK);
+  return (error);
 }
 
 /*****************************************************************************/
@@ -705,17 +735,17 @@ int Zoltan_LB_Build_PartDist(ZZ *zz)
 char *yo = "Zoltan_LB_Build_PartDist";
 int ierr = ZOLTAN_OK;
 int inflag[6], outflag[6] = {0,0,-1,0,0,0};
-int global_parts_set = 0;   /* number of procs on which NUM_GLOBAL_PARTITIONS 
+int global_parts_set = 0;   /* number of procs on which NUM_GLOBAL_PARTS 
                                parameter was set. */
-int local_parts_set = 0;    /* number of procs on which NUM_LOCAL_PARTITIONS
+int local_parts_set = 0;    /* number of procs on which NUM_LOCAL_PARTS
                                parameter was set. */
 int max_global_parts = 0;   /* Max value of Num_Global_Parts_Param on all 
                                procs. */
 int sum_local_parts = 0;    /* Sum of Num_Local_Parts over all procs.
-                               Procs on which NUM_LOCAL_PARTITIONS was not
+                               Procs on which NUM_LOCAL_PARTS was not
                                set assume zero parts on them.  Thus,
                                sum_local_parts may be < max_global_parts. */
-int remaining_procs;        /* Num of procs not setting NUM_LOCAL_PARTITIONS */
+int remaining_procs;        /* Num of procs not setting NUM_LOCAL_PARTS */
 int avail_local_parts;      /* max_global_parts - sum_local_parts */
 int num_proc = zz->Num_Proc;
 int *pdist;
@@ -746,7 +776,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
     goto End;
   }
 
-  /* Since PartDist is changing, can't reuse old partitions.
+  /* Since PartDist is changing, can't reuse old parts.
    * Free LB.Data_Structure to prevent reuse. 
    * Also free LB.PartDist and LB.ProcDist.
    */
@@ -773,8 +803,8 @@ MPI_User_function Zoltan_PartDist_MPIOp;
   }
 
   else {
-    /* Either NUM_GLOBAL_PARTITIONS is set != num_proc or NUM_LOCAL_PARTITIONS
-     * is set.  Build PartDist, distributing partitions to processors as 
+    /* Either NUM_GLOBAL_PARTS is set != num_proc or NUM_LOCAL_PARTS
+     * is set.  Build PartDist, distributing parts to processors as 
      * specified. 
      */
 
@@ -785,7 +815,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
       else if (sum_local_parts > max_global_parts) {
         char emsg[256];
         sprintf(emsg, 
-                "Sum of NUM_LOCAL_PARTITIONS %d > NUM_GLOBAL_PARTITIONS %d", 
+                "Sum of NUM_LOCAL_PARTS %d > NUM_GLOBAL_PARTS %d", 
                 sum_local_parts, max_global_parts);
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, emsg);
         ierr = ZOLTAN_FATAL;
@@ -795,7 +825,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
                local_parts_set == num_proc) {
         char emsg[256];
         sprintf(emsg, 
-                "Sum of NUM_LOCAL_PARTITIONS %d < NUM_GLOBAL_PARTITIONS %d", 
+                "Sum of NUM_LOCAL_PARTS %d < NUM_GLOBAL_PARTS %d", 
                 sum_local_parts, max_global_parts);
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, emsg);
         ierr = ZOLTAN_FATAL;
@@ -804,7 +834,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
     }
 
     if (max_global_parts == 0) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Zero partitions requested");
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Zero parts requested");
       ierr = ZOLTAN_FATAL;
       goto End;
     }
@@ -822,8 +852,8 @@ MPI_User_function Zoltan_PartDist_MPIOp;
 
     if (!local_parts_set) {
       if (max_global_parts > num_proc) {
-        /* NUM_LOCAL_PARTITIONS is not set; NUM_GLOBAL_PARTITIONS > num_proc. */
-        /* Even distribution of partitions to processors. */
+        /* NUM_LOCAL_PARTS is not set; NUM_GLOBAL_PARTS > num_proc. */
+        /* Even distribution of parts to processors. */
         zz->LB.Single_Proc_Per_Part = 1;
         frac = max_global_parts / num_proc;
         mod  = max_global_parts % num_proc;
@@ -836,8 +866,8 @@ MPI_User_function Zoltan_PartDist_MPIOp;
         pdist[cnt] = num_proc;
       }
       else { /* num_proc < max_global_parts */
-        /* NUM_LOCAL_PARTITIONS is not set; NUM_GLOBAL_PARTITIONS < num_proc. */
-        /* Even distribution of processors to partitions. */
+        /* NUM_LOCAL_PARTS is not set; NUM_GLOBAL_PARTS < num_proc. */
+        /* Even distribution of processors to parts. */
         zz->LB.Single_Proc_Per_Part = 0;  /* Parts are spread across procs */
         pdist[0] = 0;
         frac = num_proc / max_global_parts;
@@ -849,10 +879,10 @@ MPI_User_function Zoltan_PartDist_MPIOp;
     }
     else /* local_parts_set */ {
 
-      /* NUM_LOCAL_PARTITIONS is set on at least some processors. */
-      /* Distribute partitions to processors to match NUM_LOCAL_PARTITIONS
-         where specified; distribute remaining partitions 
-         to processors that didn't specify NUM_LOCAL_PARTITIONS */
+      /* NUM_LOCAL_PARTS is set on at least some processors. */
+      /* Distribute parts to processors to match NUM_LOCAL_PARTS
+         where specified; distribute remaining parts 
+         to processors that didn't specify NUM_LOCAL_PARTS */
 
       zz->LB.Single_Proc_Per_Part = 1;
 
@@ -861,9 +891,9 @@ MPI_User_function Zoltan_PartDist_MPIOp;
       MPI_Allgather(&(zz->LB.Num_Local_Parts_Param), 1, MPI_INT, 
                     local_parts_params, 1, MPI_INT, zz->Communicator);
 
-      /* Compute number of parts not specified by NUM_LOCAL_PARTITIONS */
-      /* In MPI_Allreduce above, processors not specifying NUM_LOCAL_PARTITIONS
-       * specified contributed zero partitions to sum_local_parts.  */
+      /* Compute number of parts not specified by NUM_LOCAL_PARTS */
+      /* In MPI_Allreduce above, processors not specifying NUM_LOCAL_PARTS
+       * specified contributed zero parts to sum_local_parts.  */
 
       remaining_procs = num_proc - local_parts_set;
       avail_local_parts = max_global_parts - sum_local_parts;
@@ -874,7 +904,7 @@ MPI_User_function Zoltan_PartDist_MPIOp;
 
       for (cnt = 0, pcnt = 0, i = 0; i < num_proc; i++)
         if (local_parts_params[i] != -1) {
-          /* Fill in processor for its NUM_LOCAL_PARTITIONS partitions. */
+          /* Fill in processor for its NUM_LOCAL_PARTS parts. */
           for (j = 0; j < local_parts_params[i]; j++)
             pdist[cnt++] = i;
         }

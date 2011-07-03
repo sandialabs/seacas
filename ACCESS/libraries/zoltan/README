@@ -6,10 +6,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: README,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    $Revision: 1.1 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 Contacts:
 
@@ -95,9 +95,9 @@ docs/octree                        -- Documentation for RPI's
 ZOLTAN LIBRARY FILES
 --------------------
 
-Makefile        -- Top-level Zoltan Makefile.  
+makefile        -- Top-level Zoltan makefile.  
 
-Makefile_sub    -- Lower-level Makefile template.  Copied to Obj_target
+makefile_sub    -- Lower-level makefile template.  Copied to Obj_target
                    directories when targets are compiled.
 
 all             -- Memory allocation functions.
@@ -155,8 +155,6 @@ examples        -- A directory containing very simple C and C++ applications
 fdriver         -- Fortran version of driver, primarily used for testing
                    the Fortran interface.
 
-ZoltanComponent -- A CCA wrapper around the zoltan library. making it a 
-		   CCA component of the classic kind.
 
 OTHER DIRECTORIES
 -----------------

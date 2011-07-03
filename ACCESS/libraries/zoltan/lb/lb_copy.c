@@ -5,17 +5,17 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: lb_copy.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.5 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
-#include "zz_const.h"
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
 #endif
+#include "zz_const.h"
 
 #define COPY_BUFFER(buf, type, num) \
   if (from->buf) { \
@@ -62,6 +62,8 @@ int proc = fromZZ->Proc;
   COPY_BUFFER(Part_Info, struct Zoltan_part_info, to->Part_Info_Max_Len);
 
   COPY_BUFFER(Remap, int, to->Num_Global_Parts);
+
+  COPY_BUFFER(OldRemap, int, to->Num_Global_Parts);
 
   COPY_BUFFER(PartDist, int, to->Num_Global_Parts + 1);
 

@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.sgi64,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.7 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -38,7 +38,7 @@ SPPR_HEAD               = spprinc.sun
 F90_MODULE_PREFIX       = -M
 FARG                    = farg_typical
 
-MPI_LIB                 = -L/usr/lib64
+MPI_LIBS                 = -L/usr/lib64
 MPI_LIBPATH             = -lmpi
 
 PARMETIS_LIBPATH        = -L/Net/pecos/proj/xyce/arch/sgi10k_MPI/lib

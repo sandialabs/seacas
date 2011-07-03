@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.gcc,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.19.2.1 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -29,7 +29,7 @@ CPPC			= g++ -Wall -Wno-deprecated
 
 INCLUDE_PATH		= -I/Net/local/lang/SC3.0.1/include \
 			  -I/Net/local/lang/SC3.0.1/ansi_include \
-			  -I/Net/proj/zoltan/arch/solaris/include 
+			  -I/Net/local/proj/zoltan/arch/solaris/include 
 DBG_FLAGS		= -g 
 OPT_FLAGS		= -O
 CFLAGS 			= $(DBG_FLAGS)
@@ -42,7 +42,7 @@ SPPR_HEAD 		= spprinc.most
 F90_MODULE_PREFIX 	= -M
 FARG      		= farg_typical
 
-MPI_LIB			= -lpmpich -lmpich -lsocket -lnsl -laio -lgcc
+MPI_LIBS			= -lpmpich -lmpich -lsocket -lnsl -laio -lgcc
 MPI_LIBPATH		= -L/Net/local/mpi/build/solaris/ch_p4/lib \
                   -L/Net/local/gnu/lib/gcc-lib/sparc-sun-solaris2.8/3.2.1
 MPI_INCPATH		= -I/Net/local/mpi/include \
@@ -55,8 +55,8 @@ JOSTLE_LIBPATH 		= -L/Net/local/proj/zoltan/arch/solaris/lib
 JOSTLE_INCPATH 		= -I/Net/local/proj/zoltan/arch/all/src
 JOSTLE_SRCPATH 		= /Net/local/proj/zoltan/arch/all/src
 
-PATOH_LIBPATH		= -L/Net/local/proj/zoltan/arch/solaris/lib
-PATOH_INCPATH		= -I/Net/local/proj/zoltan/arch/all/src
+PATOH_LIBPATH		= -L/Net/local/proj/zoltan/arch/solaris/PaToH
+PATOH_INCPATH		= -I/Net/local/proj/zoltan/arch/solaris/PaToH
 
 NEMESIS_LIBPATH		= -L/Net/local/proj/zoltan/arch/solaris/lib
 NEMESIS_INCPATH		= -I/Net/local/proj/zoltan/arch/solaris/include

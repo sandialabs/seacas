@@ -5,14 +5,18 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: g2l_hash.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.2 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
+#ifndef _G2L_HASH_H_
+#define _G2L_HASH_H_
 
-#ifndef _COLOR_HASH_H_
-#define _COLOR_HASH_H_
+#ifdef __cplusplus
+/* if C++, define the rest of this header file as extern C */
+extern "C" {
+#endif
 
 /* Structure used for hashing */
 struct G2L_Hash_Node {
@@ -24,8 +28,10 @@ struct G2L_Hash_Node {
 typedef struct G2L_Hash_Node G2LHashNode;
 
 struct G2L_Hash {
-    int   size;
-    int   lastlno;
+    int   maxsize;
+    int   size;          /* number of ids stored in the hash */
+    int   base, baseend; /* base and baseend are inclusive gno's of local vertices */
+    int   nlvtx;         /* it is #localy owened vertices: simply equal to "baseend-base+1" */
     
     G2LHashNode **table;
     G2LHashNode *nodes;
@@ -33,16 +39,36 @@ struct G2L_Hash {
 
 typedef struct G2L_Hash G2LHash;
 
+/* Returns the prime number closest to (and smaller than) stop */
+/* int Zoltan_GenPrime(int stop, int *prime_num); */
+    
 
-int Zoltan_G2LHash_Create(G2LHash *hash, int size);
+int Zoltan_G2LHash_Create(G2LHash *hash, int maxsize, int base, int nlvtx);
 int Zoltan_G2LHash_Destroy(G2LHash *hash);
 int Zoltan_G2LHash_G2L(G2LHash *hash, int gno);
 /*
   if gno exist it returns lno, if it does not exist,
   it inserts andr returns newly assigned lno */
 int Zoltan_G2LHash_Insert(G2LHash *hash, int gno);
-#define Zoltan_G2LHash_L2G(hash, lno) ((hash)->nodes[lno].gno)
+    
+#define Zoltan_G2LHash_L2G(hash, lno) ((lno<(hash)->nlvtx) ? (hash)->base+lno : (hash)->nodes[lno-(hash)->nlvtx].gno)
 
+
+/* Key&Value hash functions using same data structure above
+   the only difference will be the insert function */
+typedef struct G2L_Hash KVHash;
+
+int Zoltan_KVHash_Create(KVHash *hash, int maxsize);
+int Zoltan_KVHash_Destroy(KVHash *hash);
+
+int Zoltan_KVHash_Insert(KVHash *hash, int key, int value);
+int Zoltan_KVHash_GetValue(KVHash *hash, int key);
+
+    
+#ifdef __cplusplus
+} /* closing bracket for extern "C" */
+#endif
+    
 
 #endif
 

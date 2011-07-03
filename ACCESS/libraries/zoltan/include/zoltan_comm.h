@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zoltan_comm.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.7 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -52,6 +52,7 @@ int Zoltan_Comm_Resize(ZOLTAN_COMM_OBJ*, int*, int, int*);
 int Zoltan_Comm_Do     (ZOLTAN_COMM_OBJ*, int, char*, int, char*);
 int Zoltan_Comm_Do_Post(ZOLTAN_COMM_OBJ*, int, char*, int, char*);
 int Zoltan_Comm_Do_Wait(ZOLTAN_COMM_OBJ*, int, char*, int, char*);
+int Zoltan_Comm_Do_AlltoAll(ZOLTAN_COMM_OBJ*, char*, int, char*);
 
 int Zoltan_Comm_Do_Reverse     (ZOLTAN_COMM_OBJ*, int, char*, int, int*, char*);
 int Zoltan_Comm_Do_Reverse_Post(ZOLTAN_COMM_OBJ*, int, char*, int, int*, char*);

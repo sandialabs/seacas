@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: hsfc.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.26 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef ZOLTAN_HSFC_H
@@ -87,7 +87,7 @@ typedef struct Dots {
    double fsfc;         /* computed normalized SFC coordinate     */
    double x[3];         /* dots coordinates in problem domain     */
    float weight;        /* scalar computed from weight vector     */
-   int   part;          /* partition owning dots                  */
+   int   part;          /* partition to which dot is assigned     */
    } Dots;              /* represents objects being load-balanced */
 
 

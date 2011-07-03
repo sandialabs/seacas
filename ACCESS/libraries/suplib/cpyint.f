@@ -32,27 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE CPYINT (LEN, IFROM, ITO)
 C=======================================================================
-C$Id: cpyint.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: cpyint.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:12:21  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:12:20  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:06  gdsjaar
-c Initial revision
-c 
-
 C   --*** CPYINT *** (ETCLIB) Copy all integers in list
 C   --   Written by Amy Gilkey - revised 11/03/87
 C   --
@@ -66,9 +45,19 @@ C   --   ITO - OUT - the copied list
       INTEGER LEN
       INTEGER IFROM(*), ITO(*)
 
-      DO 100 I = 1, LEN
-         ITO(I) = IFROM(I)
+      DO 100 I = 1, LEN-7,8
+         ITO(I+0) = IFROM(I+0)
+         ITO(I+1) = IFROM(I+1)
+         ITO(I+2) = IFROM(I+2)
+         ITO(I+3) = IFROM(I+3)
+         ITO(I+4) = IFROM(I+4)
+         ITO(I+5) = IFROM(I+5)
+         ITO(I+6) = IFROM(I+6)
+         ITO(I+7) = IFROM(I+7)
   100 CONTINUE
+      do 110 J = I, LEN
+         ITO(J) = IFROM(J)
+ 110  continue
 
       RETURN
       END

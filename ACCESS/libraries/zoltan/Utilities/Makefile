@@ -5,14 +5,14 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Makefile,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
 #    Revision: 1.17 $
 ##############################################################################
 
 ##############################################################################
-# Top-level Makefile for Zoltan utilities.
+# Top-level makefile for Zoltan utilities.
 #
 # Utilities currently supported:
 #    Memory management utility (libzoltan_mem.a)
@@ -70,6 +70,7 @@ ifndef ZOLTAN_LIB
 ZOLTAN_LIB = libzoltan.a
 endif
 
+GDEFINES += -DTRILINOS_NO_CONFIG_H
 ############################################################################
 #                  SOURCE CODE
 ############################################################################
@@ -191,7 +192,7 @@ VPATH		= $(SUBDIRS)
 ###########################################################################
 help:
 	@echo  ' '
-	@echo  'Top-level Makefile for Zoltan utilities.'
+	@echo  'Top-level makefile for Zoltan utilities.'
 	@echo  ' '
 	@echo  'Utilities currently supported:'
 	@echo  '   Memory management utility ('$(MEM_LIB)')'
@@ -240,8 +241,8 @@ $(MEM_LIB):
 	@if [ ! -d $(ZOLTAN_OBJ_DIR) ]; 		\
 	then mkdir $(ZOLTAN_OBJ_DIR); 			\
 	fi
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) $(MEM_LIB) 			\
 	"LIB_NAME=$(MEM_LIB)"			\
@@ -260,8 +261,8 @@ $(MEM_LIB):
 
 zdrive_mem mem:
 	$(MAKE) $(MEM_LIB) 
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zdrive_mem 			\
 	"DRIVER_NAME=zdrive_mem"		\
@@ -280,8 +281,8 @@ $(COMM_LIB):
 	@if [ ! -d $(ZOLTAN_OBJ_DIR) ]; 		\
 	then mkdir $(ZOLTAN_OBJ_DIR); 			\
 	fi
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) $(COMM_LIB)			\
 	"LIB_NAME=$(COMM_LIB)"			\
@@ -300,8 +301,8 @@ $(COMM_LIB):
 zdrive_comm comm: 
 	$(MAKE) $(MEM_LIB)
 	$(MAKE) $(COMM_LIB)
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zdrive_comm 			\
 	"DRIVER_NAME=zdrive_comm"		\
@@ -316,8 +317,8 @@ zdrive_comm comm:
 zCPPdrive_comm: 
 	$(MAKE) $(MEM_LIB)
 	$(MAKE) $(COMM_LIB)
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zCPPdrive_comm 			\
 	"DRIVER_NAME=zCPPdrive_comm"		\
@@ -336,8 +337,8 @@ $(DD_LIB):
 	@if [ ! -d $(ZOLTAN_OBJ_DIR) ]; 		\
 	then mkdir $(ZOLTAN_OBJ_DIR); 			\
 	fi
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) $(DD_LIB) 			\
 	"LIB_NAME=$(DD_LIB)"			\
@@ -357,8 +358,8 @@ zdrive_dd dd:
 	$(MAKE) $(MEM_LIB)
 	$(MAKE) $(COMM_LIB)
 	$(MAKE) $(DD_LIB) 
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zdrive_dd 			\
 	"DRIVER_NAME=zdrive_dd"		\
@@ -374,8 +375,8 @@ zCPPdrive_dd:
 	$(MAKE) $(MEM_LIB)
 	$(MAKE) $(COMM_LIB)
 	$(MAKE) $(DD_LIB) 
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zCPPdrive_dd 			\
 	"DRIVER_NAME=zCPPdrive_dd"		\
@@ -394,8 +395,8 @@ $(ZT_LIB):
 	@if [ ! -d $(ZOLTAN_OBJ_DIR) ]; 		\
 	then mkdir $(ZOLTAN_OBJ_DIR); 			\
 	fi
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) $(ZT_LIB) 			\
 	"LIB_NAME=$(ZT_LIB)"			\
@@ -414,8 +415,8 @@ $(ZT_LIB):
 zdrive_timer timer:
 	$(MAKE) $(MEM_LIB)
 	$(MAKE) $(ZT_LIB) 
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zdrive_timer 			\
 	"DRIVER_NAME=zdrive_timer"		\
@@ -431,8 +432,8 @@ zCPPdrive_timer:
 	$(MAKE) $(MEM_LIB)
 	$(MAKE) $(COMM_LIB)
 	$(MAKE) $(ZT_LIB) 
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) zCPPdrive_timer 			\
 	"DRIVER_NAME=zCPPdrive_timer"		\
@@ -449,8 +450,8 @@ $(ZOLTAN):
 	$(MAKE) $(COMM_LIB)
 	$(MAKE) $(DD_LIB) 
 	$(MAKE) $(ZT_LIB) 
-	@rm -f $(ZOLTAN_OBJ_DIR)/Makefile
-	@cp Makefile_sub $(ZOLTAN_OBJ_DIR)/Makefile
+	@rm -f $(ZOLTAN_OBJ_DIR)/makefile
+	@cp makefile_sub $(ZOLTAN_OBJ_DIR)/makefile
 	@cd $(ZOLTAN_OBJ_DIR); 			\
 	$(MAKE) $(ZOLTAN_LIB) 			\
 	"LIB_NAME=$(ZOLTAN_LIB)"		\

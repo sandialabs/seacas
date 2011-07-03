@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: par_tflops_special_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.4 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -26,6 +26,9 @@ extern "C" {
 extern void Zoltan_RB_scan_double(double *, double *, int, MPI_Comm, int, int, int);
 extern void Zoltan_RB_sum_double(double *, int, int, int, int, MPI_Comm);
 extern void Zoltan_RB_max_double(double *, int, int, int, int, MPI_Comm);
+
+extern void Zoltan_RB_bcast_doubles(double *, int, int, int, int, int, MPI_Comm comm);
+extern void Zoltan_RB_gather_double( double, double *, int, int, int, int, MPI_Comm comm);
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */

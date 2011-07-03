@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.generic,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.13 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -132,7 +132,7 @@ FARG      		= farg_typical
 ##############################################################################
 
 # MPI Libraries (prefix all libraries with -l) 
-MPI_LIB			= 
+MPI_LIBS			= 
 # Paths to the MPI libraries (prefix all paths with -L).
 MPI_LIBPATH		=
 # Paths to the MPI include files (prefix all paths with -I).

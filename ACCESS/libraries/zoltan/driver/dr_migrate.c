@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_migrate.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.40 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 /*--------------------------------------------------------------------------*/
@@ -75,6 +75,19 @@ ZOLTAN_UNPACK_OBJ_MULTI_FN migrate_unpack_elem_multi;
 /*
  *  Static global variables to help with migration.
  */
+struct New_Elem_Hash_Node{
+  int globalID;
+  int localID;
+  int next;
+};
+
+static int *New_Elem_Hash_Table = NULL;
+static struct New_Elem_Hash_Node *New_Elem_Hash_Nodes = NULL;
+                                      /* Hash table containing globalIDs and
+                                         localIDs of elements in the new
+                                         decomposition; used for quick
+                                         globalID -> localID lookup. */
+
 static int *New_Elem_Index = NULL;    /* Array containing globalIDs of 
                                          elements in the new decomposition,
                                          ordered in the same order as the
@@ -88,6 +101,12 @@ static int New_Elem_Index_Size = 0;   /* Number of integers allocated in
                                          New_Elem_Index.                     */
 static int Use_Edge_Wgts = 0;         /* Flag indicating whether elements
                                          store edge weights.                 */
+/*static int Vertex_Blanking = 0;        We're dynamically altering the graph
+                                         in each iteration by blanking portions
+                                         of it, so we must migrate flags 
+                                         indicating whether adjacent vertices
+                                         of migrated elements were blanked on
+                                         the originating process.             */
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -231,6 +250,70 @@ char *yo = "migrate_elements";
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
+extern unsigned int Zoltan_Hash(ZOLTAN_ID_PTR, int, unsigned int);
+
+void insert_in_hash(
+  int globalID,
+  int localID
+)
+{
+int j;
+  New_Elem_Hash_Nodes[localID].globalID = globalID;
+  New_Elem_Hash_Nodes[localID].localID = localID;
+  j = Zoltan_Hash((ZOLTAN_ID_PTR) &globalID,1,New_Elem_Index_Size);
+  New_Elem_Hash_Nodes[localID].next = New_Elem_Hash_Table[j];
+  New_Elem_Hash_Table[j] = localID;
+}
+
+
+/*****************************************************************************/
+/*****************************************************************************/
+/*****************************************************************************/
+int find_in_hash(
+  int globalID
+) 
+{
+int idx;
+
+  ZOLTAN_ID_TYPE tmp;
+  tmp = globalID;
+  idx = Zoltan_Hash(&tmp, 1, New_Elem_Index_Size);
+  idx = New_Elem_Hash_Table[idx];
+  while (idx != -1 && New_Elem_Hash_Nodes[idx].globalID != globalID) {
+    idx = New_Elem_Hash_Nodes[idx].next;
+  }
+
+  return idx;
+}
+
+void remove_from_hash(
+  int globalID
+)
+{
+int idx, hidx, prev;
+
+  ZOLTAN_ID_TYPE tmp;
+  tmp = globalID;
+  hidx = Zoltan_Hash(&tmp, 1, New_Elem_Index_Size);
+  idx = New_Elem_Hash_Table[hidx];
+  prev = -1;
+  while (idx != -1 && New_Elem_Hash_Nodes[idx].globalID != globalID) {
+    prev = idx;
+    idx = New_Elem_Hash_Nodes[idx].next;
+  }
+  
+  if (prev == -1) 
+    New_Elem_Hash_Table[hidx] = New_Elem_Hash_Nodes[idx].next;
+  else
+    New_Elem_Hash_Nodes[prev].next = New_Elem_Hash_Nodes[idx].next;
+
+  New_Elem_Hash_Nodes[idx].globalID = -1;
+  New_Elem_Hash_Nodes[idx].localID = -1;
+  New_Elem_Hash_Nodes[idx].next = -1;
+}
+/*****************************************************************************/
+/*****************************************************************************/
+/*****************************************************************************/
 void migrate_pre_process(void *data, int num_gid_entries, int num_lid_entries, 
                          int num_import, 
                          ZOLTAN_ID_PTR import_global_ids,
@@ -264,6 +347,11 @@ char msg[256];
   mesh = (MESH_INFO_PTR) data;
   elements = mesh->elements;
 
+  for (i=0; i < mesh->num_elems; i++){
+    /* don't migrate a pointer created on this process */
+    safe_free((void **)(void *)&(elements[i].adj_blank));
+  }
+
   /*
    *  Set some flags. Assume if true for one element, true for all elements.
    *  Note that some procs may have no elements. 
@@ -275,6 +363,19 @@ char msg[256];
     k = 0;
   /* Make sure all procs have the same value */
   MPI_Allreduce(&k, &Use_Edge_Wgts, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+
+  /* NOT IMPLEMENTED: blanking information is not sent along.  Subsequent
+     lb_eval may be incorrect, since imported elements may have blanked
+     adjacencies.
+
+  if (mesh->blank_count > 0)
+    k = 1;
+  else
+    k = 0;
+ 
+  MPI_Allreduce(&k, &Vertex_Blanking, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+
+  */
 
   /*
    *  For all elements, update adjacent elements' processor information.
@@ -292,13 +393,32 @@ char msg[256];
   if (mesh->elem_array_len > New_Elem_Index_Size) 
     New_Elem_Index_Size = mesh->elem_array_len;
   New_Elem_Index = (int *) malloc(New_Elem_Index_Size * sizeof(int));
+  New_Elem_Hash_Table = (int *) malloc(New_Elem_Index_Size * sizeof(int));
+  New_Elem_Hash_Nodes = (struct New_Elem_Hash_Node *) 
+           malloc(New_Elem_Index_Size * sizeof(struct New_Elem_Hash_Node));
+
+  if (New_Elem_Index == NULL || 
+      New_Elem_Hash_Table == NULL || New_Elem_Hash_Nodes == NULL) {
+    Gen_Error(0, "fatal: insufficient memory");
+    *ierr = ZOLTAN_MEMERR;
+    return;
+  }
+
+  for (i = 0; i < New_Elem_Index_Size; i++) 
+    New_Elem_Hash_Table[i] = -1;
+  for (i = 0; i < New_Elem_Index_Size; i++) {
+    New_Elem_Hash_Nodes[i].globalID = -1;
+    New_Elem_Hash_Nodes[i].localID = -1;
+    New_Elem_Hash_Nodes[i].next = -1;
+  }
 
   if (mesh->num_elems > 0) {
 
     proc_ids = (int *)  malloc(mesh->num_elems * sizeof(int));
     change   = (char *) malloc(mesh->num_elems * sizeof(char));
 
-    if (New_Elem_Index == NULL || proc_ids == NULL || change == NULL) {
+    if (New_Elem_Index == NULL || proc_ids == NULL || change == NULL ||
+        New_Elem_Hash_Table == NULL || New_Elem_Hash_Nodes == NULL) {
       Gen_Error(0, "fatal: insufficient memory");
       *ierr = ZOLTAN_MEMERR;
       return;
@@ -306,6 +426,7 @@ char msg[256];
 
     for (i = 0; i < mesh->num_elems; i++) {
       New_Elem_Index[i] = elements[i].globalID;
+      insert_in_hash(elements[i].globalID, i);
       proc_ids[i] = proc;
       change[i] = 0;
     }
@@ -325,18 +446,21 @@ char msg[256];
     if (export_procs[i] != proc) {
       /* Export is moving to a new processor */
       New_Elem_Index[exp_elem] = -1;
+      remove_from_hash(export_global_ids[gid+i*num_gid_entries]);
       proc_ids[exp_elem] = export_procs[i];
     }
   }
 
+  j = 0;
   for (i = 0; i < num_import; i++) {
     if (import_procs[i] != proc) {
       /* Import is moving from a new processor, not just from a new partition */
       /* search for first free location */
-      for (j = 0; j < New_Elem_Index_Size; j++) 
+      for ( ; j < New_Elem_Index_Size; j++) 
         if (New_Elem_Index[j] == -1) break;
 
       New_Elem_Index[j] = import_global_ids[gid+i*num_gid_entries];
+      insert_in_hash((int) import_global_ids[gid+i*num_gid_entries], j);
     }
   }
 
@@ -392,7 +516,7 @@ char msg[256];
       }
     }
   }
-  safe_free((void **) &change);
+  safe_free((void **)(void *) &change);
 
   /*
    * Update off-processor information 
@@ -416,7 +540,7 @@ char msg[256];
       send_vec[i] = proc_ids[mesh->ecmap_elemids[i]];
   }
 
-  safe_free((void **) &proc_ids);
+  safe_free((void **)(void *) &proc_ids);
 
   if (maxlen > 0)
     recv_vec = (int *) malloc(maxlen * sizeof(int));
@@ -448,8 +572,10 @@ char msg[256];
           if (recv_vec[offset] == proc) {
             /* element is moving to this processor; */
             /* convert adj from global to local ID. */
-            if ((idx = in_list(mesh->ecmap_neighids[offset],New_Elem_Index_Size,
-                              New_Elem_Index)) == -1) {
+            idx = find_in_hash(mesh->ecmap_neighids[offset]);
+            if (idx >= 0) 
+              idx = New_Elem_Hash_Nodes[idx].localID;
+            else {
               sprintf(msg, "fatal: unable to locate element %d in "
                            "New_Elem_Index", mesh->ecmap_neighids[offset]);
               Gen_Error(0, msg);
@@ -464,8 +590,8 @@ char msg[256];
     }
   }
 
-  safe_free((void **) &recv_vec);
-  safe_free((void **) &send_vec);
+  safe_free((void **)(void *) &recv_vec);
+  safe_free((void **)(void *) &send_vec);
 
   /*
    * Allocate space (if needed) for the new element data.
@@ -485,6 +611,7 @@ char msg[256];
       initialize_element(&(mesh->elements[i]));
   }
 }
+
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -583,7 +710,9 @@ int adj_elem;
     elements[last].edge_wgt = NULL;
   }
 
-  if (New_Elem_Index != NULL) safe_free((void **) &New_Elem_Index);
+  if (New_Elem_Index != NULL) safe_free((void **)(void *) &New_Elem_Index);
+  if (New_Elem_Hash_Table != NULL) safe_free((void **)(void *) &New_Elem_Hash_Table);
+  if (New_Elem_Hash_Nodes != NULL) safe_free((void **)(void *) &New_Elem_Hash_Nodes);
   New_Elem_Index_Size = 0;
 
   if (!build_elem_comm_maps(proc, mesh)) {
@@ -636,7 +765,9 @@ int idx;
    * Compute size of one element's data.
    */
 
-  size = sizeof(ELEM_INFO);
+  /* 152 is hardcoded size of ELEM_INFO for 64-bit archs;
+   * Need it to make 32-bit and 64-bit repartitioning results match. */
+  size = (sizeof(ELEM_INFO) > 152 ? sizeof(ELEM_INFO) : 152);
  
   /* Add space to correct alignment so casts work in (un)packing. */
   size = Zoltan_Align(size);
@@ -659,6 +790,12 @@ int idx;
   size = Zoltan_Align(size);
   size += num_nodes * mesh->num_dims * sizeof(float);
   
+  /* For dynamic weights test, multiply size by vertex weight. */
+  /* This simulates mesh refinement. */
+  if (Test.Dynamic_Weights){
+    size *= ((current_elem->cpu_wgt[0] > 1.0) ? current_elem->cpu_wgt[0] : 1.0);
+  }
+
   return (size);
 }
 
@@ -817,7 +954,10 @@ void migrate_unpack_elem(void *data, int num_gid_entries, ZOLTAN_ID_PTR elem_gid
 
   MPI_Comm_rank(MPI_COMM_WORLD, &proc);
 
-  if ((idx = in_list(elem_gid[gid], New_Elem_Index_Size, New_Elem_Index)) == -1) {
+  idx = find_in_hash(elem_gid[gid]);
+  if (idx >= 0) 
+    idx = New_Elem_Hash_Nodes[idx].localID;
+  else {
     Gen_Error(0, "fatal: Unable to locate position for element");
     *ierr = ZOLTAN_FATAL;
     return;
@@ -868,9 +1008,16 @@ void migrate_unpack_elem(void *data, int num_gid_entries, ZOLTAN_ID_PTR elem_gid
       buf_int++;
       current_elem->adj_proc[i] = *buf_int;
       buf_int++;
-      if (current_elem->adj[i] != -1 && current_elem->adj_proc[i] == proc) 
-        current_elem->adj[i] = in_list(current_elem->adj[i], 
-                                       New_Elem_Index_Size, New_Elem_Index);
+      if (current_elem->adj[i] != -1 && current_elem->adj_proc[i] == proc) {
+        int idx = find_in_hash(current_elem->adj[i]);
+        if (idx >= 0) 
+          current_elem->adj[i] = New_Elem_Hash_Nodes[idx].localID;
+        else {
+          Gen_Error(0, "fatal: Unable to locate position for neighbor");
+          *ierr = ZOLTAN_FATAL;
+          return;
+        }     
+      }
     }
     size += current_elem->adj_len * 2 * sizeof(int);
 

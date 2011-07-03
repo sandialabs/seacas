@@ -1,4 +1,4 @@
-$Id: README,v 1.1 2009/06/09 18:37:57 gdsjaar Exp $
+$Id: README,v 1.1 2006/08/10 22:26:58 gdsjaar Exp $
 
 Some simple C examples may be found in the "C" directory, and
 C++ examples in the "CPP" directory.  

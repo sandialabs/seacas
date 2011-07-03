@@ -1,9 +1,12 @@
-XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.10 1998/04/27 22:39:11 rwstotz Exp $
 
 #define IHaveSubdirs
 
-#define PassDebugFlags  "CDEBUGFLAGS=$(CDEBUGFLAGS)" \
-			"F77DEBUGFLAGS= $(F77DEBUGFLAGS)"
+#define PassDebugFlags	"DEBUG=$(DEBUG)" \
+	                "CDEBUGFLAGS=$(CDEBUGFLAGS)" \
+	                "CXXDEBUGFLAGS=$(CXXDEBUGFLAGS)" \
+			"F90DEBUGFLAGS=$(F90DEBUGFLAGS)" \
+			"F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
 
 #define ExtraOptions	"CCOPTIONS=$(CCOPTIONS)" \
 			"F77OPTIONS=$(F77OPTIONS)"

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_dd.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.4 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -29,8 +29,11 @@ int build_elem_dd(MESH_INFO_PTR mesh)
 /* Create a distributed directory of the elements so we can track their
  * processor assignment after migrations.
  */
+int maxelems;
 
-  if (Zoltan_DD_Create(&(mesh->dd), MPI_COMM_WORLD, 1, 0, 0, 0, 0) != 0) {
+  MPI_Allreduce(&(mesh->num_elems), &maxelems, 1, MPI_INT, MPI_MAX,
+                MPI_COMM_WORLD);
+  if (Zoltan_DD_Create(&(mesh->dd), MPI_COMM_WORLD, 1, 0, 0, maxelems, 0) != 0){
     Gen_Error(0, "fatal:  NULL returned from Zoltan_DD_Create()\n");
     return 0;
   }
@@ -66,8 +69,8 @@ int i, j;
     return 0;
   }
 
-  safe_free((void **) &gids);
-  safe_free((void **) &parts);
+  safe_free((void **)(void *) &gids);
+  safe_free((void **)(void *) &parts);
   return 1;
 }
 

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: lb_invert.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.5 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -75,7 +75,8 @@ char *yo = "Zoltan_Invert_Lists";
 char msg[256];
 ZOLTAN_COMM_OBJ *comm_plan;        /* Object returned communication routines  */
 int msgtag, msgtag2;               /* Message tags for communication routines */
-int num_gid_entries, num_lid_entries;  /* Length of global and local ids */
+int num_gid_entries = zz->Num_GID;
+int num_lid_entries = zz->Num_LID;
 int include_parts;                 /* Flag indicating whether to compute
                                       inverse list for partitions. */
 int ierr, ret_ierr = ZOLTAN_OK;

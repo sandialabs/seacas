@@ -33,16 +33,10 @@ C=======================================================================
       SUBROUTINE DBIEB1 (NDB, OPTION, IELB, NUMELB, NUMLNK, NUMATR,
      &   LINK, ATRIB, NATRDM, NLNKDM, *)
 C=======================================================================
-C$Id: dbieb1.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbieb1.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbieb1.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.3  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.2  1997/03/20 19:40:11  caforsy
 CUpdated Imakefile for Imake 6.1.  Changed printing routines to handle

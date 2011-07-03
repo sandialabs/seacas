@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: migtags_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __MIGTAGS_CONST_H

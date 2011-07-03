@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_elem.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.14 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -816,7 +816,7 @@ int get_side_id(E_Type etype, const int *connect, const int nsnodes,
   char  err_buff[300];
 
   int nnodes, i, j, num;
-  int dup, location;
+  int dup, location = 0;
 
   /* check if this is a degenerate face */
   dup = 0;

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_input_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.3 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -46,9 +46,10 @@ struct Parallel_IO
                         /*     /pfs/tmp_1)                                   */
 
   int     file_type;    /* input file type */
+  int     file_comp;    /* wether the file is compressed and how       */
   int     init_dist_type;      /* Flag indicating how input data
                                   should be initially distributed.     */
-  int     init_dist_procs;     /* How many procs to use in 
+  int     init_dist_procs;     /* How many procs to use in
                                   the initial distribution.            */
 
   /* The root location of the parallel disks */

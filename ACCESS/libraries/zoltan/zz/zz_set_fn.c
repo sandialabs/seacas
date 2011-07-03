@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_set_fn.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.17.2.1 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -57,13 +57,13 @@ char msg[256];
 int ierr;
 
   switch (fn_type) {
-  case ZOLTAN_PARTITION_FN_TYPE:
-    ierr = Zoltan_Set_Partition_Fn(zz, 
-                  (ZOLTAN_PARTITION_FN *) fn, data);
+  case ZOLTAN_PART_FN_TYPE:
+    ierr = Zoltan_Set_Part_Fn(zz, 
+                  (ZOLTAN_PART_FN *) fn, data);
     break;
-  case ZOLTAN_PARTITION_MULTI_FN_TYPE:
-    ierr = Zoltan_Set_Partition_Multi_Fn(zz, 
-                  (ZOLTAN_PARTITION_MULTI_FN *) fn, data);
+  case ZOLTAN_PART_MULTI_FN_TYPE:
+    ierr = Zoltan_Set_Part_Multi_Fn(zz, 
+                  (ZOLTAN_PART_MULTI_FN *) fn, data);
     break;
   case ZOLTAN_NUM_EDGES_FN_TYPE:
     ierr = Zoltan_Set_Num_Edges_Fn(zz, 
@@ -217,6 +217,26 @@ int ierr;
     ierr = Zoltan_Set_HG_Edge_Wts_Fn(zz, 
                   (ZOLTAN_HG_EDGE_WTS_FN *) fn, data);
     break;
+  case ZOLTAN_NUM_FIXED_OBJ_FN_TYPE:
+    ierr = Zoltan_Set_Num_Fixed_Obj_Fn(zz, 
+                  (ZOLTAN_NUM_FIXED_OBJ_FN *) fn, data);
+    break;
+  case ZOLTAN_FIXED_OBJ_LIST_FN_TYPE:
+    ierr = Zoltan_Set_Fixed_Obj_List_Fn(zz, 
+                  (ZOLTAN_FIXED_OBJ_LIST_FN *) fn, data);
+    break;
+  case ZOLTAN_HIER_NUM_LEVELS_FN_TYPE:
+    ierr = Zoltan_Set_Hier_Num_Levels_Fn(zz,
+		  (ZOLTAN_HIER_NUM_LEVELS_FN *) fn, data);
+    break;
+  case ZOLTAN_HIER_PART_FN_TYPE:
+    ierr = Zoltan_Set_Hier_Part_Fn(zz,
+		  (ZOLTAN_HIER_PART_FN *) fn, data);
+    break;
+  case ZOLTAN_HIER_METHOD_FN_TYPE:
+    ierr = Zoltan_Set_Hier_Method_Fn(zz,
+		  (ZOLTAN_HIER_METHOD_FN *) fn, data);
+    break;
   default:
     sprintf(msg, "ZOLTAN_FN_TYPE %d is invalid.\n"
             "Value must be in range 0 to %d.", fn_type, ZOLTAN_MAX_FN_TYPES);
@@ -240,31 +260,31 @@ int ierr;
 /*****************************************************************************/
 /*****************************************************************************/
 
-int Zoltan_Set_Partition_Multi_Fn(
+int Zoltan_Set_Part_Multi_Fn(
   ZZ *zz, 
-  ZOLTAN_PARTITION_MULTI_FN *fn, 
+  ZOLTAN_PART_MULTI_FN *fn, 
   void *data
 )
 {
-  zz->Get_Partition_Multi = fn;
-  zz->Get_Partition_Multi_Data = data;
-  zz->Get_Partition = NULL;
-  zz->Get_Partition_Data = NULL;
+  zz->Get_Part_Multi = fn;
+  zz->Get_Part_Multi_Data = data;
+  zz->Get_Part = NULL;
+  zz->Get_Part_Data = NULL;
   return ZOLTAN_OK;
 }
 
 /*****************************************************************************/
 
-int Zoltan_Set_Partition_Fn(
+int Zoltan_Set_Part_Fn(
   ZZ *zz, 
-  ZOLTAN_PARTITION_FN *fn, 
+  ZOLTAN_PART_FN *fn, 
   void *data
 )
 {
-  zz->Get_Partition = fn;
-  zz->Get_Partition_Data = data;
-  zz->Get_Partition_Multi = NULL;
-  zz->Get_Partition_Multi_Data = NULL;
+  zz->Get_Part = fn;
+  zz->Get_Part_Data = data;
+  zz->Get_Part_Multi = NULL;
+  zz->Get_Part_Multi_Data = NULL;
   return ZOLTAN_OK;
 }
 
@@ -703,6 +723,71 @@ int Zoltan_Set_HG_Edge_Wts_Fn(
 {
   zz->Get_HG_Edge_Wts = fn;
   zz->Get_HG_Edge_Wts_Data = data;
+  return ZOLTAN_OK;
+}
+
+/*****************************************************************************/
+
+int Zoltan_Set_Num_Fixed_Obj_Fn(
+  ZZ *zz, 
+  ZOLTAN_NUM_FIXED_OBJ_FN *fn, 
+  void *data
+)
+{
+  zz->Get_Num_Fixed_Obj = fn;
+  zz->Get_Num_Fixed_Obj_Data = data;
+  return ZOLTAN_OK;
+}
+
+/*****************************************************************************/
+
+int Zoltan_Set_Fixed_Obj_List_Fn(
+  ZZ *zz, 
+  ZOLTAN_FIXED_OBJ_LIST_FN *fn, 
+  void *data
+)
+{
+  zz->Get_Fixed_Obj_List = fn;
+  zz->Get_Fixed_Obj_List_Data = data;
+  return ZOLTAN_OK;
+}
+
+/*****************************************************************************/
+
+int Zoltan_Set_Hier_Num_Levels_Fn(
+  ZZ *zz, 
+  ZOLTAN_HIER_NUM_LEVELS_FN *fn, 
+  void *data
+)
+{
+  zz->Get_Hier_Num_Levels = fn;
+  zz->Get_Hier_Num_Levels_Data = data;
+  return ZOLTAN_OK;
+}
+
+/*****************************************************************************/
+
+int Zoltan_Set_Hier_Part_Fn(
+  ZZ *zz, 
+  ZOLTAN_HIER_PART_FN *fn, 
+  void *data
+)
+{
+  zz->Get_Hier_Part = fn;
+  zz->Get_Hier_Part_Data = data;
+  return ZOLTAN_OK;
+}
+
+/*****************************************************************************/
+
+int Zoltan_Set_Hier_Method_Fn(
+  ZZ *zz, 
+  ZOLTAN_HIER_METHOD_FN *fn, 
+  void *data
+)
+{
+  zz->Get_Hier_Method = fn;
+  zz->Get_Hier_Method_Data = data;
   return ZOLTAN_OK;
 }
 

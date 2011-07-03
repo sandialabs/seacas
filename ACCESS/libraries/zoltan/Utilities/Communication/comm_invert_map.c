@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: comm_invert_map.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.13 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <stdio.h>
@@ -58,13 +58,25 @@ MPI_Comm  comm)			/* communicator */
     int       nrecvs=0;		/* number of messages I'll receive */
     int       i;		/* loop counter */
     MPI_Status status;		/* return MPI argument */
+    int       local_out_of_mem; /* Temporary variable to work-around a compiler
+                                   bug; see comments below. */
 
     msg_count = (int *) ZOLTAN_MALLOC(nprocs * sizeof(int));
     counts = (int *) ZOLTAN_MALLOC(nprocs * sizeof(int));
 
     if (msg_count == NULL || counts == NULL) out_of_mem = 1;
 
-    MPI_Allreduce((void *) &out_of_mem, (void *) &i, 1, MPI_INT, MPI_MAX, comm);
+    /* Work-around for compiler bug suggested by Rich Schiek.
+     * With 64-bit linux, OpenMPI 1.2.5, and Intel 10.1 compilers with
+     * optimization, passing the address of out_of_mem to MPI_Allreduce 
+     * causes a crash in MPI_Allreduce.  Rich and Tom Russo theorize that in 
+     * Zoltan_Comm_Create, out_of_mem is stored in a register, and taking 
+     * the address of a register is undefined.  Copying out_of_mem to a 
+     * local variable avoids the problem.
+     * See Zoltan Bugzilla bug 3825 for more info.
+     */
+    local_out_of_mem = out_of_mem;
+    MPI_Allreduce((void *) &local_out_of_mem, (void *) &i, 1, MPI_INT, MPI_MAX, comm);
     if (i) {
 	ZOLTAN_FREE(&counts);
 	ZOLTAN_FREE(&msg_count);
@@ -99,6 +111,9 @@ MPI_Comm  comm)			/* communicator */
 
     /* Note: these mallocs should never fail as prior frees are larger. */
 
+    /* TODO - should we do this with an alltoallv if we have many receives?,
+     *   spose all my receives arrive before I call MPI_Recv? 
+     */
 
     /* Send the lengths of all my real messages to their receivers. */
     for (i = 0; i < nsends + self_msg; i++) {

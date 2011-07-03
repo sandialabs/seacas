@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: phg_scale.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.15 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -16,6 +16,7 @@
 extern "C" {
 #endif
 #include "phg.h"
+#include "zz_const.h"
 
 
 
@@ -23,20 +24,25 @@ extern "C" {
 
 /* Scaling the weight of hypergraph edges. 
    This changes the inner product used in matching,
-   hopefully to the better! 
-   Note that the scaled weights are only used for matching,
-   and the original weights are restored afterwards (see phg_match.c).
+   usually to the better! 
+   Note that the scaled weights are returned in a separate
+   array (new_ewgts) and the hypergraph is not changed in this function.
 
-   EBEB: Removed Robert's serial scaling methods. 
+   Currently, three scalings are available:
+   1: absorption scaling (1/(size-1))
+   2: net size scaling   (1/size)
+   3: clique scaling     (2/(size*(size-1)))
+
+   EBEB: Removed Robert's old serial scaling methods. 
          We should look at these later.
  */
 int Zoltan_PHG_Scale_Edges (ZZ *zz, HGraph *hg, float *new_ewgt, 
-                             PHGPartParams *hgp)
+                            int edge_scaling)
 {
 int    i, err;
 int    *lsize = NULL;  /* local edge sizes */
 int    *size = NULL;   /* edge sizes */
-static char *yo = "Zoltan_PHG_Scale_Weights";
+static char *yo = "Zoltan_PHG_Scale_Edges";
 
   err = ZOLTAN_OK; 
 
@@ -49,7 +55,7 @@ static char *yo = "Zoltan_PHG_Scale_Weights";
     return ZOLTAN_MEMERR;
   }
 
-  switch (hgp->edge_scaling){
+  switch (edge_scaling){
 
   case 0:
     /* copy current weights; no scaling. */
@@ -61,6 +67,9 @@ static char *yo = "Zoltan_PHG_Scale_Weights";
     /* absorption scaling; scale by 1/(size -1) */
     /* intentionally fall through into next case! */
   case 2:
+    /* net size scaling; scale by 1/size */
+    /* intentionally fall through into next case! */
+  case 3:
     /* clique scaling; scale by 2/(size*(size-1)) */
 
     /* first compute size of all hyperedges */
@@ -83,9 +92,11 @@ static char *yo = "Zoltan_PHG_Scale_Weights";
       printf(" %1d,", size[i]);
 #endif
       if (size[i]>1) {
-        if (hgp->edge_scaling==1)
+        if (edge_scaling==1)
           new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0) / (size[i]-1.0);
-        else if (hgp->edge_scaling==2)
+        else if (edge_scaling==2)
+          new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0) / size[i];
+        else if (edge_scaling==3)
           new_ewgt[i] = (hg->ewgt ? hg->ewgt[i] : 1.0) * 2.0 / 
                         (size[i]*(size[i]-1.0));
       }
@@ -123,10 +134,21 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
   if ((hgp->vtx_scaling==0) || (hg->nVtx==0))
     return ZOLTAN_OK;
 
+  /* See whether vtx_scal is large enough; nVtx may have increased due to
+     processor reduction */
+  if (hgp->vtx_scal && (hgp->vtx_scal_size < hg->nVtx)) {
+    hgp->vtx_scal_size = 0;
+    ZOLTAN_FREE(&(hgp->vtx_scal));
+  }
+
   /* Allocate vtx_scal array if necessary */
-  if (hgp->vtx_scal==NULL){  /* first level in V-cycle */
-    if (!(hgp->vtx_scal = (float*) ZOLTAN_MALLOC (hg->nVtx *
+  if (hgp->vtx_scal==NULL){  
+    /* first level in V-cycle or ...*/
+    /* nVtx increased due to processor reduction */
+    hgp->vtx_scal_size = hg->nVtx;
+    if (!(hgp->vtx_scal = (float*) ZOLTAN_MALLOC (hgp->vtx_scal_size *
                            sizeof(float)))) {
+       hgp->vtx_scal_size = 0;
        ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
        return ZOLTAN_MEMERR;
     }
@@ -178,19 +200,23 @@ int Zoltan_PHG_Scale_Vtx (ZZ *zz, HGraph *hg, PHGPartParams *hgp)
   else if (hgp->vtx_scaling==3){  /* scale by sqrt vertex weights */
     if (hg->vwgt)
       for (i=0; i<hg->nVtx; i++)  {
-         if (hg->vwgt[i] == 0)
+         /* KDD Note:  Scaling by only first weight */
+         if (hg->vwgt[i*hg->VtxWeightDim] == 0)
             hgp->vtx_scal[i] = 1.0;
          else      
-             hgp->vtx_scal[i] = 1. / sqrt((double)hg->vwgt[i]);
+            /* KDD Note:  Scaling by only first weight */
+            hgp->vtx_scal[i] = 1. / sqrt((double)hg->vwgt[i*hg->VtxWeightDim]);
       }
   }
   else if (hgp->vtx_scaling==4){  /* scale by vertex weights */
     if (hg->vwgt)
       for (i=0; i<hg->nVtx; i++)  {
-         if (hg->vwgt[i] == 0)
+         /* KDD Note:  Scaling by only first weight */
+         if (hg->vwgt[i*hg->VtxWeightDim] == 0)
             hgp->vtx_scal[i] = 1.0;
          else            
-            hgp->vtx_scal[i] = 1. / hg->vwgt[i];
+            /* KDD Note:  Scaling by only first weight */
+            hgp->vtx_scal[i] = 1. / hg->vwgt[i*hg->VtxWeightDim];
       }
   }
 

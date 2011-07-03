@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: lb_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.107 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -16,6 +16,8 @@
 #define __LB_CONST_H
 
 #include "zoltan.h"
+#include "zoltan_dd.h"
+#include "params_const.h"
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -54,6 +56,9 @@ typedef int ZOLTAN_LB_BOX_ASSIGN_FN(struct Zoltan_Struct *,
 
 typedef enum Zoltan_LB_Method {
   NONE = -1,
+  BLOCK, 
+  CYCLIC, 
+  RANDOM, 
   RCB,
   OCTPART,
   PARMETIS,
@@ -61,12 +66,11 @@ typedef enum Zoltan_LB_Method {
   REFTREE,
   RIB,
   HSFC,
-  PHG,
-  PATOH,
-  PARKWAY,
+  GRAPH,
+  HYPERGRAPH,
+  HIER,
   ZOLTAN_LB_MAX_METHODS          /*  This entry should always be last.      */
 } ZOLTAN_LB_METHOD;
-
 
 /*
  * Values indicating which lists (import, export, export including
@@ -89,6 +93,7 @@ typedef enum Zoltan_LB_Method {
 #define ZOLTAN_AUTO_MIGRATE_DEF   FALSE
 #define ZOLTAN_MIGRATE_ONLY_PROC_CHANGES_DEF  1
 #define ZOLTAN_LB_RETURN_LISTS_DEF   ZOLTAN_LB_ALL_LISTS
+#define ZOLTAN_LB_APPROACH_DEF   "repartition"
 
 /* Struct for partition size info. */
 struct Zoltan_part_info {
@@ -107,12 +112,12 @@ struct Zoltan_LB_Struct {
   int Num_Global_Parts;           /*  The total number of partitions.
                                       Set in Zoltan_LB_Build_PartDist.       */
   int Num_Global_Parts_Param;     /*  The number of global partitions specified.
-                                      If parameter NUM_LOCAL_PARTITIONS or 
-                                      NUM_GLOBAL_PARTITIONS is not set,
+                                      If parameter NUM_LOCAL_PARTS or 
+                                      NUM_GLOBAL_PARTS is not set,
                                       Num_Global_Parts_Param == Num_Proc.    */
   int Num_Local_Parts_Param;      /*  The number of local partitions specified.
-                                      If parameter NUM_LOCAL_PARTITIONS or 
-                                      NUM_GLOBAL_PARTITIONS is not set,
+                                      If parameter NUM_LOCAL_PARTS or 
+                                      NUM_GLOBAL_PARTS is not set,
                                       Num_Local_Parts_Param == -1.           */
   int Prev_Global_Parts_Param;    /*  The previous values of
                                       Num_Global_Parts_Param.  Stored to 
@@ -124,12 +129,14 @@ struct Zoltan_LB_Struct {
                                       PartDist. */
   int Single_Proc_Per_Part;       /*  Flag indicating whether a partition can
                                       be spread across multiple processors.
-                                      Happens only when NUM_GLOBAL_PARTITIONS
+                                      Happens only when NUM_GLOBAL_PARTS
                                       is set to be < zz->Num_Proc.           */
   int Remap_Flag;                 /*  Flag indicating whether partitions
                                       should be remapped to reduce data mvmt. */
   int *Remap;                     /*  Remapping array; relabels computed 
                                       partitions to decrease data mvmt. */
+  int *OldRemap;                  /*  Remapping array computed in previous
+                                      invocation of partitioning. */
   int Return_Lists;               /*  Flag indicating which lists (if any)
                                       should be returned by Zoltan_LB_Balance.*/
   int Uniform_Parts;              /*  Flag indicating whether partitions are
@@ -151,6 +158,8 @@ struct Zoltan_LB_Struct {
   ZOLTAN_LB_FN *LB_Fn;            /*  Pointer to the function that performs
                                       the load balancing; this ptr is set
                                       based on the method used.              */
+  char Approach[MAX_PARAM_STRING_LEN+1];              
+                                  /*  String describing load balance approach. */
   float *Imbalance_Tol;           /*  Tolerance to which to load balance;
                                       Imbalance_Tol = 1.1 implies 10% imbalance
                                       is acceptable, i.e. max/avg = 1.1.     
@@ -166,11 +175,11 @@ struct Zoltan_LB_Struct {
   ZOLTAN_LB_COPY_DATA_FN *Copy_Structure;
                                   /*  Pointer to function that copies the
                                       Data_Structure                         */
-  ZOLTAN_LB_POINT_ASSIGN_FN *Point_Assign;  
+  ZOLTAN_LB_POINT_ASSIGN_FN *Point_Assign;
                                   /*  Pointer to the function that performs
                                       Point_Assign; this ptr is set based on 
                                       the method used.                       */
-  ZOLTAN_LB_BOX_ASSIGN_FN *Box_Assign;      
+  ZOLTAN_LB_BOX_ASSIGN_FN *Box_Assign;
                                   /*  Pointer to the function that performs
                                       Box_Assign; this ptr is set based on 
                                       the method used.                       */
@@ -257,16 +266,26 @@ extern int Zoltan_LB_Remap(struct Zoltan_Struct *, int *, int, int *, int *,
 
 extern int Zoltan_LB_Copy_Struct(struct Zoltan_Struct *to, 
                                struct Zoltan_Struct const *from);
+extern int Zoltan_LB_Special_Free_Part(struct Zoltan_Struct *,
+  ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, int **, int **);
+
+extern int Zoltan_LB_Add_Part_Sizes_Weight(struct Zoltan_Struct *, int, int,
+                                           float *, float **);
 
 /* PARTITIONING FUNCTIONS */
+extern ZOLTAN_LB_FN Zoltan_Block;
+extern ZOLTAN_LB_FN Zoltan_Cyclic;
+extern ZOLTAN_LB_FN Zoltan_Random;
 extern ZOLTAN_LB_FN Zoltan_RCB;
 extern ZOLTAN_LB_FN Zoltan_Octpart;
+extern ZOLTAN_LB_FN Zoltan_Graph;
 extern ZOLTAN_LB_FN Zoltan_ParMetis;
-extern ZOLTAN_LB_FN Zoltan_Jostle;
+extern ZOLTAN_LB_FN Zoltan_Scotch;
 extern ZOLTAN_LB_FN Zoltan_Reftree_Part;
 extern ZOLTAN_LB_FN Zoltan_RIB;
 extern ZOLTAN_LB_FN Zoltan_HSFC;
 extern ZOLTAN_LB_FN Zoltan_PHG;
+extern ZOLTAN_LB_FN Zoltan_Hier;
 
 /* FREE DATA_STRUCTURE FUNCTIONS */
 extern ZOLTAN_LB_FREE_DATA_FN Zoltan_RCB_Free_Structure;
@@ -275,11 +294,14 @@ extern ZOLTAN_LB_FREE_DATA_FN Zoltan_Oct_Free_Structure;
 extern ZOLTAN_LB_FREE_DATA_FN Zoltan_Reftree_Free_Structure;
 extern ZOLTAN_LB_FREE_DATA_FN Zoltan_HSFC_Free_Structure;
 extern ZOLTAN_LB_FREE_DATA_FN Zoltan_PHG_Free_Structure;
+extern ZOLTAN_LB_FREE_DATA_FN Zoltan_Hier_Free_Structure;
 
 /* COPY DATA_STRUCTURE FUNCTIONS */
 extern ZOLTAN_LB_COPY_DATA_FN Zoltan_RCB_Copy_Structure;
 extern ZOLTAN_LB_COPY_DATA_FN Zoltan_RIB_Copy_Structure;
 extern ZOLTAN_LB_COPY_DATA_FN Zoltan_HSFC_Copy_Structure;
+extern ZOLTAN_LB_COPY_DATA_FN Zoltan_Hier_Copy_Structure;
+extern ZOLTAN_LB_COPY_DATA_FN Zoltan_PHG_Copy_Structure;
 
 /* POINT_ASSIGN FUNCTIONS */
 extern ZOLTAN_LB_POINT_ASSIGN_FN Zoltan_RB_Point_Assign;

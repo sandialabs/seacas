@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: bind_param.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.17 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -25,6 +25,7 @@ extern "C" {
 #include "params_const.h"
 #include "zoltan_mem.h"
 #include "zoltan_util.h"
+#include "zz_const.h"
 
 int       Zoltan_Bind_Param(
 PARAM_VARS *params,		/* parameter structure */

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: lb_init.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.22 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -68,6 +68,7 @@ void Zoltan_LB_Init(struct Zoltan_LB_Struct *lb, int num_proc)
   lb->LB_Fn = Zoltan_RCB;
   lb->Remap_Flag = 1;
   lb->Remap = NULL;
+  lb->OldRemap = NULL;
   lb->Return_Lists = ZOLTAN_LB_RETURN_LISTS_DEF;
   lb->Uniform_Parts = 1;
   lb->Data_Structure = NULL;
@@ -79,6 +80,7 @@ void Zoltan_LB_Init(struct Zoltan_LB_Struct *lb, int num_proc)
   lb->Imbalance_Tol = (float *)ZOLTAN_MALLOC((lb->Imb_Tol_Len)*sizeof(float));
   for (i=0; i<lb->Imb_Tol_Len; i++)
     lb->Imbalance_Tol[i] = ZOLTAN_LB_IMBALANCE_TOL_DEF;
+  strcpy(lb->Approach, ZOLTAN_LB_APPROACH_DEF);
 }
 
 #ifdef __cplusplus

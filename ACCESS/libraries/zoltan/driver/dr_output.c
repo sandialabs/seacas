@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_output.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.34 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include "dr_const.h"
@@ -183,6 +183,7 @@ int output_results(const char *cmd_file,
   /* Local declarations. */
   const char  *yo = "output_results";
   char   par_out_fname[FILENAME_MAX+1], ctemp[FILENAME_MAX+1];
+  char cmsg[256];
 
   int   *global_ids = NULL;
   int   *parts = NULL;
@@ -228,6 +229,13 @@ int output_results(const char *cmd_file,
   gen_par_filename(ctemp, par_out_fname, pio_info, Proc, Num_Proc);
 
   fp = fopen(par_out_fname, "w");
+
+  if (fp == NULL){
+    sprintf(cmsg, "Error in %s; %s can not be opened for writing.", yo, par_out_fname);
+    Gen_Error(0, cmsg);
+    return 0;
+  }
+
   if (Proc == 0) 
     echo_cmd_file(fp, cmd_file);
 

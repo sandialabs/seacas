@@ -33,7 +33,7 @@
  * 
  */
 /*
- * $Id: exparm.c,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+ * $Id: exparm.c,v 1.26 2008/03/14 13:22:37 gdsjaar Exp $
  */
 
 /*
@@ -372,6 +372,29 @@ void exparm( char *hard, char *soft, FTNINT *mode,
 
 #endif
 /********************************************************************/
+#if defined(__APPLE__)
+#if defined linux
+#undef linux
+#endif
+  struct utsname SysInfo;
+  char hardname[MAXCHAR];
+  char softname[MAXCHAR];
+
+  *idau = 0;
+  *kcsu = sizeof (FTNREAL);           /* Darwin has 32 bit words */
+  *knsu = 1;
+
+  uname( &SysInfo );
+
+  sprintf( hardname, "%8s", "PowerMac" );
+  sprintf( softname, "Darw %3s", SysInfo.release );
+
+  strncpy(  hard , HARD, WORDLEN );
+  strncpy(  soft , SOFT, WORDLEN );
+
+#endif/* Darwin (Power Macintosh)*/
+
+/********************************************************************/
 #if defined (linux) || defined (interix) 
   struct utsname SysInfo;
   char hardname[MAXCHAR];
@@ -390,26 +413,6 @@ void exparm( char *hard, char *soft, FTNINT *mode,
   strncpy(  soft , SOFT, WORDLEN );
 
 #endif                          /* Linux, Interix */
-/********************************************************************/
-#if defined(__APPLE__)
-
-  struct utsname SysInfo;
-  char hardname[MAXCHAR];
-  char softname[MAXCHAR];
-
-  *idau = 0;
-  *kcsu = sizeof (FTNREAL);           /* Darwin has 32 bit words */
-  *knsu = 1;
-
-  uname( &SysInfo );
-
-  sprintf( hardname, "%8s", "PowerMac" );
-  sprintf( softname, "Darw %3s", SysInfo.release );
-
-  strncpy(  hard , HARD, WORDLEN );
-  strncpy(  soft , SOFT, WORDLEN );
-
-#endif/* Darwin (Power Macintosh)*/
   /********************************************************************/
 
   if( isatty(0) != 0 )	/* Test stdin as to whether or not it's a terminal. */

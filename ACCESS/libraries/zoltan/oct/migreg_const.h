@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: migreg_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.11 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __MIGREG_CONST_H

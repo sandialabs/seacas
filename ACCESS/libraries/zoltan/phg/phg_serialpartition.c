@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: phg_serialpartition.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.63 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -17,8 +17,9 @@ extern "C" {
 #endif
 
 #include "zz_sort.h"
-#include "phg.h"
 #include "zz_heap.h"
+#include "phg.h"
+#include "zz_const.h"
     
 /* If adding a new coarse partitioning fn, add prototype here 
  * AND add entry to CoarsePartitionFns array 
@@ -115,59 +116,85 @@ float *bestvals = NULL;        /* Best cut values found so far */
 int worst, new_cand;
 float bal, cut, worst_cut;
 int fine_timing = (hgp->use_timers > 2);
-static int timer_cpart=-1, timer_gather=-1, timer_refine=-1; 
+struct phg_timer_indices *timer = Zoltan_PHG_LB_Data_timers(zz);
+int local_coarse_part = hgp->LocalCoarsePartition;
 
 /* Number of iterations to try coarse partitioning on each proc. */
 /* 10 when p=1, and 1 when p is large. */
 const int num_coarse_iter = 1 + 9/zz->Num_Proc; 
 
 
-  if (fine_timing) {
-    if (timer_gather < 0)
-      timer_gather = Zoltan_Timer_Init(zz->ZTime, 1, "CP Gather");
-    if (timer_refine < 0)
-      timer_refine = Zoltan_Timer_Init(zz->ZTime, 0, "CP Refine");
-    if (timer_cpart < 0)
-      timer_cpart = Zoltan_Timer_Init(zz->ZTime, 0, "CP Part");
+  ZOLTAN_TRACE_ENTER(zz, yo);
 
-    ZOLTAN_TIMER_START(zz->ZTime, timer_cpart, phg->comm->Communicator);
+  if (fine_timing) {
+    if (timer->cpgather < 0)
+      timer->cpgather = Zoltan_Timer_Init(zz->ZTime, 1, "CP Gather");
+    if (timer->cprefine < 0)
+      timer->cprefine = Zoltan_Timer_Init(zz->ZTime, 0, "CP Refine");
+    if (timer->cpart < 0)
+      timer->cpart = Zoltan_Timer_Init(zz->ZTime, 0, "CP Part");
+
+    ZOLTAN_TIMER_START(zz->ZTime, timer->cpart, phg->comm->Communicator);
   }
 
+
   /* Force LocalCoarsePartition if large global graph */
-#define LARGE_GRAPH_VTX   32000
+#define LARGE_GRAPH_VTX   64000
 #define LARGE_GRAPH_PINS 256000
   if (phg->dist_x[phg->comm->nProc_x] > LARGE_GRAPH_VTX){
     /* TODO: || (global_nPins > LARGE_GRAPH_PINS) */
-    hgp->LocalCoarsePartition = 1;
+    local_coarse_part = 1;
   }
 
   /* take care of all special cases first */
 
-  if (!strcasecmp(hgp->coarsepartition_str, "no")) {
+  if (!strcasecmp(hgp->coarsepartition_str, "no")
+      || !strcasecmp(hgp->coarsepartition_str, "none")) {
     /* Do no coarse partitioning. */
     /* Do a sanity test and  mapping to parts [0,...,numPart-1] */
     int first = 1;
-    for (i = 0; i < phg->nVtx; i++)
-      if (part[i] >= numPart) {
-        if (first) {
-          ZOLTAN_PRINT_WARN(zz->Proc, yo, "Initial part number > numParts.");
-          first = 0;
-          ierr = ZOLTAN_WARN;
+    PHGComm *hgc=phg->comm;    
+
+    Zoltan_Srand_Sync (Zoltan_Rand(NULL), &(hgc->RNGState_col), hgc->col_comm);
+    if (hgp->UsePrefPart) {
+        for (i = 0; i < phg->nVtx; i++) {
+            /* Impose fixed vertex/preferred part constraints. */
+            if (phg->pref_part[i] < 0) { /* Free vertex in fixedvertex partitioning or repart */
+                /* randomly assigned to a part */
+                part[i] = Zoltan_Rand_InRange(&(hgc->RNGState_col), numPart);
+            } else {
+                if (phg->bisec_split < 0)
+                    /* direct k-way, use part numbers directly */
+                    part[i] = phg->pref_part[i];
+                else
+                    /* recursive bisection, map to 0-1 part numbers */
+                    part[i] = (phg->pref_part[i] < phg->bisec_split ? 0 : 1);
+            }            
         }
-        part[i] = part[i] % numPart;
-      }
+    } else {
+        for (i = 0; i < phg->nVtx; i++) {
+            if (part[i] >= numPart || part[i]<0) {
+                if (first) {
+                    ZOLTAN_PRINT_WARN(zz->Proc, yo, "Initial part number > numParts.");
+                    first = 0;
+                    ierr = ZOLTAN_WARN;
+                }
+                part[i] = ((part[i]<0) ? -part[i] : part[i]) % numPart;
+            }        
+        }
+    }
   }
   else if (numPart == 1) {            
     /* everything goes in the one partition */
     for (i =  0; i < phg->nVtx; i++)
       part[i] = 0;
   }
-  else if (numPart >= phg->dist_x[phg->comm->nProc_x]) { 
+  else if (!hgp->UsePrefPart && numPart >= phg->dist_x[phg->comm->nProc_x]) { 
     /* more partitions than vertices, trivial answer */
     for (i = 0; i < phg->nVtx; i++)
       part[i] = phg->dist_x[phg->comm->myProc_x]+i;
   }
-  else if (hgp->LocalCoarsePartition) {
+  else if (local_coarse_part) {
     /* Apply local partitioner to each column */
     ierr = local_coarse_partitioner(zz, phg, numPart, part_sizes, part, hgp,
                                     hgp->CoarsePartition);
@@ -217,19 +244,19 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
        * serial hypergraph shg.
        */
       if (fine_timing) {
-        ZOLTAN_TIMER_STOP(zz->ZTime, timer_cpart, phg->comm->Communicator);
-        ZOLTAN_TIMER_START(zz->ZTime, timer_gather, phg->comm->Communicator);
+        ZOLTAN_TIMER_STOP(zz->ZTime, timer->cpart, phg->comm->Communicator);
+        ZOLTAN_TIMER_START(zz->ZTime, timer->cpgather, phg->comm->Communicator);
       }
 
-      ierr = Zoltan_PHG_Gather_To_All_Procs(zz, phg, &scomm, &shg);
+      ierr = Zoltan_PHG_Gather_To_All_Procs(zz, phg, hgp, &scomm, &shg);
       if (ierr < 0) {
         ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Error returned from gather.");
         goto End;
       }
 
       if (fine_timing) {
-        ZOLTAN_TIMER_STOP(zz->ZTime, timer_gather, phg->comm->Communicator);
-        ZOLTAN_TIMER_START(zz->ZTime, timer_cpart, phg->comm->Communicator);
+        ZOLTAN_TIMER_STOP(zz->ZTime, timer->cpgather, phg->comm->Communicator);
+        ZOLTAN_TIMER_START(zz->ZTime, timer->cpart, phg->comm->Communicator);
       }
 
     }
@@ -258,7 +285,7 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
     new_part = spart;
 
     for (i=0; i< num_coarse_iter; i++){
-        int savefmlooplimit=hgp->fm_loop_limit;
+      int savefmlooplimit=hgp->fm_loop_limit;
         
       /* Overwrite worst partition with new candidate. */
       ierr = CoarsePartition(zz, shg, numPart, part_sizes, 
@@ -271,8 +298,8 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
 
       /* time refinement step in coarse partitioner */
       if (fine_timing) {
-        ZOLTAN_TIMER_STOP(zz->ZTime, timer_cpart, phg->comm->Communicator);
-        ZOLTAN_TIMER_START(zz->ZTime, timer_refine, phg->comm->Communicator);
+        ZOLTAN_TIMER_STOP(zz->ZTime, timer->cpart, phg->comm->Communicator);
+        ZOLTAN_TIMER_START(zz->ZTime, timer->cprefine, phg->comm->Communicator);
       }
 
       /* UVCUVC: Refine new candidate: only one pass is enough. */
@@ -282,14 +309,15 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
       
       /* stop refinement timer */
       if (fine_timing) {
-        ZOLTAN_TIMER_STOP(zz->ZTime, timer_refine, phg->comm->Communicator);
-        ZOLTAN_TIMER_START(zz->ZTime, timer_cpart, phg->comm->Communicator);
+        ZOLTAN_TIMER_STOP(zz->ZTime, timer->cprefine, phg->comm->Communicator);
+        ZOLTAN_TIMER_START(zz->ZTime, timer->cpart, phg->comm->Communicator);
       }
 
       /* Decide if candidate is in the top tier or not. */
       /* Our objective is a combination of cuts and balance */
 
-      bal = Zoltan_PHG_Compute_Balance(zz, shg, part_sizes, numPart, new_part); 
+      bal = Zoltan_PHG_Compute_Balance(zz, shg, part_sizes, 0, 
+                                       numPart, new_part); 
       cut = Zoltan_PHG_Compute_ConCut(shg->comm, shg, new_part, numPart, &ierr);
       
       /* Use ratio-cut as our objective. There are many other options! */
@@ -358,8 +386,9 @@ const int num_coarse_iter = 1 + 9/zz->Num_Proc;
   
 End:
   if (fine_timing) 
-    ZOLTAN_TIMER_STOP(zz->ZTime, timer_cpart, phg->comm->Communicator);
+    ZOLTAN_TIMER_STOP(zz->ZTime, timer->cpart, phg->comm->Communicator);
 
+  ZOLTAN_TRACE_EXIT(zz, yo);
   return ierr;
 }
 
@@ -385,6 +414,10 @@ static int local_coarse_partitioner(
 PHGComm *hgc = hg->comm;
 int err=0;
 int rootnpins, rootrank;
+
+  if (CoarsePartition == NULL) { /* PHG_COARSEPARTITION_METHOD = "auto" */
+    CoarsePartition = coarse_part_greedy;
+  }
 
   /* The column processor with the most pins will be our root.  */
   Zoltan_PHG_Find_Root(hg->nPins, hgc->myProc_y, hgc->col_comm, 
@@ -412,9 +445,13 @@ int rootnpins, rootrank;
    Multi-weights are not yet supported; only the
    first weight is used in computing the partition.
 
-   Note: This is a quick heuristic. We could alternatively use
-   a more expensive but optimal algorithm, see e.g. Ali Pinar's 
-   PhD thesis (UIUC), but for our purpose it is not worth the effort.
+   This is a quick but effective heuristic. We could alternatively use
+   a more expensive but optimal algorithm, see e.g. 
+   "Fast Optimal Load Balancing Algorithms for 1D Partitioning"
+   by Ali Pinar and C. Aykanat, but for our purpose it is 
+   probably not worth the effort.
+
+   Adapted for fixed vertices and/or prefered parts.
 
 */
 
@@ -430,8 +467,13 @@ static int seq_part (
 {
   int i, j, pnumber;
   int vwgtdim = hg->VtxWeightDim;
-  double weight_sum = 0.0, part_sum = 0.0, old_sum, cutoff;
+  int part_dim = (hg->VtxWeightDim ? hg->VtxWeightDim : 1);
+  double weight_sum = 0.0, part_sum, old_sum, cutoff;
   double psize_sum = 0.0;
+  double *fixed_wgts = NULL;
+  char *yo = "seq_part";
+
+  ZOLTAN_TRACE_ENTER(zz, yo);
 
   if (part_sizes==NULL){
     /* part_sizes should always exist, even with uniform partitions */
@@ -443,49 +485,80 @@ static int seq_part (
     return ZOLTAN_FATAL;
   }
 
+  if (hgp->UsePrefPart) {
+    fixed_wgts = (double *) ZOLTAN_CALLOC(p, sizeof(double));
+  }
+
   /* Sum up all the vertex weights. */
-  for (i=0; i<hg->nVtx; i++)
+  for (i=0; i<hg->nVtx; i++){
     weight_sum += hg->vwgt[i*vwgtdim];
+    if (hgp->UsePrefPart)
+      if (hg->pref_part[i] >= 0){
+/*
+        uprintf(hg->comm, "bisec_split=%d, i=%d, pref_part=%d\n", hg->bisec_split, i, hg->pref_part[i]);
+*/
+        /* Set partition number for fixed vtx. */
+        if (hg->bisec_split < 0){
+          /* direct k-way, use part numbers directly */
+          part[i] = hg->pref_part[i];
+        }
+        else{
+          /* recursive bisection, map to 0-1 part numbers */
+          part[i] = (hg->pref_part[i] < hg->bisec_split ? 0 : 1);
+        }
+        /* Add up weights of pref_part vertices for each partition */
+        fixed_wgts[part[i]] += hg->vwgt[i*vwgtdim];
+      }
+  }
+ 
 
   /* Sum up all the target partition weights. */
   /* Only use first vweight for now. */
   for (i=0; i<p; i++)
-    psize_sum += part_sizes[i*vwgtdim];
+    psize_sum += part_sizes[i*part_dim];
 
   pnumber = 0; /* Assign next vertex to partition no. pnumber */
-  /* Set cutoff for current partition */
-  cutoff = weight_sum*part_sizes[0]/psize_sum;  
+  part_sum = (fixed_wgts ? fixed_wgts[0] : 0.); /* Weight of fixed vertices */
+
+  /* Set cutoff for current partition. (Include fixed vtx.) */
+  cutoff = weight_sum*part_sizes[0]/psize_sum;
 
   /* Loop through all vertices in specified order, and assign
      partition numbers.  */                                        
   for (i=0; i<hg->nVtx; i++) {
     /* If order==NULL, then use linear order. */
     j = order ? order[i] : i;
-    part[j] = pnumber;
-    old_sum = part_sum;
-    part_sum += hg->vwgt[j*vwgtdim];
-    /* Check if we passed the cutoff and should start a new partition */
-    if ((pnumber+1) < p && part_sum > cutoff) {
-      pnumber++; /* Increase current part number */
-      /* Decide if current vertex should be moved to the next partition */
-      if ((part_sum-cutoff) > (cutoff-old_sum)) { 
-        part[j]++;
-        part_sum = old_sum;
+    /* for non-fixed vertices */
+    if ((!hgp->UsePrefPart) || (hg->pref_part[j] == -1)){
+      part[j] = pnumber;
+      old_sum = part_sum;
+      part_sum += hg->vwgt[j*vwgtdim];
+      /* Check if we passed the cutoff and should start a new partition */
+      if ((pnumber+1) < p && part_sum > cutoff) {
+        pnumber++; /* Increase current part number */
+        /* Decide if current vertex should be moved to the next partition */
+        if ((part_sum-cutoff) > (cutoff-old_sum)) { 
+          part[j]++;
+          part_sum = old_sum;
+        }
+        weight_sum -= part_sum;
+        /* Initialize part_sum for next partition no. */
+        part_sum = (fixed_wgts ? fixed_wgts[pnumber] : 0.);
+        if (part[j] == pnumber)
+          part_sum += hg->vwgt[j*vwgtdim];
+        /* Update cutoff. */
+        psize_sum -= part_sizes[(pnumber-1)*part_dim];
+        cutoff = weight_sum*part_sizes[pnumber*part_dim]/psize_sum;
       }
-      weight_sum -= part_sum;
-      if (part[j] == pnumber)
-        part_sum = hg->vwgt[j*vwgtdim];
-      else
-        part_sum = 0.0;
-      /* Update cutoff. */
-      psize_sum -= part_sizes[pnumber-1];
-      cutoff = weight_sum*part_sizes[pnumber]/psize_sum;
     }
-    if (hgp->output_level >= PHG_DEBUG_ALL)
+    if (hgp->output_level >= PHG_DEBUG_PRINT)
       printf("COARSE_PART i=%2d, part[%2d] = %2d, part_sum=%f, cutoff=%f\n", 
        i, j, part[j], part_sum, cutoff);
   }
 
+  if (fixed_wgts) ZOLTAN_FREE(&fixed_wgts);
+
+  ZOLTAN_TRACE_EXIT(zz, yo);
   return ZOLTAN_OK;
 }
 
@@ -501,8 +574,35 @@ static int coarse_part_linear (
   PHGPartParams *hgp
 )
 {
-  /* Call sequence partitioning with no order array. */
-  return seq_part(zz, hg, NULL, p, part_sizes, part, hgp);  
+    int i, offset, err=0, *order=NULL;
+    static char *yo = "coarse_part_linear";
+
+    if (!(order  = (int*) ZOLTAN_MALLOC (hg->nVtx*sizeof(int)))) {
+        ZOLTAN_FREE (&order);
+        ZOLTAN_PRINT_ERROR (zz->Proc, yo, "Insufficient memory.");
+        return ZOLTAN_MEMERR;
+    }
+
+    /* Make sure all procs do different variations of linear partitioning.
+       We achieve diversity by picking different starting vertices.
+       The vertex ordering is still linear, but with cyclic "wrap-around".
+     */
+    if (zz->Proc == 0)
+      offset = 0;  /* Special case for proc 0 is not really necessary */
+    else
+      offset = Zoltan_Rand(NULL) % (hg->nVtx);
+
+    for (i=0; i<hg->nVtx; i++) {
+        order[i] = offset + i;
+        if (order[i] >= hg->nVtx) 
+          order[i] -= hg->nVtx;
+    }
+
+    /* Call sequence partitioning with order array. */
+    err = seq_part (zz, hg, order, p, part_sizes, part, hgp);
+
+    ZOLTAN_FREE (&order);
+    return err;
 }
 
 
@@ -522,7 +622,7 @@ static int coarse_part_random (
     char *yo = "coarse_part_random";
 
     if (!(order  = (int*) ZOLTAN_MALLOC (hg->nVtx*sizeof(int)))) {
-        ZOLTAN_FREE ((void**) &order);
+        ZOLTAN_FREE (&order);
         ZOLTAN_PRINT_ERROR (zz->Proc, yo, "Insufficient memory.");
         return ZOLTAN_MEMERR;
     }
@@ -536,312 +636,145 @@ static int coarse_part_random (
     /* Call sequence partitioning with random order array. */
     err = seq_part (zz, hg, order, p, part_sizes, part, hgp);
 
-    ZOLTAN_FREE ((void**) &order);
+    ZOLTAN_FREE (&order);
     return err;
 }
 
 
 /*********************************************************************/
-/* Greedy ordering/partitioning based on a priority function
-   for selecting vertices. A heap is used as a priority queue. */
- 
-int Zoltan_PHG_move_vertex (HGraph *hg, int vertex, int sour, int dest,
-                            int *part, int **cut, double *gain, HEAP *heap)
-{
-    int i, j, edge, v;
 
-    gain[vertex] = 0.0;
-    part[vertex] = dest;
+/* Greedy growing algorithm. 
 
-    for (i = hg->vindex[vertex]; i < hg->vindex[vertex+1]; i++) {
-        edge = hg->vedge[i];
-        if (cut[sour][edge] == 1) {
-            for (j = hg->hindex[edge]; j < hg->hindex[edge+1]; j++) {
-                v = hg->hvertex[j];
-                gain[v] -= (hg->ewgt ? hg->ewgt[edge] : 1.0);
-                if (heap)
-                    Zoltan_Heap_Change_Value(&heap[part[v]], v, gain[v]);
-            }
-        }
-        else if (cut[sour][edge] == 2) {
-            for (j = hg->hindex[edge]; j < hg->hindex[edge+1]; j++) {
-                v = hg->hvertex[j];
-                if (part[v] == sour) {
-                    gain[v] += (hg->ewgt ? hg->ewgt[edge] : 1.0);
-                    if (heap)
-                        Zoltan_Heap_Change_Value(&heap[part[v]], v, gain[v]);
-                    break;
-                }
-            }
-        }
+   Start with all vertices in part 0, except start_vtx
+   goes in part 1. Greedily grow part 1 while
+   minimizing the cut at every step.
 
-        if (cut[dest][edge] == 0) {
-            for (j = hg->hindex[edge]; j < hg->hindex[edge+1]; j++) {
-                v = hg->hvertex[j];
-                gain[v] += (hg->ewgt ? hg->ewgt[edge] : 1.0);
-                if (heap)
-                    Zoltan_Heap_Change_Value(&heap[part[v]], v, gain[v]);
-            }
-        }
-        else if (cut[dest][edge] == 1) {
-            for (j = hg->hindex[edge]; j < hg->hindex[edge+1]; j++) {
-                v = hg->hvertex[j];
-                if (v != vertex && part[v] == dest) {
-                    gain[v] -= (hg->ewgt ? hg->ewgt[edge] : 1.0);
-                    if (heap)
-                        Zoltan_Heap_Change_Value(&heap[part[v]], v, gain[v]);
-                    break;
-                }
-            }
-        }
-        cut[sour][edge]--;
-        cut[dest][edge]++;
-    }
-    return ZOLTAN_OK;
-}
+   Note: This version assumes p==2 (bisection). 
+*/
 
-static int greedy_order (
+static int greedy_grow_part (
   ZZ *zz,
   HGraph *hg,		/* Hypergraph. */
-  int *order,		/* Order array. On exit, order[i] is the i'th vertex. */
   int start_vtx,	/* Start the ordering from this vertex. */
-  int priority_mode,	/* Priority mode for selecting vertices */
-  int p,		/* Optional (input):  Number of partitions. */
+  int p,		/* Number of partitions (must be 2). */
   float *part_sizes,    /* Array of length p containing the percentages of
                            work to be assigned to each partition. */
-  Partition part,	/* Optional (output): Partition array. */
-  PHGPartParams *hgp     /* Partitioning parameters. */
+  Partition part,	/* Output: Partition array. */
+  PHGPartParams *hgp    /* Partitioning parameters. */
 )
 {
-  int i, j, vtx, edge, bfsnumber, pnumber, nbor, *rank;
-  int esize, *vtx_count=NULL, *visited=NULL, *cut[2];
+  int i, j, vtx, edge, edgesize;
+  int *cut[2];
+  double *gain = NULL;
   int vwgtdim = hg->VtxWeightDim;
-  int err=ZOLTAN_OK;
-  double weight_sum= 0.0, part_sum= 0.0, old_sum;
-  double delta=0.0, cutoff=0.0;
-  double *gain = NULL, *edge_sum = NULL;
-  double damp_factor, psize_sum= 0.0;
-  char msg[128];
+  int part_dim = (hg->VtxWeightDim ? hg->VtxWeightDim : 1);
+  double weight_sum, part_sum;
+  double cutoff;
+  double psize_sum= 0.0;
   HEAP h[2];
-  static char *yo = "greedy_order";
-
-  bfsnumber = 0;  /* Assign next vertex this bfs number */
-  pnumber = 0;    /* Assign next vertex this partition number */
+  static char *yo = "greedy_grow_part";
+  int err=ZOLTAN_OK;
 
   /* Allocate arrays. */
-  if (!(rank  = (int*)    ZOLTAN_CALLOC (hg->nVtx, sizeof (int))) ||
-      !(gain  = (double*) ZOLTAN_CALLOC (hg->nVtx, sizeof (double))) ) {
+  if (!(gain  = (double*) ZOLTAN_CALLOC (hg->nVtx, sizeof (double)))){
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
     err =  ZOLTAN_MEMERR;
     goto End;
   }
+
+  /* Initially put all vertices in part 0, except fixed ones. */
   for (i=0; i<hg->nVtx; i++)
-    rank[i] = -1;       /* -1 means this vtx has not yet been numbered */
- 
-  if (priority_mode && (!(priority_mode&1))) {   /* 2,4,6,... */
-    if (!(edge_sum = (double*) ZOLTAN_CALLOC (hg->nVtx, sizeof (double)))){
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
-      err = ZOLTAN_MEMERR;
-      goto End;
-    }
-    /* Sum up edge weights incident to each vertex. */
-    for (edge=0; edge<hg->nEdge; edge++) {
-      for (i=hg->hindex[edge]; i<hg->hindex[edge+1]; i++){
-        edge_sum[hg->hvertex[i]] += (hg->ewgt ? hg->ewgt[edge] : 1.0);
-      }
-    }
+    part[i] = 0;   
+  if (hgp->UsePrefPart){
+    for (i=0; i<hg->nVtx; i++)
+      if ((hg->bisec_split >= 0) && (hg->pref_part[i] >= hg->bisec_split))
+        part[i] = 1;   
   }
-  if (priority_mode == 0) {
-    cut[0]  = (int*) ZOLTAN_CALLOC (2*hg->nEdge, sizeof (int));
-    visited = (int*) ZOLTAN_CALLOC (hg->nVtx,    sizeof (int));
-    if ((hg->nEdge > 0 && cut[0] == NULL) || visited == NULL) {
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
-      err = ZOLTAN_MEMERR;
-      goto End;
-    }
-    cut[1] = &(cut[0][hg->nEdge]);
-    /* Initialize cut values. */
-    for (i=0; i<hg->nEdge; i++)
-      for (j=hg->hindex[i]; j<hg->hindex[i+1]; j++)
-        (cut[visited[hg->hvertex[j]]][i])++;
-    /* Initialize gain values. */
-    for (i=0; i<hg->nVtx; i++){
+ 
+  cut[0]  = (int*) ZOLTAN_CALLOC (2*hg->nEdge, sizeof (int));
+  if ((hg->nEdge > 0 && cut[0] == NULL) ) {
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
+    err = ZOLTAN_MEMERR;
+    goto End;
+  }
+  cut[1] = &(cut[0][hg->nEdge]);
+
+  /* Initialize cut values. */
+  for (i=0; i<hg->nEdge; i++)
+    for (j=hg->hindex[i]; j<hg->hindex[i+1]; j++)
+      (cut[part[hg->hvertex[j]]][i])++;
+
+  /* Initialize gain values. */
+  for (i=0; i<hg->nVtx; i++){
+    /* compute gain only if vertex is free */
+    if (!hgp->UseFixedVtx || (hg->fixed_part[i] < 0)) 
       for (j=hg->vindex[i]; j<hg->vindex[i+1]; j++) {
         edge = hg->vedge[j];
-        gain[i] -= (hg->ewgt ? (hg->ewgt[edge]) : 1.0);
+        edgesize = cut[0][edge]+cut[1][edge];
+        /* if edge is not cut by fixed vertices, update gain value */
+        if (MIN(cut[0][edge],cut[1][edge])==0)
+          gain[i] -= (hg->ewgt ? (hg->ewgt[edge]) : 1.0);
+        if (edgesize>1 && cut[part[i]][edge]==1)
+          gain[i] += (hg->ewgt ? (hg->ewgt[edge]) : 1.0);
       }
-    }
-  }
-  else
-    cut[0] = cut[1] = NULL;
-
-  if (priority_mode >= 3) {
-    if (!(vtx_count = (int*) ZOLTAN_CALLOC (hg->nEdge, sizeof (int)))){
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
-      err = ZOLTAN_MEMERR;
-      goto End;
-    }
   }
 
-  if (p) {
-    /* If partitioning is chosen, sum up all the weights. */
-    for (i=0; i<hg->nVtx; i++)
-      weight_sum += hg->vwgt[i*vwgtdim];
-
-    /* Sum up all the target partition weights. */
-    /* Only use first vweight for now. */
-    for (i=0; i<p; i++)
-      psize_sum += part_sizes[i*vwgtdim];
-
-    /* Set cutoff for current partition */
-    cutoff = weight_sum*part_sizes[0]/psize_sum;
+  /* Sum total weights. (No multi-weights yet) */
+  weight_sum = 0.;
+  part_sum = 0.0;  /* Weight in the growing partition (1) */
+  for (i=0; i<hg->nVtx; i++){
+    weight_sum += hg->vwgt[i*vwgtdim];
+    if (part[i]>0) 
+      part_sum  += hg->vwgt[i*vwgtdim];
   }
+
+  /* Set cutoff for growing partition (1) */
+  psize_sum = part_sizes[0] + part_sizes[part_dim];
+  cutoff = weight_sum*part_sizes[part_dim]/psize_sum;
 
   if (hgp->output_level >= PHG_DEBUG_ALL)
-    printf("Starting new ordering at vertex %d, part=%2d\n", start_vtx, p);
+    printf("Debug: Starting new greedy growing at vertex %d, part=%2d\n", start_vtx, p);
 
   /* Initialize heap. */
-  gain[start_vtx] = 1.0;           /* Make it highest value in heap. */
+  if (!hgp->UseFixedVtx) 
+    gain[start_vtx] = 1e10;      /* Make start_vtx max value in heap. */
+                                 /* All other values should be negative. */
   Zoltan_Heap_Init(zz, &h[0], hg->nVtx);
   Zoltan_Heap_Init(zz, &h[1], 0);       /* Dummy heap, not used. */
-  for(i=0; i<hg->nVtx; i++)
-    Zoltan_Heap_Input(h, i, gain[i]);
+  for (i=0; i<hg->nVtx; i++){
+    /* Insert all non-fixed vertices into heap. */
+    if (!hgp->UseFixedVtx || (hg->fixed_part[i] < 0))
+      Zoltan_Heap_Input(h, i, gain[i]);
+  }
   Zoltan_Heap_Make(h);
 
-  while (bfsnumber < hg->nVtx ) {
+
+  while (part_sum < cutoff) {
 
     /* Get next vertex from heap */
     vtx = Zoltan_Heap_Extract_Max(h);
 
     if (vtx < 0) {
-      /* This should never happen. */
-      ZOLTAN_PRINT_ERROR(-1, yo, "Internal error: No vertices in heap.");
-      err = ZOLTAN_FATAL;
-      goto End;
-    }
-    if (rank[vtx] < 0){
-      order[bfsnumber] = vtx;
-      rank[vtx] = bfsnumber++;
-    }
-    else{
-      sprintf(msg, "Vertex %d in heap already labeled", vtx);
-      ZOLTAN_PRINT_ERROR(-1, yo, msg);
-      sprintf(msg, "bfsnumber=%d, rank[vtx] = %d", bfsnumber, rank[vtx]);
-      ZOLTAN_PRINT_ERROR(-1, yo, msg);
-      err = ZOLTAN_FATAL;
-      goto End;
-    }
-    if (p) {
-      old_sum = part_sum;
-      part_sum += hg->vwgt[vtx*vwgtdim];
-      part[vtx] = pnumber;
-      if (hgp->output_level >= PHG_DEBUG_ALL)
-        printf("COARSE_PART vtx=%2d, bfsnum=%2d, part[%2d]=%2d, part_sum=%f\n",
-               vtx,bfsnumber-1,vtx,part[vtx],part_sum);
+      /* Empty heap: This can only happen if all vertices are fixed. */
+      break;
     }
 
-    if (p && (pnumber+1)<p && part_sum > cutoff) {
-      /* Start new partition. Reset gain values. */
-      pnumber++;
-      /* Decide if current vertex should be moved to the next partition */
-      if (part_sum-cutoff > cutoff-old_sum) {
-        part[vtx]++;
-        part_sum = old_sum;
-        if (hgp->output_level >= PHG_DEBUG_ALL)
-          printf("COARSE_PART vtx=%2d, bfsnum=%2d, part[%2d]=%2d\n",
-           vtx, bfsnumber-1, vtx, part[vtx]);
-      }
-      weight_sum -= part_sum;
-      if (part[vtx] == pnumber){
-        part_sum = hg->vwgt[vtx*vwgtdim];
-        j = -1;
-      }
-      else { /* part[vtx] == pnumber-1 */
-        part_sum = 0.0;
-        j = Zoltan_Heap_Peek_Max(h); /* j will be the first vertex in the next part. */
-      }
-      /* Update cutoff. */
-      psize_sum -= part_sizes[pnumber-1];
-      cutoff = weight_sum*part_sizes[pnumber]/psize_sum;
+    part_sum += hg->vwgt[vtx*vwgtdim];
+    part[vtx] = 1;
+    if (hgp->output_level >= PHG_DEBUG_PRINT)
+      printf("COARSE_PART vtx=%2d, part[%2d]=%2d, part_sum=%f\n",
+              vtx,vtx,part[vtx],part_sum);
 
-      if (hgp->output_level >= PHG_DEBUG_ALL)
-        printf("COARSE_PART vtx=%2d, part[%2d] = %2d, part_sum=%f, cutoff=%f\n",
-          vtx, vtx, part[vtx], part_sum, cutoff);
-
-      if (priority_mode > 0) {
-        /* Reset all gain values (but one). */
-        for (i=0; i<hg->nVtx; i++){
-          if (i != j) gain[i] = 0.0;
-          if (rank[i] < 0) Zoltan_Heap_Change_Value(h, i, gain[i]);
-        }
-        /* Reset counters. */
-        if (vtx_count)
-          for (j=0; j<hg->nEdge; j++)
-            vtx_count[j] = 0;
-      }
-    }
-
+    /* Move vertex from part=0 to part=1. */
     /* Update gain values for nbors. */
-    if (priority_mode == 0) {
-      /* Move from visited=0 to visited=1. */
-      Zoltan_PHG_move_vertex(hg, vtx, 0, 1, visited, cut, gain, h);
-    }
-    else {
-      if (part[vtx] == pnumber) {
-        /* Don't update if vtx was the last in a partition. */
-        for (j=hg->vindex[vtx]; j<hg->vindex[vtx+1]; j++) {
-          edge = hg->vedge[j];
-          esize = hg->hindex[edge+1] - hg->hindex[edge];
-          if (vtx_count) vtx_count[edge]++;
-          for (i=hg->hindex[edge]; i<hg->hindex[edge+1]; i++) {
-            nbor = hg->hvertex[i];
-            if (rank[nbor] < 0) {
-               switch (priority_mode) {
-               case 1:
-               case 2:
-                 /* Absorption metric. */
-                 delta = (hg->ewgt ? hg->ewgt[edge] : 1.0)/(esize-1);
-                 break;
-               case 3:
-               case 4:
-                 damp_factor = 0.5; /* Choose a value between 0 and 1. */
-                 /* gain contribution from current edge will be
-                    hg->ewgt[edge]*pow(damp_factor, esize-vtx_count[edge]-1) */
-                 if (vtx_count[edge] == 1)
-                   delta = (hg->ewgt ? hg->ewgt[edge] : 1.0)
-                    * pow(damp_factor, (double) (esize-2));
-                 else
-                   delta = (hg->ewgt ? hg->ewgt[edge] : 1.0) * (1.0-damp_factor)
-                    * pow(damp_factor, (double) (esize-vtx_count[edge]-1));
-                 break;
-               }
-               if (priority_mode & 1)
-                 gain[nbor] += delta;
-               else
-                 gain[nbor] += delta/edge_sum[nbor];
+    /* We use Zoltan_HG_move_vertex from the refinement code. */
+    Zoltan_HG_move_vertex(hg, vtx, 0, 1, part, cut, gain, h);
 
-               Zoltan_Heap_Change_Value(h, nbor, gain[nbor]);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /* Sanity check: Order should be the inverse permutation of rank. */
-  for (i=0; i<hg->nVtx; i++){
-    if (rank[i]>=0)
-      if (order[rank[i]] != i)
-         ZOLTAN_PRINT_WARN(-1, yo, "Arrays order and rank are inconsistent.");
   }
 
 End:
-  ZOLTAN_FREE ((void**) &rank);
-  ZOLTAN_FREE ((void**) &gain);
-  if (edge_sum)  ZOLTAN_FREE ((void**) &edge_sum);
-  if (vtx_count) ZOLTAN_FREE ((void**) &vtx_count);
-  if (cut[0])    ZOLTAN_FREE ((void**) &cut[0]);
-  if (visited)   ZOLTAN_FREE ((void**) &visited);
+  ZOLTAN_FREE (&gain);
+  if (cut[0])    ZOLTAN_FREE (&cut[0]);
   Zoltan_Heap_Free (&h[0]);
   Zoltan_Heap_Free( &h[1]);
   return err;
@@ -850,16 +783,8 @@ End:
 
 
 /*****************************************************************/
-/* Generic greedy ordering. 
- * Default priority function (0):
- *    gain = cut size improvement (like FM gain)
- *
- * The options below are no longer supported.
- * Priority function 1:  [absorption]
- *    gain(v,S) = \sum_e wgt(e) * |e \intersect S| / |e|
- * Priority function 2:
- *    gain(v,S) = \sum_e wgt(e)/edge_sum(v) * |e \intersect S| / |e|
- */
+/* Wrapper function for greedy growing. */
+
 static int coarse_part_greedy (
   ZZ *zz,
   HGraph *hg,
@@ -869,28 +794,54 @@ static int coarse_part_greedy (
   PHGPartParams *hgp
 )
 {
-  int start, *order;
+  int start;
+#if 0
+  /* UVC commented out to avoid warning */
+  int scaling;
+  float *new_ewgt=NULL;
+#endif
+  float *old_ewgt=NULL; 
   int err = ZOLTAN_OK;
-  const int pri_mode = 0;  /* set to 0; other options not supported any more  */
   char *yo = "coarse_part_greedy";
 
-  if (!(order  = (int*) ZOLTAN_MALLOC (sizeof(int) * hg->nVtx))) {
-    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
-    err = ZOLTAN_MEMERR;
-    goto End;
+  if (hg->nVtx == 0) return ZOLTAN_OK; /* Nothing to do. */
+
+#if 0 /* Disable edge scaling for now since collective comm causes hang. TODO */
+  /* Scale the edge weights */
+  if (hg->nEdge) {
+    if (!(new_ewgt = (float*) ZOLTAN_MALLOC(hg->nEdge * sizeof(float))))
+      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Out of memory")
+    else {
+      if (hgp->edge_scaling)
+        scaling = hgp->edge_scaling;
+      else
+        /* Pick a random scaling. */
+        scaling = Zoltan_Rand(NULL) % 4; /* scaling is in [0,3] */
+      /* Temporarily scale the edge weights (save old weights) */
+      Zoltan_PHG_Scale_Edges (zz, hg, new_ewgt, scaling);
+      old_ewgt = hg->ewgt;
+      hg->ewgt = new_ewgt;
+    }
   }
+#endif
 
   /* Start at random vertex */
   start = Zoltan_Rand(NULL) % (hg->nVtx);
 
-  /* Call greedy_order. */
-  err = greedy_order(zz, hg, order, start, pri_mode, p, part_sizes, part, hgp);
-  if (err != ZOLTAN_OK && err != ZOLTAN_WARN)
-    goto End;
+  if (p==2)
+    /* Call greedy method. */
+    err = greedy_grow_part(zz, hg, start, p, part_sizes, part, hgp);
+  else
+    /* We should always do bisection?? */
+    ZOLTAN_PRINT_ERROR (zz->Proc, yo, "Invalid value for p, expected p=2.");
 
-End:
-  /* Free data and return. */
-  ZOLTAN_FREE ((void**) &order);
+  /* Restore original edge weights */
+  if (old_ewgt){
+    ZOLTAN_FREE(&(hg->ewgt));
+    hg->ewgt = old_ewgt;
+    old_ewgt = NULL;
+  }
+
   return err;
 }
 

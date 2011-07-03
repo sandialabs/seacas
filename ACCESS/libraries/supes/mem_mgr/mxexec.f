@@ -36,7 +36,7 @@ C
      *   CHRCOL, LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This routine satisfies deferred memory requests.
 C     It will service both numeric and character

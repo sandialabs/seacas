@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: reftree_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.14 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __REFTREE_CONST_H

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: ch_input_read.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.12 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -34,10 +34,10 @@ static int offset = 0;		/* offset into line for next data */
 static int break_pnt = LINE_LENGTH;	/* place in sequence to pause */
 static int save_pnt;		/* place in sequence to save */
 
-static void flush_line(FILE *);
+static void flush_line(ZOLTAN_FILE*);
 
 double    read_val(
-  FILE     *infile,		/* file to read value from */
+  ZOLTAN_FILE* infile,		/* file to read value from */
   int      *end_flag 		/* 0 => OK, 1 => EOL, -1 => EOF */
 )
 {
@@ -53,7 +53,7 @@ double    read_val(
     *end_flag = 0;
 
     if (offset == 0 || offset >= break_pnt) {
-	if (offset >= break_pnt) { /* Copy rest of line back to beginning. */ 
+	if (offset >= break_pnt) { /* Copy rest of line back to beginning. */
 	    length_left = LINE_LENGTH - save_pnt - 1;
 	    ptr2 = line;
 	    ptr = &line[save_pnt];
@@ -65,18 +65,16 @@ double    read_val(
 	    length_left = 0;
 	}
 
-	line[LINE_LENGTH - 1] = ' ';
-	line[LINE_LENGTH - 2] = ' ';
 	/* Now read next line, or next segment of current one. */
-	ptr2 = fgets(&line[length_left], length, infile);
+	ptr2 = ZOLTAN_FILE_gets(&line[length_left], length, infile);
 
 	if (ptr2 == (char *) NULL) {	/* We've hit end of file. */
 	    *end_flag = -1;
 	    return((double) 0.0);
 	}
-	
-	if (line[LINE_LENGTH - 1] == '\0' && line[LINE_LENGTH - 2] != '\0' &&
-	    line[LINE_LENGTH - 2] != '\n' && line[LINE_LENGTH - 2] != '\f') {
+
+	if ((line[LINE_LENGTH - 2] != '\n') && (line[LINE_LENGTH - 2] != '\f')
+	    && (strlen(line) == LINE_LENGTH - 1)){
 	    /* Line too long.  Find last safe place in line. */
 	    break_pnt = LINE_LENGTH - 1;
 	    save_pnt = break_pnt;
@@ -130,7 +128,7 @@ double    read_val(
 
 
 int       read_int(
-FILE     *infile,		/* file to read value from */
+ZOLTAN_FILE *infile,		/* file to read value from */
 int      *end_flag 		/* 0 => OK, 1 => EOL, -1 => EOF */
 )
 {
@@ -146,7 +144,7 @@ int      *end_flag 		/* 0 => OK, 1 => EOL, -1 => EOF */
     *end_flag = 0;
 
     if (offset == 0 || offset >= break_pnt) {
-	if (offset >= break_pnt) { /* Copy rest of line back to beginning. */ 
+	if (offset >= break_pnt) { /* Copy rest of line back to beginning. */
 	    length_left = LINE_LENGTH - save_pnt - 1;
 	    ptr2 = line;
 	    ptr = &line[save_pnt];
@@ -158,18 +156,16 @@ int      *end_flag 		/* 0 => OK, 1 => EOL, -1 => EOF */
 	    length_left = 0;
 	}
 
-	line[LINE_LENGTH - 1] = ' ';
-	line[LINE_LENGTH - 2] = ' ';
 	/* Now read next line, or next segment of current one. */
-	ptr2 = fgets(&line[length_left], length, infile);
+	ptr2 = ZOLTAN_FILE_gets(&line[length_left], length, infile);
 
 	if (ptr2 == (char *) NULL) {	/* We've hit end of file. */
 	    *end_flag = -1;
 	    return(0);
 	}
-	
-	if (line[LINE_LENGTH - 1] == '\0' && line[LINE_LENGTH - 2] != '\0' &&
-	    line[LINE_LENGTH - 2] != '\n' && line[LINE_LENGTH - 2] != '\f') {
+
+	if ((line[LINE_LENGTH - 2] != '\n') && (line[LINE_LENGTH - 2] != '\f')
+	    && (strlen(line) == LINE_LENGTH - 1)){
 	    /* Line too long.  Find last safe place in line. */
 	    break_pnt = LINE_LENGTH - 1;
 	    save_pnt = break_pnt;
@@ -223,14 +219,14 @@ int      *end_flag 		/* 0 => OK, 1 => EOL, -1 => EOF */
 
 
 static void flush_line(
-FILE     *infile 		/* file to read value from */
+ZOLTAN_FILE *infile 		/* file to read value from */
 )
 {
     char      c;		/* character being read */
 
-    c = getc(infile);
+    c = ZOLTAN_FILE_getc(infile);
     while (c != '\n' && c != '\f')
-	c = getc(infile);
+	c = ZOLTAN_FILE_getc(infile);
 }
 
 #ifdef __cplusplus

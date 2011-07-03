@@ -79,7 +79,6 @@ long      seed;			/* for random graph mutations */
     extern int PERTURB;		/* perturb matrix if quad/octasection? */
     extern int NSQRTS;		/* number of square roots to precompute */
     extern int KL_METRIC;	/* KL interset cost: 1=>cuts, 2=>hops */
-    extern int RAND_MAXIMUM;	/* largest value returnable by rand() */
     extern int LANCZOS_TYPE;	/* type of Lanczos to use */
     extern int REFINE_MAP;	/* use greedy strategy to improve mapping? */
     extern int REFINE_PARTITION;/* number of calls to pairwise_refine to make */
@@ -136,8 +135,12 @@ long      seed;			/* for random graph mutations */
 	mesh_dims[2] = 1;
     
     /* Check for simple special case of 1 processor. */
-    if (architecture == 0) k = 1 << ndims_tot;
-    else if (architecture > 0) k = mesh_dims[0] * mesh_dims[1] * mesh_dims[2];
+    k = 0;
+    if (architecture == 0)
+      k = 1 << ndims_tot;
+    else if (architecture > 0)
+      k = mesh_dims[0] * mesh_dims[1] * mesh_dims[2];
+
     if (k == 1) {
 	for (i = 1; i <= nvtxs; i++) assignment[i] = 0;
 
@@ -219,13 +222,12 @@ long      seed;			/* for random graph mutations */
 
     /* Perform some one-time initializations. */
     setrandom(seed);
-    machine_params(&DOUBLE_EPSILON, &DOUBLE_MAX, &RAND_MAXIMUM);
+    machine_params(&DOUBLE_EPSILON, &DOUBLE_MAX);
 
     if (DEBUG_MACH_PARAMS > 0) {
 	printf("Machine parameters:\n");
 	printf("  DOUBLE_EPSILON = %e\n", DOUBLE_EPSILON);
 	printf("  DOUBLE_MAX = %e\n", DOUBLE_MAX);
-	printf("  RAND_MAXIMUM = %d\n\n", RAND_MAXIMUM);
     }
 
     nsets = (1 << ndims);
@@ -305,6 +307,7 @@ long      seed;			/* for random graph mutations */
 
     partition_time += seconds() - time - kernel_time;
 
+    nsets_tot = 0;
     if (architecture == 0)
 	nsets_tot = 1 << ndims_tot;
     else if (architecture > 0)

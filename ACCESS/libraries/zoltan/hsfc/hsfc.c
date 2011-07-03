@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: hsfc.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.61 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -29,15 +29,21 @@ extern "C" {
 
 
 #include "hsfc.h"
+#include "zz_const.h"
 #include <float.h>
 
 /****************************************************************************/
+
+static int partition_stats(ZZ *zz, int ndots, 
+                   Dots *dots, int *obj_sizes,
+                   float *work_fraction, int *parts, int *new_parts);
 
 /* This structure is the Zoltan convention for user settable parameters */
 static PARAM_VARS HSFC_params[] =
    {{"KEEP_CUTS", NULL, "INT", 0},
     { "REDUCE_DIMENSIONS", NULL, "INT", 0 },
     { "DEGENERATE_RATIO", NULL, "DOUBLE", 0 },
+    {"FINAL_OUTPUT",  NULL,  "INT",    0},
     {NULL,        NULL,  NULL, 0}};
 
 
@@ -61,9 +67,6 @@ int Zoltan_HSFC(
  int           **export_to_parts    /* partition assignments for export */
 )
    {
-   MPI_Op mpi_op;
-   MPI_User_function  Zoltan_HSFC_mpi_sum_max_min; /* simultaneous SUM,MAX,MIN */
-
    /* malloc'd arrays that need to be freed before completion */
    Dots      *dots            = NULL;
    ZOLTAN_ID_PTR  gids        = NULL;
@@ -88,19 +91,21 @@ int Zoltan_HSFC(
    int     pcount;                /* number of partitions in grand partition */
    int     new_map;               /* flag indicating whether parts were
                                      remapped */
-   double  start_time, end_time;  /* used to time execution */
+   double  start_time=0.0L, end_time=0.0L;  /* used to time execution */
+   double  start_stat_time=0.0L, total_stat_time=0.0L;
    double  total_weight = 0.0;
 
    /* temporary variables, loop counters, etc. */
    int        tmp;
    int        i, j, k;            /* loop counters */
    double     sum;
-   int        done, out_of_tolerance;    /* binary flags */
+   int        done, out_of_tolerance=0;    /* binary flags */
    Partition *p = NULL;
-   int        loop;
+   int        loop = 0;
    double     actual, desired, correction;
-   double     temp, in[9], out[9];
+   double     temp, in[6], out[6];
    int        err;
+   int        final_output;
    int        param;
    int        idummy;
    double     ddummy;
@@ -113,11 +118,20 @@ int Zoltan_HSFC(
       MPI_Barrier(zz->Communicator);
       start_time = Zoltan_Time(zz->Timer);
       }
-   *num_export = *num_import = -1;              /* in case of early error exit */
-   MPI_Op_create(&Zoltan_HSFC_mpi_sum_max_min, 1, &mpi_op); /* register method */
+   *num_export = *num_import = -1;             /* in case of early error exit */
+   Zoltan_Bind_Param (HSFC_params, "FINAL_OUTPUT", (void*) &final_output);
+   Zoltan_Bind_Param (HSFC_params, "KEEP_CUTS", (void*) &param);
+   Zoltan_Bind_Param (HSFC_params, "REDUCE_DIMENSIONS", (void*) &idummy);
+   Zoltan_Bind_Param (HSFC_params, "DEGENERATE_RATIO", (void*) &ddummy);
+   param = idummy = final_output = 0;
+   ddummy = 0.0;
+   Zoltan_Assign_Param_Vals (zz->Params, HSFC_params, zz->Debug_Level, zz->Proc,
+    zz->Debug_Proc);
 
-   if (sizeof (int) != 4)
-      ZOLTAN_PRINT_WARN(zz->Proc, yo, "HSFC tested only for 32 bit integers");
+   if (sizeof (int) != 4) {
+     ZOLTAN_HSFC_ERROR(ZOLTAN_FATAL, 
+                       "HSFC implemented only for 32-bit integers");
+   }
 
    /* allocate persistent storage required by box assign and point assign */
 
@@ -141,6 +155,14 @@ int Zoltan_HSFC(
     &weights, &parts);
    if (err)
       ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL, "Error in Zoltan_Get_Obj_List.");
+
+   MPI_Allreduce(&ndots, &i, 1, MPI_INT, MPI_MAX, zz->Communicator);
+   if (i < 1){
+     if (zz->Proc == 0)
+       ZOLTAN_PRINT_WARN(zz->Proc, yo, "No objects to partition")
+     *num_export = 0;
+     goto EndReporting;
+   }
 
    /* allocate storage for dots and their corresponding gids, lids, weights */
    if (ndots > 0) {
@@ -212,27 +234,26 @@ int Zoltan_HSFC(
       }
 
    /* Get bounding box, smallest coordinate aligned box containing all dots */
-   for (i =  0;              i <   dim; i++) 
-      out[i] = in[i] =  0.0;
-   for (i =   dim; i < 2*dim; i++) 
+   for (i = 0; i < dim; i++) 
       out[i] = in[i] = -HUGE_VAL;
-   for (i = 2*dim; i < 3*dim; i++) 
+   for (i = dim; i < 2*dim; i++) 
       out[i] = in[i] =  HUGE_VAL;
    for (i = 0; i < ndots; i++)
      for (j = 0; j < dim; j++) {
        /* get maximum and minimum bound box coordinates: */
-       if(dots[i].x[j]>in[j+  dim]) in[j+  dim]=dots[i].x[j];
-       if(dots[i].x[j]<in[j+2*dim]) in[j+2*dim]=dots[i].x[j];
+       if(dots[i].x[j]>in[j]) in[j]=dots[i].x[j];
+       if(dots[i].x[j]<in[j+dim]) in[j+dim]=dots[i].x[j];
        }
-   err = MPI_Allreduce(in,out,3*dim,MPI_DOUBLE,mpi_op,zz->Communicator);
+   err = MPI_Allreduce(in,out,dim,MPI_DOUBLE,MPI_MAX,zz->Communicator);
+   err = MPI_Allreduce(in+dim,out+dim,dim,MPI_DOUBLE,MPI_MIN,zz->Communicator);
    if (err != MPI_SUCCESS)
       ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL, "Bounding box MPI_Allreduce error");
 
    /* Enlarge bounding box to make points on faces become interior (Andy) */
    for (i = 0; i < dim; i++) {
-      temp = (out[i+dim] - out[i+2*dim]) * HSFC_EPSILON;
-      d->bbox_hi[i] = out[i+  dim] + temp;
-      d->bbox_lo[i] = out[i+2*dim] - temp;
+      temp = (out[i] - out[i+dim]) * HSFC_EPSILON;
+      d->bbox_hi[i] = out[i] + temp;
+      d->bbox_lo[i] = out[i+dim] - temp;
       d->bbox_extent[i] = d->bbox_hi[i] - d->bbox_lo[i];
       if (d->bbox_extent[i] == 0.0)
           d->bbox_extent[i]  = 1.0; /* degenerate axis, avoid divide by zero */
@@ -291,8 +312,12 @@ int Zoltan_HSFC(
          if (dots[i].fsfc < temp_weight[p->index + 2 * pcount])
             temp_weight [p->index + pcount * 2] = dots[i].fsfc;/*local indx min*/
          }
-      err = MPI_Allreduce(temp_weight, grand_weight, 3 * pcount, MPI_DOUBLE,
-       mpi_op, zz->Communicator);
+      err = MPI_Allreduce(temp_weight, grand_weight, pcount,
+                          MPI_DOUBLE, MPI_SUM, zz->Communicator);
+      err = MPI_Allreduce(temp_weight+pcount, grand_weight+pcount, pcount,
+                          MPI_DOUBLE, MPI_MAX, zz->Communicator);
+      err = MPI_Allreduce(temp_weight+2*pcount, grand_weight+2*pcount, pcount,
+                          MPI_DOUBLE, MPI_MIN, zz->Communicator);
       if (err != MPI_SUCCESS)
          ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL, "MPI_Allreduce returned error");
       ZOLTAN_TRACE_DETAIL (zz, yo, "Complete main loop MPI_Allreduce");
@@ -477,6 +502,55 @@ int Zoltan_HSFC(
          ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL,"Error returned from Zoltan_LB_Remap");
       }
 
+   total_stat_time = 0.0;
+   if (final_output){
+     int *objSizes = NULL;
+     if (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME) {
+        start_stat_time = Zoltan_Time(zz->Timer);
+        }
+     if ((ndots > 0) && ((zz->Get_Obj_Size_Multi) || (zz->Get_Obj_Size))){
+       
+       objSizes = (int *) ZOLTAN_MALLOC(ndots * sizeof(int));
+       if (!objSizes){
+         ZOLTAN_HSFC_ERROR (ZOLTAN_MEMERR, "Failed to ZOLTAN_MALLOC sizes.");
+       }
+   
+       if (zz->Get_Obj_Size_Multi) {
+         zz->Get_Obj_Size_Multi(zz->Get_Obj_Size_Multi_Data,
+                                zz->Num_GID, zz->Num_LID, ndots,
+                                gids, lids, objSizes, &err);
+         if (err < 0) {
+           ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL, "Error returned from "
+                           "ZOLTAN_OBJ_SIZE_MULTI function.");
+         }
+       }
+       else if (zz->Get_Obj_Size) {
+         for (i = 0; i < ndots; i++) {
+           ZOLTAN_ID_PTR lid = (zz->Num_LID ? &(lids[i*zz->Num_LID]):NULL);
+           objSizes[i] = zz->Get_Obj_Size(zz->Get_Obj_Size_Data,
+                                          zz->Num_GID, zz->Num_LID,
+                                            &(gids[i*zz->Num_GID]),
+                                            lid, &err);
+           if (err < 0) {
+             ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL, "Error returned from "
+                           "ZOLTAN_OBJ_SIZE function.");
+           }
+         }
+       }
+     }
+     err = partition_stats(zz, ndots, dots, objSizes, work_fraction, 
+                           parts, new_part);
+  
+     if (err != ZOLTAN_OK){
+       ZOLTAN_HSFC_ERROR (ZOLTAN_FATAL, "statistics");
+     }
+     if (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME) {
+        total_stat_time = Zoltan_Time(zz->Timer) - start_stat_time;
+     }
+  
+     ZOLTAN_FREE(&objSizes);
+   }
+
    /* free stuff before next required allocations */
    Zoltan_Multifree (__FILE__, __LINE__, 3, &temp_weight, &grand_partition,
     &target);
@@ -487,6 +561,8 @@ int Zoltan_HSFC(
       if (new_part[i] != parts[i]  ||  zz->Proc != new_proc[i])
          ++(*num_export);
       }
+
+EndReporting:
 
    if (!zz->LB.Return_Lists)
       *num_export = -1;
@@ -531,7 +607,6 @@ int Zoltan_HSFC(
       }
     ZOLTAN_TRACE_DETAIL (zz, yo, "Filled in export information");
 
-
    /* DEBUG: print useful information */
    if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL  &&  zz->Proc == 0)
       printf ("<%d> Number of loops = %d\n", zz->Proc, loop + 1);
@@ -553,13 +628,6 @@ int Zoltan_HSFC(
    ZOLTAN_FREE(&new_part);
 
    /* done, do we keep data structure for box drop and point drop? */
-   Zoltan_Bind_Param (HSFC_params, "KEEP_CUTS", (void*) &param);
-   Zoltan_Bind_Param (HSFC_params, "REDUCE_DIMENSIONS", (void*) &idummy);
-   Zoltan_Bind_Param (HSFC_params, "DEGENERATE_RATIO", (void*) &ddummy);
-   param = idummy = 0;
-   ddummy = 0.0;
-   Zoltan_Assign_Param_Vals (zz->Params, HSFC_params, zz->Debug_Level, zz->Proc,
-    zz->Debug_Proc);
 
    if (!param &&                    /* we don't need partitions */
        (d->tran.Target_Dim < 0)){   /* we don't need transformation */
@@ -572,7 +640,6 @@ int Zoltan_HSFC(
       ZOLTAN_PRINT_WARN (zz->Proc, yo, "HSFC: Imbalance exceeds user limit");
 
 End:
-   MPI_Op_free (&mpi_op);
 
    Zoltan_Multifree (__FILE__, __LINE__, 12, &dots, &gids, &lids, &partition,
     &grand_partition, &grand_weight, &temp_weight, &weights, &target, &delta,
@@ -584,7 +651,8 @@ End:
       MPI_Barrier(zz->Communicator);
       end_time = Zoltan_Time(zz->Timer);
       if (zz->Debug_Proc == zz->Proc)
-         printf ("HSFC Processing Time is %.6f seconds\n", end_time-start_time);
+         printf ("HSFC Processing Time is %.6f seconds\n", 
+                  end_time-start_time-total_stat_time);
       }
 
    ZOLTAN_TRACE_EXIT (zz, yo);
@@ -668,7 +736,7 @@ Partition *p;
   if (data->final_partition){
     p = data->final_partition;
     for (i=0; i< nparts; i++){
-      printf("interval %d: [%6.4lf, %6.4lf), owner %d\n",
+      printf("interval %d: [%6.4f, %6.4f), owner %d\n",
        i, p->l, p->r, p->index);
       p++;
     }
@@ -677,13 +745,13 @@ Partition *p;
     printf("Final partition: NULL\n");
   }
 
-  printf("bbox low: %6.4lf %6.4lf %6.4lf, bbox hi: %6.4lf %6.4lf %6.4lf\n",
+  printf("bbox low: %6.4f %6.4f %6.4f, bbox hi: %6.4f %6.4f %6.4f\n",
      data->bbox_lo[0], data->bbox_lo[1], data->bbox_lo[2],
      data->bbox_hi[0], data->bbox_hi[1], data->bbox_hi[2]);
 
-  printf("extent: %6.4lf %6.4lf %6.4lf, dim: %d, func: %p\n",
+  printf("extent: %6.4f %6.4f %6.4f, dim: %d\n",
       data->bbox_extent[0], data->bbox_extent[1], data->bbox_extent[2],
-      data->ndimension, data->fhsfc);
+      data->ndimension);
 
   Zoltan_Print_Transformation(&(data->tran));
 }
@@ -698,24 +766,113 @@ int Zoltan_HSFC_Set_Param (char *name, char *val)
    }
 
 
+/****************************************************************************/
+static int partition_stats(ZZ *zz, int ndots, 
+                   Dots *dots, int *obj_sizes,
+                   float *work_fraction, int *parts, int *new_parts)
+{
+int wgtDim = zz->Obj_Weight_Dim;
+int proc = zz->Proc;
+int i, j, max, numParts;
+double move, gmove, bal, max_imbal, ib;
+double lwtot, gwtot;
+double *lpartWgt = NULL;
+double *gpartWgt = NULL;
 
-/* allows SUM, MAX, MIN on single array in one MPI_Allreduce call */
-void  Zoltan_HSFC_mpi_sum_max_min (void *in, void *inout, int *len,
- MPI_Datatype *datatype)
-   {
-   int i, count = *len/3;
+  lwtot = 0.0;
+  for (i = 0, max=0; i < ndots; i++){
+    if (new_parts[i] > max) max = new_parts[i];
+    if (wgtDim){
+      lwtot += dots[i * wgtDim].weight;
+    }
+    else{
+      lwtot += 1.0;
+    }
+  }
 
-   for (i = 0; i < count; i++)                        /* SUM */
-      ((double*) inout)[i] += ((double*) in)[i];
+  MPI_Reduce(&lwtot,&gwtot,1,MPI_DOUBLE, MPI_SUM, 0, zz->Communicator);
 
-   for (i = count; i < 2 * count; i++)                /* MAX */
-      if (((double*) inout)[i] < ((double*) in)[i])
-          ((double*) inout)[i] = ((double*) in)[i];
+  MPI_Allreduce(&max,&numParts,1,MPI_INT, MPI_MAX, zz->Communicator);
+  numParts++;
 
-   for (i = 2 * count; i < 3 * count; i++)            /* MIN */
-      if (((double*) inout)[i] > ((double*) in)[i])
-          ((double*) inout)[i] = ((double*) in)[i];
-   }
+  lpartWgt = (double *)ZOLTAN_CALLOC(numParts, sizeof(double));
+  gpartWgt = (double *)ZOLTAN_MALLOC(numParts * sizeof(double));
+
+  if (numParts && (!lpartWgt || !gpartWgt)){
+    ZOLTAN_PRINT_ERROR(zz->Proc, "partition_stats", "Insufficient memory.");
+    return ZOLTAN_MEMERR;
+  }
+
+  for (i = 0, j=0, move=0.0; i < ndots; i++, j += wgtDim){
+    if (wgtDim)
+      lpartWgt[new_parts[i]] +=  (double)dots[j].weight;
+    else
+      lpartWgt[new_parts[i]] += 1.0; 
+
+    if (parts[i] != new_parts[i]){
+      if (obj_sizes)
+        move += (double)obj_sizes[i];
+      else
+        move += 1;
+    }
+  }
+
+  MPI_Reduce(lpartWgt, gpartWgt, numParts, MPI_DOUBLE, MPI_SUM,
+             0, zz->Communicator);
+  MPI_Reduce(&move, &gmove, 1, MPI_DOUBLE, MPI_SUM, 0, zz->Communicator);
+
+  ZOLTAN_FREE(&lpartWgt);
+
+  if (proc == 0) {
+    static int nRuns=0;
+    static double balsum, balmax, balmin;
+    static double movesum, movemax, movemin;
+    char *countType;
+
+    max_imbal = 0.0;
+
+    if (gwtot) {
+      for (i = 0; i < numParts; i++){
+        if (work_fraction[i]) {
+          ib= (gpartWgt[i]-work_fraction[i]*gwtot)/(work_fraction[i]*gwtot);
+          if (ib>max_imbal)
+            max_imbal = ib;
+        }
+      }
+    }
+
+    bal = 1.0 + max_imbal;
+
+    if (nRuns){
+      if (gmove > movemax) movemax = gmove;
+      if (gmove < movemin) movemin = gmove;
+      if (bal > balmax) balmax = bal;
+      if (bal < balmin) balmin = bal;
+      movesum += gmove;
+      balsum += bal;
+    }
+    else{
+      movemax = movemin = movesum = gmove;
+      balmax = balmin = balsum = bal;
+    }
+
+    countType = "moveCnt";
+    if (obj_sizes){
+      countType = "moveVol";
+    }
+
+    nRuns++;
+    printf(" STATS Runs %d  bal  CURRENT %f  MAX %f  MIN %f  AVG %f\n",
+            nRuns, bal, balmax, balmin, balsum/nRuns);
+    printf(" STATS Runs %d  %s CURRENT %f  MAX %f  MIN %f  AVG %f\n",
+            nRuns, countType, gmove, movemax, movemin, movesum/nRuns);
+  }
+
+  ZOLTAN_FREE(&gpartWgt);
+  MPI_Barrier(zz->Communicator);
+
+  return ZOLTAN_OK;
+}
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */

@@ -4,10 +4,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: mpistring.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.4 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 /* Wrapper for MPI routines that take string arguments, to avoid the

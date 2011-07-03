@@ -1,4 +1,4 @@
-XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.9 2004/12/14 19:08:47 gdsjaar Exp $
 
 SRCS =	\
 mxexec.f mxrsrv.f mxfind.f mycomp.f mxget.f  mydel.f  shftc.f  \

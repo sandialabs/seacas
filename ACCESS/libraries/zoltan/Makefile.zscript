@@ -6,9 +6,9 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Makefile.zscript,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
 #    Revision: 1.6 $
 ##############################################################################
 
@@ -17,9 +17,10 @@ include ./Utilities/Config/Config.$(ZOLTAN_ARCH)
 ZTARGET = zdrive
 LIB_NAME = libzoltan.a
 LIB_TARGET = zoltan
-SUBDIRS	= driver ch zz all lb par rcb oct parmetis params timer ha reftree hsfc phg coloring
-UTIL_SUBDIRS = Memory Communication DDirectory
+SUBDIRS	= driver ch zz all lb par rcb oct parmetis params timer ha reftree hsfc phg coloring simple
+UTIL_SUBDIRS = Memory Communication DDirectory Timer shared
 ZOLTAN_OBJ_DIR = Obj_$(ZOLTAN_ARCH)
+DEFS +=  -DTRILINOS_NO_CONFIG_H
 
 zoltan:	
 	@if [ ! -f $(ZOLTAN_OBJ_DIR)/$(LIB_NAME) ]; then \

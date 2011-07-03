@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: rib.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.12 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -46,7 +46,7 @@ typedef struct RIB_Struct {
     ZZ_Transform       Tran;     /* transformation for degenerate geometry */
 } RIB_STRUCT;
 
-extern int Zoltan_RIB_Build_Structure(ZZ *, int *, int *, int, int);
+extern int Zoltan_RIB_Build_Structure(ZZ *, int *, int *, int, double, int);
 extern void Zoltan_RIB_Print_Structure(ZZ *zz, int howMany);
 
 

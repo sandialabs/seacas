@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_chaco_io.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.39 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <mpi.h>
@@ -26,16 +26,17 @@
 #include "dr_maps_const.h"
 #include "ch_input_const.h"
 #include "ch_init_dist_const.h"
+#include "dr_compress_const.h"
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
 extern "C" {
 #endif
 
-
 #ifndef MAX_STR_LENGTH
 #define MAX_STR_LENGTH 80
 #endif
+
 
 /****************************************************************************/
 /****************************************************************************/
@@ -63,8 +64,8 @@ int read_chaco_file(int Proc,
 
   short *assignments = NULL;
 
-  FILE  *fp;
-  int    file_error = 0;
+  ZOLTAN_FILE *fp = NULL;
+  int file_error;
 /***************************** BEGIN EXECUTION ******************************/
 
   DEBUG_TRACE_START(Proc, yo);
@@ -75,8 +76,9 @@ int read_chaco_file(int Proc,
   if (Proc == 0) {
 
     /* Open and read the Chaco graph file. */
-    sprintf(chaco_fname, "%s.graph", pio_info->pexo_fname);   
-    fp = fopen(chaco_fname, "r");
+    sprintf(chaco_fname, "%s.graph", pio_info->pexo_fname);
+
+    fp = ZOLTAN_FILE_open(chaco_fname, "r", pio_info->file_comp);
     file_error = (fp == NULL);
   }
 
@@ -99,7 +101,8 @@ int read_chaco_file(int Proc,
 
     /* Read Chaco geometry file, if provided. */
     sprintf(chaco_fname, "%s.coords", pio_info->pexo_fname);
-    fp = fopen(chaco_fname, "r");
+
+    fp = ZOLTAN_FILE_open(chaco_fname, "r", pio_info->file_comp);
     if (fp == NULL) {
       no_geom = TRUE;
       sprintf(cmesg, "warning:  Could not open Chaco geometry file %s; "
@@ -115,10 +118,62 @@ int read_chaco_file(int Proc,
       }
     }
 
+#ifdef MESS_UP_POINTS
+/* Try to create a geometry that isn't nicely symmetric */
+{
+int i, j;
+double min[3], max[3], a[3], b[3];
+min[0] = max[0] = x[0];
+if (ndim > 1){
+  min[1] = max[1] = y[0];
+  if (ndim > 2)
+    min[2] = max[2] = z[0];
+}
+for (i=1; i<nvtxs; i++) {
+  if (x[i] < min[0]) min[0] = x[i];
+  else if (x[i] > max[0]) max[0] = x[i];
+  if (ndim > 1){
+    if (y[i] < min[1]) min[1] = y[i];
+    else if (y[i] > max[1]) max[1] = y[i];
+    if (ndim > 2){
+      if (z[i] < min[2]) min[2] = z[i];
+      else if (z[i] > max[2]) max[2] = z[i];
+    }
+  }
+}
+for (i=0; i<ndim; i++)  /* point inside but near edge of geometry */
+  a[i] = ((max[i] - min[i]) * .1) + min[i];
+
+for (i=0; i<nvtxs; i++) { /* move 2/3 of points much closer to "a" */
+  if (i%3 == 0) continue;
+  b[0] = x[i];
+  if (ndim > 1){
+    b[1] = y[i];
+    if (ndim > 2){
+      b[2] = z[i];
+    }
+  }
+  for (j=0; j<ndim; j++){
+    b[j] = a[j] + ((b[j] - a[j])*.1);
+  }
+  x[i] = b[0];
+  if (ndim > 1){
+    y[i] = b[1];
+    if (ndim > 2){
+      z[i] = b[2];
+    }
+  }
+}
+}
+#endif
+
     /* Read Chaco assignment file, if requested */
     if (pio_info->init_dist_type == INITIAL_FILE) {
       sprintf(chaco_fname, "%s.assign", pio_info->pexo_fname);
-      fp = fopen(chaco_fname, "r");
+      if (pio_info->file_comp == GZIP)
+	sprintf(chaco_fname, "%s.gz", chaco_fname);
+
+      fp = ZOLTAN_FILE_open(chaco_fname, "r", pio_info->file_comp);
       if (fp == NULL) {
         sprintf(cmesg, "Error:  Could not open Chaco assignment file %s; "
                 "initial distribution cannot be read",
@@ -156,14 +211,14 @@ int read_chaco_file(int Proc,
     return 0;
   }
 
-  safe_free((void **) &adj);
-  safe_free((void **) &vwgts);
-  safe_free((void **) &ewgts);
-  safe_free((void **) &start);
-  safe_free((void **) &x);
-  safe_free((void **) &y);
-  safe_free((void **) &z);
-  safe_free((void **) &assignments);
+  safe_free((void **)(void *) &adj);
+  safe_free((void **)(void *) &vwgts);
+  safe_free((void **)(void *) &ewgts);
+  safe_free((void **)(void *) &start);
+  safe_free((void **)(void *) &x);
+  safe_free((void **)(void *) &y);
+  safe_free((void **)(void *) &z);
+  safe_free((void **)(void *) &assignments);
 
   DEBUG_TRACE_END(Proc, yo);
   return 1;
@@ -386,8 +441,16 @@ int chaco_fill_elements(
         mesh->elements[i].edge_wgt = NULL;
 
       for (j = 0; j < mesh->elements[i].nadj; j++) {
+#if 0
         elem_id = adj[start[i] + j] - (1-base);  /* Chaco is 1-based;
                                                     HG may be 0 or 1 based. */
+#else
+        /* when called from hypergraph build, the line above gives the wrong
+         * value for the adjacency.  (it is one too low). I'm guessing that
+         * this is the fix.  Works for hypergraph & chaco files in testing.
+         */
+        elem_id = adj[start[i] + j];
+#endif
 
         /* determine which processor the adjacent vertex is on */
         k = ch_dist_proc(elem_id, assignments, base);
@@ -409,8 +472,8 @@ int chaco_fill_elements(
     } /* End: "if (mesh->elements[i].nadj > 0)" */
   } /* End: "for (i = 0; i < mesh->num_elems; i++)" */
 
-  safe_free((void **) &vtx_list);
-  safe_free((void **) &local_ids);
+  safe_free((void **)(void *) &vtx_list);
+  safe_free((void **)(void *) &local_ids);
 
   if (!build_elem_comm_maps(Proc, mesh)) {
     Gen_Error(0, "Fatal: error building initial elem comm maps");

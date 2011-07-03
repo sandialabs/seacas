@@ -4,10 +4,10 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  CVS File Information :
-!     $RCSfile: fdr_main.f90,v $
-!     $Author: gdsjaar $
-!     $Date: 2009/06/09 18:37:57 $
-!     Revision: 1.17.2.2 $
+!     $RCSfile$
+!     $Author$
+!     $Date$
+!     $Revision$
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !/*--------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ implicit none
   real(Zoltan_FLOAT) :: version
 
   integer(Zoltan_INT) :: Proc, Num_Proc
-  integer(Zoltan_INT) :: error, i, j
+  integer(Zoltan_INT) :: error, i
 
   type(PARIO_INFO) :: pio_info
   type(PROB_INFO) :: prob
@@ -158,6 +158,7 @@ end interface
 
   prob%method             = ''
   prob%num_params         = 0
+  prob%ztnPrm_file        = ''
   nullify(prob%params)
 
 !  /* Read in the ascii input file */
@@ -411,7 +412,7 @@ type(ELEM_INFO), pointer :: elements(:)
   call dr_sort_index(Mesh%num_elems, global_ids, index)
 
 !  /* generate the parallel filename for this processor */
-  ctemp = pio_info%pexo_fname(1:len_trim(pio_info%pexo_fname))//".fout"
+  ctemp = pio_info%pexo_fname(1:len_trim(pio_info%pexo_fname))//".out"
   call gen_par_filename(ctemp, par_out_fname, pio_info, Proc, Num_Proc)
 
   open(unit=fp,file=par_out_fname,action="write")

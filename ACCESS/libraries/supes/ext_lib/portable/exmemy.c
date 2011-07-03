@@ -33,11 +33,16 @@
  * 
  */
 /*
- * $Id: exmemy.c,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+ * $Id: exmemy.c,v 1.19 2008/12/17 22:47:19 gdsjaar Exp $
  */
 
 /*
  *  NOTES ON MODULE EXMEMY:
+ *
+ * -2. The big assumption on which this is based is that a FTNINT
+ *     which is either an int or a long int, is the same size as
+ *     the void* returned by malloc. There are both compile-time
+ *     and run-time assertions that attempt to catch this.
  *
  * -1. The information below is the original implementation. At that
  *     time, the only C routines linked with most executables were the
@@ -54,7 +59,7 @@
  *     removed since the underlying 'malloc' implementation is better
  *     at dealing with this than we are (hopefully).
  *
- *     The implementation of 'free' is somewhat of a kludge and
+ *     The implementation of 'free' is somewhat of a kluge and
  *     required changes to the calling 'mem_mgr' routines.  Specifically,
  *
  *     1) A few routines were disabled -- mdget which is supposed to
@@ -110,8 +115,10 @@
  * Assumptions:
  * 1. All systems have stdlib.h and define the prototype for malloc
  * 2. All systems are ANSI C compliant (have function prototypes)
+ * 3. sizeof(FTNINT) == sizeof(void*)
  */
 
+#include <assert.h>
 #include <stdlib.h>
 /*
  * Define the Fortran/C interface for the system in question
@@ -121,6 +128,17 @@
 
 #include <fortranc.h>
 
+#define ct_assert(e) extern char (*ct_assert(void)) [sizeof(char[1 - 2*!(e)])]
+/* If the following line causes a compile-time error, then there is a problem
+ * which will cause the supes memory manager to not work correctly on this
+ * platform. The error will be something similar to:
+ *
+ * exmemy.c(141): error: the size of an array must be greater than zero
+ * ct_assert(sizeof(FTNINT) == sizeof(void*));
+ *
+ * Contact Greg Sjaardema, gdsjaar@sandia.gov for asisstance.
+ */
+ct_assert(sizeof(FTNINT) == sizeof(void*));
 
 #if defined(ADDC_)
 void exmemy_(FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
@@ -146,6 +164,13 @@ void exmemy( FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
     /* convert back to numerical storage units */
     *locblk = (FTNINT)((size_t)block_location / NumSize);
     
+    /* See if we have lost any information in the conversion. For example, if
+     * the pointer is a 64-bit quantity and a FTNINT is 32-bits, we may not be
+     * able to recover the block_location...  This should have been caught in
+     * the ct_assert above, but if not, we check again here...
+     */
+    assert (block_location == (size_t*)((size_t)(*locblk) * NumSize));
+
     if (block_location == 0) {
       /*
        * Then the call to 'malloc' has failed, most likely due to
@@ -172,7 +197,7 @@ void exmemy( FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
      */
     block_location = (size_t*)((size_t)(*locblk) * NumSize);
 
-    if (*memrtn == -999) {
+    if (*memrtn == -999 || *memreq == 0) {
       /* Handle normal 'free' */
       /* printf("FREE:  %11x %11d\n", block_location, *memreq); */
       free(block_location);
@@ -185,7 +210,7 @@ void exmemy( FTNINT *memreq, FTNINT *locblk, FTNINT *memrtn)
       new_location = realloc(block_location, numbytes);
       /* printf("POST: %11x %11d\n", new_location, numbytes); */
 
-      if (new_location == 0) {
+      if (new_location == 0 && *memreq > 0) {
 	/*
 	 * Then the call to 'realloc' has failed, most likely due to
 	 * asking for more memory than what's available.

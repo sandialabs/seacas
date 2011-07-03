@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zoltan.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.47.2.3 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __ZOLTAN_H
@@ -20,6 +20,7 @@
 #include "zoltan_comm.h"
 #include "zoltan_mem.h"
 #include "zoltan_dd.h"
+#include "zoltan_eval.h"
 
 /*
  * Define this prior to #ifdef __cplusplus to avoid a 
@@ -32,7 +33,7 @@ typedef void ZOLTAN_VOID_FN(void);
 extern "C" {
 #endif
 
-#define ZOLTAN_VERSION_NUMBER   2.011
+#define ZOLTAN_VERSION_NUMBER   3.4
 
 /*****************************************************************************
  *  Data types and functions describing the interface between the
@@ -79,17 +80,27 @@ enum Zoltan_Fn_Type {
   ZOLTAN_OBJ_SIZE_MULTI_FN_TYPE,
   ZOLTAN_PACK_OBJ_MULTI_FN_TYPE,
   ZOLTAN_UNPACK_OBJ_MULTI_FN_TYPE,
-  ZOLTAN_PARTITION_FN_TYPE,
-  ZOLTAN_PARTITION_MULTI_FN_TYPE,
+  ZOLTAN_PART_FN_TYPE,
+  ZOLTAN_PART_MULTI_FN_TYPE,
   ZOLTAN_PROC_NAME_FN_TYPE,
   ZOLTAN_HG_SIZE_CS_FN_TYPE,
   ZOLTAN_HG_CS_FN_TYPE,
   ZOLTAN_HG_SIZE_EDGE_WTS_FN_TYPE,
   ZOLTAN_HG_EDGE_WTS_FN_TYPE,
+  ZOLTAN_NUM_FIXED_OBJ_FN_TYPE,
+  ZOLTAN_FIXED_OBJ_LIST_FN_TYPE,
+  ZOLTAN_HIER_NUM_LEVELS_FN_TYPE,
+  ZOLTAN_HIER_PART_FN_TYPE,
+  ZOLTAN_HIER_METHOD_FN_TYPE,
   ZOLTAN_MAX_FN_TYPES               /*  This entry should always be last. */
 };
 
 typedef enum Zoltan_Fn_Type ZOLTAN_FN_TYPE;
+
+/* For backward compatibility with v3.0 */
+#define ZOLTAN_HIER_PARTITION_FN_TYPE ZOLTAN_HIER_PART_FN_TYPE
+#define ZOLTAN_PARTITION_FN_TYPE ZOLTAN_PART_FN_TYPE
+#define ZOLTAN_PARTITION_MULTI_FN_TYPE ZOLTAN_PART_MULTI_FN_TYPE
 
 /* Definitions to support name change for 31-character F90 names */
 #define ZOLTAN_HG_SIZE_EDGE_WEIGHTS_FN_TYPE   ZOLTAN_HG_SIZE_EDGE_WTS_FN_TYPE
@@ -145,7 +156,7 @@ struct Zoltan_Struct;
  *    *ierr               --  error code
  */
 
-typedef void ZOLTAN_PARTITION_MULTI_FN(
+typedef void ZOLTAN_PART_MULTI_FN(
   void *data,              
   int num_gid_entries, 
   int num_lid_entries,
@@ -156,7 +167,7 @@ typedef void ZOLTAN_PARTITION_MULTI_FN(
   int *ierr
 );
 
-typedef void ZOLTAN_PARTITION_MULTI_FORT_FN(
+typedef void ZOLTAN_PART_MULTI_FORT_FN(
   void *data, 
   int *num_gid_entries, 
   int *num_lid_entries,
@@ -166,6 +177,10 @@ typedef void ZOLTAN_PARTITION_MULTI_FORT_FN(
   int *parts,
   int *ierr
 );
+
+/* For backward compatibility with v3.0 */
+#define ZOLTAN_PARTITION_MULTI_FN ZOLTAN_PART_MULTI_FN
+#define ZOLTAN_PARTITION_MULTI_FORT_FN ZOLTAN_PART_MULTI_FORT_FN
 
 /*****************************************************************************/
 /*
@@ -184,7 +199,7 @@ typedef void ZOLTAN_PARTITION_MULTI_FORT_FN(
  *  Returned value:       --  partition number the object is assigned to.
  */
 
-typedef int ZOLTAN_PARTITION_FN(
+typedef int ZOLTAN_PART_FN(
   void *data,              
   int num_gid_entries, 
   int num_lid_entries,
@@ -193,7 +208,7 @@ typedef int ZOLTAN_PARTITION_FN(
   int *ierr
 );
 
-typedef int ZOLTAN_PARTITION_FORT_FN(
+typedef int ZOLTAN_PART_FORT_FN(
   void *data, 
   int *num_gid_entries, 
   int *num_lid_entries,
@@ -201,6 +216,10 @@ typedef int ZOLTAN_PARTITION_FORT_FN(
   ZOLTAN_ID_PTR local_id, 
   int *ierr
 );
+
+/* For backward compatibility with v3.0 */
+#define ZOLTAN_PARTITION_FN ZOLTAN_PART_FN
+#define ZOLTAN_PARTITION_FORT_FN ZOLTAN_PART_FN
 
 /*****************************************************************************/
 /*
@@ -1750,12 +1769,21 @@ typedef void ZOLTAN_HG_SIZE_CS_FORT_FN(
  *    format              --  ZOLTAN_COMPRESSED_VERTEX or ZOLTAN_COMPRESSED_EDGE
  *
  *  Output:
- *    vtxedge_GID --  if ZOLTAN_COMPRESSED_EDGE: global edge ID for each edge
- *                   if ZOLTAN_COMPRESSED_VERTEX: global vertex ID for each vertex
- *    vtxedge_ptr --  if ZOLTAN_COMPRESSED_EDGE: pointer into pin_GID list for
- *                     the start of each edge
- *                   if ZOLTAN_COMPRESSED_VERTEX: pointer into pin_GID list for
- *                     the start of each vertex
+ *    vtxedge_GID -- if ZOLTAN_COMPRESSED_EDGE: global edge ID for each edge
+ *                   if ZOLTAN_COMPRESSED_VERTEX: global vertex ID for each 
+ *                   vertex
+ *    vtxedge_ptr -- if ZOLTAN_COMPRESSED_EDGE:  
+ *                      vtxedge_ptr[i+1]-vtxedge_ptr[i] is the number of 
+ *                      vertices belonging to edge i (i.e., pins or non-zeros)
+ *                      specified by this processor in pin_GID. The starting
+ *                      index in pin_GID of edge i's vertices is 
+ *                      vtxedge_ptr[i]*num_gid_entries.
+ *                   if ZOLTAN_COMPRESSED_VERTEX:  
+ *                      vtxedge_ptr[i+1]-vtxedge_ptr[i] is the number of 
+ *                      edges to which vertex i belongs 
+ *                      specified by this processor in pin_GID. The starting
+ *                      index in pin_GID of vertex i's edges is 
+ *                      vtxedge_ptr[i]*num_gid_entries.
  *    pin_GID    --  if ZOLTAN_COMPRESSED_EDGE: global vertex ID for each
  *                     pin (non-zero) in each edge
  *                   if ZOLTAN_COMPRESSED_VERTEX: global edge ID for each
@@ -1851,6 +1879,61 @@ typedef void ZOLTAN_HG_EDGE_WTS_FORT_FN(
   ZOLTAN_ID_PTR edge_GID,
   ZOLTAN_ID_PTR edge_LID,
   float *edge_weight,
+  int *ierr
+);
+
+/*****************************************************************************/
+/*
+ *  Function to return
+ *  the number of objects on a given processor fixed to particular partitions.
+ *  Input:  
+ *    data                --  pointer to user defined data structure
+ *  Output:
+ *    ierr                --  error code
+ *  Returned value:       --  the number of fixed objects on this processor.
+ */
+
+typedef int ZOLTAN_NUM_FIXED_OBJ_FN(
+  void *data, 
+  int *ierr
+);
+
+typedef int ZOLTAN_NUM_FIXED_OBJ_FORT_FN(
+  void *data, 
+  int *ierr
+);
+
+/*****************************************************************************/
+/*
+ *  Function to return a list of fixed objects and the partitions to
+ *  which they are fixed.
+ *
+ *  Input:
+ *    data                --  pointer to user defined data structure
+ *    num_fixed_obj       --  number of fixed objects to be stored
+ *    num_gid_entries     --  number of array entries of type ZOLTAN_ID_TYPE
+ *                            in a global ID
+ *  Output:
+ *    fixed_gids          --  global IDs of fixed objects
+ *    fixed_part          --  partition assignment of fixed objects
+ *    ierr                --  error code
+ */
+
+typedef void ZOLTAN_FIXED_OBJ_LIST_FN(
+  void *data,
+  int num_fixed_obj,
+  int num_gid_entries,
+  ZOLTAN_ID_PTR fixed_gids,
+  int *fixed_part,
+  int *ierr
+);
+
+typedef void ZOLTAN_FIXED_OBJ_LIST_FORT_FN(
+  void *data,
+  int *num_fixed_obj,
+  int *num_gid_entries,
+  ZOLTAN_ID_PTR fixed_gids,
+  int *fixed_part,
   int *ierr
 );
 
@@ -2035,6 +2118,89 @@ typedef int ZOLTAN_NEXT_BORDER_OBJ_FORT_FN(
 );
 
 /*****************************************************************************/
+/*******  Functions to set up hierarchical balancing  ************************/
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*
+ *  Function to return, for the calling processor, the number of levels
+ *  of hierarchy for hierarchical load balancing
+ *  Input:  
+ *    data                --  pointer to user defined data structure
+ *  Output:
+ *    ierr                --  error code
+ *  Returned value:       --  the number of levels of balancing hierarchy
+ */
+
+typedef int ZOLTAN_HIER_NUM_LEVELS_FN(
+  void *data,
+  int *ierr
+);
+
+typedef int ZOLTAN_HIER_NUM_LEVELS_FORT_FN(
+  void *data, 
+  int *ierr
+);
+
+/*****************************************************************************/
+/*
+ *  Function to return, for the calling processor, the part
+ *  in which the processor is to be computing for hierarchical
+ *  balancing at the given level in the hierarchy
+ *  Input:  
+ *    data                --  pointer to user defined data structure
+ *    level               --  level in the hierarchy being considered
+ *  Output:
+ *    ierr                --  error code
+ *  Returned value:       --  the partition number the processor is to compute
+ */
+
+typedef int ZOLTAN_HIER_PART_FN(
+  void *data,
+  int level,
+  int *ierr
+);
+
+typedef int ZOLTAN_HIER_PART_FORT_FN(
+  void *data,
+  int *level,
+  int *ierr
+);
+
+/* For backward compatibility with v3.0 */
+#define ZOLTAN_HIER_PARTITION_FN ZOLTAN_HIER_PART_FN
+#define ZOLTAN_HIER_PARTITION_FORT_FN ZOLTAN_HIER_PART_FORT_FN
+
+/*****************************************************************************/
+/*
+ *  Function to provide to the calling processor the Zoltan_Struct
+ *  to be used to guide the partitioning and load balancing at the
+ *  given level in the hierarchy.  This Zoltan_Struct can be passed to
+ *  Zoltan_Set_Param to set load balancing parameters for this level
+ *  in the hierarchical balancing
+ *  Input:  
+ *    data                --  pointer to user defined data structure
+ *    level               --  level in the hierarchy being considered
+ *    zz                  --  Zoltan_Struct to use to set parameters
+ *  Output:
+ *    ierr                --  error code
+ */
+
+typedef void ZOLTAN_HIER_METHOD_FN(
+  void *data,
+  int level,
+  struct Zoltan_Struct *zz,
+  int *ierr
+);
+
+typedef void ZOLTAN_HIER_METHOD_FORT_FN(
+  void *data,
+  int *level,
+  int *zz, /* this is a Zoltan_Struct, but is converted for F90 */
+  int *ierr
+);
+
+/*****************************************************************************/
 /*****************************************************************************/
 /*******  Functions to set-up Zoltan load-balancing data structure  **********/
 /*****************************************************************************/
@@ -2162,15 +2328,15 @@ extern int Zoltan_Set_Fn(
  *  Returned value:       --  Error code
  */
 
-extern int Zoltan_Set_Partition_Multi_Fn(
+extern int Zoltan_Set_Part_Multi_Fn(
   struct Zoltan_Struct *zz, 
-  ZOLTAN_PARTITION_MULTI_FN *fn_ptr, 
+  ZOLTAN_PART_MULTI_FN *fn_ptr, 
   void *data_ptr
 );
 
-extern int Zoltan_Set_Partition_Fn(
+extern int Zoltan_Set_Part_Fn(
   struct Zoltan_Struct *zz, 
-  ZOLTAN_PARTITION_FN *fn_ptr, 
+  ZOLTAN_PART_FN *fn_ptr, 
   void *data_ptr
 );
 
@@ -2401,6 +2567,41 @@ extern int Zoltan_Set_HG_Edge_Wts_Fn(
   void *data_ptr
 );
 
+extern int Zoltan_Set_Num_Fixed_Obj_Fn(
+  struct Zoltan_Struct *zz, 
+  ZOLTAN_NUM_FIXED_OBJ_FN *fn_ptr, 
+  void *data_ptr
+);
+
+extern int Zoltan_Set_Fixed_Obj_List_Fn(
+  struct Zoltan_Struct *zz, 
+  ZOLTAN_FIXED_OBJ_LIST_FN *fn_ptr, 
+  void *data_ptr
+);
+
+extern int Zoltan_Set_Hier_Num_Levels_Fn(
+  struct Zoltan_Struct *zz, 
+  ZOLTAN_HIER_NUM_LEVELS_FN *fn_ptr, 
+  void *data_ptr
+);
+
+extern int Zoltan_Set_Hier_Part_Fn(
+  struct Zoltan_Struct *zz, 
+  ZOLTAN_HIER_PART_FN *fn_ptr, 
+  void *data_ptr
+);
+
+extern int Zoltan_Set_Hier_Method_Fn(
+  struct Zoltan_Struct *zz, 
+  ZOLTAN_HIER_METHOD_FN *fn_ptr, 
+  void *data_ptr
+);
+
+/* For backward compatibility with v3.0 */
+#define Zoltan_Set_Partition_Multi_Fn Zoltan_Set_Part_Multi_Fn
+#define Zoltan_Set_Partition_Fn Zoltan_Set_Part_Fn
+#define Zoltan_Set_Hier_Partition_Fn Zoltan_Set_Hier_Part_Fn
+
 /*****************************************************************************/
 /*
  *  Function to change a parameter value within Zoltan.
@@ -2580,38 +2781,122 @@ int Zoltan_RCB_Box(
  *  Routine to compute an ordering (permutation) of the objects.
  *
  *  Input:
- *    zz                  --  The Zoltan structure containing 
+ *    zz                  --  The Zoltan structure containing
  *                            info for this load-balancing invocation.
- *  Output:
+ *  Input:
  *    num_gid_entries     --  number of entries of type ZOLTAN_ID_TYPE
  *                            in a global ID
- *    num_lid_entries     --  number of entries of type ZOLTAN_ID_TYPE
- *                            in a local ID
  *
- *    gids                --  list of global ids in permuted order
+ *    num_obj             --  Number of elements in the global_ids array.
  *
- *    lids                --  list of local ids in permuted order
+ *    global_ids          --  List of global ids. This list contains the
+ *                            global ID for which the user wants to know
+ *                            the corresponding permutation.
  *
- *    order_info          --  pointer to an "order struct" that contains
- *                            additional information about an ordering
+ *  Output:
+ *    permuted_global_ids --  Permutation Vector: global_ids[i] becomes
+ *                            permuted_global_ids[i] in the new ordering.
  *
  *  Returned value:       --  Error code
  */
 
-struct Zoltan_Order_Struct; /* Structure defined in order/order_const.h */
 
-extern int Zoltan_Order(
-  struct Zoltan_Struct *zz,
-  int *num_gid_entries,
-  int *num_lid_entries,
-  int num_obj,
-  ZOLTAN_ID_PTR global_ids,
-  ZOLTAN_ID_PTR local_ids,
-  int *rank,
-  int *iperm,
-  struct Zoltan_Order_Struct *order_info  /* Currently not used. */
+int Zoltan_Order (
+      struct Zoltan_Struct *zz,
+      int num_gid_entries,
+      int num_obj,
+      ZOLTAN_ID_PTR global_ids,
+      ZOLTAN_ID_PTR permuted_global_ids
 );
 
+/*****************************************************************************/
+/*
+ *  Function to return the number of blocks in ordering.
+ *  Input:
+ *    zz                  --  The zoltan struct with ordering info.
+ *  Returned value:       --  The number of blocks in ordering.
+ */
+
+extern int Zoltan_Order_Get_Num_Blocks(
+  struct Zoltan_Struct *zz  /* Info about ordering */
+);
+
+/*****************************************************************************/
+/*
+ *  Function to return the description of an ordering block
+ *  Input:
+ *    zz                  --  The zoltan struct with ordering info.
+ *    block_num           --  The id of the block to take care of.
+ *  Output:
+ *    first               --  Number of the first element of the block.
+ *    last                --  Number of the last element of the block.
+ *  For both, number means an indice between 0 and N-1, not in the GID domain.
+ *  Returned value:       --  Error code
+ */
+
+extern int Zoltan_Order_Get_Block_Bounds(
+  struct Zoltan_Struct *zz,          /* Info about ordering */
+  int                   block_num,   /* Number of the wanted block */
+  int                  *first,       /* First element in block */
+  int                  *last         /* Last element in block */
+);
+
+/*****************************************************************************/
+/*
+ *  Function to return the number of elements within a block
+ *  Input:
+ *    zz                  --  The zoltan struct with ordering info.
+ *    block_num           --  The id of the block to take care of.
+ *  Returned value:       --  Number of elements in the block.
+ */
+
+extern int Zoltan_Order_Get_Block_Size(
+  struct Zoltan_Struct *zz,          /* Info about ordering */
+  int                   block_num   /* Number of the wanted block */
+);
+
+/*****************************************************************************/
+/*
+ *  Function to return the indice of the parent block in the elimination tree.
+ *  Input:
+ *    zz                  --  The zoltan struct with ordering info.
+ *    block_num           --  The id of the block to take care of.
+ *  Returned value:       --  Indice of the father, -1 if block is the root.
+ */
+
+extern int Zoltan_Order_Get_Block_Parent(
+  struct Zoltan_Struct *zz,          /* Info about ordering */
+  int                   block_num   /* Number of the wanted block */
+);
+
+
+/*****************************************************************************/
+/*
+ *  Function to return the number of the leaves in the elimination tree
+ *  Input:
+ *    zz                  --  The ordering computed by Zoltan_Order.
+ *  Returned value:       --  Number of leaves in the elimination tree.
+ */
+
+extern int Zoltan_Order_Get_Num_Leaves(struct Zoltan_Struct *zz);
+
+
+/*****************************************************************************/
+/*
+ *  Function to return the list of the leaves in the elimination tree
+ *  Input:
+ *    zz                  --  The zoltan struct with ordering info.
+ *  Ouput:
+ *    leaves              --  List of block indices that are leaves in the
+ *                            elimination tree. -1 marks the end of the list.
+ *                            The array must be of size num_leaves+1, known by 
+ *                            calling Zoltan_Order_Get_Num_Leaves.
+ */
+
+extern void Zoltan_Order_Get_Block_Leaves(
+  struct Zoltan_Struct *zz,          /* Info about ordering */
+  int                  *leaves
+);
 
 
 /**********************************************************/
@@ -2619,13 +2904,10 @@ extern int Zoltan_Order(
 /**********************************************************/    
 int Zoltan_Color(
     struct Zoltan_Struct *zz, /* Zoltan structure */
-    int *num_gid_entries,     /* # of entries for a global id */
-    int *num_lid_entries,     /* # of entries for a local id */
+    int num_gid_entries,     /* # of entries for a global id */
     int num_obj,              /* Input: number of objects */
     ZOLTAN_ID_PTR global_ids, /* Input: global ids of the vertices */
                               /* The application must allocate enough space */    
-    ZOLTAN_ID_PTR local_ids,  /* Input: local ids of the vertices */
-                              /* The application must allocate enough space */
     int *color_exp            /* Output: Colors assigned to local vertices */
                               /* The application must allocate enough space */
     ); 
@@ -2859,6 +3141,8 @@ extern int Zoltan_LB_Free_Data(
 );
 
 /*****************************************************************************/
+
+/*****************************************************************************/
 /* 
  * Routine to determine which processor and partition a new point should be 
  * assigned to.
@@ -2978,36 +3262,6 @@ extern int Zoltan_LB_Box_Assign(
   double zmax,
   int *procs,
   int *numprocs
-);
-
-/*****************************************************************************/
-/* 
- * Routine to compute statistics about the current balance/partitioning.
- *
- * Input:
- *   zz                   -- pointer to Zoltan structure
- *   print_stats          -- if >0, compute and print max and sum of the metrics
- *
- * Output:
- *   nobj                 -- number of objects (for each processor)
- *   obj_wgt              -- obj_wgt[0:vwgt_dim-1] are the object weights 
- *                           (on each processor)
- *   cut_wgt              -- cut size/weight (for each processor)
- *   nboundary            -- number of boundary objects (for each processor)
- *   nadj                 -- the number of adjacent procs (for each processor)
- *
- * Returned value:        -- error code
- */
-
-extern int Zoltan_LB_Eval(
-  struct Zoltan_Struct *zz, 
-  int print_stats, 
-  int *nobj,
-  float *obj_wgt,
-  int *ncuts,
-  float *cut_wgt, 
-  int *nboundary,
-  int *nadj
 );
 
 /*

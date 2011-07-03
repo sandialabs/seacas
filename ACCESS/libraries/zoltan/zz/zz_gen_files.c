@@ -4,10 +4,10 @@
  * For more info, see the README file in the top-level Zoltan directory.     *   *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_gen_files.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.29.2.3 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -18,9 +18,9 @@ extern "C" {
 
 #include "zz_const.h"
 #include "zz_util_const.h"
-#include "parmetis_jostle.h"
+#include "third_library_const.h"
 #include "params_const.h"
-#include "phg_hypergraph.h"
+#include "phg.h"
 
 #define ZOLTAN_PRINT_VTX_NUM  0  /* print vertex number at beginning of line? */
 
@@ -81,12 +81,12 @@ int gen_geom, int gen_graph, int gen_hg)
   float *float_vwgt, *ewgts, *eWgts, *wptr;
   double *xyz;
   int i, j, k, num_obj, num_geom, num_edges, reduce;
-  int glob_nvtxs, glob_edges, glob_hedges, glob_pins, glob_ewgts;
+  int glob_nvtxs, glob_edges=0, glob_hedges=0, glob_pins, glob_ewgts;
   int minid, maxid, minEdgeId, maxEdgeId, minVtxId, maxVtxId;
-  int numPins, edgeOffset, vtxOffset;
+  int numPins, edgeOffset=0, vtxOffset=0;
   int print_vtx_num = ZOLTAN_PRINT_VTX_NUM;
-  int have_pin_callbacks;
-  int nEdges, nEwgts;
+  int have_pin_callbacks=0;
+  int nEdges=0, nEwgts=0;
   ZOLTAN_ID_PTR edgeIds, vtxIds, eWgtIds, eptr, vptr;
   int lenGID = zz->Num_GID;
 
@@ -117,9 +117,10 @@ int gen_geom, int gen_graph, int gen_hg)
   }
 
   if (gen_graph){
+    int graph_type = 0;
     /* Build (ParMetis) graph data structures. */
-    error = Zoltan_Build_Graph(zz, 1, 1, num_obj,
-           global_ids, local_ids, zz->Obj_Weight_Dim, zz->Edge_Weight_Dim,
+    error = Zoltan_Build_Graph(zz, &graph_type, 1, num_obj,
+           global_ids, local_ids, zz->Obj_Weight_Dim, &zz->Edge_Weight_Dim,
            &vtxdist, &xadj, &adjncy, &ewgts, &adjproc);
     if (error != ZOLTAN_OK && error != ZOLTAN_WARN){
       ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Zoltan_Build_Graph returned error.");
@@ -262,22 +263,20 @@ int gen_geom, int gen_graph, int gen_hg)
    */
   /* Write object assignments to file. */
   /* For now, only write partition number. */
-  if (num_obj > 0){
-    sprintf(full_fname, "%s.assign", fname);
-    if (zz->Proc == 0)
-      fp = fopen(full_fname, "w");
-    else
-      fp = fopen(full_fname, "a");
-    if (fp==NULL){
-      ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Could not open file for writing.\n");
-      error = ZOLTAN_FATAL;
-      goto End;
-    }
-    for (i=0; i<num_obj; i++)
-      fprintf(fp, "%d\n", part[i]);
-      /* fprintf(fp, "%d\n", zz->Proc); */
-    fclose(fp);
+  sprintf(full_fname, "%s.assign", fname);
+  if (zz->Proc == 0)
+    fp = fopen(full_fname, "w");
+  else
+    fp = fopen(full_fname, "a");
+  if (fp==NULL){
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Could not open file for writing.\n");
+    error = ZOLTAN_FATAL;
+    goto End;
   }
+  for (i=0; i<num_obj; i++)
+    fprintf(fp, "%d\n", part[i]);
+    /* fprintf(fp, "%d\n", zz->Proc); */
+  fclose(fp);
 
   /* Write geometry to file, if applicable. */
   if (gen_geom){
@@ -496,7 +495,7 @@ End:
   ZOLTAN_FREE(&ewgts);
   ZOLTAN_FREE(&part);
   
-  if ( have_pin_callbacks){
+  if (have_pin_callbacks){
     ZOLTAN_FREE(&edgeSize);
     ZOLTAN_FREE(&edgeIds);
     ZOLTAN_FREE(&vtxIds);
@@ -576,8 +575,7 @@ static int Zoltan_HG_Get_Pins(ZZ *zz, int *nEdges, int **edgeSize,
 
   /* get pins */
 
-  ierr = Zoltan_Call_Hypergraph_Pin_Query(zz, &numEdges, &num_pins,
-                &egids, &esize, &vgids);
+  ierr = Zoltan_Hypergraph_Queries(zz, &numEdges, &num_pins, &egids, &esize, &vgids);
 
   if ((ierr != ZOLTAN_OK) && (ierr != ZOLTAN_WARN)){
     Zoltan_Multifree(__FILE__,__LINE__,2,&ew_gids,&ew_weights);

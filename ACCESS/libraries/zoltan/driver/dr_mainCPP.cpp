@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_mainCPP.cpp,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    $Revision: 1.1 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <mpi.h>   // must appear before stdio or iostream
@@ -29,12 +29,13 @@ using namespace std;
 #include "dr_err_const.h"
 #include "dr_elem_util_const.h"
 #include "dr_dd.h"
+#include "dr_compress_const.h"
 
 #include "zoltan_cpp.h"
 
 int Debug_Driver = 1;
 int Number_Iterations = 1;
-int Driver_Action = 1;	/* Flag indicating load-balancing or ordering. */
+int Driver_Action = 1;	/* Flag indicating coloring, load-balancing or ordering. */
 int Debug_Chaco_Input = 0;
 int Chaco_In_Assign_Inv = 0;
 struct Test_Flags Test;
@@ -75,17 +76,18 @@ int main(int argc, char *argv[])
 
   /* Initialize flags */
   Test.DDirectory = 0;
-  Test.Local_Partitions = 0;
+  Test.Local_Parts = 0;
   Test.Drops = 0;
   Test.RCB_Box = 0;
   Test.Multi_Callbacks = 0;
   Test.Gen_Files = 0;
+  Test.Fixed_Objects = 0;
   Test.Null_Lists = NONE;
 
   Output.Text = 1;
   Output.Gnuplot = 0;
   Output.Nemesis = 0;
-  Output.Plot_Partitions = 0;
+  Output.Plot_Partition = 0;
   Output.Mesh_Info_File = 0;
 
   /* Interpret the command line */
@@ -157,6 +159,7 @@ int main(int argc, char *argv[])
   pio_info.pdsk_root[0]		= '\0';
   pio_info.pdsk_subdir[0]	= '\0';
   pio_info.pexo_fname[0]	= '\0';
+  pio_info.file_comp            = STANDARD;
 
   PROB_INFO  prob;
   prob.method[0]		= '\0';
@@ -196,7 +199,7 @@ int main(int argc, char *argv[])
   zz->Set_Param("DEBUG_MEMORY", "1");
   print_output = Output.Text;
 
-  if (!setup_zoltan(*zz, Proc, &prob, &mesh)) {
+  if (!setup_zoltan(*zz, Proc, &prob, &mesh, &pio_info)) {
     Gen_Error(0, "fatal: Error returned from setup_zoltan\n");
     error_report(Proc);
     print_output = 0;
@@ -237,7 +240,7 @@ int main(int argc, char *argv[])
 #ifdef KDDKDD_COOL_TEST
 /* KDD Cool test of changing number of partitions  */
     sprintf(cmesg, "%d", Num_Proc * iteration);
-    zz->Set_Param("NUM_GLOBAL_PARTITIONS", cmesg);
+    zz->Set_Param("NUM_GLOBAL_PARTS", cmesg);
 #endif
 
     /*
@@ -283,7 +286,9 @@ int main(int argc, char *argv[])
         }
       /* change the ParMETIS Seed */
       sprintf(str, "%d", iteration%10000);
+#ifdef ZOLTAN_PARMETIS      
       zz->Set_Param("PARMETIS_SEED", str);
+#endif
     }
 
   } /* End of loop over read and balance */
@@ -362,7 +367,6 @@ static int read_mesh(
         return 0;
     }
   }
-#ifdef ZOLTAN_HG
   else if (pio_info->file_type == HYPERGRAPH_FILE) {
     if (!read_hypergraph_file(Proc, Num_Proc, prob, pio_info, mesh)) {
         Gen_Error(0, "fatal: Error returned from read_hypergraph_file\n");
@@ -381,8 +385,7 @@ static int read_mesh(
         
     }
   }
-#endif
-  else if (pio_info->file_type == NO_FILE) {
+  else if (pio_info->file_type == NO_FILE_POINTS) {
     if (!create_random_input(Proc, Num_Proc, prob, pio_info, mesh)) {
         Gen_Error(0, "fatal: Error returned from create_random_input\n");
         return 0;
@@ -480,6 +483,8 @@ static void initialize_mesh(MESH_INFO_PTR mesh)
                   = mesh->vwgt_dim
                   = mesh->ewgt_dim
                   = mesh->hewgt_dim
+                  = mesh->blank_count
+                  = mesh->global_blank_count
                   = 0;
   mesh->eb_names       = NULL;
   mesh->eb_ids         = NULL;
@@ -492,6 +497,7 @@ static void initialize_mesh(MESH_INFO_PTR mesh)
   mesh->ecmap_sideids  = NULL;
   mesh->ecmap_neighids = NULL;
   mesh->elements       = NULL;
+  mesh->blank          = NULL;
   mesh->format         = ZOLTAN_COMPRESSED_EDGE;
   mesh->hgid           = NULL;
   mesh->hindex         = NULL;

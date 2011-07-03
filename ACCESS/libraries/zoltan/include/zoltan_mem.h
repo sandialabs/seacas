@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zoltan_mem.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.9 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -16,11 +16,7 @@
 #define __MEM_CONST_H
 
 
-#ifdef __STDC__
 #include <string.h>
-#else
-#include <strings.h>
-#endif  /* __STDC__ */
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -41,10 +37,11 @@ extern "C" {
 #   define	PROTO(x)	()
 #endif
 
-#define ZOLTAN_MALLOC(a) Zoltan_Malloc((a), __FILE__, __LINE__)
-#define ZOLTAN_CALLOC(a, b) Zoltan_Calloc((a), (b), __FILE__, __LINE__)
-#define ZOLTAN_REALLOC(a, b) Zoltan_Realloc((a), (b), __FILE__, __LINE__)
-#define ZOLTAN_FREE(a) Zoltan_Free((void **) (a), __FILE__, __LINE__)
+#define ZOLTAN_MALLOC(a)     Zoltan_Malloc((a), __FILE__, __LINE__)
+#define ZOLTAN_CALLOC(a, b)  Zoltan_Calloc((a), (b), __FILE__, __LINE__)
+#define ZOLTAN_FREE(a)       Zoltan_Free((void**)(void*) (a), __FILE__, __LINE__)
+
+#define ZOLTAN_REALLOC(a, b) Zoltan_Realloc((a), (b),  __FILE__, __LINE__)
 
 #define ZOLTAN_MEM_STAT_TOTAL   0
 #define ZOLTAN_MEM_STAT_MAXIMUM 1
@@ -58,12 +55,13 @@ extern double *Zoltan_Array_Alloc();
 #endif
 
 extern void    Zoltan_Memory_Debug(int);
-extern void    Zoltan_Free(void **ptr, char *file, int lineno);
-extern double *Zoltan_Calloc (size_t num, size_t size, char *filename, int lineno);
-extern double *Zoltan_Malloc(size_t n, char *file, int lineno);
-extern double *Zoltan_Realloc(void *ptr, size_t n, char *filename, int lineno);
+extern void    Zoltan_Free(void **, char *, int);
+extern double *Zoltan_Calloc(size_t, size_t, char *, int);
+extern double *Zoltan_Malloc(size_t, char *, int);
+extern double *Zoltan_Realloc(void *, size_t, char *, int);
 extern void    Zoltan_Memory_Stats(void);
 extern size_t  Zoltan_Memory_Usage(int);
+extern void    Zoltan_Memory_Reset(int);
 
 #ifdef __STDC__
 extern void Zoltan_Multifree(char *, int, int n, ...);

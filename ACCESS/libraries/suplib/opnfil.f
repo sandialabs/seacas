@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE OPNFIL (IUNIT, INOUT, FFORM, IDAPAR, IERR)
 C=======================================================================
-C$Id: opnfil.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: opnfil.f,v 1.4 2009/03/25 12:46:02 gdsjaar Exp $
 C   --*** OPNFIL *** (ETCLIB) Open a file
 C   --   Written by Amy Gilkey - revised 04/20/88
 C   --
@@ -63,7 +63,7 @@ C   --   LENSTR - (STRLIB) Get string length
       CHARACTER FFORM
       INTEGER IDAPAR(2)
 
-      CHARACTER*132 FILNAM
+      CHARACTER*1024 FILNAM
       CHARACTER*11 FORM
       CHARACTER*7 STAT
       CHARACTER*8 CDUM

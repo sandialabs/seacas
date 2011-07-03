@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_hg_readfile.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -22,13 +22,16 @@
 extern "C" {
 #endif
 
+#include "dr_input_const.h"
+#include "dr_compress_const.h"
+
 /* Hypergraph read from file */
-int HG_readfile (int, FILE*, int*, int*, int*, int**, int**, int*,
+int HG_readfile (int, ZOLTAN_FILE*, int*, int*, int*, int**, int**, int*,
  float**, int*, float**, int*);
 
 /* MatrixMarket read from file */
-int MM_readfile (int, FILE*, int*, int*, int*, int**, int**, int*,
- float**, int*, float**, int*, int);
+int MM_readfile (int, int, ZOLTAN_FILE*, PARIO_INFO_PTR, int*, int*, int*, int**, int**, int*,
+ float**, int*, float**, int**, int**, int*, float**, int*, int*);
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */

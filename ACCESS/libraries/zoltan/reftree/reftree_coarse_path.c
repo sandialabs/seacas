@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: reftree_coarse_path.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.13 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -216,9 +216,8 @@ char *yo = "push";
 /* make sure there's enough memory */
 
    if (to_add_ptr[list] >= to_add_dim[list]-1) {
-      to_add_dim[list] = 2*to_add_dim[list];
-      to_add[list] = (int *) ZOLTAN_REALLOC(to_add[list],
-                                            sizeof(int *)*to_add_dim[list]);
+      to_add_dim[list] *= 2;
+      to_add[list] = (int *) ZOLTAN_REALLOC(to_add[list], sizeof(int *)*to_add_dim[list]);
       if (to_add[list] == NULL) {
          ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
          return(ZOLTAN_MEMERR);
@@ -350,14 +349,16 @@ int i, j, k, l, nvert, vert, index, element, vert_count, ierr;
 
          if (nvert >= element_list_dim) {
             element_list_dim *= 2;
-            temp_element_list = (int **) ZOLTAN_REALLOC(element_list,
-                                                sizeof(int *)*element_list_dim);
+            temp_element_list = (int **) ZOLTAN_REALLOC(element_list, sizeof(int *)*element_list_dim);
+
             if (temp_element_list != NULL) element_list = temp_element_list;
-            num_elem = (int *) ZOLTAN_REALLOC(num_elem,
-                                              sizeof(int)*element_list_dim);
-            elem_dim = (int *) ZOLTAN_REALLOC(elem_dim,
-                                              sizeof(int)*element_list_dim);
+
+            num_elem = (int *) ZOLTAN_REALLOC(num_elem, sizeof(int)*element_list_dim);
+
+            elem_dim = (int *) ZOLTAN_REALLOC(elem_dim, sizeof(int)*element_list_dim);
+
             vertex_gid = ZOLTAN_REALLOC_GID_ARRAY(zz,vertex_gid,element_list_dim);
+
             if (temp_element_list == NULL || num_elem == NULL ||
                 elem_dim == NULL || vertex_gid == NULL) {
                ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
@@ -367,6 +368,7 @@ int i, j, k, l, nvert, vert, index, element, vert_count, ierr;
                                                        &elem_dim);
                return(ZOLTAN_MEMERR);
             }
+
             for (i=element_list_dim/2; i<element_list_dim; i++) {
                num_elem[i] = 0;
                elem_dim[i] = 8;
@@ -383,8 +385,8 @@ int i, j, k, l, nvert, vert, index, element, vert_count, ierr;
          }
          if (num_elem[vert] > elem_dim[vert]-1) {
             elem_dim[vert] *= 2;
-            element_list[vert] = (int *) ZOLTAN_REALLOC(element_list[vert],
-                                            sizeof(int)*elem_dim[vert]);
+            element_list[vert] = (int *) ZOLTAN_REALLOC(element_list[vert], sizeof(int)*elem_dim[vert]);
+
             if (element_list[vert] == NULL) {
                ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
                for (j=0; j<element_list_dim; j++) ZOLTAN_FREE(&(element_list[j]));
@@ -393,6 +395,7 @@ int i, j, k, l, nvert, vert, index, element, vert_count, ierr;
                                                        &elem_dim);
                return(ZOLTAN_MEMERR);
             }
+
          }
 
 /* add the element to the list of this vertex */
@@ -533,7 +536,7 @@ static int add_neigh_pair(int v,int e1,int e2, ZZ *zz)
  */
 
 char *yo = "add_neigh_pair";
-int nshare, index, i, j, k;
+int nshare, index = 0, i, j, k;
 
 /* 
  * see if they are already listed as neighbors
@@ -557,14 +560,16 @@ int nshare, index, i, j, k;
 
    if (neigh_dim[e1][nshare+1] <= num_neigh[e1][nshare+1]) {
       neigh_dim[e1][nshare+1] *= 2;
-      neigh[e1][nshare+1] = (int *) ZOLTAN_REALLOC(neigh[e1][nshare+1],
-                                           sizeof(int)*neigh_dim[e1][nshare+1]);
-      shared_vert[e1][nshare+1] = (int **) ZOLTAN_REALLOC(shared_vert[e1][nshare+1],
-                                      sizeof(int *)*neigh_dim[e1][nshare+1]);
+      neigh[e1][nshare+1] = 
+        (int *) ZOLTAN_REALLOC(neigh[e1][nshare+1], sizeof(int)*neigh_dim[e1][nshare+1]);
+      shared_vert[e1][nshare+1] = 
+        (int **) ZOLTAN_REALLOC(shared_vert[e1][nshare+1], sizeof(int *)*neigh_dim[e1][nshare+1]);
+
       if (neigh[e1][nshare+1] == NULL || shared_vert[e1][nshare+1] == NULL) {
          ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
          return(ZOLTAN_MEMERR);
       }
+
       for (k=neigh_dim[e1][nshare+1]/2; k<neigh_dim[e1][nshare+1]; k++) {
          shared_vert[e1][nshare+1][k] = (int *) ZOLTAN_MALLOC(sizeof(int)*(nshare+1));
          if (shared_vert[e1][nshare+1][k] == NULL) {
@@ -613,14 +618,15 @@ int nshare, index, i, j, k;
 
    if (neigh_dim[e2][nshare+1] <= num_neigh[e2][nshare+1]) {
       neigh_dim[e2][nshare+1] *= 2;
-      neigh[e2][nshare+1] = (int *) ZOLTAN_REALLOC(neigh[e2][nshare+1],
-                                           sizeof(int)*neigh_dim[e2][nshare+1]);
-      shared_vert[e2][nshare+1] = (int **) ZOLTAN_REALLOC(shared_vert[e2][nshare+1],
-                                      sizeof(int *)*neigh_dim[e2][nshare+1]);
+      neigh[e2][nshare+1] = (int *) ZOLTAN_REALLOC(neigh[e2][nshare+1], 
+                                       sizeof(int)*neigh_dim[e2][nshare+1]);
+      shared_vert[e2][nshare+1] = (int **) ZOLTAN_REALLOC(shared_vert[e2][nshare+1], 
+                                       sizeof(int *)*neigh_dim[e2][nshare+1]);
       if (neigh[e2][nshare+1] == NULL || shared_vert[e2][nshare+1] == NULL) {
          ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Insufficient memory.");
          return(ZOLTAN_MEMERR);
       }
+
       for (k=neigh_dim[e2][nshare+1]/2; k<neigh_dim[e2][nshare+1]; k++) {
          shared_vert[e2][nshare+1][k] = (int *) ZOLTAN_MALLOC(sizeof(int)*(nshare+1));
          if (shared_vert[e2][nshare+1][k] == NULL) {
@@ -808,8 +814,8 @@ static int add_around_vertex(int vert, ZZ *zz)
  * notion of going around a vertex is not well defined.
  */
 
-int elementA, elementB, elementC, elementD, elementE;
-int vertexc, vertexd;
+int elementA, elementB, elementC, elementD = 0, elementE;
+int vertexc = -1, vertexd = -1;
 int i, j, k, l, num_share, pass, success, ierr;
 
 /* find an element with vert as the out vertex */
@@ -1713,7 +1719,7 @@ static int broken_link(int *ierr, ZZ *zz)
 
 int success;
 int elementB, elementC, elementD;
-int vertb, verte, vertf, vert1;
+int vertb, verte, vertf = 0, vert1;
 int j, k;
 int success1, j1, k1, l1;
 

@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: DD_Hash2.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.8 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -59,7 +59,7 @@ extern "C" {
 
 #define ZOLTAN_DD_HASH_CONSTANT 2654435761U   /* consider 516595003U */
 
-unsigned int Zoltan_DD_Hash2(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n)
+unsigned int Zoltan_DD_Hash2(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int n, void* hashdata)
 {
   unsigned int h, rest, *p, bytes, num_bytes;
   char *byteptr;
@@ -88,6 +88,11 @@ unsigned int Zoltan_DD_Hash2(ZOLTAN_ID_PTR key, int num_id_entries, unsigned int
   return (h%n);
 }
 
+
+void Zoltan_DD_default_cleanup (void *hashdata)
+{
+  ZOLTAN_FREE(&hashdata);
+}
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */

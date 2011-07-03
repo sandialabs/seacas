@@ -1,9 +1,9 @@
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: migreg.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.38 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -17,6 +17,7 @@ extern "C" {
 #include "dfs_const.h"
 #include "oct_util_const.h"
 #include "octree_const.h"
+#include "zz_const.h"
 
 #define MIGMIGREGCommCreate 32767
 #define MIGMIGREGCommDo     32766

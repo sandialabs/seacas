@@ -1,5 +1,5 @@
 /*
-** $Id: exmisc.c,v 1.1 2009/06/09 18:37:57 gdsjaar Exp $
+** $Id: exmisc.c,v 1.1 2006/08/10 22:26:59 gdsjaar Exp $
 **
 ** Miscellaneous functions to support writing simple Zoltan examples.
 */

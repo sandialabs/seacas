@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.linux,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.22 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -93,8 +93,8 @@ DEFS 			=
 RANLIB			= ranlib
 AR			= ar r
 
-CC			= mpicc -Wall -Werror-implicit-function-declaration
-CPPC			= mpiCC -Wall -Werror-implicit-function-declaration
+CC			= mpicc -Wall
+CPPC		= mpiCC -Wall
 
 # ifeq "$(MPI_VERSION)" "lam"
 # INCLUDE_PATH		= -I$(LAMHOME)/include
@@ -104,24 +104,24 @@ CPPC			= mpiCC -Wall -Werror-implicit-function-declaration
 
 DBG_FLAGS		= -g -Wall
 OPT_FLAGS		= -O2 
-CFLAGS 			= $(DBG_FLAGS)
+CFLAGS 			= $(OPT_FLAGS)
 
 LOCAL_F90		= $(F90)
 
 ifeq "$(MPI_VERSION)" "lam"
 # We use mpicc to link, so we don't need to set the variables below.
-MPI_LIB		= 
+MPI_LIBS		= 
 MPI_LIBPATH	= 
 endif
 
 # Some users have needed these libraries.  If your linker can't find getarg or
 # iargc, uncomment these paths and try again.
-#MPI_LIB = -lg2c
+#MPI_LIBS = -lg2c
 #MPI_LIBPATH = -L/usr/lib/gcc-lib/i386-redhat-linux/2.96
 
 
-PARMETIS_LIBPATH        = -L/Net/local/proj/zoltan/arch/linux/lib/ParMETIS3 
-PARMETIS_INCPATH        = -I/Net/local/proj/zoltan/arch/all/src/ParMETIS3
+PARMETIS_LIBPATH        = -L/Net/local/proj/zoltan/arch/linux/lib/ParMETIS3_1
+PARMETIS_INCPATH        = -I/Net/local/proj/zoltan/arch/all/src/ParMETIS3_1
 
 
 #JOSTLE_LIBPATH 	= -L/Net/local/proj/zoltan/arch/linux/lib

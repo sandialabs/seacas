@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: rib_util.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.23 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -26,7 +26,7 @@ extern "C" {
 /*****************************************************************************/
 
 int Zoltan_RIB_Build_Structure(ZZ *zz, int *num_obj, int *max_obj, int wgtflag,
-                           int use_ids)
+                               double overalloc, int use_ids)
 {
 /* Function to build the geometry-based data structures for RIB method. */
 char           *yo = "Zoltan_RIB_Build_Structure";
@@ -77,7 +77,7 @@ int            i, ierr = 0;
 
   ierr = Zoltan_RB_Build_Structure(zz, &(rib->Global_IDs), &(rib->Local_IDs),
                                &(rib->Dots), num_obj, max_obj, &(rib->Num_Geom),
-                               wgtflag, use_ids);
+                               wgtflag, overalloc, use_ids);
   if (ierr) {
     ZOLTAN_PRINT_ERROR(zz->Proc, yo,
                        "Error returned from Zoltan_RB_Build_Structure.");
@@ -167,7 +167,7 @@ void Zoltan_RIB_Print_Structure(ZZ *zz, int howMany)
 
   for (i=0; rib->Dots && (i<num_obj); i++){
     dot = rib->Dots[i];
-    printf("(Dots %d) (%6.4lf %6.4lf %6.4lf) (%6.4lf %6.4lf %6.4lf %6.4lf) proc %d, part %d, new part %dn",
+    printf("(Dots %d) (%6.4f %6.4f %6.4f) (%6.4f %6.4f %6.4f %6.4f) proc %d, part %d, new part %dn",
      i, dot.X[0], dot.X[1], dot.X[2],
      dot.Weight[0], dot.Weight[1], dot.Weight[2], dot.Weight[3],
      dot.Proc, dot.Input_Part, dot.Part);
@@ -182,7 +182,7 @@ void Zoltan_RIB_Print_Structure(ZZ *zz, int howMany)
 
   for (i=0; rib->Tree_Ptr && (i<len); i++){
     r = rib->Tree_Ptr[i];
-    printf("(Tree %d) cm %6.4lf %6.4lf %6.4lf, ev %6.4lf %6.4lf %6.4lf, cut: %6.4lf, up %d, left %d, right %d\n",
+    printf("(Tree %d) cm %6.4f %6.4f %6.4f, ev %6.4f %6.4f %6.4f, cut: %6.4f, up %d, left %d, right %d\n",
       i, 
       r.cm[0], r.cm[1], r.cm[2],
       r.ev[0], r.ev[1], r.ev[2],

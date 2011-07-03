@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_id_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __ZOLTAN_ID_CONST_H
@@ -69,13 +69,14 @@ extern "C" {
 /*
  * Macros for reallocating arrays of IDs.
  */
-#define ZOLTAN_REALLOC_GID_ARRAY(zz,ptr,num_obj) \
+#define ZOLTAN_REALLOC_GID_ARRAY(zz,ptr,num_new_obj) \
   (ZOLTAN_ID_PTR) ZOLTAN_REALLOC(ptr,\
-                                (num_obj)*(zz)->Num_GID*sizeof(ZOLTAN_ID_TYPE))
-#define ZOLTAN_REALLOC_LID_ARRAY(zz,ptr,num_obj) \
+               (num_new_obj)*(zz)->Num_GID*sizeof(ZOLTAN_ID_TYPE))
+
+#define ZOLTAN_REALLOC_LID_ARRAY(zz,ptr,num_new_obj) \
   ((zz)->Num_LID \
     ? (ZOLTAN_ID_PTR)ZOLTAN_REALLOC(ptr, \
-                               (num_obj)*(zz)->Num_LID*sizeof(ZOLTAN_ID_TYPE)) \
+                               (num_new_obj)*(zz)->Num_LID*sizeof(ZOLTAN_ID_TYPE)) \
     : NULL)
 
 /****************************************************************************/

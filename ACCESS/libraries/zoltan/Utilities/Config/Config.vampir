@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.vampir,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.1 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -36,7 +36,7 @@ SPPR_HEAD 		=
 F90_MODULE_PREFIX 	= -M
 FARG      		= 
 
-MPI_LIB			= -lVT -ldwarf -lelf -lnsl -lm -lpthread
+MPI_LIBS			= -lVT -ldwarf -lelf -lnsl -lm -lpthread
 MPI_LIBPATH		= -L/apps/intel/itc-6.0.0-0beta/lib
 
 

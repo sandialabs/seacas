@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: set_param.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.50 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -27,17 +27,23 @@ extern "C" {
 #ifdef ZOLTAN_OCT
 #include "octupdate_const.h"
 #endif
-#include "parmetis_jostle_const.h"
+#include "third_library_const.h"
 #include "reftree_const.h"
 #include "ha_const.h"
 #include "rib_const.h"
 #include "hsfc_const.h"
 #include "all_allo_const.h"
 #include "order_const.h"
-#ifdef ZOLTAN_HG
-#include "phg_const.h"    
+#include "phg_const.h"
+#include "graph_const.h"
+#ifdef ZOLTAN_HIER
+#include "hier.h"
+#endif
+#ifdef ZOLTAN_DRUM
+#include "ha_drum.h"
 #endif
 #include "coloring_const.h"
+#include "zz_const.h"
 
 static int add_param(ZZ *, char **, char **, int);
 static int remove_param(ZZ *, char *, int);
@@ -46,8 +52,13 @@ static int remove_param(ZZ *, char *, int);
 static ZOLTAN_SET_PARAM_FN * Param_func[] = {
        Zoltan_Set_Malloc_Param,
        Zoltan_RCB_Set_Param,
+       Zoltan_Third_Set_Param,
+#ifdef ZOLTAN_PARMETIS
        Zoltan_ParMetis_Set_Param,
-       Zoltan_Jostle_Set_Param,
+#endif /* ZOLTAN_PARMETIS_SET_PARAM */
+#ifdef ZOLTAN_SCOTCH
+       Zoltan_Scotch_Set_Param,
+#endif /* ZOLTAN_PARMETIS_SET_PARAM */
 #ifdef ZOLTAN_OCT
        Zoltan_Oct_Set_Param,
 #endif
@@ -55,12 +66,18 @@ static ZOLTAN_SET_PARAM_FN * Param_func[] = {
        Zoltan_RIB_Set_Param,
        Zoltan_HSFC_Set_Param,
        Zoltan_Order_Set_Param,
-#ifdef ZOLTAN_HG
        Zoltan_PHG_Set_Param,
+#ifdef ZOLTAN_HIER
+       Zoltan_Hier_Set_Param,
 #endif
+#ifdef ZOLTAN_DRUM
+       Zoltan_Drum_Set_Param,
+#endif
+       Zoltan_ZG_Set_Param,
        /* Zoltan_Set_Machine_Param, */
        Zoltan_Color_Set_Param,
        /*** Add your new parameter setting function here! ***/
+       Zoltan_Graph_Package_Set_Param,
        NULL /* Last entry _must_ be NULL! */
 };
 
@@ -131,6 +148,14 @@ int index			/* index of vector parameter; -1 if scalar */
         ZOLTAN_PRINT_WARN(zz->Proc, yo, msg);
 	ZOLTAN_FREE(&name);
     	ZOLTAN_FREE(&val);
+    }
+    else if (status == 2) {
+	sprintf(msg, "Invalid value `%s' for parameter `%s'; default "
+                     "value will be used.\n", val, name);
+        ZOLTAN_PRINT_WARN(zz->Proc, yo, msg);
+	ZOLTAN_FREE(&name);
+    	ZOLTAN_FREE(&val);
+       
     }
     else {
         if (!strcmp(val, "DEFAULT")){

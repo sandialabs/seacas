@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: all_allo.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.38 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -20,6 +20,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "zoltan_util.h"
 #include "all_allo_const.h"
 #include "params_const.h"
 
@@ -27,7 +28,7 @@ extern "C" {
 
 static ZOLTAN_FORT_MALLOC_INT_FN *Zoltan_Fort_Malloc_int;
 static ZOLTAN_FORT_FREE_INT_FN *Zoltan_Fort_Free_int;
-
+static ZOLTAN_FORT_MALLOC_SET_STRUCT_FN *Zoltan_Fort_Malloc_Set_Struct;
 
 int Zoltan_Set_Malloc_Param(
 char *name,			/* name of variable */
@@ -58,7 +59,7 @@ char *val)			/* value of variable */
  *
  * Zoltan_Special_Free frees memory allocated by Zoltan_Special_Malloc
  *
- * Zfw_Register_Fort_Malloc is called by the wrappers for the Fortran
+ * Zoltan_Register_Fort_Malloc is called by the wrappers for the Fortran
  * interface to provide pointers to the Fortran allocation/free routines.
  *
  * int Zoltan_Special_Malloc(ZZ *zz, void **array, int size,
@@ -79,10 +80,12 @@ char *val)			/* value of variable */
  *****************************************************************************/
 
 void Zoltan_Register_Fort_Malloc(ZOLTAN_FORT_MALLOC_INT_FN *fort_malloc_int,
-                                 ZOLTAN_FORT_FREE_INT_FN *fort_free_int)
+                                 ZOLTAN_FORT_FREE_INT_FN *fort_free_int,
+				 ZOLTAN_FORT_MALLOC_SET_STRUCT_FN *fort_malloc_set_struct)
 {
    Zoltan_Fort_Malloc_int = fort_malloc_int;
    Zoltan_Fort_Free_int = fort_free_int;
+   Zoltan_Fort_Malloc_Set_Struct = fort_malloc_set_struct;
 }
 
 int Zoltan_Special_Malloc(ZZ *zz, void **array, int size,
@@ -232,6 +235,17 @@ int Zoltan_Special_Free(ZZ *zz, void **array,
       ZOLTAN_FREE(array);
    }
    return success;
+}
+
+
+/****************************************************************************/
+/****************************************************************************/
+/****************************************************************************/
+
+int Zoltan_Special_Fort_Malloc_Set_Struct(int *zz_addr_bytes, int **fort_zz) 
+{
+  Zoltan_Fort_Malloc_Set_Struct(zz_addr_bytes, fort_zz);
+  return 1;
 }
 
 /*****************************************************************************/

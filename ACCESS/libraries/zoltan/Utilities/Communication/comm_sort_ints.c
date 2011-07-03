@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: comm_sort_ints.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.8 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <string.h>
@@ -35,7 +35,7 @@ int  nvals)         /* length of these two arrays */
 {
     int *store=NULL, *copy_sort=NULL, *copy_other=NULL, *p;
     int i;
-    int top;         /* largest interger to sort, smallest is 0 by assumption */
+    int top;         /* largest integer to sort, smallest is 0 by assumption */
     int err = ZOLTAN_OK;
 
     if (nvals < 1 || vals_sort == NULL  || vals_other == NULL)

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: coloring.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:56 $
- *    Revision: 1.3 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __COLORING_H
@@ -24,19 +24,17 @@ extern "C" {
 #include "zz_util_const.h"
 #include "coloring_const.h"
 
+/* Metis also has a swap */
+#ifdef SWAP
+#undef SWAP
+#endif
+
 #define SWAP(a,b) tmp=(a);(a)=(b);(b)=tmp;
 
 /* Macros for error handling */
 #define ZOLTAN_COLOR_ERROR(error,str) {ierr = error ; \
  ZOLTAN_PRINT_ERROR(zz->Proc, yo, str) ; goto End ;}
 
-#define MEMORY_ERROR { \
-  ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error."); \
-  ierr = ZOLTAN_MEMERR; \
-  goto End; \
-}
-
-    
 #ifdef __cplusplus
 }
 #endif

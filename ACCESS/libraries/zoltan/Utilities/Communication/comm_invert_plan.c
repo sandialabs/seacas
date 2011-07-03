@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: comm_invert_plan.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.2 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <stdio.h>
@@ -94,13 +94,30 @@ int max_recv_length;
   new->max_send_size = max_recv_length;
   new->total_recv_size = total_send_length;
   new->comm = old->comm;
+  new->maxed_recvs = 0;
 
-  new->request = (MPI_Request *) ZOLTAN_MALLOC(new->nrecvs*sizeof(MPI_Request));
-  new->status = (MPI_Status *) ZOLTAN_MALLOC(new->nrecvs*sizeof(MPI_Status));
+  if (MPI_RECV_LIMIT > 0){
+    /* If we have a limit to the number of posted receives we are allowed,
+    ** and our plan has exceeded that, then switch to an MPI_Alltoallv so
+    ** that we will have fewer receives posted when we do the communication.
+    */
+    MPI_Allreduce(&new->nrecvs, &i, 1, MPI_INT, MPI_MAX, new->comm);
+    if (i > MPI_RECV_LIMIT){
+      new->maxed_recvs = 1;
+    }
+  }
 
-  if (new->nrecvs && ((new->request == NULL) || (new->status == NULL))) {
-    ierr = ZOLTAN_MEMERR;
-    goto End;
+  if (new->maxed_recvs){
+    new->request = NULL;
+    new->status = NULL;
+  }
+  else{
+    new->request = (MPI_Request *) ZOLTAN_MALLOC(new->nrecvs*sizeof(MPI_Request));
+    new->status = (MPI_Status *) ZOLTAN_MALLOC(new->nrecvs*sizeof(MPI_Status));
+    if (new->nrecvs && ((new->request == NULL) || (new->status == NULL))) {
+      ierr = ZOLTAN_MEMERR;
+      goto End;
+    }
   }
 
 End:

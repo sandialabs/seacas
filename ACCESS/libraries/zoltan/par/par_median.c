@@ -5,9 +5,9 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: par_median.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
  *    Revision: 1.6.2.1 $
  ****************************************************************************/
 
@@ -25,8 +25,12 @@ extern "C" {
 #include "par_median_const.h"
 #include "par_tflops_special_const.h"
 #include "par_average_const.h"
+#include "zoltan_timer.h"
+#include "zz_const.h"
 
 #define TINY   1.0e-6
+
+/*#define WATCH_MEDIAN_FIND*/
 
 /* Data structure for parallel find median routine */
 
@@ -68,7 +72,6 @@ int Zoltan_RB_find_median(
   MPI_Comm local_comm,  /* MPI communicator on which to find median          */
   double *valuehalf,    /* on entry - first guess at median (if first_guess set)                           on exit - the median value                        */
   int first_guess,      /* if set, use value in valuehalf as first guess     */
-  int *counter,         /* returned for stats, # of median interations       */
   int nprocs,           /* Total number of processors (Tflops_Special)       */
   int num_procs,        /* Number of procs in set (Tflops_Special)     */
   int proclower,        /* Lowest numbered proc in set (Tflops_Special)*/
@@ -98,13 +101,27 @@ int Zoltan_RB_find_median(
   int     indexlo=0, indexhi=0;      /* indices of dot closest to median */
   int     breakflag;                 /* for breaking out of median iteration */
   int     markactive;                /* which side of cut is active = 0/1 */
-  int     rank;                      /* rank in partition (Tflops_Special) */
+  int     rank=0;                    /* rank in partition (Tflops_Special) */
+  int     loopCount=0;
 
   /* MPI data types and user functions */
 
   MPI_Op            med_op;
   MPI_Datatype      med_type;
   MPI_User_function Zoltan_RB_median_merge;
+
+#ifdef WATCH_MEDIAN_FIND
+  char debugText[64];
+  double initmin, initmax;
+  if (first_guess)
+    sprintf(debugText,"(%d - %d) first guess %lf ",proclower,proclower+num_procs-1,*valuehalf);
+  else
+    sprintf(debugText,"(%d - %d) ",proclower,proclower+num_procs-1);
+  initmin = valuemin;
+  initmax = valuemax;
+#endif
+
+  rank = proc - proclower;
 
 
 /***************************** BEGIN EXECUTION ******************************/
@@ -137,7 +154,6 @@ int Zoltan_RB_find_median(
   }
 
   if (Tflops_Special) {
-    rank = proc - proclower;
     if (wgtflag) {
 
       /* find tolerance (max of wtmax) */
@@ -187,7 +203,7 @@ int Zoltan_RB_find_median(
                                              Input argument Tflops_Special 
                                              should be 0 for
                                              serial partitioning. */
-  while (1) {
+    while (1) {
 
     /* choose bisector value */
     /* use old value on 1st iteration if old cut dimension is the same */
@@ -258,8 +274,8 @@ int Zoltan_RB_find_median(
       med.countlo = med.counthi = 0;
       med.proclo = med.prochi = proc;
 
-      /* combine median data struct across current subset of procs */
-      if (counter != NULL) (*counter)++;
+      loopCount++;
+
       if (Tflops_Special) {
          i = 1;
          Zoltan_RB_reduce(num_procs, rank, proc, (void *) &medme, (void *) &med,
@@ -430,7 +446,7 @@ int Zoltan_RB_find_median(
       }
       numlist = k;
 
-  }
+    }
   }
   else { /* if one processor set all dots to 0 (Tflops_Special) */
     for (i = 0; i < numlist; i++)
@@ -455,8 +471,16 @@ int Zoltan_RB_find_median(
   if (!Tflops_Special)
      MPI_Op_free(&med_op);
 
-  return 1;
+#ifdef WATCH_MEDIAN_FIND
+  if ((num_procs>1) && (rank==0)){
+    fprintf(stderr,"%s loop count %d interval size %d median (%lf - %lf) %lf\n",
+      debugText, loopCount,dotnum, initmin, initmax, *valuehalf);
+  }
+#endif
 
+  par_median_accumulate_counts(nprocs, num_procs, rank, loopCount);
+
+  return 1;
 }
 
 /* merge median data structure */

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: inertial2d.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.19 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -26,6 +26,7 @@ extern "C" {
 #include <stdio.h>
 #include <math.h>
 #include "rib.h"
+#include "zz_const.h"
 
 /* macros for routines */
 #define max(a, b) ((a) < (b) ? (b) : (a))
@@ -62,7 +63,7 @@ int Zoltan_RIB_inertial2d(
      int    i, j;               /* loop counter */
      double xcmt, ycmt, wgtt;   /* temp for center of mass */
      double xxt, yyt, xyt;      /* temp for tensor */
-     int    rank;               /* rank in partition (Tflops_Special) */
+     int    rank = 0;           /* rank in partition (Tflops_Special) */
 
      /* Compute center of mass and total mass. */
 

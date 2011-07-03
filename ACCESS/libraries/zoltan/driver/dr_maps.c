@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_maps.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.19 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 #include "dr_const.h"
 #include "dr_maps_const.h"
@@ -88,11 +88,11 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
    */
 
   if (mesh->ecmap_id != NULL) {
-    safe_free((void **) &(mesh->ecmap_id));
-    safe_free((void **) &(mesh->ecmap_cnt));
-    safe_free((void **) &(mesh->ecmap_elemids));
-    safe_free((void **) &(mesh->ecmap_sideids));
-    safe_free((void **) &(mesh->ecmap_neighids));
+    safe_free((void **)(void *) &(mesh->ecmap_id));
+    safe_free((void **)(void *) &(mesh->ecmap_cnt));
+    safe_free((void **)(void *) &(mesh->ecmap_elemids));
+    safe_free((void **)(void *) &(mesh->ecmap_sideids));
+    safe_free((void **)(void *) &(mesh->ecmap_neighids));
     mesh->necmap = 0;
   }
 
@@ -258,13 +258,13 @@ struct map_list_head *tmp_maps = NULL, *map = NULL;
 
   /* Free temporary data structure. */
   for (i = 0; i < mesh->necmap; i++) {
-    safe_free((void **) &(tmp_maps[i].glob_id));
-    safe_free((void **) &(tmp_maps[i].elem_id));
-    safe_free((void **) &(tmp_maps[i].side_id));
-    safe_free((void **) &(tmp_maps[i].neigh_id));
+    safe_free((void **)(void *) &(tmp_maps[i].glob_id));
+    safe_free((void **)(void *) &(tmp_maps[i].elem_id));
+    safe_free((void **)(void *) &(tmp_maps[i].side_id));
+    safe_free((void **)(void *) &(tmp_maps[i].neigh_id));
   }
-  safe_free((void **) &tmp_maps);
-  safe_free((void **) &sindex);
+  safe_free((void **)(void *) &tmp_maps);
+  safe_free((void **)(void *) &sindex);
 
   if (Test.DDirectory) 
     compare_maps_with_ddirectory_results(proc, mesh);
@@ -292,6 +292,7 @@ static void compare_maps_with_ddirectory_results(
  */
 static const int want_size = 4;
 int num_elems = mesh->num_elems;
+int max_nelems;
 Zoltan_DD_Directory *dd = NULL;
 Zoltan_DD_Directory *ddCopy = NULL;
 ZOLTAN_ID_PTR gids = NULL;
@@ -344,7 +345,8 @@ ZOLTAN_COMM_OBJ *comm, *comm_copy;
    * Create DDirectory and register all owned elements. 
    */
 
-  ierr = Zoltan_DD_Create(&dd, MPI_COMM_WORLD, 1, 1, 0, 0, 0);
+  MPI_Allreduce(&num_elems, &max_nelems, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+  ierr = Zoltan_DD_Create(&dd, MPI_COMM_WORLD, 1, 1, 0, max_nelems, 0);
   if (ierr) {
     Gen_Error(0, "Fatal:  Error returned by Zoltan_DD_Create");
     error = 1;

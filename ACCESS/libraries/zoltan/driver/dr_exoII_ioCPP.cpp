@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_exoII_ioCPP.cpp,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    $Revision: 1.1 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <mpi.h>   // must appear before stdio or iostream
@@ -16,11 +16,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifdef ZOLTAN_NEMESIS
-#include "exodusII.h"
-#include "ne_nemesisI.h"
-#endif /* ZOLTAN_NEMESIS */
 
 #include "dr_const.h"
 #include "dr_input_const.h"
@@ -33,6 +28,11 @@
 #include "zoltan_comm.h"
 
 #include "zoltan_comm_cpp.h"
+
+#ifdef ZOLTAN_NEMESIS
+#include "exodusII.h"
+#include "ne_nemesisI.h"
+#endif /* ZOLTAN_NEMESIS */
 
 #define LIST_ALLOC 10
 
@@ -1001,10 +1001,10 @@ char cmesg[256];
       if (mesh->elements[i].elem_blk == iblk) {
         /* Element is in block; see whether it is to be exported. */
         if ((tmp=in_list(mesh->elements[i].globalID, num_exp, (int *) exp_gids)) != -1)
-          vars[j++] = (Output.Plot_Partitions ? (float) (exp_to_part[tmp]) 
+          vars[j++] = (Output.Plot_Partition ? (float) (exp_to_part[tmp]) 
                                        : (float) (exp_procs[tmp]));
         else
-          vars[j++] = (Output.Plot_Partitions ? mesh->elements[i].my_part 
+          vars[j++] = (Output.Plot_Partition ? mesh->elements[i].my_part 
                                        : (float) (Proc));
       }
     }

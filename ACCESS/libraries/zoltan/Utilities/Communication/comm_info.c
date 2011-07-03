@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: comm_info.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.3 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -67,11 +67,11 @@ int i, j, k, my_proc;
     *nsends = plan->nsends;
 
   if (send_procs)
-    for (i = 0; i < plan->nsends; i++)
+    for (i = 0; i < plan->nsends + plan->self_msg; i++)
       send_procs[i] = plan->procs_to[i];
 
   if (send_lengths)
-    for (i = 0; i < plan->nsends; i++)
+    for (i = 0; i < plan->nsends + plan->self_msg; i++)
       send_lengths[i] = plan->lengths_to[i];
 
   if (send_nvals)
@@ -102,11 +102,11 @@ int i, j, k, my_proc;
     *nrecvs = plan->nrecvs;
 
   if (recv_procs)
-    for (i = 0; i < plan->nrecvs; i++)
+    for (i = 0; i < plan->nrecvs + plan->self_msg; i++)
       recv_procs[i] = plan->procs_from[i];
 
   if (recv_lengths)
-    for (i = 0; i < plan->nrecvs; i++)
+    for (i = 0; i < plan->nrecvs + plan->self_msg; i++)
       recv_lengths[i] = plan->lengths_from[i];
 
   if (recv_nvals)

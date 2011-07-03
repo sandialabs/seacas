@@ -1,14 +1,14 @@
-/*****************************************************************************
+/*
  * Zoltan Library for Parallel Applications                                  *
  * Copyright (c) 2000,2001,2002, Sandia National Laboratories.               *
  * For more info, see the README file in the top-level Zoltan directory.     *  
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zoltan_util.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -20,7 +20,92 @@
 extern "C" {
 #endif
 
+/* This block should be executed for Autotools and CMake builds. */
+/* The Zoltan classic build defines TRILINOS_NO_CONFIG_H.        */
 
+#ifndef TRILINOS_NO_CONFIG_H
+
+#ifdef PACKAGE
+#undef PACKAGE
+#endif
+
+#ifdef PACKAGE_NAME
+#undef PACKAGE_NAME
+#endif
+
+#ifdef PACKAGE_BUGREPORT
+#undef PACKAGE_BUGREPORT
+#endif
+
+#ifdef PACKAGE_STRING
+#undef PACKAGE_STRING
+#endif
+
+#ifdef PACKAGE_TARNAME
+#undef PACKAGE_TARNAME
+#endif
+
+#ifdef PACKAGE_VERSION
+#undef PACKAGE_VERSION
+#endif
+
+#ifdef VERSION
+#undef VERSION
+#endif
+
+/* This file passes values from configure to the source code. */
+#include "Zoltan_config.h"
+
+#ifdef HAVE_PARMETIS
+#define ZOLTAN_PARMETIS
+#endif
+
+#ifdef HAVE_METIS
+#define ZOLTAN_METIS
+#endif
+
+#ifdef HAVE_SCOTCH
+#define ZOLTAN_SCOTCH
+#  ifdef HAVE_MPI
+#  define ZOLTAN_PTSCOTCH
+#  endif
+#endif
+
+#ifdef HAVE_PATOH
+#define ZOLTAN_PATOH
+#endif
+
+#ifdef HAVE_CCOLAMD
+#define ZOLTAN_CCOLAMD
+#endif
+
+#ifdef HAVE_ZOLTAN_HUND
+#define ZOLTAN_HUND
+#endif
+
+#ifdef HAVE_DRUM
+#define ZOLTAN_DRUM
+#endif
+
+#ifdef HAVE_PARKWAY
+#define ZOLTAN_PARKWAY
+#endif
+
+#ifdef HAVE_ZOLTAN_OCT
+#define ZOLTAN_OCT
+#endif
+
+#else /* !AUTOTOOLS_BUILD */
+
+  /* With the manual build system we support only Parallel Version of Scotch */
+
+#ifdef ZOLTAN_SCOTCH
+#define ZOLTAN_PTSCOTCH
+#endif
+
+#endif /* !AUTOTOOLS_BUILD */
+
+#define ZOLTAN_HIER
 /*****************************************************************************/
 /* 
  *  Macros and definitions that are common to all Zoltan modules and 
@@ -44,7 +129,7 @@ extern "C" {
 
 #define ZOLTAN_TRACE(proc,where,yo,str) \
   printf("ZOLTAN (Processor %d) %s %s  %s\n", (proc), (where), (yo), \
-         ((str) != NULL ? (str) : " "));
+         ((str) != NULL ? (char *)(str) : " "));
 
 #define ZOLTAN_TRACE_IN(proc,yo,str) \
   ZOLTAN_TRACE((proc),"Entering",(yo),(str));
@@ -54,7 +139,7 @@ extern "C" {
 
 #define ZOLTAN_PRINT_INFO(proc,yo,str) \
   printf("ZOLTAN (Processor %d) %s: %s\n", (proc), (yo), \
-         ((str) != NULL ? (str) : " "));
+         ((str) != NULL ? (char *)(str) : " "));
 
 
 #ifdef __cplusplus

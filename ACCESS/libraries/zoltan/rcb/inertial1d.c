@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: inertial1d.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.11 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -26,6 +26,7 @@ extern "C" {
 
 #include <stdio.h>
 #include "rib.h"
+#include "zz_const.h"
 
 int Zoltan_RIB_inertial1d(
      struct Dot_Struct *dotpt,  /* graph data structure for weights */

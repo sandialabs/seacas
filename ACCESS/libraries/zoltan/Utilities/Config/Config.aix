@@ -5,10 +5,10 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.aix,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
-#    Revision: 1.2 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
+#    $Revision$
 ##############################################################################
 
 ##############################################################################
@@ -44,7 +44,7 @@ F90_MODULE_PREFIX 	= -I
 FARG      		= farg_typical
 
 MPI_LIBPATH		= -L/usr/lpp/ppe.poe/lib
-MPI_LIB			= -lmpi
+MPI_LIBS			= -lmpi
 
 PARMETIS_LIBPATH 	= \
 -L/sierra/Release/ParMetis/3.0/lib/rs6000-ibm-aix4.3.2.0/dp

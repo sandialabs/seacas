@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: comm.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.7 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -92,6 +92,8 @@ struct Zoltan_Comm_Obj {	/* data for mapping between decompositions */
     int       self_msg;		/* do I have data for myself? */
     int       max_send_size;	/* size of longest message I send (w/o self) */
     int       total_recv_size;	/* total amount of data I'll recv (w/ self) */
+    int       maxed_recvs;      /* do I have to many receives to post all
+                                 * at once? if so use MPI_Alltoallv */
     MPI_Comm  comm;		/* communicator for operation */
     MPI_Request *request;       /* MPI requests for posted recvs */
     MPI_Status *status;		/* MPI status for those recvs */
@@ -99,6 +101,18 @@ struct Zoltan_Comm_Obj {	/* data for mapping between decompositions */
     ZOLTAN_COMM_OBJ* plan_reverse;   /* to support POST & WAIT */
     char*     recv_buff;  /* To support POST & WAIT */    
 };
+
+/* Red Storm MPI permits a maximum of 2048 receives.  We set our
+ * limit of posted receives to 2000, leaving some for the application.
+ */
+
+#ifndef MPI_RECV_LIMIT
+/* Decided for Trilinos v10/Zoltan v3.2 would almost always use */
+/* MPI_Alltoall communication instead of point-to-point.        */
+/* August 2009 */
+/* #define MPI_RECV_LIMIT 2000 */
+#define MPI_RECV_LIMIT 4
+#endif
 
 
 #ifdef __cplusplus

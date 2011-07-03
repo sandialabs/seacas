@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_gnuplot.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.12 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include "dr_const.h"
@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -69,17 +70,31 @@ int output_gnu(const char *cmd_file,
   char   par_out_fname[FILENAME_MAX+1], ctemp[FILENAME_MAX+1];
   ELEM_INFO *current_elem, *nbor_elem;
   int    nbor, num_nodes;
-  const char  *datastyle;
-  int    i, j;
+  const char  *datastyle = NULL;
+  int    i, j, nelems;
   int    prev_part = -1;
   int    max_part = -1;
+  float    locMaxX = INT_MIN;
+  float    locMinX = INT_MAX;
+  float    locMaxY = INT_MIN;
+  float    locMinY = INT_MAX;
+  float    globMaxX = INT_MIN;
+  float    globMinX = INT_MAX;
+  float    globMaxY = INT_MIN;
+  float    globMinY = INT_MAX;
   int    gmax_part = Num_Proc-1;
   int    gnum_part = Num_Proc;
   int   *parts = NULL;
-  int   *index;
-  int   *elem_index;
+  int   *index = NULL;
+  int   *elem_index = NULL;
   FILE  *fp = NULL;
 /***************************** BEGIN EXECUTION ******************************/
+
+  if(Output.Gnuplot < 0)
+  {
+    Gen_Error(0,"warning: 'gnuplot output' parameter set to invalid negative value.");
+    return 0;
+  }
 
   DEBUG_TRACE_START(Proc, yo);
 
@@ -102,24 +117,30 @@ int output_gnu(const char *cmd_file,
    * will be used even when plotting by processor numbers (for generality), 
    * so build it regardless. 
    */
-  if (mesh->num_elems > 0) {
-    parts = (int *) malloc(3 * mesh->num_elems * sizeof(int));
-    index = parts + mesh->num_elems;
-    elem_index = index + mesh->num_elems;
+  nelems = mesh->num_elems - mesh->blank_count;
+
+  if (nelems > 0) {
+    parts = (int *) malloc(3 * nelems * sizeof(int));
+    index = parts + nelems;
+    elem_index = index + nelems;
     for (j = 0, i = 0; i < mesh->elem_array_len; i++) {
       current_elem = &(mesh->elements[i]);
       if (current_elem->globalID >= 0) {
+
+        if (mesh->blank_count && (mesh->blank[i] == 1)) continue;
+        
         if (current_elem->my_part > max_part) max_part = current_elem->my_part;
-        parts[j] = (Output.Plot_Partitions ? current_elem->my_part : Proc);
+        parts[j] = (Output.Plot_Partition ? current_elem->my_part : Proc);
         index[j] = j;
         elem_index[j] = i;
         j++;
       }
     }
   }
-  if (Output.Plot_Partitions) {
+  if (Output.Plot_Partition) {
     /* Sort by partition numbers.  Assumes # parts >= # proc. */
-    if (mesh->num_elems > 0) sort_index(mesh->num_elems, parts, index);
+    if (nelems > 0) 
+      sort_index(nelems, parts, index);
     MPI_Allreduce(&max_part, &gmax_part, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
     gnum_part = gmax_part + 1;
   }
@@ -132,7 +153,8 @@ int output_gnu(const char *cmd_file,
 
 
   if (pio_info->file_type == CHACO_FILE ||
-      pio_info->file_type == NO_FILE ||
+      pio_info->file_type == NO_FILE_POINTS ||
+      pio_info->file_type == NO_FILE_TRIANGLES ||
       pio_info->file_type == HYPERGRAPH_FILE) {
     /* 
      * For each node of Chaco graph, print the coordinates of the node.
@@ -140,7 +162,7 @@ int output_gnu(const char *cmd_file,
      * coordinates.
      */
     datastyle = "linespoints";
-    for (i = 0; i < mesh->num_elems; i++) {
+    for (i = 0; i < nelems; i++) {
       current_elem = &(mesh->elements[elem_index[index[i]]]);
       if (parts[index[i]] != prev_part) {
         if (fp != NULL) fclose(fp);
@@ -154,24 +176,58 @@ int output_gnu(const char *cmd_file,
        * the point will appear.  */
       fprintf(fp, "\n%e %e\n", 
               current_elem->coord[0][0], current_elem->coord[0][1]);
-      for (j = 0; j < current_elem->nadj; j++) {
-        if (current_elem->adj_proc[j] == Proc) {  /* Nbor is on same proc */
-          if (!Output.Plot_Partitions || 
-              mesh->elements[current_elem->adj[j]].my_part == 
+
+      /* save max and min x/y coords */
+      if(current_elem->coord[0][0] < locMinX)
+      {
+        locMinX = current_elem->coord[0][0];
+      }
+      if(current_elem->coord[0][0] > locMaxX)
+      {
+        locMaxX = current_elem->coord[0][0];
+      }
+      if(current_elem->coord[0][1] < locMinY)
+      {
+        locMinY = current_elem->coord[0][1];
+      }
+      if(current_elem->coord[0][1] > locMaxY)
+      {
+        locMaxY = current_elem->coord[0][1];
+      }
+
+      if (Output.Gnuplot>1)
+      {
+
+        for (j = 0; j < current_elem->nadj; j++) {
+          if (current_elem->adj_proc[j] == Proc) {  /* Nbor is on same proc */
+            if (mesh->blank_count && (mesh->blank[current_elem->adj[j]] == 1))
+              continue;
+            if (!Output.Plot_Partition || 
+                mesh->elements[current_elem->adj[j]].my_part == 
                              current_elem->my_part) {  
-            /* Not plotting partitions, or nbor is in same partition */
-            /* Plot the edge.  Need to include current point and nbor point
-             * for each edge. */
-            fprintf(fp, "\n%e %e\n", 
-                current_elem->coord[0][0], current_elem->coord[0][1]);
-            nbor = current_elem->adj[j];
-            nbor_elem = &(mesh->elements[nbor]);
-            fprintf(fp, "%e %e\n",
-                    nbor_elem->coord[0][0], nbor_elem->coord[0][1]);
+              /* Not plotting partitions, or nbor is in same partition */
+              /* Plot the edge.  Need to include current point and nbor point
+               * for each edge. */
+              fprintf(fp, "\n%e %e\n", 
+                  current_elem->coord[0][0], current_elem->coord[0][1]);
+              nbor = current_elem->adj[j];
+              nbor_elem = &(mesh->elements[nbor]);
+              fprintf(fp, "%e %e\n",
+                      nbor_elem->coord[0][0], nbor_elem->coord[0][1]);
+            }
           }
         }
+
       }
+
+
     }
+
+    MPI_Reduce(&locMinX,&globMinX,1,MPI_FLOAT,MPI_MIN,0,MPI_COMM_WORLD);
+    MPI_Reduce(&locMinY,&globMinY,1,MPI_FLOAT,MPI_MIN,0,MPI_COMM_WORLD);
+    MPI_Reduce(&locMaxX,&globMaxX,1,MPI_FLOAT,MPI_MAX,0,MPI_COMM_WORLD);
+    MPI_Reduce(&locMaxY,&globMaxY,1,MPI_FLOAT,MPI_MAX,0,MPI_COMM_WORLD);
+
   }
   else if (pio_info->file_type == NEMESIS_FILE) { /* Nemesis input file */
     /* 
@@ -180,7 +236,7 @@ int output_gnu(const char *cmd_file,
      */
     double sum[2];
     datastyle = "lines";
-    for (i = 0; i < mesh->num_elems; i++) {
+    for (i = 0; i < nelems; i++) {
       current_elem = &(mesh->elements[elem_index[index[i]]]);
       if (parts[index[i]] != prev_part) {
         if (fp != NULL) fclose(fp);
@@ -210,14 +266,14 @@ int output_gnu(const char *cmd_file,
     }
   }
   
-  if (mesh->num_elems == 0 && !Output.Plot_Partitions) { 
+  if (nelems == 0 && !Output.Plot_Partition) { 
     /* Open a file just so one exists; satisfies the gnuload file. */
     gen_par_filename(ctemp, par_out_fname, pio_info, Proc, Num_Proc);
     fp = fopen(par_out_fname, "w");
   }
     
   if (fp != NULL) fclose(fp);
-  safe_free((void **) &parts);
+  safe_free((void **)(void *) &parts);
 
   if (Proc == 0) {
     /* Write gnu master file with gnu commands for plotting */
@@ -233,6 +289,13 @@ int output_gnu(const char *cmd_file,
     fprintf(fp, "set noxtics\n");
     fprintf(fp, "set noytics\n");
     fprintf(fp, "set data style %s\n", datastyle);
+
+    /* resize range so that there is a 5% border around data */
+    fprintf(fp, "set xrange [%f:%f] \n ",globMinX-(globMaxX-globMinX)/20
+	                            ,globMaxX+(globMaxX-globMinX)/20);
+    fprintf(fp, "set yrange [%f:%f] \n ",globMinY-(globMaxY-globMinY)/20
+	                            ,globMaxY+(globMaxY-globMinY)/20);
+
 
     fprintf(fp, "plot ");
     strcpy(ctemp, pio_info->pexo_fname);

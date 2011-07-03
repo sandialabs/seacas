@@ -50,6 +50,17 @@ Ioss::ElementBlock::ElementBlock(const Ioss::DatabaseIO *io_database,
 {
   properties.add(Ioss::Property(this, "attribute_count",
 				Ioss::Property::INTEGER));
+
+  if (topology()->master_element_name() != element_type &&
+      topology()->name() != element_type) {
+    // Maintain original element type on output database if possible.
+    properties.add(Ioss::Property("original_element_type", element_type));
+  }
+
+  // Returns connectivity in local id space
+  fields.add(Ioss::Field("connectivity_raw", Ioss::Field::INTEGER,
+			 topology()->name(),
+			 Ioss::Field::MESH, number_elements));
 }
 
 Ioss::ElementBlock::~ElementBlock() {}

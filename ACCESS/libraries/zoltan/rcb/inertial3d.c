@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: inertial3d.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.17 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -26,6 +26,7 @@ extern "C" {
 #include <stdio.h>
 #include <math.h>
 #include "rib.h"
+#include "zz_const.h"
 
 /* macros for routines */ 
 #define max(a, b) ((a) < (b) ? (b) : (a)) 
@@ -66,7 +67,7 @@ int Zoltan_RIB_inertial3d(
      double    cmt[3], wgtt;    /* temp for center of mass */
      double    xxt, yyt, zzt;   /* temp for inertial tensor */
      double    xyt, xzt, yzt;   /* temp for inertial tensor */
-     int       rank;            /* rank in partition (Tflops_Special) */
+     int       rank = 0;        /* rank in partition (Tflops_Special) */
 
      /* Compute center of mass and total mass. */
      cm[0] = cm[1] = cm[2] = 0.0;
@@ -300,7 +301,7 @@ static void eigenvec3(
      double norm;               /* norm of eigenvector */
      double res1, res2, res3;   /* elements of residual vector */
      double tol = 1.0e-6;       /* smaller value assumed to be zero */
-     int    imax, jmax;         /* indices of max value in matrix */
+     int    imax=0, jmax=0;     /* indices of max value in matrix */
      int    i, j;               /* loop counters */
 
      for (i = 0; i < 3; i++)

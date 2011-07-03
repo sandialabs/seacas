@@ -1,5 +1,5 @@
 /*
-** $Id: exphg.c,v 1.1 2009/06/09 18:37:57 gdsjaar Exp $
+** $Id: exphg.c,v 1.1 2006/08/10 22:26:59 gdsjaar Exp $
 **
 ** Functions to support writing Zoltan parallel hypergraph examples.
 **

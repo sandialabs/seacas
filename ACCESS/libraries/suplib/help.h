@@ -30,7 +30,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* $Id: help.h,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $ */
+/* $Id: help.h,v 1.3 2009/03/25 12:46:02 gdsjaar Exp $ */
 
 /* Exit status returned by help() */
 #define	H_FOUND		0	/* found the keyword */

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: shared.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.12 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -39,10 +39,11 @@ struct Dot_Struct {	        /* dot = point in 3-space */
                                    initially (input).  */
   int Part;                     /* New partition to which the dot is 
                                    assigned.  */
+  int Size;                     /* Migration size */
 };
 
 extern int Zoltan_RB_Build_Structure(ZZ *, ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, 
-  struct Dot_Struct **, int *, int *, int *, int, int);
+  struct Dot_Struct **, int *, int *, int *, int, double, int);
 
 extern void Zoltan_RB_Print_All(ZZ *, ZOLTAN_ID_PTR , struct Dot_Struct *,
   int , int , ZOLTAN_ID_PTR , int *);
@@ -52,7 +53,7 @@ extern int Zoltan_RB_Send_Outgoing(ZZ *, ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *,
   int *, int, MPI_Comm, int, int, int, int);
 
 extern int Zoltan_RB_Send_To_Part(ZZ *, ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *,
-  struct Dot_Struct **, int **, int *, int *, int *, int, int *, double, int,
+  struct Dot_Struct **, int **, int *, int *, int *, int *, double, int,
   int *, int);
 
 extern int Zoltan_RB_Send_Dots(ZZ *, ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *,
@@ -71,8 +72,8 @@ extern int Zoltan_RB_check_geom_input(ZZ *, struct Dot_Struct *, int);
 extern int Zoltan_RB_check_geom_output(ZZ *, struct Dot_Struct *, float *,
   int, int, int, int, void *);
 
-extern void Zoltan_RB_stats(ZZ *, double, struct Dot_Struct *, int , double *, 
-  int *, int, int *, void *, int);
+extern void Zoltan_RB_stats(ZZ *, double, struct Dot_Struct *, int , 
+                            float *, double *, int *, int, int *, void *, int);
 
 extern int Zoltan_RB_Use_IDs(ZZ *);
 

@@ -4,10 +4,10 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  CVS File Information :
-!     $RCSfile: farg_nas.f,v $
-!     $Author: gdsjaar $
-!     $Date: 2009/06/09 18:37:57 $
-!     $Revision: 1.1 $
+!     $RCSfile$
+!     $Author$
+!     $Date$
+!     $Revision$
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ! Command line argument functions for NASoftware FortranPlus 2.0

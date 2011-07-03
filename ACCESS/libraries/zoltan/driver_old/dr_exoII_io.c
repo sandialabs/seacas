@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_exoII_io.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.5 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <mpi.h>
@@ -16,11 +16,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifdef ZOLTAN_NEMESIS
-#include "exodusII.h"
-#include "ne_nemesisI.h"
-#endif /* ZOLTAN_NEMESIS */
 
 #include "dr_const.h"
 #include "dr_input_const.h"
@@ -30,6 +25,11 @@
 #include "dr_err_const.h"
 #include "dr_output_const.h"
 #include "dr_elem_util_const.h"
+
+#ifdef ZOLTAN_NEMESIS
+#include "exodusII.h"
+#include "ne_nemesisI.h"
+#endif /* ZOLTAN_NEMESIS */
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */

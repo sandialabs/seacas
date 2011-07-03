@@ -5,9 +5,9 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.pure_siMPI,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
 #    Revision: 1.12.2.1 $
 ##############################################################################
 
@@ -46,7 +46,7 @@ F90_MODULE_PREFIX       = -M
 FARG                    = farg_typical
 
 MPI_INCPATH		= -I../../siMPI -I../../../siMPI
-MPI_LIB			= -lsiMPI
+MPI_LIBS			= -lsiMPI
 MPI_LIBPATH		= -L../../siMPI -L../../../siMPI
 
 PARMETIS_LIBPATH 	= -L../../ParMETIS3_1

@@ -5,12 +5,19 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: phg_distrib.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.18 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
+#ifdef __cplusplus
+/* if C++, define the rest of this header file as extern C */
+extern "C" {
+#endif
+
+
 #include "phg_distrib.h"
+#include "zz_const.h"
 
     /*
 #define _DEBUG1
@@ -33,9 +40,11 @@ int Zoltan_PHG_Gno_To_Proc_Block(
  */
 
 int idx;
+double fidx;
 int maxgno = dist_dim[nProc_dim];
 
-  idx = gno * nProc_dim / maxgno;
+  fidx = (double)gno * (double)nProc_dim / (double)maxgno;
+  idx = (int) fidx;
 
   while (gno < dist_dim[idx]) idx--;
   while (gno >= dist_dim[idx+1]) idx++;
@@ -61,8 +70,10 @@ static void PrintArr(PHGComm *hgc, char *st, int *ar, int n)
 
 static int Zoltan_PHG_Redistribute_Hypergraph(
     ZZ *zz, 
+    PHGPartParams *hgp,     /* Input:  parameters; used only for UseFixedVtx */
     HGraph  *ohg,           /* Input:  Local part of distributed hypergraph */
-    int     firstproc,      /* Input:  rank (in ocomm) of the first proc of the ncomm*/
+    int     firstproc,      /* Input:  rank (in ocomm) of the first proc of 
+                                       the ncomm*/
     int     *v2Col,         /* Input:  Vertex to processor Column Mapping */
     int     *n2Row,         /* Input:  Net to processor Row Mapping */
     PHGComm *ncomm,         /* Input:  communicators of new distribution */
@@ -117,7 +128,8 @@ static int Zoltan_PHG_Redistribute_Hypergraph(
     /* compute prefix sum to find new vertex start numbers; for each processor */
     MPI_Scan(dist_x, vsn, ncomm->nProc_x, MPI_INT, MPI_SUM, ocomm->row_comm);
     /* All reduce to compute how many each processor will have */ 
-    MPI_Allreduce(dist_x, &(nhg->dist_x[1]), ncomm->nProc_x, MPI_INT, MPI_SUM, ocomm->row_comm);
+    MPI_Allreduce(dist_x, &(nhg->dist_x[1]), ncomm->nProc_x, MPI_INT, MPI_SUM, 
+                  ocomm->row_comm);
     nhg->dist_x[0] = 0;    
     for (i=1; i<=ncomm->nProc_x; ++i) 
         nhg->dist_x[i] += nhg->dist_x[i-1];
@@ -253,6 +265,29 @@ static int Zoltan_PHG_Redistribute_Hypergraph(
         if (ncomm->myProc!=-1)  /* ncomm's first row now bcast to other rows */
             MPI_Bcast(nhg->vwgt, nVtx*ohg->VtxWeightDim, MPI_FLOAT, 0, ncomm->col_comm);
     }    
+
+    /* communicate fixed vertices, if any */
+    if (hgp->UseFixedVtx) {
+        if (nVtx)
+            nhg->fixed_part = (int *) ZOLTAN_MALLOC(nVtx*sizeof(int));
+        --msg_tag;
+        Zoltan_Comm_Do(plan, msg_tag, (char *) ohg->fixed_part,
+                       sizeof(int), (char *) nhg->fixed_part);
+        if (ncomm->myProc!=-1)  /* ncomm's first row now bcast to other rows */
+            MPI_Bcast(nhg->fixed_part, nVtx, MPI_INT, 0, ncomm->col_comm);
+    }    
+    /* communicate pref parts, if any */
+    if (hgp->UsePrefPart) {
+        if (nVtx)
+            nhg->pref_part = (int *) ZOLTAN_MALLOC(nVtx*sizeof(int));
+        --msg_tag;
+        Zoltan_Comm_Do(plan, msg_tag, (char *) ohg->pref_part,
+                       sizeof(int), (char *) nhg->pref_part);
+        if (ncomm->myProc!=-1)  /* ncomm's first row now bcast to other rows */
+            MPI_Bcast(nhg->pref_part, nVtx, MPI_INT, 0, ncomm->col_comm);
+    }    
+
+    /* this comm plan is no longer needed. */
     Zoltan_Comm_Destroy(&plan);
 
     
@@ -410,6 +445,18 @@ int Zoltan_PHG_Redistribute(
     /* UVC: TODO very simple straight forward partitioning right now;
        later we can implement a more "load balanced", or smarter
        mechanisms */
+    /* KDDKDD 5/11/07:  Round-off error in the computation of v2Col
+     * and n2Row can lead to different answers on different platforms.
+     * Vertices or edges get sent to different processors during the 
+     * split, resulting in different matchings and, thus, different
+     * answers.
+     * Problem was observed on hg_cage10, zdrive.inp.phg.ipm.nproc_vertex1
+     * and zdrive.inp.phg.ipm.nproc_edge1;
+     * solaris machine seamus and linux machine patches give different
+     * results due to differences in n2Row and v2Col, respectively.  
+     * Neither answer is wrong,
+     * but the linux results result in FAILED test in test_zoltan.
+     */
     frac = (float) ohg->nVtx / (float) ncomm->nProc_x;
     for (i=0; i<ohg->nVtx; ++i) 
         v2Col[i] = (int) ((float) i / frac);
@@ -417,7 +464,9 @@ int Zoltan_PHG_Redistribute(
     for (i=0; i<ohg->nEdge; ++i) 
         n2Row[i] = (int) ((float) i / frac);
 
-    ierr |= Zoltan_PHG_Redistribute_Hypergraph(zz, ohg, lo, v2Col, n2Row, ncomm, nhg, vmap, vdest);
+    ierr |= Zoltan_PHG_Redistribute_Hypergraph(zz, hgp, ohg, lo, 
+                                               v2Col, n2Row, ncomm, 
+                                               nhg, vmap, vdest);
     Zoltan_Multifree(__FILE__, __LINE__, 2,
                      &v2Col, &n2Row);
     
@@ -425,3 +474,6 @@ int Zoltan_PHG_Redistribute(
 }
 
     
+#ifdef __cplusplus
+} /* closing bracket for extern "C" */
+#endif

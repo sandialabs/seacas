@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: timer_params.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.2 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -23,6 +23,7 @@ extern "C" {
 #include "zoltan_timer.h"
 #include "params_const.h"
 #include "zoltan_util.h"
+#include "zz_const.h"
 
 /* Function to interpret and set timer parameters */
 

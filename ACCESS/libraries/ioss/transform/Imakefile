@@ -31,7 +31,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 CXXEXTRA_INCLUDES = -I..
+#if defined SGIArchitecture
+CXXETRA_DEFINES = -ptused -DNO_MPI
+#else
 CXXEXTRA_DEFINES = -DNO_MPI
+#endif
 
 SRCS =	Iotr_Factory.C Iotr_Initializer.C Iotr_MinMax.C Iotr_Offset.C Iotr_Scale.C \
 	Iotr_Tensor.C Iotr_VectorMagnitude.C Iotr_Offset3D.C  Iotr_Scale3D.C

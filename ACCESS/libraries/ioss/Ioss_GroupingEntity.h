@@ -95,11 +95,8 @@ namespace Ioss {
     //: Returns true if 'name' is an alias for this entity.
     bool is_alias(const std::string &name) const;
 
-    virtual size_t block_count() const {return 0;}
-    virtual EntityBlock* get_block(size_t which) const {return NULL;}
-
     //: Return list of blocks that the entities in this GroupingEntity "touch"
-    //: For a FaceSet or EdgeSet, returns a list of the element blocks that the
+    //: For a SideSet, returns a list of the element blocks that the
     //: elements in the set belong to.  For a nodeset, returns "nodeblock_1".
     //: For others, it returns an empty vector.
     //: Entries are pushed onto the "block_members" vector, so it will be
@@ -130,6 +127,7 @@ namespace Ioss {
     void field_erase(const std::string& field_name);
     bool field_exists(const std::string& field_name) const;
     Field get_field(const std::string& field_name) const;
+    const Field &get_fieldref(const std::string& field_name) const;
     int field_describe(NameList* names) const;
     int field_describe(Field::RoleType role, NameList* names) const;
     size_t field_count() const;
@@ -146,10 +144,12 @@ namespace Ioss {
     // Put this fields data into the specified std::vector space.
     // Returns number of entities for which the field was read.
     // Resizes 'data' to size needed to hold all values.
+    int get_field_data(const std::string& field_name, std::vector<char>    &data) const;
     int get_field_data(const std::string& field_name, std::vector<double>  &data) const;
     int get_field_data(const std::string& field_name, std::vector<int>     &data) const;
     int get_field_data(const std::string& field_name, std::vector<Complex> &data) const;
 
+    int put_field_data(const std::string& field_name, std::vector<char>    &data) const;
     int put_field_data(const std::string& field_name, std::vector<double>  &data) const;
     int put_field_data(const std::string& field_name, std::vector<int>     &data) const;
     int put_field_data(const std::string& field_name, std::vector<Complex> &data) const;
@@ -231,6 +231,10 @@ Ioss::GroupingEntity::field_exists(const std::string& field_name) const
 inline Ioss::Field
 Ioss::GroupingEntity::get_field(const std::string& field_name) const
 {return fields.get(field_name);}
+
+inline const Ioss::Field&
+Ioss::GroupingEntity::get_fieldref(const std::string& field_name) const
+{return fields.getref(field_name);}
 
 inline int
 Ioss::GroupingEntity::field_describe(NameList* names) const

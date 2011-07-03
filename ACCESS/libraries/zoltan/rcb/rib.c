@@ -5,9 +5,9 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: rib.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
  *    Revision: 1.6.2.2 $
  ****************************************************************************/
 
@@ -43,7 +43,7 @@ extern "C" {
 /*  RIB_OUTPUT_LEVEL = 1  Log times and counts, print summary */
 /*  RIB_OUTPUT_LEVEL = 2  Log times and counts, print for each proc */
 #define RIB_DEFAULT_OUTPUT_LEVEL 0
-#define RIB_DEFAULT_OVERALLOC 1.0
+#define RIB_DEFAULT_OVERALLOC 1.2
 
 
 /*---------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ static int compute_rib_direction(ZZ *, int, int, double *, double *,
   MPI_Comm, int, int, int);
 static int serial_rib(ZZ *, struct Dot_Struct *, int *, int *, int, int,
   int, double, int, int, int *, int *, int, int, int, int, int, int, int,
-  int *, struct rib_tree *, double *, double *, float *);
+  struct rib_tree *, double *, double *, float *);
 
 /*---------------------------------------------------------------------------*/
 /*  Parameters structure for RIB method.  Used in  */
@@ -68,6 +68,8 @@ static PARAM_VARS RIB_params[] = {
                { "KEEP_CUTS", NULL, "INT", 0 },
                { "REDUCE_DIMENSIONS", NULL, "INT", 0 },
                { "DEGENERATE_RATIO", NULL, "DOUBLE", 0 },
+               {"FINAL_OUTPUT", NULL,  "INT",    0},
+
                { NULL, NULL, NULL, 0 } };
 
 /*---------------------------------------------------------------------------*/
@@ -127,6 +129,7 @@ int Zoltan_RIB(
   int average_cuts;           /* (0) don't (1) compute the cut to be the
                               average of the closest dots. */
   int idummy;
+  int final_output;
   double ddummy;
   int ierr;
 
@@ -137,11 +140,13 @@ int Zoltan_RIB(
   Zoltan_Bind_Param(RIB_params, "KEEP_CUTS", (void *) &gen_tree);
   Zoltan_Bind_Param(RIB_params, "REDUCE_DIMENSIONS", (void *) &idummy);
   Zoltan_Bind_Param(RIB_params, "DEGENERATE_RATIO", (void *) &ddummy);
+  Zoltan_Bind_Param(RIB_params, "FINAL_OUTPUT", (void *) &final_output);
 
   overalloc = RIB_DEFAULT_OVERALLOC;
   check_geom = DEFAULT_CHECK_GEOM;
   stats = RIB_DEFAULT_OUTPUT_LEVEL;
   gen_tree = 0;
+  final_output = 0;
   average_cuts = 0;
   wgtflag = zz->Obj_Weight_Dim;
   idummy = 0;
@@ -153,6 +158,11 @@ int Zoltan_RIB(
   /* Initializations in case of early exit. */
   *num_import = -1;
   *num_export = -1;  /* We don't compute the export map. */
+
+  if (final_output && (stats < 1)){
+    /* FINAL_OUTPUT is a graph/phg param, corresponds to our OUTPUT_LEVEL 1 */
+    stats = 1; 
+  }
 
   ierr = rib_fn(zz, num_import, import_global_ids, import_local_ids,
                 import_procs, import_to_part,
@@ -190,7 +200,7 @@ static int rib_fn(
   int gen_tree,                 /* (0) do not (1) do generate full treept */
   int average_cuts,             /* (0) don't (1) compute the cut to be the
                                 average of the closest dots. */
-  float *part_sizes             /* Input:  Array of size zz->Num_Global_Parts
+  float *part_sizes            /* Input:  Array of size zz->Num_Global_Parts
                                 containing the percentage of work to be
                                 assigned to each partition.               */
 )
@@ -221,9 +231,9 @@ static int rib_fn(
   double  evec[3];            /* Eigenvector defining direction */
   int     first_guess = 0;    /* flag if first guess for median search */
   int     allocflag;          /* have to re-allocate space */
-  double  time1,time2;        /* timers */
-  double  time3,time4;        /* timers */
-  double  timestart,timestop; /* timers */
+  double  time1=0,time2=0;    /* timers */
+  double  time3=0,time4=0;    /* timers */
+  double  timestart=0,timestop=0; /* timers */
   double  timers[4]={0.,0.,0.,0.}; 
                               /* diagnostic timers
                                  0 = start-up time before recursion
@@ -231,7 +241,7 @@ static int rib_fn(
                                  2 = time in median iterations
                                  3 = communication time */
   int     counters[7];        /* diagnostic counts
-                                 0 = # of median iterations
+                                 0 = unused
                                  1 = # of dots sent
                                  2 = # of dots received
                                  3 = most dots this proc ever owns
@@ -250,7 +260,7 @@ static int rib_fn(
   struct rib_tree *treept = NULL; /* tree of cuts - single cut on exit*/
 
   double start_time, end_time;
-  double lb_time[2];
+  double lb_time[2]={0,0};
   int tfs[2], tmp_tfs[2];     /* added for Tflops_Special; max number
                                  of procs and parts over all processors
                                  in each iteration (while loop) of
@@ -267,8 +277,8 @@ static int rib_fn(
                                  better efficiency (don't necessarily
                                  have to realloc for each find_median).*/
   int rectilinear_blocks = 0; /* parameter for find_median (not used by rib) */
-  int fp;                     /* first partition assigned to this proc. */
-  int np;                     /* number of parts assigned to this proc. */
+  int fp=0;                     /* first partition assigned to this proc. */
+  int np=0;                     /* number of parts assigned to this proc. */
 
   /* MPI data types and user functions */
 
@@ -300,7 +310,8 @@ static int rib_fn(
    */
 
   start_time = Zoltan_Time(zz->Timer);
-  ierr = Zoltan_RIB_Build_Structure(zz, &pdotnum, &dotmax, wgtflag, use_ids);
+  ierr = Zoltan_RIB_Build_Structure(zz, &pdotnum, &dotmax, wgtflag, overalloc,
+                                    use_ids);
   if (ierr < 0) {
     ZOLTAN_PRINT_ERROR(proc, yo, 
       "Error returned from Zoltan_RIB_Build_Structure.");
@@ -327,6 +338,17 @@ static int rib_fn(
   counters[4] = dotmax;
   counters[5] = 0;
   counters[6] = 0;
+
+  MPI_Allreduce(&dotnum, &i, 1, MPI_INT, MPI_MAX, zz->Communicator);
+
+  if (i == 0){
+    if (proc == 0){
+      ZOLTAN_PRINT_WARN(proc, yo, "RIB partitioning called with no objects");
+    }
+    timestart = timestop = 0;
+    goto EndReporting;
+  }
+
 
   /* create mark and list arrays for dots */
 
@@ -475,7 +497,7 @@ static int rib_fn(
     if (!Zoltan_RB_find_median(
                    zz->Tflops_Special, value, wgts, dotmark, dotnum, proc, 
                    fractionlo, local_comm, &valuehalf, first_guess,
-                   &(counters[0]), nprocs, old_nprocs, proclower, old_nparts,
+                   nprocs, old_nprocs, proclower, old_nparts,
                    wgtflag, valuelo, valuehi, weight[0], weightlo,
                    weighthi, dotlist, rectilinear_blocks, average_cuts)) {
       ZOLTAN_PRINT_ERROR(proc, yo,
@@ -483,7 +505,7 @@ static int rib_fn(
       ierr = ZOLTAN_FATAL;
       goto End;
     }
-
+  
     if (set)    /* set weight for current partition */
       for (j=0; j<wgtflag; j++) weight[j] = weighthi[j];
     else
@@ -574,7 +596,7 @@ static int rib_fn(
 
   ierr = Zoltan_RB_Send_To_Part(zz, &(rib->Global_IDs), &(rib->Local_IDs),
                                &(rib->Dots), &dotmark, &dottop,
-                               &dotnum, &dotmax, set, &allocflag, overalloc,
+                               &dotnum, &dotmax, &allocflag, overalloc,
                                stats, counters, use_ids);
 
   if (ierr < 0) {
@@ -611,7 +633,7 @@ static int rib_fn(
                       &(dindx[0]), &(tmpdindx[0]), partlower,
                       proc, wgtflag, stats, gen_tree,
                       rectilinear_blocks, average_cuts,
-                      counters, treept, value, wgts, part_sizes);
+                      treept, value, wgts, part_sizes);
     ZOLTAN_FREE(&dindx);
     if (ierr < 0) {
       ZOLTAN_PRINT_ERROR(proc, yo, "Error returned from serial_rib");
@@ -639,9 +661,7 @@ static int rib_fn(
     }
   }
 
-  if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
-    Zoltan_RB_stats(zz, timestop-timestart, rib->Dots, dotnum, timers, counters,
-                stats, NULL, NULL, FALSE);
+EndReporting:
 
   /* update calling routine parameters */
 
@@ -727,6 +747,10 @@ static int rib_fn(
 
   end_time = Zoltan_Time(zz->Timer);
   lb_time[0] += (end_time - start_time);
+
+  if (stats || (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME))
+    Zoltan_RB_stats(zz, timestop-timestart, rib->Dots, dotnum, 
+                part_sizes, timers, counters, stats, NULL, NULL, FALSE);
 
   if (zz->Debug_Level >= ZOLTAN_DEBUG_ATIME) {
     if (zz->Proc == zz->Debug_Proc)
@@ -884,7 +908,7 @@ static int compute_rib_direction(
                                  Tflops_Special */
 )
 {
-int i, ierr;
+int i, ierr = 0;
 double tmp;
 RIB_STRUCT *rib;
 
@@ -958,7 +982,6 @@ static int serial_rib(
   int rectilinear_blocks,    /* parameter for find_median (not used by rib) */
   int average_cuts,          /* (0) don't (1) compute the cut to be the
                                 average of the closest dots. */
-  int counters[],            /* diagnostic counts */
   struct rib_tree *treept,   /* tree of RCB cuts */
   double *value,              /* temp array for median_find; rotated coords */
   double *wgts,              /* temp array for median_find */
@@ -1004,8 +1027,8 @@ int i;
     }
 
     if (!Zoltan_RB_find_median(0, value, wgts, dotmark, dotnum, proc, 
-                               fractionlo, MPI_COMM_SELF, &valuehalf, 0,
-                               &(counters[0]), 1, 1, proc, num_parts,
+                               fractionlo, MPI_COMM_SELF, &valuehalf, 
+                               0, zz->Num_Proc, 1, proc, num_parts,
                                wgtflag, valuelo, valuehi, weight, &weightlo,
                                &weighthi, dotlist, rectilinear_blocks, 
                                average_cuts)) {
@@ -1047,7 +1070,7 @@ int i;
                         &(dindx[0]), &(tmpdindx[0]), partlower,
                         proc, wgtflag, stats, gen_tree, 
                         rectilinear_blocks, average_cuts,
-                        counters, treept, value, wgts, part_sizes);
+                        treept, value, wgts, part_sizes);
       if (ierr < 0) {
         goto End;
       }
@@ -1062,7 +1085,7 @@ int i;
                         &(dindx[set1]), &(tmpdindx[set1]), partmid,
                         proc, wgtflag, stats, gen_tree,
                         rectilinear_blocks, average_cuts,
-                        counters, treept, value, wgts, part_sizes);
+                        treept, value, wgts, part_sizes);
       if (ierr < 0) {
         goto End;
       }

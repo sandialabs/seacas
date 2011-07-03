@@ -6,10 +6,10 @@
 // *****************************************************************************
 // *****************************************************************************
 // * CVS File Information :
-// *    $RCSfile: zoltan_cpp.h,v $
-// *    $Author: gdsjaar $
-// *    $Date: 2009/06/09 18:37:58 $
-// *    Revision: 1.15.2.2 $
+// *    $RCSfile$
+// *    $Author$
+// *    $Date$
+// *    $Revision$
 // *****************************************************************************
 
 // ************************************************************************
@@ -25,6 +25,7 @@
 #include "zoltan.h"
 #include "zoltan_comm_cpp.h"
 #include "zoltan_dd_cpp.h"
+#include <cstdlib>
 
 /* F90 names must be less than 31 characters, support old name */
 #define Set_HG_Size_Edge_Weights_Fn    Set_HG_Size_Edge_Wts_Fn 
@@ -93,6 +94,14 @@ public:
 
   // Wrappers for Zoltan functions
 
+  static int LB_Free_Part( ZOLTAN_ID_PTR *global_ids,
+                    ZOLTAN_ID_PTR *local_ids,
+                    int **procs,
+                    int **to_part )
+  {
+    return Zoltan_LB_Free_Part( global_ids, local_ids, procs, to_part );
+  }
+
   int Set_Param( const std::string & param, const std::string & value )
   {
     return Zoltan_Set_Param( ZZ_Ptr, param.c_str(), value.c_str() );
@@ -138,30 +147,62 @@ public:
                                      part_ids, wgt_idx, part_sizes );
   }
 
-  int Order    ( int &num_gid_entries,
-                 int &num_lid_entries,
-                 const int &num_objs,
+  /* This method is deprecated */
+  int Order    ( int num_gid_entries,
+                 int num_objs,
                  ZOLTAN_ID_PTR global_ids,
-                 ZOLTAN_ID_PTR local_ids,
-                 int * rank,
+                 int *rank,
                  int * iperm )
   {
-    //  Note:  Zoltan_Order_Struct set to NULL.
-    return Zoltan_Order( ZZ_Ptr,
-                         &num_gid_entries, &num_lid_entries,
-                         num_objs, global_ids, local_ids,
-                         rank, iperm, NULL );
+    return Order(  num_gid_entries, num_objs, global_ids,
+		  (ZOLTAN_ID_PTR)rank);
   }
+
+  int Order    ( int num_gid_entries,
+                 int num_objs,
+                 ZOLTAN_ID_PTR global_ids,
+                 ZOLTAN_ID_PTR permuted_global_ids)
+  {
+    return Zoltan_Order( ZZ_Ptr,
+                         num_gid_entries, num_objs, global_ids,
+                         permuted_global_ids);
+  }
+
+  int Order_Get_Num_Blocks() {
+    return Zoltan_Order_Get_Num_Blocks(ZZ_Ptr);
+  }
+
+  int Order_Get_Block_Bounds(int block_num, int &first, int &last) {
+    return Zoltan_Order_Get_Block_Bounds(ZZ_Ptr, block_num, &first, &last);
+  }
+
+  int Order_Get_Block_Size(int block_num) {
+    return Zoltan_Order_Get_Block_Size(ZZ_Ptr, block_num);
+  }
+
+  int Order_Get_Block_Parent(int block_num) {
+    return Zoltan_Order_Get_Block_Parent(ZZ_Ptr, block_num);
+  }
+
+  int Order_Get_Num_Leaves() {
+    return Zoltan_Order_Get_Num_Leaves(ZZ_Ptr);
+  }
+
+  void Order_Get_Block_Leaves(int *leaves) {
+    return Zoltan_Order_Get_Block_Leaves(ZZ_Ptr, leaves);
+  }
+
   int Color (int &num_gid_entries,
-             int &num_lid_entries,
              const int &num_objs,
              ZOLTAN_ID_PTR global_ids,
-             ZOLTAN_ID_PTR local_ids,
              int *color_exp )
   {
-    return Zoltan_Color(ZZ_Ptr, &num_gid_entries, &num_lid_entries,
-      num_objs, global_ids, local_ids, color_exp);
+    return Zoltan_Color(ZZ_Ptr, num_gid_entries,
+			num_objs, global_ids, color_exp);
   }
+  /* Simpler method to do coloring */
+/*   int Color (int *color_exp); */
+
   int Color_Test (int &num_gid_entries,
              int &num_lid_entries,
              const int &num_objs,
@@ -172,19 +213,26 @@ public:
     return Zoltan_Color_Test(ZZ_Ptr, &num_gid_entries, &num_lid_entries,
       num_objs, global_ids, local_ids, color_exp);
   }
- 
-  int LB_Eval( const int &print_stats,
-                int & num_objects,
-                float * const object_weights,
-                int & num_cuts,
-                float * const cut_weights,
-                int & num_boundary_objects,
-                int & num_adj_procs )
+
+  int LB_Eval_Balance(int print_stats, ZOLTAN_BALANCE_EVAL *eval)
   {
-    return Zoltan_LB_Eval( ZZ_Ptr, print_stats,
-                    &num_objects, object_weights,
-                    &num_cuts, cut_weights,
-                    &num_boundary_objects, &num_adj_procs );
+    return Zoltan_LB_Eval_Balance(ZZ_Ptr, print_stats, eval);
+  }
+
+  int LB_Eval_Graph(int print_stats, ZOLTAN_GRAPH_EVAL *graph)
+  {
+    return Zoltan_LB_Eval_Graph(ZZ_Ptr, print_stats, graph);
+  }
+
+  int LB_Eval_HG(int print_stats, ZOLTAN_HG_EVAL *hg)
+  {
+    return Zoltan_LB_Eval_HG(ZZ_Ptr, print_stats, hg);
+  }
+
+  int LB_Eval( const int &print_stats, ZOLTAN_BALANCE_EVAL *eval, 
+               ZOLTAN_GRAPH_EVAL *graph, ZOLTAN_HG_EVAL *hg)
+  {
+    return Zoltan_LB_Eval( ZZ_Ptr, print_stats, eval, graph, hg); 
   }
 
   int RCB_Box( const int &part,
@@ -199,14 +247,6 @@ public:
     return Zoltan_RCB_Box( ZZ_Ptr,part,&ndim,&xmin,&ymin,&zmin,&xmax,&ymax,&zmax);
   }
 
-  int LB_Free_Part( ZOLTAN_ID_PTR *global_ids,
-                    ZOLTAN_ID_PTR *local_ids,
-                    int **procs,
-                    int **to_part )
-  {
-    return Zoltan_LB_Free_Part( global_ids, local_ids, procs, to_part );
-  }
-
   int Set_Fn  ( const ZOLTAN_FN_TYPE &fn_type,
                 void (*fn_ptr)(),
                 void * data = 0 )
@@ -217,17 +257,17 @@ public:
   // Individual callback support
 
   ///--------------------------
-  int Set_Partition_Multi_Fn  ( ZOLTAN_PARTITION_MULTI_FN * fn_ptr,
+  int Set_Part_Multi_Fn  ( ZOLTAN_PART_MULTI_FN * fn_ptr,
                                 void * data = 0 )
   {
-    return Zoltan_Set_Partition_Multi_Fn( ZZ_Ptr, fn_ptr, data );
+    return Zoltan_Set_Part_Multi_Fn( ZZ_Ptr, fn_ptr, data );
   }
 
   ///--------------------------
-  int Set_Partition_Fn        ( ZOLTAN_PARTITION_FN * fn_ptr,
+  int Set_Part_Fn        ( ZOLTAN_PART_FN * fn_ptr,
                                 void * data = 0 )
   {
-    return Zoltan_Set_Partition_Fn( ZZ_Ptr, fn_ptr, data );
+    return Zoltan_Set_Part_Fn( ZZ_Ptr, fn_ptr, data );
   }
 
   ///--------------------------
@@ -381,6 +421,36 @@ public:
     return Zoltan_Set_HG_Edge_Wts_Fn( ZZ_Ptr, fn_ptr, data );
   }
   ///--------------------------
+  int Set_Hier_Num_Levels_Fn( ZOLTAN_HIER_NUM_LEVELS_FN * fn_ptr,
+                               void * data = 0 )
+  {
+    return Zoltan_Set_Hier_Num_Levels_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+  ///--------------------------
+  int Set_Hier_Part_Fn( ZOLTAN_HIER_PART_FN * fn_ptr,
+                               void * data = 0 )
+  {
+    return Zoltan_Set_Hier_Part_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+  ///--------------------------
+  int Set_Hier_Method_Fn( ZOLTAN_HIER_METHOD_FN * fn_ptr,
+                               void * data = 0 )
+  {
+    return Zoltan_Set_Hier_Method_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+  ///--------------------------
+  int Set_Num_Fixed_Obj_Fn    ( ZOLTAN_NUM_FIXED_OBJ_FN * fn_ptr,
+                               void * data = 0 )
+  {
+    return Zoltan_Set_Num_Fixed_Obj_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+  ///--------------------------
+  int Set_Fixed_Obj_List_Fn    ( ZOLTAN_FIXED_OBJ_LIST_FN * fn_ptr,
+                               void * data = 0 )
+  {
+    return Zoltan_Set_Fixed_Obj_List_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+  ///--------------------------
   int Set_Pre_Migrate_PP_Fn  ( ZOLTAN_PRE_MIGRATE_PP_FN * fn_ptr,
                                void * data = 0 )
   {
@@ -443,6 +513,29 @@ public:
     return Zoltan_Set_Unpack_Obj_Fn( ZZ_Ptr, fn_ptr, data );
   }
 
+  /// Backward compatibility with v3.0
+  ///--------------------------
+  int Set_Partition_Multi_Fn  ( ZOLTAN_PART_MULTI_FN * fn_ptr,
+                                void * data = 0 )
+  {
+    return Zoltan_Set_Part_Multi_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+
+  ///--------------------------
+  int Set_Partition_Fn        ( ZOLTAN_PART_FN * fn_ptr,
+                                void * data = 0 )
+  {
+    return Zoltan_Set_Part_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+
+  ///--------------------------
+  int Set_Hier_Partition_Fn( ZOLTAN_HIER_PART_FN * fn_ptr,
+                               void * data = 0 )
+  {
+    return Zoltan_Set_Hier_Part_Fn( ZZ_Ptr, fn_ptr, data );
+  }
+  ///--------------------------
+  ///--------------------------
   int LB_Point_PP_Assign ( double * const coords,
                            int &proc,
                            int &part )
@@ -523,7 +616,7 @@ public:
     int rc = Zoltan_Generate_Files( ZZ_Ptr, fn, base_index,
                                   gen_geom, gen_graph, gen_hg );
 
-    free(fn);
+    std::free(fn);
 
     return rc;
   }

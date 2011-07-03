@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.32.2.2 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -18,18 +18,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#ifdef __STDC__
 #include <string.h>
-#else
 #include <strings.h>
-#endif  /* __STDC__ */
 
+#include "zoltan_util.h"
 #include "zoltan.h"
 #include "lb_const.h"
+#include "order_const.h"
 #include "zz_id_const.h"
-#include "zoltan_util.h"
 #include "par_const.h"
+#ifdef ZOLTAN_DRUM
+#include "ha_drum.h"
+#endif
 #include "zoltan_timer.h"
+
+#ifdef _MSC_VER
+#define __func__ __FUNCTION__
+#endif
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -201,6 +206,8 @@ struct Zoltan_Struct {
   int Fortran;                    /*  1 if created from Fortran, 0 otherwise */
   int Tflops_Special;             /*  Flag to indicate if we should use some
                                       MPI constructs (0) or not (1) on tflops*/
+  unsigned int Seed;              /*  Zoltan_Rand seed: default or provided 
+                                      by user.     */
   MachineType *Machine_Desc;      /*  Machine description for hetero. arch.  */
   struct Param_List *Params;      /*  List of parameter names & new vals     */
   int Deterministic;              /*  Flag indicating whether algorithms used
@@ -213,20 +220,17 @@ struct Zoltan_Struct {
   int Timer;                      /*  Timer type that is currently active */
   struct Zoltan_Timer *ZTime;     /*  Timer structure for persistent timing. */
   /***************************************************************************/
-  ZOLTAN_PARTITION_MULTI_FN *Get_Partition_Multi;
-                                       /* Fn ptr to get objects'
-                                          partition assignments.     */
-  ZOLTAN_PARTITION_MULTI_FORT_FN *Get_Partition_Multi_Fort;
+  ZOLTAN_PART_MULTI_FN *Get_Part_Multi;/* Fn ptr to get objects'
+                                          part assignments.     */
+  ZOLTAN_PART_MULTI_FORT_FN *Get_Part_Multi_Fort;
                                        /* Fortran version            */
-  void *Get_Partition_Multi_Data;      /* Ptr to user defined data to be 
-                                          passed to Get_Partition_Multi()    */
-  ZOLTAN_PARTITION_FN *Get_Partition;          
-                                       /* Fn ptr to get an object's
-                                          partition assignment.      */
-  ZOLTAN_PARTITION_FORT_FN *Get_Partition_Fort;
-                                       /* Fortran version            */
-  void *Get_Partition_Data;            /* Ptr to user defined data
-                                          to be passed to Get_Partition()    */
+  void *Get_Part_Multi_Data;           /* Ptr to user defined data to be 
+                                          passed to Get_Part_Multi()    */
+  ZOLTAN_PART_FN *Get_Part;            /* Fn ptr to get an object's
+                                          part assignment.      */
+  ZOLTAN_PART_FORT_FN *Get_Part_Fort;  /* Fortran version            */
+  void *Get_Part_Data;                 /* Ptr to user defined data
+                                          to be passed to Get_Part()    */
   /***************************************************************************/
   ZOLTAN_NUM_EDGES_FN *Get_Num_Edges;  /* Fn ptr to get an object's
                                           number of edges.           */
@@ -428,6 +432,49 @@ struct Zoltan_Struct {
   void *Get_HG_Edge_Wts_Data;                /* Ptr to user defined data
                                         to be passed to Get_HG_Edge_Wts() */
   /***************************************************************************/
+  ZOLTAN_NUM_FIXED_OBJ_FN *Get_Num_Fixed_Obj;
+                                            /* Fn ptr to get a processor's
+                                               number of fixed objects.      */
+  ZOLTAN_NUM_FIXED_OBJ_FORT_FN *Get_Num_Fixed_Obj_Fort;  
+                                            /* Fortran version               */
+  void *Get_Num_Fixed_Obj_Data;             /* Ptr to user defined data to be
+                                               passed to Get_Num_Fixed_Obj() */
+  /***************************************************************************/
+  ZOLTAN_FIXED_OBJ_LIST_FN *Get_Fixed_Obj_List;
+                                            /* Fn ptr to get a processor's
+                                               number of fixed objects.      */
+  ZOLTAN_FIXED_OBJ_LIST_FORT_FN *Get_Fixed_Obj_List_Fort;  
+                                            /* Fortran version               */
+  void *Get_Fixed_Obj_List_Data;            /* Ptr to user defined data to be
+                                               passed to Get_Fixed_Obj_List()*/
+  /***************************************************************************/
+  ZOLTAN_HIER_NUM_LEVELS_FN *Get_Hier_Num_Levels;
+                                       /* Function that returns the number
+                                          of levels for hierarchical 
+                                          partitioning */
+  ZOLTAN_HIER_NUM_LEVELS_FORT_FN *Get_Hier_Num_Levels_Fort;
+                                       /* Fortran version             */
+  void *Get_Hier_Num_Levels_Data;      /* Ptr to user defined data to be passed
+                                          to Get_Hier_Num_Levels() */
+  /***************************************************************************/
+  ZOLTAN_HIER_PART_FN *Get_Hier_Part;  /* Function that returns the part
+                                          for process at a given level in
+                                          hierarchical partitioning */
+  ZOLTAN_HIER_PART_FORT_FN *Get_Hier_Part_Fort;
+                                       /* Fortran version             */
+  void *Get_Hier_Part_Data;            /* Ptr to user defined data to be passed
+                                          to Get_Hier_Part() */
+  /***************************************************************************/
+  ZOLTAN_HIER_METHOD_FN *Get_Hier_Method;
+                                       /* Function that allows app to set the
+                                          LB method and params for process 
+                                          at a given level in
+                                          hierarchical partitioning */
+  ZOLTAN_HIER_METHOD_FORT_FN *Get_Hier_Method_Fort;
+                                       /* Fortran version             */
+  void *Get_Hier_Method_Data;          /* Ptr to user defined data to be passed
+                                          to Get_Hier_Method() */
+  /***************************************************************************/
   ZOLTAN_OBJ_SIZE_FN *Get_Obj_Size;    /* Function that returns the size of
                                           contiguous memory needed to store
                                           the data for a single object for
@@ -486,7 +533,11 @@ struct Zoltan_Struct {
 
   /***************************************************************************/
   struct Zoltan_LB_Struct LB;          /* Struct with info for load balancing */
+  struct Zoltan_Order_Struct  Order;   /* Struct with info for ordering       */
   struct Zoltan_Migrate_Struct Migrate;/* Struct with info for migration.     */
+#ifdef ZOLTAN_DRUM
+  struct Zoltan_Drum_Struct Drum;      /* Struct with info for DRUM interface */
+#endif
 };
 
 typedef struct Zoltan_Struct ZZ;
@@ -527,21 +578,50 @@ typedef struct Zoltan_Transform_Struct ZZ_Transform;
 /*  
  *  Print trace information.
  */
-#define ZOLTAN_TRACE_ENTER(zz,yo) \
+#define ZOLTAN_TRACE_ENTER(zz,yo) do { \
   if ((zz)->Debug_Level >= ZOLTAN_DEBUG_TRACE_ALL || \
      ((zz)->Proc == (zz)->Debug_Proc && \
       (zz)->Debug_Level == ZOLTAN_DEBUG_TRACE_SINGLE)) \
-    ZOLTAN_TRACE_IN((zz)->Proc, (yo), NULL);
+    ZOLTAN_TRACE_IN((zz)->Proc, (yo), NULL); } while (0)
 
-#define ZOLTAN_TRACE_EXIT(zz,yo) \
+#define ZOLTAN_TRACE_EXIT(zz,yo) do { \
   if ((zz)->Debug_Level >= ZOLTAN_DEBUG_TRACE_ALL || \
      ((zz)->Proc == (zz)->Debug_Proc && \
       (zz)->Debug_Level == ZOLTAN_DEBUG_TRACE_SINGLE)) \
-    ZOLTAN_TRACE_OUT((zz)->Proc, (yo), NULL);
+    ZOLTAN_TRACE_OUT((zz)->Proc, (yo), NULL); } while (0)
 
-#define ZOLTAN_TRACE_DETAIL(zz,yo,string) \
+#define ZOLTAN_TRACE_DETAIL(zz,yo,string) do { \
   if ((zz)->Debug_Level >= ZOLTAN_DEBUG_TRACE_DETAIL) \
-    ZOLTAN_PRINT_INFO((zz)->Proc, (yo), (string));
+    ZOLTAN_PRINT_INFO((zz)->Proc, (yo), (string)); } while (0)
+
+
+  /* Error Handling macro, used in PHG, coloring, matrix, graph ... */
+
+#define MEMORY_ERROR do { \
+  ZOLTAN_PRINT_ERROR(zz->Proc, yo, "Memory error."); \
+  ierr = ZOLTAN_MEMERR; \
+  goto End; \
+} while (0)
+
+#define FATAL_ERROR(s) do { \
+  ZOLTAN_PRINT_ERROR(zz->Proc, yo, s); \
+  ierr = ZOLTAN_FATAL; \
+  goto End; \
+} while (0)
+
+#define CHECK_FOR_MPI_ERROR(rc) do { \
+  if (rc != MPI_SUCCESS){ \
+    char _mpi_err_str[MPI_MAX_ERROR_STRING]; \
+    int _mpi_err_len; \
+    MPI_Error_string(rc, _mpi_err_str, &_mpi_err_len);  \
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, _mpi_err_str); \
+    ierr = ZOLTAN_FATAL; \
+    goto End; \
+  } } while (0)
+
+
+#define CHECK_IERR do {   if (ierr != ZOLTAN_OK && ierr != ZOLTAN_WARN) \
+    goto End;  } while (0)
 
 /*
  *  Debugging macro for Tflop architecture.
@@ -563,12 +643,15 @@ typedef struct Zoltan_Transform_Struct ZZ_Transform;
 #define ZOLTAN_HEAP_INFO(Proc,a) ;
 #endif
 
+
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
 /* PROTOTYPES */
-extern int Zoltan_Get_Obj_List(ZZ *, int *, ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, 
-                               int, float**, int **);
+extern int Zoltan_Get_Obj_List(ZZ *, int *, 
+              ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, int, float**, int **);
+extern int Zoltan_Get_Obj_List_Special_Malloc(ZZ *, int *, 
+              ZOLTAN_ID_PTR *, ZOLTAN_ID_PTR *, int, float**, int **);
 
 extern int Zoltan_Print_Obj_List( ZZ *zz, ZOLTAN_ID_PTR Gids, ZOLTAN_ID_PTR Lids,
   int wdim, float *Weights, int *Parts, int howMany);

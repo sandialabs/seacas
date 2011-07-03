@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: phg.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.59 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef __ZOLTAN_PHG_H
@@ -20,7 +20,7 @@
 #include "phg_const.h"
 #include "phg_util.h"
 #include "phg_hypergraph.h"
-
+#include "phg_tree.h"
 
 #ifdef __cplusplus
 /* if C++, define the rest of this header file as extern C */
@@ -46,7 +46,10 @@ typedef int ZOLTAN_PHG_REFINEMENT_FN(ZZ*, HGraph*, int, float *, Partition,
 /* Parameters to the hypergraph functions */
 /******************************************/
 struct PHGPartParamsStruct {
-  char hgraph_pkg[MAX_PARAM_STRING_LEN];  /* Hypergraph package (e.g., PHG) */
+  char hgraph_pkg[MAX_PARAM_STRING_LEN];/* Package (Zoltan,PaToH,ParKway) */
+  char hgraph_method[MAX_PARAM_STRING_LEN]; /* Operation(partition,repart,refine)*/
+  int useMultilevel;             /* Flag indicating whether to use multilevel
+                                    method */
   float bal_tol;                 /* Balance tolerance in % of average */
   float bal_tol_adjustment;      /* balance tolerance adjustment;
                                     between [0-1.0]: it is % of bal_tol
@@ -56,14 +59,32 @@ struct PHGPartParamsStruct {
                                     for all requested partitions. */
   int kway;                      /* 1 -> direct kway, 0->recursive bisection */
   int redl;                      /* Reduction limit (constant). */
+  int nCand;                     /* Maximum number of candidates per round;
+                                    currently only used in agglomerative matching */
+  int UseFixedVtx;               /* Flag indicating whether any vertices of
+                                    hypergraph are fixed. */
+  int UsePrefPart;               /* Flag indicating that the coarsening
+                                    should be restricted using pref_part and
+                                    coarse partitioning should take the part
+                                    preferences into account. */
+                                    
+
   char redm_str[MAX_PARAM_STRING_LEN];  /* Reduction method string. */
   char redm_fast[MAX_PARAM_STRING_LEN]; /* Fast reduction method string. */
   char redmo_str[MAX_PARAM_STRING_LEN]; /* Matching optimization string*/
     
   ZOLTAN_PHG_MATCHING_FN *matching;    /* Pointers to Matching function */
+  int  match_array_type;         /* interpretation of match array:
+                                    assuming (u,v, w) are matched
+                                    0 -> old style link-list
+                                         match[u] = v; match[v] = w;  match[w] = u;
+                                    1 -> all vertices point the representative
+                                         match[u] = match[v] = match[w] = u;
+                                 */
     
   int edge_scaling;              /* type of hyperedge weight scaling */
   int vtx_scaling;               /* type of vertex scaling for inner product */
+  int vtx_scal_size;                   /* size of vtx_scal array */
   float *vtx_scal;                     /* vtx scaling array */
   int LocalCoarsePartition;            /* 1 -> apply coarse partitioner locally;
                                           0 -> gather entire HG to each proc
@@ -87,6 +108,9 @@ struct PHGPartParamsStruct {
                          * See levels PHG_DEBUG_* below.  */
   int final_output;     /* Prints final timing and quality info at end of PHG
                            (regardless of value of output_level) */
+#ifdef CEDRIC_2D_PARTITIONS
+  int keep_tree;
+#endif /* CEDRIC_2D_PARTITIONS */
 
     /* NOTE THAT this comm refers to "GLOBAL" comm structure
        (hence the name change: just to make sure it has not been used
@@ -105,16 +129,28 @@ struct PHGPartParamsStruct {
   int use_timers;       /* Flag indicating whether to time the PHG code. */
   float EdgeSizeThreshold;  /* % of global vtxs beyond which an edge is 
                                considered to be dense. */
+  int MatchEdgeSizeThreshold;  /* Edges with sizes bigger than this threshold
+                               considered to be dense for matching and ignored. */
   float hybrid_keep_factor; /* h-ipm only: keep matches with i.p. values
                                greater than this factor times the mean */
-  char parkway_serpart[MAX_PARAM_STRING_LEN];  /* SerialPartitioner for parKway. */    
+  char parkway_serpart[MAX_PARAM_STRING_LEN];  /* SerialPartitioner for parKway. */
+  int connectivity_cut;     /* 1: if cut_objective==connectivity,
+                               0: if it is hyperedges */
   int add_obj_weight;       /* Calculated weight: unit vertex, non-zeroes,
                                                   or none */
   int edge_weight_op;   /* What to do when more than one process returns a
                         weight for the same edge: add, take max, flag error */
   int RandomizeInitDist;  /* Flag indicating whether to randomly distribute
                              vertices and edges passed as input to PHG. */
-  int patoh_alloc_pool0,    /* to adjust patoh's memory pre-allocation amount */
+  float ProRedL;           /* V-cycle processor reduction limit in % of pins */
+  float RepartMultiplier;  /* In PHG_REPART, multiply input edge weights by
+                              RepartMultiplier, a parameter that should be 
+                              proportional to the number of times the 
+                              communication described by the hypergraph 
+                              will be done before the next repartitioning.  
+                              This cost allows us to consider migration cost
+                              compared to application communication cost. */
+  int patoh_alloc_pool0,   /* to adjust patoh's memory pre-allocation amount */
       patoh_alloc_pool1;    
 };
 
@@ -131,13 +167,12 @@ typedef struct PHGPartParamsStruct PHGPartParams;
 #define PHG_DEBUG_PLOT 4
 
 
-
 /**********************/
 /* Matching functions */
 /**********************/
 int Zoltan_PHG_Matching (ZZ*, HGraph*, Matching, PHGPartParams*);
 int Zoltan_PHG_Set_Matching_Fn (PHGPartParams*);
-int Zoltan_PHG_Scale_Edges (ZZ*, HGraph*, float*, PHGPartParams*);
+int Zoltan_PHG_Scale_Edges (ZZ*, HGraph*, float*, int);
 int Zoltan_PHG_Scale_Vtx (ZZ*, HGraph*, PHGPartParams*);
 int Zoltan_PHG_Vertex_Visit_Order (ZZ*, HGraph*, PHGPartParams*, int*);
 
@@ -150,12 +185,12 @@ int Zoltan_PHG_Coarsening(ZZ*, HGraph*, Matching, HGraph*, int*, int*, int*,
 /*********************************/
 /* Coarse Partitioning functions */
 /*********************************/
-extern int Zoltan_PHG_Gather_To_All_Procs(ZZ*, HGraph*, PHGComm*, HGraph**);
+extern int Zoltan_PHG_Gather_To_All_Procs(ZZ*, HGraph*, PHGPartParams*,
+                                          PHGComm*, HGraph**);
 extern int Zoltan_PHG_CoarsePartition(ZZ*, HGraph*, int, float *, Partition, 
                                       PHGPartParams*);
 ZOLTAN_PHG_COARSEPARTITION_FN *Zoltan_PHG_Set_CoarsePartition_Fn(PHGPartParams*,
                                                                  int*);
-
 /************************/
 /* Refinement functions */ 
 /************************/
@@ -174,24 +209,26 @@ extern int Zoltan_PHG_Gno_To_Proc_Block(int gno, int*, int);
 /* Other Function Prototypes */
 /*****************************/
 
-extern int Zoltan_PHG_Initialize_Params(ZZ*, float *, PHGPartParams*);
+extern int Zoltan_PHG_Initialize_Params(ZZ*, float *, int, PHGPartParams*);
 
 extern void Zoltan_PHG_Free_Hypergraph_Data(ZHG *zoltan_hg);
 
 extern int Zoltan_PHG_Fill_Hypergraph(ZZ*, ZHG*, PHGPartParams *, Partition*);
+extern int Zoltan_PHG_Remove_Repart_Data(ZZ*, ZHG*, HGraph*, PHGPartParams*);
 
 extern int Zoltan_PHG_rdivide (int,  int, Partition, ZZ *, HGraph *,
-                               PHGPartParams *, int);
+                               PHGPartParams *, int, int);
     
 extern int Zoltan_PHG_Set_Part_Options(ZZ*, PHGPartParams*);
 extern int Zoltan_PHG_Partition(ZZ*, HGraph*, int, float *, Partition, 
-                                PHGPartParams*, int);
+                                PHGPartParams*);
 extern double Zoltan_PHG_Compute_NetCut(PHGComm*, HGraph*, Partition, int);
 extern double Zoltan_PHG_Compute_ConCut(PHGComm*, HGraph*, Partition, int, 
                                         int*);    
-extern int Zoltan_PHG_Removed_Cuts(ZZ *, ZHG *, double *);
+extern int Zoltan_PHG_Cuts(ZZ *, ZHG *, double *);
 
-extern double Zoltan_PHG_Compute_Balance(ZZ*, HGraph*, float *, int, Partition);
+extern double Zoltan_PHG_Compute_Balance(ZZ*, HGraph*, float *, int, 
+                                         int, Partition);
 
 extern int Zoltan_PHG_Build_Hypergraph(ZZ*, ZHG**, Partition*, PHGPartParams*);
 extern void Zoltan_PHG_Plot(int, int, int, int*, int*, int*, char*);
@@ -199,7 +236,33 @@ extern void Zoltan_PHG_Plot_2D_Distrib(ZZ*, HGraph*);
 
 extern int Zoltan_PHG_PaToH(ZZ *, HGraph *, int, int *, PHGPartParams*);    
 extern int Zoltan_PHG_ParKway(ZZ *, HGraph *, int, Partition, PHGPartParams* );
-    
+
+extern int Zoltan_PHG_2ways_hyperedge_partition (ZZ *, HGraph *, Partition, Zoltan_PHG_Tree *,
+						 struct Zoltan_DD_Struct *,
+						 struct Zoltan_DD_Struct **,
+						 int *, int **);
+
+
+
+/* Functions that are used in more than one PHG source file, 
+   but not called from outside PHG. */
+
+#include "zz_heap.h"  /* defines type HEAP */
+
+int Zoltan_HG_move_vertex (HGraph *hg, int vertex, int sour, int dest,
+    int *part, int **cut, double *gain, HEAP *heap);
+
+int Zoltan_PHG_GIDs_to_global_numbers(ZZ *zz, int *gnos, int len, int randomize, int *num);
+
+int Zoltan_Get_Hypergraph_From_Queries(ZZ *, PHGPartParams *, int, ZHG *); 
+
+int Zoltan_Hypergraph_Queries(ZZ *zz, int *num_lists, int *num_pins, ZOLTAN_ID_PTR *edg_GID,
+   int **row_ptr, ZOLTAN_ID_PTR *vtx_GID);
+
+int Zoltan_Graph_Queries( ZZ *zz, int numVertex, ZOLTAN_ID_PTR vgid, ZOLTAN_ID_PTR vlid,
+  int *nPins, int **num_nbors, ZOLTAN_ID_PTR *nbor_GIDs, int **nbor_Procs,
+  float **edgeWeights);
+
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */

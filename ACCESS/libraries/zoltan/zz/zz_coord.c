@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_coord.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.18.2.1 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -334,12 +334,12 @@ int Zoltan_Get_Coordinates(
         if ((zz->Debug_Level > 0) && (zz->Proc == 0)){
           if (d == 2){
             sprintf(msg,
-             "Geometry (~%lf x %lf), exceeds %lf to 1.0 ratio",
+             "Geometry (~%f x %f), exceeds %f to 1.0 ratio",
               dist[order[0]], dist[order[1]], deg_ratio);
           }
           else{
             sprintf(msg,
-             "Geometry (~%lf x %lf x %lf), exceeds %lf to 1.0 ratio",
+             "Geometry (~%f x %f x %f), exceeds %f to 1.0 ratio",
               dist[order[0]], dist[order[1]], dist[order[2]], deg_ratio);
           }
 
@@ -407,18 +407,18 @@ void Zoltan_Print_Transformation(ZZ_Transform *tr)
   printf("Degenerate geometry:\n");
   printf("  Transformation:\n");
   for (i=0; i<3; i++){
-    printf("    %lf %lf %lf\n", tr->Transformation[i][0],
+    printf("    %f %f %f\n", tr->Transformation[i][0],
            tr->Transformation[i][1], tr->Transformation[i][2]);
   }
   printf("  Eigenvectors of inertial matrix:\n");
   for (i=0; i<3; i++){
-    printf("    %lf %lf %lf\n", tr->Evecs[i][0], 
+    printf("    %f %f %f\n", tr->Evecs[i][0], 
       tr->Evecs[i][1], tr->Evecs[i][2]);
   }
   printf("  Simple coordinate permutation (if axis-aligned):\n");
   printf("    %d %d %d\n",
     tr->Permutation[0], tr->Permutation[1], tr->Permutation[2]);
-  printf("  Center of mass, axis order: (%lf %lf %lf), %d %d %d\n",
+  printf("  Center of mass, axis order: (%f %f %f), %d %d %d\n",
     tr->CM[0], tr->CM[1], tr->CM[2],
     tr->Axis_Order[0], tr->Axis_Order[1], tr->Axis_Order[2]);
 }
@@ -540,7 +540,7 @@ static void inertial_matrix2D(ZZ *zstruct, double *X,
   double    tmp1[3], tmp2[3];
   double    xx, yy, xy;
   double    xdif, ydif;
-  int       j, rank;
+  int       j, rank=0;
   double    cmt[2];
   double    xxt, yyt, xyt;
   double *c, num_coords, total_coords;
@@ -607,7 +607,7 @@ static void inertial_matrix3D(ZZ *zstruct, double *X,
   double    tmp1[6], tmp2[6];
   double    xx, yy, zz, xy, xz, yz;
   double    xdif, ydif, zdif;
-  int       j, rank;
+  int       j, rank=0;
   double    cmt[3];
   double    xxt, yyt, zzt, xyt, xzt, yzt;
   double *c, num_coords, total_coords;
@@ -693,18 +693,32 @@ double val, min[3], max[3], *c, tmp;
 int Tflops_Special, proc, nprocs, proclower;
 MPI_Comm local_comm;
 
+  Tflops_Special = zz->Tflops_Special;
+  proc = zz->Proc;
+  nprocs = zz->Num_Proc;
+  proclower = 0;
+  local_comm = zz->Communicator;
+
   if (aa){
     /* special case - eigenvectors are axis aligned */
 
     for (j=0; j<dim; j++){
-      min[j] = max[j] = coords[j];
+      min[j] = DBL_MAX;
+      max[j] = DBL_MIN;
     }
 
-    for (i=1, c = coords+dim; i<num_obj; i++, c += dim){
+    for (i=0, c = coords; i<num_obj; i++, c += dim){
       for (j=0; j<dim; j++){
         if (c[j] < min[j]) min[j] = c[j];
-        else if (c[j] > max[j]) max[j] = c[j];
+        if (c[j] > max[j]) max[j] = c[j];
       }
+    }
+
+    for (i=0; i<dim; i++){
+      tmp = max[i];
+      MPI_Allreduce(&tmp, max + i, 1, MPI_DOUBLE, MPI_MAX, local_comm);
+      tmp = min[i];
+      MPI_Allreduce(&tmp, min + i, 1, MPI_DOUBLE, MPI_MIN, local_comm);
     }
 
     for (j=0; j<dim; j++){
@@ -714,12 +728,6 @@ MPI_Comm local_comm;
     
     return;
   }
-
-  Tflops_Special = zz->Tflops_Special;
-  proc = zz->Proc;
-  nprocs = zz->Num_Proc;
-  proclower = 0;
-  local_comm = zz->Communicator;
 
   for (i=0; i<dim; i++){
     for (j=0, c=coords; j<num_obj; j++, c+=dim){

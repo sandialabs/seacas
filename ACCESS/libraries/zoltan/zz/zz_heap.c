@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_heap.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.21 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -18,6 +18,7 @@ extern "C" {
 #endif
 
 #include "zz_heap.h"
+#include "zz_const.h"
 
 
 #define INT_SWAP(A,B)         {int    _C_=(A);(A)=(B);(B)=_C_;}

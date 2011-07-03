@@ -33,16 +33,10 @@ C=======================================================================
       SUBROUTINE DBIESS (NDB, OPTION, NUMESS, LESSEL, LESSNL,
      &   IDESS, NEESS, NNESS, IXEESS, IXNESS, LTEESS, LTNESS, FACESS, *)
 C=======================================================================
-C$Id: dbiess.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbiess.f,v 1.2 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiess.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.2  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.1.1.1  1990/08/14 16:12:40  gdsjaar
 CTesting

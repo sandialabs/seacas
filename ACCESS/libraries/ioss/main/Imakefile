@@ -43,9 +43,14 @@ AllTarget($(PROGS))
 
 libIoex.a: ../libIoex.a
 
+SRCS = io_info.C volume.C
+OBJS = $(SRCS:.C=.o)
+
 NormalCCTarget(cth_pressure_map, cth_pressure_map.o, $(DEPLIBS), /**/, $(LIBS))
-NormalCCTarget(io_info,          io_info.o,         $(DEPLIBS), /**/, $(LIBS))
+NormalCCTarget(io_info,          $(OBJS),         $(DEPLIBS), /**/, $(LIBS))
 NormalCCTarget(io_shell,         io_shell.o,       $(DEPLIBS), /**/, $(LIBS))
 NormalCCTarget(shell_to_hex,     shell_to_hex.o,  $(DEPLIBS), /**/, $(LIBS))
 
+InstallProgram(io_info,$(BINDIR))
+InstallProgram(io_shell,$(BINDIR))
 

@@ -35,19 +35,18 @@
 #include <Ioss_Utils.h>
 #include <Ioss_CompositeVariableType.h>
 #include <Ioss_ConstructedVariableType.h>
+#include <Ioss_NamedSuffixVariableType.h>
 
+#include <algorithm>
 #include <string>
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
 #include <assert.h>
 #include <sstream>
-#include <algorithm>
 #include <cctype>
 
 namespace {
-  std::string uppercase(const std::string &name);
-
   class Deleter {
   public:
     void operator()(Ioss::VariableType* t) {delete t;}
@@ -73,20 +72,21 @@ Ioss::VariableType::~VariableType() {}
 Ioss::VariableType::VariableType(const std::string& type, int comp_count, bool delete_me)
   : name_(type), componentCount(comp_count)
 {
-  registry().insert(Ioss::VTM_ValuePair(type, this), delete_me);
+  std::string low_type = Ioss::Utils::lowercase(type);
+  registry().insert(Ioss::VTM_ValuePair(low_type, this), delete_me);
 
   // Register uppercase version also
-  std::string up_type = uppercase(type);
+  std::string up_type = Ioss::Utils::uppercase(type);
   registry().insert(Ioss::VTM_ValuePair(up_type, this), false);
 
 }
 
 void Ioss::VariableType::alias(const std::string& base, const std::string& syn)
 {
-  registry().insert(Ioss::VTM_ValuePair(syn,
+  registry().insert(Ioss::VTM_ValuePair(Ioss::Utils::lowercase(syn),
 					(Ioss::VariableType*)factory(base)), false);
   // Register uppercase version also
-  std::string up_type = uppercase(syn);
+  std::string up_type = Ioss::Utils::uppercase(syn);
   registry().insert(Ioss::VTM_ValuePair(up_type,
 					(Ioss::VariableType*)factory(base)), false);
 
@@ -109,9 +109,60 @@ int Ioss::VariableType::describe(NameList *names)
   return count;
 }
 
-const Ioss::VariableType* Ioss::VariableType::factory(const std::string& name, int copies)
+bool Ioss::VariableType::add_field_type_mapping(const std::string &raw_field, const std::string &raw_type)
+{
+  // See if storage type 'type' exists...
+  std::string field = Ioss::Utils::lowercase(raw_field);
+  std::string type  = Ioss::Utils::lowercase(raw_type);
+  if (registry().find(type) == registry().end())
+    return false;
+
+  // Add mapping.
+  if (registry().customFieldTypes.insert(std::make_pair(field, type)).second)
+    return true;
+  else
+    return false;
+}
+
+bool Ioss::VariableType::create_named_suffix_field_type(const std::string &type_name, std::vector<std::string> &suffices)
+{
+  size_t count = suffices.size();
+  if (count < 1)
+    return false;
+
+  std::string low_name = Ioss::Utils::lowercase(type_name);
+  // See if the variable already exists...
+  if (registry().find(low_name) != registry().end())
+    return false;
+  
+  // Create the variable.  Note that the 'true' argument means Ioss will delete the pointer.
+  Ioss::NamedSuffixVariableType *var_type = new Ioss::NamedSuffixVariableType(low_name, count, true);
+
+  for (size_t i=0; i < count; i++) {
+    var_type->add_suffix(i+1, suffices[i]);
+  }
+  return true;
+}
+
+bool Ioss::VariableType::get_field_type_mapping(const std::string &field, std::string *type)
+{
+  // Returns true if a mapping exists, 'type' contains the mapped type.
+  // Returns false if no custom mapping exists for this field.
+  std::string low_field = Ioss::Utils::lowercase(field);
+  
+  if (registry().customFieldTypes.find(low_field) == registry().customFieldTypes.end()) {
+    return false;
+  }
+  else {
+    *type = registry().customFieldTypes.find(low_field)->second;
+    return true;
+  }
+}
+
+const Ioss::VariableType* Ioss::VariableType::factory(const std::string& raw_name, int copies)
 {
   Ioss::VariableType* inst = NULL;
+  std::string name = Ioss::Utils::lowercase(raw_name);
   Ioss::VariableTypeMap::iterator iter = registry().find(name);
   if (iter == registry().end()) {
     bool can_construct = build_variable_type(name);
@@ -121,7 +172,7 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::string& name, i
       inst = (*iter).second;
     } else {
       std::ostringstream errmsg;
-      errmsg << "FATAL: The variable type '" << name << "' is not supported.\n";
+      errmsg << "FATAL: The variable type '" << raw_name << "' is not supported.\n";
       IOSS_ERROR(errmsg);
     }
   } else {
@@ -234,12 +285,14 @@ std::string Ioss::VariableType::label_name(const std::string& base, int which,
   return my_name;
 }
 
-bool Ioss::VariableType::build_variable_type(const std::string& type)
+bool Ioss::VariableType::build_variable_type(const std::string& raw_type)
 {
   // See if this is a multi-component instance of a base type.
   // An example would be REAL[2] which is a basic real type with
   // two components.  The suffices would be .0 and .1
 
+  std::string type = Ioss::Utils::lowercase(raw_type);
+  
   // Step 0:
   // See if the type contains '[' and ']'
   char const *typestr = type.c_str();
@@ -305,13 +358,4 @@ std::string Ioss::VariableType::numeric_label(int which, int ncomp, const std::s
 
   std::sprintf(digits, format, which);
   return std::string(digits);
-}
-
-namespace {
-  std::string uppercase(const std::string &name)
-  {
-    std::string s(name);
-    std::transform(s.begin(), s.end(), s.begin(), toupper);
-    return s;
-  }
 }

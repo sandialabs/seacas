@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: print_params.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.13 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -20,6 +20,7 @@ extern "C" {
 
 #include <stdio.h>
 #include "params_const.h"
+#include "zz_const.h"
 
 
 void Zoltan_Print_Params(

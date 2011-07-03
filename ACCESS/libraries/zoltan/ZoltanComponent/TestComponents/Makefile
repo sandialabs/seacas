@@ -56,7 +56,7 @@ JOSTLE_LIBS = -ljostle
 endif
 
 ifdef NEMESIS_LIBPATH
-NEMESIS_LIBS = -lnemIc -lexoIIv2c -lnetcdf
+NEMESIS_LIBS = -lnemesis -lexodus -lnetcdf
 endif
 
 # Application specific libraries like blas, lapack etc.

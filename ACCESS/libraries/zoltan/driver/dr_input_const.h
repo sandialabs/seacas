@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_input_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.31 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -24,14 +24,16 @@ extern "C" {
 #ifndef _DR_CONST_H
 #include "dr_const.h"
 #endif
+#include "dr_compress_const.h"
 
 /* define the input file types */
-#define NO_FILE           0
-#define NEMESIS_FILE      1
-#define CHACO_FILE        2
-#define HYPERGRAPH_FILE   3
-#define MATRIXMARKET_FILE 4
-#define MATRIXMARKET_PLUS_FILE 5
+#define NO_FILE_POINTS    0
+#define NO_FILE_TRIANGLES 1
+#define NEMESIS_FILE      2
+#define CHACO_FILE        3
+#define HYPERGRAPH_FILE   4
+#define MATRIXMARKET_FILE 5
+#define MATRIXMARKET_PLUS_FILE 6
 
 /* define matrix_obj options */
 #define ROWS            0
@@ -71,15 +73,17 @@ struct Parallel_IO
                         /*     /pfs/tmp_1)                                   */
 
   int     file_type;    /* input file type */
+  ZOLTAN_FILETYPE file_comp;  /* whether the file is compressed and how      */
+  int     chunk_reader;   /* for very large matrix market files */
   int     init_dist_type;      /* Flag indicating how input objects
                                   should be initially distributed.     */
   int     init_dist_procs;     /* How many procs to use in 
                                   the initial distribution.            */
-  int     init_size;           /* For NO_FILE (random) input, the 
+  int     init_size;           /* For NO_FILE_* (random) input, the 
                                   no. of objects to be created. */
-  int     init_dim;            /* For NO_FILE (random) input, the 
+  int     init_dim;            /* For NO_FILE_* (random) input, the 
                                   dimension of the problem (1, 2, or 3D) */
-  int     init_vwgt_dim;       /* For NO_FILE (random) input, the 
+  int     init_vwgt_dim;       /* For NO_FILE_* (random) input, the 
                                   no. of weights per object.           */
   int     matrix_obj;          /* What are the objects to be balanced
                                   for a sparse matrix? (ROWS, COLUMNS) */
@@ -186,7 +190,17 @@ extern int read_mm_file(
   MESH_INFO_PTR mesh
 );
 
+extern void mm_cleanup(MESH_INFO_PTR);
+
 extern int read_mtxplus_file(
+  int Proc,
+  int Num_Proc,
+  PROB_INFO_PTR prob,
+  PARIO_INFO_PTR pio_info,
+  MESH_INFO_PTR mesh
+);
+
+extern int create_random_triangles(
   int Proc,
   int Num_Proc,
   PROB_INFO_PTR prob,

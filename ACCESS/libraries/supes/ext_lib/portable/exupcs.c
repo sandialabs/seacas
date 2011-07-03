@@ -33,7 +33,7 @@
  * 
  */
 /*
- * $Id: exupcs.c,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+ * $Id: exupcs.c,v 1.12 2008/03/14 13:22:38 gdsjaar Exp $
  */
 
 #include <ctype.h>

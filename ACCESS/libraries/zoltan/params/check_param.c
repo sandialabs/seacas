@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: check_param.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:00 $
- *    Revision: 1.21 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -24,6 +24,7 @@ extern "C" {
 #include <string.h>
 #include "params_const.h"
 #include "zoltan_util.h"
+#include "zz_const.h"
 
 
 int       Zoltan_Check_Param(

@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_migrateCPP.cpp,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    $Revision: 1.1 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <mpi.h>   // must appear before stdio or iostream
@@ -616,7 +616,9 @@ int idx = 0;
    * Compute size of one element's data.
    */
 
-  int size = sizeof(ELEM_INFO);
+  /* 152 is hardcoded size of ELEM_INFO for 64-bit archs;
+   * Need it to make 32-bit and 64-bit repartitioning results match. */
+  int size = (sizeof(ELEM_INFO) > 152 ? sizeof(ELEM_INFO) : 152);
  
   /* Add space to correct alignment so casts work in (un)packing. */
   size = Zoltan_Align(size);

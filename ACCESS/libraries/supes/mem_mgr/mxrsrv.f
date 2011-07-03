@@ -37,7 +37,7 @@ C
      *   LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This routine finds space to service a non-negative space request.
 C     If zero space is requested, a valid pointer of 1 will be
@@ -123,9 +123,19 @@ C
 C        Data fill pattern.
 C
          IF (FILL) THEN
-            DO 100 I = VOID(VROW,1,1), VOID(VROW,1,1)+MYLEN-1
-               MYV(I) = FDATA
+            DO 100 I = VOID(VROW,1,1), VOID(VROW,1,1)+MYLEN-1-7,8
+               MYV(I+0) = FDATA
+               MYV(I+1) = FDATA
+               MYV(I+2) = FDATA
+               MYV(I+3) = FDATA
+               MYV(I+4) = FDATA
+               MYV(I+5) = FDATA
+               MYV(I+6) = FDATA
+               MYV(I+7) = FDATA
   100       CONTINUE
+            do 110 J = I, VOID(VROW,1,1)+MYLEN-1
+              MYV(J) = FDATA
+ 110        continue
          END IF
 C
 C        Update void table.

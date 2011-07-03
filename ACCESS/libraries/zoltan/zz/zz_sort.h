@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_sort.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:38:01 $
- *    Revision: 1.3 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifndef ZOLTAN_SORT_H
@@ -24,10 +24,11 @@ extern "C" {
 /* Sorting */
 void Zoltan_quicksort_pointer_dec_float_int (int*, float*, int*, int, int);
 void Zoltan_quicksort_pointer_dec_float     (int*, float*, int,  int);
+void Zoltan_quicksort_pointer_dec_double     (int*, double*, int,  int);
+
 void Zoltan_quicksort_pointer_inc_float     (int*, float*, int,  int);
 void Zoltan_quicksort_pointer_inc_int_int   (int*, int*,   int*, int, int);
-void Zoltan_quicksort_list_inc_int          (int*, int,    int);
-void Zoltan_quicksort_pointer_inc_int_mult  (int*, int,    int,  int*, int*);
+void Zoltan_quicksort_list_inc_int          (int*, int*,   int,  int);
 
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */

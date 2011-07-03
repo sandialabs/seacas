@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: timer.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:55 $
- *    Revision: 1.2 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -30,8 +30,9 @@
  * but that has not been implemented here. 
  */
 
-#if defined(__PUMAGON__) || defined(__LIBCATAMOUNT__)
+#if defined(__PUMAGON__) || defined(__LIBCATAMOUNT__) || defined(_MSC_VER)
 /* Tflops with Cougar & Red Storm w/Catamount does not have sysconf() or times() */
+/* Microsoft Visual Studio does not have times either */
 #define NO_TIMES
 #endif /* __PUMAGON__ */
 

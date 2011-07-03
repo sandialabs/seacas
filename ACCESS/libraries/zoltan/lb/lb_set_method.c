@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: lb_set_method.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.27 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -70,7 +70,25 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     goto End;
   }
 
-  if (strcmp(method_upper, "RCB") == 0) {
+  if (strcmp(method_upper, "BLOCK") == 0) {
+    zz->LB.Method = BLOCK;
+    zz->LB.LB_Fn = Zoltan_Block;
+    zz->LB.Free_Structure = NULL;
+    zz->LB.Copy_Structure = NULL;
+  }
+  else if (strcmp(method_upper, "CYCLIC") == 0) {
+    zz->LB.Method = CYCLIC;
+    zz->LB.LB_Fn = Zoltan_Cyclic;
+    zz->LB.Free_Structure = NULL;
+    zz->LB.Copy_Structure = NULL;
+  }
+  else if (strcmp(method_upper, "RANDOM") == 0) {
+    zz->LB.Method = RANDOM;
+    zz->LB.LB_Fn = Zoltan_Random;
+    zz->LB.Free_Structure = NULL;
+    zz->LB.Copy_Structure = NULL;
+  }
+  else if (strcmp(method_upper, "RCB") == 0) {
     zz->LB.Method = RCB;
     zz->LB.LB_Fn = Zoltan_RCB;
     zz->LB.Free_Structure = Zoltan_RCB_Free_Structure;
@@ -94,22 +112,35 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     goto End;
 #endif
   }
-  else if ((strcmp(method_upper, "GRAPH") == 0)
-           || (strcmp(method_upper, "PARMETIS") == 0)) {
-    zz->LB.Method = PARMETIS;
+  else if (strcmp(method_upper, "GRAPH") == 0){
+    zz->LB.Method = GRAPH;
+    zz->LB.LB_Fn = Zoltan_Graph;
+    /* Next two are useful only when using PHG */
+    zz->LB.Free_Structure = Zoltan_PHG_Free_Structure;
+    zz->LB.Copy_Structure = Zoltan_PHG_Copy_Structure;
+    zz->LB.Point_Assign = NULL;
+    zz->LB.Box_Assign = NULL;
+  }
+  /* PARMETIS and JOSTLE are here for backward compatibility.
+   * New way: LB_METHOD = GRAPH
+   *          GRAPH_PACKAGE = PARMETIS or JOSTLE or PHG
+   */
+  else if (strcmp(method_upper, "PARMETIS") == 0){
+#ifdef ZOLTAN_PARMETIS
+    zz->LB.Method = GRAPH;
     zz->LB.LB_Fn = Zoltan_ParMetis;
     zz->LB.Free_Structure = NULL;
     zz->LB.Copy_Structure = NULL;
     zz->LB.Point_Assign = NULL;
     zz->LB.Box_Assign = NULL;
-  }
-  else if (strcmp(method_upper, "JOSTLE") == 0) {
-    zz->LB.Method = JOSTLE;
-    zz->LB.LB_Fn = Zoltan_Jostle;
-    zz->LB.Free_Structure = NULL;
-    zz->LB.Copy_Structure = NULL;
-    zz->LB.Point_Assign = NULL;
-    zz->LB.Box_Assign = NULL;
+#else
+    ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
+                       "ParMETIS method selected but "
+                       "ParMETIS not compiled into Zoltan; "
+                       "Compile with --with-parmetis.");
+    error = ZOLTAN_FATAL;
+    goto End;
+#endif
   }
   else if (strcmp(method_upper, "REFTREE") == 0) {
     zz->LB.Method = REFTREE;
@@ -136,32 +167,29 @@ int Zoltan_LB_Set_LB_Method(ZZ *zz, char *method_name)
     zz->LB.Box_Assign = Zoltan_HSFC_Box_Assign;
   }
   else if ((strcmp(method_upper, "HYPERGRAPH") == 0) 
-           || (strcmp(method_upper, "PHG") == 0)
-           || (strcmp(method_upper, "PATOH") == 0)
-           || (strcmp(method_upper, "PARKWAY") == 0)){
-    /* The hypergraph methods have a lot in common. We allow
-       the user to either set the LB method to HYPERGRAPH and
-       select a package via the parameter HYPERGRAPH_PACKAGE,
-       or to set the LB method to be the package name (e.g. PHG, Patoh).
-       Either way, LB.Method will eventually be set to the
-       desired hypergraph package.
-    */
-#ifdef ZOLTAN_HG
-    if (!strcmp(method_upper, "PATOH"))
-      zz->LB.Method = PATOH;
-    else if (!strcmp(method_upper, "PARKWAY"))
-      zz->LB.Method = PARKWAY;
-    else /* HYPERGRAPH or PHG */
-      zz->LB.Method = PHG;
+           || (strcmp(method_upper, "PHG") == 0)){
+
+    /* HYPERGRAPH is a family of methods. */
+    /* PHG is Zoltan's standard parallel hypergraph partitioner. */
+    zz->LB.Method = HYPERGRAPH;
     zz->LB.LB_Fn = Zoltan_PHG;
     zz->LB.Free_Structure = Zoltan_PHG_Free_Structure;
-    zz->LB.Copy_Structure = NULL;
+    zz->LB.Copy_Structure = Zoltan_PHG_Copy_Structure;
+    zz->LB.Point_Assign = NULL;
+    zz->LB.Box_Assign = NULL;
+  }
+  else if (strcmp(method_upper, "HIER") == 0) {
+#ifdef ZOLTAN_HIER
+    zz->LB.Method = HIER;
+    zz->LB.LB_Fn = Zoltan_Hier;
+    zz->LB.Free_Structure = Zoltan_Hier_Free_Structure;
+    zz->LB.Copy_Structure = Zoltan_Hier_Copy_Structure;
     zz->LB.Point_Assign = NULL;
     zz->LB.Box_Assign = NULL;
 #else
     ZOLTAN_PRINT_ERROR(zz->Proc, yo, 
-                       "Hypergraph method selected but not compiled into Zoltan; "
-                       "Compile with ZOLTAN_HG=1.");
+                       "HIER method selected but not compiled into Zoltan; "
+                       "Compile with ZOLTAN_HIER=1.");
     error = ZOLTAN_FATAL;
     goto End;
 #endif

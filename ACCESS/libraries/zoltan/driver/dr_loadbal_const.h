@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_loadbal_const.h,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.18 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -31,10 +31,13 @@
 
 #endif
 
-extern int setup_zoltan(ZOLTAN_STRUCT, int, PROB_INFO_PTR, MESH_INFO_PTR); 
+extern int setup_zoltan(ZOLTAN_STRUCT, int, PROB_INFO_PTR, MESH_INFO_PTR,
+                                PARIO_INFO_PTR); 
+extern void setup_fixed_obj(MESH_INFO_PTR, int); 
 
 extern int run_zoltan(ZOLTAN_STRUCT, int, PROB_INFO_PTR, MESH_INFO_PTR,
                       PARIO_INFO_PTR); 
+
 
 extern int migrate_elements(int, MESH_INFO_PTR, ZOLTAN_STRUCT,
                             int, int, 

@@ -32,16 +32,10 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE DBERR (IOSTAT, ERRMSG)
 C=======================================================================
-C$Id: dberr.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dberr.f,v 1.4 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dberr.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.4  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.3  1991/09/30 20:08:33  gdsjaar
 CIncreased error number format for Cray

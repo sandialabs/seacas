@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: zz_util.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/10/10 22:42:17 $
- *    Revision: 1.10 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 
@@ -20,14 +20,10 @@ extern "C" {
 
 #include <stdio.h>
 #include <ctype.h>
-#ifdef __STDC__
-#include <string.h>
-#else
-#include <strings.h>
-#endif  /* __STDC__ */
 
 #include "zz_util_const.h"
 #include "zoltan_mem.h"
+#include "zz_const.h"
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -237,6 +233,31 @@ void Zoltan_Transform_Box(
        }
      }
 }
+
+
+int
+Zoltan_AllReduceInPlace(void *sndrcvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+{
+  int ierr;
+
+#ifndef MPI_IN_PLACE
+  void * dummy;
+  int size;
+
+  MPI_Type_size(datatype, &size);
+
+  dummy = ZOLTAN_MALLOC(size*count);
+  if (dummy == NULL)
+    return ZOLTAN_MEMERR;
+  memcpy (dummy, sndrcvbuf, size*count);
+  ierr = MPI_Allreduce(dummy, sndrcvbuf, count, datatype, op, comm);
+  ZOLTAN_FREE(&dummy);
+#else /* MPI_IN_PLACE */
+  ierr = MPI_Allreduce(MPI_IN_PLACE, sndrcvbuf, count, datatype, op, comm);
+#endif /* MPI_IN_PLACE */
+  return (ierr);
+}
+
 #ifdef __cplusplus
 } /* closing bracket for extern "C" */
 #endif

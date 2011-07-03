@@ -5,9 +5,9 @@
 ##############################################################################
 ##############################################################################
 # CVS File Information
-#    $RCSfile: Config.x1,v $
-#    $Author: gdsjaar $
-#    $Date: 2009/06/09 18:37:55 $
+#    $RCSfile$
+#    $Author$
+#    $Date$
 #    Revision: 1.14 $
 ##############################################################################
 
@@ -38,7 +38,7 @@ SPPR_HEAD 		= spprinc.most
 F90_MODULE_PREFIX 	= -M
 FARG      		= farg_typical
 
-MPI_LIB			= 
+MPI_LIBS			= 
 MPI_LIBPATH		=
 
 PARMETIS_LIBPATH 	= -L${HOME}/Software/ParMetis-3.1

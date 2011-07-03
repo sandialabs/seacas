@@ -5,10 +5,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: dr_chaco_io.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:57 $
- *    Revision: 1.6 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #include <mpi.h>
@@ -80,7 +80,7 @@ int read_chaco_mesh(int Proc,
   if (Proc == 0) {
 
     /* Open and read the Chaco graph file. */
-    sprintf(chaco_fname, "%s.graph", pio_info->pexo_fname);   
+    sprintf(chaco_fname, "%s.graph", pio_info->pexo_fname);
     fp = fopen(chaco_fname, "r");
     if (fp == NULL) {
       sprintf(cmesg, "fatal:  Could not open Chaco graph file %s",

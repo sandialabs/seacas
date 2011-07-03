@@ -6,10 +6,10 @@
  *****************************************************************************/
 /*****************************************************************************
  * CVS File Information :
- *    $RCSfile: hsfc_point_assign.c,v $
- *    $Author: gdsjaar $
- *    $Date: 2009/06/09 18:37:58 $
- *    Revision: 1.18 $
+ *    $RCSfile$
+ *    $Author$
+ *    $Date$
+ *    $Revision$
  ****************************************************************************/
 
 #ifdef __cplusplus
@@ -19,7 +19,8 @@ extern "C" {
 
 
 #include "hsfc.h"
-#include "../zz/zz_util_const.h"
+#include "zz_const.h"
+#include "zz_util_const.h"
 
 /* For a detailed explaination of this module, please see the Developers
    Guide.  For instructions on its use, please see the Users Guide.   */
