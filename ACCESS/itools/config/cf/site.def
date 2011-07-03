@@ -1,12 +1,12 @@
 XCOMM site.def file for SNL ACCESS System
 
-#define Owner gdsjaar
-#define Group _developer
+#define Owner seacas
+#define Group seacas
 
 /*
  * AccessRoot should specify the path to the ACCESS source directory
  */
-#define AccessRoot /Users/gdsjaar/src/SEACAS-SF
+#define AccessRoot /An/Invalid/Path/To/Remind/User/To/Change
 
 #ifndef BuildSharedExodusLibrary
 #define BuildSharedExodusLibrary YES
