@@ -1686,18 +1686,18 @@ LintLibReferences(varname,libname,libsource)
  * UnsharedLibObjCompile - compile fragment for unshared objects
  */
 #ifndef UnsharedLibObjCompile
-#define UnsharedLibObjCompile(options) LibObjCompile(unshared,$(CDEBUGFLAGS) options)
+#define UnsharedLibObjCompile(options) LibObjCompile(unshared,$(CDEBUGFLAGS) $(DEBUG) options)
 #endif
 
 #ifndef UnsharedLibObjCplusplusCompile
-#define UnsharedLibObjCplusplusCompile(options) LibObjCplusplusCompile(unshared,$(CXXDEBUGFLAGS) options)
+#define UnsharedLibObjCplusplusCompile(options) LibObjCplusplusCompile(unshared,$(CXXDEBUGFLAGS) $(DEBUG) options)
 #endif
 
 /*
  * SharedLibObjCompile - compile fragment for shared objects
  */
 #ifndef SharedLibObjCompile
-#define SharedLibObjCompile(options) LibObjCompile(shared,options $(SHLIBDEF) $(SHAREDCODEDEF) $(PICFLAGS) $(CDEBUGFLAGS))
+#define SharedLibObjCompile(options) LibObjCompile(shared,options $(SHLIBDEF) $(SHAREDCODEDEF) $(PICFLAGS) $(CDEBUGFLAGS) $(DEBUG) )
 #endif
 
 /*

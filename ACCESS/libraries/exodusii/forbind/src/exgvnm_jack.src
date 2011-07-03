@@ -1,0 +1,147 @@
+/*
+ * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
+ * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+ * retains certain rights in this software.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ * 
+ *     * Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials provided
+ *       with the distribution.  
+ * 
+ *     * Neither the name of Sandia Corporation nor the names of its
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ */
+/****************************************************************************
+*
+* exgvnm - ex_get_var_name exodusII fortran jacket
+*
+* author - Victor R. Yarberry, Sandia National Laboratories
+*          Larry A. Schoof - Original in C
+*
+* environment - UNIX
+*
+* entry conditions - 
+*   input parameters:
+*       int*    idexo                   exodus file id
+*       char*   var_type                variable type: G,N, or E
+*       int*    var_index		variable index to read
+*
+* exit conditions -
+*       char*   var_name                ptr to variable name
+*	int*	ierr			returned error code
+*
+* revision history - 
+*
+*
+*****************************************************************************/
+/*
+ * OVERVIEW
+ *
+ * This file contains a jacket routine written in C for interfacing Fortran
+ * ExodusII function calls to the actual C binding for ExodusII.  This code
+ * is written explicitly for M4__SYSTEM.  In general, these functions handle
+ * character-string parameter conventions, convert between
+ * column-major-order arrays and row-major-order arrays, and map between
+ * array indices beginning at one and array indices beginning at zero.
+ *
+ */
+
+/* LINTLIBRARY */
+#include        <ctype.h>
+#include        <string.h>
+#include        <stdio.h>
+#include	<stdlib.h>
+#include        "netcdf.h"
+#include        "exodusII.h"
+#include        "exodusII_int.h"
+
+M4__STRING_DESCRIPTOR_INCLUDES
+
+M4__FORTRAN_DEFINES
+
+/* global integer that contains a Exodus-specific error code */
+extern int exerrval;
+extern void ex_fcdcpy(char*, int, char*);
+/*
+ * read results variables names
+ */
+% void
+% exgvnm (
+%      int *idexo,             /* EXODUS file ID */
+%      string var_type,        /* (single) character indicating the type of */
+%                              /* variable which is described */
+%      int *var_index          /* variable index to be read */
+%      string var_name,        /* returned string containing variable name */ 
+%      int *ierr               /* returned error code */
+%      )
+% {
+
+  char errmsg[MAX_ERR_LENGTH];
+
+
+    char *sptr; /* ptr to temp staging space for string */
+    int slen;
+    *ierr=0;     /* default no errror */
+
+    slen = ex_max_name_length;      /* max str size */
+    if (var_namelen < slen)
+    {
+      slen = var_namelen;
+    }
+
+    /* Allocate staging space for the variable name */
+    if (!(sptr=malloc((slen+1)*sizeof(char))))
+    {
+      *ierr = EX_MEMFAIL;
+      if (exoptval & EX_DEBUG)
+      {
+        sprintf(errmsg,
+    "Error: failed to allocate space for results variable name for file id %d",
+                *idexo);
+        ex_err("exgvnm",errmsg,EX_MEMFAIL);
+      }
+      return;
+    }
+
+    /* do ExodusII C call to read results variables names */
+    if (ex_get_var_name(*idexo,var_type,*var_index,sptr) == EX_FATAL)
+    {
+      *ierr = EX_FATAL;
+      free(sptr);       /* free up allocated space */
+      if (exoptval & EX_DEBUG)
+      {
+        sprintf(errmsg,
+               "Error: failed to get results variable name from file id %d",
+                *idexo);
+        ex_err("exgvnm",errmsg,EX_MSG);
+      }
+      return;
+    }
+
+    /* Copy Fortran variable names to staging space */
+      /** printf("[exgvnm] var_name(%d): %s\n",*var_index,sptr)); **/
+      ex_fcdcpy(var_name,slen,sptr);/* copy string into Fortran buffer */
+
+    free(sptr); /* Free up string staging area */
+}

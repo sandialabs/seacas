@@ -32,26 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE PCKSTR (NSTR, STR)
 C=======================================================================
-C$Id: pckstr.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: pckstr.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:16:06  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:16:05  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:43  gdsjaar
-c Initial revision
-c 
 
 C   --*** PCKSTR *** (STRLIB) Remove all blanks from string
 C   --   Written by Amy Gilkey - revised 03/21/88
@@ -62,12 +42,19 @@ C   --
 C   --Parameters:
 C   --   NSTR - IN - the number of strings to be packed
 C   --   STR - IN/OUT - the array of strings, returned packed, may be up
-C   --      to 132 characters long
+C   --      to 1024 characters long
 
       INTEGER NSTR
       CHARACTER*(*) STR(*)
 
-      CHARACTER*132 TMPSTR
+      PARAMETER (MXSTR = 1024)
+      CHARACTER*(MXSTR) TMPSTR
+
+      LSTR = LENSTR (STR)
+      if (lstr .gt. MXSTR) then
+        call prterr ('PROGRAM', 'String is too long in SQZSTR')
+        return
+      end if
 
       DO 20 I = 1, NSTR
          LSTR = LENSTR (STR(I))

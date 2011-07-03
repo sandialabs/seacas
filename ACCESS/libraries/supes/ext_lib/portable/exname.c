@@ -33,7 +33,7 @@
  * 
  */
 /*
- * $Id: exname.c,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+ * $Id: exname.c,v 1.14 2008/03/14 13:22:36 gdsjaar Exp $
  */
 
 /*

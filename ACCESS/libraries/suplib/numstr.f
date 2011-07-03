@@ -32,16 +32,10 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE NUMSTR (NNUM, NSIG, RNUM, RSTR, LSTR)
 C=======================================================================
-C$Id: numstr.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: numstr.f,v 1.2 2009/03/25 12:46:02 gdsjaar Exp $
 C$Log: numstr.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.2  2009/03/25 12:46:02  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.1.1.1  1990/08/14 16:15:53  gdsjaar
 CTesting
@@ -93,8 +87,9 @@ C   --      (0 if all positive, 1 if any number negative)
 10000  FORMAT ('(0PE', I2.2, '.', I2.2, ')')
 
       ISIGN = 0
-      MINE = 9999
-      MAXE = -9999
+      MINE  = 9999
+      MINE2 = 9999
+      MAXE  = -9999
       MAXES = MAXE
       DO 100 I = 1, NNUM
          IF (RNUM(I) .NE. 0.0) THEN

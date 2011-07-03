@@ -32,16 +32,10 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE DBIV0 (NQAREC, NINFO)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.4 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.4  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.3  1990/11/30 09:50:53  gdsjaar
 CModified to work on Unicos
@@ -128,16 +122,10 @@ C   --Save the input parameters
 C=======================================================================
       ENTRY DBIV1 (NELBLK, NVARHI, NVARGL, NVARNP, NVAREL, ISEVOK)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.4 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.4  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.3  1990/11/30 09:50:53  gdsjaar
 CModified to work on Unicos
@@ -217,16 +205,10 @@ C   --Set NREC0 = the number of records before the time steps
 C=======================================================================
       ENTRY DBIVIN (REWDB)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.4 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.4  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.3  1990/11/30 09:50:53  gdsjaar
 CModified to work on Unicos
@@ -269,16 +251,10 @@ C=======================================================================
       ENTRY DBIVAR (NDB, NUMVAR, IVAR, ISTEP, LENVAR, IELBLK,
      &   NELBLK, NUMELB, ISEVOK, VAR, *)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C$Id: dbiv0.f,v 1.4 2009/03/25 12:46:01 gdsjaar Exp $
 C$Log: dbiv0.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
+CRevision 1.4  2009/03/25 12:46:01  gdsjaar
+CAdd copyright and license notice to all files.
 C
 CRevision 1.3  1990/11/30 09:50:53  gdsjaar
 CModified to work on Unicos

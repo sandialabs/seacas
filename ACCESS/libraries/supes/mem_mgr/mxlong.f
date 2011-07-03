@@ -36,7 +36,7 @@ C
      *   FILL, FDATA, CFILL, CFDATA, CHRNUM, CHRCOL, LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C***********************************************************************
 C
@@ -97,17 +97,10 @@ C ... If the old length == 0, then we don't have a valid pointer.
 C      Need to call malloc instead of realloc.
       if (oldlen .eq. 0) then
         memret = 0
-        call exmemy(memlen, oldadr, memret)
-      else
-
-C ... Passing a size of 0 to realloc (via exmemy) is the 
-C     same as a 'free' which invalidates the pointer.
-C     Supes wants the pointer to stay valid, so instead
-C     we request a space of '1' to maintain a valid pointer.
-        if (newlen .eq. 0) then
-          memlen = 1
+        if (memlen .gt. 0) then
+           call exmemy(memlen, oldadr, memret)
         end if
-        
+      else
         call exmemy(-memlen, oldadr, memret)
       end if
       
@@ -126,9 +119,19 @@ C
 C     Perform data fill if appropriate.
 C
       IF (FILL) THEN
-         DO 120 I = DPOINT(ROW,1,1)+OLDLEN, DPOINT(ROW,1,1)+NEWLEN-1
-            MYV(I) = FDATA
+         DO 120 I = DPOINT(ROW,1,1)+OLDLEN, DPOINT(ROW,1,1)+NEWLEN-1-7,8
+            MYV(I+0) = FDATA
+            MYV(I+1) = FDATA
+            MYV(I+2) = FDATA
+            MYV(I+3) = FDATA
+            MYV(I+4) = FDATA
+            MYV(I+5) = FDATA
+            MYV(I+6) = FDATA
+            MYV(I+7) = FDATA
   120    CONTINUE
+         DO 130 J = I, DPOINT(ROW,1,1)+NEWLEN-1
+            MYV(J) = FDATA
+  130    CONTINUE
       END IF
 
       RETURN

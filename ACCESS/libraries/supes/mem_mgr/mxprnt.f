@@ -34,7 +34,7 @@ C
      *   DICT, DPOINT, LDICT, NNAMES, CHRCOL, NCOLP, LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C***********************************************************************
 C

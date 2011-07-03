@@ -147,6 +147,10 @@
  *      22. seed. Type long. This is a seed for the random number generator \rand()". 
  *         Note that it overrides the RANDOM SEED parameter.
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int interface(int       nvtxs,                /* number of vertices in full graph */
 		     int      *start,                /* start of edge list for each vertex */
 		     int      *adjacency,            /* edge list data */
@@ -170,5 +174,9 @@ extern int interface(int       nvtxs,                /* number of vertices in fu
 
 /* Chaco interface to read assignment vector from file */
 extern int input_assign(FILE *, char *, int, int *);
+
+#ifdef __cplusplus
+}                               /* close brackets on extern "C" declaration */
+#endif
 
 #endif

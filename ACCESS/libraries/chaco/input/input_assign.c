@@ -73,7 +73,7 @@ int    *assignment;		/* values to be printed */
     if (assignment[0] > nvtxs)
 	flag = assignment[1];
     for (i = 1; i < nvtxs; i++) {
-	j = fscanf(finassign, "%hd", &(assignment[i]));
+	j = fscanf(finassign, "%d", &(assignment[i]));
 	if (j != 1) {
 	    printf("ERROR: Too few values in assignment file `%s'.\n", inassignname);
 	    fclose(finassign);

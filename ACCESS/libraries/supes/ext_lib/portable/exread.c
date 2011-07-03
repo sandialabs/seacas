@@ -33,7 +33,7 @@
  * 
  */
 /*
- * $Id: exread.c,v 1.1 2008/10/31 05:19:56 gdsjaar Exp $
+ * $Id: exread.c,v 1.20 2008/05/05 19:42:09 gdsjaar Exp $
  */
 
 #include <stdio.h>

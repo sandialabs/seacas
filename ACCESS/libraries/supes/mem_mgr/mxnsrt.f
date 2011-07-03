@@ -35,7 +35,7 @@ C
      *   NNAMES, CHRCOL, LASTER)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This routine updates the dictionary with a new name (if it is new)
 C     and updates the location and length tables.  The length of the

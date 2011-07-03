@@ -15,10 +15,9 @@
 /* Note: These values might not be calculated precisely correctly.*/
 /*       If you know them for your machine, replace this code! */
 
-void      machine_params(double *double_epsilon, double *double_max, int *rand_max)
+void      machine_params(double *double_epsilon, double *double_max)
                          	/* returns machine precision */
                      		/* returns largest double value */
-                   		/* returns largest value returnable from rand() */
 {
 
 #ifndef DBL_EPSILON
@@ -33,14 +32,6 @@ void      machine_params(double *double_epsilon, double *double_max, int *rand_m
 #endif
 
     double    max;		/* largest double precision value */
-#endif
-
-#ifndef RAND_MAX
-    int       rmax;		/* largest value returned from rand() */
-    int       val;		/* value returned from rand() */
-    int       n_rand_calls = 100;	/* number of times to call rand to find max */
-    int       i;		/* loop counter */
-
 #endif
 
 #ifndef DBL_EPSILON
@@ -83,15 +74,4 @@ void      machine_params(double *double_epsilon, double *double_max, int *rand_m
     *double_max = DBL_MAX;
 #endif
 
-#ifndef RAND_MAX
-    rmax = 32767;
-    for (i = n_rand_calls; i; i--) {
-	val = rand();
-	while (val > rmax)
-	    rmax = 2 * rmax + 1;
-    }
-    *rand_max = rmax;
-#else
-    *rand_max = RAND_MAX;
-#endif
 }

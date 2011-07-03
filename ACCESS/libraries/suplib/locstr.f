@@ -32,26 +32,6 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       INTEGER FUNCTION LOCSTR (STR, LENLST, STRLST)
 C=======================================================================
-C$Id: locstr.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
-C$Log: locstr.f,v $
-CRevision 1.2  2009/03/25 04:47:54  gdsjaar
-CAdded blotII2 source since Copyright was asserted.
-C
-CUpdate copyright notice in suplib.
-C
-CAdd blotII2 to config files.  Note that blot will not build yet since
-Cit requires some libraries that are still being reviewed for copyright
-Cassertion.
-C
-CRevision 1.1.1.1  1990/08/14 16:15:24  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:15:23  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:34  gdsjaar
-c Initial revision
-c 
 
 C   --*** LOCSTR *** (STRLIB) Find string in list
 C   --   Written by Amy Gilkey - revised 03/21/88

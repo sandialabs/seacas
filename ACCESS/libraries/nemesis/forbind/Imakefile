@@ -1,0 +1,138 @@
+# Copyright (c) 1998 Sandia Corporation. Under the terms of Contract
+# DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+# retains certain rights in this software.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+# 
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.  
+# 
+#     * Neither the name of Sandia Corporation nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+
+XCOMM $Id: Imakefile,v 1.31 2005/07/11 18:10:50 gdsjaar Exp $
+
+#if defined CatamountArchitecture
+#define OSystem 	catamount
+
+#elif defined CougarArchitecture
+#define OSystem 	cougar
+
+#elif defined SGIArchitecture
+#define OSystem         irix
+
+#elif defined CrayArchitecture
+#define OSystem              unicos
+
+#elif defined SunArchitecture
+#define OSystem              sunos
+
+#elif defined HPArchitecture
+#define OSystem              hpux
+
+#elif defined UltrixArchitecture
+#define OSystem              ultrix
+
+#elif defined OSF1Architecture
+#define OSystem              osf
+
+#elif defined AIXArchitecture
+#define OSystem              aix
+ 
+#elif defined PPCArchitecture
+#define OSystem              linux
+
+#elif defined InterixArchitecture
+#define OSystem		     interix
+
+#elif defined AlphaArchitecture
+#define OSystem		     linux
+
+#elif defined i386Architecture
+#define OSystem		     linux
+
+#elif defined x86_64Architecture
+#define OSystem              linux
+
+#elif defined ia64Architecture
+#define OSystem              linux
+
+#elif defined __APPLE__
+#define OSystem		     darwin
+
+#else
+#define OSystem              ""
+#error "Could not determine Operating System type in nemesis/forbind/Imakefile."
+#endif   
+
+#if Build64BitAccess == YES     
+#define Bits 64
+#else
+#define Bits 32
+#endif
+
+/* Use local include/XXX.h files instead of installed *.h files  */
+ALTINC = IncRef-I../
+
+OS_TYPE = OSystem
+
+DEFINES = -DEX_ERR_STR
+
+F77CPPFLAGS = F77CppFlags 
+
+SRCS = ne_jack.c
+
+SRCSF = addrwrpn.f
+
+OBJS = ${SRCS:.c=.o} ${SRCSF:.f=.o}
+
+BITS = Bits
+
+#if Build64BitAccess == YES     
+
+SRCS32 = ne_jack32.c
+
+ne_jack32.c: ne_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
+	 	ACCESS=$(ACCESSDIR) ./fortc -P 32 -L . -O $(OS_TYPE) ne_jack.src > $@
+
+OBJS32 = ${SRCS32:.c=.o}
+
+all:: libnemIf32.a
+libnemIf32.a: $(OBJS32)
+	$(AR) $@ $?
+	$(_NULLCMD_)
+	$(_NULLCMD_)
+	$(CP) libnemIf32.a ../
+#endif
+
+ne_jack.c: ne_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
+		ACCESS=$(ACCESSDIR) ./fortc -P $(BITS) -L . -O $(OS_TYPE) ne_jack.src > $@
+
+LibraryTargetSubdirsCopy(libnemIf.a,$(OBJS),../)
+
+ExtraStuffToClean(*.c)
+CleanupCapF(addrwrpn.f)
+
+DependTarget()
+

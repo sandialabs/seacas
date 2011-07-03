@@ -34,7 +34,7 @@ C
      *   CHRCOL, LASTER, VROW)
 C
       IMPLICIT INTEGER (A-Z)
-      INCLUDE 'PARAMS.INC'
+      INCLUDE 'params.inc'
 C
 C     This subroutine returns the location (row number) of a void with
 C     sufficient space for the memory request.  If necessary, memory is

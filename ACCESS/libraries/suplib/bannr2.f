@@ -29,16 +29,10 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Id: bannr2.f,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $
+C $Id: bannr2.f,v 1.3 2009/03/25 12:46:01 gdsjaar Exp $
 C $Log: bannr2.f,v $
-C Revision 1.2  2009/03/25 04:47:54  gdsjaar
-C Added blotII2 source since Copyright was asserted.
-C
-C Update copyright notice in suplib.
-C
-C Add blotII2 to config files.  Note that blot will not build yet since
-C it requires some libraries that are still being reviewed for copyright
-C assertion.
+C Revision 1.3  2009/03/25 12:46:01  gdsjaar
+C Add copyright and license notice to all files.
 C
 C Revision 1.2  1993/07/30 20:26:42  gdsjaar
 C Fixed to write to unit * if iout equals 0

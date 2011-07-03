@@ -30,7 +30,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* $Id: help_c.c,v 1.2 2009/03/25 04:47:54 gdsjaar Exp $ */
+/* $Id: help_c.c,v 1.7 2009/03/25 12:46:02 gdsjaar Exp $ */
 
 #include <stdio.h>
 #include <errno.h>
