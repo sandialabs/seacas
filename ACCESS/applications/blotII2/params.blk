@@ -1,0 +1,5 @@
+      PARAMETER (MXSTLN=32)
+      PARAMETER (MXLNLN=80)
+      PARAMETER (MXSVAR=50)
+C     --MXTVAR - the maximum number of plot variables
+      PARAMETER (MXTVAR=100)

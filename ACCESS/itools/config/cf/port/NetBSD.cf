@@ -1,0 +1,328 @@
+XCOMM platform:  $XConsortium: NetBSD.cf /main/16 1996/10/31 14:47:14 kaleb $
+
+
+
+XCOMM platform:  $XFree86: xc/config/cf/NetBSD.cf,v 3.44 1996/10/23 13:07:55 dawes Exp $
+
+#ifndef OpenBSDArchitecture
+
+#ifndef OSName
+#define OSName		NetBSD 1.2
+#endif
+#ifndef OSMajorVersion
+#define OSMajorVersion    1
+#endif
+#ifndef OSMinorVersion
+#define OSMinorVersion    2
+#endif
+/* 1 = A, 2 = B, 3 = C */
+#ifndef OSTeenyVersion
+#define OSTeenyVersion	  0
+#endif
+
+#else
+
+#ifndef OSName
+#define OSName		OpenBSD 2.0
+#endif
+#ifndef OSMajorVersion
+#define OSMajorVersion    2
+#endif
+#ifndef OSMinorVersion
+#define OSMinorVersion    0
+#endif
+/* 1 = A, 2 = B, 3 = C */
+#ifndef OSTeenyVersion
+#define OSTeenyVersion	  0
+#endif
+
+#endif
+
+#ifndef OSVendor
+#define	OSVendor	/**/
+#endif
+XCOMM operating system:  OSName
+
+/*
+ * C library features
+ */
+#if defined(OpenBSDArchitecture) || \
+   defined(NetBSDArchitecture) && (OsMajorVersion == 1 && OsMinorVersion >= 2)
+#  define HasPoll			YES
+#endif
+#define HasNdbm         	YES
+#define HasPutenv       	YES
+#define HasSnprintf		YES
+#define HasBSD44Sockets 	YES
+#define Malloc0ReturnsNull	NO
+#define SetTtyGroup     	YES
+#define DBMLibrary		/**/
+#ifndef HasLibCrypt
+# define HasLibCrypt		YES
+#endif
+#ifndef HasShm
+# if OSMajorVersion == 0 && OSMinorVersion == 9 && OSTeenyVersion == 2
+/*
+ * Shm memory was removed in 0.9B because it was encumbered.
+ * A free version was added in 0.9C
+ */
+#  define HasShm          	NO
+# else
+#  define HasShm          	YES
+# endif
+#endif
+#define HasWChar32		YES
+/*
+ * There's a bug in NetBSD 1.0, 1.1 and 1.2 dlsym()
+ */
+#if !defined(OpenBSDArchitecture) && OSMajorVersion == 1 && OSMinorVersion <= 2
+#  define HasDlsymBug		YES
+#endif
+
+/*
+ * Compiler Features
+ */
+#undef HasGcc
+#define HasGcc			YES
+#define HasGcc2			YES
+#ifndef HasGcc2ForCplusplus
+#define HasGcc2ForCplusplus	YES
+#endif
+#define GccUsesGas		YES
+#define UseGas			YES
+#define GnuCpp			YES
+
+/* OpenBSD has gcc 2.7.2.1 which fixes the strength-reduce bug */
+#ifdef OpenBSDArchitecture
+#define DefaultGcc2i386Opt	-O2
+#endif
+
+#define NeedConstPrototypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	NO
+
+#define MkdirHierCmd		mkdir -p
+
+#define CppCmd          	/usr/libexec/cpp
+#define StandardCppDefines	-traditional
+#define PreProcessCmd   	CppCmd
+#ifndef OpenBSDArchitecture
+#define PreIncDir		/usr/include
+#else
+#define PreIncDir /usr/lib/gcc-lib/i386-unknown-openbsd1.2/2.7.2.1/include
+#endif
+
+#undef CcCmd
+#define CcCmd 			gcc
+#if UseInstalled
+#define DefaultCCOptions 	/**/
+#else
+#define DefaultCCOptions 	-ansi -Dasm=__asm
+#endif
+
+#define GccGasOption 		-DGCCUSESGAS
+#define AsmDefines 		-DUSE_GAS
+
+
+#ifdef i386Architecture
+# define OptimizedCDebugFlags 	-m486 DefaultGcc2i386Opt
+# if OSMajorVersion < 1
+#  define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME -DXNO_SYSCONF
+# else
+#  define ServerOSDefines	XFree86ServerOSDefines -DDDXTIME
+# endif
+# if OSMajorVersion == 1 && OSMinorVersion >= 1 || OSMajorVersion >= 2
+#  define ServerExtraSysLibs	-li386
+# endif
+#else
+# define OptimizedCDebugFlags 	-O2
+# if defined(SparcArchitecture)
+#  define ServerOSDefines 	-DDDXOSINIT
+# else
+#  define ServerOSDefines 	/**/
+# endif
+#endif
+#ifdef i386Architecture
+# define ServerExtraDefines GccGasOption XFree86ServerDefines
+# ifndef XFree86ConsoleDefines
+#  define XFree86ConsoleDefines -DPCCONS_SUPPORT -DPCVT_SUPPORT
+# endif
+#else
+# define ServerExtraDefines GccGasOption
+#endif
+
+#define StandardDefines	-DCSRG_BASED
+#define XawI18nDefines	-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
+
+#if OSMajorVersion > 0
+# ifndef BuildDynamicLoading
+# define BuildDynamicLoading	YES
+# endif
+#endif
+
+#ifndef ExtraLibraries
+#define ExtraLibraries		/**/
+#endif
+#ifndef UseGnuMalloc
+#ifndef OpenBSDArchitecture
+#  define UseGnuMalloc		YES
+#else
+#  define UseGnuMalloc		NO
+#endif
+#endif
+#ifndef GnuMallocLibrary
+#define GnuMallocLibrary	-lgnumalloc
+#endif
+
+/*
+ * Make & install Features
+ */
+
+#define HasMakefileSafeInclude	YES
+#define IncludeMakefile(file) @@# dependencies are in .depend
+#define DependFileName .depend
+#define AvoidNullMakeCommand 	YES
+#define StripInstalledPrograms	YES
+#define CompressAllFonts	YES
+#define DefaultUserPath		.:/bin:/usr/bin:/usr/local/bin:$(BINDIR)
+#define DefaultSystemPath	/sbin:/usr/sbin:/bin:/usr/bin:$(BINDIR)
+
+#ifdef  InstallCmd
+# undef  InstallCmd
+# define InstallCmd 		/usr/bin/install
+#endif
+
+#ifndef ExtraFilesToClean
+# define ExtraFilesToClean 	*.core
+#endif
+
+/*
+ * Documentation formatting
+ */
+#define NeqnCmd			neqn -Tlatin1
+#define	EqnCmd 			eqn -Tps
+#define TroffCmd        	groff -Tps
+
+/*
+ * To use the NetBSD Aperture driver
+ */
+#if defined(i386Architecture)
+#ifndef HasNetBSDApertureDrv
+#define HasNetBSDApertureDrv	NO
+#endif
+#endif
+
+#define MakeHasPosixVariableSubstitutions	YES
+
+/*
+ * ForceSubdirs - force make to build subdirectories
+ * 
+ * For BSD 4.4 make 
+ */
+#define ForceSubdirs(dirs)						@@\
+dirs:	.EXEC								@@\
+	@cd $@ ; echo "making all in $(CURRENT_DIR)/$@..."; \		@@\
+	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
+									@@\
+.EXEC:
+
+XCOMM Man pages need to be formatted when installed, so override the default
+XCOMM imake rules.
+
+#define ManSuffix	1
+#define FileManSuffix	5
+#define ManSourcePath	$(MANPATH)/cat
+
+#define InstallManPageLong(file,destdir,dest)                           @@\
+all:: file.0								@@\
+									@@\
+file.0:: file.man							@@\
+	@if [ -f file.man ]; \						@@\
+	then \								@@\
+	cat file.man | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) | $(COL) >/tmp/$$$$.man; \	@@\
+	cp /tmp/$$$$.man file.0; \					@@\
+	$(RM) /tmp/$$$$.man; \						@@\
+	fi 								@@\
+									@@\
+install.man::                                                           @@\
+	MakeDir($(DESTDIR)destdir)					@@\
+	-@if [ -f file.0 ]; \						@@\
+	then \								@@\
+	$(INSTALL) -c $(INSTMANFLAGS) file.0 $(DESTDIR)destdir/dest.0; \@@\
+	fi
+
+#define InstallGenManPageLong(file,destdir,dest,suffix)			@@\
+	InstallManPageLong(file,destdir,dest)
+
+#define InstallMultipleManSuffix(list,dest,suff)                        @@\
+install.man:: 								@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	case '${MFLAGS}' in *[i]*) set +e;; esac; \			@@\
+	for i in list; do \                                             @@\
+	  (set -x; \							@@\
+	  cat $$i.suff | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) | $(COL) >/tmp/$$$$.suff; \	@@\
+	  $(INSTALL) -c $(INSTMANFLAGS) /tmp/$$$$.suff $(DESTDIR)dest/$$i.0; \	@@\
+	  $(RM) /tmp/$$$$.suff); \						@@\
+	done
+
+#define InstallMultipleMan(list,dest)                                   @@\
+	InstallMultipleManSuffix(list,dest,man)
+
+#define InstallManPageAliases(file,destdir,aliases)                     @@\
+install.man:: 								@@\
+	@case '${MFLAGS}' in *[i]*) set +e;; esac; \                    @@\
+	for i in aliases; do \                                          @@\
+		(set -x; \						@@\
+		$(RM) $(DESTDIR)destdir/$$i.0;\  			@@\
+		(cd $(DESTDIR)/destdir; $(LN) file.0 $$i.0);\ 		@@\
+		); \							@@\
+	done
+
+#define InstallGenManPageAliases(file,destdir,suffix,aliases)		@@\
+	InstallManPageAliases(file,destdir,aliases)
+
+#include <bsdLib.rules>
+
+#ifdef i386Architecture
+# include <xfree86.cf>
+#endif
+
+/*
+ * Definitions for the SUN server on NetBSD/sparc
+ */
+#ifdef SparcArchitecture
+#ifndef Xsun24Server
+#define Xsun24Server	NO
+#endif
+#ifndef XsunServer
+#define XsunServer	YES
+#endif
+#ifndef XsunMonoServer
+#define XsunMonoServer	YES
+#endif
+#ifndef BuildScreenSaverLibrary
+#define BuildScreenSaverLibrary	YES
+#endif
+/*
+ * XFree86 uses its own (more portable) database routines to speed up 
+ * the RGB database lookups
+ * However, if you want to use ndbm anyway, you can set that to NO in 
+ * site.def
+ */
+#ifndef UseRgbTxt
+#define UseRgbTxt	YES
+#endif
+#endif
+
+/*
+ * Definition for compiling on MIPS machines
+ */
+#ifdef MipsArchitecture
+#define PositionIndependentCFlags
+#define SharedLibraryLoadFlags -x -shared --whole-archive -soname `echo $@ |
+sed 's/\.[0-9]*$$//'`
+#define SharedXtReqs $(XLIBONLY) $(SMLIB) $(ICELIB)
+#define SharedXmuReqs $(LDPRELIB) $(XTOOLONLYLIB) $(XONLYLIB) $(EXTENSIONLIB)
+#endif

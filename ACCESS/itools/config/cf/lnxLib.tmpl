@@ -1,0 +1,22 @@
+XCOMM $XConsortium: lnxLib.tmpl,v 1.5 95/01/11 21:44:44 kaleb Exp $
+
+/*
+ * Linux shared library template
+ */
+
+/* Linux ELF shared libraries are deficient in link semantics */
+#if UseElfFormat
+#ifndef FixupLibReferences
+#define FixupLibReferences()						@@\
+XMULIBONLY = -lXmu							@@\
+XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
+#endif
+#ifndef XawClientLibs
+#define XawClientLibs $(XAWLIB) $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
+#endif
+#else
+#ifndef FixupLibReferences
+#define FixupLibReferences()						@@\
+XMULIB = -lXmu $(XLIB)
+#endif
+#endif

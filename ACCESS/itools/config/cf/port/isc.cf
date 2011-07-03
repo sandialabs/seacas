@@ -1,0 +1,129 @@
+XCOMM $XConsortium: isc.cf /main/1 1996/10/31 14:45:18 kaleb $
+
+
+
+XCOMM platform:  $XFree86: xc/config/cf/isc.cf,v 3.9 1996/09/01 04:12:51 dawes Exp $
+
+#ifndef HasGcc2
+#define HasGcc2			YES
+#endif
+
+/* INTERACTIVE UNIX SYSTEM (IUS) Version 3.x 4.x */
+
+#if IscVersion == 400
+# define ISCVerDef -DISC40 -DISC30
+# define OSVendor		(IUS Version 4.x)
+#else
+# if IscVersion == 300
+#  define ISCVerDef -DISC30
+#  define OSVendor		(ISC Version 3.0)
+# else
+#  if IscVersion == 202
+#   define OSVendor		(ISC Version 2.0.2)
+#   define ISCVerDef -DISC202
+#  else
+#   define OSVendor		(ISC Version 2.2.1)
+#   define ISCVerDef -DISC22
+#  endif
+# endif
+#endif
+
+#ifdef UsePosix
+# define PosixDefines		-posix -D_SYSV3 -D_POSIX_SOURCE 
+#else
+# define PosixDefines
+#endif
+
+#define OSDefines		-DISC ISCVerDef
+
+#define OSName			Unix System V/386 Release 3.2
+#define OSMajorVersion		3
+#define OSMinorVersion		2
+
+/* Note, cpp already does -Di386 */
+#define BootstrapCFlags		OSDefines -DSYSV
+
+#if IscVersion > 202
+# define LocalLibraries	-lpt
+# define PosixLibraries	-lcposix
+#else
+# define LocalLibraries        MallocLibrary -lpt
+# define PosixLibraries
+#endif
+
+#define SocketLibraries		-linet
+
+#ifndef GnuMallocLibrary
+# define GnuMallocLibrary	-L/usr/local/lib -lgmalloc
+#endif
+
+#ifndef MallocLibrary
+# if UseGnuMalloc
+#  define MallocLibrary		GnuMallocLibrary
+# else
+#  define MallocLibrary		-lmalloc
+# endif
+#endif
+
+#ifndef ExtraLibraries
+# if UseGnuMalloc
+#  define ExtraLibraries SocketLibraries LocalLibraries MallocLibrary PosixLibraries
+# else
+#  define ExtraLibraries SocketLibraries LocalLibraries PosixLibraries
+# endif
+#endif
+
+/* Don't know if this is necessary, but it avoids breaking the current setup */
+#define MallocLibraries		/**/
+
+#define XawI18nDefines		-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
+
+#define ServerExtraSysLibs	$(CBRT)
+
+#define ServerExtraDefines	SVR3mmapFlags XFree86ServerDefines
+
+#if IscVersion > 300
+# ifndef HasSymLinks
+#  define HasSymLinks           YES
+# endif
+#endif
+
+#define HasShm			YES
+#define HasSnprintf		YES
+
+#ifndef HasLibCrypt
+#define HasLibCrypt		YES
+#define SpecialLibCrypt        -lcrypt
+#endif
+
+#ifndef DefaultCDebugFlags
+# if HasGcc2
+#  define DefaultCDebugFlags DefaultGcc2i386Opt PosixDefines
+# else
+#  define DefaultCDebugFlags -O PosixDefines
+# endif
+#endif
+
+#if HasGcc2
+# define CcCmd gcc 
+#endif
+
+#ifndef DefaultCplusplusOptions
+#define DefaultCplusplusOptions	-fno-implicit-templates
+#endif
+
+#ifndef ConnectionFlags
+#define ConnectionFlags -DLOCALCONN -DTCPCONN 
+/* -DSTREAMSCONN -DUNIXCONN -- does not work on ISC SVR3 */
+#endif
+
+#define CompressManCmd $(COMPRESS) -v
+
+#define XmanSearchPath /usr/catman
+
+#ifndef RemoveDSDENroffMacros
+#define RemoveDSDENroffMacros   YES
+#endif
+
+#include <svr3.cf>
+

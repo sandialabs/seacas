@@ -1,0 +1,88 @@
+Below is some sample configuration stuff showing how to incorporate msub
+support into your imake configuration files.
+
+1) Put the following in Imake.tmpl or Project.tmpl to define an MSUB
+parameter:
+
+#ifndef MsubCmd
+#define MsubCmd msub
+#endif
+
+MSUB = MsubCmd
+
+2) Add the following rules to Imake.rules.  These actually are not
+msub-specific; they allow you to create scripts using templates by
+passing them through some arbitrary filter.  To use them with msub,
+invoke them, e.g., like this:
+
+For non-executable script:
+ScriptFromTemplateTarget(script,template,$(MSUB),deps)
+For executable script (here, a shell script):
+ExecScriptFromTemplateTarget($(SHELL),dst,src,$(MSUB),deps)
+
+Note that AllTarget() generates an all:: target for its argument,
+StuffToClean() generates a clean:: target for its argument, and
+HasExecableScripts is equivalent to X11R6's ExecableScripts.  If you don't
+have them, look at the end of this file.
+
+/*
+ * Create a target by running a template through some filter.
+ */
+
+#ifndef	ScriptFromTemplateTarget
+#define	ScriptFromTemplateTarget(dst,src,command,deps)			@@\
+AllTarget(dst)								@@\
+StuffToClean(dst)							@@\
+dst:: src deps								@@\
+	command src > $@
+#endif
+
+
+/*
+ * Create an executable target for some arbitrary program by running a
+ * template through some filter.  prog must be a full pathname.
+ *
+ * If the HasExecableScripts configuration parameter is not YES, make sure
+ * the first line begins with a colon and write the script into a temp
+ * file, have the program execute that, and remove the temp file when
+ * done.  Ugly ugly ugly.
+ */
+
+#ifndef	ExecScriptFromTemplateTarget
+#if HasExecableScripts		/* can use #! */
+#define	ExecScriptFromTemplateTarget(prog,dst,src,command,deps)		@@\
+AllTarget(dst)								@@\
+StuffToClean(dst)							@@\
+dst::  src deps								@@\
+	$(RM) $@							@@\
+	echo "#!"prog > $@						@@\
+	command src >> $@						@@\
+	chmod a+x $@
+#else
+#define	ExecScriptFromTemplateTarget(prog,dst,src,command,deps)		@@\
+AllTarget(dst)								@@\
+StuffToClean(dst)							@@\
+dst::  src deps								@@\
+	$(RM) $@							@@\
+	echo \: > $@							@@\
+	echo 'x=/tmp/xx$$$$' >> $@					@@\
+	echo "cat > "'$$x'" << 'EOF'" >> $@				@@\
+	command src >> $@						@@\
+	echo EOF >> $@							@@\
+	echo prog '$$x' '$$@' >> $@					@@\
+	echo $(RM) '$$x' >> $@						@@\
+	chmod a+x $@
+#endif /* HasExecableScripts */
+#endif /* ExecScriptFromTemplateTarget */
+
+
+#ifndef StuffToClean
+#define StuffToClean(extra)						@@\
+clean::									@@\
+	$(RM) extra
+#endif /* StuffToClean */
+
+#ifndef AllTarget
+#define AllTarget(depends)						@@\
+all:: depends
+#endif /* AllTarget */

@@ -1,0 +1,23 @@
+XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:04:05 gdsjaar Exp $
+
+INCLUDESFILES=exodusII.inc
+
+CODE = conex2
+
+SRCS = \
+cmpelb.f cmpinp.f conex2.f cphead.f erelbk.f erqain.f \
+ervnam.f ewelbk.f ewqain.f ewvnam.f init.f   list.f   \
+prompt.f rdcomd.f rdhead.f utils.f  version.f fndptr.f	
+
+CSRCS = adler32.c
+
+OBJS = ${SRCS:.f=.o} ${CSRCS:.c=.o}
+
+LIBS = $(EXOIIV2FOR) $(EXOIIV2C) $(NETCDF) $(SUPLIB) $(SUPES)
+
+NormalFortranTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+
+InstallTarget(install,$(CODE),$(INSTBINFLAGS),$(BINDIR))
+
+DependTarget()
+

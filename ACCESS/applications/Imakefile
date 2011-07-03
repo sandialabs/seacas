@@ -1,0 +1,29 @@
+XCOMM $Id: Imakefile,v 1.6 2010/08/10 16:46:36 gdsjaar Exp $
+
+#define IHaveSubdirs
+
+#undef  PassDebugFlags
+#define PassDebugFlags	"CDEBUGFLAGS=$(CDEBUGFLAGS)" \
+                        "F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
+
+SUBDIRS = \
+$(APREPROSRC) \
+$(GROPE2SRC) \
+$(GJOINSRC) \
+$(MAPVARSRC) \
+$(MAPVARKDSRC) \
+$(ALGEBRA2SRC) \
+$(CONEX2SRC) \
+$(EXOTXT2SRC) \
+$(EXODIFFSRC) \
+$(TXTEXO2SRC) \
+$(EPUSRC) \
+$(EX1EX2V2SRC) \
+$(NEM_SLICESRC) \
+$(NEM_SPREADSRC) \
+$(EJOINSRC) \
+$(CONJOINSRC) \
+$(BLOTSRC)
+
+MakeAllTargets($(SUBDIRS),PassDebugFlags)
+

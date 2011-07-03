@@ -1,0 +1,200 @@
+/* Operating system strings and version */
+#ifndef OSName
+# define OSName			Cygwin
+#endif
+#ifndef OSVendor
+# define OSVendor		Red Hat Inc.
+#endif
+# define OSMajorVersion		DefaultOSMajorVersion
+# define OSMinorVersion		DefaultOSMinorVersion
+# define OSTeenyVersion		DefaultOSTeenyVersion
+
+#define ExcludeSpiff
+#define NeedsGetSubopt 		YES
+
+#if defined NO_CYGWIN_OPTION
+
+#define NativeCC                gcc
+#define CcCmd			gcc -mno-cygwin
+#define CplusplusCmd		g++ -mno-cygwin
+#define StandardDefines		-D__CYGWIN__  -D__NO_CYGWIN_OPTION__ -DADDC_ -DADDC__
+#define OptimizedCDebugFlags	-O1 
+#define FortranCmd              g77 -mno-cygwin
+#define Fortran90Cmd		f90 -mno-cygwin
+#define DefaultF77Options	 
+#define ExtraLibraries          -liberty
+#define X11Lib -lX11
+
+#else
+
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+#define StandardDefines		-Dlinux  -DADDC_ -DADDC__
+#define OptimizedCDebugFlags	-O1 
+#define FortranCmd              g77
+#define Fortran90Cmd		f90
+#define DefaultF77Options	 
+#define X11Lib -L/usr/X11R6/lib -lX11
+
+#endif
+
+#define X11Includes -I/usr/X11R6/include
+
+#define NeedsDoubleEscape	YES
+
+#if !CrossCompiling
+# define HasGcc2		YES
+#endif /* !CrossCompiling */
+#define HasGcc2ForCplusplus	YES
+#define GccUsesGas		YES
+#define UseGas			YES
+#define GnuCpp			YES
+#define UnixCpp /* Just a flag that affects Concat macros in Imake.rules */
+
+#define ExtraLoadFlags		-Wl,--enable-auto-import,--enable-runtime-pseudo-reloc
+
+#define HasShadowPasswd		NO
+#define HasLibCrypt		YES
+#define HasPutenv		YES
+#define HasPoll			NO
+#if (OSMajorVersion > 1) || (OSMajorVersion == 1 && OSMinorVersion >= 5)
+# define HasStrlcat		YES
+#endif
+#define HasShm			YES
+
+#define HasSnprintf		YES
+#ifndef HasMakefileSafeInclude
+# define HasMakefileSafeInclude YES
+#endif
+
+/*
+ * Cygwin has Tcl/Tk, but you need to keep the version numbers
+ * of the libs in sync.  These version numbers may change
+ * occassionally.
+ */
+#define Hastcl			YES
+#define Hastk			YES
+#define TclLibName		tcl80
+#define TkLibName		tk80
+
+#define HasSockets		YES
+#define HasZlib			YES
+
+/* We don't need -lm */
+#define MathLibrary		/**/
+
+/*
+ * /lib/libtermcap.a doesn't have tgetent, which is needed for
+ * xc/programs/xterm/resize.exe
+ */
+#define TermcapLibrary		-lncurses.dll
+
+#define AvoidNullMakeCommand	YES
+#define StripInstalledPrograms	NO
+#define CompressAllFonts	YES
+#define Malloc0ReturnsNull	NO
+#define NeedConstPrototypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	NO
+#define SetTtyGroup		YES
+#define ExpandManNames		YES
+#define HasDlopen		NO
+#define HasGnuMake		YES
+#define UseGccMakeDepend	NO
+#define ThreadedX		YES
+#define HasThreadSafeAPI	YES
+#if !CrossCompiling
+#define CaseSensitiveFileSystem	NO
+#endif
+#define HasWChar32		YES
+#define HasBasename		NO /* basename() in libc */
+
+#define LnCmd			ln -s
+#ifndef CcCmd
+# define CcCmd			gcc
+#endif /* CcCmd */
+#ifndef CplusplusCmd
+# define CplusplusCmd		g++
+#endif /* CplusplusCmd */
+#ifndef AsCmd
+# define AsCmd			as
+#endif /* AsCmd */
+
+#define GccGasOption		-DGCCUSESGAS
+#define AsmDefines		-DUSE_GAS -DGCCUSESGAS
+
+#ifndef LdCmd
+# define LdCmd			gcc -lautomode
+#endif /* LdCmd */
+
+#define MkdirHierCmd		mkdir -p
+
+#ifndef CppCmd
+# define CppCmd			/usr/bin/cpp
+#endif /* CppCmd */
+#ifndef YaccCmd
+# define YaccCmd		bison -y
+#endif /* YaccCmd */
+
+#define LexCmd			flex -l
+#define LexLib			-lfl
+#define HasFlex			YES
+#ifndef CrossCompileDir
+# ifndef HasExpat
+#  define HasExpat		YES
+# endif
+# ifndef HasFreetype2
+#  define HasFreetype2		YES
+# endif
+# ifndef HasFontconfig
+#  define HasFontconfig		YES
+# endif
+#endif
+
+/* Cygwin-specific Windows resource compiler command */
+#ifdef CrossCompileDir
+# ifndef WindresCmd
+#  define WindresCmd		Concat3(CrossCompileDir,/,windres)
+# endif
+#else
+# ifndef WindresCmd
+#  define WindresCmd		windres
+# endif
+#endif
+
+#define PreProcessCmd		CcCmd -E
+
+#ifndef PostIncDir
+# ifdef CrossCompileDir
+#  define PostIncDir		`CrossCompileDir/CcCmd --print-libgcc-file-name | sed 's,\\\\,/,g' | sed 's,libgcc.a,include,'`
+# else
+#  define PostIncDir		`CcCmd --print-libgcc-file-name | sed 's,\\\\,/,g' | sed 's,libgcc.a,include,'`
+# endif
+#endif
+#ifndef ExtraIncDir
+# ifdef CrossCompileDir
+#  define ExtraIncDir		CrossCompileDir/../include/w32api
+# else
+#  define ExtraIncDir		/usr/include/w32api
+# endif
+#endif
+
+
+/*
+ * -DFD_SETSIZE=256 is needed for xfs and the xserver. cygwin defines the
+ * FD_SETSIZE as 64 but some code expects it to be larger. 
+ */ 
+#define StandardCppOptions	-traditional
+
+/*
+ * --unix option of Cygwin make fools the standard MakeFlagsToShellFlags macro
+ */
+#define MakeFlagsToShellFlags(makeflags,shellcmd) \
+	for flag in ${MAKEFLAGS} ''; do \				@@\
+	  case "$$flag" in *=*) ;;--*) ;; *[makeflags]*) shellcmd;; esac; done
+
+#define MakeNamedTargetSubdir(dir,flags,subname)\
+	$(MAKE) -C dir $(MFLAGS) flags subname
+

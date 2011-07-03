@@ -1,0 +1,893 @@
+.\" $XConsortium: RELNOTES.ms,v 1.23 91/08/29 09:45:58 rws Exp $
+.\" use ms macros
+.if n \{
+.nr LL 79n
+.ll 79n
+.nr FL 79n
+.nr LT 79n
+.\}
+.nr PS 11
+.de Ds
+.LP
+.in +.5i
+.nf
+..
+.de De
+.fi
+.in -.5i
+..
+.de Ip
+.LP
+.ne 3
+\fB\\$1\fP
+.br
+.IP
+..
+.ds LF \fBX Window System Release Notes\fP
+.ds RF \fBX Version 11, Release 5\fP
+.LP
+[The document below is an abridged version of the original:
+those parts with no relevance to \fIimake\fP have been excised.
+Deletions are marked by ``[deleted]''.
+The original may be obtained as the file \fImit/RELNOTES.ms\fP in the X11R5
+distribution. \- Paul DuBois, \fIdubois@primate.wisc.edu\fP]
+.sp 2
+.ce 4
+\s+2\fBX Window System, Version 11, Release 5\fP\s-2
+
+\s+1\fBRelease Notes\fP\s-1
+
+\fIMIT X Consortium staff\fP
+
+MIT Laboratory for Computer Science
+.sp 3
+Copyright \(co\ 1991 by the Massachusetts Institute of Technology.
+.nr PS 9
+.LP
+Permission to use, copy, modify, and distribute this document 
+for any purpose and without fee is hereby granted, provided 
+that the above copyright notice and this permission notice
+appear in all copies, and that the name of MIT not be used 
+in advertising or publicity pertaining to this document without 
+specific, written prior permission.
+MIT makes no representations about the suitability of this
+document for any purpose.
+It is provided ``as is'' without express or implied warranty.
+.nr PS 11
+.LP
+\fIX Window System\fP is a trademark of MIT.
+.sp 3
+This document describes how to build, install, and get started with
+Release 5 of the X Window System from MIT
+and gives a brief overview of the contents of the release.
+.NH 1
+For the Impatient Explorer
+.LP
+For those of you who will try to build the distribution without reading the
+entire release notes first, here is a quick summary of what to do.
+.LP
+If you want to build with \fBgcc\fP, edit \fBmit/config/site.def\fP by
+uncommenting the \fBHasGcc\fP line.
+.LP
+If you want to install into somewhere other than \fB/usr/bin/X11\fP,
+\fB/usr/include/X11\fP, etc., edit \fBmit/config/site.def\fP by uncommenting
+the \fBProjectRoot\fP lines and changing "/usr/X11R5" to whatever directory
+you want to install into.  (Do \fInot\fP use \fBDESTDIR\fP.)
+.LP
+Check the appropriate \fBmit/config/\fP\fIvendor\fP\fB.cf\fP file to
+make sure that \fBOSMajorVersion\fP and \fBOSMinorVersion\fP are
+set correctly (change them if necessary).
+.LP
+Find the \fBBootstrapCFlags\fP line, if any, in the \fIvendor\fP\fB.cf\fP file.
+If there isn't one, \fBcd\fP to the \fBmit\fP directory and type:
+.Ds
+make World >& world.log
+.De
+.LP
+If there is a \fBBootstrapCFlags\fP, take its value\s-2\u1\d\s0
+.FS
+\s+2\&1.  If you are using the \fBx386.cf\fP file, you will have to compute the
+correct value.\s-2
+.FE
+and type:
+.Ds
+make World BOOTSTRAPCFLAGS="\fIvalue\fP" >& world.log
+.De
+.LP
+Do not call the output file ``make.log'', or it will be deleted.
+If the build is successful, you can install most of it with:
+.Ds
+make install >& install.log
+.De
+.LP
+You can install man pages with:
+.Ds
+make install.man >& man.log
+.De
+.LP
+You can install lint libraries (if desired) with:
+.Ds
+make install.ln >& lintlib.log
+.De
+.LP
+If things fail, read the rest of the release notes.
+.NH 1
+Brief Overview of the Distribution
+.LP
+[deleted]
+.NH 2
+Structure of the MIT Sources
+.LP
+[deleted]
+.NH 1
+Building the Release
+.LP
+The core distribution (code under the \fBmit\fP directory) has been
+built and tested at MIT on the following systems:
+.Ds
+AIX 3.1.5, on IBM RS/6000
+Apollo SR10.3 (very minimal testing, bsd4.3 only)
+AT&T Unix System V Release 4 V2, on AT&T WGS6386
+A/UX 2.0.1
+HP-UX 7.0, on HP9000/s300
+IRIX 4.0
+Mach 2.5 Version 1.13, on OMRON Luna 88k
+NEWS-OS 4.1, on Sony NWS-1850
+NEWS-OS 5.0U, on Sony NWS-3710
+SunOS 4.1.1, on Sun 3, Sparc 1, and Sparc 2
+Ultrix-32 4.2, VAX and RISC
+UNICOS 5.1
+UTek 4.0
+VAX 4.3bsd (with unknown local changes)
+.De
+.LP
+In somes cases, we have not used the most recent version of the operating
+system (sorry).  Support for earlier versions of the operating systems
+listed is not claimed, and not guaranteed.
+.LP
+In addition to the systems above, support has been provided by vendors for:
+.Ds
+AIX 2.2 and AOS 4.3, on IBM RT
+AIX 1.2.1, on IBM PS/2
+ConvexOS V9.0
+DG/UX 4.32
+INTERACTIVE UNIX Version 2.2.1
+Mach 2.5 Version 1.40, on OMRON Luna 68k
+Motorola R32V2/R3V6.2 and R40V1
+RISCOS 4.50
+UNIOS-B 4.3BSD UNIX: 2.00
+Unix System V/386 Release 3.2, on ESIX, SCO, and AT&T (``work in progress'')
+Unix System V/386 Release 4.0, on DELL
+.De
+.NH 2
+Unpacking the Distribution
+.LP
+[deleted]
+.NH 2
+Symbolic Link Trees
+.LP
+[deleted]
+.NH 2
+Setting Configuration Parameters
+.LP
+You will notice that few if any of the subdirectories under \fBmit\fP
+contain a \fBMakefile\fP, but they do contain an \fBImakefile\fP.
+The \fBImakefile\fP is a template file used to create a \fBMakefile\fP
+containing build rules and variables appropriate for the target machine.
+The \fBMakefile\fP is generated by the program \fBimake\fP.
+Most of the configuration work prior to building the release is to
+set parameters so that \fBimake\fP will generate correct files.
+.LP
+The directory \fBmit/config\fP contains configuration
+files that control how the distribution is built.  On systems directly
+supported by this distribution, only minimal editing of these files
+should be necessary.  If your system is not supported by the
+distribution but conforms to ANSI C and POSIX.1 and has socket-style
+networking, then you should be able to build a new configuration
+file relatively easily.  Otherwise, edits to many files throughout
+the system may be necessary.  We only deal with minor editing for
+supported systems here.
+.LP
+The main files to be concerned with in the \fBmit/config\fP directory
+are \fBsite.def\fP and one of the \fIvendor\fP\fB.cf\fP files.  The
+\fBsite.def\fP file should be used for most site-specific configuration
+customizations.  The \fB.cf\fP file should normally only need to be edited
+if you are using a different release of the operating system.
+.NH 3
+The vendor.cf File
+.LP
+Find the appropriate \fB.cf\fP file from this table:
+.Ds
+.ta 2.5i
+AIX	ibm.cf
+AOS	ibm.cf
+Apollo	apollo.cf
+AT&T Unix SVR4	att.cf
+A/UX	macII.cf
+BSD	bsd.cf
+ConvexOS	convex.cf
+DG/UX	DGUX.cf
+HP-UX	hp.cf
+INTERACTIVE	x386.cf
+IRIX	sgi.cf
+Mach (Luna)	luna.cf
+Motorola	moto.cf
+NEWS-OS	sony.cf
+RISCOS	Mips.cf
+SunOS	sun.cf
+Ultrix	ultrix.cf
+UNICOS	cray.cf
+UTek	pegasus.cf
+UNIOS-B	luna.cf
+Unix System V/386	x386.cf
+.De
+.LP
+Look through this file, and check the \fBOSMajorVersion\fP and
+\fBOSMinorVersion\fP values.  The numbers have been preset
+to what was tested at MIT or what was supplied by the vendor.
+If the version numbers match the operating system you are
+currently running, all is well.  If they do not, you
+will need to edit to file to make them correct.  In a few cases
+(specifically
+changing UNICOS from 5.1 to 6.0) there should not be a problem
+in moving the version numbers forward to a newer release.
+However, if you are moving the version numbers backwards,
+or moving forward to a version that hasn't been pre-tested,
+you may have problems, and you have have to edit other parts
+of the file (and possibly other files) to get things to work.
+.LP
+You can browse through the rest of the items in the \fB.cf\fP file,
+but most of them you should not need to edit.
+.NH 3
+The site.def File
+.LP
+There are two main variables to set in the \fBsite.def\fP file:
+\fBHasGcc\fP and \fBProjectRoot\fP.  If you are going to compile
+the distribution with \fBgcc\fP, find the line that looks like
+.Ds
+/* #define HasGcc YES */
+.De
+.LP
+and remove the comment markers, turning it into
+.Ds
+#define HasGcc YES
+.De
+.LP
+If you are sharing a single \fBsite.def\fP across multiple systems,
+you can do something more complicated.
+For example, if you only want to use \fBgcc\fP on a Sun 3 (but not
+on Sparcs) you might use this:
+.Ds
+#ifdef SunArchitecture
+#define HasGcc mc68000
+#endif
+.De
+.LP
+The most common error when using \fBgcc\fP is to fail to run
+the \fBfixincludes\fP script (from the \fBgcc\fP distribution)
+when installing \fBgcc\fP.  Make sure you have done this before
+compiling the release.  Another common error is likely to be
+using \fBgcc\fP ANSI C include files when the vendor operating system
+supplies correct ones.  The \fBgcc\fP include files \fBassert.h\fP,
+\fBlimits.h\fP, and \fBstddef.h\fP are prime candidates for not installing.
+.LP
+The \fBProjectRoot\fP variable controls where the software will
+eventually be installed.  The default as distributed for most
+systems is to install into ``system'' directories: \fB/usr/bin/X11\fP,
+\fB/usr/include/X11\fP, \fB/usr/lib\fP, and \fB/usr/man\fP (this
+is the behaviour when \fBProjectRoot\fP is not defined).
+If you prefer to install into alternate directories, the simplest
+thing to do is to set \fBProjectRoot\fP.  Find the four \fBProjectRoot\fP
+lines in the \fBsite.def\fP file, and again remove the ``/*'' and ``*/''
+comment markers that surround them.  You will see a default choice
+for \fBProjectRoot\fP of \fB/usr/X11R5\fP; if you don't like that one,
+replace it with another.  Assuming you have set the variable to some
+value /\fIpath\fP, files will be installed into
+/\fIpath\fP/bin, /\fIpath\fP/include/X11, /\fIpath\fP/lib, and
+/\fIpath\fP/man.
+.LP
+Note that in a few cases (\fBibm.cf\fP and \fBx386.cf\fP) the
+vendor-supplied \fB.cf\fP file supplies a \fBProjectRoot\fP by default.
+If you want to accept this one, do not uncomment the one in \fBsite.def\fP;
+otherwise the one you place in \fBsite.def\fP will
+override the default setting.
+.LP
+The directories where the software will be installed are compiled in
+to various programs and files during the build process, so it is
+important that you get the configuration correct at the outset.
+If you change your mind later, you will want to do a ``make Everything''
+to rebuild correctly.
+.LP
+Notice that the \fBsite.def\fP file was two parts, one protected with
+``#ifdef BeforeVendorCF'' and one with ``#ifdef AfterVendorCF''.
+The file is actually processed twice, once before the \fB.cf\fP file
+and once after.  About the only thing you need to set in the ``before''
+section is \fBHasGcc\fP; just about everything else can be set in the
+``after'' section.
+.LP
+There are a large number of parameters that you can modify to change
+what gets built and how it gets built.  An exhaustive list and explanation
+will not be given here; you can browse through \fBmit/config/README\fP
+to see a list of parameters.
+.LP
+[rest of section deleted]
+.NH 2
+System Pitfalls
+.LP
+On a few systems, you are likely to have build problems unless you make some
+minor changes to the system.  Naturally, you should exercise caution
+before making changes to system files, but these are our recommendations
+based on our experience.
+.LP
+On VAX Ultrix systems, you may find that \fB<stdlib.h>\fP
+contains declarations of \fBmalloc\fP, \fBcalloc\fP, and \fBrealloc\fP
+with a return value of ``void *''.  You may find this causes problems
+when compiling with a non-ANSI-C compiler, in which case a workaround
+is to change the return values to ``char\&*'' in the ``#else'' section.
+.LP
+Ultrix may not provide \fB<locale.h>\fP unless you load the
+Internationalization subset.  You will need this file to compile
+the distribution (or else you will need to reset a configuration
+parameter, see below).
+.LP
+On SunOS systems, you may find that statically linking (when debugging)
+against both Xlib and the \fBlibc\fP will result in unresolved symbols to
+dynamic linker functions, because Xlib contains calls to \fBwcstombs\fP.
+Either link dynamically against \fBlibc\fP, or compile and link
+the stub routines in \fBmit/util/misc/dlsym.c\fP.
+.LP
+On Sun 3s, the default is to compile library files with no special floating
+point assumptions.  If all of your Sun 3s have floating point hardware, you
+may want to change this, for better performance of Xlib color functions.
+For example, in the ``after'' section of your \fBsite.def\fP file,
+you might add:
+.Ds
+#if defined(SunArchitecture) && defined(mc68000)
+#undef LibraryCCOptions
+#define SharedLibraryCCOptions -f68881 -pipe
+#endif
+.De
+.LP
+On AOS, you may find that \fB<stdarg.h>\fP is missing.
+In that case, you should be able to copy \fBmit/util/misc/rt.stdarg.h\fP
+to create the file.
+.LP
+On some System V/386 systems, you may find when using \fBgcc\fP in
+ANSI mode that there are inconsistent declarations between \fB<memory.h>\fP
+and \fB<string.h>\fP.  In that case, you may find it convenient to
+remove \fB<memory.h>\fP and make it a link to \fB<string.h>\fP.
+.LP
+On some System V/386 systems, you may need to build and install a
+\fBdbm\fP library before building the X server and RGB database.
+One can be found in \fBcontrib/util/sdbm\fP.
+.NH 3
+Internationalization
+.LP
+[deleted]
+.NH 2
+Typing ``make World''
+.LP
+One more piece of information is required before building, at least
+on some systems: bootstrap flags.  Look in your \fB.cf\fP file for
+a line of the form
+.Ds
+#define BootstrapCFlags \fIvalue\fP
+.De
+.LP
+If there isn't one things are simple, otherwise things
+are only slightly more complicated.  If there is more than one
+(for example, in \fBibm.cf\fP, \fBmoto.cf\fP, and \fBsony.cf\fP),
+then you need to select the right one; it should be pretty obvious by the
+grouping according to operating system type.  Note that on
+A/UX you only need this value if you are using \fBgcc\fP,
+and that on a Sun you only need this value if you are using
+an earlier version of the operating system.
+.LP
+If you are using \fBx386.cf\fP, you will have to ``compute'' the value
+from the information given in the file.  You may also need to do other
+preparatory work; please read \fBmit/server/ddx/x386/README\fP.
+.LP
+If no value is required on your system, you can \fBcd\fP to the \fBmit\fP
+directory and start the build with:
+.Ds
+make World >& world.log
+.De
+.LP
+If a value is required, start the build with:
+.Ds
+make World BOOTSTRAPCFLAGS="\fIvalue\fP" >& world.log
+.De
+.LP
+You can call the output file something other than ``world.log'', but
+do not call it ``make.log'' because files with this name are
+automatically deleted during the ``cleaning'' stage of the build.
+.LP
+Because the build can take several hours to complete, you will probably
+want to run it in the background, and keep a watch on the output.
+For example:
+.Ds
+make World >& world.log &
+tail -f world.log
+.De
+.LP
+If something goes wrong, the easiest thing is to just start over
+(typing ``make World'' again) once you have corrected the problem.
+It is possible that a failure will corrupt the top-level \fBMakefile\fP.
+If that happens, simply delete the file and recreate a workable
+substitute with:
+.Ds
+cp Makefile.ini Makefile
+.De
+.LP
+When the build completes, examine the \fBworld.log\fP file for
+errors.  If you search for `:' (colon) characters, and skip
+the obvious compile lines, it is usually pretty easy to spot
+any errors.\s-2\u2\d\s0
+.FS
+\s+2\&2.  Searching for colon does not work particularly well on the RS/6000
+because it appears in command lines when building shared libraries.
+Try searching for colon followed by space.\s-2
+.FE
+.NH 1
+Installing the Release
+.LP
+Although it is possible to test the release before installing it,
+it is a lot easier to test after it has been installed.
+If everything is built successfully, you can install the software
+by typing the following as root, from the \fBmit\fP directory:
+.Ds
+make install >& install.log
+.De
+.LP
+Again, you might want to run this in the background and use \fBtail\fP
+to watch the progress.
+.LP
+You can install the man pages by typing the following as root,
+from the \fBmit\fP directory:
+.Ds
+make install.man >& man.log
+.De
+.LP
+You can install lint libraries (useful if your systems does does not have
+an ANSI C compiler) by typing the following as root,
+from the \fBmit\fP directory:
+.Ds
+make install.ln >& lintlib.log
+.De
+.NH 2
+Setting Up xterm
+.LP
+[deleted]
+.NH 2
+Starting Servers at System Boot
+.LP
+[deleted]
+.NH 1
+Rebuilding the Release
+.LP
+You shouldn't need this right away, but eventually you are probably
+going to make changes to the sources, for example by applying
+public patches distributed by MIT.  If only C source files are
+changed, you should be able to rebuild just by going to the \fBmit\fP
+directory and typing:
+.Ds
+make >& make.log
+.De
+.LP
+If configuration files are changed, the safest thing to do is type:
+.Ds
+make Everything >& every.log
+.De
+.LP
+``Everything'' is similar to ``World'' in that it rebuilds every
+\fBMakefile\fP, but unlike ``World'' it does not delete the
+existing objects, libraries, and executables, and only rebuilds
+what is out of date.
+.LP
+Note that in both kinds of rebuilds you do not need to supply the
+\fBBootstrapCFlags\fP value any more, the information is already recorded.
+.NH 1
+Building Contributed Software
+.LP
+[deleted]
+.NH 1
+Filing Bug Reports
+.LP
+[deleted]
+.NH 1
+Public Fixes
+.LP
+[deleted]
+.NH 1
+Configuring for a New Architecture
+.LP
+Here is a very brief overview of the files that \fBimake\fP reads.
+All the files are in the \fBmit/config\fP directory, except
+for the \fBImakefile\fP in the directory for which the \fBMakefile\fP
+is being created.  The processing order is:
+.Ds
+.ta 2.5i
+Imake.tmpl	variables not related specifically to X
+    site.def	site-specific BeforeVendorCF part
+    *.cf	machine-specific
+        *Lib.rules	shared library rules
+    site.def	site-specific AfterVendorCF part
+    Project.tmpl	X-specific variables
+        *Lib.tmpl	shared library variables
+    Imake.rules		rules
+Imakefile		specific to the program or library
+    Library.tmpl	library rules
+    Server.tmpl	server rules
+.De
+The indentation levels indicate what files include other files.
+.NH 2
+Imake.tmpl
+.LP
+The first part of \fBImake.tmpl\fP determines which \fB.cf\fP
+file to include.  If your \fBcpp\fP defines a unique symbol,
+that should be used to select the file.
+Otherwise, you should place a -D symbol definition
+in \fBBootstrapCFlags\fP in your \fB.cf\fP file and use that.
+The canonical code to add to \fBImake.tmpl\fP is:
+.Ds
+#ifdef \fIsymbol\fP
+#define MacroIncludeFile <\fIsymbol\fP.cf>
+#define MacroFile \fIsymbol\fP.cf
+#undef \fIsymbol\fP
+#define \fISymbol\fPArchitecture
+#endif /* \fIsymbol\fP */
+.De
+.NH 2
+imakemdep.h
+.LP
+You also need to edit the file \fBimakemdep.h\fP.  There are
+three parts to this file.  The first contains defines (beyond
+\fBBootstrapCFlags\fP) or compiler options that are required to get
+\fBimake\fP itself built the first time.
+.LP
+The next section is for \fBimake\fP itself.
+There is a hook in case your \fBcpp\fP collapses tabs down to single spaces.
+There is also a way to override the \fBcpp\fP to use.
+Finally, add specific defines to pass to \fBcpp\fP
+when processing configuration files.
+.LP
+The last section is for \fBmakedepend\fP, to tell it about
+predefined symbols that will be used to control inclusion of header files.
+.LP
+.NH 2
+vendor.cf
+.LP
+Most of the rest of your vendor-specific configuration information goes here.
+We won't try to tell you everything you need; study the other \fB.cf\fP
+files and copy from systems that are similar.  One good rule to follow
+is to not define anything that will get the correct default value from
+somewhere else; this will make it easier to see what is special, and will
+make it easier for sites to customize in their \fBsite.def\fP.
+.LP
+If you have shared libraries, the convention is to place the
+configuration rules and standard parameters in a file named
+\fIos\fP\fBLib.rules\fP, and to place version number parameters
+and \fBmake\fP variables in a file named \fIos\fP\fBLib.tmpl\fP.
+Look at the existing files and mimic them.
+.NH 2
+Other Files
+.LP
+[deleted]
+.NH 1
+Writing Portable Code
+.LP
+In this section we give a brief introduction to using various header
+files to aid in writing portable code.
+.NH 2
+<X11/Xosdefs.h>
+.LP
+The file \fB<X11/Xosdefs.h>\fP defines symbols that describe the system
+environment for ANSI C and POSIX.  We likely will extend it to other
+standards in the future.  We have found these symbols useful in
+writing portable code, and hope that other writers of X software will
+use them as well.
+This file is not part of any X Consortium standard,
+it is simply part of our software distribution.
+.LP
+\fB<X11/Xosdefs.h>\fP can be included directly by a file, or it
+will be automatically included when you include \fB<X11/Xos.h>\fP.
+.LP
+The symbols in \fB<X11/Xosdefs.h>\fP tell when you can, for example, do
+.Ds
+#include <stdlib.h>
+.De
+.LP
+without getting a ``no such header file'' error from the compiler.
+If the system provides a declaration for a function or value for a
+constant, it is important to use the system's definition rather than
+providing your own, particularly because you might not use function
+prototypes and the system might, or vice versa.
+.LP
+\fB<X11/Xosdefs.h>\fP currently controls two symbols:
+\fBX_NOT_STDC_ENV\fP and \fBX_NOT_POSIX\fP.
+.LP
+\fBX_NOT_STDC_ENV\fP means the system does not have ANSI C header files.
+Thus, for example, if \fBX_NOT_STDC_ENV\fP is not defined, it is safe to
+include \fB<stdlib.h>\fP.  Do not confuse this symbol with \fB_\^_STDC_\^_\fP,
+which says whether the compiler itself supports ANSI C semantics.
+\fBX_NOT_STDC_ENV\fP is independent, and tells what header files it
+is safe to include.
+.LP
+Lack of the symbol \fBX_NOT_STDC_ENV\fP does \fInot\fP mean that the
+system has \fB<stdarg.h>\fP.  This header file is part of ANSI C,
+but we have found it more useful to check for it separately because
+many systems have all the ANSI C files we need except this one.
+\fB_\^_STDC_\^_\fP is used to control inclusion of this file.
+.LP
+An example of using \fBX_NOT_STDC_ENV\fP might be to know when the system
+declares \fBgetenv\fP:
+.Ds
+#ifndef X_NOT_STDC_ENV
+#include <stdlib.h>
+#else
+extern char *getenv();
+#endif
+.De
+.LP
+We usually put the standard case first in our code, using ``#ifndef''.
+.LP
+\fBX_NOT_POSIX\fP means the system does not have POSIX.1 header files.
+Lack of this symbol does \fInot\fP mean that the POSIX environment is
+the default.  You may still have to define \fB_POSIX_SOURCE\fP before
+including the header file to get POSIX definitions.\s-2\u3\d\s0
+.FS
+\s+2\&3.  We have found it very unfortunate that POSIX did not define
+a standard symbol that means ``give me POSIX, plus any non-conflicting
+vendor-specific definitions''.\s-2
+.FE
+.LP
+An example of using \fBX_NOT_POSIX\fP might be to determine the type that
+\fBgetuid\fP would be declared by in \fB<pwd.h>\fP:
+.Ds
+#include <pwd.h>
+#ifndef X_NOT_POSIX
+    uid_t uid;
+#else
+    int uid;
+    extern int getuid();
+#endif
+    uid = getuid();
+.De
+.LP
+Note that both of these symbols, when declared, state a
+non-compliance.  This was chosen so that porting to a new, standard
+platform would be easier.  Only non-standard platforms need to add
+themselves to \fB<X11/Xosdefs.h>\fP to turn on the appropriate symbols.
+.LP
+Not all systems for which we leave these symbols undefined strictly
+adhere to the relevant standards.  Thus you will sometimes see checks
+for a specific O/S near a check for one of the Xosdefs.h symbols.
+However, we have found it most useful to label systems as conforming
+even if they have some holes in their compliance.  Presumably these
+holes will become fewer as time goes on.
+.NH 2
+<X11/Xos.h>
+.LP
+In general, \fB<X11/Xos.h>\fP should be used instead of the
+following header files:
+.Ds
+<string.h>
+<strings.h>
+<sys/types.h>
+<sys/file.h>
+<fcntl.h>
+<sys/time.h>
+<unistd.h>
+.De
+This file is not part of any X Consortium standard,
+it is simply part of our software distribution.
+.LP
+Some common routines for which you need to include
+\fB<X11/Xos.h>\fP before using are:
+.Ds
+index
+rindex
+strchr
+strrchr
+(all the other standard string routines)
+gettimeofday
+time
+.De
+.LP
+Data types and constants that should be obtained with \fB<X11/Xos.h>\fP are:
+.Ds
+caddr_t
+O_RDONLY
+O_RDWR
+(and other \fBopen\fP constants)
+R_OK
+W_OK
+X_OK
+(and other \fBfcntl\fP constants)
+.De
+.LP
+Unfortunately, we did not create a header file for declaring \fBmalloc\fP
+correctly, and it can be a bit tricky.  You can use what we currently
+have by copying, for example, from \fBmit/lib/Xt/Alloc.c\fP:
+.Ds
+#ifndef X_NOT_STDC_ENV
+#include <stdlib.h>
+#else
+char *malloc(), *realloc(), *calloc();
+#endif
+#if defined(macII) && !defined(__STDC__)  /* stdlib.h fails to define these */
+char *malloc(), *realloc(), *calloc();
+#endif /* macII */
+.De
+.NH 2
+<X11/Xfuncs.h>
+.LP
+This file contains definitions of \fBbcopy\fP, \fBbzero\fP,
+and \fBbcmp\fP.\s-2\u4\d\s0
+.FS
+\s+2\&4.  Yes, we should have used the ANSI C function names,
+but we thought we had too much existing code using the BSD names.\s-2
+.FE
+You should include this header in any file that uses these functions.
+This file is not part of any X Consortium standard,
+it is simply part of our software distribution.
+.NH 2
+<X11/Xfuncproto.h>
+.LP
+This file contains definitions for writing function declarations
+to get function prototypes to work right.
+It deals with ANSI C compilers as well as pre-ANSI C compilers
+that have parts of function prototypes implemented.
+This file is not part of any X Consortium standard,
+it is simply part of our software distribution.
+.LP
+For external header files that might get used from C++,
+you should wrap all of your function declarations like this:
+.Ds
+_XFUNCPROTOBEGIN
+\fIfunction declarations\fP
+_XFUNCPROTOEND
+.De
+When in doubt, assume that the header file might get used from C++.
+.LP
+A typical function declaration uses \fBNeedFunctionPrototypes\fP, like this:
+.Ds
+extern Atom XInternAtom(
+#if NeedFunctionPrototypes
+    Display*		/* display */,
+    _Xconst char*	/* atom_name */,
+    Bool		/* only_if_exists */		 
+#endif
+);
+.De
+.LP
+If there are \fBconst\fP parameters, use the symbol \fB_Xconst\fP instead,
+as above.
+If it is plausible to pass a string literal to a char* parameter, then
+it is a good idea to declare the parameter with \fB_Xconst\fP, so that
+literals can be passed in C++.
+.LP
+If there are nested function prototypes, use \fBNeedNestedPrototypes\fP:
+.Ds
+extern Bool XCheckIfEvent(
+#if NeedFunctionPrototypes
+    Display*		/* display */,
+    XEvent*		/* event_return */,
+    Bool (*) (
+#if NeedNestedPrototypes
+	       Display*			/* display */,
+               XEvent*			/* event */,
+               XPointer			/* arg */
+#endif
+             )		/* predicate */,
+    XPointer		/* arg */
+#endif
+);
+.De
+.LP
+If there is a variable argument list, use \fBNeedVarargsPrototypes\fP:
+.Ds
+extern char *XGetIMValues(
+#if NeedVarargsPrototypes
+    XIM /* im */, ...
+#endif
+);
+.De
+.LP
+If you have parameter types that will widen in K&R C, then you should
+use \fBNeedWidePrototypes\fP:
+.Ds
+extern XModifierKeymap *XDeleteModifiermapEntry(
+#if NeedFunctionPrototypes
+    XModifierKeymap*	/* modmap */,
+#if NeedWidePrototypes
+    unsigned int	/* keycode_entry */,
+#else
+    KeyCode		/* keycode_entry */,
+#endif
+    int			/* modifier */
+#endif
+);
+.De
+.LP
+If you use \fB_Xconst\fP, \fBNeedNestedPrototypes\fP,
+\fBNeedVarargsPrototypes\fP, or \fBNeedWidePrototypes\fP,
+then your function implementation also has to have a
+function prototype.  For example:
+.Ds
+#if NeedFunctionPrototypes
+Atom XInternAtom (
+    Display *dpy,
+    _Xconst char *name,
+    Bool onlyIfExists)
+#else
+Atom XInternAtom (dpy, name, onlyIfExists)
+    Display *dpy;
+    char *name;
+    Bool onlyIfExists;
+#endif
+{
+    ...
+}
+.De
+.LP
+Actually, anytime you use a function prototype in a header file,
+you should use a function prototype in the implementation, as
+required by ANSI C.  The MIT X sources do not follow this (we've
+never had time to make all the changes), and there are almost
+certainly compilers that will complain if the implementation
+does not match the declaration.
+.NH 2
+Other Symbols
+.LP
+Do not use the names \fBclass\fP, \fBnew\fP, or \fBindex\fP as
+variables or struct members.  The names \fBclass\fP and \fBnew\fP
+are reserved words in C++, and you may find your header files
+used by a C++ program someday.
+Depending on your system, \fBindex\fP can be defined as \fBstrchr\fP
+or a macro in \fB<X11/Xos.h>\fP; this may cause problems if you
+include this header file.
+.LP
+The following system-specific symbols are commonly used in X sources
+where OS dependencies intrude:\s-2\u5\d\s0
+.FS
+\s+2\&5.  At most \fIone\fP of these symbols should be defined
+on a given system!\s-2
+.FE
+.Ds
+.ta 1i
+USG	based on System V Release 2
+SYSV	based on System V Release 3
+SVR4	System V Release 4
+.De
+.LP
+For other system-specific symbols, look at the \fBStandardDefines\fP
+parameters in the \fBmit/config/*.cf\fP files.
+.NH 1
+What's New, What's Changed
+.LP
+[deleted]
+.NH 1
+Acknowledgements
+.LP
+The MIT Release 5 distribution is brought to you by the MIT X Consortium.
+A cast of thousands, literally, have made this release possible.
+We cannot possibly acknowledge them all here.
+The names of all people who made it a reality will be found in the
+individual documents and source files.
+We greatly appreciate the work that everyone has put into this release.
+.sp 1
+.in +3i
+.nf
+Hoping you enjoy Release 5,
+
+Donna Converse
+Stephen Gildea
+Susan Hardy
+Jay Hersh
+Keith Packard
+David Sternlicht
+Bob Scheifler
+Ralph Swick
+
+(R5 Survival Club)

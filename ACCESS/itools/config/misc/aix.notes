@@ -1,0 +1,4 @@
+Apparently the stock cpp on some (newer?) versions of AIX doesn't work
+very well with imake.  It's been reported on the net that setting
+the environment variable IMAKECPP to /usr/lpp/X11/Xamples/util/cpp/cpp
+works better.

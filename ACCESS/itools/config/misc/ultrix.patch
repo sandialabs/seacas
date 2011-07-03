@@ -1,0 +1,53 @@
+Purpose of this patch:  The distribution builds correctly for recent versions
+of Ultrix, but older versions (e.g., 3.1) fail with a "can't find stdlib.h"
+error when building imake and makedepend.  In both cases the fix is to add
+-DNOSTDHDRS to the bootstrap flags.
+
+This patch changes the OS version to 3.1 and adds a clause at the end to
+define BootstrapCFlags.
+
+To build the distribution on an older Ultrix, apply the patch, and build using
+this command:
+
+	% make World BOOTSTRAPCFLAGS="-Dultrix -DNOSTDHDRS" >& make.world
+
+Ultrix 3.1 is the last release for which I know the patch is necessary; if
+there are higher-numbered releases for which it's needed, please let me know.
+
+*** ultrix.cf.orig	Sat Apr 10 10:47:39 1993
+--- ultrix.cf	Tue Apr 13 13:01:19 1993
+***************
+*** 2,9
+  
+  #define OSName            Ultrix-32 4.2
+  XCOMM operating system:  OSName
+! #define OSMajorVersion    4
+! #define OSMinorVersion    2
+  
+  #define HasPutenv YES
+  #define HasSaberC YES
+
+--- 2,9 -----
+  
+  #define OSName            Ultrix-32 4.2
+  XCOMM operating system:  OSName
+! #define OSMajorVersion    3
+! #define OSMinorVersion    1
+  
+  #define HasPutenv YES
+  #define HasSaberC YES
+***************
+*** 44,46
+  #endif
+  
+  #define ServerOSDefines AllocateLocalDefines
+
+--- 44,51 -----
+  #endif
+  
+  #define ServerOSDefines AllocateLocalDefines
++ 
++ #if OSMajorVersion < 3 || (OSMajorVersion == 3 && OSMinorVersion <= 1)
++ #define BootstrapCFlags -Dultrix -DNOSTDHDRS
++ #endif
++ 

@@ -1,0 +1,222 @@
+C    Copyright(C) 2008 Sandia Corporation.  Under the terms of Contract
+C    DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
+C    certain rights in this software
+C    
+C    Redistribution and use in source and binary forms, with or without
+C    modification, are permitted provided that the following conditions are
+C    met:
+C    
+C    * Redistributions of source code must retain the above copyright
+C       notice, this list of conditions and the following disclaimer.
+C              
+C    * Redistributions in binary form must reproduce the above
+C      copyright notice, this list of conditions and the following
+C      disclaimer in the documentation and/or other materials provided
+C      with the distribution.
+C                            
+C    * Neither the name of Sandia Corporation nor the names of its
+C      contributors may be used to endorse or promote products derived
+C      from this software without specific prior written permission.
+C                                                    
+C    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+C    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+C    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+C    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+C    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+C    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+C    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+C    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+C    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+C    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+C    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+C    
+C $Id: qainfo.blk,v 1.1 2008/10/31 05:04:00 gdsjaar Exp $
+C $Log: qainfo.blk,v $
+C Revision 1.1  2008/10/31 05:04:00  gdsjaar
+C Moved the applications into an applications subdirectory.
+C
+C Revision 1.1  2008/06/18 16:00:27  gdsjaar
+C Initial adding of files to sourceforge
+C
+C Revision 1.28  2008/03/14 13:45:28  gdsjaar
+C Added copyright information to top of all files.
+C
+C ALGEBRA2 is now open-sourced under BSD license
+C
+C Revision 1.27  2006/07/19 21:26:47  gdsjaar
+C Fixed opnlog to correctly get names of input and output files.
+C
+C Removed some mdget calls and initialize ktimes if there are no timesteps
+C
+C Fixed output of visible/selected element block ids.  For large numbers
+C of element blocks, the output was overrunning a string.  Changed
+C output to fill up the string, output it, and then continue...
+C
+C Revision 1.26  2005/04/11 18:49:14  gdsjaar
+C Removed old warning message about algebra2 being a test version...
+C
+C Fixed so that code does not core dump if log file cannot be opened.
+C
+C Revision 1.25  2004/03/01 17:24:37  gdsjaar
+C Fixed subscripting error on the unode function. It was stored in same place as uglob function which caused problems
+C
+C Revision 1.24  2003/08/11 14:42:26  gdsjaar
+C Parser was not recognizing "." as a valid character in a variable
+C name.  Sierra restart files use this character.
+C
+C Revision 1.23  2003/05/30 13:44:16  gdsjaar
+C Added a call to mdfill(0) to initialize all supes allocated memory to
+C 0. This is a quick fix to an uninitialized variable problem caused by
+C the commands:
+C
+C tot = 0
+C tot = tot: + variable
+C
+C Revision 1.22  2002/04/25 15:27:37  gdsjaar
+C Fixed problem with reading 32 character variable names
+C
+C Revision 1.21  2000/12/18 15:01:54  gdsjaar
+C Fixed typo introduced in the intrinsic wrappers fix.  Had generated a call to mymysum instead of mysum.
+C
+C Revision 1.20  2000/12/05 22:28:56  gdsjaar
+C Fix problem with incorrect array size for node set distribution factor
+C indices.  Also wrong size in mdget call.
+C
+C Revision 1.19  2000/11/09 16:32:36  gdsjaar
+C There is a strange interaction with the second_underscore option to
+C the Portland compiler and the INTRINSIC statement.  For example,
+C INTRINSIC SQRT would cause the linker to look for ftn_sqrt__ instead
+C of ftn_sqrt_.  So, to remove the intrinsic statement, I added wrappers
+C around all of the intrinsics.  For example, mysqrt wraps sqrt.
+C
+C The other benefit/result of this change is that there no longer needs
+C to be SGI64-specific code since the intrinsics are not passed as
+C function arguments anymore -- they are in the wrapped functions and
+C the compiler can determine the concrete intrinsic when the code
+C specifies the generic.
+C
+C Revision 1.18  2000/09/21 20:33:11  gdsjaar
+C Changes to work with files that have been decomposed and do not have
+C any nodesets or sidesets on this file even though the combined file
+C has sidesets and/or nodesets.  Added checks that number of
+C nodes/elements in nodesets/sidesets was positive before calling some
+C routines.
+C
+C This problem was causing failures on pronto3d history files in a
+C parallel run.
+C
+C Revision 1.17  2000/02/17 15:14:45  gdsjaar
+C Fixed problem with incorrect length of qainfo.  One place had 8
+C charaters; another 32.
+C
+C Revision 1.16  1999/07/20 14:43:50  gdsjaar
+C Added ifdefs to see if compiling in 64-bit mode on SGI systems.  Since
+C the intrinsic functions are being passed as a parameter into a
+C routine, the specific name needs to be used instead of the generic
+C name. Changed eval.f to eval.F with added ifdefs
+C
+C Also changed the my*.f functions to use the generic name instead of
+C the specific name so the correct version would be picked depending on
+C the compilation mode.
+C
+C Upped version.
+C
+C Revision 1.15  1998/08/18 22:32:56  gdsjaar
+C Upped maximum number of variables from 300 to 2048.
+C
+C Revision 1.14  1998/08/04 15:03:12  gdsjaar
+C Added trap and error message for sideset with no nodes or elements
+C
+C Revision 1.13  1998/04/22 21:26:02  gdsjaar
+C Added 'delete qa|information|qainfo' command to delete the qa and/or
+C information records from the output database
+C
+C Revision 1.12  1998/03/23 05:08:21  gdsjaar
+C Fixed data statement ordering
+C
+C Revision 1.11  1998/03/14 00:05:27  rwstotz
+C dbinam.f converts variable names to uppercase now
+C
+C Revision 1.10  1997/09/09 23:03:47  gdsjaar
+C Removed the automatic printing of qa and info records. This can still
+C be accessed via the 'list qa' command.
+C
+C Revision 1.9  1997/09/08 17:18:52  gdsjaar
+C Minor cleanup of some exodusII related issues.  The cleanups fall in
+C two distinct areas:
+C 1. Handling of 32 character names
+C 2. Nonexistence of History variables (or special treatment...)
+C
+C In the first area, changes were made in several areas to permit the
+C user to reference and create variable names with >8 characters. The
+C reading and writing of these worked correctly, but users couldn't
+C enter names >8 characters from the command line
+C
+C In the second area: In exodusII, there is not really the concept of
+C history variables as they existed in exodusI. If needed, a separate
+C exodus file is written with a different timestep frequency.  In the
+C original version of algebra, TIME and any variable that was a function
+C of TIME was a history variable. This was carried over into algebra2
+C except that history variables are not written to the database, so the
+C user couldn't do any functions involving time.  This has been changed
+C to use GLOBAL variables instead of HISTORY.
+C
+C Minor change: Variable names are uppercased as they are read in from
+C the exodus database. This fixes problem with not being able to access
+C variables with lowercase names.
+C
+C Revision 1.8  1997/08/05 18:55:03  gdsjaar
+C Fixed the check for comment fix I made yesterday. The backslash is
+C non-standard for escaping a single quote. Instead, supposed to double it.
+C
+C Revision 1.7  1997/08/04 13:41:38  gdsjaar
+C Fixed handling of comment character (').
+C
+C Revision 1.6  1995/10/03 21:36:34  mksmith
+C Removing old algII files
+C Replacing modified algII files
+C
+
+      CHARACTER*(MXSTLN) CVSREV, CVSDAT
+
+C     The CVS* variables are updated by the CVS/RCS program every time
+C     this routine is commited to the repository.  Therefore, whenever 
+C     there are any changes to any routines, this routine should also 
+C     be committed.  The assignment to QAINFO(I) strips off the 'Revision'
+C     and 'Date' strings from the CVS variables.  Kludgey but it might work.
+
+C      --QAINFO - the current program QA information:
+C      --   (1) = program name
+C      --   (2) = revision date
+C      --   (3) = version as "QA xx.xx" or "X  xx.xx" or "   xx.xx"
+C      --   (4) = program name with version appended
+C      --   (5) = date of current run
+C      --   (6) = time of current run
+
+      
+      CVSREV = '$Revision: 1.1 $'
+      CVSDAT = '$Date: 2008/10/31 05:04:00 $'
+
+      QAINFO(1) = 'Algebra2                        '
+      QAINFO(2) = '                                '
+      QAINFO(3) = '                                '
+      QAINFO(4) = '                                '
+      QAINFO(5) = '                                '
+      QAINFO(6) = '                                '
+      LREV = LENSTR(CVSREV)
+      LDAT = LENSTR(CVSDAT)
+      QAINFO(2) = CVSDAT(10:17)
+      QAINFO(3) = CVSREV(11:15)
+
+c      if (cvsrev(1:1) .eq. '$') then
+c         LREV = LENSTR(CVSREV) - 12
+c         QAINFO(2) = CVSDAT(10:17)
+c         QAINFO(3) = CVSREV(12:15)
+c         QAINFO(3)(MAX(1,MXSTLN-LREV):MXSTLN) = CVSREV(12:11+LREV)
+c      else
+c         lrev = lenstr(cvsrev)
+c         QAINFO(2) = CVSDAT(3:10)
+c         QAINFO(3)(MAX(1,9-LREV):8) = CVSREV(1:LREV)
+c      end if
+
+c ------------------------.

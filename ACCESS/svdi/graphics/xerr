@@ -1,0 +1,6 @@
+XIO:  fatal IO error XIO:  fatal IO error 32 (Broken pipe) on X server "local:0.0"
+      after 37 requests (31 known processed) with 0 events remaining.
+      The connection was probably broken by a server shutdown or KillClient.
+32 (Broken pipe) on X server "local:0.0"
+      after 43 requests (32 known processed) with 0 events remaining.
+      The connection was probably broken by a server shutdown or KillClient.

@@ -1,0 +1,825 @@
+/*
+        ACCESS Rules for Benchmark Testing
+*/
+
+#ifndef ProgramTargetHelper
+#define ProgramTargetHelper(program,srcs,objs,deplib,locallib,syslib)   @@\
+ProgramTargetName(program): $(objs) $(deplib)                           @@\
+	RemoveTargetProgram($@)                                         @@\
+	LinkRule($@,$(LDOPTIONS),$(objs),locallib $(LDLIBS) syslib)     @@\
+                                                                        @@\
+CenterProgramTarget(program,$(srcs),$(objs),locallib,syslib)            @@\
+SentinelProgramTarget(program,$(objs) $(deplib),$(objs) locallib $(LDLIBS) syslib) @@\
+PurifyProgramTarget(program,$(objs) $(deplib),$(objs) locallib $(LDLIBS) syslib) @@\
+ProofProgramTarget(program,$(objs) $(deplib),$(objs) locallib $(LDLIBS) syslib) @@\
+                                                                        @@\
+InstallProgram(program,$(ETCDIR))                                       @@\
+InstallManPage(program,$(MANDIR))
+#endif /* ProgramTargetHelper */
+
+/*
+ * TagsTarget - generate rules to compute tags files for C, Fortran source.
+ */
+#ifndef TagsTarget
+#define	TagsTarget()							@@\
+tags::									@@\
+	$(TAGS) -w *.[chfF]						@@\
+	$(TAGS) -xw *.[chfF] > TAGS
+#endif /* TagsTarget */
+
+/*
+ * RunAnalysisProgram - generate rules to run a SEACAS analysis program
+ */
+#ifndef RunAnalysisProgram
+#define	RunAnalysisProgram(basename,program,options)			@@\
+AllTarget(basename.e)							@@\
+basename.e:: basename.g basename.i					@@\
+	program options basename					@@\
+output:: basename.g basename.i 						@@\
+	program options basename					@@\
+basename.h:: basename.g basename.i					@@\
+	program options basename					@@\
+ExtraStuffToClean(basename.e)
+#endif /* RunAnalysisProgram */
+
+/*
+ * PRunAnalysisProgram - generate rules to run a SEACAS analysis program
+ */
+#ifndef PRunAnalysisProgram
+#ifdef CougarArchitecture
+#define	PRunAnalysisProgram(basename,program,options)			@@\
+AllTarget(basename.e)							@@\
+basename.e:: basename.spread basename.g basename.i 			@@\
+	program options -mesh basename.par basename			@@\
+	yod -sz 1 $(BINDIR)/nem_join basename.pex			@@\
+	mv basename-out.e basename.e					@@\
+output:: basename.spread basename.g basename.i 				@@\
+	program options -mesh basename.par basename			@@\
+basename.h:: basename.g basename.i					@@\
+	program options basename					@@\
+ExtraStuffToClean(basename.e)						@@\
+ExtraStuffToClean(basename.cat)
+#else
+#define	PRunAnalysisProgram(basename,program,options)			@@\
+AllTarget(basename.e)							@@\
+basename.e:: basename.spread basename.g basename.i 			@@\
+	program options -mesh basename.par basename			@@\
+	nem_join basename.pex						@@\
+	mv basename-out.e basename.e					@@\
+output:: basename.spread basename.g basename.i 				@@\
+	program options -mesh basename.par basename			@@\
+basename.h:: basename.g basename.i					@@\
+	program options basename					@@\
+ExtraStuffToClean(basename.e)						@@\
+ExtraStuffToClean(basename.cat)
+#endif
+#endif /* RunAnalysisProgram */
+ 
+
+/*
+ * QuickCompareRule - Generate rules to compare base.o file
+ *            with the benchmark.qcomp file.
+ */
+#ifndef QuickCompareRule
+#define QuickCompareRule(base)                                          @@\
+                                                                        @@\
+qcompare: output                                                        @@\
+	@grep -i "==>" benchmark.out > comp1.tmp;                       @@\
+	@grep -i "==>" base.o > comp2.tmp;                              @@\
+	@if spiff -r0.01 comp1.tmp comp2.tmp > Verify.log; then \       @@\
+	  echo " 	passed" >Verify.results; \                      @@\
+	  echo "  passed"; \                                            @@\
+	else \                                                          @@\
+	  if grep aborted base.o > /dev/null; then \                    @@\
+	    echo " 			ABORTED"> Verify.results; \     @@\
+	    echo "  ABORTED - see Verify.log"; \                        @@\
+	  else \                                                        @@\
+	    echo " 			DIFFS"> Verify.results; \       @@\
+	    echo "  DIFFS - see Verify.log"; \                          @@\
+	  fi \                                                          @@\
+	fi                                                              @@\
+paraqcomp: output                                                       @@\
+	@grep -i "==>" benchmark.out > comp1.tmp;                       @@\
+	@grep -i "==>" base.o > comp2.tmp;                              @@\
+	@if spiff -r0.01 comp1.tmp comp2.tmp > Verify.log; then \       @@\
+	  echo " 	passed" >Verify.results; \                      @@\
+	else \                                                          @@\
+	  echo " 			DIFFS"> Verify.results; \       @@\
+	fi                                                              @@\
+ExtraStuffToClean(Verify.log)                                           @@\
+ExtraStuffToClean(Verify.results)                                       @@\
+ExtraStuffToClean(comp1.tmp)                                            @@\
+ExtraStuffToClean(comp2.tmp)
+#endif /*QuickCompareRule*/
+ 
+/*
+ * MakeCompareRule - Generate rules to create compare results.m file
+ *            with the benchamrk.m file.  
+ */
+#ifndef MakeCompareRule
+#define MakeCompareRule()                                               @@\
+LOCATION = $(ACCESS)/matlab						@@\
+compare: results.m 							@@\
+	@if [ -f benchmark.m ]; then \              		        @@\
+		$(RM) -f compare.ps;\                                   @@\
+		matlab <$(LOCATION)/compare.m;\                         @@\
+	else \                                                  	@@\
+		echo 'error - missing benchmark.m';\                    @@\
+		exit 1;\                                                @@\
+	fi								@@\
+ExtraStuffToClean(compare.log)
+#endif /*MakeCompareRule*/
+
+/*
+ * ExoIExoIIConverter - coverts Exodus I files to exoII files
+ */
+#ifndef ExoIExoIIConverter
+#define	ExoIExoIIConverter(basename)					@@\
+exoIIg::                                                                @@\
+	ex1ex2v2 -force basename.g basename.g2				@@\
+	mv basename.g2 basename.g					@@\
+ExtraStuffToClean(basename.g2)
+#endif /* ExoIExoIIConverter */
+
+/*
+ * MakeBenchmarkRule - Generate rules to create new benchmark.m file
+ */
+#ifndef MakeBenchmarkRule
+#define MakeBenchmarkRule()                                             @@\
+benchmark: results.m							@@\
+	@$(MV) results.m benchmark.m					@@\
+	@$(MV) *.o benchmark.out
+#endif /*MakeBenchmarkRule*/
+
+/*
+ * MakeQBenchmarkRule - Generate rules to create new benchmark.out file
+ */
+#ifndef MakeQBenchmarkRule
+#define MakeQBenchmarkRule(base)                                        @@\
+qbenchmark:								@@\
+	@echo cp base.o benchmark.out					@@\
+	@$(CP) base.o benchmark.out
+#endif /*MakeQBenchmarkRule*/
+
+/*
+ * MakeResultsRule - Generate rules to create results.m file
+ */
+#ifndef MakeResultsRule
+#define MakeResultsRule(base)                                           @@\
+LOCATION = $(ACCESS)/matlab						@@\
+TRANS = exomat                                                          @@\
+results results.m: base.e                                               @@\
+	@$(RM) results.m                                                @@\
+	@LOC=..;EXT=e; \                                                @@\
+	if [ -f base.h ]; then EXT=h;fi; \                              @@\
+	if [ -f $(TRANS).i ]; then LOC=.;fi; \                          @@\
+	$(TRANS) base.$$EXT <$$LOC/$(TRANS).i > results.m               @@\
+	@if [ ! -f results.m ]; then echo 'error - missing results.m';\ @@\
+	exit 1; fi							@@\
+ExtraStuffToClean(results.m)
+#endif /*MakeResultsRule*/
+
+/*
+ * MakeJanusResultsRule - Generate rules to create results.m file
+ */
+#ifndef MakeJanusResultsRule
+#define MakeJanusResultsRule(base)                                      @@\
+LOCATION = $(ACCESS)/matlab						@@\
+TRANS = exomat                                                          @@\
+results.janus: base.e		                                        @@\
+	base.cfg							@@\
+	set user = `whoami`;						@@\
+	@$(RM) results.m                                                @@\
+	@LOC=..;EXT=e; \                                                @@\
+	if [ -f $(TRANS).i ]; then LOC=.;fi; \                          @@\
+	if [ -f base.h ]; then EXT=h; \                                 @@\
+	  $(TRANS) base.$$EXT <$$LOC/$(TRANS).i>results.m               @@\
+	else \								@@\
+	  $(TRANS) $root_dir$raid_offset/$sub_dir/base.e$(NUM_PROCS).0\	@@\
+	  <$$LOC/$(TRANS).i>results.m; fi     			        @@\
+	@if [ ! -f results.m ]; then echo 'error - missing results.m';\ @@\
+	exit 1; fi							@@\
+ExtraStuffToClean(results.m)
+#endif /*MakeJanusResultsRule*/
+
+/*
+ * MakePlotsRule -  Generate rules to plot the difference between the 
+ * results.m file and the benchmark.m file.
+ */
+#ifndef MakePlotsRule
+#define MakePlotsRule()                                                 @@\
+PLOTS = plots	                                                        @@\
+LOCATION = $(ACCESS)/matlab						@@\
+plots: results.m							@@\
+	$(RM) -f results.ps  		                                @@\
+	matlab <$(LOCATION)/$(PLOTS).m 
+#endif /*MakePlotsRule*/
+                                              
+/*
+ * MakeMovieRule -  Generate rules to create a MPEG file.
+ */
+#ifndef MakeMovieRule
+#define MakeMovieRule(movie_insuf, exodus)		      	        @@\
+.SUFFIXES:	movie_insuf .movie					@@\
+Concat(movie_insuf,.movie):						@@\
+	make exodus							@@\
+	blot -hardcopy $* -dev=met exodus -input Concat($*,movie_insuf)	@@\
+	echo "5"|post $*.met cps					@@\
+	pstompeg vdicps.ps $*						@@\
+ExtraStuffToClean(*.U)							@@\
+ExtraStuffToClean(*.V)							@@\
+ExtraStuffToClean(*.Y)
+#endif /*MakeMovieRule*/
+
+/*
+ * PlayMovieRule -  Generate rules to call mpeg_play to play an MPEG file.
+ */
+#ifndef PlayMovieRule
+#define PlayMovieRule()				         	        @@\
+.SUFFIXES: .play .mpg							@@\
+.mpg.play:								@@\
+	mpeg_play $*.mpg
+#endif /*PlayMovieRule*/
+                                              
+
+/*
+ * DisplayFigureRule -  Generate rules to display a figure.
+ */
+#ifndef DisplayFigureRule
+#define DisplayFigureRule(figure_insuf, exodus)		   	        @@\
+.SUFFIXES:	figure_insuf .display	 				@@\
+Concat(figure_insuf,.display):						@@\
+	make exodus							@@\
+	blot  -input Concat($*,figure_insuf) exodus
+#endif /*DisplayFigureRule*/
+                                              
+
+/*
+ * MakeCPSRule -  Generate rules to display a figure.
+ */
+#ifndef MakeCPSRule
+#define MakeCPSRule(figure_insuf, exodus)	         	        @@\
+.SUFFIXES:	figure_insuf .cps					@@\
+Concat(figure_insuf,.cps): 						@@\
+	make exodus							@@\
+	echo "5" | blot  -hardcopy $* -device cps -input \		@@\
+	Concat($*,figure_insuf) exodus
+#endif /*MakeCPSRule*/
+                                              
+/*
+ * MakeSliceRule -  Generate files to decompose file.
+ */
+#ifndef MakeSliceRule
+#define MakeSliceRule(base)			         	        @@\
+slice base.cfg base.nem base.spd:	base.g 				@@\
+	ex1ex2v2 base.g base.g2;					@@\
+	@if [ -f base.g2 ]; then mv base.g2 base.g; fi			@@\
+	loadbal -p $(NUM_PROCS) $(LOADBAL_OPTIONS) base
+#endif /*MakeSliceRule*/
+                                              
+/*
+ * MakeSpreadRule -  Decompose genesis file.
+ */
+#ifndef MakeSpreadRule
+#define MakeSpreadRule(base)			         	        @@\
+spread base.spread: base.cfg base.nem base.spd				@@\
+	Concat(./,base.spd)						@@\
+	touch base.spread						@@\
+ExtraStuffToClean(base.spread)
+#endif /*MakeSpreadRule*/
+                                              
+/*
+ * MakeConcatRule -  Recompose genesis file.
+ */
+#ifndef MakeConcatRule
+#ifdef CougarArchitecture
+#define MakeConcatRule(base)			         	        @@\
+nem_join : 								@@\
+	yod -sz 1 $(BINDIR)/nem_join base.pex				@@\
+ExtraStuffToClean(base.cat)
+#else
+#define MakeConcatRule(base)			         	        @@\
+nem_join : 								@@\
+	nem_join base.pex						@@\
+ExtraStuffToClean(base.cat)
+#endif
+#endif /*MakeConcatRule*/
+                                              
+
+#ifndef MPI
+/*
+ * NormalProblemRule -  Encapsulates other prules
+ */
+#ifndef NormalProblemRule
+#define NormalProblemRule(code, base)		         	        @@\
+	MakeCompareRule()						@@\
+	QuickCompareRule(base)						@@\
+	MakeBenchmarkRule()						@@\
+	MakeQBenchmarkRule(base)					@@\
+	MakeResultsRule(base)						@@\
+	MakeJanusResultsRule(base)                                      @@\
+	MakePlotsRule()							@@\
+									@@\
+	MakeMovieRule(.blt, base.e)					@@\
+	PlayMovieRule()							@@\
+	DisplayFigureRule(.blt, base.e)					@@\
+	DisplayFigureRule(.history_blt, base.h)				@@\
+	MakeCPSRule(.blt, base.e)					@@\
+	MakeCPSRule(.history_blt, base.h)				@@\
+	MakeSliceRule(base)						@@\
+	MakeSpreadRule(base)						@@\
+	MakeConcatRule(base)						@@\
+	ExoIExoIIConverter(base)					@@\
+									@@\
+	RunAnalysisProgram(base, code, $(ANALYSIS_OPTIONS) -aprepro)	@@\
+									@@\
+	NormalFastqRule(.fsq,.g2d,-aprepro)				@@\
+	NormalGen3dRule(insuf,outsuf,genin,options)                     @@\
+									@@\
+	ExtraStuffToClean(*.g2d)					@@\
+	ExtraStuffToClean(*.g3d)					@@\
+	ExtraStuffToClean(*.g)						@@\
+	ExtraStuffToClean(*.met)					@@\
+	ExtraStuffToClean(*.g2)						@@\
+	ExtraStuffToClean(*.ps)						@@\
+	ExtraStuffToClean(*.g.*)					@@\
+	ExtraStuffToClean(*.h)						@@\
+	ExtraStuffToClean(*.gen.*)					@@\
+	ExtraStuffToClean(*.exd)					@@\
+	ExtraStuffToClean(*.ech)					@@\
+	ExtraStuffToClean(*.rsin)                                       @@\
+	ExtraStuffToClean(*.rsout)                                      @@\
+	ExtraStuffToClean(ftn100)                                       @@\
+	ExtraStuffToClean(*.psc)                                        @@\
+	ExtraStuffToClean(*.ele)                                        @@\
+	ExtraStuffToClean(*.ele2d)
+#endif /*NormalProblemRule*/
+#endif /* MPI */
+
+#ifdef MPI
+/*
+ * NormalProblemRule -  Encapsulates other prules
+ */
+#ifndef NormalProblemRule
+#define NormalProblemRule(code, base)		         	        @@\
+	MakeCompareRule()						@@\
+	QuickCompareRule(base)						@@\
+	MakeBenchmarkRule()						@@\
+	MakeQBenchmarkRule(base)					@@\
+	MakeResultsRule(base)						@@\
+	MakeJanusResultsRule(base)                                      @@\
+	MakePlotsRule()							@@\
+									@@\
+	MakeMovieRule(.blt, base.e)					@@\
+	PlayMovieRule()							@@\
+	DisplayFigureRule(.blt, base.e)					@@\
+	DisplayFigureRule(.history_blt, base.h)				@@\
+	MakeCPSRule(.blt, base.e)					@@\
+	MakeCPSRule(.history_blt, base.h)				@@\
+	MakeSliceRule(base)						@@\
+	MakeSpreadRule(base)						@@\
+	MakeConcatRule(base)						@@\
+        ExoIExoIIConverter(base)					@@\
+									@@\
+	PRunAnalysisProgram(base, code, -parallel $(ANALYSIS_OPTIONS) -aprepro)	@@\
+									@@\
+	NormalFastqRule(.fsq,.g2d,-aprepro)				@@\
+	NormalGen3dRule(insuf,outsuf,genin,options)                     @@\
+									@@\
+	ExtraStuffToClean(*.g2d)					@@\
+	ExtraStuffToClean(*.g3d)					@@\
+	ExtraStuffToClean(*.g)						@@\
+	ExtraStuffToClean(*.met)					@@\
+	ExtraStuffToClean(*.g2)						@@\
+	ExtraStuffToClean(*.ps)						@@\
+	ExtraStuffToClean(*.g.*)					@@\
+	ExtraStuffToClean(*.e.*)					@@\
+	ExtraStuffToClean(*.gbl)					@@\
+	ExtraStuffToClean(*.h)						@@\
+	ExtraStuffToClean(*.h.*)					@@\
+	ExtraStuffToClean(*.gen.*)					@@\
+	ExtraStuffToClean(*.get)					@@\
+	ExtraStuffToClean(*.put)					@@\
+	ExtraStuffToClean(*.exd)					@@\
+	ExtraStuffToClean(*.edt)					@@\
+	ExtraStuffToClean(*.edt-ap)					@@\
+	ExtraStuffToClean(processors)					@@\
+	ExtraStuffToClean(*.ech)					@@\
+	ExtraStuffToClean(*.psc)                                        @@\
+	ExtraStuffToClean(*.cfg)                                        @@\
+	ExtraStuffToClean(*.pex)                                        @@\
+	ExtraStuffToClean(*.spd)                                        @@\
+	ExtraStuffToClean(*.nem)                                        @@\
+	ExtraStuffToClean(*.lbd.out)                                    @@\
+	ExtraStuffToClean(*.lbd.err)                                    @@\
+	ExtraStuffToClean(*.ele)                                        @@\
+	ExtraStuffToClean(*.ele2d)
+#endif /*NormalProblemRule*/
+#endif /* MPI */
+
+#ifndef MPI
+/*
+ * RestartProblemRule 
+ */
+#ifndef RestartProblemRule
+#define RestartProblemRule(code,base,option)				@@\
+AllTarget(base.e)							@@\
+MakeCompareRule()							@@\
+QuickCompareRule(base)							@@\
+base.g::								@@\
+	@$(RM) base.g; \						@@\
+	$(LN) ../base.g .; \						@@\
+	if [ option = continue ]; then \				@@\
+	   $(RM) base.e; \						@@\
+	   $(LN) ../base.e .; \						@@\
+	   if test -f ../base.h; then \					@@\
+	      $(RM) base.h; \						@@\
+	      $(LN) ../base.h .; \					@@\
+	   fi; \							@@\
+	   $(RM) base.rsout; \						@@\
+	   $(LN) ../base.rsout .; \					@@\
+	else \								@@\
+	   $(RM) base.rsin; \						@@\
+	   $(LN) ../base.rsout base.rsin; \				@@\
+	fi; \								@@\
+	if [ -f ../base.gc ]; then \					@@\
+	   $(RM) base.gc; \						@@\
+	   $(LN) ../base.gc .; \					@@\
+	fi								@@\
+	RunAnalysisProgram(base, code, $(ANALYSIS_OPTIONS) -aprepro)	@@\
+	MakeBenchmarkRule()						@@\
+	MakeQBenchmarkRule(base)					@@\
+	MakeResultsRule(base)						@@\
+	MakeJanusResultsRule(base)					@@\
+	ExtraStuffToClean(base.cfg)					@@\
+	ExtraStuffToClean(base.g)					@@\
+	ExtraStuffToClean(base.h)					@@\
+	ExtraStuffToClean(base.e)					@@\
+	ExtraStuffToClean(*rsin*)					@@\
+	ExtraStuffToClean(*rsout*)
+#endif /* RestartProblemRule */
+#endif /* MPI */
+
+#ifdef MPI
+/*
+ * RestartProblemRule
+ */
+#ifndef RestartProblemRule
+#define RestartProblemRule(code,base,option)				@@\
+MakeCompareRule()							@@\
+QuickCompareRule(base)							@@\
+AllTarget(base.e)							@@\
+base.g::								@@\
+	@echo "Using original spread files..."; echo ""			@@\
+	@$(RM) base.g; \						@@\
+	$(LN) ../base.g .; \						@@\
+	if [ -f ../base.cfg ]; then \					@@\
+	   $(RM) base.cfg; \						@@\
+	   $(LN) ../base.cfg .; \					@@\
+	fi; \								@@\
+	if [ -f ../base.spd ]; then \					@@\
+	   $(RM) base.spd; \						@@\
+	   $(LN) ../base.spd .; \					@@\
+	fi; \								@@\
+	if [ -f base.cfg -a -f base.spd ]; then \			@@\
+	   rootdir=`cat base.cfg | grep root_dir | sed -e 's/^.*=//' -e 's/ //g'`; \ @@\
+	   subdir=`cat base.cfg | grep sub_dir | sed -e 's/^.*=//' -e 's/ //g'`;\ @@\
+	   numraids=`cat base.cfg | grep num_raids | sed -e 's/^.*=//' -e 's/ //g'`; \ @@\
+	   raidoffset=`cat base.cfg | grep raid_offset | sed -e 's/^.*=//' -e 's/ //g'`; \ @@\
+	   zero=`cat base.cfg | grep zero | sed -e 's/^.*=//' -e 's/ //g'`; \ @@\
+	   stride=`cat base.spd | grep 'set stride' | sed -e 's/^.*=//' -e 's/ //g'`; \ @@\
+	   counter1=1; \						@@\
+	   counter2=$${raidoffset}; \					@@\
+	   if [ "$${subdir}" = "." ]; then \				@@\
+		   subdir= ; \						@@\
+	   fi; \							@@\
+	   while [ $${counter1} -le $${numraids} ]; \			@@\
+	   do \								@@\
+	      if [ $${counter2} -lt 10 ]; then \			@@\
+	         spreaddir=$${rootdir}$${zero}$${counter2}/$${subdir}; \ @@\
+	      else \ 							@@\
+	         spreaddir=$${rootdir}$${counter2}/$${subdir}; \	@@\
+	      fi; \							@@\
+	      spreaddir=`echo $${spreaddir} | sed "s/\/\//\//g"` ;\ 	@@\
+	      spreadbasedir=`dirname $${spreaddir}`/; \			@@\
+	      spreadbasedir=`echo $${spreadbasedir} | sed "s/\/\//\//g"` ;\ @@\
+	      OLDIFS=$${IFS}; \						@@\
+	      IFS=/ ; \							@@\
+	      for i in $${spreaddir}; do \: ; done; \			@@\
+	      lastdir=$${i} ;\						@@\
+	      IFS=$${OLDIFS}; \						@@\
+	      if [ -d $${spreadbasedir}/$${lastdir}_orig/ ]; then \	@@\
+		 $(RM) -r $${spreaddir}; \				@@\
+	         $(CP) -r $${spreadbasedir}/$${lastdir}_orig/ $${spreaddir}/; \ @@\
+	      else \							@@\
+	         $(CP) -r $${spreaddir}/ $${spreadbasedir}/$${lastdir}_orig/; \ @@\
+	      fi;\							@@\
+	      counter1=`expr $${counter1} + 1`; \			@@\
+	      counter2=`expr $${counter2} + $${stride}`; \		@@\
+	   done; \							@@\
+	fi; \								@@\
+	if [ option = continue ]; then \				@@\
+	   $(RM) base.e; \						@@\
+	   $(LN) ../base.e .; \						@@\
+	   if test -f ../base.h; then \					@@\
+	      $(RM) base.h; \						@@\
+	      $(LN) ../base.h .; \					@@\
+	   fi; \							@@\
+	fi; \								@@\
+	linkmp base.rsout base.rsin; \  				@@\
+	if [ -f ../base.gc ]; then \					@@\
+	   $(RM) base.gc; \						@@\
+	   $(LN) ../base.gc .; \					@@\
+	fi								@@\
+	RunAnalysisProgram(base, code, -parallel $(ANALYSIS_OPTIONS) -aprepro)	@@\
+	MakeBenchmarkRule()						@@\
+	MakeQBenchmarkRule(base)					@@\
+	MakeResultsRule(base)						@@\
+	MakeJanusResultsRule(base)					@@\
+	ExtraStuffToClean(base.cfg)					@@\
+	ExtraStuffToClean(base.g)					@@\
+	ExtraStuffToClean(base.h)					@@\
+	ExtraStuffToClean(base.e)
+#endif /* RestartProblemRule */
+#endif /* MPI */
+
+/*
+ * MakeBlotFigure - generate rules to run blot programs
+ */
+#ifndef MakeBlotFigure
+#define MakeBlotFigure(figname,instruct,exodus,driver,options)		@@\
+figname:: exodus instruct						@@\
+	echo "7" | blot options -hardcopy figname -device driver \
+	-input instruct exodus						@@\
+ExtraStuffToClean(figname)
+#endif /* MakeBlotFigure */
+
+/*
+ * MakeBlotIFigure - generate rules to run blotI program, 
+ */
+#ifndef MakeBlotIFigure
+#define MakeBlotIFigure(figname,instruct,exodus,driver,options)		@@\
+figname:: exodus instruct						@@\
+	echo "7" | blotI options -hardcopy figname -device driver \
+	-input instruct exodus						@@\
+ExtraStuffToClean(figname)
+#endif /* MakeBlotIFigure */
+
+/*
+ * GeneralTranslator - generate rules to run a SEACAS translator
+ */
+#ifndef GeneralTranslator
+#define GeneralTranslator(exoout,exoin,input,program, options)		@@\
+AllTarget(exoout)							@@\
+ExtraStuffToClean(exoout)						@@\
+exoout:: exoin input							@@\
+	program options exoin exoout <input				
+#endif /* GeneralTranslator */
+
+#ifndef NormalFastqRule
+#define	NormalFastqRule(insuf,outsuf,options)				@@\
+.SUFFIXES: insuf outsuf							@@\
+Concat(insuf,outsuf):							@@\
+	RemoveTargetProgram($@)						@@\
+	fastq options -mesh=Concat($*,outsuf) Concat($*,insuf)
+#endif /* NormalFastqRule */
+
+#ifndef NormalGen3dRule
+#define	NormalGen3dRule(insuf,outsuf,genin,options)			@@\
+.SUFFIXES: insuf outsuf	genin						@@\
+Concat(insuf,outsuf):							@@\
+	RemoveTargetProgram($@)						@@\
+	gen3d options Concat($*,insuf) Concat($*,outsuf) < Concat($*,genin) @@\
+Concat(genin,outsuf):							@@\
+	RemoveTargetProgram($@)						@@\
+	gen3d options Concat($*,insuf) Concat($*,outsuf) < Concat($*,genin)
+#endif /* NormalGen3dRule */
+
+#ifndef GjoinTarget
+#define GjoinTarget(exoout,exoin,input)				@@\
+AllTarget(exoout)							@@\
+ExtraStuffToClean(exoout)						@@\
+exoout:: exoin input							@@\
+	gjoin < input
+#endif /* GjoinTarget */
+
+#ifndef CompareMatlab
+#define CompareMatlab(basename)						@@\
+all:: compare								@@\
+compare:: history.m exodus.m						@@\
+	@$(RM) history.psc						@@\
+	@if test -f compare.m; then \					@@\
+	    echo ""; \ 							@@\
+	    echo "MATLAB HISTORY comparisons:  Input is compare.m"; \ 	@@\
+	    echo ""; \ 							@@\
+	    matlab < compare.m; \					@@\
+	else \								@@\
+	    if test -f compare.hm; then \				@@\
+	        echo ""; \						@@\
+	echo "MATLAB HISTORY comparisions:  Input is compare.hm"; \	@@\
+	        echo ""; \ 						@@\
+		matlab < compare.hm; \					@@\
+	    fi \							@@\
+	fi								@@\
+	@$(RM) exodus.psc						@@\
+	@if test -f compare.em; then \					@@\
+	    echo ""; \ 							@@\
+	echo "MATLAB EXODUS comparisions:  Input is compare.em"; \	@@\
+	    echo ""; \ 							@@\
+	    matlab < compare.em; \					@@\
+	fi								@@\
+history.m:: basename.e 							@@\
+	@exomatlab basename.h history.m					@@\
+exodus.m:: basename.e			 				@@\
+	@exomatlab basename.e exodus.m					@@\
+history_old.m:: history.m						@@\
+	@if test -f history_old.m; then \				@@\
+	  echo "	"$(RM)" history_old.m.bak"; \			@@\
+	  echo "	"$(MV)" history_old.m history_old.m.bak"; \	@@\
+	  $(RM) history_old.m.bak; \					@@\
+	  $(MV) history_old.m history_old.m.bak; \			@@\
+	fi								@@\
+	$(MV) history.m history_old.m					@@\
+exodus_old.m:: exodus.m							@@\
+	@if test -f exodus_old.m; then \				@@\
+	  echo "	"$(RM)" exodus_old.m.bak"; \			@@\
+	  echo "	"$(MV)" exodus_old.m exodus_old.m.bak"; \	@@\
+	  $(RM) exodus_old.m.bak; \ 					@@\
+	  $(MV) exodus_old.m exodus_old.m.bak; \			@@\
+	fi								@@\
+	$(MV) exodus.m exodus_old.m
+#endif /* CompareMatlab */
+
+/************************************************************************/
+/*                 Rules for pre/post process test suite                */
+/************************************************************************/
+
+/*
+ * MakeExoIIText - convert exoII file to exoI format; transfer both files
+ *                text and compare.
+ */
+#ifndef MakeExoIIText
+#define MakeExoIIText(exoI,exoII)                                       @@\
+ExtraStuffToClean(exoI.txt exoII.txt)                                   @@\
+results:: exoI exoII                                                    @@\
+	exodiff exoI exoI.txt                                           @@\
+	exodiff exoII exoII.txt
+#endif
+
+/*
+ * TextDiff - diff text files
+ */
+#ifndef TextDiff
+#define TextDiff(file1,file2,res)                                       @@\
+ExtraStuffToClean(res)                                                  @@\
+.IGNORE: diff								@@\
+diff:: file1 file2                                                      @@\
+	diff file1 file2 > res
+#endif
+
+/*
+ * GeneralFastqRule - general fastq batch rule
+ */
+#ifndef GeneralFastqRule
+#define GeneralFastqRule(exoout,exoin,options)				@@\
+fastq:: exoout								@@\
+ExtraStuffToClean(exoout)						@@\
+exoout:: exoin								@@\
+	fastq options -m exoout exoin				
+#endif /* GeneralFastqRule */
+
+/*
+ * GeneralGen3dRule
+ */
+#ifndef GeneralGen3dRule
+#define GeneralGen3dRule(exoout,exoin,input,options)			@@\
+gen3d:: exoout								@@\
+ExtraStuffToClean(exoout) 						@@\
+exoout:: exoin								@@\
+	gen3d options exoin exoout < input
+#endif
+
+/*
+ * GeneralGreposRule
+ */
+#ifndef GeneralGreposRule
+#define GeneralGreposRule(exoout,exoin,input,options)			@@\
+grepos:: exoout								@@\
+ExtraStuffToClean(exoout)                                               @@\
+exoout:: exoin                                                          @@\
+	grepos options exoin exoout < input
+#endif
+
+#ifndef GjoinTarget
+#define GjoinTarget(exoout,exoin,input)					@@\
+AllTarget(exoout)							@@\
+ExtraStuffToClean(exoout)						@@\
+exoout:: exoin input							@@\
+	gjoin < input
+#endif /* GjoinTarget */
+
+#ifndef Gjoin2Target
+#define Gjoin2Target(exoout,exoin,input)				@@\
+AllTarget(exoout)							@@\
+ExtraStuffToClean(exoout)						@@\
+exoout:: exoin input							@@\
+	gjoin2 < input
+#endif /* Gjoin2Target */
+
+/************************************************************************/
+/* John Holland's JAS addtitions					*/
+/************************************************************************/
+
+/*
+ * MakeDependRule - Generate rules to make dependencies - new
+ */
+#ifndef MakeDependRule
+#define MakeDependRule(dep_in,dep_on)                                   @@\
+AllTarget(dep_in)                                                       @@\
+dep_in: dep_on                                                          @@\
+ExtraStuffToClean(dep_in)
+#endif /*MakeDependRule*/
+
+/*
+ * MakeAWKRule - Generate rules for editing text files - new
+ */
+#ifndef MakeAWKRule
+#define MakeAWKRule(awk_in,awk_out,awk_script)                          @@\
+AllTarget(awk_out)                                                      @@\
+awk_out: awk_in awk_script                                              @@\
+	@$(RM) awk_out                                                  @@\
+	awk -f awk_script awk_in >awk_out                               @@\
+ExtraStuffToClean(awk_out)
+#endif /*MakeAWKRule*/
+
+/*
+ * MakeCopyRule - More Robust copy rule - new
+ */
+#ifndef MakeCopyRule
+#define MakeCopyRule(copy_in,copy_out)                                  @@\
+AllTarget(copy_out)                                                     @@\
+copy_out: copy_in                                                       @@\
+	@$(CP) copy_in copy_out                                         @@\
+ExtraStuffToClean(copy_out)
+#endif /*MakeCopyRule*/
+
+/*
+ * MakeExoTxtRule - Convert Exodus I file to Text rule - new
+ */
+#ifndef MakeExoTxtRule
+#define MakeExoTxtRule(exod_in,txt_out)                                 @@\
+AllTarget(txt_out)                                                      @@\
+txt_out: exod_in                                                        @@\
+	@$(RM) txt_out                                                  @@\
+	exotxt exod_in txt_out                                          @@\
+ExtraStuffToClean(txt_out)
+#endif /*MakeExoTxtRule*/
+
+/*
+ * MakeTxtExoRule - Convert Text file to Exodus I rule - new
+ */
+#ifndef MakeTxtExoRule
+#define MakeTxtExoRule(txt_in,exod_out)                                 @@\
+AllTarget(exod_out)                                                     @@\
+exod_out: txt_in                                                        @@\
+	@$(RM) exod_out                                                 @@\
+	txtexo txt_in exod_out                                          @@\
+ExtraStuffToClean(exod_out)
+#endif /*MakeTxtExoRule*/
+
+/*
+ * MakeExodusIRule - More Robust Exodus II to Exodus I Converter - new
+ */
+#ifndef MakeExodusIRule
+#define MakeExodusIRule(exo2_in,exo1_out)                                 @@\
+AllTarget(exo1_out)                                                       @@\
+exo1_out: exo2_in                                                         @@\
+	ex2ex1v2 -force exo2_in exo1_out                                  @@\
+ExtraStuffToClean(exo1_out)
+#endif /*MakeExodusIRule*/
+
+/*
+ * MakeExodusIIRule - More Robust Exodus I to Exodus II Converter - new
+ */
+#ifndef MakeExodusIIRule
+#define MakeExodusIIRule(exo1_in,exo2_out)                              @@\
+AllTarget(exo2_out)                                                     @@\
+exo2_out: exo1_in                                                       @@\
+	ex1ex2v2 -force exo1_in exo2_out                                @@\
+ExtraStuffToClean(exo2_out)
+#endif /*MakeExodusIIRule*/
+
+/*
+ * MakeProgRunRule - Generate rules to run small programs - new
+ */
+#ifndef MakeProgRunRule
+#define MakeProgRunRule(pprog,pr_in,pr_out,depx)                       @@\
+AllTarget(pr_out)                                                      @@\
+pr_out: pprog pr_in depx                                               @@\
+	@$(RM) pr_out                                                  @@\
+	pprog <pr_in                                                   @@\
+ExtraStuffToClean(pr_out)
+#endif /*MakeProgRunRule*/
+
+/************************************************************************/
+/************************************************************************/

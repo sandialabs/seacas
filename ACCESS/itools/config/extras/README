@@ -1,0 +1,120 @@
+README for imboot
+Paul DuBois
+4 March 1996
+
+This README has the following sections:
+
+I)   How to build and install imboot if you you have xmkmf and the
+     X11R[4, 5, or 6] configuration files.
+II)  How to build and install imboot by hand.
+III) How to move the configuration root directory
+
+-----------------------------------------------------------------------------
+
+Section I. Installing imboot
+
+1) Look in Imakefile and find the line that sets the value of CONFIGROOTDIR:
+
+	CONFIGROOTDIR = /usr/local/lib/config
+
+This is the imboot configuration root; it's the directory under which are
+installed the various sets of configuration files that imboot know about.
+Each set of files is installed in its own directory.
+
+If you want to use a different directory, change the value of CONFIGROOTDIR.
+
+2) If imboot has not been installed on your system already, you'll need
+to create the configuration root directory:
+
+	% mkdir /usr/local/lib/config	(or whatever pathname you're using)
+
+3) Build the Makefile, then build imboot and the manual page imboot.man:
+
+	% xmkmf
+	% make
+
+4) Determine whether the installation directories for imboot and imboot.man
+are appropriate for your system:
+
+	% make -n install
+	% make -n install.man
+
+These commands show you where the Makefile will install the files.  If
+the locations are suitable, install the files:
+
+	% make install
+	% make install.man
+
+Otherwise install the files by hand.  imboot can be installed in any
+directory in your search path.  Be sure to make it executable.
+
+-----------------------------------------------------------------------------
+
+Section II. Installing imboot by hand
+
+To install imboot and imboot.man by hand, first run the following commands:
+
+	% cp imboot.cpp imboot
+	% chmod +x imboot
+	% cp imboot.man.cpp imboot.man
+
+Then edit imboot and imboot.man, replacing all instances of XCOMM with #
+and all instances of CONFIGROOTDIR with /usr/local/lib/config (or with
+the full pathname of whatever directory you use for your configuration
+root).
+
+Finally, install imboot and imboot.man in locations appropriate for your
+system.
+
+-----------------------------------------------------------------------------
+
+Section III. How to move the configuration root directory
+
+If you want to move the configuration root directory, you need to
+rebuild imboot and move any configuration files that are already installed
+under the old configuration root.  For concreteness, assume the old
+configuration  root is /usr/local/lib/config and the new configuration
+root is /var/lib/config.  (Make the appropriate substitutions for your
+own system.)
+
+1) Build and install imboot with the new value of CONFIGROOTDIR, using
+the instructions above in section I or II.
+
+2) Create the new configuration root directory:
+
+	% mkdir /var/lib/config
+
+3) Move any files that may already be installed under the old configuration
+root.
+
+If you want to be lazy, just populate the new configuration root with
+symlinks to each directory under the old configuration root.  That way
+you can use existing files without actually moving them.  Commands to
+create the symlinks are shown below for csh and sh:
+
+csh:	cd /usr/local/lib/config
+	foreach dir (*)
+		ln -s /usr/local/lib/config/$dir /var/lib/$dir
+	end
+
+sh:	cd /usr/local/lib/config
+	for dir in *; do
+		ln -s /usr/local/lib/config/$dir /var/lib/$dir
+	done
+
+To actually copy the files, rather than making symlinks, a command something
+like the following will do the job (on some systems, you may need to use xof
+rather than xf):
+
+	% (cd /usr/local/lib ; tar cf - config) | (cd /var/lib ; tar xf -)
+
+Then cd into /var/lib/config, and, for each non-symlink directory there,
+change into the directory, and change the self-reference to point to the
+directory you're in.  The self-reference is typically specified as the
+value of ConfigDir in Project.tmpl or site.def.  But do a grep first to
+find out exactly where the value is specified.
+
+When you're done, test imboot to see that it uses the files in the new
+configuration root.  When you're satisfied, remove the old configuration
+root and the stuff in it.  (Do NOT remove the old configuration root
+if you used the lazy method above, however!)

@@ -1,0 +1,2 @@
+      common /dualpr/ proces
+      character*8 proces

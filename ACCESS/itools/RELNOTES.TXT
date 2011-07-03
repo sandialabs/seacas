@@ -1,0 +1,732 @@
+
+
+
+
+
+
+
+
+
+                X Window System, Version 11, Release 6.1
+
+                             Release Notes
+
+
+
+
+
+
+
+                             Stephen Gildea
+
+                              X Consortium
+
+
+
+
+
+
+                             March 5, 1996
+
+
+
+
+
+
+
+Copyright (C) 1996 X Consortium
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Soft-
+ware"), to deal in the Software without restriction, including without
+limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to
+whom the Software is furnished to do so, subject to the following condi-
+tions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-
+ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT
+SHALL THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABIL-
+ITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+Except as contained in this notice, the name of the X Consortium shall
+not be used in advertising or otherwise to promote the sale, use or
+other dealings in this Software without prior written authorization from
+the X Consortium.
+
+X Window System is a trademark of X Consortium, Inc.
+
+
+
+1.  What Is Release 6.1
+
+
+This is the X Consortium implementation of the X Window System.  X is a
+vendor-neutral, system-architecture neutral network-transparent window
+system and user interface standard.  X runs on a wide range of computing
+and graphics machines.  For an overview of X, see the X manual page.
+
+R6.1 is an update to R6.  It is compatible with R6 at the source and
+protocol levels in all respects, and binaries are upward-compatible.
+
+The X Consortium is an independent, not-for-profit corporation.  See the
+XConsortium manual page for details.
+
+See xc/INSTALL.PS (PostScript) or xc/INSTALL.TXT (plain text) for
+instructions on how to build and install this software.
+
+
+1.1.  Overview of the X Consortium Release
+
+
+The X Consortium software and documentation in Release 6.1 is in direc-
+tory xc/ and contains the following:
+
+X Consortium Standards
+     The X Consortium produces standards:  documents which define net-
+     work protocols, programming interfaces, and other aspects of the X
+     environment.  See the XStandards manual page for a list of stan-
+     dards.
+
+Implementations
+     For most of our standards, we provide high-quality implementations
+     to demonstrate proof of concept and to give early adoptors and ven-
+     dors a base to use.  These are not reference implementations; the
+     written specifications define the standards.
+
+Fonts
+     A collection of bitmap and outline fonts are included in the dis-
+     tribution, contributed by various individuals and companies.
+
+Utility Libraries
+     A number of libraries, such as Xmu and the Athena Widget Set, are
+     included.  These are not standards, but are used in building X Con-
+     sortium applications and may be useful in building other applica-
+     tions.
+
+Programs
+     We also provide a number of application programs.  A few of these
+     programs, such as xdm, should be considered essential in almost all
+     environments.  The rest of the applications carry no special sta-
+     tus; they are simply programs that have been developed and/or main-
+     tained by X Consortium staff.  In some cases, you will find better
+     substitutes for these programs contributed by others.
+
+
+1.2.  Supported Systems
+
+
+We built and tested this release on the following systems:
+
+
+     AIX 4.1.4
+     HP-UX 10.01
+     IRIX 5.3
+     IRIX 6.2 beta
+     DEC OSF/1 3.2
+     Digital Unix 4.0 beta
+     FreeBSD 2.1.0R
+     Linux 1.2.11 (Slackware 2.3)
+     SCO 3.2
+     SunOS 4.1.3
+     SunOS 5.4 (Sparc and x86)
+     UNIX System V/386 Release 4.2 (Novell UnixWare) Version 2.02
+     UNIX System V/386/486 Release 4.0 (NCR) Version 3.0
+     Ultrix 4.4
+     Microsoft Windows NT 3.5
+
+In addition, Cray has tested the beta release on UNICOS 8.0.
+
+In all cases we have used the vendor's compiler.  On the two SunOS
+releases we also test with gcc.
+
+
+1.2.1.  Supported Display Devices
+
+
+This release includes the necessary device-dependent support for an X
+server on the following platforms and devices:
+
+
+     AIX with Skyway display adaptor
+     HP-UX
+     DEC OSF/1 on Alpha AXP with PMAG-B frame buffer
+     Ultrix
+     Various Intel-based platforms: See the XF86_* manual pages.
+     Sun SPARCstations: See the Xsun(1) manual page for supported frame buffers.
+
+
+
+1.3.  The XC Tree
+
+
+The general layout under xc/ is as follows:
+
+
+config/             config files, imake, makedepend, build utilities
+doc/                all documentation other than per-program manual pages
+fonts/              BDF, Speedo, Type1 fonts
+include/            include files shared by multiple directories
+lib/                all libraries
+nls/                national language support files
+programs/           all programs, including the X server and rgb
+test/               X Test Suite and other test suites
+util/               patch, compress, other utilities
+bug-report          bug reporting template
+registry            X Registry
+
+
+This file is xc/RELNOTES.*, in various formats.  The documentation
+source files RELNOTES.ms and INSTALL.ms are in the new xc/doc/misc/
+directory.
+
+
+1.4.  X Registry
+
+
+The X Consortium maintains a registry of certain X-related items to aid
+in avoiding conflicts and to aid in sharing of such items.
+
+The registry is in the file xc/registry in the distribution.  The latest
+version is also available by sending a message to xstuff@x.org.  The
+message can have a subject line and no body, or a single-line body and
+no subject; in either case the line should look like this:
+
+     send docs registry
+
+
+
+1.5.  Extensions supported
+
+
+The core distribution includes the following extensions: BIG-REQUESTS,
+DOUBLE-BUFFER, MIT-SHM, MIT-SUNDRY-NONSTANDARD, Multi-Buffering, RECORD,
+SHAPE, SYNC, X3D-PEX, XC-MISC, XFree86-VidModeExtension, XIE, XInputEx-
+tension, XKEYBOARD, XTEST, and XTestExtension1.
+
+Not all of these extensions are standards; see the XStandards manual
+page.
+
+
+1.6.  Implementation Parameters
+
+
+Some of the specifications define some behavior as implementation-depen-
+dent.  Implementations of X Consortium standards need to document how
+those parameters are implemented; this section does so.
+
+XFILESEARCHPATH default
+     This default can be set at build time by setting the imake vari-
+     ables XFileSearchPathDefault, XAppLoadDir, XFileSearchPathBase, and
+     ProjectRoot in site.def.  See xc/config/cf/Project.tmpl for how
+     they are used.
+
+     By default ProjectRoot is /usr/X11R6.1 and XFILESEARCHPATH has
+     these components:
+
+          /usr/X11R6.1/lib/X11/%L/%T/%N%C%S
+          /usr/X11R6.1/lib/X11/%l/%T/%N%C%S
+          /usr/X11R6.1/lib/X11/%T/%N%C%S
+          /usr/X11R6.1/lib/X11/%L/%T/%N%S
+          /usr/X11R6.1/lib/X11/%l/%T/%N%S
+          /usr/X11R6.1/lib/X11/%T/%N%S
+
+
+XUSERFILESEARCHPATH default
+     If the environment variable XAPPLRESDIR is defined, the default
+     value of XUSERFILESEARCHPATH has the following components:
+
+          $XAPPLRESDIR/%L/%N%C
+          $XAPPLRESDIR/%l/%N%C
+          $XAPPLRESDIR/%N%C
+          $HOME/%N%C
+          $XAPPLRESDIR/%L/%N
+          $XAPPLRESDIR/%l/%N
+          $XAPPLRESDIR/%N
+          $HOME/%N
+
+     Otherwise it has these components:
+
+          $HOME/%L/%N%C
+          $HOME/%l/%N%C
+          $HOME/%N%C
+          $HOME/%L/%N
+          $HOME/%l/%N
+          $HOME/%N
+
+
+XKEYSYMDB default
+     Defaults to /usr/X11R6.1/lib/X11/XKeysymDB, assuming ProjectRoot is
+     set to /usr/X11R6.1.
+
+XCMSDB default
+     Defaults to /usr/X11R6.1/lib/X11/Xcms.txt, assuming ProjectRoot is
+     set to /usr/X11R6.1.
+
+XLOCALEDIR default
+     Defaults to the directory /usr/X11R6.1/lib/X11/locale, assuming
+     ProjectRoot is set to /usr/X11R6.1.  The XLOCALEDIR variable can
+     contain multiple colon-separate pathnames.
+
+XErrorDB location
+     The Xlib error database file is /usr/X11R6.1/lib/X11/XErrorDB,
+     assuming ProjectRoot is set to /usr/X11R6.1.
+
+XtErrorDB location
+     The Xt error database file is /usr/X11R6.1/lib/X11/XtErrorDB,
+     assuming ProjectRoot is set to /usr/X11R6.1.
+
+Supported Locales
+     X locales supported are in locale.dir; the mapping between various
+     system locale names and X locale names is in locale.alias.  Both
+     files are in the xc/nls/X11/locale/ directory.
+
+Input Methods supported
+     The core distribution does not include any input method servers.
+     However, Xlib supplies a default built-in input method that sup-
+     ports compose processing in 8-bit locales.  Compose files are pro-
+     vided for Latin-1 and Latin-2.  The built-in input method can sup-
+     port other locales, given suitable compose files.  See
+     xc/nls/X11/locale/Compose/iso8859-* for the supported compositions.
+
+There are input method servers in the contrib software.
+
+
+
+2.  What is Unchanged in Release 6.1
+
+
+As this is an update release, there is a great deal of stability in the
+standards, libraries, and clients.  No existing standards have changed
+in a material way, though several documents have been updated with edi-
+torial improvements.  Most of the libraries have no new interfaces.
+
+
+
+3.  What Is New in Release 6.1
+
+
+This section describes changes in the X Consortium distribution since
+Release 6.
+
+All libraries, protocols, and servers are compatible with Release 6.
+That is, R6 clients and applications will work with R6.1 libraries and
+servers and vice versa.
+
+The major new functionality in R6.1 is the X Keyboard extension, double
+buffering for smooth animation, and protocol recording.
+
+
+3.1.  OS Support
+
+
+The following platforms now have a newer operating system version sup-
+ported:
+
+
+System         R6             R6.1
+
+AIX            3.2.5          4.1.4
+DEC OSF/1      1.0 and 1.3    3.2 and 4.0 (now called Digital Unix 4.0)
+FreeBSD        1.1            2.1
+HP-UX          9.1            10.01
+IRIX           5.2            5.3 and 6.2
+Linux          1.0.0          1.2.11
+NCR SVR4       MP-RAS         Version 3.0
+NEWS-OS        6.0            6.1
+SunOS 5        5.3            5.4
+Ultrix         4.3            4.4
+UnixWare       1              2.02
+Windows NT     3.1            3.5
+
+
+Release 6.1 adds support for SCO Open Server Release 5.0.
+
+Release 6.1 does not support the following platforms supported in
+Release 6: A/UX, Mach (from Omron), Unix System V/860 (from Oki), and
+BSD/OS.
+
+
+3.2.  New Standards
+
+
+The following are new X Consortium standards in Release 6.1.  Each is
+described in its own section below.
+
+     XKEYBOARD (XKB)
+     RECORD
+     DOUBLE-BUFFER (DBE)
+     ICE X Rendevous
+
+
+
+3.3.  DBE
+
+
+The Double Buffer Extension (DBE) provides a standard way to utilize
+double-buffering, allowing flicker-free animation.
+
+The older Multi-Buffering extension is not linked in to the X server by
+default.  It will move to unsupported status at the next release.
+
+
+3.4.  XKB
+
+
+An early version of the X Keyboard extension (XKB) was shipped as a work
+in progress in R6.  In R6.1 it is now complete.
+
+XKB provides detailed keyboard descriptions and enhanced keyboard func-
+tionality, including support for the ISO 9995 keyboard model.
+
+With XKB are several new core clients, xkbcomp, xkbevd, xkbprint, each
+in their own directory under xc/programs, and xkbbell, xkbvleds, and
+xkbwatch, in xc/programs/xkbutils.
+
+
+3.5.  RECORD
+
+
+An early version of the RECORD extension was shipped as a work in
+progress in R6.  It is now complete.
+
+RECORD is an X protocol extension that supports the recording of all
+core X protocol and arbitrary X extension protocol.
+
+Documentation of RECORD is in xc/doc/specs/Xext/record*.ms and
+xc/doc/hardcopy/Xext/record*.PS.Z.  A thorough test program is in
+xc/test/record/.
+
+
+3.6.  VidMode
+
+
+This extension allows interactively adjusting graphics frame buffer
+parameters on PC-based (primarily Intel) hardware.  It is not a Consor-
+tium standard.
+
+
+3.7.  ICE X Rendezvous
+
+
+The Inter-Client Exchange protocol (ICE), which became a standard in
+X11R6, specifies a generic communication framework for data exchange
+between arbitrary clients.  The ICE protocol itself does not specify the
+manner in which two clients interested in communicating via ICE are made
+aware of each other's existence.
+
+The ICE X Rendezvous protocol is one standard protocol by which two
+clients who have connections to a common X server can rendezvous.  This
+new protocol is included in the ICE Protocol Specification document.
+
+
+3.8.  Configuration
+
+
+The top-level Makefile is no longer over-ridden by the first build.
+Instead a new file xmakefile is created.  Thus is it no longer necessary
+to copy Makefile.ini to Makefile to reset the builds.
+
+In R6, it was only necessary to supply BOOTSTRAPCFLAGS on the command
+line of the first make World on platforms that needed it.  As of R6.1,
+this flag must always be passed in the make World command.  However,
+Solaris 2 and USL systems no longer require BOOTSTRAPCFLAGS.
+
+The file xc/config/cf/README has been greatly expanded.  It now provides
+more guidance on how to write an Imakefile, including a list of vari-
+ables that may be set in an Imakefile.  A must read for Imakefile
+authors.
+
+The X configuration now supports Atria's clearmake, which allows sharing
+of object files when using ClearCase.
+
+The LaTeX text processor is now supported.  If you have LaTeX on your
+system, turn on HasLatex to have the MakeLatexDoc rule use it.
+
+We have added support for threads on more systems: Standard conforming
+pthreads (POSIX threads) on AIX 4.1.x and Digital Unix 4.0.  (As in R6,
+SVR4 threads are also supported on Solaris 2 and Unixware, MS-Windows
+threads on NT 3.5, and Draft 4 pthreads on DEC OSF/1 2 and 3.)  POSIX
+threads are not supported on Solaris 2.5.
+
+With System V Release 4 (SVR4) compilers, we now use the -Xa (ANSI C
+with native extensions) compiler flag rather than -Xc (limit environment
+to that specified in the standard).  This change provides access to the
+full richness of the platform.  Unfortunately, it also defines the pre-
+processor symbol __STDC__ to 0, instead of 1 as specified by the stan-
+dard.  Therefore we have changed all "#if __STDC__" tests in our code to
+"#ifdef __STDC__".  Changing the test does not break any currently-sup-
+ported compilers.  On HP-UX systems we now use the -Ae compiler option
+instead of -Aa, also to access the full environment offered by the plat-
+form.
+
+The database used by the "man -k" command is rebuilt when doing "make
+install.man" at the top of the xc tree.
+
+The makestrs program has moved from xc/lib/Xt/util to xc/config/util so
+it can be used by libraries other than Xt.  It now has a manual page.
+This enhancement was shipped in R6 public patch 12.
+
+The imake variables InstallXdmConfig, InstallXinitConfig, and InstallAp-
+pDefFiles have changed semantics.  Previously, turning off these vari-
+ables would suppress ever installing the files they controlled.  In
+R6.1, it suppresses overwriting existing files; if the files didn't pre-
+viously exist, the files are always installed.  The new interpretation
+makes bootstrapping a new system easier.
+
+
+3.9.  Internationalization
+
+
+Clarifications have been made to several sections of Chapter 13 of the
+Xlib specification.  No changes to the Xlib standard are involved.
+
+
+3.10.  Documentation
+
+
+The Release Notes document is split into two, the real release notes
+(this document) and installation instructions.  Formatted versions of
+both continue to be at top-level in xc/RELNOTES.* and xc/INSTALL.*.  A
+new directory xc/doc/misc/ holds the troff -ms sources.
+
+A new file xc/doc/misc/xlogo.epsi is the X logo in PostScript.
+
+
+3.11.  Header Files
+
+
+xc/include/Xalloca.h is solely responsible for defining ALLOCATE_LOCAL
+and DEALLOCATE_LOCAL.  You should be able to add or update a platform's
+support for alloca() by editing this one file instead of finding and
+changing the multiple definitions that existed previously.
+
+xc/include/Xpoll.h allows more portable, consistent select() and poll()
+use in the clients, including getting the fd_set properly defined.  (The
+servers still use select on all systems, even those that have poll.)
+
+
+3.12.  X Server
+
+
+
+3.12.1.  Device Support
+
+
+The following ddxen have been removed: macII, omron, and svga.
+
+The XFree86 ddx has been updated to 3.1.2C.
+
+The IBM ddx has been updated to work on AIX 4 as well as AIX 3.2.
+
+There is a new HP ddx with support for a new graphics card, the HCRX
+(HyperCRX, HPA4071A_Z), available in 8-bit or 24-bit deep options.  The
+24-bit version has a optional hardware accelerator, in which case it's
+known as an HCRX24Z.  This ddx was distributed in R6 public patch 9.
+
+The Xnest ddx now works on 64-bit machines.
+
+The DEC ddx now works on an Alpha with a simple framebuffer (PMAG-B).
+
+
+3.12.2.  Internal Changes
+
+
+To support DBE idioms, the new functions PeekNextRequest and
+SkipRequests add the ability to do request lookahead and skipping.  See
+xc/programs/server/os/io.c, xc/programs/server/include/os.h, and
+xc/doc/specs/Xserver/ddx.tbl.ms.
+
+The pixelization of zero-width lines is now tunable so that you can make
+the server match what your hardware does.  See xc/pro-
+grams/Xserver/mi/miline.h.  As a result of this work, clipping and pix-
+elization of zero-width lines are now consistent across cfb, mfb, and
+mi.
+
+Several new callback lists were introduced to support the RECORD exten-
+sion: DeviceEventCallback, ReplyCallback, SkippedRequestsCallback, and
+FlushCallback.  The parameters of the ClientStateCallback changed:
+instead of passing a pointer to the client as the call_data, a pointer
+to a small structure containing a pointer to the client and pointers to
+the connection setup information is passed.
+
+
+3.13.  New Programs
+
+
+There are new core programs xkbcomp, xkbevd, xkbprint, xkbbell, xkb-
+vleds, and xkbwatch.
+
+
+3.14.  xmh
+
+
+The xmh mail reader is now session aware.  This enhancement was dis-
+tributed in R6 public patch 8.
+
+
+3.15.  xsm
+
+
+The xsm session manager has many enhancements.  It has been moved out of
+xc/workInProgress into xc/programs.  Most of the enhancements were dis-
+tributed in R6 public patch 8.  Advanced signal handling in xsm is
+appearing for the first time in R6.1.
+
+
+3.16.  makeg
+
+
+The makeg script runs make with the options necessary to make a debug-
+gable program.
+
+
+3.17.  xterm
+
+
+The xterm terminal emulator has been minimally internationalized to use
+the Xlib built-in input method with 8-bit character sets.
+
+
+3.18.  Fonts
+
+
+Digital has contributed numerous fixes the the bitmap fonts.  These were
+distributed with R6 public patch 10.
+
+
+3.19.  X Test Suite
+
+
+As of X11R6.1, the X Test Suite, which tests functionality only up
+through X11R4, is considered unsupported software, and no further devel-
+opment is planned.
+
+For those who require a more up-to-date test suite with available sup-
+port, X/Open Company Ltd. offers VSW5, a successor to the X Consortium
+Test Suite.  VSW5 includes many bug fixes and a large number of new
+tests for Xt and for new R5 functionality.  R6 tests are planned for the
+future.  Refer to <http://www.xopen.org/public/test/vsw45.htm> for more
+information.
+
+
+3.20.  ANSIfication
+
+
+As noted previously under "Configuration Files", for pragmatic reasons
+we changed the way we use __STDC__ to test for standard C compilers.
+This is only a short-term issue, as R6.1 will be the last release that
+will support traditional K&R C.  Future releases will assume a standard
+C compiler and environment.
+
+
+3.21.  Software No Longer Included
+
+
+The software described in this section has been removed from the core
+distribution in R6.1.
+
+
+3.21.1.  MTXserver
+
+
+The multi-threaded X server snapshot is no longer shipped.  It was in
+xc/workInProgress in R6.  No further development has occurred.  Consid-
+erable would work have been necessary to get the MTXserver sources back
+into a state where they could be compiled.
+
+
+3.21.2.  LBX
+
+
+Low Bandwidth X, shipped in preliminary form in xc/workInProgress in R6,
+has been removed from the distribution pending completion of the proto-
+col design and sample implementation.  It will reappear in a future
+release.
+
+
+3.21.3.  Fresco
+
+
+Fresco, shipped in xc/workInProgress in R6, is now independently dis-
+tributed.  Source and documentation are available from
+<http://www.faslab.com/fresco/HomePage.html>.
+
+
+
+4.  Filing Bug Reports
+
+
+If you find a reproducible bug in software in the xc directory, or find
+bugs in the xc documentation, please send a bug report to the X Consor-
+tium using the form in the file xc/bug-report and this destination
+address:
+
+     xbugs@x.org
+
+
+Please try to provide all of the information requested on the form if it
+is applicable; the little extra time you spend on the report will make
+it much easier for us to reproduce, find, and fix the bug.  Receipt of
+bug reports is generally acknowledged, but sometimes it can be delayed
+by a few weeks.
+
+Bugs in contrib software are not handled by X Consortium staff.  Consult
+the documentation for the individual software to see where (if anywhere)
+to report the bug.  Many authors of contributed software subscribe to
+the mailing list "contrib-bugs" hosted at x.org, so this might be a use-
+ful place to report bugs.  (To subscribe to contrib-bugs yourself, send
+email to contrib-bugs-request@x.org.)
+
+
+
+5.  Acknowledgements
+
+
+Release 6.1 of X Version 11 is brought to you by the X staff at X Con-
+sortium, Inc: Donna Converse, Stephen Gildea, Kaleb Keithley, Matt Lan-
+dau, Ralph Mor, Bob Scheifler, Ralph Swick, Ray Tice, Mark Welch, and
+Dave Wiggins.
+
+Many companies and individuals have cooperated and worked extremely hard
+to make this release a reality, and our thanks go out to them.  You will
+find many of them listed in the acknowledgements in the individual spec-
+ifications.
+
+Contributions were received from
+
+Mike Patnode and SCO.
+
+XKB: Erik Fortune (SGI) was the architect and major implementor.  Help
+was received from Will Walker (Digital).  Funding for some of this work
+was provided by IBM.  The library spec was written by Gary Atkins and
+Amber Benson.  The XFree86 Team used early versions and provided useful
+feedback and bug reports.
+
+DBE: T. Alex Chen (IBM), Peter Daifuku (SGI), Ian Elliott (HP), Jim Gra-
+ham (Sun), Larry Hare (AGE), Jay Hersh (X Consortium), Daryl Huff (Sun),
+Deron Dann Johnson (Sun), Louis Khouw (Sun), Mark Kilgard (SGI), Allen
+Leinwand (SGI).  Rob Lembree (Digital), Alan Ricker (Metheus), Michael
+Rosenblum (Digital), Larry Seiler (Digital), Jeanne Sparlin (IBM), Jeff
+Stevenson (HP), Walter Strand (Metheus), Ken Tidwell (HP), Tom Yip (HP).
+
+RECORD: Rob Chesler (Absol-puter), Amnon Cohen (Mercury Interactive),
+Kieron Drake (UniSoft), Marc Evans (Synergytics) Jim Fulton (NCD), Jim
+Haggerty (Metheus) Ken Miller (Digital), Alan Ricker (Metheus), Kent
+Siefkes (Performance Awareness), and Martha Zimet (NCD).
+
+ddxen: HP, IBM, Digital, XFree86 Team.
+
+fonts: Digital
+
+Hidetoshi Tajima (Sun) tested the new internationalization code, provid-
+ing useful bug reports and fixes.
+
+ICE X Rendevous: Will Walker (Digital), Keith Edwards (Georgia Institute
+of Technology).

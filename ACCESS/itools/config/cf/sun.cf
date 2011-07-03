@@ -1,0 +1,307 @@
+XCOMM platform:  $XConsortium: sun.cf /main/160 1996/12/26 08:52:18 kaleb $
+
+#define OSName 			DefaultOSName
+#define OSMajorVersion		DefaultOSMajorVersion
+#define OSMinorVersion		DefaultOSMinorVersion
+#define OSTeenyVersion		DefaultOSTeenyVersion
+
+XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
+
+#define CompilerMajorVersion 5
+
+/* Depending on your mpirun/mprun command, you may need to define the
+   following symbol.  If the mpirun/mprun command requires a hostfile
+   to specify where to run the job, then define NEEDS_HOSTFILE; else if
+   the mprun command just needs the number of processors (-np 42), don't
+   define it.
+*/
+/* #define NEEDS_HOSTFILE 1 */
+
+#if 0
+#define UseNetcdf4 YES
+#define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lsocket -lnsl -lm -lz
+#endif
+
+#define Build64BitAccess YES
+
+#define UseCCMakeDepend		YES
+#define Use32BitAddress YES
+#define System SUN
+#define TempDir /usr/tmp
+#define NumProcs 4
+#define SerialDebugCmd "ddd --dbx"
+#define ExecableScripts YES
+#define NeedsDoubleEscape YES
+#define HasSunC YES
+#define ArFlags csr
+
+#define DependInc -I /usr/include -I $(INCDIR) 
+#if CompilerMajorVersion  > 4
+#define DependFlags -m mod
+#endif
+
+#define X11Includes -I/usr/X11R6.6/include
+#define X11Lib	    -L/usr/X11R6.6/lib -lX11
+
+
+/* If system has Matlab libraries and includes, change the definition of 
+ * HasMatlab in the following line from NO to YES, and check the definition 
+ * of MatlabLibraries and MatlabIncludes down below.
+ */
+#define HasMatlab NO
+
+/*
+ * Compiler setup.  This sun.cf file knows what options to use with 
+ * certain compilers, including Sun C, and gcc.  It 
+ * also understands how to set some of the options for various C++
+ * compilers, including Sun C++.
+ *
+ * === C Compiler Setup ==========================================
+ *
+ * For SunPro C, define HasSunC to YES in site.def.  
+ * For gcc or gcc2, define HasGcc or HasGcc2 to YES in site.def
+ * For other compilers, define HasSunC to NO in site.def, then 
+ *    provide appropriate values for the various compiler related
+ *    configuration varibles used here.
+ * 
+ * If you say you have the SunPro C compiler, we assume you have 
+ * version 2.0.x of the compiler.  If you have version 3.0.x instead, 
+ * define CCompilerMajorVersion as 3 in site.def
+ *
+ * If you don't tell us which C compiler you have, we assume you have 
+ * the SunPro C compiler under Solaris 2.x, and the bundled /bin/cc 
+ * under SunOS 4.1.x
+ *
+ * === C++ Compiler Setup ==========================================
+ *
+ * For SunPro C++, define HasSunCplusplus to YES in site.def
+ * For Gnu g++ 2.6.x, define HasGcc2ForCplusplus to YES in site.def
+ * For other compilers, define HasCplusplus to YES in site.def, and 
+ *    check to see if you need to provide values for CplusplusOptions
+ *    and/or DefaultCplusplusOptions.
+ *
+ * In any case, you may also need to set CplusplusDependIncludes.
+ *
+ * If you say you have the SunPro C++ compiler, we assume you have 
+ * version 3.0.x of the compiler.  If you have version 4.0.x instead, 
+ * define CplusplusCompilerMajorVersion as 4 in site.def.
+ *
+ */
+
+#ifndef HasSunC
+# if (HasGcc || HasGcc2 || OSMajorVersion < 5)
+#  define HasSunC NO
+# else
+#  define HasSunC YES
+# endif
+#endif
+
+#if HasSunC 
+# ifndef CCompilerMajorVersion
+#  define CCompilerMajorVersion 4
+# endif
+#endif
+
+#if HasSunCplusplus
+# ifndef HasCplusplus
+#  define HasCplusplus YES
+# endif
+# ifndef CplusplusCompilerMajorVersion
+#  define CplusplusCompilerMajorVersion 3
+# endif
+#endif
+
+#if OSMajorVersion > 4
+# define ExtraLibraries    -lsocket -lnsl
+# if CompilerMajorVersion > 4
+#  define F90ExtraLibraries   -lf77compat
+# endif
+# if OSMinorVersion > 1
+#  define ThreadedX	  YES
+#  if HasSunC && CCompilerMajorVersion > 2
+#   define ThreadsCompileFlags -mt
+#  else
+#   define SystemMTDefines -D_REENTRANT
+#   define ThreadsLibraries -lthread
+#  endif
+#  if HasSunCplusplus && CplusplusCompilerMajorVersion > 3
+#   define ThreadsCplusplusCompileFlags -mt
+#  else
+#   define CplusplusSystemMTDefines -D_REENTRANT
+#   define ThreadsCplusplusLibraries -lthread
+#  endif
+# endif 		/* OSMinorVersion > 1 */
+# ifndef UseExportLists
+#  define UseExportLists YES
+# endif
+# define HasVFork          NO
+# define InstKmemFlags	  -g sys -m 2711
+# define ShLibIncludeFile <sunLib.tmpl>
+/*
+ * Set flags for position independent code before including sv4Lib.rules
+ * if the compiler in use doesn't use standard SVR4 flags
+ */
+# if HasSunC 
+#  define PositionIndependentCFlags -KPIC
+#  define LargePositionIndependentCFlags -KPIC
+# endif
+# if HasSunCplusplus 
+#  define PositionIndependentCplusplusFlags -pic
+#  define LargePositionIndependentCplusplusFlags -PIC
+# endif
+#else /* not OSMajorVersion > 4 */
+#define InstKmemFlags	  -g kmem -m 2711
+#include <sunLib.rules>
+#endif /* OSMajorVersion > 4 (else) */
+
+#define BuildLibPathVar	  LD_LIBRARY_PATH
+#define HasNdbm		  YES
+#define HasShm		  YES
+#define HasSecureRPC	  YES
+#define SetTtyGroup	  YES
+#define HasPutenv	  YES
+
+#if HasGcc
+# if OSMajorVersion > 4 && defined(i386Architecture)
+#  ifndef DefaultCCOptions
+#   if OSMinorVersion == 1
+#    define DefaultCCOptions -DNO_ASM
+#   else
+#    define DefaultCCOptions -ansi -DNO_ASM
+#   endif
+#  endif
+# endif
+# if HasGcc2
+#  ifndef OptimizedCDebugFlags
+#   ifdef i386Architecture
+#    define OptimizedCDebugFlags -m486 -O2 -fno-strength-reduce
+#   else
+#    define OptimizedCDebugFlags -O2
+#   endif
+#  endif
+# else
+#  define SharedLibraryCcCmd cc
+#  define ExtraLoadFlags -B/usr/bin/
+#  define AllocateLocalDefines /**/
+
+.c.o:
+	ClearmakeOSName	$(CC) -c $(CFLAGS) $*.c
+
+# endif /* HasGcc2 (else) */
+
+#else /* not HasGcc */
+
+# define AllocateLocalDefines -DINCLUDE_ALLOCA_H
+
+/* Set up compiler-dependent options for Sun C */
+
+# if HasSunC
+#  ifdef Sun3Architecture
+#   ifndef DefaultCCOptions
+#    define DefaultCCOptions -f68881 -pipe
+#   endif
+#  else	/* not defined(Sun3Architecture) */
+#   if OSMajorVersion < 5
+#    if CCompilerMajorVersion < 3
+#     define BootstrapCFlags	-DSVR4
+#    else
+#     define BootstrapCFlags	/* none needed */
+#    endif
+#    ifndef DefaultCCOptions
+#     define DefaultCCOptions -pipe
+#    endif
+#   else /* OSMajorVersion >= 5*/
+#    define BootstrapCFlags -Dsun -DSVR4
+#    if Build64BitAccess == YES
+#      define StandardDefines -Dsun -DSVR4 -DADDC_ -DBuild64
+#    else
+#      define StandardDefines -Dsun -DSVR4 -DADDC_
+#    endif
+#    define CppCmd /usr/ccs/lib/cpp
+#    define ArCmd ar csr
+#    define SystemV YES
+#    define RanlibCmd touch
+#    ifdef UseInstalled
+#    if Build64BitAccess == YES
+#     define DefaultCCOptions           -xtarget=ultra -xarch=v9
+#     define DefaultF77Options		-xtarget=ultra -xarch=v9 
+#     define DefaultF90Options		-xtarget=ultra -xarch=v9 
+#     define DefaultF77DebugFlags	-O3 -xtarget=ultra -xarch=v9 
+#     define DefaultF90DebugFlags	-O3 -xtarget=ultra -xarch=v9 
+#     define DefaultCDebugFlags	        -xO3 -xtarget=ultra -xarch=v9
+#     define DefaultCplusplusDebugFlags -xO3 -xtarget=ultra -xarch=v9
+#     define F90PrecOptions		-xtypemap=real:64,double:64,integer:64
+#     define F77PrecOptions		-xtypemap=real:64,double:64,integer:64
+#     define ExtraLoadOptions		-xtarget=ultra -xarch=v9
+#     define ExtraLoadFlags
+#     define RpcLib -lnsl
+#    else
+#     define DefaultCCOptions
+#     define DefaultF77Options
+#     define DefaultF90Options
+#     define DefaultF77DebugFlags -O3
+#     define DefaultF90DebugFlags -O3
+#     define DefaultCDebugFlags -xO3
+#     define DefaultCplusplusDebugFlags -xO3
+#     define ExtraLoadOptions 
+#     define ExtraLoadFlags
+#     define RpcLib -lnsl
+#    endif
+#    else
+#     define DefaultCCOptions -Xa
+#     define DefaultF77Options
+#     define DefaultF90Options
+#     define DefaultF77DebugFlags -O
+#     define DefaultF90DebugFlags -O
+#     define DefaultCDebugFlags -O
+#    endif
+#if Parallel
+#define ParallelCcCmd			/opt/SUNWhpc/bin/mpcc
+#define ParallelCplusplusCmd		/opt/SUNWhpc/bin/mpCC
+#define ParallelFortranCmd              /opt/SUNWhpc/bin/mpf77
+#define ParallelFortran90Cmd		/opt/SUNWhpc/bin/mpf90
+
+#define ParRunCmd "/opt/SUNWhpc/bin/mprun"
+#define NPCmd -np
+#define ParDebugCmdSngl "ddd --dbx"
+#define ParDebugCmdMult "totalview /opt/SUNWhpc/bin/mprun -a"
+#endif
+#   endif	
+#  endif	
+# endif
+
+# define PexCCOptions DefaultCCOptions
+
+#endif /* HasGcc (else) */
+
+#if OSMajorVersion < 5
+# define SharedAllocateLocalDefines -DINCLUDE_ALLOCA_H
+# define LibraryCCOptions /* don't want special floating point */
+#endif /* OSMajorVersion < 5 */
+
+#if OSMajorVersion > 4
+# include <svr4.cf>
+#endif
+
+#ifndef ManKeywordsTarget
+# define ManKeywordsTarget(manpath)					@@\
+man_keywords::								@@\
+	catman -M $(DESTDIR)manpath -w
+#endif
+
+#if !defined(UsePamLibrary)
+# if (OSMajorVersion > 5) || ((OSMajorVersion == 5) && (OSMinorVersion >= 4))
+#  define UsePamLibrary		YES
+# endif
+#endif
+
+#define ArchitectureDefines	-DSUN_ARCHITECTURE
+
+#define TtClientExtraLibs	ExtraLibraries -ldl -lintl
+
+#define ShlibExportListOpt(filename)	-M filename
+
+#define CdeProjectDefines \
+	-DMULTIBYTE -DNLS16 -DMESSAGE_CAT -D_XOPEN_VERSION=4 \
+	-D_XOPEN_SOURCE -D__EXTENSIONS__ \
+	-DOSMAJORVERSION=OSMajorVersion -DOSMINORVERSION=OSMinorVersion
