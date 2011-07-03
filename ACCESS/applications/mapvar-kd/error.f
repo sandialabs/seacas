@@ -34,7 +34,7 @@ C
 C=======================================================================
 *DECK,ERROR
       SUBROUTINE ERROR (SUBNAM,MESSAG,LABEL1,I,LABEL2,J,LABEL3,WORD,    
-     1ISTOP)
+     1  ISTOP)
 C
 C     ******************************************************************
 C
@@ -48,7 +48,7 @@ C     ******************************************************************
 C
       CHARACTER*(*) SUBNAM,MESSAG,LABEL1,LABEL2,LABEL3,WORD
 C
-      COMMON /TAPES/ NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'tapes.blk'
 C
 C     ******************************************************************
 C

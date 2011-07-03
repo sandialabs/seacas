@@ -34,7 +34,7 @@ C
 C=======================================================================
       INTEGER FUNCTION LENSTR (STRING)
 C=======================================================================
-C$Id: lenstr.f,v 1.1 2008/10/31 05:04:13 gdsjaar Exp $
+C$Id: lenstr.f,v 1.3 2007/10/17 18:43:49 gdsjaar Exp $
 C   --*** LENSTR *** (STRLIB) Return string length
 C   --   Written by Amy Gilkey - revised 02/14/86
 C   --

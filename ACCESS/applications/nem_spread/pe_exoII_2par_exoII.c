@@ -32,39 +32,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: pe_exoII_2par_exoII.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
 /*--------------------------------------------------------------------------*/
 /* Purpose: Parallel I/O utility for SALSA.                                 */
 /*                                                                          */
 /*    This program takes an Exodus II FEM database file and a parallel      */
 /* load-balance file and creates a set of parallel Exodus II FEM files for  */
 /* use by SALSA.                                                            */
-/*--------------------------------------------------------------------------*/
-/* Author(s):  Gary L. Hennigan (1421)                                      */
-/*--------------------------------------------------------------------------*/
-/* Supported Environment(s):    nCube                                       */
-/*                              Intel Paragon                               */
-/*--------------------------------------------------------------------------*/
-/* Revision History:                                                        */
-/*                                                                          */
-/*    05 November 1993:    Date of creation                                 */
-/*    08 December 1993:    Modified to read in both Salsa and               */
-/*                         Parallel-ExodusII command files.                 */
 /*--------------------------------------------------------------------------*/
 
 #include <stdio.h>

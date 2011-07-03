@@ -31,20 +31,12 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: version.f,v 1.1 2008/10/31 05:04:15 gdsjaar Exp $
 C************************************************************************
       subroutine version (qainfo)
 C************************************************************************
 
       include 'exodusII.inc'
       character*(mxstln) qainfo(6)
-      character*(mxstln) cvsrev, cvsdat
-
-C     The CVS* variables are updated by the CVS/RCS program every time
-C     this routine is commited to the repository.  Therefore, whenever 
-C     there are any changes to any routines, this routine should also 
-C     be committed.  The assignment to QAINFO(I) strips off the 'Revision'
-C     and 'Date' strings from the CVS variables.  Kludgey but it might work.
 
 C      --QAINFO - the current program QA information:
 C      --   (1) = program name
@@ -55,18 +47,13 @@ C      --   (5) = date of current run
 C      --   (6) = time of current run
 
       
-      cvsrev = '$Revision: 1.1 $'
-      cvsdat = '$Date: 2008/10/31 05:04:15 $'
-
-      qainfo(1) = 'MAPVAR                          '
-      qainfo(2) = '                                '
-      qainfo(3) = '                                '
+      qainfo(1) = 'mapvar                          '
+      qainfo(2) = '2011/06/16 10:40:36             '
+      qainfo(3) = ' 1.13                           '
       qainfo(4) = '                                '
       qainfo(5) = '                                '
       qainfo(6) = '                                '
-      qainfo(2) = cvsdat(10:17)
-      qainfo(3)(2:5) = cvsrev(12:15)
 
       return
       end
-C........
+

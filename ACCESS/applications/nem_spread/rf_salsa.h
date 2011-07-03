@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: rf_salsa.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 /*
 *
 *  rf_salsa.h:
@@ -59,7 +44,7 @@
 */
 
 #define UTIL_NAME "nem_spread"
-#define VER_STR   "5.13 (2009/04/20)"
+#define VER_STR   "5.15 (2011/06/29)"
 
 /*****************************************************************************/
 /*		PROTOTYPES FOR COMMON MP FUNCTIONS		  	     */

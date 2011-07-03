@@ -148,7 +148,7 @@ namespace {
   }
 }
 
-void index_sort(std::vector<double> &xyz, std::vector<int> &index, int axis)
+void index_coord_sort(const std::vector<double> &xyz, std::vector<int> &index, int axis)
 {
   // For now, let's extract the component we want to sort on into a separate vector.
   std::vector<double> comp(xyz.size()/3);
@@ -156,4 +156,13 @@ void index_sort(std::vector<double> &xyz, std::vector<int> &index, int axis)
   for (size_t i=axis; i < xyz.size(); i+=3)
     comp[j++] = xyz[i];
   ex_iqsort(&comp[0], &index[0], (int)index.size());
+}
+
+void index_sort(const std::vector<int> &ids, std::vector<int> &index)
+{
+  index.resize(ids.size());
+  for (size_t i=0; i < index.size(); i++)
+    index[i] = i;
+  
+  ex_iqsort(&ids[0], &index[0], (int)index.size());
 }

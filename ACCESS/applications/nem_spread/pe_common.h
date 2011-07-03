@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: pe_common.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 
 #ifndef _PE_COMMON_H
 #define _PE_COMMON_H

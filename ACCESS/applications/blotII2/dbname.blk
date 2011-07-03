@@ -1,2 +1,0 @@
-      COMMON /DBNAME/ FILNAM
-      character*132 FILNAM

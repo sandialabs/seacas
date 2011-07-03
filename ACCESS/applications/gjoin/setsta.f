@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
 C -*- Mode: fortran -*-
-C $Id: setsta.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: setsta.f,v 1.4 2008/04/09 21:45:53 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE SETSTA (PROMPT, ERRMSG, NITEM1, NITEM2, IDS, ISTAT, *)
 C=======================================================================

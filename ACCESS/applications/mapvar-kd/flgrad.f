@@ -71,9 +71,9 @@ C  *********************************************************************
 C
       include 'exodusII.inc'
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,itype
+      include 'aexds1.blk'
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
 
 C
       DIMENSION CNTRA(NUMEBA,*), SHLNRM(3), SOLEA(NUMEBA,*)

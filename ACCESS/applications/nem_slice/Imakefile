@@ -31,8 +31,6 @@ XCOMM (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 XCOMM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 XCOMM 
 
-XCOMM $Id: Imakefile,v 1.1 2009/06/09 17:45:12 gdsjaar Exp $
-
 #if defined(OSF1Architecture)
 CDEBUGFLAGS=-O
 CCOPTIONS=
@@ -48,34 +46,15 @@ CC = cc
 CC = $(ACCESSDIR)/siMPI/bin/mpicc
 #endif
 
-#if defined(SunArchitecture)
-DEFINES = -DPRINT_INFO -DHAS_GETRUSAGE
-#elif defined(LinuxArchitecture)
-DEFINES = -DPRINT_INFO  -DHAS_GETRUSAGE
-#elif defined(SGIArchitecture)
-DEFINES = -DPRINT_INFO  -DHAS_GETRUSAGE
-#elif defined(OSF1Architecture)
-DEFINES = -DPRINT_INFO  -DHAS_GETRUSAGE
-#else
-DEFINES = -DPRINT_INFO 
-#endif
+DEFINES = -DHAS_GETRUSAGE
 
-#if NeedsGetSubopt
-SRCS1 = md_getsubopt.c
-#else
-SRCS1 = 
-#endif
-
-SRCS2 = \
+SRCS = \
 elb_allo.c       elb_elem.c       elb_err.c        elb_exo_util.c \
 elb_graph.c      elb_groups.c     elb_inp.c        elb_loadbal.c \
 elb_main.c       elb_output.c     elb_time.c       elb_util.c \
-add_to_log.c
+add_to_log.c     getopt.c         md_getsubopt.c
 
-OBJS1 = ${SRCS1:.c=.o}
-OBJS2 = ${SRCS2:.c=.o}
-
-OBJS = $(OBJS1) $(OBJS2)
+OBJS = ${SRCS:.c=.o}
 
 LIBS = $(EXOIIV2C) $(NETCDF) $(NEMESISC) $(CHACO) $(ZOLTAN) -lm
 

@@ -31,39 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: srchs.f,v 1.1 2008/10/31 05:04:15 gdsjaar Exp $
-C $Log: srchs.f,v $
-C Revision 1.1  2008/10/31 05:04:15  gdsjaar
-C Moved the applications into an applications subdirectory.
-C
-C Revision 1.1  2008/06/18 16:09:22  gdsjaar
-C Initial import of files into sourceforge repository
-C
-C Revision 1.5  2007/10/17 18:40:36  gdsjaar
-C Added copyright notice to all files.
-C
-C Mapvar is licensed under the BSD license
-C
-C Revision 1.4  2003/09/11 12:47:53  gwwellm
-C tet element processing and 3 years of bug fixes I thought I had already committed
-C
-C Revision 1.3  1999/03/15 16:52:11  gwwellm
-C New interpolation scheme added
-C Degenerate Hex elements now handled correctly
-C Reorganized flow thru code for improved efficiency
-C Miscellaneous bug fixes
-C
-C Revision 1.2  1998/04/15 19:43:39  gwwellm
-C Added truth table, input search tolerance as user command,
-C general bug fixes and cleanup
-C
-C Revision 1.1  1998/03/13 18:12:29  gdsjaar
-C New code -- mapvar. Interpolates results form an exodusII results file
-C to a differently mesh geometry.  Written by Gerry Wellman,
-C 9117. Loosely based on MERLIN. Provides a superset of merlin
-C functionality.
-C
-C
       SUBROUTINE SRCHS (
      *  NPSRF,   NFSRF,   LINKSRF, XYZSRF,
      *  NPTS,    XYZPTS,  TOLSRCH,
@@ -129,7 +96,7 @@ C  P     IERR     -/O    ERROR FLAG
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'tapes.blk'
 C
 C INPUT/OUTPUT ARRAYS
 C

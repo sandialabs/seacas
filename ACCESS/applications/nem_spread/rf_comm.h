@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: rf_comm.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 #ifndef _RF_COMM_H
 #define _RF_COMM_H
 
@@ -58,7 +43,7 @@ extern int    nwrite_big (char *, int, int, int, int *);
 extern int    nread_big  (char *, int, int *, int *, int *);
 extern void   brdcst_maxlen (const int, const int, char *, int, int);
 extern void   brdcst (int, int, char *, int,  int);
-extern void   sync (int, int);
+extern void   psync (int, int);
 extern void   print_sync_start (int, int, int);
 extern void   print_sync_end   (int, int, int);
 extern int    gsum_int    (int,    int, int);

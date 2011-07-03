@@ -72,14 +72,13 @@ C
 C  *********************************************************************
 C
       include 'exodusII.inc'
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AEXDS2/ QALINE(4,240),NAMECO(3),NAMVAR(512)
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'aexds1.blk'
+      include 'aexds2.blk'
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'tapes.blk'
 C
       DIMENSION ICONA(NELNDA,*), NELTN(*)
       DIMENSION SOLEA(NUMEBA,*), SOLENA(NODESA,NVAREL), ITT(NVAREL,*)

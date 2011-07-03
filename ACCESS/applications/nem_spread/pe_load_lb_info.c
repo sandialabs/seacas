@@ -32,22 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: pe_load_lb_info.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -68,7 +52,6 @@
 #include "rf_mp_const.h"
 
 #include "ps_pario_const.h"
-#include "md_heap_info_smos.h"
 
 #include "ne_nemesisI.h"
 

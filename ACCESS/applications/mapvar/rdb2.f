@@ -55,9 +55,9 @@ C
       include 'exodusII.inc'
       character*(MXSTLN) typ,typa
 C
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
+      include 'bmesh.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
 C
       DIMENSION ICONB(NELNDB,*),NDLSTB(*)
 C

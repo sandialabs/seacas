@@ -37,7 +37,7 @@ C=======================================================================
      &  LTEESS, LTSSS, FACSS, 
      &  LTEX, LTSX, TDX, IXESS, IXDSS, NEX, NDX, ISCR)
 C=======================================================================
-C $Id: muness.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: muness.f,v 1.2 2001/06/26 17:38:54 gdsjaar Exp $
 C
 C   --*** MUNESS *** (GJOIN) Compress and rearrange element side sets
 C   --   Written by Amy Gilkey - revised 02/25/88

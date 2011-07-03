@@ -35,12 +35,11 @@
  */
 
 %{
-  /* $Id: aprepro.l,v 1.2 2009/06/10 04:30:12 gdsjaar Exp $  */
 
+#include <stdio.h>
 #include <string.h>
 #include <fcntl.h> 
 
-char rcsid2[] = "$Id: aprepro.l,v 1.2 2009/06/10 04:30:12 gdsjaar Exp $";
 #define show(x)   printf("<%s>", x);
 #undef yywrap
 int yywrap(void);
@@ -51,6 +50,8 @@ int nfile = 0;
 int ifdef;
 int file_must_exist = 0; /* Global used by include/conditional include */
 #define LINENUM_INC	ap_file_list[nfile].lineno++
+
+extern aprepro_options ap_options;
 
 /* Global variables used by the looping mechanism */
 int loop_lvl = 0;
@@ -64,42 +65,41 @@ extern void  conv_string(char *string);
 extern FILE *open_file(char *file, char *mode);
 extern FILE *check_open_file(char *file, char *mode);
  
-extern char comment; /* Character used to indicate a comment at the beginning of the line */
-extern int debugging;
-extern int info_msg;
-extern int warning_msg;
-
 #define MAX_IF_NESTING 64
 
 int if_state[MAX_IF_NESTING];
 int if_lvl = 0;
 
 %}
+
+%option nounput
+
 qstring	\"[^\"\n]*[\"\n]
 mlstring \'[^\']*[\']
 D     [0-9]
 E     [Ee][+-]?{D}+
 L     [A-Za-z_]
-id    {L}({L}|{D})*
+id    {L}(:|{L}|{D})*
 WS    [ \t\f]*
+NL    "\n"
 number {D}*\.({D}+)?({E})?
 integer {D}+({E})?
 
 %START PARSING GET_FILENAME IF_SKIP GET_VAR VERBATIM IF_WHILE_SKIP GET_LOOP_VAR LOOP LOOP_SKIP
 
 %%
-<INITIAL>"{VERBATIM(ON)}"            { BEGIN(VERBATIM);  }
+<INITIAL>"{VERBATIM(ON)}"   { BEGIN(VERBATIM);  }
 <VERBATIM>"{VERBATIM(OFF)}" { BEGIN(INITIAL);   }
-<VERBATIM>[A-Za-z0-9_ ]* |
+<VERBATIM>[A-Za-z0-9_: ]* |
 <VERBATIM>.                 { if (echo) ECHO; }
 <VERBATIM>"\n"              { if (echo) ECHO; LINENUM_INC;   }
 
-<INITIAL>"{ECHO}" |
-"{ECHO(ON)}"		    { echo = True;	}
-<INITIAL>"{NOECHO}" |
-"{ECHO(OFF)}"		    { echo = False;	}
+<INITIAL>{WS}"{ECHO}" |
+{WS}"{ECHO(ON)}"	    { echo = True;	}
+<INITIAL>{WS}"{NOECHO}" |
+{WS}"{ECHO(OFF)}"	    { echo = False;	}
 
-<INITIAL>"{"[Ll]"oop(" { BEGIN(GET_LOOP_VAR); }
+<INITIAL>{WS}"{"[Ll]"oop(" { BEGIN(GET_LOOP_VAR); }
 
 <GET_LOOP_VAR>{number}")".*"\n" |
 <GET_LOOP_VAR>{integer}")}".*"\n" {/* Loop control defined by integer */
@@ -140,7 +140,7 @@ integer {D}+({E})?
 				}
 				 LINENUM_INC;
 			       }
-<LOOP>"{"[Ee]"nd"[Ll]"oop".*"\n" { LINENUM_INC;
+<LOOP>{WS}"{"[Ee]"nd"[Ll]"oop".*"\n" { LINENUM_INC;
 				   if (--loop_lvl == 0)
 				     {
 				       BEGIN(INITIAL);
@@ -155,7 +155,7 @@ integer {D}+({E})?
 				   else
 				     fprintf(tmp_file, "%s", yytext);
 				 }
-<LOOP>"{"[Ll]"oop(".*"\n"  { loop_lvl++; /* Nested Loop */
+<LOOP>{WS}"{"[Ll]"oop(".*"\n"  { loop_lvl++; /* Nested Loop */
 			     fprintf(tmp_file, "%s", yytext);
 			     LINENUM_INC;
 			   }
@@ -164,38 +164,38 @@ integer {D}+({E})?
 			   }
 
 
-<LOOP_SKIP>"{"[Ee]"nd"[Ll]"oop".*"\n" { LINENUM_INC;
+<LOOP_SKIP>{WS}"{"[Ee]"nd"[Ll]"oop".*"\n" { LINENUM_INC;
 					if (--loop_lvl == 0)
 					  BEGIN(INITIAL);
 				      }
-<LOOP_SKIP>"{"[Ll]"oop(".*"\n"        { loop_lvl++; /* Nested Loop */
+<LOOP_SKIP>{WS}"{"[Ll]"oop(".*"\n"        { loop_lvl++; /* Nested Loop */
 					LINENUM_INC;
 				      }
 <LOOP_SKIP>.*"\n"		      { LINENUM_INC; }
 
-<IF_SKIP>"{"[Ii]"fdef("  { if_lvl++; 
-    if (debugging) 
+<IF_SKIP>{WS}"{"[Ii]"fdef("  { if_lvl++; 
+    if (ap_options.debugging) 
 	fprintf (stderr, "DEBUG IF: 'ifdef'  at level = %d at line %d\n",
 		 if_lvl, ap_file_list[nfile].lineno);
 			   if (if_lvl >= MAX_IF_NESTING)
 			     yyerror("Too many nested if statements");
 			   if_state[if_lvl] = IF_WHILE_SKIP; }
-<IF_SKIP>"{"[Ii]"fndef(" { if_lvl++; 
-    if (debugging) 
+<IF_SKIP>{WS}"{"[Ii]"fndef(" { if_lvl++; 
+    if (ap_options.debugging) 
 	fprintf (stderr, "DEBUG IF: 'ifndef' at level = %d at line %d\n",
 		 if_lvl, ap_file_list[nfile].lineno);
 			   if (if_lvl >= MAX_IF_NESTING)
 			     yyerror("Too many nested if statements");
 			   if_state[if_lvl] = IF_WHILE_SKIP; }
-<INITIAL>"{"[Ii]"fdef("  { if_lvl++; 
-    if (debugging) 
+<INITIAL>{WS}"{"[Ii]"fdef("  { if_lvl++; 
+    if (ap_options.debugging) 
 	fprintf (stderr, "DEBUG IF: 'ifdef'  at level = %d at line %d\n",
 		 if_lvl, ap_file_list[nfile].lineno);
 			   if (if_lvl >= MAX_IF_NESTING)
 			     yyerror("Too many nested if statements");
 			   ifdef = 1; BEGIN(GET_VAR); }
-<INITIAL>"{"[Ii]"fndef(" { if_lvl++; 
-    if (debugging)
+<INITIAL>{WS}"{"[Ii]"fndef(" { if_lvl++; 
+    if (ap_options.debugging)
 	fprintf (stderr, "DEBUG IF: 'ifndef' at level = %d at line %d\n",
 		 if_lvl, ap_file_list[nfile].lineno);
 			   if (if_lvl >= MAX_IF_NESTING)
@@ -232,7 +232,7 @@ integer {D}+({E})?
 			    }
 
 "{"[Ee]"lse}".*"\n"     { LINENUM_INC; 
-    if (debugging) 
+    if (ap_options.debugging) 
 	fprintf (stderr, "DEBUG IF: 'else'   at level = %d at line %d\n",
 		 if_lvl, ap_file_list[nfile].lineno);
 			    if (if_state[if_lvl] == IF_SKIP) 
@@ -247,7 +247,7 @@ integer {D}+({E})?
 			     BEGIN(INITIAL);
 			   /* If neither is true, this is a nested 
 			      if that should be skipped */
-    if (debugging) 
+    if (ap_options.debugging) 
 	printf ("DEBUG IF: 'endif'  at level = %d at line %d\n",
 		if_lvl, ap_file_list[nfile].lineno);
 			   if (--if_lvl < 0) {
@@ -262,11 +262,11 @@ integer {D}+({E})?
 <IF_SKIP>.                 { ; }
 <IF_SKIP>"\n"              { LINENUM_INC; }
 
-<INITIAL>"{"[Ii]"nclude("           { BEGIN(GET_FILENAME); 
+<INITIAL>{WS}"{"[Ii]"nclude("           { BEGIN(GET_FILENAME); 
                              file_must_exist = True; }
-<INITIAL>"{"[Cc]"include("          { BEGIN(GET_FILENAME);
+<INITIAL>{WS}"{"[Cc]"include("          { BEGIN(GET_FILENAME);
                              file_must_exist = !True; }
-<GET_FILENAME>.+")"{WS}"}".*"\n" { BEGIN(INITIAL); 
+<GET_FILENAME>.+")"{WS}"}"{NL}* { BEGIN(INITIAL); 
 			     {
 			       symrec *s;
 			       int quoted = False;
@@ -301,7 +301,7 @@ integer {D}+({E})?
 				 yytmp = check_open_file(pt, "r");
 			       if (yytmp != NULL) {
 				 yyin = yytmp;
-				 if (info_msg == True) {
+				 if (ap_options.info_msg == True) {
 				   fprintf(stderr,
 	         "Aprepro: INFO: Included File: '%s' (%s, line %d)\n", pt,
 					   ap_file_list[nfile].name,
@@ -318,7 +318,7 @@ integer {D}+({E})?
 				 yy_switch_to_buffer (
 				    yy_create_buffer( yyin, YY_BUF_SIZE));
 			       } else {
-				 if (warning_msg == True) {
+				 if (ap_options.warning_msg == True) {
 				   fprintf(stderr,
 					   "Aprepro: WARN: Can't open '%s'\n",
 					   yytext);
@@ -338,7 +338,7 @@ integer {D}+({E})?
 <PARSING>{id}              { symrec *s;
 			     s = getsym(yytext);
 			     if (s == 0)
-			       s = putsym (yytext, UNDVAR);
+			       s = putsym (yytext, UNDVAR, 0);
 			     yylval.tptr = s;
 			     return(s->type);
 			   }
@@ -397,7 +397,7 @@ integer {D}+({E})?
 "{"                        { BEGIN(PARSING); return('{');  }
 
 [Ee][Xx][Ii][Tt] |
-[Qq][Uu][Ii][Tt]           { if (end_on_exit)
+[Qq][Uu][Ii][Tt]           { if (ap_options.end_on_exit)
 			       {
 				 if (echo) ECHO;
 				 return(-1);  
@@ -418,8 +418,6 @@ integer {D}+({E})?
 %%
 int yywrap(void)
 {
-  int fclose(FILE *);
-
   if (nfile == 0)		/* End of main file, not in nested include */
     {
       fclose (yyin);
@@ -428,18 +426,23 @@ int yywrap(void)
   else
     /* We are in an included or looping file */
     {
-      yy_delete_buffer (yy_current_buffer);
+      yy_delete_buffer (YY_CURRENT_BUFFER);
       if (ap_file_list[nfile].tmp_file)
 	{
-          if (debugging)
+          if (ap_options.debugging)
 	      fprintf (stderr, "DEBUG LOOP: Loop count = %d\n",
 		       ap_file_list[nfile].loop_count);
 	  if (--ap_file_list[nfile].loop_count <= 0)
 	    {
-	      fclose (yyin);
-#ifndef DEBUG
-	      remove(ap_file_list[nfile].name);	/* Delete file if temporary */
-#endif
+	      if (strcmp("_string_", ap_file_list[nfile].name) != 0) {
+		
+		fclose (yyin);
+		if (!ap_options.debugging)
+		  remove(ap_file_list[nfile].name);	/* Delete file if temporary */
+	      } else {
+		/* Free the string buffer */
+		/* free(file_pointer[nfile]); */
+	      }
 	      free (ap_file_list[nfile].name);
 	      yy_switch_to_buffer (file_pointer[--nfile]);
 	    }
@@ -455,9 +458,9 @@ int yywrap(void)
 	  fclose (yyin);
 	  free (ap_file_list[nfile].name);
 	  yy_switch_to_buffer (file_pointer[--nfile]);
+	  /* Turn echoing back on at end of included files. */
+	  echo = True;
 	}
-/* Turn echoing back on at end of included files. */
-      echo = True;
       return (0);
     }
 }
@@ -476,7 +479,7 @@ void yyerror (char *s)
 
 void undefined_warning (char *var)
 {
-  if (warning_msg == True)
+  if (ap_options.warning_msg == True)
     fprintf (stderr,
 	     "Aprepro: WARN: Undefined variable '%s' (%s, line %d)\n",
 	     var, ap_file_list[nfile].name, ap_file_list[nfile].lineno + 1);
@@ -484,7 +487,7 @@ void undefined_warning (char *var)
 
 void redefined_warning (char *var)
 {
-  if (*var != '_' && warning_msg == True)
+  if (*var != '_' && ap_options.warning_msg == True)
     fprintf (stderr,
 	     "Aprepro: WARN: Variable '%s' redefined (%s, line %d)\n",
 	     var, ap_file_list[nfile].name, ap_file_list[nfile].lineno + 1);
@@ -492,53 +495,86 @@ void redefined_warning (char *var)
 
 void warning (char *string)
 {
-  if (warning_msg == True)
+  if (ap_options.warning_msg == True)
     fprintf (stderr,
 	     "Aprepro: WARN: '%s' (%s, line %d)\n",
 	     string, ap_file_list[nfile].name, ap_file_list[nfile].lineno + 1);
 }
 
-/* Push the contents of 'string' onto the stack to be reread.
- * 'string' will be surrounded by {} so it must be a valid expression.
- */
 
 char *do_execute (char string[])
 {
+  /* Push the contents of 'string' onto the stack to be reread.
+   * 'string' will be surrounded by {} so it must be a valid expression.
+   */
+  
   int i;
-/*
- * NOTE: The closing } has not yet been scanned in the call to execute();
- *       therefore, we put that back on the stack last (to be read first),
- *       then push our beginning {, then push the string.  The unread }
- *       becomes our closing }.
- */
-  for (i = strlen (string) - 1; i >= 0; --i)
-    unput (string[i]);
-  unput ('{');
-  unput ('}');
+  char *new_string = NULL;
+
+  /*
+   * NOTE: The closing } has not yet been scanned in the call to execute();
+   *       therefore, we read it ourselves using input(), then we push:
+   *       '}{' + our string + '}' 
+   */
+  while ((i = input ()) != '}' && i != EOF)
+    ;				/* eat up values */
+  if (i == EOF) {
+    yyerror ("Aprepro: ERR: End-of-file in execute() command");
+  }
+
+  /* Allocate space for string + '}' + '{' + end_of_string */
+  new_string = malloc(strlen(string)+4); 
+  strcpy(new_string, "}{");
+  strcat(new_string, string);
+  strcat(new_string, "}");
+
+  file_pointer[nfile++] = YY_CURRENT_BUFFER;
+  NEWSTR("_string_", ap_file_list[nfile].name);
+  SET_FILE_LIST(nfile, 0, True, -1);
+  
+  {
+    YY_BUFFER_STATE bp = yy_scan_string(new_string);
+    file_pointer[nfile] = bp;
+    yy_switch_to_buffer(bp);
+    free(new_string);
+  }
+
   return (NULL);
 }
+
 /* Push the contents of 'string' onto the stack to be reread.
  * 'string' will not be surrounded by {}.
  */
 
-char *do_rescan (char string[])
+char *do_rescan (char *string)
 {
   int i;
 /*
- * NOTE: The closing } has not yet been scanned in the call to execute();
+ * NOTE: The closing } has not yet been scanned in the call to rescan();
  *       therefore, we read it ourselves using input(), then we push our
  *       string and then put the closing } back on the stack last
  *       (to be read first),
  */
   while ((i = input ()) != '}' && i != EOF)
     ;				/* eat up values */
-  if (i == EOF)
-    {
-      yyerror ("Aprepro: ERR: End-of-file in rescan() command");
-    }
-  for (i = strlen (string) - 1; i >= 0; --i)
-    unput (string[i]);
-  unput ('}');
+  if (i == EOF) {
+    yyerror ("Aprepro: ERR: End-of-file in rescan() command");
+  }
+  
+  {
+    YY_BUFFER_STATE bp;
+    char *new_string = malloc(strlen(string)+2);
+    file_pointer[nfile++] = YY_CURRENT_BUFFER;
+    NEWSTR("_string_", ap_file_list[nfile].name);
+    SET_FILE_LIST(nfile, 0, True, -1);
+    new_string[0] = '}';
+    new_string[1] = '\0';
+    strcat(new_string, string);
+    bp = yy_scan_string(new_string);
+    file_pointer[nfile] = bp;
+    yy_switch_to_buffer(bp);
+    free(new_string);
+  }
   return (NULL);
 }
 
@@ -559,3 +595,4 @@ void push_file(char *tmp_file, int is_tmp, int loop_count)
     yyin = open_file(tmp_file, "r");
     yy_switch_to_buffer(yy_create_buffer( yyin, YY_BUF_SIZE));        
 }
+

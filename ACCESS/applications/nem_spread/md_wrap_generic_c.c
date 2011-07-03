@@ -32,30 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: md_wrap_generic_c.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
-/*******************************************************************************
- * Copyright 1995, Sandia Corporation.  The United States Government retains a *
- * nonexclusive license in this software as prescribed in AL 88-1 and AL 91-7. *
- * Export of this program may require a license from the United States         *
- * Government.                                                                 *
- ******************************************************************************/
-
-
 #ifdef MPI
 #include <mpi.h>
 #else

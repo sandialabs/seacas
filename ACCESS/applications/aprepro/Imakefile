@@ -31,31 +31,29 @@ XCOMM (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 XCOMM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 XCOMM
 
-XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:04:04 gdsjaar Exp $
-
 #if defined(__CYGWIN__) && defined(__NO_CYGWIN_OPTION__)
 #define LOCAL_LDFLAGS -liberty
 #endif
 
 #if HasFlexBison
-BISON = bison --yacc
+BISON = bison --yacc --defines
 FLEX = flex
 
 SRCS = \
 builtin.c  main.c     stat.c     alloca.c  getopt.c  getopt1.c \
-util.c     init.c     hash.c     liballoc.c units.c
+util.c     init.c     hash.c     liballoc.c units.c exodus.c add_to_log.c
 OSRCS = \
-aprepro.l  aprepro.y  aprepro.h  getopt.h 
+aprepro.l  aprepro.y  my_aprepro.h  getopt.h 
 
 #else
 
 SRCS = \
 builtin.c  main.c     stat.c     alloca.c  getopt.c  getopt1.c \
 y.tab.c    lex.yy.c   util.c     init.c    hash.c    liballoc.c \
-exodus.o   add_to_log.c  units.c
+exodus.c   add_to_log.c  units.c
 
 OSRCS = \
-aprepro.l  aprepro.y  aprepro.h  getopt.h
+aprepro.l  aprepro.y  my_aprepro.h  getopt.h
 
 #endif
 
@@ -64,7 +62,7 @@ LIBS=$(NEMESISC) $(EXOIIV2C) $(NETCDF) -lm
 OBJS = \
 y.tab.o    builtin.o  main.o     stat.o    alloca.o  getopt.o  \
 getopt1.o  util.o     init.o     hash.o    liballoc.o  exodus.o \
-add_to_log.o  units.o
+add_to_log.o  units.o  getline.o getdelim.o
 
 DEFINES = $(ALLOCA_DEFINES)
 
@@ -74,25 +72,32 @@ InstallProgram(aprepro,$(BINDIR))
 
 CleanTarget()
 
-y.tab.o: y.tab.c aprepro.h lex.yy.c
+y.tab.o: y.tab.c my_aprepro.h lex.yy.c
 
 #if HasFlexBison
+BISON = bison --yacc --defines
+FLEX = flex
+
 y.tab.c y.tab.h: aprepro.y
 	$(BISON) aprepro.y
 
 lex.yy.c: aprepro.l
 	$(FLEX) aprepro.l
+
+ExtraStuffToClean(lex.yy.c y.tab.c y.tab.h)
 #endif
+
 test: check
 
 check: aprepro
 	@echo "****Test should produce the following 4 lines of output to stderr:"
 	@echo "	Aprepro: WARN: Variable \`b' redefined (test.inp_app, line 19)"
 	@echo "	Aprepro: WARN: Undefined variable \`Parse' (test.inp_app, line 74)"
-	@echo "	Aprepro: ERR:  parse error (test.inp_app, line 74)"
-	@echo "	Aprepro: WARN: Undefined variable \`T' (test.inp_app, line 108)"
+	@echo "	Aprepro: ERR:  syntax error (test.inp_app, line 74)"
+	@echo "	Aprepro: WARN: Undefined variable \`T' (test.inp_app, line 106)"
 	@echo " "
-	./aprepro test.inp_app distribution.out
+	rm -f distribution.out
+	./aprepro test.inp_app | grep -v Revision > distribution.out
 	@echo " "
 	@echo "****'<' denotes standard, '>' denotes current output"
 	@echo "****Differences should be limited to small differences in"

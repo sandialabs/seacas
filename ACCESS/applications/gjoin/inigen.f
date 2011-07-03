@@ -39,7 +39,7 @@ C=======================================================================
      &   KIDSS, KNESS, KNDSS, KIXESS, KIXDSS, KLTESS, kltsss,
      &   kltsnc, KFACSS, KNMLB)
 C=======================================================================
-C $Id: inigen.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: inigen.f,v 1.3 2001/06/26 17:38:54 gdsjaar Exp $
 
 C   --*** INIGEN *** (GJOIN) Initialize the memory for GENESIS database
 C   --   Written by Amy Gilkey - revised 10/14/87

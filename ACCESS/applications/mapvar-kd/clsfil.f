@@ -43,9 +43,9 @@ C     Called by ERROR, MAPVAR
 C
 C     ******************************************************************
 C
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /NTPDAT/ IFILES(5)
+      include 'ex2tp.blk'
+      include 'tapes.blk'
+      include 'ntpdat.blk'
       include 'exodusII.inc'
 C
 C     ******************************************************************

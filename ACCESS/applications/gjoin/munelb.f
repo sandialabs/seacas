@@ -37,11 +37,8 @@ C=======================================================================
      &   LINK, ATRIB, LINKX, ATRIBX, IXEL, IXELB, NELBX,
      $   ISCR, NAMELB, SCRSTR, LLINK, LATRIB)
 C=======================================================================
-C $Id: munelb.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: munelb.f,v 1.3 1999/03/22 15:53:00 gdsjaar Exp $
 C $Log: munelb.f,v $
-C Revision 1.1  2009/06/09 19:01:22  gdsjaar
-C mAdd gjoin (access gjoin2) based on copyright assertion paperwork coming through.
-C
 C Revision 1.3  1999/03/22 15:53:00  gdsjaar
 C Fix problem with too many element blocks. GJoin has fixed size of 256
 C element blocks, but didn't check whether maximum was exceeded.

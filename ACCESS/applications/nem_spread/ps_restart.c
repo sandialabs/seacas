@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: ps_restart.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- *====================================================================*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,6 +70,7 @@
 ******************************************************************************/
 
 /******** P R O T O T Y P E S   O F    F U N C T I O N S *********************/
+static int get_free_descriptor_count(void);
 extern int  check_monot       (int vector[], int length);
 extern void check_exodus_error(
                                int  error,           /* error code         */
@@ -92,8 +78,8 @@ extern void check_exodus_error(
                                     /* EXODUS function returning the error   */
                                );
 
-static int read_var_param (int exoid);
-static int broadcast_var_param (RESTART_PTR restart);
+static int read_var_param (int exoid, int max_name_length);
+static int broadcast_var_param (RESTART_PTR restart, int max_name_length);
 static int read_vars(int exoid, int index, int blk_cnt, int *eb_ids,
                      int *eb_cnts, int ***eb_map_ptr, int **eb_cnts_local,
 		     int *ss_ids, int *ss_cnts, int *ns_ids, int *ns_cnts,
@@ -164,7 +150,8 @@ void read_restart_params(int io_ws)
 
   int    exoid, cpu_ws=0;
   float  vers;
-
+  int    max_name_length = 0;
+  
   if (Proc == 0) {
     /* Open the ExodusII file */
     if ((exoid=ex_open(Exo_Res_File, EX_READ, &cpu_ws, &io_ws, &vers)) < 0) {
@@ -172,6 +159,8 @@ void read_restart_params(int io_ws)
               yo, Exo_Res_File);
       exit(1);
     }
+
+    max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
 
     /*
      * Just do a rudimentary check to figure out if the mesh parameters
@@ -186,7 +175,7 @@ void read_restart_params(int io_ws)
       }
 
     /* get the time, and the variable names */
-    if (read_var_param(exoid) < 0) {
+    if (read_var_param(exoid, max_name_length) < 0) {
       fprintf(stderr, "%s: Error occured while reading variable parameters\n",
               yo);
       exit(1);
@@ -198,7 +187,7 @@ void read_restart_params(int io_ws)
   }
 
   /* now broadcast the variable parameters to all of the processors */
-  if (broadcast_var_param(&Restart_Info) < 0) {
+  if (broadcast_var_param(&Restart_Info, max_name_length) < 0) {
     fprintf(stderr, "%s: Error occured while broadcasting variable params\n",
             yo);
     exit(1);
@@ -229,7 +218,7 @@ void read_restart_data (int io_ws)
 {
   char  *yo="read_restart_data";
 
-  int    cnt, ilocal, ifound, offset, iproc, glob_pindx, cpu_ws;
+  int    cnt, ilocal, ifound, offset, iproc, cpu_ws;
   int   *eb_ids_global = NULL, *eb_cnts_global = NULL;
   int   *ss_ids_global = NULL, *ss_cnts_global = NULL;
   int   *ns_ids_global = NULL, *ns_cnts_global = NULL;
@@ -237,8 +226,9 @@ void read_restart_data (int io_ws)
   int    num_blocks, times_in_blk, iblk, time_idx;
   int    array_size;
   int    dum1, dum2;
-  int    exoid, par_exoid;
-
+  int    exoid, *par_exoid = NULL;
+  
+  int    open_file_count;
   double start_t, end_t;
   float  vers;
 
@@ -614,6 +604,49 @@ void read_restart_data (int io_ws)
   if ((Restart_Info.Num_Times % Restart_Info.Block_Size) != 0)
     num_blocks++;
   
+  par_exoid = malloc(Proc_Info[2] * sizeof(int));
+  if(!par_exoid) {
+    fprintf(stderr, "[%d, %s]: ERROR, insufficient memory!\n",
+	    Proc, yo);
+    exit(1);
+  }
+
+  /* See if any '/' in the name.  IF present, isolate the basename of the file */
+  if (strrchr(PIO_Info.Scalar_LB_File_Name, '/') != NULL) {
+    /* There is a path separator.  Get the portion after the
+     * separator
+     */
+    strcpy(cTemp, strrchr(PIO_Info.Scalar_LB_File_Name, '/')+1);
+  } else {
+    /* No separator; this is already just the basename... */
+    strcpy(cTemp, PIO_Info.Scalar_LB_File_Name);
+  }    
+  
+  if (strlen(PIO_Info.Exo_Extension) == 0)
+    add_fname_ext(cTemp, ".par");
+  else
+    add_fname_ext(cTemp, PIO_Info.Exo_Extension);
+  
+  open_file_count = get_free_descriptor_count();
+  if (open_file_count > Proc_Info[2]) {
+    fprintf(stderr, "All output files opened simultaneously.\n");
+    for (iproc=0; iproc < Proc_Info[2]; iproc++) {
+      
+      gen_par_filename(cTemp, Par_Nem_File_Name, Proc_Ids[iproc],
+		       Proc_Info[0]);
+      
+      /* Open the parallel Exodus II file for writing */
+      if ((par_exoid[iproc]=ex_open(Par_Nem_File_Name, EX_WRITE, &cpu_ws,
+				    &io_ws, &vers)) < 0) {
+	fprintf(stderr,"[%d] %s Could not open parallel Exodus II file: %s\n",
+		iproc, yo, Par_Nem_File_Name);
+	exit(1);
+      }
+    }
+  } else {
+    fprintf(stderr, "All output files opened one-at-a-time.\n");
+  }
+
   /* Now loop over the number of time steps */
   for (iblk = 0; iblk < num_blocks; iblk++) {
 
@@ -640,40 +673,20 @@ void read_restart_data (int io_ws)
       end_t   = second () - start_t;
       if (Proc == 0) printf ("\tTime to read  vars for timestep %d: %f (sec.)\n", (time_idx+1), end_t);
 
-      /* Generate the parallel exodus II file name */
-
-      /* See if any '/' in the name.  IF present, isolate the basename of the file */
-      if (strrchr(PIO_Info.Scalar_LB_File_Name, '/') != NULL) {
-	/* There is a path separator.  Get the portion after the
-	 * separator
-	 */
-	strcpy(cTemp, strrchr(PIO_Info.Scalar_LB_File_Name, '/')+1);
-      } else {
-	/* No separator; this is already just the basename... */
-	strcpy(cTemp, PIO_Info.Scalar_LB_File_Name);
-      }    
-
-      if (strlen(PIO_Info.Exo_Extension) == 0)
-	add_fname_ext(cTemp, ".par");
-      else
-	add_fname_ext(cTemp, PIO_Info.Exo_Extension);
-
       start_t = second ();
       for (iproc=0; iproc < Proc_Info[2]; iproc++) {
 
-	gen_par_filename(cTemp, Par_Nem_File_Name, Proc_Ids[iproc],
-			 Proc_Info[0]);
-
-	/* Stage the writes if specified in the input file */
-	pdisk_stage_begin(&PIO_Info, Proc, Proc_Info, Proc_Ids, iproc,
-			  &glob_pindx);
-
-	/* Open the parallel Exodus II file for writing */
-	if ((par_exoid=ex_open(Par_Nem_File_Name, EX_WRITE, &cpu_ws,
-			       &io_ws, &vers)) < 0) {
-	  fprintf(stderr,"[%d] %sCould not open parallel Exodus II file\n",
-		  Proc, yo);
-	  exit(1);
+	if (open_file_count < Proc_Info[2]) {
+	  gen_par_filename(cTemp, Par_Nem_File_Name, Proc_Ids[iproc],
+			   Proc_Info[0]);
+	  
+	  /* Open the parallel Exodus II file for writing */
+	  if ((par_exoid[iproc]=ex_open(Par_Nem_File_Name, EX_WRITE, &cpu_ws,
+					&io_ws, &vers)) < 0) {
+	    fprintf(stderr,"[%d] %s Could not open parallel Exodus II file: %s\n",
+		    iproc, yo, Par_Nem_File_Name);
+	    exit(1);
+	  }
 	}
 
 	/*
@@ -682,24 +695,10 @@ void read_restart_data (int io_ws)
 	 */
 	for (cnt = 0; cnt < times_in_blk; cnt++) {
 	  time_idx = iblk * Restart_Info.Block_Size + cnt;
-	  write_var_timestep(par_exoid, iproc, (time_idx+1), cnt,
+	  write_var_timestep(par_exoid[iproc], iproc, (time_idx+1), cnt,
 			     eb_ids_global, ss_ids_global, ns_ids_global,
 			     io_ws);
 	}
-
-	/* Close the parallel exodus II file */
-	if (ex_close(par_exoid) == -1) {
-	  fprintf(stderr, "%sCould not close the parallel Exodus II file\n",
-		  yo);
-	  exit(1);
-	}
-
-	/*
-	 * If staged writes are enabled then the current processor tells the next
-	 * processor in the chain to perform it's writes.
-	 */
-
-	pdisk_stage_end(&PIO_Info, Proc, Proc_Info, Proc_Ids, iproc, glob_pindx);
 
 	if (Proc == 0) {
 	  if (iproc%10 == 0 || iproc == Proc_Info[2]-1)
@@ -708,11 +707,17 @@ void read_restart_data (int io_ws)
 	    fprintf(stderr, ".");
 	}
 
+	if (open_file_count < Proc_Info[2]) {
+	  if (ex_close(par_exoid[iproc]) == -1) {
+	    fprintf(stderr, "[%d] %s Could not close the parallel Exodus II file.\n",
+		    iproc, yo);
+	    exit(1);
+	  }
+	}
       } /* End "for (iproc=0; iproc < Proc_Info[2]; iproc++)" */
 
       end_t   = second () - start_t;
       if (Proc == 0) printf ("\n\tTime to write vars for timestep %d: %f (sec.)\n", (time_idx+1), end_t);
-
 
     } /* End: "for (iblk = 0; iblk < num_blocks; iblk++)" */
   }
@@ -738,20 +743,28 @@ void read_restart_data (int io_ws)
     }
   }
 
+  for (iproc=0; iproc < Proc_Info[2]; iproc++) {
+    /* Close the parallel exodus II file */
+    if (ex_close(par_exoid[iproc]) == -1) {
+      fprintf(stderr, "[%d] %s Could not close the parallel Exodus II file.\n",
+	      iproc, yo);
+      exit(1);
+    }
+  }
+  if (par_exoid != NULL) {
+    free(par_exoid);
+    par_exoid = NULL;
+  }
 }
 
-static int read_var_param (int exoid)
+static int read_var_param (int exoid, int max_name_length)
 {
   char  *yo="read_var_param";
 
   int    ret_int, cnt;
 
   /* Get the number of time indices contained in the file */
-  if (ex_inquire(exoid, EX_INQ_TIME, &ret_int, NULL, NULL) < 0) {
-    fprintf(stderr, "%s: Could not get number of time steps from file\n", yo);
-    return -1;
-  }
-
+  ret_int = ex_inquire_int(exoid, EX_INQ_TIME);
 
   /* see if the user want to get all of the time indices */
   if (Restart_Info.Num_Times == -1) {
@@ -807,7 +820,7 @@ static int read_var_param (int exoid)
   if (Restart_Info.NVar_Glob > 0) {
     Restart_Info.GV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
                                                  Restart_Info.NVar_Glob,
-                                                 MAX_STR_LENGTH+1,
+                                                 max_name_length+1,
                                                  sizeof(char));
 
     /* get the global variable names */
@@ -830,7 +843,7 @@ static int read_var_param (int exoid)
   if (Restart_Info.NVar_Elem > 0) {
     Restart_Info.EV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
                                                  Restart_Info.NVar_Elem,
-                                                 MAX_STR_LENGTH+1,
+                                                 max_name_length+1,
                                                  sizeof(char));
 
     /* get the elemental variable names */
@@ -865,7 +878,7 @@ static int read_var_param (int exoid)
   if (Restart_Info.NVar_Node > 0) {
     Restart_Info.NV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
                                                  Restart_Info.NVar_Node,
-                                                 MAX_STR_LENGTH+1,
+                                                 max_name_length+1,
                                                  sizeof(char));
 
     /* get the nodal variable names */
@@ -888,7 +901,7 @@ static int read_var_param (int exoid)
   if (Restart_Info.NVar_Sset > 0) {
     Restart_Info.SSV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
 						  Restart_Info.NVar_Sset,
-						  MAX_STR_LENGTH+1,
+						  max_name_length+1,
 						  sizeof(char));
 
     /* get the variable names */
@@ -922,7 +935,7 @@ static int read_var_param (int exoid)
   if (Restart_Info.NVar_Nset > 0) {
     Restart_Info.NSV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
 						  Restart_Info.NVar_Nset,
-						  MAX_STR_LENGTH+1,
+						  max_name_length+1,
 						  sizeof(char));
 
     /* get the variable names */
@@ -970,7 +983,7 @@ static int read_var_param (int exoid)
 
 }
 
-static int broadcast_var_param(RESTART_PTR restart)
+static int broadcast_var_param(RESTART_PTR restart, int max_name_length)
 {
   int    iproc, cnt1, cnt2;
 
@@ -988,13 +1001,13 @@ static int broadcast_var_param(RESTART_PTR restart)
     if (Restart_Info.NVar_Glob > 0)
       restart->GV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
                                                restart->NVar_Glob,
-                                               MAX_STR_LENGTH+1,
+                                               max_name_length+1,
                                                sizeof(char));
 
     if (Restart_Info.NVar_Elem > 0) {
       restart->EV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
                                                restart->NVar_Elem,
-                                               MAX_STR_LENGTH+1,
+                                               max_name_length+1,
                                                sizeof(char));
 
       Restart_Info.GElem_TT = (int *) array_alloc(__FILE__, __LINE__, 1,
@@ -1007,7 +1020,7 @@ static int broadcast_var_param(RESTART_PTR restart)
     if (Restart_Info.NVar_Node > 0)
       restart->NV_Name = (char **) array_alloc(__FILE__, __LINE__, 2,
                                                restart->NVar_Node,
-                                               MAX_STR_LENGTH+1,
+                                               max_name_length+1,
                                                sizeof(char));
   }  /* End "if (Proc != 0)" */
 
@@ -1024,10 +1037,10 @@ static int broadcast_var_param(RESTART_PTR restart)
    */
   if (restart->NVar_Glob > 0)
     brdcst(Proc, Num_Proc, restart->GV_Name[0],
-           (restart->NVar_Glob*(MAX_STR_LENGTH+1)*sizeof(char)), 0);
+           (restart->NVar_Glob*(max_name_length+1)*sizeof(char)), 0);
   if (restart->NVar_Elem > 0) {
     brdcst(Proc, Num_Proc, restart->EV_Name[0],
-           (restart->NVar_Elem*(MAX_STR_LENGTH+1)*sizeof(char)), 0);
+           (restart->NVar_Elem*(max_name_length+1)*sizeof(char)), 0);
 
     /* with the elemental variables, broadcast the truth table as well */
     brdcst(Proc, Num_Proc, (char *) Restart_Info.GElem_TT,
@@ -1049,11 +1062,11 @@ static int broadcast_var_param(RESTART_PTR restart)
 
   if (restart->NVar_Node > 0)
     brdcst(Proc, Num_Proc, restart->NV_Name[0],
-           (restart->NVar_Node*(MAX_STR_LENGTH+1)*sizeof(char)), 0);
+           (restart->NVar_Node*(max_name_length+1)*sizeof(char)), 0);
 
   if (restart->NVar_Nset > 0) {
     brdcst(Proc, Num_Proc, restart->NSV_Name[0],
-           (restart->NVar_Nset*(MAX_STR_LENGTH+1)*sizeof(char)), 0);
+           (restart->NVar_Nset*(max_name_length+1)*sizeof(char)), 0);
 
     /* with the nodeset variables, broadcast the truth table as well */
     brdcst(Proc, Num_Proc, (char *) Restart_Info.GNset_TT,
@@ -1074,7 +1087,7 @@ static int broadcast_var_param(RESTART_PTR restart)
 
   if (restart->NVar_Sset > 0) {
     brdcst(Proc, Num_Proc, restart->SSV_Name[0],
-           (restart->NVar_Sset*(MAX_STR_LENGTH+1)*sizeof(char)), 0);
+           (restart->NVar_Sset*(max_name_length+1)*sizeof(char)), 0);
 
     /* with the sideset variables, broadcast the truth table as well */
     brdcst(Proc, Num_Proc, (char *) Restart_Info.GSset_TT,
@@ -1429,7 +1442,7 @@ static int read_elem_vars_n(int exoid, int index, int blk_cnt, int *eb_ids,
 	brdcst_maxlen(Proc, Num_Proc, (char *)ptr,
 		      num_ev_in_mesg * io_ws, 0);
 
-	sync(Proc, Num_Proc);
+	psync(Proc, Num_Proc);
 
 	/* now sort out if this is single or double precision */
 	if (io_ws == sizeof(float)) sp_vals = (float *) ptr;
@@ -1826,11 +1839,11 @@ static int read_nodal_vars (int exoid, int index, int blk_cnt, int io_ws)
       brdcst_maxlen(Proc, Num_Proc, (char *)glob_node,
 		    num_nv_in_mesg * sizeof(int), 0);
 
-      sync(Proc, Num_Proc);
+      psync(Proc, Num_Proc);
 
       brdcst_maxlen(Proc, Num_Proc, (char *)ptr, num_nv_in_mesg * io_ws, 0);
 
-      sync(Proc, Num_Proc);
+      psync(Proc, Num_Proc);
 
       /* figure out which pointer to use */
       if (io_ws == sizeof(float)) sp_vals = ptr;
@@ -2020,4 +2033,44 @@ int find_gnode_inter(int *intersect, int num_g_nodes, int *glob_vec,
 #endif
 
   return count;
+}
+
+#if defined(__PUMAGON__)
+#include <stdio.h>
+#else
+#include <unistd.h>
+#endif
+#include <limits.h>
+
+int get_free_descriptor_count(void)
+{
+  /* Returns maximum number of files that one process can have open
+   * at one time. (POSIX)
+   */
+#if defined(__PUMAGON__)
+  int fdmax = FOPEN_MAX;
+#else
+  int fdmax = sysconf(_SC_OPEN_MAX);
+  if (fdmax == -1) {
+    /* POSIX indication that there is no limit on open files... */
+    fdmax = INT_MAX;
+  }
+#endif
+  /* File descriptors are assigned in order (0,1,2,3,...) on a per-process
+   * basis.
+   *
+   * Assume that we have stdin, stdout, stderr, and input exodus
+   * file (4 total).
+   */
+
+  return fdmax - 4;
+
+  /* Could iterate from 0..fdmax and check for the first EBADF (bad
+   * file descriptor) error return from fcntl, but that takes too long
+   * and may cause other problems.  There is a isastream(filedes) call
+   * on Solaris that can be used for system-dependent code.
+   *
+   * Another possibility is to do an open and see which descriptor is
+   * returned -- take that as 1 more than the current count of open files.
+   */
 }

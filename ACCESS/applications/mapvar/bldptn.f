@@ -41,8 +41,8 @@ C Called by MAPVAR
 C
 C***********************************************************************
 C
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
+      include 'ebbyeb.blk'
+      include 'amesh.blk'
 C
       DIMENSION XB(*),YB(*),ZB(*),NDLSTB(*)
       DIMENSION XYZPTS(NUMNDB,3)

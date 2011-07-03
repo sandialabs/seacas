@@ -33,7 +33,7 @@ C
 
 C -*- Mode: fortran -*-
 C=======================================================================
-C $Id: comand.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: comand.f,v 1.3 2001/06/26 17:38:54 gdsjaar Exp $
 
       SUBROUTINE COMAND (A, IELBST, IDELB, NUMELB, NUMLNK, NUMATR,
      &  NAMELB, INPSST, IDNPS, NNNPS, IESSST, IDESS, NEESS, DONE, *)

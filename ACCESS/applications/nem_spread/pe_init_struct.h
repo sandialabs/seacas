@@ -32,33 +32,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: pe_init_struct.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================
- *
- *
+
+/*
  *	Structure used to broadcast initialization information
  *	to each of the processors. The necessary information
  *	was read by processor zero from the ascii file "input"
  *	and now must be communicated through the structure
  *	Brdcst_Struct by a call to the broadcast routine.
- *
- *	Author: 	John Shadid
- *                 	Harry Moffat
- *	Date:		5/26/93
- *
  */
 
 /* structure to broadcast init info to nodes     */

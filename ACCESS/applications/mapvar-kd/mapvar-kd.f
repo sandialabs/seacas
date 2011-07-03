@@ -99,24 +99,21 @@ C       DECAY - constrained to be .lt. 1.
 C
       include 'exodusII.inc'
       CHARACTER*(MXSTLN) TYP
-      CHARACTER*(MXSTLN) QAINFO(6)
-      CHARACTER*80 HED
       CHARACTER*8   MEMDBG
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-C      COMMON /ELMDAT/ NNELM(13)
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /HEADER/ HED
-      COMMON /RUNDAT/ QAINFO
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /SCHDAT/ TOLSHL,TOLQAD,TOLHEX,TOLTET,NISS,NRSS
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
-      COMMON /VAREPT/ ISXX,ISYY,ISZZ,ISXY,ISYZ,ISZX,IELMS,IDENS
+      include 'aexds1.blk'
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'contrl.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'header.blk'
+      include 'rundat.blk'
+      include 'steps.blk'
+      include 'schdat.blk'
+      include 'tapes.blk'
+      include 'varnpt.blk'
+      include 'varept.blk'
 C
       EXTERNAL INITLZ
 C
@@ -1442,11 +1439,12 @@ C
 C     CLOSE FILES AND STOP
 C
 c
-      CALL BANNER(84,'NORMAL',NTPOUT)
-      CALL BANNER(84,'EXIT',NTPOUT)
+      CALL BANNR2(84,'NORMAL',NTPOUT)
+      CALL BANNR2(84,'EXIT',NTPOUT)
       call debug('CLSFIL')
       CALL CLSFIL
 C
+      call addlog (qainfo(1))
       call wrapup(qainfo(1))
       STOP
 C
@@ -1467,14 +1465,4 @@ C
   430 FORMAT (/,5X,'MESH-B NODE NUMBER ',I9,/
      &       ,5x,' ELEMENT BLOCK     ',I9,/
      &       ,5X,' WAS NOT FOUND IN MESH-A BY SRCHQ')
-      END
-
-      SUBROUTINE WRAPUP (PROG)
-      CHARACTER*(*) PROG
-
-      CALL EXCPUS (CPUSEC)
-      WRITE (*, 10000) PROG(:LENSTR(PROG)), CPUSEC
-10000  FORMAT (/, 1X, A, ' used ', F8.2, ' seconds of CPU time')
-
-      RETURN
       END

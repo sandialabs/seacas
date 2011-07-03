@@ -33,8 +33,6 @@
  *
  */
 
-/* $Id: util.c,v 1.1 2008/10/31 05:04:04 gdsjaar Exp $ */
-
 /***
    NAME
      util
@@ -63,7 +61,9 @@
 #include <unistd.h>
 #include <ctype.h>
 
-extern char* include_path;
+#include <my_aprepro.h>
+extern aprepro_options ap_options;
+
 char *pathopen (char *file);
 void  conv_string(char *string);
 FILE *open_file(char *file, char *mode);
@@ -169,13 +169,13 @@ FILE* open_file(char *file, char *mode)
   pointer = NULL;
   /* See if file exists in current directory (or as specified) */
   pointer = fopen(file, mode);
-  if (pointer == NULL && include_path != NULL) {
+  if (pointer == NULL && ap_options.include_path != NULL) {
     /* If there is an include path specified, try opening file there */
     char *file_path;
     int   length;
-    length = strlen(include_path) + strlen(file) + 2;
+    length = strlen(ap_options.include_path) + strlen(file) + 2;
     file_path = (char*) malloc(length * sizeof(char));
-    strcpy(file_path, include_path);
+    strcpy(file_path, ap_options.include_path);
     strcat(file_path, "/");
     strcat(file_path, file);
     
@@ -199,13 +199,13 @@ FILE *check_open_file(char *file, char *mode)
   FILE *pointer = NULL;
   pointer = fopen(file, mode);
 
-  if (pointer == NULL && include_path != NULL) {
+  if (pointer == NULL && ap_options.include_path != NULL) {
     /* If there is an include path specified, try opening file there */
     char *file_path;
     int   length;
-    length = strlen(include_path) + strlen(file) + 2;
+    length = strlen(ap_options.include_path) + strlen(file) + 2;
     file_path = (char*) malloc(length * sizeof(char));
-    strcpy(file_path, include_path);
+    strcpy(file_path, ap_options.include_path);
     strcat(file_path, "/");
     strcat(file_path, file);
     

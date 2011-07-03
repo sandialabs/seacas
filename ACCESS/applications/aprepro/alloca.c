@@ -1,4 +1,3 @@
-/* $Id: alloca.c,v 1.1 2008/10/31 05:04:04 gdsjaar Exp $ */
 #ifdef NEEDS_ALLOCA
 /*
 	alloca -- (mostly) portable public-domain implementation -- D A Gwyn

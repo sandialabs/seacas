@@ -97,13 +97,13 @@ C     ****************************************************************
 C
       include 'exodusII.inc'
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
-      COMMON /VAREPT/ ISXX,ISYY,ISZZ,ISXY,ISYZ,ISZX,IELMS,IDENS
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'tapes.blk'
+      include 'varnpt.blk'
+      include 'varept.blk'
 C
       DIMENSION TIMES(*),ICONA(NELNDA,*),NDLSTA(*)
       DIMENSION XA(*),YA(*),ZA(*),VELXA(*),VELYA(*),VELZA(*)

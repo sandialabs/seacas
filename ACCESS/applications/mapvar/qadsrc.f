@@ -81,10 +81,10 @@ C                        WITH POINTS LISTED IN IDP
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /TOLDAT/ TOL,EPS,STRLMT,ITERMX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
+      include 'toldat.blk'
+      include 'tapes.blk'
 C
 C INPUT/OUTPUT ARRAYS
       DIMENSION

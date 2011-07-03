@@ -34,11 +34,8 @@ C
 C=======================================================================
       SUBROUTINE INITIN (LIST, LLIST, IVAL)
 C=======================================================================
-C $Id: initin.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: initin.f,v 1.1 1999/01/18 19:21:22 gdsjaar Exp $
 C $Log: initin.f,v $
-C Revision 1.1  2009/06/09 19:01:22  gdsjaar
-C mAdd gjoin (access gjoin2) based on copyright assertion paperwork coming through.
-C
 C Revision 1.1  1999/01/18 19:21:22  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear
 C

@@ -1,4 +1,3 @@
-XCOMM $Id: Imakefile,v 1.3 2009/06/09 20:49:39 gdsjaar Exp $
 CODE = epu
 
 #if defined(CrossLinuxArchitecture)
@@ -12,9 +11,9 @@ LOCAL_LDFLAGS = -LANG:std
 
 LIBS = $(EXOIIV2C) $(NETCDF) -lm
 
-SRCS =	Excn_ExodusFile.C Excn_GetLongOpt.C \
-	Excn_Internals.C Excn_ParallelDisks.C \
-	Excn_SystemInterface.C Main_SierraConcat.C \
+SRCS =	ExodusFile.C GetLongOpt.C \
+	Internals.C ParallelDisks.C \
+	SystemInterface.C epu.C tokenize.C \
 	smart_assert.C add_to_log.C timer.C to_string.C
 
 OBJS = $(SRCS:.C=.o)

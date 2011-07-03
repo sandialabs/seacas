@@ -31,7 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: version.f,v 1.1 2008/10/31 05:04:13 gdsjaar Exp $
 C************************************************************************
       subroutine version (qainfo)
 C************************************************************************
@@ -55,17 +54,15 @@ C      --   (5) = date of current run
 C      --   (6) = time of current run
 
       
-      cvsrev = '$Revision: 1.1 $'
-      cvsdat = '$Date: 2008/10/31 05:04:13 $'
+      cvsrev = '$Revision: 1.17 $'
+      cvsdat = '$Date: 2011/06/16 10:43:50 $'
 
-      qainfo(1) = 'MAPVAR-KD                       '
-      qainfo(2) = '                                '
-      qainfo(3) = '                                '
+      qainfo(1) = 'mapvar-kd                       '
+      qainfo(2) = '2011/07/01                      '
+      qainfo(3) = ' 1.18                           '
       qainfo(4) = '                                '
       qainfo(5) = '                                '
       qainfo(6) = '                                '
-      qainfo(2) = cvsdat(10:17)
-      qainfo(3)(2:5) = cvsrev(12:15)
       call exdate(qainfo(5))
       call extime(qainfo(6))
       return

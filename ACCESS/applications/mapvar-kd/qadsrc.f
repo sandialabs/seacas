@@ -77,10 +77,10 @@ C  P     IELT     I/U    SURFACE PAIRED WITH POINT LISTED IN IPT
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /TOLDAT/ TOL,EPS,STRLMT,ITERMX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
+      include 'toldat.blk'
+      include 'tapes.blk'
 C
 C INPUT/OUTPUT ARRAYS
       DIMENSION

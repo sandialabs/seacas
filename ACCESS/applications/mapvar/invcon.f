@@ -53,9 +53,8 @@ C
 C************************************************************************
 C
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-C      COMMON /ELMDAT/ NNELM(13)
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
 C
       DIMENSION INVLN(*),INVCN(MAXLN,*),ICONA(nelnda,*)
 C
@@ -67,7 +66,6 @@ C
         INVCN(J,I) = 0
     5 CONTINUE
 C
-C      NNODES = NNELM(ITYPE)
       NNODES = NELNDA
       IF (ITYPE .EQ. 6) NNODES = 4
       DO 10 J = 1, NUMEBA

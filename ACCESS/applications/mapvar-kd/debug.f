@@ -1,8 +1,8 @@
       subroutine debug(routine)
       character*(*) routine
       
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      common /DEBG/  idebug
+      include 'tapes.blk'
+      include 'debg.blk'
 
       data timlast /0.0/
       save timlast

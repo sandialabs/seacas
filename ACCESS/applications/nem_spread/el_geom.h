@@ -32,28 +32,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: el_geom.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
 /*-----------------------------------------------------------------------------
 *
 *  Include file containing element geometry variable declarations
-*
-*        Author:          Scott Hutchinson (1421)
-*        Date:            24 November 1992
 *----------------------------------------------------------------------------*/
 
 #ifndef NULL
@@ -78,6 +59,8 @@ int   Max_NP_Elem = 0;        /* Maximum number of nodes in any element      *
 		               *  - this is a global quantity                */
 int   Num_QA_Recs = 0;	      /* Number of QA records in original file       */
 int   Num_Info_Recs = 0;      /* Number of Info records in original file     */
+
+int   Num_Coordinate_Frames = 0;
 
 /*---------------------------------------------------------------------------*/
 /*    VARIABLES THAT DEAL WITH SPECIFICATION OF LOAD BALANCE PROPERTIES      */
@@ -338,8 +321,6 @@ int **Proc_SS_GEMap_List = NULL;
 			       *  Type: int vector of length                 *
  			       *        Proc_SS_Elem_List_Length             */
 
-struct Elem_Quality_struct *Elem_Quality = NULL;
-
 /*---------------------------------------------------------------------------*/
 /*		VARIABLES THAT DEAL WITH GENERAL INFORMATION THAT IS         */
 /*			THE SAME ON EVERY PROCESSOR                          */
@@ -349,6 +330,11 @@ char **QA_Record = NULL;	/* The QA Records from the original file     */
 
 char **Info_Record = NULL;	/* The Information Records from the original *
                                  * file                                      */
+
+int    *Coordinate_Frame_Ids            = NULL;
+float  *Coordinate_Frame_Coordinates_sp = NULL;
+double *Coordinate_Frame_Coordinates_dp = NULL;
+char   *Coordinate_Frame_Tags           = NULL;
 
 /*---------------------------------------------------------------------------*/
 /*			END OF el_geom.h				     */

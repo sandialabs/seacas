@@ -34,6 +34,8 @@
 
 #include <string>
 #include <vector>
+#include <set>
+#include <utility>
 #include <Ioss_Region.h>
 
 typedef std::vector<int> IntVector;
@@ -42,5 +44,5 @@ typedef std::vector<int> Map;
 typedef std::vector<std::pair<std::string, int> > StringIdVector;
 typedef std::vector<std::string> StringVector;
 typedef std::vector<Ioss::Region*> RegionVector;
-
+typedef std::vector<StringVector> Omissions;
 #endif

@@ -31,7 +31,6 @@ XCOMM (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 XCOMM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 XCOMM 
 
-XCOMM $Id: Imakefile,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
 XCOMM Imakefile for nem_spread
 
 #if defined(OSF1Architecture)
@@ -41,53 +40,18 @@ CCOPTIONS=
 
 CODE = nem_spread
 
-NESRCS = \
+SRCS = \
 el_check_monot.c         el_elm_info.c            el_exoII_io.c \
 el_exoII_io_util.c       pe_check_inp.c           pe_exoII_2par_exoII.c \
 pe_init_info.c           pe_input.c               pe_load_lb_info.c \
 pe_str_util.c            pe_util.c                pe_write_parExo_info.c \
 ps_restart.c             rf_allo.c                rf_comm.c \
 rf_mesh_param.c          rf_pre_proc.c            rf_util.c \
-sort_utils.c		 add_to_log.c
+sort_utils.c		 add_to_log.c \
+md_timer_getrusage.c md_wrap_generic_c.c
 
-#if NeedsParallelnem_spread
-
-#ifdef CrossCougarArchitecture
-MDSRCS          = md_wrap_mpi_c.c  md_timer_intel.c
-CCOPTIONS       = -cougar
-STD_DEFINES     = StandardDefines -DUSE_MPI
-EXTRA_LIBRARIES = -lrpc -lmpi
-EXTRA_LDOPTIONS = -cougar
-LIBPATH = -L$(INCLUDESRC) $(ALTLIBPATH) -L$(PLIBDIR)
-LIBS=$(NEMESISC) $(EXOIIV2C) $(NETCDF)
-#else
-MDSRCS          = md_wrap_mpi_c.c  md_timer_generic.c
-STD_DEFINES     = StandardDefines -DUSE_MPI
-EXTRA_LIBRARIES = -lmpi
-LIBS=$(NEMESISC) $(EXOIIV2C) $(NETCDF)
-#endif
-
-#else
-#if defined(OSF1Architecture)
-MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
-#elif defined(SunArchitecture)
-MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
-#elif defined(SGIArchitecture)
-MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
-#elif defined(HPArchitecture)
-MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
-#elif defined(LinuxArchitecture)
-MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
-#else
-MDSRCS          = md_timer_generic.c md_wrap_generic_c.c
-#endif
 LIBS = $(NEMESISC) $(EXOIIV2C) $(NETCDF) -lm
-#endif
-
-NEOBJS = ${NESRCS:.c=.o}
-MDOBJS = ${MDSRCS:.c=.o}
-OBJS   = $(NEOBJS) $(MDOBJS)
-SRCS   = $(NESRCS) $(MDSRCS)
+OBJS = ${SRCS:.c=.o}
 
 NormalCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
 
