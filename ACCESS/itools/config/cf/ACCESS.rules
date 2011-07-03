@@ -21,7 +21,7 @@
  * DarwinArchitecture: The filesystem is "case aware, but not case sensitive"
  *                     which messes up the .F conversion to .f since it sees
  *                     both files as the same. If NeedCapFRule is also defined,
- *                     then preprocess name.F to nameF.f and compile that.
+ *                     then preprocess name.F to name_F.f and compile that.
  * 
  * Note that this was changed recently (NeedCapFRule added), so there may be
  * systems that need the rule defined, but don't have it defined in the .cf file.
@@ -75,9 +75,9 @@
 .mod.o:									@@\
 .F.o:                                                                   @@\
 	RemoveTargetProgram($@)                                         @@\
-	RemoveTargetProgram($*.f)                                       @@\
-	$(CPP) -P $(F77CPPFLAGS) $(DEFINES) $*.F >& $*.f                @@\
-	$(FC) -c $(STATICFLAGS) $(FFLAGS) $*.f				@@\
+	RemoveTargetProgram($*_F.f)                                     @@\
+	$(CPP) -P $(F77CPPFLAGS) $(DEFINES) $*.F >& $*_F.f              @@\
+	$(FC) -c $(STATICFLAGS) $(FFLAGS) $*_F.f -o $*.o		@@\
 .f90.mod:                                                               @@\
 	$(F90C) -c $(STATICFLAGS) $(F90FLAGS) $*.f90                   
 #elif defined(NeedCapFRule)
@@ -825,9 +825,9 @@ parallelsetup::								@@\
 #ifdef MakeNetcdfMakefiles
 # undef MakeNetcdfMakefiles
 #endif
-#define MakeNetcdfMakefiles(netcdfpath,accesspath,custom)		@@\
+#define MakeNetcdfMakefiles(netcdfpath,accesspath)			@@\
 Makefiles:: runconfigure						@@\
-	@echo "Making Makefiles for netcdfpath on arch $(NETDEFS)"; \	@@\
+	@echo "Making Makefiles for netcdfpath"; \			@@\
 	      (cd netcdfpath; \						@@\
 	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
 	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
@@ -843,7 +843,7 @@ Makefiles:: runconfigure						@@\
 makeincludes::								@@\
 	@echo "Installing netcdf include files: "; \			@@\
 	 echo "installing netcdf.h in accesspath/inc"; \		@@\
-	      ($(CP) netcdfpath/libsrc/netcdf.h accesspath/inc)
+	      ($(CP) netcdfpath/include/netcdf*.h accesspath/inc)
 
 /*
  * MakeNetcdfNoinstall - Generate the netcdf Makefiles and build
@@ -852,9 +852,9 @@ makeincludes::								@@\
 #ifdef MakeNetcdfNoinstall
 # undef MakeNetcdfNoinstall
 #endif
-#define MakeNetcdfNoinstall(netcdfpath,accesspath,custom)		@@\
+#define MakeNetcdfNoinstall(netcdfpath,accesspath)			@@\
 noinstall::	runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
+	@echo "Running configure in netcdfpath"; \			@@\
 	 (cd netcdfpath; \						@@\
 	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
 	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
@@ -863,59 +863,21 @@ noinstall::	runconfigure						@@\
 	      (cd netcdfpath; $(MAKE) all);
 
 /*
- * MakeCrossNetcdfNoinstall - cross compiler version of
- *                            MakeNetcdfNoinstall
- */
-#ifdef MakeCrossNetcdfNoinstall
-# undef MakeCrossNetcdfNoinstall
-#endif
-#define MakeCrossNetcdfNoinstall(netcdfpath,accesspath,custom)		@@\
-noinstall::	runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
-	 (cd netcdfpath; \						@@\
-	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
-	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
-	      ./runconfigure --prefix=accesspath > makefiles.log); \	@@\
-	      echo "making all..."; \					@@\
-	      (cd netcdfpath/libsrc; \					@@\
-	         $(CP) ncconfig_$(custom).h ncconfig.h ); \		@@\
-	      (cd netcdfpath; $(MAKE) all)
-
-/*
  * MakeNetcdfParallelNoinstall - Generate the parallelnetcdf Makefiles
  * and build the library.  Does not install the libraries.
  */
 #ifdef MakeNetcdfParallelNoinstall
 # undef MakeNetcdfParallelNoinstall
 #endif
-#define MakeNetcdfParallelNoinstall(netcdfpath,accesspath,custom)	@@\
+#define MakeNetcdfParallelNoinstall(netcdfpath,accesspath)		@@\
 noinstall::	runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
+	@echo "Running configure in netcdfpath"; \			@@\
 	 (cd netcdfpath; \						@@\
 	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
 	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
 	      ./runconfigure --prefix=accesspath > makefiles.log); \	@@\
 	      echo "making all in netcdfpath/libsrc"; \			@@\
 	      (cd netcdfpath/libsrc; $(MAKE) all)
-
-/*
- * MakeCrossNetcdfParallelNoinstall - cross compiler version of
- *                                    MakeNetcdfParallelNoinstall
- */
-#ifdef MakeCrossNetcdfParallelNoinstall
-# undef MakeCrossNetcdfParallelNoinstall
-#endif
-#define MakeCrossNetcdfParallelNoinstall(netcdfpath,accesspath,custom)	@@\
-noinstall::	runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
-	 (cd netcdfpath; \						@@\
-	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
-	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
-	      ./runconfigure --prefix=accesspath > makefiles.log); \	@@\
-	      echo "making all in netcdfpath/libsrc"; \			@@\
-	      (cd netcdfpath/libsrc; \					@@\
-	         $(CP) ncconfig_$(custom).h ncconfig.h ); \		@@\
-	      (cd netcdfpath; $(MAKE) all)
 
 /***********************************************************************/
 /*                                      */
@@ -927,9 +889,9 @@ noinstall::	runconfigure						@@\
 #ifdef MakeNetcdfAll
 # undef MakeNetcdfAll
 #endif
-#define MakeNetcdfAll(netcdfpath,accesspath,custom)			@@\
+#define MakeNetcdfAll(netcdfpath,accesspath)				@@\
 all::		runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
+	@echo "Running configure in netcdfpath"; \			@@\
 	 (cd netcdfpath; \						@@\
 	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
 	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
@@ -937,28 +899,8 @@ all::		runconfigure						@@\
 	      echo "making all..."; \					@@\
 	      echo "installing library files in accesspath/lib" ;\	@@\
 	      echo "installing include files in accesspath/inc" ;\	@@\
-	      (cd netcdfpath; $(MAKE) all && $(MAKE) install)
-
-/*
- * MakeCrossNetcdfAll - cross compiler version of
- *                      MakeNetcdfAll
- */
-#ifdef MakeCrossNetcdfAll
-# undef MakeCrossNetcdfAll
-#endif
-#define MakeCrossNetcdfAll(netcdfpath,accesspath,custom)		@@\
-all::		runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
-	 (cd netcdfpath; \						@@\
-	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
-	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
-	      ./runconfigure --prefix=accesspath > makefiles.log); \	@@\
-	      echo "making all in ./libsrc, ./ncdump and ./ncgen"; \	@@\
-	      echo "installing library files in accesspath/lib" ;\	@@\
-	      echo "installing include files in accesspath/inc" ;\	@@\
-	      (cd netcdfpath/libsrc; \					@@\
-	         $(CP) ncconfig_$(custom).h ncconfig.h ); \		@@\
-	      (cd netcdfpath; $(MAKE) all && $(MAKE) install)
+	      (cd netcdfpath; $(MAKE) all && $(MAKE) install); \        @@\
+	      (cd $(USRLIBDIR); $(MV) shared/libnetcdf*.a . )
 
 /*
  * MakeNetcdfParallelAll
@@ -966,36 +908,17 @@ all::		runconfigure						@@\
 #ifdef MakeNetcdfParallelAll
 # undef MakeNetcdfParallelAll
 #endif
-#define MakeNetcdfParallelAll(netcdfpath,accesspath,custom)		@@\
+#define MakeNetcdfParallelAll(netcdfpath,accesspath)			@@\
 all::		runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
+	@echo "Running configure in netcdfpath"; \			@@\
 	 (cd netcdfpath; \						@@\
 	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
 	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
 	      ./runconfigure --prefix=accesspath > makefiles.log); \	@@\
 	      echo "making all..."; \					@@\
 	      echo "installing netcdf.h in accesspath/inc"; \		@@\
-	      (cd netcdfpath; $(MAKE) all && $(MAKE) install)
-
-/*
- * MakeCrossNetcdfParallelAll - cross compiler version of
- *                              MakeNetcdfParallelAll
- */
-#ifdef MakeCrossNetcdfParallelAll
-# undef MakeCrossNetcdfParallelAll
-#endif
-#define MakeCrossNetcdfParallelAll(netcdfpath,accesspath,custom)	@@\
-all::		runconfigure						@@\
-	@echo "Running configure in netcdfpath for arch $(NETDEFS)"; \	@@\
-	 (cd netcdfpath; \						@@\
-	      if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \	@@\
-	      if [ -f config.cache ]; then $(RM) config.cache; fi; \	@@\
-	      ./runconfigure --prefix=accesspath > makefiles.log); \	@@\
-	      echo "making all in netcdfpath/libsrc"; \			@@\
-	      echo "installing netcdf.h in accesspath/inc"; \		@@\
-	      (cd netcdfpath/libsrc; \					@@\
-	         $(CP) ncconfig_$(custom).h ncconfig.h ); \		@@\
-	      (cd netcdfpath; $(MAKE) all && $(MAKE) install)
+	      (cd netcdfpath; $(MAKE) all && $(MAKE) install); \        @@\
+	      (cd $(USRLIBDIR); $(MV) shared/libnetcdf*.a . )
 
 /*
  * MakeNetcdfInstall
@@ -1003,12 +926,13 @@ all::		runconfigure						@@\
 #ifdef MakeNetcdfInstall
 # undef MakeNetcdfInstall
 #endif
-#define MakeNetcdfInstall(netcdfpath,accesspath,custom)			@@\
+#define MakeNetcdfInstall(netcdfpath,accesspath)			@@\
 install::								@@\
 	@echo "Installing netcdf library files in "accesspath/lib; \	@@\
 	echo "installing netcdf include files in "accesspath/inc; \	@@\
 	echo "installing ncdump and ncgen in accesspath/bin"; \		@@\
-	      (cd netcdfpath; $(MAKE) install)
+	      (cd netcdfpath; $(MAKE) install); \                       @@\
+	      (cd $(USRLIBDIR); $(MV) shared/libnetcdf*.a . )
 
 /*
  * MakeNetcdfParallelInstall
@@ -1016,11 +940,12 @@ install::								@@\
 #ifdef MakeNetcdfParallelInstall
 # undef MakeNetcdfParallelInstall
 #endif
-#define MakeNetcdfParallelInstall(netcdfpath,accesspath,custom)		@@\
+#define MakeNetcdfParallelInstall(netcdfpath,accesspath)		@@\
 install::								@@\
 	@echo "Installing netcdf library files in "accesspath/plib; \	@@\
 	echo "installing netcdf include files in "accesspath/inc; \	@@\
-	      (cd netcdfpath; $(MAKE) install)
+	      (cd netcdfpath; $(MAKE) install); \                       @@\
+	      (cd $(USRLIBDIR); $(MV) shared/libnetcdf*.a . )
 
 /*
  * MakeNetcdfTest
@@ -1165,22 +1090,3 @@ LibraryTargetName(libname): objlist                                     @@\
 	RanLibrary($@)                                                  @@\
 	_LinkBuildLibrary($@)
 
-/*
- * get project-specific test problem rules
- */
-#ifdef ProjectTestrulesFile1
-# undef ProjectTestrulesFile1
-#endif
-/*#define ProjectTestrulesFile1	Concat3(,TopLevelProject,.testrules)*/
-# define ProjectTestrulesFile1 ACCESS.testrules
-#ifdef ProjectTestrulesFile2
-# undef ProjectTestrulesFile2
-#endif
-/*#define ProjectTestrulesFile2	Concat3(<,TopLevelProject,.testrules>)*/
-# define ProjectTestrulesFile2 <ACCESS.testrules>
-#include ProjectTestrulesFile2
-# ifndef LocalTestrulesFile
-/* need this to make ANSI-style preprocessors happy */
-#define LocalTestrulesFile <noop.rules>
-#endif
-#include LocalTestrulesFile

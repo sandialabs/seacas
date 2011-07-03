@@ -215,6 +215,9 @@ XCOMM Set in site.def : ProjectName, ProjectRelease, AccessRoot, AccessInstall
 #ifndef LibDir
 #define LibDir $(ACCESSDIR)/lib
 #endif
+#ifndef ShLibDir
+#define ShLibDir $(ACCESSDIR)/lib
+#endif
 #ifndef ParallelLibDir
 #define ParallelLibDir $(ACCESSDIR)/plib
 #endif
@@ -277,27 +280,18 @@ XCOMM Set in site.def : ProjectName, ProjectRelease, AccessRoot, AccessInstall
  * Directory structure of ACCESS source files
  */
 
+        TFLOPROOT = TflopAccessRoot
+       CPLANTROOT = CplantAccessRoot
+
 XCOMM Source code for the ACCESS System
         ITOOLSSRC = itools
-#ifndef ExcludeGraphics
       GRAPHICSSRC = graphics
           SVDISRC = svdi
-#endif
      LIBRARIESSRC = libraries
         NETCDFSRC = netcdf
-#ifndef ExcludeHDF5
           HDF5SRC = hdf5
-#endif
      SERIALMPISRC = serial_mpi
-#ifndef ExcludeMatlab
-        MATLABSRC = matlab
-#endif
-#ifndef ExcludePrepost
-       APPLICATIONSRC = applications
-#endif
-#ifndef ExcludeTranslate
-     TRANSLATESRC = translate
-#endif
+   APPLICATIONSRC = applications
        SCRIPTSSRC = scripts
         TESTPROBS = test
   PARLIBRARIESSRC = parallellibraries
@@ -309,6 +303,8 @@ XCOMM Translator Subdirectories
         CONCATSRC = concat
          CONEXSRC = conex
         CONEX2SRC = conex2
+       CONJOINSRC = conjoin
+         EJOINSRC = ejoin
         EMERGESRC = emerge
         EXOCTHSRC = exocth
         EXOEXOSRC = exoexo
@@ -326,14 +322,13 @@ XCOMM Translator Subdirectories
         TXTEXOSRC = txtexo
        TXTEXO2SRC = txtexo2
        EXO2VISSRC = exo2vis
-#ifndef ExcludeMatlab
      EXOMATLABSRC = exomatlab
         EXOMATSRC = exomat
        EXO2MATSRC = exo2mat
 #if HasMatlab 
        MAT2EXOSRC = mat2exo
 #endif
-#endif
+
       EX1EX2V2SRC = ex1ex2v2
       EX2EX1V2SRC = ex2ex1v2
        EXODIFFSRC = exodiff
@@ -345,7 +340,8 @@ XCOMM Translator Subdirectories
          WTO3DSRC = wto3d
 
 XCOMM Graphics Subdirectories
-          BLOTSRC = blotII2
+          BLOTSRC = blot
+       BLOTII2SRC = blotII2
          FASTQSRC = fastq
          FONTSSRC = fonts
          GRAPHSRC = graph
@@ -355,24 +351,21 @@ XCOMM Library Subdirectories
        SUPESDPSRC = supesdp
         SUPLIBSRC = suplib
       EXODUSIISRC = exodusii
-#ifndef ExcludeGraphics
            PLTSRC = plt
-#endif
+   VDI_DRIVERSSRC = vdi_drivers
+          IOSSSRC = ioss
         ZOLTANSRC = zoltan
          CHACOSRC = chaco
        NEMESISSRC = nemesis
-          IOSSSRC = ioss
-#ifndef ExcludeXHelp
+    APREPROLIBSRC = aprepro
          XHELPSRC = xhelp
-#endif
 XCOMM Library Subdirectories for svdi
            CGISRC = cgi
            CDRSRC = cdr
           POSTSRC = post
           TESTSRC = test
-   VDI_DRIVERSSRC = vdi_drivers
 
-XCOMM Application  Subdirectories
+XCOMM Pre- and Post-processing Subdirectories
        APREPROSRC = aprepro
       FAILPROBSRC = failprob
          GEN3DSRC = gen3d
@@ -386,17 +379,12 @@ XCOMM Application  Subdirectories
         GREPOSSRC = grepos
        GREPOS2SRC = grepos2
          GROPESRC = grope
-        GROPE2SRC = grope2
         MAPVARSRC = mapvar
       MAPVARKDSRC = mapvar-kd
        NUMBERSSRC = numbers
       NUMBERS2SRC = numbers2
        EX_JOINSRC = ex_join
-         EJOINSRC = ejoin
-       CONJOINSRC = conjoin
-#ifndef ExcludeSpiff
          SPIFFSRC = spiff
-#endif
 
 XCOMM ACCESS installation directories
            BINDIR = BinDir
@@ -425,6 +413,7 @@ XCOMM Override Library directories
          PLIBPATH = PLibPath
       
 XCOMM Libraries
+             IOSS = -lIonit -lIoex  -lIogn -lIotr -lIohb -lIoss
              HDF5 = -lhdf5
           HDF5_HL = -lhdf5_hl
             SUPES = -lsupes
@@ -435,13 +424,15 @@ XCOMM Libraries
    EXTRANETCDFLIB = ExtraNetcdfLib
             LCLIB = -lLegacyContact
            NETCDF = -lnetcdf $(EXTRANETCDFLIB)
-         EXOIIV2C = -lexoIIv2c 
+         EXOIIV2C = -lexodus
+           EXODUS = -lexodus
        EXOIIV2FOR = -lexoIIv2for
      EXOIIV2FOR32 = -lexoIIv2for32
            ABALIB = AbaqusLibrary
               CGI = -lcgi
               CDR = -lcdr
-         NEMESISC = -lnemIc
+          NEMESIS = -lnemesis
+         NEMESISC = -lnemesis
          NEMESISF = -lnemIf
        NEMESISF32 = -lnemIf32
             CHACO = -lchaco

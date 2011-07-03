@@ -140,8 +140,8 @@ XCOMM the platform-specific parameters - edit site.def to change
 #define ExecableScripts		YES	/* kernel exec() can handle #! */
 #endif
 #endif
-#ifndef HasFlush
-#define HasFlush NO
+#ifndef NeedsFortranFlush
+#define NeedsFortranFlush NO
 #endif
 
 #ifndef HasMakefileSafeInclude	    /* -include or sinclude in a Makefile */
@@ -153,7 +153,7 @@ XCOMM the platform-specific parameters - edit site.def to change
 #endif
 
 #ifndef UseSfmakedepend
-#define UseSfmakedepend YES
+#define UseSfmakedepend NO
 #endif
 
 #include <Imake.rules>
@@ -374,7 +374,7 @@ XCOMM the platform-specific parameters - edit site.def to change
 #endif
 #endif
 #ifndef ShLibDir
-#define ShLibDir UsrLibDir
+#define ShLibDir UsrLibDir/shared
 #endif
 #ifndef IncRoot
 #ifdef ProjectRoot
@@ -438,8 +438,11 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef UNCOMPRESSPATH
 #define UNCOMPRESSPATH /usr/ucb/uncompress
 #endif
+#ifndef OptimizedDebugFlags
+#define OptimizedDebugFlags -O
+#endif
 #ifndef OptimizedCDebugFlags
-#define OptimizedCDebugFlags -O
+#define OptimizedCDebugFlags 
 #endif
 #ifndef OptimizedCplusplusDebugFlags
 #define OptimizedCplusplusDebugFlags OptimizedCDebugFlags
@@ -458,6 +461,9 @@ XCOMM the platform-specific parameters - edit site.def to change
 #endif
 #ifndef NoOpCDebugFlags
 #define NoOpCDebugFlags /**/
+#endif
+#ifndef DefaultDebugFlags
+#define DefaultDebugFlags OptimizedDebugFlags
 #endif
 #ifndef DefaultCDebugFlags
 #define DefaultCDebugFlags OptimizedCDebugFlags
@@ -675,10 +681,10 @@ XCOMM the platform-specific parameters - edit site.def to change
 #define FortranStaticFlags /**/
 #endif
 #ifndef DefaultF77DebugFlags /* for -O or -g */
-#define DefaultF77DebugFlags -O
+#define DefaultF77DebugFlags 
 #endif
 #ifndef DefaultF90DebugFlags /* for -O or -g */
-#define DefaultF90DebugFlags -O
+#define DefaultF90DebugFlags 
 #endif
 #ifndef F77CppFlags
 #ifdef PVM
@@ -901,7 +907,7 @@ XCOMM the platform-specific parameters - edit site.def to change
 #if UseSfmakedepend
 #define DependCmd $(PERLCMD) $(ETCDIR)/sfmakedepend
 #else
-#define DependCmd $(ACCESS)/etc/makedepend
+#define DependCmd $(ETCDIR)/makedepend
 #endif
 #else
 #if UseSfmakedepend
@@ -1116,9 +1122,9 @@ CXXDEPENDINCLUDES = CplusplusDependIncludes
 CXXEXTRA_INCLUDES = CplusplusExtraIncludes
    CXXSTD_DEFINES = CplusplusStandardDefines $(CXXPROJECT_DEFINES)
        CXXOPTIONS = CplusplusOptions
-      CXXINCLUDES = $(INCLUDES) $(TOP_INCLUDES) $(CXXEXTRA_INCLUDES) 
+      CXXINCLUDES = $(CXXEXTRA_INCLUDES) $(INCLUDES) $(TOP_INCLUDES) 
        CXXDEFINES = $(CXXINCLUDES) $(CXXSTD_DEFINES) $(THREADS_CXXDEFINES) $(CXXEXTRA_DEFINES) $(DEFINES)
-         CXXFLAGS = $(CXXDEBUGFLAGS) $(CXXOPTIONS) $(THREADS_CXXFLAGS) $(CXXDEFINES) $(PROJECT_INCLUDES)
+         CXXFLAGS = $(CXXDEBUGFLAGS) $(DEBUG) $(CXXOPTIONS) $(THREADS_CXXFLAGS) $(CXXDEFINES) $(PROJECT_INCLUDES)
 #endif
          COMPRESS = CompressCmd
               CPP = CppCmd $(STD_CPP_DEFINES)		/* simple filters */
@@ -1259,11 +1265,12 @@ F90EXTRALIBRARIES = F90ExtraLibraries
       ALLINCLUDES = $(INCLUDES) $(EXTRA_INCLUDES) $(TOP_INCLUDES) $(STD_INCLUDES)
        ALLDEFINES = $(ALLINCLUDES) $(STD_DEFINES) $(EXTRA_DEFINES) $(THREADS_DEFINES) $(DEFINES)
 
+            DEBUG = DefaultDebugFlags
       CDEBUGFLAGS = DefaultCDebugFlags
         CCOPTIONS = DefaultCCOptions
      PARCCOPTIONS = ParallelCCOptions
    CCEXTRAOPTIONS = CCExtraOptions
-           CFLAGS = $(CDEBUGFLAGS) $(CCOPTIONS) $(CCEXTRAOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) $(PROJECT_INCLUDES)
+           CFLAGS = $(CDEBUGFLAGS)  $(DEBUG) $(CCOPTIONS) $(CCEXTRAOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) $(PROJECT_INCLUDES)
         LINTFLAGS = $(LINTOPTS) -DLINT $(ALLDEFINES) $(DEPEND_DEFINES)
 
     F77DEBUGFLAGS = DefaultF77DebugFlags
@@ -1273,7 +1280,7 @@ F90EXTRALIBRARIES = F90ExtraLibraries
     PARF77OPTIONS = ParallelF77Options
    F77STATICFLAGS = FortranStaticFlags
       F77CPPFLAGS = F77CppFlags
-           FFLAGS = $(F77DEBUGFLAGS) $(F77OPTIONS) $(F77PRECOPTIONS) $(F77EXTRAOPTIONS) $(PROJECT_INCLUDES)
+           FFLAGS = $(F77DEBUGFLAGS) $(DEBUG) $(F77OPTIONS) $(F77PRECOPTIONS) $(F77EXTRAOPTIONS) $(PROJECT_INCLUDES)
 
     F90DEBUGFLAGS = DefaultF90DebugFlags
        F90OPTIONS = DefaultF90Options
@@ -1283,7 +1290,7 @@ F90EXTRALIBRARIES = F90ExtraLibraries
       F90CPPFLAGS = F90CppFlags
    F90PRECOPTIONS = F90PrecOptions
 F90EXTRALDOPTIONS = F90ExtraLdOptions
-         F90FLAGS = $(F90DEBUGFLAGS) $(F90OPTIONS) $(F90EXTRAOPTIONS) $(F90PRECOPTIONS) $(PROJECT_INCLUDES)
+         F90FLAGS = $(F90DEBUGFLAGS) $(DEBUG) $(F90OPTIONS) $(F90EXTRAOPTIONS) $(F90PRECOPTIONS) $(PROJECT_INCLUDES)
 
          LDPRELIB = LdPreLib
         LDPOSTLIB = LdPostLib
@@ -1478,7 +1485,9 @@ depend::
 #endif /* if subdirectory rules are needed */
 
 XCOMM ----------------------------------------------------------------------
+#if !DoSharedLib
 NormalObjectRule()
+#endif
 
 XCOMM ----------------------------------------------------------------------
 XCOMM dependencies generated by makedepend or sfmakedepend
