@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: el_geom_const.h,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 /*-----------------------------------------------------------------------------
 *
 *  Include file containing element geometry variable definitions
@@ -106,6 +91,8 @@ extern int   Max_NP_Elem;     /* Maximum number of nodes in any element      *
 		               *  - this is a global quantity                */
 extern int   Num_QA_Recs;     /* Number of QA records in original file       */
 extern int   Num_Info_Recs;   /* Number of Info records in original file     */
+
+extern int   Num_Coordinate_Frames;
 
 /*---------------------------------------------------------------------------*/
 /*    VARIABLES THAT DEAL WITH SPECIFICATION OF LOAD BALANCE PROPERTIES      */
@@ -406,31 +393,10 @@ extern char **QA_Record;	/* The QA Records from the original file     */
 
 extern char **Info_Record;	/* The Information Records from the original *
                                  * file                                      */
-
-/*
- * Structure to hold information from element quality checks for element blocks
- */
-
-struct Elem_Quality_struct
-{
-  int elem_blk_id;
-  int distortion_max_id;
-  int distortion_min_id;
-  int stretch_max_id;
-  int stretch_min_id;
-  int aspect_ratio_max_id;
-  int aspect_ratio_min_id;
-
-  double distortion_max;
-  double distortion_min;
-  double distortion_mean;
-  double stretch_max;
-  double stretch_min;
-  double stretch_mean;
-  double aspect_ratio_max;
-  double aspect_ratio_min;
-  double aspect_ratio_mean;
-};
+extern int    *Coordinate_Frame_Ids;
+extern float  *Coordinate_Frame_Coordinates_sp;
+extern double *Coordinate_Frame_Coordinates_dp;
+extern char   *Coordinate_Frame_Tags;
 
 /*---------------------------------------------------------------------------*/
 /*			END OF el_geom_const.h				     */

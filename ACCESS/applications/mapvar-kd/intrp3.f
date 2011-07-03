@@ -68,16 +68,14 @@ C
 C     ******************************************************************
 C
       include 'exodusII.inc'
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AEXDS2/ QALINE(4,240),NAMECO(3),NAMVAR(512)
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,itype
-C      COMMON /ELMDAT/ NNELM(13)
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'aexds1.blk'
+      include 'aexds2.blk'
+      include 'amesh.blk'
+      include 'bmesh.blk'
+      include 'ebbyeb.blk'
+      include 'ex2tp.blk'
+      include 'tapes.blk'
 C     
       DIMENSION CNTRB(NUMEBB,*), CNTRA(NUMEBA,*), IELPT(*)
       DIMENSION SOLEB(NUMEBB,*), SOLEA(NUMEBA,*)

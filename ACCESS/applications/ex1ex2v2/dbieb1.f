@@ -35,13 +35,8 @@ C=======================================================================
       SUBROUTINE DBIEB1 (NDB, OPTION, IELB, NUMELB, NUMLNK, NUMATR,
      &   LINK, ATRIB, NATRDM, NLNKDM, *)
 C=======================================================================
-C$Id: dbieb1.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbieb1.f,v 1.1 1994/01/24 23:00:52 vryarbe Exp $
 C$Log: dbieb1.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.1  1994/01/24 23:00:52  vryarbe
 CInitial revision
 C

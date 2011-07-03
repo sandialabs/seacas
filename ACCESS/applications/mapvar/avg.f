@@ -58,9 +58,9 @@ C  IM     INT   Block number being processed (not block ID)
 C
 C************************************************************************
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
+      include 'aexds1.blk'
+      include 'amesh.blk'
+      include 'ebbyeb.blk'
 C
       DIMENSION INVCN(MAXLN,*),SOLEA(NUMEBA,*),
      &          SOLENA(NODESA,NVAREL), ITT(NVAREL,*)

@@ -77,7 +77,7 @@ C     ****************************************************************
 C
       include 'exodusII.inc'
 C
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
+      include 'amesh.blk'
 C
       DIMENSION ICON(NELND,*),NDLST(*)
       DIMENSION VELX(*),VELY(*),VELZ(*),EMSS(*),RNMS(*)

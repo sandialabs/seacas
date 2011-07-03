@@ -35,6 +35,7 @@
 #include "Vector3.h"
 #include "index_sort.h"
 #include "smart_assert.h"
+#include "mapping.h"
 #include <Ioss_SubSystem.h>
 
 namespace {
@@ -86,12 +87,33 @@ namespace {
   }
 }
 
-void match_xyz(RegionVector &part_mesh,
-	       double tolerance,
-	       Map &local_node_map, Map &global_node_map)
+void match_node_xyz(RegionVector &part_mesh,
+		    double tolerance,
+		    Map &global_node_map, Map &local_node_map)
 {
-  for (size_t i=0; i < local_node_map.size(); i++) {
-    local_node_map[i] = i;
+  // See if any omitted element blocks...
+  bool has_omissions = false;
+  for (size_t p = 0; p < part_mesh.size(); p++) {
+    if (part_mesh[p]->get_property("block_omission_count").get_int() > 0) {
+      has_omissions = true;
+      break;
+    }
+  }
+
+  if (!has_omissions) {
+    for (size_t i=0; i < local_node_map.size(); i++) {
+      local_node_map[i] = i;
+    }
+  } else {
+    Map dummy;
+    eliminate_omitted_nodes(part_mesh, dummy, local_node_map);
+
+    // The local_node_map is not quite in the correct format after the
+    // call to 'eliminate_omitted_nodes'.  We need all non-omitted
+    // nodes to have local_node_map[i] == i.
+    for (size_t i=0; i < local_node_map.size(); i++) {
+      if (local_node_map[i] >= 0) local_node_map[i] = i;
+    }
   }
   
   size_t part_count = part_mesh.size();
@@ -157,8 +179,8 @@ void match_xyz(RegionVector &part_mesh,
       find_in_range(i_coord, min, max, i_inrange);
 
       // Index sort all nodes on the coordinate range with the maximum delta.
-      index_sort(i_coord, i_inrange, XYZ);
-      index_sort(j_coord, j_inrange, XYZ);
+      index_coord_sort(i_coord, i_inrange, XYZ);
+      index_coord_sort(j_coord, j_inrange, XYZ);
 
       if (i_inrange.size() < j_inrange.size()) {
 	do_matching(i_inrange, i_coord, i_offset,
@@ -175,11 +197,11 @@ void match_xyz(RegionVector &part_mesh,
   // Build the global and local maps...
   size_t j = 1;
   for (size_t i=0; i < local_node_map.size(); i++) {
-    if (local_node_map[i] == i) {
+    if (local_node_map[i] == (int)i) {
       global_node_map.push_back(j);
       local_node_map[i] = j-1;
       j++;
-    } else {
+    } else if (local_node_map[i] >= 0) {
       local_node_map[i] = local_node_map[local_node_map[i]];
     }
   }
@@ -195,19 +217,22 @@ namespace {
     size_t match = 0;
     size_t compare = 0;
 
-    double dismin =  FLT_MAX;
+    double g_dismin =  FLT_MAX;
     double dismax = -FLT_MAX;
 
     for (size_t i=0; i < i_inrange.size(); i++) {
       int ii = i_inrange[i];
+      if (local_node_map[ii+i_offset] < 0)
+	continue;
 
+      double dismin =  FLT_MAX;
       double dmin = FLT_MAX;
       int node_dmin = -1;
 
       for (size_t j = j2beg; j < j_inrange.size(); j++) {
 	compare++;
 	int  jj = j_inrange[j];
-	if (jj < 0)
+	if (jj < 0 || local_node_map[jj+j_offset] < 0)
 	  continue;
 
 	if (i_coord[3*ii+XYZ]-epsilon > j_coord[3*jj+XYZ]) {
@@ -247,6 +272,9 @@ namespace {
 	  local_node_map[jnod] = inod;
 	else
 	  local_node_map[inod] = jnod;
+      } else {
+	if (dismin < g_dismin)
+	  g_dismin = dismin;
       }
     }
     std::cout << "\nNumber of nodes matched                   = " << match << "\n";
@@ -254,8 +282,8 @@ namespace {
     std::cout << "Tolerance used for matching               = " << epsilon << "\n";
     if (dismax > -FLT_MAX)
       std::cout << "Maximum distance between matched nodes    = " << dismax << "\n";
-    if (dismin < FLT_MAX)
-      std::cout << "Minimum distance between nonmatched nodes = " << dismin << "\n";
+    if (g_dismin < FLT_MAX)
+      std::cout << "Minimum distance between nonmatched nodes = " << g_dismin << "\n";
     std::cout << "\n";
   }
 }

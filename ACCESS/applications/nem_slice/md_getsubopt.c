@@ -71,10 +71,7 @@
    suboption.  On exit *OPTIONP is set to the beginning of the next
    token or at the terminating NUL character.  */
 int
-getsubopt (optionp, tokens, valuep)
-     char **optionp;
-     const char *const *tokens;
-     char **valuep;
+md_getsubopt (char **optionp, char **tokens, char **valuep)
 {
   char *endp, *vstart;
   int cnt;

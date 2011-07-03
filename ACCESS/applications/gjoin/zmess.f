@@ -35,7 +35,7 @@ C=======================================================================
       SUBROUTINE ZMESS (NUMESS, LESSEL, LESSDL, 
      &   IDESS, NEESS, NEDSS, IXEESS, IXEDSS, LTEESS, LTSSS, LTSNC, FAC)
 C=======================================================================
-C $Id: zmess.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: zmess.f,v 1.3 2002/01/28 19:44:47 gdsjaar Exp $
 
 C   --*** ZMESS *** (GJOIN) Compress element side sets
 C   --   Written by Amy Gilkey - revised 01/20/88

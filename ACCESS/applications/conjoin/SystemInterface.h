@@ -61,6 +61,7 @@ namespace Excn {
 
       const std::string &element_status_variable() const {return elementStatusVariable_;}
       const std::string &nodal_status_variable()   const {return nodalStatusVariable_;}
+      const std::string &combined_mesh_status_variable()   const {return meshCombineStatusVariable_;}
 
       //! Dumps representation of data in this class to cerr
       void dump(std::ostream &str) const;
@@ -88,6 +89,9 @@ namespace Excn {
       
       std::string elementStatusVariable_;
       std::string nodalStatusVariable_;
+
+      // Mesh status variable to combine with elementStatusVariable_
+      std::string meshCombineStatusVariable_; 
 
       StringIdVector globalVarNames_;
       StringIdVector nodeVarNames_;

@@ -34,13 +34,8 @@ C
 C=======================================================================
       SUBROUTINE DBIST1 (NDB, NVARNP, NUMNP, VARNP, IVAR, *)
 C=======================================================================
-C$Id: dbist1.f,v 1.1 2009/06/09 13:32:43 gdsjaar Exp $
+C$Id: dbist1.f,v 1.2 1998/05/20 17:47:55 gdsjaar Exp $
 C$Log: dbist1.f,v $
-CRevision 1.1  2009/06/09 13:32:43  gdsjaar
-CReceived permission to assert copyright on nem_spread and ex1ex2v2.
-C
-CBoth are released under the BSD Open Source licence.
-C
 CRevision 1.2  1998/05/20 17:47:55  gdsjaar
 CRemoved several unused files that were being compiled and linked in
 Cbut never called.

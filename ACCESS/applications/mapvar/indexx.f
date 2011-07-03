@@ -31,14 +31,8 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: indexx.f,v 1.1 2008/10/31 05:04:15 gdsjaar Exp $
+C $Id: indexx.f,v 1.2 2007/10/17 18:40:35 gdsjaar Exp $
 C $Log: indexx.f,v $
-C Revision 1.1  2008/10/31 05:04:15  gdsjaar
-C Moved the applications into an applications subdirectory.
-C
-C Revision 1.1  2008/06/18 16:09:21  gdsjaar
-C Initial import of files into sourceforge repository
-C
 C Revision 1.2  2007/10/17 18:40:35  gdsjaar
 C Added copyright notice to all files.
 C

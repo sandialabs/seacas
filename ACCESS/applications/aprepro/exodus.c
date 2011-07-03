@@ -34,17 +34,15 @@
  */
 
 #if !defined(NO_EXODUSII)
-#include "aprepro.h"
+#include "my_aprepro.h"
 #include "exodusII.h"
 #include "ne_nemesisI.h"
 #include "netcdf.h"
 
 #include "y.tab.h"
 
-#ifndef __APPLE__
 #include <stdlib.h>
 #include <ctype.h>
-#endif
 #include <string.h>
 
 extern char *get_temp_filename(void);
@@ -62,7 +60,7 @@ int open_exodus_file(char *filename)
    yyerror("Error opening exodusII file.");
  } else {
   symrec *ptr;
-  ptr = putsym("ex_version", VAR);
+  ptr = putsym("ex_version", VAR, 0);
   ptr->value.var = version;
  }
  return exo;
@@ -71,50 +69,58 @@ int open_exodus_file(char *filename)
 char *do_exodus_info(char *filename)
 {
   int exoid;
+  int size = 0;
   int count;
   char **info;
   int i;
-  char *temp_f;
-  FILE *tmp_file;
+  char *lines;
+  char *ret_string = NULL; 
   
   /*
    * Open the specified exodusII file, read the info records
    * then parse them as input to aprepro.
    */
   exoid = open_exodus_file(filename);
+  if (exoid < 0) return "";
 
   ex_inquire(exoid, EX_INQ_INFO, &count, (float *) NULL, (char *) NULL);
   
   if (count > 0) {
     info = (char**)malloc(count * sizeof(char*));
     for (i=0; i < count; i++) {
-      info[i] = (char*)malloc(count * (MAX_LINE_LENGTH+1) * sizeof(char));
+      info[i] = (char*)malloc((MAX_LINE_LENGTH+1) * sizeof(char));
+      memset(info[i], '\0', MAX_LINE_LENGTH+1);
     }
     
     ex_get_info(exoid, info);
     
-    temp_f = get_temp_filename();
-    tmp_file = open_file(temp_f, "w");
-    
-    /*
-     * The "}" closes the current exodus_info command,so the file
-     * containing the info records can be processed.  We then output a
-     * '{' to match the closing brace for the exodus_info command
-     * which is still in the input buffer. Looks strange, but it
-     * works.
-     */
-    fprintf(tmp_file, "}{NOECHO}");
-    for (i=0; i < count; i++) {
-      fprintf(tmp_file, "%s\n", info[i]);
+    /* Count total size of info records.. */
+    for (i=0; i<count; i++) {
+      size += strlen(info[i]);  
     }
-    fprintf(tmp_file, "{\" \"");
+    size += count-1; /* newlines */
+    lines = malloc(size * sizeof(char) + 1);
+    lines[0] = '\0';
+
+    for (i=0; i<count; i++) {
+      strcat(lines, info[i]);
+      strcat(lines, "\n");
+    }
+
+    NEWSTR(lines, ret_string);
+    if (lines) free(lines);
     
-    ex_close(exoid);
-    fclose(tmp_file);
-    push_file(temp_f, True, -1);
-    
+    if (count > 0) {
+      for (i=0; i < count; i++) {
+	free(info[i]);
+      }
+      free(info);
+    }
+    return ret_string;
+  } else {
+    return "";
   }
-  return "";
+  ex_close(exoid);
 }
 
 char *do_exodus_meta(char *filename)
@@ -132,29 +138,31 @@ char *do_exodus_meta(char *filename)
    * Examples include "node_count", "element_count", ...
    */
   exoid = open_exodus_file(filename);
+  if (exoid < 0) return "";
+
   /* read database paramters */
   title = (char *)calloc ((MAX_LINE_LENGTH+1),sizeof(char *));
   ex_get_init(exoid,title,&ndim,&nnodes,&nelems,&nblks,&nnsets,&nssets);
   
-  ptr = putsym("ex_title", SVAR);
+  ptr = putsym("ex_title", SVAR, 0);
   ptr->value.svar = title;
 
-  ptr = putsym("ex_dimension", VAR);
+  ptr = putsym("ex_dimension", VAR, 0);
   ptr->value.var = ndim;
 
-  ptr = putsym("ex_node_count", VAR);
+  ptr = putsym("ex_node_count", VAR, 0);
   ptr->value.var = nnodes;
 
-  ptr = putsym("ex_element_count", VAR);
+  ptr = putsym("ex_element_count", VAR, 0);
   ptr->value.var = nelems;
 
-  ptr = putsym("ex_block_count", VAR);
+  ptr = putsym("ex_block_count", VAR, 0);
   ptr->value.var = nblks;
 
-  ptr = putsym("ex_nset_count", VAR);
+  ptr = putsym("ex_nset_count", VAR, 0);
   ptr->value.var = nnsets;
 
-  ptr = putsym("ex_sset_count", VAR);
+  ptr = putsym("ex_sset_count", VAR, 0);
   ptr->value.var = nssets;
   
   { /* Nemesis Information */
@@ -172,16 +180,16 @@ char *do_exodus_meta(char *filename)
     error = ne_get_init_info(exoid, &proc_count, &proc_in_file, file_type);
 
     if (error >= 0) {
-      ptr = putsym("ex_processor_count", VAR);
+      ptr = putsym("ex_processor_count", VAR, 0);
       ptr->value.var = proc_count;
       
       ne_get_init_global(exoid, &global_nodes, &global_elements,
 			 &global_blocks, &global_nsets, &global_ssets);
       
-      ptr = putsym("ex_node_count_global", VAR);
+      ptr = putsym("ex_node_count_global", VAR, 0);
       ptr->value.var = global_nodes;
       
-      ptr = putsym("ex_element_count_global", VAR);
+      ptr = putsym("ex_element_count_global", VAR, 0);
       ptr->value.var = global_elements;
     }
   }
@@ -219,13 +227,15 @@ char *do_exodus_meta(char *filename)
     for (i=0; i < nblks; i++) {
       sprintf(cid, "%d ", ids[i]);
       if (strlen(buffer) + strlen(cid) +1 > size) {
-	realloc(buffer, size *=2);
+	if (realloc(buffer, size *=2) == NULL) {
+	  yyerror("Error allocating memory.");
+	}
 	memset(&buffer[size/2], 0, size/2);
       }
       strcat(buffer, cid);
     }
     NEWSTR(buffer, tmp);
-    ptr = putsym("ex_block_ids", SVAR);
+    ptr = putsym("ex_block_ids", SVAR, 0);
     ptr->value.svar = tmp;
 
     if (buffer != NULL)
@@ -245,25 +255,25 @@ char *do_exodus_meta(char *filename)
       ex_get_elem_block(exoid, ids[i], type, &nel, &nnel, &natr);
 
       sprintf(var, "ex_block_seq_%d_id", i+1);
-      ptr = putsym(var, VAR);
+      ptr = putsym(var, VAR, 0);
       ptr->value.var = ids[i];
 
       sprintf(var, "ex_block_%d_name", ids[i]);
-      ptr = putsym(var, SVAR);
+      ptr = putsym(var, SVAR, 0);
       sprintf(var, "block_%d", ids[i]);
       NEWSTR(var, tmp);
       ptr->value.svar = tmp;
 
       sprintf(var, "ex_block_%d_element_count", ids[i]);
-      ptr = putsym(var, VAR);
+      ptr = putsym(var, VAR, 0);
       ptr->value.var = nel;
 
       sprintf(var, "ex_block_%d_nodes_per_element", ids[i]);
-      ptr = putsym(var, VAR);
+      ptr = putsym(var, VAR, 0);
       ptr->value.var = nnel;
 
       sprintf(var, "ex_block_%d_topology", ids[i]);
-      ptr = putsym(var, SVAR);
+      ptr = putsym(var, SVAR, 0);
       NEWSTR(type, tmp);
 
       /* lowercase the string */
@@ -271,7 +281,7 @@ char *do_exodus_meta(char *filename)
       ptr->value.svar = tmp;
 
       sprintf(var, "ex_block_%d_attribute_count", ids[i]);
-      ptr = putsym(var, VAR);
+      ptr = putsym(var, VAR, 0);
       ptr->value.var = natr;
     }
   }
@@ -281,7 +291,7 @@ char *do_exodus_meta(char *filename)
     /* Get timestep count */
     int ts_count;
     ex_inquire(exoid, EX_INQ_TIME, &ts_count, (float *) NULL, (char *) NULL);
-    ptr = putsym("ex_timestep_count", VAR);
+    ptr = putsym("ex_timestep_count", VAR, 0);
     ptr->value.var = ts_count;
     
     if (ts_count > 0) {
@@ -300,18 +310,20 @@ char *do_exodus_meta(char *filename)
       for (i=0; i < ts_count; i++) {
 	sprintf(cid, format->value.svar, timesteps[i]);
 	if (strlen(buffer) + strlen(cid) +2 > size) {
-	realloc(buffer, size *=2);
-	memset(&buffer[size/2], 0, size/2);
+	  if (realloc(buffer, size *=2) == NULL) {
+	    yyerror("Error allocating memory.");
+	  }
+	  memset(&buffer[size/2], 0, size/2);
+	}
+	strcat(buffer, cid);
+	strcat(buffer, " ");
       }
-      strcat(buffer, cid);
-      strcat(buffer, " ");
-    }
-    NEWSTR(buffer, tmp);
-    ptr = putsym("ex_timestep_times", SVAR);
-    ptr->value.svar = tmp;
+      NEWSTR(buffer, tmp);
+      ptr = putsym("ex_timestep_times", SVAR, 0);
+      ptr->value.svar = tmp;
 
-    if (buffer != NULL)
-      free(buffer);
+      if (buffer != NULL)
+	free(buffer);
     }
   }
   

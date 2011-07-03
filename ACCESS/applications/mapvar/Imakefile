@@ -1,9 +1,9 @@
-XCOMM $Id: Imakefile,v 1.1 2008/10/31 05:04:15 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.8 2008/02/07 15:22:37 gdsjaar Exp $
 CODE = mapvar
 
 SRCSM = mapvar.f
 
-SRCSL = avg.f     banner.f  bldpte.f  bldptn.f  bldsrf.f  bs.f      \
+SRCSL = avg.f     bldpte.f  bldptn.f  bldsrf.f  bs.f      \
         clsfil.f  cntr.f    elgrad.f  elton0.f  elton1.f  error.f   \
         exth.f    extq.f    exts.f    flgrad.f  frge.f    getbnd.f  \
         hexsrc.f  indexx.f  inielt.f  ininod.f  initlz.f  intrp3.f  \
@@ -18,7 +18,7 @@ OBJSL = ${SRCSL:.f=.o}
 OBJSM = ${SRCSM:.f=.o}
 
 EXOLIBS = $(EXOIIV2FOR) $(EXOIIV2C) $(NETCDF)
-LIBS = $(EXOLIBS) $(SUPES)
+LIBS = $(EXOLIBS) $(SUPLIB) $(SUPES)
 
 NormalLibraryTarget($(CODE),$(OBJSL))
 NormalFortranTarget($(CODE), $(OBJSM),lib$(CODE).a,lib$(CODE).a,$(LIBS))

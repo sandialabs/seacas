@@ -34,7 +34,7 @@ C
 C=======================================================================
       SUBROUTINE PRTESS (ISTAT, NESS1, NESS2, IDESS, NEESS, ISCR)
 C=======================================================================
-C $Id: prtess.F,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: prtess.F,v 1.2 2001/06/26 17:38:54 gdsjaar Exp $
 
 C   --*** PRTESS *** (GJOIN) Print summary for element side sets
 C   --   Written by Amy Gilkey - revised 02/04/88

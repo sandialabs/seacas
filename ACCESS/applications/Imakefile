@@ -1,28 +1,31 @@
-XCOMM $Id: Imakefile,v 1.6 2010/08/10 16:46:36 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.40 2007/02/01 19:39:28 gdsjaar Exp $
 
 #define IHaveSubdirs
 
-#undef  PassDebugFlags
-#define PassDebugFlags	"CDEBUGFLAGS=$(CDEBUGFLAGS)" \
-                        "F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
+#define PassDebugFlags	"DEBUG=$(DEBUG)" \
+	                "CDEBUGFLAGS=$(CDEBUGFLAGS)" \
+	                "CXXDEBUGFLAGS=$(CXXDEBUGFLAGS)" \
+			"F90DEBUGFLAGS=$(F90DEBUGFLAGS)" \
+			"F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
 
 SUBDIRS = \
 $(APREPROSRC) \
-$(GROPE2SRC) \
 $(GJOINSRC) \
+$(GROPESRC) \
 $(MAPVARSRC) \
 $(MAPVARKDSRC) \
-$(ALGEBRA2SRC) \
-$(CONEX2SRC) \
-$(EXOTXT2SRC) \
-$(EXODIFFSRC) \
-$(TXTEXO2SRC) \
-$(EPUSRC) \
+$(SPIFFSRC) \
+$(ALGEBRASRC) \
+$(CONJOINSRC) \
+$(EJOINSRC) \
 $(EX1EX2V2SRC) \
+$(EXOTXTSRC) \
+$(EXODIFFSRC) \
+$(TXTEXOSRC) \
 $(NEM_SLICESRC) \
 $(NEM_SPREADSRC) \
-$(EJOINSRC) \
-$(CONJOINSRC) \
+$(EPUSRC) \
+$(FONTSSRC) \
 $(BLOTSRC)
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)

@@ -44,6 +44,7 @@ C   --EX1EX2V2 reads EXODUS I database and writes an EXODUS II V2.03 database
 C   --
 
       include 'exodusII.inc'
+      INCLUDE 'f2kcli.inc'
 
       CHARACTER*8 QAINFO(6)
 
@@ -56,7 +57,7 @@ C   --
       CHARACTER*8 NAMECO(MAXDIM)
       CHARACTER*8 NAMELB(MAXELB)
       CHARACTER*8 NAMES(MAXVAR)
-      character exofil*250, netfil*250, hfil*250
+      character exofil*256, netfil*256, scratch*256
       character*8 name
 
       integer cpuws,wsout
@@ -71,7 +72,7 @@ C      --A - the dynamic memory base array
       LOGICAL EXODUS
       LOGICAL WHOTIM
 
-      DATA (QAINFO(I), I=1,3) / 'EX1EX2V2', '12/16/04', 'V 2.10  ' /
+      data (qainfo(i), i=1,3) / 'ex1ex2v2', '20110616', 'v 2.11  ' /
       data iin,iout/5,6/
       data nsteps /0/
       data cpuws,wsout /0,0/
@@ -95,34 +96,45 @@ c	make netCDF and exodus errors not show up
 c
       call exopts(0,ierr)
 
-      call exname (ndb, exofil, lnam)
+C .. Get filename from command line.  If not specified, emit error message
+      NARG = COMMAND_ARGUMENT_COUNT()
+      if (narg .lt. 2) then
+        CALL PRTERR ('FATAL', 'Filenames not specified.')
+        CALL PRTERR ('FATAL',
+     *    'Syntax is: "ex1ex2v2 exo1_file exo2_file"')
+        GOTO 140
+      else if (narg .gt. 2) then
+        CALL PRTERR ('FATAL', 'Too many arguments specified.')
+        CALL PRTERR ('FATAL',
+     *    'Syntax is: "ex1ex2v2 exo1_file exo2_file"')
+        GOTO 140
+      end if
+
+      CALL GET_COMMAND_ARGUMENT(1,exofil, lnam, ISTATUS)
       write(*,*)'Input filename: ',exofil(1:lnam)
-      CALL OPNFIL (NDB, 'I', 'U', 0, IERR)
+      open(unit=ndb, file=exofil(:lnam), form='unformatted',
+     *     status='old', iostat=ierr)      
        IF (IERR .NE. 0) THEN
-         CALL PRTERR ('FATAL', 'Database does not exist')
-         call screrr (11, exofil, lnam, 'ex1ex2v2', 'ex1ex2v2')
+         SCRATCH = 'Database "'//exofil(:lnam)//'" does not exist.'
+         CALL PRTERR ('FATAL', SCRATCH(:LENSTR(SCRATCH)))
          GOTO 140
       END IF
 
-      call exname (net, netfil, lnam)
+      CALL GET_COMMAND_ARGUMENT(2,netfil, lnam, ISTATUS)
       write(*,*)'Output filename: ',netfil(1:lnam)
 
-c     output file word size is specifed in environment variable EXT05
-      call exname (-5, ws, llen)
-      read(ws,'(i1)',ERR=25)wsout
-      if (llen .lt. 1) goto 25
-      if (wsout .ne. 4 .and. wsout .ne. 8) then
-         CALL PRTERR ('FATAL', 'Invalid output word size')
-         STOP
-      endif
-      goto 26
-25    continue
+c$$$c     output file word size is specifed in environment variable EXT05
+c$$$      call exname (-5, ws, llen)
+c$$$      read(ws,'(i1)',ERR=25)wsout
+c$$$      if (llen .lt. 1) goto 25
+c$$$      if (wsout .ne. 4 .and. wsout .ne. 8) then
+c$$$         CALL PRTERR ('FATAL', 'Invalid output word size')
+c$$$         STOP
+c$$$      endif
+c$$$      goto 26
+c$$$25    continue
 
-      call exparm (cdum, cdum, idum, wsout, idum, idum)
-      write(*,*)
-     1      'Output word size not specified, default will be used'
-
-26    continue
+      wsout = 8
       write(*,*)'Output word size: ',wsout
       CALL MDINIT (A)
       CALL MDSTAT (NERR, MEM)
@@ -451,38 +463,6 @@ c
 c
       if (.not. EXODUS) goto 150
 c
-c        if there are any history variables
-c
-      if (nvarhi .gt. 0) then
-c
-c        create EXODUS II history file
-c
-        ilen = index (netfil, ' ')
-        hfil =netfil(1:ilen-1)//'h'
-        ihdexo = excre (hfil, EXCLOB, cpuws, wsout, ierr) 
-        if (ierr .lt. 0) then
-          call exerr ('ex1ex2v2','Error from excre', exlmsg)
-          goto 150
-        end if
-c
-c
-c        write the number of history variables (as global variables)
-c
-        call expvp (ihdexo, 'G', nvarhi, ierr)
-        if (ierr .lt. 0) then
-          call exerr ('ex1ex2v2','Error from expvp', exlmsg)
-          goto 140
-        end if
-c
-c        write the history variable names (as global variable names)
-c
-        call expvan (ihdexo, 'G', nvarhi, names(ixhv), ierr)
-        if (ierr .lt. 0) then
-          call exerr ('ex1ex2v2','Error from expvan', exlmsg)
-          goto 140
-        end if
-      end if
-c
 c       write the number of global variables
 c
       if (nvargl .gt. 0) then
@@ -628,25 +608,6 @@ c
 
 
          end if
-c
-c           write history variable values (as global variables)
-c
-         if (nvarhi .gt. 0) then
-           call expgv (ihdexo, nhstep, nvarhi, a(kvarhi), ierr)
-           if (ierr .lt. 0) then
-             call exerr ('ex1ex2v2','Error from expgv', exlmsg)
-             goto 140
-           end if
-c
-c            write history time step
-c
-           call exptim (ihdexo, nhstep, time, ierr)
-           if (ierr .lt. 0) then
-             call exerr ('ex1ex2v2','Error from exptim', exlmsg)
-             goto 140
-           end if
-         end if
-
          GOTO 110
       END IF
 
@@ -670,17 +631,11 @@ c
 
   140 CONTINUE
 
-
-
-      if (nvarhi .gt. 0) then
-        call exclos (ihdexo, ierr)
-      endif
-
   150 call exclos (idexo, ierr)
 
       IF (NDB .NE. 0) CLOSE (NDB, IOSTAT=K)
 
-
+      call addlog (QAINFO(1)(:lenstr(QAINFO(1))))
       CALL WRAPUP (QAINFO(1))
       STOP
       END

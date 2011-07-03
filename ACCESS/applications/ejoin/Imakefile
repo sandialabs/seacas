@@ -30,7 +30,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-XCOMM $Id: Imakefile,v 1.1 2010/08/10 16:46:36 gdsjaar Exp $
 CXXEXTRA_DEFINES = -I$(INCDIR)/ioss
 CODE = ejoin
 
@@ -43,10 +42,10 @@ CXXEXTRA_DEFINES = -LANG:std
 LOCAL_LDFLAGS = -LANG:std
 #endif
 
-LIBS = -lIonit -lIoex -lIogn -lIotr -lIohb -lIoss $(NEMESISC) $(EXOIIV2C) $(NETCDF) -lm
+LIBS = $(IOSS) $(NEMESIS) $(EXODUS) $(NETCDF) -lm
 
 SRCS =	EJoin.C adler.C GetLongOpt.C smart_assert.C SystemInterface.C to_string.C add_to_log.C \
-	match_xyz.C index_sort.C Vector3.C
+	match_xyz.C index_sort.C Vector3.C tokenize.C mapping.C
 
 OBJS = $(SRCS:.C=.o)
 

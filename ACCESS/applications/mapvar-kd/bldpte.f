@@ -43,10 +43,9 @@ C Called by MAPVAR
 C
 C***********************************************************************
 C
-C      COMMON /ELMDAT/ NNELM(13)
-      COMMON /BMESH/  NUMELB,NODESB,NBLKSB,NDIMB,NELNDB
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'bmesh.blk'
+      include 'ebbyeb.blk'
+      include 'tapes.blk'
 C
       DIMENSION X(*),Y(*),Z(*),CENTER(NUMEBB,*),ICON(NELNDB,*)
       DIMENSION XX(27), YY(27), ZZ(27)

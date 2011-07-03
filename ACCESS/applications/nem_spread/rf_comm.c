@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: rf_comm.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
 /* System Include files */
 
 #include <stdlib.h>
@@ -70,7 +55,7 @@
 *    brdcst_maxlen ()        void                el_exoII_io.c
 *    brdcst_nosync ()        static void         brdcst_maxlen ()
 *    brdcst ()               void                Many places
-*    sync ()                 void                Many places
+*    psync ()                void                Many places
 *    print_sync_start ()     void                Many places
 *    print_sync_end ()       void                Many places
 *    gsum_int ()             int                 Many places
@@ -245,7 +230,7 @@ void brdcst_maxlen(
     /* Synchronize if needed to ensure buffers clear. */
 
     if ((j % MAX_MESG_IN_BUF) == (MAX_MESG_IN_BUF - 1))
-      sync(node, nprocs);
+      psync(node, nprocs);
   }
 
   /* Now handle left overs. */
@@ -255,7 +240,7 @@ void brdcst_maxlen(
     brdcst_nosync(node, nprocs, &data[istart_pos], nleft_over, sender);
 
   /*
-   *   sync(node, nprocs);
+   *   psync(node, nprocs);
    */
 }
 
@@ -446,7 +431,7 @@ void brdcst(
 
   /* Synchronize to ensure message buffers clear. */
 
-  sync(Proc, Num_Proc);
+  psync(Proc, Num_Proc);
 
 }
 
@@ -454,7 +439,7 @@ void brdcst(
 /*****************************************************************************/
 /*****************************************************************************/
 
-void sync(int node, int nprocs)
+void psync(int node, int nprocs)
 
 {
   int        type;         /* type of next message */
@@ -483,14 +468,14 @@ void sync(int node, int nprocs)
   partner = node ^ nprocs_small;
   if (node & nprocs_small) {
     if (md_write((char *)NULL, 0, partner, type, &cflag) != 0) {
-      (void) fprintf(stderr, "sync: ERROR on node %d\n", node);
+      (void) fprintf(stderr, "psync: ERROR on node %d\n", node);
       (void) fprintf(stderr, "md_write failed, message type = %d\n", node);
       exit(1);
     }
   }
   else if (node+nprocs_small < nprocs) {
     if (md_read((char *)NULL, 0, &partner, &type, &cflag) != 0) {
-      (void) fprintf(stderr, "sync: ERROR on node %d\n", node);
+      (void) fprintf(stderr, "psync: ERROR on node %d\n", node);
       (void) fprintf(stderr, "md_read failed, message type = %d\n", type);
       exit(1);
     }
@@ -503,12 +488,12 @@ void sync(int node, int nprocs)
       type++;
       partner = node ^ mask;
       if (md_write((char *)NULL, 0, partner, type, &cflag)) {
-        (void) fprintf(stderr, "sync: ERROR on node %d\n", node);
+        (void) fprintf(stderr, "psync: ERROR on node %d\n", node);
         (void) fprintf(stderr, "md_write failed, message type = %d\n", type);
         exit(1);
       }
       if (md_read((char *)NULL, 0, &partner, &type, &cflag) != 0) {
-        (void) fprintf(stderr, "sync: ERROR on node %d\n", node);
+        (void) fprintf(stderr, "psync: ERROR on node %d\n", node);
         (void) fprintf(stderr, "md_read failed, message type = %d\n", type);
         exit(1);
       }
@@ -522,14 +507,14 @@ void sync(int node, int nprocs)
   partner = node ^ nprocs_small;
   if (node & nprocs_small) {
     if (md_read((char *)NULL, 0, &partner, &type, &cflag) != 0) {
-      (void) fprintf(stderr, "sync: ERROR on node %d\n", node);
+      (void) fprintf(stderr, "psync: ERROR on node %d\n", node);
       (void) fprintf(stderr, "md_read failed, message type = %d\n", type);
       exit(1);
     }
   }
   else if (node+nprocs_small < nprocs) {
     if (md_write((char *)NULL, 0, partner, type, &cflag)) {
-      (void) fprintf(stderr, "sync: ERROR on node %d\n", node);
+      (void) fprintf(stderr, "psync: ERROR on node %d\n", node);
       (void) fprintf(stderr, "md_write failed, message type = %d\n", type);
       exit(1);
     }
@@ -664,7 +649,7 @@ void print_sync_end(int proc, int nprocs, int do_print_line)
    * (Num_Proc-1)
    */
 
-  sync (Proc, Num_Proc);
+  psync (Proc, Num_Proc);
 
 }
 

@@ -34,14 +34,8 @@ C
 C=======================================================================
       INTEGER FUNCTION LENSTR (STRING)
 C=======================================================================
-C$Id: lenstr.f,v 1.1 2008/10/31 05:04:15 gdsjaar Exp $
+C$Id: lenstr.f,v 1.2 2007/10/17 18:40:35 gdsjaar Exp $
 C$Log: lenstr.f,v $
-CRevision 1.1  2008/10/31 05:04:15  gdsjaar
-CMoved the applications into an applications subdirectory.
-C
-CRevision 1.1  2008/06/18 16:09:22  gdsjaar
-CInitial import of files into sourceforge repository
-C
 CRevision 1.2  2007/10/17 18:40:35  gdsjaar
 CAdded copyright notice to all files.
 C

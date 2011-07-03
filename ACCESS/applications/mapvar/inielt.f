@@ -58,10 +58,9 @@ C
 C *********************************************************************
 C
       include 'exodusII.inc'
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR,NAME
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /EBBYEB/ NUMEBA,NUMEBB,NUMNDA,NUMNDB,ITYPE
+      include 'aexds1.blk'
+      include 'ebbyeb.blk'
 C
       DIMENSION SOLEB(NUMEBB,NVAREL), TIMES(*), CENTER(NUMEBB,*)
       DIMENSION DUME(*)

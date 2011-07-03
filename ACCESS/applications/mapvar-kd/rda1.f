@@ -56,18 +56,16 @@ C
 C     ******************************************************************
 C
       include 'exodusII.inc'
-      CHARACTER*(MXSTLN) QALINE,NAMECO,NAMVAR
-      CHARACTER*(MXSTLN) QAINFO
 C
-      COMMON /AEXDS1/ NQAREC,NVARGP,NVARNP,NVAREL
-      COMMON /AEXDS2/ QALINE(4,240),NAMECO(3),NAMVAR(512)
-      COMMON /AMESH/  NUMELA,NODESA,NBLKSA,NDIMA,NELNDA
-      COMMON /CONTRL/ ISCHEM,IDEF,IACCU
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
-      COMMON /RUNDAT/ QAINFO(6)
-      COMMON /STEPS/  ISTEP,NTIMES,OUTTIM
-      COMMON /VARNPT/ IXDIS,IYDIS,IZDIS,IXVEL,IYVEL,IZVEL
-      COMMON /VAREPT/ ISXX,ISYY,ISZZ,ISXY,ISYZ,ISZX,IELMS,IDENS
+      include 'aexds1.blk'
+      include 'aexds2.blk'
+      include 'amesh.blk'
+      include 'contrl.blk'
+      include 'ex2tp.blk'
+      include 'rundat.blk'
+      include 'steps.blk'
+      include 'varnpt.blk'
+      include 'varept.blk'
 C
       DIMENSION xa(*),ya(*),za(*)
       DIMENSION DISXA(*),DISYA(*),DISZA(*)

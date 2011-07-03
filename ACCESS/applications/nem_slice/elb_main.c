@@ -593,7 +593,6 @@ void print_input(
 
 /*-----------------------------Execution Begins------------------------------*/
 
-#ifdef PRINT_INFO
   printf("%s version %s\n", UTIL_NAME, ELB_VERSION);
 
   printf("Performing ");
@@ -789,9 +788,6 @@ void print_input(
     printf("\telement block groups defined\n");
     printf("\tgroup string: \"%s\"\n", prob->groups);
   }
-
-#endif /* PRINT_INFO */
-
   return;
 }
 

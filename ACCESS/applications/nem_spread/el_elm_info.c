@@ -32,21 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: el_elm_info.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/10/10 22:38:18 $
- *
- * $Revision: 1.2 $
- *
- * $Name:  $
- *====================================================================*/
 
 #include <math.h>
 #include <stdlib.h>

@@ -1,0 +1,3 @@
+      COMMON /NAMES/ DBNAME, BASENAM, DEVICE
+      character*256 DBNAME, BASENAM
+      character*32  DEVICE

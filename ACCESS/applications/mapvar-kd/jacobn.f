@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: jacobn.f,v 1.1 2008/10/31 05:04:13 gdsjaar Exp $
+C $Id: jacobn.f,v 1.3 2007/10/17 18:43:49 gdsjaar Exp $
 C=======================================================================
 *DECK,JACOBN
       SUBROUTINE JACOBN (ITYPE,XX,YY,ZZ,SP,TP,RP,A11,A12,A13,A21,A22,

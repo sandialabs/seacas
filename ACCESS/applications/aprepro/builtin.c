@@ -33,12 +33,18 @@
  *
  */
 
-/* $Id: builtin.c,v 1.2 2009/06/10 04:30:12 gdsjaar Exp $ */
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <time.h>
-#include "aprepro.h"
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <assert.h>
+#include "my_aprepro.h"
+#include "getline.h"
+#include "y.tab.h"
 
 #ifndef RAND_MAX
 #include <limits.h>
@@ -69,11 +75,7 @@
 #define LOG1P(x)	log(1.0 + (x))
 #endif
 
-extern char *include_path;
-extern int warning_msg;
-extern int info_msg;
-extern int debugging;
-extern int statistics;
+extern aprepro_options ap_options;
 extern FILE *open_file(char *file, char *mode);
 
 void check_math_error(double);
@@ -109,6 +111,7 @@ double do_log10(double x);
 double do_max(double x, double y);
 double do_min(double x, double y);
 double do_r2d(double x);
+double do_srand(double seed);
 double do_rand(double xl, double xh);
 double do_rand_normal(double mean, double stddev);
 double do_rand_lognormal(double mean, double stddev);
@@ -130,14 +133,18 @@ char  *do_tolower(char *string);
 char  *do_toupper(char *string);
 char  *do_tostring(double x);
 char  *do_output(char *newfile);
+char  *do_append(char *newfile);
 char  *do_error(char *error_string);
+char  *do_help(void);
 char  *do_dumpsym(void);
 char  *do_get_date(void);
 char  *do_get_time(void);
 double do_option(char *option, double value);
-extern void dumpsym(void);  /* in hash.c */
+extern void dumpsym(int type, int doInternal);  /* in hash.c */
 double do_word_count(char *string, char *delm );
 char  *do_get_word(double n, char *string, char *delm);
+char  *do_file_to_string(char *filename);
+char  *do_extract(char *string, char *begin, char *end);
 double do_Material(double id, char *type, char *name, char *model, char *code, FILE * yyout);
 double do_lgamma(double val);
 double do_juldayhms(double mon, double day, double year,
@@ -420,6 +427,14 @@ do_rand(double xl, double xh)
   temp = xl + (xh - xl) * ((double) rand() / (double) RAND_MAX);
   MATH_ERROR("rand");
   return (temp);
+}
+
+/* do_srand(x) Seed the random generator with the specified integer value */
+double 
+do_srand(double seed)
+{
+  srand((unsigned)seed);
+  return (0);
 }
 
 double 
@@ -795,9 +810,28 @@ char *do_output(char *filename)
   errno = 0;
   fflush(yyout);
   MATH_ERROR("output (fflush)");
-  fclose(yyout);
+  if (yyout != stdout) 
+    fclose(yyout);
   MATH_ERROR("output (fclose)");
-  yyout = open_file(filename, "w");
+  if (strcmp(filename, "stdout") == 0)
+    yyout = stdout;
+  else
+    yyout = open_file(filename, "w");
+  return (NULL);
+}
+
+char *do_append(char *filename)
+{
+  errno = 0;
+  fflush(yyout);
+  MATH_ERROR("append (fflush)");
+  if (yyout != stdout) 
+    fclose(yyout);
+  MATH_ERROR("append (fclose)");
+  if (strcmp(filename, "stdout") == 0)
+    yyout = stdout;
+  else
+    yyout = open_file(filename, "a");
   return (NULL);
 }
 
@@ -844,6 +878,46 @@ char *do_get_word(double n, char *string, char *delm)
      return(word);
 }
 
+char *do_file_to_string(char *filename)
+{
+  FILE * fp;
+  int size = 0;
+  char *line = NULL;
+  char *ret_string = NULL; 
+  size_t len = 0;
+  int error = 0;
+  struct stat st;
+  
+  char *lines = NULL;
+  errno = 0;
+
+  error = stat(filename, &st);
+  if (error < 0) {
+    char tmpstr[128];
+    sprintf(tmpstr, "Aprepro: ERR:  Can't open '%s'",filename); 
+    perror(tmpstr);
+    exit(EXIT_FAILURE);
+  }
+
+  size = st.st_size;
+
+  lines = malloc(size * sizeof(char)+1);
+  lines[0] = '\0';
+  
+  fp = open_file(filename, "r");
+
+  while (getline(&line, &len, fp) != -1) {
+    strcat ( lines, line );
+    assert(strlen(lines) <= size);
+  }
+
+  assert(strlen(lines) == size);
+  NEWSTR(lines, ret_string);
+  if (line) free(line);
+  if (lines) free(lines);
+  return ret_string;
+}
+
 char *do_getenv(char *env)
 {
   char *tmp;
@@ -870,10 +944,34 @@ double do_strtod(char *string)
 }
 
 char *
+do_help(void)
+{
+  char comment = getsym("_C_")->value.svar[0];
+  printf ("\n%c   Enter {DUMP()}        to list defined variables\n", comment);
+  printf ("%c         {DUMP_FUNC()}   to list of all double and string functions\n", comment);
+  printf ("%c         {DUMP_PREVAR()} to list all predefined variables\n", comment);
+  return("");
+}
+
+char *
 do_dumpsym(void)
 {
-	dumpsym();
-	return("");
+  dumpsym(VAR, 0);
+  return("");
+}
+
+char *
+do_dumpfunc(void)
+{
+  dumpsym(FNCT, 1);
+  return("");
+}
+
+char *
+do_dumpvar(void)
+{
+  dumpsym(VAR, 1);
+  return("");
 }
 
 double do_option(char *option, double value)
@@ -882,23 +980,23 @@ double do_option(char *option, double value)
   current = -1;
   
   if (strcmp(option, "warning") == 0) {
-    current = warning_msg;
-    warning_msg = (value == 0.0) ? False : True;
+    current = ap_options.warning_msg;
+    ap_options.warning_msg = (value == 0.0) ? False : True;
   }
 
   else if (strcmp(option, "info") == 0) {
-    current = info_msg;
-    info_msg = (value == 0.0) ? False : True;
+    current = ap_options.info_msg;
+    ap_options.info_msg = (value == 0.0) ? False : True;
   }
   
   else if (strcmp(option, "debugging") == 0) {
-    current = debugging;
-    debugging = (value == 0.0) ? False : True;
+    current = ap_options.debugging;
+    ap_options.debugging = (value == 0.0) ? False : True;
   }
   
   else if (strcmp(option, "statistics") == 0) {
-    current = statistics;
-    statistics = (value == 0.0) ? False : True;
+    current = ap_options.statistics;
+    ap_options.statistics = (value == 0.0) ? False : True;
   }
 
   else {
@@ -909,10 +1007,10 @@ double do_option(char *option, double value)
 
 char *do_include_path(char *new_path)
 {
-  if (include_path != NULL) {
-    free(include_path);
+  if (ap_options.include_path != NULL) {
+    free(ap_options.include_path);
   }
-  NEWSTR(new_path, include_path);
+  NEWSTR(new_path, ap_options.include_path);
   return (NULL);
 }
 
@@ -939,4 +1037,42 @@ char *do_intout(double intval)
       NEWSTR(tmpstr, tmp);
       return (tmp);
     }
+}
+
+char *do_extract(char *string, char *begin, char *end)
+{
+  /* From 'string' return a substring delimited by 'begin' and 'end'.
+   *  'begin' is included in the string, but 'end' is not. If
+   *  'begin' does not appear in the string, return NULL; If 'end'
+   *  does not appear, then return the remainder of the string. If
+   *  'begin' == "", then start at beginning; if 'end' == "", then
+   *  return remainder of the string.
+   */
+  
+  char *start = string;
+  char *tmp;
+  int len = 0;
+  
+  if (strlen(begin) > 0) {
+    start = strstr(string, begin);
+    if (start == NULL)
+      return "";
+  }
+  
+  len = strlen(start);
+  if (strlen(end) > 0) {
+    char *finish = strstr(start, end);
+    if (finish != NULL) {
+      len = finish-start;
+    }
+  }
+
+  {
+    char *tmpstr = malloc(len+1);
+    strncpy(tmpstr, start, len);
+    tmpstr[len] = '\0';
+    NEWSTR(tmpstr, tmp);
+    free(tmpstr);
+  }      
+  return tmp;
 }

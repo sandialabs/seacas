@@ -32,22 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: pe_write_parExo_info.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
 #include <assert.h>
 
 #include <stdlib.h>
@@ -74,7 +58,7 @@
 
 #include "ps_pario_const.h"
 
-static int write_var_param(int mesh_exoid,
+static int write_var_param(int mesh_exoid, int max_name_length, 
 			   int num_glob, char **gv_names,
 			   int num_node, char **nv_names, 
                            int num_elem, char **ev_names, int *local_ebtt,
@@ -102,7 +86,7 @@ extern char GeomTitle[];
 /*      11 November 1993 - Date of first working version on the nCube.      */
 /****************************************************************************/
 
-void write_parExo_data(int mesh_exoid,
+void write_parExo_data(int mesh_exoid, int max_name_length,
                        int iproc,
                        int io_ws,
                        int num_qa_records,
@@ -663,6 +647,32 @@ void write_parExo_data(int mesh_exoid,
   PIO_Time_Array[8]  = (second() - tt1);
   total_out_time    += PIO_Time_Array[8];
 
+  /* Output the coordinate frame information (if any). This puts the
+     file in/out of define mode, so should be early in the write stage
+  */
+  if(Debug_Flag >= 4) {
+    printf("[%d]: Number of Coordinate Frames: %d\n", Proc, Num_Coordinate_Frames);
+  }
+
+  if (Num_Coordinate_Frames > 0) {
+    void *Coordinate_Frame_Coordinates = NULL;
+    if (io_ws <= sizeof(float)) {
+      Coordinate_Frame_Coordinates = Coordinate_Frame_Coordinates_sp;
+    } else {
+      Coordinate_Frame_Coordinates = Coordinate_Frame_Coordinates_dp;
+    }
+    if (ex_put_coordinate_frames(mesh_exoid, Num_Coordinate_Frames,
+				 Coordinate_Frame_Ids,
+				 Coordinate_Frame_Coordinates,
+				 Coordinate_Frame_Tags) < 0) {
+      fprintf(stderr,
+	      "[%d, %s]: ERROR, Unable to put coordinate frame data in parallel mesh file\n",
+	      Proc, yo);
+      ex_close(mesh_exoid);
+      exit(1);
+    }
+  }
+
   if (proc_for == 0)
     strcpy(cTitle, GeomTitle);
   else
@@ -1035,7 +1045,7 @@ void write_parExo_data(int mesh_exoid,
     if(ne_put_elem_map(mesh_exoid, Elem_Map[iproc],
 		       Elem_Map[iproc] + Num_Internal_Elems[iproc],
 		       proc_for) < 0) {
-      fprintf(stderr, "[%d, %s]: ERROR, unable to output nem element map!\n",
+      fprintf(stderr, "[%d, %s]: ERROR, unable to output nemesis element map!\n",
 	      Proc, yo);
       ex_close(mesh_exoid);
       exit(1);
@@ -1456,7 +1466,7 @@ void write_parExo_data(int mesh_exoid,
     else
       local_sstt = NULL;
 
-    bytes_out += write_var_param(mesh_exoid,
+    bytes_out += write_var_param(mesh_exoid, max_name_length,
 				 Restart_Info.NVar_Glob, Restart_Info.GV_Name,
 				 Restart_Info.NVar_Node, Restart_Info.NV_Name, 
 				 Restart_Info.NVar_Elem, Restart_Info.EV_Name,  local_tt,
@@ -1483,7 +1493,7 @@ void write_parExo_data(int mesh_exoid,
 
 } /* END write_parExo_data() */
 
-static int write_var_param(int mesh_exoid,
+static int write_var_param(int mesh_exoid, int max_name_length,
 			   int num_glob, char **gv_names,
 			   int num_node, char **nv_names, 
                            int num_elem, char **ev_names, int *local_ebtt,
@@ -1502,27 +1512,27 @@ static int write_var_param(int mesh_exoid,
   check_exodus_error(error, "ex_put_all_var_param");
 
   if (gv_names != NULL) {
-    bytes_out += Restart_Info.NVar_Glob * MAX_STR_LENGTH;
+    bytes_out += Restart_Info.NVar_Glob * max_name_length;
     error = ex_put_var_names(mesh_exoid, "g", num_glob, gv_names);
     check_exodus_error(error, "ex_put_var_names");
   }
   if (nv_names != NULL) {
-    bytes_out += num_node * MAX_STR_LENGTH;
+    bytes_out += num_node * max_name_length;
     error = ex_put_var_names(mesh_exoid, "n", num_node, nv_names);
     check_exodus_error(error, "ex_put_var_names");
   }
   if (ev_names != NULL) {
-    bytes_out += Restart_Info.NVar_Elem * MAX_STR_LENGTH;
+    bytes_out += Restart_Info.NVar_Elem * max_name_length;
     error = ex_put_var_names(mesh_exoid, "e", num_elem, ev_names);
     check_exodus_error(error, "ex_put_var_names");
   }
   if (ns_names != NULL) {
-    bytes_out += Restart_Info.NVar_Nset * MAX_STR_LENGTH;
+    bytes_out += Restart_Info.NVar_Nset * max_name_length;
     error = ex_put_var_names(mesh_exoid, "m", num_nset, ns_names);
     check_exodus_error(error, "ex_put_var_names");
   }
   if (ss_names != NULL) {
-    bytes_out += Restart_Info.NVar_Sset * MAX_STR_LENGTH;
+    bytes_out += Restart_Info.NVar_Sset * max_name_length;
     error = ex_put_var_names(mesh_exoid, "s", num_sset, ss_names);
     check_exodus_error(error, "ex_put_var_names");
   }

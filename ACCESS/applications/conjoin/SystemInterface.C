@@ -9,8 +9,8 @@
 #include <limits.h>
 #include <string.h>
 
-#include <Version.h>
-#include <tokenize.h>
+#include "Version.h"
+#include "tokenize.h"
 
 #if defined(__PUMAGON__)
 #define NPOS (size_t)-1
@@ -51,12 +51,23 @@ void Excn::SystemInterface::enroll_options()
 		  "Value (1 or 0) to indicate that an element is alive, default = 0",
 		  "0");
   
+  options_.enroll("combine_status_variables", GetLongOpt::MandatoryValue,
+		  "The conjoin elem_status variable will be combined\n"
+		  "\t\twith the specified status variable ($val) existing on the mesh.\n"
+		  "\t\tBoth variables must have the same value (1 or 0) for 'alive'.\n"
+		  "\t\t\tIf 1 is alive, then the combined variable is the min of the two values.\n"
+		  "\t\t\tIf 0 is alive, then the combined variable is the max of the two values.\n"
+		  "\t\tUse the 'alive_value' option to set conjoin's alive value",
+		  "");
   options_.enroll("element_status_variable", GetLongOpt::MandatoryValue,
-		  "Name to use as element status variable;\n\t\tmust not exist on input files. Default = elem_status",
+		  "Name to use as element existance status variable;\n"
+                  "\t\tmust not exist on input files. If NONE, then not created.\n"
+		  "\t\tDefault = elem_status",
 		  "elem_status");
   
   options_.enroll("nodal_status_variable", GetLongOpt::MandatoryValue,
-		  "Name to use as nodal status variable;\n\t\tmust not exist on input files. Default = node_status",
+		  "Name to use as nodal status variable;\n\t\tmust not exist on input files.\n"
+		  "\t\tIf NONE, then not created. Default = node_status",
 		  "node_status");
   
   options_.enroll("omit_nodesets", GetLongOpt::NoValue,
@@ -163,6 +174,11 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("nodal_status_variable");
     nodalStatusVariable_ = temp;
+  }
+
+  {
+    const char *temp = options_.retrieve("combine_status_variables");
+    meshCombineStatusVariable_ = temp;
   }
 
   {
@@ -294,7 +310,8 @@ namespace {
     // Break into tokens separated by ","
     if (tokens != NULL) {
       std::string token_string(tokens);
-      StringVector var_list = tokenize(token_string, recognize(","));
+      StringVector var_list;
+      tokenize(token_string, ",", var_list);
     
       // At this point, var_list is either a single string, or a string
       // separated from 1 or more block ids with ":" delimiter.
@@ -304,7 +321,8 @@ namespace {
       // written for all blocks.
       std::vector<std::string>::iterator I = var_list.begin();
       while (I != var_list.end()) {
-	StringVector name_id = tokenize(*I, recognize(":"));
+	StringVector name_id;
+	tokenize(*I, ":", name_id);
 	std::string var_name = LowerCase(name_id[0]);
 	if (name_id.size() == 1) {
 	  (*variable_list).push_back(std::make_pair(var_name,0));

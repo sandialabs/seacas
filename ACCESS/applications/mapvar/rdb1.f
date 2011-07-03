@@ -48,7 +48,7 @@ C     XB,etc  Original coordinates read from Mesh-B
 C
 C     *****************************************************************
 C
-      COMMON /EX2TP/  NTP2EX,NTP3EX,NTP4EX
+      include 'ex2tp.blk'
       include 'exodusII.inc'
 C
       DIMENSION XB(*),YB(*),ZB(*)

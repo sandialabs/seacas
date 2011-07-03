@@ -80,8 +80,8 @@ C                        WITH POINTS LISTED IN IDP
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /TOLDAT/ TOL,EPS,STRLMT,ITERMX
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
+      include 'toldat.blk'
+      include 'tapes.blk'
 C
 C INPUT/OUTPUT ARRAYS
       DIMENSION

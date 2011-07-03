@@ -31,7 +31,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: srchs.f,v 1.1 2008/10/31 05:04:13 gdsjaar Exp $
+C $Id: srchs.f,v 1.3 2007/10/17 18:43:50 gdsjaar Exp $
       SUBROUTINE SRCHS (
      *  NPSRF,   NFSRF,   LINKSRF, XYZSRF,
      *  NPTS,    XYZPTS,  TOLSRCH,
@@ -91,8 +91,8 @@ C  P     IERR     -/O    ERROR FLAG
 C
 C-----------------------------------------------------------------------
 C
-      COMMON /TAPES/  NOUT,NTPOUT,NTP2,NTP3,NTP4
-      COMMON /DEBG/   IDEBUG
+      include 'tapes.blk'
+      include 'debg.blk'
 C
 C INPUT/OUTPUT ARRAYS
 C

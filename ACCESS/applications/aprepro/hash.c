@@ -32,7 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/* $Id: hash.c,v 1.1 2008/10/31 05:04:04 gdsjaar Exp $ */
 /***
    NAME
      hash
@@ -40,20 +39,19 @@
      Symbol table manipulation for Aprepro
 ***/
 #include <stdlib.h>
-#include "aprepro.h"
+#include "my_aprepro.h"
 #include "y.tab.h"
 #include <sys/types.h>
 #include <limits.h>
 
-extern char comment; /* Character used to indicate a comment at the beginning of the line */
-void dumpsym(void);
+void dumpsym(int type, int doInternal);
 void pstats(void);
 unsigned hash(char *symbol);
 extern double mean(void);
 extern void newsample(int);
 extern double deviation(void);
 
-#define HASHSIZE 293
+#define HASHSIZE 5939
 unsigned hash (char *symbol)
 {
   unsigned hashval;
@@ -64,27 +62,22 @@ unsigned hash (char *symbol)
 
 static symrec *sym_table[HASHSIZE];
 
-symrec *putsym (char *sym_name, int sym_type)
+symrec *putsym (char *sym_name, int sym_type, int is_internal)
 {
   symrec *ptr;
-/*  symrec *getsym(char *); */
   unsigned hashval;
 
-/*   if ((ptr = getsym(sym_name)) == NULL)  */
-  {				/* Not found -- We `know' it won't be found because we look before we
-       install
-     */
-    ptr = (symrec *) malloc (sizeof (symrec));
-    if (ptr == NULL)
-      return NULL;
-    NEWSTR (sym_name, ptr->name);
-    ptr->type = sym_type;
-    ptr->value.var = 0;
-
-    hashval = hash (ptr->name);
-    ptr->next = sym_table[hashval];
-    sym_table[hashval] = ptr;
-  }
+  ptr = (symrec *) malloc (sizeof (symrec));
+  if (ptr == NULL)
+    return NULL;
+  NEWSTR (sym_name, ptr->name);
+  ptr->type = sym_type;
+  ptr->value.var = 0;
+  ptr->isInternal = is_internal;
+  
+  hashval = hash (ptr->name);
+  ptr->next = sym_table[hashval];
+  sym_table[hashval] = ptr;
   return ptr;
 }
 
@@ -97,22 +90,44 @@ symrec *getsym (char *sym_name)
   return (symrec *) 0;
 }
 
-void dumpsym (void)
+void dumpsym (int type, int doInternal)
 {
   symrec *ptr;
   unsigned hashval;
 
-  printf ("\n%c   Variable = Value\n", comment);
-  for (hashval = 0; hashval < HASHSIZE; hashval++)
-    {
-      for (ptr = sym_table[hashval]; ptr != (symrec *) 0; ptr = ptr->next)
-	{
+  char comment = getsym("_C_")->value.svar[0];
+  
+  if (type == VAR || type == SVAR) {
+    printf ("\n%c   Variable = Value\n", comment);
+    for (hashval = 0; hashval < HASHSIZE; hashval++) {
+      for (ptr = sym_table[hashval]; ptr != (symrec *) 0; ptr = ptr->next) {
+	if ((doInternal && ptr->isInternal) || (!doInternal && !ptr->isInternal)) {
 	  if (ptr->type == VAR)
 	    printf ("%c  {%-10s\t= %.10g}\n", comment, ptr->name, ptr->value.var);
 	  else if (ptr->type == SVAR)
 	    printf ("%c  {%-10s\t= \"%s\"}\n", comment, ptr->name, ptr->value.svar);
 	}
+      }
     }
+  }
+  else if (type == FNCT || type == SFNCT) {
+    printf ("\nFunctions returning double:\n");
+    for (hashval = 0; hashval < HASHSIZE; hashval++) {
+      for (ptr = sym_table[hashval]; ptr != (symrec *) 0; ptr = ptr->next) {
+	if (ptr->type == FNCT) {
+	  printf ("%-20s:  %s\n", ptr->syntax, ptr->info);
+	}
+      }
+    }
+    printf ("\nFunctions returning string:\n");
+    for (hashval = 0; hashval < HASHSIZE; hashval++) {
+      for (ptr = sym_table[hashval]; ptr != (symrec *) 0; ptr = ptr->next) {
+	if (ptr->type == SFNCT) {
+	  printf ("%-20s:  %s\n", ptr->syntax, ptr->info);
+	}
+      }
+    }
+  }
 }
 
 #define min(x,y) ((x) < (y) ? (x) : (y))

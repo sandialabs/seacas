@@ -31,7 +31,7 @@ XCOMM  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 XCOMM  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 XCOMM  
 
-XCOMM   $Id: Imakefile,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+XCOMM   $Id: Imakefile,v 1.6 2005/11/15 22:56:03 gdsjaar Exp $
 
 CODE = gjoin
 
@@ -67,8 +67,12 @@ LIBS = $(EXOIIV2FOR) $(EXOIIV2C) $(NETCDF) $(SUPLIB) $(SUPES)
 NormalFortranTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
 
 InstallProgram($(CODE),$(BINDIR))
+InstallProgram(gjoin2,$(BINDIR))
+
+gjoin2: gjoin
+	$(CP) gjoin gjoin2
 
 CleanupCapF($(SRCSf))
-
+ExtraStuffToClean(gjoin2)
 DependTarget()
 

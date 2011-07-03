@@ -34,11 +34,8 @@ C
 C=======================================================================
       SUBROUTINE ZMXYZ (NDIM, NUMNP, IXNP, XN, YN, ZN)
 C=======================================================================
-C $Id: zmxyz.f,v 1.1 2009/06/09 19:01:22 gdsjaar Exp $
+C $Id: zmxyz.f,v 1.1 1999/01/18 19:21:28 gdsjaar Exp $
 C $Log: zmxyz.f,v $
-C Revision 1.1  2009/06/09 19:01:22  gdsjaar
-C mAdd gjoin (access gjoin2) based on copyright assertion paperwork coming through.
-C
 C Revision 1.1  1999/01/18 19:21:28  gdsjaar
 C ExodusII version of gjoin, needs testing and syncing with exodus 1 version, but is being committed to permit easier testing and modifications.  This was created by Dave Fry at Goodyear
 C

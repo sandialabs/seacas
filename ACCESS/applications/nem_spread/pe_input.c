@@ -32,35 +32,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*====================================================================
- * ------------------------
- * | CVS File Information |
- * ------------------------
- *
- * $RCSfile: pe_input.c,v $
- *
- * $Author: gdsjaar $
- *
- * $Date: 2009/06/09 13:32:43 $
- *
- * $Revision: 1.1 $
- *
- * $Name:  $
- *====================================================================*/
-
 /*--------------------------------------------------------------------------*/
 /* Purpose: Determine file types for command files and read in the parallel */
 /*          ExodusII command file.                                          */
-/*--------------------------------------------------------------------------*/
-/* Author(s):  Gary L. Hennigan (1421)                                      */
-/*             Matthew M. St.John (9221)                                    */
-/*--------------------------------------------------------------------------*/
-/* Supported Environment(s):  nCube                                         */
-/*                            Intel Paragon                                 */
-/*--------------------------------------------------------------------------*/
-/* Revision History:                                                        */
-/*    08 December 1993:       Date of creation.                             */
-/*    18 June 1997:           Changed to new file format, for nem_join      */
 /*--------------------------------------------------------------------------*/
 
 

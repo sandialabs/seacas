@@ -86,7 +86,6 @@ int parse_groups(int *el_blk_ids,
 {
   char *id;
   int   i, last, found;
-  int   first_el;
 
 /*---------------------------Execution Begins--------------------------------*/
 
@@ -132,17 +131,17 @@ int parse_groups(int *el_blk_ids,
 
   prob->num_groups = last;
 
-#ifdef PRINT_INFO
-  printf("\nNumber of blocks: %d\n", mesh->num_el_blks);
-  printf("Block ID and associated groups:\n");
-  first_el = 0;
-  printf("   block   #elems  group   type\n");
-  for (i = 0; i < mesh->num_el_blks; i++) {
-    printf("%8d%8d%8d%8s\n", el_blk_ids[i], mesh->eb_cnts[i], prob->group_no[i], elem_names[mesh->elem_type[first_el]]);
-    first_el += mesh->eb_cnts[i];
+  {
+    int first_el = 0;
+    printf("\nNumber of blocks: %d\n", mesh->num_el_blks);
+    printf("Block ID and associated groups:\n");
+    printf("   block   #elems  group   type\n");
+    for (i = 0; i < mesh->num_el_blks; i++) {
+      printf("%8d%8d%8d%8s\n", el_blk_ids[i], mesh->eb_cnts[i], prob->group_no[i], elem_names[mesh->elem_type[first_el]]);
+      first_el += mesh->eb_cnts[i];
+    }
+    printf("There are %d groups of blocks\n", prob->num_groups);
   }
-  printf("There are %d groups of blocks\n", prob->num_groups);
-#endif
 
   /* finnished with the group designator string */
   free (prob->groups);
@@ -270,11 +269,9 @@ int get_group_info(MACHINE_PTR machine,
     }
   }
 
-#ifdef PRINT_INFO
   printf("Load balance information\n");
   for (i = 0; i < prob->num_groups; i++)
     printf("group[%d]  #elements=%-10d  #proc=%d\n",i,nelemg[i],nprocg[i]);
-#endif
 
   if(prob->alloc_graph == ELB_TRUE)
     free (nadj_per_grp);
