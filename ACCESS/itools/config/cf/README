@@ -631,7 +631,7 @@ Imakefile for directory with subdirectories
 
 XCOMM this is a sample Imakefile for a directory containing subdirectories
 #define IHaveSubdirs
-#define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
+#define PassDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
 SUBDIRS = list of subdirs ...
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))

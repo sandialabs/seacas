@@ -2148,11 +2148,11 @@ name::									@@\
  * If you want CDEBUGFLAGS passed along to subdirectories, provide a line like
  * the following in the appropriate Imakefile
  * 
- *         #define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
+ *         #define PassDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
  */
 #ifndef NamedMakeSubdirs
 #define NamedMakeSubdirs(name,dirs) \
-NamedTargetSubdirs(name,dirs,"making" name,PassCDebugFlags,all)
+NamedTargetSubdirs(name,dirs,"making" name,PassDebugFlags,all)
 #endif /* NamedMakeSubdirs */
 
 #ifndef MakeSubdirs
@@ -2178,7 +2178,7 @@ NamedTargetSubdirs(depend,dirs,"depending",NullParameter,depend)
 #define ForceSubdirs(dirs)						@@\
 dirs: FRC								@@\
 	@cd $@ ; echo "making all in $(CURRENT_DIR)/$@..."; \		@@\
-	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
+	$(MAKE) $(MFLAGS) PassDebugFlags all				@@\
 									@@\
 FRC:
 #endif /* ForceSubdirs */
