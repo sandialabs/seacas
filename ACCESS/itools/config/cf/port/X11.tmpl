@@ -1,0 +1,1404 @@
+XCOMM ----------------------------------------------------------------------
+XCOMM X Window System Build Parameters and Rules
+XCOMM $XConsortium: X11.tmpl /main/290 1996/12/27 16:14:21 kaleb $
+
+/***************************************************************************
+ *                                                                         *
+ *                            DEFAULT DEFINITIONS                          *
+ *                                                                         *
+ * The following section contains defaults for things that can             *
+ * overridden in the various *.cf and site.def files.  DO NOT EDIT!        *
+ *                                                                         *
+ **************************************************************************/
+
+#define ProjectX		603	/* do *not* change this line */
+
+/* The following project-specific rules are defined at the end of this file:
+ *
+ * InstallAppDefaults		(class)
+ * InstallAppDefaultsLong	(file,class)
+ * MakeFontsDir			(deplist)
+ * MakeFonts			()
+ * InstallFontObjs		(objs,dest)
+ * InstallFonts			(dest)
+ * InstallFontAliases		(dest)
+ * FontSrc			(basename)
+ * FontBaseObj			(basename)
+ * InstallFontScale		(dest)
+ * UncompressedFontTarget	(basename)
+ * CompressedFontTarget		(basename)
+ * FontTarget			(basename)
+ * FontObj			(basename)
+ * MakeXkbDir			(basedir,subdir)
+ */
+
+/*
+ * X-specific things
+ */
+#ifndef HasXServer
+#define HasXServer		YES
+#endif
+#ifndef BuildServer
+#define BuildServer		HasXServer
+#endif
+#ifndef BuildFontServer
+#define BuildFontServer		YES
+#endif
+#ifndef BuildFonts
+#define BuildFonts		(BuildServer | BuildFontServer)
+#endif
+#ifndef HasXAudio
+#define HasXAudio		NO
+#endif
+#ifndef BuildXAudio
+#define BuildXAudio		(HasXAudio & HasCplusplus)
+#endif
+#ifndef HasXAServer
+#define HasXAServer		NO
+#endif
+#ifndef BuildXAServer
+#define BuildXAServer		(HasXAServer & HasCplusplus)
+#endif
+#ifndef BuildPhigs
+#define BuildPhigs		NO
+#endif
+#ifndef BuildPexExt
+#define BuildPexExt		NO
+#endif
+#ifndef BuildXInputExt
+#define BuildXInputExt		NO
+#endif
+#ifndef BuildDIS
+#define BuildDIS		NO
+#endif
+#ifndef BuildXIE
+#define BuildXIE		YES
+#endif
+#ifndef BuildXKB
+#define BuildXKB		YES
+#endif
+#ifndef BuildXKBlib
+#define BuildXKBlib		YES
+#endif
+	/*
+	 * WARNING: Setting UseXKBInClients to YES cause incompatibilities
+	 *          between many clients (such as xterm) and pre-XKB shared
+	 *          libraries.
+	 */
+#ifndef UseXKBInClients
+#define	UseXKBInClients		NO	/* use XKB in "normal" clients? */
+#endif
+#ifndef BuildDBE
+#define BuildDBE		YES
+#endif
+#ifndef BuildMultibuffer
+#define BuildMultibuffer	NO
+#endif
+#ifndef BuildRECORD
+#define BuildRECORD		YES
+#endif
+#ifndef BuildLBX
+#define BuildLBX		YES
+#endif
+#ifndef BuildXCSecurity
+#define BuildXCSecurity		YES
+#endif
+#ifndef BuildAppgroup
+#define BuildAppgroup		YES
+#endif
+#ifndef HasPlugin
+#define HasPlugin		NO
+#endif
+#ifndef BuildPlugin
+#define BuildPlugin		HasPlugin
+#endif
+#ifndef XprtServer
+#define XprtServer		BuildServer
+#endif
+#ifndef BuildXprint
+#if XprtServer
+#define BuildXprint		YES
+#else
+#define BuildXprint		NO
+#endif
+#endif
+#ifndef InstallLibManPages
+#define InstallLibManPages	YES
+#endif
+#ifndef InstallXtermSetUID
+#define InstallXtermSetUID	YES	/* xterm needs to be set uid */
+#endif
+#ifndef InstallXinitConfig
+#define InstallXinitConfig	NO	/* install sample xinit config */
+#endif
+#ifndef InstallXdmConfig
+#define InstallXdmConfig	NO	/* install sample xdm config */
+#endif
+#ifndef XdmServersType			/* what Xservers files to use */
+#if BuildServer
+#define XdmServersType ws
+#else
+#define XdmServersType fs
+#endif
+#endif
+#ifndef InstallFSConfig
+#define InstallFSConfig		NO	/* install sample fs config */
+#endif
+#ifndef InstallAppDefFiles
+#define InstallAppDefFiles	YES	/* install application defaults */
+#endif
+#ifndef ThreadedX
+#if HasPosixThreads || HasCThreads
+#define ThreadedX		YES	/* multi-threaded libraries */
+#else
+#define ThreadedX		NO
+#endif
+#endif
+#ifndef ThreadedProject
+#define ThreadedProject ThreadedX
+#endif
+#ifndef HasWChar32
+#define HasWChar32		SystemV4
+#endif
+#ifndef HasXdmAuth
+#define HasXdmAuth		NO	/* if you can not use XDM-AUTH* */
+#endif
+#ifndef PrimaryScreenResolution
+#define PrimaryScreenResolution 72		/* a common resolution */
+#endif
+#ifndef DefaultFontPath
+#if PrimaryScreenResolution < 88		/* (75 + 100) / 2 */
+#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/Speedo/,$(FONTDIR)/Type1/,$(FONTDIR)/75dpi/,$(FONTDIR)/100dpi/
+#else
+#define DefaultFontPath $(FONTDIR)/misc/,$(FONTDIR)/Speedo/,$(FONTDIR)/Type1/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
+#endif
+#endif
+#ifndef DefaultRGBDatabase
+#define DefaultRGBDatabase $(LIBDIR)/rgb
+#endif
+#ifndef UseRgbTxt
+#define UseRgbTxt		NO	/* default is to compile with dbm */
+#endif
+#ifndef FontCompilerFlags
+#define FontCompilerFlags -t
+#endif
+#ifndef ConnectionFlags
+#if HasStreams
+#define ConnectionFlags -DSTREAMSCONN
+#else
+#if HasDECnet
+#define ConnectionFlags -DTCPCONN -DUNIXCONN -DDNETCONN
+#else
+#define ConnectionFlags -DTCPCONN -DUNIXCONN
+#endif
+#endif
+#endif
+#ifndef ProjectThreadsDefines
+#define ProjectThreadsDefines -DXTHREADS
+#endif
+#ifndef FontOSDefines
+#define FontOSDefines /**/
+#endif
+#ifndef FontDefines
+#define FontDefines -DFONT_SNF -DFONT_BDF -DFONT_PCF -DCOMPRESSED_FONTS FontOSDefines
+#endif
+#ifndef XawI18nDefines
+#if SystemV4
+#define XawI18nDefines -DHAS_WCTYPE_H
+#else
+#define XawI18nDefines -DUSE_XWCHAR_STRING
+#endif
+#endif
+#ifndef ExtensionOSDefines
+#define ExtensionOSDefines /**/
+#endif
+#ifndef ExtensionDefines
+#ifndef PexDefines
+#if BuildPexExt
+#define PexDefines -DPEXEXT
+#else
+#define PexDefines /**/
+#endif
+#endif
+#ifndef ShmDefines
+#if HasShm
+#define ShmDefines -DMITSHM
+#else
+#define ShmDefines /**/
+#endif
+#endif
+#ifndef XInputDefines
+#if BuildXInputExt
+#define XInputDefines -DXINPUT
+#else
+#define XInputDefines /**/
+#endif
+#endif
+#ifndef XieDefines
+#if BuildXIE
+#define XieDefines -DXIE
+#else
+#define XieDefines /**/
+#endif
+#endif
+#ifndef PrintOnlyServer
+#define PrintOnlyServer YES
+#endif
+#ifndef XprintDefines
+#if BuildXprint
+#if PrintOnlyServer
+#define XprintDefines -DPIXPRIV
+#else
+#define XprintDefines -DXPRINT -DPIXPRIV
+#endif
+#else
+#define XprintDefines /**/
+#endif
+#endif
+#ifndef XkbDefines
+#if BuildXKB
+#define XkbDefines -DXKB
+#else
+#define XkbDefines /**/
+#endif
+#endif
+#ifndef XkbClientDefines
+#if UseXKBInClients
+#define XkbClientDefines -DXKB
+#else
+#define XkbClientDefines /**/
+#endif
+#endif
+#ifndef XkbServerDefines
+#define XkbServerDefines /**/
+#endif
+#ifndef LbxDefines
+#if BuildLBX
+#define LbxDefines -DLBX
+#else
+#define LbxDefines /**/
+#endif
+#endif
+#ifndef BigReqDefines
+#define BigReqDefines -DBIGREQS
+#endif
+
+#ifndef DBEDefines
+#if BuildDBE
+#define DBEDefines -DDBE
+#else
+#define DBEDefines /**/
+#endif
+#endif
+
+#ifndef PervasiveDBEDefines
+#define PervasiveDBEDefines /* -DNEED_DBE_BUF_BITS -DNEED_DBE_BUF_VALIDATE */
+#endif
+
+#ifndef MultibufferDefines
+#if BuildMultibuffer
+#define MultibufferDefines -DMULTIBUFFER
+#else
+#define MultibufferDefines /**/
+#endif
+#endif
+
+#ifndef VidTuneExtensionDefines
+#define VidTuneExtensionDefines /**/
+#endif
+
+#ifndef RECORDDefines
+#if BuildRECORD
+#define RECORDDefines -DXRECORD
+#else
+#define RECORDDefines /**/
+#endif
+#endif
+
+#ifndef AppgroupDefines
+#if BuildAppgroup
+#define AppgroupDefines -DXAPPGROUP
+#else
+#define AppgroupDefines /**/
+#endif
+#endif
+
+#ifndef XCSecurityDefines
+#if BuildXCSecurity
+#define XCSecurityDefines -DXCSECURITY
+#else
+#define XCSecurityDefines /**/
+#endif
+#endif
+
+#ifndef SitePervasiveExtensionDefines
+#define SitePervasiveExtensionDefines /**/
+#endif
+#ifndef PervasiveExtensionDefines
+#define PervasiveExtensionDefines -DSHAPE XInputDefines XkbDefines LbxDefines AppgroupDefines XCSecurityDefines PervasiveDBEDefines XprintDefines SitePervasiveExtensionDefines
+#endif
+#ifndef SiteExtensionDefines
+#define SiteExtensionDefines /**/
+#endif
+#ifndef BaseExtensionDefines
+#define BaseExtensionDefines MultibufferDefines -DMITMISC -DXTEST -DXSYNC -DXCMISC RECORDDefines PexDefines ShmDefines XieDefines BigReqDefines VidTuneExtensionDefines DBEDefines SiteExtensionDefines
+#endif
+#define ExtensionDefines BaseExtensionDefines ExtensionOSDefines
+#endif /* ExtensionDefines */
+
+#ifndef HasStrcasecmp
+#define HasStrcasecmp YES
+#endif
+
+#ifndef StrcasecmpDefines
+# if HasStrcasecmp
+#  define StrcasecmpDefines /**/
+# else
+#  define StrcasecmpDefines -DNEED_STRCASECMP
+# endif
+#endif
+
+#ifndef ServerXdmcpDefines
+#define ServerXdmcpDefines -DXDMCP
+#endif
+#ifndef ServerOSDefines
+#define ServerOSDefines /**/
+#endif
+#if HasKrb5
+#ifndef Krb5Defines
+#define Krb5Defines -DK5AUTH
+#endif
+#else
+#define Krb5Defines /**/
+#endif
+#ifndef ServerExtraDefines
+#define ServerExtraDefines /* -DPIXPRIV */
+#endif
+#ifndef ServerAssertDefines
+#define ServerAssertDefines -DNDEBUG
+#endif
+#ifndef ServerDefines
+#define ServerDefines StandardDefines PervasiveExtensionDefines ServerExtraDefines ServerAssertDefines
+#endif
+#ifndef PexDipexDefines
+#define PexDipexDefines /**/
+#endif
+#ifndef PexDdpexDefines
+#define PexDdpexDefines /**/
+#endif
+#ifndef PexPhigsDefines
+#ifndef PexShmIPC
+#define PexShmIPC HasShm
+#endif
+#if PexShmIPC
+#define PexPhigsDefines /**/
+#else
+#define PexPhigsDefines -DPEX_API_SOCKET_IPC
+#endif
+#endif
+#ifndef PexClientDefines
+#define PexClientDefines -DPEX_SI_PHIGS
+#endif
+#ifndef PhigsInclude
+#ifdef UseInstalled
+#define PhigsInclude -I$(INCDIR)/X11
+#else
+#define PhigsInclude -I$(BUILDINCDIR)
+#endif
+#endif
+#ifndef PexCDebugFlags
+#define PexCDebugFlags DebuggableCDebugFlags
+#endif
+#ifndef PexCCOptions
+#ifdef LibraryCCOptions
+#define PexCCOptions LibraryCCOptions
+#else
+#define PexCCOptions DefaultCCOptions
+#endif
+#endif
+#ifndef DefaultFSConfigFile
+#define DefaultFSConfigFile $(LIBDIR)/fs/config
+#endif
+#ifndef BinDir
+#ifdef ProjectRoot
+#define BinDir Concat(ProjectRoot,/bin)
+#else
+#define BinDir /usr/bin/X11
+#endif
+#endif
+#ifndef BuildIncRoot
+#define BuildIncRoot $(TOP)/exports
+#endif
+#ifndef BuildIncDir
+#define BuildIncDir $(BUILDINCROOT)/include
+#endif
+#ifndef BuildIncTop
+#define BuildIncTop ../..	/* relative to BuildIncDir */
+#endif
+#ifndef XTop
+# if ImportX11
+#  define XTop $(TOP)/imports/x11
+# else
+#  define XTop $(TOP)
+# endif
+#endif
+#ifndef XBuildIncRoot
+# if ImportX11
+#  define XBuildIncRoot	$(XTOP)
+# else
+#  define XBuildIncRoot	$(XTOP)/exports
+# endif
+#endif
+#ifndef XBuildIncDir
+# define XBuildIncDir	$(XBUILDINCROOT)/include/X11
+#endif
+#ifndef XBuildIncTop
+# define XBuildIncTop	../../..
+#endif
+#ifndef XBuildBinDir
+# define XBuildBinDir	$(XBUILDINCROOT)/bin
+#endif
+#ifndef BuildBinDir
+#define BuildBinDir $(TOP)/exports/bin
+#endif
+#ifndef BuildBinTop
+#define BuildBinTop ../..	/* relative to BuildBinDir */
+#endif
+#ifndef BuildLibDir
+#define BuildLibDir $(TOP)/exports/lib
+#endif
+#ifndef BuildLibTop
+#define BuildLibTop ../..	/* relative to BuildLibDir */
+#endif
+#ifndef LibDir
+#define LibDir $(USRLIBDIR)/X11
+#endif
+#ifndef ConfigDir
+#define ConfigDir $(LIBDIR)/config
+#endif
+#ifndef FontDir
+#define FontDir $(LIBDIR)/fonts
+#endif
+#ifndef AdmDir
+#define AdmDir /usr/adm
+#endif
+#ifndef XinitDir
+#define XinitDir $(LIBDIR)/xinit
+#endif
+#ifndef XdmDir
+#define XdmDir $(LIBDIR)/xdm
+#endif
+#ifndef XdmConfigurationSubdirectory		/* under xdm sources */
+#define XdmConfigurationSubdirectory config
+#endif
+#ifndef TwmDir
+#define TwmDir $(LIBDIR)/twm
+#endif
+#ifndef XsmDir
+#define XsmDir $(LIBDIR)/xsm
+#endif
+#ifndef NlsDir
+#define NlsDir $(LIBDIR)/nls
+#endif
+#ifndef XLocaleDir
+#define XLocaleDir $(LIBDIR)/locale
+#endif
+#ifndef PexApiDir
+#define PexApiDir $(LIBDIR)/PEX
+#endif
+#ifndef LbxproxyDir
+#define LbxproxyDir $(LIBDIR)/lbxproxy
+#endif
+#ifndef LbxproxyConfigSubdir		/* under lbxproxy sources */
+#define LbxproxyConfigSubdir config
+#endif
+#ifndef ProxyManagerDir
+#define ProxyManagerDir $(LIBDIR)/proxymngr
+#endif
+#ifndef XPrintDir
+#define XPrintDir $(LIBDIR)
+#endif
+#ifndef ServerConfigDir
+#define ServerConfigDir $(LIBDIR)/xserver
+#endif
+#ifndef InstallSecurityConfig
+#define InstallSecurityConfig YES	/* Install sample security policy */
+#endif
+#ifndef XFileSearchPathBase
+/* avoid SCCS keyword */
+#define XFileSearchPathBase Concat4($(LIBDIR)/%L/%T/%N%C,%S:$(LIBDIR)/%l/%T/%N%C,%S:$(LIBDIR)/%T/%N%C,%S:$(LIBDIR)/%L/%T/%N%S:$(LIBDIR)/%l/%T/%N%S:$(LIBDIR)/%T/%N%S)
+#endif
+#ifndef XFileSearchPathDefault
+#ifdef XAppLoadDir
+/* avoid SCCS keyword */
+#define XFileSearchPathDefault XAppLoadDir/Concat(%N%C,%S):XAppLoadDir/%N%S:XFileSearchPathBase
+#else
+#define XFileSearchPathDefault XFileSearchPathBase
+#endif
+#endif
+#ifndef XAppLoadDir
+#define XAppLoadDir $(LIBDIR)/app-defaults
+#endif
+#ifndef XtErrorPrefix
+#define XtErrorPrefix /* as empty string */
+#endif
+#ifndef XtExtraDefines
+#define XtExtraDefines /* as empty string */
+#endif
+#ifndef XtWarningPrefix
+#define XtWarningPrefix /* as empty string */
+#endif
+#ifndef OsNameDefines
+#define OsNameDefines /* as nothing */
+#endif
+#ifndef DefaultUserPath			/* for xdm */
+#define DefaultUserPath :/bin:/usr/bin:$(BINDIR):/usr/ucb
+#endif
+#ifndef DefaultSystemPath		/* for xdm */
+#define DefaultSystemPath /etc:/bin:/usr/bin:$(BINDIR):/usr/ucb
+#endif
+#ifndef DefaultSystemShell		/* for xdm to set in SHELL */
+#define DefaultSystemShell BourneShell
+#endif
+#ifndef ContribDir
+#define ContribDir $(XTOP)/../contrib	/* contrib is outside core tree */
+#endif
+#ifndef UnsupportedDir
+#define UnsupportedDir $(XTOP)/unsupported
+#endif
+#ifndef AllocateLocalDefines
+#define AllocateLocalDefines /**/
+#endif
+
+#ifndef ForceNormalLib
+#define ForceNormalLib (HasGcc && !HasGcc2)
+#endif
+
+XCOMM -----------------------------------------------------------------------
+XCOMM X Window System make variables; these need to be coordinated with rules
+
+/*
+ * This list must be reflected in the DIRS_TO_BUILD list in the top-level
+ * Makefile.
+ */
+             XTOP = XTop
+           BINDIR = BinDir		/* programs */
+     BUILDINCROOT = BuildIncRoot	/* base of build loc */
+      BUILDINCDIR = BuildIncDir		/* built headers */
+      BUILDINCTOP = BuildIncTop		/* top relative to BUILDINCDIR */
+      BUILDLIBDIR = BuildLibDir		/* built libraries */
+      BUILDLIBTOP = BuildLibTop		/* top relative to BUILDLIBDIR */
+      BUILDBINDIR = BuildBinDir		/* built binaries */
+      BUILDBINTOP = BuildBinTop		/* top relative to BUILDBINDIR */
+    XBUILDINCROOT = XBuildIncRoot	/* base of X build loc */
+     XBUILDINCDIR = XBuildIncDir
+     XBUILDINCTOP = XBuildIncTop
+     XBUILDBINDIR = XBuildBinDir
+           INCDIR = $(INCROOT)		/* header files */
+           ADMDIR = AdmDir		/* server log files */
+           LIBDIR = LibDir		/* rgb, XErrorDB, etc. */
+   TOP_X_INCLUDES = TopXInclude
+
+          FONTDIR = FontDir		/* font directories */
+         XINITDIR = XinitDir		/* xinit config files */
+           XDMDIR = XdmDir		/* xdm config files */
+           TWMDIR = TwmDir		/* twm config files */
+           XSMDIR = XsmDir		/* xsm config files */
+           NLSDIR = NlsDir		/* nls files */
+       XLOCALEDIR = XLocaleDir		/* locale files */
+        PEXAPIDIR = PexApiDir		/* PEX support files */
+      LBXPROXYDIR = LbxproxyDir	        /* lbxproxy files */
+  PROXYMANAGERDIR = ProxyManagerDir	/* proxy manager config files */
+        XPRINTDIR = XPrintDir		/* print config file root */
+      XAPPLOADDIR = XAppLoadDir		/* application default resource dir */
+       FONTCFLAGS = FontCompilerFlags
+
+     INSTAPPFLAGS = $(INSTDATFLAGS)	/* XXX - this should go away - XXX */
+
+#if UseInstalledX11
+              RGB = rgb			/* assume BINDIR in path */
+            FONTC = bdftopcf		/* assume BINDIR in path */
+        MKFONTDIR = mkfontdir		/* assume BINDIR in path */
+#else
+              RGB = $(CLIENTENVSETUP) $(XBUILDBINDIR)/rgb
+            FONTC = $(CLIENTENVSETUP) $(XBUILDBINDIR)/bdftopcf
+        MKFONTDIR = $(CLIENTENVSETUP) $(XBUILDBINDIR)/mkfontdir
+#endif
+
+       DOCUTILSRC = $(XTOP)/doc/util
+       XDOCMACROS = $(DOCUTILSRC)/macros.t
+       XIDXMACROS = $(DOCUTILSRC)/indexmacros.t
+       PROGRAMSRC = $(TOP)/programs
+           LIBSRC = $(XTOP)/lib
+          FONTSRC = $(XTOP)/fonts
+       INCLUDESRC = BuildIncDir
+      XINCLUDESRC = $(INCLUDESRC)/X11
+        SERVERSRC = $(XTOP)/programs/Xserver
+       CONTRIBSRC = ContribDir
+   UNSUPPORTEDSRC = UnsupportedDir
+           DOCSRC = $(XTOP)/doc
+           RGBSRC = $(XTOP)/programs/rgb
+      BDFTOPCFSRC = $(PROGRAMSRC)/bdftopcf
+     MKFONTDIRSRC = $(PROGRAMSRC)/mkfontdir
+    FONTSERVERSRC = $(PROGRAMSRC)/xfs
+       FONTINCSRC = $(XTOP)/include/fonts
+        EXTINCSRC = $(XTOP)/include/extensions
+     TRANSCOMMSRC = $(LIBSRC)/xtrans
+   TRANS_INCLUDES = -I$(TRANSCOMMSRC)
+#ifdef X11ProjectRoot
+     XPROJECTROOT = X11ProjectRoot
+#endif
+#ifdef BuildLibPathVar
+# ifdef SystemBuildLibPath
+  SYSTEMENVLIBDIR = SystemBuildLibPath
+# endif
+       XENVLIBDIR = X11BuildLibPath
+   CLIENTENVSETUP = BuildLibPathVar=BuildLibPath
+#else
+   CLIENTENVSETUP = 
+#endif
+
+#ifndef ShLibIncludeFile
+/* need this to make ANSI-style preprocessors happy */
+#define ShLibIncludeFile <noop.rules>
+#endif
+
+#include ShLibIncludeFile
+
+#ifndef XBuildLibDir
+# define XBuildLibDir	BuildLibDir
+#endif
+
+#ifndef SharedLibX11
+#define SharedLibX11 HasSharedLibraries
+#endif
+#ifndef NormalLibX11
+#define NormalLibX11 (!SharedLibX11 | ForceNormalLib)
+#endif
+#ifndef DebugLibX11
+#define DebugLibX11		NO	/* debugged X library */
+#endif
+#ifndef ProfileLibX11
+#define ProfileLibX11		NO	/* profiled X library */
+#endif
+          XLIBSRC = $(LIBSRC)/X11
+#if SharedLibX11
+#ifndef SharedX11Rev
+#define SharedX11Rev 6.1
+#endif
+SharedLibReferences(XONLY,X11,$(XLIBSRC),SOXLIBREV,SharedX11Rev)
+#else
+ProjectUnsharedLibReferences(XONLY,X11,$(XLIBSRC),XBuildLibDir)
+#endif
+         XLIBONLY = $(XONLYLIB)
+
+#ifndef SharedLibXext
+#define SharedLibXext HasSharedLibraries
+#endif
+#ifndef NormalLibXext
+#define NormalLibXext (!SharedLibXext | ForceNormalLib)
+#endif
+#ifndef DebugLibXext
+#define DebugLibXext		NO	/* debugged Xext library */
+#endif
+#ifndef ProfileLibXext
+#define ProfileLibXext		NO	/* profiled Xext library */
+#endif
+      XEXTLIBSRC = $(LIBSRC)/Xext
+#if SharedLibXext
+#ifndef SharedXextRev
+#define SharedXextRev 6.3
+#endif
+SharedLibReferences(EXTENSION,Xext,$(XEXTLIBSRC),SOXEXTREV,SharedXextRev)
+#else
+ProjectUnsharedLibReferences(EXTENSION,Xext,$(XEXTLIBSRC),XBuildLibDir)
+#endif
+LINTEXTENSIONLIB = $(LINTEXTENSION)
+          DEPXLIB = $(DEPEXTENSIONLIB) $(DEPXONLYLIB)
+             XLIB = $(EXTENSIONLIB) $(XONLYLIB)
+         LINTXLIB = $(LINTXONLYLIB)
+
+#ifndef SharedLibXau
+#define SharedLibXau NO		/* don't need shared form */
+#endif
+#ifndef NormalLibXau
+#define NormalLibXau (!SharedLibXau | ForceNormalLib)
+#endif
+#ifndef DebugLibXau
+#define DebugLibXau		NO	/* debugged auth library */
+#endif
+#ifndef ProfileLibXau
+#define ProfileLibXau		NO	/* profiled auth library */
+#endif
+         XAUTHSRC = $(LIBSRC)/Xau
+#if SharedLibXau
+#ifndef SharedXauRev
+#define SharedXauRev 6.0
+#endif
+SharedLibReferences(XAUTH,Xau,$(XAUTHSRC),SOXAUTHREV,SharedXauRev)
+#else
+ProjectUnsharedLibReferences(XAUTH,Xau,$(XAUTHSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXdmcp
+#define SharedLibXdmcp NO	/* don't need shared form */
+#endif
+#ifndef NormalLibXdmcp
+#define NormalLibXdmcp (!SharedLibXdmcp | ForceNormalLib)
+#endif
+#ifndef DebugLibXdmcp
+#define DebugLibXdmcp		NO	/* debugged XDMCP library */
+#endif
+#ifndef ProfileLibXdmcp
+#define ProfileLibXdmcp		NO	/* profiled XDMCP library */
+#endif
+      XDMCPLIBSRC = $(LIBSRC)/Xdmcp
+#if SharedLibXdmcp
+#ifndef SharedXdmcpRev
+#define SharedXdmcpRev 6.0
+#endif
+SharedLibReferences(XDMCP,Xdmcp,$(XDMCPLIBSRC),SOXDMCPREV,SharedXdmcpRev)
+#else
+ProjectUnsharedLibReferences(XDMCP,Xdmcp,$(XDMCPLIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXmu
+#define SharedLibXmu HasSharedLibraries
+#endif
+#ifndef NormalLibXmu
+#define NormalLibXmu (!SharedLibXmu | ForceNormalLib)
+#endif
+#ifndef DebugLibXmu
+#define DebugLibXmu		NO	/* debugged Xmu library */
+#endif
+#ifndef ProfileLibXmu
+#define ProfileLibXmu		NO	/* profiled Xmu library */
+#endif
+           XMUSRC = $(LIBSRC)/Xmu
+#if SharedLibXmu
+#ifndef SharedXmuRev
+#define SharedXmuRev 6.0
+#endif
+SharedDSLibReferences(XMU,Xmu,$(XMUSRC),SOXMUREV,SharedXmuRev)
+#else
+ProjectUnsharedLibReferences(XMU,Xmu,$(XMUSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedOldX
+#define SharedOldX HasSharedLibraries
+#endif
+#ifndef NormalOldX
+#define NormalOldX (!SharedOldX | ForceNormalLib)
+#endif
+#ifndef DebugOldX
+#define DebugOldX		NO	/* debugged old X library */
+#endif
+#ifndef ProfileOldX
+#define ProfileOldX		NO	/* profiled old X library */
+#endif
+       OLDXLIBSRC = $(LIBSRC)/oldX
+#if SharedOldX
+#ifndef SharedOldXRev
+#define SharedOldXRev 6.0
+#endif
+SharedLibReferences(OLDX,oldX,$(OLDXLIBSRC),SOOLDXREV,SharedOldXRev)
+#else
+ProjectUnsharedLibReferences(OLDX,oldX,$(OLDXLIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXp
+#define SharedLibXp HasSharedLibraries
+#endif
+#ifndef NormalLibXp
+#define NormalLibXp (!SharedLibXp | ForceNormalLib)
+#endif
+#ifndef DebugLibXp
+#define DebugLibXp              NO      /* debugged Xp library */
+#endif
+#ifndef ProfileLibXp
+#define ProfileLibXp            NO      /* profiled Xp library */
+#endif
+         XPLIBSRC = $(LIBSRC)/Xp
+#if SharedLibXp
+#ifndef SharedXpRev
+#define SharedXpRev 6.2
+#endif
+SharedLibReferences(XP,Xp,$(XPLIBSRC),SOXPREV,SharedXpRev)
+#else
+ProjectUnsharedLibReferences(XP,Xp,$(XPLIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXt
+#define SharedLibXt HasSharedLibraries
+#endif
+#ifndef NormalLibXt
+#define NormalLibXt (!SharedLibXt | ForceNormalLib)
+#endif
+#ifndef DebugLibXt
+#define DebugLibXt		NO	/* debugged toolkit library */
+#endif
+#ifndef ProfileLibXt
+#define ProfileLibXt		NO	/* profiled toolkit library */
+#endif
+       TOOLKITSRC = $(LIBSRC)/Xt
+#if SharedLibXt
+#ifndef SharedXtRev
+#define SharedXtRev 6.0
+#endif
+SharedDSLibReferences(XTOOLONLY,Xt,$(TOOLKITSRC),SOXTREV,SharedXtRev)
+#else
+ProjectUnsharedLibReferences(XTOOLONLY,Xt,$(TOOLKITSRC),XBuildLibDir)
+#endif
+      DEPXTOOLLIB = $(DEPXTOOLONLYLIB) $(DEPSMLIB) $(DEPICELIB)
+         XTOOLLIB = $(XTOOLONLYLIB) $(SMLIB) $(ICELIB)
+     LINTXTOOLLIB = $(LINTXTOOLONLYLIB)
+
+#ifndef SharedLibXa
+#define SharedLibXa	(HasSharedLibraries & HasCplusplus)
+#endif
+#ifndef NormalLibXa
+/* #define NormalLibXa	((!SharedLibXa | ForceNormalLib) & HasCplusplus) */
+#define NormalLibXa	YES /* needed for current tests, will correct later */
+#endif
+#ifndef DebugLibXa
+#define DebugLibXa	NO	/* debugged audio library */
+#endif
+#ifndef ProfileLibXa
+#define ProfileLibXa	NO	/* profiled audio library */
+#endif
+       XALIBSRC = $(LIBSRC)/Xa
+#if SharedLibXa
+#ifndef SharedXaRev
+#define SharedXaRev 1.0
+#endif
+SharedLibReferences(XA,Xa,$(XALIBSRC),SOXAREV,SharedXaRev)
+#else
+UnsharedLibReferences(XA,Xa,$(XALIBSRC))
+#endif
+
+#ifndef SharedLibXaw
+#define SharedLibXaw HasSharedLibraries
+#endif
+#ifndef NormalLibXaw
+#define NormalLibXaw (!SharedLibXaw | ForceNormalLib)
+#endif
+#ifndef DebugLibXaw
+#define DebugLibXaw		NO	/* debugged widget library */
+#endif
+#ifndef ProfileLibXaw
+#define ProfileLibXaw		NO	/* profiled widget library */
+#endif
+       AWIDGETSRC = $(LIBSRC)/Xaw
+#if SharedLibXaw
+#ifndef SharedXawRev
+#define SharedXawRev 6.1
+#endif
+SharedDSLibReferences(XAW,Xaw,$(AWIDGETSRC),SOXAWREV,SharedXawRev)
+#else
+ProjectUnsharedLibReferences(XAW,Xaw,$(AWIDGETSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXi
+#define SharedLibXi HasSharedLibraries
+#endif
+#ifndef NormalLibXi
+#define NormalLibXi (!SharedLibXi | ForceNormalLib)
+#endif
+#ifndef DebugLibXi
+#define DebugLibXi		NO	/* debugged Xi library */
+#endif
+#ifndef ProfileLibXi
+#define ProfileLibXi		NO	/* profiled Xi library */
+#endif
+         XILIBSRC = $(LIBSRC)/Xi
+#if SharedLibXi
+#ifndef SharedXiRev
+#define SharedXiRev 6.0
+#endif
+SharedLibReferences(XI,Xi,$(XILIBSRC),SOXINPUTREV,SharedXiRev)
+#else
+ProjectUnsharedLibReferences(XI,Xi,$(XILIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXtst
+#define SharedLibXtst HasSharedLibraries
+#endif
+#ifndef NormalLibXtst
+#define NormalLibXtst (!SharedLibXtst | ForceNormalLib)
+#endif
+#ifndef DebugLibXtst
+#define DebugLibXtst		NO	/* debugged Xtst library */
+#endif
+#ifndef ProfileLibXtst
+#define ProfileLibXtst		NO	/* profiled Xtst library */
+#endif
+      XTESTLIBSRC = $(LIBSRC)/Xtst
+#if SharedLibXtst
+#ifndef SharedXtstRev
+#define SharedXtstRev 6.1
+#endif
+SharedLibReferences(XTEST,Xtst,$(XTESTLIBSRC),SOXTESTREV,SharedXtstRev)
+#else
+ProjectUnsharedLibReferences(XTEST,Xtst,$(XTESTLIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibPex
+#define SharedLibPex HasSharedLibraries
+#endif
+#ifndef NormalLibPex
+#define NormalLibPex (!SharedLibPex | ForceNormalLib)
+#endif
+#ifndef DebugLibPex
+#define DebugLibPex		NO	/* debugged PEX5 library */
+#endif
+#ifndef ProfileLibPex
+#define ProfileLibPex		NO	/* profiled PEX5 library */
+#endif
+        PEXLIBSRC = $(LIBSRC)/PEX5
+#if SharedLibPex
+#ifndef SharedPexRev
+#define SharedPexRev 6.0
+#endif
+SharedLibReferences(PEX,PEX5,$(PEXLIBSRC),SOPEXREV,SharedPexRev)
+#else
+ProjectUnsharedLibReferences(PEX,PEX5,$(PEXLIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXie
+#define SharedLibXie HasSharedLibraries
+#endif
+#ifndef NormalLibXie
+#define NormalLibXie (!SharedLibXie | ForceNormalLib)
+#endif
+#ifndef DebugLibXie
+#define DebugLibXie		NO	/* debugged XIE library */
+#endif
+#ifndef ProfileLibXie
+#define ProfileLibXie		NO	/* profiled XIE library */
+#endif
+        XIELIBSRC = $(LIBSRC)/XIE
+#if SharedLibXie
+#ifndef SharedXieRev
+#define SharedXieRev 6.0
+#endif
+SharedLibReferences(XIE,XIE,$(XIELIBSRC),SOXIEREV,SharedXieRev)
+#else
+ProjectUnsharedLibReferences(XIE,XIE,$(XIELIBSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibPhigs
+#define SharedLibPhigs NO	/* XXX - haven't made it sharable yet */
+#endif
+#ifndef NormalLibPhigs
+#define NormalLibPhigs (!SharedLibPhigs | ForceNormalLib)
+#endif
+      PHIGSLIBSRC = $(LIBSRC)/PHIGS
+#if SharedLibPhigs
+#ifndef SharedPhigsRev
+#define SharedPhigsRev 6.0
+#endif
+SharedLibReferences(PHIGS,phigs,$(PHIGSLIBSRC),SOPHIGSREV,SharedPhigsRev)
+#else
+ProjectUnsharedLibReferences(PHIGS,phigs,$(PHIGSLIBSRC),XBuildLibDir)
+#endif
+
+ProjectUnsharedLibReferences(XBSD,Xbsd,$(LIBSRC)/Xbsd,XBuildLibDir)
+
+#ifndef SharedLibICE
+#define SharedLibICE HasSharedLibraries
+#endif
+#ifndef NormalLibICE
+#define NormalLibICE (!SharedLibICE | ForceNormalLib)
+#endif
+#ifndef DebugLibICE
+#define DebugLibICE		NO	/* debugged ICE library */
+#endif
+#ifndef ProfileLibICE
+#define ProfileLibICE		NO	/* profiled ICE library */
+#endif
+           ICESRC = $(LIBSRC)/ICE
+#if SharedLibICE
+#ifndef SharedICERev
+#define SharedICERev 6.3
+#endif
+SharedLibReferences(ICE,ICE,$(ICESRC),SOICEREV,SharedICERev)
+#else
+ProjectUnsharedLibReferences(ICE,ICE,$(ICESRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibSM
+#define SharedLibSM HasSharedLibraries
+#endif
+#ifndef NormalLibSM
+#define NormalLibSM (!SharedLibSM | ForceNormalLib)
+#endif
+#ifndef DebugLibSM
+#define DebugLibSM		NO	/* debugged SM library */
+#endif
+#ifndef ProfileLibSM
+#define ProfileLibSM		NO	/* profiled SM library */
+#endif
+            SMSRC = $(LIBSRC)/SM
+#if SharedLibSM
+#ifndef SharedSMRev
+#define SharedSMRev 6.0
+#endif
+SharedLibReferences(SM,SM,$(SMSRC),SOSMREV,SharedSMRev)
+#else
+ProjectUnsharedLibReferences(SM,SM,$(SMSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibXkey
+#define SharedLibXkey HasSharedLibraries
+#endif
+#ifndef NormalLibXkey
+#define NormalLibXkey (!SharedLibXkey | ForceNormalLib)
+#endif
+#ifndef DebugLibXkey
+#define DebugLibXkey		NO	/* debugged Xkey library */
+#endif
+#ifndef ProfileLibXkey
+#define ProfileLibXkey		NO	/* profiled Xkey library */
+#endif
+           XKEYSRC = $(LIBSRC)/Xkey
+#if SharedLibXkey
+#ifndef SharedXkeyRev
+#define SharedXkeyRev 6.0
+#endif
+SharedLibReferences(XKEY,Xkey,$(XKEYSRC),SOXKEYREV,SharedXkeyRev)
+#else
+ProjectUnsharedLibReferences(XKEY,Xkey,$(XKEYSRC),XBuildLibDir)
+#endif
+
+#ifndef SharedLibFS
+#define SharedLibFS		NO	/* for now */
+#endif
+#ifndef NormalLibFS
+#define NormalLibFS (!SharedLibFS | ForceNormalLib)
+#endif
+#ifndef DebugLibFS
+#define DebugLibFS		NO	/* debugged FS library */
+#endif
+#ifndef ProfileLibFS
+#define ProfileLibFS		NO	/* profiled FS library */
+#endif
+         FSLIBSRC = $(LIBSRC)/FS
+#if SharedLibFS
+#ifndef SharedFSRev
+#define SharedFSRev 6.0
+#endif
+SharedLibReferences(FS,FS,$(FSLIBSRC),SOFSREV,SharedFSRev)
+#else
+ProjectUnsharedLibReferences(FS,FS,$(FSLIBSRC),XBuildLibDir)
+#endif
+
+         FONTLIBSRC = $(LIBSRC)/font
+ProjectUnsharedLibReferences(FONT,font,$(FONTLIBSRC),XBuildLibDir)
+
+#ifdef BuildXKBlib
+    XKBFILELIBSRC = $(LIBSRC)/xkbfile
+ProjectUnsharedLibReferences(XKBFILE,xkbfile,$(XKBFILELIBSRC),XBuildLibDir)
+#ifndef XkbClientDepLibs
+#if UseXKBInClients
+#define XkbClientDepLibs $(DEPXKBFILELIB)
+#else
+#define XkbClientDepLibs /**/
+#endif
+#endif
+#ifndef XkbClientLibs
+#if UseXKBInClients
+#define XkbClientLibs $(XKBFILELIB)
+#else
+#define XkbClientLibs /**/
+#endif
+#endif
+#ifdef UseInstalled
+     XKBCOMPCMD = xkbcomp                       /* assume BINDIR in path */
+#else
+     XKBCOMPSRC = $(PROGRAMSRC)/xkbcomp
+     XKBCOMPCMD = $(CLIENTENVSETUP) $(XKBCOMPSRC)/xkbcomp
+#endif
+#else /* !BuildXKBlib */
+#ifndef XkbClientDepLibs
+#define XkbClientDepLibs
+#endif
+#ifndef XkbClientLibs
+#define XkbClientLibs
+#endif
+#endif /* BuildXKBlib */
+
+#ifndef XawClientDepLibs
+#define XawClientDepLibs $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
+#endif
+#ifndef XawClientLibs
+#define XawClientLibs $(XAWLIB) $(XMULIB) $(XTOOLLIB) $(XLIB)
+#endif
+
+#ifndef NeedDefaultDepLibs
+#define NeedDefaultDepLibs YES
+#endif
+
+#if NeedDefaultDepLibs
+/*
+ * Individual libraries should override this
+ */
+#if HasSharedLibraries || defined(UseInstalled)
+          DEPLIBS = $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
+#else
+          DEPLIBS = $(LOCAL_LIBRARIES)
+#endif
+         DEPLIBS1 = $(DEPLIBS)
+         DEPLIBS2 = $(DEPLIBS)
+         DEPLIBS3 = $(DEPLIBS)
+         DEPLIBS4 = $(DEPLIBS)
+         DEPLIBS5 = $(DEPLIBS)
+         DEPLIBS6 = $(DEPLIBS)
+         DEPLIBS7 = $(DEPLIBS)
+         DEPLIBS8 = $(DEPLIBS)
+         DEPLIBS9 = $(DEPLIBS)
+         DEPLIBS10 = $(DEPLIBS)
+#endif /* NeedDefaultDepLibs */
+
+
+/*
+ * InstallAppDefaults - simple rules to install application default file
+ */
+#ifndef InstallAppDefaults
+#define InstallAppDefaults(class) InstallAppDefaultsLong(class,class)
+#endif /* InstallAppDefaults */
+
+/*
+ * InstallAppDefaultsLong - general rule to install application default file
+ * if the InstallAppDefFiles configuration parameter is set.
+ */
+#ifndef InstallAppDefaultsLong
+#if InstallAppDefFiles
+#define InstallAppDefaultsLong(file,class)				@@\
+InstallNamedTarget(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class)
+#else
+#define InstallAppDefaultsLong(file,class)				@@\
+InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class)
+#endif /* InstallAppDefFiles */
+#endif /* InstallAppDefaultsLong */
+
+/*
+ * MakeFontsDir - generate rules to build fonts.dir database.
+ */
+#ifndef MakeFontsDir
+#define MakeFontsDir(deplist)						@@\
+all:: fonts.dir								@@\
+									@@\
+fonts.dir:  deplist							@@\
+	RunProgram(MKFONTDIR,.)						@@\
+									@@\
+clean::									@@\
+	RemoveFile(fonts.dir)
+#endif /* MakeFontsDir */
+
+
+/*
+ * MakeFonts - generate rules to build font database.
+ */
+#ifndef MakeFonts
+#define MakeFonts()							@@\
+all::  $(OBJS)								@@\
+									@@\
+MakeFontsDir($(OBJS))							@@\
+									@@\
+clean::									@@\
+	RemoveFiles(*.pcf *.pcf.Z *.pcf.gz)
+#endif /* MakeFonts */
+
+
+/*
+ * InstallFontObjs - generate rules to install font files
+ */
+#ifndef InstallFontObjs
+#define InstallFontObjs(objs,dest)					@@\
+InstallMultipleFlags(objs,dest,$(INSTDATFLAGS))				@@\
+									@@\
+InstallTarget(install,fonts.dir,$(INSTDATFLAGS),dest)
+#endif /* InstallFontObjs */
+
+
+/*
+ * InstallFonts - generate rules to install font files
+ */
+#ifndef InstallFonts
+#define InstallFonts(dest)						@@\
+InstallFontObjs($(OBJS),dest)
+#endif /* InstallFonts */
+
+
+/*
+ * InstallFontAliases - generate rules to install font aliases databases. 
+ */
+#ifndef InstallFontAliases
+#define InstallFontAliases(dest)					@@\
+InstallTarget(install,fonts.alias,$(INSTDATFLAGS),dest)
+#endif /* InstallFontAliases */
+
+#ifndef FontSrc
+#define FontSrc(basename) basename.bdf
+#endif
+
+#ifndef FontBaseObj
+#define FontBaseObj(basename)basename.pcf
+#endif
+
+/*
+ * InstallFontScale - generate rules to install font scale database.
+ */
+#ifndef InstallFontScale
+#define InstallFontScale(dest)						@@\
+InstallTarget(install,fonts.scale,$(INSTDATFLAGS),dest)
+#endif /* InstallFontScale */
+
+/*
+ * UncompressedFontTarget
+ */
+#ifndef UncompressedFontTarget
+#define UncompressedFontTarget(basename)				@@\
+FontBaseObj(basename):  FontSrc(basename)				@@\
+	RunProgram(FONTC,$(FONTCFLAGS) $? -o $@)
+#endif /* UncompressedFontTarget */
+
+/*
+ * CompressedFontTarget
+ */
+#ifndef GzipFontCompression
+#define GzipFontCompression NO
+#endif
+
+#ifndef CompressedFontTarget
+#if GzipFontCompression
+#define CompressedFontTarget(basename)					@@\
+FontBaseObj(basename).gz:  FontSrc(basename)				@@\
+	RunProgram(FONTC,$(FONTCFLAGS) $?) | $(GZIP) > $@
+#else
+#define CompressedFontTarget(basename)					@@\
+FontBaseObj(basename).Z:  FontSrc(basename)				@@\
+	RunProgram(FONTC,$(FONTCFLAGS) $?) | $(COMPRESS) > $@
+#endif
+#endif /* CompressedFontTarget */
+
+#ifdef CompressAllFonts
+#define FontTarget(basename) CompressedFontTarget(basename)
+#if GzipFontCompression
+#define FontObj(basename) FontBaseObj(basename).gz
+#else
+#define FontObj(basename) FontBaseObj(basename).Z
+#endif
+#else
+#define FontTarget(basename) UncompressedFontTarget(basename)
+#define FontObj(basename) FontBaseObj(basename)
+#endif /* CompressAllFonts */
+
+/*
+ * MakeXkbDir
+ */
+#ifndef MakeXkbDir
+#define MakeXkbDir(basedir,subdir)					@@\
+all::   Concat(subdir,.dir)						@@\
+									@@\
+Concat(subdir,.dir):							@@\
+	$(XKBCOMPCMD) -lfhlpR -o Concat(subdir,.dir) '*'		@@\
+									@@\
+InstallTarget(install,Concat(subdir,.dir),$(INSTDATFLAGS),basedir)
+#endif
+
+/*
+ * PostProcessTroffPS - by default moves the working output into place,
+ * but can be a hook for more complicated post-processing.
+ */
+#ifndef PostProcessTroffPS
+#define PostProcessTroffPS(temp,real) $(MV) temp real
+#endif
+
+#ifndef MakeSimpleDoc
+#define MakeSimpleDoc(file,srcs)					@@\
+all:: file.PS								@@\
+.PRECIOUS: file.PS							@@\
+									@@\
+file.PS: srcs								@@\
+	-$(TROFF) $(MSMACROS) $(XDOCMACROS) srcs 2> index.raw > file.nPS \@@\
+	&& PostProcessTroffPS(file.nPS,$@)				@@\
+	@if grep '^[^1-9.]' index.raw; then exit 1; else test $$? = 1; fi @@\
+									@@\
+file.txt: srcs								@@\
+	$(NROFF) $(MSMACROS) $(XDOCMACROS) srcs 2> index.raw > $@	@@\
+									@@\
+clean::									@@\
+	$(RM) index.raw file.nPS file.PS file.txt
+#endif
+
+#ifndef MakeTblDoc
+#define MakeTblDoc(file,srcs)						@@\
+all:: file.PS								@@\
+.PRECIOUS: file.PS							@@\
+									@@\
+file.PS: srcs								@@\
+	-$(TBL) $(XDOCMACROS) srcs | $(TROFF) $(MSMACROS) 2> index.raw > file.nPS \@@\
+	&& PostProcessTroffPS(file.nPS,$@)				@@\
+	@if grep '^[^1-9.]' index.raw; then exit 1; else test $$? = 1; fi @@\
+									@@\
+file.txt: srcs								@@\
+	$(TBL) $(XDOCMACROS) srcs | $(NROFF) $(MSMACROS) 2> index.raw | $(COL) > $@	@@\
+									@@\
+clean::									@@\
+	$(RM) index.raw file.nPS file.PS file.txt
+#endif
+
+#ifndef MakeEqnDoc
+#define MakeEqnDoc(file,srcs)						@@\
+all:: file.PS								@@\
+.PRECIOUS: file.PS							@@\
+									@@\
+file.PS: srcs								@@\
+	-$(TBL) $(XDOCMACROS) srcs | $(EQN) | $(TROFF) $(MSMACROS) 2> index.raw > file.nPS \@@\
+	&& PostProcessTroffPS(file.nPS,$@)				@@\
+	@if grep '^[^1-9.]' index.raw; then exit 1; else test $$? = 1; fi @@\
+									@@\
+file.txt: srcs								@@\
+	$(TBL) $(XDOCMACROS) srcs | $(NEQN) | $(NROFF) $(MSMACROS) 2> index.raw | $(COL) > $@ @@\
+									@@\
+clean::									@@\
+	$(RM) index.raw file.nPS file.PS file.txt
+#endif
+
+#ifndef MakeDocIndex
+#define MakeDocIndex(file,srcs)						@@\
+all:: file.idx.PS							@@\
+									@@\
+file.idx.PS: srcs index.raw						@@\
+	tail -1 index.raw > index.pageno				@@\
+	grep '^[1-9]' index.raw | sort -f '-t:' +1 -3 +0n -1n | awk -f $(DOCUTILSRC)/fixindex.awk | awk -f $(DOCUTILSRC)/block.awk > index.troff @@\
+	cat srcs $(XIDXMACROS) index.troff | $(TROFF) -me > file.idx.nPS \@@\
+	&& $(MV) file.idx.nPS $@					@@\
+	$(RM) index.troff index.pageno					@@\
+									@@\
+clean::									@@\
+	$(RM) index.troff index.pageno file.idx.nPS file.idx.PS
+#endif
+
+#ifndef MakeLatexDoc
+#if HasLatex
+#define MakeLatexDoc(file,src)	 					@@\
+all:: file.PS								@@\
+									@@\
+file.dvi: src	  							@@\
+	$(LATEX) src							@@\
+									@@\
+file.PS: file.dvi							@@\
+	$(DVIPS) -o file.nPS file && $(MV) file.nPS $@			@@\
+									@@\
+clean:: 								@@\
+	RemoveFiles(file.nPS file.PS file.dvi file.log)			@@\
+	RemoveFiles(file.aux file.toc file.lof file.lot)
+#else /* HasLatex */
+#define MakeLatexDoc(file,src)	 					@@\
+all::									@@\
+file.PS: src								@@\
+	@echo "cannot make file.PS: no latex on this system"; exit 1
+#endif /* HasLatex (else) */
+#endif /* MakeLatexDoc */

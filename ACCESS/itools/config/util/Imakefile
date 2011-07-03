@@ -1,0 +1,117 @@
+XCOMM BASED ON
+XCOMM $XConsortium: Imakefile /main/16 1996/11/13 14:43:28 lehors $
+
+/*
+ * IMPORTANT:
+ * Take a look at the extras.tmpl file and make any changes that
+ * are appropriate for your system.
+ */
+
+#include "../extras/extras.tmpl"
+
+               CC =$(NATIVECC)
+           CFLAGS = $(CCOPTIONS) $(CCEXTRAOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) $(PROJECT_INCLUDES)
+          DEPLIBS =
+#ifndef Win32Architecture
+  EXTRA_LIBRARIES =
+#endif
+
+XCOMM Some compilers generate fatal errors if an -L directory does
+XCOMM not exist.  Since BUILDLIBDIR may not exist yet suppress its use.
+         LDPRELIB =
+        LDPRELIBS =
+
+all::
+
+/*
+#if HasSymLinks
+        LNDIRSRCS = lndir.c
+        LNDIROBJS = lndir.o
+AllTarget(ProgramTargetName(lndir))
+NormalProgramTarget(lndir,$(LNDIROBJS),NullParameter,NullParameter,NullParameter)
+install:: Concat(install.,ProgramTargetName(lndir))
+InstallMultipleDestFlags(install.ProgramTargetName(lndir),ProgramTargetName(lndir),$(ETCDIR),$(INSTBINFLAGS))
+InstallManPage(lndir,$(MANDIR))
+#endif
+*/
+
+/*
+#if defined(Win32Architecture) || UsePerlXmkmf
+PerlScriptTarget(xmkmf,xmkmf.pl,NullParameter)
+#else
+AllTarget(ProgramTargetName(xmkmf))
+CppScriptTarget(ProgramTargetName(xmkmf),xmkmf.cpp,-DETCDIR='"'"$(ETCDIR)"'"' -DCONFIGDIRSPEC='"'"-I$(CONFIGDIR)"'"',$(ICONFIGFILES))
+install:: Concat(install.,ProgramTargetName(xmkmf))
+InstallMultipleDestFlags(install.ProgramTargetName(xmkmf),ProgramTargetName(xmkmf),$(ETCDIR),$(INSTBINFLAGS))
+#endif
+InstallManPage(xmkmf,$(MANDIR))
+*/
+
+#if defined(Win32Architecture) || UsePerlXmkmf
+PerlScriptTarget(accmkmf,accmkmf.pl,NullParameter)
+#else
+AllTarget(ProgramTargetName(accmkmf))
+install:: Concat(install.,ProgramTargetName(accmkmf))
+CppScriptTarget(ProgramTargetName(accmkmf),accmkmf.cpp,-DETCDIR='"'"$(ETCDIR)"'"' -DCONFIGDIRSPEC='"'"-I$(CONFIGDIR)"'"',$(ICONFIGFILES))
+InstallMultipleDestFlags(install.ProgramTargetName(accmkmf),ProgramTargetName(accmkmf),$(ETCDIR),$(INSTBINFLAGS))
+#endif
+InstallManPage(accmkmf,$(MANDIR))
+
+#ifdef Win32Architecture
+    MKDIRHIERSRCS = mkdirhier.c
+    MKDIRHIEROBJS = mkdirhier.o
+AllTarget(ProgramTargetName(mkdirhier))
+NormalProgramTarget(mkdirhier,$(MKDIRHIEROBJS),NullParameter,NullParameter,NullParameter)
+#else
+AllTarget(ProgramTargetName(mkdirhier))
+ProgramTargetName(mkdirhier):: mkdirhier.sh
+	$(CP) mkdirhier.sh ProgramTargetName(mkdirhier)
+	chmod a+x ProgramTargetName(mkdirhier)
+clean::
+	RemoveFile(ProgramTargetName(mkdirhier))
+#endif
+install:: Concat(install.,ProgramTargetName(mkdirhier))
+InstallMultipleDestFlags(install.ProgramTargetName(mkdirhier),ProgramTargetName(mkdirhier),$(ETCDIR),$(INSTBINFLAGS))
+InstallManPage(mkdirhier,$(MANDIR))
+
+#if UseCCMakeDepend
+AllTarget(ProgramTargetName(makedepend))
+CppScriptTarget(ProgramTargetName(makedepend),mdepend.cpp,-DPREPROC='"'"$(PREPROCESSCMD)"'"',$(ICONFIGFILES))
+install:: Concat(install.,ProgramTargetName(makedepend))
+InstallMultipleDestFlags(install.ProgramTargetName(makedepend),ProgramTargetName(makedepend),$(BINDIR),$(INSTBINFLAGS))
+#endif
+
+#if SystemV || SystemV4
+AllTarget(ProgramTargetName(bsdinst))
+ProgramTargetName(bsdinst):: bsdinst.sh
+	$(CP) bsdinst.sh ProgramTargetName(bsdinst)
+	chmod a+x ProgramTargetName(bsdinst)
+clean::
+	RemoveFile(ProgramTargetName(bsdinst))
+install:: Concat(install.,ProgramTargetName(bsdinst))
+InstallMultipleDestFlags(install.ProgramTargetName(bsdinst),ProgramTargetName(bsdinst),$(ETCDIR),$(INSTBINFLAGS))
+
+AllTarget(ProgramTargetName(installsh))
+ProgramTargetName(installsh):: install.sh
+	$(CP) install.sh ProgramTargetName(installsh)
+	chmod a+x ProgramTargetName(installsh)
+clean::
+	RemoveFile(ProgramTargetName(install))
+install:: Concat(install.,ProgramTargetName(installsh))
+InstallMultipleDestFlags(install.ProgramTargetName(installsh),ProgramTargetName(installsh),$(ETCDIR),$(INSTBINFLAGS))
+#endif
+
+#if defined(CrossCougarArchitecture) || defined(CrossLinuxArchitecture)
+AllTarget(ProgramTargetName(installsh))
+ProgramTargetName(installsh):: install.sh
+	$(CP) install.sh ProgramTargetName(installsh)
+	chmod a+x ProgramTargetName(installsh)
+clean::
+	RemoveFile(ProgramTargetName(install))
+install:: Concat(install.,ProgramTargetName(installsh))
+InstallMultipleDestFlags(install.ProgramTargetName(installsh),ProgramTargetName(installsh),$(ETCDIR),$(INSTBINFLAGS))
+#endif
+
+             SRCS = $(LNDIRSRCS) $(MKDIRHIERSRCS)
+
+DependTarget()

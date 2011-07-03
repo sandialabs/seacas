@@ -1,0 +1,72 @@
+XCOMM WARNING -- Totally untested ****************
+XCOMM  MUST LOAD CORRECT PRGENV MODULES...
+
+#define Build64BitAccess YES
+#define Parallel 1
+
+#define RSC-C2
+
+#define OSMajorVersion		0
+#define OSMinorVersion		0
+#define OSTeenyVersion		0
+
+#define System CATAMOUNT
+
+/*----------------------------------------------------- */
+#define X11Includes -I/usr/include/X11
+#define X11Lib -L/usr/lib/X11 -lX11
+
+#define InstallCmd        install
+#define NeedsGetSubopt YES
+#define NeedsDoubleEscape YES
+#define NeedsParallelnem_join YES
+#define NeedsParallelnem_spread YES
+#define TempDir /tmp
+#define NumProcs 4
+#define SerialDebugCmd "debug"
+
+#define BootstrapCFlags -DREDS
+#define CppNoLineInfoOption -P
+#define CcCmd cc
+#define CplusplusCmd CC
+#define ArCmd ar cr
+#define FortranCmd ftn
+#define Fortran90Cmd ftn
+#define F90ExtraLdOptions -lf
+#define CppCmd /usr/mach/lib/cpp
+#define PreProcessCmd /usr/mach/lib/cpp
+#define DoRanlibCmd NO
+#define StandardDefines -DREDS -DADDC_ -DBuild64
+
+#define DefaultF77DebugFlags -O2
+#define DefaultF90DebugFlags -O2
+#define DefaultCDebugFlags -O2
+
+#define DefaultCCOptions
+#define DefaultF77Options
+#define DefaultF90Options
+#define ExtraLoadOptions
+
+#define ParallelCCOptions -REDS
+#define ParallelF77Options -REDS
+#define ParallelF90Options -REDS
+#define ParallelExtraLoadOptions -REDS
+#define ParallelCcCmd		cc
+#define ParallelCplusplusCmd	CC
+#define ParallelFortranCmd      ftn
+#define ParallelFortran90Cmd	ftn
+
+#define NPCmd -sz
+#define ParRunCmd "yod"
+#define ParFLibs -lmpi
+#define ParCLibs -lmpi
+#define ParDebugCmdSngl "debug"
+#define ParDebugCmdMult "debug"
+
+#ifndef Use32BitAddress
+#define Use32BitAddress YES
+#endif
+
+#define HasMPI YES
+#define MPIIncludePath /cougar/include
+#define MPILibPath /cougar/lib/puma

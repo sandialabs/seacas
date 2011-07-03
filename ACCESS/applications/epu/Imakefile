@@ -1,0 +1,26 @@
+XCOMM $Id: Imakefile,v 1.3 2009/06/09 20:49:39 gdsjaar Exp $
+CODE = epu
+
+#if defined(CrossLinuxArchitecture)
+CXXSTD_DEFINES = -Dlinux -D__alpha__ -DADDC_ $(CXXPROJECT_DEFINES)
+#endif
+
+#if defined SGIArchitecture
+CXXEXTRA_DEFINES = -LANG:std
+LOCAL_LDFLAGS = -LANG:std
+#endif
+
+LIBS = $(EXOIIV2C) $(NETCDF) -lm
+
+SRCS =	Excn_ExodusFile.C Excn_GetLongOpt.C \
+	Excn_Internals.C Excn_ParallelDisks.C \
+	Excn_SystemInterface.C Main_SierraConcat.C \
+	smart_assert.C add_to_log.C timer.C to_string.C
+
+OBJS = $(SRCS:.C=.o)
+
+NormalCCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+
+InstallNamedTarget(install,$(CODE),NullParameter,$(BINDIR),$(CODE))
+
+DependTarget()

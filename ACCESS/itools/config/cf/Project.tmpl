@@ -1,0 +1,405 @@
+XCOMM ----------------------------------------------------------------------
+XCOMM X Window System Build Parameters and Rules
+XCOMM $XConsortium: Project.tmpl /main/r61_main/6 1996/01/15 12:26:59 gildea $
+
+/***************************************************************************
+ *                                                                         *
+ *                            DEFAULT DEFINITONS                           *
+ *                                                                         *
+ * The following section contains defaults for things that can             *
+ * overridden in the various *.cf and site.def files.  DO NOT EDIT!        *
+ *                                                                         *
+ **************************************************************************/
+
+#define ProjectX		6	/* do *not* change this line */
+
+/* The following project-specific rules are defined at the end of this file:
+ *
+ * InstallAppDefaults		(class)
+ * InstallAppDefaultsLong	(file,class)
+ * MakeFontsDir			(deplist)
+ * MakeFonts			()
+ * InstallFontObjs		(objs,dest)
+ * InstallFonts			(dest)
+ * InstallFontAliases		(dest)
+ * FontSrc			(basename)
+ * FontBaseObj			(basename)
+ * InstallFontScale		(dest)
+ * UncompressedFontTarget	(basename)
+ * CompressedFontTarget		(basename)
+ * FontTarget			(basename)
+ * FontObj			(basename)
+ */
+
+/*
+ * X-specific things
+ */
+#ifndef HasXServer
+#define HasXServer		YES
+#endif
+#ifndef BuildServer
+#define BuildServer		HasXServer
+#endif
+#ifndef XServerThreaded
+#define XServerThreaded		NO	/* turn on threads in merged server */
+#endif
+#ifndef BuildFontServer
+#define BuildFontServer		YES
+#endif
+#ifndef BuildFonts
+#define BuildFonts		(BuildServer | BuildFontServer)
+#endif
+#ifndef BuildPhigs
+#define BuildPhigs		NO
+#endif
+#ifndef BuildPexExt
+#define BuildPexExt		YES
+#endif
+#ifndef BuildXInputExt
+#define BuildXInputExt		NO
+#endif
+#ifndef BuildDIS
+#define BuildDIS		NO
+#endif
+#ifndef BuildXIE
+#define BuildXIE		YES
+#endif
+#ifndef BuildXKB
+#define BuildXKB		YES
+#endif
+#ifndef BuildXKBlib
+#define BuildXKBlib		YES
+#endif
+	/*
+	 * WARNING: Setting UseXKBInClients to YES cause incompatibilities
+	 *          between many clients (such as xterm) and pre-XKB shared
+	 *          libraries.
+	 */
+#ifndef UseXKBInClients
+#define	UseXKBInClients		NO	/* use XKB in "normal" clients? */
+#endif
+#ifndef BuildDBE
+#define BuildDBE		YES
+#endif
+#ifndef BuildMultibuffer
+#define BuildMultibuffer	NO
+#endif
+#ifndef BuildRECORD
+#define BuildRECORD		YES
+#endif
+#ifndef InstallLibManPages
+#define InstallLibManPages	YES
+#endif
+#ifndef InstallXtermSetUID
+#define InstallXtermSetUID	YES	/* xterm needs to be set uid */
+#endif
+#ifndef InstallXinitConfig
+#define InstallXinitConfig	NO	/* install sample xinit config */
+#endif
+#ifndef InstallXdmConfig
+#define InstallXdmConfig	NO	/* install sample xdm config */
+#endif
+#ifndef XdmServersType			/* what Xservers files to use */
+#if BuildServer
+#define XdmServersType ws
+#else
+#define XdmServersType fs
+#endif
+#endif
+#ifndef InstallFSConfig
+#define InstallFSConfig		NO	/* install sample fs config */
+#endif
+#ifndef InstallAppDefFiles
+#define InstallAppDefFiles	YES	/* install application defaults */
+#endif
+#ifndef ThreadedX
+#if HasPosixThreads || HasCThreads
+#define ThreadedX		YES	/* multi-threaded libraries */
+#else
+#define ThreadedX		NO
+#endif
+#endif
+#ifndef ThreadedProject
+#define ThreadedProject ThreadedX
+#endif
+#ifndef HasWChar32
+#define HasWChar32		SystemV4
+#endif
+#ifndef HasXdmAuth
+#define HasXdmAuth		NO	/* if you can not use XDM-AUTH* */
+#endif
+#ifndef PrimaryScreenResolution
+#define PrimaryScreenResolution 72		/* a common resolution */
+#endif
+#ifndef UseRgbTxt
+#define UseRgbTxt		NO	/* default is to compile with dbm */
+#endif
+#ifndef FontCompilerFlags
+#define FontCompilerFlags -t
+#endif
+#ifndef ConnectionFlags
+#if HasStreams
+#define ConnectionFlags -DSTREAMSCONN
+#else
+#if HasDECnet
+#define ConnectionFlags -DTCPCONN -DUNIXCONN -DDNETCONN
+#else
+#define ConnectionFlags -DTCPCONN -DUNIXCONN
+#endif
+#endif
+#endif
+#ifndef ProjectThreadsDefines
+#define ProjectThreadsDefines -DXTHREADS
+#endif
+#ifndef FontOSDefines
+#define FontOSDefines /**/
+#endif
+#ifndef FontDefines
+#define FontDefines -DFONT_SNF -DFONT_BDF -DFONT_PCF -DCOMPRESSED_FONTS FontOSDefines
+#endif
+#ifndef XawI18nDefines
+#if SystemV4
+#define XawI18nDefines -DHAS_WCTYPE_H
+#else
+#define XawI18nDefines -DUSE_XWCHAR_STRING
+#endif
+#endif
+#ifndef ExtensionOSDefines
+#define ExtensionOSDefines /**/
+#endif
+#ifndef ExtensionDefines
+#ifndef PexDefines
+#if BuildPexExt
+#define PexDefines -DPEXEXT
+#else
+#define PexDefines /**/
+#endif
+#endif
+#ifndef ShmDefines
+#if HasShm
+#define ShmDefines -DMITSHM
+#else
+#define ShmDefines /**/
+#endif
+#endif
+#ifndef XInputDefines
+#if BuildXInputExt
+#define XInputDefines -DXINPUT
+#else
+#define XInputDefines /**/
+#endif
+#endif
+#ifndef XieDefines
+#if BuildXIE
+#define XieDefines -DXIE
+#else
+#define XieDefines /**/
+#endif
+#endif
+#ifndef XkbDefines
+#if BuildXKB
+#define XkbDefines -DXKB
+#else
+#define XkbDefines /**/
+#endif
+#endif
+#ifndef XkbClientDefines
+#if UseXKBInClients
+#define XkbClientDefines -DXKB
+#else
+#define XkbClientDefines /**/
+#endif
+#endif
+#ifndef XkbServerDefines
+#define XkbServerDefines /**/
+#endif
+#ifndef BigReqDefines
+#define BigReqDefines -DBIGREQS
+#endif
+
+#ifndef DBEDefines
+#if BuildDBE
+#define DBEDefines -DDBE
+#else
+#define DBEDefines /**/
+#endif
+#endif
+
+#ifndef PervasiveDBEDefines
+#define PervasiveDBEDefines /* -DNEED_DBE_BUF_BITS -DNEED_DBE_BUF_VALIDATE */
+#endif
+
+#ifndef MultibufferDefines
+#if BuildMultibuffer
+#define MultibufferDefines -DMULTIBUFFER
+#else
+#define MultibufferDefines /**/
+#endif
+#endif
+
+#ifndef VidTuneExtensionDefines
+#define VidTuneExtensionDefines /**/
+#endif
+
+#ifndef RECORDDefines
+#if BuildRECORD
+#define RECORDDefines -DXRECORD
+#else
+#define RECORDDefines /**/
+#endif
+#endif
+
+#ifndef SitePervasiveExtensionDefines
+#define SitePervasiveExtensionDefines /**/
+#endif
+#ifndef PervasiveExtensionDefines
+#define PervasiveExtensionDefines -DSHAPE XInputDefines XkbDefines PervasiveDBEDefines SitePervasiveExtensionDefines
+#endif
+#ifndef SiteExtensionDefines
+#define SiteExtensionDefines /**/
+#endif
+#ifndef BaseExtensionDefines
+#define BaseExtensionDefines MultibufferDefines -DMITMISC -DXTEST -DXSYNC -DXCMISC RECORDDefines PexDefines ShmDefines XieDefines BigReqDefines VidTuneExtensionDefines DBEDefines SiteExtensionDefines
+#endif
+#define ExtensionDefines BaseExtensionDefines ExtensionOSDefines
+#endif
+#ifndef ServerXdmcpDefines
+#define ServerXdmcpDefines -DXDMCP
+#endif
+#ifndef ServerOSDefines
+#define ServerOSDefines /**/
+#endif
+#if HasKrb5
+#ifndef Krb5Defines
+#define Krb5Defines -DK5AUTH
+#endif
+#else
+#define Krb5Defines /**/
+#endif
+#ifndef ServerExtraDefines
+#define ServerExtraDefines /* -DPIXPRIV */
+#endif
+#ifndef ServerDefines
+#define ServerDefines StandardDefines PervasiveExtensionDefines ServerExtraDefines
+#endif
+#ifndef PexDipexDefines
+#define PexDipexDefines /**/
+#endif
+#ifndef PexDdpexDefines
+#define PexDdpexDefines /**/
+#endif
+#ifndef PexPhigsDefines
+#ifndef PexShmIPC
+#define PexShmIPC HasShm
+#endif
+#if PexShmIPC
+#define PexPhigsDefines /**/
+#else
+#define PexPhigsDefines -DPEX_API_SOCKET_IPC
+#endif
+#endif
+#ifndef PexClientDefines
+#define PexClientDefines -DPEX_SI_PHIGS
+#endif
+#ifndef PexCDebugFlags
+#define PexCDebugFlags DebuggableCDebugFlags
+#endif
+#ifndef PexCCOptions
+#ifdef LibraryCCOptions
+#define PexCCOptions LibraryCCOptions
+#else
+#define PexCCOptions DefaultCCOptions
+#endif
+#endif
+#ifndef BinDir
+#ifdef ProjectRoot
+#define BinDir Concat(ProjectRoot,/bin)
+#else
+#define BinDir /usr/bin/X11
+#endif
+#endif
+#ifndef BuildIncRoot
+#define BuildIncRoot $(TOP)
+#endif
+#ifndef BuildIncDir
+#define BuildIncDir $(BUILDINCROOT)/X11
+#endif
+#ifndef BuildIncTop
+#define BuildIncTop ..		/* relative to BuildIncDir */
+#endif
+#ifndef BuildLibDir
+#define BuildLibDir $(TOP)/usrlib
+#endif
+#ifndef BuildLibTop
+#define BuildLibTop ..		/* relative to BuildLibDir */
+#endif
+#ifndef LibDir
+#define LibDir $(USRLIBDIR)/X11
+#endif
+#ifndef ConfigDir
+#define ConfigDir $(LIBDIR)/config
+#endif
+#ifndef FontDir
+#define FontDir $(LIBDIR)/fonts
+#endif
+#ifndef AdmDir
+#define AdmDir /usr/adm
+#endif
+#ifndef XdmConfigurationSubdirectory		/* under xdm sources */
+#define XdmConfigurationSubdirectory config
+#endif
+#ifndef XFileSearchPathDefault
+#ifdef XAppLoadDir
+/* avoid SCCS keyword */
+#define XFileSearchPathDefault XAppLoadDir/Concat(%N%C,%S):XAppLoadDir/%N%S:XFileSearchPathBase
+#else
+#define XFileSearchPathDefault XFileSearchPathBase
+#endif
+#endif
+#ifndef XtErrorPrefix
+#define XtErrorPrefix /* as empty string */
+#endif
+#ifndef XtExtraDefines
+#define XtExtraDefines /* as empty string */
+#endif
+#ifndef XtWarningPrefix
+#define XtWarningPrefix /* as empty string */
+#endif
+#ifndef OsNameDefines
+#define OsNameDefines /* as nothing */
+#endif
+#ifndef DefaultUserPath			/* for xdm */
+#define DefaultUserPath :/bin:/usr/bin:$(BINDIR):/usr/ucb
+#endif
+#ifndef DefaultSystemPath		/* for xdm */
+#define DefaultSystemPath /etc:/bin:/usr/bin:$(BINDIR):/usr/ucb
+#endif
+#ifndef DefaultSystemShell		/* for xdm to set in SHELL */
+#define DefaultSystemShell BourneShell
+#endif
+#ifndef ContribDir
+#define ContribDir $(TOP)/../contrib	/* contrib is outside core tree */
+#endif
+#ifndef UnsupportedDir
+#define UnsupportedDir $(TOP)/unsupported
+#endif
+#ifndef AllocateLocalDefines
+#define AllocateLocalDefines /**/
+#endif
+#ifndef ForceNormalLib
+#define ForceNormalLib (HasGcc && !HasGcc2)
+#endif
+
+      BUILDINCROOT = BuildIncRoot
+       BUILDINCDIR = BuildIncDir        /* built headers */
+       BUILDLIBDIR = BuildLibDir        /* built libraries */
+            LIBSRC = $(TOP)/lib
+
+/*
+            LIBDIR = LibDir
+            BINDIR = BinDir
+            INCDIR = IncDir
+*/
+
+
+#include <Project.ptmpl>

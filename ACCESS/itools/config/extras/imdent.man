@@ -1,0 +1,84 @@
+.TH IMDENT 1
+.\"
+.SH NAME
+imdent \-indent
+.I cpp
+directives to show nesting level
+.\"
+.SH SYNOPSIS
+.B imdent
+[
+.I \-n
+] [
+.I file
+] ...
+.\"
+.SH DESCRIPTION
+.I imdent
+reads the named input file(s), or the standard input if no files are named,
+and adds indentation to
+.I cpp
+directives based on the nesting level of conditional directives.
+This visually shows the nesting as an aid to finding malformed
+conditional constructs and can be helpful when debugging
+.I imake
+configuration files.
+.PP
+.I imdent
+understands the following option:
+.TP 8
+.I \-n
+Specify indentation increment per nesting level.
+.I n
+is a number.
+The default is 2 spaces.
+.I \-0
+removes all indentation.
+.\"
+.SH EXAMPLE
+Given the following input:
+.sp .5v
+.in +.5i
+.nf
+#ifndef ManDirectoryRoot
+#ifdef ProjectRoot
+#define ManDirectoryRoot Concat(ProjectRoot,/man)
+#ifndef XmanLocalSearchPath
+#define XmanLocalSearchPath ManDirectoryRoot
+#endif
+#else
+#if SystemV4
+#define ManDirectoryRoot /usr/share/man
+#else
+#define ManDirectoryRoot /usr/man
+#endif
+#endif
+#endif
+.fi
+.in
+.sp .5v
+.I imdent
+produces the following output:
+.sp .5v
+.in +.5i
+.nf
+#ifndef ManDirectoryRoot
+#  ifdef ProjectRoot
+#    define ManDirectoryRoot Concat(ProjectRoot,/man)
+#    ifndef XmanLocalSearchPath
+#      define XmanLocalSearchPath ManDirectoryRoot
+#    endif
+#  else
+#    if SystemV4
+#      define ManDirectoryRoot /usr/share/man
+#    else
+#      define ManDirectoryRoot /usr/man
+#    endif
+#  endif
+#endif
+.fi
+.in
+.\"
+.SH "WHO-TO-BLAME"
+Paul DuBois, dubois@primate.wisc.edu
+.\"

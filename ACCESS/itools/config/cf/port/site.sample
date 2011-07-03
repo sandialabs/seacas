@@ -1,0 +1,105 @@
+XCOMM site:  $XConsortium: site.sample /main/19 1995/12/14 13:03:29 matt $
+
+/***************************************************************************
+ *                                                                         *
+ *			   SITE-SPECIFIC DEFINITIONS                       *
+ *                                                                         *
+ * This file contains two halves, one included before the vendor-specific  *
+ * configuration file (.cf file), and one included after the .cf file.     *
+ * The before-half should be protected by #ifdef BeforeVendorCF, and the   *
+ * after-half should be protected by #ifdef AfterVendorCF.                 *
+ *                                                                         *
+ * The before-half should only set things that the .cf file depends on.    *
+ * For the .cf files shipped in this release, the main variables in this   *
+ * category are HasGcc, HasGcc2, and HasCplusplus 			   *
+ *                                                                         *
+ * The after-half should contain all other definitions.  For example,      *
+ * place your ProjectRoot definition here.                                 *
+ *                                                                         *
+ * OS Major and Minor version numbers should be changed directly in the    *
+ * .cf file, not overridden in site.def.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+/* if you want host-specific customization, this is one way to do it */
+/*
+#ifndef SiteIConfigFiles
+#define SiteIConfigFiles $(IRULESRC)/host.def
+#define LocalConfigFiles host.def
+#endif
+*/
+
+
+#ifdef BeforeVendorCF
+
+/* #include <host.def> */
+
+/*
+#ifndef HasGcc2
+#define HasGcc2 YES
+#endif
+*/
+
+#endif /* BeforeVendorCF */
+
+#ifdef AfterVendorCF
+
+#define ProjectRoot /usr/X11R6.1
+
+/* Only set HasXdmAuth to YES if you have a Wraphelp.c file. */
+/* #define HasXdmAuth YES */
+
+/* #define PreIncDir /usr/local/lib/gcc-lib/sparc-sun-sunos4.1.3/2.6.0/include */
+
+/*
+#if defined(SunArchitecture) && defined(SparcArchitecture)
+#define HasCodeCenter	YES
+#ifndef SVR4Architecture
+#define HasTestCenter	YES
+#endif
+#endif
+*/
+
+/*
+#ifdef __hp9000s800
+#define HasCodeCenter	YES
+#endif
+*/
+
+/*
+#if defined(SunArchitecture) && defined(SparcArchitecture) && !defined(SVR4Architecture)
+#define HasPurify	YES
+#endif
+*/
+
+/*
+#define HasSentinel	YES
+*/
+
+/*
+#undef DefaultUserPath
+#define DefaultUserPath /bin:/usr/bin:$(BINDIR):/usr/ucb:/usr/local/bin
+*/
+
+
+/* You do NOT need SetUID if you only run the server under xdm */
+/* You MAY need SetUID if users run the server by hand or under xinit */
+/* Consult your system administrator before making the X server setuid */
+/*
+#if defined(SunArchitecture) && OSMajorVersion > 4
+#define InstallXserverSetUID YES
+#endif
+*/
+
+/* You do NOT need SetUID if you only run the server under xdm */
+/* You MAY need SetUID if users run the server by hand or under xinit */
+/* Consult your system administrator before making the X server setuid */
+/*
+#ifdef XFree86Version
+#define InstallXserverSetUID YES
+#endif
+*/
+
+/* #include <host.def> */
+
+#endif /* AfterVendorCF */

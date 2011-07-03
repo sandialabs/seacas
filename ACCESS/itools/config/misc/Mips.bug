@@ -1,0 +1,11 @@
+Even if you don't apply the patch in Mips.patch, you should change the
+definition of InstallCmd, since it refers to $(ETCDIR), which is nowhere
+defined.
+
+Change this:
+
+	#define InstallCmd $(ETCDIR)/mipsinstall
+
+To this:
+
+	#define InstallCmd /etc/mipsinstall

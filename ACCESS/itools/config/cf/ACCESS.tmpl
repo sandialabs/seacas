@@ -1,0 +1,476 @@
+/*
+    ACCESS System configuration Project.tmpl
+
+*/
+XCOMM ----------------------------------------------------------------------
+XCOMM ACCESS System Build Parameters and Rules
+XCOMM ACCESS.tmpl
+
+/*
+ * Project-specific system characteristics
+ */
+#if HasVarargs
+  VARARGS_DEFINES = -DVARARGS
+#endif
+#if !HasVoidSignalReturn
+   SIGNAL_DEFINES = -DSIGNALRETURNSINT
+#endif
+
+#ifdef CplusplusProjectDefines
+# undef CplusplusProjectDefines
+#endif
+#define CplusplusProjectDefines /**/
+
+/*
+ * Project-specific include file directories
+ */
+#ifndef IncludeSrc
+#define IncludeSrc      ./               /* cannot be empty */
+#endif
+
+#ifndef IncRef
+#if defined(SGIArchitecture)
+#if OSMajorVersion < 6
+#define IncRef -Wf,
+#else
+#define IncRef /**/
+#endif
+#else
+#define IncRef /**/
+#endif
+#endif
+
+#ifndef ProjectIncludes
+#if defined(CrayArchitecture)
+#define ProjectIncludes IncRef-I$(INCLUDESRC) $(ALTINC) IncRef-I$(INCDIR)
+#else
+#define ProjectIncludes IncRef-I$(INCLUDESRC) $(ALTINC) IncRef-I$(INCDIR)
+#endif
+#endif
+
+#ifdef HPArchitecture
+#define LibRef -Wl,
+#else
+#define LibRef /**/
+#endif
+
+#ifndef LibPath
+#define LibPath LibRef-L$(INCLUDESRC) $(ALTLIBPATH) LibRef-L$(LIBDIR)
+#endif
+
+#ifndef PLibPath
+#define PLibPath LibRef-L$(INCLUDESRC) $(ALTLIBPATH) LibRef-L$(PLIBDIR)
+#endif
+
+#ifndef HasMPI
+#define HasMPI NO
+#endif
+
+#ifndef NeedsAlloca                     /* if need to use our alloca */
+#if SystemV
+#define NeedsAlloca     YES
+#else
+#define NeedsAlloca     NO
+#endif
+#endif
+
+#if NeedsAlloca
+   ALLOCA_DEFINES = -DNEEDS_ALLOCA
+#endif
+
+#ifndef NeedsGetSubopt
+#define NeedsGetSubopt NO
+#endif
+
+#ifndef NeedsScriptPatch
+#define NeedsScriptPatch NO
+#endif
+
+#ifndef NeedsParallelnem_spread
+#define NeedsParallelnem_spread NO
+#endif
+
+#ifndef NeedsParallelnem_join
+#define NeedsParallelnem_join NO
+#endif
+
+#ifndef NumProcs
+#define NumProcs 1
+#endif
+
+#ifndef ParFLibs
+#define ParFLibs -lmpi
+#endif
+#ifndef ParCLibs
+#define ParCLibs -lmpi
+#endif
+#ifndef ParIncPath
+#define ParIncPath
+#endif
+#ifndef ParRunCmd
+#define ParRunCmd mpirun
+#endif
+#ifndef NPCmd
+#define NPCmd -np
+#endif
+#ifndef HFCmd
+#define HFCmd -p4pg
+#endif
+
+#ifndef PerlCmd
+#define PerlCmd /usr/local/bin/perl
+#endif
+#ifndef DependInc
+#define DependInc -I /usr/include -I $(INCDIR)
+#endif
+
+/*
+ * Configuration tools (files and directories)
+ */
+#ifndef TempDir
+#define TempDir /usr/tmp
+#endif
+          TEMPDIR = TempDir
+#ifndef HasAbaqus
+#define HasAbaqus       NO
+#endif
+#if HasAbaqus
+#ifndef AbaqusLibrary
+#define AbaqusLibrary AccessInstall/a485s.a
+#endif
+#else
+#ifndef AbaqusLibrary
+#define AbaqusLibrary /**/
+#endif
+#endif
+#ifndef DependCmd
+#define DependCmd makedepend
+#endif
+#ifndef MsubCmd
+#define MsubCmd msub
+#endif
+#ifndef Build64BitAccess
+#define Build64BitAccess NO 
+#endif
+
+/*
+ * Extra libraries required
+ */
+
+#ifndef RpcLib
+#define RpcLib /**/
+#endif
+
+#ifndef ExtraNetcdfLib
+#if UseNetcdf4 && !defined ExcludeHDF5
+#define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lm -lz
+#else
+#define ExtraNetcdfLib /**/
+#endif
+#endif
+
+/*
+ * Needed for ACCESS/prepost/spiff.  
+ * Other options for library are -lncures     or -ltermcap
+ * Other options for define are  -DM_TERMINFO or -DM_TERMCAP
+ */
+#ifndef TermcapLibrary
+#define TermcapLibrary -lcurses
+#endif
+#ifndef TermcapDefine
+#define TermcapDefine -DM_TERMINFO
+#endif
+
+/*
+ * Directory Definitions for ACCESS source code
+ */
+XCOMM PROJECTNAME     : name of project
+XCOMM PROJECTRELEASE  : release number of ACCESS distribution
+XCOMM ACCESSSRC       : location of ACCESS source code
+XCOMM ACCESSDIR       : location of ACCESS installation directories
+XCOMM Set in site.def : ProjectName, ProjectRelease, AccessRoot, AccessInstall
+      PROJECTNAME = ProjectName
+   PROJECTRELEASE = ProjectRelease
+        ACCESSSRC = AccessRoot/ACCESS
+        ACCESSDIR = AccessInstall
+
+/*
+ * Definitions for Access installation directories
+ */
+#ifndef DestDir
+#define DestDir /**/
+#endif
+#ifndef BinDir
+#define BinDir $(ACCESSDIR)/bin
+#endif
+#ifndef ConfigDir
+#define ConfigDir $(ACCESSDIR)/config
+#endif
+#ifndef EtcDir
+#define EtcDir $(ACCESSDIR)/etc
+#endif
+#ifndef IncDir
+#define IncDir $(ACCESSDIR)/inc
+#endif
+#ifndef LibDir
+#define LibDir $(ACCESSDIR)/lib
+#endif
+#ifndef ParallelLibDir
+#define ParallelLibDir $(ACCESSDIR)/plib
+#endif
+#ifndef MatLabDir
+#define MatLabDir $(ACCESSDIR)/matlab
+#endif
+#ifndef SvdiDir
+#define SvdiDir $(ACCESSDIR)/svdi
+#endif
+#ifndef SvdiBinDir
+#define SvdiBinDir $(ACCESSDIR)/svdi/bin
+#endif
+#ifndef SvdiLibDir
+#define SvdiLibDir $(ACCESSDIR)/svdi/lib
+#endif
+#ifndef SvdiTestDir
+#define SvdiTestDir $(ACCESSDIR)/svdi/test
+#endif
+#ifdef LdPreLib
+# undef LdPreLib
+#endif
+#define LdPreLib /**/
+#ifdef LdPreLibs
+# undef LdPreLibs
+#endif
+#define LdPreLibs LdPreLib
+#ifdef LdPostLibs
+# undef LdPostLibs
+#endif
+#define LdPostLibs LdPostLib
+#ifdef TopIncludes
+# undef TopIncludes
+#endif
+#define TopIncludes TopInclude
+#ifdef ProjectDefines
+# undef ProjectDefines
+#endif
+#define ProjectDefines /**/
+#ifndef BuildIncRoot
+#define BuildIncRoot $(ACCESSDIR)
+#endif
+#ifndef BuildIncDir
+#define BuildIncDir BuildIncRoot/inc
+#endif
+#ifndef BuildIncTop
+#define BuildIncTop ..	 /* relative to BuildIncDir */
+#endif
+#ifndef BuildLibDir
+#define BuildLibDir $(TOP)/usrlib
+#endif
+#ifndef BuildLibTop
+#define BuildLibTop ..	/* relative to BuildLibDir */
+#endif
+
+/*
+ * Project-specific system directories and file locations
+ */
+
+/*
+ * Directory structure of ACCESS source files
+ */
+
+XCOMM Source code for the ACCESS System
+        ITOOLSSRC = itools
+#ifndef ExcludeGraphics
+      GRAPHICSSRC = graphics
+          SVDISRC = svdi
+#endif
+     LIBRARIESSRC = libraries
+        NETCDFSRC = netcdf
+#ifndef ExcludeHDF5
+          HDF5SRC = hdf5
+#endif
+     SERIALMPISRC = serial_mpi
+#ifndef ExcludeMatlab
+        MATLABSRC = matlab
+#endif
+#ifndef ExcludePrepost
+       APPLICATIONSRC = applications
+#endif
+#ifndef ExcludeTranslate
+     TRANSLATESRC = translate
+#endif
+       SCRIPTSSRC = scripts
+        TESTPROBS = test
+  PARLIBRARIESSRC = parallellibraries
+     PARNETCDFSRC = parallelnetcdf
+
+XCOMM Translator Subdirectories
+       ALGEBRASRC = algebra
+      ALGEBRA2SRC = algebra2
+        CONCATSRC = concat
+         CONEXSRC = conex
+        CONEX2SRC = conex2
+        EMERGESRC = emerge
+        EXOCTHSRC = exocth
+        EXOEXOSRC = exoexo
+        EXOPATSRC = exopat
+        EXOSYMSRC = exosym
+        EXOTRCSRC = exotrc
+       EXOTEC2SRC = exotec2
+        EXOTXTSRC = exotxt
+       EXOTXT2SRC = exotxt2
+        PATEXOSRC = patexo
+        SEAEXOSRC = seaexo
+      SPHGEN2DSRC = sphgen2d
+      SPHGEN3DSRC = sphgen3d
+     SPHGEN3D2SRC = sphgen3d2
+        TXTEXOSRC = txtexo
+       TXTEXO2SRC = txtexo2
+       EXO2VISSRC = exo2vis
+#ifndef ExcludeMatlab
+     EXOMATLABSRC = exomatlab
+        EXOMATSRC = exomat
+       EXO2MATSRC = exo2mat
+#if HasMatlab 
+       MAT2EXOSRC = mat2exo
+#endif
+#endif
+      EX1EX2V2SRC = ex1ex2v2
+      EX2EX1V2SRC = ex2ex1v2
+       EXODIFFSRC = exodiff
+           EPUSRC = epu
+        ABAEXOSRC = abaexo
+      NEM_JOINSRC = nem_join
+     NEM_SLICESRC = nem_slice
+    NEM_SPREADSRC = nem_spread
+         WTO3DSRC = wto3d
+
+XCOMM Graphics Subdirectories
+          BLOTSRC = blotII2
+         FASTQSRC = fastq
+         FONTSSRC = fonts
+         GRAPHSRC = graph
+
+XCOMM Library Subdirectories
+         SUPESSRC = supes
+       SUPESDPSRC = supesdp
+        SUPLIBSRC = suplib
+      EXODUSIISRC = exodusii
+#ifndef ExcludeGraphics
+           PLTSRC = plt
+#endif
+        ZOLTANSRC = zoltan
+         CHACOSRC = chaco
+       NEMESISSRC = nemesis
+          IOSSSRC = ioss
+#ifndef ExcludeXHelp
+         XHELPSRC = xhelp
+#endif
+XCOMM Library Subdirectories for svdi
+           CGISRC = cgi
+           CDRSRC = cdr
+          POSTSRC = post
+          TESTSRC = test
+   VDI_DRIVERSSRC = vdi_drivers
+
+XCOMM Application  Subdirectories
+       APREPROSRC = aprepro
+      FAILPROBSRC = failprob
+         GEN3DSRC = gen3d
+        GEN3D2SRC = gen3d2
+      GENSHELLSRC = genshell
+     GENSHELL2SRC = genshell2
+      GENHXSHLSRC = genhxshl
+         GJOINSRC = gjoin
+        GJOIN1SRC = gjoin1
+        GJOIN2SRC = gjoin2
+        GREPOSSRC = grepos
+       GREPOS2SRC = grepos2
+         GROPESRC = grope
+        GROPE2SRC = grope2
+        MAPVARSRC = mapvar
+      MAPVARKDSRC = mapvar-kd
+       NUMBERSSRC = numbers
+      NUMBERS2SRC = numbers2
+       EX_JOINSRC = ex_join
+         EJOINSRC = ejoin
+       CONJOINSRC = conjoin
+#ifndef ExcludeSpiff
+         SPIFFSRC = spiff
+#endif
+
+XCOMM ACCESS installation directories
+           BINDIR = BinDir
+        CONFIGDIR = ConfigDir
+           ETCDIR = EtcDir
+           INCDIR = IncDir
+           LIBDIR = LibDir
+          PLIBDIR = ParallelLibDir
+        MATLABDIR = MatLabDir
+          SVDIDIR = SvdiDir
+      SVDITESTDIR = SvdiTestDir
+      BUILDINCDIR = BuildIncDir        /* built headers */
+      BUILDINCTOP = BuildIncTop
+      BUILDLIBDIR = BuildLibDir        /* built libraries */
+
+XCOMM Override Include directories
+           INCREF = IncRef
+           ALTINC = 
+       INCLUDESRC = IncludeSrc
+ PROJECT_INCLUDES = ProjectIncludes
+
+XCOMM Override Library directories
+           LIBREF = LibRef
+       ALTLIBPATH = 
+          LIBPATH = LibPath
+         PLIBPATH = PLibPath
+      
+XCOMM Libraries
+             HDF5 = -lhdf5
+          HDF5_HL = -lhdf5_hl
+            SUPES = -lsupes
+          SUPESDP = -lsupesdp
+           SUPLIB = -lsuplib
+              PLT = -lplt
+           RPCLIB = RpcLib
+   EXTRANETCDFLIB = ExtraNetcdfLib
+            LCLIB = -lLegacyContact
+           NETCDF = -lnetcdf $(EXTRANETCDFLIB)
+         EXOIIV2C = -lexoIIv2c 
+       EXOIIV2FOR = -lexoIIv2for
+     EXOIIV2FOR32 = -lexoIIv2for32
+           ABALIB = AbaqusLibrary
+              CGI = -lcgi
+              CDR = -lcdr
+         NEMESISC = -lnemIc
+         NEMESISF = -lnemIf
+       NEMESISF32 = -lnemIf32
+            CHACO = -lchaco
+           ZOLTAN = -lzoltan
+
+XCOMM Libraries and include path used for building parallel executables
+         PARFLIBS = ParFLibs
+         PARCLIBS = ParCLibs
+       PARINCPATH = ParIncPath
+
+XCOMM Perl command and includes needed for sfmakedepend
+          PERLCMD = PerlCmd
+        DEPENDINC = DependInc
+
+XCOMM X11 includes and libraries
+      X11INCLUDES = X11Includes
+              X11 = X11Lib
+
+XCOMM Matlab includes and libraries
+  MATLABLIBRARIES = MatlabLibraries
+   MATLABINCLUDES = MatlabIncludes
+
+XCOMM Definitions used for running parallel executables
+         PARALLEL = Parallel
+        NUM_PROCS = NumProcs
+        PARRUNCMD = ParRunCmd
+            NPCMD = NPCmd
+            HFCMD = HFCmd
+
+XCOMM Imake flag used in the parallel directories
+
+PARALLELIMAKEFLAG = ParallelImakeFlag

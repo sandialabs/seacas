@@ -1,0 +1,55 @@
+/*
+ * IMPORTANT:
+ * Take a look at the extras.tmpl file and make any changes that
+ * are appropriate for your system.
+ */
+
+#include "./extras.tmpl"
+
+XCOMM ---- msub stuff -----
+
+        SRCS = msub.c
+        OBJS = msub.o
+
+AllTarget(ProgramTargetName(msub))
+
+CC=$(NATIVECC)
+CFLAGS = $(CCOPTIONS) $(CCEXTRAOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) $(PROJECT_INCLUDES)
+
+NormalProgramTarget(msub,$(OBJS),NullParameter,NullParameter,NullParameter)
+
+install:: Concat(install.,ProgramTargetName(msub))
+InstallMultipleDestFlags(install.ProgramTargetName(msub),ProgramTargetName(msub),$(ETCDIR),$(INSTBINFLAGS))
+
+XCOMM "make test" to run a test
+XCOMM "make regression" to run the test, compare output with reference result
+
+#ifdef Win32Architecture
+test:: .\\ProgramTargetName(msub)
+	.\\ProgramTargetName(msub) -f test.makefile testfile
+#else
+test:: ./ProgramTargetName(msub)
+	./ProgramTargetName(msub) -f test.makefile testfile
+#endif /* Win32Architecture */
+
+regression:: ProgramTargetName(msub)
+	ProgramTargetName(msub) -f test.makefile testfile | diff test.out -
+
+XCOMM ---- imboot stuff -----
+
+#if defined(Win32Architecture) || UsePerlImboot
+PerlScriptTarget(imboot,imboot.pl,NullParameter)
+#else
+AllTarget(ProgramTargetName(imboot))
+CppScriptTarget(ProgramTargetName(imboot),imboot.cpp,-DCONFIGROOTDIR=$(CONFIGROOTDIR) -DRM='"$(RM)"' -DMV='"$(MV)"',NullParameter)
+install:: Concat(install.,ProgramTargetName(imboot))
+InstallMultipleDestFlags(install.ProgramTargetName(imboot),ProgramTargetName(imboot),$(ETCDIR),$(INSTBINFLAGS))
+#endif
+
+AllTarget(imboot.man)
+CppFileTarget(imboot.man,imboot.man.cpp,-DCONFIGROOTDIR=$(CONFIGROOTDIR),NullParameter)
+InstallManPage(imboot,$(MANDIR))
+
+XCOMM ---- other stuff -----
+
+DependTarget ()

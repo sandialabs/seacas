@@ -1,0 +1,95 @@
+In the config directory, make the following changes:
+
+--------------------------------------------------------------------------
+Changes to imakemdep.h:
+
+Add the following lines to the cpp_argv[] array:
+
+#if defined(__OSF1__) || defined(__osf__)
+	"-D__OSF1__",
+# ifdef __mips__
+	"-D__mips__",
+# endif
+# ifdef __i386__
+	"-D__i386__",
+# endif
+# endif
+
+Add the following lines to the predefs[] array:
+
+#ifdef __OSF1__
+	{"__OSF1__", "1"},
+#endif
+#ifdef __osf__
+	{"__osf__", "1"},
+#endif
+
+Add this vendor block to the vendor block section of Imake.tmpl:
+
+#ifdef __OSF1__
+#define MacroIncludeFile <osf1.cf>
+#define MacroFile osf1.cf
+#define OSF1Architecture
+#undef __OSF1__
+#ifdef __mips__
+#undef __mips__
+#define MipsArchitecture
+#endif
+#endif
+
+Apply this patch to imake.c.  Without it, you'll get an assert failure
+when imake tries to exec cpp.  The only change is to add the line preceded
+by the "+":
+
+*** imake.c~	Sun Feb 21 09:46:56 1993
+--- imake.c	Fri Aug  6 16:32:24 1993
+***************
+*** 508,513 ****
+--- 508,514 ----
+  		}
+  		CleanCppOutput(outfd, outfname);
+  	} else {	/* child... dup and exec cpp */
++ 		cpp_argv[0] = cpp;
+  		if (verbose)
+  			showargs(cpp_argv);
+  		dup2(pipefd[0], 0);
+
+Create osf1.cf.  It should contain at least the following:
+
+/*
+ * SET OS VERSION NUMBERS BEFORE MAKING MAKEFILES
+ */
+
+#define OSName    OSF/1 1.2
+#define OSMajorVersion    1
+#define OSMinorVersion    2
+
+XCOMM platform:  osf1.cf 93/08/05
+XCOMM operating system: OSName
+
+#define HasNdbm YES
+#define HasPutenv YES
+#define Malloc0ReturnsNull 0
+
+#define InstallCmd	installbsd
+
+#define StandardDefines	-D__OSF1__
+
+#ifdef MipsArchitecture
+#define DefaultCCOptions	-Xc
+#endif
+
+#define LintLibFlag -o
+#define LintOpts -bh
+
+However, this is enough just to get the distribution built properly
+and to allow configuring simple projects.  It is *not* enough to
+configure X11 itself.
+
+
+--------------------------------------------------------------------------
+Now, back in the project root, you should be able to build the project:
+
+	% make World BOOTSTRAPCFLAGS=-D__OSF1__ >& make.world
+
+Actually, BOOTSTRAPCFLAGS can probably be empty.

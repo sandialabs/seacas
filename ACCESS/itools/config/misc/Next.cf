@@ -1,0 +1,85 @@
+XCOMM platform:  $Header: /cvsroot/seacas/ACCESS/itools/config/misc/Next.cf,v 1.1 2008/06/18 16:23:17 gdsjaar Exp $
+/* Douglas Scott -- U.C. Santa Barbara */
+/* doug@foxtrot.ccmrc.ucsb.edu  */
+
+#define OSName            NeXT Release 3.0
+XCOMM operating system:  OSName
+#define OSMajorVersion    3
+#define OSMinorVersion    0
+
+#define InstKmemFlags -m 2755 -g kmem
+
+#define HasSaberC	  NO
+#define HasNdbm		  YES
+#define SetTtyGroup	  YES
+#define HasBsearch	  YES	/* changed by DAS -- is available on NeXT */
+
+#define NeedConstPrototypes		YES
+#define NeedVarargsPrototypes		YES
+#define NeedFunctionPrototypes          YES
+#define NeedWidePrototypes              NO
+
+#define BuildServer	  YES
+#define XnextServer       YES
+
+#ifdef BuildColorServer		/* from site.def */
+#define BuildPexExt YES
+#else
+#define BuildPexExt NO 		/* PEX does not work with 2-Bit server */
+#endif
+
+#define BuildXInputExt	  NO	/* these dont seem to work on the NeXT */
+
+#if HasGcc
+#define CcCmd gcc -Wno-import	/* dont use -fpcc-struct-return on NeXT */
+#if defined(HasGcc2) 
+#define OptimizedCDebugFlags -O2
+/* Leave Alone XXX */
+#else 
+#define OptimizedCDebugFlags -O
+#endif
+#endif
+
+#ifndef NeXT
+#define NeXT 	/* Define needed for Imakefiles */
+#endif
+
+#define BuildExamples     NO
+
+#define StandardDefines -DX_NOT_POSIX -DX_NOT_STDC_ENV -DX_LOCALE
+
+#define HasVoidSignalReturn YES		/* NO when compiling with -bsd */
+
+/* this next part added for makedepend under 3.0 -- DAS */
+
+#if OSMajorVersion == 3	
+#ifndef DependFlags
+#define DependFlags -I/usr/include/ansi -I/usr/include/bsd
+#endif
+#endif
+
+#ifndef InstallCmd
+#define InstallCmd	install -u	/* unlink old */
+#endif
+
+#ifndef RanlibCmd
+#define RanlibCmd	ranlib -c -s
+#endif
+
+/* see below for ServerDefines */
+#define PrimaryScreenResolution 95	/* for 17 inch screen -- DAS */
+
+/* the defines that determine which server type to create are only needed in 
+   the server code, not in the rest of the distribution -- DAS
+   use -DNEXT_21_INCH below for large monitors
+   use -DNEXT_2BIT for monochrome server
+   use -DNEXT_16BIT for color server
+*/
+
+#ifdef BuildColorServer
+#define ServerExtraDefines -DNEXT_16BIT -DXDMCP -DSTATIC_COLOR
+#else
+#define ServerExtraDefines -DNEXT_2BIT -DXDMCP -DSTATIC_COLOR
+#endif
+
+#define ServerCDebugFlags -g -O2	/* debug server for now */

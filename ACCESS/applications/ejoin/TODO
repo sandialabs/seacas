@@ -1,0 +1,28 @@
+* Handle salinas use case.
+
+* Handle duplicate grouping entity ids.  
+  -- This is working for non-merging of grouping entities.
+     - Each entities name is prefixed with p#_ where # is the part number 1..num_parts.
+     - Duplicate ids are renumbered.
+
+* Handle merging of nodes and/or elements based on global id or
+   geometric proximity
+   -- I think global id matching of nodes OK
+   -- Matching by proximity should be working now also at least for 2 parts;
+      - Multiple (more than 2) part matching needs testing.
+
+* Option to create a nodeset containing the nodes for each part.
+   Could move all of the parts nodal variables to nodeset variables on
+   this part.
+
+* Create an element set containing the elements for each part.  Would
+   need to fix Ioss to handle element sets.
+
+* Fix problem with sideset element mapping -- I think element blocks
+   are in a different order, so the element mapping is incorrect.
+
+* Fix so node and element global id maps are preserved as much as possible.
+
+* Add subsetting (exclude specific grouping entities)
+
+

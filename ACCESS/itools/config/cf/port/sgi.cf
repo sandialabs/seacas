@@ -1,0 +1,145 @@
+XCOMM platform:  $XConsortium: sgi.cf /main/23 1996/02/02 18:59:52 gildea $
+
+#ifndef OSName
+#define OSName			IRIX 5.3
+#endif
+XCOMM operating system:  OSName
+#ifndef OSMajorVersion
+#define OSMajorVersion		5
+#endif
+#ifndef OSMinorVersion
+#define OSMinorVersion		3
+#endif
+#ifndef OSTeenyVersion
+#define OSTeenyVersion          0
+#endif
+
+#if OSMajorVersion < 4
+/* We do not guarantee this will work */
+#define BootstrapCFlags		-DX_WCHAR -DX_LOCALE -DX_USEBFUNCS -DSYSV
+#define StandardDefines		-DX_WCHAR -DX_LOCALE -DX_USEBFUNCS -DSYSV
+#define SetTtyGroup		NO
+#else
+#define SetTtyGroup		YES
+#define ExtraFilesToClean	so_locations
+#endif
+
+#if OSMajorVersion < 5
+#define SystemV			YES
+#define XawI18nDefines		-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
+#else
+#define BootstrapCFlags		-DSVR4
+#define StandardDefines		-DSVR4
+#define SystemV4		YES
+#define HasWChar32              YES
+#define HasVFork		NO
+#define XawI18nDefines		-DHAS_WCTYPE_H -DHAS_ISW_FUNCS
+#define AllocateLocalDefines	-DINCLUDE_ALLOCA_H
+#ifndef ExtraLoadFlags
+#define ExtraLoadFlags -Wl,-rpath,$(USRLIBDIR)
+#endif
+#endif
+
+#if OSMajorVersion == 6
+#define Mips64Architecture
+#endif
+
+#define Malloc0ReturnsNull	YES	/* IRIX 5.x -lmalloc needs this */
+#define HasPutenv		YES
+#define ExecableScripts		YES
+#define HasNdbm			YES
+#define HasPoll                 YES
+
+#if OSMajorVersion > 3 || (OSMajorVersion == 3 && OSMinorVersion > 2)
+#define NeedVarargsPrototypes	YES
+#define NeedConstPrototypes	YES
+#define NeedWidePrototypes	NO
+#endif
+
+#if OSMajorVersion < 5
+#define SymbolTables -Wf,-XNp9000,-XNd8000,-XNh2000
+#define PexSymbolTables -Wf,-XNp15000,-XNd15000,-XNh2000
+#define ServerSymbolTables -Wf,-XNp8000,-XNh2000,-XNd8000
+#else
+#define SymbolTables
+#define PexSymbolTables 
+#define ServerSymbolTables
+#endif
+
+/* this is for floating point, ANSI cpp */
+#if OSMajorVersion < 5
+/* Extra libraries provide : yp, sysV malloc, shared libc, and widechar */
+#define ExtraLibraries -lsun -lmalloc -lc_s -lw
+#define sgiCCOptions -xansi -D__STDC__=1 -float
+#else
+#define sgiCCOptions -xansi
+/* SGI's -lsocket -lnsl is broken, at least in 5.2, so override here */
+#define ExtraLibraries /**/
+#endif
+
+#define DefaultCCOptions sgiCCOptions SymbolTables
+#define PexCCOptions sgiCCOptions PexSymbolTables
+#define ServerCCOptions sgiCCOptions ServerSymbolTables
+
+/* For SGI C++ compiler, need to search extra dirs in make depend */
+#ifndef CplusplusDependIncludes
+#define CplusplusDependIncludes -I/usr/include/CC
+#endif
+
+/* At SGI, we don't need this */
+#define ConstructMFLAGS		NO	/* build MFLAGS from MAKEFLAGS */
+
+/* Used only for compressed fonts */
+#define UNCOMPRESSPATH /usr/bsd/uncompress
+
+/* Normally used only to conditionally chose the default font path order */
+#define PrimaryScreenResolution 96
+
+/* Override Imake.tmpl's "-X" flag */
+#define LdCombineFlags -r
+
+/* Installation Build Parameters */
+#define InstKmemFlags -m 2711 -g sys
+
+#define ArCmd ar scq
+
+/* for xdm or anyone else to use */
+#define DefaultUserPath :/usr/sbin:/usr/bsd:/usr/bin:/bin:$(BINDIR):/etc:/usr/etc
+#define DefaultSystemPath /usr/sbin:/usr/bsd:/bin:/etc:/usr/bin:/usr/etc:$(BINDIR)
+
+#define BuildServer             NO
+#define ServerOSDefines		-DDDXTIME 
+/* only need this for binary compatibility with their ddx */
+#define ServerExtraDefines	-DNEED_LINEHELPER AllocateLocalDefines
+
+/* Changed to a single shell command for pmake/smake */
+#if OSMajorVersion < 5
+/*
+ * NormalLibObjCompile - compile fragment for a library object file
+ * 	do ld -x to remove line number symbols for libraries
+ */
+#define NormalLibObjCompile(options) 	ClearmakeOSName			  \
+	$(RM) $@ $*.os \						@@\
+	&& $(CC) -c options $(CFLAGS) $*.c \				@@\
+	&& $(LD) $(LDSTRIPFLAGS) -r $@ -o $*.os \			@@\
+	&& $(MV) $*.os $@
+#endif
+
+#define LibObjCompile(dir,options) ClearmakeOSName			  \
+	$(RM) $@ dir/$@ \						@@\
+	&& $(CC) -c $(CCOPTIONS) $(ALLDEFINES) options $*.c \		@@\
+	&& $(MV) $@ dir/$@
+
+#ifndef HasMakefileSafeInclude
+#define HasMakefileSafeInclude YES
+#endif
+#ifndef IncludeMakefile
+#define IncludeMakefile(file) @@sinclude file
+#endif
+
+/* needs to find nroff on the system to work */
+#ifndef ManKeywordsTarget
+#define ManKeywordsTarget(manpath)					@@\
+man_keywords::								@@\
+	/usr/lib/makewhatis -M $(DESTDIR)manpath $(DESTDIR)manpath/whatis
+#endif

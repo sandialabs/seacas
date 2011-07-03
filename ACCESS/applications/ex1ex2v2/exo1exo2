@@ -1,0 +1,4 @@
+#!/bin/csh
+setenv FOR011 $1
+setenv FOR020 $2
+/home/vryarbe/exodus/trans/exo1exo2.201/exo1exo2.e

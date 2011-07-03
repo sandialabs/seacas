@@ -1,0 +1,27 @@
+XCOMM $XConsortium: Imakefile /main/92 1996/11/30 10:09:25 lehors $
+
+#ifdef Win32Architecture
+EXTRA_HEADERS = Xw32defs.h
+#endif
+
+HEADERS = \
+	Xfuncproto.h \
+	Xos.h \
+	Xosdefs.h \
+	$(EXTRA_HEADERS)
+
+all::
+
+BuildIncludes($(HEADERS),X11,../ACCESS/itools)
+
+InstallMultipleFlags($(HEADERS),$(INCDIR)/X11,$(INSTINCFLAGS))
+
+InstallLinkKitNonExecFile(X.h,$(LINKKITDIR)/include)
+InstallLinkKitNonExecFile(Xmd.h,$(LINKKITDIR)/include)
+InstallLinkKitNonExecFile(Xos.h,$(LINKKITDIR)/include)
+InstallLinkKitNonExecFile(Xproto.h,$(LINKKITDIR)/include)
+InstallLinkKitNonExecFile(Xprotostr.h,$(LINKKITDIR)/include)
+
+depend::
+
+clean::

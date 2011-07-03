@@ -1,0 +1,11 @@
+XCOMM $Id: Imakefile,v 1.1 2009/06/09 18:26:03 gdsjaar Exp $
+
+EXTRA_INCLUDES = -I../main -I../util
+
+SRCS = \
+determinant.c func2d.c func3d.c opt2d.c opt3d.c
+
+OBJS = ${SRCS:.c=.o}
+
+LibraryTargetSubdirs(libchaco.a,$(OBJS),../)
+

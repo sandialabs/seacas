@@ -1,0 +1,319 @@
+/* -*- c -*- */
+XCOMM $Id: linux.cf,v 1.3 2008/10/31 14:54:54 gdsjaar Exp $
+XCOMM
+XCOMM NOTE: This was copied from the X11 distribution and modified. 
+XCOMM       It includes several symbols that are not used in ACCESS.
+XCOMM
+XCOMM NOTE: The default flags do not do very aggressive optimization;
+XCOMM       You can change this if you want (possibly) faster execution.
+XCOMM
+XCOMM Contact gdsjaar@sandia.gov if you have any questions
+XCOMM
+
+/* Change to YES for 64-bit build; (some defines do it automatically) */
+#define Build64BitAccess YES
+
+/* I think all compilers used below will accept this flag... */
+#define PositionIndependentCFlags -fpic
+
+/* ========================================================================
+ *   Define ONE of the following compilers.
+ * ========================================================================
+ */
+/* #define GCCG77 1 */ /* gcc-3.X */
+/* #define GCC4GFORTRAN */ /* gcc-4.1 or later */
+/* #define ABSOFT 1 */
+/* #define PORTLAND 1 */
+/* #define USE_INTEL 1 */
+/* #define GCC_INTEL 1 */ /* gcc c/c++ and intel fortran */
+
+#if !defined(GCCG77) && !defined(GCC4GFORTRAN) && !defined(PORTLAND) && !defined(USE_INTEL) && !defined(ABSOFT) && !defined(GCC_INTEL)
+
+#error "Must define which compiler to use or system to build on."
+#endif
+
+/* Most users should not need to change anything below here. */
+#define OSName 			DefaultOSName
+#define OSMajorVersion		DefaultOSMajorVersion
+#define OSMinorVersion		DefaultOSMinorVersion
+#define OSTeenyVersion		DefaultOSTeenyVersion
+
+XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
+
+/* C and C++ Compilers */
+/* Portland Group  http://www.pgroup.com */
+/*
+ * NOTE: If you get an error similar to the following when compiling
+ * genhxshl or epu, you should edit the cstdio file and remove that
+ * line. It is a problem with the compiler and not with our code.
+ *
+ * "/var/tmp/pgi/linux86/5.1/include/CC/cstdio", line 114: error: the global
+ *          scope has no "vsnprintf"
+ * using _STLP_VENDOR_CSTD::vsnprintf;
+ *
+ */
+
+/* ======================================================================== */
+#if defined(GCCG77) 
+
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+
+#ifdef i386Architecture
+#define StandardDefines		-Dlinux  -DADDC_ -DADDC__
+#define OptimizedCDebugFlags	-O2 
+#endif /* i386Architecture */
+
+#if defined x86_64Architecture
+#if Build64BitAccess
+#define StandardDefines		-m64 -Dlinux  -DADDC_ -DADDC__
+#define F77PrecOptions          -m64 -fno-f2c
+#define ExtraLoadOptions        -m64
+#else
+#define StandardDefines		-m32 -Dlinux  -DADDC_ -DADDC__
+#define F77PrecOptions          -m32 -fno-f2c
+#define ExtraLoadOptions        -m32
+#endif
+#endif /* x86_64Architecture && !Build64BitAccess */
+
+#ifdef AlphaArchitecture
+#define OptimizedCDebugFlags	-g -O2
+#define StandardDefines		-Dlinux -D__alpha__ -DADDC_ 
+#endif /* AlphaArchitecture */
+
+#define HasGcc			YES
+#define HasGcc2			YES
+#define HasGcc2ForCplusplus	YES
+#define GccUsesGas		YES
+#define UseGas			YES
+
+/* g77 */
+#define FortranCmd              g77
+#define Fortran90Cmd		true
+#define DefaultF77Options	 
+#endif  /* GCCCG77 */
+
+/* ======================================================================== */
+#if defined(GCC4GFORTRAN) 
+
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+#define FortranCmd              gfortran
+#define Fortran90Cmd		gfortran
+
+#ifdef i386Architecture
+#define StandardDefines		-Dlinux  -DADDC_
+#define OptimizedCDebugFlags	-O2 
+#endif /* i386Architecture */
+
+#if defined x86_64Architecture
+#if Build64BitAccess
+#undef StandardDefines
+#define StandardDefines		-m64 -DBuild64 -Dlinux  -DADDC_
+ /* -fno-range-check needed for x80000000 in plt library.
+  *   -fcray-pointer needed for addrwrap.F in exodusII
+  */
+#define F77PrecOptions          -m64 -DBuild64  -fno-f2c -O3 -fno-range-check -fcray-pointer -fdefault-real-8 -fdefault-integer-8
+#define F90PrecOptions          -m64 -fno-f2c -O3 
+#define ExtraLoadOptions        -m64 
+#else
+#undef StandardDefines
+#define StandardDefines		-m32 -Dlinux  -DADDC_
+#define F77PrecOptions          -m32 -fno-f2c -O3 -fno-range-check
+#define F90PrecOptions          -m32 -fno-f2c -O3 
+#define ExtraLoadOptions        -m32 
+#endif
+#endif /* x86_64Architecture && !Build64BitAccess */
+
+#define HasGcc			YES
+#define HasGcc2			YES
+#define HasGcc2ForCplusplus	YES
+#define GccUsesGas		YES
+#define UseGas			YES
+
+/* g77 */
+#define DefaultF77Options	-fno-range-check
+#endif  /* GCC4GFORTRAN */
+
+/* ======================================================================== */
+#if defined(PORTLAND)
+#define CcCmd				pgcc
+#define CplusplusCmd			pgCC
+#define OptimizedCDebugFlags		-O -Mframe
+#define OptimizedCplusplusDebugFlags	-Mframe
+#define HasGcc				NO
+#define HasGcc2				NO
+#define HasGcc2ForCplusplus		NO
+#define GccUsesGas			NO
+#define UseGas				NO
+
+/* Fortran */
+#define FortranCmd              	pgf77
+#define Fortran90Cmd			pgf90
+#define DefaultF77Options		-fast
+
+/* Following needed for linking f90 and f77 (if f77 does io) */
+#define F90ExtraLibraries       	-lpgftnrtl
+
+/* PORTLAND i386A */
+#ifdef i386Architecture
+#define StandardDefines			-Dlinux -D__i386__ -DADDC_ 
+#endif /* i386Architecture */
+
+#if defined x86_64Architecture
+#undef CcCmd
+#undef CplusplusCmd
+#undef FortranCmd
+#undef Fortran90Cmd
+#undef StandardDefines
+
+#if Build64BitAccess
+#define CcCmd				pgcc  -tp=k8-64 -fast
+#define CplusplusCmd			pgCC  -tp=k8-64 -fast
+#define FortranCmd              	pgf77 -tp=k8-64 -fast
+#define Fortran90Cmd			pgf90 -tp=k8-64 -fast
+#define F90PrecOptions			-r8 -i8
+#define F77PrecOptions			-r8 -i8
+#define StandardDefines			-DBuild64 -Dlinux -DADDC_ 
+
+#else /* PORTLAND 32 bit */
+#define CcCmd				pgcc  -tp=k8-32
+#define CplusplusCmd			pgCC  -tp=k8-32
+#define FortranCmd              	pgf77 -tp=k8-32
+#define Fortran90Cmd			pgf90 -tp=k8-32
+#define StandardDefines			-Dlinux -DADDC_ 
+#endif /* PORTLAND 64 bit */
+#endif /* PORTLAND x86_64 arch*/
+
+#ifdef AlphaArchitecture /* PORTLAND Alpha */
+#define StandardDefines			-Dlinux -D__alpha__   
+#endif /* PORTLAND Alpha */
+
+#endif /* PORTLAND */
+
+/* ======================================================================== */
+#if defined(USE_INTEL)
+#define CcCmd			icc
+#define CplusplusCmd		icpc
+#define FortranCmd              ifort -cm
+#define Fortran90Cmd		ifort -w90 -cm
+#define OptimizedCDebugFlags	        -O2 -ip
+#define OptimizedCplusplusDebugFlags	-O2 -ip
+#define DefaultF77Options		-O2 -ip
+#if Build64BitAccess
+#define F90PrecOptions		-r8 -i8
+#define F77PrecOptions		-r8 -i8
+#define StandardDefines		-DBuild64 -Dlinux -DADDC_
+#else
+#define StandardDefines		-Dlinux -DADDC_
+#endif
+#define NeedsDoubleEscape	NO
+#define HasGcc			NO
+#define HasGcc2			NO
+#define HasGcc2ForCplusplus	NO
+#define GccUsesGas		NO
+#define UseGas			NO
+#define ExtraLoadOptions  -Wl,-R/projects/global/x86_64/compilers/intel/intel-9.1-cce-044/lib -Wl,-R/projects/global/x86_64/compilers/intel/intel-9.1-fc-039/lib
+#endif /* USE_INTEL */
+
+
+/* ======================================================================== */
+/* ABSOFT Fortran Compiler, GCC C/C++
+ * (This has not been tested very much as of 11/14/2001)
+ */
+#if defined(ABSOFT)
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+#define FortranCmd              /usr/absoft/bin/f77
+#define Fortran90Cmd		/usr/absoft/bin/f90
+#define OptimizedCDebugFlags	-O
+#define OptimizedCplusplusDebugFlags	-O
+#define DefaultF77Options		-f -B108 -N22
+#define StandardDefines		-Dlinux -DADDC_
+#define NeedsDoubleEscape	NO
+#define HasGcc			YES
+#define HasGcc2			YES
+#define HasGcc2ForCplusplus	NO
+#define GccUsesGas		NO
+#define UseGas			NO
+#endif /* ABSOFT */
+
+
+/* ======================================================================== */
+#if defined(GCC_INTEL) 
+
+#define CcCmd			gcc
+#define CplusplusCmd		g++
+
+#define StandardDefines		-Dlinux  -DADDC_ 
+#define OptimizedCDebugFlags	-O2 
+
+#define HasGcc			YES
+#define HasGcc2			YES
+#define HasGcc2ForCplusplus	YES
+#define GccUsesGas		YES
+#define UseGas			YES
+
+#define FortranCmd              ifort -cm
+#define Fortran90Cmd		ifort -w90 -cm
+#define DefaultF77Options	-O2 -ip
+
+#endif  /* GCC_INTEL */
+
+/* ======================================================================== */
+#define MkdirHierCmd		mkdir -p
+
+#define GnuCpp			YES
+#define CppCmd			/lib/cpp
+
+#define PreProcessCmd		CppCmd -P
+#define UseCCMakeDepend		YES
+
+#ifndef NeedsDoubleEscape
+#define NeedsDoubleEscape	YES
+#endif
+
+#define ArCmd			ar cr
+
+#define TermcapLibrary          -lncurses
+#define TermcapDefine           -DM_TERMINFO
+
+/* Following are left over from X11 use */
+#define LdCombineFlags		-r
+#define StandardCppDefines	StandardDefines
+
+#define PerlCmd			/usr/bin/perl
+#define System			linux
+
+#define UseElfFormat		YES
+#define Use32BitAddress		YES
+#define HasShadowPasswd		NO
+
+#define HasPutenv		YES
+#define HasShm			YES
+#define HasSockets		YES
+
+#define AvoidNullMakeCommand	YES
+#define CompressAllFonts	YES
+#define Malloc0ReturnsNull	YES
+#define NeedConstPrototypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	NO
+#define SetTtyGroup		YES
+
+XCOMM Default location for linux systems if not redefined above
+#ifndef X11Includes
+#define X11Includes -I/usr/X11R6/include
+#endif
+#ifndef X11Lib
+#if Build64BitAccess
+#define X11Lib -L/usr/X11R6/lib64 -lX11
+#else
+#define X11Lib -L/usr/X11R6/lib   -lX11
+#endif
+#endif
+#ifndef HasFlush
+#define HasFlush YES
+#endif

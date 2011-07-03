@@ -1,0 +1,325 @@
+XCOMM platform:  $XConsortium: linux.cf,v 1.16 91/08/26 11:23:34 rws Exp $
+/*
+ * there are some switches to set appropriate...
+ * Set these in the BeforeVendorCF part of site.def
+ *
+ * Please set the values for OSMajorVerion and OSMinorVersion
+ * before making makefiles.	 
+ */
+
+#define OSName            Linux
+#define OSMajorVersion    0
+#define OSMinorVersion    97pl2
+#ifdef CROSS_COMPILE
+/* For myself only */
+#define OSDefines	  -D_POSIX_SOURCE -D_BSD_SOURCE -D_GNU_SOURCE -D__USE_GNU -D__USE_MISC -D__USE_BSD -DCROSS_COMPILE 
+#else
+#define OSDefines	  -D_POSIX_SOURCE -D_BSD_SOURCE -D_GNU_SOURCE -D__USE_GNU -D__USE_MISC -D__USE_BSD
+#endif
+#define OSRelease	  -Dlinux
+#define OSVendor	  (Usenet)
+
+XCOMM operating system:  OSName
+
+/*
+#define UsrLibDir	/usr/lib/gcc-lib/i$(_NOOP_)386-linux/2.2.2d
+*/
+
+#define LibDir		/usr/lib/X11
+
+#ifndef Build75Dpi
+#define Build75Dpi		YES
+#endif
+#ifndef Build100Dpi
+#define Build100Dpi		NO
+#endif
+#ifndef BuildLargeMiscFonts
+#define BuildLargeMiscFonts	NO
+#endif
+
+#ifndef HasShadowPasswd
+#define HasShadowPasswd		NO
+#endif
+
+#define AvoidNullMakeCommand	YES
+
+#define StandardCppDefines	-traditional StandardDefines
+#define OptimizedCDebugFlags	-O2
+#ifdef UseInstalled
+#define InstallCmd		install
+#else
+#define InstallCmd		sh $(SCRIPTSRC)/install.sh
+#endif
+#define LinuxNeedsInstall	YES
+#define DoRanlibCmd		YES
+#define StripInstalledPrograms	YES
+#define	ExecableScripts		YES
+#define HasBsearch		YES
+#define HasFortran		NO
+#define HasGcc			YES
+#define HasNdbm			YES
+#define HasPutenv		YES
+#define HasSaberC		NO
+#define HasSecureRPC		NO
+#define HasSharedLibraries	NO
+#define HasShm			NO
+#define HasSockets		YES
+#define HasVFork		YES
+#define HasVoidSignalReturn	YES
+#define LintLibFlag		NO
+#define Malloc0ReturnsNull	YES
+#define NeedConstPrototoypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	NO
+#define SystemV			NO
+
+#if 0
+#define _DefaultCDebugFlags
+#define BaseExtensionDefines
+#define _PrimaryScreenResolution 75
+#endif
+
+#define BuildPexClients		NO
+#define BuildPexExt		NO
+#define BuildFontServer		NO
+#define BuildFonts		NO
+#define BuildXInputExt		NO
+#define BuildXInputLib		NO
+#ifdef HAS_TCPIP
+#define ConnectionFlags		-DUNIXCONN -DTCPCONN
+#else
+#define ConnectionFlags		-DUNIXCONN
+#endif
+#define	DebugLibX		NO
+#define	DebugLibXArchive	NO
+#define	DebugLibXau		NO
+#define	DebugLibXaw		NO
+#define	DebugLibXdmcp		NO
+#define	DebugLibXext		NO
+#define	DebugLibXmu		NO
+#define	DebugLibXt		NO
+#define	DebugOldLibX		NO
+#define DefaultFontPath		$(FONTDIR)/misc/
+#define ExtraLibraries
+#define	HasXdmAuth		NO
+#define	InstallAppDefFiles	YES
+#define	InstallFSConfig		NO
+#define	InstallLibManPages	NO
+#define	InstallXdmConfig	YES
+#define	InstallXinitConfig	YES
+#define	NormalLibPhigs		NO
+#define	NormalLibX		YES
+#define	NormalLibXau		YES
+#define	NormalLibXaw		YES
+#define	NormalLibXdmcp		YES
+#define	NormalLibXext		YES
+#define	NormalLibXinput		YES
+#define	NormalLibXmu		YES
+#define	NormalLibXt		YES
+#define	NormalOldLibX		YES
+#define	ProfileLibX		NO
+#define	ProfileLibXArchive	NO
+#define	ProfileLibXau		NO
+#define	ProfileLibXaw		NO
+#define	ProfileLibXdmcp		NO
+#define	ProfileLibXext		NO
+#define	ProfileLibXmu		NO
+#define	ProfileLibXt		NO
+#define	ProfileOldLibX		NO
+#define	SharedLibPhigs		NO
+#define	SharedLibX		NO
+#define	SharedLibXau		NO
+#define	SharedLibXaw		NO
+#define	SharedLibXdmcp		NO
+#define	SharedLibXext		NO
+#define	SharedLibXinput		NO
+#define	SharedLibXmu		NO
+#define	SharedLibXt		NO
+#define	SharedOldLibX		NO
+
+#define CompressAllFonts	YES
+
+#define X386Server		YES
+
+#define UseCCMakeDepend		YES
+
+#define GccUsesGas              YES
+#define UseGas                  YES
+
+#define HasGcc2			Yes	/* for GCC 2.0 or later */
+#define HasSockets		YES
+
+#define UNCOMPRESSPATH		/bin/uncompress
+
+#define ExtensionOSDefines	-DXTESTEXT1
+#ifndef MotifBC
+#define MotifBC	        	YES
+#endif
+
+#ifndef Target_486
+#define Target_486		NO	/* YES if binaries are for 486 */
+#endif
+
+#ifdef CROSS_COMPILE
+#define YaccCmd			yacc
+#define LexCmd			lex
+#else
+#define YaccCmd			bison -y
+#define LexCmd			flex
+#endif
+
+#ifdef YaccCmd
+               YACC = YaccCmd
+#endif
+
+#ifdef LexCmd
+                LEX = LexCmd
+#endif
+
+      LOCAL_LDFLAGS = -s -jump
+
+#ifdef CROSS_COMPILE
+             HOSTCC = gcc -fwritable-strings -fomit-frame-pointer -shlib
+#else
+             HOSTCC = $(CC)
+#endif
+
+#ifdef CROSS_COMPILE
+#define ArCmd		/local/lib/gcc-lib/"i386-linux"/2.2.2d/ar clq
+#define AsCmd		/local/lib/gcc-lib/"i386-linux"/2.2.2d/as
+#define CppCmd		/local/lib/gcc-lib/"i386-linux"/2.2.2d/cpp
+#define LdCmd		/local/lib/gcc-lib/"i386-linux"/2.2.2d/ld
+#define RanlibCmd	/local/lib/gcc-lib/"i386-linux"/2.2.2d/ranlib
+#define LnCmd		ln
+
+#define CcCmd		gcc -fwritable-strings -fomit-frame-pointer -V 2.2.2d -b "i386-linux"
+
+#else
+#define CppCmd		/lib/cpp
+#define CcCmd		gcc -fwritable-strings -fomit-frame-pointer
+#endif
+
+/* You must manually compute BootstrapCFlags for initial build */
+#define BootstrapCFlags		OSDefines OSRelease
+
+#define StandardDefines		OSDefines OSRelease
+
+#define LdCombineFlags		-r
+
+#if Target_486
+# define Gcc2MOption -m486
+#else
+# define Gcc2MOption -m386
+#endif
+
+#define GccGasOption -DGCCUSESGAS
+
+#if HasNdbm
+# if HasSdbm
+#  define NdbmDefines           -DNDBM -DSDBM
+# else
+#  define NdbmDefines		-DNDBM
+# endif
+#endif
+
+#define DefaultCCOptions Gcc2MOption -DNO_ASM -fwritable-strings
+#define LibraryCCOptions Gcc2MOption -DNO_ASM 
+#define OptimizedCDebugFlags -O2
+
+#if 0
+#define ShlibDefines -D__GNUC__ -DGNULIB=/usr/local/lib/gcc-gnulib
+#endif
+
+#ifdef HAS_TCPIP
+#define ServerExtraDefines GccGasOption -DXDMCP -DGOOD_ET4000
+#else
+#define ServerExtraDefines GccGasOption -DGOOD_ET4000
+#endif
+
+#define AsmDefines -DUSE_GAS
+
+#define AssembleObject(flags) $(RM) $@                                  @@\
+	$(CPP) AsmDefines $(INCLUDES) flags $*.s > $*.i                 @@\
+	$(AS) -o $*.o $*.i                                              @@\
+	$(RM) $*.i
+
+#define NormalAsmObjectRule()                                           @@\
+.s.o:                                                                   @@\
+	AssembleObject($(_NOOP_))
+
+#define ObjectFromSpecialAsmSource(dst,src,flags)                       @@\
+dst.s:  src.s                                                           @@\
+	$(RM) $@                                                        @@\
+	$(LN) $? $@                                                     @@\
+                                                                        @@\
+dst.o:  dst.s                                                           @@\
+	AssembleObject(flags)                                           @@\
+                                                                        @@\
+depend:: dst.s                                                          @@\
+                                                                        @@\
+clean::                                                                 @@\
+	$(RM) dst.s
+
+#define InstallManPageLong(file,destdir,dest)				@@\
+install.man:: file.man							@@\
+	@echo Oops. Not done yet.
+
+#define InstallMultipleMan(list,dest)                                   @@\
+install.man:: list                                                      @@\
+	@echo Oops. Not done yet.
+
+/*
+ * DependTarget - generate rules to compute dependencies for all files
+ * listed in $(SRCS).
+ */
+#define DependTarget()							@@\
+depend::								@@\
+	(TMP=/tmp/makedepend$$$$; \					@@\
+	sed -e '/^# DO NOT DELETE/,$$d' < Makefile > $$TMP; \		@@\
+	echo "# DO NOT DELETE" >> $$TMP; \				@@\
+	(for i in $(SRCS) __foo__; do \					@@\
+	  if [ $$i != __foo__ ]; then \					@@\
+	    dir=`dirname $$i`; base=`basename $$i .s`; \		@@\
+	    filename=`basename $$i .foooooo`; \				@@\
+	    if [ $$dir/$${base}.s = $$dir/$$filename ]; then \		@@\
+	      mv $$i $$dir/$${base}.S; \				@@\
+	      $(CC) -M $(ALLDEFINES) $$dir/$${base}.S | \		@@\
+		sed 's,\.S,\.s,'; \					@@\
+	      mv $$dir/$${base}.S $$i; \				@@\
+	    else $(CC) -imake -M $(ALLDEFINES) $$i; fi; \		@@\
+	   fi; \							@@\
+	 done) >> $$TMP; \						@@\
+	mv Makefile Makefile.bak; \					@@\
+	mv $$TMP Makefile;)
+
+
+ .SUFFIXES: .S .C .cc .o .s .i
+
+ .S.o:
+	$(CC) $(CFLAGS) -c  $<
+
+ .c.s:
+	$(CC) $(CFLAGS) -S  $<
+
+ .c.i:
+	$(CC) $(CFLAGS) -E  $< -o $*.i
+
+ .C.o:
+	$(CC) $(CFLAGS) -c  $<
+
+ .C.s:
+	$(CC) $(CFLAGS) -S  $<
+
+ .C.i:
+	$(CC) $(CFLAGS) -E  $< -o $*.i
+
+ .cc.o:
+	$(CC) $(CFLAGS) -c  $<
+
+ .cc.s:
+	$(CC) $(CFLAGS) -S  $<
+
+ .cc.i:
+	$(CC) $(CFLAGS) -E  $< -o $*.i
