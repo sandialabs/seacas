@@ -9,7 +9,7 @@ and path, then generate Makefiles for ACCESS to build and install
 ACCESS.
 
 1) Unpack the ACCESS distribution
-   % tar -zxvf seams.tar.gz
+   % tar -zxvf seacas.tar.gz
    % ls ACCESS
 
 2) Download netcdf.  The most recent released version (currently 4.1.3) is recommended. 
@@ -27,19 +27,19 @@ ACCESS.
 #define NC_MAX_VARS     524288   /* max variables per file */
 #define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
 
-2) cd back to the top-level 'seams' subdirectory
-   -- You can also rename 'seams' to any other name you desire.
+2) cd back to the top-level 'seacas' subdirectory
+   -- You can also rename 'seacas' to any other name you desire.
 
-3) The current directory (seams unless you renamed if) will be your
+3) The current directory (seacas unless you renamed if) will be your
    ACCESS root.  Set the environment variable ACCESS to point to this
    area. 
    -- setenv ACCESS `pwd`  (csh/tcsh)
    -- export ACCESS=`pwd`  (sh/bash)
 
-   If you do an 'ls $ACCESS', you should see something similar to:
+   If you do an 'ls $ACCESS/ACCESS', you should see something similar to:
 
-Imakefile application doc-source  itools        netcdf      serial_mpi
-Makefile  deprecated  hdf5        libraries     scripts     
+applications  Imakefile  itools  libraries  netcdf  scripts  serial_mpi
+
 
 4) Move into the $ACCESS/ACCESS/itools/config/cf directory and edit
    the 'site.def' and the configuration file associated with your
@@ -92,13 +92,14 @@ Makefile  deprecated  hdf5        libraries     scripts
       of MatlabLibraries and MatlabIncludes down below.
 
    ------------------------------------------------------------------------
-   b) platform.cf (platform=hardware or os type) [linux.cf, darwin.cf, ?.cf]
-      The platform.cf configuration file contains system-specific settings; in
-      particular compiler paths.  The linux.cf file is the most complicated
-      due to the multitude of compilers available.  Pick the define corresponding
-      to the compilers you will be using and then search for that #if block
-      and make sure paths are correct; the paths typically only need changing for
-      parallel compiles and if your system has multiple versions of compilers.
+   b) platform.cf (platform=hardware or os type) [linux.cf, darwin.cf,
+      ?.cf] The platform.cf configuration file contains system-specific
+      settings; in particular compiler paths.  The linux.cf file is the
+      most complicated due to the multitude of compilers available.  Pick
+      the define corresponding to the compilers you will be using and
+      then search for that #if block and make sure paths are correct; the
+      paths typically only need changing for parallel compiles and if
+      your system has multiple versions of compilers.
 
       If you are building on a 64-bit system, define Build64BitAccess YES.
 
