@@ -173,7 +173,7 @@ DefaultGroup=`grep "define Group" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d'
 
 ExecuteCommand() {
 Command=$1
-LogFile=$2
+LogFile=$DefaultAccessRootDir/Logs/$2
 DirName=$3
 LocalBootStrapCFlags=$4
 NextCommand=$5
@@ -202,7 +202,11 @@ if [ \( "$LocalConfigFile" = "interix" \) -o \( "$LocalConfigFile" = "crossredst
 else
    echo "Executing ${txtpur}'$Command'${txtrst} in $DirName"
 fi
-echo "   Command output is saved in $DirName/$LogFile"
+echo "   Command output is saved in $LogFile"
+
+if [ ! -e $DefaultAccessRootDir/Logs ] ; then
+   mkdir $DefaultAccessRootDir/Logs
+fi
 
 if [ -f $LogFile ]; then
         i=1
@@ -484,7 +488,7 @@ ExecuteCommand "make World" "makeWorld.log" \
 DoMakeInstallItools() {
 InDoMakeInstallAccess=NO
 InDoMakeInstallItools=YES
-ExecuteCommand "make install" "makeinstall.log" \
+ExecuteCommand "make install" "makeInstallItools.log" \
                "$DefaultAccessRootDir/ACCESS/itools" "" \
                "with 'accmkmf' in $DefaultAccessRootDir/ACCESS/"
 
