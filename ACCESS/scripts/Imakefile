@@ -3,6 +3,10 @@ XCOMM $Id: Imakefile,v 1.158 2008/06/19 14:57:43 gdsjaar Exp $
 NormalCTarget(zpad,zpad.o,NullParameter,NullParameter,NullParameter)
 InstallProgram(zpad,$(BINDIR))
 
+XCOMM Some systems do not have enhanced getopt.  Provide our own copy...
+NormalCTarget(getopt.seacas,getopt.seacas.o,NullParameter,NullParameter,NullParameter)
+InstallProgram(getopt.seacas,$(BINDIR))
+
 audit.log::
 	touch audit.log
 	chmod 666 audit.log
