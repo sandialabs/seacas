@@ -125,6 +125,7 @@ int ex_open_int (const char  *path,
    int status;
    int old_fill;
    int file_wordsize;
+   int dim_str_name;
    char errmsg[MAX_ERR_LENGTH];
 
   exerrval = 0; /* clear error code */
@@ -187,6 +188,17 @@ int ex_open_int (const char  *path,
               exoid);
       ex_err("ex_open", errmsg, exerrval);
       return (EX_FATAL);
+    }
+
+    /* If the DIM_STR_NAME variable does not exist on the database, we
+       need to add it now.
+    */
+    status = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
+    if(status != NC_NOERR) {
+      /* Not found; set to default value of 32+1. */
+      nc_redef(exoid);
+      status = nc_def_dim(exoid, DIM_STR_NAME, 33, &dim_str_name);
+      nc_enddef (exoid);
     }
   }
   else 
