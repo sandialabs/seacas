@@ -1,3 +1,5 @@
+#!/bin/bash -f
+
 function usage {
 USAGE="Usage: post filename device [postcript option | list]"
    echo ""
