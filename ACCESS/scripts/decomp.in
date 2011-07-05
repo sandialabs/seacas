@@ -206,7 +206,9 @@ fi
 
 ########################################################################
 # decomp options:
-TEMP=`getopt -o hno:p:j:r:R:S: -a \
+GETOPT=${ACCESS}/bin/getopt.seacas
+
+TEMP=`${GETOPT} -o hno:p:j:r:R:S: -a \
     --long help,nem_slice_flag,processors:,rootdir:,subdir: \
     --long multikl,rcb,rib,sfc,spectral,inertial,linear,random,scattered,brick,zpinch \
     -n 'decomp' -- "$@"`

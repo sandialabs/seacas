@@ -73,7 +73,9 @@ device="x11"
 
 export EXT04=NO
 
-TEMP=`getopt -o aoidhbp -a --long ps_option:,device:,input:,hardcopy:,basename:,aprepro,help -n 'blot' -- "$@"`
+GETOPT=${ACCESS}/bin/getopt.seacas
+
+TEMP=`${GETOPT} -o aoidhbp -a --long ps_option:,device:,input:,hardcopy:,basename:,aprepro,help -n 'blot' -- "$@"`
 
 if [ $? != 0 ] ; then usage ; exit 1 ; fi
 
@@ -145,10 +147,6 @@ fi
 
 export FOR090="Blot.90.$$"
 
-cp ${ACCESS}/bin/SSRFNT SSRFNT
-cp ${ACCESS}/bin/STKFNT STKFNT
-cp ${ACCESS}/bin/ROMFNT ROMFNT
-
 if [ "${device}" == "dual" ]
 then
     export DUAL_FILENAME="${filename}.met"
@@ -180,9 +178,6 @@ then
 fi
 
 # Remove temporary files
-if [ -e STKFNT ] ; then rm -f STKFNT ; fi
-if [ -e SSRFNT ] ; then rm -f SSRFNT ; fi
-if [ -e ROMFNT ] ; then rm -f ROMFNT ; fi
 if [ -e Blot.90.$$ ] ; then rm -f Blot.90.$$ ; fi
 
 echo "${txtgrn}BLOT Successful Execution${txtrst}"
