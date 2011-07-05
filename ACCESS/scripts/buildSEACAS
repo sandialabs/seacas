@@ -166,6 +166,21 @@ ACCESS=$DefaultAccessRootDir; export ACCESS
 PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
 
 DefaultGroup=`grep "define Group" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
+
+#
+# Check that netcdf exists...
+#
+nc_vers=`grep -m 1 V_NUM $DefaultAccessRootDir/ACCESS/netcdf/Imakefile |cut -f2 -d'='`
+if [ ! -e $DefaultAccessRootDir/ACCESS/netcdf/$nc_vers ] ; then
+    echo "${txtred}"
+    echo "  ERROR: NETCDF library not found."
+    echo "  The directory $DefaultAccessRootDir/ACCESS/netcdf/$nc_vers"
+    echo "  does not exist.  Have you downloaded and installed netcdf?${txtrst}"
+    echo ""
+    echo "  The script will now exit so you can correct this problem."
+    echo ""
+    exit
+fi
 }
 
 
