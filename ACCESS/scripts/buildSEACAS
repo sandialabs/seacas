@@ -127,22 +127,22 @@ DefaultAccessRootDir=`/bin/pwd`
 SiteConfig="ACCESS/itools/config/cf/site.def"    
 
 if [ ! -d $DefaultAccessRootDir/ACCESS/itools/config/cf ]; then
-    echo ""
+    echo "${txtred}"
     echo "\"$DefaultAccessRootDir/ACCESS/itools/config/cf\" does not exist!"
     echo "The basic SEACAS directory structure is not setup correctly"
     echo "or you are running the script from the wrong directory!"
     echo "Exiting the script..."
-    echo ""
+    echo "${txtrst}"
     exit
 fi
 
 if [ ! -f $DefaultAccessRootDir/$SiteConfig ]; then
-   echo ""
+   echo "${txtred}"
    echo "\"$DefaultAccessRootDir/$SiteConfig\" does \
 not exist!"
    echo "One of the main SEACAS configuration files is missing!"
    echo "Exiting the script..."
-   echo ""
+   echo "${txtrst}"
    exit
 fi
 
@@ -151,12 +151,23 @@ fi
 # The cd wierdness is that sometimes two strings don't match, but they
 # refer to the same path...
 FileAccessRootDir=`grep "define AccessRoot" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
+if [ ! -e $FileAccessRootDir ] ; then
+    echo "${txtred}"
+    echo "Incorrect Setting:"
+    echo "  The AccessRoot specified in site.def does not exist:"
+    echo "     $FileAccessRootDir"
+    echo "${txtrst}"
+    echo "The script will now exit so you can correct this problem."
+    exit
+fi
+
 cd $FileAccessRootDir; FileAccessRootDir=`/bin/pwd`; cd $DefaultAccessRootDir
 if [ $DefaultAccessRootDir != $FileAccessRootDir ]; then
+    echo "${txtred}"
     echo "Settings conflict:"
     echo "  Your current working directory $DefaultAccessRootDir"
     echo "  Must match the AccessRoot setting in site.def: $FileAccessRootDir"
-    echo ""
+    echo "${txtrst}"
     echo "The script will now exit so you can correct this problem."
     exit
 fi
