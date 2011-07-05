@@ -8,7 +8,7 @@ V_BASE = 4.hdf5
 #else
 V_BASE = 4
 #endif
-V_NUM = netcdf-4.1.3
+V_NUM=netcdf-4.1.3
 
 TRUE_NETCDF = $(V_NUM)
 
