@@ -136,6 +136,7 @@ if ! test -z "$1" ; then
         echo "${txtred}ERROR: File  '$1' does not exist.${txtrst}"
 	usage
     fi
+    shift
 fi
 
 # Check for device specified, use ${device} if none specified
