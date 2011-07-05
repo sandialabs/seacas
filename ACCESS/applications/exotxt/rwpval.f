@@ -32,7 +32,8 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
 C************************************************************************
-      subroutine rwpval(ndbi, ndbo, flag, nump, nval, names, values)
+      subroutine rwpval(ndbi, ndbo, flag, nump, nval, names, values,
+     *  namlen)
 C************************************************************************
 C     This subroutine with read properties from an input file and
 C     write properties to an output text file
@@ -44,10 +45,8 @@ C     nval   - IN - number of values
 C     names  - IN - names of the properties
 C     values - IN - values of the properties
 
-      include 'params.blk'
-
       integer ndbi, ndbo, flag, nump, nval
-      character*(mxstln) names(*)
+      character*(namlen) names(*)
       integer values(*)
 
       if (nump .eq. 0) return

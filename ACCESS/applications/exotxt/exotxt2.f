@@ -431,7 +431,7 @@ C     Reserve memory for element block properties names and values
       write (NTXT, '(I10,12x,A)') numebp, 
      &      '! Number of ELEMENT BLOCK Properties'
       call rwpval (ndb, NTXT, EXEBLK, numebp, nelblk,
-     &             c(iebpn), a(iebpv))
+     &             c(iebpn), a(iebpv), namlen)
 
       call mcdel ('EBPNAM')
       call mddel ('EBPVAL')
@@ -451,7 +451,7 @@ C************************************************************************
       write (NTXT, '(I10,12x,A)') numnsp, 
      &      '! Number of NODE SET Properties'
       call rwpval (ndb, NTXT, EXNSET, numnsp, numnps,
-     &             c(inspn), a(inspv))
+     &             c(inspn), a(inspv), namlen)
 
       call mcdel ('NSPNAM')
       call mddel ('NSPVAL')
@@ -472,7 +472,7 @@ C************************************************************************
       write (NTXT, '(I10,12x,A)') numssp, 
      &      '! Number of SIDE SET Properties'
       call rwpval (ndb, NTXT, EXSSET, numssp, numess,
-     &             c(isspn), a(isspv))
+     &             c(isspn), a(isspv), namlen)
 
       call mcdel ('SSPNAM')
       call mddel ('SSPVAL')
