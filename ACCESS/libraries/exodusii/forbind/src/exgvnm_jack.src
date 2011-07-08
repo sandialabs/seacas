@@ -140,8 +140,9 @@ extern void ex_fcdcpy(char*, int, char*);
     }
 
     /* Copy Fortran variable names to staging space */
-      /** printf("[exgvnm] var_name(%d): %s\n",*var_index,sptr)); **/
-      ex_fcdcpy(var_name,slen,sptr);/* copy string into Fortran buffer */
+    /** printf("[exgvnm] var_name(%d): %s\n",*var_index,sptr)); **/
+    memset(var_name, 0, var_namelen);
+    ex_fcdcpy(var_name,slen,sptr);/* copy string into Fortran buffer */
 
     free(sptr); /* Free up string staging area */
 }

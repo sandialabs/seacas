@@ -67,10 +67,17 @@ C     optional arguments, so all arguments must be specified by the
 C     caller.
 
       CHARACTER*(*)  COMMAND
-      INTEGER        LENGTH
-      INTEGER        STATUS
+      integer        length, status
 
+#if defined(FOURBYTEINTRINSIC)
+      INTEGER*4      IARG,NARG,IPOS,LENARG
+      integer*4      len_trimf2k, len
+      integer*4      iargc
+#else
       INTEGER        IARG,NARG,IPOS,LENARG
+      integer        len_trimf2k, len
+      integer        iargc
+#endif      
       CHARACTER*2000 ARGSTR
       LOGICAL        GETCMD
 
@@ -105,7 +112,7 @@ C
       RETURN
       END
 C
-      SUBROUTINE GET_COMMAND_ARGUMENT(NUMBER,VALUE,LENGTH,STATUS)
+      SUBROUTINE GET_COMMAND_ARGUMENT(NUMBER8,VALUE,LENGTH8,STATUS8)
 C
 C Description. Returns a command argument.
 C
@@ -150,25 +157,33 @@ C (2) The Fortran 77 implementation of this routine does not support
 C     optional arguments, so all arguments must be specified by the
 C     caller.
 C
-      INTEGER       NUMBER
+      INTEGER       NUMBER8
       CHARACTER*(*) VALUE
-      INTEGER       LENGTH
-      INTEGER       STATUS
+      INTEGER       LENGTH8
+      INTEGER       STATUS8
 
+#if defined(FOURBYTEINTRINSIC)
+      integer*4     number
+      integer*4     len_trimf2k, iargc
+#else
+      integer       number
+      integer       len_trimf2k, iargc
+#endif
 C
 C Possible error codes:
 C 1 = Argument number is less than minimum
 C 2 = Argument number exceeds maximum
 C
+      number = number8
       IF (NUMBER.LT.0) THEN
           VALUE  = ' '
-          LENGTH = 0
-          STATUS = 1
+          LENGTH8 = 0
+          STATUS8 = 1
           RETURN
       ELSE IF (NUMBER.GT.IARGC()) THEN
           VALUE  = ' '
-          LENGTH = 0
-          STATUS = 2
+          LENGTH8 = 0
+          STATUS8 = 2
           RETURN
       ENDIF
 
@@ -184,6 +199,7 @@ C knowing the true length of any quoted arguments.
 C Just find last non-blank character in string.
 C
       LENGTH = LEN_TRIMF2K(VALUE)
+      length8 = length
 
 C Since GETARG does not return a result code, assume success
 
@@ -191,7 +207,11 @@ C Since GETARG does not return a result code, assume success
       RETURN
       END
 
-      INTEGER FUNCTION LEN_TRIMF2K(STRING)
+#if defined(FOURBYTEINTRINSIC)
+      INTEGER*4 FUNCTION LEN_TRIMF2K(STRING)
+#else
+      INTEGER   FUNCTION LEN_TRIMF2K(STRING)
+#endif
 C
 C Return actual length of supplied string,
 C excluding trailing blanks or zero if blank.
@@ -200,7 +220,8 @@ C STRING = String to search
 C
       CHARACTER*(*) STRING
 
-      INTEGER       IPOS
+      INTEGER*4       IPOS
+      integer*4       len
 
       DO 100 IPOS = LEN(STRING),1,-1
         IF (STRING(IPOS:IPOS).NE.' ') THEN

@@ -230,7 +230,6 @@ namespace {
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
-    int total_elements = 0;
     while (i != ebs.end()) {
       if ((*i)->get_property("topology_type").get_string() == "hex8") {
 	hex_volume(*i, coordinates);

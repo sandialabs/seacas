@@ -96,7 +96,7 @@ namespace Ioss {
     bool is_alias(const std::string &name) const;
 
     //: Return list of blocks that the entities in this GroupingEntity "touch"
-    //: For a SideSet, returns a list of the element blocks that the
+    //: For a FaceSet or EdgeSet, returns a list of the element blocks that the
     //: elements in the set belong to.  For a nodeset, returns "nodeblock_1".
     //: For others, it returns an empty vector.
     //: Entries are pushed onto the "block_members" vector, so it will be
