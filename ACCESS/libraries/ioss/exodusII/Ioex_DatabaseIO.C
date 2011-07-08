@@ -1552,14 +1552,14 @@ namespace Ioex {
 	}
 
 	for (int i = 0; i < sidesetCount; i++) {
-	  char ss_name[maximumNameLength+1];
-	  error = ex_get_name(get_file_pointer(), EX_SIDE_SET, side_set_ids[i], ss_name);
+	  std::vector<char> ss_name(maximumNameLength+1);
+	  error = ex_get_name(get_file_pointer(), EX_SIDE_SET, side_set_ids[i], &ss_name[0]);
 	  if (error < 0) {
 	    exodus_error(get_file_pointer(), __LINE__, myProcessor);
 	  }
 	  if (ss_name[0] != '\0') {
-	    Ioss::Utils::fixup_name(ss_name);
-	    decode_surface_name(fs_map, fs_set, ss_name);
+	    Ioss::Utils::fixup_name(&ss_name[0]);
+	    decode_surface_name(fs_map, fs_set, &ss_name[0]);
 	  }
 	}
       }
