@@ -161,7 +161,8 @@ void read_restart_params(int io_ws)
     }
 
     max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-
+    ex_set_max_name_length(exoid, max_name_length);
+    
     /*
      * Just do a rudimentary check to figure out if the mesh parameters
      * in the results file are the same as the mesh parameters in the

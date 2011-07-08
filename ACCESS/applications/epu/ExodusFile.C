@@ -176,7 +176,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface& si, int start_part, int
       }
 
       int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-      maximumNameLength_ = max_name_length;
+      if (max_name_length > maximumNameLength_)
+	maximumNameLength_ = max_name_length;
 
       ex_close(exoid);
 
@@ -250,6 +251,11 @@ bool Excn::ExodusFile::create_output(const SystemInterface& si, int cycle)
     return false;
   }
 
+  // EPU Can add a name of "processor_id_epu" which is 16 characters long.
+  // Make sure maximumNameLength_ is at least that long...
+  
+  if (maximumNameLength_ < 16)
+    maximumNameLength_ = 16;
   ex_set_max_name_length(outputId_, maximumNameLength_);
 
   std::cout << "IO Word size is " << ioWordSize_ << " bytes.\n";
