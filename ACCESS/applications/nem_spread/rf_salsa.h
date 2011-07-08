@@ -44,7 +44,7 @@
 */
 
 #define UTIL_NAME "nem_spread"
-#define VER_STR   "5.15 (2011/06/29)"
+#define VER_STR   "5.16 (2011/07/06)"
 
 /*****************************************************************************/
 /*		PROTOTYPES FOR COMMON MP FUNCTIONS		  	     */
