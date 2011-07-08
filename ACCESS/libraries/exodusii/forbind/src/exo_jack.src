@@ -879,7 +879,7 @@ itos(ints, dims, ndims)
 
     for (i=0;i<num_info;i++) /* Copy Fortran info records to staging space */
     {
-      ex_fcdcpy(info+i*slen,slen,*(aptr+i));	/* copy string into buffer */
+      ex_fcdcpy(info+i*infolen,slen,*(aptr+i));	/* copy string into buffer */
       /** printf("[exginf] rec: %d , %s\n",i,*(aptr+i)); **/
     }
 
@@ -1127,11 +1127,12 @@ itos(ints, dims, ndims)
     }
 
     /* copy C strings to Fortran arrays */
+    memset(coord_names, 0, ndim*coord_nameslen);
     for (i=0;i<ndim;i++)
     {
       if (exoptval & EX_DEBUG)
         printf("[exgcon] name(%d): %s\n",i,*(aptr+i));
-      ex_fcdcpy(coord_names+i*slen,slen,*(aptr+i)); /* copy and blank fill */
+      ex_fcdcpy(coord_names+i*coord_nameslen,slen,*(aptr+i)); /* copy and blank fill */
     }
 
     free(sptr);        /* Free up string buffer space */
@@ -1413,6 +1414,7 @@ itos(ints, dims, ndims)
       return;
     }
     /* Copy element type name from staging area to Fortran array */
+    memset(elem_type, 0, elem_typelen);
     ex_fcdcpy (elem_type, slen, sptr);
 /*    cstra2fstra(sptr,elem_type,elem_typelen,num_elem_this_blk); */
     free(sptr);
@@ -1712,9 +1714,10 @@ itos(ints, dims, ndims)
       }
     }
     /* Copy Fortran names from staging space */
+    memset(names, 0, *num_attr*nameslen);
     for (i=0;i<*num_attr;i++)
     {
-	ex_fcdcpy(names+i*slen,slen,*(aptr+i));/* copy str into Fortran buffer */
+	ex_fcdcpy(names+i*nameslen,slen,*(aptr+i));/* copy str into Fortran buffer */
     }
 
     free(sptr);	/* Free up string staging area */
@@ -1957,9 +1960,10 @@ itos(ints, dims, ndims)
     }
 
     /* Copy Fortran names from staging space */
+    memset(names, 0, *num_obj*nameslen);
     for (i=0;i<*num_obj;i++)
     {
-	ex_fcdcpy(names+i*slen,slen,*(aptr+i));/* copy str into Fortran buffer */
+	ex_fcdcpy(names+i*nameslen,slen,*(aptr+i));/* copy str into Fortran buffer */
     }
 
     free(sptr);	/* Free up string staging area */
@@ -2164,11 +2168,12 @@ itos(ints, dims, ndims)
       return;
     }
     /* copy C strings to Fortran arrays */
+    memset(prop_names, 0, num_props*prop_nameslen);
     for (i=0;i<num_props;i++)
     {
       if (exoptval & EX_DEBUG)
         printf("[exgpn] name(%d): %s\n",i,*(aptr+i));
-      ex_fcdcpy(prop_names+i*slen,slen,*(aptr+i)); /* copy and blank fill */
+      ex_fcdcpy(prop_names+i*prop_nameslen,slen,*(aptr+i)); /* copy and blank fill */
     }
 
     /* Free up the space we used */
@@ -3568,10 +3573,11 @@ itos(ints, dims, ndims)
     }
 
     /* Copy Fortran variable names to staging space */
+    memset(var_names, 0, *num_vars*var_nameslen);
     for (i=0;i<*num_vars;i++)
     {
       /** printf("[exgvan] var_name(%d): %s\n",i,*(aptr+i)); **/
-      ex_fcdcpy(var_names+i*slen,slen,*(aptr+i));/* copy str into Fortran buffer */
+      ex_fcdcpy(var_names+i*var_nameslen,slen,*(aptr+i));/* copy str into Fortran buffer */
     }
 
     free(sptr);	/* Free up string staging area */

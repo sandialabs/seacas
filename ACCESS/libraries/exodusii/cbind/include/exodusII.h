@@ -47,8 +47,8 @@
 #include "stddef.h"
 
 /* EXODUS II version number */
-#define EX_API_VERS 5.07f
-#define EX_API_VERS_NODOT 507
+#define EX_API_VERS 5.08f
+#define EX_API_VERS_NODOT 508
 #define EX_VERS EX_API_VERS
 
 

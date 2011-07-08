@@ -47,32 +47,18 @@
 namespace Ioss {
 
   class NodeBlock;
-  class EdgeBlock;
-  class FaceBlock;
   class ElementBlock;
-
-  class NodeSet;
-  class EdgeSet;
-  class FaceSet;
-  class ElementSet;
-
-  class CommSet;
   class SideSet;
   class SideBlock;
+  class NodeSet;
+  class CommSet;
 
   typedef std::vector<NodeBlock*>    NodeBlockContainer;
-  typedef std::vector<EdgeBlock*>    EdgeBlockContainer;
-  typedef std::vector<FaceBlock*>    FaceBlockContainer;
   typedef std::vector<ElementBlock*> ElementBlockContainer;
-
-  typedef std::vector<NodeSet*>      NodeSetContainer;
-  typedef std::vector<EdgeSet*>      EdgeSetContainer;
-  typedef std::vector<FaceSet*>      FaceSetContainer;
-  typedef std::vector<ElementSet*>   ElementSetContainer;
-
   typedef std::vector<SideSet*>      SideSetContainer;
+  typedef std::vector<NodeSet*>      NodeSetContainer;
   typedef std::vector<CommSet*>      CommSetContainer;
-  typedef std::vector<double>        StateTimeContainer;
+  typedef std::vector<double>          StateTimeContainer;
 
   typedef std::map<std::string, std::string, std::less<std::string> > AliasMap;
   typedef AliasMap::value_type IOAliasValuePair;
