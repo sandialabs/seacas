@@ -313,6 +313,13 @@ fi
 HasOptionC=NO
 SkipIt=NO
 
+if [ $continue -eq 1 ] && [ "$PossibleError" = "YES" ] ; then
+   echo ""
+   echo "   ${txtred}An error might have occured! (Code=${err_chk})${txtrst}"
+   echo "   Continuing due to -continue option."
+   PossibleError="NO"
+fi
+
 if [ "$PossibleError" = "YES" ]; then
    echo ""
    echo "   ${txtred}An error might have occured! (Code=${err_chk})${txtrst}"
@@ -851,7 +858,13 @@ read Response
 # Main part of the script:
 
 # Set default values:
- 
+if [ "$1" = "-continue" ]
+then
+    continue=1
+else
+    continue=0
+fi
+
 # Default setting for $ACCESS:
 GetDefaultAccessRootDir
 
@@ -879,6 +892,9 @@ do
    echo "   SEACAS Root:        ${txtpur}$DefaultAccessRootDir${txtrst}"
    echo "   Install group:      ${txtpur}$DefaultGroup${txtrst}"
    echo "   Current umask:      ${txtpur}`umask`${txtrst}"
+   if [ $continue ] ; then
+   echo "   Continue automatically if possible error detected."
+   fi
    echo ""
    echo "If you have not modified the files, or the settings are wrong,"
    echo "enter 'q' to exit this script."
