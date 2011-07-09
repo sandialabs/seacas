@@ -610,9 +610,7 @@ itos(ints, dims, ndims)
   char errmsg[MAX_ERR_LENGTH];
 
 
-    char cdummy[2];
     int num_qa_records;
-    real rdummy;
     char **sptr;  /* internal string pointer array for malloc use */
     int i,ii,iii,slen,alen;
 
@@ -809,8 +807,6 @@ itos(ints, dims, ndims)
     char **aptr;  /* internal string array pointer for malloc use */
     char *sptr;   /* internal string pointer for malloc use */
     int i,slen,num_info;
-    real fdummy;
-    char cdummy[2];
 
     *ierr=0;     /* default no errror */
 
@@ -967,9 +963,7 @@ itos(ints, dims, ndims)
 
     char **aptr;  /* internal array of string pointers for malloc use */
     char *sptr;   /* internal string pointer for malloc use */
-    char cdummy[2];
     int i,ndim,slen;
-    real fdummy;
 
     *ierr=0;     /* default no errror */
 
@@ -1052,9 +1046,7 @@ itos(ints, dims, ndims)
 
     char **aptr;  /* internal string array pointer for malloc use */
     char *sptr;   /* internal string pointer for malloc use */
-    char cdummy[2];
     int ndim;
-    real fdummy;
     int i,slen;
 
     *ierr = 0; /* default no error */
@@ -1217,8 +1209,6 @@ itos(ints, dims, ndims)
 
 
     int num_elem_blk;
-    char cdummy[2];
-    real fdummy;
 
     char **aptr;/* ptr to temp staging space for string array ptrs */
     char *sptr; /* ptr to temp staging space for strings */
@@ -2071,11 +2061,9 @@ itos(ints, dims, ndims)
 
     char **aptr;  /* internal string array pointer for malloc use */
     char *sptr;  /* internal string pointer for malloc use */
-    char *cdummy = 0;
     int i, slen;
     ex_inquiry inq_code;
     int num_props;
-    real fdummy;
 
     *ierr = 0;
 
@@ -2652,8 +2640,6 @@ itos(ints, dims, ndims)
 
 
     int num_node_sets, i, *node_index_ptr, *dist_index_ptr;
-    char cdummy[2];
-    real fdummy;
 
     *ierr = 0;
 
@@ -2744,8 +2730,6 @@ itos(ints, dims, ndims)
 
 
     int num_node_sets, i, *node_index_ptr, *dist_index_ptr;
-    real fdummy;
-    char cdummy[2];
 
     *ierr = 0;
 
@@ -3078,8 +3062,6 @@ itos(ints, dims, ndims)
 %      )
 % {
   int num_side_sets, i, *elem_index_ptr, *dist_index_ptr;
-  real fdummy;
-  char *cdummy = 0;
 
   char errmsg[MAX_ERR_LENGTH];
 
@@ -3177,8 +3159,6 @@ itos(ints, dims, ndims)
 
 
     int i, num_side_sets, *elem_index_ptr, *dist_index_ptr;
-    real fdummy;
-    char cdummy[2];
 
     *ierr = 0;
 
@@ -3285,8 +3265,6 @@ itos(ints, dims, ndims)
 
 
     int i, num_side_sets, *elem_index_ptr, *dist_index_ptr;
-    real fdummy;
-    char cdummy[2];
 
     *ierr = 0;
 
@@ -4390,8 +4368,6 @@ itos(ints, dims, ndims)
 % {
 
     int i, num_side_sets, *node_index_ptr, *elem_index_ptr;
-    real fdummy;
-    char *cdummy = 0;
 
   char errmsg[MAX_ERR_LENGTH];
 
