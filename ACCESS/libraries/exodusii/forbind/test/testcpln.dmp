@@ -107,7 +107,7 @@ variables:
 		:floating_point_word_size = 4 ;
 		:file_size = 0 ;
 		:title = "This is a test" ;
-		:maximum_name_length = 9 ;
+		:maximum_name_length = 32 ;
 data:
 
  eb_status = 0, 0, 0, 0, 0 ;

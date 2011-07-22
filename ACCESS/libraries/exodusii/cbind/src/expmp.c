@@ -50,6 +50,7 @@
 #include "exodusII.h"
 #include "exodusII_int.h"
 #include <assert.h>
+#include <stdlib.h>
 
 /*!
  * defines the number of node and element maps. It is more efficient
@@ -285,10 +286,14 @@ int ex_put_map_param (int   exoid,
 	for (i=0; i < maxset; i++) {
 	  invalid_ids[i] = EX_INVALID_ID;
 	}
-	status = nc_put_var_int(exoid, var_nm_id, invalid_ids);
-	assert(status == NC_NOERR);
-	status = nc_put_var_int(exoid, var_em_id, invalid_ids);
-	assert(status == NC_NOERR);
+	if (num_node_maps > 0) {
+	  status = nc_put_var_int(exoid, var_nm_id, invalid_ids);
+	  assert(status == NC_NOERR);
+	}
+	if (num_elem_maps > 0) {
+	  status = nc_put_var_int(exoid, var_em_id, invalid_ids);
+	  assert(status == NC_NOERR);
+	}
 	free(invalid_ids);
       }
     }

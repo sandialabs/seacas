@@ -119,8 +119,7 @@ while true ; do
 	esac
 done
 
-if test -z "$1"
-then
+if [ $# -eq 0 ] ; then
     echo "${txtred}ERROR: No exodus database specified.${txtrst}"
     usage
 else
@@ -135,8 +134,7 @@ else
 fi    
 
 # Check for device specified, use ${device} if none specified
-if ! test -z "$1"
-then
+if [ $# -gt 0 ] ; then
   device="$1"
 fi
 

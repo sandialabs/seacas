@@ -261,6 +261,7 @@ C
 C
       DIMENSION A(1),IA(1)
       EQUIVALENCE (A(1),IA(1))
+      CHARACTER*(MXSTLN) TYP
 C
 C     ******************************************************************
 C
@@ -1616,12 +1617,12 @@ C
      3,I7,/,10X,'TOTAL NUMBER OF ZONES (BINS) -   ',I7,/,10X,'NUMBER OF 
      4ELEMENTS ALLOWED IN EACH BIN - ',I7,/)
   270 FORMAT (3X,'DATA FROM MESH "A" FILE-',//,10X,'HEADING - ',A,/)
-  280 FORMAT (10x,I2,'DIMENSIONAL MODEL',/
+  280 FORMAT (10x,I1,'-DIMENSIONAL MODEL',/
      &       ,10X,'NUMBER OF NODES IN MESH A (nodesa) -      ',I7,/
      &       ,10X,'NUMBER OF ELEMENTS IN MESH A (numela) -   ',I7,/
      &       ,10X,'NUMBER OF ELEMENT BLOCKS IN A (nblksa) -  ',I7)
   290 FORMAT (3X,'DATA FROM MESH "B" FILE-',//,10X,'HEADING - ',A,/)
-  300 FORMAT (10x,I2,'DIMENSIONAL MODEL',/
+  300 FORMAT (10x,I1,'-DIMENSIONAL MODEL',/
      &       ,10X,'NUMBER OF NODES IN MESH B (nodesb) -      ',I7,/
      &       ,10X,'NUMBER OF ELEMENTS IN MESH B (numelb) -   ',I7,/
      &       ,10X,'NUMBER OF ELEMENT BLOCKS IN B (nblksb) -  ',I7)
