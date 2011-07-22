@@ -1,9 +1,3 @@
-#ifndef lint
-static char     rcsid[] =
-"$Id: getline_int.c,v 1.1 2008/05/05 19:42:09 gdsjaar Exp $";
-static char    *copyright = "Copyright (C) 1991, 1992, 1993, Chris Thewalt";
-#endif
-
 /*
  * Copyright (C) 1991, 1992, 1993 by Chris Thewalt (thewalt@ce.berkeley.edu)
  *

@@ -37,7 +37,7 @@
 #if !defined(__CYGWIN__)
 #include <unistd.h>
 #include <sys/utsname.h>
-#include <sys/times.h>
+#include <sys/resource.h>
 #include <time.h>
 #endif
 
@@ -61,7 +61,7 @@ void addlog(char *name, int len)
   double u_time, s_time;
   struct utsname sys_info;
   char *username = NULL;
-  
+
   /* Don't log information if this environment variable is set */
   if (getenv("SEACAS_NO_LOGGING") != NULL) {
     fprintf(stderr, "SEACAS Audit logging disabled via SEACAS_NO_LOGGING setting.\n");
@@ -87,12 +87,10 @@ void addlog(char *name, int len)
   }
 
   {
-    int ticks_per_second;
-    struct tms time_buf;
-    times(&time_buf);
-    ticks_per_second = sysconf(_SC_CLK_TCK);
-    u_time = (double)(time_buf.tms_utime + time_buf.tms_cutime) / ticks_per_second;
-    s_time = (double)(time_buf.tms_stime + time_buf.tms_cstime) / ticks_per_second;
+    struct rusage rusage;
+    getrusage(RUSAGE_SELF,&rusage);
+    u_time = rusage.ru_utime.tv_sec + rusage.ru_utime.tv_usec / 1.0e6;
+    s_time = rusage.ru_stime.tv_sec + rusage.ru_stime.tv_usec / 1.0e6;
   }
   
   uname(&sys_info);

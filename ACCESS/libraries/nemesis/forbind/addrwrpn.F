@@ -733,7 +733,6 @@ C
       integer*4 num_df_to_get4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       ss_id4 = ss_id
       start_num4 = start_num
@@ -764,7 +763,6 @@ C
       integer*4 num_df_to_get4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       ss_id4 = ss_id
       start_num4 = start_num
@@ -865,7 +863,6 @@ C
       integer*4 num_df_to_get4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       ns_id4 = ns_id
       start_num4 = start_num
@@ -896,7 +893,6 @@ C
       integer*4 num_df_to_get4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       ns_id4 = ns_id
       start_num4 = start_num
@@ -927,7 +923,6 @@ C
       integer*4 num_nodes4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       start_node_num4 = start_node_num
       num_nodes4 = num_nodes
@@ -957,7 +952,6 @@ C
       integer*4 num_nodes4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       start_node_num4 = start_node_num
       num_nodes4 = num_nodes
@@ -1057,7 +1051,6 @@ C
       integer*4 num_elems4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       elem_blk_id4 = elem_blk_id
       start_elem_num4 = start_elem_num
@@ -1088,7 +1081,6 @@ C
       integer*4 num_elems4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       elem_blk_id4 = elem_blk_id
       start_elem_num4 = start_elem_num
@@ -1147,7 +1139,6 @@ C
       integer*4 num_elem4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       time_step4 = time_step
       elem_var_index4 = elem_var_index
@@ -1187,7 +1178,6 @@ C
       integer*4 num_vals4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       time_step4 = time_step
       elem_var_index4 = elem_var_index
@@ -1223,7 +1213,6 @@ C
       integer*4 num_nodes4 
       integer*4 ierr4
 C
-      INTEGER J1X
       idne4 = idne
       time_step4 = time_step
       nodal_var_index4 = nodal_var_index

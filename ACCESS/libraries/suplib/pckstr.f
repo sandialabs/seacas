@@ -50,6 +50,8 @@ C   --      to 1024 characters long
       PARAMETER (MXSTR = 1024)
       CHARACTER*(MXSTR) TMPSTR
 
+      if (nstr .eq. 0) return
+
       LSTR = LENSTR (STR)
       if (lstr .gt. MXSTR) then
         call prterr ('PROGRAM', 'String is too long in SQZSTR')

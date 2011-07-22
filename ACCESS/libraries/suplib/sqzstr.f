@@ -53,6 +53,7 @@ C   --   LENSTR - (STRLIB) Find string length
       PARAMETER (MXSTR = 1024)
       CHARACTER*(MXSTR) TMPSTR
 
+      LSTR = 1
       IF (STRING .EQ. ' ') RETURN
 
       LSTR = LENSTR (STRING)
