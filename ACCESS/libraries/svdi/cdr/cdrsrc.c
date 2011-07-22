@@ -825,12 +825,7 @@ int *ibuffer,*iprompt;
      length of machine     
 */
 
-void cdrjob_()
-{                                           
-  /* This just fills the structure with dummy information... */
-    int uid ;
-    char s[256]; 
-}
+void cdrjob_() {}
 
 /*  *** CDRLWR *** 
 
@@ -903,7 +898,6 @@ int *ifilcd;
   int j = 0;
   char blank = ' ';
   char bslash = '\\';
-  char eos = '\0';
 
   /* check for graphics output file. file name is stored in KGNAME
      from external (common) cdrcm2. if file hasn't been named, or

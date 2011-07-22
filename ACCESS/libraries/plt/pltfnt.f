@@ -31,6 +31,11 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
+C $Id: pltfnt.f,v 1.1 1993/07/16 16:48:09 gdsjaar Exp $ 
+C $Log: pltfnt.f,v $
+C Revision 1.1  1993/07/16 16:48:09  gdsjaar
+C Changed plt to library rather than single source file.
+C 
 C=======================================================================
       SUBROUTINE PLTFNT(FILENM)
       REAL DEVCAP(23)

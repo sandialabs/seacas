@@ -199,8 +199,7 @@ if [ -n "$JUNK" ]; then
   suffix_input='inp'
 fi
 
-if test -z "$1"
-then
+if [ $# -eq 0 ] ; then
   usage
 fi
 
@@ -248,8 +247,7 @@ while true ; do
 done
 
 ########################################################################
-if test -z "$1"
-then
+if [ $# -eq 0 ] ; then
     echo ${txtred}
     echo "ERROR:******************************************************************"
     echo "ERROR:"
