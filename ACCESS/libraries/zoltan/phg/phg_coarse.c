@@ -37,81 +37,113 @@ extern "C" {
 #define BITSET(data, elem)       ((data)[(elem) >> 5] |=( 1 << ((elem) & 31)))
 #define BITCHECK(data, elem)     ((data)[(elem) >> 5] & (1 << ((elem) & 31)))
     
-/* UVC:
-   Following quicksort routines are modified from
-   Numerical Recipes Software
-   these versions of quicksort seems to perform
-   better than the ones that exist in Zoltan
-*/
-    
-#define SWAP(a,b) {temp=(a);(a)=(b);(b)=temp;}
+/*!
+ * The following 'qsort' routine is modified from Sedgewicks
+ * algorithm It selects the pivot based on the median of the left,
+ * right, and center values to try to avoid degenerate cases ocurring
+ * when a single value is chosen.  It performs a quicksort on
+ * intervals down to the QSORT_CUTOFF size and then performs a final
+ * insertion sort on the almost sorted final array.  Based on data in
+ * Sedgewick, the QSORT_CUTOFF value should be between 5 and 20.
+ *
+ * See Sedgewick for further details
+ * Define DEBUG_QSORT at the top of this file and recompile to compile
+ * in code that verifies that the array is sorted.
+ */
 
-#define M             7
-#define NSTACK        50
+#define QSORT_CUTOFF 12
 
-
-static void uqsorti(int n, int *arr)
+/* swap - interchange v[i] and v[j] */
+static void int_swap (int v[], int i, int j)
 {
-    int         i, ir=n, j, k, l=1;
-    int         jstack=0, istack[NSTACK];
-    int         a, temp;
-    
-    --arr;
-    for (;;) {
-        if (ir-l < M) {
-            for (j=l+1;j<=ir;j++) {
-                a=arr[j];
-                for (i=j-1;i>=1;i--) {
-                    if (arr[i] <= a) 
-                        break;
-                    arr[i+1] = arr[i];
-                }
-                arr[i+1]=a;
-            }
-            if (jstack == 0) 
-                break;
-            ir=istack[jstack--];
-            l=istack[jstack--];
-        } else {
-            k=(l+ir) >> 1;
-            SWAP(arr[k],arr[l+1]);
-            if (arr[l+1] > arr[ir]) 
-                SWAP(arr[l+1], arr[ir]);
-            if (arr[l] > arr[ir]) 
-                SWAP(arr[l], arr[ir]);
-            if (arr[l+1] > arr[l]) 
-                SWAP(arr[l+1], arr[l]);
-            i=l+1;
-            j=ir;
-            a=arr[l];
-            for (;;) {
-                do i++; while (arr[i] < a);
-                do j--; while (arr[j] > a);
-                if (j < i) break;
-                SWAP(arr[i], arr[j]);
-            }
-            arr[l]=arr[j];
-            arr[j]=a;
-            jstack += 2;
-            if (jstack > NSTACK) 
-                errexit("uqsort: NSTACK too small in sort.");
-            if (ir-i+1 >= j-l) {
-                istack[jstack]=ir;
-                istack[jstack-1]=i;
-                ir=j-1;
-            } else {
-                istack[jstack]=j-1;
-                istack[jstack-1]=l;
-                l=i;
-            }
-        }
-    }
+  int temp;
+
+  temp = v[i];
+  v[i] = v[j];
+  v[j] = temp;
 }
 
+static int int_median3(int v[], int left, int right)
+{
+  int center;
+  center = (left + right) / 2;
 
-#undef M
-#undef NSTACK
-#undef SWAP
+  if (v[left] > v[center])
+    int_swap(v, left, center);
+  if (v[left] > v[right])
+    int_swap(v, left, right);
+  if (v[center] > v[right])
+    int_swap(v, center, right);
+
+  int_swap(v, center, right-1);
+  return v[right-1];
+}
+
+static void int_qsort(int v[], int left, int right)
+{
+  int pivot;
+  int i, j;
+  
+  if (left + QSORT_CUTOFF <= right) {
+    pivot = int_median3(v, left, right);
+    i = left;
+    j = right - 1;
+
+    for ( ; ; ) {
+      while (v[++i] < v[pivot]);
+      while (v[--j] > v[pivot]);
+      if (i < j) {
+        int_swap(v, i, j);
+      } else {
+        break;
+      }
+    }
+
+    int_swap(v, i, right-1);
+    int_qsort(v, left, i-1);
+    int_qsort(v, i+1, right);
+  }
+}
+
+static void int_isort(int v[], int N)
+{
+  int i,j;
+  int ndx = 0;
+  int small;
+  int tmp;
+  
+  small = v[0];
+  for (i = 1; i < N; i++) {
+    if (v[i] < small) {
+      small = v[i];
+      ndx = i;
+    }
+  }
+  /* Put smallest value in slot 0 */
+  int_swap(v, 0, ndx);
+
+  for (i=1; i <N; i++) {
+    tmp = v[i];
+    for (j=i; v[tmp] < v[j-1]; j--) {
+      v[j] = v[j-1];
+    }
+    v[j] = tmp;
+  }
+}
+
+static void uqsorti(int N, int v[])
+{
+  int_qsort(v, 0, N-1);
+  int_isort(v, N);
+
+#if defined(DEBUG_QSORT)
+  fprintf(stderr, "Checking sort of %d values\n", N+1);
+  int i;
+  for (i=1; i < N; i++) {
+    assert(v[i-1] <= v[i]);
+  }
+#endif
+}
 
 static unsigned int hashValue(HGraph *hg, int n, int *ar)
 {
@@ -518,6 +550,8 @@ int Zoltan_PHG_Coarsening
       /* in qsort start and end indices are inclusive */
       /*    Zoltan_quicksort_list_inc_int(&c_hg->hvertex[sidx], 0, idx-sidx-1); */
       /* UVC my qsort code is a little bit faster :) */
+      /* gdsjaar: Replace UVC qsort code with Sedgewick's version to avoid
+       * issues with numerical recipes copyright/license */
       uqsorti(idx-sidx, &c_hg->hvertex[sidx]);
   }
   c_hg->hindex[hg->nEdge] = c_hg->nPins = idx;

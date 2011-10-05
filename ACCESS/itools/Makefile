@@ -67,7 +67,7 @@ World:
 # This is just a sequence of bootstrapping steps we have to do.
 # The steps are listed as separate targets so clearmake can wink in
 # the Makefile.proto files.
-Makefile.boot: imake.proto $(DEPENDSRC)/Makefile.proto depend.bootstrap $(IMAKESRC)/Makefile.proto imake.bootstrap
+Makefile.boot: imake.proto $(DEPENDSRC)/Makefile.proto $(IMAKESRC)/Makefile.proto imake.bootstrap
 
 imake.proto:
 	cd $(IMAKESRC) && $(MAKE) $(FLAGS)
@@ -76,15 +76,11 @@ imake.proto:
 $(DEPENDSRC)/Makefile.proto:
 	$(IMAKE_CMD) -s $(DEPENDSRC)/Makefile.proto -f $(DEPENDSRC)/Imakefile -DTOPDIR=$(DEPENDTOP) -DCURDIR=$(DEPENDSRC)
 
-depend.bootstrap:
-	cd $(DEPENDSRC) && $(RM) -r Makefile Makefile.dep makedepend *.o bootstrap
-	cd $(DEPENDSRC) && $(MAKE) -f Makefile.proto bootstrap
 
 $(IMAKESRC)/Makefile.proto:
 	$(IMAKE_CMD) -s $(IMAKESRC)/Makefile.proto -f $(IMAKESRC)/Imakefile -DTOPDIR=$(IMAKETOP) -DCURDIR=$(IMAKESRC)
 
 imake.bootstrap:
-	cd $(IMAKESRC) && $(MAKE) -f Makefile.proto bootstrapdepend
 	cd $(IMAKESRC) && $(MAKE) $(FLAGS) bootstrap
 	cd $(IMAKESRC) && $(MAKE) -f Makefile.proto all 
 	-@if [ -f xmakefile ]; then set -x; \
@@ -119,7 +115,6 @@ World.Win32:
 	$(MAKE) mkdirhier.exe
 	cd ..\..
 	$(MAKE_CMD) $(MFLAGS) includes
-	$(MAKE_CMD) $(MFLAGS) depend
 	$(MAKE_CMD) $(MFLAGS) $(WIN32WORLDOPTS)
 	@echo :
 	@echo :

@@ -31,108 +31,43 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 
-XCOMM $Id: Imakefile,v 1.31 2005/07/11 18:10:50 gdsjaar Exp $
-
-#if defined CatamountArchitecture
-#define OSystem 	catamount
-
-#elif defined CougarArchitecture
-#define OSystem 	cougar
-
-#elif defined SGIArchitecture
-#define OSystem         irix
-
-#elif defined CrayArchitecture
-#define OSystem              unicos
-
-#elif defined SunArchitecture
-#define OSystem              sunos
-
-#elif defined HPArchitecture
-#define OSystem              hpux
-
-#elif defined UltrixArchitecture
-#define OSystem              ultrix
-
-#elif defined OSF1Architecture
-#define OSystem              osf
-
-#elif defined AIXArchitecture
-#define OSystem              aix
- 
-#elif defined PPCArchitecture
-#define OSystem              linux
-
-#elif defined InterixArchitecture
-#define OSystem		     interix
-
-#elif defined AlphaArchitecture
-#define OSystem		     linux
-
-#elif defined i386Architecture
-#define OSystem		     linux
-
-#elif defined x86_64Architecture
-#define OSystem              linux
-
-#elif defined ia64Architecture
-#define OSystem              linux
-
-#elif defined __APPLE__
-#define OSystem		     darwin
-
-#else
-#define OSystem              ""
-#error "Could not determine Operating System type in nemesis/forbind/Imakefile."
-#endif   
-
-#if Build64BitAccess == YES     
-#define Bits 64
-#else
-#define Bits 32
-#endif
-
 /* Use local include/XXX.h files instead of installed *.h files  */
 ALTINC = IncRef-I../
-
-OS_TYPE = OSystem
-
-DEFINES = -DEX_ERR_STR
 
 F77CPPFLAGS = F77CppFlags 
 
 SRCS = ne_jack.c
+SRCSF = addrwrpn.F
 
-SRCSF = addrwrpn.f
-
-OBJS = ${SRCS:.c=.o} ${SRCSF:.f=.o}
-
-BITS = Bits
+OBJS = ${SRCS:.c=.o} ${SRCSF:.F=.o}
+LibraryTargetSubdirsCopy(libnemIf.a,$(OBJS),../)
+CleanupCapF(addrwrpn.f)
 
 #if Build64BitAccess == YES     
-
-SRCS32 = ne_jack32.c
-
-ne_jack32.c: ne_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
-	 	ACCESS=$(ACCESSDIR) ./fortc -P 32 -L . -O $(OS_TYPE) ne_jack.src > $@
-
-OBJS32 = ${SRCS32:.c=.o}
+/* Need to compile ne_jack.c without the -DBuild64 option
+ * real* -> float* (actually void* since it handles both float* and double*)
+ */
+ne_jack32.o: ne_jack.c
+	$(CC) -o ne_jack32.o -c $(CFLAGS) -DDEFAULT_REAL_INT ne_jack.c
 
 all:: libnemIf32.a
-libnemIf32.a: $(OBJS32)
+libnemIf32.a: ne_jack32.o
 	$(AR) $@ $?
 	$(_NULLCMD_)
 	$(_NULLCMD_)
-	$(CP) libnemIf32.a ../
+	$(CP) $@ ../
 #endif
 
-ne_jack.c: ne_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
-		ACCESS=$(ACCESSDIR) ./fortc -P $(BITS) -L . -O $(OS_TYPE) ne_jack.src > $@
-
-LibraryTargetSubdirsCopy(libnemIf.a,$(OBJS),../)
-
-ExtraStuffToClean(*.c)
-CleanupCapF(addrwrpn.f)
+/*
+ * 32-bit build:
+ *   Compile ne_jack.c and put in libexoIIv2for.a archive.
+ *
+ * 64-bit build: (using 8-byte integer/real)
+ *   Compile addrwrap.F                (contains main api name 'func'; calls 'func4' name)
+ *   Compile ne_jack.c with -DBuild64 (adds 4_ to function names)
+ *   -- put above two object files into libnemIf.a
+ *
+ */
 
 DependTarget()
 

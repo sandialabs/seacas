@@ -44,7 +44,7 @@ C   --EX1EX2V2 reads EXODUS I database and writes an EXODUS II V2.03 database
 C   --
 
       include 'exodusII.inc'
-      INCLUDE 'f2kcli.inc'
+      INCLUDE 'argparse.inc'
 
       CHARACTER*8 QAINFO(6)
 
@@ -97,7 +97,7 @@ c
       call exopts(0,ierr)
 
 C .. Get filename from command line.  If not specified, emit error message
-      NARG = COMMAND_ARGUMENT_COUNT()
+      NARG = argument_count()
       if (narg .lt. 2) then
         CALL PRTERR ('FATAL', 'Filenames not specified.')
         CALL PRTERR ('FATAL',
@@ -110,7 +110,7 @@ C .. Get filename from command line.  If not specified, emit error message
         GOTO 140
       end if
 
-      CALL GET_COMMAND_ARGUMENT(1,exofil, lnam, ISTATUS)
+      CALL get_argument(1,exofil, lnam)
       write(*,*)'Input filename: ',exofil(1:lnam)
       open(unit=ndb, file=exofil(:lnam), form='unformatted',
      *     status='old', iostat=ierr)      
@@ -120,7 +120,7 @@ C .. Get filename from command line.  If not specified, emit error message
          GOTO 140
       END IF
 
-      CALL GET_COMMAND_ARGUMENT(2,netfil, lnam, ISTATUS)
+      CALL get_argument(2,netfil, lnam)
       write(*,*)'Output filename: ',netfil(1:lnam)
 
 c$$$c     output file word size is specifed in environment variable EXT05

@@ -39,6 +39,8 @@ in this Software without prior written authorization from the X Consortium.
 #define imake_ccflags "-O"
 #endif
 
+#include <stdlib.h>
+
 extern int write(int, const void *, unsigned int);
 
 main()

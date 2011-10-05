@@ -84,8 +84,6 @@ namespace {
   const size_t max_string_length = MAX_STR_LENGTH;
   const size_t max_line_length   = MAX_LINE_LENGTH;
   const std::string SCALAR()     {return std::string("scalar");}
-  const std::string VECTOR3D()   {return std::string("vector_3d");}
-  const std::string SYM_TENSOR() {return std::string("sym_tensor_33");}
 
   void separate_surface_element_sides(Ioss::IntVector &element,
 				      Ioss::IntVector &sides,
@@ -137,7 +135,9 @@ namespace Iopg {
     spatialDimension(3), nodeCount(0),
     elementCount(0), nodeBlockCount(0),
     elementBlockCount(0), nodesetCount(0), sidesetCount(0),
-    sequentialNG2L(false), sequentialEG2L(false)
+    commsetNodeCount(0), commsetElemCount(0),
+    sequentialNG2L(false), sequentialEG2L(false),
+    blockAdjacenciesCalculated(false)
   {
     if (is_input()) {
       dbState = Ioss::STATE_UNKNOWN;
@@ -370,6 +370,9 @@ namespace Iopg {
       if (error < 0)
 	pamgen_error(get_file_pointer(), __LINE__, myProcessor);
 
+      commsetNodeCount = num_node_cmaps;
+      commsetElemCount = num_elem_cmaps;
+
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
       // nodes/elements that communicate with only a single processor).
@@ -535,8 +538,7 @@ namespace Iopg {
       }
 
       block = new Ioss::ElementBlock(this, block_name, type,
-				     local_element_count[iblk],
-				     attributes[iblk]);
+				     local_element_count[iblk]);
 
       block->property_add(Ioss::Property("id", id));
       
@@ -546,7 +548,7 @@ namespace Iopg {
       if (block->get_property("topology_type").get_string() != save_type
 	  && save_type != "null" && save_type != "") {
 	// Maintain original element type on output database if possible.
-	block->property_add(Ioss::Property("original_element_type", save_type));
+	block->property_add(Ioss::Property("original_topology_type", save_type));
       }
       
       block->property_add(Ioss::Property("global_entity_count", global_element_count[iblk]));
@@ -628,19 +630,20 @@ namespace Iopg {
       // communications maps if the decomposition occurs along contact
       // surfaces.  In this case, we create empty node and element
       // communication maps.
+
       if (commsetNodeCount > 0 || commsetElemCount > 0) {
 	if (commsetNodeCount > 0) {
-	  nodeCmapIds      = new int[commsetNodeCount];
-	  nodeCmapNodeCnts = new int[commsetNodeCount];
+	  nodeCmapIds.resize(commsetNodeCount);
+	  nodeCmapNodeCnts.resize(commsetNodeCount);
 	}
 	if (commsetElemCount > 0) {
-	  elemCmapIds      = new int[commsetElemCount];
-	  elemCmapElemCnts = new int[commsetElemCount];
+	  elemCmapIds.resize(commsetElemCount);
+	  elemCmapElemCnts.resize(commsetElemCount);
 	}
 
 	int error = im_ne_get_cmap_params(get_file_pointer(),
-					  nodeCmapIds, nodeCmapNodeCnts,
-					  elemCmapIds, elemCmapElemCnts,
+					  TOPTR(nodeCmapIds), TOPTR(nodeCmapNodeCnts),
+					  TOPTR(elemCmapIds), TOPTR(elemCmapElemCnts),
 					  myProcessor);
 	if (error < 0)
 	  pamgen_error(get_file_pointer(), __LINE__, myProcessor);
@@ -847,7 +850,7 @@ namespace Iopg {
 #else
 	    if (true) {
 #endif
-	      int side_count = (*I).second;
+	      int my_side_count = (*I).second;
 
 	      std::string side_block_name = "surface_" + topo_or_block_name + "_" + side_topo->name();
 	      if (side_set_name == "universal_sideset") {
@@ -888,7 +891,7 @@ namespace Iopg {
 	      Ioss::SideBlock *side_block = new Ioss::SideBlock(this, side_block_name,
 								side_topo->name(),
 								elem_topo->name(),
-								side_count);
+								my_side_count);
 	      side_set->add(side_block);
 
 	      // Note that all sideblocks within a specific
@@ -937,13 +940,13 @@ namespace Iopg {
 		storage += "]";
 		side_block->field_add(Ioss::Field("distribution_factors",
 						Ioss::Field::REAL, storage,
-						Ioss::Field::MESH, side_count));
+						Ioss::Field::MESH, my_side_count));
 	      }
 
 	      if (side_set_name == "universal_sideset") {
 		side_block->field_add(Ioss::Field("side_ids",
 						Ioss::Field::INTEGER, "scalar",
-						Ioss::Field::MESH, side_count));
+						Ioss::Field::MESH, my_side_count));
 	      }
 	    }
 	  }
@@ -1001,7 +1004,7 @@ namespace Iopg {
 	  if (ierr < 0)
 	    pamgen_error(get_file_pointer(), __LINE__, myProcessor);
 
-	  int index = 0;
+	  size_t index = 0;
 	  for (size_t i=0; i < num_to_get; i++) {
 	    rdata[index++] = x[i];
 	    rdata[index++] = y[i];
@@ -1212,7 +1215,7 @@ namespace Iopg {
 	// sideset.  Because of this, the passed in 'data' may not be
 	// large enough to hold the data residing in the sideset and we
 	// may need to allocate a temporary array...  This can be checked
-	// by comparing the size of the sideset with the 'side_count' of
+	// by comparing the size of the sideset with the 'my_side_count' of
 	// the side block.
 
 	if (field.get_name() == "side_ids") {
@@ -1260,7 +1263,7 @@ namespace Iopg {
 	    }
 	  } else {
 	    Ioss::IntVector is_valid_side(number_sides);
-	    Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, element, &sides[0],
+	    Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, element, TOPTR(sides),
 							number_sides, get_region());
 	    size_t ieb = 0;
 	    for (int iel = 0; iel < number_sides; iel++) {
@@ -1308,7 +1311,7 @@ namespace Iopg {
 	    assert(index/2 == entity_count);
 	  } else {
 	    Ioss::IntVector is_valid_side(number_sides);
-	    Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, &element[0], &sides[0],
+	    Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, TOPTR(element), TOPTR(sides),
 							number_sides, get_region());
 
 	    size_t index = 0;
@@ -1847,7 +1850,7 @@ namespace Iopg {
     }
   }
   
-  void DatabaseIO::compute_block_membership(Ioss::EntityBlock *sideblock,
+  void DatabaseIO::compute_block_membership(Ioss::SideBlock *sideblock,
 					    std::vector<std::string> &block_membership) const
   {
     Ioss::IntVector block_ids(elementBlockCount);
@@ -1886,7 +1889,7 @@ namespace Iopg {
     }
   }
 
-  int DatabaseIO::get_side_connectivity(const Ioss::EntityBlock* fb,
+  int DatabaseIO::get_side_connectivity(const Ioss::SideBlock* fb,
 					int id, int,
 					int *fconnect,
 					size_t /* data_size */) const
@@ -1912,7 +1915,7 @@ namespace Iopg {
 //----
 
     Ioss::IntVector is_valid_side(number_sides);
-    Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, &element[0], &side[0],
+    Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, TOPTR(element), TOPTR(side),
 						number_sides, get_region());
 
     Ioss::IntVector elconnect;
@@ -1936,6 +1939,9 @@ namespace Iopg {
 
 	// ensure we have correct connectivity
 	block = get_region()->get_element_block(elem_id);
+	assert(block != NULL);
+	assert(block->topology() != NULL);
+
 	if (conn_block != block) {
 	  int nelem = block->get_property("entity_count").get_int();
 	  nelnode = block->topology()->number_nodes();
@@ -1957,6 +1963,7 @@ namespace Iopg {
 	if (current_side != side[iel]) {
 	  side_elem_map = block->topology()->boundary_connectivity(side[iel]);
 	  current_side = side[iel];
+	  assert(block->topology()->boundary_type(side[iel]) != NULL);
 	  nfnodes = block->topology()->boundary_type(side[iel])->number_nodes();
 	}
 	for (int inode = 0; inode < nfnodes; inode++) {
@@ -1970,7 +1977,7 @@ namespace Iopg {
   }
 
   // Get distribution factors for the specified side block
-  int DatabaseIO::get_side_distributions(const Ioss::EntityBlock* fb,
+  int DatabaseIO::get_side_distributions(const Ioss::SideBlock* fb,
 					 int id, int my_side_count,
 					 double *dist_fact,
 					 size_t /* data_size */) const

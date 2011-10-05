@@ -22,9 +22,6 @@ XCOMM $XConsortium: ibmLib.rules /main/15 1996/12/30 16:06:05 kaleb $
 #ifndef ShLibIncludeFile
 # define ShLibIncludeFile <ibmLib.tmpl>
 #endif
-#ifndef PositionIndependentCFlags
-# define PositionIndependentCFlags -bM\:SRE
-#endif
 #ifndef ExtraLoadFlags
 # define ExtraLoadFlags -bnodelcsect
 #endif

@@ -397,6 +397,7 @@ XCOMM $XConsortium: Imake.cf /main/26 1996/09/28 16:05:09 rws $
 #ifdef __APPLE__
 # define MacroIncludeFile <darwin.cf>
 # define MacroFile darwin.cf
+# undef linux
 # ifdef __ppc__
 #  define PPCArchitecture
 # endif

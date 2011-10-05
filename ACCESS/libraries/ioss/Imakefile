@@ -69,8 +69,16 @@ Ioss_Edge2D2.C \
 Ioss_Edge2D3.C \
 Ioss_Edge3.C \
 Ioss_ElementBlock.C \
+Ioss_FaceBlock.C \
+Ioss_EdgeBlock.C \
+Ioss_NodeBlock.C \
+Ioss_ElementSet.C \
+Ioss_FaceSet.C \
+Ioss_EdgeSet.C \
+Ioss_NodeSet.C \
 Ioss_ElementTopology.C \
 Ioss_EntityBlock.C \
+Ioss_EntitySet.C \
 Ioss_SideBlock.C \
 Ioss_SideSet.C \
 Ioss_Field.C \
@@ -83,9 +91,7 @@ Ioss_Hex8.C \
 Ioss_Initializer.C \
 Ioss_IOFactory.C \
 Ioss_Map.C \
-Ioss_NodeBlock.C \
 Ioss_Node.C \
-Ioss_NodeSet.C \
 Ioss_ParallelUtils.C \
 Ioss_Property.C \
 Ioss_PropertyManager.C \
@@ -123,28 +129,34 @@ tokenize.C
 
 OBJS = ${SRCS:.C=.o}
 
-all:: libIoex.a libIoss.a libIotr.a libIonit.a libIogn.a libIohb.a Trios_config.h
+all:: libIoex.a libIoss.a libIotr.a libIonit.a libIogn.a libIohb.a SEACASIoss_config.h
 
 INCLIST = \
-	Trios_config.h \
+	SEACASIoss_config.h \
 	Ioss_CodeTypes.h \
 	Ioss_CommSet.h \
 	Ioss_ConcreteVariableType.h \
 	Ioss_DBUsage.h \
 	Ioss_DatabaseIO.h \
-	Ioss_ElementBlock.h \
 	Ioss_ElementTopology.h \
 	Ioss_EntityBlock.h \
+	Ioss_EntitySet.h \
 	Ioss_EntityType.h \
-	Ioss_SideBlock.h \
-	Ioss_SideSet.h \
 	Ioss_Field.h \
 	Ioss_FieldManager.h \
 	Ioss_FileInfo.h \
 	Ioss_GroupingEntity.h \
 	Ioss_IOFactory.h \
 	Ioss_NodeBlock.h \
+	Ioss_EdgeBlock.h \
+	Ioss_FaceBlock.h \
+	Ioss_ElementBlock.h \
 	Ioss_NodeSet.h \
+	Ioss_EdgeSet.h \
+	Ioss_FaceSet.h \
+	Ioss_ElementSet.h \
+	Ioss_SideBlock.h \
+	Ioss_SideSet.h \
 	Ioss_ParallelUtils.h \
 	Ioss_Property.h \
 	Ioss_PropertyManager.h \
@@ -158,11 +170,11 @@ INCLIST = \
 	Ioss_Utils.h 
 
 # Can be empty.  Is used in Trilinos, so just create dummy here.
-Trios_config.h:
-	touch Trios_config.h
+SEACASIoss_config.h:
+	touch SEACASIoss_config.h
 
-makeincludes:: Trios_config.h
-install:: Trios_config.h
+makeincludes:: SEACASIoss_config.h
+install:: SEACASIoss_config.h
 
 
 NormalLibraryTarget(Ioss,$(OBJS))
@@ -193,4 +205,6 @@ InstallIncludeList(makeincludes,$(INCLIST),$(INCDIR)/ioss)
 InstallIncludeList(install,$(INCLIST),$(INCDIR)/ioss)
 InstallSubdirIncludeList(makeincludes,init,Ionit_Initializer.h,$(INCDIR)/ioss)
 
+ExtraStuffToClean(SEACASIoss_config.h)
+DependTarget()
 DependSubdirs($(SUBDIRS))

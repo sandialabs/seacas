@@ -285,6 +285,8 @@ c      call excpus(timin)
 c      write(nout,1001)
 c      write(ntpout,1001)
 C
+      call init
+
 C disable netcdf warning messages
 C
       CALL EXOPTS(0,IERR)
@@ -589,9 +591,9 @@ C
      &              'JUST BEFOR INTERPOLATION LOOP',
      &              0,' ',0,' ',' ',1)
       END IF
-C
-c      write(nout,1010)
-c      write(ntpout,1010)
+
+      call inirea(nodesb*nvarnp, 0.0, a(nbsoln))
+
       CALL TRUTBL(IA(NMAP),IMP,IA(NAEB),IA(NBEB),IA(ITTA),IA(ITTB))
 C
 C *********************************************************************

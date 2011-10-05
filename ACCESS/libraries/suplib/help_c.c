@@ -467,11 +467,11 @@ static void ShowSubtopics(KEY *key, boolean *subtopics)
 {
   int subt = 0;			/* printed any subtopics yet? */
   KEY *subkey;			/* subtopic key */
-  int len;				/* length of key name */
+  int len;			/* length of key name */
   char line[BUFSIZ];		/* subtopic output line */
   char *start;			/* position of subname in key name */
   int sublen;			/* length of subname */
-  int pos;
+  int pos = 0;
   char *prev = NULL;		/* the last thing we put on the list */
 
   *line = '\0';

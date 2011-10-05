@@ -30,7 +30,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
-      SUBROUTINE DBVINI (NVARHI, NVARGL, NVARNP, NVAREL, NVARNS, NVARSS)
+      SUBROUTINE DBVINI (NVARGL, NVARNP, NVAREL, NVARNS, NVARSS)
 C=======================================================================
 
 C   --*** DBVINI *** (EXOLIB) Initialize for DBVTYP and DBVIX
@@ -43,7 +43,6 @@ C   --Note that the indices are shared because the other two routines
 C   --are ENTRY routines of DBVINI.
 C   --
 C   --Parameters:
-C   --   NVARHI - IN - the number of history variables
 C   --   NVARGL - IN - the number of global variables
 C   --   NVARNP - IN - the number of nodal variables
 C   --   NVAREL - IN - the number of element variables
@@ -55,18 +54,16 @@ C   --Definition for the ENTRY routine parameters
       INTEGER IID, ID
       INTEGER IIX, IX
 
-      INTEGER IXHV,  IXGV,  IXNV,  IXEV,  IXNS,  IXSS
-      INTEGER IXHVE, IXGVE, IXNVE, IXEVE, IXNSE, IXSSE
+      INTEGER IXGV,  IXNV,  IXEV,  IXNS,  IXSS
+      INTEGER IXGVE, IXNVE, IXEVE, IXNSE, IXSSE
 
-      SAVE IXHV,  IXGV,  IXNV,  IXEV,  IXNS,  IXSS
-      SAVE IXHVE, IXGVE, IXNVE, IXEVE, IXNSE, IXSSE
+      SAVE IXGV,  IXNV,  IXEV,  IXNS,  IXSS
+      SAVE IXGVE, IXNVE, IXEVE, IXNSE, IXSSE
 
-      DATA IXHV, IXGV, IXNV, IXEV, IXNS, IXSS
-     *  / -1, -1, -1, -1, -1, -1/
+      DATA IXGV, IXNV, IXEV, IXNS, IXSS
+     *  / -1, -1, -1, -1, -1/
 
-      IXHV = 1
-      IXHVE = IXHV + NVARHI - 1
-      IXGV = IXHVE + 1
+      IXGV = 1
       IXGVE = IXGV + NVARGL - 1
       IXNV = IXGVE + 1
       IXNVE = IXNV + NVARNP - 1
@@ -82,30 +79,6 @@ C   --Definition for the ENTRY routine parameters
 C=======================================================================
       ENTRY DBVTYP (IIX, TYP, ID)
 C=======================================================================
-C$Log: dbvini.f,v $
-CRevision 1.2  2009/03/25 12:36:43  gdsjaar
-CAdd copyright and license notice to all files.
-CPermission to assert copyright has been granted; blot is now open source, BSD
-C
-CRevision 1.1  2009/01/22 15:51:01  gdsjaar
-CAdded minor support for nodeset and sideset variables.
-C
-CIt can print the count and the names, but that is all
-Cat this time.
-C
-CRevision 1.2  1990/11/30 09:50:55  gdsjaar
-CModified to work on Unicos
-C
-c Revision 1.1.1.1  90/08/14  16:13:59  gdsjaar
-c Testing
-c 
-c Revision 1.1  90/08/14  16:13:58  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:20  gdsjaar
-c Initial revision
-c 
-
 C   --*** DBVTYP *** (EXOLIB) Return the variable type and number
 C   --   Written by Amy Gilkey - revised 03/18/88
 C   --
@@ -121,15 +94,12 @@ C   --   IIX - IN - the variable index
 C   --   TYP - OUT - the variable type: 'H'istory, 'G'lobal, 'N'odal, 'E'lement
 C   --   ID - OUT - the variable number within the type
 
-      IF ((IXHV .LE. 0) .AND. (IXGV .LE. 0)
+      IF ((IXGV .LE. 0)
      &   .AND. (IXNV .LE. 0) .AND. (IXEV .LE. 0)
      &   .AND. (IXNS .LE. 0) .AND. (IXSS .LE. 0))
      &   RETURN
 
-      IF ((IIX .GE. IXHV) .AND. (IIX .LE. IXHVE)) THEN
-         TYP = 'H'
-         ID = IIX - IXHV + 1
-      ELSE IF ((IIX .GE. IXGV) .AND. (IIX .LE. IXGVE)) THEN
+      IF ((IIX .GE. IXGV) .AND. (IIX .LE. IXGVE)) THEN
          TYP = 'G'
          ID = IIX - IXGV + 1
       ELSE IF ((IIX .GE. IXNV) .AND. (IIX .LE. IXNVE)) THEN
@@ -154,30 +124,6 @@ C   --   ID - OUT - the variable number within the type
 C=======================================================================
       ENTRY DBVIX (ITYP, IID, IX)
 C=======================================================================
-C$Log: dbvini.f,v $
-CRevision 1.2  2009/03/25 12:36:43  gdsjaar
-CAdd copyright and license notice to all files.
-CPermission to assert copyright has been granted; blot is now open source, BSD
-C
-CRevision 1.1  2009/01/22 15:51:01  gdsjaar
-CAdded minor support for nodeset and sideset variables.
-C
-CIt can print the count and the names, but that is all
-Cat this time.
-C
-CRevision 1.2  1990/11/30 09:50:55  gdsjaar
-CModified to work on Unicos
-C
-c Revision 1.1.1.1  90/08/14  16:13:59  gdsjaar
-c Testing
-c 
-c Revision 1.1  90/08/14  16:13:58  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:20  gdsjaar
-c Initial revision
-c 
-
 C   --*** DBVIX *** (EXOLIB) Return the variable index
 C   --   Written by Amy Gilkey - revised 10/14/87
 C   --
@@ -193,14 +139,13 @@ C   --   ITYP - IN - the variable type: 'H'istory, 'G'lobal, 'N'odal, 'E'lement
 C   --   IID - IN - the variable number within the type
 C   --   IX - OUT - the variable index
 
-      IF ((IXHV .LE. 0) .AND. (IXGV .LE. 0)
+      ix = 0
+      IF ((IXGV .LE. 0)
      &   .AND. (IXNV .LE. 0) .AND. (IXEV .LE. 0)
      &   .AND. (IXNS .LE. 0) .AND. (IXSS .LE. 0))
      &   RETURN
 
-      IF (ITYP .EQ. 'H') THEN
-         IX = IID + IXHV - 1
-      ELSE IF (ITYP .EQ. 'G') THEN
+      IF (ITYP .EQ. 'G') THEN
          IX = IID + IXGV - 1
       ELSE IF (ITYP .EQ. 'N') THEN
          IX = IID + IXNV - 1

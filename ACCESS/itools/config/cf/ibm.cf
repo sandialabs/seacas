@@ -8,9 +8,14 @@ XCOMM platform:  $XConsortium: ibm.cf /main/80 1996/12/26 08:52:31 kaleb $
 XCOMM operating system:  OSName (OSMajorVersion.OSMinorVersion.OSTeenyVersion)
 
 #define System IBM
-#define Build64BitAccess NO
+#define Build64BitAccess YES
+
+#define X11Lib      -L/usr/X11R6/lib64 -lX11
+#define X11Includes -I/usr/X11R6/include
+
 #define RanlibCmd touch
 #define NeedsDoubleEscape YES
+#define MakeCmd		  gmake
 
 #define FortranCmd xlf
 #define Fortran90Cmd xlf90
@@ -29,7 +34,7 @@ XCOMM operating system:  OSName (OSMajorVersion.OSMinorVersion.OSTeenyVersion)
 #define DefaultF77Options -q64 -qhalt=S -b64 -qwarn64
 #define DefaultF90Options -q64 -qhalt=S -b64 -qwarn64 
 #define CplusplusOptions -q64 -D_LARGE_FILES
-#define ExtraLoadOptions -q64 -bmaxdata:0x06FFFFFFFFFFFFF8 -bmaxstack:0x10000000
+#define ExtraLoadOptions -q64 -blpdata
 #define F77PrecOptions -qintsize=8 -qrealsize=8
 #define F90PrecOptions -qintsize=8 -qrealsize=8
 
@@ -42,13 +47,13 @@ XCOMM operating system:  OSName (OSMajorVersion.OSMinorVersion.OSTeenyVersion)
 #define ParallelCCOptions -q64 -D_LARGE_FILES
 #define ParallelF77Options -q64 -qhalt=S -b64 -qwarn64
 #define ParallelF90Options -q64 -qhalt=S -b64 -qwarn64
-#define ParallelExtraLoadOptions -q64 -bmaxdata:0x06FFFFFFFFFFFFF8 -bmaxstack:0x10000000
+#define ParallelExtraLoadOptions -q64 
 #endif
 
 
 #else
 #define Use32BitAddress YES
-#define ArCmd ar -c -s -r
+#define ArCmd ar -X32 -c -s -r
 #define ArFlags -X32 cru
 
 #define DefaultCCOptions -D_LARGE_FILES
@@ -159,9 +164,9 @@ baseobj.Osuf:	basedep.CCsuf						@@\
 
 #if OSMajorVersion > 3
 #if Build64BitAccess == YES
-#define StandardDefines		-DSYSV -DAIXV3 -DAIXV4 -D_ALL_SOURCE -Daix -Dunix -DBuild64
+#define StandardDefines		-DSYSV -D_ALL_SOURCE -Daix -DBuild64
 #else
-#define StandardDefines		-DSYSV -DAIXV3 -DAIXV4 -D_ALL_SOURCE -Daix -Dunix
+#define StandardDefines		-DSYSV -D_ALL_SOURCE -Daix
 #endif
 
 #define XawI18nDefines		-DHAS_WCHAR_H -DHAS_ISW_FUNCS

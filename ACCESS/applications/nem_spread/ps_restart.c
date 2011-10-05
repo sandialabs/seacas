@@ -227,7 +227,7 @@ void read_restart_data (int io_ws)
   int    num_blocks, times_in_blk, iblk, time_idx;
   int    array_size;
   int    dum1, dum2;
-  int    exoid, *par_exoid = NULL;
+  int    exoid=0, *par_exoid = NULL;
   
   int    open_file_count;
   double start_t, end_t;
@@ -1453,9 +1453,9 @@ static int read_elem_vars_n(int exoid, int index, int blk_cnt, int *eb_ids,
 	if (!check_monot(glob_elem, num_ev_in_mesg)) {
 
 	  if (io_ws == sizeof(float))
-	    sortN_int_float(num_ev_in_mesg, glob_elem, 1, sp_vals);
+	    sort_int_float(num_ev_in_mesg, glob_elem,  sp_vals);
 	  else
-	    sortN_int_double(num_ev_in_mesg, glob_elem, 1, dp_vals);
+	    sort_int_double(num_ev_in_mesg, glob_elem, dp_vals);
 	}
 
 

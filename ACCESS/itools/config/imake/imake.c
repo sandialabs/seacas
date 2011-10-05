@@ -353,7 +353,7 @@ int main(int argc, char **argv)
 		tmpMakefile = Makefile;
 	else {
 		tmpMakefile = Strdup(tmpMakefile);
-		(void) mktemp(tmpMakefile);
+		(void) mkstemp(tmpMakefile);
 	}
 	AddMakeArg("-f");
 	AddMakeArg( tmpMakefile );
@@ -908,7 +908,7 @@ CleanCppInput(char *imakefile)
 		    strcmp(ptoken, "undef")) {
 		    if (outFile == NULL) {
 			tmpImakefile = Strdup(tmpImakefile);
-			(void) mktemp(tmpImakefile);
+			(void) mkstemp(tmpImakefile);
 			outFile = fopen(tmpImakefile, "w");
 			if (outFile == NULL)
 			    LogFatal("Cannot open %s for write.",

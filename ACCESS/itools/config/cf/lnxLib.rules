@@ -33,7 +33,7 @@ XCOMM $XConsortium: lnxLib.rules /main/13 1996/09/28 16:11:01 rws $
 #endif
 
 #ifndef SharedLibraryLoadFlags
-#define SharedLibraryLoadFlags -shared
+#define SharedLibraryLoadFlags -shared -L$(USRLIBDIRPATH) -Wl,-rpath,$(SHLIBDIR)
 #endif
 
 #ifndef PositionIndependentCFlags
@@ -45,8 +45,7 @@ XCOMM $XConsortium: lnxLib.rules /main/13 1996/09/28 16:11:01 rws $
 #endif
 
 #ifndef ExtraLoadFlags
-/*   #define ExtraLoadFlags -Wl,-rpath,$(USRLIBDIRPATH)   */
-#define      ExtraLoadFlags -L$(USRLIBDIRPATH)
+#define ExtraLoadFlags -L$(USRLIBDIRPATH) -Wl,-rpath,$(SHLIBDIR)
 #endif
 
 /*

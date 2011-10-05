@@ -31,6 +31,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 CXXEXTRA_INCLUDES = -I..
+EXTRA_INCLUDES = -I..
+
 #if defined SGIArchitecture
 CXXETRA_DEFINES = -ptused -DNO_MPI
 #else
@@ -42,4 +44,5 @@ SRCS =  Ioex_DatabaseIO.C  Ioex_IOFactory.C  Ioex_Internals.C   Ioex_SuperElemen
 OBJS = ${SRCS:.C=.o}
 
 LibraryTargetSubdirs(libIoex.a,$(OBJS),../)
+DependTarget()
 

@@ -57,6 +57,28 @@
       <table class="zebra" WIDTH=90% align=center  BGCOLOR=WHITE CELLPADDING=10>
 	  <tr align=left><th>Date</th><th>Code</th><th>Version</th><th>Change</tr>
 
+	  <tr><td>2011-08-25</td>
+	  <td>epu</td><td>3.35</td>
+
+	  <td>Added "-sum_shared_nodes" flag which will sum the nodal results values
+	    of all nodes on processor boundaries instead of assuming that the values
+	    are equal.
+	  </td>
+	  </tr>
+
+	  <tr><td>2011-07-28</td>
+	  <td>grepos</td><td>1.60</td>
+
+	  <td>Add "-name_length {len}" command line option to specify the size of names on the output file.</td>
+	  </tr>
+
+	  <tr><td>2011-07-27</td>
+	  <td>grepos</td><td>1.59</td>
+
+	  <td>Add range to entity deletion/undeletion. Can now do "delete block {n1} to {n2} by {n3}" in addition to listing ids. For example, "delete block 1 to 10 by 2 13 17 21 to 40 by 3"
+	  </td>
+	  </tr>
+
 	  <tr><td>2011-04-05</td>
 	  <td>aprepro</td><td>3.06</td>
 
@@ -335,7 +357,7 @@
     <address><a href="mailto:gdsjaar@sandia.gov">Gregory D Sjaardema</a></address>
 <!-- Created: Tue Nov 17 07:07:27 MST 2009 -->
 <!-- hhmts start -->
-Last modified: Wed Apr  6 16:19:38 MDT 2011
+Last modified: Thu Aug 25 15:45:37 MDT 2011
 <!-- hhmts end -->
   </body>
 </html>
