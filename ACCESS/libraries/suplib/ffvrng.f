@@ -33,23 +33,6 @@ C=======================================================================
       SUBROUTINE FFVRNG (IFLD, INTYP, CFIELD, IFIELD, EXPECT, MAXVAL,
      &   IRANGE, *)
 C=======================================================================
-C$Id: ffvrng.f,v 1.3 2009/03/25 12:46:02 gdsjaar Exp $
-C$Log: ffvrng.f,v $
-CRevision 1.3  2009/03/25 12:46:02  gdsjaar
-CAdd copyright and license notice to all files.
-C
-CRevision 1.2  2009/03/12 13:27:06  gdsjaar
-CWiden output format
-C
-CRevision 1.1.1.1  1990/08/14 16:14:47  gdsjaar
-CTesting
-C
-c Revision 1.1  90/08/14  16:14:46  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:28  gdsjaar
-c Initial revision
-c 
 
 C   --*** FFVRNG *** (FFLIB) Parse free-field integer range
 C   --   Written by Amy Gilkey - revised 02/24/86
@@ -66,7 +49,7 @@ C   --   INTYP - IN - the input type array from the free-field reader
 C   --   CFIELD - IN - the input string array from the free-field reader
 C   --   IFIELD - IN - the input integer array from the free-field reader
 C   --   EXPECT - IN - the type of range being parsed, for error
-C   --   MAXVAL - IN - the maximum range value
+C   --   MAXVAL - IN - the maximum range value (ignore if < 0)
 C   --   IRANGE - OUT - the input range value array:
 C   --          (1) = n1, (2) = n2, (3) = n3;
 C   --      partially set on error
@@ -172,7 +155,8 @@ C            --Get BY and step value
             CALL SQZSTR (ERRMSG, L)
             CALL PRTERR ('CMDERR', ERRMSG(:L))
          END IF
-         IF (MIN (IRANGE(1), IRANGE(2)) .GT. MAXVAL) THEN
+         IF (MIN (IRANGE(1), IRANGE(2)) .GT. MAXVAL .AND.
+     *     MAXVAL .GT. 0) THEN
             STRA = 'Minimum ' // EXPECT
             WRITE (ERRMSG, 10010, IOSTAT=IDUM) STRA(:LENSTR(STRA)),
      &         MIN (IRANGE(1), IRANGE(2)), ' > maximum ', MAXVAL
@@ -189,8 +173,8 @@ C            --Get BY and step value
             GOTO 110
          END IF
 
-         IF (IRANGE(1) .GT. MAXVAL) IRANGE(1) = MAXVAL
-         IF (IRANGE(2) .GT. MAXVAL) IRANGE(2) = MAXVAL
+         IF (IRANGE(1) .GT. MAXVAL .AND. MAXVAL .GT. 0) IRANGE(1) = MAXVAL
+         IF (IRANGE(2) .GT. MAXVAL .AND. MAXVAL .GT. 0) IRANGE(2) = MAXVAL
       END IF
 
       RETURN

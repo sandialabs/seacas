@@ -1,4 +1,4 @@
-XCOMM $Id: crosslinux.cf,v 1.1 2008/06/18 16:23:13 gdsjaar Exp $
+XCOMM $Id: crosslinux.cf,v 1.3 2005/11/15 22:52:54 gdsjaar Exp $
 XCOMM
 XCOMM README:
 XCOMM   This config file is a work in progress. It has been tested on
@@ -202,7 +202,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define MkdirHierCmd		mkdir -p
 
 
-#define GnuCpp			NO
 #define CppCmd			/lib/cpp
 #define PreProcessCmd		CppCmd -P
 
@@ -272,6 +271,5 @@ $(FC) -o program options objects -Wl,-T -Wl,$(LIBDIR)/ldscript $(LIBPATH) librar
 
 #define ParRunCmd yod
 #define NPCmd -size
-#define HasFlush YES
 #define ExtraLibraries -L/usr/lib -ldnet_stub
 #define NumProcs 4

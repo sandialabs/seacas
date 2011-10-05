@@ -224,7 +224,7 @@ XCOMM operating system:  OSName
 #define ForceSubdirs(dirs)						@@\
 dirs:	.EXEC								@@\
 	@cd $@ ; echo "making all in $(CURRENT_DIR)/$@..."; \		@@\
-	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
+	$(MAKE) $(MFLAGS) PassDebugFlags all				@@\
 									@@\
 .EXEC:
 

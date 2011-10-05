@@ -169,6 +169,7 @@ ACCESS/libraries/ioss/main/cth_pressure_map
 ACCESS/libraries/ioss/main/io_info
 ACCESS/libraries/ioss/main/io_shell
 ACCESS/libraries/ioss/main/shell_to_hex
+ACCESS/libraries/ioss/main/sphgen
 ACCESS/libraries/nemesis/forbind/ne_jack.c
 ACCESS/libraries/nemesis/forbind/ne_jack32.c
 ACCESS/libraries/nemesis/unshared/
@@ -253,4 +254,5 @@ ACCESS/scripts/sphgen2d
 ACCESS/scripts/sphgen3d
 ACCESS/scripts/txtexo
 ACCESS/scripts/zpad
+ACCESS/scripts/getopt.seacas
 autom4te.cache

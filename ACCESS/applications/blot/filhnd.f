@@ -191,6 +191,9 @@ c *****************************************************************
 c
 c        static declarations
 c
+      logical first              
+      save first
+
       integer maxunits
       parameter (maxunits=25)    
 c           maximum number of units that may be open at once.
@@ -202,12 +205,16 @@ c            numbers
 
       save numopn, opnlst
 
-      data numopn / 0 /          
-c            initially, no files open
+      data first / .TRUE. /
 
 c *********************************************************************
 c *********************************************************************
 
+      if (first) then
+        numopn = 0
+        first = .FALSE.
+      end if
+      
 c      print *, 'numopen = ',numopn
 c      if ( numopn .gt. 0 )
 c     &    print *, 'list is ',(opnlst(i),i=1,numopn)

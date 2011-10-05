@@ -19,8 +19,6 @@ XCOMM  MUST LOAD CORRECT PRGENV MODULES...
 #define InstallCmd        install
 #define NeedsGetSubopt YES
 #define NeedsDoubleEscape YES
-#define NeedsParallelnem_join YES
-#define NeedsParallelnem_spread YES
 #define TempDir /tmp
 #define NumProcs 4
 #define SerialDebugCmd "debug"

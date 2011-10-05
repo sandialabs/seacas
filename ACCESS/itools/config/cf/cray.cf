@@ -1,4 +1,4 @@
-XCOMM $Id: cray.cf,v 1.1 2008/06/18 16:23:13 gdsjaar Exp $
+XCOMM $Id: cray.cf,v 1.13 1999/02/10 17:17:38 rwstotz Exp $
 XCOMM Configuration file for cray
 XCOMM platform:  $XConsortium: cray.cf /main/52 1996/09/28 16:09:55 rws $
 

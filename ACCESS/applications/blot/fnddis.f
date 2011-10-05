@@ -1,14 +1,14 @@
 C Copyright(C) 2009 Sandia Corporation. Under the terms of Contract
 C DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 C certain rights in this software.
-C         
+C
 C Redistribution and use in source and binary forms, with or without
 C modification, are permitted provided that the following conditions are
 C met:
-C 
+C
 C     * Redistributions of source code must retain the above copyright
 C       notice, this list of conditions and the following disclaimer.
-C 
+C
 C     * Redistributions in binary form must reproduce the above
 C       copyright notice, this list of conditions and the following
 C       disclaimer in the documentation and/or other materials provided
@@ -16,7 +16,7 @@ C       with the distribution.
 C     * Neither the name of Sandia Corporation nor the names of its
 C       contributors may be used to endorse or promote products derived
 C       from this software without specific prior written permission.
-C 
+C
 C THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 C "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 C LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -42,14 +42,23 @@ C   --variables are displacement variables if and only if they begin with
 C   --'D' and end with the last character of the corresponding coordinate
 C   --name.
 C     NAMING CONVENTION FOR DISPLACEMENT VARIABLES
+C     FIRST OPTION
 C     1) The nodal variables must be the first two or three variables
-C        in the nodal varialbe names list.
+C        in the nodal variable names list.
 C     2) Nodal variables must begin with a 'D'
 C     3) The last character of the nodal variable must be equal to
 C        the last character in the coordinate name.
 C     4) The names of the displacement variables must be the same
 C        except for the last character
-C     Sample of valid displacement varialbe names
+C     SECOND OPTION
+C     1) The nodal variables must appear together in the nodal
+C        variable names list.
+C     2) The nodal variables must begin with "DISP"
+C     3) The last character of the nodal variable must be equal to
+C        the last character in the coordinate name.
+C     4) The names of the displacement variables must be the same
+C        except for the last character
+C     Sample of valid displacement variable names
 C     Coordinate Name: X, Y, Z
 C     Nodal Variable Names: DISPLX, DISPLY, DISPLZ
 C     Note: Nodal variable names should be written with capital letters
@@ -97,6 +106,32 @@ C           name is equal to the last character in the coordinate name.
      &         .OR. (NAMENV(I)(LN:LN) .NE. NAMECO(I)(LC:LC)))
      &         DEFOK = .FALSE.
   100    CONTINUE
+
+         IF (.NOT. DEFOK) THEN
+           DO 300 J = 2, NVARNP
+             IF (LENSTR(NAMENV(J)) .GE. 5) THEN
+               IF ((NAMENV(J)(1:4) .EQ. "DISP")
+     &           .AND. (J+NDIM-1 .LE. NVARNP)) THEN
+                 DEFOK = .TRUE.
+                 NDEF0 = J-1
+                 LN = MAX (LENSTR (NAMENV(J)), 2)
+                 DO 200 I = 1, NDIM
+                   LC = LENSTR (NAMECO(I))
+                   IF ((NAMENV(I+J-1)(1:4) .NE. "DISP")
+     &               .OR. (NAMENV(I+J-1)(1:LN-1) .NE.
+     &                     NAMENV(J)(1:LN-1))
+     &               .OR. (NAMENV(I+J-1)(LN:LN) .NE.
+     &                     NAMECO(I)(LC:LC))) THEN
+                     DEFOK = .FALSE.
+                   ENDIF
+ 200             CONTINUE
+                 IF (DEFOK) THEN
+                    EXIT
+                 ENDIF
+               ENDIF
+             ENDIF
+ 300       CONTINUE
+         ENDIF
 
          IF (DEFOK) THEN
 C           find the index for the x displacement variable

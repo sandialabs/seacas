@@ -211,11 +211,7 @@ c          .FALSE. if the input is to be read as a line.
 
       integer nin      
 c          logical unit where instructions are currently being read from.
-      integer inter    
-c          logical unit where interactive instructions are read from.
-      integer batin    
-c          logical unit where instructions from files are read from.
-      save nin, inter, batin
+      save nin
 
       character*256 cval2(80)
       logical batch
@@ -224,11 +220,9 @@ c ***********************************************************************
 c
 c     data statements
 c
-      data stkpnt / 0 /
       data recred / maxstk*0 /
       data first / .TRUE. /
       data cmdfile(1:7) / 'CMDFILE' /
-      data inter, batin / 0, 7 /
 c
 c ***********************************************************************
 c ***********************************************************************
@@ -254,30 +248,30 @@ c           field of the command line
 
          if ( instr() ) then     
 c   an instruction file was specified
-            call exname ( batin, name( 1 ), ln )   
+            call exname ( 7, name( 1 ), ln )   
 c   get name of file
 c
 c                 open file
 c
             if ( batch() ) then
-               call filhnd ( batin, name(1)(:ln), .TRUE., ecode,
+               call filhnd ( 7, name(1)(:ln), .TRUE., ecode,
      &            'o', 'f', 's', 0, *150)
                stkpnt = stkpnt + 1       
 c   increment stack pointer
-               nin = batin               
+               nin = 7               
 c    set logical unit where instructions are to be read from
             else
-               call filhnd ( batin, name(1)(:ln), .FALSE., ecode,
+               call filhnd ( 7, name(1)(:ln), .FALSE., ecode,
      &            'o', 'f', 's', 0, *150)
                if ( ecode ) then       
 c  file opened properly
                   stkpnt = stkpnt + 1        
 c  increment stack pointer
-                  nin = batin               
+                  nin = 7               
 c   set logical unit where instructions are to be read from
                else                    
 c   instruction file wasn't there. prompt user for instructions.
-                  nin = inter
+                  nin = 0
                endif
             endif
 
@@ -288,7 +282,7 @@ c   no instruction file was specified
      &        'No instruction file was specified on the command line.')
                return 1
             else
-               nin = inter
+               nin = 0
             endif
          endif
          first = .FALSE.
@@ -303,7 +297,7 @@ c
 
   110 continue
 
-      if ( nin .eq. batin )
+      if ( nin .eq. 7 )
      &   recred( stkpnt ) = recred( stkpnt ) + 1
 c
 c              read instruction
@@ -327,7 +321,7 @@ c   error in reading instruction
 c
 c              end of file read from input stream.
 
-         if ( nin .ne. inter ) then
+         if ( nin .ne. 0 ) then
 c            EOF mark read from a file.
 c            Close the file and open the
 c            previous one on the stack, if
@@ -354,7 +348,7 @@ c  no more files on the stack.  Switch
 c  to interactive input if an interactive
 c  job.  If a batch job, print error.
                if ( .not. batch() ) then
-                  nin = inter
+                  nin = 0
                else
                   call prterr ('PROGRAM',
      &          ' End of file mark read in lowest level command file.')
@@ -394,7 +388,7 @@ C ... Convert filename to all lowercase -- FREFLD converts to all uppercase
                call lowstr(filelc, file)
                try = .TRUE.
             else
-               if ( nin .eq. inter ) then
+               if ( nin .eq. 0 ) then
                   write ( *, 10020 )
 10020              format ( // 5x, 'Please enter an instruction file',
      &               ' to read from or ''a'' to ' / 5x,
@@ -434,7 +428,7 @@ c          an instruction.
          temp = nin                 
 c          remember where instructions are coming from.
 
-         if ( nin .eq. batin ) then 
+         if ( nin .eq. 7 ) then 
 c           instructions are currently coming
 c           from a file.  This current file
 c           must be closed.  The information
@@ -446,8 +440,8 @@ c           has already been stored on the stack.
          else                       
 c           instructions are currently coming
 c           from the terminal.  Change unit
-c           of instructions to batin
-            nin = batin
+c           of instructions to 7
+            nin = 7
          endif
 
          stkpnt = stkpnt + 1        
@@ -498,7 +492,7 @@ c   necessary ) and reset parameters.
 
             nin = temp
             stkpnt = stkpnt - 1
-            if ( nin .eq. batin ) then
+            if ( nin .eq. 7 ) then
 
                call filhnd ( nin, name( stkpnt ), .TRUE., ecode,
      &            'o', 'f', 's', 0, *150)

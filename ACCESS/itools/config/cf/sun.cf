@@ -172,11 +172,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  endif
 # endif
 # if HasGcc2
-#  ifndef OptimizedCDebugFlags
+#  ifndef OptimizedDebugFlags
 #   ifdef i386Architecture
-#    define OptimizedCDebugFlags -m486 -O2 -fno-strength-reduce
+#    define OptimizedDebugFlags -m486 -O2 -fno-strength-reduce
 #   else
-#    define OptimizedCDebugFlags -O2
+#    define OptimizedDebugFlags -O2
 #   endif
 #  endif
 # else
@@ -223,16 +223,16 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #    define RanlibCmd touch
 #    ifdef UseInstalled
 #    if Build64BitAccess == YES
-#     define DefaultCCOptions           -xtarget=ultra -xarch=v9
-#     define DefaultF77Options		-xtarget=ultra -xarch=v9 
-#     define DefaultF90Options		-xtarget=ultra -xarch=v9 
-#     define DefaultF77DebugFlags	-O3 -xtarget=ultra -xarch=v9 
-#     define DefaultF90DebugFlags	-O3 -xtarget=ultra -xarch=v9 
-#     define DefaultCDebugFlags	        -xO3 -xtarget=ultra -xarch=v9
-#     define DefaultCplusplusDebugFlags -xO3 -xtarget=ultra -xarch=v9
+#     define DefaultCCOptions           -xtarget=ultra -m64
+#     define DefaultF77Options		-xtarget=ultra -m64 
+#     define DefaultF90Options		-xtarget=ultra -m64 
+#     define DefaultF77DebugFlags	-O3 -xtarget=ultra -m64 
+#     define DefaultF90DebugFlags	-O3 -xtarget=ultra -m64 
+#     define DefaultCDebugFlags	        -xO3 -xtarget=ultra -m64
+#     define DefaultCplusplusDebugFlags -xO3 -xtarget=ultra -m64
 #     define F90PrecOptions		-xtypemap=real:64,double:64,integer:64
 #     define F77PrecOptions		-xtypemap=real:64,double:64,integer:64
-#     define ExtraLoadOptions		-xtarget=ultra -xarch=v9
+#     define ExtraLoadOptions		-xtarget=ultra -m64
 #     define ExtraLoadFlags
 #     define RpcLib -lnsl
 #    else
