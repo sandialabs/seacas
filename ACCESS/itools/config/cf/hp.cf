@@ -1,4 +1,4 @@
-XCOMM $Id: hp.cf,v 1.1 2008/06/18 16:23:13 gdsjaar Exp $
+XCOMM $Id: hp.cf,v 1.14 2004/06/28 19:23:09 gdsjaar Exp $
 
 /*
  * C++ compiler setup.  This file knows what options to use with 

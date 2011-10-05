@@ -178,6 +178,8 @@ C      --These parameters define the mesh display (see MSHLIN of /MSHOPT/)
       include 'light.blk'
       include 'icrnbw.blk'
 
+      include 'argparse.inc'
+      
       common /debugc/ cdebug
       common /debugn/ idebug
       character*8 cdebug
@@ -277,7 +279,7 @@ C   --Initialize dynamic memory
 
 C   --Open database file
 
-      NARG = COMMAND_ARGUMENT_COUNT()
+      NARG = argument_count()
       if (narg .eq. 0) then
         CALL PRTERR ('FATAL', 'Filename not specified.')
         CALL PRTERR ('CMDSPEC',
@@ -286,7 +288,7 @@ C   --Open database file
         GOTO 170
       end if
 
-      CALL GET_COMMAND_ARGUMENT(narg,dbname, lfil, ISTATUS)
+      CALL get_argument(narg,dbname, lfil)
       dbname(lfil+1:) = ' '
       ndb = exopen(dbname(:lfil), EXREAD, CMPSIZ, IOWS, vers, ierr)
       IF (IERR .NE. 0) THEN
@@ -317,8 +319,8 @@ C     Options should all be of the form "-option arg"
       bltans = '7'
       if (narg .gt. 1) then
         do i=1, narg-1, 2
-          CALL GET_COMMAND_ARGUMENT(i+0,option, lo, istatus)
-          CALL GET_COMMAND_ARGUMENT(i+1,value,  lv, istatus)
+          CALL get_argument(i+0,option, lo)
+          CALL get_argument(i+1,value,  lv)
           if (option(:lo) .eq. '-hardcopy' .or.
      *      option(:lo) .eq. '--hardcopy' .or.
      *      option(:lo) .eq. '-basename' .or.

@@ -206,7 +206,7 @@ depend::								@@\
 dirs: DONE								@@\
 									@@\
 DONE:									@@\
-	@for %i in (dirs) do ImakeIndir %i $(MAKE) SHELL= MAKE=x11make $(MFLAGS) PassCDebugFlags all @@\
+	@for %i in (dirs) do ImakeIndir %i $(MAKE) SHELL= MAKE=x11make $(MFLAGS) PassDebugFlags all @@\
 	touch DONE							@@\
 									@@\
 clean::									@@\

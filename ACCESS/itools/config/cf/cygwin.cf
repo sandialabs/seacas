@@ -32,13 +32,15 @@
 #define StandardDefines		-Dlinux  -DADDC_ -DADDC__
 #define OptimizedCDebugFlags	-O1 
 #define FortranCmd              g77
-#define Fortran90Cmd		f90
 #define DefaultF77Options	 
+// Use the following if using gfortran:
+//#define DefaultF77Options       -fno-f2c -O3 -fno-range-check -fcray-pointer
+#define Fortran90Cmd		f90
 #define X11Lib -L/usr/X11R6/lib -lX11
 
 #endif
 
-#define X11Includes -I/usr/X11R6/include
+#define X11Includes -I/usr/include/X11
 
 #define NeedsDoubleEscape	YES
 
@@ -48,7 +50,6 @@
 #define HasGcc2ForCplusplus	YES
 #define GccUsesGas		YES
 #define UseGas			YES
-#define GnuCpp			YES
 #define UnixCpp /* Just a flag that affects Concat macros in Imake.rules */
 
 #define ExtraLoadFlags		-Wl,--enable-auto-import,--enable-runtime-pseudo-reloc

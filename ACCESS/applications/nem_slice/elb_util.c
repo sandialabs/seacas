@@ -42,7 +42,6 @@
  *	clean_string()
  *	sort2_int_int()
  *	sort3_int_int_int()
- *	sort4_iiii()
  *	find_first_last()
  *	find_int()
  *	in_list()
@@ -229,260 +228,83 @@ void clean_string(char inp_str[], const char *tokens)
 
 } /*---------------- End clean_string() -----------------*/
 
-/*
- * Function from "Numerical Methods in C"
- */
-void sort2_int_int(int n, int *ra, int *rb)
+#define SWAP(type, r,s)  do{type t=r; r=s; s=t; } while(0)
+
+static void siftDown( int *a, int *b, int start, int count);
+
+void sort2_int_int(int count, int ra[], int rb[])
 {
-  /* NOTE: This currently assumes ra[1] is first entry in array */
-  int l,j,ir,i;
-  int rra, rrb;
-
-  if(n <= 1)return;
-
-  l  = (n >> 1)+1;
-  ir = n;
-  for(;;)
-  {
-    if(l > 1)
-    {
-      rra = ra[--l];
-      rrb = rb[l];
+  int start, end;
+ 
+  /* heapify */
+  for (start = (count-2)/2; start >=0; start--) {
+    siftDown( ra, rb, start, count);
+  }
+ 
+  for (end=count-1; end > 0; end--) {
+    SWAP(int, ra[end],ra[0]);
+    SWAP(int, rb[end],rb[0]);
+    siftDown(ra, rb, 0, end);
+  }
+}
+ 
+static void siftDown( int *a, int *b, int start, int end)
+{
+  int root = start;
+ 
+  while ( root*2+1 < end ) {
+    int child = 2*root + 1;
+    if ((child + 1 < end) && (a[child] < a[child+1])) {
+      child += 1;
+    }
+    if (a[root] < a[child]) {
+      SWAP(int, a[child], a[root] );
+      SWAP(int, b[child], b[root] );
+      root = child;
     }
     else
-    {
-      rra    = ra[ir];
-      rrb    = rb[ir];
-      ra[ir] = ra[1];
-      rb[ir] = rb[1];
-
-      if(--ir == 1)
-      {
-        ra[1] = rra;
-        rb[1] = rrb;
-        return;
-      }
-    }
-
-    i = l;
-    j = l << 1;
-
-    while(j <= ir)
-    {
-      if(j < ir && ra[j] < ra[j+1]) ++j;
-      if(rra < ra[j])
-      {
-        ra[i]  = ra[j];
-        rb[i]  = rb[j];
-        j     += (i=j);
-      }
-      else
-        j = ir + 1;
-    }
-    ra[i] = rra;
-    rb[i] = rrb;
+      return;
   }
-
 }
 
-/*
- * Function from "Numerical Methods in C"
- * Note that this sort uses 2nd arg as primary key and 3rd arg as secondary key
- */
-void sort3_int_int_int(int n, int *ra, int *rb, int *rc)
+static void siftDowniii( int *a, int *b, int *c, int start, int count);
+
+void sort3_int_int_int(int count, int ra[], int rb[], int rc[])
 {
-  int l,j,ir,i;
-  int rra, rrb, rrc;
-
-  if(n <= 1)return;
-
-  l  = n >> 1;
-  ir = n-1;
-  for(;;)
-  {
-    if(l > 0)
-    {
-      rra = ra[--l];
-      rrb = rb[l];
-      rrc = rc[l];
+  int start, end;
+ 
+  /* heapify */
+  for (start = (count-2)/2; start >=0; start--) {
+    siftDowniii( ra, rb, rc, start, count);
+  }
+ 
+  for (end=count-1; end > 0; end--) {
+    SWAP(int, ra[end],ra[0]);
+    SWAP(int, rb[end],rb[0]);
+    SWAP(int, rc[end],rc[0]);
+    siftDowniii(ra, rb, rc, 0, end);
+  }
+}
+ 
+static void siftDowniii( int *a, int *b, int *c, int start, int end)
+{
+  int root = start;
+ 
+  while ( root*2+1 < end ) {
+    int child = 2*root + 1;
+    if ((child + 1 < end) && (a[child] < a[child+1] || (a[child] == a[child+1] && b[child] < b[child+1]))) {
+      child += 1;
+    }
+    if (a[root] < a[child]) {
+      SWAP(int, a[child], a[root] );
+      SWAP(int, b[child], b[root] );
+      SWAP(int, c[child], c[root] );
+      root = child;
     }
     else
-    {
-      rra    = ra[ir];
-      rrb    = rb[ir];
-      rrc    = rc[ir];
-      ra[ir] = ra[0];
-      rb[ir] = rb[0];
-      rc[ir] = rc[0];
-
-      if(--ir == 0)
-      {
-        ra[0] = rra;
-        rb[0] = rrb;
-        rc[0] = rrc;
-        return;
-      }
-    }
-
-    i = l;
-    j = (l << 1)+1;
-
-    while(j <= ir)
-    {
-      if(j < ir &&
-	 (ra[j] < ra[j+1] || (ra[j]==ra[j+1] && rb[j] < rb[j+1]))) ++j;
-
-      if(rra < ra[j] || (rra == ra[j] && rrb < rb[j]))
-      {
-        ra[i]  = ra[j];
-        rb[i]  = rb[j];
-        rc[i]  = rc[j];
-        j     += (i=j)+1;
-      }
-      else
-        j = ir + 1;
-    }
-    ra[i] = rra;
-    rb[i] = rrb;
-    rc[i] = rrc;
+      return;
   }
-
 }
-
-/*****************************************************************************/
-/* Function from "Numerical Methods in C"
- *****************************************************************************/
-#if 1
-void sort4_iiii(int n, int *ra, int *rb, int *rc, int *rd)
-{
-  int l,j,ir,i;
-  int rra, rrb, rrc, rrd;
-
-  if (n <= 1) return;
-
-  l  = n >> 1;
-  ir = n-1;
-  for(;;)
-    {
-      if(l > 0)
-	{
-	  rra = ra[--l];
-	  rrb = rb[l];
-	  rrc = rc[l];
-	  rrd = rd[l];
-	}
-      else
-	{
-	  rra    = ra[ir];
-	  rrb    = rb[ir];
-	  rrc    = rc[ir];
-	  rrd    = rd[ir];
-	  ra[ir] = ra[0];
-	  rb[ir] = rb[0];
-	  rc[ir] = rc[0];
-	  rd[ir] = rd[0];
-
-	  if(--ir == 0)
-	    {
-	      ra[0] = rra;
-	      rb[0] = rrb;
-	      rc[0] = rrc;
-	      rd[0] = rrd;
-	      return;
-	    }
-	}
-
-      i = l;
-      j = (l << 1) + 1;
-
-      while (j <= ir)
-	{
-	  if (j < ir && is_less_than4(ra[j],   rb[j],   rc[j],   rd[j],
-				     ra[j+1], rb[j+1], rc[j+1], rd[j+1]))
-	    ++j;
-
-	  if (is_less_than4(rra,   rrb,   rrc,   rrd,
-			   ra[j], rb[j], rc[j], rd[j])) {
-	    ra[i]  = ra[j];
-	    rb[i]  = rb[j];
-	    rc[i]  = rc[j];
-	    rd[i]  = rd[j];
-	    j     += (i=j)+1;
-	  } else {
-	    j = ir + 1;
-	  }
-	}
-      ra[i] = rra;
-      rb[i] = rrb;
-      rc[i] = rrc;
-      rd[i] = rrd;
-    }
-}
-#else
-void sort4_iiii(int n, int *ra, int *rb, int *rc, int *rd)
-{
-  int l,j,ir,i;
-  int rra, rrb, rrc, rrd;
-
-  if(n <= 1)return;
-
-  l  = (n >> 1)+1;
-  ir = n;
-  for(;;)
-  {
-    if(l > 1)
-    {
-      rra = ra[--l];
-      rrb = rb[l];
-      rrc = rc[l];
-      rrd = rd[l];
-    }
-    else
-    {
-      rra    = ra[ir];
-      rrb    = rb[ir];
-      rrc    = rc[ir];
-      rrd    = rd[ir];
-      ra[ir] = ra[1];
-      rb[ir] = rb[1];
-      rc[ir] = rc[1];
-      rd[ir] = rd[1];
-
-      if(--ir == 1)
-      {
-        ra[1] = rra;
-        rb[1] = rrb;
-        rc[1] = rrc;
-        rd[1] = rrd;
-        return;
-      }
-    }
-
-    i = l;
-    j = l << 1;
-
-    while(j <= ir)
-    {
-      if(j < ir && ra[j] < ra[j+1]) ++j;
-      if(rra < ra[j])
-      {
-        ra[i]  = ra[j];
-        rb[i]  = rb[j];
-        rc[i]  = rc[j];
-        rd[i]  = rd[j];
-        j     += (i=j);
-      }
-      else
-        j = ir + 1;
-    }
-    ra[i] = rra;
-    rb[i] = rrb;
-    rc[i] = rrc;
-    rd[i] = rrd;
-  }
-
-}
-#endif
 
 int bin_search2 (int value, int num, int List[])
 
@@ -704,7 +526,7 @@ int find_min(const int list_length, const int list[])
  * and returns the number of values in the intersection.
  *****************************************************************************/
 int find_inter(const int set1[], const int set2[], const int length1,
-               const int length2, const int prob_type, int inter_ptr[])
+               const int length2, int inter_ptr[])
 
 /*
  *
@@ -715,10 +537,7 @@ int find_inter(const int set1[], const int set2[], const int length1,
  *      have already been allocated in the calling program before this
  *      function is called.
  *
- *        prob_type defines the problem to be addressed:
- *            0 = don't know anything about set1 or set2.
- *            1 = Know that set2 is monotonically increasing.
- *            2 = Know that set1 and set2 are monotonically increasing
+ *      Know that set1 and set2 are monotonically increasing
  *
  *      On return, find_inter returns 0 if there is no intersection.
  *      It returns the number of points in the intersection, if there
@@ -726,84 +545,32 @@ int find_inter(const int set1[], const int set2[], const int length1,
  */
 
 {
+  int counter = 0;
+  int i = 0;
+  int j = 0;
 
-  /* Local variables */
-
-  register int    i, j, counter = 0;
-  int             max_set1, min_set1, max_set2, min_set2;
-
-  /****************************** execution begins *****************************/
-
-  /* Error check the arguments */
-  if ((length1 <= 0) || (length2 <= 0)) return (counter);
-
-  if (prob_type == 0 ) {
-
-    /* find the maximum and the minimum of the two sets */
-    max_set1 = find_max (length1, set1);
-    min_set1 = find_min (length1, set1);
-    max_set2 = find_max (length2, set2);
-    min_set2 = find_min (length2, set2);
-
-    /*  check for a possible overlaps in node numbers;
-     *  If there is an overlap, then do the search
-     */
-
-    if ( (max_set2 >= min_set1) && (min_set2 <= max_set1) )   {
-
-      for (i = 0; i < length1; i++)
-        for (j = 0; j < length2; j++)
-          if (set1[i] == set2[j])  inter_ptr[counter++] = i;
-
+  while (i < length1 && j < length2) {
+    if (set1[i] < set2[j])
+      ++i;
+    else if (set2[j] < set1[i])
+      ++j;
+    else {
+      inter_ptr[counter++] = i;
+      ++i;
+      ++j;
     }
-  } else if (prob_type == 1) {
-
-    fprintf (stderr, "prob_type = 1 is unimplemented\n");
-    exit(1);
-
-  } else if (prob_type == 2) {
-    /*
-     *    Find the maximum and the minimum of the two sets
-     */
-    max_set1 =  set1[length1-1];
-    min_set1 =  set1[0];
-    max_set2 =  set2[length2-1];
-    min_set2 =  set2[0];
-    /*
-     *    Check for a possible overlaps in node numbers;
-     *    If there is an overlap, then do the search using a linearly
-     *    scaled method
-     *
-     */
-    if ( (max_set2 >= min_set1) && (min_set2 <= max_set1) )   {
-      i = 0;
-      j = 0;
-      while (i < length1 && j < length2 &&
-	     set1[i] <= max_set2 && set2[j] <= max_set1) {
-	if (set1[i] < set2[j])
-	  ++i;
-	else if (set2[j] < set1[i])
-	  ++j;
-	else {
-	  inter_ptr[counter++] = i;
-	  ++i;
-	  ++j;
-	}
-      }
-    }
-  } else {
-
-    fprintf (stderr, "prob_type = %d is unknown\n", prob_type);
-    exit(1);
-
   }
 
+#if 0
+  fprintf(stderr, "%d %d -- %d %d -- %d %d -- %d\n", length1, length2,
+	  min_set1, max_set1, min_set2, max_set2, counter);
+#endif
   return counter;
 
 } /* find_inter **************************************************************/
 
 #define QSORT_CUTOFF 12
-#define SWAP(V, I,J) do{int _t = V[I]; V[I] = V[J]; V[J] = _t;} while (0)
+#define ISWAP(V, I,J) do{int _t = V[I]; V[I] = V[J]; V[J] = _t;} while (0)
 
 
 int is_less_than4(int ra1,int rb1,int rc1,int rd1,
@@ -849,10 +616,10 @@ int is_less_than4v(int *v1, int *v2, int *v3, int *v4, int i, int j)
 
 void swap4(int *v1, int *v2, int *v3, int *v4, int i, int j)
 {
-  SWAP(v1, i, j);
-  SWAP(v2, i, j);
-  SWAP(v3, i, j);
-  SWAP(v4, i, j);
+  ISWAP(v1, i, j);
+  ISWAP(v2, i, j);
+  ISWAP(v3, i, j);
+  ISWAP(v4, i, j);
 }
 
 int internal_median3_4(int *v1, int *v2, int *v3, int *v4, int left, int right)
@@ -979,8 +746,8 @@ int is_less_than2v(int *v1, int *v2, int i, int j)
 
 void swap2(int *v1, int *v2, int i, int j)
 {
-  SWAP(v1, i, j);
-  SWAP(v2, i, j);
+  ISWAP(v1, i, j);
+  ISWAP(v2, i, j);
 }
 
 int internal_median3_2(int *v1, int *v2, int left, int right)

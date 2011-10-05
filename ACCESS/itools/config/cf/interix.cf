@@ -119,7 +119,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define MkdirHierCmd		mkdir -p
 
-#define GnuCpp			YES
 #define CppCmd			cpp
 
 #define PreProcessCmd		CppCmd -P

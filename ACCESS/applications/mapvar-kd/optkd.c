@@ -182,10 +182,11 @@ int findmaxspread(int l,
 		  int dimension,
 		  real *points, int N)
 {
-  int i,j,maxdim;
-  real max =-FLT_MAX,
-    min       = FLT_MAX,
-    maxspread =-FLT_MAX;
+  int maxdim = 0;
+  real max =-FLT_MAX;
+  real min = FLT_MAX;
+  real maxspread =-FLT_MAX;
+  int i,j;
 
   for (i=0; i < dimension; i++) {
     max =-FLT_MAX;
@@ -212,8 +213,9 @@ int findmaxvariance(int l,
 		    int dimension,
 		    real *points, int N)
 {
-  int i,j,maxdim;
+  int maxdim = 0;
   real max_var = 0.0;
+  int i,j;
   
   for (i=0; i < dimension; i++) {
     real prev_mean = 0.0;
@@ -527,7 +529,6 @@ void KDRECTQUERY (real *Points,
 		  int *count)
 {
   static real B[6];
-  int dc;
 
   switch(*Dimension) {
   case 3:

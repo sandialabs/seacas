@@ -143,15 +143,15 @@ C   --Read the number of variables
       call exgvp(ndb, 'E', nvarel, ierr)
       call exgvp(ndb, 'M', nvarns, ierr)
       call exgvp(ndb, 'S', nvarss, ierr)
+
+C   --Initialize for DBVTYP and DBVIX
+
+      CALL DBVINI (NVARGL, NVARNP, NVAREL, NVARNS, NVARSS)
+
       if ((nvarhi + nvargl + nvarnp + nvarel + nvarns + nvarss) .eq. 0)
      *  go to 160
 
       EXODUS = .TRUE.
-
-C   --Initialize for DBVTYP and DBVIX
-
-      CALL DBVINI (NVARHI, NVARGL, NVARNP, NVAREL, NVARNS, NVARSS)
-
       IF ((OPTION .EQ. '*') .OR. (INDEX (OPTION, 'V') .GT. 0)) THEN
 
 C      --Get the name indices

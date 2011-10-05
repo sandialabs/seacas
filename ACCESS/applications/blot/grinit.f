@@ -85,8 +85,6 @@ C   --   GRSDEV - (GRPLIB) Select device
       PARAMETER (KDVDI=10000)
       PARAMETER (KHCHSZ=1, KSCHSZ=2, KCHLSZ=6)
 
-      include 'f2kcli.inc'
-      
       COMMON /GRPCOC/ DEVNAM(2), DEVCOD(2)
       CHARACTER*3 DEVNAM
       CHARACTER*8 DEVCOD
@@ -163,7 +161,7 @@ c  100 CONTINUE
 C   --Get graphic output devices ready
 
 C ... Get graphics device name from executable (follows . in executable name)
-      CALL GET_COMMAND_ARGUMENT(0,scratch, lfil, ISTATUS)
+      CALL GET_ARGUMENT(0,scratch, lfil)
       last = indexr(scratch, '.')
       if (last .gt. 2) then
         device = scratch(last+1:lfil)

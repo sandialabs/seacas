@@ -39,8 +39,8 @@ int       vwgt_max;		/* largest vertex weight */
     int       done;		/* have I successfully move a vertex? */
 
     /* int npass=0; *//* counts passes through main loop */
-    int       badset;		/* most unbalanced set */
-    int       toobig;		/* badset too large or too small? */
+    int       badset=-1;		/* most unbalanced set */
+    int       toobig=0;		/* badset too large or too small? */
     int       balanced;		/* is balance attained? */
     double    imbalance;	/* amount of imbalance in badset */
     int       i;		/* loop counter */
@@ -173,9 +173,9 @@ double   *next_delta;		/* size of change in distances */
     int       good;		/* is this the delta OK? */
     int       first;		/* is this the first OK delta I've seen? */
     int       maxset, minset;	/* larger/smaller of two sets */
-    int     bestfrom, bestto;	/* sets best move comes from and goes to */
-    int       bestdir;		/* direction to step in list for best move */
-    int       bestvtx;		/* vertex being moved between sets */
+    int     bestfrom=0, bestto=0;/* sets best move comes from and goes to */
+    int       bestdir=0;	/* direction to step in list for best move */
+    int       bestvtx=0;	/* vertex being moved between sets */
     int     from, to;		/* sets vertex wants to move from and to */
     int       index;		/* offset into indices array */
     int       dir;		/* direction to step through list */

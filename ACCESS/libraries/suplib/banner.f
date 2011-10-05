@@ -145,18 +145,19 @@ C   --   LENSTR - (STRLIB) Find string length
       CALL SQZSTR (BANR, L)
       IF (NOUT .LE. 0) THEN
          WRITE (*, 10000) BLANK(:NCEN(L)), BANR(:L)
-      ELSE
-         WRITE (NOUT, 10000) BLANK(:NCEN(L)), BANR(:L)
-      END IF
-
-      IF (NOUT .LE. 0) THEN
+         WRITE (*, 10030)
          WRITE (*, *)
       ELSE
+         WRITE (NOUT, 10000) BLANK(:NCEN(L)), BANR(:L)
+         WRITE (NOUT, 10030)
          WRITE (NOUT, *)
       END IF
+
 
       RETURN
 10000  FORMAT (8A)
 10010  FORMAT ('Run on ', A4, '-', A2, '-', A2, ' at ', A8)
 10020  FORMAT ('Run on ', A8, ' at ', A8)
+10030  FORMAT (/,15x,
+     *   '==== Email seacas-help@sandia.gov for support ====')
       END

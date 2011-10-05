@@ -18,7 +18,6 @@ XCOMM operating system: OSName (OSMajorVersion.OSMinorVersion)
 #define SerialDebugCmd "dxladebug"
 #define HasDECCplusplus YES
 #define NumProcs 4
-#define HasFlush YES
 #define PerlCmd /bin/perl
 #define DependFlags -m mod
 

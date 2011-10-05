@@ -19,6 +19,7 @@ site.def
 
 RULEFILES = \
 Imake.rules \
+darwinLib.rules \
 hpLib.rules \
 ibmLib.rules \
 lnxLib.rules \
@@ -26,12 +27,11 @@ osfLib.rules \
 sgiLib.rules \
 sunLib.rules \
 sv4Lib.rules \
-darwinLib.rules \
 Win32.rules \
 xf86.rules \
 noop.rules \
-ProjectRulesFile1
-
+ProjectRulesFile1 \
+ProjectTestrulesFile1
 
 TMPLFILES = \
 Imake.tmpl \
@@ -57,6 +57,7 @@ generic.cf \
 hp.cf \
 ibm.cf \
 linux.cf \
+linux-pmac.cf \
 crosslinux.cf \
 crossredstorm.cf \
 redstorm.cf \

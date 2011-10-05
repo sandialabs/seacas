@@ -40,13 +40,10 @@
 /*****************************************************************************/
 
 extern int   ilog2i (unsigned int n);
-extern void  sortN_int_int    (int nval, int ra[], int narr, ...);
-extern void  sortN_int_float  (int nval, int ra[], int narr, ...);
-extern void  sortN_int_floatlist  (int nval, int ra[], int narr, float *rb[]);
-extern void  sortN_int_double (int nval, int ra[], int narr, ...);
-extern void  sortN_int_doublelist (int nval, int ra[], int narr, double *rb[]);
+extern void  sort_int_int    (int nval, int ra[], int rb[]);
+extern void  sort_int_float  (int nval, int ra[], float rb[]);
+extern void  sort_int_double (int nval, int ra[], double rb[]);
 extern void  sort_int_ptr(int nval, int ra[], char *rb[]);
-extern void  sort_int_int(int nval, int ra[], int rb[]);
 extern void  sort_int_int_ptr(int nval, int ra[], int rb[], char *rc[]);
 extern void  sort_int_int_int(int nval, int ra[], int rb[], int rc[]);
 extern void  sort_int (int n, int ra[]);
@@ -73,7 +70,6 @@ extern int   bin_search     (int List[],  int num, int value);
 extern int   bin_search2    (int value,   int num, int List[]);
 extern int   bin_search_min (int List[],  int num, int value);
 extern void  print_line     (char *charstr, int ntimes);
-extern int   int_cmp        (int *i1, int *i2);
 extern int   break_message_up(size_t, size_t, size_t, int **);
 extern double srandom1      (int *seed);
 /*****************************************************************************/

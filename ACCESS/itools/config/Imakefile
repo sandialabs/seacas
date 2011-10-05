@@ -5,8 +5,8 @@ XCOMM $XConsortium: Imakefile /main/5 1996/01/17 17:48:35 kaleb $
 #undef BootstrapCleanSubdirs
 #define BootstrapCleanSubdirs BOOTSTRAPSUBDIRS="$(BOOTSTRAPSUBDIRS)"
 
-BOOTSTRAPSUBDIRS = imake makedepend
-SUBDIRS = cf $(BOOTSTRAPSUBDIRS) util extras
+BOOTSTRAPSUBDIRS = imake
+SUBDIRS = cf $(BOOTSTRAPSUBDIRS) util extras 
 
 MakeSubdirs($(SUBDIRS))
-DependSubdirs($(SUBDIRS))
+#DependSubdirs($(SUBDIRS))

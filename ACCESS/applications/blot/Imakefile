@@ -81,7 +81,7 @@ SRCS2 = \
 grpbeg.f  grpend.f  grsdev.f  grsnap.f  grspar.f  grsymb.f \
 grtexc.f  grtext.f  grview.f  grycen.f  gtmvar.f  hidcor.f \
 hidden.f  hidedg.f  hidixf.f  hidmid.f  hidnod.f  hidpar.f \
-hidset.f  hidzm.f   idedge.f  indexx.f  ininpf.f \
+hidset.f  hidzm.f   idedge.f  ininpf.f \
 initim.f  inpcr.f   inpick.f  instr.f   interp.f \
 ixvw.f    linthk.f  lnchk.f   lncomd.f  lnlab.f   lnmain.f \
 lnplot.f  lnread.f  lnshow.f  lnstor.f  locrl.f   mainvw.f \

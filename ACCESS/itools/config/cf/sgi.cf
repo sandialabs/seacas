@@ -1,5 +1,5 @@
 
-XCOMM $Id: sgi.cf,v 1.1 2008/06/18 16:23:16 gdsjaar Exp $
+XCOMM $Id: sgi.cf,v 1.25 2007/07/09 17:42:24 gdsjaar Exp $
 XCOMM platform:  $XConsortium: sgi.cf /main/42 1996/12/03 15:54:15 swick $
 
 #define OSName	DefaultOSName
@@ -14,7 +14,6 @@ XCOMM operating system: OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVer
 #define Use32BitAddress YES
 #define DoRanlibCmd NO
 #define NumProcs 4
-#define HasFlush YES
 #define PerlCmd /usr/sbin/perl
 #define UseCpInScripts NO
 
@@ -26,16 +25,6 @@ XCOMM operating system: OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVer
 #define UseNetcdf4 YES
 #define ExtraNetcdfLib -lhdf5_hl -lhdf5
 #endif
-
-/* 
- * Uncomment the following if you need parallel nem_join and nem_spread
- * 
- * #if Parallel
- * #define NeedsParallelnem_join YES
- * #define NeedsParallelnem_spread YES
- * #endif
- *
-*/
 
 #if OSMajorVersion >= 6
 #ifdef UseInstalled

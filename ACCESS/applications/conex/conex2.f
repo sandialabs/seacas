@@ -146,7 +146,7 @@ C************************************************************************
       include 'ebptr.blk'
       include 'exqain.blk'
       include 'namptr.blk'
-      INCLUDE 'f2kcli.inc'
+      INCLUDE 'argparse.inc'
 
 C************************************************************************
 C     Program variables
@@ -266,7 +266,7 @@ C************************************************************************
       call exopts(EXABRT, ierr)
 
 C .. Check number of arguments on command line.
-      NARG = COMMAND_ARGUMENT_COUNT()
+      NARG = argument_count()
       if (narg .lt. 2) then
         CALL PRTERR ('FATAL', 'Filenames not specified.')
         CALL PRTERR ('FATAL',
@@ -283,7 +283,7 @@ C************************************************************************
 C     Open Master file read; time step data
 C************************************************************************
 C     Open Master file
-      CALL GET_COMMAND_ARGUMENT(1,mfile, lfil, ISTATUS)
+      CALL get_argument(1,mfile, lfil)
       ndbm = exopen(mfile(:lfil), EXREAD, cpuws, iows, vers, ierr)
       IF (IERR .NE. 0) THEN
         SCRATCH = 'Database "'//mfile(:lfil)//'" does not exist.'
@@ -375,7 +375,7 @@ C************************************************************************
 C************************************************************************
 C     open results file
 C************************************************************************
-      CALL GET_COMMAND_ARGUMENT(2,rfile, lfil, ISTATUS)
+      CALL get_argument(2,rfile, lfil)
       ndbo = excre(rfile(:lfil), EXCLOB, cpuws, iows, ierr)
       IF (IERR .NE. 0) THEN
         SCRATCH = 'Problems creating database "'//rfile(:LFIL)//'".'
