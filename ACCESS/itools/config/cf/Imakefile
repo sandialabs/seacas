@@ -30,7 +30,7 @@ sv4Lib.rules \
 Win32.rules \
 xf86.rules \
 noop.rules \
-ProjectRulesFile1
+ACCESS.rules
 
 TMPLFILES = \
 Imake.tmpl \
@@ -46,7 +46,7 @@ Library.tmpl \
 Server.tmpl \
 Threads.tmpl \
 WinLib.tmpl \
-ProjectTmplFile1
+ACCESS.tmpl
 
 CFFILES = \
 Imake.cf \

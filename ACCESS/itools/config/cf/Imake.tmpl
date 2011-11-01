@@ -1350,45 +1350,21 @@ F90EXTRALDOPTIONS = F90ExtraLdOptions
 # define TopLevelProject	X11
 #endif
 
-#ifndef ProjectRulesFile1
-/*# define ProjectRulesFile1	Concat3(,TopLevelProject,.rules)*/
-# define ProjectRulesFile1 ACCESS.rules
-#endif
-#ifndef ProjectRulesFile2
-/*# define ProjectRulesFile2	Concat3(<,TopLevelProject,.rules>)*/
-# define ProjectRulesFile2 <ACCESS.rules>
-#endif
-#include ProjectRulesFile2
-#ifndef LocalRulesFile
-/* need this to make ANSI-style preprocessors happy */
-#define LocalRulesFile <noop.rules>
-#endif
-#include LocalRulesFile
+#include <ACCESS.rules>
+#include <noop.rules>
 
 /*
  * get project-specific configuration and rules
  */
-#ifndef ProjectTmplFile1
-/*# define ProjectTmplFile1	Concat3(,TopLevelProject,.tmpl)*/
-# define ProjectTmplFile1 ACCESS.tmpl
-#endif
-#ifndef ProjectTmplFile2
-/*# define ProjectTmplFile2	Concat3(<,TopLevelProject,.tmpl>)*/
-# define ProjectTmplFile2 <ACCESS.tmpl>
-#endif
-#include ProjectTmplFile2
-#ifndef LocalTmplFile
-/* need this to make ANSI-style preprocessors happy */
-#define LocalTmplFile <noop.rules>
-#endif
-#include LocalTmplFile
+#include <ACCESS.tmpl>
+#include <noop.rules>
 
 #if !HasClearmake
      /* clearmake records relevant defines and flags in the build script,
 	so it knows when they change and we don't need this coarser-level
 	dependency.  We also don't want it, since it prevents sharing if
 	even one config file, say site.def or host.def, changes. */
-     ICONFIGFILES = $(IRULESRC)/Imake.tmpl $(IRULESRC)/ProjectTmplFile1 \
+     ICONFIGFILES = $(IRULESRC)/Imake.tmpl $(IRULESRC)/ACCESS.tmpl \
 			$(IRULESRC)/site.def $(IRULESRC)/$(MACROFILE) \
 			SiteIConfigFiles $(EXTRA_ICONFIGFILES)
 #endif
