@@ -34,12 +34,11 @@ XCOMM
 CODE =	ex1ex2v2
 
 SRCS = \
-ex1ex2v2.f dbinam.f dbinm1.f dbist1.f dbist2.f dbiste.f dbiv0.f  dbvini.f \
-putev.f  
+ex1ex2v2.f dbinm1.f dbist1.f dbist2.f dbiste.f dbiv0.f  putev.f  
 
 OBJS = ${SRCS:.f=.o}
 
-LIBS = $(EXOIIV2FOR) $(EXOIIV2C) $(NETCDF) $(SUPLIB) $(SUPES)
+LIBS = $(EXOIIV2FOR) $(EXOIIV2C) $(NETCDF) $(LEGACY) $(SUPLIB) $(SUPES)
 
 NormalFortranTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS)) 
 
