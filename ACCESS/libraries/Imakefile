@@ -30,9 +30,9 @@ SUBDIRS = $(ACCESSLIBSUBDIRS) $(SUPESSRC) $(SUPESDPSRC)
 #endif
 
 makeincludes::
-	@if test -d $(EXODUSIISRC) ;  then \
-	(cd $(EXODUSIISRC)/cbind/include   && $(MAKE) install) ; \
-	(cd $(EXODUSIISRC)/forbind/include && $(MAKE) install) ; \
+	@if test -d $(EXODUSSRC) ;  then \
+	(cd $(EXODUSSRC)/cbind/include   && $(MAKE) install) ; \
+	(cd $(EXODUSSRC)/forbind/include && $(MAKE) install) ; \
 	fi; \
 	if test -d $(NEMESISSRC) ; \
 	then \
