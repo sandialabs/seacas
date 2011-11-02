@@ -147,8 +147,6 @@ ACCESS/libraries/exodusii/cbind/test/testwt_ss
 ACCESS/libraries/exodusii/cbind/test/testwtd
 ACCESS/libraries/exodusii/cbind/test/testwtm
 ACCESS/libraries/exodusii/cmake_install.cmake
-ACCESS/libraries/exodusii/forbind/src/*_jack.c
-ACCESS/libraries/exodusii/forbind/src/*_jack32.c
 ACCESS/libraries/exodusii/forbind/test/*.res
 ACCESS/libraries/exodusii/forbind/test/testall
 ACCESS/libraries/exodusii/forbind/test/testcp
@@ -170,8 +168,6 @@ ACCESS/libraries/ioss/main/io_info
 ACCESS/libraries/ioss/main/io_shell
 ACCESS/libraries/ioss/main/shell_to_hex
 ACCESS/libraries/ioss/main/sphgen
-ACCESS/libraries/nemesis/forbind/ne_jack.c
-ACCESS/libraries/nemesis/forbind/ne_jack32.c
 ACCESS/libraries/nemesis/unshared/
 ACCESS/libraries/supes/exttest
 ACCESS/libraries/supes/ffrtest
