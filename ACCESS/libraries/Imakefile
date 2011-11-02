@@ -12,6 +12,7 @@ XCOMM The ACCESS/libraries directory has subdirectories
 
 ACCESSLIBSUBDIRS = \
 $(SUPLIBSRC) \
+$(MAPVARLIBSRC) \
 $(EXODUSSRC) \
 $(VDI_DRIVERSSRC) \
 $(PLTSRC) \
@@ -19,6 +20,7 @@ $(NEMESISSRC) \
 $(CHACOSRC) \
 $(ZOLTANSRC) \
 $(IOSSSRC) \
+$(LEGACYSRC) \
 $(APREPROLIBSRC) \
 $(SVDISRC)
 

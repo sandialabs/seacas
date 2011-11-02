@@ -75,7 +75,7 @@ batch="false"
 export EXTO3=INT
 GETOPT=${ACCESS}/bin/getopt.seacas
 
-TEMP=`${GETOPT} -o mhipdea -a --long ps_option:,mesh:,device:,input:,exodus:,hardcopy:,aprepro,help -n 'fastq' -- "$@"`
+TEMP=`${GETOPT} -o m:hi:p:d:e:a -a --long ps_option:,mesh:,device:,input:,exodus:,hardcopy:,aprepro,help -n 'fastq' -- "$@"`
 
 if [ $? != 0 ] ; then usage ; exit 1 ; fi
 
