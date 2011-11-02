@@ -54,7 +54,7 @@ CXXEXTRA_DEFINES = -DNO_MPI -DNO_PAMGEN_SUPPORT
 
 
 LIBRARY = libIoss.a
-SUBDIRS = exodusII generated init transform heartbeat main 
+SUBDIRS = exodusII generated init transform heartbeat main utest
 
 SRCS = \
 Ioss_Bar2.C \
@@ -200,10 +200,12 @@ InstallLibrary(Iohb,$(LIBDIR))
 InstallLibrary(Ionit,$(LIBDIR))
 
 MakeDirectories(makeincludes, $(INCDIR)/ioss)
+MakeDirectories(makeincludes, $(INCDIR)/ioss/init)
 MakeDirectories(install, $(INCDIR)/ioss)
+MakeDirectories(install, $(INCDIR)/ioss/init)
 InstallIncludeList(makeincludes,$(INCLIST),$(INCDIR)/ioss)
 InstallIncludeList(install,$(INCLIST),$(INCDIR)/ioss)
-InstallSubdirIncludeList(makeincludes,init,Ionit_Initializer.h,$(INCDIR)/ioss)
+InstallSubdirIncludeList(makeincludes,init,Ionit_Initializer.h,$(INCDIR)/ioss/init)
 
 ExtraStuffToClean(SEACASIoss_config.h)
 DependTarget()
