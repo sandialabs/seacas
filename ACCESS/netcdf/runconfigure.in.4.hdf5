@@ -2,15 +2,17 @@
 rm -f config.cache
 LIBRARYSUBDIR=lib; export LIBRARYSUBDIR
 CC='$(CC)'; export CC
-CFLAGS='-I../libsrc $(CFLAGS) $(PICFLAGS)'; export CFLAGS
+CFLAGS='-I../libsrc $(CFLAGS) $(PICFLAGS) -I$(HDF5ROOT)/include'; export CFLAGS
 CXX='$(CXX)'; export CXX
 CXXFLAGS='-I../libsrc $(CXXFLAGS) $(PICFLAGS)'; export CXXFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 AR_FLAGS='$(ARFLAGS)'; export AR_FLAGS
-LDFLAGS='$(LDOPTIONS)'; export LDFLAGS
+
+# The -L$(HDF5ROOT)/lib is to find the hdf5 libraries...
+LDFLAGS='-L$(HDF5ROOT)/lib $(LDOPTIONS)'; export LDFLAGS
 
 ### SEACAS does not use the Fortran or F90 versions of netcdf library
 FC=''; export FC
 F90=''; export F90
  
-./configure --enable-netcdf-4 --with-hdf5=$(ACCESSDIR) --disable-f77 --disable-f90 $(SHARED) --prefix $(PROJECTROOT) --libdir $(SHLIBDIR) --disable-dap $1
+./configure --enable-netcdf-4 --disable-f77 --disable-f90 $(SHARED) --disable-fsync --prefix $(PROJECTROOT) --libdir $(SHLIBDIR) --disable-dap --disable-cdmremote $1

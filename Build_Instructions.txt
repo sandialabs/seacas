@@ -72,6 +72,12 @@ applications  Imakefile  itools  libraries  netcdf  scripts  serial_mpi
       Set to YES to use the new hdf5-based netcdf-4;
       leave as NO to use the classic netcdf-4.
       
+   #define HDF5_Root AccessRoot
+      If UseNetcdf4 is YES, then HDF5_Root needs to point to the root of
+      an installed HDF5 library (both libhdf5.a and libhdf5_hl.a) and
+      include files.  HDF5_Root/lib holds the libs and HDF5_Root/include
+      has the include files.  
+         
    #define ExcludeAnalysis 
    #define Parallel 0
       The above parallel setting is used for building and installing

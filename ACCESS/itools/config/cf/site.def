@@ -15,6 +15,12 @@ XCOMM site.def file for SNL ACCESS System
 /* Change to YES to enable hdf5-based netcdf build */
 #define UseNetcdf4 NO
 
+/* Also, if the HDF5 library is external, specify the path to the installed root.
+ *  The {HDF5_Root}/lib and {HDF5_Root}/include should have the hdf5 libraries and
+ *  include files. 
+ */
+#define HDF5_Root AccessRoot
+
 /*
  * For most cases, leave the Platform define as "normal"; however,
  * if building on "interix", define it as interix;
