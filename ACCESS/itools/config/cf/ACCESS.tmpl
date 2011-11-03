@@ -163,7 +163,7 @@ XCOMM ACCESS.tmpl
 
 #ifndef ExtraNetcdfLib
 #if UseNetcdf4 && !defined ExcludeHDF5
-#define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lm -lz
+#define ExtraNetcdfLib -L$(HDF5ROOT)/lib -lhdf5_hl -lhdf5 -lm -lz
 #else
 #define ExtraNetcdfLib /**/
 #endif
@@ -282,6 +282,9 @@ XCOMM Set in site.def : ProjectName, ProjectRelease, AccessRoot, AccessInstall
 
         TFLOPROOT = TflopAccessRoot
        CPLANTROOT = CplantAccessRoot
+
+XCOMM Used to specify location of hdf5 libraries for use with netcdf-4 
+         HDF5ROOT = HDF5_Root
 
 XCOMM Source code for the ACCESS System
         ITOOLSSRC = itools
