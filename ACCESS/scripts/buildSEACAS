@@ -172,8 +172,13 @@ if [ $DefaultAccessRootDir != $FileAccessRootDir ]; then
     exit
 fi
 
+FileAccessInstallDir=`grep "define AccessInstall" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
+if [ $FileAccessInstallDir = "AccessRoot" ]; then
+    FileAccessInstallDir=$DefaultAccessRootDir
+fi
+
 DefaultAccessRootDirSet=YES
-ACCESS=$DefaultAccessRootDir; export ACCESS
+ACCESS=$FileAccessInstallDir; export ACCESS
 PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
 
 DefaultGroup=`grep "define Group" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
@@ -889,7 +894,8 @@ do
    echo "Please make sure before continuing that the settings below"
    echo "are set to what you want:"
    echo ""
-   echo "   SEACAS Root:        ${txtpur}$DefaultAccessRootDir${txtrst}"
+   echo "   SEACAS Source Root: ${txtpur}$DefaultAccessRootDir${txtrst}"
+   echo "   SEACAS Install Dir: ${txtpur}$FileAccessInstallDir${txtrst}"
    echo "   Install group:      ${txtpur}$DefaultGroup${txtrst}"
    echo "   Current umask:      ${txtpur}`umask`${txtrst}"
    if [ $continue ] ; then
