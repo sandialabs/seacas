@@ -8,6 +8,13 @@ XCOMM site.def file for SNL ACCESS System
  */
 #define AccessRoot /Users/gdsjaar/src/SEACAS-SF
 
+/*
+ * Path to installation directories: bin, config, etc, inc, lib, mats, svdi
+ */
+#ifndef AccessInstall
+#define AccessInstall AccessRoot
+#endif
+
 #ifndef BuildSharedExodusLibrary
 #define BuildSharedExodusLibrary YES
 #endif
@@ -36,14 +43,7 @@ XCOMM site.def file for SNL ACCESS System
 #define TopLevelProject	ACCESS
 #define ProjectName "SNLA ACCESS"
 #define ProjectRelease "1.0"
-#define ProjectRoot AccessRoot
-
-/*
- * Path to installation directories: bin, config, etc, inc, lib, mats, svdi
- */
-#ifndef AccessInstall
-#define AccessInstall AccessRoot
-#endif
+#define ProjectRoot AccessInstall
 
 #define InstAccBin 775
 #define InstAccLib 775
