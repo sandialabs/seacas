@@ -651,23 +651,29 @@ echo ""
 echo "Setting the group id of all files to \"$DefaultGroup\"..."
 cd $DefaultAccessRootDir
 chgrp -R $DefaultGroup *
+cd $FileAccessInstallDir
+chgrp -R $DefaultGroup *
 echo ""
 echo ""
 echo "Giving the \"$DefaultGroup\" group read and write permission on all SEACAS files..."
 cd $DefaultAccessRootDir
 find . -type d -exec chmod 775 {} \;
 chmod -R g+rw *
+
+cd $FileAccessInstallDir
+find . -type d -exec chmod 775 {} \;
+chmod -R g+rw *
 echo ""
 echo ""
-cd $DefaultAccessRootDir/bin
+cd $FileAccessInstallDir/bin
 chmod 775 *
-cd $DefaultAccessRootDir/etc
+cd $FileAccessInstallDir/etc
 chmod 775 *
-if [ -f $DefaultAccessRootDir/etc/audit.log ]; then
-    cd $DefaultAccessRootDir/etc
+if [ -f $FileAccessInstallDir/etc/audit.log ]; then
+    cd $FileAccessInstallDir/etc
     chmod 666 audit.log
 else
-    cd $DefaultAccessRootDir/etc
+    cd $FileAccessInstallDir/etc
     touch audit.log
     chmod 666 audit.log 
 fi
