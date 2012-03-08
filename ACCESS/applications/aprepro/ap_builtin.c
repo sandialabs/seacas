@@ -899,7 +899,7 @@ char *do_file_to_string(char *filename)
     exit(EXIT_FAILURE);
   }
 
-  size = st.st_size;
+  size = st.st_size+2;
 
   lines = malloc(size * sizeof(char)+1);
   lines[0] = '\0';
@@ -911,7 +911,7 @@ char *do_file_to_string(char *filename)
     assert(strlen(lines) <= size);
   }
 
-  assert(strlen(lines) == size);
+  assert(strlen(lines) <= size);
   NEWSTR(lines, ret_string);
   if (line) free(line);
   if (lines) free(lines);
