@@ -1,9 +1,7 @@
-INCLUDE(SubPackageMacros)
-INCLUDE(PackageAddExecutable)
+INCLUDE(TribitsSubPackageMacros)
+INCLUDE(TribitsAddExecutable)
 
-SUBPACKAGE(Aprepro)
-
-SET(CMAKE_EXECUTABLE_SUFFIX "")
+TRIBITS_SUBPACKAGE(Aprepro)
 
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -13,11 +11,12 @@ INCLUDE_DIRECTORIES(
 ADD_DEFINITIONS(-DNO_EXODUSII)
 
 SET(HEADERS "")
-SET(SOURCES ap_builtin.c  aprepro.c      ap_stat.c  y.tab.c  ap_util.c  ap_init.c
+SET(SOURCES ap_builtin.c  ap_stat.c  y.tab.c  ap_util.c  ap_init.c
 	    ap_hash.c     ap_liballoc.c  ap_units.c)
 
-PACKAGE_ADD_EXECUTABLE(aprepro NOEXEPREFIX NOEXESUFFIX SOURCES ${SOURCES} DEPLIBS suplib m)
+TRIBITS_ADD_LIBRARY(aprepro_app_lib SOURCES ${SOURCES} DEPLIBS suplib)
+TRIBITS_ADD_EXECUTABLE(aprepro NOEXEPREFIX NOEXESUFFIX SOURCES aprepro.c DEPLIBS aprepro_app_lib suplib m COMM serial mpi)
 install_executable(aprepro)
 
-SUBPACKAGE_POSTPROCESS()
+TRIBITS_SUBPACKAGE_POSTPROCESS()
 
