@@ -38,7 +38,7 @@ Other options:
 
    help-email: seacas-users@software.sandia.gov (code, script)
   Information: www.jal.sandia.gov/SEACAS/SEACAS.html (IRN)
-               endo.sandia.gov/SEACAS/SEACAS.html    (EON)
+
 DECOMP_USAGE_EOF
 exit 1
 }
