@@ -182,8 +182,8 @@ unsigned outary[];  /* data to be buffered */
    if( *numwds <= 0 && buff_ptr > 0 ){
 
       /* write out the data as a byte stream. */
-      if(istat = write(file_d, buffer,
-                                   buff_ptr ) == -1) {
+     if((istat = write(file_d, buffer,
+		       buff_ptr )) == -1) {
           printf("wmetbf: write error\n");
       } /* end write buffer */
    
@@ -197,8 +197,8 @@ unsigned outary[];  /* data to be buffered */
        if (buff_ptr + *numwds >= BUFFER_SIZE) {
 	 
 	 /* write out the data as a byte stream. */
-	 if(istat = write(file_d, buffer, 
-			  buff_ptr) == -1) {
+	 if((istat = write(file_d, buffer, 
+			   buff_ptr)) == -1) {
 	   printf("wmetbf: write error\n");
 	 } /* end write buffer */
 	 
