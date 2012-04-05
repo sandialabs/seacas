@@ -31,13 +31,16 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_Field.h>
-#include <Ioss_VariableType.h>
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
-
-#include <assert.h>
+#include <Ioss_VariableType.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <iostream>
 #include <string>
+#include <vector>
+
+#include "Ioss_CodeTypes.h"
 
 namespace {
   size_t internal_get_size(Ioss::Field::BasicType type, size_t count,
@@ -50,6 +53,8 @@ namespace {
       return std::string("real");
     case Ioss::Field::INTEGER:
       return std::string("integer");
+    case Ioss::Field::INT64:
+      return std::string("64-bit integer");
     case Ioss::Field::COMPLEX:
       return std::string("complex");
     case Ioss::Field::STRING:
@@ -255,6 +260,9 @@ namespace {
       break;
     case Ioss::Field::INTEGER:
       basic_size = sizeof(int);
+      break;
+    case Ioss::Field::INT64:
+      basic_size = sizeof(int64_t);
       break;
     case Ioss::Field::COMPLEX:
       basic_size = sizeof(Complex);

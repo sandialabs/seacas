@@ -30,19 +30,24 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_EdgeBlock.h>
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_Property.h>
-#include <Ioss_Field.h>
-#include <Ioss_VariableType.h>
+#include <Ioss_EdgeBlock.h>
 #include <Ioss_ElementTopology.h>
-
+#include <Ioss_Property.h>
+#include <stddef.h>
 #include <string>
+
+#include "Ioss_EntityBlock.h"
+#include "Ioss_PropertyManager.h"
+
+namespace Ioss {
+class Field;
+}  // namespace Ioss
 
 Ioss::EdgeBlock::EdgeBlock(Ioss::DatabaseIO *io_database,
 			   const std::string& my_name,
 			   const std::string& edge_type,
-			   size_t number_edges)
+			   int64_t number_edges)
   : Ioss::EntityBlock(io_database, my_name, edge_type, number_edges)
 {
   if (topology()->master_element_name() != edge_type &&
@@ -60,13 +65,13 @@ Ioss::Property Ioss::EdgeBlock::get_implicit_property(const std::string& my_name
   return Ioss::EntityBlock::get_implicit_property(my_name);
 }
 
-int Ioss::EdgeBlock::internal_get_field_data(const Ioss::Field& field,
+int64_t Ioss::EdgeBlock::internal_get_field_data(const Ioss::Field& field,
 				      void *data, size_t data_size) const
 {
   return get_database()->get_field(this, field, data, data_size);
 }
 
-int Ioss::EdgeBlock::internal_put_field_data(const Ioss::Field& field,
+int64_t Ioss::EdgeBlock::internal_put_field_data(const Ioss::Field& field,
 				      void *data, size_t data_size) const
 {
   return get_database()->put_field(this, field, data, data_size);

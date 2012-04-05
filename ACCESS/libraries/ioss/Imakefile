@@ -56,6 +56,7 @@ CXXEXTRA_DEFINES = -DNO_MPI -DNO_PAMGEN_SUPPORT
 LIBRARY = libIoss.a
 SUBDIRS = exodusII generated init transform heartbeat main utest
 
+
 SRCS = \
 Ioss_Bar2.C \
 Ioss_Bar3.C \
@@ -137,6 +138,7 @@ INCLIST = \
 	Ioss_CommSet.h \
 	Ioss_ConcreteVariableType.h \
 	Ioss_DBUsage.h \
+	Ioss_DataSize.h \
 	Ioss_DatabaseIO.h \
 	Ioss_ElementTopology.h \
 	Ioss_EntityBlock.h \
@@ -179,6 +181,7 @@ install:: SEACASIoss_config.h
 
 NormalLibraryTarget(Ioss,$(OBJS))
 NamedTargetSubdirs(libIoex.a,  exodusII,  "making Ioss/exodusII",  PassDebugFlags ExtraOptions,libIoex.a)
+
 NamedTargetSubdirs(libIogn.a,  generated, "making Ioss/generated", PassDebugFlags ExtraOptions,libIogn.a)
 NamedTargetSubdirs(libIotr.a,  transform, "making Ioss/transform", PassDebugFlags ExtraOptions,libIotr.a)
 NamedTargetSubdirs(libIohb.a,  heartbeat, "making Ioss/heartbeat", PassDebugFlags ExtraOptions,libIohb.a)
@@ -187,6 +190,7 @@ NamedTargetSubdirs(all,        main,      "making Ioss/main",      PassDebugFlag
 
 AllTarget(libIoss.a)
 AllTarget(libIoex.a)
+
 AllTarget(libIogn.a)
 AllTarget(libIotr.a)
 AllTarget(libIohb.a)
@@ -194,6 +198,7 @@ AllTarget(libIonit.a)
 
 InstallLibrary(Ioss,$(LIBDIR))
 InstallLibrary(Ioex,$(LIBDIR))
+
 InstallLibrary(Iogn,$(LIBDIR))
 InstallLibrary(Iotr,$(LIBDIR))
 InstallLibrary(Iohb,$(LIBDIR))
