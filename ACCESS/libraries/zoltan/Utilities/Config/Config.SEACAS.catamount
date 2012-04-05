@@ -1,8 +1,0 @@
-
-DEFS 			= 
-RANLIB			= @RANLIB@
-AR			= @AR@
-
-CC			= mpicc
-CFLAGS 			= @CFLAGS@
-

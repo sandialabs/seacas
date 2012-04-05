@@ -1,0 +1,37 @@
+
+ZOLTAN_BLD = zoltan-build
+ZOLTAN_SRC = zoltan-3.601
+
+#if BuildSharedExodusLibrary
+SHARED = --enable-shared
+#else
+SHARED = --disable-shared
+#endif
+
+all:: $(ZOLTAN_BLD)/Makefile
+	cd $(ZOLTAN_BLD); $(MAKE)
+	make install
+
+$(ZOLTAN_BLD)/runconfigure: runconfigure.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/msub.seacas runconfigure.in > $(ZOLTAN_BLD)/runconfigure
+	chmod +x $(ZOLTAN_BLD)/runconfigure
+
+$(ZOLTAN_BLD)/Makefile: $(ZOLTAN_BLD)/runconfigure
+	cd $(ZOLTAN_BLD); ./runconfigure
+
+test:: all
+	cd $(ZOLTAN_BLD); $(MAKE) test
+
+install:: 
+	cd $(ZOLTAN_BLD); $(MAKE) install
+
+clean:: $(ZOLTAN_BLD)/Makefile
+	cd $(ZOLTAN_BLD); $(MAKE) clean
+
+distclean::
+	$(RM) -r $(ZOLTAN_BLD)
+	mkdir $(ZOLTAN_BLD)
+
+makeincludes:: $(ZOLTAN_BLD)/Makefile
+	cd $(ZOLTAN_BLD)/src; make install-includeHEADERS
+
