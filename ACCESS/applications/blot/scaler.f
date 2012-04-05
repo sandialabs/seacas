@@ -29,23 +29,9 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: scaler.f,v $
-C Revision 1.3  2009/03/25 12:36:47  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  2002/12/03 19:09:36  gdsjaar
-C Fixed some uninitialized variables and some missing 'SAVE' statements.
-C
-C Revision 1.1  1994/04/07 20:11:00  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:57:01  gdsjaar
-c Added RCS Id and Log to all files
-c
 C======================================================================
-      SUBROUTINE SCALER (A, IPRINT, NAME, IVAR,
-     &  USESEL, IELBST, NALVAR, VALMIN, VALMAX)
+      SUBROUTINE SCALER (A, IA, IPRINT, NAME, IVAR,
+     &  USESEL, IELBST, NALVAR, VALMIN, VALMAX, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** SCALER *** (BLOT) Scale variable
@@ -94,10 +80,12 @@ C   --   Uses NAMECO of /DBNAMS/
       include 'dbnams.blk'
 
       DIMENSION A(*)
+      INTEGER IA(*)
       CHARACTER*(*) NAME
       LOGICAL USESEL
       INTEGER IELBST(*)
-
+      INTEGER MAPEL(*), MAPND(*)
+      
       CHARACTER TYP
       REAL XYZMIN(3), XYZMAX(3)
 
@@ -324,10 +312,10 @@ C      --Print min/max for nodal variable
         IF ((IPRINT .GT. 0) .AND.
      &    ((IPRINT .GT. 1) .OR. (ICALC .GT. 0))) THEN
           CALL SCAPRT (NAMECO, NAME, IVAR, A(KTIMES),
-     &      A(KVALNN+IX), A(KNUMNN+IX), A(KXYZNN+IXX),
+     &      A(KVALNN+IX), MAPND(IA(KNUMNN+IX)), A(KXYZNN+IXX),
      &      A(KISTNN+IX),
-     &      A(KVALNX+IX), A(KNUMNX+IX), A(KXYZNX+IXX),
-     &      A(KISTNX+IX))
+     &      A(KVALNX+IX), MAPND(IA(KNUMNX+IX)), A(KXYZNX+IXX),
+     *      A(KISTNX+IX))
         end if
 
       ELSE IF (TYP .EQ. 'E') THEN
@@ -438,8 +426,8 @@ C      --Print min/max for element variable
         IF ((IPRINT .GT. 0) .AND.
      &    ((IPRINT .GT. 1) .OR. (ICALC .GT. 0))) THEN
           CALL SCAPRT (NAMECO, NAME, IVAR, A(KTIMES),
-     &      VALMIN, NUMMIN, XYZMIN, ISTMIN,
-     &      VALMAX, NUMMAX, XYZMAX, ISTMAX)
+     &      VALMIN, MAPEL(NUMMIN), XYZMIN, ISTMIN,
+     &      VALMAX, MAPEL(NUMMAX), XYZMAX, ISTMAX)
         END IF
       END IF
 

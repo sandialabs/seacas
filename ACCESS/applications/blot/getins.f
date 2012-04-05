@@ -152,9 +152,9 @@ c        local declarations
       parameter ( maxstk = 10 )  
 c         the maximum number of files allowed in the stack of files
 c         containing instructions that are still to be read.
-      character*256 file, filelc          
+      character*2048 file, filelc          
 c         Name of file to be opened for reading instructions
-      character*256 name( maxstk ) 
+      character*2048 name( maxstk ) 
 c         the stack of file names containing instructions that are 
 c         still to be read
       integer recred( maxstk )   
@@ -198,7 +198,7 @@ c          .TRUE. if control should go back to the top of the routine
 c          to try to read another command line.
 c          .FALSE. if a command line has successfully been read and 
 c          the program should exit.
-      character*256 cmdfile  
+      character*2048 cmdfile  
 c          Name of the command for directing command to a new file.
       save cmdfile
 
@@ -213,7 +213,7 @@ c          .FALSE. if the input is to be read as a line.
 c          logical unit where instructions are currently being read from.
       save nin
 
-      character*256 cval2(80)
+      character*2048 cval2(80)
       logical batch
 
 c ***********************************************************************

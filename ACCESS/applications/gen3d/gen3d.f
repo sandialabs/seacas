@@ -75,16 +75,16 @@ C   --   "User's Manual for GEN3D"
 
       include 'exodusII.inc'
 
-      INCLUDE 'progqa.blk'
-      INCLUDE 'dbase.blk'
-      INCLUDE 'dbtitl.blk'
-      INCLUDE 'dbnums.blk'
-      INCLUDE 'dbnum3.blk'
-      INCLUDE 'params.blk'
-      INCLUDE 'xyzoff.blk'
-      INCLUDE 'xyzrot.blk'
-      INCLUDE 'xyzmir.blk'
-      INCLUDE 'twist.blk'
+      INCLUDE 'g3_progqa.blk'
+      INCLUDE 'g3_dbase.blk'
+      INCLUDE 'g3_dbtitl.blk'
+      INCLUDE 'g3_dbnums.blk'
+      INCLUDE 'g3_dbnum3.blk'
+      INCLUDE 'g3_params.blk'
+      INCLUDE 'g3_xyzoff.blk'
+      INCLUDE 'g3_xyzrot.blk'
+      INCLUDE 'g3_xyzmir.blk'
+      INCLUDE 'g3_twist.blk'
       INCLUDE 'argparse.inc'
 
       CHARACTER*2048 FILIN, FILOUT, SCRATCH
@@ -105,7 +105,7 @@ C      --A - the dynamic numeric memory base array
       INTEGER IDNSET(0:MAXSET,2)
       INTEGER IDESET(0:MAXSET,2)
 
-      INCLUDE 'qainfo.blk'
+      INCLUDE 'g3_qainfo.blk'
 
       CALL STRTUP (QAINFO)
 

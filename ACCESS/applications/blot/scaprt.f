@@ -29,21 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: scaprt.f,v $
-C Revision 1.3  2009/03/25 12:36:47  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  1996/06/21 16:07:15  caforsy
-C Ran ftnchek and removed unused variables.  Reformat output for list
-C var, list global, and list name.
-C
-C Revision 1.1  1994/04/07 20:11:12  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:57:05  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE SCAPRT (NAMECO, NAME, IVAR, TIMES,
      &   VALMIN, NUMMIN, XYZMIN, ISTMIN, VALMAX, NUMMAX, XYZMAX, ISTMAX)

@@ -700,9 +700,11 @@ C *** Mesh control ***
      &   .or. (verb .eq. 'SCALE') .OR. (VERB .EQ. 'SQUARE')) THEN
          INVERB = ' '
 
+         CALL MDFIND ('MAPND', KMAPND, LDUM)
+
          CALL CMDZM (VERB, INLINE(1),
      &      IFLD, INTYP, CFIELD, IFIELD, RFIELD,
-     &      NEWZM, SETTIC, A, *140)
+     &      NEWZM, SETTIC, A(KMAPND), A, *140)
 
          CALL SCALAX
 
@@ -801,11 +803,14 @@ C ... Normalize light vectors.
          ELSE
            KZE = 1
          END IF
+         CALL MDFIND ('MAPEL', KMAPEL, LDUM)
+         CALL MDFIND ('MAPND', KMAPND, LDUM)
+
          CALL CMDWHE (VERB, INLINE(1),
      &      IFLD, INTYP, CFIELD, IFIELD, RFIELD,
      &      A(KXN), A(KYN), A(KZN),
      &      A(KXNN), A(KYNN), A(KZNN), A(KHIDEN),
-     *      A(KXE), A(KYE), A(KZE), *140)
+     *      A(KXE), A(KYE), A(KZE), A(KMAPEL), A(KMAPND), *140)
 
       ELSE IF (VERB .EQ. 'LINETHICKNESS') THEN
 

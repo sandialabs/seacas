@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE SPPLOT (A, NEUTRL, NPTIMS, IPTIMS, TIMES,
      *  NENUM, DIST, PLTVAL, NAMES, IXSEGV, ISEGEL, SQDIST, LIDSP,
-     &   BLKCOL)
+     &   BLKCOL, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** SPPLOT *** (SPLOT) Plot curves for all times
@@ -110,6 +110,7 @@ C   --   Sets XMIN, XMAX, YMIN, YMAX of /XYLIM/
       REAL SQDIST(NNENUM)
       INTEGER LIDSP(0:*)
       INTEGER BLKCOL(0:NELBLK)
+      INTEGER MAPEL(*), MAPND(*)
 
       LOGICAL NUMCRV
       CHARACTER*1024 TXLAB, TYLAB
@@ -238,7 +239,7 @@ C         --Label plot if overlaid by time
   140       CONTINUE
             CALL SPLAB (A, NPTIMS, IPTIMS, TIMES, NENUM,
      &           N, 1, NUMCRV, NAMES, TXLAB, TYLAB,
-     &           LIDSP, BLKCOL,  *210)
+     &           LIDSP, BLKCOL,  MAPEL, MAPND, *210)
             IF (IYSCAL .NE. 'CURVE')
      &           CALL XYAXIS (0, DOGRID, TXLAB, TYLAB, BLKCOL, *210)
             
@@ -258,14 +259,14 @@ C         --Plot all time curves for this variable
      &               NENUM, DIST, PLTVAL(1,N,NPT),
      &               TXLAB, TYLAB, NAMES,
      &               NNE, ISEGEL(1,IXSEGV(N)), NPDON,
-     &               NPTOT, LIDSP, BLKCOL, *210)
+     &               NPTOT, LIDSP, BLKCOL, MAPEL, MAPND, *210)
                ELSE
                   CALL SPPLT1 (A, NEUTRL, IPTIMS, TIMES, NPT,
      &               N, OVERTM, NPT, NUMCRV,
      &               NENUM, SQDIST, PLTVAL(1,N,NPT),
      &               TXLAB, TYLAB, NAMES,
      &               NNE, ISEGEL(1,IXSEGV(N)), NPDON,
-     &               NPTOT, LIDSP, BLKCOL, *210)
+     &               NPTOT, LIDSP, BLKCOL, MAPEL, MAPND, *210)
                END IF
   150       CONTINUE
 
@@ -310,7 +311,7 @@ C         --Label plot if overlaid curves
                CALL SPLAB (A, 1, IPTIMS(NPT), TIMES,
      &            NENUM, 1, NSPVAR,
      &            NUMCRV, NAMES, TXLAB, TYLAB, LIDSP,
-     &            BLKCOL,  *210)
+     &            BLKCOL,  MAPEL, MAPND, *210)
                IF (IYSCAL .NE. 'CURVE')
      &            CALL XYAXIS (0, DOGRID, TXLAB, TYLAB, BLKCOL, *210)
             END IF
@@ -341,14 +342,14 @@ C            --Compact distances to match compacted variables
      &               NENUM, DIST, PLTVAL(1,N,NPT),
      &               TXLAB, TYLAB, NAMES,
      &               NNE, ISEGEL(1,IXSEGV(N)), NPDON,
-     &               NPTOT, LIDSP, BLKCOL, *210)
+     &               NPTOT, LIDSP, BLKCOL, MAPEL, MAPND, *210)
                ELSE
                   CALL SPPLT1 (A, NEUTRL, IPTIMS, TIMES, NPT,
      &               N, OVERLY, N, NUMCRV,
      &               NENUM, SQDIST, PLTVAL(1,N,NPT),
      &               TXLAB, TYLAB, NAMES,
      &               NNE, ISEGEL(1,IXSEGV(N)), NPDON,
-     &               NPTOT, LIDSP, BLKCOL, *210)
+     &               NPTOT, LIDSP, BLKCOL, MAPEL, MAPND, *210)
                END IF
   190       CONTINUE
 

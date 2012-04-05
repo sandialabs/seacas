@@ -37,7 +37,7 @@ C=======================================================================
      &   IE2ELB, NEWELB, IELBST,
      &   KNPSUR,
      &   ISSNPS, IDNPS, ISSESS, IDESS, LIDSP, BLKCOL,
-     &   IDELB, NAMELB, NAMLEN)
+     &   IDELB, NAMELB, NAMLEN, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** PLOTER *** (BLOT) Main routine for plotting
@@ -137,6 +137,7 @@ C   --   Sets DVIEW0 of /LAYOUT/
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
       CHARACTER*(*) NAMELB(*)
+      INTEGER MAPEL(*), MAPND(*)
 
 C   --Set up graphics
 
@@ -170,7 +171,7 @@ C   --Call plotting routine for current subprogram
      &      NEWELB, IELBST,
      &      KNPSUR,
      &      ISSNPS, IDNPS, ISSESS, IDESS, NENUM, LIDSP,
-     &      BLKCOL, IDELB, NAMELB)
+     &      BLKCOL, IDELB, NAMELB, MAPEL, MAPND)
 
       ELSE IF (CURPRO .EQ. 'DETOUR') THEN
          CALL STCLST('DETOUR')
@@ -179,7 +180,7 @@ C   --Call plotting routine for current subprogram
      &      NEWELB, IELBST,
      &      KNPSUR, ISEVOK,
      &      ISSNPS, IDNPS, ISSESS, IDESS, LIDSP, BLKCOL,
-     &      IDELB,  NAMELB)
+     &      IDELB,  NAMELB, MAPEL, MAPND)
 
       ELSE IF (CURPRO .EQ. 'PATHLINE') THEN
          CALL STCLST('PATH')
@@ -188,19 +189,19 @@ C   --Call plotting routine for current subprogram
      &      NEWELB, IELBST,
      &      KNPSUR,
      &      ISSNPS, IDNPS, ISSESS, IDESS, LIDSP, BLKCOL,
-     &      IDELB, NAMELB)
+     &      IDELB, NAMELB, MAPEL, MAPND)
 
       ELSE IF (CURPRO .EQ. 'TPLOT') THEN
          CALL STCLST('TPLOT')
          CALL TPMAIN (A, NEUTRL, NAMES,
      &      NPTIMS, IPTIMS, TIMES, WHOTIM, BLKCOL,
-     &      IDELB)
+     &      IDELB, MAPEL, MAPND)
 
       ELSE IF (CURPRO .EQ. 'SPLOT') THEN
          CALL STCLST('SPLOT')
          CALL SPMAIN (A, NEUTRL, NAMES, NPTIMS, IPTIMS, TIMES,
      &      NENUM, XN, YN, ZN, XE, YE, ZE, IE2ELB, ISEVOK,
-     &      LIDSP, BLKCOL, IDELB)
+     &      LIDSP, BLKCOL, IDELB, MAPEL, MAPND)
       END IF
 
   100 CONTINUE

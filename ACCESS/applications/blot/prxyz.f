@@ -29,23 +29,9 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: prxyz.f,v $
-C Revision 1.2  2009/03/25 12:36:46  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.1  1994/04/07 20:08:13  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.3  1992/05/22  22:37:30  gdsjaar
-c Modified to handle more than 100,000 nodes/elements in printouts
-c
-c Revision 1.2  1990/12/14  08:55:28  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE PRXYZ (OPTION, NOUT, NDIM, NAMECO, NUMNP, LISNP,
-     &   XN, YN, ZN)
+     &   XN, YN, ZN, MAPND)
 C=======================================================================
 
 C   --*** PRXYZ *** (BLOT) Display database coordinates
@@ -66,7 +52,8 @@ C   --   XN, YN, ZN - IN - the nodal coordinates
       CHARACTER*(*) NAMECO(*)
       INTEGER LISNP(0:*)
       REAL XN(*), YN(*), ZN(*)
-
+      INTEGER MAPND(*)
+      
       LOGICAL ISABRT
 
       IF (NOUT .GT. 0) WRITE (NOUT, 10000)
@@ -83,18 +70,18 @@ C   --   XN, YN, ZN - IN - the nodal coordinates
          IF (NOUT .GT. 0) THEN
             IF (NDIM .LE. 2) THEN
                WRITE (NOUT, 10020, IOSTAT=IDUM)
-     &            INP, XN(INP), YN(INP)
+     &          MAPND(INP), XN(INP), YN(INP)
             ELSE
                WRITE (NOUT, 10020, IOSTAT=IDUM)
-     &            INP, XN(INP), YN(INP), ZN(INP)
+     &          MAPND(INP), XN(INP), YN(INP), ZN(INP)
             END IF
          ELSE
             IF (NDIM .LE. 2) THEN
                WRITE (*, 10020, IOSTAT=IDUM)
-     &            INP, XN(INP), YN(INP)
+     &          MAPND(INP), XN(INP), YN(INP)
             ELSE
                WRITE (*, 10020, IOSTAT=IDUM)
-     &            INP, XN(INP), YN(INP), ZN(INP)
+     &          MAPND(INP), XN(INP), YN(INP), ZN(INP)
             END IF
          END IF
   100 CONTINUE
@@ -102,7 +89,8 @@ C   --   XN, YN, ZN - IN - the nodal coordinates
       RETURN
 
 10000  FORMAT (/, 1X, 'COORDINATES')
-10010  FORMAT (/, 1X, 5X, 6X, 4X, 5 (3X, A8, :, 3X), :, /,
+10010  FORMAT (/, 1X, 'Node Ids are Global Ids',/,
+     *   5X, 6X, 4X, 5 (3X, A8, :, 3X), :, /,
      &   (1X, 5 (3X, A8, :, 3X)))
 10020  FORMAT (1X, 'Node ', I6, 4X, 5 (1X, 1PE13.6), :, /,
      &   (1X, 5 (1X, 1PE13.6)))

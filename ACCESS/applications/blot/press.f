@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE PRESS (OPTION, NOUT, NUMESS, LISESS, LESSEL, LESSNL,
      &   IDESS, NEESS, NNESS, IXEESS, IXNESS, LTEESS, LTNESS, FACESS,
-     $   SSNAME)
+     $   SSNAME, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** PRESS *** (BLOT) Display database side set
@@ -71,6 +71,8 @@ C   --   FACESS - IN - the distribution factors for all sets
       INTEGER LTNESS(*)
       REAL FACESS(*)
       CHARACTER*(*) SSNAME(*)
+      INTEGER MAPEL(*)
+      INTEGER MAPND(*)
       
       LOGICAL ISABRT
       LOGICAL DOELE, DONOD, DOFAC
@@ -138,23 +140,23 @@ C   --   FACESS - IN - the distribution factors for all sets
             IS = IXEESS(IESS)
             IE = IS + NEESS(IESS) - 1
             IF (NOUT .GT. 0) THEN
-               WRITE (NOUT, 10040, IOSTAT=IDUM)
-     &            (LTEESS(I), I=IS,IE)
+              WRITE (NOUT, 10040, IOSTAT=IDUM)
+     &          (MAPEL(LTEESS(I)), I=IS,IE)
             ELSE
-               WRITE (*, 10040, IOSTAT=IDUM)
-     &            (LTEESS(I), I=IS,IE)
+              WRITE (*, 10040, IOSTAT=IDUM)
+     &          (MAPEL(LTEESS(I)), I=IS,IE)
             END IF
-         END IF
-
-         IF (DONOD .AND. (NNESS(IESS) .GT. 0)) THEN
+          END IF
+          
+          IF (DONOD .AND. (NNESS(IESS) .GT. 0)) THEN
             IS = IXNESS(IESS)
             IE = IS + NNESS(IESS) - 1
             IF (NOUT .GT. 0) THEN
-               WRITE (NOUT, 10040, IOSTAT=IDUM)
-     &            (LTNESS(I), I=IS,IE)
+              WRITE (NOUT, 10040, IOSTAT=IDUM)
+     &          (MAPND(LTNESS(I)), I=IS,IE)
             ELSE
-               WRITE (*, 10040, IOSTAT=IDUM)
-     &            (LTNESS(I), I=IS,IE)
+              WRITE (*, 10040, IOSTAT=IDUM)
+     &          (MAPND(LTNESS(I)), I=IS,IE)
             END IF
          END IF
 

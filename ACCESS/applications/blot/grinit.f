@@ -126,7 +126,7 @@ C      --MAPUSE - the color map type to use (as in MAPALT)
       LOGICAL HRDCPY
       REAL VDINFO(23)
 
-      character*256 scratch
+      character*2048 scratch
       character*32  device
       
       PARAMETER (MXDCOD = 12)

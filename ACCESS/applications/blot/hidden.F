@@ -523,7 +523,7 @@ C   --Make up indexed list of faces (back to front)
          IF (NERR .GT. 0) GOTO 360
 
          CALL HIDIXF (HIDEF, HIDENP, LENF, NLNKE, NLNKF, LINKF,
-     &      ZF, NXFAC, IXFAC, A(KSCRIX))
+     &      ZF, NXFAC, IXFAC, A(KSCRIX), NAMELB)
 
          CALL MDDEL ('SCRIX')
       END IF

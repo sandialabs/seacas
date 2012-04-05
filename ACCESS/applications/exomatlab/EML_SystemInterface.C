@@ -61,7 +61,7 @@ namespace {
 
 SystemInterface::SystemInterface()
   : minimumTime_(0.0), maximumTime_(-1.0), inputFile_(), outputFile_(),
-    listVars_(false), fieldSuffix_('_')
+    listVars_(false), fieldSuffix_(0)
 {
   enroll_options();
 }
@@ -74,52 +74,52 @@ void SystemInterface::enroll_options()
 		 "\t\tIf output name not specified, then output file will be the\n"
 		 "\t\tbasename of the input file with suffix '.m'");
 
-  options_.enroll("help", GetLongOpt::NoValue,
+  options_.enroll("help", GetLongOption::NoValue,
 		  "Print this summary and exit", 0);
 
-  options_.enroll("version", GetLongOpt::NoValue,
+  options_.enroll("version", GetLongOption::NoValue,
 		  "Print version and exit", NULL);
 
-  options_.enroll("field_suffix", GetLongOpt::MandatoryValue,
+  options_.enroll("field_suffix", GetLongOption::MandatoryValue,
 		  "Character used to separate a field component suffix from the field name.\n"
-		  "\t\tEnter 'none' for no separator (fieldx, fieldy fieldz).\n"
-		  "\t\tDefault = '_' (field_x, field_y, field_z)", "_");
+		  "\t\tEnter '_' to treat field_x, field_y, field_z as a 3-component vector 'field'.\n"
+		  "\t\tDefault = none (field_x, field_y, field_z are different fields)", "none");
   
-  options_.enroll("minimum_time", GetLongOpt::MandatoryValue,
+  options_.enroll("minimum_time", GetLongOption::MandatoryValue,
 		  "Minimum timestep for which to transfer data to matlab file.", 0);
   
-  options_.enroll("maximum_time", GetLongOpt::MandatoryValue,
+  options_.enroll("maximum_time", GetLongOption::MandatoryValue,
 		  "Maximum timestep for which to transfer data to matlab file.", 0);
   
-  options_.enroll("list", GetLongOpt::MandatoryValue,
+  options_.enroll("list", GetLongOption::MandatoryValue,
 		  "List global, nodal, element, nodeset, or sideset variables.\n\t\tEnter 'all' to list all types.\n"
 		  "\t\tCode exits after listing variable names.", NULL);
   
-  options_.enroll("gvar", GetLongOpt::MandatoryValue,
+  options_.enroll("gvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of global variables to be output or ALL or NONE.",
 		  0);
 
-  options_.enroll("evar", GetLongOpt::MandatoryValue,
+  options_.enroll("evar", GetLongOption::MandatoryValue,
 		  "(NI) Comma-separated list of element variables to be output or ALL or NONE.\n"
 		  "\t\tVariables can be limited to certain blocks by appending a\n"
 		  "\t\tcolon followed by the block id.  E.g. -evar sigxx:10:20",
 		  0);
 
-  options_.enroll("nvar", GetLongOpt::MandatoryValue,
+  options_.enroll("nvar", GetLongOption::MandatoryValue,
 		  "(NI) Comma-separated list of nodal variables to be output or ALL or NONE.\n"
 		  "\t\tVariables can be limited to certain nodes by appending a\n"
 		  "\t\tcolon followed by the node id.  E.g. -nvar disp:10:20",
 		  0);
 
-  options_.enroll("nsetvar", GetLongOpt::MandatoryValue,
+  options_.enroll("nsetvar", GetLongOption::MandatoryValue,
 		  "(NI) Comma-separated list of nodeset variables to be output or ALL or NONE.",
 		  0);
 
-  options_.enroll("ssetvar", GetLongOpt::MandatoryValue,
+  options_.enroll("ssetvar", GetLongOption::MandatoryValue,
 		  "(NI) Comma-separated list of sideset variables to be output or ALL or NONE.",
 		  0);
 
-  options_.enroll("copyright", GetLongOpt::NoValue,
+  options_.enroll("copyright", GetLongOption::NoValue,
 		  "Show copyright and license data.",
 		  NULL);
 }

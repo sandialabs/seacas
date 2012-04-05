@@ -33,7 +33,8 @@ C=======================================================================
       SUBROUTINE SPMAIN (A, NEUTRL, NAMES, NPTIMS, IPTIMS,
      *  TIMES, NENUM,
      &   XN, YN, ZN, XE, YE, ZE,
-     &   IE2ELB, ISEVOK, LIDSP, BLKCOL, IDELB)
+     &   IE2ELB, ISEVOK, LIDSP, BLKCOL, IDELB,
+     *  MAPEL, MAPND)
 C=======================================================================
 
 C   --*** SPMAIN *** (SPLOT) SPLOT main plot routine
@@ -104,7 +105,8 @@ C   --   Uses NSPVAR of /SPVARS/
       INTEGER LIDSP(0:*)
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
-
+      INTEGER MAPEL(*), MAPND(*)
+      
 C   --Use the selected color table
       CALL GRCOLU ('ALTERNATE')
 
@@ -156,7 +158,8 @@ C   --Plot requested curves
 
       CALL SPPLOT (A, NEUTRL, NPTIMS, IPTIMS, TIMES, NENUM,
      &   A(KDIST), A(KPLVAL), NAMES,
-     &   A(KXSEGV), A(KSEGEL), A(KXDIST), LIDSP, BLKCOL)
+     &   A(KXSEGV), A(KSEGEL), A(KXDIST), LIDSP, BLKCOL,
+     *  MAPEL, MAPND)
 
       CALL MDDEL ('PLTVAL')
       CALL MDDEL ('DIST')

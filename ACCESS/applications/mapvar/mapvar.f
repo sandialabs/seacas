@@ -280,14 +280,14 @@ C     ******************************************************************
 C
 C open all disk files
 C
-      call init
+      call initbd
 
 C disable netcdf warning messages
 C
       CALL EXOPTS(0,IERR)
 C
-      call debug('OPNFIL')
-      CALL OPNFIL
+      call debug('MVOPNFIL')
+      CALL MVOPNFIL
 C
 C get info for QA records
 C
@@ -324,7 +324,7 @@ C IA(NAEB)    =   IDA(1:NBLKSA) - Donor mesh element block I.D.'s
 C IA(NBEB)    =   IDB(1:NBLKSA) - Recipient mesh element block I.D.'s
 C IA(NMAP)    =   MP(1:3,1:MBLK) - Donor to recipient mesh map
 C
-      MBLK = NBLKSA + NBLKSB
+      MBLK = NBLKSA * NBLKSB
       CALL MDRSRV ('TIMES', NT1,   NTIMES)
       CALL MDRSRV ('IDA',   NAEB,  NBLKSA)
       CALL MDRSRV ('IDB',   NBEB,  NBLKSB)
@@ -789,6 +789,7 @@ C IA(NAINVLN) =    INVLNA(1:NODESA) - Mesh-Anumber of elements per
 C                                      node in inverse connectivity
 C IA(NAINVC)  =    INVCN(1:MAXLN,1:NODESA) Inverse connectivity
 C IA(NACTR)   =    CNTRA(1:NUMEBA,1:3) - Mesh-A element centroids
+        LBLK = 1
         IDIM = MAX(NUMNDB, NUMEBB)
         CALL MDRSRV ('ISRCHR', NS1,  1*idim)
         CALL MDRSRV ('RSRCHR', NS2,  6*idim)

@@ -140,6 +140,7 @@ C   --   IID - IN - the variable number within the type
 C   --   IX - OUT - the variable index
 
       ix = 0
+
       IF ((IXGV .LE. 0)
      &   .AND. (IXNV .LE. 0) .AND. (IXEV .LE. 0)
      &   .AND. (IXNS .LE. 0) .AND. (IXSS .LE. 0))

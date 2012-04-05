@@ -67,21 +67,21 @@ C     --   none
 
       include 'exodusII.inc'
 
-      include 'namlen.blk'
-      include 'progqa.blk'
-      include 'dbase.blk'
-      include 'dbtitl.blk'
-      include 'dbnums.blk'
-      include 'xyzoff.blk'
-      include 'xyzrot.blk'
-      include 'xyzmir.blk'
-      include 'xyzwrp.blk'
-      include 'nsset.blk'
-      include 'smooth.blk'
-      include 'snap.blk'
-      include 'combine.blk'
-      include 'deform.blk'
-      include 'attrot.blk'
+      include 'gp_namlen.blk'
+      include 'gp_progqa.blk'
+      include 'gp_dbase.blk'
+      include 'gp_dbtitl.blk'
+      include 'gp_dbnums.blk'
+      include 'gp_xyzoff.blk'
+      include 'gp_xyzrot.blk'
+      include 'gp_xyzmir.blk'
+      include 'gp_xyzwrp.blk'
+      include 'gp_nsset.blk'
+      include 'gp_smooth.blk'
+      include 'gp_snap.blk'
+      include 'gp_combine.blk'
+      include 'gp_deform.blk'
+      include 'gp_attrot.blk'
       INCLUDE 'argparse.inc'
       
       CHARACTER*2048 FILIN, FILOUT, SCRATCH, SYNTAX
@@ -107,7 +107,7 @@ C    or 'MULTIPLE_TOPOLOGIES' if not common topology.
       
 C     --A - the dynamic numeric memory base array
 
-      INCLUDE 'qainfo.blk'
+      INCLUDE 'gp_qainfo.blk'
       CALL STRTUP (QAINFO)
 
       WRITE (*, 70)
@@ -1272,13 +1272,13 @@ C     number element blocks, and truth table.
  10   CONTINUE
       END
       subroutine exgqaw(ndb, qarec, ierr)
-      include 'params.blk'
+      include 'gp_params.blk'
       character*(mxstln) qarec(4, *)
       call exgqa(ndb, qarec, ierr)
       return
       end
       subroutine exginw(ndb, info, ierr)
-      include 'params.blk'
+      include 'gp_params.blk'
       character*(mxlnln) info(*)
       call exginf(ndb, info, ierr)
       return
@@ -1315,7 +1315,7 @@ C     number element blocks, and truth table.
       end
 
       subroutine centnam(names, isevok, nelblk, nvarel, ndim)
-      include 'namlen.blk'
+      include 'gp_namlen.blk'
       character*(maxnam) names(*)
       integer isevok(nelblk, nvarel)
       
@@ -1334,7 +1334,7 @@ C     number element blocks, and truth table.
 
       subroutine eltznam(evnames, names, ixnv, nvarnp,
      *  inod2el, ixev, nvarel)
-      include 'namlen.blk'
+      include 'gp_namlen.blk'
       character*(maxnam) names(*), evnames(*)
       integer inod2el(*)
 
@@ -1382,7 +1382,7 @@ C   This is currently used in the sideset mirroring code
       end
 
       subroutine getcon(ndb, ndim, nameco, ierr)
-      include 'namlen.blk'
+      include 'gp_namlen.blk'
 
       character*(maxnam) nameco(*)
       CALL INISTR (NDIM, ' ', nameco)
@@ -1391,7 +1391,7 @@ C   This is currently used in the sideset mirroring code
       end
 
       subroutine getnam(ndb, itype, isiz, names)
-      include 'namlen.blk'
+      include 'gp_namlen.blk'
       character*(maxnam) names(*)
       
       call exgnams(ndb, itype, isiz, names, ierr)
@@ -1399,7 +1399,7 @@ C   This is currently used in the sideset mirroring code
       end
 
       subroutine putnam(ndb, itype, isiz, names)
-      include 'namlen.blk'
+      include 'gp_namlen.blk'
       character*(maxnam) names(*)
       
       call expnams(ndb, itype, isiz, names, ierr)
@@ -1407,7 +1407,7 @@ C   This is currently used in the sideset mirroring code
       end
 
       subroutine munnam(nold, nnew, istat, names)
-      include 'namlen.blk'
+      include 'gp_namlen.blk'
       character*(maxnam) names(*)
       integer istat(*)
       

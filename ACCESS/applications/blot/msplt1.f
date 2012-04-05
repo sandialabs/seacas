@@ -36,7 +36,7 @@ C=======================================================================
      &   IELBST, IN2ELB, DODEAD, IDN2B,
      &   NODSEL, NNESEL, NESEL,
      &   NNPSET, ISSNPS, NESSET, ISSESS, BLKCOL,
-     &   IDELB, VARNP, MODDET, IHIDOP, *)
+     &   IDELB, VARNP, MODDET, IHIDOP, MAPEL, MAPND, *)
 C=======================================================================
 
 C   --*** MSPLT1 *** (MESH) Plot one view
@@ -138,6 +138,8 @@ C   --   Uses SELOK of /SELNE/
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
       REAL VARNP(*)
+      INTEGER MAPEL(*), MAPND(*)
+      
       CHARACTER*8 MODDET
 
       CHARACTER*6 FFLAG
@@ -176,9 +178,10 @@ C   --Number nodes or elements, if requested
          IF (NERR .GT. 0) GOTO 100
 
          CALL NUMBER (MSHNUM, LENF, NLNKF, A(KIX2NP), A(KIF2EL),
-     &      HIDENP, HIDEF, XN, YN, ZN, XF, YF, ZF,
-     &      IELBST, IN2ELB, DODEAD, IDN2B,
-     &      INUM, NNESEL, NESEL, BLKCOL, IDELB, *100)
+     &     HIDENP, HIDEF, XN, YN, ZN, XF, YF, ZF,
+     &     IELBST, IN2ELB, DODEAD, IDN2B,
+     &     INUM, NNESEL, NESEL, BLKCOL, IDELB,
+     *     MAPEL, MAPND, *100)
       END IF
 
 C   --Mark node sets, if selected

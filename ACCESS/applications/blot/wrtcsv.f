@@ -30,7 +30,8 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
-      SUBROUTINE WRTCSV (NCRV, MAXPTS, NPTS, PTS, TXLAB, NAMES, DOLEGN)
+      SUBROUTINE WRTCSV (NCRV, MAXPTS, NPTS, PTS, TXLAB, NAMES, DOLEGN,
+     *  MAPEL, MAPND)
 C=======================================================================
 
 C   --*** WRTCSV *** (XYPLOT) Write curve to CSV neutral file
@@ -60,11 +61,12 @@ C   --
       include 'params.blk'
       include 'tpvars.blk'
       
-      CHARACTER*256 filnam, errmsg
+      CHARACTER*2048 filnam, errmsg
       INTEGER NPTS(*)
       REAL PTS(MAXPTS,*)
       CHARACTER*(*) TXLAB, NAMES(*)
       LOGICAL DOLEGN
+      INTEGER MAPEL(*), MAPND(*)
 
       CHARACTER*(MAXLEG) LEGEND
       CHARACTER*(MXLNLN) PV
@@ -74,7 +76,7 @@ C   --
 
 C      --Open the csv neutral file and write the title line
 
-        write (*,*) "CSV File: ", filnam
+        write (*,*) "CSV File: ", filnam(:lenstr(filnam))
         open (unit=ncsv, file=filnam(:lenstr(filnam)), form='formatted',
      *    status='unknown', iostat=ierr)
         IF (IERR .NE. 0) THEN
@@ -95,7 +97,8 @@ C      --Open the csv neutral file and write the title line
       end if
       
       do i = n, ncrv+n-1
-        call tplabv(0, itvid(i), names(itvid(i)), itvne(i), pv)
+        call tplabv(0, itvid(i), names(itvid(i)), itvne(i), pv,
+     *    MAPEL, MAPND)
         lpv = lenstr(pv)
         lleg = lenstr(legend)+1
         if (lleg+lpv-1+2 .gt. maxleg) go to 100

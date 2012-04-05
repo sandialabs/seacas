@@ -34,6 +34,7 @@ C=======================================================================
      &   INVERB, IFLD, INTYP, CFIELD, IFIELD, RFIELD,
      &   NAMES, ISEVOK, IE2ELB, NENUM)
 C=======================================================================
+C TODO: Support for Mapped node/element ids
 
 C   --*** LNCOMD *** (PATHLN) Process PATHLINE commands
 C   --   Written by Amy Gilkey - revised 05/31/88

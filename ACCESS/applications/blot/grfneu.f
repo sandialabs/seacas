@@ -29,26 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: grfneu.f,v $
-C Revision 1.4  2009/03/25 12:36:44  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.3  2008/10/23 17:27:50  gdsjaar
-C Handle output of reals with 3-digit exponents 1.0e-100 was printing as 1.0-100
-C
-C Revision 1.2  1994/07/21 15:27:29  gdsjaar
-C Increased curve name string size
-C
-c Revision 1.1  1994/04/07  20:02:21  gdsjaar
-c Initial checkin of ACCESS/graphics/blotII2
-c
-c Revision 1.1  1994/01/14  19:47:30  gdsjaar
-c Added capability to write both grafaid and xmgr neutral files.
-c
-c Revision 1.2  1990/12/14  08:59:33  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE GRFNEU (NPTS, XPTS, YPTS, PLTITL, TXLAB, TYLAB)
 C=======================================================================
@@ -87,7 +67,7 @@ C   --   Uses and sets NEUOPN of /NEUTR./
       CHARACTER*(*) PLTITL
       CHARACTER*(*) TXLAB, TYLAB
 
-      CHARACTER*256 FILNAM, ERRMSG
+      CHARACTER*2048 FILNAM, ERRMSG
       CHARACTER*4 XTYP
       CHARACTER*4 AXTYP
       CHARACTER AUX

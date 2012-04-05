@@ -29,41 +29,11 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: number.f,v $
-C Revision 1.5  2009/03/25 12:36:46  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.4  2009/01/22 21:34:21  gdsjaar
-C There were several inline dbnums common blocks. Replaced with the
-C include so they all have the same size with the added variable types.
-C
-C Added minor support for nodeset and sideset variables.
-C
-C It can print the count and the names, but that is all
-C at this time.
-C
-C Revision 1.3  2001/01/18 19:52:20  gdsjaar
-C Fix typo introduced in last change to this file (inlining of function)
-C
-C Revision 1.2  2000/07/11 16:50:23  gdsjaar
-C SGI had problems with logical statment function, inlined it
-C
-C Revision 1.1  1994/04/07 20:06:14  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.3  1991/06/25  16:09:50  gdsjaar
-c Fixed? problem with calls to ugrcol -- changed
-c call ugrcol(idelb(ielb),...) to call ugrcol(ielb,...)
-c
-c Revision 1.2  1990/12/14  08:54:16  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE NUMBER (NUMTYP, LENF, NLNKF, IX2NP, IF2EL,
      &   HIDENP, HIDEF, XN, YN, ZN, XF, YF, ZF,
      &   IELBST, IN2ELB, DODEAD, IDN2B,
-     &   ISELTY, NNESEL, NESEL, BLKCOL, IDELB, *)
+     &   ISELTY, NNESEL, NESEL, BLKCOL, IDELB, MAPEL, MAPND, *)
 C=======================================================================
 
 C   --*** NUMBER *** (MESH) Number nodes and elements on mesh
@@ -142,6 +112,7 @@ C   --   Uses IS3DIM, NUMNPF of /D3NUMS/
       INTEGER NESEL(*)
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
+      INTEGER MAPEL(*), MAPND(*)
 
       LOGICAL PLTGTT, LDUM
       LOGICAL GRABRT
@@ -185,7 +156,7 @@ C      --Number selected nodes
 
             if (logt) then
                IF (GRABRT ()) RETURN 1
-               NNUM = INP
+               NNUM = MAPND(INP)
                CALL INTSTR (1, 0, NNUM, ISTR, LSTR)
                CALL MP2PT (1, XN(INP), YN(INP), DX0, DY0, MASK)
                IF (EXISTS (MASK))
@@ -222,7 +193,7 @@ C      --Number all nodes
 
             if (logt) then
                IF (GRABRT ()) RETURN 1
-               NNUM = INP
+               NNUM = MAPND(INP)
                CALL INTSTR (1, 0, NNUM, ISTR, LSTR)
                CALL MP2PT (1, XN(INP), YN(INP), DX0, DY0, MASK)
                IF (EXISTS (MASK))
@@ -304,7 +275,8 @@ c               CALL UGRCOL (IDELB(IELB), BLKCOL)
                      IF (GRABRT ()) RETURN 1
                      if ((cdebug .eq. 'HIDDEN')
      &                  .or. (cdebug .eq. 'NUMBER')) iel = ifac
-                     CALL INTSTR (1, 0, IEL, ISTR, LSTR)
+                     NNUM = MAPEL(IEL)
+                     CALL INTSTR (1, 0, NNUM, ISTR, LSTR)
                      CALL MP2PT (1, XF(IFAC), YF(IFAC), DX0, DY0, MASK)
                      IF (EXISTS (MASK))
      &                  CALL GRTEXC (DX0+DXO, DY0+DYO, ISTR(:LSTR))
@@ -342,7 +314,7 @@ c               CALL UGRCOL (IDELB(IELB), BLKCOL)
                   IF (GRABRT ()) RETURN 1
                   if ((cdebug .eq. 'HIDDEN')
      &               .or. (cdebug .eq. 'NUMBER')) iel = ifac
-                  CALL INTSTR (1, 0, IEL, ISTR, LSTR)
+                  CALL INTSTR (1, 0, MAPEL(IEL), ISTR, LSTR)
                   CALL MP2PT (1, XF(IFAC), YF(IFAC), DX0, DY0, MASK)
                   IF (EXISTS (MASK))
      &               CALL GRTEXC (DX0+DXO, DY0+DYO, ISTR(:LSTR))

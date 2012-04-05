@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE TPCOMD (A, INLINE,
      &   INVERB, IFLD, INTYP, CFIELD, IFIELD, RFIELD, MAXFLD,
-     &   NAMES, ISEVOK, IE2ELB, NENUM, NNENUM)
+     &   NAMES, ISEVOK, IE2ELB, NENUM, NNENUM, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** TPCOMD *** (TPLOT) Process TPLOT commands
@@ -104,6 +104,8 @@ C   --   Sets OVERLY of /XYOPT/
       LOGICAL ISEVOK(NELBLK,NVAREL)
       INTEGER NENUM(NNENUM,2)
       INTEGER IE2ELB(*)
+      INTEGER MAPEL(*)
+      INTEGER MAPND(*)
 
       LOGICAL FFEXST
       LOGICAL BATCH
@@ -411,15 +413,15 @@ C         --Get the variable range
                NNUM = 0
                IF (FFEXST (IFLD, INTYP)) THEN
                   IF (TYP(IXY) .EQ. 'N') THEN
-                     CALL RIXINT (INLINE(ILIN),
+                     CALL RMIXINT (INLINE(ILIN),
      &                  IFLD, INTYP, CFIELD, IFIELD,
      &                  'node number', NUMNP, NNUM, NENUM(1,IXY),
-     &                  *150)
+     &                  MAPND, *150)
                   ELSE IF (TYP(IXY) .EQ. 'E') THEN
-                     CALL RIXINT (INLINE(ILIN),
-     &                  IFLD, INTYP, CFIELD, IFIELD,
-     &                  'element number', NUMEL, NNUM, NENUM(1,IXY),
-     &                  *150)
+                     CALL RMIXINT (INLINE(ILIN),
+     &                IFLD, INTYP, CFIELD, IFIELD,
+     &                'element number', NUMEL, NNUM, NENUM(1,IXY),
+     &                MAPEL, *150)
                   END IF
                END IF
                IF (NNUM .LE. 0) THEN
@@ -589,7 +591,7 @@ C *** Information ***
          CALL FFCHAR (IFLD, INTYP, CFIELD, ' ', WORD)
          CALL ABRSTR (VERB, WORD, CMDTBL)
          IF (VERB .NE. ' ') THEN
-            CALL TPSHOW (VERB, NAMES)
+            CALL TPSHOW (VERB, NAMES, MAPEL, MAPND)
             INVERB = ' '
          END IF
          VERB = ' '
@@ -612,7 +614,7 @@ C *** Information ***
 
   220 CONTINUE
       IF (VERB .NE. ' ') THEN
-         CALL TPSHOW (VERB, NAMES)
+         CALL TPSHOW (VERB, NAMES, MAPEL, MAPND)
       END IF
 
       RETURN
