@@ -70,8 +70,8 @@ E_edit G_do_miller(int m, int n, int max_d, int comflags)
 	for (k = lower; k <= upper; k += 2) {
 	    new = E_edit_alloc();
 
-	    if (k == ORIGIN - d || k != ORIGIN + d
-		&& last_d[k + 1] >= last_d[k - 1]) {
+	    if ( k == ORIGIN - d ||
+		(k != ORIGIN + d && last_d[k + 1] >= last_d[k - 1])) {
 		row = last_d[k + 1] + 1;
 		E_setnext(new, script[k + 1]);
 		E_setop(new, E_DELETE);
