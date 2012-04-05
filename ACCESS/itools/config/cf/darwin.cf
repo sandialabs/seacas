@@ -12,9 +12,10 @@ XCOMM
 #define Build64BitAccess YES
 
 /* #define USE_INTEL 1 */
-/* #define GCC4GFORTRAN */  /* gcc-4.X or later */
+/* #define GCC4GFORTRAN */ /* gcc-4.X or later */
 /* #define GCCG77 1 */      /* gcc-3.4.X */
-#define USE_MACPORTS 4.6 /* the value represents the version of gcc */
+/* #define USE_MACPORTS 4.5 */ /* the value represents the version of gcc */
+#define USE_CLANG 3.1
 
 /* Set the following if you want to build with backward compatability with an earlier OS version */
 /* NOTE: for Tiger (10.4) you need to set this to MacOSX10.4u */
@@ -27,7 +28,7 @@ XCOMM
 #define MINOS_LFLAGS
 #endif
 
-#if !defined(GCCG77) && !defined(GCC4GFORTRAN) && !defined(USE_INTEL) && !defined(USE_MACPORTS)
+#if !defined(GCCG77) && !defined(GCC4GFORTRAN) && !defined(USE_INTEL) && !defined(USE_MACPORTS) && !defined(USE_CLANG)
 #error "Must define which compiler to use or system to build on in darwin.cf."
 #endif
 
@@ -71,6 +72,30 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define CplusplusCmd		/opt/local/bin/g++-mp-USE_MACPORTS
 #define FortranCmd		/opt/local/bin/gfortran-mp-USE_MACPORTS
 #define Fortran90Cmd		/opt/local/bin/gfortran-mp-USE_MACPORTS
+
+#if Build64BitAccess
+#define StandardDefines 	-DBuild64 -DADDC_ MINOS_CFLAGS
+#define StandardCppDefines 	-DBuild64 -DADDC_ 
+#define DefaultF77Options	-fno-range-check -fcray-pointer -fdefault-real-8 -fdefault-integer-8 MINOS_CFLAGS
+#define DefaultF90Options	-fno-range-check MINOS_CFLAGS
+#else
+#define StandardDefines 	-DADDC_ MINOS_CFLAGS
+#define StandardCppDefines 	-DADDC_ 
+#define DefaultF77Options	-fno-range-check MINOS_CFLAGS
+#define DefaultF90Options	-fno-range-check MINOS_CFLAGS
+#endif
+
+#define NeedsDoubleEscape	NO
+#define CppCmd			/usr/bin/cpp
+#define PreProcessCmd		CppCmd -P
+#define ExtraLoadOptions	MINOS_LFLAGS
+#endif
+
+#if defined (USE_CLANG)
+#define CcCmd			/opt/local/bin/clang-mp-USE_CLANG
+#define CplusplusCmd		/opt/local/bin/clang++-mp-USE_CLANG
+#define FortranCmd		/opt/local/bin/gfortran-mp-4.6
+#define Fortran90Cmd		/opt/local/bin/gfortran-mp-5.6
 
 #if Build64BitAccess
 #define StandardDefines 	-DBuild64 -DADDC_ MINOS_CFLAGS
