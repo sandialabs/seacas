@@ -30,7 +30,8 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
-      SUBROUTINE TPLABN (IPVAR, TIMLIM, NAMES, PLTITL, TXLAB, TYLAB)
+      SUBROUTINE TPLABN (IPVAR, TIMLIM, NAMES, PLTITL, TXLAB, TYLAB,
+     *  MAPEL, MAPND)
 C=======================================================================
 
 C   --*** TPLABN *** (TPLOT) Get neutral file plot labels
@@ -61,6 +62,7 @@ C   --   Uses XLAB, YLAB of /XYLAB/
       CHARACTER*(*) NAMES(*)
       CHARACTER*(*) PLTITL
       CHARACTER*(*) TXLAB, TYLAB
+      INTEGER MAPEL(*), MAPND(*)
 
       CHARACTER*(1024) PV1, PV2
       CHARACTER*20 RSTR(2)
@@ -71,13 +73,16 @@ C   --Get the plot legend
 
       IF (TIMPLT) THEN
          PV1 = 'TIME'
-         CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV2)
+         CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV2,
+     *     MAPEL, MAPND)
          PLTITL = PV1(:LENSTR(PV1)) // ' vs ' // PV2(:LENSTR(PV2))
-         write (*,*) pltitl
+         write (*,*) pltitl(:lenstr(pltitl))
       ELSE
-         CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV1)
+         CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV1,
+     *    MAPEL, MAPND)
          N = N + 1
-         CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV2)
+         CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV2,
+     *     MAPEL, MAPND)
          CALL NUMSTR (2, 4, TIMLIM, RSTR, LSTR)
          PLTITL = PV1(:LENSTR(PV1)) // ' vs ' // PV2(:LENSTR(PV2))
      &      // ' for times ' // RSTR(1)(:LENSTR(RSTR(1)))

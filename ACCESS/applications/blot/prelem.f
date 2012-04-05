@@ -29,27 +29,10 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: prelem.f,v $
-C Revision 1.3  2009/03/25 12:36:46  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  1994/06/13 14:28:02  gdsjaar
-C Fixed another character length problem.
-C
-c Revision 1.1  1994/04/07  20:07:27  gdsjaar
-c Initial checkin of ACCESS/graphics/blotII2
-c
-CRevision 1.3  1992/06/10  18:57:01  gdsjaar
-CChanged formatting of output data to allow for more than 100000 nodes/elements
-C
-CRevision 1.2  1990/12/14  08:54:58  gdsjaar
-CAdded RCS Id and Log to all files
-C
 C=======================================================================
       SUBROUTINE PRELEM (OPTION, NOUT,
      &   NELBLK, NUMEL, NLISEL, LISEL, LENE,
-     &   NVAREL, LISEV, NAMEEV, ISEVOK, VAREL)
+     &   NVAREL, LISEV, NAMEEV, ISEVOK, VAREL, MAPEL)
 C=======================================================================
 
 C   --*** PRELEM *** (BLOT) Display current database element variables
@@ -80,13 +63,18 @@ C   --   VAREL - IN - the selected element variables for the time step
       CHARACTER*(*) NAMEEV(*)
       LOGICAL ISEVOK(NELBLK,NVAREL)
       REAL VAREL(NUMEL,*)
+      INTEGER MAPEL(*)
 
       LOGICAL ISABRT
 
       CHARACTER*13 CVAL(5)
 
-      IF (NOUT .GT. 0) WRITE (NOUT, 10000)
-
+      if (nout .gt. 0) then
+        WRITE (NOUT, 10000)
+      else
+        WRITE (*, 10000)
+      end if
+      
       do i=1, lisev(0)
         irow = ((i-1)/5)+1
         icol = i - (irow-1)*5
@@ -120,11 +108,11 @@ C   --   VAREL - IN - the selected element variables for the time step
 
                   IF (IVAR .EQ. 1) THEN
                      IF (NOUT .GT. 0) THEN
-                        WRITE (NOUT, 10030, IOSTAT=IDUM)
-     &                     IEL, (CVAL(I), I=1,NVAL)
+                       WRITE (NOUT, 10030, IOSTAT=IDUM)
+     &                   MAPEL(IEL), (CVAL(I), I=1,NVAL)
                      ELSE
-                        WRITE (*, 10030, IOSTAT=IDUM)
-     &                     IEL, (CVAL(I), I=1,NVAL)
+                       WRITE (*, 10030, IOSTAT=IDUM)
+     &                   MAPEL(IEL), (CVAL(I), I=1,NVAL)
                      END IF
                   ELSE
                      IF (NOUT .GT. 0) THEN
@@ -142,7 +130,7 @@ C   --   VAREL - IN - the selected element variables for the time step
 
       RETURN
 
-10000  FORMAT (/, 1X, 'ELEMENT TIME STEP VARIABLES')
+10000  FORMAT (/, ' Element Time Step Variables (Global Element Ids)')
 10010  FORMAT (1X, 'Row ',I4,', Column ',I1,' is variable ',A)
 10020  FORMAT (1PE13.6)
 10030  FORMAT (1X, 'Elem', I6, 5 (1X, A13))

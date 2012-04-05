@@ -35,7 +35,7 @@ C=======================================================================
      &   NEWELB, IELBST,
      &   KNPSUR,
      &   ISSNPS, IDNPS, ISSESS, IDESS,
-     &   NENUM, LIDSP, BLKCOL, IDELB, NAMELB)
+     &   NENUM, LIDSP, BLKCOL, IDELB, NAMELB, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** MSMAIN *** (MESH) MESH main plot routine
@@ -167,6 +167,7 @@ C   --   Sets and uses ZMMESH of /MSHLIM/
       LOGICAL ANYDEF, ANYUND
       LOGICAL DOIXF, DON2B, DOELED, DOELEU, DODEAD, DONPS, DOESS, DOSCAL
       REAL RDUM4(4)
+      INTEGER MAPEL(*), MAPND(*)
 
       CHARACTER*(MXSTLN) CDUM
       CHARACTER*(MXSTLN) NAMELB(*)
@@ -343,7 +344,7 @@ C      --Set up the mesh plot pick
      &      NODVAR, NNUM, NENUM,
      &      NNPSET(IVIEW), ISSNPS(1,IVIEW),
      &      NESSET(IVIEW), ISSESS(1,IVIEW), BLKCOL,
-     &      IDELB, VARNP, CDUM, IHIDOP, *120)
+     &      IDELB, VARNP, CDUM, IHIDOP, MAPEL, MAPND, *120)
 
          NEWSET = .FALSE.
          NEWFAC = .FALSE.

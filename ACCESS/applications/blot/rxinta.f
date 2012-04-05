@@ -29,20 +29,9 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: rxinta.f,v $
-C Revision 1.2  2009/03/25 12:36:47  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.1  1994/04/07 20:10:27  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:56:44  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE RXINTA (INLINE, IFLD, INTYP, CFIELD, IFIELD,
-     &   SELMSG, MAXSEL, NUMSEL, IXSEL, *)
+     &   SELMSG, MAXSEL, NUMSEL, IXSEL, MAP, *)
 C=======================================================================
 
 C   --*** RXINTA *** (BLOT) Alternate parse selection command
@@ -75,9 +64,11 @@ C   --   * - return statement if error before any items selected
       INTEGER IFIELD(*)
       CHARACTER*(*) SELMSG
       INTEGER IXSEL(*)
+      INTEGER MAP(*)
 
       LOGICAL FFEXST, FFNUMB, FFMATC
       CHARACTER*80 ERRMSG
+      CHARACTER*32 ISTR
       INTEGER IRNG(3)
 
       IF (.NOT. (FFEXST (IFLD, INTYP))) THEN
@@ -118,24 +109,34 @@ C      --Reset to none selected unless ADD
 C         --Scan numeric range
 
             CALL FFVRNG (IFLD, INTYP, CFIELD, IFIELD,
-     &         SELMSG, MAXSEL, IRNG, *130)
+     &         SELMSG, -MAXSEL, IRNG, *130)
             CALL FFADDV (IRNG, INLINE)
 
 C         --Store the range selected
 
-            DO 120 I = IRNG(1), IRNG(2), IRNG(3)
-               IF (NUMSEL .EQ. 0  .OR.
-     &            LOCINT(I, NUMSEL, IXSEL) .NE. NUMSEL) THEN
+            DO 120 ID = IRNG(1), IRNG(2), IRNG(3)
+C ... See if a node/element with id 'I' exists in map.
+C     Store the index of where this occurs.
+              I = LOCINT(ID, MAXSEL, MAP)
+              
+              if (I .eq. 0) then
+                call intstr(1, -1, ID, ISTR, LSTR);
+                ERRMSG = 'No ' // SELMSG // ' with id equal '
+     *            // ISTR(:LSTR) // ' found.'
+              ELSE
+                IF (NUMSEL .EQ. 0  .OR.
+     &            LOCINT(ID, NUMSEL, IXSEL) .NE. NUMSEL) THEN
                   IF (NUMSEL .GE. MAXSEL) THEN
-                     ERRMSG = 'Too many ' // SELMSG // 's selected'
-                     CALL PRTERR ('CMDERR', ERRMSG(:LENSTR(ERRMSG)))
-                     GOTO 130
+                    ERRMSG = 'Too many ' // SELMSG // 's selected'
+                    CALL PRTERR ('CMDERR', ERRMSG(:LENSTR(ERRMSG)))
+                    GOTO 130
                   END IF
-
+                  
                   NUMSEL = NUMSEL + 1
                   IXSEL(NUMSEL) = I
-               END IF
-  120       CONTINUE
+                END IF
+              END IF
+ 120        CONTINUE
 
             GOTO 110
          END IF

@@ -33,7 +33,7 @@ C=======================================================================
       SUBROUTINE SPCOMD (A, INLINE,
      &   INVERB, IFLD, INTYP, CFIELD, IFIELD, RFIELD,
      &   NAMES, LENE, NLNKE, LINKE, XN, YN, ZN, XE, YE, ZE,
-     &   ISEVOK, IE2ELB, NENUM, LIDSP)
+     &   ISEVOK, IE2ELB, NENUM, LIDSP, MAPEL, MAPND, NAMLEN)
 C=======================================================================
 
 C   --*** SPCOMD *** (SPLOT) Process SPLOT commands
@@ -134,6 +134,8 @@ C   --   Sets OVERLY, OVERTM of /XYOPT/
       INTEGER IE2ELB(*)
       INTEGER NENUM(*)
       INTEGER LIDSP(0:*)
+      INTEGER MAPEL(*)
+      INTEGER MAPND(*)
 
       LOGICAL FFEXST, FFMATC
 
@@ -232,7 +234,7 @@ C      --Reset parameters
             IF (VERB .EQ. 'reset') THEN
 C           --reset display variable list
                CALL DISPV (.TRUE., INLINE, IFLD, INTYP,
-     &            CFIELD, NAMES, LIDSP)
+     &            CFIELD, NAMES, LIDSP, NAMLEN)
             ENDIF
 
 
@@ -396,10 +398,10 @@ C      --Make a list of the selected nodes
          IF (FFEXST (IFLD, INTYP)) THEN
             IF (ISON) THEN
                CALL RXINTA (INLINE(1), IFLD, INTYP, CFIELD, IFIELD,
-     &            'node number', NUMNP, NNENUM, NENUM, *180)
+     &            'node number', NUMNP, NNENUM, NENUM, MAPND, *180)
             ELSE
                CALL RXINTA (INLINE(1), IFLD, INTYP, CFIELD, IFIELD,
-     &            'element number', NUMEL, NNENUM, NENUM, *180)
+     &            'element number', NUMEL, NNENUM, NENUM, MAPEL, *180)
             END IF
          END IF
 
@@ -434,7 +436,7 @@ C *** Display control ***
       ELSE IF (VERB .EQ. 'DISPVAR') THEN
          CALL FFADDC (VERB, INLINE(1))
          CALL DISPV (.FALSE., INLINE, IFLD, INTYP,
-     &      CFIELD, NAMES, LIDSP)
+     &      CFIELD, NAMES, LIDSP, NAMLEN)
          INVERB = ' '
 
 C *** Display ***

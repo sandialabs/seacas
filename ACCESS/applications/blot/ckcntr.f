@@ -29,21 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: ckcntr.f,v $
-C Revision 1.3  2009/03/25 12:36:42  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  1996/06/21 16:07:00  caforsy
-C Ran ftnchek and removed unused variables.  Reformat output for list
-C var, list global, and list name.
-C
-C Revision 1.1  1994/04/07 19:55:40  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:48:06  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE CKCNTR (OK)
 C=======================================================================
@@ -82,7 +67,7 @@ C     LOGICAL CINTOK, LINCON, NOCMIN, NOCMAX
          IF (CINTV(1) .LE. CINTV(2)) THEN
             DO 100 I = 2, NC
                IF (CINTV(I-1) .GE. CINTV(I)) THEN
-                  WRITE (ERRSTR, 10000, IOSTAT=IDUM)
+                  WRITE (ERRSTR, 10000)
      &               'Contour interval ', I-1, ' >= interval ', I
 10000             FORMAT (A, I5, A, I5)
                   CALL SQZSTR (ERRSTR, LSTR)
@@ -93,7 +78,7 @@ C     LOGICAL CINTOK, LINCON, NOCMIN, NOCMAX
          ELSE
             DO 110 I = 2, NC
                IF (CINTV(I-1) .LE. CINTV(I)) THEN
-                  WRITE (ERRSTR, 10000, IOSTAT=IDUM)
+                  WRITE (ERRSTR, 10000)
      &               'Contour interval ', I-1, ' <= interval ', I
                   CALL SQZSTR (ERRSTR, LSTR)
                   CALL PRTERR ('CMDWARN', ERRSTR(:LSTR))

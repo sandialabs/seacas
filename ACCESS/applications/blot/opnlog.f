@@ -52,7 +52,7 @@ C   --   Uses QAINFO of /PROGQA/
       include 'dbase.blk'
       include 'dbname.blk'
 
-      CHARACTER*256 INLINE, FILNAM, ERRMSG
+      CHARACTER*2048 INLINE, FILNAM, ERRMSG
       CHARACTER*256 STR
       LOGICAL ISON
 

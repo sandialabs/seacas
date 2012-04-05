@@ -99,8 +99,8 @@ prstep.f  prtdev.f  prtims.f  prxyz.f   ptsnrm.f  qalab.f   qepain.f  qnpick.f \
 qpaint.f  qsolid.f  rainbow.f prochs.f
 
 SRCS3 = \
-rixid.f   rixint.f  rixwrd.f \
-rlgint.f  rndvar.f  rotate.f  roteye.f  rotxyz.f  rotzm.f  \
+rixid.f   rmixint.f rixint.f  rixwrd.f \
+rndvar.f  rotate.f  roteye.f  rotxyz.f  rotzm.f  \
 rxinta.f  scacal.f  scaelb.f  scaele.f  scaglo.f  scahis.f \
 scaini.f  scal3d.f  scalax.f  scaler.f  scanod.f  scaprt.f \
 scolor.f  setbck.f  setcol.f  setfor.f  setmod.f  setmsh.f \

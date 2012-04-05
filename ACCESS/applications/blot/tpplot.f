@@ -31,7 +31,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
       SUBROUTINE TPPLOT (NEUTRL, MAXPTS, NPTS, TIMLIM, PLTVAL,
-     &  NAMES, BLKCOL)
+     &  NAMES, BLKCOL, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** TPPLOT *** (TPLOT) Plot the curves
@@ -85,7 +85,8 @@ C   --   Sets XMIN, XMAX, YMIN, YMAX of /XYLIM/
       REAL PLTVAL(MAXPTS,NTPVAR+2)
       CHARACTER*(*) NAMES(*)
       INTEGER BLKCOL(0:NELBLK)
-
+      INTEGER MAPEL(*), MAPND(*)
+      
       LOGICAL GRABRT, gobck
       LOGICAL SCACRV
       LOGICAL NUMCRV
@@ -163,7 +164,7 @@ C   --Label plot if overlaid
  100  CONTINUE
       IF (OVERLY) THEN
         CALL TPLAB (1, NTPCRV, NUMCRV, TIMLIM, NAMES,
-     &    TXLAB, TYLAB, BLKCOL, *130)
+     &    TXLAB, TYLAB, BLKCOL, MAPEL, MAPND, *130)
         IF (.NOT. SCACRV)
      &    CALL XYAXIS (0, DOGRID, TXLAB, TYLAB, BLKCOL, *130)
       END IF
@@ -210,7 +211,7 @@ C         --Label plot if needed
  110        CONTINUE
             IF (.NOT. OVERLY) THEN
               CALL TPLAB (N, 1, NUMCRV, TIMLIM, NAMES,
-     &          TXLAB, TYLAB, BLKCOL, *130)
+     &          TXLAB, TYLAB, BLKCOL, MAPEL, MAPND, *130)
               CALL XYAXIS (0, DOGRID, TXLAB, TYLAB, BLKCOL, *130)
             END IF
 
@@ -257,7 +258,8 @@ C            --Set color in case text is requested
             
 C         --Get plot labels
 
-            CALL TPLABN (N, TIMLIM, NAMES, PLTITL, TXLAB, TYLAB)
+            CALL TPLABN (N, TIMLIM, NAMES, PLTITL, TXLAB, TYLAB,
+     *        MAPEL, MAPND)
 
 C         --Plot variable against time or variable against variable
 
@@ -288,8 +290,10 @@ C         --Plot variable against time or variable against variable
           doleg = .false.
         end if
 C ... CSV format neutral file selected...
-        CALL TPLABN (1, TIMLIM, NAMES, PLTITL, TXLAB, TYLAB)
-        call wrtcsv(ntpcrv, maxpts, npts, pltval, txlab, names, doleg)
+        CALL TPLABN (1, TIMLIM, NAMES, PLTITL, TXLAB, TYLAB,
+     *    MAPEL, MAPND)
+        call wrtcsv(ntpcrv, maxpts, npts, pltval, txlab, names, doleg,
+     *    MAPEL, MAPND)
       end if
 C   --Finish overlaid plot
 

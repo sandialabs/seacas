@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE COMAND (A, CURPRO,
      &   QAREC, INFREC, NAMECO, NAMELB, NAMES, TIMES, WHOTIM, IPTIMS,
-     &   IDELB, NEWELB, IELBST, IE2ELB,
+     &   MAPEL, MAPND, IDELB, NEWELB, IELBST, IE2ELB,
      &   LENE, NLNKE, LINKE, XN, YN, ZN, XE, YE, ZE,
      &   ISEVOK,
      &   ISSNPS, IDNPS, NNNPS, ISSESS, IDESS, NEESS, NNESS,
@@ -147,6 +147,8 @@ C   --   Uses NALVAR of /MSHOPT/
       REAL TIMES(*)
       LOGICAL WHOTIM(*)
       INTEGER IPTIMS(*)
+      INTEGER MAPEL(*)
+      INTEGER MAPND(*)
       INTEGER IDELB(*)
       INTEGER NEWELB
       INTEGER IELBST(*)
@@ -454,7 +456,8 @@ C   --Informational commands
      &      IDELB, LENE, NLNKE, LINKE, ISEVOK,
      &      IDNPS, NNNPS, IDESS, NEESS, NNESS,
      &      NCSTEP, LISNP, NLISEL, LISEL, LISNPS, LISESS,
-     &      LISHV, LISGV, LISNV, LISEV, EBNAME, NSNAME, SSNAME, NAMLEN)
+     &      LISHV, LISGV, LISNV, LISEV, EBNAME, NSNAME, SSNAME, NAMLEN,
+     *      MAPEL, MAPND)
          VERB = ' '
          CALL MDSTAT (NERR, MEM)
          IF (NERR .GT. 0) GOTO 160
@@ -472,11 +475,11 @@ C   --Informational commands
          END IF
 
          IF (MSHTYP) THEN
-            CALL SCALER (A, 2, NAMES(IVAR), IVAR,
-     &         .TRUE., IELBST, NALVAR, DUMMIN, DUMMAX)
+            CALL SCALER (A, A, 2, NAMES(IVAR), IVAR,
+     &         .TRUE., IELBST, NALVAR, DUMMIN, DUMMAX, MAPEL, MAPND)
          ELSE
-            CALL SCALER (A, 2, NAMES(IVAR), IVAR,
-     &         .FALSE., IDUM, 0, DUMMIN, DUMMAX)
+            CALL SCALER (A, A, 2, NAMES(IVAR), IVAR,
+     &         .FALSE., IDUM, 0, DUMMIN, DUMMAX, MAPEL, MAPND)
          END IF
          CALL MDSTAT (NERR, MEM)
          IF (NERR .GT. 0) GOTO 160
@@ -553,7 +556,7 @@ C      --Perform DETOUR command
             CALL DTCOMD (A, INLINE,
      &         VERB, IIFLD, INTYP, CFIELD, IFIELD, RFIELD,
      &         NEWMOD, NAMES, IELBST,
-     &         ISSNPS, ISSESS, LIDSP)
+     &         ISSNPS, ISSESS, LIDSP, MAPEL, MAPND, NAMLEN)
             CALL MDSTAT (NERR, MEM)
             IF (NERR .GT. 0) GOTO 160
             IF (VERB .EQ. ' ') GOTO 120
@@ -579,7 +582,7 @@ C      --Perform TPLOT command
             IIFLD = IFLD
             CALL TPCOMD (A, INLINE,
      &         VERB, IIFLD, INTYP, CFIELD, IFIELD, RFIELD, MAXFLD,
-     &         NAMES, ISEVOK, IE2ELB, A(KTPSCR), NTPSCR)
+     &         NAMES, ISEVOK, IE2ELB, A(KTPSCR), NTPSCR, MAPEL, MAPND)
             CALL MDSTAT (NERR, MEM)
             IF (NERR .GT. 0) GOTO 160
             IF (VERB .EQ. ' ') GOTO 120
@@ -592,7 +595,7 @@ C      --Perform SPLOT command
             CALL SPCOMD (A, INLINE,
      &         VERB, IIFLD, INTYP, CFIELD, IFIELD, RFIELD,
      &         NAMES, LENE, NLNKE, LINKE, XN, YN, ZN, XE, YE, ZE,
-     &         ISEVOK, IE2ELB, NENUM, LIDSP)
+     &         ISEVOK, IE2ELB, NENUM, LIDSP, MAPEL, MAPND, NAMLEN)
             CALL MDSTAT (NERR, MEM)
             IF (NERR .GT. 0) GOTO 160
             IF (VERB .EQ. ' ') GOTO 120

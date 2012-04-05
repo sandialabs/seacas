@@ -32,10 +32,9 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE DTMAIN (A, NAMECO, NAMES, NPTIMS, IPTIMS, TIMES,
      &   LENF, NLNKE, NLNKF, KLINKF, LENL, KLNSET,
-     &   NEWELB, IELBST,
-     &   KNPSUR,
-     &   ISEVOK,
-     &   ISSNPS, IDNPS, ISSESS, IDESS, LIDSP, BLKCOL, IDELB, NAMELB)
+     &   NEWELB, IELBST, KNPSUR, ISEVOK,
+     &   ISSNPS, IDNPS, ISSESS, IDESS, LIDSP, BLKCOL, IDELB, NAMELB,
+     *  MAPEL, MAPND)
 C=======================================================================
 
 C   --*** DTMAIN *** (DETOUR) DETOUR main plot routine
@@ -193,6 +192,7 @@ C   --   Sets and uses ZMMESH of /MSHLIM/
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
       CHARACTER*(MXSTLN) NAMELB(*)
+      INTEGER MAPEL(*), MAPND(*)
 
       INTEGER NUMMOD, NDEFVW, IXVW
       CHARACTER TYP
@@ -371,10 +371,10 @@ C            --Set up scaling for the vectors, if needed
                         IF (IDTVAR(I) .GT. 0) THEN
 C                        --Note that SCALER does not print result, and that
 C                        --min/max has been calculated in DTCOMD
-                           CALL SCALER (A,
-     &                        0, NAMES(IDTVAR(I)), IDTVAR(I),
-     &                        .TRUE., IELBST, NALVAR, FMIN, FMAX)
-                           VVMAX = MAX (VVMAX, ABS(FMIN), ABS(FMAX))
+                          CALL SCALER (A, A,
+     &                      0, NAMES(IDTVAR(I)), IDTVAR(I), .TRUE.,
+     *                      IELBST, NALVAR, FMIN, FMAX, MAPEL, MAPND)
+                          VVMAX = MAX (VVMAX, ABS(FMIN), ABS(FMAX))
                         END IF
   110                CONTINUE
                      IF (VVMAX .EQ. 0.0) VVMAX = 1.0
@@ -561,8 +561,8 @@ C            --Set up the mesh plot pick
      &            NNPSET(IVIEW), ISSNPS(1,IVIEW),
      &            NESSET(IVIEW), ISSESS(1,IVIEW),
      &            IDTVAR, A(KVARNP), A(KVARF), NMIN, NMAX, FMIN, FMAX,
-     &            VECMAX, A(KISVOK), BLKCOL, IDELB, MAXHID, 
-     &            *160)
+     &            VECMAX, A(KISVOK), BLKCOL, IDELB, MAXHID,
+     *            MAPEL, MAPND, *160)
 
                IF (NEWSET) THEN
                   NEWSET = .FALSE.

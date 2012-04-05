@@ -38,7 +38,7 @@ C=======================================================================
      &   IDNPS, NNNPS, IDESS, NEESS, NNESS,
      &   NCSTEP, LISNP, NLISEL, LISEL, LISNPS, LISESS,
      &   LISHV, LISGV, LISNV, LISEV,
-     $   EBNAME, NSNAME, SSNAME, NAMLEN)
+     $   EBNAME, NSNAME, SSNAME, NAMLEN, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** DBLIST *** (BLOT) Process LIST/PRINT commands
@@ -145,6 +145,8 @@ C   --   Uses NOUT, NCRT, NPRT, ANYPRT of /OUTFIL/
       INTEGER NLISEL(0:*), LISEL(0:*)
       INTEGER LISNPS(0:*), LISESS(0:*)
       INTEGER LISHV(0:*), LISGV(0:*), LISNV(0:*), LISEV(0:*)
+      INTEGER MAPEL(*)
+      INTEGER MAPND(*)
 
       LOGICAL FFEXST
 
@@ -156,7 +158,7 @@ C   --   Uses NOUT, NCRT, NPRT, ANYPRT of /OUTFIL/
       SAVE FIRST
 C      --FIRST - true iff first time through routine
 
-      CHARACTER*(MXSTLN) CMDTBL(30)
+      CHARACTER*(MXSTLN) CMDTBL(32)
       SAVE CMDTBL
 C      --CMDTBL - the valid commands table
 
@@ -166,7 +168,7 @@ C   --Command table follows.  Remember to change the dimensioned size when
 C   --changing the table.
       DATA CMDTBL /
      1   'TITLE   ', 'VARS    ',
-     2   'COORDINA', 'MAP     ',
+     2   'COORDINA', 'MAP     ', 'NODEMAP ', 'NMAP    ',
      3   'BLOCKS  ', 'MATERIAL', 'LINK    ', 'CONNECTI', 'ATTRIBUT',
      4   'NSETS   ', 'NNODES  ', 'NFACTORS',
      5   'SSETS   ', 'SELEMS  ', 'SNODES  ', 'SFACTORS',
@@ -384,17 +386,20 @@ C *** GENESIS Print Commands ***
          CALL CKNONE (NDIM, .FALSE., 'coordinates', *150)
          CALL CKNONE (LISNP(0), .TRUE., 'coordinates', *150)
 
-         CALL PRXYZ ('*', NOUT, NDIM, NAMECO, NUMNP, LISNP, XN, YN, ZN)
+         CALL PRXYZ ('*', NOUT, NDIM, NAMECO, NUMNP, LISNP, XN, YN, ZN,
+     &     MAPND)
 
       ELSE IF (LISTYP .EQ. 'MAP') THEN
          CALL FFADDC (LISTYP, INLINE(1))
          CALL CKNONE (NUMEL, .FALSE., 'elements', *150)
 
-         CALL MDFIND ('MAPEL', KMAPEL, N)
-         CALL MDSTAT (NERR, MEM)
-         IF (NERR .GT. 0) GOTO 150
+         CALL PRMAP ('*', NOUT, NUMEL, MAPEL, 'Element')
 
-         CALL PRMAP ('*', NOUT, NUMEL, A(KMAPEL))
+      ELSE IF ((LISTYP .EQ. 'NODEMAP') .OR. (LISTYP .EQ. 'NMAP')) THEN
+         CALL FFADDC (LISTYP, INLINE(1))
+         CALL CKNONE (NUMNP, .FALSE., 'nodes', *150)
+
+         CALL PRMAP ('*', NOUT, NUMNP, MAPND, 'Node')
 
       ELSE IF ((LISTYP .EQ. 'BLOCKS') .OR. (LISTYP .EQ. 'MATERIAL')
      &   .OR. (LISTYP .EQ. 'LINK') .OR. (LISTYP .EQ. 'CONNECTI')
@@ -446,7 +451,8 @@ C *** GENESIS Print Commands ***
 
          CALL PRELB (OPT, NOUT, NELBLK, NLISEL, LISEL,
      &      IDELB, LENE, NLNKE, A(KNATR), LINKE, A(KATRIB),
-     &      NAMELB, EBNAME, NVAREL, NAMES(IXEV), ISEVOK, A(KXLSEV))
+     &      NAMELB, EBNAME, NVAREL, NAMES(IXEV), ISEVOK, A(KXLSEV),
+     *      MAPEL, MAPND)
 
          IF ((OPT .EQ. '*') .OR. (INDEX (OPT, 'V') .GT. 0)) THEN
             CALL MDDEL ('XLISEV')
@@ -479,7 +485,7 @@ C *** GENESIS Print Commands ***
 
          CALL PRNPS (OPT, NOUT, NUMNPS, LISNPS, LNPSNL,
      &      IDNPS, NNNPS, A(KIXNNS), A(KLTNNS), A(KFACNS),
-     $      NSNAME)
+     $      NSNAME, MAPND)
 
       ELSE IF ((LISTYP .EQ. 'SSETS')
      &   .OR. (LISTYP .EQ. 'SELEMS')
@@ -519,7 +525,7 @@ C *** GENESIS Print Commands ***
 
          CALL PRESS (OPT, NOUT, NUMESS, LISESS, LESSEL, LESSNL,
      &      IDESS, NEESS, NNESS, A(KIXESS), A(KIXNSS),
-     &      A(KLTESS), A(KLTNSS), A(KFACSS), SSNAME)
+     &      A(KLTESS), A(KLTNSS), A(KFACSS), SSNAME, MAPEL, MAPND)
 
       ELSE IF (LISTYP .EQ. 'QA') THEN
          CALL FFADDC (LISTYP, INLINE(1))
@@ -614,7 +620,7 @@ C *** EXODUS Print Commands ***
      &      TIMES(NCSTEP), WHOTIM(NCSTEP), NCSTEP, NSTEPS)
 
          CALL PRNODE ('*', NOUT, NUMNP, LISNP, NVARNP, LISNV,
-     &      NAMES(IXNV), A(KVAR))
+     &      NAMES(IXNV), A(KVAR), MAPND)
 
          CALL MDDEL ('SCRVAR')
 
@@ -654,7 +660,7 @@ C      --Transfer needed variables to random disk
      &      TIMES(NCSTEP), WHOTIM(NCSTEP), NCSTEP, NSTEPS)
 
          CALL PRELEM ('*', NOUT, NELBLK, NUMEL, NLISEL, LISEL, LENE,
-     &      NVAREL, LISEV, NAMES(IXEV), ISEVOK, A(KVAR))
+     &      NVAREL, LISEV, NAMES(IXEV), ISEVOK, A(KVAR), MAPEL)
 
          CALL MDDEL ('SCRVAR')
 
@@ -677,8 +683,8 @@ C *** Miscellaneous Commmands ***
             GOTO 150
          END IF
 
-         CALL SCALER (A, 2, NAMES(IVAR), IVAR,
-     &      .FALSE., IDUM, 0, DUMMIN, DUMMAX)
+         CALL SCALER (A, A, 2, NAMES(IVAR), IVAR,
+     &      .FALSE., IDUM, 0, DUMMIN, DUMMAX, MAPEL, MAPND)
          CALL MDSTAT (NERR, MEM)
          IF (NERR .GT. 0) GOTO 150
 

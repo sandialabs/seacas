@@ -30,7 +30,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
-      SUBROUTINE TPLABV (NPLT, IVAR, NAME, NE, LABSTR)
+      SUBROUTINE TPLABV (NPLT, IVAR, NAME, NE, LABSTR, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** TPLABV *** (TPLOT) Get a plot label
@@ -52,6 +52,7 @@ C   --   Uses NVARNP, NVAREL of /DBNUMS/
 
       CHARACTER*(*) NAME
       CHARACTER*(*) LABSTR
+      INTEGER MAPEL(*), MAPND(*)
 
       CHARACTER TYP
 
@@ -61,9 +62,11 @@ C   --   Uses NVARNP, NVAREL of /DBNUMS/
          IF ((TYP .EQ. 'H') .OR. (TYP .EQ. 'G')) THEN
             WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME
          ELSE IF (TYP .EQ. 'N') THEN
-            WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'at NODE', NE
+           WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'at NODE',
+     *       MAPND(NE)
          ELSE IF (TYP .EQ. 'E') THEN
-            WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'at ELEMENT', NE
+            WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'at ELEMENT',
+     *       MAPEL(NE)
          END IF
 
       ELSE
@@ -71,9 +74,11 @@ C   --   Uses NVARNP, NVAREL of /DBNUMS/
          IF ((TYP .EQ. 'H') .OR. (TYP .EQ. 'G')) THEN
             WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME
          ELSE IF (TYP .EQ. 'N') THEN
-            WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'NODE', NE
+            WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'NODE',
+     *       MAPND(NE)
          ELSE IF (TYP .EQ. 'E') THEN
-            WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'ELEM', NE
+           WRITE (LABSTR, 10000, IOSTAT=IDUM) NAME, 'ELEM',
+     *       MAPEL(NE)
          END IF
       END IF
 

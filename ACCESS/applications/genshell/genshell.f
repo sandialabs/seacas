@@ -68,15 +68,15 @@ C     --Documentation:
 C     --   --NONE--
       
       include 'exodusII.inc'
-      INCLUDE 'progqa.blk'
-      INCLUDE 'dbase.blk'
-      INCLUDE 'dbtitl.blk'
-      INCLUDE 'dbnums.blk'
-      INCLUDE 'dbnum3.blk'
-      INCLUDE 'params.blk'
-      INCLUDE 'xyzoff.blk'
-      INCLUDE 'xyzrot.blk'
-      INCLUDE 'xyzmir.blk'
+      INCLUDE 'gs_progqa.blk'
+      INCLUDE 'gs_dbase.blk'
+      INCLUDE 'gs_dbtitl.blk'
+      INCLUDE 'gs_dbnums.blk'
+      INCLUDE 'gs_dbnum3.blk'
+      INCLUDE 'gs_params.blk'
+      INCLUDE 'gs_xyzoff.blk'
+      INCLUDE 'gs_xyzrot.blk'
+      INCLUDE 'gs_xyzmir.blk'
       INCLUDE 'argparse.inc'
       
       CHARACTER*2048 FILIN, FILOUT, SCRATCH
@@ -97,7 +97,7 @@ C     --A - the dynamic numeric memory base array
       INTEGER IDNSET(0:10,2)
       INTEGER IDESET(0:10,2)
       
-      INCLUDE 'qainfo.blk'
+      INCLUDE 'gs_qainfo.blk'
       
       CALL STRTUP (QAINFO)
       

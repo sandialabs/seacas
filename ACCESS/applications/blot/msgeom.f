@@ -29,25 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: msgeom.f,v $
-C Revision 1.3  2009/03/25 12:36:46  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  2007/11/14 20:14:53  gdsjaar
-C Added optional 'alive value' to the death on variable command.  The
-C default value is 0.0, but you can now specify a different value to
-C indicate aliveness (for example, the presto DEATH_DUMMY_VAR treats 1.0
-C as the alive value).
-C
-C Example: DEATH ON DEATH_DUMMY_VAR 1
-C
-C Revision 1.1  1994/04/07 20:05:28  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:53:48  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE MSGEOM (A, CURPRO, ISTEP,
      &  LENF, NLNKF, KLINKF, KXN, KYN, KZN,

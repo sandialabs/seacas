@@ -29,29 +29,9 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: prnode.f,v $
-C Revision 1.4  2009/03/25 12:36:46  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.3  1994/06/13 14:52:36  gdsjaar
-C Changed width of format to 14, too small if we start using all 32 characters...
-C
-C Revision 1.2  1994/06/13  14:28:03  gdsjaar
-C Fixed another character length problem.
-C
-c Revision 1.1  1994/04/07  20:07:49  gdsjaar
-c Initial checkin of ACCESS/graphics/blotII2
-c
-CRevision 1.3  1992/06/10  18:57:03  gdsjaar
-CChanged formatting of output data to allow for more than 100000 nodes/elements
-C
-CRevision 1.2  1990/12/14  08:55:14  gdsjaar
-CAdded RCS Id and Log to all files
-C
 C=======================================================================
       SUBROUTINE PRNODE (OPTION, NOUT, NUMNP, LISNP,
-     &   NVARNP, LISNV, NAMENV, VARNP)
+     &   NVARNP, LISNV, NAMENV, VARNP, MAPND)
 C=======================================================================
 
 C   --*** PRNODE *** (BLOT) Display current database nodal variables
@@ -74,7 +54,8 @@ C   --   VARNP - IN - the selected nodal variables for the time step
       INTEGER LISNV(0:*)
       CHARACTER*(*) NAMENV(*)
       REAL VARNP(NUMNP,*)
-
+      INTEGER MAPND(*)
+      
       LOGICAL ISABRT
 
       IF (NOUT .GT. 0) WRITE (NOUT, 10000)
@@ -94,10 +75,10 @@ C   --   VARNP - IN - the selected nodal variables for the time step
          INP = LISNP(IX)
          IF (NOUT .GT. 0) THEN
             WRITE (NOUT, 10020, IOSTAT=IDUM)
-     &         INP, (VARNP(INP,I), I=1,LISNV(0))
+     &       MAPND(INP), (VARNP(INP,I), I=1,LISNV(0))
          ELSE
             WRITE (*, 10020, IOSTAT=IDUM)
-     &         INP, (VARNP(INP,I), I=1,LISNV(0))
+     &       MAPND(INP), (VARNP(INP,I), I=1,LISNV(0))
          END IF
   100 CONTINUE
 

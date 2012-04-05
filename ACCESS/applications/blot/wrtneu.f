@@ -61,7 +61,7 @@ C   --   Uses and sets NEUOPN of /NEUTR./
       include 'xylim.blk'
       include 'neutr.blk'
 
-      CHARACTER*256 filnam, errmsg
+      CHARACTER*2048 filnam, errmsg
       REAL XPTS(NPTS), YPTS(NPTS)
       CHARACTER*(*) PLTITL
       CHARACTER*(*) TXLAB, TYLAB

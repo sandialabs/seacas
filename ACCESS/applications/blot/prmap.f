@@ -29,55 +29,36 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: prmap.f,v $
-C Revision 1.3  2009/03/25 12:36:46  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  1998/03/10 16:08:35  gdsjaar
-C If the model size is greater than 1,000,000 elements, dont save the element order map. Should help a little with large problems
-C
-C Revision 1.1  1994/04/07 20:07:44  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:55:11  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
-      SUBROUTINE PRMAP (OPTION, NOUT, NUMEL, MAPEL)
+      SUBROUTINE PRMAP (OPTION, NOUT, NUMEL, MAPEL, TYPE)
 C=======================================================================
 
-C   --*** PRMAP *** (BLOT) Display database element order map
-C   --   Written by Amy Gilkey - revised 01/21/88
+C   --*** PRMAP *** (BLOT) Display database node/element number map
 C   --
-C   --PRMAP displays the element order map.
+C   --PRMAP displays the node/element order map.
 C   --
 C   --Parameters:
 C   --   OPTION - IN - '*' to print all, else print options:
 C   --   NOUT - IN - the output file, <=0 for standard
-C   --   NUMEL - IN - the number of elements
-C   --   MAPEL - IN - the element order map
+C   --   NUMEL - IN - the number of node/elements
+C   --   MAPEL - IN - the node/element order map
 
       CHARACTER*(*) OPTION
       INTEGER MAPEL(*)
+      CHARACTER*(*) TYPE
 
       LOGICAL ISABRT
       CHARACTER*4 FMT
-      CHARACTER*6 STRA, STRB
+      CHARACTER*32 STRA, STRB
 
       LOGICAL MAPONE
 
-      IF (NOUT .GT. 0) WRITE (NOUT, 10000)
-
-      if (numel .ge. 1000000) then
-         WRITE (NOUT, 10030) 
-         return
-      end if
+      IF (NOUT .GT. 0) WRITE (NOUT, 10000) type(:lenstr(type))
 
       IF (NOUT .GT. 0) THEN
-         WRITE (NOUT, 10010)
+         WRITE (NOUT, 10010) type(:lenstr(type))
       ELSE
-         WRITE (*, 10010)
+         WRITE (*, 10010) type(:lenstr(type))
       END IF
 
       WRITE (STRA, '(I11)', IOSTAT=IDUM) NUMEL
@@ -95,9 +76,9 @@ C ... Check for 1-1 mapping
  90   continue
       if (mapone) then
         IF (NOUT .GT. 0) THEN
-          write (nout, 10040) 'element'
+          write (nout, 10040) type(:lenstr(type))
         ELSE
-          write (*, 10040) 'element'
+          write (*, 10040) type(:lenstr(type))
         END IF
       else
       DO 100 IEL = 1, NUMEL, 8
@@ -116,11 +97,9 @@ C ... Check for 1-1 mapping
       end if
       RETURN
 
-10000  FORMAT (/, 1X, 'ELEMENT ORDER MAP')
-10010  FORMAT (/, 1X, 'Element Order Map:')
+10000  FORMAT (/, 1X, A, ' NUMBER MAP')
+10010  FORMAT (/, 1X, A, ' Number Map:')
 10020  FORMAT (1X, 3X, A, '..', A, 3X, 8I11)
-10030  FORMAT (/, 1x, 'Element order Map not saved for large models',
-     $      'Use grope if you need to see the map.')
 10040  format (1x, 3x, 'Map does not modify local ',
      &   A, ' ids (X maps to X)')
       END

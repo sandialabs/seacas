@@ -30,7 +30,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
-      SUBROUTINE TPSHOW (SHOTYP, NAMES)
+      SUBROUTINE TPSHOW (SHOTYP, NAMES, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** TPSHOW *** (TPLOT) Display TPLOT parameter information
@@ -57,6 +57,7 @@ C   --   Uses NTPVAR, TIMPLT, ITVID, ITVNE of /TPVARS/
 
       CHARACTER*(*) SHOTYP
       CHARACTER*(*) NAMES(*)
+      INTEGER MAPEL(*), MAPND(*)
 
       LOGICAL ISABRT
       CHARACTER*(1024) PV1, PV2
@@ -72,10 +73,11 @@ C   --   Uses NTPVAR, TIMPLT, ITVID, ITVNE of /TPVARS/
                PV1 = 'TIME'
             ELSE
                CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N),
-     &            PV1)
+     &            PV1, MAPEL, MAPND)
                N = N + 1
             END IF
-            CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV2)
+            CALL TPLABV (-1, ITVID(N), NAMES(ITVID(N)), ITVNE(N), PV2,
+     *        MAPEL, MAPND)
             N = N + 1
             WRITE (STR2, '(I2)', IOSTAT=IDUM) NP
             WRITE (*, 10000) 'Curve ', STR2, ' :  ', PV2(:LENSTR(PV2)),
