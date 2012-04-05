@@ -647,21 +647,21 @@ namespace SEAMS {
 
 /* Line 678 of lalr1.cc  */
 #line 145 "aprepro.yy"
-    { (yyval.string) = (*((yysemantic_stack_[(4) - (1)].tptr)->value.strfnct_c))((yysemantic_stack_[(4) - (3)].string));	}
+    { (yyval.string) = (char*)(*((yysemantic_stack_[(4) - (1)].tptr)->value.strfnct_c))((yysemantic_stack_[(4) - (3)].string));	}
     break;
 
   case 33:
 
 /* Line 678 of lalr1.cc  */
 #line 146 "aprepro.yy"
-    { (yyval.string) = (*((yysemantic_stack_[(3) - (1)].tptr)->value.strfnct))();	}
+    { (yyval.string) = (char*)(*((yysemantic_stack_[(3) - (1)].tptr)->value.strfnct))();	}
     break;
 
   case 34:
 
 /* Line 678 of lalr1.cc  */
 #line 147 "aprepro.yy"
-    { (yyval.string) = (*((yysemantic_stack_[(4) - (1)].tptr)->value.strfnct_d))((yysemantic_stack_[(4) - (3)].val));	}
+    { (yyval.string) = (char*)(*((yysemantic_stack_[(4) - (1)].tptr)->value.strfnct_d))((yysemantic_stack_[(4) - (3)].val));	}
     break;
 
   case 35:
@@ -672,28 +672,28 @@ namespace SEAMS {
 				  int len3 = strlen((yysemantic_stack_[(3) - (3)].string));
 				  (yyval.string) = (char*)calloc(1, (len1+len3+1));
 				  memcpy((yyval.string), (yysemantic_stack_[(3) - (1)].string), len1+1);
-				  (void *)strcat((yyval.string), (yysemantic_stack_[(3) - (3)].string)); }
+				  strcat((yyval.string), (yysemantic_stack_[(3) - (3)].string)); }
     break;
 
   case 36:
 
 /* Line 678 of lalr1.cc  */
 #line 154 "aprepro.yy"
-    { (yyval.string) = (*((yysemantic_stack_[(12) - (1)].tptr)->value.strfnct_dcccc))((yysemantic_stack_[(12) - (3)].val), (yysemantic_stack_[(12) - (5)].string), (yysemantic_stack_[(12) - (7)].string), (yysemantic_stack_[(12) - (9)].string), (yysemantic_stack_[(12) - (11)].string)); }
+    { (yyval.string) = (char*)(*((yysemantic_stack_[(12) - (1)].tptr)->value.strfnct_dcccc))((yysemantic_stack_[(12) - (3)].val), (yysemantic_stack_[(12) - (5)].string), (yysemantic_stack_[(12) - (7)].string), (yysemantic_stack_[(12) - (9)].string), (yysemantic_stack_[(12) - (11)].string)); }
     break;
 
   case 37:
 
 /* Line 678 of lalr1.cc  */
 #line 156 "aprepro.yy"
-    { (yyval.string) = (*((yysemantic_stack_[(8) - (1)].tptr)->value.strfnct_dcc))((yysemantic_stack_[(8) - (3)].val), (yysemantic_stack_[(8) - (5)].string), (yysemantic_stack_[(8) - (7)].string)); }
+    { (yyval.string) = (char*)(*((yysemantic_stack_[(8) - (1)].tptr)->value.strfnct_dcc))((yysemantic_stack_[(8) - (3)].val), (yysemantic_stack_[(8) - (5)].string), (yysemantic_stack_[(8) - (7)].string)); }
     break;
 
   case 38:
 
 /* Line 678 of lalr1.cc  */
 #line 158 "aprepro.yy"
-    { (yyval.string) = (*((yysemantic_stack_[(8) - (1)].tptr)->value.strfnct_ccc))((yysemantic_stack_[(8) - (3)].string), (yysemantic_stack_[(8) - (5)].string), (yysemantic_stack_[(8) - (7)].string)); }
+    { (yyval.string) = (char*)(*((yysemantic_stack_[(8) - (1)].tptr)->value.strfnct_ccc))((yysemantic_stack_[(8) - (3)].string), (yysemantic_stack_[(8) - (5)].string), (yysemantic_stack_[(8) - (7)].string)); }
     break;
 
   case 39:
