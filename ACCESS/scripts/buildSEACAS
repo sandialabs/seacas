@@ -613,14 +613,6 @@ ExecuteCommand "make applications" "makeapplications.log" \
 DoMakeScripts() {
 ExecuteCommand "make scripts" "makescripts.log" \
                "$DefaultAccessRootDir/ACCESS" "" \
-               "with 'make analysis'"              
-}
-
-# Making analysis codes:
-
-DoMakeAnalysis() {
-ExecuteCommand "make analysis" "makeanalysis.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make install' in $DefaultAccessRootDir/ACCESS"
 }
 
@@ -732,8 +724,8 @@ do
    echo " 9)                             10) make libraries"
    echo "11) make parallellibraries"
    echo "15) make applications           16) make scripts"
-   echo "17) (deleted)                   18) make matlab"
-   echo "19) make analysis               20) make all"
+   echo "17) (deleted)                   18) (deleted)
+   echo "19) (deleted)                   20) make all"
    echo "21) make install"
    echo ""
    echo "22) Return to the main menu"
@@ -789,11 +781,6 @@ do
               DoMakeScripts
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         19 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/analysis"
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              DoMakeAnalysis
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              break ;;
          20 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeAll
@@ -816,11 +803,11 @@ HelpMenu() {
 echo ""
 echo "1) Build all of SEACAS (including the Imake tools)"
 echo ""
-echo "   This option will build SEACAS from scratch. First, the configuration"
+echo "   (out-of-date) This option will build SEACAS from scratch. First, the configuration"
 echo "   files (site.def and your_system.cf) will be modified and then the"
 echo "   Imake tools will be built and installed. Next all the Makefiles are"
 echo "   made and finally all the SEACAS codes are built (libraries, pre- and"
-echo "   post processor, translator, graphics and analysis codes as well as the"
+echo "   post processor, translator, graphics codes as well as the"
 echo "   scripts). This option is equivalent to selecting options 2) and 3) in"
 echo "   succession."
 echo ""
@@ -835,7 +822,7 @@ echo "3) Build all of SEACAS except for the Imake tools"
 echo ""
 echo "   This option will make all the Makefiles and then build all the"
 echo "   libraries (netCDF, Exodus, svdi,...) and all other SEACAS codes"
-echo "   (pre- and post processor, translator, graphics and analysis codes"
+echo "   (pre- and post processor, translator, graphics codes"
 echo "   as well as the scripts)." 
 echo ""
 PromptLine "Press <RETURN> to continue... "
@@ -980,8 +967,6 @@ else
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeScripts
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeAnalysis
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeInstallAccess
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              break 
@@ -1024,8 +1009,6 @@ else
              DoMakeApplications
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeScripts
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeAnalysis
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeInstallAccess
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
