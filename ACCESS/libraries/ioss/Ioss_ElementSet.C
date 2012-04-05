@@ -30,30 +30,36 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_ElementSet.h>
-
 #include <Ioss_DatabaseIO.h>
+#include <Ioss_ElementSet.h>
 #include <Ioss_Property.h>
-#include <Ioss_Field.h>
-#include <Ioss_Utils.h>
+#include <stddef.h>
 #include <string>
+#include <vector>
+
+#include "Ioss_EntitySet.h"
+#include "Ioss_GroupingEntity.h"
+
+namespace Ioss {
+class Field;
+}  // namespace Ioss
 
 Ioss::ElementSet::ElementSet()
   : Ioss::EntitySet(NULL, "invalid", 0)
 {}
 
 Ioss::ElementSet::ElementSet(Ioss::DatabaseIO *io_database, const std::string& my_name,
-			     size_t number_elements)
+			     int64_t number_elements)
   : Ioss::EntitySet(io_database, my_name, number_elements)
 {}
 
-int Ioss::ElementSet::internal_get_field_data(const Ioss::Field& field,
+int64_t Ioss::ElementSet::internal_get_field_data(const Ioss::Field& field,
 				      void *data, size_t data_size) const
 {
   return get_database()->get_field(this, field, data, data_size);
 }
 
-int Ioss::ElementSet::internal_put_field_data(const Ioss::Field& field,
+int64_t Ioss::ElementSet::internal_put_field_data(const Ioss::Field& field,
 				      void *data, size_t data_size) const
 {
   return get_database()->put_field(this, field, data, data_size);

@@ -30,16 +30,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <exodusII/Ioex_SuperElement.h>
+#include <exodusII/Ioex_SuperElement.h>  // for SuperElement
 
-#include <Ioss_Property.h>
-#include <Ioss_Field.h>
-#include <Ioss_Utils.h>
-#include <string>
+#include <Ioss_Field.h>                 // for Field, etc
+#include <Ioss_Property.h>              // for Property, etc
+#include <Ioss_Utils.h>                 // for IOSS_ERROR, Utils
 
-#include <assert.h>
+#include <assert.h>                     // for assert
+#include <netcdf.h>                     // for NC_NOERR, nc_close, etc
+#include <stddef.h>                     // for size_t, NULL
+#include <iostream>                     // for operator<<, basic_ostream, etc
+#include <string>                       // for char_traits, operator<<, etc
 
-#include <netcdf.h>
+#include <Ioss_FieldManager.h>          // for FieldManager
+#include <Ioss_GroupingEntity.h>        // for GroupingEntity
+#include <Ioss_PropertyManager.h>       // for PropertyManager
 
 namespace {
   int nc_get_array(int ncid, const char *name, double *data)
@@ -161,7 +166,7 @@ Ioex::SuperElement::SuperElement(const std::string &filename,
   // but for now we only need "Kr" and "Mr"
 }
 
-int Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
+int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
 				      void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
@@ -198,7 +203,7 @@ Ioex::SuperElement::~SuperElement()
   if (filePtr) nc_close(filePtr);
 }
 
-int Ioex::SuperElement::internal_put_field_data(const Ioss::Field& /* field */,
+int64_t Ioex::SuperElement::internal_put_field_data(const Ioss::Field& /* field */,
 						void* /* data */, size_t /* data_size */) const
 {
   return -1;

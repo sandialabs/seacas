@@ -30,14 +30,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_NodeBlock.h>
-
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_Property.h>
 #include <Ioss_Field.h>
-#include <Ioss_ElementTopology.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_Property.h>
 #include <assert.h>
+#include <stddef.h>
 #include <string>
+
+#include "Ioss_EntityBlock.h"
+#include "Ioss_FieldManager.h"
+#include "Ioss_PropertyManager.h"
 
 namespace {
   const std::string SCALAR()    { return std::string("scalar");}
@@ -47,8 +50,8 @@ namespace {
 
 Ioss::NodeBlock::NodeBlock(Ioss::DatabaseIO *io_database,
 			   const std::string &my_name,
-			   size_t node_count,
-			   size_t degrees_of_freedom)
+			   int64_t node_count,
+			   int64_t degrees_of_freedom)
   : Ioss::EntityBlock(io_database, my_name, "node", node_count)
 {
   properties.add(Ioss::Property("component_degree",
@@ -68,6 +71,20 @@ Ioss::NodeBlock::NodeBlock(Ioss::DatabaseIO *io_database,
 			 Ioss::Field::REAL, vector_name,
 			 Ioss::Field::MESH, node_count));
 
+  // Permit access 1-coordinate at a time
+  fields.add(Ioss::Field("mesh_model_coordinates_x",
+			 Ioss::Field::REAL, SCALAR(),
+			 Ioss::Field::MESH, node_count));
+  if (degrees_of_freedom > 1)
+    fields.add(Ioss::Field("mesh_model_coordinates_y",
+			   Ioss::Field::REAL, SCALAR(),
+			   Ioss::Field::MESH, node_count));
+
+  if (degrees_of_freedom > 2)
+    fields.add(Ioss::Field("mesh_model_coordinates_z",
+			   Ioss::Field::REAL, SCALAR(),
+			   Ioss::Field::MESH, node_count));
+  
   fields.add(Ioss::Field("node_connectivity_status",
 			 Ioss::Field::CHARACTER, SCALAR(),
 			 Ioss::Field::MESH, node_count));
@@ -81,13 +98,13 @@ Ioss::NodeBlock::get_implicit_property(const std::string& my_name) const
   return Ioss::EntityBlock::get_implicit_property(my_name);
 }
 
-int Ioss::NodeBlock::internal_get_field_data(const Ioss::Field& field,
+int64_t Ioss::NodeBlock::internal_get_field_data(const Ioss::Field& field,
 				   void *data, size_t data_size) const
 {
   return get_database()->get_field(this, field, data, data_size);
 }
 
-int Ioss::NodeBlock::internal_put_field_data(const Ioss::Field& field,
+int64_t Ioss::NodeBlock::internal_put_field_data(const Ioss::Field& field,
 				   void *data, size_t data_size) const
 {
   return get_database()->put_field(this, field, data, data_size);
