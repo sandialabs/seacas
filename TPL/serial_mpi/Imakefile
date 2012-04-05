@@ -1,0 +1,25 @@
+
+runconfigure: siMPI/runconfigure
+
+siMPI/runconfigure: runconfigure.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd runconfigure.in > siMPI/runconfigure
+	chmod +x siMPI/runconfigure
+
+all:: runconfigure
+	cd siMPI; \
+	if [ -f makefiles.log ]; then $(RM) makefiles.log; fi; \
+	if [ -f config.cache ]; then $(RM) config.cache; fi; \
+	./runconfigure > makefiles.log; \
+	$(MAKE) all; \
+	$(MAKE) install
+
+noinstall:: runconfigure
+	cd siMPI; ./runconfigure > makefiles.log; $(MAKE) all
+
+clean::
+	cd siMPI; $(MAKE) distclean
+
+install:: runconfigure
+	cd siMPI; $(MAKE) install
+
+ExtraStuffToClean(siMPI/runconfigure)

@@ -1,0 +1,12 @@
+#! /bin/sh
+rm -f config.status
+CC='/opt/local/bin/clang-mp-3.1'; export CC
+CFLAGS='  -O      -I/Users/gdsjaar/src/SEACAS/inc  -DBuild64 -DADDC_      -I./  -I/Users/gdsjaar/src/SEACAS/inc -fPIC'; export CFLAGS
+CXX='/opt/local/bin/clang++-mp-3.1'; export CXX
+CXXFLAGS=' -O     -I/Users/gdsjaar/src/SEACAS/inc -DBuild64 -DADDC_      -I./  -I/Users/gdsjaar/src/SEACAS/inc -fPIC'; export CXXFLAGS
+CPPFLAGS='-DNDEBUG'; export CPPFLAGS
+ARFLAGS='cru'; export ARFLAGS
+F77='/opt/local/bin/gfortran-mp-4.6'; export F77
+FFLAGS=' -O -fno-range-check -fcray-pointer -fdefault-real-8 -fdefault-integer-8   -I./  -I/Users/gdsjaar/src/SEACAS/inc'; export FFLAGS
+
+./configure --prefix=/Users/gdsjaar/src/SEACAS/siMPI $1
