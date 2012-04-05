@@ -1,0 +1,37 @@
+
+TRUE_HDF5 = hdf5-source
+
+
+#if BuildSharedExodusLibrary
+SHARED = --enable-shared
+#else
+SHARED = --disable-shared
+#endif
+
+all:: $(TRUE_HDF5)/Makefile
+	cd $(TRUE_HDF5); $(MAKE)
+	make install
+
+$(TRUE_HDF5)/runconfigure: runconfigure.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/msub.seacas runconfigure.in > $(TRUE_HDF5)/runconfigure
+	chmod +x $(TRUE_HDF5)/runconfigure
+
+$(TRUE_HDF5)/Makefile: $(TRUE_HDF5)/runconfigure
+	cd $(TRUE_HDF5); ./runconfigure
+
+test:: all
+	cd $(TRUE_HDF5); $(MAKE) test
+
+install:: 
+	cd $(TRUE_HDF5); $(MAKE) install
+	cd $(USRLIBDIR); $(MV) shared/libhdf5*.a .
+
+clean:: $(TRUE_HDF5)/Makefile
+	cd $(TRUE_HDF5); $(MAKE) clean
+
+distclean:: $(TRUE_HDF5)/runconfigure
+	cd $(TRUE_HDF5); $(MAKE) distclean
+
+makeincludes:: $(TRUE_HDF5)/Makefile
+	cd $(TRUE_HDF5)/src; make install-includeHEADERS
+
