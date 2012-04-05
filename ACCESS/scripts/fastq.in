@@ -62,7 +62,7 @@ txtrst=$(tput sgr0)       # Text reset
 echo " "
 echo "=============================================================="
 echo "| Sandia Engineering Analysis Access procedure for: ${codename}"
-echo "| Send email to SEACAS-HELP@sandia.gov for help"
+echo "| Send email to gdsjaar@sandia.gov for help"
 echo "=============================================================="
 
 aprepro="false"
@@ -169,14 +169,14 @@ fi
 if [ ! -x "${ACCESS}/bin/${codename}.${device}" ]
 then
    echo "${txtred}ERROR: ${ACCESS}/bin/${codename}.${device} does not exist.${txtrst}"
-   echo "    Contact seacas-help@sandia.gov if you need this device;"
+   echo "    Contact gdsjaar@sandia.gov if you need this device;"
    echo "    otherwise use one of the supported devices:"
    show_device
    exit 1
 fi
 
 # Run the code, --
-${ACCESS}/bin/${codename}.${device} -basename ${filename} ${FOR011}
+${ACCESS}/bin/${codename}.${device} -basename ${filename} 
 
 if [ ! -z ${filename} ] && [ "${device}" != "dual" ] && [ "${device}" != "xcps" ]
 then

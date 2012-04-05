@@ -19,6 +19,9 @@ txtcyn=$(tput setaf 6)    # Cyan
 txtwht=$(tput setaf 7)    # White
 txtrst=$(tput sgr0)       # Text reset
 
+automatic=0
+continue=0
+
 # Print prompt line:
 
 PromptLine() {
@@ -151,7 +154,7 @@ fi
 # The cd wierdness is that sometimes two strings don't match, but they
 # refer to the same path...
 FileAccessRootDir=`grep "define AccessRoot" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
-if [ ! -e $FileAccessRootDir ] ; then
+if [ ! -d $FileAccessRootDir ] ; then
     echo "${txtred}"
     echo "Incorrect Setting:"
     echo "  The AccessRoot specified in site.def does not exist:"
@@ -176,27 +179,11 @@ FileAccessInstallDir=`grep "define AccessInstall" $DefaultAccessRootDir/$SiteCon
 if [ $FileAccessInstallDir = "AccessRoot" ]; then
     FileAccessInstallDir=$DefaultAccessRootDir
 fi
-
 DefaultAccessRootDirSet=YES
 ACCESS=$FileAccessInstallDir; export ACCESS
 PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
 
 DefaultGroup=`grep "define Group" $DefaultAccessRootDir/$SiteConfig |cut -f3 -d' '`
-
-#
-# Check that netcdf exists...
-#
-nc_vers=`grep -m 1 V_NUM $DefaultAccessRootDir/ACCESS/netcdf/Imakefile |cut -f2 -d'='`
-if [ ! -e $DefaultAccessRootDir/ACCESS/netcdf/$nc_vers ] ; then
-    echo "${txtred}"
-    echo "  ERROR: NETCDF library not found."
-    echo "  The directory $DefaultAccessRootDir/ACCESS/netcdf/$nc_vers"
-    echo "  does not exist.  Have you downloaded and installed netcdf?${txtrst}"
-    echo ""
-    echo "  The script will now exit so you can correct this problem."
-    echo ""
-    exit
-fi
 }
 
 
@@ -302,7 +289,7 @@ if [ $? -eq 0 ]; then
    err_chk=`expr $err_chk + 32`
    PossibleError=YES
 fi
-grep -i "not found" $LogFile |grep -v warning > /dev/null 
+grep -i "not found" $LogFile |grep -v warning |grep -v CUNIT> /dev/null 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} not found"
    err_chk=`expr $err_chk + 64`
@@ -522,11 +509,10 @@ ExecuteCommand "make World" "makeWorld.log" \
 
 
 # Function for executing "make install" in ACCESS/itools:
-
 DoMakeInstallItools() {
 InDoMakeInstallAccess=NO
 InDoMakeInstallItools=YES
-ExecuteCommand "make install" "makeInstallItools.log" \
+ExecuteCommand "make install" "makeinstallItools.log" \
                "$DefaultAccessRootDir/ACCESS/itools" "" \
                "with 'accmkmf' in $DefaultAccessRootDir/ACCESS/"
 
@@ -537,15 +523,43 @@ InDoMakeInstallItools=NO
 
 
 # Function for executing "accmkmf" in ACCESS:
-
 DoAccmkmf() {
    ExecuteCommand "accmkmf" "accmkmf.log" "$DefaultAccessRootDir/ACCESS" "" \
-                  "with 'make Makefiles'"
+                  "with 'accmkmfTPL'"
+}
+
+# Function for executing "accmkmf" in TPL:
+DoAccmkmfTPL() {
+   ExecuteCommand "accmkmf" "accmkmfTPL.log" "$DefaultAccessRootDir/TPL" "" \
+                  "with 'make TPL Makefiles'"
 }
 
 
-# Making Makefiles:
+DoMakeTPLMakefiles() {
+ExecuteCommand "make Makefiles" "makeTPLMakefiles.log" \
+               "$DefaultAccessRootDir/TPL" "" \
+               "with 'make TPLs'"
+}
 
+DoMakeTPLs() {
+if [ "$DefaultParallel" = "1" ]; then
+   ExecuteCommand "make TPLs" "makeTPLs.log" "$DefaultAccessRootDir/TPL" "" \
+                  "with 'make parallelsetup'"
+else
+   ExecuteCommand "make TPLs" "makeTPLs.log" "$DefaultAccessRootDir/TPL" "" \
+                  "with 'make Makefiles'"
+fi
+}
+
+
+# Making parallel setup (only needed for Parallel=1):
+DoMakeParallelsetup() {
+ExecuteCommand "make parallelsetup" "makeparallelsetup.log" \
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make Makefiles'"
+}
+
+# Making Makefiles:
 DoMakeMakefiles() {
 ExecuteCommand "make Makefiles" "makeMakefiles.log" \
                "$DefaultAccessRootDir/ACCESS" "" \
@@ -553,50 +567,37 @@ ExecuteCommand "make Makefiles" "makeMakefiles.log" \
 }
 
 # Making makeincludes:
-
 DoMakeMakeincludes() {
 ExecuteCommand "make makeincludes" "makemakeincludes.log" \
                "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make clean'"
-               
 }
 
 # Function for executing "make clean" in specified directory:
-
 DoMakeClean() {
 ExecuteCommand "make clean" "makeclean.log" "$1" "" ""
-}
-
-# Making netCDF:
-
-DoMakeNetcdf() {
-   ExecuteCommand "make netcdf" "makenetcdf.log" \
-                  "$DefaultAccessRootDir/ACCESS" "" \
-                  "with 'make hdf5'"
-}
-
-# Making serial_mpi:
-
-DoMakeSIMPI() {
-ExecuteCommand "make serial_mpi" "makeserialmpi.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
-               "with 'make hdf5'"
-}
-
-# Making hdf5:
-
-DoMakeHDF5() {
-ExecuteCommand "make hdf5" "makehdf5.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
-               "with 'make libraries'"
 }
 
 # Making libraries:
 
 DoMakeLibraries() {
+if [ "$DefaultParallel" = "1" ]; then
+   ExecuteCommand "make libraries" "makelibraries.log" \
+                  "$DefaultAccessRootDir/ACCESS" "" \
+                  "with 'make parallellibraries'"
+else
    ExecuteCommand "make libraries" "makelibraries.log" \
                   "$DefaultAccessRootDir/ACCESS" "" \
                   "with 'make applications'"
+fi
+}
+
+# Making parallel libraries:
+
+DoMakeParallellibraries() {
+ExecuteCommand "make parallellibraries" "makeparallellibraries.log" \
+               "$DefaultAccessRootDir/ACCESS" "" \
+               "with 'make applications'"
 }
 
 # Making application codes:
@@ -611,14 +612,6 @@ ExecuteCommand "make applications" "makeapplications.log" \
 
 DoMakeScripts() {
 ExecuteCommand "make scripts" "makescripts.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
-               "with 'make matlab'"              
-}
-
-# Making matlab connection:
-
-DoMakeMatlab() {
-ExecuteCommand "make matlab" "makematlab.log" \
                "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make analysis'"              
 }
@@ -659,7 +652,6 @@ echo "Giving the \"$DefaultGroup\" group read and write permission on all SEACAS
 cd $DefaultAccessRootDir
 find . -type d -exec chmod 775 {} \;
 chmod -R g+rw *
-
 cd $FileAccessInstallDir
 find . -type d -exec chmod 775 {} \;
 chmod -R g+rw *
@@ -678,8 +670,10 @@ else
     chmod 666 audit.log 
 fi
 cd $DefaultAccessRootDir
+if [ $automatic -eq 0 ] ; then
 PromptLine "Press <RETURN> to return to the menu... "
 read Response
+fi
 
 InDoMakeInstallAccess=NO
 }
@@ -732,10 +726,11 @@ do
    echo ""
    echo "In $DefaultAccessRootDir/ACCESS:"
    echo ""
-   echo " 3) accmkmf             "         
+   echo " 3) accmkmf                      4) make parallelsetup"
    echo " 5) make Makefiles               6) make makeincludes" 
-   echo " 7) make clean                   8) make netcdf"
-   echo "                                10) make libraries"
+   echo " 7) make clean                   8) "
+   echo " 9)                             10) make libraries"
+   echo "11) make parallellibraries"
    echo "15) make applications           16) make scripts"
    echo "17) (deleted)                   18) make matlab"
    echo "19) make analysis               20) make all"
@@ -761,6 +756,9 @@ do
           3 ) DoAccmkmf
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
+          4 ) DoMakeParallelsetup
+              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+              break ;;
           5 ) DoMakeMakefiles
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
@@ -771,14 +769,14 @@ do
               DoMakeClean "$DefaultAccessRootDir/ACCESS"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-          8 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/netcdf"
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              DoMakeNetcdf
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              break ;;
          10 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/libraries"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeLibraries
+              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+              break ;;
+         11 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/parallellibraries"
+              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+              DoMakeParallellibraries
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
          15 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/applications"
@@ -789,9 +787,6 @@ do
          16 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/scripts"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeScripts
-              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-              break ;;
-         18 ) DoMakeMatlab
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
          19 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/analysis"
@@ -872,10 +867,14 @@ read Response
 if [ "$1" = "-continue" ]
 then
     continue=1
-else
-    continue=0
 fi
-
+ 
+if [ "$1" = "-auto" ]
+then
+    continue=1
+    automatic=1
+fi
+ 
 # Default setting for $ACCESS:
 GetDefaultAccessRootDir
 
@@ -903,22 +902,42 @@ do
    echo "   SEACAS Source Root: ${txtpur}$DefaultAccessRootDir${txtrst}"
    echo "   SEACAS Install Dir: ${txtpur}$FileAccessInstallDir${txtrst}"
    echo "   Install group:      ${txtpur}$DefaultGroup${txtrst}"
+   echo "   Parallel Setting:   ${txtpur}$DefaultParallel${txtrst}"
    echo "   Current umask:      ${txtpur}`umask`${txtrst}"
-   if [ $continue ] ; then
+  if [ $continue ] ; then
    echo "   Continue automatically if possible error detected."
    fi
-   echo ""
+    echo ""
    echo "If you have not modified the files, or the settings are wrong,"
    echo "enter 'q' to exit this script."
    echo ""
-   echo "Please enter the number (1-6) corresponding to your choice"
-   PromptLine "   'q' to quit, or 'h' for help on the options: "
+   if [ ! $automatic ] ; then
+       echo "Please enter the number (1-6) corresponding to your choice"
+       PromptLine "   'q' to quit, or 'h' for help on the options: "
+   fi
 
    UseCurrentConfigFiles=NO
    ReturnToMenu=NO
    InCommandMenu=NO
    BuildItoolsOnly=NO
 
+if [ $automatic ]; then
+    GetLocalBootStrapCFlags
+    DoMakeWorld
+    DoMakeInstallItools
+    DoAccmkmf
+    DoAccmkmfTPL
+    DoMakeTPLMakefiles
+    DoMakeTPLs
+    if [ "$DefaultParallel" = "1" ]; then
+	DoMakeParallelsetup
+    fi
+    DoMakeMakefiles
+    DoMakeMakeincludes
+    DoMakeClean "$DefaultAccessRootDir/ACCESS"
+    DoMakeAllDoMakeInstall
+    exit
+else
    while :
    do
       read Response 
@@ -933,6 +952,16 @@ do
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoAccmkmf
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             DoAccmkmfTPL
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+	     DoMakeTPLMakefiles
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+	     DoMakeTPLs
+             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             if [ "$DefaultParallel" = "1" ]; then
+                DoMakeParallelsetup
+                if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             fi
              DoMakeMakefiles
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeMakeincludes
@@ -941,19 +970,15 @@ do
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAllDoMakeInstall
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeNetcdf
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-	     DoMakeSIMPI
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-	     DoMakeHDF5
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeLibraries
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             if [ "$DefaultParallel" = "1" ]; then
+                DoMakeParallellibraries
+                if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             fi
              DoMakeApplications
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeScripts
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeMatlab
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAnalysis
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -978,6 +1003,10 @@ do
              fi
              DoAccmkmf
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             if [ "$DefaultParallel" = "1" ]; then
+                DoMakeParallelsetup
+                if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             fi
              DoMakeMakefiles
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeMakeincludes
@@ -986,15 +1015,15 @@ do
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAllDoMakeInstall
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeNetcdf
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeLibraries
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             if [ "$DefaultParallel" = "1" ]; then
+                DoMakeParallellibraries
+                if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
+             fi
              DoMakeApplications
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeScripts
-             if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeMatlab
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAnalysis
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -1018,4 +1047,5 @@ do
              ;;
       esac
    done
+fi
 done
