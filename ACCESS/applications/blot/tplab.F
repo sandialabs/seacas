@@ -31,7 +31,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
       SUBROUTINE TPLAB (IPVAR, NCRV, NUMCRV, TIMLIM, NAMES,
-     &   TXLAB, TYLAB, BLKCOL, *)
+     &   TXLAB, TYLAB, BLKCOL, MAPEL, MAPND, *)
 C=======================================================================
 
 C   --*** TPLAB *** (TPLOT) Label plot
@@ -103,7 +103,8 @@ C   --   Uses CHLSIZ, DBORD0, DVIEW0 of /LAYOUT/
       CHARACTER*(*) NAMES(*)
       CHARACTER*(*) TXLAB, TYLAB
       INTEGER BLKCOL(0:NELBLK)
-
+      INTEGER MAPEL(*), MAPND(*)
+      
       LOGICAL GRABRT
       CHARACTER*80 LABSTR
       REAL DLEGND(KTOP)
@@ -217,9 +218,10 @@ C   --Display plot item(s) (variable name and number) for each curve
             WRITE (LABSTR, FMT, IOSTAT=IDUM) NP
             CALL GRCALN (LABSTR, L)
             CALL TPLABV (0, ITVID(N), NAMES(ITVID(N)), ITVNE(N),
-     &         LABSTR(L+2:))
+     &         LABSTR(L+2:), MAPEL, MAPND)
          ELSE
-            CALL TPLABV (0, ITVID(N), NAMES(ITVID(N)), ITVNE(N), LABSTR)
+            CALL TPLABV (0, ITVID(N), NAMES(ITVID(N)), ITVNE(N), LABSTR,
+     *       MAPEL, MAPND)
          END IF
 
          IF (GRABRT ()) RETURN 1
@@ -254,7 +256,8 @@ C   --Display plot item(s) (variable name and number) for each curve
 
          IF (.NOT. TIMPLT) THEN
             IF (GRABRT ()) RETURN 1
-            CALL TPLABV (0, ITVID(N), NAMES(ITVID(N)), ITVNE(N), LABSTR)
+            CALL TPLABV (0, ITVID(N), NAMES(ITVID(N)), ITVNE(N), LABSTR,
+     *        MAPEL, MAPND)
             CALL GRTEXT (DLEGND(KLFT), DTOP, '  ' // LABSTR)
             DTOP = DTOP - CHLSIZ
             N = N + 1

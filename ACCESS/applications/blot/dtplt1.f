@@ -29,33 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: dtplt1.f,v $
-C Revision 1.3  2009/03/25 12:36:43  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.2  1999/08/29 04:41:06  gdsjaar
-C Fixed problem in 2D sphere plotting.  The IHIDOP variable was not set
-C for 2D meshes, but was checked to see whether symsph or shdsph should
-C be entered.  Added additional check of dimensionality.
-C
-C Revision 1.1  1994/04/07 19:59:54  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.5  1993/10/22  18:55:56  gdsjaar
-c Added ihidop to msplt1 calling list. Needed for shading spheres
-c
-c Revision 1.4  1993/09/16  21:13:47  gdsjaar
-c Redid method of writing rayshade file. Now, hidden 6 only writes file,
-c but does not do shaded plot.  Also, new file written each time rather
-c than appending on to end of first file.
-c
-c Revision 1.3  1993/09/15  20:43:55  gdsjaar
-c Added shading (hidden 5) option to blot.  Simple illumination model.
-c
-c Revision 1.2  1990/12/14  08:49:37  gdsjaar
-c Added RCS Id and Log to all files
-c
 C=======================================================================
       SUBROUTINE DTPLT1 (A, MSHNUM, MSHLIN, MLNTYP, MODDET, MODTYP,
      &   LENF, NLNKF, LINKF, LENL, LINSET,
@@ -64,7 +37,7 @@ C=======================================================================
      &   IELBST, ISEVOK, IN2ELB, IVN2B, DODEAD, IDN2B,
      &   NNPSET, ISSNPS, NESSET, ISSESS,
      &   IDTVAR, VARNP, VARFAC, NMIN, NMAX, FMIN, FMAX, VECMAX, ISVOK,
-     &   BLKCOL, IDELB, IHIDOP, *)
+     &   BLKCOL, IDELB, IHIDOP, MAPEL, MAPND, *)
 C=======================================================================
 
 C   --*** DTPLT1 *** (DETOUR) Plot one view
@@ -173,6 +146,7 @@ C   --   Uses IS3DIM, NUMNPF of /D3NUMS/
       LOGICAL ISVOK(NELBLK)
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
+      INTEGER MAPEL(*), MAPND(*)
 
       LOGICAL WIDLIN
       LOGICAL LDUM
@@ -247,7 +221,7 @@ C   --Draw mesh (with numbering, etc.)
      &   IELBST, IN2ELB, DODEAD, IDN2B,
      &   .FALSE., 0, IDUM,
      &   NNPSET, ISSNPS, NESSET, ISSESS, BLKCOL,
-     &   IDELB, VARNP, MODDET, IHIDOP, *100)
+     &   IDELB, VARNP, MODDET, IHIDOP, MAPEL, MAPND, *100)
 
 C   --Call appropriate function routine
 

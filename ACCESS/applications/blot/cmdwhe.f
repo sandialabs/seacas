@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE CMDWHE (VERB, INLINE,
      &   IFLD, INTYP, CFIELD, IFIELD, RFIELD,
-     &   XN, YN, ZN, XNN, YNN, ZNN, HIDENP, XE, YE, ZE, *)
+     &   XN, YN, ZN, XNN, YNN, ZNN, HIDENP, XE, YE, ZE, MAPEL, MAPND, *)
 C=======================================================================
 
 C   --*** CMDWHE *** (MESH) Process locate commands
@@ -70,6 +70,7 @@ C   --   Uses IS3DIM of /D3NUMS/
       REAL XNN(NUMNP), YNN(NUMNP), ZNN(NUMNP)
       LOGICAL HIDENP(NUMNP)
       REAL XE(NUMEL), YE(NUMEL), ZE(NUMEL)
+      INTEGER MAPEL(*), MAPND(*)
 
       CHARACTER*(MXSTLN) WORD
       LOGICAL ISON
@@ -100,7 +101,7 @@ C   --   Uses IS3DIM of /D3NUMS/
      &            INP, *100)
             END IF
 
-            CALL INTSTR (1, 0, INP, RSTR(1), L)
+            CALL INTSTR (1, 0, MAPND(INP), RSTR(1), L)
             WRITE (*, 10000) 'Nearest node is node ', RSTR(1)(:L)
             RNUM(1) = XN(INP)
             RNUM(2) = YN(INP)
@@ -121,7 +122,7 @@ C   --   Uses IS3DIM of /D3NUMS/
      &        .TRUE., IFLD, INTYP, RFIELD,
      &        INP, *100)
             
-            CALL INTSTR (1, 0, INP, RSTR(1), L)
+            CALL INTSTR (1, 0, MAPEL(INP), RSTR(1), L)
             WRITE (*, 10000) 'Nearest object is element ', RSTR(1)(:L)
             RNUM(1) = XE(INP)
             RNUM(2) = YE(INP)
@@ -142,9 +143,10 @@ C   --   Uses IS3DIM of /D3NUMS/
 
          IF (MATSTR (WORD, 'NODE', 1)) THEN
             CALL FFINTG (IFLD, INTYP, IFIELD,
-     &         'node number', 0, INP, *100)
+     &         'node number', 0, NOD, *100)
+            INP = locint(NOD, NUMNP, MAPND)
             IF ((INP .LT. 1) .OR. (INP .GT. NUMNP)) THEN
-               CALL PRTERR ('CMDERR', 'Invalid node number')
+               CALL PRTERR ('CMDERR', 'Invalid node id')
                GOTO 100
             END IF
 
@@ -165,7 +167,8 @@ C   --   Uses IS3DIM of /D3NUMS/
 
           ELSE IF (MATSTR (WORD, 'ELEMENT', 1)) THEN
             CALL FFINTG (IFLD, INTYP, IFIELD,
-     &         'element number', 0, INP, *100)
+     &         'element number', 0, IEL, *100)
+            INP = locint(IEL, NUMEL, MAPEL)
             IF ((INP .LT. 1) .OR. (INP .GT. NUMEL)) THEN
                CALL PRTERR ('CMDERR', 'Invalid element number')
                GOTO 100

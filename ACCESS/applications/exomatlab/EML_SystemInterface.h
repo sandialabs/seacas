@@ -74,7 +74,7 @@ class SystemInterface
   double minimumTime_;
   double maximumTime_;
   
-  GetLongOpt options_; //!< Options parsing
+  GetLongOption options_; //!< Options parsing
   
   std::string inputFile_;
   std::string outputFile_;

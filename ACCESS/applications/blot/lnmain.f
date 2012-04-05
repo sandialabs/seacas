@@ -36,7 +36,7 @@ C=======================================================================
      &   NEWELB, IELBST,
      &   KNPSUR,
      &   ISSNPS, IDNPS, ISSESS, IDESS, LIDSP, BLKCOL,
-     &   IDELB, NAMELB)
+     &   IDELB, NAMELB, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** LNMAIN *** (PATHLN) PATHLINE main plot routine
@@ -172,7 +172,8 @@ C   --   Sets and uses ZMMESH of /MSHLIM/
       INTEGER LIDSP(0:*)
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
-
+      INTEGER MAPEL(*), MAPND(*)
+      
       INTEGER NDEFVW, IXVW
       LOGICAL NEWSET, NEWFAC, FIXFAC
       LOGICAL ANYDEF, ANYUND
@@ -327,7 +328,7 @@ C      --Set up the mesh plot pick
      &      .FALSE., 0, IDUM,
      &      NNPSET(IVIEW), ISSNPS(1,IVIEW),
      &      NESSET(IVIEW), ISSESS(1,IVIEW), BLKCOL,
-     &      IDELB, VARNP, CDUM, IHIDOP, *120)
+     &      IDELB, VARNP, CDUM, IHIDOP, MAPEL, MAPND, *120)
 
          IF (IS3DIM) CALL MDLONG ('IXSCR', KIXSCR, NPTIMS)
          CALL MDSTAT (NERR, MEM)

@@ -29,28 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: dtlab.F,v $
-C Revision 1.4  2009/03/25 12:36:43  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.3  1999/05/03 13:27:02  gdsjaar
-C Added 'lcntr' to save statement in dtlab.  Value was being used as if
-C it were saved and was getting bad values on systems that don't
-C implicitly save variables
-C
-C Revision 1.2  1997/06/26 17:51:33  caforsy
-C Substituted if NeedsDoubleEscape for ifdef sun.  This define is needed on cougar, sun and ibm platforms
-C
-C Revision 1.1  1994/04/07 19:59:46  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-CRevision 1.3  1993/07/08  21:57:12  gdsjaar
-CReplaced SUN with sun in all ifdef statements.
-C
-CRevision 1.2  1990/12/14  08:49:33  gdsjaar
-CAdded RCS Id and Log to all files
-C
 C=======================================================================
       SUBROUTINE DTLAB (A, NEWSET, NVWTIM, IPTIMS, TIMES,
      &   NAMECO, NAMES, IELBST, NMIN, NMAX, FMIN, FMAX,
@@ -120,10 +98,6 @@ C   --   Uses CHLSIZ of /LAYOUT/
 
       PARAMETER (KLFT=1, KRGT=2, KBOT=3, KTOP=4, KNEA=5, KFAR=6)
 
-      PARAMETER (KXORIG=1, KYORIG=2, KXLENG=3, KYLENG=4)
-      PARAMETER (KXNUMS=22, KXLABS=23, KYNUMS=47, KYLABS=48)
-      PARAMETER (KSCALE=11)
-
       include 'params.blk'
       include 'dbnums.blk'
       include 'dbnumgq.blk'
@@ -139,7 +113,7 @@ C   --   Uses CHLSIZ of /LAYOUT/
       INTEGER IPTIMS(*)
       REAL TIMES(*)
       CHARACTER*(MXSTLN) NAMECO(*)
-      CHARACTER*(MXSTLN) NAMES(*)
+      CHARACTER*(*) NAMES(*)
       INTEGER IELBST(NELBLK)
       INTEGER ISSNPS(NUMNPS,4)
       INTEGER ISSESS(NUMESS,4)

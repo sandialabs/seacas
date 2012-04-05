@@ -57,7 +57,7 @@ C   --
       CHARACTER*8 NAMECO(MAXDIM)
       CHARACTER*8 NAMELB(MAXELB)
       CHARACTER*8 NAMES(MAXVAR)
-      character exofil*256, netfil*256, scratch*256
+      character*2048 exofil, netfil, scratch
       character*8 name
 
       integer cpuws,wsout

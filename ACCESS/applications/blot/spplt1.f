@@ -33,7 +33,8 @@ C=======================================================================
       SUBROUTINE SPPLT1 (A, NEUTRL, IPTIMS, TIMES, IDTIME,
      &   N, OVER, NCRV, NUMCRV,
      &   NENUM, DIST, PLTVAL, TXLAB, TYLAB, NAMES,
-     &   NNE, ISEGEL, NPDON, NPTOT, LIDSP, BLKCOL, *)
+     &   NNE, ISEGEL, NPDON, NPTOT, LIDSP, BLKCOL,
+     *  MAPEL, MAPND, *)
 C=======================================================================
 
 C   --*** SPPLT1 *** (SPLOT) Plot the curve for a time and a variable
@@ -119,6 +120,7 @@ C   --   Sets YMIN, YMAX of /XYLIM/
       INTEGER ISEGEL(*)
       INTEGER LIDSP(0:*)
       INTEGER BLKCOL(0:NELBLK)
+      INTEGER MAPEL(*), MAPND(*)
 
       LOGICAL GRABRT
       CHARACTER*80 PLTITL
@@ -149,7 +151,7 @@ C      --Label plot if needed
          IF (.NOT. OVER) THEN
             CALL SPLAB (A, 1, IPTIMS(IDTIME), TIMES,
      &         NENUM, N, 1, NUMCRV, NAMES,
-     &         TXLAB, TYLAB, LIDSP, BLKCOL, *120)
+     &         TXLAB, TYLAB, LIDSP, BLKCOL, MAPEL, MAPND, *120)
             CALL XYAXIS (0, DOGRID, TXLAB, TYLAB, BLKCOL, *120)
          END IF
 
@@ -202,7 +204,7 @@ C         --Set color in case text is requested
 C      --Get plot labels
 
          CALL SPLABN (N, TIMES(IPTIMS(IDTIME)), NENUM, NAMES,
-     &      PLTITL, TXLAB, TYLAB)
+     &      PLTITL, TXLAB, TYLAB, MAPEL, MAPND)
 
 C      --Plot variable against distances
 

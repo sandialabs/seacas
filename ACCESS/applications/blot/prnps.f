@@ -31,7 +31,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 C=======================================================================
       SUBROUTINE PRNPS (OPTION, NOUT, NUMNPS, LISNPS, LNPSNL,
-     &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS, NSNAME)
+     &   IDNPS, NNNPS, IXNNPS, LTNNPS, FACNPS, NSNAME, MAPND)
 C=======================================================================
 
 C   --*** PRNPS *** (BLOT) Display database node set
@@ -62,7 +62,8 @@ C   --   FACNPS - IN - the distribution factors for all sets
       INTEGER LTNNPS(*)
       REAL FACNPS(*)
       CHARACTER*(*) NSNAME(*)
-
+      INTEGER MAPND(*)
+      
       LOGICAL ISABRT
       LOGICAL DONOD, DOFAC
       CHARACTER*20 STRA, STRB
@@ -72,11 +73,11 @@ C   --   FACNPS - IN - the distribution factors for all sets
 
       IF (NOUT .GT. 0) THEN
          IF (DONOD .AND. DOFAC) THEN
-            WRITE (NOUT, 10020) 'NODE LIST AND DISTRIBUTION FACTORS'
+            WRITE (NOUT, 10020) 'Node List and Distribution Factors'
          ELSE IF (DONOD) THEN
-            WRITE (NOUT, 10020) 'NODE LIST'
+            WRITE (NOUT, 10020) 'Node List'
          ELSE IF (DOFAC) THEN
-            WRITE (NOUT, 10020) 'DISTRIBUTION FACTORS'
+            WRITE (NOUT, 10020) 'Distribution Factors'
          ELSE
             WRITE (NOUT, 10020)
          END IF
@@ -121,10 +122,10 @@ C   --   FACNPS - IN - the distribution factors for all sets
             IE = IS + NNNPS(INPS) - 1
             IF (NOUT .GT. 0) THEN
                WRITE (NOUT, 10040, IOSTAT=IDUM)
-     &            (LTNNPS(I), I=IS,IE)
+     &          (MAPND(LTNNPS(I)), I=IS,IE)
             ELSE
                WRITE (*, 10040, IOSTAT=IDUM)
-     &            (LTNNPS(I), I=IS,IE)
+     &          (MAPND(LTNNPS(I)), I=IS,IE)
             END IF
          END IF
 
@@ -143,7 +144,7 @@ C   --   FACNPS - IN - the distribution factors for all sets
 
       RETURN
 
-10020  FORMAT (/, 1X, 'NODE SETS', :, ' - ', A)
+10020  FORMAT (/, 1X, 'Node Sets (Global Node Ids)', :, ' - ', A)
 10030  FORMAT (1X, 'Set', I9, 1X, A, ':',
      &   I6, ' nodes', 1X, A,' name = "',A,'"')
 10040  FORMAT ((1X, 8I11))

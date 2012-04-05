@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE DTCOMD (A, INLINE, INVERB, IFLD, INTYP, CFIELD,
      &                   IFIELD, RFIELD, NEWMOD, NAMES, IELBST,
-     &                   ISSNPS, ISSESS, LIDSP)
+     &                   ISSNPS, ISSESS, LIDSP, MAPEL, MAPND, NAMLEN)
 C=======================================================================
 
 C   --*** DTCOMD *** (DETOUR) Process DETOUR commands
@@ -138,9 +138,8 @@ C   --   Sets and uses CINTOK, LINCON, NCNTR, CMIN, CMAX, DELC, CINTV,
 C   --      NOCMIN, NOCMAX, LABINC, MAXMIN, MAXMAX of /CNTR/
 
       PARAMETER (MSHNON=0, MSHBOR=1, MSHDIV=2, MSHSEL=3, MSHALL=4)
-
       PARAMETER (KLFT=1, KRGT=2, KBOT=3, KTOP=4, KNEA=5, KFAR=6)
-
+      
       EXTERNAL BLKDAT
 
       include 'debug.blk'
@@ -176,7 +175,8 @@ C  Flag for exact contour values for each plot
       INTEGER ISSNPS(NUMNPS,4)
       INTEGER ISSESS(NUMESS,4)
       INTEGER LIDSP(0:*)
-
+      INTEGER MAPEL(*), MAPND(*)
+      
       LOGICAL FFNUMB, MATSTR
       INTEGER NUMMOD
       CHARACTER*(MXNAME) VERB, VERB2
@@ -332,7 +332,7 @@ C      --Reset parameters
             IF (VERB .EQ. 'reset') THEN
 C         --Set list of display variables
                CALL DISPV (.TRUE., INLINE, IFLD, INTYP,
-     &            CFIELD, NAMES, LIDSP)
+     &            CFIELD, NAMES, LIDSP, NAMLEN)
             ENDIF
 
 C         --Set default magnification factor
@@ -495,7 +495,7 @@ C *** Display control ***
       ELSE IF (VERB .EQ. 'DISPVAR') THEN
          CALL FFADDC (VERB, INLINE(1))
          CALL DISPV (.FALSE., INLINE, IFLD, INTYP,
-     &      CFIELD, NAMES, LIDSP)
+     &      CFIELD, NAMES, LIDSP, NAMLEN)
          INVERB = ' '
 
       ELSE IF ((VERB .EQ. 'CLABEL') .or. (verb .eq. 'LINES')) THEN
@@ -682,8 +682,9 @@ C      --Scale requested variable
                   FMIN = 0.0
                   FMAX = 0.0
                ELSE
-                  CALL SCALER (A, 1, NAMES(IDTVAR(IVAR)), IDTVAR(IVAR),
-     &               .TRUE., IELBST, NALVAR, FMIN, FMAX)
+                 CALL SCALER (A, A, 1, NAMES(IDTVAR(IVAR)),
+     *             IDTVAR(IVAR),
+     &             .TRUE., IELBST, NALVAR, FMIN, FMAX, MAPEL, MAPND)
                END IF
 
                IF (IVAR .EQ. 1) THEN

@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE TPMAIN (A, NEUTRL, NAMES,
      &   NPTIMS, IPTIMS, TIMES, WHOTIM, BLKCOL,
-     &   IDELB)
+     &   IDELB, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** TPMAIN *** (TPLOT) TPLOT main plot routine
@@ -84,6 +84,7 @@ C      --These parameters define the indices of 2D limit arrays
       LOGICAL WHOTIM(*)
       INTEGER BLKCOL(0:NELBLK)
       INTEGER IDELB(*)
+      INTEGER MAPEL(*), MAPND(*)
 
       REAL TIMLIM(2)
 
@@ -125,7 +126,7 @@ C   --Plot
       TIMLIM(2) = TIMES(IPTIMS(NPTIMS))
 
       CALL TPPLOT (NEUTRL, NPTIMS, A(KNPTS), TIMLIM, A(KPLVAL),
-     &   NAMES, BLKCOL)
+     &   NAMES, BLKCOL, MAPEL, MAPND)
 
       CALL MDDEL ('PLTVAL')
       CALL MDDEL ('NPTCRV')

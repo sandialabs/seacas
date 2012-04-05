@@ -32,7 +32,7 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE CMDZM (VERB, INLINE,
      &   IFLD, INTYP, CFIELD, IFIELD, RFIELD,
-     &   NEWZM, SETTIC, A, *)
+     &   NEWZM, SETTIC, MAPND, A, *)
 C=======================================================================
 
 C   --*** CMDZM *** (MESH) Process scaling commands
@@ -75,6 +75,7 @@ C   --   Sets and uses NZMON,XZM,YZM,ZZM,RADZM,NDZMID OF /NODZOM/
       REAL          RFIELD(*)
       LOGICAL NEWZM
       LOGICAL SETTIC
+      INTEGER       MAPND(*)
 
       CHARACTER*(MXSTLN) WORD
       REAL RNUM(KTOP)
@@ -312,9 +313,12 @@ C -- INPUT NODE ID AND RADIUS
                CALL FFNEED(IFLD, INTYP, 'I', 1,
      &                     'node id',*100)
                CALL FFINTG (IFLD, INTYP, IFIELD, 'node id', 0,
-     &                      NODEZM, *100)
-               CALL FFADDI (NODEZM, INLINE)
+     &                      INP, *100)
+               CALL FFADDI (INP, INLINE)
 
+C ... Convert global node id to local node offset
+               NODEZM = locint(inp, numnp, mapnd)
+               
                CALL FFNEED(IFLD, INTYP, 'R', 1,
      &                     'radius',*100)
                CALL FFREAL (IFLD, INTYP, RFIELD, 'radius', 0.0,

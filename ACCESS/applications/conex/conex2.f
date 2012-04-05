@@ -164,7 +164,7 @@ C             false indicates that the files are not compatible for appending
 C     mfile - name of master file
 C     nfile - name of new file to append
 C     rfile - name of results file
-      character*256 mfile, nfile, rfile, scratch
+      character*2048 mfile, nfile, rfile, scratch
 
 C     tminm - minimum time step value in master file
 C     tmaxm - maximum time step value in master file

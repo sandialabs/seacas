@@ -30,7 +30,7 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE PREB1 (OPTION, NOUT, IEL0, NLISEL, LISEL,
-     &   NLINK, NATR, LINK, ATRIB)
+     &   NLINK, NATR, LINK, ATRIB, MAPEL, MAPND)
 C=======================================================================
 
 C   --*** PREB1 *** (BLOT) Display database element block information
@@ -56,7 +56,7 @@ C   --   ATRIB - IN - the attribute array for this block
       INTEGER LISEL(*)
       INTEGER LINK(NLINK,*)
       REAL ATRIB(NATR,*)
-
+      INTEGER MAPEL(*), MAPND(*)
       LOGICAL ISABRT
       LOGICAL DOCONN, DOATR
 
@@ -93,19 +93,19 @@ C   --   ATRIB - IN - the attribute array for this block
          IF (DOCONN) THEN
             IF (NOUT .GT. 0) THEN
                WRITE (NOUT, 10010, IOSTAT=IDUM)
-     &            NE, IEL, (LINK(I,NE), I=1,NLINK)
+     &          NE, MAPEL(IEL), (MAPND(LINK(I,NE)), I=1,NLINK)
             ELSE
                WRITE (*, 10010, IOSTAT=IDUM)
-     &            NE, IEL, (LINK(I,NE), I=1,NLINK)
+     &            NE, MAPEL(IEL), (MAPND(LINK(I,NE)), I=1,NLINK)
             END IF
          END IF
          IF (DOATR) THEN
             IF (NOUT .GT. 0) THEN
                WRITE (NOUT, 10020, IOSTAT=IDUM)
-     &            NE, IEL, (ATRIB(I,NE), I=1,NATR)
+     &            NE, MAPEL(IEL), (ATRIB(I,NE), I=1,NATR)
             ELSE
                WRITE (*, 10020, IOSTAT=IDUM)
-     &            NE, IEL, (ATRIB(I,NE), I=1,NATR)
+     &            NE, MAPEL(IEL), (ATRIB(I,NE), I=1,NATR)
             END IF
          END IF
   100 CONTINUE

@@ -32,7 +32,8 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C=======================================================================
       SUBROUTINE PRELB (OPTION, NOUT, NELBLK, NLISEL, LISEL,
      &   IDELB, LENE, NUMLNK, NUMATR, LINK, ATRIB,
-     &   NAMELB, EBNAME, NVAREL, NAMEEV, ISEVOK, LISEV)
+     &   NAMELB, EBNAME, NVAREL, NAMEEV, ISEVOK, LISEV,
+     *   MAPEL, MAPND)
 C=======================================================================
 
 C   --*** PRELB *** (BLOT) Display database element blocks
@@ -78,6 +79,7 @@ C   --   LISEV - SCRATCH - size = NVAREL (if 'V' in OPTION)
       CHARACTER*(*) NAMEEV(*)
       LOGICAL ISEVOK(NELBLK,NVAREL)
       INTEGER LISEV(*)
+      INTEGER MAPEL(*), MAPND(*)
 
       LOGICAL ISABRT
       LOGICAL DONAM, DOVTBL, DOCONN, DOATR
@@ -179,7 +181,7 @@ C   --   LISEV - SCRATCH - size = NVAREL (if 'V' in OPTION)
                IF (DOATR)  ISATR = IDBLNK (IELB, 0, LENE, NUMATR)
                CALL PREB1 (OPTION, NOUT, IEL-1,
      &            NLISEL(IELB), LISEL(IEL), NUMLNK(IELB), NUMATR(IELB),
-     &            LINK(ISLNK), ATRIB(ISATR))
+     &            LINK(ISLNK), ATRIB(ISATR), MAPEL, MAPND)
                IF (ISABRT ()) RETURN
             END IF
          END IF

@@ -193,13 +193,14 @@ C ... Used for hardcopy device drivers...
       CHARACTER*1 C(1)
 C      --A - the dynamic memory base array
 
-      character*256 scratch, option, value
+      character*2048 scratch
+      character*256  option, value
       
       LOGICAL MESHOK, DTOK, LNOK, SPOK, TPOK
+      LOGICAL MAPND, MAPEL
       CHARACTER*(MXSTLN) CURPRO
       INTEGER NEWELB
       CHARACTER NEWPRO
-      CHARACTER*80 OPTS
 
       INTEGER IDUM
       REAL RDUM
@@ -284,7 +285,7 @@ C   --Open database file
         CALL PRTERR ('FATAL', 'Filename not specified.')
         CALL PRTERR ('CMDSPEC',
      *    'Syntax is: "blot.dev [-basename basename] [-ps_option num]'//
-     *    ' filename"')
+     *    ' [-nomap node|element|all] filename"')
         GOTO 170
       end if
 
@@ -317,6 +318,11 @@ C     later if the user added a -hardcopy or -basename argument.
 C ... Now see if a command-line option overrides this.
 C     Options should all be of the form "-option arg"
       bltans = '7'
+
+C ... By default, map both nodes and elements
+      mapel = .true.
+      mapnd = .true.
+
       if (narg .gt. 1) then
         do i=1, narg-1, 2
           CALL get_argument(i+0,option, lo)
@@ -331,10 +337,20 @@ C     Options should all be of the form "-option arg"
             if (lv .le. 2) then
               bltans = value(:lv)
             end if
+          else if (option(:lo) .eq. '-nomap' .or.
+     *        option(:lo) .eq. '--nomap') then
+            if (value(1:1) .eq. 'n' .or. value(1:1) .eq. 'N')
+     *        mapnd = .false.
+            if (value(1:1) .eq. 'e' .or. value(1:1) .eq. 'E')
+     *        mapel = .false.
+            if (value(1:1) .eq. 'a' .or. value(1:1) .eq. 'A') then
+              mapnd = .false.
+              mapel = .false.
+            end if
           end if
         end do
       end if
-
+      
 C   --Set error reporting level
       CALL EXOPTS(EXABRT,IERR)
 
@@ -407,9 +423,11 @@ C     Element Block names
       IF (NERR .GT. 0) GOTO 160
 
       CALL EXGEBI (NDB, IA(KIDELB), IERR)
-      CALL MDLONG ('IDELB', KIDELB, NELBLK)
-      CALL MCLONG ('NAMELB', KNMLB, NELBLK * MXSTLN)
-      CALL MCLONG ('EBNAME', KNMEB, NELBLK * NAMLEN)
+      if (nelblk .gt. 0) then
+        CALL MDLONG ('IDELB', KIDELB, NELBLK)
+        CALL MCLONG ('NAMELB', KNMLB, NELBLK * MXSTLN)
+        CALL MCLONG ('EBNAME', KNMEB, NELBLK * NAMLEN)
+      end if
 C     Number of elements in element block
       CALL MDRSRV ('NUMELB', KNELB, NELBLK)
 C     Number of nodes per elements in element block
@@ -486,21 +504,26 @@ C     Reset number of elements
  20   CONTINUE
       NUMEL = INEL
 
-C   --Scan element order map
-
-C      --DBLIST uses MDFIND to find MAPEL
-C ... If change the 1,000,000 below, also change in PRMAP.
-C     This is done just to try to save a little storage
-C     since nobody really uses the map, especially when it is large...         
-      if (numel .ge. 1000000 .or. numel .eq. 0) then
-        CALL MDRSRV ('MAPEL', KMAPEL, 1)
+C   --Scan element number map (global id)
+      CALL MDRSRV ('MAPEL', KMAPEL, NUMEL)
+      CALL MDSTAT (NERR, MEM)
+      IF (NERR .GT. 0) GOTO 160
+      if (mapel) then
+        call exgenm (ndb, ia(kmapel), ierr)
       else
-        CALL MDRSRV ('MAPEL', KMAPEL, NUMEL)
-        CALL MDSTAT (NERR, MEM)
-        IF (NERR .GT. 0) GOTO 160
-        call exgmap (ndb, a(kmapel), ierr)
+        call iniseq(numel, ia(kmapel))
       end if
 
+C   --Read node number map (global id)
+      CALL MDRSRV ('MAPND', KMAPND, NUMNP)
+      CALL MDSTAT (NERR, MEM)
+      IF (NERR .GT. 0) GOTO 160
+      if (mapnd) then
+        call exgnnm (ndb, ia(kmapnd), ierr)
+      else
+        call iniseq(numnp, ia(kmapnd))
+      end if
+      
 C   --Change number of elements per element block to block index
       
 C   --SCALER and MSMEMY and MSGEOM use MDFIND to find LENE
@@ -584,7 +607,7 @@ C ... Wrapper to get strings the right length
 C ... Wrapper to get info record the right length
         call exginw(ndb, c(kinfo), ierr)
       end if
- 100  CONTINUE
+
       CALL INISTR (4, ' ', CREATE)
       CALL INISTR (4, ' ', MODIFY)
 C ... NOTE: cpyst8 must be called since cpystr knows that c() is only 
@@ -823,11 +846,11 @@ C   --Reserve memory for all programs
 
 C   --Reserve memory for mesh plots
 
+      CALL MDRSRV ('BLKCOL', KBKCOL, 1+NELBLK)
       IF (MESHOK) THEN
         CALL MDRSRV ('IELBST', KELBST, NELBLK)
         CALL MDRSRV ('ISSNPS', KSSNPS, NUMNPS*4)
         CALL MDRSRV ('ISSESS', KSSESS, NUMESS*4)
-        CALL MDRSRV ('BLKCOL', KBKCOL, 1+NELBLK)
         CALL MDRSRV ('SHDCOL', KSHDCL, NELBLK*7)
         CALL MDRSRV ('ISHDCL', KISHCL, NELBLK*3)
         CALL MDSTAT (NERR, MEM)
@@ -898,12 +921,33 @@ C        Initialize array containing list of display variables
 
 C        Initialize BLKCOL array.
 
-      IF (MESHOK) CALL BCOLOR (.TRUE., ' ', IDUM, IDUM, IDUM,
-     &  ' ', A(KBKCOL))
+      CALL BCOLOR (.TRUE., ' ', IDUM, IDUM, IDUM,' ', A(KBKCOL))
 
 C        Initialize line thicknesses for mesh plots
       CALL LINTHK (CDUM, IDUM, IDUM, IDUM, RDUM, CDUM, .TRUE.)
 
+        write (*,9999)
+ 9999   FORMAT(/,
+     *    10x,'NOTE: This version of blot uses global ids for both',
+     *    ' node and element ids by default.',/
+     *    10x,'      To see the mapping from local to global, use',
+     *    ' the commands:',/
+     *    10x,'          "LIST MAP" (element map), or ',
+     *    '"LIST NODEMAP" (node map)',/
+     *    10x,'      To disable the maps and use local ids, restart'
+     *    ' blot with "-nomap node|element|all"',//
+     *    10x,'      Notify gdsjaar@sandia.gov if bugs found')
+        
+        if (mapel .and. mapnd) then
+          WRITE (*, 10010) 'Nodes and Elements using Global Ids'
+        else if (mapel) then
+          WRITE (*, 10010) 'Elements use Global Ids, Node Ids are Local'
+        else if (mapnd) then
+          WRITE (*, 10010) 'Element use Local Ids, Node Ids are Global'
+        else
+          WRITE (*, 10010) 'Nodes and Elements using Local Ids'
+        end if        
+        
  130  CONTINUE
       IF (.TRUE.) THEN
         CALL MDLONG ('IPTIMS', KPTIMS, MAX (NSTEPS, 1))
@@ -915,7 +959,7 @@ C        Initialize line thicknesses for mesh plots
 
         CALL COMAND (A, CURPRO, C(KQAREC), C(KINFO),
      &    NAMECO, C(KNMLB), C(KNAMES), A(KTIMES), A(KWHOLE),
-     *    A(KPTIMS),
+     *    A(KPTIMS), A(KMAPEL), A(KMAPND), 
      &    A(KIDELB), NEWELB, A(KELBST), A(KE2ELB),
      &    A(KLENE), A(KNLNKE), A(KLINKE),
      &    A(KXN), A(KYN), A(KZN), A(KXE), A(KYE), A(KZE),
@@ -955,7 +999,8 @@ C         --Calculate the undeformed and deformed mesh limits
      &      A(KLENL), KLNSET,
      &      A(KE2ELB), NEWELB, A(KELBST), KNPSUR,
      &      A(KSSNPS), A(KIDNS), A(KSSESS), A(KIDSS),
-     &      A(KLIDP), A(KBKCOL), A(KIDELB),C(KNMLB), NAMLEN)
+     &      A(KLIDP), A(KBKCOL), A(KIDELB),C(KNMLB), NAMLEN,
+     *      A(KMAPEL), A(KMAPND))
           CALL MDSTAT (NERR, MEM)
           IF (NERR .GT. 0) GOTO 160
         END IF
@@ -999,7 +1044,6 @@ C   --Close files
       call addlog (QAINFO(1)(:lenstr(QAINFO(1))))
       CALL WRAPUP (QAINFO(1))
 
- 200  CONTINUE
 10010 FORMAT (/, 1X, 5A)
 10020 FORMAT (/
      &  21X,'BBBBBBBB    LL            OOOOOO    TTTTTTTTTT', /
@@ -1093,3 +1137,10 @@ C=======================================================================
       RETURN
       END
 
+      subroutine iniseq(icnt, map)
+      integer map(*)
+      do i=1, icnt
+        map(i) = i
+      end do
+      return
+      end
