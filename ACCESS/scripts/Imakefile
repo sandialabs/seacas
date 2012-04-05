@@ -1,19 +1,45 @@
 XCOMM $Id: Imakefile,v 1.158 2008/06/19 14:57:43 gdsjaar Exp $
 
-NormalCTarget(zpad,zpad.o,NullParameter,NullParameter,NullParameter)
-InstallProgram(zpad,$(BINDIR))
-
 XCOMM Some systems do not have enhanced getopt.  Provide our own copy...
 NormalCTarget(getopt.seacas,getopt.seacas.o,NullParameter,NullParameter,NullParameter)
 InstallProgram(getopt.seacas,$(BINDIR))
+
+XCOMM Definitions for options program
+SRCS = main.c alloca.c getopt.c getopt1.c
+OBJS = $(SRCS:.c=.o)
+
+DEFINES = $(ALLOCA_DEFINES)
+XCOMM Build the program that parses long options
+NormalCTarget(options,$(OBJS),NullParameter,NullParameter,NullParameter)
+InstallProgram(options,$(BINDIR))
+
+XCOMM Build the program that outputs zero-padded sequence [0..limit)
+XCOMM Used as a helper for scripts dealing with processor files.
+NormalCTarget(zpad,zpad.o,NullParameter,NullParameter,NullParameter)
+InstallProgram(zpad,$(BINDIR))
+
+XCOMM The platform standard cpp defines are removed while creating script 
+#if defined(GnuCpp)
+STD_CPP_DEFINES = -$$ -traditional
+#else
+STD_CPP_DEFINES = 
+#endif
+
+XCOMM Build the program to test if exodusii file
+EXTRA_DEFINES = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE 
+NormalCTarget(exo-test-ver,exo-test-ver.o,NullParameter,NullParameter,$(EXOIIV2C) $(NETCDF))
+InstallProgram(exo-test-ver,$(BINDIR))
 
 audit.log::
 	touch audit.log
 	chmod 666 audit.log
 
-all:: decomp blot fastq post loadbal
+INCLUDELIST =  subop.h arguments.h rmscr.h environment.h log.h run.h usage.h format.h parse.h setio.h variables.h
+
+XCOMM Generate the utility scripts
+all:: decomp epup blot fastq post loadbal
 clean::
-	rm -f decomp blot fastq post loadbal
+	rm -f decomp epup blot fastq post loadbal
 
 loadbal: loadbal.in Imakefile $(CONFIGDIR)/$(MACROFILE)
 	$(ETCDIR)/MsubCmd +R@ -R@ loadbal.in > loadbal
@@ -22,6 +48,10 @@ loadbal: loadbal.in Imakefile $(CONFIGDIR)/$(MACROFILE)
 decomp: decomp.in Imakefile $(CONFIGDIR)/$(MACROFILE)
 	$(ETCDIR)/MsubCmd +R@ -R@ decomp.in > decomp
 	chmod +x decomp
+
+epup: epup.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ epup.in > epup
+	chmod +x epup
 
 blot: blot.in Imakefile $(CONFIGDIR)/$(MACROFILE)
 	$(ETCDIR)/MsubCmd +R@ -R@ blot.in > blot
@@ -36,13 +66,227 @@ post: post.in Imakefile $(CONFIGDIR)/$(MACROFILE)
 	chmod +x post
 
 XCOMM Install plot scripts
-InstallProgram(blot,        $(ETCDIR))
-InstallProgram(fastq,       $(ETCDIR))
-InstallProgram(post,        $(ETCDIR))
+InstallProgram(blot,        $(BINDIR))
+InstallProgram(fastq,       $(BINDIR))
+InstallProgram(decomp,      $(BINDIR))
+InstallProgram(epup,        $(BINDIR))
+InstallProgram(post,        $(BINDIR))
+
+InstallProgram(failprob,    $(ETCDIR))
 InstallProgram(loadbal,     $(ETCDIR))
-InstallProgram(decomp,      $(ETCDIR))
 InstallProgram(sfmakedepend,$(ETCDIR))
 
 InstallProgram(buildSEACAS,$(ETCDIR))
+
+XCOMM Install analysis scripts
+#ifndef ExcludeAnalysis
+XCOMM Some platforms need to use cp instead of ln -s
+#if UseCpInScripts == YES
+LNCMD = cp
+#else
+LNCMD = ln -s 
+#endif
+
+#if defined(SAIS033_GM) || defined(RENEGADE_GM) || defined(ROGUE_GM) || defined(GOODYEAR_GM)
+GMLIBS=1
+#else
+GMLIBS=0
+#endif
+
+#if defined(SAIS033_GM) || defined(RENEGADE) || defined(ROGUE) || defined(ROGUE_GM)
+PASSENVIRONMENT=1
+#else
+PASSENVIRONMENT=0
+#endif
+
+XCOMM SET_GLOBMEM used in run.h for parallel ip builds on scico linux machines.
+#if defined(SCICO_IP)
+SET_GLOBMEM=1
+#else
+SET_GLOBMEM=0
+#endif
+
+#ifndef ParallelCcCmd
+#define ParallelCcCmd CcCmd
+#endif
+#ifndef ParallelFortran90Cmd
+#define ParallelFortran90Cmd Fortran90Cmd
+#endif
+
+#if Parallel || defined(MPI) /* Parallel >= 1 or MPI defined */
+PAR_CC              = ParallelCcCmd
+PAR_F90C            = ParallelFortran90Cmd
+PAR_FC              = ParallelFortranCmd
+#else
+PAR_CC              = CcCmd
+PAR_F90C            = Fortran90Cmd
+PAR_FC              = FortranCmd
+#endif          /* end of Parallel test */
+
+#if Build64BitAccess == YES
+EXOIIFORANALYSIS = $(EXOIIV2FOR32)
+NEMFORANALYSIS   = $(NEMESISF32)
+
+#else
+EXOIIFORANALYSIS = $(EXOIIV2FOR)
+NEMFORANALYSIS   = $(NEMESISF)
+#endif
+
+#if defined(NEEDS_HOSTFILE)
+HOSTFILE=1
+#else
+HOSTFILE=0
+#endif
+XCOMM CPP_DEFS are passed to the script files through cpp to try to 
+XCOMM remove some system-dependent coding from the .csh files.
+XCOMM Each of the following $(DEFINITION) variable needs to be 
+XCOMM defined in the Makefile (or Imake.tmpl/Project.ptmpl)
+
+#ifndef CrossCompiling
+CPP_DEFS = \
+-D$(SYSTEM) \
+-D_ACCESSDIR='$(ACCESSDIR)' \
+-D_ACCESSSRC='$(ACCESSSRC)' \
+-D_ALLDEFINES='$(ALLDEFINES)' \
+-D_LIBREF='$(LIBREF)' \
+-D_LIBPATH='$(LIBPATH)' \
+-D_PLIBPATH='$(PLIBPATH)' \
+-D_LIBDIR='$(LIBDIR)' \
+-D_PLIBDIR='$(PLIBDIR)' \
+-D_EXETMP='$(TEMPDIR)' \
+-D_SERIALDEBUGCMD='$(SERIALDEBUGCMD)' \
+-D_PARDEBUGCMDSNGL='$(PARDEBUGCMDSNGL)' \
+-D_PARDEBUGCMDMULT='$(PARDEBUGCMDMULT)' \
+-D_FC='$(FC)' \
+-D_F90C='$(F90C)' \
+-D_CC='$(CC)' \
+-D_PAR_FC='$(PAR_FC)' \
+-D_PAR_F90C='$(PAR_F90C)' \
+-D_PAR_CC='$(PAR_CC)' \
+-D_CDEBUGFLAGS='$(CDEBUGFLAGS)' \
+-D_CDEBUG='$(CDEBUG)' \
+-D_CCOPTIONS='$(CCOPTIONS)' \
+-D_F77DEBUG='$(F77DEBUG)' \
+-D_F77DEBUGFLAGS='$(F77DEBUGFLAGS)' \
+-D_F77OPTIONS='$(F77OPTIONS)' \
+-D_F77PRECOPTIONS='$(F77PRECOPTIONS)' \
+-D_F77STATICFLAGS='$(F77STATICFLAGS)' \
+-D_PARF77OPTIONS='$(PARF77OPTIONS)' \
+-D_F90DEBUG='$(F90DEBUG)' \
+-D_F90DEBUGFLAGS='$(F90DEBUGFLAGS)' \
+-D_F90OPTIONS='$(F90OPTIONS)' \
+-D_F90EXTRALDOPTIONS='$(F90EXTRALDOPTIONS)' \
+-D_F90STATICFLAGS='$(F90STATICFLAGS)' \
+-D_PARF90OPTIONS='$(PARF90OPTIONS)' \
+-D_PARCCOPTIONS='$(PARCCOPTIONS)' \
+-D_PARLDOPTIONS='$(PARLDOPTIONS)' \
+-D_SUPES='$(SUPES)' \
+-D_SUPLIB='$(SUPLIB)' \
+-D_SUPESDP='$(SUPESDP)' \
+-D_PLT='$(PLT)' \
+-D_NETCDF='$(NETCDF)' \
+-D_RPCLIB='$(RPCLIB)' \
+-D_EXOIIV2FOR='$(EXOIIV2FOR)' \
+-D_EXOIIV2FORANALYSIS='$(EXOIIFORANALYSIS)' \
+-D_NEMFORANALYSIS='$(NEMFORANALYSIS)' \
+-D_EXOIIV2C='$(EXOIIV2C)' \
+-D_NEMESISF='$(NEMESISF)' \
+-D_NEMESISC='$(NEMESISC)' \
+-D_PARFLIBS='$(PARFLIBS)' \
+-D_PARCLIBS='$(PARCLIBS)' \
+-D_PROJECT_INCLUDES='$(PROJECT_INCLUDES)' \
+-D_EXTRA_LDOPTIONS='$(EXTRA_LDOPTIONS)' \
+-D_ALTLIBPATH='$(ALTLIBPATH)' \
+-D_PARALLEL='$(PARALLEL)' \
+-D_PARRUNCMD='$(PARRUNCMD)' \
+-D_PASS_ENVIRONMENT='$(PASSENVIRONMENT)' \
+-D_GM_LIBS='$(GMLIBS)' \
+-D_NPCMD='$(NPCMD)' \
+-D_HFCMD='$(HFCMD)' \
+-D_EXTRA_LIBRARIES='$(EXTRA_LIBRARIES)' \
+-D_NEEDS_HOSTFILE='$(HOSTFILE)' \
+-D_SET_GLOBMEM='$(SET_GLOBMEM)' \
+-D_TFLOPROOT='$(TFLOPROOT)' \
+-D_CPLANTROOT='$(CPLANTROOT)' \
+-D_LNCMD='$(LNCMD)' 
+#else
+CPP_DEFS = \
+-D$(SYSTEM) \
+-D_ACCESSDIR='$(CROSSACCESSROOT)' \
+-D_ACCESSSRC='$(CROSSACCESSSRC)' \
+-D_ALLDEFINES='$(CROSSALLDEFINES)' \
+-D_LIBREF='$(LIBREF)' \
+-D_LIBPATH='$(CROSSLIBPATH)' \
+-D_PLIBPATH='$(CROSSPLIBPATH)' \
+-D_LIBDIR='$(CROSSLIBDIR)' \
+-D_PLIBDIR='$(CROSSPLIBDIR)' \
+-D_EXETMP='$(TEMPDIR)' \
+-D_SERIALDEBUGCMD='$(SERIALDEBUGCMD)' \
+-D_PARDEBUGCMDSNGL='$(PARDEBUGCMDSNGL)' \
+-D_PARDEBUGCMDMULT='$(PARDEBUGCMDMULT)' \
+-D_FC='$(FC)' \
+-D_F90C='$(F90C)' \
+-D_CC='$(CC)' \
+-D_CDEBUGFLAGS='$(CDEBUGFLAGS)' \
+-D_CDEBUG='$(CDEBUG)' \
+-D_CCOPTIONS='$(CCOPTIONS)' \
+-D_F77DEBUG='$(F77DEBUG)' \
+-D_F77DEBUGFLAGS='$(F77DEBUGFLAGS)' \
+-D_F77OPTIONS='$(F77OPTIONS)' \
+-D_F77STATICFLAGS='$(F77STATICFLAGS)' \
+-D_PARF77OPTIONS='$(PARF77OPTIONS)' \
+-D_F90DEBUG='$(F90DEBUG)' \
+-D_F90DEBUGFLAGS='$(F90DEBUGFLAGS)' \
+-D_F90OPTIONS='$(F90OPTIONS)' \
+-D_F90EXTRALDOPTIONS='$(F90EXTRALDOPTIONS)' \
+-D_F90STATICFLAGS='$(F90STATICFLAGS)' \
+-D_PARF90OPTIONS='$(PARF90OPTIONS)' \
+-D_PARCCOPTIONS='$(PARCCOPTIONS)' \
+-D_PARLDOPTIONS='$(PARLDOPTIONS)' \
+-D_SUPES='$(SUPES)' \
+-D_SUPLIB='$(SUPLIB)' \
+-D_SUPESDP='$(SUPESDP)' \
+-D_PLT='$(PLT)' \
+-D_NETCDF='$(NETCDF)' \
+-D_RPCLIB='$(RPCLIB)' \
+-D_EXOIIV2FORANALYSIS='$(EXOIIFORANALYSIS)' \
+-D_NEMFORANALYSIS='$(NEMFORANALYSIS)' \
+-D_EXOIIV2FOR='$(EXOIIV2FOR)' \
+-D_EXOIIV2C='$(EXOIIV2C)' \
+-D_NEMESISF='$(NEMESISF)' \
+-D_NEMESISC='$(NEMESISC)' \
+-D_PARFLIBS='$(PARFLIBS)' \
+-D_PARCLIBS='$(PARCLIBS)' \
+-D_PROJECT_INCLUDES='$(CROSSPROJECTINCS)' \
+-D_EXTRA_LDOPTIONS='$(EXTRA_LDOPTIONS)' \
+-D_ALTLIBPATH='$(ALTLIBPATH)' \
+-D_PARALLEL='$(PARALLEL)' \
+-D_PARRUNCMD='$(PARRUNCMD)' \
+-D_PASS_ENVIRONMENT='$(PASSENVIRONMENT)' \
+-D_GM_LIBS='$(GMLIBS)' \
+-D_NPCMD='$(NPCMD)' \
+-D_HFCMD='$(HFCMD)' \
+-D_NEEDS_HOSTFILE='$(HOSTFILE)' \
+-D_EXTRA_LIBRARIES='$(EXTRA_LIBRARIES)' \
+-D_TFLOPROOT='$(TFLOPROOT)' \
+-D_CPLANTROOT='$(CPLANTROOT)' \
+-D_LNCMD='$(LNCMD)' 
+#endif
+
+ANLYLIST = pronto3d pronto3d-9.4 jas3d pronto2d santos
+
+analysis:: $(ANLYLIST)
+
+AccessScripts(pronto3d,     analysis,-DPRONTO3D=1   $(CPP_DEFS),$(INCLUDELIST))
+AccessScripts(pronto3d-9.4, analysis,-DPRONTO3D94=1 $(CPP_DEFS),$(INCLUDELIST))
+AccessScripts(jas3d,        analysis,-DJAS3D=1      $(CPP_DEFS),$(INCLUDELIST))
+AccessScripts(pronto2d,     analysis,-DPRONTO2D=1   $(CPP_DEFS),$(INCLUDELIST))
+AccessScripts(santos,       analysis,-DSANTOS=1     $(CPP_DEFS),$(INCLUDELIST))
+InstallProgram(pronto3d,    $(ETCDIR))
+InstallProgram(pronto3d-9.4,$(ETCDIR))
+InstallProgram(jas3d,       $(ETCDIR))
+InstallProgram(pronto2d,    $(ETCDIR))
+InstallProgram(santos,      $(ETCDIR))
+#endif
 
 
