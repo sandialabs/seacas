@@ -32,6 +32,7 @@ Decomposition methods: [0..3] = speed ranking 0=fastest
 
 Other options:
 --help             Print this message (-h)
+--spheres_linear   Decompose sphere elements using linear method (matches old behavior)
 --processors #p    Specify number of processors (-p, -j)
 --root root_dir    Root directory to begin the path to on the separate disks (-R)
 --subdir sub_dir   Continuation of the path on the separate disks to the files (-S)
@@ -85,15 +86,15 @@ function execute_loadbalance {
     
     echo ${txtblu}
     echo "Executing:"
-    echo "   $NEM_SLICE -e $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis"
+    echo "   $NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis"
     echo "   ...see $output for nem_slice status"
     echo ${txtrst}
     if [ -e $input ]
     then
-	($NEM_SLICE -e $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis >> $output) 
+	($NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis >> $output) 
 	load_rc=$?
     else
-	($NEM_SLICE -e $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors $genesis >> $output)
+	($NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors $genesis >> $output)
 	load_rc=$?
     fi
     return $load_rc
@@ -185,7 +186,7 @@ decomp_method="-l inertial"
 nem_slice_flag="-c"
 rootdir="`pwd`/"
 subdir="."
-
+spheres="-S"
 curdir=`pwd`
 
 ACCESS=@ACCESSDIR@
@@ -208,7 +209,7 @@ fi
 GETOPT=${ACCESS}/bin/getopt.seacas
 
 TEMP=`${GETOPT} -o hno:p:j:r:R:S: -a \
-    --long help,nem_slice_flag,processors:,rootdir:,subdir: \
+    --long help,nem_slice_flag,processors:,rootdir:,subdir:,spheres_linear \
     --long multikl,rcb,rib,hsfc,spectral,inertial,linear,random,scattered,brick,zpinch \
     -n 'decomp' -- "$@"`
 
@@ -229,6 +230,8 @@ while true ; do
 	    -S|--subdir)
 	      subdir=$2 ; shift 2 ;;
 
+	    --spheres_linear) spheres="" ; shift ;;
+	    
 # Decomposition Method options...
 	    --multikl)   decomp_method="-l multikl" ; shift ;;
 	    --rcb)       decomp_method="-l rcb" ; shift ;;
@@ -334,9 +337,9 @@ else
     userid=`echo $LOGNAME`
     
 # Write info to audit.log file
-    if [ -w @ACCESSDIR@/etc/audit.log ]
+    if [ -w ${ACCESS}/etc/audit.log ]
     then
-	echo "decomp ${userid} `date` ${time_used} `hostname`" >> @ACCESSDIR@/etc/audit.log
+	echo "decomp ${userid} `date` ${time_used} `hostname`" >> ${ACCESS}/etc/audit.log
     fi
 fi
 
