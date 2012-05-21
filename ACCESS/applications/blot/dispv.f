@@ -29,17 +29,6 @@ C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-C $Log: dispv.f,v $
-C Revision 1.2  2009/03/25 12:36:43  gdsjaar
-C Add copyright and license notice to all files.
-C Permission to assert copyright has been granted; blot is now open source, BSD
-C
-C Revision 1.1  1994/04/07 19:59:37  gdsjaar
-C Initial checkin of ACCESS/graphics/blotII2
-C
-c Revision 1.2  1990/12/14  08:49:26  gdsjaar
-c Added RCS Id and Log to all files
-c
 C============================================================================
       SUBROUTINE DISPV (INIT, INLINE, IFLD, INTYP, CFIELD,
      &   NAMES, LIDSP, NAMLEN)
@@ -81,7 +70,7 @@ C
 
       LOGICAL FFMATC
 
-      CHARACTER*(MXNAME) TNAME(256)
+      CHARACTER*(MXNAME) TNAME(4096)
       SAVE TNAME
       INTEGER LLIST
       SAVE LLIST
@@ -101,6 +90,10 @@ C        Check that database is in the EXODUS format
 C        Construct array containing names of history and global
 C        variables and TIME.
 
+         if (nvarhi+nvargl+1 .gt. 4096) then
+            call prterr('PROGRAM',
+     $           'Too many names; increase TNAME size')
+         end if
          TNAME(1) = 'TIME'
          CALL DBVIX ('H', 1, IXHV)
          CALL CPYSTR (NVARHI, NAMES(IXHV), TNAME(2))
