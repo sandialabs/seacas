@@ -80,6 +80,10 @@ C ... NOTE: Only sllft(1) and slrgt(1) are used, (2) left for comp. with gen3d
       
       LOGICAL RDTHET, NOSCAL
       
+      rad = 0.0
+      xt = 0.0
+      yt = 0.0
+      
       PI = ATAN2(0.0, -1.0)
       
 C ... Check for valid options...
@@ -176,7 +180,6 @@ C     ... Echo spline data
       DO 100 INP = 1, NUMNP
          DX = XN(INP)
          DY = YN(INP)
-         rad = 0.0
          IF (SWEEP .EQ. SPHERI) THEN
             RAD = SQRT (DX**2 + DY**2)
          ELSE IF (SWEEP .EQ. XSWEEP) THEN
@@ -226,9 +229,6 @@ C         FIXR  = SIGN(0.5, RAD) + SIGN(0.5, -RAD)
             RNEWA = ZSAV * SIN(RSAV)
         END IF
          
-        xt = 0.0
-        yt = 0.0
-        
          IF (SWEEP .EQ. SPHERI) THEN
 C ... Spherical Sweep of Spline Surface
             XT = RNEWA * DX / (RAD + FIXR)
