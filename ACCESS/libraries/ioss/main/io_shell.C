@@ -46,6 +46,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <exodusII.h>
 
 #ifdef HAVE_MPI
 #include <mpi.h>
@@ -75,13 +76,17 @@ namespace {
 
   struct Globals
   {
-    bool debug;
-    bool do_transform_fields;
-    bool ints_64_bit;
+    std::string working_directory;
     double maximum_time;
     double minimum_time;
     int  surface_split_type;
-    std::string working_directory;
+    int  compression_level;
+    bool debug;
+    bool do_transform_fields;
+    bool ints_64_bit;
+    bool reals_32_bit;
+    bool netcdf4;
+    bool shuffle;
   };
 
   void show_usage(const std::string &prog);
@@ -161,6 +166,10 @@ int main(int argc, char *argv[])
   globals.minimum_time = 0.0;
   globals.surface_split_type = 1;
   globals.ints_64_bit = false;
+  globals.reals_32_bit = false;
+  globals.netcdf4 = false;
+  globals.compression_level = 0;
+  globals.shuffle = false;
   
   codename = argv[0];
   size_t ind = codename.find_last_of("/", codename.size());
@@ -209,6 +218,22 @@ int main(int argc, char *argv[])
     else if (std::strcmp("--64", argv[i]) == 0) {
       i++;
       globals.ints_64_bit = true;
+    }
+    else if (std::strcmp("--float", argv[i]) == 0) {
+      i++;
+      globals.reals_32_bit = true;
+    }
+    else if (std::strcmp("--netcdf4", argv[i]) == 0) {
+      i++;
+      globals.netcdf4 = true;
+    }
+    else if (std::strcmp("--shuffle", argv[i]) == 0) {
+      i++;
+      globals.shuffle = true;
+    }
+    else if (std::strcmp("--compress", argv[i]) == 0) {
+      i++;
+      globals.compression_level = std::strtol(argv[i++], NULL, 10);
     }
     else if (std::strcmp("--debug", argv[i]) == 0) {
       i++;
@@ -313,7 +338,10 @@ namespace {
     OUTPUT << "\t--in_type {pamgen|generated|exodus} : set input type to the argument. Default exodus\n";
     OUTPUT << "\t--out_type {exodus} : set output type to the argument. Default exodus\n";
     OUTPUT << "\t--64 : integers will be 64-bit for api.\n";
+    OUTPUT << "\t--float : reals will be stored as floats (32-bits) on the database (output only).\n";
     OUTPUT << "\t--debug : turn on debugging output\n";
+    OUTPUT << "\t--compress {level} : specifies comrpession level [0..9]\n";
+    OUTPUT << "\t--shuffle : enable shuffle filter for use with compression\n";
     OUTPUT << "\t--Maximum_Time {time} : maximum time from input mesh to transfer to output mesh\n";
     OUTPUT << "\t--Minimum_Time {time} : minimum time from input mesh to transfer to output mesh\n";
     OUTPUT << "\t--Surface_Split_Scheme {TOPOLOGY|ELEMENT_BLOCK|NO_SPLIT} -- how to split sidesets\n";
@@ -350,18 +378,35 @@ namespace {
     //========================================================================
     // OUTPUT ...
     //========================================================================
+    Ioss::PropertyManager properties;
+    if (globals.ints_64_bit) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB",  8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+    }
+
+    if (globals.reals_32_bit) {
+      properties.add(Ioss::Property("REAL_SIZE_DB",  4));
+    }
+
+    if (globals.compression_level > 0 || globals.shuffle) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", globals.compression_level));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", globals.shuffle));
+    }
+      
+    if (globals.netcdf4) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+    
+    if (globals.debug)
+      properties.add(Ioss::Property("LOGGING", 1));
+
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(output_type, outfile, Ioss::WRITE_RESTART,
-						    (MPI_Comm)MPI_COMM_WORLD);
+						    (MPI_Comm)MPI_COMM_WORLD, properties);
     if (dbo == NULL || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
 
-    if (globals.ints_64_bit)
-      dbo->set_int_byte_size_api(Ioss::USE_INT64_API);
-
-    if (globals.debug)
-      dbo->set_logging(true);
-    
     // NOTE: 'output_region' owns 'dbo' pointer at this time
     Ioss::Region output_region(dbo, "region_2");
 
@@ -969,10 +1014,20 @@ namespace {
       assert(isize == oge->get_field(field_name).get_size());
     }
 
-    assert(data.size() >= isize);
+    if (field_name == "mesh_model_coordinates_x") return;
+    if (field_name == "mesh_model_coordinates_y") return;
+    if (field_name == "mesh_model_coordinates_z") return;
     if (field_name == "connectivity_raw") return;
     if (field_name == "element_side_raw") return;
+    if (field_name == "ids_raw") return;
     if (field_name == "node_connectivity_status") return;
+
+    if (data.size() < isize) {
+      std::cerr << "Field: " << field_name << "\tIsize = " << isize << "\tdata size = " << data.size() << "\n";
+      data.resize(isize);
+    }
+
+    assert(data.size() >= isize);
     ige->get_field_data(field_name, &data[0], isize);
     oge->put_field_data(field_name, &data[0], isize);
   }

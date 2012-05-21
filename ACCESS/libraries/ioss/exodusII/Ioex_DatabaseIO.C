@@ -121,7 +121,7 @@ namespace {
 
   const char *complex_suffix[] = {".re", ".im"};
 
-  const char *Version() {return "Ioex_DatabaseIO.C 2011/04/14 gdsjaar";}
+  const char *Version() {return "Ioex_DatabaseIO.C 2012/04/19 gdsjaar";}
 
   bool type_match(const std::string& type, const char *substring);
   int64_t extract_id(const std::string &name_id);
@@ -368,9 +368,10 @@ namespace {
 
 namespace Ioex {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
-			 Ioss::DatabaseUsage db_usage, MPI_Comm communicator) :
-    Ioss::DatabaseIO(region, filename, db_usage, communicator),
-    exodusFilePtr(-1), databaseTitle(""), exodusMode(EX_CLOBBER),
+			 Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+			 const Ioss::PropertyManager &props) :
+    Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
+    exodusFilePtr(-1), databaseTitle(""), exodusMode(EX_CLOBBER), dbRealWordSize(8),
     maximumNameLength(32), spatialDimension(0),
     nodeCount(0), edgeCount(0), faceCount(0), elementCount(0),
     commsetNodeCount(0), commsetElemCount(0),
@@ -404,6 +405,55 @@ namespace Ioex {
       }
     }
 
+    // See if there are any properties that need to (or can) be
+    // handled prior to opening/creating database...
+    bool compress = ((properties.exists("COMPRESSION_LEVEL") &&
+		      properties.get("COMPRESSION_LEVEL").get_int() > 0) ||
+		     (properties.exists("COMPRESSION_SHUFFLE") &&
+		      properties.get("COMPRESSION_SHUFFLE").get_int() > 0));
+
+    if (compress) {
+      exodusMode |= EX_NETCDF4;
+    }
+
+    if (properties.exists("FILE_TYPE")) {
+      std::string type = properties.get("FILE_TYPE").get_string();
+      if (type == "netcdf4" || type == "netcdf-4" || type == "hdf5") {
+	exodusMode |= EX_NETCDF4;
+      }
+    }
+
+    if (properties.exists("MAXIMUM_NAME_LENGTH")) {
+      maximumNameLength = properties.get("MAXIMUM_NAME_LENGTH").get_int();
+    }
+
+    if (properties.exists("REAL_SIZE_DB")) {
+      int rsize = properties.get("REAL_SIZE_DB").get_int();
+      if (rsize == 4) {
+	dbRealWordSize = 4; // Only used for file create...
+      }
+    }
+    
+    if (properties.exists("INTEGER_SIZE_DB")) {
+      int isize = properties.get("INTEGER_SIZE_DB").get_int();
+      if (isize == 8) {
+	exodusMode |= EX_ALL_INT64_DB;
+      }
+    }
+    
+    if (properties.exists("INTEGER_SIZE_API")) {
+      int isize = properties.get("INTEGER_SIZE_API").get_int();
+      if (isize == 8) {
+	exodusMode |= EX_ALL_INT64_API;
+	set_int_byte_size_api(Ioss::USE_INT64_API);
+      }
+    }
+    
+    if (properties.exists("LOGGING")) {
+      int logging = properties.get("LOGGING").get_int();
+      set_logging(logging != 0);
+    }
+    
     // Don't open output files until they are actually going to be
     // written to.  This is needed for proper support of the topology
     // files and auto restart so we don't overwrite a file with data we
@@ -452,7 +502,7 @@ namespace Ioex {
 	mode |= EX_ALL_INT64_DB;
       
       exodus_file_ptr = ex_create(decoded_filename.c_str(), exodusMode|mode,
-				  &cpu_word_size, &io_word_size);
+				  &cpu_word_size, &dbRealWordSize);
     }
     
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
@@ -538,11 +588,10 @@ namespace Ioex {
 				  &cpu_word_size, &io_word_size, &version);
 	} else {
 	  // If the first write for this file, create it...
-	  io_word_size = cpu_word_size;
 	  if (int_byte_size_api() == 8)
 	    mode |= EX_ALL_INT64_DB;
 	  exodusFilePtr = ex_create(decoded_filename.c_str(), mode,
-				    &cpu_word_size, &io_word_size);
+				    &cpu_word_size, &dbRealWordSize);
 	  if (exodusFilePtr < 0) {
 	    dbState = Ioss::STATE_INVALID;
 	    // NOTE: Code will not continue past this call...
@@ -571,6 +620,17 @@ namespace Ioex {
 	  maximumNameLength = max_name_length;
 	}
       }
+
+      // Check properties handled post-create/open...
+      if (properties.exists("COMPRESSION_LEVEL")) {
+	int comp_level = properties.get("COMPRESSION_LEVEL").get_int();
+	ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_LEVEL, comp_level);
+      }
+      if (properties.exists("COMPRESSION_SHUFFLE")) {
+	int shuffle = properties.get("COMPRESSION_SHUFFLE").get_int();
+	ex_set_option(exodusFilePtr, EX_OPT_COMPRESSION_SHUFFLE, shuffle);
+      }
+
     }
     assert(exodusFilePtr >= 0);
     fileExists = true;
@@ -888,35 +948,52 @@ namespace Ioex {
     int64_t num_internal_elems = elementCount;
     int64_t num_border_elems   = 0;
     
-    if (isParallel) {
-      int error = ex_get_init_info(get_file_pointer(),
-				   &num_proc, &num_proc_in_file, &file_type[0]);
-      if (error < 0) {
-	// Not a nemesis file
-	if (util().parallel_size() > 1) {
-	  std::ostringstream errmsg;
-	  errmsg << "Exodus file does not contain nemesis information.\n";
-	  IOSS_ERROR(errmsg);
-	}
-      } else if (num_proc != util().parallel_size() && util().parallel_size() > 1) {
+    bool nemesis_file = true;
+    int error = ex_get_init_info(get_file_pointer(),
+				 &num_proc, &num_proc_in_file, &file_type[0]);
+    if (error < 0) {
+      // Not a nemesis file
+      nemesis_file = false;
+      if (isParallel && util().parallel_size() > 1) {
+	std::ostringstream errmsg;
+	errmsg << "Exodus file does not contain nemesis information.\n";
+	IOSS_ERROR(errmsg);
+      }
+      num_proc = 1;
+      num_proc_in_file = 1;
+      file_type[0] = 'p';
+    } else {
+      if (!isParallel) {
+	// The file contains nemesis parallel information.
+	// Even though we are running in serial, make the information
+	// available to the application.
+	isSerialParallel = true;
+	get_region()->property_add(Ioss::Property("processor_count", num_proc));
+      }
+    }
+    
+    if (isParallel && num_proc != util().parallel_size() && util().parallel_size() > 1) {
 	std::ostringstream errmsg;
 	errmsg <<  "Exodus file was decomposed for " << num_proc
 	       << " processors; application is currently being run on "
 	       << util().parallel_size() << " processors";
 	IOSS_ERROR(errmsg);
 
-      } else if (num_proc_in_file != 1) {
-	std::ostringstream errmsg;
-	errmsg <<"Exodus file contains data for " << num_proc_in_file
-	       << " processors; application requires 1 processor per file.";
-	IOSS_ERROR(errmsg);
+    }
+    if (num_proc_in_file != 1) {
+      std::ostringstream errmsg;
+      errmsg <<"Exodus file contains data for " << num_proc_in_file
+	     << " processors; application requires 1 processor per file.";
+      IOSS_ERROR(errmsg);
+      
+    }
+    if (file_type[0] != 'p') {
+      std::ostringstream errmsg;
+      errmsg << "Exodus file contains scalar nemesis data; application requires parallel nemesis data.";
+      IOSS_ERROR(errmsg);
+    }
 
-      } else if (file_type[0] != 'p') {
-	std::ostringstream errmsg;
-	errmsg << "Exodus file contains scalar nemesis data; application requires parallel nemesis data.";
-	IOSS_ERROR(errmsg);
-      }
-
+    if (nemesis_file) {
       if (int_byte_size_api() == 4) {
 	int nin, nbn, nen, nie, nbe, nnc, nec;
 	error = ex_get_loadbal_param(get_file_pointer(),
@@ -941,10 +1018,7 @@ namespace Ioex {
       }
       if (error < 0)
 	exodus_error(get_file_pointer(), __LINE__, myProcessor);
-
-      commsetNodeCount = num_node_cmaps;
-      commsetElemCount = num_elem_cmaps;
-
+      
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
       // nodes/elements that communicate with only a single processor).
@@ -967,6 +1041,9 @@ namespace Ioex {
       if (error < 0)
 	exodus_error(get_file_pointer(), __LINE__, myProcessor);
     }
+  
+    commsetNodeCount = num_node_cmaps;
+    commsetElemCount = num_elem_cmaps;
 
     Ioss::Region *region = get_region();
     region->property_add(Ioss::Property("internal_node_count",
@@ -979,6 +1056,9 @@ namespace Ioex {
 					num_border_elems));
     region->property_add(Ioss::Property("global_node_count",    global_nodes));
     region->property_add(Ioss::Property("global_element_count", global_elements));
+    region->property_add(Ioss::Property("global_element_block_count", global_eblocks));
+    region->property_add(Ioss::Property("global_node_set_count", global_nsets));
+    region->property_add(Ioss::Property("global_side_set_count", global_ssets));
 
     // Possibly, the following 4 fields should be nodesets and element
     // sets instead of fields on the region...
@@ -1700,7 +1780,7 @@ namespace Ioex {
 	proc_node.reserve(entity_processor.size()/2);
 	size_t j=0;
 	for (size_t i=0; i < entity_processor.size(); j++, i+=2) {
-	  proc_node[j].push_back(std::make_pair(entity_processor[i+1], entity_processor[i]));
+	  proc_node.push_back(std::make_pair(entity_processor[i+1], entity_processor[i]));
 	}
       }
 
@@ -2604,7 +2684,7 @@ namespace Ioex {
       // If this is a serial execution, there will be no communication
       // nodesets, just return an empty container.
 
-      if (isParallel) {
+      if (isParallel || isSerialParallel) {
 	Ioss::SerializeIO	serializeIO__(this);
 	// This is a parallel run. There should be communications data
 	// Get nemesis commset metadata
@@ -3328,6 +3408,8 @@ namespace Ioex {
 	      IOSS_ERROR(errmsg);
 	    }
 
+	  } else if (field.get_name() == "ids") {
+	      // Do nothing, just handles an idiosyncracy of the GroupingEntity
 	  } else {
 	    num_to_get = Ioss::Utils::field_warning(cs, field, "input");
 	  }
@@ -5608,6 +5690,8 @@ namespace Ioex {
 	  errmsg << "Invalid commset type " << type;
 	  IOSS_ERROR(errmsg);
 	}
+      } else if (field.get_name() == "ids") {
+	// Do nothing, just handles an idiosyncracy of the GroupingEntity
       } else {
 	num_to_get = Ioss::Utils::field_warning(cs, field, "output");
       }
@@ -6166,6 +6250,7 @@ namespace Ioex {
       if (isParallel) {
 	meta->processorCount = util().parallel_size();
 	meta->processorId = myProcessor;
+	meta->outputNemesis = true;
       } else {
 	if (get_region()->property_exists("processor_count")) {
 	  meta->processorCount = get_region()->get_property("processor_count").get_int();
@@ -6173,9 +6258,13 @@ namespace Ioex {
 	if (get_region()->property_exists("my_processor")) {
 	  meta->processorId = get_region()->get_property("my_processor").get_int();
 	}
+	if (get_region()->get_commsets().size() > 0) {
+	  isSerialParallel = true;
+	  meta->outputNemesis = true;
+	}
       }
 
-      if (meta->processorCount > 0) {
+      if (isSerialParallel || meta->processorCount > 0) {
 	meta->globalNodes    = 1; // Just need a nonzero value.
 	meta->globalElements = 1; // Just need a nonzero value.
 
@@ -6185,6 +6274,24 @@ namespace Ioex {
 
 	if (get_region()->property_exists("global_element_count")) {
 	  meta->globalElements = get_region()->get_property("global_element_count").get_int();
+	}
+
+	if (get_region()->property_exists("global_element_block_count")) {
+	  meta->globalElementBlocks = get_region()->get_property("global_element_block_count").get_int();
+	} else {
+	  meta->globalElementBlocks = get_region()->get_element_blocks().size();
+	}
+
+	if (get_region()->property_exists("global_node_set_count")) {
+	  meta->globalNodeSets = get_region()->get_property("global_node_set_count").get_int();
+	} else {
+	  meta->globalNodeSets = get_region()->get_nodesets().size();
+	}
+
+	if (get_region()->property_exists("global_side_set_count")) {
+	  meta->globalSideSets = get_region()->get_property("global_side_set_count").get_int();
+	} else {
+	  meta->globalSideSets = get_region()->get_sidesets().size();
 	}
 
 	// ========================================================================
@@ -6316,7 +6423,8 @@ namespace Ioex {
 	  // Add to VariableNameMap so can determine exodusII index given a
 	  // Sierra field name.  exodusII index is just 'i+1'
 	  for (int i=0; i < nvar; i++) {
-	    Ioss::Utils::fixup_name(names[i]);
+	    if (lowerCaseVariableNames)
+	      Ioss::Utils::fixup_name(names[i]);
 	    variables.insert(VNMValuePair(std::string(names[i]),   i+1));
 	  }
 
@@ -6944,15 +7052,6 @@ namespace Ioex {
 	    size_t index = attribute_count - unknown_attributes + 1;
 	    block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage,
 					 Ioss::Field::ATTRIBUTE, my_element_count, index));
-	  
-	    if (myProcessor == 0) {
-	      IOSS_WARNING << "For element block '" << block->name()
-			   << "' of type '" << type << "'\n\tthere were "
-			   << unknown_attributes << " attributes that are not known to the IO Subsystem\n\t"
-			   << "in addition to the " << attribute_count - unknown_attributes
-			   << " known. The extra attributes can be accessed\n\tas the field '"
-			   << att_name << "' with " << unknown_attributes << " components.\n\n";
-	    }
 	  }
 	}
 
