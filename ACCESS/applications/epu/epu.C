@@ -586,7 +586,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     put_global_info(global);
     get_put_coordinate_frames(ExodusFile(0), ExodusFile::output(), float_or_double);
 
-    Internals<INT> exodus(ExodusFile::output(), ExodusFile::max_name_length(), interface.compress_data());
+    Internals<INT> exodus(ExodusFile::output(), ExodusFile::max_name_length());
 
     if (interface.append()) {
       bool matches = exodus.check_meta_data(global, glob_blocks, glob_nsets, glob_ssets, comm_data);
@@ -2853,7 +2853,7 @@ namespace {
     double* local_values = &values[0];
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_loc = local_set.nodeOrderMap[j];
-      SMART_ASSERT(global_loc >= 0 && global_loc < glob_entity_count);
+      SMART_ASSERT(global_loc < glob_entity_count);
       global_values[global_loc] = local_values[j];
     }
   }
@@ -2866,7 +2866,7 @@ namespace {
     float* local_values = &values[0];
     for (size_t j = 0; j < entity_count; j++) {
       size_t global_loc = local_set.nodeOrderMap[j];
-      SMART_ASSERT(global_loc >= 0 && global_loc < glob_entity_count);
+      SMART_ASSERT(global_loc < glob_entity_count);
       global_values[global_loc] = local_values[j];
     }
   }
