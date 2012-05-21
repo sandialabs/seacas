@@ -1015,7 +1015,6 @@ namespace Iogn {
       }
     }
     else if (component == 2) {
-      size_t k = 0;
       for (size_t m=myStartZ; m < myStartZ+myNumZ+1; m++) {
 	for (size_t i=0; i < numY+1; i++) {
 	  for (size_t j=0; j < numX+1; j++) {
@@ -1025,7 +1024,6 @@ namespace Iogn {
       }
     }
     else if (component == 3) {
-      size_t k = 0;
       for (size_t m=myStartZ; m < myStartZ+myNumZ+1; m++) {
 	for (size_t i=0; i < numY+1; i++) {
 	  for (size_t j=0; j < numX+1; j++) {

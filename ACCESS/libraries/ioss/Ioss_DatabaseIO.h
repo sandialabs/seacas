@@ -43,6 +43,7 @@
 #include <Ioss_DBUsage.h>
 #include <Ioss_DataSize.h>
 #include <Ioss_SurfaceSplit.h>
+#include <Ioss_PropertyManager.h>
 
 #include <vector>
 
@@ -140,6 +141,7 @@ namespace Ioss {
       virtual int maximum_symbol_length() const {return 0;} // Default is unlimited...
       char get_field_separator() {return fieldSuffixSeparator;}
       void set_field_separator(const char separator) {fieldSuffixSeparator = separator;}
+      void set_lower_case_variable_names(bool true_false) const {lowerCaseVariableNames = true_false;}
       void set_surface_split_type(Ioss::SurfaceSplitType split_type) {splitType = split_type;}
       Ioss::SurfaceSplitType get_surface_split_type() const {return splitType;}
 
@@ -215,7 +217,28 @@ namespace Ioss {
     protected:
 
       DatabaseIO(Region *region, const std::string& filename,
-		 Ioss::DatabaseUsage db_usage, MPI_Comm communicator);
+		 Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
+		 const Ioss::PropertyManager &properties);
+
+      /*! 
+       * The properties member data contains properties that can be
+       * used to set database-specific options.  Examples include
+       * compression, name lengths, integer sizes, floating point
+       * sizes. By convention, the property name is all
+       * uppercase. Some existing properties recognized by the Exodus
+       * DatabaseIO class are:
+       *
+       * | Property              | Value
+       * |-----------------------|-------------------
+       * | COMPRESSION_LEVEL     | In the range [0..9]. A value of 0 indicates no compression
+       * | COMPRESSION_SHUFFLE   | (true/false) to enable/disable hdf5's shuffle compression algorithm.
+       * | FILE_TYPE             | netcdf4 
+       * | MAXIMUM_NAME_LENGTH   | Maximum length of names that will be returned/passed via api call.
+       * | INTEGER_SIZE_DB       | 4 or 8 indicating byte size of integers stored on the database.
+       * | INTEGER_SIZE_API      | 4 or 8 indicating byte size of integers used in api functions.
+       * | LOGGING               | (true/false) to enable/disable logging of field input/output
+       */
+      Ioss::PropertyManager properties;
 
       /*!
        * Utility function that may be used by derived classes.
@@ -227,6 +250,7 @@ namespace Ioss {
       void set_common_side_topology() const;
       ElementTopology *commonSideTopology;
 
+      
       /*!
        * Filename that this Database is connected with.  Derived
        * DatabaseIO classes may need to change this if the passed  in
@@ -240,6 +264,7 @@ namespace Ioss {
       mutable Ioss::State dbState;
 
       bool isParallel; //!< true if running in parallel
+      mutable bool isSerialParallel; //!< true if a serial code that needs to read/write the parallel information.
       int  myProcessor; //!< number of processor this database is for
 
       /*!
@@ -275,6 +300,8 @@ namespace Ioss {
       // * Do not use node global_id_order map ever
       // * If a serial input mesh file, don't do any id mapping
       mutable bool nodeGlobalIdBackwardCompatibility;
+      
+      mutable bool lowerCaseVariableNames;
       
       // List of element blocks that should be omitted from this model.
       // Surfaces will take this into account while splitting;

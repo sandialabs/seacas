@@ -31,6 +31,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Copyright 2001, 2008, 2009 Sandia Corporation, Albuquerque, NM.
 
+// This must appear before exodusII_int.h include.
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#ifndef PRId64
+#error "PRId64 not defined"
+#endif
+
 #include <Ioss_Utils.h>                 // for IOSS_WARNING
 #include <assert.h>                     // for assert
 #include <exodusII/Ioex_Internals.h>    // for Internals, ElemBlock, etc
@@ -79,20 +86,11 @@ namespace {
 
   size_t max_string_length() {return MAX_STR_LENGTH;}
   int put_int_array(int exoid, const char *var_type,  const std::vector<int> &array);
-  int put_id_array(int exoid, const char *var_type,  const std::vector<ex_entity_id> &array);
+  int put_id_array(int exoid, const char *var_type,  const std::vector<entity_id> &array);
   int define_coordinate_vars(int exodusFilePtr, int64_t nodes, int node_dim,
 			     int dimension, int dim_dim, int str_dim);
   template <typename T>
   int output_names(const std::vector<T> &entities, int exoid, ex_entity_type nc_type);
-
-  void compress_variable(int exoid, int varid)
-  {
-#if defined(USE_NETCDF4)
-    const int DEFLATE_LEVEL = 5; // 0 (no compression) to 9 (max compression)
-    const int COMPRESS = 1;      // 1 to compress, 0 to not compress
-    nc_def_var_deflate(exoid, varid, NC_SHUFFLE, COMPRESS, DEFLATE_LEVEL);
-#endif
-  }
 }
 
 #define stringify(X) #X
@@ -721,7 +719,7 @@ int Internals::put_metadata(const Mesh &mesh,
       }
       return (EX_FATAL);
     }
-    compress_variable(exodusFilePtr, varid);
+    ex_compress_variable(exodusFilePtr, varid, 1);
   }
 
   if (mesh.nodeblocks[0].attributeCount > 0) {
@@ -731,8 +729,8 @@ int Internals::put_metadata(const Mesh &mesh,
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to define number of attributes in node block %lld in file id %d",
-	      mesh.nodeblocks[0].id,exodusFilePtr);
+	      "Error: failed to define number of attributes in node block %"PRId64" in file id %d",
+	      (entity_id)mesh.nodeblocks[0].id,exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
     }
@@ -745,7 +743,7 @@ int Internals::put_metadata(const Mesh &mesh,
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error:  failed to define attributes for node block %lld in file id %d",
+	      "Error:  failed to define attributes for node block %"PRId64" in file id %d",
 	      mesh.nodeblocks[0].id,exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -760,7 +758,7 @@ int Internals::put_metadata(const Mesh &mesh,
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to define attribute name array for node block %lld in file id %d",
+	      "Error: failed to define attribute name array for node block %"PRId64" in file id %d",
 	      mesh.nodeblocks[0].id,exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -803,7 +801,7 @@ int Internals::put_metadata(const Mesh &mesh,
       }
       return (EX_FATAL);
     }
-    compress_variable(exodusFilePtr, varid);
+    ex_compress_variable(exodusFilePtr, varid, 1);
   }
 
   size_t face_count = 0;
@@ -934,19 +932,21 @@ int Internals::put_metadata(const Mesh &mesh,
   if (status != EX_NOERR) return EX_FATAL;
 
   // Define dimension for the number of processors
-  if (comm.processorCount > 1) {
-    int procdim;
-    status=nc_inq_dimid(exodusFilePtr, DIM_NUM_PROCS, &procdim);
-    if (status != NC_NOERR) {
-      int ltempsv = comm.processorCount;
-      status=nc_def_dim(exodusFilePtr, DIM_NUM_PROCS, ltempsv, &procdim);
+  if (comm.outputNemesis) {
+    if (comm.processorCount > 0) {
+      int procdim;
+      status=nc_inq_dimid(exodusFilePtr, DIM_NUM_PROCS, &procdim);
       if (status != NC_NOERR) {
-	ex_opts(EX_VERBOSE);
-	sprintf(errmsg,
-		"Error: failed to dimension \"%s\" in file ID %d",
-		DIM_NUM_PROCS, exodusFilePtr);
-	ex_err(routine, errmsg, status);
-	return (EX_FATAL);
+	int ltempsv = comm.processorCount;
+	status=nc_def_dim(exodusFilePtr, DIM_NUM_PROCS, ltempsv, &procdim);
+	if (status != NC_NOERR) {
+	  ex_opts(EX_VERBOSE);
+	  sprintf(errmsg,
+		  "Error: failed to dimension \"%s\" in file ID %d",
+		  DIM_NUM_PROCS, exodusFilePtr);
+	  ex_err(routine, errmsg, status);
+	  return (EX_FATAL);
+	}
       }
     }
 
@@ -1017,14 +1017,13 @@ int Internals::put_metadata(const Mesh &mesh,
     // Output the number of global element blocks. This is output as a
     // dimension since the vector of global element block IDs is sized
     // by this quantity.
-    // For Sierra, global block count == local block count
     {
       const char *vars[] = {VAR_ELBLK_IDS_GLOBAL,
 			    VAR_ELBLK_CNT_GLOBAL,
 			    NULL};
       const nc_type types[] = {ids_type, bulk_type};
       
-      status = define_variables(exodusFilePtr, (int)mesh.elemblocks.size(), DIM_NUM_ELBLK_GLOBAL, vars, types);
+      status = define_variables(exodusFilePtr, (int)comm.globalElementBlocks, DIM_NUM_ELBLK_GLOBAL, vars, types);
       if (status != EX_NOERR) return EX_FATAL;
     }
 
@@ -1038,7 +1037,7 @@ int Internals::put_metadata(const Mesh &mesh,
 			    NULL};
       const nc_type types[] = {ids_type, bulk_type, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)mesh.nodesets.size(), DIM_NUM_NS_GLOBAL, vars, types);
+      status = define_variables(exodusFilePtr, (int)comm.globalNodeSets, DIM_NUM_NS_GLOBAL, vars, types);
       if (status != EX_NOERR) return EX_FATAL;
     }
 	
@@ -1052,7 +1051,7 @@ int Internals::put_metadata(const Mesh &mesh,
 			    NULL};
       const nc_type types[] = {ids_type, bulk_type, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)mesh.sidesets.size(), DIM_NUM_SS_GLOBAL, vars, types);
+      status = define_variables(exodusFilePtr, (int)comm.globalSideSets, DIM_NUM_SS_GLOBAL, vars, types);
       if (status != EX_NOERR) return EX_FATAL;
     }
 
@@ -1216,13 +1215,13 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status == NC_ENAMEINUSE) {	// duplicate entry
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: element block %lld already defined in file id %d",
+		"Error: element block %"PRId64" already defined in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of elements/block for block %lld file id %d",
+		"Error: failed to define number of elements/block for block %"PRId64" file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -1235,7 +1234,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to define number of nodes/element for block %lld in file id %d",
+	      "Error: failed to define number of nodes/element for block %"PRId64" in file id %d",
 	      blocks[iblk].id, exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -1251,12 +1250,12 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to create connectivity array for block %lld in file id %d",
+		"Error: failed to create connectivity array for block %"PRId64" in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
       }
-      compress_variable(exodusFilePtr, connid);
+      ex_compress_variable(exodusFilePtr, connid, 1);
     
       // store element type as attribute of connectivity variable
       status=nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
@@ -1278,7 +1277,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of edges/element for block %lld in file id %d",
+		"Error: failed to define number of edges/element for block %"PRId64" in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1293,7 +1292,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to create element->edge connectivity array for block %lld in file id %d",
+		"Error: failed to create element->edge connectivity array for block %"PRId64" in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1307,7 +1306,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of faces/element for block %lld in file id %d",
+		"Error: failed to define number of faces/element for block %"PRId64" in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1322,7 +1321,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to create element->edge connectivity array for block %lld in file id %d",
+		"Error: failed to create element->edge connectivity array for block %"PRId64" in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1337,7 +1336,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in block %lld in file id %d",
+		"Error: failed to define number of attributes in block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1351,12 +1350,12 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for element block %lld in file id %d",
+		"Error:  failed to define attributes for element block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
       }
-      compress_variable(exodusFilePtr, varid);
+      ex_compress_variable(exodusFilePtr, varid, 2);
 
       // Attribute name array...
       dims[0] = numattrdim;
@@ -1367,7 +1366,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for element block %lld in file id %d",
+		"Error: failed to define attribute name array for element block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1440,13 +1439,13 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
       if (status == NC_ENAMEINUSE) {	// duplicate entry
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: face block %lld already defined in file id %d",
+		"Error: face block %"PRId64" already defined in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of faces/block for block %lld file id %d",
+		"Error: failed to define number of faces/block for block %"PRId64" file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -1459,7 +1458,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to define number of nodes/face for block %lld in file id %d",
+	      "Error: failed to define number of nodes/face for block %"PRId64" in file id %d",
 	      blocks[iblk].id, exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -1473,7 +1472,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in block %lld in file id %d",
+		"Error: failed to define number of attributes in block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1487,7 +1486,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for face block %lld in file id %d",
+		"Error:  failed to define attributes for face block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1502,7 +1501,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for face block %lld in file id %d",
+		"Error: failed to define attribute name array for face block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1518,7 +1517,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to create connectivity array for block %lld in file id %d",
+	      "Error: failed to create connectivity array for block %"PRId64" in file id %d",
 	      blocks[iblk].id, exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -1603,13 +1602,13 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
       if (status == NC_ENAMEINUSE) {	// duplicate entry
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: edge block %lld already defined in file id %d",
+		"Error: edge block %"PRId64" already defined in file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of edges/block for block %lld file id %d",
+		"Error: failed to define number of edges/block for block %"PRId64" file id %d",
 		blocks[iblk].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -1622,7 +1621,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to define number of nodes/edge (%lld) for block %lld in file id %d",
+	      "Error: failed to define number of nodes/edge (%"PRId64") for block %"PRId64" in file id %d",
 	      blocks[iblk].nodesPerEntity, blocks[iblk].id, exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -1636,7 +1635,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in block %lld in file id %d",
+		"Error: failed to define number of attributes in block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1650,7 +1649,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for edge block %lld in file id %d",
+		"Error:  failed to define attributes for edge block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1665,7 +1664,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for edge block %lld in file id %d",
+		"Error: failed to define attribute name array for edge block %"PRId64" in file id %d",
 		blocks[iblk].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -1681,7 +1680,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to create connectivity array for block %lld in file id %d",
+	      "Error: failed to create connectivity array for block %"PRId64" in file id %d",
 	      blocks[iblk].id, exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
@@ -1711,7 +1710,7 @@ int Internals::put_non_define_data(const Mesh&,
   // Metadata that must be written outside of define mode...
 
   // Output the file type
-  if (comm.processorCount > 1) {
+  if (comm.outputNemesis) {
     int varid;
     status=nc_inq_varid(exodusFilePtr, VAR_FILE_TYPE, &varid);
     if (status != NC_NOERR) {
@@ -1841,7 +1840,7 @@ int Internals::put_non_define_data(const Mesh&,
       } // End "for(icm=0; icm < num_n_comm_maps; icm++)"
 
       // Put Communication set ids...
-      std::vector<ex_entity_id> node_cmap_ids(comm.nodeMap.size());
+      std::vector<entity_id> node_cmap_ids(comm.nodeMap.size());
       for (size_t i=0; i < comm.nodeMap.size(); i++) {
 	node_cmap_ids[i] = comm.nodeMap[i].id;
       }
@@ -1899,7 +1898,7 @@ int Internals::put_non_define_data(const Mesh&,
       } // End "for(icm=0; icm < num_e_comm_maps; icm++)"
 
       // Get the variable ID for the elemental comm map IDs vector
-      std::vector<ex_entity_id> elem_cmap_ids(comm.elementMap.size());
+      std::vector<entity_id> elem_cmap_ids(comm.elementMap.size());
       for (size_t i=0; i < comm.elementMap.size(); i++) {
 	elem_cmap_ids[i] = comm.elementMap[i].id;
       }
@@ -1916,7 +1915,7 @@ int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 
   if (num_elem_blk > 0) {
     // first get id of element block ids array variable
-    std::vector<ex_entity_id> elem_blk_id(num_elem_blk);
+    std::vector<entity_id> elem_blk_id(num_elem_blk);
     for (int iblk = 0; iblk < num_elem_blk; iblk++) {
       elem_blk_id[iblk] = blocks[iblk].id;
     }
@@ -1961,7 +1960,7 @@ int Internals::put_non_define_data(const std::vector<FaceBlock> &blocks)
 
   if (num_face_blk > 0) {
     // first get id of face block ids array variable
-    std::vector<ex_entity_id> face_blk_id(num_face_blk);
+    std::vector<entity_id> face_blk_id(num_face_blk);
     for (int iblk = 0; iblk < num_face_blk; iblk++) {
       face_blk_id[iblk] = blocks[iblk].id;
     }
@@ -2006,7 +2005,7 @@ int Internals::put_non_define_data(const std::vector<EdgeBlock> &blocks)
 
   if (num_edge_blk > 0) {
     // first get id of edge block ids array variable
-    std::vector<ex_entity_id> edge_blk_id(num_edge_blk);
+    std::vector<entity_id> edge_blk_id(num_edge_blk);
     for (int iblk = 0; iblk < num_edge_blk; iblk++) {
       edge_blk_id[iblk] = blocks[iblk].id;
     }
@@ -2107,12 +2106,12 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: node set %lld already defined in file id %d",
+		"Error: node set %"PRId64" already defined in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to define number of nodes for set %lld in file id %d",
+		"Error: failed to define number of nodes for set %"PRId64" in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2129,18 +2128,18 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: node set %lld node list already defined in file id %d",
+		"Error: node set %"PRId64" node list already defined in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create node set %lld node list in file id %d",
+		"Error: failed to create node set %"PRId64" node list in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
       return(EX_FATAL);
     }
-    compress_variable(exodusFilePtr, varid);
+    ex_compress_variable(exodusFilePtr, varid, 1);
 
     // Create variable for distribution factors if required
     if (nodesets[i].dfCount > 0) {
@@ -2149,8 +2148,8 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
 	status = EX_FATAL;
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: # dist fact (%lld) not equal to # nodes (%lld) "
-		"in node set %lld file id %d",
+		"Error: # dist fact (%"PRId64") not equal to # nodes (%"PRId64") "
+		"in node set %"PRId64" file id %d",
 		nodesets[i].dfCount, nodesets[i].entityCount, nodesets[i].id,
 		exodusFilePtr);
 	ex_err(routine, errmsg, status);
@@ -2163,19 +2162,19 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
 	  ex_opts(EX_VERBOSE);
 	  if (status == NC_ENAMEINUSE) {
 	    sprintf(errmsg,
-		    "Error: node set %lld dist factors already exist in file id %d",
+		    "Error: node set %"PRId64" dist factors already exist in file id %d",
 		    nodesets[i].id,exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  } else {
 	    sprintf(errmsg,
-		    "Error: failed to create node set %lld dist factors in file id %d",
+		    "Error: failed to create node set %"PRId64" dist factors in file id %d",
 		    nodesets[i].id, exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  }
 	  return(EX_FATAL);
 	}
       }
-      compress_variable(exodusFilePtr, varid);
+      ex_compress_variable(exodusFilePtr, varid, 2);
     }
     if (nodesets[i].attributeCount > 0) {
       int numattrdim;
@@ -2184,7 +2183,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in nodeset %lld in file id %d",
+		"Error: failed to define number of attributes in nodeset %"PRId64" in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2197,7 +2196,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for element nodeset %lld in file id %d",
+		"Error:  failed to define attributes for element nodeset %"PRId64" in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2212,7 +2211,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for nodeset %lld in file id %d",
+		"Error: failed to define attribute name array for nodeset %"PRId64" in file id %d",
 		nodesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2284,12 +2283,12 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: edge set %lld already defined in file id %d",
+		"Error: edge set %"PRId64" already defined in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to define number of edges for set %lld in file id %d",
+		"Error: failed to define number of edges for set %"PRId64" in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2306,12 +2305,12 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: edge set %lld edge list already defined in file id %d",
+		"Error: edge set %"PRId64" edge list already defined in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create edge set %lld edge list in file id %d",
+		"Error: failed to create edge set %"PRId64" edge list in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2325,12 +2324,12 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: extra list already exists for edge set %lld in file id %d",
+		"Error: extra list already exists for edge set %"PRId64" in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine,errmsg,exerrval);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create extra list for edge set %lld in file id %d",
+		"Error: failed to create extra list for edge set %"PRId64" in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine,errmsg,exerrval);
       }
@@ -2344,8 +2343,8 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
 	status = EX_FATAL;
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: # dist fact (%lld) not equal to # edges (%lld) "
-		"in edge set %lld file id %d",
+		"Error: # dist fact (%"PRId64") not equal to # edges (%"PRId64") "
+		"in edge set %"PRId64" file id %d",
 		edgesets[i].dfCount, edgesets[i].entityCount, edgesets[i].id,
 		exodusFilePtr);
 	ex_err(routine, errmsg, status);
@@ -2358,12 +2357,12 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
 	  ex_opts(EX_VERBOSE);
 	  if (status == NC_ENAMEINUSE) {
 	    sprintf(errmsg,
-		    "Error: edge set %lld dist factors already exist in file id %d",
+		    "Error: edge set %"PRId64" dist factors already exist in file id %d",
 		    edgesets[i].id,exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  } else {
 	    sprintf(errmsg,
-		    "Error: failed to create edge set %lld dist factors in file id %d",
+		    "Error: failed to create edge set %"PRId64" dist factors in file id %d",
 		    edgesets[i].id, exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  }
@@ -2378,7 +2377,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in edgeset %lld in file id %d",
+		"Error: failed to define number of attributes in edgeset %"PRId64" in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2392,7 +2391,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for element edgeset %lld in file id %d",
+		"Error:  failed to define attributes for element edgeset %"PRId64" in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2407,7 +2406,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for edgeset %lld in file id %d",
+		"Error: failed to define attribute name array for edgeset %"PRId64" in file id %d",
 		edgesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2479,12 +2478,12 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: face set %lld already defined in file id %d",
+		"Error: face set %"PRId64" already defined in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to define number of faces for set %lld in file id %d",
+		"Error: failed to define number of faces for set %"PRId64" in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2501,12 +2500,12 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: face set %lld face list already defined in file id %d",
+		"Error: face set %"PRId64" face list already defined in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create face set %lld face list in file id %d",
+		"Error: failed to create face set %"PRId64" face list in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2520,12 +2519,12 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: extra list already exists for face set %lld in file id %d",
+		"Error: extra list already exists for face set %"PRId64" in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine,errmsg,exerrval);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create extra list for face set %lld in file id %d",
+		"Error: failed to create extra list for face set %"PRId64" in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine,errmsg,exerrval);
       }
@@ -2539,8 +2538,8 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
 	status = EX_FATAL;
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: # dist fact (%lld) not equal to # faces (%lld) "
-		"in face set %lld file id %d",
+		"Error: # dist fact (%"PRId64") not equal to # faces (%"PRId64") "
+		"in face set %"PRId64" file id %d",
 		facesets[i].dfCount, facesets[i].entityCount, facesets[i].id,
 		exodusFilePtr);
 	ex_err(routine, errmsg, status);
@@ -2553,12 +2552,12 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
 	  ex_opts(EX_VERBOSE);
 	  if (status == NC_ENAMEINUSE) {
 	    sprintf(errmsg,
-		    "Error: face set %lld dist factors already exist in file id %d",
+		    "Error: face set %"PRId64" dist factors already exist in file id %d",
 		    facesets[i].id,exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  } else {
 	    sprintf(errmsg,
-		    "Error: failed to create face set %lld dist factors in file id %d",
+		    "Error: failed to create face set %"PRId64" dist factors in file id %d",
 		    facesets[i].id, exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  }
@@ -2573,7 +2572,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in faceset %lld in file id %d",
+		"Error: failed to define number of attributes in faceset %"PRId64" in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2586,7 +2585,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for element faceset %lld in file id %d",
+		"Error:  failed to define attributes for element faceset %"PRId64" in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2601,7 +2600,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for faceset %lld in file id %d",
+		"Error: failed to define attribute name array for faceset %"PRId64" in file id %d",
 		facesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2671,12 +2670,12 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: elem set %lld already defined in file id %d",
+		"Error: elem set %"PRId64" already defined in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to define number of elems for set %lld in file id %d",
+		"Error: failed to define number of elems for set %"PRId64" in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2695,12 +2694,12 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: element set %lld element list already defined in file id %d",
+		"Error: element set %"PRId64" element list already defined in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create element set %lld element list in file id %d",
+		"Error: failed to create element set %"PRId64" element list in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2714,8 +2713,8 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
 	status = EX_FATAL;
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: # dist fact (%lld) not equal to # elements (%lld) "
-		"in element set %lld file id %d",
+		"Error: # dist fact (%"PRId64") not equal to # elements (%"PRId64") "
+		"in element set %"PRId64" file id %d",
 		elemsets[i].dfCount, elemsets[i].entityCount, elemsets[i].id,
 		exodusFilePtr);
 	ex_err(routine, errmsg, status);
@@ -2728,12 +2727,12 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
 	  ex_opts(EX_VERBOSE);
 	  if (status == NC_ENAMEINUSE) {
 	    sprintf(errmsg,
-		    "Error: element set %lld dist factors already exist in file id %d",
+		    "Error: element set %"PRId64" dist factors already exist in file id %d",
 		    elemsets[i].id,exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  } else {
 	    sprintf(errmsg,
-		    "Error: failed to create element set %lld dist factors in file id %d",
+		    "Error: failed to create element set %"PRId64" dist factors in file id %d",
 		    elemsets[i].id, exodusFilePtr);
 	    ex_err(routine, errmsg, status);
 	  }
@@ -2748,7 +2747,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define number of attributes in elemset %lld in file id %d",
+		"Error: failed to define number of attributes in elemset %"PRId64" in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2761,7 +2760,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error:  failed to define attributes for element elemset %lld in file id %d",
+		"Error:  failed to define attributes for element elemset %"PRId64" in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2776,7 +2775,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
       if (status != NC_NOERR) {
 	ex_opts(EX_VERBOSE);
 	sprintf(errmsg,
-		"Error: failed to define attribute name array for elemset %lld in file id %d",
+		"Error: failed to define attribute name array for elemset %"PRId64" in file id %d",
 		elemsets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
@@ -2793,7 +2792,7 @@ int Internals::put_non_define_data(const std::vector<NodeSet> &nodesets)
 
   // Output nodeset ids...
   size_t num_nodesets = nodesets.size();
-  std::vector<ex_entity_id> nodeset_id(num_nodesets);
+  std::vector<entity_id> nodeset_id(num_nodesets);
   for (size_t i = 0; i < num_nodesets; i++) {
     nodeset_id[i] = nodesets[i].id;
   }
@@ -2820,7 +2819,7 @@ int Internals::put_non_define_data(const std::vector<EdgeSet> &edgesets)
 
   // Output edgeset ids...
   size_t num_edgesets = edgesets.size();
-  std::vector<ex_entity_id> edgeset_id(num_edgesets);
+  std::vector<entity_id> edgeset_id(num_edgesets);
   for (size_t i = 0; i < num_edgesets; i++) {
     edgeset_id[i] = edgesets[i].id;
   }
@@ -2847,7 +2846,7 @@ int Internals::put_non_define_data(const std::vector<FaceSet> &facesets)
 
   // Output faceset ids...
   size_t num_facesets = facesets.size();
-  std::vector<ex_entity_id> faceset_id(num_facesets);
+  std::vector<entity_id> faceset_id(num_facesets);
   for (size_t i = 0; i < num_facesets; i++) {
     faceset_id[i] = facesets[i].id;
   }
@@ -2874,7 +2873,7 @@ int Internals::put_non_define_data(const std::vector<ElemSet> &elemsets)
 
   // Output elemset ids...
   size_t num_elemsets = elemsets.size();
-  std::vector<ex_entity_id> elemset_id(num_elemsets);
+  std::vector<entity_id> elemset_id(num_elemsets);
   for (size_t i = 0; i < num_elemsets; i++) {
     elemset_id[i] = elemsets[i].id;
   }
@@ -2945,12 +2944,12 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: side set %lld already defined in file id %d",
+		"Error: side set %"PRId64" already defined in file id %d",
 		sidesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to define number of sides for set %lld in file id %d",
+		"Error: failed to define number of sides for set %"PRId64" in file id %d",
 		sidesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
@@ -2966,18 +2965,18 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: side set %lld element list already defined in file id %d",
+		"Error: side set %"PRId64" element list already defined in file id %d",
 		sidesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create side set %lld element list in file id %d",
+		"Error: failed to create side set %"PRId64" element list in file id %d",
 		sidesets[i].id,exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
       return(EX_FATAL);
     }
-    compress_variable(exodusFilePtr, varid);
+    ex_compress_variable(exodusFilePtr, varid, 1);
 
     // create side list variable for side set
     status=nc_def_var(exodusFilePtr, VAR_SIDE_SS(cur_num_side_sets+1),
@@ -2986,18 +2985,18 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets)
       ex_opts(EX_VERBOSE);
       if (status == NC_ENAMEINUSE) {
 	sprintf(errmsg,
-		"Error: side list already exists for side set %lld in file id %d",
+		"Error: side list already exists for side set %"PRId64" in file id %d",
 		sidesets[i].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       } else {
 	sprintf(errmsg,
-		"Error: failed to create side list for side set %lld in file id %d",
+		"Error: failed to create side list for side set %"PRId64" in file id %d",
 		sidesets[i].id, exodusFilePtr);
 	ex_err(routine, errmsg, status);
       }
       return(EX_FATAL);
     }
-    compress_variable(exodusFilePtr, varid);
+    ex_compress_variable(exodusFilePtr, varid, 1);
 
     // Create variable for distribution factors if required
     if (sidesets[i].dfCount > 0) {
@@ -3007,12 +3006,12 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets)
 	ex_opts(EX_VERBOSE);
 	if (status == NC_ENAMEINUSE) {
 	  sprintf(errmsg,
-		  "Error: side set df count %lld already defined in file id %d",
+		  "Error: side set df count %"PRId64" already defined in file id %d",
 		  sidesets[i].id, exodusFilePtr);
 	  ex_err(routine, errmsg, status);
 	} else {
 	  sprintf(errmsg,
-		  "Error: failed to define side set df count for set %lld in file id %d",
+		  "Error: failed to define side set df count for set %"PRId64" in file id %d",
 		  sidesets[i].id, exodusFilePtr);
 	  ex_err(routine, errmsg, status);
 	}
@@ -3027,19 +3026,19 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets)
 	ex_opts(EX_VERBOSE);
 	if (status == NC_ENAMEINUSE) {
 	  sprintf(errmsg,
-		  "Error: dist factor list already exists for side set %lld in file id %d",
+		  "Error: dist factor list already exists for side set %"PRId64" in file id %d",
 		  sidesets[i].id, exodusFilePtr);
 	  ex_err(routine, errmsg, status);
 	} else {
 	  sprintf(errmsg,
-		  "Error: failed to create dist factor list for side set %lld in file id %d",
+		  "Error: failed to create dist factor list for side set %"PRId64" in file id %d",
 		  sidesets[i].id, exodusFilePtr);
 	  ex_err(routine, errmsg, status);
 	}
 	return(EX_FATAL);
       }
     }
-    compress_variable(exodusFilePtr, varid);
+    ex_compress_variable(exodusFilePtr, varid, 2);
   }
   return EX_NOERR;
 }
@@ -3051,7 +3050,7 @@ int Internals::put_non_define_data(const std::vector<SideSet> &sidesets)
 
   // Output sideset ids...
   int num_sidesets = (int)sidesets.size();
-  std::vector<ex_entity_id> sideset_id(num_sidesets);
+  std::vector<entity_id> sideset_id(num_sidesets);
   for (int i = 0; i < num_sidesets; i++) {
     sideset_id[i] = sidesets[i].id;
   }
@@ -3106,7 +3105,7 @@ namespace {
 	return (EX_FATAL);
       }
     }
-    compress_variable(exodusFilePtr, *varid);
+    ex_compress_variable(exodusFilePtr, *varid, 1);
     return EX_NOERR;
   }
 
@@ -3139,7 +3138,7 @@ namespace {
 	ex_err(routine, errmsg, status);
 	return (EX_FATAL);
       }
-      compress_variable(exodusFilePtr, varid);
+      ex_compress_variable(exodusFilePtr, varid, 1);
     } 
     return EX_NOERR;
   }
@@ -3175,7 +3174,7 @@ namespace {
 	  ex_err(routine, errmsg, status);
 	  return (EX_FATAL);
 	}
-	compress_variable(exodusFilePtr, varid);
+	ex_compress_variable(exodusFilePtr, varid, 1);
 	i++;
       }
     }
@@ -3209,7 +3208,7 @@ namespace {
     return (EX_NOERR);
   }
 
-  int put_id_array(int exoid, const char *var_type, const std::vector<ex_entity_id> &ids)
+  int put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids)
   {
     const char *routine = "Ioex_Internals.C, put_id_array";
     char errmsg[MAX_ERR_LENGTH];
@@ -3229,7 +3228,7 @@ namespace {
     if (id_type == NC_INT64) {
       status=nc_put_var_longlong(exoid, var_id, (long long int*)&ids[0]);
     } else {
-      // Have ex_entity_id (long long), need ints...
+      // Have entity_id (long long), need ints...
       std::vector<int> int_ids(ids.size());
       int_ids.assign(ids.begin(), ids.end());
       status=nc_put_var_int(exoid, var_id, &int_ids[0]);
@@ -3266,7 +3265,7 @@ namespace {
 	    ex_err(routine,errmsg,status);
 	    return(EX_FATAL);
 	  }
-	  compress_variable(exodusFilePtr, varid);
+	  ex_compress_variable(exodusFilePtr, varid, 2);
 	}
 
 	if (dimension > 1) {
@@ -3278,7 +3277,7 @@ namespace {
 	    ex_err(routine,errmsg,status);
 	    return(EX_FATAL);
 	  }
-	  compress_variable(exodusFilePtr, varid);
+	  ex_compress_variable(exodusFilePtr, varid, 1);
 	}
 
 	if (dimension > 2) {
@@ -3290,7 +3289,7 @@ namespace {
 	    ex_err(routine,errmsg,status);
 	    return(EX_FATAL);
 	  }
-	  compress_variable(exodusFilePtr, varid);
+	  ex_compress_variable(exodusFilePtr, varid, 2);
 	}
       } else {
 	// node coordinate arrays:  -- all stored together (old method)2
@@ -3354,7 +3353,6 @@ namespace {
       ex_err(routine,errmsg,status);
       return(EX_FATAL);
     }
-    compress_variable(exoid, varid);
 
     // id array:
     int ids_type  = get_type(exoid, EX_IDS_INT64_DB);
@@ -3366,7 +3364,6 @@ namespace {
       ex_err(routine,errmsg,status);
       return(EX_FATAL);
     }
-    compress_variable(exoid, varid);
 
     // store property name as attribute of property array variable
     status=nc_put_att_text(exoid, varid, ATT_PROP_NAME, 3, "ID");
