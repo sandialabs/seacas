@@ -116,7 +116,7 @@ int ex_put_sets (int   exoid,
     }
     
     for (i=0; i < set_count; i++) {
-      if (sets_to_define[i] == 0 || sets[i].num_entry == 0)
+      if (sets_to_define[i] == 0)
 	continue;
       
       /*   NOTE: ex_inc_file_item finds the current number of sets defined
@@ -125,6 +125,9 @@ int ex_put_sets (int   exoid,
       set_id_ndx = cur_num_sets + 1;
       sets_to_define[i] = set_id_ndx;
       
+      if (sets[i].num_entry == 0)
+	continue;
+
       /* setup pointers based on set_type */
       if (sets[i].type == EX_NODE_SET) {
 	numentryptr = DIM_NUM_NOD_NS(set_id_ndx);
@@ -204,7 +207,7 @@ int ex_put_sets (int   exoid,
 	}
 	goto error_ret;            /* exit define mode and return */
       }
-      ex_compress_variable(exoid, varid);
+      ex_compress_variable(exoid, varid, 1);
       
       if (extraptr) {
 	if ((status = nc_def_var(exoid, extraptr, int_size, 1, dims, &varid)) != NC_NOERR) {
@@ -222,7 +225,7 @@ int ex_put_sets (int   exoid,
 	  }
 	  goto error_ret;         /* exit define mode and return */
 	}
-	ex_compress_variable(exoid, varid);
+	ex_compress_variable(exoid, varid, 1);
       }
 
       /* Create distribution factors variable if required */
@@ -268,7 +271,7 @@ int ex_put_sets (int   exoid,
 	  }
 	  goto error_ret;            /* exit define mode and return */
 	}
-	ex_compress_variable(exoid, varid);
+	ex_compress_variable(exoid, varid, 2);
       }
     }
 
