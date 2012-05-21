@@ -90,15 +90,11 @@ int ex_put_cmap_params(int  exoid,
   char    errmsg[MAX_ERR_LENGTH];
 
   int index_type = NC_INT;
-  int int_type = NC_INT;
   int id_type  = NC_INT;
   int format;
   nc_inq_format(exoid, &format);
   if ((ex_int64_status(exoid) & EX_BULK_INT64_DB) || (format == NC_FORMAT_NETCDF4)) {
     index_type = NC_INT64;
-  }
-  if (ex_int64_status(exoid) & EX_BULK_INT64_DB) {
-    int_type = NC_INT64;
   }
   if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
     id_type = NC_INT64;
@@ -211,7 +207,7 @@ int ex_put_cmap_params(int  exoid,
 
       return (EX_FATAL);
     }
-    ex_compress_variable(exoid, varid);
+    ex_compress_variable(exoid, varid, 1);
 
     if ((status = nc_def_var(exoid, VAR_N_COMM_PROC, NC_INT, 1, dimid, &varid)) != NC_NOERR) {
       exerrval = status;
@@ -224,7 +220,7 @@ int ex_put_cmap_params(int  exoid,
 
       return (EX_FATAL);
     }
-    ex_compress_variable(exoid, varid);
+    ex_compress_variable(exoid, varid, 1);
 
   } /* End "if (num_n_comm_maps > 0)" */
 
@@ -297,7 +293,7 @@ int ex_put_cmap_params(int  exoid,
 
       return (EX_FATAL);
     }
-    ex_compress_variable(exoid, varid);
+    ex_compress_variable(exoid, varid, 1);
 
     if ((status = nc_def_var(exoid, VAR_E_COMM_PROC, NC_INT, 1, dimid, &varid)) != NC_NOERR) {
       exerrval = status;
@@ -310,7 +306,7 @@ int ex_put_cmap_params(int  exoid,
 
       return (EX_FATAL);
     }
-    ex_compress_variable(exoid, varid);
+    ex_compress_variable(exoid, varid, 1);
 
     if ((status = nc_def_var(exoid, VAR_E_COMM_SIDS, NC_INT, 1, dimid, &varid)) != NC_NOERR) {
       exerrval = status;
@@ -323,7 +319,7 @@ int ex_put_cmap_params(int  exoid,
 
       return (EX_FATAL);
     }
-    ex_compress_variable(exoid, varid);
+    ex_compress_variable(exoid, varid, 1);
 
   } /* End "if (num_e_comm_maps > 0)" */
 

@@ -210,7 +210,6 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
 static void invalidate_id_status(int exoid, const char *var_stat,
 				 const char *var_id, int count, int *ids)
 {
-  int status;
   int i;
   int id_var, stat_var;
   
@@ -219,11 +218,8 @@ static void invalidate_id_status(int exoid, const char *var_stat,
       for (i=0; i < count; i++) {
 	ids[i] = EX_INVALID_ID;
       }
-
-      status = nc_inq_varid(exoid, var_id,   &id_var);
-      assert(status == NC_NOERR);
-      status = nc_put_var_int(exoid, id_var,   ids);
-      assert(status == NC_NOERR);
+      nc_inq_varid(exoid, var_id,   &id_var);
+      nc_put_var_int(exoid, id_var,   ids);
     }
 
     if (var_stat != 0) {
@@ -231,10 +227,8 @@ static void invalidate_id_status(int exoid, const char *var_stat,
 	ids[i] = 0;
       }
 
-      status = nc_inq_varid(exoid, var_stat, &stat_var);
-      assert(status == NC_NOERR);
-      status = nc_put_var_int(exoid, stat_var, ids);
-      assert(status == NC_NOERR);
+      nc_inq_varid(exoid, var_stat, &stat_var);
+      nc_put_var_int(exoid, stat_var, ids);
     }
   }
 }
@@ -299,7 +293,8 @@ int ex_put_init_ext (int   exoid,
 
   /* create name string length dimension */
   {
-    int max_name = ex_max_name_length < 32 ? 32 : ex_max_name_length;
+    int max_name = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+    if (max_name < ex_default_max_name_length) max_name = ex_default_max_name_length;
     if ((status=nc_def_dim (exoid, DIM_STR_NAME, max_name+1, &dim_str_name)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
@@ -449,7 +444,7 @@ int ex_put_init_ext (int   exoid,
             ex_err("ex_put_init_ext",errmsg,exerrval);
             goto error_ret;         /* exit define mode and return */
           }
-	ex_compress_variable(exoid, temp);
+	ex_compress_variable(exoid, temp, 2);
       }
     
       if (model->num_dim > 1) {
@@ -461,7 +456,7 @@ int ex_put_init_ext (int   exoid,
             ex_err("ex_put_init_ext",errmsg,exerrval);
             goto error_ret;         /* exit define mode and return */
           }
-	ex_compress_variable(exoid, temp);
+	ex_compress_variable(exoid, temp, 2);
       }
 
       if (model->num_dim > 2) {
@@ -473,7 +468,7 @@ int ex_put_init_ext (int   exoid,
             ex_err("ex_put_init_ext",errmsg,exerrval);
             goto error_ret;         /* exit define mode and return */
           }
-	ex_compress_variable(exoid, temp);
+	ex_compress_variable(exoid, temp, 2);
       }
     } else {
       /* node coordinate arrays: -- all stored together (old method) */
