@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
+
 #include "exodusII.h"
 #include "exodusII_int.h"
 
@@ -138,7 +140,7 @@ int ex_set_max_name_length(int exoid, int length)
     return (EX_FATAL);
   }
   else {
-    ex_max_name_length = length;
+    ex_set_option(exoid, EX_OPT_MAX_NAME_LENGTH, length);
   }
   return EX_NOERR;
 }
@@ -275,10 +277,11 @@ int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,
   int status;
 
   /* Query size of names on file
-   * Use the smaller of the size on file or ex_max_name_length
+   * Use the smaller of the size on file or user-specified length
    */
   int db_name_size = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);
-  int name_size = db_name_size < ex_max_name_length ? db_name_size : ex_max_name_length;
+  int api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+  int name_size = db_name_size < api_name_size ? db_name_size : api_name_size;
   
   for (i=0; i<num_entity; i++) {
     status = ex_get_name_internal(exoid, varid, i, names[i], name_size, obj_type, routine);
@@ -294,6 +297,7 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int nam
   size_t start[2], count[2];
   int status;
   char errmsg[MAX_ERR_LENGTH];
+  int api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
 
   /* read the name */
   start[0] = index;  count[0] = 1;
@@ -308,7 +312,7 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int nam
     return (EX_FATAL);
   }
 
-  name[ex_max_name_length] = '\0';
+  name[api_name_size] = '\0';
   
   ex_trim_internal(name);
   return EX_NOERR;
@@ -699,8 +703,9 @@ int ex_id_lkup( int exoid,
       return (EX_FATAL);
     }
 
-    /* allocate space for id array */
-    if (!(id_vals = malloc(dim_len*sizeof(int64_t)))) {
+    /* allocate space for id array and initialize to zero to ensure
+     that the higher bits don't contain garbage while copy from ints */
+    if (!(id_vals = calloc(dim_len,sizeof(int64_t)))) {
       exerrval = EX_MEMFAIL;
       sprintf(errmsg,
              "Error: failed to allocate memory for %s array for file id %d",
@@ -709,7 +714,26 @@ int ex_id_lkup( int exoid,
       return (EX_FATAL);
     }
 
-    status = nc_get_var_longlong (exoid, varid, (long long*)id_vals);
+    if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
+      status = nc_get_var_longlong (exoid, varid, (long long*)id_vals);
+    }
+    else {
+      int *id_vals_int;
+      if (!(id_vals_int = malloc(dim_len*sizeof(int)))) {
+        exerrval = EX_MEMFAIL;
+        sprintf(errmsg,
+                "Error: failed to allocate memory for temporary array id_vals_int for file id %d",
+                exoid);
+        ex_err("ex_id_lkup",errmsg,exerrval);
+        return (EX_FATAL);
+      }
+      status = nc_get_var_int(exoid, varid, (int *)id_vals_int);
+      if (status == NC_NOERR) {
+	for (i=0;i<dim_len;i++)
+	  id_vals[i] = (int64_t) id_vals_int[i];
+      }
+      free(id_vals_int);
+    }
     
     if (status != NC_NOERR) {
       exerrval = status;
@@ -1247,8 +1271,8 @@ static void ex_swap64 (int64_t v[], int64_t i, int64_t j)
 
 static int ex_int_median3(int v[], int iv[], int left, int right)
 {
-  int center;
-  center = (left + right) / 2;
+  ssize_t center;
+  center = ((ssize_t)left + (ssize_t)right) / 2;
 
   if (v[iv[left]] > v[iv[center]])
     ex_swap(iv, left, center);
@@ -1502,11 +1526,29 @@ size_t ex_header_size(int exoid)
   return 0;
 }
 
-void ex_compress_variable(int exoid, int varid)
+/* type = 1 for integer, 2 for real, 3 for character */
+void ex_compress_variable(int exoid, int varid, int type)
 {
-#if defined(USE_NETCDF4)
-  const int DEFLATE_LEVEL = 5;
-  const int COMPRESS = 1;
-  nc_def_var_deflate(exoid, varid, NC_SHUFFLE, COMPRESS, DEFLATE_LEVEL);
+#if defined(NC_INT64)
+  struct file_item* file = ex_find_file_item(exoid);
+
+  if (!file ) {
+    char errmsg[MAX_ERR_LENGTH];
+    exerrval = EX_BADFILEID;
+    sprintf(errmsg,"Error: unknown file id %d for ex_compress_variable().",exoid);
+    ex_err("ex_compress_variable",errmsg,exerrval);
+  }
+  else {
+    int deflate_level = file->compression_level;
+    int compress = 1;
+    int shuffle = file->shuffle;
+#if 0
+    if (type == 2)
+      shuffle = 0;
+#endif
+    if (deflate_level > 0 && (file->file_type == 2 || file->file_type == 3)) {
+      nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
+    }
+  }
 #endif
 }
