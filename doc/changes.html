@@ -57,6 +57,55 @@
       <table class="zebra" WIDTH=90% align=center  BGCOLOR=WHITE CELLPADDING=10>
 	  <tr align=left><th>Date</th><th>Code</th><th>Version</th><th>Change</tr>
 
+	  <tr><td>2012-04-14</td>
+	  <td>nemesis</td><td></td>
+
+	  <td>The nemesis library is now included in the exodus
+	    library.  All api functions have been renamed from ne_* to
+	    ex_*.  The nemesis library still exists with a wrapper
+	    routine which forwards all calls to the exodus library for
+	    backward-compatability.
+	    </td>
+	  </tr>
+
+	  <tr><td>2012-04-04</td>
+	  <td>blot</td><td>3.00</td>
+
+	  <td>Blot now uses and displays global node and element ids.
+	    Start blot with "-nomap node|elemen|all" to get old local
+	    id display.</td>
+	  </tr>
+
+	  <tr><td>2011-11-17</td>
+	  <td>aprepro</td><td>2.24</td>
+
+	  <td>Added command line editing and recall.</td>
+	  </tr>
+
+	  <tr><td>2011-10-10</td>
+	  <td>nem_spread (decomp/loadbal)</td><td>5.17</td>
+
+	  <td>Allow subset of files to be written
+	    Added -s &lt;start_proc&gt; and -n &lt;num_proc&gt; options to allow processing
+	    only the files for processors &lt;start_proc&gt; to
+            &lt;start_proc&gt;+&lt;num_proc&gt;-1.  For example, -s 3 -n 2 would output files
+            for processors 3 and 4.
+    
+	    This can then be used with gnu parallel or some other method to run
+	    multiple nem_spread jobs simultaneously and speed up the spread
+            process.
+	  </td>
+	  </tr>
+
+	  <tr><td>2011-09-14</td>
+	  <td>ejoin</td><td>1.2.8</td>
+
+	  <td>Added "-info_records p#,p#,..." option which will transfer
+	      information records from the specified part(s) or "all"
+	      to the output mesh.  
+	  </td>
+	  </tr>
+
 	  <tr><td>2011-08-25</td>
 	  <td>epu</td><td>3.35</td>
 
@@ -357,7 +406,7 @@
     <address><a href="mailto:gdsjaar@sandia.gov">Gregory D Sjaardema</a></address>
 <!-- Created: Tue Nov 17 07:07:27 MST 2009 -->
 <!-- hhmts start -->
-Last modified: Thu Aug 25 15:45:37 MDT 2011
+Last modified: Mon Apr 16 09:33:52 MDT 2012
 <!-- hhmts end -->
   </body>
 </html>
