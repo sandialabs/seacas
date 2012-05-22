@@ -724,7 +724,7 @@ do
    echo " 9)                             10) make libraries"
    echo "11) make parallellibraries"
    echo "15) make applications           16) make scripts"
-   echo "17) (deleted)                   18) (deleted)
+   echo "17) (deleted)                   18) (deleted)"
    echo "19) (deleted)                   20) make all"
    echo "21) make install"
    echo ""
