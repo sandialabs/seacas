@@ -12,7 +12,8 @@ $(SERIALMPISRC) \
 $(HDF5SRC) \
 $(NETCDFSRC) \
 $(ZOLTANSRC) \
-parallel
+parallel \
+matio
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
 
@@ -39,8 +40,9 @@ makeincludes::
 	(cd $(HDF5SRC) && make makeincludes) ; \
 	fi;
 
-MakeTarget(netcdf,$(NETCDFSRC),PassDebugFlags)
-MakeTarget(hdf5, $(HDF5SRC), PassDebugFlags)
-MakeTarget(serial_mpi, $(SERIALMPISRC), PassDebugFlags)
-MakeTarget(zoltan, $(ZOLTANSRC), PassDebugFlags)
-MakeTarget(parallel, parallel, PassDebugFlags)
+MakeTarget(netcdf,      $(NETCDFSRC),    PassDebugFlags)
+MakeTarget(hdf5,        $(HDF5SRC),      PassDebugFlags)
+MakeTarget(serial_mpi,  $(SERIALMPISRC), PassDebugFlags)
+MakeTarget(zoltan,      $(ZOLTANSRC),    PassDebugFlags)
+MakeTarget(parallel,    parallel,        PassDebugFlags)
+MakeTarget(matio,       matio,           PassDebugFlags)
