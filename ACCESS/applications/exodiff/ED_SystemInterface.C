@@ -23,14 +23,14 @@ namespace {
 	      << sline << "\"." << std::endl;
     exit(1);
   }
-  
+
 
   std::string Parse_Variables(std::string xline, std::ifstream& cmd_file,
 			      bool& all_flag, Tolerance &def_tol,
 			      std::vector<std::string>& names,
 			      std::vector<Tolerance> &toler,
 			      int max_names);
-  
+
   int case_strcmp(const std::string &s1, const std::string &s2)
   {
     const char *c1 = s1.c_str();
@@ -48,17 +48,17 @@ namespace {
   double To_Double(const std::string & str_val)
   {
     SMART_ASSERT(str_val.size() > 0);
-    
+
     char* endptr; errno = 0;
     double val = strtod(str_val.c_str(), &endptr);
-    
+
     if (errno == ERANGE) {
       std::cerr << "exodiff: ERROR:  Overflow or underflow occured when trying"
 		<< " to parse command line tolerance.  Aborting..." << std::endl;
       exit(1);
     }
     errno = 0;
-    
+
     if (val < 0.0) {
       std::cerr << "exodiff: ERROR:  Parsed a negative value \""
 		<< val << "\".  Aborting..." << std::endl;
@@ -75,7 +75,7 @@ namespace {
     file_check.close();
     return 1;
   }
-  
+
   void Parse_Steps_Option(const std::string &option, int &start, int &stop, int &increment)
   {
     //: The defined formats for the count attribute are:<br>
@@ -159,84 +159,84 @@ namespace {
   void parseExcludeTimes(std::string exclude_arg, std::vector<int> &exclude_steps)
   {
     std::string arg_copy = exclude_arg;
-  
+
     int num_excluded_steps = 0;
-  
+
     // first pass just counts the number of excluded time steps:
-  
+
     std::string tok = extract_token( exclude_arg, "," );
     while (tok.size() > 0)
       {
 	std::string subtok = extract_token( tok, "-" );
 	SMART_ASSERT(subtok.size() > 0);
-    
+
 	errno = 0;
 	int ival1 = atoi( subtok.c_str() );  SMART_ASSERT(errno == 0);
-    
+
 	if (ival1 < 1) {
 	  std::cerr << "exodiff: Error parsing exclusion times from command "
 	    "line .. value was less than 1" << std::endl;
 	  exit(1);
 	}
-    
+
 	++num_excluded_steps;
-    
+
 	subtok = extract_token( tok, "-" );
 	if (subtok.size() > 0)
 	  {
 	    errno = 0;
 	    int ival2 = atoi( subtok.c_str() );  SMART_ASSERT(errno == 0);
-      
+
 	    if (ival2 < 1) {
 	      std::cerr << "exodiff: Error parsing exclusion times from command "
-                "line .. value was less than 1" << std::endl;
+		"line .. value was less than 1" << std::endl;
 	      exit(1);
 	    }
-      
+
 	    if (ival1 < ival2) {
 	      for (int i = ival1+1; i <= ival2; ++i) ++num_excluded_steps;
 	    }
 	    else if (ival1 > ival2) {
 	      std::cerr << "exodiff: Error parsing exclusion times from command "
-                "line .. first value in a range was greater than the "
-                "second" << std::endl;
+		"line .. first value in a range was greater than the "
+		"second" << std::endl;
 	      exit(1);
 	    }
 	  }
-    
+
 	tok = extract_token( exclude_arg, "," );
       }
-  
+
     if (num_excluded_steps > 0)
       {
 	exclude_steps.resize(num_excluded_steps);
-    
+
 	// second pass collects the excluded time steps
-    
+
 	exclude_arg = arg_copy;
 	num_excluded_steps = 0;
-    
+
 	tok = extract_token( exclude_arg, "," );
 	while (tok.size() > 0)
 	  {
 	    std::string subtok = extract_token( tok, "-" );
 	    SMART_ASSERT(subtok.size() > 0);
-      
+
 	    errno = 0;
 	    int ival1 = atoi( subtok.c_str() );  SMART_ASSERT(errno == 0);
-      
+
 	    exclude_steps[num_excluded_steps++] = ival1;
-      
+
 	    subtok = extract_token( tok, "-" );
 	    if (subtok.size() > 0)
 	      {
 		errno = 0;
 		int ival2 = atoi( subtok.c_str() );  SMART_ASSERT(errno == 0);
-        
+
 		for (int i = ival1+1; i <= ival2; ++i)
 		  exclude_steps[num_excluded_steps++] = i;
 	      }
-      
+
 	    tok = extract_token( exclude_arg, "," );
 	  }
       }
@@ -327,7 +327,7 @@ void SystemInterface::enroll_options()
   options_.enroll("Floor", GetLongOption::MandatoryValue,
 		  "Overrides the default floor tolerance of 0.0.",
 		  "0.0");
-  
+
   options_.enroll("TimeStepOffset", GetLongOption::MandatoryValue,
 		  "Timestep 'x+offset' in first file matches timestep 'x' in second file.",
 		  0);
@@ -419,8 +419,8 @@ void SystemInterface::enroll_options()
   options_.enroll("ignore_attributes", GetLongOption::NoValue,
 		  "Don't compare element attribute values.", 0);
   options_.enroll("64-bit", GetLongOption::NoValue,
-                  "True if forcing the use of 64-bit integers for the output file",
-                  NULL);
+		  "True if forcing the use of 64-bit integers for the output file",
+		  NULL);
   options_.enroll("nosymmetric_name_check", GetLongOption::NoValue,
 		  "No symmetric variable name checking.  By default, a warning will\n"
 		  "\t\tbe produced if a name that is not to be excluded is contained\n"
@@ -477,10 +477,13 @@ void SystemInterface::enroll_options()
 		  "Backward-compatible option for -ignore_case.", 0);
   options_.enroll("f", GetLongOption::MandatoryValue,
 		  "Backward-compatible option for -file", 0);
+  options_.enroll("T", GetLongOption::MandatoryValue,
+		  "Backward-compatible option for -TimeStepOffset", 0);
 }
 
 void SystemInterface::Set_Max_Names(int size)
 {
+  max_number_of_names = size;
   glob_var.resize(max_number_of_names, default_tol);
   node_var.resize(max_number_of_names, default_tol);
   elmt_var.resize(max_number_of_names, default_tol);
@@ -510,19 +513,19 @@ bool SystemInterface::parse_options(int argc, char **argv)
       std::cerr << "\n\t\tCan also set options via EXODIFF_OPTIONS environment variable.\n";
       std::cerr << "\t\t->->-> Send email to gdsjaar@sandia.gov for exodiff support.<-<-<-\n";
       exit(EXIT_SUCCESS);
-    }      
+    }
   }
 
   if (options_.retrieve("Help")) {
     options_.usage();
     exit(EXIT_SUCCESS);
   }
-  
+
   if (options_.retrieve("version")) {
     show_version();
     exit(EXIT_SUCCESS);
   }
-  
+
   if (options_.retrieve("copyright")) {
     std::cerr << "\n"
 	      << "Copyright(C) 2008 Sandia Corporation.\n"
@@ -558,7 +561,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 	      << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
     exit(EXIT_SUCCESS);
   }
-  
+
   // Parse remaining options as filenames
   if (option_index < argc) {
     file1 = argv[option_index++];
@@ -588,7 +591,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("min_coordinate_separation")) {
     coord_sep = true;
   }
-  
+
   {
     const char *temp = options_.retrieve("exclude");
     if (temp) parseExcludeTimes(temp, exclude_steps);
@@ -618,9 +621,15 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (temp) {
       errno = 0;
       time_step_offset =  atoi(temp);  SMART_ASSERT(errno == 0);
+    } else {
+      const char *temp2 = options_.retrieve("T");
+      if (temp2) {
+	errno = 0;
+	time_step_offset =  atoi(temp2);  SMART_ASSERT(errno == 0);
+      }
     }
   }
-  
+
   if (options_.retrieve("TA")) {
     time_step_offset =  -1; // Signifies automatic offset calculation.
   }
@@ -628,7 +637,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("TM")) {
     time_step_offset =  -2; // Signifies automatic offset calculation -- closest match
   }
-  
+
   {
     const char *temp = options_.retrieve("steps");
     if (temp) {
@@ -647,15 +656,15 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve("partial") || options_.retrieve("p")) {
     map_flag = PARTIAL;
   }
-  
+
   if (options_.retrieve( "match_ids")) {
     map_flag = USE_FILE_IDS;
   }
-  
+
   if (options_.retrieve("match_file_order")) {
     map_flag = FILE_ORDER;
   }
-  
+
   if (options_.retrieve("map") || options_.retrieve("m")) {
     map_flag = DISTANCE;
   }
@@ -734,11 +743,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
     default_tol.type = COMBINED;
   }
   if (options_.retrieve("ulps_float")) {
-    output_type      = ULPS_FLOAT;  
+    output_type      = ULPS_FLOAT;
     default_tol.type = ULPS_FLOAT;
   }
   if (options_.retrieve("ulps_double")) {
-    output_type      = ULPS_DOUBLE;  
+    output_type      = ULPS_DOUBLE;
     default_tol.type = ULPS_DOUBLE;
   }
   if (options_.retrieve("eigen_relative")) {
@@ -767,13 +776,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
       int tmp = atoi(temp);  SMART_ASSERT(errno == 0);
       if (tmp > 0) Set_Max_Names(tmp);
     }
-    if (options_.retrieve( "status")) {
-      exit_status_switch = true;
-    }
-    if (options_.retrieve("use_old_floor")) {
-      Tolerance::use_old_floor = true;  // Change type to relative.
-    }
+  }
 
+  if (options_.retrieve( "status")) {
+    exit_status_switch = true;
+  }
+  if (options_.retrieve("use_old_floor")) {
+    Tolerance::use_old_floor = true;  // Change type to relative.
+  }
+
+  {
     // Reset default tolerances in case the -t flag was given.
     time_tol         = default_tol;
     glob_var_default = default_tol;
@@ -783,20 +795,21 @@ bool SystemInterface::parse_options(int argc, char **argv)
     ns_var_default   = default_tol;
     ss_var_default   = default_tol;
 
-    for (int k = 0; k < max_number_of_names; ++k)
-      {
-	glob_var[k] = default_tol;
-	node_var[k] = default_tol;
-	elmt_var[k] = default_tol;
-	elmt_att[k] = default_tol;
-	ss_var[k]   = default_tol;
-	ns_var[k]   = default_tol;
+    const char *temp = options_.retrieve("file");
+    if (temp) {
+      command_file = temp;
+      if (!summary_flag && !File_Exists(command_file)) {
+	std::cerr << "exodiff: Can't open file \"" << command_file << "\"." << std::endl;
+	exit(1);
       }
-  
-    {
-      const char *temp = options_.retrieve("file");
-      if (temp) {
-	command_file = temp;
+
+      // Command file exists, parse contents...
+      Parse_Command_File();
+    }
+    else {
+      const char *t2 = options_.retrieve("f");
+      if (t2) {
+	command_file = t2;
 	if (!summary_flag && !File_Exists(command_file)) {
 	  std::cerr << "exodiff: Can't open file \"" << command_file << "\"." << std::endl;
 	  exit(1);
@@ -806,41 +819,29 @@ bool SystemInterface::parse_options(int argc, char **argv)
 	Parse_Command_File();
       }
       else {
-	const char *t2 = options_.retrieve("f");
-	if (t2) {
-	  command_file = t2;
-	  if (!summary_flag && !File_Exists(command_file)) {
-	    std::cerr << "exodiff: Can't open file \"" << command_file << "\"." << std::endl;
-	    exit(1);
-	  }
-
-	  // Command file exists, parse contents...
-	  Parse_Command_File();
-	}
-	else {
-	  glob_var_do_all_flag = true;
-	  node_var_do_all_flag = true;
-	  elmt_var_do_all_flag = true;
-	  elmt_att_do_all_flag = true;
-	  ns_var_do_all_flag = true;
-	  ss_var_do_all_flag = true;
-	}
+	glob_var_do_all_flag = true;
+	node_var_do_all_flag = true;
+	elmt_var_do_all_flag = true;
+	elmt_att_do_all_flag = true;
+	ns_var_do_all_flag = true;
+	ss_var_do_all_flag = true;
       }
     }
-    return true;
   }
+  return true;
 }
+
 void SystemInterface::Parse_Command_File()
 {
   int default_tol_specified = 0;
-    
+
   // Set all types to inactive (ignore) by default.
   coord_tol.type = IGNORE;
   time_tol.type  = IGNORE;
-    
+
   std::ifstream cmd_file(command_file.c_str(), std::ios::in);
   SMART_ASSERT(cmd_file.good());
-    
+
   char line[256];
   std::string xline, tok1, tok2;
   cmd_file.getline(line, 256);  xline = line;
@@ -852,13 +853,13 @@ void SystemInterface::Parse_Command_File()
 	{
 	  to_lower( tok1 );  // Make case insensitive.
 	  tok2 = extract_token(xline, " \t");  to_lower(tok2);
-        
+
 	  if ( abbreviation(tok1, "default", 3) &&
 	       abbreviation(tok2, "tolerance", 3) )
 	    {
 	      std::string tok = extract_token(xline, " \n\t=,");  to_lower(tok);
 	      if (tok == "") Parse_Die(line);
-          
+
 	      if ( abbreviation(tok, "relative", 3) )
 		{
 		  default_tol.type = RELATIVE;
@@ -890,9 +891,9 @@ void SystemInterface::Parse_Command_File()
 		  tok = extract_token( xline, " \n\t=," );
 		}
 	      if (tok == "") Parse_Die(line);
-          
+
 	      default_tol.value = To_Double(tok);
-    
+
 	      tok = extract_token( xline, " \n\t=," );  to_lower(tok);
 	      if ( abbreviation(tok, "floor", 3) )
 		{
@@ -1021,7 +1022,7 @@ void SystemInterface::Parse_Command_File()
 		coord_tol.value = 1.e-6;   // the defaults at the top of
 		coord_tol.floor = 0.0;     // this file.
 	      }
-          
+
 	      if (tok2 != "" && tok2[0] != '#')
 		{
 		  // If rel or abs is specified, then the tolerance must
@@ -1074,7 +1075,7 @@ void SystemInterface::Parse_Command_File()
 		      if (tok2 == "") Parse_Die(line);
 		      coord_tol.floor = To_Double(tok2);
 		    }
-            
+
 		  tok2 = extract_token( xline, " \n\t=," );  to_lower(tok2);
 		  if ( abbreviation(tok2, "floor", 3) )
 		    {
@@ -1087,7 +1088,7 @@ void SystemInterface::Parse_Command_File()
 	  else if (tok1 == "time" && abbreviation(tok2, "steps", 4) )
 	    {
 	      time_tol = default_tol;
-          
+
 	      std::string tok = extract_token( xline, " \n\t=" );  to_lower(tok);
 	      if (tok != "" && tok[0] != '#')
 		{
@@ -1120,7 +1121,7 @@ void SystemInterface::Parse_Command_File()
 		      if (tok == "") Parse_Die(line);
 		      time_tol.floor = To_Double(tok);
 		    }
-            
+
 		  tok2 = extract_token( xline, " \n\t=," );  to_lower(tok2);
 		  if ( abbreviation(tok2, "floor", 3) )
 		    {
@@ -1140,12 +1141,12 @@ void SystemInterface::Parse_Command_File()
 				      glob_var_names,
 				      glob_var,
 				      max_number_of_names);
-          
+
 	      Check_Parsed_Names(glob_var_names, glob_var_do_all_flag);
-          
+
 	      if (!xline.empty()) strncpy(line, xline.c_str(), 255);
 	      else                strcpy(line, "");
-          
+
 	      continue;
 	    }
 	  else if ( abbreviation(tok1, "nodal", 4) &&
@@ -1158,12 +1159,12 @@ void SystemInterface::Parse_Command_File()
 				      node_var_names,
 				      node_var,
 				      max_number_of_names);
-          
+
 	      Check_Parsed_Names(node_var_names, node_var_do_all_flag);
-          
+
 	      if (!xline.empty()) strncpy(line, xline.c_str(), 255);
 	      else                strcpy(line, "");
-          
+
 	      continue;
 	    }
 	  else if ( abbreviation(tok1, "element", 4) &&
@@ -1176,12 +1177,12 @@ void SystemInterface::Parse_Command_File()
 				      elmt_var_names,
 				      elmt_var,
 				      max_number_of_names);
-          
+
 	      Check_Parsed_Names(elmt_var_names, elmt_var_do_all_flag);
-          
+
 	      if (!xline.empty()) strncpy(line, xline.c_str(), 255);
 	      else                strcpy(line, "");
-          
+
 	      continue;
 	    }
 	  else if ( tok1 == "nodeset" &&
@@ -1194,12 +1195,12 @@ void SystemInterface::Parse_Command_File()
 				      ns_var_names,
 				      ns_var,
 				      max_number_of_names);
-          
+
 	      Check_Parsed_Names(ns_var_names, ns_var_do_all_flag);
-          
+
 	      if (!xline.empty()) strncpy(line, xline.c_str(), 255);
 	      else                strcpy(line, "");
-          
+
 	      continue;
 	    }
 	  else if ( abbreviation(tok1, "sideset", 4) &&
@@ -1212,12 +1213,12 @@ void SystemInterface::Parse_Command_File()
 				      ss_var_names,
 				      ss_var,
 				      max_number_of_names);
-          
+
 	      Check_Parsed_Names(ss_var_names, ss_var_do_all_flag);
-          
+
 	      if (!xline.empty()) strncpy(line, xline.c_str(), 255);
 	      else                strcpy(line, "");
-          
+
 	      continue;
 	    }
 	  else if ( abbreviation(tok1, "element", 4) &&
@@ -1230,18 +1231,18 @@ void SystemInterface::Parse_Command_File()
 				      elmt_att_names,
 				      elmt_att,
 				      max_number_of_names);
-          
+
 	      Check_Parsed_Names(elmt_att_names, elmt_att_do_all_flag);
-          
+
 	      if (!xline.empty()) strncpy(line, xline.c_str(), 255);
 	      else                strcpy(line, "");
-          
+
 	      continue;
 	    }
 	  else
 	    Parse_Die(line);
 	}
-      
+
       cmd_file.getline(line, 256);  xline = line;
     }
 }
@@ -1255,252 +1256,252 @@ namespace {
 			      int max_names)
 {
   char line[256];
-  
+
   toler[0] = def_tol;
-  
+
   std::string tok = extract_token( xline, " \n\t=," );  to_lower(tok);
   if (tok != "")
     {
       if (tok != "(all)" && tok != "all" &&
-          !abbreviation(tok, "relative",    3) &&
-          !abbreviation(tok, "absolute",    3) &&
-          !abbreviation(tok, "combine", 3) &&
-          !abbreviation(tok, "ulps_float", 6) &&
-          !abbreviation(tok, "ulps_double", 6) &&
-          !abbreviation(tok, "eigen_relative",    7) &&
-          !abbreviation(tok, "eigen_absolute",    7) &&
-          !abbreviation(tok, "eigen_combine", 7) &&
-          !abbreviation(tok, "floor",       3) )
-        {
-          std::cout << "exodiff: error in parsing command file: unrecognized "
-                  "keyword \"" << tok << "\"" << std::endl;
-          exit(1);
-        }
-    
+	  !abbreviation(tok, "relative",    3) &&
+	  !abbreviation(tok, "absolute",    3) &&
+	  !abbreviation(tok, "combine", 3) &&
+	  !abbreviation(tok, "ulps_float", 6) &&
+	  !abbreviation(tok, "ulps_double", 6) &&
+	  !abbreviation(tok, "eigen_relative",    7) &&
+	  !abbreviation(tok, "eigen_absolute",    7) &&
+	  !abbreviation(tok, "eigen_combine", 7) &&
+	  !abbreviation(tok, "floor",       3) )
+	{
+	  std::cout << "exodiff: error in parsing command file: unrecognized "
+		  "keyword \"" << tok << "\"" << std::endl;
+	  exit(1);
+	}
+
       if (tok == "(all)" || tok == "all") {
-        all_flag = true;
-        tok = extract_token( xline, " \n\t=," );
+	all_flag = true;
+	tok = extract_token( xline, " \n\t=," );
       }
-    
+
       // If rel or abs is specified, then the tolerance must be specified.
       if ( abbreviation(tok, "relative", 3) )
-        {
-          def_tol.type = RELATIVE;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = RELATIVE;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "absolute", 3) )
-        {
-          def_tol.type = ABSOLUTE;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = ABSOLUTE;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "combine", 3) )
-        {
-          def_tol.type = COMBINED;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = COMBINED;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "ulps_float", 6) )
-        {
-          def_tol.type = ULPS_FLOAT;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = ULPS_FLOAT;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "ulps_double", 6) )
-        {
-          def_tol.type = ULPS_DOUBLE;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = ULPS_DOUBLE;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "eigen_relative", 7) )
-        {
-          def_tol.type = EIGEN_REL;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = EIGEN_REL;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "eigen_absolute", 7) )
-        {
-          def_tol.type = EIGEN_ABS;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
+	{
+	  def_tol.type = EIGEN_ABS;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
       else if ( abbreviation(tok, "eigen_combine", 7) )
-        {
-          def_tol.type = EIGEN_COM;
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "floor" || tok == "") {
-            std::cout << "exodiff: Input file specifies a tolerance type "
-                    "but no tolerance" << std::endl;
-            exit(1);
-          }
-          def_tol.value = To_Double(tok);
-          tok = extract_token( xline, " \n\t=," );  to_lower(tok);
-        }
-        
-        
+	{
+	  def_tol.type = EIGEN_COM;
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "floor" || tok == "") {
+	    std::cout << "exodiff: Input file specifies a tolerance type "
+		    "but no tolerance" << std::endl;
+	    exit(1);
+	  }
+	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
+
+
       if ( abbreviation(tok, "floor", 3) )
-        {
-          tok = extract_token( xline, " \n\t=," );
-          if (tok == "" || tok[0] == '#') {
-            std::cout << "exodiff: Floor specified but couldn't find value"
-                 << std::endl;
-            exit(1);
-          }
-          def_tol.floor = To_Double(tok);
-        }
+	{
+	  tok = extract_token( xline, " \n\t=," );
+	  if (tok == "" || tok[0] == '#') {
+	    std::cout << "exodiff: Floor specified but couldn't find value"
+		 << std::endl;
+	    exit(1);
+	  }
+	  def_tol.floor = To_Double(tok);
+	}
     }
-  
+
   for (int i = 0; i < max_names; ++i) {
     toler[i] = def_tol;
   }
-  
+
   cmd_file.getline(line, 256);  xline = line;
   while (!cmd_file.eof())
     {
       if (xline.empty() || (xline[0] != '\t' && first_character(xline) != '#'))
-        break;
-    
+	break;
+
       if ( first_character(xline) != '#' )
-        {
-          tok = extract_token(xline);
-          chop_whitespace( tok );
-          if (tok == "") continue;  // Found tab but no name given.
-      
-          int idx = names.size();
-          if (idx >= max_names) {
-            std::cout << "exodiff: Number of names in tabbed list is larger "
-                    "than current limit of " << max_names
-                 << ".  To increase, use \"-maxnames <int>\" on the "
-                    "command line or \"MAX NAMES <int>\" in the command "
-                    "file.  Aborting..." << std::endl;
-            exit(1);
-          }
-      
-          if (tok[0] == '!')
-            {
-              // A "!" in front of a name means to exclude the name so no
-              // need to look for difference type and tolerance.
-              std::string tmp = tok;
-              if (extract_token(tmp,"!") != "") names.push_back(tok);
-              cmd_file.getline(line, 256);  xline = line;
-              continue;
-            }
-          names.push_back(tok);
-      
-          tok = extract_token(xline);  to_lower(tok);
-      
-          if (tok != "" && tok[0] != '#')
-            {
-              if ( abbreviation(tok, "relative", 3) )
-                {
-                  toler[idx].type = RELATIVE;
-                  tok = extract_token(xline," \n\t=,");
-                }
-              else if ( abbreviation(tok, "absolute", 3) )
-                {
-                  toler[idx].type = ABSOLUTE;
-                  tok = extract_token(xline," \n\t=,");
-                }
-              else if ( abbreviation(tok, "combine", 3) )
-                {
-                  toler[idx].type = COMBINED;
-                  tok = extract_token(xline," \n\t=,");
-                }
-              else if ( abbreviation(tok, "eigen_relative", 7) )
-                {
-                  toler[idx].type = EIGEN_REL;
-                  tok = extract_token(xline," \n\t=,");
-                }
-              else if ( abbreviation(tok, "eigen_absolute", 7) )
-                {
-                  toler[idx].type = EIGEN_ABS;
-                  tok = extract_token(xline," \n\t=,");
-                }
-        
-              else if ( abbreviation(tok, "eigen_com", 7) )
-                {
-                  toler[idx].type = EIGEN_COM;
-                  tok = extract_token(xline," \n\t=,");
-                }
-        
-              if ( abbreviation(tok, "floor", 3) )
-                {
-                  toler[idx].value = def_tol.value;
-          
-                  tok = extract_token(xline," \n\t=,");
-                  if (tok == "") Parse_Die(line);
-                  toler[idx].floor = To_Double(tok);
-                }
-              else
-                {
-                  if (tok == "") Parse_Die(line);
-                  toler[idx].value = To_Double(tok);
-          
-                  tok = extract_token(xline," \n\t=,");  to_lower(tok);
-                  if ( abbreviation(tok, "floor", 3) )
-                    {
-                      tok = extract_token(xline," \n\t=,");
-                      if (tok == "") Parse_Die(line);
-                      toler[idx].floor = To_Double(tok);
-                    }
-                  else
-                    toler[idx].floor = def_tol.floor;
-                }
-            }
-          else
-            {
-              toler[idx] = def_tol;
-            }
-        }
-    
+	{
+	  tok = extract_token(xline);
+	  chop_whitespace( tok );
+	  if (tok == "") continue;  // Found tab but no name given.
+
+	  int idx = names.size();
+	  if (idx >= max_names) {
+	    std::cout << "exodiff: Number of names in tabbed list is larger "
+		    "than current limit of " << max_names
+		 << ".  To increase, use \"-maxnames <int>\" on the "
+		    "command line or \"MAX NAMES <int>\" in the command "
+		    "file.  Aborting..." << std::endl;
+	    exit(1);
+	  }
+
+	  if (tok[0] == '!')
+	    {
+	      // A "!" in front of a name means to exclude the name so no
+	      // need to look for difference type and tolerance.
+	      std::string tmp = tok;
+	      if (extract_token(tmp,"!") != "") names.push_back(tok);
+	      cmd_file.getline(line, 256);  xline = line;
+	      continue;
+	    }
+	  names.push_back(tok);
+
+	  tok = extract_token(xline);  to_lower(tok);
+
+	  if (tok != "" && tok[0] != '#')
+	    {
+	      if ( abbreviation(tok, "relative", 3) )
+		{
+		  toler[idx].type = RELATIVE;
+		  tok = extract_token(xline," \n\t=,");
+		}
+	      else if ( abbreviation(tok, "absolute", 3) )
+		{
+		  toler[idx].type = ABSOLUTE;
+		  tok = extract_token(xline," \n\t=,");
+		}
+	      else if ( abbreviation(tok, "combine", 3) )
+		{
+		  toler[idx].type = COMBINED;
+		  tok = extract_token(xline," \n\t=,");
+		}
+	      else if ( abbreviation(tok, "eigen_relative", 7) )
+		{
+		  toler[idx].type = EIGEN_REL;
+		  tok = extract_token(xline," \n\t=,");
+		}
+	      else if ( abbreviation(tok, "eigen_absolute", 7) )
+		{
+		  toler[idx].type = EIGEN_ABS;
+		  tok = extract_token(xline," \n\t=,");
+		}
+
+	      else if ( abbreviation(tok, "eigen_com", 7) )
+		{
+		  toler[idx].type = EIGEN_COM;
+		  tok = extract_token(xline," \n\t=,");
+		}
+
+	      if ( abbreviation(tok, "floor", 3) )
+		{
+		  toler[idx].value = def_tol.value;
+
+		  tok = extract_token(xline," \n\t=,");
+		  if (tok == "") Parse_Die(line);
+		  toler[idx].floor = To_Double(tok);
+		}
+	      else
+		{
+		  if (tok == "") Parse_Die(line);
+		  toler[idx].value = To_Double(tok);
+
+		  tok = extract_token(xline," \n\t=,");  to_lower(tok);
+		  if ( abbreviation(tok, "floor", 3) )
+		    {
+		      tok = extract_token(xline," \n\t=,");
+		      if (tok == "") Parse_Die(line);
+		      toler[idx].floor = To_Double(tok);
+		    }
+		  else
+		    toler[idx].floor = def_tol.floor;
+		}
+	    }
+	  else
+	    {
+	      toler[idx] = def_tol;
+	    }
+	}
+
       cmd_file.getline(line, 256);  xline = line;
     }
-  
+
   if (names.size() == 0) all_flag = true;
-  
+
   return xline;
 }
 
@@ -1534,7 +1535,7 @@ namespace {
       << "\t   and a floor of 10^{-15}.\n"
       << "\n\n";
   }
-      
+
   void file_help()
   {
     std::cout

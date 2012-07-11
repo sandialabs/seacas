@@ -37,7 +37,7 @@ C Revision 1.1  1993/07/16 16:49:59  gdsjaar
 C Changed plt to library rather than single source file.
 C 
 C=======================================================================
-      SUBROUTINE PLTXTC(X,Y,LINE)
+      SUBROUTINE PLTXTC1(X,Y,LINE)
       CHARACTER*(*) LINE
 
       CALL PLTRIM(LINE,L)

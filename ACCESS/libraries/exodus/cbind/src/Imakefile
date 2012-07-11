@@ -36,6 +36,10 @@ XCOMM Use include files locates in exodusii/cbind/include
 INCLUDES = IncRef-I../include
 REQUIREDLIBS = -L$(SHLIBDIR) $(NETCDF)
 
+#if !UseNetcdf4
+NET_DEF = -DNOT_NETCDF4
+#endif
+
 #ifndef BuildSharedExodusLibrary
 #define BuildSharedExodusLibrary NO
 #endif  
@@ -46,9 +50,9 @@ REQUIREDLIBS = -L$(SHLIBDIR) $(NETCDF)
 SOREV = 5
 #define SoRev SOREV
 
-DEFINES = $(PICFLAGS)
+DEFINES = $(PICFLAGS) $(NET_DEF)
 
-SRCS = 	ex_close.c \
+SRCS =	ex_close.c \
 	ex_conv.c \
 	ex_copy.c \
 	ex_create.c \
@@ -272,6 +276,7 @@ OBJS   = ${SRCS:.c=.o}
 #include <Library.tmpl> 
 
 LibraryTargetSubdirsCopy(libexodus.a,$(OBJS),../../) 
+
 
 $(OBJS): ../include/exodusII.h ../include/exodusII_int.h
 
