@@ -101,7 +101,7 @@ C   --   Uses NUMNP, NUMEL, NELBLK of /DBNUMS/
 
 C      --Get the variable type
 
-         CALL DBVTYP (IDTVAR(IVAR), TYP, ID)
+         CALL DBVTYP_BL (IDTVAR(IVAR), TYP, ID)
 
 C      --Read in variable
 
@@ -149,6 +149,5 @@ C            --Get element variable, change to face variable
          END IF
   160 CONTINUE
 
-  170 CONTINUE
       RETURN
       END

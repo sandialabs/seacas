@@ -4,7 +4,7 @@ c
 c This is a test program for the Fortran binding of the EXODUS II
 c database read routines
 c
-c       09/07/93 V.R. Yarberry - Modified for API 2.00
+c	09/07/93 V.R. Yarberry - Modified for API 2.00
       implicit none
 
       include 'exodusII.inc'
@@ -57,7 +57,7 @@ c
   
       exoid = exopen ("test.exo", EXREAD, cpu_ws, io_ws, vers, ierr)
       write (iout, '(/"after exopen, error = ",i3)')
-     1                  ierr
+     1			ierr
 
       write (iout, '("test.exo is an EXODUSII file; version ",
      1                f4.2)') vers
@@ -161,8 +161,8 @@ c     read element block properties */
       call exinq (exoid, EXNEBP, num_props, fdum, cdum, ierr)
       write (iout, '(/"after exinq, error = ", i3)' ) ierr
       write (iout,
-     1  '(/"There are ",i2," properties for each element block")')
-     2  num_props
+     1	'(/"There are ",i2," properties for each element block")')
+     2	num_props
 
 
       call exgpn(exoid, EXEBLK, prop_names, ierr)
@@ -173,10 +173,10 @@ c     read element block properties */
           call exgp(exoid, EXEBLK,ids(j),prop_names(i),prop_value,ierr)
           if (ierr .eq. 0) then
             write( iout,
-     1        '("elem block ",i2," property(",i2,"): ",a," = ",i5)' )
-     2        j, i, prop_names(i), prop_value
+     1	      '("elem block ",i2," property(",i2,"): ",a," = ",i5)' )
+     2	      j, i, prop_names(i), prop_value
           else
-            write (iout, '(/"after exgp, error = ", i3)' ) ierr
+	    write (iout, '(/"after exgp, error = ", i3)' ) ierr
           endif
 45      continue
 47    continue
@@ -245,7 +245,7 @@ c
          if (num_df_in_set .gt. 0) then
            call exgnsd (exoid, ids(i), dist_fact, ierr)
            write (iout, '(/"after exgnsd, error = ", i3)' ) ierr
-         endif
+	 endif
 
          write (iout, '(/"node list for node set ", i2)') ids(i)
  
@@ -253,14 +253,14 @@ c
             write (iout, '(i3)') node_list(j)
 80       continue
 
-         if (num_df_in_set .gt. 0) then
+	 if (num_df_in_set .gt. 0) then
            write (iout, '("dist factors for node set ", i2)') ids(i)
            do 90 j = 1, num_nodes_in_set
              write (iout, '(f5.2)') dist_fact(j)
 90         continue
-         else
+	 else
            write (iout, '("no dist factors for node set ", i2)') ids(i)
-         endif
+	 endif
 
 100   continue
 
@@ -269,8 +269,8 @@ c     read node set properties
       call exinq (exoid, EXNNSP, num_props, fdum, cdum, ierr)
       write (iout, '(/"after exinq, error = ", i3)' ) ierr
       write (iout,
-     1  '(/"There are ",i2," properties for each node set")')
-     2  num_props
+     1	'(/"There are ",i2," properties for each node set")')
+     2	num_props
 
 
       call exgpn(exoid, EXNSET, prop_names, ierr)
@@ -281,10 +281,10 @@ c     read node set properties
           call exgp(exoid,EXNSET,ids(j),prop_names(i),prop_value,ierr)
           if (ierr .eq. 0) then
             write( iout,
-     1        '("node set ",i2," property(",i2,"): ",a," = ",i5)' )
-     2        j, i, prop_names(i), prop_value
+     1	      '("node set ",i2," property(",i2,"): ",a," = ",i5)' )
+     2	      j, i, prop_names(i), prop_value
           else
-            write (iout, '(/"after exgp, error = ", i3)' ) ierr
+	    write (iout, '(/"after exgp, error = ", i3)' ) ierr
           endif
 105      continue
 107    continue
@@ -299,11 +299,11 @@ c
       if (num_node_sets .gt. 0) then
          call exinq (exoid, EXNSNL, list_len, fdum, cdum, ierr)
          write(iout,'(/"after EXNSNL =",i3," exinq, error = ",i3)')
-     1                  list_len,ierr
+     1			list_len,ierr
  
          call exinq (exoid, EXNSDF, list_len, fdum, cdum, ierr)
          write(iout,'(/"after EXNSDF =",i3," exinq, error = ",i3)')
-     1                  list_len,ierr
+     1			list_len,ierr
  
          call exgcns (exoid, ids, num_nodes_per_set, num_df_per_set,
      1                node_ind, df_ind, node_list, dist_fact, ierr)
@@ -367,7 +367,7 @@ c
          call exgssn (exoid, ids(i), node_ctr_list, node_list, ierr)
          write (iout, '(/"after exgssn, error = ", i3)' ) ierr
 
-         if (num_df_in_set .gt. 0) then
+	 if (num_df_in_set .gt. 0) then
            call exgssd (exoid, ids(i), dist_fact, ierr)
            write (iout, '(/"after exgssd, error = ", i3)' ) ierr
          endif
@@ -385,21 +385,21 @@ c
             write (iout, '(i3)') side_list(j)
 170      continue
 
-         node_ctr = 0
-         write (iout, '("node list for side set ", i2)') ids(i)
-         do 178 k=1, num_elem_in_set
-           do 175 j=1, node_ctr_list(k)
-             write (iout, '(i3)') node_list(j+node_ctr)
-175        continue
-           node_ctr = node_ctr+node_ctr_list(k)
-178      continue
+	 node_ctr = 0
+	 write (iout, '("node list for side set ", i2)') ids(i)
+	 do 178 k=1, num_elem_in_set
+	   do 175 j=1, node_ctr_list(k)
+	     write (iout, '(i3)') node_list(j+node_ctr)
+175	   continue
+	   node_ctr = node_ctr+node_ctr_list(k)
+178	 continue
 
-         if (num_df_in_set .gt. 0) then
+	 if (num_df_in_set .gt. 0) then
            write (iout, '("dist factors for side set ", i2)') ids(i)
            do 180 j = 1, num_df_in_set
              write (iout, '(f6.3)') dist_fact(j)
 180        continue
-         else
+	 else
            write (iout, '("no dist factors for side set ", i2)') ids(i)
          endif
 
@@ -410,8 +410,8 @@ c     read side set properties
       call exinq (exoid, EXNSSP, num_props, fdum, cdum, ierr)
       write (iout, '(/"after exinq, error = ", i3)' ) ierr
       write (iout,
-     1  '(/"There are ",i2," properties for each side set")')
-     2  num_props
+     1	'(/"There are ",i2," properties for each side set")')
+     2	num_props
 
 
       call exgpn(exoid, EXSSET, prop_names, ierr)
@@ -422,30 +422,30 @@ c     read side set properties
           call exgp(exoid, EXSSET,ids(j),prop_names(i),prop_value,ierr)
           if (ierr .eq. 0) then
             write( iout,
-     1        '("side set ",i2," property(",i2,"): ",a," = ",i5)' )
-     2        j, i, prop_names(i), prop_value
+     1	      '("side set ",i2," property(",i2,"): ",a," = ",i5)' )
+     2	      j, i, prop_names(i), prop_value
           else
-            write (iout, '(/"after exgp, error = ", i3)' ) ierr
+	    write (iout, '(/"after exgp, error = ", i3)' ) ierr
           endif
 195      continue
 197    continue
 
       call exinq (exoid, EXSIDS, num_side_sets, fdum, cdum, ierr)
       write (iout, '(/"after exinq: EXSIDS =",i3,", error = ",i3)')
-     1          num_side_sets,ierr
+     1		num_side_sets,ierr
  
       if (num_side_sets .gt. 0) then
          call exinq (exoid, EXSSEL, elem_list_len, fdum, cdum, ierr)
          write (iout, '(/"after exinq: EXSSEL =",i3,", error = ",i3)')
-     1          elem_list_len,ierr
+     1		elem_list_len,ierr
  
          call exinq (exoid, EXSSNL, node_list_len, fdum, cdum, ierr)
          write (iout, '(/"after exinq: EXSSNL =",i3,", error = ",i3)')
-     1          node_list_len,ierr
+     1		node_list_len,ierr
  
          call exinq (exoid, EXSSDF, df_list_len, fdum, cdum, ierr)
          write (iout, '(/"after exinq: EXSSDF =",i3,", error = ",i3)')
-     1          df_list_len,ierr
+     1		df_list_len,ierr
 c
 c read concatenated side sets; this produces the same information as
 c the above code which reads individual side sets
