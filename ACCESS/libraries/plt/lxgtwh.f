@@ -48,7 +48,7 @@ C=======================================================================
       CH = ILINE(JLINE:JLINE)
  2490 IF (.NOT. (CH.EQ.' '.OR.CH.EQ.CHAR(9))) GO TO 2510
       JLINE = JLINE + 1
- 2500 CH = ILINE(JLINE:JLINE)
+      CH = ILINE(JLINE:JLINE)
       GO TO 2490
 
  2510 CONTINUE

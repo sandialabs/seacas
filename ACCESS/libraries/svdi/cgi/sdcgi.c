@@ -526,7 +526,7 @@ f_integer       *funcid;
    short        dev_found;              /* which device was it found on */
    short        func_id = CDQERR_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -673,7 +673,7 @@ char            *devid;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQID_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -726,7 +726,7 @@ f_integer       *pixloc;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQD_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -782,7 +782,7 @@ f_integer       *supprt;
    short        dev_found;              /* which device was it found on */
    short        func_id = CLF_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -830,7 +830,7 @@ f_integer       *supprt;
    short        dev_found;              /* which device was it found on */
    short        func_id = CLPR_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -893,7 +893,7 @@ f_integer       *cixp;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQSP_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -954,7 +954,7 @@ f_integer       *supprt;
    short        dev_found;              /* which device was it found on */
    short        func_id = CLESC_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -1008,7 +1008,7 @@ f_integer       *cixp;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQP_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -1063,7 +1063,7 @@ f_integer       *sclipr;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQCL_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -1662,7 +1662,7 @@ f_integer       *string_size;
    short        dev_found;              /* which device was it found on */
    short        func_id = CGTXX_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
    string1 = f2cchar(string);     /* convert Fortran char ptr to C ptr */
@@ -1731,7 +1731,7 @@ f_integer       *clofig;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQPRL_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -1790,7 +1790,7 @@ f_integer       *maxwid;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQLN_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -1842,7 +1842,7 @@ f_integer       *lntyp;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQLNT_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -1899,7 +1899,7 @@ f_integer       *font_size;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQCHH_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
    font1 = f2cchar(font);     /* convert Fortran char ptr to C ptr */
@@ -1961,7 +1961,7 @@ f_integer       *ptrans;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQFL_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -2019,7 +2019,7 @@ f_integer       *monoc;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQC_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -2072,7 +2072,7 @@ f_integer       *lcmode;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQLNA_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -2135,7 +2135,7 @@ f_integer       *achsi;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQTXA_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -2194,7 +2194,7 @@ f_integer       *colors;
    short        dev_found;              /* which device was it found on */
    short        func_id = CQCTE_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -2239,7 +2239,7 @@ f_integer       *idev;
    short        dev_found;              /* which device was it found on */
    short        func_id = CILI_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 
@@ -2285,7 +2285,7 @@ f_real          *x, *y;
    short        dev_found;              /* which device was it found on */
    short        func_id = CRQLC_FN;
    short        surf;                   /* which surface on device */
-   short        surf_found;             /* which active_surface was found */
+   short        surf_found=0;             /* which active_surface was found */
    anything     *temp_surface[1];
 
 

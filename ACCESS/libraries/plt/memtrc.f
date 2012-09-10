@@ -29,13 +29,7 @@ C DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 C THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-C 
 
-C $Id: memtrc.f,v 1.1 1993/07/16 16:47:01 gdsjaar Exp $ 
-C $Log: memtrc.f,v $
-C Revision 1.1  1993/07/16 16:47:01  gdsjaar
-C Changed plt to library rather than single source file.
-C 
 C=======================================================================
       SUBROUTINE MEMTRC(MEMRY)
       INTEGER MEMRY(*)
@@ -48,7 +42,7 @@ C=======================================================================
       IPN = MEMRY(ABS(IP))
       PRINT *,IP,IPN
       IP = IPN
- 2810 IF (.NOT. (IPN.EQ.0)) GO TO 2800
+      IF (.NOT. (IPN.EQ.0)) GO TO 2800
       RETURN
 
       END

@@ -31,18 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: pltlgy.f,v 1.3 2000/10/25 13:32:35 gdsjaar Exp $ 
-C $Log: pltlgy.f,v $
-C Revision 1.3  2000/10/25 13:32:35  gdsjaar
-C Modified intrinsic functions to use generic versions to avoid warnings on SGI 64-bit compiles
-C
-C Revision 1.2  1993/07/16 18:07:54  gdsjaar
-C Added external pltblk statements so that linkers would pull in block
-C data subprogram to initialize constants.
-C
-c Revision 1.1  1993/07/16  16:48:36  gdsjaar
-c Changed plt to library rather than single source file.
-c 
 C=======================================================================
       SUBROUTINE PLTLGY(X,Y,NUM,XLAB,XUNIT,YLAB,YUNIT)
       REAL DEVCAP(23)
@@ -73,12 +61,10 @@ C=======================================================================
       COMMON /MAPPAR/MAPP(11)
       REAL MAPP
       COMMON /STORAG/MEMORY(1000)
-      LOGICAL CPUIFC
       CHARACTER*(*) XLAB,XUNIT,YLAB,YUNIT
       REAL INTERX,MINEXY,MAXEXY
       DIMENSION X(1),Y(1)
 
- 2840 CONTINUE
       CALL VECRGS(IABS(NUM),X,XMAX,XMIN)
       CALL VECRGS(IABS(NUM),Y,YMAX,YMIN)
       IF (GRAPHP(22).EQ.1. .OR. GRAPHP(22).EQ.2.) THEN
@@ -221,38 +207,19 @@ C=======================================================================
          TNEXPX = 1.
       END IF
 
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2860
-
-      END IF
-
       CALL PLTAXS(GRAPHP(1),GRAPHP(2),GRAPHP(3),GRAPHP(4),'x',XSTART,
      *            XEND,FNLOWX,INT(GRAPHP(41)),INTERX,NMINX,XLAB,XUNIT,
      *            IEXPX)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2860
-
-      END IF
 
       CALL PLTLAX(GRAPHP(1),GRAPHP(2),GRAPHP(3),GRAPHP(4),'y',MINEXY,
      *            MAXEXY,YLAB,YUNIT)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2860
-
-      END IF
 
       CALL PLTGM2(XSTART*TNEXPX,XEND*TNEXPX,MINEXY,MAXEXY,GRAPHP(1),
      *            GRAPHP(1)+GRAPHP(3),GRAPHP(2),GRAPHP(2)+GRAPHP(4),
      *            GRAPHP(7))
       CALL PLTUWN(GRAPHP(7))
       CALL PLTCUR(X,Y,NUM)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2860
 
-      END IF
-
- 2850 IF (.NOT. (.TRUE.)) GO TO 2840
- 2860 CONTINUE
       RETURN
 
       END

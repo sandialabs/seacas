@@ -49,6 +49,12 @@
 /*									      */
 /******************************************************************************/
 
+#ifndef CGI_H
+#define CGI_H
+
+#include "fortyp.h"
+#include "stdtyp.h"
+
 /* define true and false */
 #define FALSE 0
 #define TRUE 1
@@ -178,4 +184,7 @@ typedef int         cenum;    /* CGI enumeration type */
 
 typedef enum csm_enum { dc_csm, ic_csm } csm_enum;
 
+void cgi_def_ini();
+
 /* end cgi.h */
+#endif

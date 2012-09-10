@@ -83,7 +83,7 @@ C=======================================================================
       END IF
 
       IP = IPN
- 2760 IF (.NOT. (IPN.EQ.0)) GO TO 2750
+      IF (.NOT. (IPN.EQ.0)) GO TO 2750
       MEMCMP = (.FALSE.)
       RETURN
 

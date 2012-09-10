@@ -1,8 +1,7 @@
-# Copyright(C) 1999-2010
-# Sandia Corporation. Under the terms of Contract
-# DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
-# certain rights in this software.
-#         
+# Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
+# DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+# retains certain rights in this software.
+# 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
@@ -13,7 +12,8 @@
 #     * Redistributions in binary form must reproduce the above
 #       copyright notice, this list of conditions and the following
 #       disclaimer in the documentation and/or other materials provided
-#       with the distribution.
+#       with the distribution.  
+# 
 #     * Neither the name of Sandia Corporation nor the names of its
 #       contributors may be used to endorse or promote products derived
 #       from this software without specific prior written permission.
@@ -29,20 +29,38 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
 
-CXXEXTRA_INCLUDES = -I..
-#if defined SGIArchitecture
-CXXETRA_DEFINES = -ptused -DNO_MPI -DNO_PAMGEN_SUPPORT -DNO_PARAVIEWIMESH_SUPPORT
-#else
-CXXEXTRA_DEFINES = -DNO_MPI -DNO_PAMGEN_SUPPORT -DNO_PARAVIEWIMESH_SUPPORT
-#endif
 
-SRCS =	Ionit_Initializer.C
+XCOMM Use include files locates in exodusii/cbind/include
+INCLUDES = IncRef-I../include
+REQUIREDLIBS = -L$(SHLIBDIR) $(EXODUS) $(NETCDF) 
 
-OBJS = ${SRCS:.C=.o}
+#ifndef BuildSharedExodusLibrary
+#define BuildSharedExodusLibrary NO
+#endif  
 
-LibraryTargetSubdirs(libIonit.a,$(OBJS),../)
+#define DoNormalLib YES
+#define DoSharedLib BuildSharedExodusLibrary
+#define LibName exodus_par
+SOREV = 5
+#define SoRev SOREV
 
-MakeDirectories(install, $(INCDIR)/ioss)
-InstallIncludeList(install,Ionit_Initializer.h,$(INCDIR)/ioss/init)
+CC      = $(CCPAR)
+#define LibraryCcCmd $(CCPAR)
 
+DEFINES = $(PICFLAGS)
+
+SRCS =	ex_open_par.c ex_create_par.c
+
+OBJS = ${SRCS:.c=.o}
+
+#include <Library.tmpl> 
+
+LibraryTargetSubdirsCopy(libexodus_par.a,$(OBJS),../../) 
+
+$(OBJS): ../include/exodusII.h ../include/exodusII_int.h ../include/exodusII_par.h
+
+
+DependTarget()
+LibraryObjectRule()
