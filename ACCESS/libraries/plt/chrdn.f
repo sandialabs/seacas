@@ -31,11 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: chrdn.f,v 1.1 1993/07/16 16:46:18 gdsjaar Exp $ 
-C $Log: chrdn.f,v $
-C Revision 1.1  1993/07/16 16:46:18  gdsjaar
-C Changed plt to library rather than single source file.
-C 
 C=======================================================================
       SUBROUTINE CHRDN(LINE1,LINE2)
       CHARACTER*(*) LINE1,LINE2
@@ -49,7 +44,7 @@ C=======================================================================
       END IF
 
       LINE2(I:I) = CHAR(ICH)
- 2010 I = I + 1
+      I = I + 1
       GO TO 2000
 
  2020 CONTINUE

@@ -31,11 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: pltfnt.f,v 1.1 1993/07/16 16:48:09 gdsjaar Exp $ 
-C $Log: pltfnt.f,v $
-C Revision 1.1  1993/07/16 16:48:09  gdsjaar
-C Changed plt to library rather than single source file.
-C 
 C=======================================================================
       SUBROUTINE PLTFNT(FILENM)
       REAL DEVCAP(23)
@@ -73,85 +68,18 @@ C=======================================================================
       CHARACTER*10 IERROR
       INTEGER CHRLEN
 
-      CALL CPUNAL(IUNIT)
-      LOCFIL = FILENM
-      L = CHRLEN(LOCFIL)
-      IF (L.EQ.0) THEN
-         RETURN
-
-      END IF
-
-      OPEN (UNIT=IUNIT,FILE=LOCFIL(1:L),FORM='unformatted',STATUS='old',
-     *  IOSTAT=IOS)
-      if (ios .ne. 0) then
-C ... See if environment variable ACCESS is set.  If so, then
-C     search for file in "$ACCESS/bin/LOCFIL"        
-        call getenv('ACCESS', ACCESS)
-        la = chrlen(ACCESS)
-        if (la .ne. 0) then
-          locfil = ACCESS(:la) // '/bin/' // filenm(:l)
-          l = chrlen(locfil)
-          OPEN (UNIT=IUNIT,FILE=LOCFIL(1:L),FORM='unformatted',
-     *      STATUS='old', ERR=10, IOSTAT=IOS)
-        else
-          go to 10
-        end if
+      if (FILENM .eq. 'STKFNT') then
+        call plt_stick()
+      else if (FILENM .eq. 'SSRFNT') then
+        call plt_sanserif()
+      else if (FILENM .eq. 'ROMFNT') then
+        call plt_roman()
+      else
+        CALL PLTFLU
+        TLINE = 'Error: Unrecognized font specification '//
+     *    FILENM
+        CALL SIORPT('PLTFNT',TLINE,2)
       end if
-      
-      READ (IUNIT) NOVECT,TEXTP(39),TEXTP(40)
-      IF (NOVECT.GT.2300) THEN
-         CALL PLTFLU
-         TLINE = 'Too many vectors in font file "'//LOCFIL(1:L)//
-     *           '"; no font read in.'
-         CALL SIORPT('PLTFNT',TLINE,2)
-         RETURN
-
-      END IF
-
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (IDEX(I,1),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (NVECT(I,1),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (XSIZE(I,1),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (YSIZE(I,1),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (X0(I,1),I=1,NOVECT)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (Y0(I,1),I=1,NOVECT)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (X1(I,1),I=1,NOVECT)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (Y1(I,1),I=1,NOVECT)
-      READ (IUNIT) NOVECT,TEXTP(39),TEXTP(40)
-      IF (NOVECT.GT.2300) THEN
-         CALL PLTFLU
-         TLINE = 'Too many vectors in font file "'//LOCFIL(1:L)//
-     *           '"; no font read in.'
-         CALL SIORPT('PLTFNT',TLINE,2)
-         RETURN
-
-      END IF
-
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (IDEX(I,2),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (NVECT(I,2),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (XSIZE(I,2),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (YSIZE(I,2),I=1,200)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (X0(I,2),I=1,NOVECT)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (Y0(I,2),I=1,NOVECT)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (X1(I,2),I=1,NOVECT)
-      READ (IUNIT,ERR=30,IOSTAT=IOS) (Y1(I,2),I=1,NOVECT)
-      CLOSE (IUNIT)
-      CALL CPUNDE(IUNIT)
-      RETURN
-
-   30 CONTINUE
-      CALL CHRIC(IOS,IERROR,LI)
-      CALL PLTFLU
-      TLINE = 'I/O error '//IERROR(1:LI)//' in reading font file "'//
-     *        LOCFIL(1:L)//'"; no font read in.'
-      CALL SIORPT('PLTFNT',TLINE,2)
-      RETURN
-
-   10 CONTINUE
-      CALL CHRIC(IOS,IERROR,LI)
-      CALL PLTFLU
-      TLINE = 'Open error '//IERROR(1:LI)//' in reading font file "'//
-     *        LOCFIL(1:L)//'"; no font read in.'
-      CALL SIORPT('PLTFNT',TLINE,2)
       RETURN
 
       END

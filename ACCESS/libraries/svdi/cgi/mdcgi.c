@@ -81,9 +81,9 @@ void xcoon_ (anything **surface_id) /* which surface to turn output on for*/
    /* rearrange the surface list for that device */
 
    short	dev;			/* which device to look at now */
-   short	dev_found;		/* which device was it found on */
+   short	dev_found = 0;		/* which device was it found on */
    short	surf;			/* which surface on device to look at */
-   short	surf_found;		/* which active_surface was found */
+   short	surf_found = 0;		/* which active_surface was found */
    anything	*temp;			/* for swap */
 
    /* search active devices for this surface */
@@ -266,9 +266,9 @@ void xcdact_ (anything **surface_id)
    short	dev_found;		/* which device was it found on */
    short	hole;			/* index in device of hole to fill */
    short	i;
-   short	old_ptr;		/* where in oldest_surfs is this one */
+   short	old_ptr=0;		/* where in oldest_surfs is this one */
    short	surf;			/* which surface on device to look at */
-   short	surf_found;		/* which surface was it */
+   short	surf_found=0;		/* which surface was it */
    anything	*temp_surface[1];	/* for calling driver */
 
 

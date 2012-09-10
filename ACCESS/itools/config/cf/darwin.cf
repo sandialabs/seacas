@@ -94,8 +94,8 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #if defined (USE_CLANG)
 #define CcCmd			/opt/local/bin/clang-mp-USE_CLANG
 #define CplusplusCmd		/opt/local/bin/clang++-mp-USE_CLANG
-#define FortranCmd		/opt/local/bin/gfortran-mp-4.6
-#define Fortran90Cmd		/opt/local/bin/gfortran-mp-5.6
+#define FortranCmd		/opt/local/bin/gfortran-mp-4.8
+#define Fortran90Cmd		/opt/local/bin/gfortran-mp-4.8
 
 #if Build64BitAccess
 #define StandardDefines 	-DBuild64 -DADDC_ MINOS_CFLAGS

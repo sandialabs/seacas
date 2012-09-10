@@ -259,7 +259,7 @@ SystemInterface::SystemInterface()
     ignore_attributes    (false),
     ints_64_bits         (false),
     coord_sep            (false),
-    exit_status_switch   (false),
+    exit_status_switch   (true),
     dump_mapping         (false),
     show_unmatched       (false),
     noSymmetricNameCheck (false),
@@ -301,7 +301,7 @@ SystemInterface::~SystemInterface() {}
 
 void SystemInterface::show_version()
 {
-  std::cout << qainfo[0] << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  std::cout << "EXODIFF\t(Version: " << version << ") Modified: " << verdate << '\n';
 }
 
 void SystemInterface::enroll_options()
@@ -362,6 +362,8 @@ void SystemInterface::enroll_options()
 		  "Default tolerance is relative differences of the absolute value of the values.", 0);
   options_.enroll("eigen_combined", GetLongOption::NoValue,
 		  "Default tolerance is combined differences of the absolute value of the values.", 0);
+  options_.enroll("ignore", GetLongOption::NoValue,
+		  "Default tolerance is ignored (turn off all checking by default).", 0);
 
   options_.enroll("show_all_diffs", GetLongOption::NoValue,
 		  "Show all differences for all variables, not just the maximum.", 0);
@@ -443,8 +445,9 @@ void SystemInterface::enroll_options()
   options_.enroll("norms", GetLongOption::NoValue,
 		  "Calculate L2 norm of variable differences and output if > 0.0", 0);
   options_.enroll("status", GetLongOption::NoValue,
-		  "Return exit status of 2 if the files are different.\n"
-		  "\t\tNormally, the exit status is always zero unless an error occurs.", 0);
+		  "Return exit status of 2 if the files are different. (default).", 0);
+  options_.enroll("ignore_status", GetLongOption::NoValue,
+		  "The exit status is always zero unless an error occurs.", 0);
   options_.enroll("maxnames", GetLongOption::MandatoryValue,
 		  "There is a compiled limit of 1000 exodus names.\n"
 		  "\t\tThis option allows the maximum number to be changed.",
@@ -569,7 +572,19 @@ bool SystemInterface::parse_options(int argc, char **argv)
       file2 = argv[option_index++];
     }
     if (option_index < argc) {
-      diff_file = argv[option_index++];
+      if (option_index+1 == argc) {
+	diff_file = argv[option_index++];
+      } else {
+	// Check for additional unknown arguments...
+	std::cerr << "\nERROR: Too many file arguments specified."
+		  << "\n       Probably options following filenames which is no longer allowed."
+		  << "\n       Unknown options are: ";
+	while (option_index < argc) {
+	  std::cerr << "'" << argv[option_index++] << "' ";
+	}
+	std::cerr << "\n\n";
+	return false;
+      }
     }
   } else {
     std::cerr << "\nERROR: no files specified\n\n";
@@ -734,6 +749,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
     output_type      = RELATIVE;  // Change type to relative.
     default_tol.type = RELATIVE;
   }
+  if (options_.retrieve("ignore")) {
+    output_type      = IGNORE;  // Change type to ignored
+    default_tol.type = IGNORE;
+  }
   if (options_.retrieve("absolute")) {
     output_type      = ABSOLUTE;  // Change type to absolute
     default_tol.type = ABSOLUTE;
@@ -781,6 +800,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   if (options_.retrieve( "status")) {
     exit_status_switch = true;
   }
+
+  if (options_.retrieve( "ignore_status")) {
+    exit_status_switch = false;
+  }
+
   if (options_.retrieve("use_old_floor")) {
     Tolerance::use_old_floor = true;  // Change type to relative.
   }
@@ -835,15 +859,11 @@ void SystemInterface::Parse_Command_File()
 {
   int default_tol_specified = 0;
 
-  // Set all types to inactive (ignore) by default.
-  coord_tol.type = IGNORE;
-  time_tol.type  = IGNORE;
-
   std::ifstream cmd_file(command_file.c_str(), std::ios::in);
   SMART_ASSERT(cmd_file.good());
 
   char line[256];
-  std::string xline, tok1, tok2;
+  std::string xline, tok1, tok2, tok3;
   cmd_file.getline(line, 256);  xline = line;
   while (!cmd_file.eof())
     {
@@ -890,6 +910,11 @@ void SystemInterface::Parse_Command_File()
 		  default_tol.type = EIGEN_COM;
 		  tok = extract_token( xline, " \n\t=," );
 		}
+	      else if ( abbreviation(tok, "ignore", 3) )
+		{
+		  default_tol.type = IGNORE;
+		  tok = extract_token( xline, " \n\t=," );
+		}
 	      if (tok == "") Parse_Die(line);
 
 	      default_tol.value = To_Double(tok);
@@ -921,10 +946,29 @@ void SystemInterface::Parse_Command_File()
 		  exit(1);
 		}
 	    }
+	  else if ( abbreviation(tok1, "final", 3) &&
+		    abbreviation(tok2, "time", 3) )
+	    {
+	      tok3 = extract_token(xline, " \t");  to_lower(tok3);
+	      if (!abbreviation(tok3, "tolerance", 3)) {
+		std::cout << "exodiff: ERROR:  expected \"TOLERANCE\" "
+			  << "after the \"FINAL TIME\" keyword. "
+			  <<  "Found \"" << tok3 << "\" instead. Aborting..." << std::endl;
+		exit(1);
+	      }
+	      std::string tok = extract_token( xline, " \n\t=," );
+	      if (tok == "") Parse_Die(line);
+	      final_time_tol.value = To_Double(tok);
+	    }
 	  else if ( abbreviation(tok1, "return", 3) &&
 		    abbreviation(tok2, "status", 3) )
 	    {
 	      exit_status_switch = true;
+	    }
+	  else if ( abbreviation(tok1, "ignore", 3) &&
+		    abbreviation(tok2, "status", 3) )
+	    {
+	      exit_status_switch = false;
 	    }
 	  else if ( abbreviation(tok1, "exclude", 3) &&
 		    abbreviation(tok2, "times", 3) )
@@ -1069,6 +1113,11 @@ void SystemInterface::Parse_Command_File()
 		      if (tok2 == "") Parse_Die(line);
 		      coord_tol.value = To_Double(tok2);
 		    }
+		  else if ( abbreviation(tok2, "ignore", 3) )
+		    {
+		      coord_tol.type = IGNORE;
+		      coord_tol.value = 0.0;
+		    }
 		  else if ( abbreviation(tok2, "floor", 3) )
 		    {
 		      tok2 = extract_token( xline, " \n\t=" );
@@ -1114,6 +1163,11 @@ void SystemInterface::Parse_Command_File()
 		      tok = extract_token( xline, " \n\t=" );
 		      if (tok == "") Parse_Die(line);
 		      time_tol.value = To_Double(tok);
+		    }
+		  else if ( abbreviation(tok, "ignore", 3) )
+		    {
+		      time_tol.type = IGNORE;
+		      time_tol.value = 0.0;
 		    }
 		  else if ( abbreviation(tok, "floor", 3) )
 		    {
@@ -1271,6 +1325,7 @@ namespace {
 	  !abbreviation(tok, "eigen_relative",    7) &&
 	  !abbreviation(tok, "eigen_absolute",    7) &&
 	  !abbreviation(tok, "eigen_combine", 7) &&
+	  !abbreviation(tok, "ignore", 3) &&
 	  !abbreviation(tok, "floor",       3) )
 	{
 	  std::cout << "exodiff: error in parsing command file: unrecognized "
@@ -1378,6 +1433,12 @@ namespace {
 	    exit(1);
 	  }
 	  def_tol.value = To_Double(tok);
+	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
+	}
+      else if ( abbreviation(tok, "ignore", 3) )
+	{
+	  def_tol.type = IGNORE;
+	  def_tol.value = 0.0;
 	  tok = extract_token( xline, " \n\t=," );  to_lower(tok);
 	}
 
@@ -1608,10 +1669,14 @@ namespace {
       << "           on with the STEP OFFSET MATCH keyword.\n"
       << "         - The interpolation option, \"-interpolate\", can be turned\n"
       << "           on with the INTERPOLATE keyword.\n"
+      << "         - The final time tolerance, \"-final_time_tolerance <tol>\", can be turned\n"
+      << "           on with the FINAL TIME TOLERANCE keyword.\n"
       << "         - The calculation of the L2 norm of differences \"-norms\", can be turned\n"
       << "           on with the CALCULATE NORMS keyword.\n"
       << "         - The exit status return option, \"-stat\", can be turned on with the \n"
       << "           RETURN STATUS keyword.\n"
+      << "         - The ignore exit status return option, \"-ignore_status\", can be turned on with the \n"
+      << "           IGNORE STATUS keyword.\n"
       << "         - The pedantic compare option, \"-pedantic\", can be turned on with the \n"
       << "           PEDANTIC keyword.\n"
       << std::endl;

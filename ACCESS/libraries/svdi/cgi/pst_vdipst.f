@@ -906,12 +906,12 @@ C
 C CALLS            -
 C
 C EXIT CONDITIONS  -CHAR = integer ASCII character input from the
-C		    keyboard, right-justified, zero fill.  Range 32-126.
-C		    X,Y = real NDC position of the locator.
+C                   keyboard, right-justified, zero fill.  Range 32-126.
+C                   X,Y = real NDC position of the locator.
 C
 C NARRATIVE        -Wait until a key is hit, then return the character
-C		    entered in CHAR and the NDC value of the locator
-C		    in X,Y.  If the character entered does not fall in
+C                   entered in CHAR and the NDC value of the locator
+C                   in X,Y.  If the character entered does not fall in
 C                   the range 32-126, a blank(32) is returned in CHAR.
 C                   This function flushes the output buffers before
 C                   doing input.
@@ -1004,7 +1004,7 @@ C
 C EXIT CONDITIONS  -
 C
 C NARRATIVE        -Ring user's bell to get his attention.  This
-C		    function is ignored by batch devices.
+C                   function is ignored by batch devices.
 C
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 C
@@ -1087,7 +1087,7 @@ C
 C EXIT CONDITIONS  -
 C
 C NARRATIVE        -Wait for the user to view the screen and signal he
-C		    is done, normally by hitting any key.  This function
+C                   is done, normally by hitting any key.  This function
 C                   flushes the output buffers before doing input.
 C
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
@@ -1233,8 +1233,8 @@ C
 C EXIT CONDITIONS  -VECTOR(2) = real updated background color (COLOR).
 C
 C NARRATIVE        -Set the background color for following VDNWPG or
-C		    TEXT primitives for devices supporting these
-C		    features.  For example, many raster devices support
+C                   TEXT primitives for devices supporting these
+C                   features.  For example, many raster devices support
 C                   both an overall background color and a background
 C                   for character drawing(e.g.,red letters on a green
 C                   box).
@@ -1273,11 +1273,11 @@ C                   All Black and White Devices. (LXY, HC1, ALP)
 C
 C ENTRY CONDITIONS -NUM = integer number of color indexes to be set.
 C                   Range 1-256.
-C		    INDEX = integer array of indexes to be set.  Range
+C                   INDEX = integer array of indexes to be set.  Range
 C                   0-255.
-C		    CLRARY = real array of 3 by NUM elements specifying
-C		    the values of the components of the index to be
-C		    set.
+C                   CLRARY = real array of 3 by NUM elements specifying
+C                   the values of the components of the index to be
+C                   set.
 C                   Range for RGB: red 0.0-1.0
 C                                  green 0.0-1.0
 C                                  blue 0.0-1.0
@@ -1285,17 +1285,17 @@ C                   Range for HLS: hue 0.0-360.0
 C                                  lightness 0.0-1.0
 C                                  saturation 0.0-1.0
 C                   Default:
-C		    Index  Color  RGB Values
-C		      0    black   0.,0.,0.
-C		      1    red     1.,0.,0.
-C		      2    green   0.,1.,0.
-C		      3    yellow  1.,1.,0.
-C		      4    blue    0.,0.,1.
-C		      5    magenta 1.,0.,1.
-C		      6    cyan    0.,1.,1.
-C		      7    white   1.,1.,1.
-C		    CLRMOD = integer color model being used.  Range 0,1.
-C		    Default: 0 (RGB).
+C                   Index  Color  RGB Values
+C                     0    black   0.,0.,0.
+C                     1    red     1.,0.,0.
+C                     2    green   0.,1.,0.
+C                     3    yellow  1.,1.,0.
+C                     4    blue    0.,0.,1.
+C                     5    magenta 1.,0.,1.
+C                     6    cyan    0.,1.,1.
+C                     7    white   1.,1.,1.
+C                   CLRMOD = integer color model being used.  Range 0,1.
+C                   Default: 0 (RGB).
 C
 C CALLS            -VBERRH
 C
@@ -1306,13 +1306,13 @@ C                   dynamic setting, if the device will support it.
 C                   "Dynamic" neans that primitives which have already
 C                   been drawn will change their appearance when a
 C                   dynamic setting is changed.  INDEX is the
-C		    position (or array of positions) in the table
-C		    (0-255).  CLRARY is a three-element vector (or 3 by
-C		    NUM array) with the fractions (0.-1.) of RGB or
+C                   position (or array of positions) in the table
+C                   (0-255).  CLRARY is a three-element vector (or 3 by
+C                   NUM array) with the fractions (0.-1.) of RGB or
 C                   values (0.0-360.0, 0.0-1.0, 0.0-1.0) of HLS.
-C		    A translator for HLS to RGB will be used from
-C		    GSPC79.  CLRMOD specifies which color model is being
-C		    used (0=RGB, 1=HLS).
+C                   A translator for HLS to RGB will be used from
+C                   GSPC79.  CLRMOD specifies which color model is being
+C                   used (0=RGB, 1=HLS).
 C                   All devices must support at least a single device
 C                   dependent value for each of red, green, and blue and
 C                   the corresponding values for hue, lightness, and
@@ -1404,9 +1404,9 @@ C
 C EXIT CONDITIONS  -VECTOR(1) = real updated foreground color (COLOR).
 C
 C NARRATIVE        -Set the foreground color index, i.e., the color
-C		    table index used for drawing future primitives.
-C		    Color is an integer from 0-255 which is used as an
-C		    index into the color table (see VDSTCO). 
+C                   table index used for drawing future primitives.
+C                   Color is an integer from 0-255 which is used as an
+C                   index into the color table (see VDSTCO). 
 C                   All devices must support at least a single device
 C                   dependent value in the range 0-7.
 C                   If an unsupported value is specified, set to
@@ -1441,16 +1441,16 @@ C ENVIRONMENT      -COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 C                   All Single Intensity Devices. (LXY, HC1)
 C
 C ENTRY CONDITIONS -INTEN = real intensity of the image of an output
-C		    primitive.  Range 0.-1.  Default: device dependent.
+C                   primitive.  Range 0.-1.  Default: device dependent.
 C
 C CALLS            -
 C
 C EXIT CONDITIONS  -VECTOR(3) = real updated intensity (INTEN).
 C
 C NARRATIVE        -Set the intensity value indicated for future
-C		    primitives.  Intensity is a real value between 0
-C		    (not visible) and 1 (maximum).  Intensities are
-C		    monotonically increasing within this range.
+C                   primitives.  Intensity is a real value between 0
+C                   (not visible) and 1 (maximum).  Intensities are
+C                   monotonically increasing within this range.
 C                   All devices must support at least a single value:
 C                   1.0.  If an unsupported value is specified, set to
 C                   the closest supported intensity.
@@ -1691,9 +1691,9 @@ C ENVIRONMENT      -COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 C                   (postscript)
 C
 C ENTRY CONDITIONS -ASPECT = real ratio of X dimension to Y dimension.
-C		    Range >0.0.  Default: 0. (device dependent).
+C                   Range >0.0.  Default: 0. (device dependent).
 C                   JUSTIF = integer justification of NDC space on the
-C		    device.  Range 0-9.  Default: 0 (device dependent.)
+C                   device.  Range 0-9.  Default: 0 (device dependent.)
 C
 C CALLS            -VBERRH,VDSTCS,VDSTLW,VIMOVA
 C
@@ -1722,7 +1722,7 @@ C                   one dimension fills the corresponding dimension of
 C                   the device.
 C
 C                   JUSTIF determines where the rectangle is located on
-C		    the device as diagrammed below:
+C                   the device as diagrammed below:
 C                            ---------
 C                           | 7  8  9 |
 C                           | 4  5  6 |
@@ -1750,6 +1750,9 @@ C
       COMMON /WPST08/ XSCALE,YSCALE
       INTEGER XPAD,YPAD,XDEVIC,YDEVIC
       COMMON /WPST09/ XPAD,YPAD,XDEVIC,YDEVIC
+      COMMON /WPST11/ IVECT,COORD
+      CHARACTER COORD*20
+      INTEGER IVECT
       INTEGER*4 MACHIN(3),MACLEN
       INTEGER*4 KIDSIZ,KJOBID(4),KUSRSZ,KUSRID(4),KSZROU
       INTEGER*4 KJROUT(4),KSECUR,KJTIME(3),KJDATE(3)
@@ -1763,7 +1766,7 @@ C PATNO AND BORDER USED BY VIPOLY FOR FILL PATTERN AND BORDER ON/OFF;
 C DEFAULT COMPLETE FILL WITH BORDER. PLC.
       COMMON /WPST06/ PGFORM,PATNO,BORDER
       INTEGER PGFORM,PATNO,BORDER
-      CHARACTER COORD*20,XCOORD*5,YCOORD*5
+      CHARACTER XCOORD*5,YCOORD*5
 C
 C
 C SET DEFAULT ATTRIBUTE VALUES.  ALL ARE DEVICE DEPENDENT EXCEPT
@@ -1773,10 +1776,11 @@ C           (2)=BACKGROUND COLOR - WHITE
 C           (3)=INTENSITY        - MAXIMUM
 C           (4)=LINE STYLE       - SOLID
 C           (5)=LINE WIDTH       - ABOUT 1/72 INCHES
-C	    (6)=CHARACTER BOX Y  - ABOUT 1/10 INCHES
-C	    (7)=CHARACTER BOX X  - 5/7 OF BOX-Y
+C           (6)=CHARACTER BOX Y  - ABOUT 1/10 INCHES
+C           (7)=CHARACTER BOX X  - 5/7 OF BOX-Y
 C
 C
+      IVECT=0
       VECTOR(1) = 0.
       VECTOR(2) = 7.
       VECTOR(3) = 1.
@@ -1841,31 +1845,31 @@ C
       IF(ASPEC1.GE.DASPEC) THEN
 C
 C THEN X DIMENSION IS FILLED.
-	 XDEVIC=XUNITS
-	 YDEVIC=XUNITS/ASPEC1
-	 XPAD=0
+         XDEVIC=XUNITS
+         YDEVIC=XUNITS/ASPEC1
+         XPAD=0
 C FIGURE HOW MUCH Y PADDING IS NEEDED.
-	 IF(JUSTI1.LE.3) THEN
+         IF(JUSTI1.LE.3) THEN
             YPAD=0
-	 ELSE IF(JUSTI1.LE.6) THEN
-	    YPAD=(YUNITS-YDEVIC)/2
+         ELSE IF(JUSTI1.LE.6) THEN
+            YPAD=(YUNITS-YDEVIC)/2
          ELSE
-	    YPAD=YUNITS-YDEVIC
-	 END IF
+            YPAD=YUNITS-YDEVIC
+         END IF
       ELSE
 C
 C ELSE Y DIMENSION IS FILLED.
-	 XDEVIC=YUNITS*ASPEC1
-	 YDEVIC=YUNITS
-	 YPAD=0
+         XDEVIC=YUNITS*ASPEC1
+         YDEVIC=YUNITS
+         YPAD=0
 C FIGURE HOW MUCH X PADDING IS NEEDED.
-	 IF(JUSTI1.EQ.3.OR.JUSTI1.EQ.6.OR.JUSTI1.EQ.9) THEN
-	    XPAD=XUNITS-XDEVIC
-	 ELSE IF(JUSTI1.EQ.2.OR.JUSTI1.EQ.5.OR.JUSTI1.EQ.8) THEN
-	    XPAD=(XUNITS-XDEVIC)/2
+         IF(JUSTI1.EQ.3.OR.JUSTI1.EQ.6.OR.JUSTI1.EQ.9) THEN
+            XPAD=XUNITS-XDEVIC
+         ELSE IF(JUSTI1.EQ.2.OR.JUSTI1.EQ.5.OR.JUSTI1.EQ.8) THEN
+            XPAD=(XUNITS-XDEVIC)/2
          ELSE
             XPAD=0
-	 END IF
+         END IF
       END IF
 C
 C FIGURE MAXIMUM NDC VALUES XNDCMX AND YNDCMX.
@@ -2009,7 +2013,7 @@ C
 C EXIT CONDITIONS  -
 C
 C NARRATIVE        -Set current position to absolute NDC position X,Y
-C		    and put a visible point there.  Attributes
+C                   and put a visible point there.  Attributes
 C                   foreground color and intensity apply.
 C
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
@@ -2151,7 +2155,7 @@ C EXIT CONDITIONS  -
 C
 C NARRATIVE        -Physically advance the medium or clear the screen,
 C                   whichever is appropriate.  Also flood the screen
-C		    with the background color on devices that support
+C                   with the background color on devices that support
 C                   this.  The current position is not changed.
 C
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
@@ -2295,7 +2299,6 @@ c
       COMMON /WPST11/ IVECT,COORD
       CHARACTER COORD*20
       INTEGER IVECT
-      DATA IVECT/0/
 c
 c compute new point in dev. coord.
 c     convert to floating offsets
@@ -2354,9 +2357,9 @@ C
 C ENVIRONMENT      - COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 C
 C ENTRY CONDITIONS - LENGT1 = integer number of characters in CHARS.
-C		     Range 1-136.
-C		     CHARS = integer array of ASCII characters, one
-C		     character per array element, right justified.
+C                    Range 1-136.
+C                    CHARS = integer array of ASCII characters, one
+C                    character per array element, right justified.
 C                    Range 8,10,32-126.
 C
 C CALLS            - vbout
@@ -2365,12 +2368,12 @@ C EXIT CONDITIONS  - XCP,YCP = integer updated current position (at the end
 C                    of the string).
 C
 C NARRATIVE        - Draw LENGT1 characters in CHARS, starting at
-C		     current position and update current position to
-C		     the point after the last character box where the
-C		     next character would begin.  Current position
-C		     indicates the lower left corner of the first
-C		     character box.  Only printable characters (32-126
-C		     decimal) and backspace and linefeed are allowed.
+C                    current position and update current position to
+C                    the point after the last character box where the
+C                    next character would begin.  Current position
+C                    indicates the lower left corner of the first
+C                    character box.  Only printable characters (32-126
+C                    decimal) and backspace and linefeed are allowed.
 C                    All values in this range must produce "reasonable"
 C                    output; mapping lower case to upper case letters is
 C                    considered reasonable.  Attributes foreground color,
@@ -2501,14 +2504,14 @@ C
 C ENVIRONMENT      -COMPUTER-INDEPENDENT, SYSTEM-INDEPENDENT, FORTRAN 77
 C
 C ENTRY CONDITIONS -LINSTY = integer linestyle of line drawing output
-C		    primitives.  Range 0-5.  Default:0.
+C                   primitives.  Range 0-5.  Default:0.
 C
 C CALLS            -
 C
 C EXIT CONDITIONS  -VECTOR(4) = real updated line style (LINSTY).
 C
 C NARRATIVE        -Set the style of line as below.  This applies only
-C		    to line drawing primitives.  The line styles are:
+C                   to line drawing primitives.  The line styles are:
 C                          0 - solid
 C                          1 - dotted
 C                          2 - dot dash
@@ -2541,8 +2544,8 @@ C           (2)=BACKGROUND COLOR
 C           (3)=INTENSITY
 C           (4)=LINE STYLE
 C           (5)=LINE WIDTH
-C	    (6)=CHARACTER BOX Y
-C	    (7)=CHARACTER BOX X
+C           (6)=CHARACTER BOX Y
+C           (7)=CHARACTER BOX X
 C
 c
       ENTRY WPST14(LINSTY)
@@ -2655,10 +2658,10 @@ C EXIT CONDITIONS  -VECTOR(6) = real updated character box Y (YSIZE).
 C                   VECTOR(7) = real updated character box X.
 C
 C NARRATIVE        -Set the character size for text primitives.  Size
-C		    is given by YSIZE as the Y dimension of the
-C		    character box.  The SVDI will assign the X dimension
-C		    of the character box and X and Y character size
-C		    within the box according to the font used.  Applies
+C                   is given by YSIZE as the Y dimension of the
+C                   character box.  The SVDI will assign the X dimension
+C                   of the character box and X and Y character size
+C                   within the box according to the font used.  Applies
 C                   only to text primitives.
 C                   All devices must support at least a single device
 C                   dependent value that is the default.  If an
@@ -2780,11 +2783,11 @@ C
 C CALLS            -
 C
 C EXIT CONDITIONS  -SUPPRT = integer level of support for the escape
-C		    function specified.  Range 0,1,2.
+C                   function specified.  Range 0,1,2.
 C
 C NARRATIVE        -An integer value indicating 2=hardware supported,
-C		    1=software supported, 0=unsupported is returned in
-C		    SUPPRT for the escape function ESCPCD.
+C                   1=software supported, 0=unsupported is returned in
+C                   SUPPRT for the escape function ESCPCD.
 C
 C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C
 C

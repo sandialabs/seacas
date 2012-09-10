@@ -303,4 +303,3 @@ GetLongOption::usage(std::ostream &outfile) const
    }
    outfile.flush();
 }
-

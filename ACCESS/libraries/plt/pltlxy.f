@@ -31,14 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: pltlxy.f,v 1.2 2000/10/25 13:32:35 gdsjaar Exp $ 
-C $Log: pltlxy.f,v $
-C Revision 1.2  2000/10/25 13:32:35  gdsjaar
-C Modified intrinsic functions to use generic versions to avoid warnings on SGI 64-bit compiles
-C
-C Revision 1.1  1993/07/16 16:48:45  gdsjaar
-C Changed plt to library rather than single source file.
-C 
 C=======================================================================
       SUBROUTINE PLTLXY(X,Y,NUM,XLAB,XUNIT,YLAB,YUNIT)
       REAL DEVCAP(23)
@@ -74,7 +66,6 @@ C=======================================================================
       CHARACTER*(*) XLAB,XUNIT,YLAB,YUNIT
       DIMENSION X(1),Y(1)
 
- 2810 CONTINUE
       XLENT = GRAPHP(3)
       YLENT = GRAPHP(4)
       CALL VECRGS(IABS(NUM),X,XMAX,XMIN)
@@ -250,36 +241,17 @@ C=======================================================================
          TENMXY = 10.**MAXEXY
       END IF
 
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2830
-
-      END IF
-
       CALL PLTLAX(GRAPHP(1),GRAPHP(2),XLENT,YLENT,'x',MINEXX,MAXEXX,
      *            XLAB,XUNIT)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2830
-
-      END IF
 
       CALL PLTLAX(GRAPHP(1),GRAPHP(2),XLENT,YLENT,'y',MINEXY,MAXEXY,
      *            YLAB,YUNIT)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2830
-
-      END IF
 
       CALL PLTGM2(MINEXX,MAXEXX,MINEXY,MAXEXY,GRAPHP(1),GRAPHP(1)+XLENT,
      *            GRAPHP(2),GRAPHP(2)+YLENT,GRAPHP(7))
       CALL PLTUWN(GRAPHP(7))
       CALL PLTCUR(X,Y,NUM)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2830
 
-      END IF
-
- 2820 IF (.NOT. (.TRUE.)) GO TO 2810
- 2830 CONTINUE
       RETURN
 
       END

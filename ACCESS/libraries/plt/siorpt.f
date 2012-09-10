@@ -41,7 +41,7 @@ C=======================================================================
       IMPLICIT INTEGER (A-Z)
       CHARACTER*(*) MODULE
       CHARACTER*(*) MESS
-      CHARACTER*80 LOCLIN
+      CHARACTER*256 LOCLIN
       CHARACTER*20 ERRORT
       CHARACTER*120 ERRMSG
       CHARACTER*8 ERRMOD
