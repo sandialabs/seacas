@@ -1,0 +1,10 @@
+prefix=/Users/gdsjaar/src/SEACAS-SF-INSTALL
+exec_prefix=${prefix}
+libdir=/Users/gdsjaar/src/SEACAS-SF-INSTALL/lib/shared
+includedir=${prefix}/include
+
+Name: MATIO
+Description: MATIO Library
+Version: 1.5.0
+Libs: -L${libdir} -lmatio -L/Users/gdsjaar/src/SEACAS-SF-INSTALL/lib -lhdf5 -lz
+Cflags: -I${includedir} -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/include 

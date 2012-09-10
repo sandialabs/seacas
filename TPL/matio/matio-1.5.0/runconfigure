@@ -1,0 +1,14 @@
+#! /bin/sh
+rm -f config.cache
+LIBRARYSUBDIR=lib; export LIBRARYSUBDIR
+CC='/opt/local/bin/clang-mp-3.1'; export CC
+CFLAGS='-I../libsrc   -O      -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/inc  -DBuild64 -DADDC_      -I./  -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/inc -fPIC'; export CFLAGS
+CXX='/opt/local/bin/clang++-mp-3.1'; export CXX
+CXXFLAGS='-I../libsrc  -O     -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/inc -DBuild64 -DADDC_      -I./  -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/inc -fPIC'; export CXXFLAGS
+CPPFLAGS='-DNDEBUG'; export CPPFLAGS
+AR_FLAGS='cru'; export AR_FLAGS
+
+# The -L is to find the hdf5 library...
+LDFLAGS='-L/Users/gdsjaar/src/SEACAS-SF-INSTALL/lib    '; export LDFLAGS
+
+./configure --with-hdf5=/Users/gdsjaar/src/SEACAS-SF-INSTALL --enable-mat73 --enable-shared --prefix /Users/gdsjaar/src/SEACAS-SF-INSTALL --libdir /Users/gdsjaar/src/SEACAS-SF-INSTALL/lib/shared $1
