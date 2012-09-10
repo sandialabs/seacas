@@ -1,0 +1,695 @@
+# Copyright (C) 2012   Christopher C. Hulbert
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#    1. Redistributions of source code must retain the above copyright notice,
+#       this list of conditions and the following disclaimer.
+#
+#    2. Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY
+# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+AT_SETUP([Create structure array])
+AT_KEYWORDS([struct_api])
+MATIO_AT_HOST_DATA([expout],
+[      Name: a
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@4@:>@ {
+      Name: field1
+      Rank: 0
+      Name: field2
+      Rank: 0
+      Name: field1
+      Rank: 0
+      Name: field2
+      Rank: 0
+}
+      Name: b
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@0@:>@ {
+}
+      Name: c
+      Rank: 2
+Dimensions: 0 x 0
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@2@:>@ {
+      Name: field1
+      Rank: 0
+      Name: field2
+      Rank: 0
+}
+],[ignore])
+AT_CHECK([$builddir/test_mat struct_api_create],[0],[expout],[ignore])
+AT_CLEANUP
+
+AT_SETUP([Set structure field])
+AT_KEYWORDS([struct_api])
+MATIO_AT_HOST_DATA([expout],
+[      Name: a
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@4@:>@ {
+      Name: field1
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+0 @&t@
+1 @&t@
+}
+      Name: field2
+      Rank: 2
+Dimensions: 3 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+2 @&t@
+3 @&t@
+4 @&t@
+}
+      Name: field1
+      Rank: 2
+Dimensions: 1 x 3
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+5 6 7 @&t@
+}
+      Name: field2
+      Rank: 2
+Dimensions: 1 x 2
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+8 9 @&t@
+}
+}
+      Name: b
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@4@:>@ {
+      Name: field1
+      Rank: 2
+Dimensions: 1 x 2
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+8 9 @&t@
+}
+      Name: field2
+      Rank: 2
+Dimensions: 1 x 3
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+5 6 7 @&t@
+}
+      Name: field1
+      Rank: 2
+Dimensions: 3 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+2 @&t@
+3 @&t@
+4 @&t@
+}
+      Name: field2
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+0 @&t@
+1 @&t@
+}
+}
+],[ignore])
+AT_CHECK([$builddir/test_mat struct_api_setfield],[0],[expout],[ignore])
+AT_CLEANUP
+
+AT_SETUP([Get structure fieldnames])
+AT_KEYWORDS([struct_api])
+MATIO_AT_HOST_DATA([expout],
+[Fieldnames of "a":
+    0. field1
+    1. field2
+    2. field3
+    3. field4
+Fieldnames of "b":
+  None
+Fieldnames of "NULL":
+  None
+],[ignore])
+AT_CHECK([$builddir/test_mat struct_api_getfieldnames],[0],[expout],[ignore])
+AT_CLEANUP
+
+AT_SETUP([Add fields to structure array])
+AT_KEYWORDS([struct_api])
+MATIO_AT_HOST_DATA([expout],
+[      Name: a
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@4@:>@ {
+      Name: field1
+      Rank: 2
+Dimensions: 2 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+0 @&t@
+1 @&t@
+}
+      Name: field2
+      Rank: 2
+Dimensions: 3 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+2 @&t@
+3 @&t@
+4 @&t@
+}
+      Name: field1
+      Rank: 2
+Dimensions: 1 x 3
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+5 6 7 @&t@
+}
+      Name: field2
+      Rank: 2
+Dimensions: 1 x 2
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+8 9 @&t@
+}
+}
+],[ignore])
+AT_CHECK([$builddir/test_mat struct_api_addfield],[0],[expout],[ignore])
+AT_CLEANUP
+
+AT_SETUP([Linearly index a structure])
+AT_KEYWORDS([struct_api])
+MATIO_AT_HOST_DATA([expout],
+[      Name: a
+      Rank: 2
+Dimensions: 4 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@12@:>@ {
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+1 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+13 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+1 + 13i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+4 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+16 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+4 + 16i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+7 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+19 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+7 + 19i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+10 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+22 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+10 + 22i @&t@
+}
+}
+      Name: a
+      Rank: 2
+Dimensions: 3 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@9@:>@ {
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+0 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+12 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+0 + 12i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+1 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+13 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+1 + 13i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+2 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+14 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+2 + 14i @&t@
+}
+}
+      Name: a
+      Rank: 2
+Dimensions: 3 x 1
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@9@:>@ {
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+0 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+12 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+0 + 12i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+4 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+16 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+4 + 16i @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+8 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+20 @&t@
+}
+      Name: z
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array (complex)
+ Data Type: IEEE 754 double-precision
+{
+8 + 20i @&t@
+}
+}
+],[ignore])
+AT_CHECK([$builddir/test_mat struct_api_getlinear],[0],[expout],[ignore])
+AT_CLEANUP
+
+AT_SETUP([Index structure via dimension slices])
+AT_KEYWORDS([struct_api])
+MATIO_AT_HOST_DATA([expout],
+[      Name: a
+      Rank: 4
+Dimensions: 1 x 2 x 3 x 2
+Class Type: Structure
+ Data Type: Structure
+Fields@<:@24@:>@ {
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+65 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-65 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+68 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-68 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+89 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-89 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+92 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-92 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+113 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-113 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+116 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-116 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+305 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-305 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+308 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-308 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+329 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-329 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+332 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-332 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+353 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-353 @&t@
+}
+      Name: r
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+356 @&t@
+}
+      Name: c
+      Rank: 2
+Dimensions: 1 x 1
+Class Type: Double Precision Array
+ Data Type: IEEE 754 double-precision
+{
+-356 @&t@
+}
+}
+],[ignore])
+AT_CHECK([$builddir/test_mat struct_api_get],[0],[expout],[ignore])
+AT_CLEANUP

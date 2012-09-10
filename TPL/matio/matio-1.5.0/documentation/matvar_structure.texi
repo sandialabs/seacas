@@ -1,0 +1,87 @@
+@c Copyright (C) 2011-2012   Christopher C. Hulbert
+@c
+@c All rights reserved.
+@c
+@c Redistribution and use in source and binary forms, with or without
+@c modification, are permitted provided that the following conditions are met:
+@c
+@c    1. Redistributions of source code must retain the above copyright notice,
+@c       this list of conditions and the following disclaimer.
+@c
+@c    2. Redistributions in binary form must reproduce the above copyright
+@c       notice, this list of conditions and the following disclaimer in the
+@c       documentation and/or other materials provided with the distribution.
+@c
+@c THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY EXPRESS
+@c OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+@c OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+@c EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+@c INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+@c (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+@c LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+@c ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+@c (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+@c SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@chapter MATLAB Variable Structure
+@section Variable Information
+When a MATLAB variable is read or created, all of the information about the
+variable (e.g. name, dimensions, etc.) are stored in the MATLAB variable
+structure type @code{matvar_t}.
+@table @code
+@item name
+Nul-terminated string that is the name of the variable. The name may be NULL (e.g. for elements of a cell-array), so the field should be checked prior to use.
+@item rank
+The number of dimensions of the variable. The minimum rank is 2.
+@item dims
+An array of the number of elements in each dimensions of the variable.
+@item class_type
+Indicates the class of the variable (e.g. double-precision, structure, cell,
+etc.).
+@item data_type
+Indicates the type of the data stored in the @code{data} field of the MATLAB
+variable structure.
+@item isComplex
+is non-zero if the variable is a complex-valued numeric array.
+@item isLogical
+is non-zero of the variable should be interpreted as logical (i.e. zero for
+false, non-zero for true).
+@item isGlobal
+is non-zero if the variable should be a global variable. In MATLAB a global
+variable is available in all scopes (e.g. base workspace, function, etc.)
+@end table
+
+@subsection Sparse Matrix Variables
+If a variable's class type is sparse, the @code{data} field of the MATLAB
+variable structure is a pointer to the sparse matrix structure
+@code{mat_sparse_t}. The sparse matrix structure stores the non-zero elements of
+the matrix in compressed column format.
+
+@subsection Structure Variables
+If the MATLAB variable structure's @code{class_type} is @code{MAT_C_STRUCT}, the
+@code{data_type} field should be @code{MAT_T_STRUCT}. The @code{data} field of
+the variable structure is an pointer to an array of @code{matvar_t *}. The
+length of the array is @math{numel \times nfields} where @code{numel} is the
+number of elements in the structure array (product of dimensions array), and
+@math{nfields} is the number of fields in the structure. The order of the
+variables in the array is first by field, and then by structure index. For
+example, for a @math{2 \times 1} structure array with 3 fields @emph{field1},
+@emph{field2}, and @emph{field3}, @code{data} field of the structure variable
+is ordered as:
+
+@table @code
+@item s(1).field1
+@item s(1).field2
+@item s(1).field3
+@item s(2).field1
+@item s(2).field2
+@item s(2).field3
+@end table
+
+@node Cell Variables
+@subsection Cell Variables
+If the MATLAB variable structure's @code{class_type} is @code{MAT_C_CELL}, the
+@code{data_type} field should be @code{MAT_T_CELL}. The @code{data} field of
+the variable structure is a pointer to an array of @code{matvar_t *}. The
+length of the array is product of the dimensions array. Each element of the
+cell array can be a different type.
