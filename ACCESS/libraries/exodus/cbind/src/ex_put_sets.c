@@ -127,7 +127,7 @@ int ex_put_sets (int   exoid,
       
       if (sets[i].num_entry == 0)
 	continue;
-
+      
       /* setup pointers based on set_type */
       if (sets[i].type == EX_NODE_SET) {
 	numentryptr = DIM_NUM_NOD_NS(set_id_ndx);

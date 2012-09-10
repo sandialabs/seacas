@@ -31,18 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C $Id: pltnxy.f,v 1.3 2000/10/25 13:32:35 gdsjaar Exp $ 
-C $Log: pltnxy.f,v $
-C Revision 1.3  2000/10/25 13:32:35  gdsjaar
-C Modified intrinsic functions to use generic versions to avoid warnings on SGI 64-bit compiles
-C
-C Revision 1.2  1993/07/16 18:07:56  gdsjaar
-C Added external pltblk statements so that linkers would pull in block
-C data subprogram to initialize constants.
-C
-c Revision 1.1  1993/07/16  16:49:03  gdsjaar
-c Changed plt to library rather than single source file.
-c 
 C=======================================================================
       SUBROUTINE PLTNXY(X,Y,NUM,XLAB,XUNIT,YLAB,YUNIT)
       REAL DEVCAP(23)
@@ -73,12 +61,10 @@ C=======================================================================
       COMMON /MAPPAR/MAPP(11)
       REAL MAPP
       COMMON /STORAG/MEMORY(1000)
-      LOGICAL CPUIFC
       CHARACTER*(*) XLAB,XUNIT,YLAB,YUNIT
       DIMENSION X(1),Y(1)
       REAL INTERX,INTERY
 
- 2950 CONTINUE
       XLENT = GRAPHP(3)
       YLENT = GRAPHP(4)
       CALL VECRGS(IABS(NUM),X,XMAX,XMIN)
@@ -304,26 +290,12 @@ C=======================================================================
       CALL PLTUWN(GRAPHP(7))
       CALL PLTAXS(GRAPHP(1),GRAPHP(2),XLENT,YLENT,'x',XSTART,XEND,
      *            FNLOWX,INT(GRAPHP(41)),INTERX,NMINX,XLAB,XUNIT,IEXPX)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2970
-
-      END IF
 
       CALL PLTAXS(GRAPHP(1),GRAPHP(2),XLENT,YLENT,'y',YSTART,YEND,
      *            FNLOWY,INT(GRAPHP(42)),INTERY,NMINY,YLAB,YUNIT,IEXPY)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2970
-
-      END IF
 
       CALL PLTCUR(X,Y,NUM)
-      IF (CPUIFC(.FALSE.)) THEN
-         GO TO 2970
 
-      END IF
-
- 2960 IF (.NOT. (.TRUE.)) GO TO 2950
- 2970 CONTINUE
       RETURN
 
       END

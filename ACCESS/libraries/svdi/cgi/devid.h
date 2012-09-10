@@ -71,8 +71,7 @@ static struct device_ids device_values[MAX_DEVID] =
  *               INPUT: a pointer to the 3 character string                 * 
  *               RETURN: floating point device number                       *
  *                                                                          */
-static char *get_devid_char(number)
-float number;
+static char *get_devid_char(float number)
 {
 int i;
 

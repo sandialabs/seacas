@@ -359,6 +359,8 @@
 #define DEFAULT_OUTFILE_NAME ""  /* not used, driver builds the name */
 
 /* end cgix11.h */
+#include "data_def.h"
+#include <unistd.h>
 #include <stdio.h>
 #include <math.h>
 #include <ctype.h>
@@ -380,84 +382,84 @@
 /* >> FUNCTION PROTOTYPES                                      */
 /*-------------------------------------------------------------*/
    /* cgi/vdi routines */
-static void xactivate();
-static void xdeactivate();
-static void xci();
-static void xct();
-static void xcxdfac();
-static void xcpds();
-static void xcendpg();
-static void xcbc();
-static void xcvdcx();
-static void xcv();
-static void xccl();
-static void xcdscl();
-static void xcdqerr();
-static void xcerhct();
-static void xccixp();
-static void xcesc();
-static void xcqid();
-static void xcqd();
-static void xclf();
+static void xactivate(anything **params, anything **surf_list);
+static void xdeactivate(anything **params, anything **surf_list);
+static void xci(anything **params, int num_surfaces, anything **surf_list);
+static void xct(int num_surfaces, anything **surf_list);
+static void xcxdfac(int num_surfaces, anything **surf_list);
+static void xcpds(anything **params, int num_surfaces, anything **surf_list);
+static void xcendpg(int num_surfaces, anything **surf_list);
+static void xcbc(anything **params, int num_surfaces, anything **surf_list);
+static void xcvdcx(anything **params, int num_surfaces, anything **surf_list);
+static void xcv(anything **params, int num_surfaces, anything **surf_list);
+static void xccl(anything **params, int num_surfaces, anything **surf_list);
+static void xcdscl(anything **params, int num_surfaces, anything **surf_list);
+static void xcdqerr(anything **params, anything **surf_list);
+static void xcerhct(anything **params, int num_surfaces, anything **surf_list);
+static void xccixp(anything **params, int num_surfaces, anything **surf_list);
+static void xcesc(anything **params, int num_surfaces, anything **surf_list);
+static void xcqid(anything **params, anything **surf_list);
+static void xcqd(anything **params, anything **surf_list);
+static void xclf(anything **params, anything **surf_list);
 #ifndef sgi
-static void xclpr();
+static void xclpr(anything **params, anything **surf_list);
 #endif
-static void xcqsp();
-static void xclesc();
-static void xcqp();
-static void xcqcl();
-static void xcpl();
-static void xcdjpl();
-static void xcpm();
-static void xctx();
-static void xcpg();
-static void xcca();
-static void xcpxa();
-static void xclnt();
-static void xclnw();
-static void xclnc();
-static void xcmkt();
-static void xcmks();
-static void xcmkc();
-static void xctxp();
-static void xctxc();
-static void xcchh();
-static void xccho();
-static void xcis();
-static void xcflc();
-static void xccsm();
-static void xcct();
-static void xcgtxx();
-static void xcqprl();
-static void xcqln();
-static void xcqlnt();
-static void xcqslw();
-static void xcqmk();
-static void xcqmkt();
-static void xcqsms();
-static void xcqchh();
-static void xcqfl();
-static void xcqc();
-static void xcqlna();
-static void xcqmka();
-static void xcqtxa();
-static void xcqfla();
-static void xcqcte();
-static void xcili();
-static void xcrqlc();
+static void xcqsp(anything **params, anything **surf_list);
+static void xclesc(anything **params, anything **surf_list);
+static void xcqp(anything **params, anything **surf_list);
+static void xcqcl(anything **params, anything **surf_list);
+static void xcpl(anything **params, int num_surfaces, anything **surf_list);
+static void xcdjpl(anything **params, int num_surfaces, anything **surf_list);
+static void xcpm(anything **params, int num_surfaces, anything **surf_list);
+static void xctx(anything **params, int num_surfaces, anything **surf_list);
+static void xcpg(anything **params, int num_surfaces, anything **surf_list);
+static void xcca(anything **params, int num_surfaces, anything **surf_list);
+static void xcpxa(anything **params, int num_surfaces, anything **surf_list);
+static void xclnt(anything **params, int num_surfaces, anything **surf_list);
+static void xclnw(anything **params, int num_surfaces, anything **surf_list);
+static void xclnc(anything **params, int num_surfaces, anything **surf_list);
+static void xcmkt(anything **params, int num_surfaces, anything **surf_list);
+static void xcmks(anything **params, int num_surfaces, anything **surf_list);
+static void xcmkc(anything **params, int num_surfaces, anything **surf_list);
+static void xctxp(anything **params, int num_surfaces, anything **surf_list);
+static void xctxc(anything **params, int num_surfaces, anything **surf_list);
+static void xcchh(anything **params, int num_surfaces, anything **surf_list);
+static void xccho(anything **params, int num_surfaces, anything **surf_list);
+static void xcis(anything **params, int num_surfaces, anything **surf_list);
+static void xcflc(anything **params, int num_surfaces, anything **surf_list);
+static void xccsm(anything **params, int num_surfaces, anything **surf_list);
+static void xcct(anything **params, int num_surfaces, anything **surf_list);
+static void xcgtxx(anything **params, anything **surf_list);
+static void xcqprl(anything **params, anything **surf_list);
+static void xcqln(anything **params, anything **surf_list);
+static void xcqlnt(anything **params, anything **surf_list);
+static void xcqslw(anything **params, anything **surf_list);
+static void xcqmk(anything **params, anything **surf_list);
+static void xcqmkt(anything **params, anything **surf_list);
+static void xcqsms(anything **params, anything **surf_list);
+static void xcqchh(anything **params, anything **surf_list);
+static void xcqfl(anything **params, anything **surf_list);
+static void xcqc(anything **params, anything **surf_list);
+static void xcqlna(anything **params, anything **surf_list);
+static void xcqmka(anything **params, anything **surf_list);
+static void xcqtxa(anything **params, anything **surf_list);
+static void xcqfla(anything **params, anything **surf_list);
+static void xcqcte(anything **params, anything **surf_list);
+static void xcili(anything **params, anything **surf_list);
+static void xcrqlc(anything **params, anything **surf_list);
    /* utility routines */
-static void init_state();
-static void set_dev_descrip();
-static void reset_vdi();
-static void set_mapping();
-static void set_clipping();
-static void set_foreground_color();
-static void set_background_color();
-static void report_error();
-static void gettoken();
-static int poly_clip();
-static int inside_bnd();
-static point intersect_bnd();
+static void init_state(surf_statelist *surf_state);
+static void set_dev_descrip(void);
+static void reset_vdi(surf_statelist *surf_state);
+static void set_mapping(surf_statelist *surf_state);
+static void set_clipping(surf_statelist *cur_state);
+static void set_foreground_color(surf_statelist *surf_state, int *colors);
+static void set_background_color(surf_statelist *surf_state, int *colors);
+static void report_error(surf_statelist *surf_state, int e_class, int e_num, int f_id);
+static void gettoken(int *index_p, int *numrecs_p, char *data_p, int max_chars, char *outtoken_p);
+static int poly_clip(point *cmin, point *cmax, float *vx, float *vy, int vlen, float *xout, float *yout, int *lenout);
+static int inside_bnd(point *v, point *bmin, point *bmax, int bound_num);
+static point intersect_bnd(point *p1, point *p2, point *bmin, point *bmax, int bound_num);
    /* cdr routines */
    /* -- not used with interactive devices */
 void cdrofs();
@@ -467,215 +469,6 @@ void cdrrfs();
 void cdrwfs();
 void cdrcfs();
 void cdroab();
-
-/* ------------------------------------------------------------*/
-/* >> DATA STRUCTURE DEFINITIONS                               */
-/*-------------------------------------------------------------*/
-
-/* define a structure to store SVDI attributes */
-/* --keeps track of SVDI attribs which have been set for each surface */
-/* --these values are stored in CGI terms, not SVDI/NDC terms */
-typedef struct {
-      int fg_color;            /* foreground color for vector */
-      int bg_color;            /* background color for vector */
-      float intensity;         /* current intensity */
-      int line_type;           /* current line style */
-      float line_width;        /* current line width */
-      float char_x;            /* current char box size in x */
-      float char_y;            /* current char box size in y */
-      float fg_rgb[3];         /* foreground color for raster */
-      float bg_rgb[3];         /* background color for raster */
-} vdi_attrib_struct;
-
-/* state list structure for this device */
-/* -- stores state of each surface for this device */
-typedef struct {
- 
-/* cstate.i - definitions for cgi part of state lists for devices
- * 8 Sep 1989 - last date modified
- * Pat McGee, jpm@lanl.gov
- */
-
-   int    cgi_inited;                  /* 0 for uninitialized, 1 for inited */
-   int    err_flag [MAX_ERROR_CLASS];  /* on or off for each of 7 classes */
-   error_report   err_queue [ERROR_LIST_SIZE];
-   int    err_head_ptr;                /* head of error queue */
-   int    err_count;                   /* count of errors in queue */
-
-/* ----------control, negotiation and errors---------- */
-/* control state list */
-   /* -- control state: */
-   int    pic_dirty;           /* 0 = clean, 1 = dirty */
-   int    color_index_prec;    /* -1 for bad */
-
-   /* -- VDC to Device mapping: */
-   point  vdc1;                /* corner 1 of vdc extent */
-   point  vdc2;                /* corner 2 of vdc extent */
-   point  vp1;                 /* corner 1 of viewport (mode:fraction view surf)*/
-   point  vp2;                 /* corner 1 of viewport (mode:fraction view surf)*/
-   point  eff_vp1;             /* corner 1 of effective viewport */
-   point  eff_vp2;             /* corner 2 of effective viewport */
-
-   /* -- clipping: */
-   cenum  clip_indicator;      /* on, off  */
-   point  clip_rect1;          /* corner 1 of requested clip rectangle */
-   point  clip_rect2;          /* corner 2 of requested clip rectangle */
-   cenum  ds_clip_indicator;   /* off, draw surf clip rect, viewport */
-
-/* ----------output and attributes---------- */
-/* attribute state lists */
-/* line attributes state list */
-   int    line_type;
-   float  line_width;
-   int    line_color[3];       /* use elem 0 for indexed, all 3 for direct*/
-   cenum  line_csm;            /* csm in which line color was last specified */
-
-/* marker attributes state list */
-   int    mark_type;
-   float  mark_size;
-   int    mark_color[3];       /* use elem 0 for indexed, all 3 for direct*/
-   cenum  mark_csm;            /* csm in which mark color was last specified */
-
-/* text attributes state list */
-   int    text_color[3];       /* use elem 0 for indexed, all 3 for direct*/
-   cenum  text_csm;            /* csm in which text color was last specified */
-   float  char_height;
-
-/* fill attributes state list */
-   int    fill_color[3];       /* use elem 0 for indexed, all 3 for direct*/
-   cenum  fill_csm;            /* csm in which fill color was last specified */
-   int    interior_style;      /* 0 = hollow, 1 = solid */
-
-/* output and attribute control state list */
-   cenum  csm;                 /* current color mode:
-                                    0=direct, 1=indexed, -1=bad*/
-   rgb    color_table [COLOR_TABLE_SIZE];
-
-/* end cstate.i */
-
-   int      next_free_state;   /* for free state list */
-   int      this_index;        /* index of statelist in array */
-
-   /* SVDI dependent stuff */
-   float xscale;               /* x scale to map VDC to NDC viewport */
-   float yscale;               /* y scale to map VDC to NDC viewport */
-   float xoffset;              /* x offset to map VDC to NDC v.p. */
-   float yoffset;              /* y offset to map VDC to NDC v.p. */
-   int color_set;              /* TRUE = color table set by user */ 
-   vdi_attrib_struct vdi_attrib; /* current vdi attributes */
-
-   /* other info */
-   point eff_clip_rect1;       /* corner 1 of effective clip rectangle */
-   point eff_clip_rect2;       /* corner 2 of effective clip rectangle */
-   point clipmin;              /* min corner of actual clip region - NDC */
-   point clipmax;              /* max corner of actual clip region - NDC */
-   int clip_on;                /* logical - TRUE = clipping is on */
-   int fg_index;               /* for mapping foreground and background */
-   int bg_index;               /*  indices */
-
-   /* device dependent stuff - batch device */
-   /* -- BUFFER_SIZE is 0 if interactive device */
-   char     filename[100];     /* name of file */
-   int      file_d;            /* file descriptor - -1 if file not open */
-   char     buffer[BUFFER_SIZE];/* for buffering data for output to file */
-   int      buff_ptr;          /* keep track of buffer space */
-
-   /* device dependent stuff - interactive device  */
-   /* a state list exists for each logical input device as identified
-    * by its input class and its input device index.  we support only
-    * locator, and 1 input device index. 
-    */ 
-    int   input_dev_class;     /* we only support locator */
-    int   input_dev_index;     /* we only support 1 */
-    cenum input_dev_state;     /* ready or released */
-   
-} surf_statelist;
-
-
-/* description table */
-/* -- stores description table for this device  - one per device */
-typedef struct {
-
-/* cdescr.i - definitions for cgi description table */
-/* 9 Sep 1989 - last date modified
- */
-
-/* ----------control, negotiation and errors---------- */
-/* device identity description table  */
-   cenum    dev_class;         /* device class: IN,OUT,INOUT */
-   char     dev_id[3];         /* device identification */
-
-/* output device description table  */
-   cenum    copy_class;        /* hard, soft */
-   cenum    display_type;      /* vector,raster,other */
-   cenum    bcolor_cap;        /* background color capability */
-   cenum    dynamic_mod_bg;    /* dynamic mod accept for bg color */
-   cenum    dynamic_mod_map;   /* dynamic mod accept for mapping */
-   dpoint   dc1;               /* device bottom left corner */
-   dpoint   dc2;               /* device upper right corner */
-   float    draw_surf_width;   /* measured in millimetres */
-   float    draw_surf_height;  /* measured in millimetres */
-   cenum    pix_loc;           /* pixel location */ 
-  
-/* ----------output and attributes---------- */
-/* attribute description tables */
-/* primitive support description table */
-   int    max_pts_polyline;       /* -1,128..n  */
-   int    max_pts_disj_polyline;  /* -1,0..n    */
-   int    max_pts_polygon;        /* -1,0..n    */
-   int    max_pts_polygon_set;    /* -1,0..n    */
-   int    max_pts_polymarker;     /* -1,128..n  */
-   int    max_pts_cellarray;      /* -1,0..n    */
-   int    max_pts_closed_fig;     /* -1,0..n    */
-   int    max_chars_text;         /* 80..n      */
-   cenum    cellarray_fill_cap;   /* none,global,local */
-   cenum    cellarray_align_cap;  /* axis,skewed */
-   cenum    compound_text_cap;    /* none,global,local */
-   cenum    compound_fig_cap;     /* none,global,local */
-
-/* line description table  */
-   int    linewidth_nominal;   /* nominal scaled line width ( >0 ) */
-   int    linewidth_min;       /* minimum scaled line width ( >0 ) */ 
-   int    linewidth_max;       /* maximum scaled line width ( >0 ) */ 
-   int    line_types[5];       /* list of available line types */
-   int    line_widths[5];      /* list of availabl scale line widths */
-
-/* marker description table */
-   int    mark_nominal;        /* nominal scaled marker size ( >0 ) */
-   int    mark_min;            /* minimum scaled marker size ( >0 ) */ 
-   int    mark_max;            /* maximum scaled marker size ( >0 ) */ 
-   int    mark_types[1];       /* list of available marker types */
-   int    mark_sizes[1];       /* list of availabl scale marker sizes */
-
-/* text description table */
-/* fill description table */
-   cenum    interior_styles[2];  /* list of available interior styles */
-   
-/* attribute and control description table */
-   int    num_simul_colors;    /* 2..n */
-   int    num_avail_colors;    /* 2..n */
-   int    num_avail_int;       /* if direct, use all 3 */
-   cenum    csm_avail;         /* indexed only, indexed and direct */
-   cenum    dynamic_mod_ct;    /* irg, cbs, imm */
-   cenum    color_overwrite;   /* irg, cbs, imm */
-   cenum    monochrome_device; /* no,yes */
-
-/* end cdescr.i */
-
-   /* SVDI part of description table */
-   /* --used to store default SVDI setup and to reinitialize */
-   int set_flag;              /* TRUE = SVDI defaults set, FALSE = not */
-   int svdi_type;             /* 0 = SVDI, 1 = SVDI+raster */
-   float xndc_max;            /* max x ndc value */
-   float yndc_max;            /* max y ndc value */
-   float att_array[14];       /* output status of attributes */
-                              /* --stuff stored in CGI terms */
-   int num_cols;              /* number of colors */
-   int col_mode;              /* color mode */
-   int index_array[256];      /* color index array */
-   float color_array[256][3]; /* color values */
-
-} dev_descrip_table;
 
 /*-------------------------------------------------------------*/
 /* >> GLOBAL VARIABLE DECLARATIONS                             */
@@ -783,9 +576,7 @@ anything *surf_list[];
 
 /* ACTIVATE */
 static void
-xactivate(params,surf_list)
-anything *params[];
-anything *surf_list[];
+xactivate(anything **params, anything **surf_list)
 {
   int   new_state;                      /* index of new state to use */
 
@@ -819,9 +610,7 @@ anything *surf_list[];
 
 /* DEACTIVATE */
 static void 
-xdeactivate(params,surf_list)
-anything *params[];
-anything *surf_list[];
+xdeactivate(anything **params, anything **surf_list)
 {
    /* deallocate memory allocated for cgi state list */
    
@@ -841,10 +630,7 @@ anything *surf_list[];
 
 /* INITIALIZE */
 static void 
-xci(params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xci(anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surf_list */
   float zero = 0.;
@@ -889,9 +675,7 @@ anything *surf_list[];
 
 /* TERMINATE */
 static void 
-xct (num_surfaces, surf_list)
-int     num_surfaces;
-anything *surf_list[];
+xct (int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
 
@@ -910,9 +694,7 @@ anything *surf_list[];
 
 /* EXECUTE DEFERRED ACTIONS */
 static void
-xcxdfac (num_surfaces, surf_list)
-int num_surfaces;
-anything *surf_list[];
+xcxdfac (int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
 
@@ -929,10 +711,7 @@ anything *surf_list[];
 
 /* PREPARE DRAWING SURFACE */
 static void
-xcpds (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcpds (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
 
@@ -953,9 +732,7 @@ anything *surf_list[];
 
 /* END PAGE */
 static void
-xcendpg (num_surfaces, surf_list)
-int num_surfaces;
-anything *surf_list[];
+xcendpg (int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
 
@@ -980,10 +757,7 @@ anything *surf_list[];
 
 /* BACKGROUND COLOR */
 static void
-xcbc (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcbc (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   int   bg_color[3];            /* temporary array */
@@ -1005,10 +779,7 @@ anything *surf_list[];
 
 /* VDC EXTENT */
 static void 
-xcvdcx (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xcvdcx (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -1069,10 +840,7 @@ anything *surf_list[];
      
 /* DEVICE VIEWPORT */
 static void 
-xcv (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xcv (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -1109,10 +877,7 @@ anything *surf_list[];
 
 /* CLIP INDICATOR */
 static void 
-xccl (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xccl (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -1137,10 +902,7 @@ anything *surf_list[];
 
 /* DRAWING SURFACE CLIP INDICATOR */
 static void 
-xcdscl (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xcdscl (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -1166,9 +928,7 @@ anything *surf_list[];
 
 /* DEQUEUE ERROR REPORTS */
 static void 
-xcdqerr( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcdqerr(anything **params, anything **surf_list)
 {
  int    i;                      /* loop variable */
  int    max_ret;                /* max number of errors to return */
@@ -1214,10 +974,7 @@ anything *surf_list[];
 
 /* ERROR HANDLING CONTROL */
 static void
-xcerhct( params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcerhct(anything **params, int num_surfaces, anything **surf_list)
 {
   int   i, j;                   /* loop indices */
   
@@ -1252,10 +1009,7 @@ anything *surf_list[];
 
 /* COLOR INDEX PRECISION */
 static void
-xccixp (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xccixp (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -1280,10 +1034,7 @@ anything *surf_list[];
 
 /* ESCAPE */
 static void
-xcesc (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xcesc (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   int   j;                      /* loop index */
@@ -1418,9 +1169,7 @@ anything *surf_list[];
 
 /* INQUIRE DEVICE IDENTIFICATION */
 static void
-xcqid (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqid (anything **params, anything **surf_list)
 {
   char  *cgi_devid;             /* pointer to character device id */
   int   maxchr;                 /* max number of chars in device id */
@@ -1460,9 +1209,7 @@ anything *surf_list[];
 
 /* INQUIRE DEVICE DESCRIPTION */
 static void
-xcqd( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqd(anything **params, anything **surf_list)
 {
   int   qdc_index;              /* index for inquiries to vdiqdc  */
   float value;                  /* value returned by vdiqdc */
@@ -1532,9 +1279,7 @@ anything *surf_list[];
 
 /* LOOKUP FUNCTION SUPPORT */
 static void
-xclf( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xclf(anything **params, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   int   qdc_index = 24;         /* for inquire SVDI */
@@ -1627,9 +1372,7 @@ anything *surf_list[];
 
 /* LOOKUP PROFILE SUPPORT */
 static void
-xclpr( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xclpr(anything **params, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
 
@@ -1652,9 +1395,7 @@ anything *surf_list[];
 
 /* INQUIRE SUPPORTED PRECISIONS */
 static void
-xcqsp( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqsp(anything **params, anything **surf_list)
 {
   /* there is only one surface for inquiries */
   cur_state = (surf_statelist *)surf_list[0];
@@ -1669,9 +1410,7 @@ anything *surf_list[];
 
 /* LOOKUP ESCAPE SUPPORT */
 static void
-xclesc (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xclesc (anything **params, anything **surf_list)
 {
   int   i;                      /* loop index */
   int esc = 1400;               /* for inquire escape */
@@ -1708,9 +1447,7 @@ anything *surf_list[];
 
 /* INQUIRE CURRENT PRECISIONS */
 static void
-xcqp( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqp(anything **params, anything **surf_list)
 {
   /* there is only one surface for inquiries */
   cur_state = (surf_statelist *)surf_list[0];
@@ -1724,9 +1461,7 @@ anything *surf_list[];
 
 /* INQUIRE CLIPPING */
 static void
-xcqcl( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqcl(anything **params, anything **surf_list)
 {
   /* there is only one surface for inquiries */
   cur_state = (surf_statelist *)surf_list[0];
@@ -1762,10 +1497,7 @@ anything *surf_list[];
 
 /* POLYLINE */
 static void 
-xcpl (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xcpl (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i,j;                    /* indices for loops */
   int   np;                     /* number of points in polyline */
@@ -2018,10 +1750,7 @@ anything *surf_list[];
 
 /* DISJOINT POLYLINE */
 static void
-xcdjpl (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcdjpl (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i,j;                    /* indices for loops */
   int   np;                     /* number of points in polyline */
@@ -2243,10 +1972,7 @@ anything *surf_list[];
 
 /* POLYMARKER */
 static void
-xcpm (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcpm (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i,j;                    /* indices for loops */
   int   np;                     /* number of points */
@@ -2310,10 +2036,7 @@ anything *surf_list[];
       
 /* TEXT */
 static void
-xctx (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xctx (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i, j;                   /* indices for loops */
   float x, y;                   /* x,y starting position */
@@ -2432,10 +2155,7 @@ anything *surf_list[];
 
 /* POLYGON */
 static void 
-xcpg (params, num_surfaces, surf_list)
-anything *params[];
-int     num_surfaces;
-anything *surf_list[];
+xcpg (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i,j;                    /* indices for loops */
   int   np;                     /* number of points */
@@ -2538,10 +2258,7 @@ anything *surf_list[];
 
 /* CELL ARRAY */
 static void
-xcca (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcca (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   int   j,k;                    /* loop indices */
@@ -2895,10 +2612,7 @@ anything *surf_list[];
 
 /* PIXEL ARRAY */
 static void
-xcpxa (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcpxa (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   int   j,k;                    /* loop indices */
@@ -3284,10 +2998,7 @@ anything *surf_list[];
 
 /* LINE TYPE */
 static void
-xclnt (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xclnt (anything **params, int num_surfaces, anything **surf_list)
 {
 
   int   i;                      /* index for loop on surfaces */
@@ -3342,10 +3053,7 @@ anything *surf_list[];
 
 /* LINE WIDTH */
 static void
-xclnw (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xclnw (anything **params, int num_surfaces, anything **surf_list)
 {
 
   int   i;                      /* index for loop on surfaces */
@@ -3384,10 +3092,7 @@ anything *surf_list[];
 
 /* LINE COLOR */
 static void
-xclnc (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xclnc (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -3421,10 +3126,7 @@ anything *surf_list[];
 
 /* MARKER TYPE */
 static void
-xcmkt (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcmkt (anything **params, int num_surfaces, anything **surf_list)
 {
    /* CGI marker types: */
    /* 1: dot - supported
@@ -3446,10 +3148,7 @@ anything *surf_list[];
 
 /* MARKER SIZE */
 static void
-xcmks (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcmks (anything **params, int num_surfaces, anything **surf_list)
 {
   /* marker size is mapped to nearest avail marker size on
    * the device. SVDI only supports 1 marker size, which is
@@ -3463,10 +3162,7 @@ anything *surf_list[];
 
 /* MARKER COLOR */
 static void
-xcmkc (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcmkc (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -3500,10 +3196,7 @@ anything *surf_list[];
 
 /* TEXT PRECISION */
 static void
-xctxp (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xctxp (anything **params, int num_surfaces, anything **surf_list)
 {
  /* error 4:001 - Function not supported. Function ignored */
  report_error( cur_state, 4, 001, *(short *)params[0] );
@@ -3513,10 +3206,7 @@ anything *surf_list[];
 
 /* TEXT COLOR */
 static void
-xctxc (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xctxc (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -3550,10 +3240,7 @@ anything *surf_list[];
      
 /* CHARACTER HEIGHT */
 static void
-xcchh (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcchh (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   float vdi_cs;                 /* SVDI character size */
@@ -3589,10 +3276,7 @@ anything *surf_list[];
 
 /* CHARACTER ORIENTATION */
 static void
-xccho (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xccho (anything **params, int num_surfaces, anything **surf_list)
 {
  /* error 4:001 - Function not supported. Function ignored */
  report_error( cur_state, 4, 001, *(short *)params[0] );
@@ -3602,10 +3286,7 @@ anything *surf_list[];
 
 /* INTERIOR STYLE */
 static void
-xcis (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcis (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -3637,10 +3318,7 @@ anything *surf_list[];
 
 /* FILL COLOR */
 static void
-xcflc (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcflc (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -3674,10 +3352,7 @@ anything *surf_list[];
 
 /* COLOR SELECTION MODE */
 static void
-xccsm (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xccsm (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   
@@ -3712,10 +3387,7 @@ anything *surf_list[];
 
 /* COLOR TABLE */
 static void
-xcct (params, num_surfaces, surf_list)
-anything *params[];
-int num_surfaces;
-anything *surf_list[];
+xcct (anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surfaces */
   int   j, k;                   /* indices for looping */
@@ -3877,9 +3549,7 @@ anything *surf_list[];
 
 /* GET TEXT EXTENT */
 static void
-xcgtxx (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcgtxx (anything **params, anything **surf_list)
 {
   float act_h, act_w;           /* actual char height and width (VDC) */
   float x1,y1,x2;               /* parrallelogram parts */
@@ -3941,9 +3611,7 @@ anything *surf_list[];
 
 /* INQUIRE PRIMITIVE SUPPORT LEVELS */
 static void
-xcqprl( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqprl(anything **params, anything **surf_list)
 {
   int   qdc_index = 25;         /* index for inquiries to vdiqdc  */
   float value;                  /* value returned by vdiqdc */
@@ -4021,9 +3689,7 @@ anything *surf_list[];
 
 /* INQUIRE LINE CAPABILITY */
 static void
-xcqln (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqln (anything **params, anything **surf_list)
 {
 
   /* there is only one surface for inquiries */
@@ -4055,9 +3721,7 @@ anything *surf_list[];
 
 /* INQUIRE LIST OF AVAILABLE LINE TYPES */
 static void 
-xcqlnt (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqlnt (anything **params, anything **surf_list)
 {
   int   i,j;                    /* loop indicies */
   int   qdc_index = 6;          /* index for inquiries to vdiqdc  */
@@ -4143,9 +3807,7 @@ anything *surf_list[];
 
 /* INQUIRE LIST OF AVAILABLE SCALED LINE WIDTHS */
 static void
-xcqslw( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqslw(anything **params, anything **surf_list)
 {
   int   qdc_index = 5;          /* index for inquiries to vdiqdc  */
   float value;                  /* value returned by vdiqdc */
@@ -4179,9 +3841,7 @@ anything *surf_list[];
 
 /* INQUIRE MARKER CAPABILITY */
 static void
-xcqmk (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqmk (anything **params, anything **surf_list)
 {
   /* there is only one surface for inquiries */
   cur_state = (surf_statelist *)surf_list[0];
@@ -4212,9 +3872,7 @@ anything *surf_list[];
 
 /* INQUIRE LIST OF AVAILABLE MARKER TYPES */
 static void
-xcqmkt (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqmkt (anything **params, anything **surf_list)
 {
   static int set = FALSE;       /* flag whether values have been set */
   static int ntotal;            /* save total nbr of linestyles */
@@ -4250,9 +3908,7 @@ anything *surf_list[];
 
 /* INQUIRE LIST OF AVAILABLE SCALED MARKER SIZES */
 static void
-xcqsms( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqsms(anything **params, anything **surf_list)
 {
   /* there is only one surface for inquiries */
   cur_state = (surf_statelist *)surf_list[0];
@@ -4271,9 +3927,7 @@ anything *surf_list[];
 
 /* INQUIRE LIST OF AVAILABLE CHARACTER HEIGHTS */
 static void
-xcqchh( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqchh(anything **params, anything **surf_list)
 {
   int   qdc_index = 7;          /* index for inquiries to vdiqdc  */
   float value;                  /* value returned by vdiqdc */
@@ -4319,9 +3973,7 @@ anything *surf_list[];
 
 /* INQUIRE FILL CAPABILITY */
 static void
-xcqfl (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqfl (anything **params, anything **surf_list)
 {
   static int set = FALSE;       /* flag whether values have been set */
   static int ntotal;            /* save total nbr of fill styles */
@@ -4384,9 +4036,7 @@ anything *surf_list[];
 
 /* INQUIRE COLOR CAPABILITIES */
 static void 
-xcqc( params, surf_list )
-anything *params[];
-anything *surf_list[];
+xcqc(anything **params, anything **surf_list)
 {
   int   qdc_index;              /* index for inquiries to vdiqdc  */
   float value;                  /* value returned by vdiqdc */
@@ -4445,9 +4095,7 @@ anything *surf_list[];
 
 /* INQUIRE LINE ATTRIBUTES */
 static void 
-xcqlna (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqlna (anything **params, anything **surf_list)
 {
 
   /* there is only one surface for inquiries */
@@ -4487,9 +4135,7 @@ anything *surf_list[];
 
 /* INQUIRE MARKER ATTRIBUTES */
 static void 
-xcqmka (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqmka (anything **params, anything **surf_list)
 {
 
   /* there is only one surface for inquiries */
@@ -4529,9 +4175,7 @@ anything *surf_list[];
 
 /* INQUIRE TEXT ATTRIBUTES */
 static void 
-xcqtxa (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqtxa (anything **params, anything **surf_list)
 {
 
   /* there is only one surface for inquiries */
@@ -4601,9 +4245,7 @@ anything *surf_list[];
 
 /* INQUIRE FILL ATTRIBUTES */
 static void 
-xcqfla (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqfla (anything **params, anything **surf_list)
 {
 
   /* there is only one surface for inquiries */
@@ -4660,9 +4302,7 @@ anything *surf_list[];
 
 /* INQUIRE LIST OF COLOR TABLE ENTRIES */
 static void 
-xcqcte (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcqcte (anything **params, anything **surf_list)
 {
   int   i;                      /* loop index */
   int   first;                  /* index of first element to return */
@@ -4705,9 +4345,7 @@ anything *surf_list[];
 
 /* INITIALIZE LOGICAL INPUT DEVICE */
 static void
-xcili (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcili (anything **params, anything **surf_list)
 {
    /* there is only one surface for input */
    cur_state = (surf_statelist *)surf_list[0];
@@ -4737,9 +4375,7 @@ anything *surf_list[];
 
 /* REQUEST LOCATOR */
 static void
-xcrqlc (params, surf_list)
-anything *params[];
-anything *surf_list[];
+xcrqlc (anything **params, anything **surf_list)
 {
   float x, y;                   /* x,y values of locator */
   
@@ -4805,8 +4441,8 @@ anything *surf_list[];
 /* init_state */
 /* Initialize the state list */
 static void 
-init_state ( surf_state )
-surf_statelist  *surf_state;  /* surface statelist to init */
+init_state (surf_statelist *surf_state)
+                              /* surface statelist to init */
 {
   int   i;                      /* loop index */
   float tmp_array[1][3];        /* temp array to set SVDI color table */
@@ -4969,7 +4605,7 @@ surf_statelist  *surf_state;  /* surface statelist to init */
 /* set_dev_descrip */ 
 /* Set the device description table */
 static void 
-set_dev_descrip ()
+set_dev_descrip (void)
 {
   /* dev_descrip is global */
   int   j;                      /* loop index */
@@ -5069,8 +4705,8 @@ set_dev_descrip ()
 /* reset_vdi */
 /* Reset SVDI values. Used if CI is called twice */
 static void 
-reset_vdi ( surf_state )
-surf_statelist  *surf_state; /* current surface statelist */
+reset_vdi (surf_statelist *surf_state)
+                             /* current surface statelist */
 {
   
    /* reset the output status */
@@ -5090,8 +4726,7 @@ surf_statelist  *surf_state; /* current surface statelist */
  * in NDC and VDC.
  */
 static void
-set_mapping( surf_state ) 
-surf_statelist *surf_state;
+set_mapping(surf_statelist *surf_state)
 {
   point ndc_vp1, ndc_vp2;
 
@@ -5143,8 +4778,7 @@ surf_statelist *surf_state;
 /* set_clipping */
 /* Set up the clip region. */
 static void
-set_clipping( cur_state )
-surf_statelist *cur_state;
+set_clipping(surf_statelist *cur_state)
 {
   point clip1, clip2;                   /* temp clip values */
 
@@ -5279,9 +4913,7 @@ surf_statelist *cur_state;
 /* set_foreground_color */
 /* Set the SVDI foreground color */
 static void
-set_foreground_color( surf_state, colors )
-surf_statelist *surf_state;
-int colors[3];
+set_foreground_color(surf_statelist *surf_state, int *colors)
 { 
   int   zero = 0;
   int   one = 1;
@@ -5353,9 +4985,7 @@ int colors[3];
 /* set_background_color */
 /* Set the SVDI background color */
 static void
-set_background_color( surf_state, colors )
-surf_statelist *surf_state;
-int colors[3];
+set_background_color(surf_statelist *surf_state, int *colors)
 {
   int   i;                      /* loop index */
   int   index;                  /* color index */
@@ -5459,9 +5089,7 @@ int colors[3];
 /* report_error */
 /* Stuff the error info into the error queue */
 static void
-report_error( surf_state, e_class, e_num, f_id )
-surf_statelist *surf_state;
-int e_class, e_num, f_id;
+report_error(surf_statelist *surf_state, int e_class, int e_num, int f_id)
 {
   int   err_slot;               /* slot in the queue to put the error */
 
@@ -5508,13 +5136,13 @@ int e_class, e_num, f_id;
 /* gettoken */
 /* Return one token from data record....written by Pat MaGee, LANL */
 static void
-gettoken (index_p, numrecs_p, data_p, max_chars, outtoken_p)
-  int   *index_p;       /* in: 1st char of whitespace before token */
+gettoken (int *index_p, int *numrecs_p, char *data_p, int max_chars, char *outtoken_p)
+                        /* in: 1st char of whitespace before token */
                         /* out: 1st char past token */
-  int   *numrecs_p;     /* in: number of data records */
-  char  *data_p;        /* in: 80 character records */
-  int   max_chars;      /* in: max # of chars to put into outtoken */
-  char  *outtoken_p;    /* out: where to put output token */
+                        /* in: number of data records */
+                        /* in: 80 character records */
+                        /* in: max # of chars to put into outtoken */
+                        /* out: where to put output token */
 {
    char c;              /* char from data record */
    int  num_chars;      /* # chars put into outtoken so far */
@@ -5568,12 +5196,7 @@ gettoken (index_p, numrecs_p, data_p, max_chars, outtoken_p)
  * inline.
  */
 static int
-poly_clip( cmin, cmax, vx, vy, vlen, xout, yout, lenout )
-point *cmin, *cmax;
-float vx[], vy[];
-int vlen;
-float xout[], yout[];
-int *lenout;
+poly_clip(point *cmin, point *cmax, float *vx, float *vy, int vlen, float *xout, float *yout, int *lenout)
 {
   point s, p, t;
   int   i, j, bnd, curlen;
@@ -5672,10 +5295,7 @@ int *lenout;
  * top, right, bottom, left )
  */
 static int
-inside_bnd( v, bmin, bmax, bound_num)
-point *v;
-point *bmin, *bmax;
-int bound_num;
+inside_bnd(point *v, point *bmin, point *bmax, int bound_num)
 {
    /* this routine assumes a rectangular boundry */
    switch( bound_num ) {
@@ -5694,10 +5314,7 @@ int bound_num;
  * to top, right, bottom, and left boundry edges, repectively.
  */
 static point
-intersect_bnd( p1, p2, bmin, bmax, bound_num)
-point *p1, *p2;
-point *bmin, *bmax;
-int bound_num;
+intersect_bnd(point *p1, point *p2, point *bmin, point *bmax, int bound_num)
 {
   point temp;
 
