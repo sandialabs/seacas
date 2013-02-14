@@ -19,8 +19,6 @@ function execute_epu {
     cycles=$1
     all_options=$2
     
-    let "cycles -= 1"
-
     $PARALLEL -u "$EPU -cycle {} $all_options" ::: $($ZPAD $cycles)
 
     epu_rc=$?

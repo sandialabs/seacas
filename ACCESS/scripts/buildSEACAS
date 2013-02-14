@@ -253,53 +253,60 @@ fi
 PossibleError=NO
 err_chk=0
 srch_for=""
-grep ERROR $LogFile |grep -v MPI_ERRORS |grep -v warning: > /dev/null 
+rm -f ${LogFile}.errors
+touch ${LogFile}.errors
+grep ERROR $LogFile |grep -v MPI_ERRORS |grep -v warning: >> ${LogFile}.errors
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} ERROR"
    err_chk=`expr $err_chk + 1`
    PossibleError=YES
 fi
-grep Error $LogFile |grep -v MPI_Error |grep -v ignored |grep -v PrintErrorStackOn > /dev/null 
+grep Error $LogFile |grep -v MPI_Error |grep -v ignored |grep -v PrintErrorStackOn >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} Error"
    err_chk=`expr $err_chk + 2`
    PossibleError=YES
 fi
-grep "error:" $LogFile > /dev/null 
+#grep "error:" $LogFile |grep -v 'Autoconf' >> ${LogFile}.errors 
+grep "error:" $LogFile >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} error:"
    err_chk=`expr $err_chk + 4`
    PossibleError=YES
 fi
-grep -i "can't" $LogFile > /dev/null 
+grep -i "can't" $LogFile >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} can't"
    err_chk=`expr $err_chk + 8`
    PossibleError=YES
 fi
-grep -i cannot $LogFile |grep -v optimize > /dev/null 
+grep -i cannot $LogFile |grep -v optimize >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} cannot"
    err_chk=`expr $err_chk + 16`
    PossibleError=YES
 fi
-grep -i "don't" $LogFile > /dev/null 
+grep -i "don't" $LogFile >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} don't"
    err_chk=`expr $err_chk + 32`
    PossibleError=YES
 fi
-grep -i "not found" $LogFile |grep -v warning |grep -v CUNIT> /dev/null 
+grep -i "not found" $LogFile |grep -v warning |grep -v CUNIT >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} not found"
    err_chk=`expr $err_chk + 64`
    PossibleError=YES
 fi
-grep -i "no space" $LogFile > /dev/null 
+grep -i "no space" $LogFile >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} no space"
    err_chk=`expr $err_chk + 128`
    PossibleError=YES
+fi
+
+if [ "$PossibleError" = "NO" ] ; then
+    rm -f ${LogFile}.errors
 fi
 
 HasOptionC=NO
@@ -308,6 +315,7 @@ SkipIt=NO
 if [ $continue -eq 1 ] && [ "$PossibleError" = "YES" ] ; then
    echo ""
    echo "   ${txtred}An error might have occured! (Code=${err_chk})${txtrst}"
+   echo "   Check ${LogFile}.errors to see potential errors."
    echo "   Continuing due to -continue option."
    PossibleError="NO"
 fi
@@ -803,7 +811,7 @@ HelpMenu() {
 echo ""
 echo "1) Build all of SEACAS (including the Imake tools)"
 echo ""
-echo "   (out-of-date) This option will build SEACAS from scratch. First, the configuration"
+echo "   (out of date) This option will build SEACAS from scratch. First, the configuration"
 echo "   files (site.def and your_system.cf) will be modified and then the"
 echo "   Imake tools will be built and installed. Next all the Makefiles are"
 echo "   made and finally all the SEACAS codes are built (libraries, pre- and"
