@@ -34,16 +34,11 @@ c=======================================================================
       PROGRAM BLOTII
 C=======================================================================
 
-C                         *** BLOTII 1.00 ***
+C                         *** BLOT ***
 
-C   --*** BLOTII *** (BLOTII) Post-processing plot program
-C   --   Mofified by John Glick 1/20/89
-C   --   Written by Amy Gilkey - revised 06/01/88
-C   --   Version 1.1   17 July, 1990   Ray J. Meyers
-C   --       Version 1.11 15 Nov, 1990 - added colored spheres
-C   --       Version 1.12 04 Dec, 1990 - added sun/1 capabilities
+C   --*** BLOT *** (BLOT) Post-processing plot program
 C   --
-C   --BLOTII is a graphics program for post-processing of finite element
+C   --BLOT is a graphics program for post-processing of finite element
 C   --analyses output in the EXODUS II database format.  BLOT combines the
 C   --plotting capabilities of DETOUR, TPLOT, and SPLOT.  It is command
 C   --driven with free-format input.  BLOT can drive any graphics device
@@ -297,7 +292,7 @@ C   --Open database file
         CALL PRTERR ('FATAL', SCRATCH(:LENSTR(SCRATCH)))
         CALL PRTERR ('CMDSPEC',
      *    'Syntax is: "blot.dev [-basename basename] [-ps_option num]'//
-     *    ' filename"')
+     *    ' [-nomap node|element|all] filename"')
         GOTO 170
       END IF
       EXODUS = .FALSE.
