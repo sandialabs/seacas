@@ -44,6 +44,7 @@
 #include <Ioss_DataSize.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_PropertyManager.h>
+#include <Ioss_EntityType.h>
 
 #include <vector>
 
@@ -75,7 +76,10 @@ namespace Ioss {
     public:
 
       // Check to see if database state is ok...
-      virtual bool ok(bool write_message = false) const {return dbState != Ioss::STATE_INVALID;}
+      // If 'write_message' true, then output a warning message indicating the problem.
+      // If 'error_message' non-null, then put the warning message into the string and return it.
+      virtual bool ok(bool write_message = false, std::string *error_message=NULL) const
+      {return dbState != Ioss::STATE_INVALID;}
 
       // Check capabilities of input/output database...  Returns an
       // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -88,14 +92,22 @@ namespace Ioss {
 
       virtual ~DatabaseIO();
 
+      // Eliminate as much memory as possible, but still retain meta data information
+      // Typically, eliminate the maps...
+      virtual void release_memory() {}
+
       std::string get_filename() const {return DBFilename;}
       bool is_input() const {return isInput;}
       Ioss::DatabaseUsage usage() const {return dbUsage;}
       
+      virtual bool needs_shared_node_information() const {return false;}
+
+      Ioss::IfDatabaseExistsBehavior open_create_behavior() const;
+      
       void set_region(Region* region) {region_ = region;}
 
-      virtual void openDatabase() const {};
-      virtual void closeDatabase() const {};
+      virtual void openDatabase() const {}
+      virtual void closeDatabase() const {}
 
       virtual bool begin(Ioss::State state) = 0;
       virtual bool   end(Ioss::State state) = 0;
@@ -105,7 +117,7 @@ namespace Ioss {
 
       // Metadata-related functions.
       virtual void read_meta_data() = 0;
-      virtual void get_step_times() {};
+      virtual void get_step_times() {}
 
       virtual bool internal_edges_available() const {return false;}
       virtual bool internal_faces_available() const {return false;}
@@ -139,8 +151,8 @@ namespace Ioss {
       void set_logging(bool on_off) {doLogging = on_off;}
 
       virtual int maximum_symbol_length() const {return 0;} // Default is unlimited...
-      char get_field_separator() {return fieldSuffixSeparator;}
-      void set_field_separator(const char separator) {fieldSuffixSeparator = separator;}
+      char get_field_separator() const;
+      void set_field_separator(const char separator);
       void set_lower_case_variable_names(bool true_false) const {lowerCaseVariableNames = true_false;}
       void set_surface_split_type(Ioss::SurfaceSplitType split_type) {splitType = split_type;}
       Ioss::SurfaceSplitType get_surface_split_type() const {return splitType;}
@@ -218,7 +230,7 @@ namespace Ioss {
 
       DatabaseIO(Region *region, const std::string& filename,
 		 Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-		 const Ioss::PropertyManager &properties);
+		 const Ioss::PropertyManager &props);
 
       /*! 
        * The properties member data contains properties that can be
@@ -251,6 +263,16 @@ namespace Ioss {
       ElementTopology *commonSideTopology;
 
       
+      template <typename T>
+	void create_groups(const std::string &property_name, EntityType type,
+			   const std::string &type_name, const T* set_type);
+      template <typename T>
+	void create_group(EntityType type, const std::string &type_name,
+			  const std::vector<std::string> &group_spec, const T* set_type);
+
+      // Create new sets as groups of existing exodus sets...
+      void handle_groups(); 
+
       /*!
        * Filename that this Database is connected with.  Derived
        * DatabaseIO classes may need to change this if the passed  in
@@ -290,8 +312,6 @@ namespace Ioss {
 
       mutable int overlayCount;
 
-      /// Character(s) to use between base name of field and component suffices.
-      char fieldSuffixSeparator;
       Ioss::SurfaceSplitType splitType;
       Ioss::DatabaseUsage dbUsage;
       mutable Ioss::DataSize dbIntSizeAPI;

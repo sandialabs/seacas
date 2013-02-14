@@ -30,48 +30,26 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_CommSet.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_Field.h>
-#include <Ioss_Property.h>
-#include <assert.h>
-#include <stddef.h>
+#ifndef IOSS_Iopx_IOFactory_h
+#define IOSS_Iopx_IOFactory_h
+
+#include <Ioss_IOFactory.h>
+#include <Ioss_DBUsage.h>
 #include <string>
 
-#include "Ioss_FieldManager.h"
-#include "Ioss_GroupingEntity.h"
-#include "Ioss_PropertyManager.h"
+namespace Iopx {
 
-Ioss::CommSet::CommSet(Ioss::DatabaseIO *io_database,
-		       const std::string& my_name,
-		       const std::string& entity_type,
-		       size_t entity_count)
-  : Ioss::GroupingEntity(io_database, my_name, entity_count)
-{
-  assert(entity_type == "node" || entity_type == "side");
-  properties.add(Ioss::Property("entity_type",  entity_type));
+  class IOFactory : public Ioss::IOFactory
+    {
+    public:
+      static const IOFactory* factory();
 
-  // Field contains a pair of type [entity_id, shared_cpu]
-  fields.add(Ioss::Field("entity_processor", field_int_type(), "pair",
-			 Ioss::Field::COMMUNICATION, entity_count));
-  fields.add(Ioss::Field("entity_processor_raw", field_int_type(), "pair",
-			 Ioss::Field::COMMUNICATION, entity_count));
+    private:
+      IOFactory();
+      Ioss::DatabaseIO* make_IO(const std::string& filename,
+				Ioss::DatabaseUsage db_usage,
+				MPI_Comm communicator,
+				const Ioss::PropertyManager &properties) const;
+    };
 }
-
-int64_t Ioss::CommSet::internal_get_field_data(const Ioss::Field& field,
-				 void *data, size_t data_size) const
-{
-  return get_database()->get_field(this, field, data, data_size);
-}
-
-int64_t Ioss::CommSet::internal_put_field_data(const Ioss::Field& field,
-				 void *data, size_t data_size) const
-{
-  return get_database()->put_field(this, field, data, data_size);
-}
-
-Ioss::Property
-Ioss::CommSet::get_implicit_property(const std::string& my_name) const
-{
-  return Ioss::GroupingEntity::get_implicit_property(my_name);
-}
+#endif // IOSS_Iopx_IOFactory_h

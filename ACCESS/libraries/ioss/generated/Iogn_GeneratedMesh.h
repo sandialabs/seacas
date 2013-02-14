@@ -32,7 +32,9 @@
 
 #ifndef IOSS_Iogn_GeneratedMesh_h
 #define IOSS_Iogn_GeneratedMesh_h
+
 #include <string>
+#include <map>
 #include <vector>
 #include <stdint.h>
 #include <iostream>
@@ -186,7 +188,7 @@ namespace Iogn {
     explicit GeneratedMesh(const std::string &parameters, int proc_count = 1, int my_proc = 0);
     GeneratedMesh(int64_t num_x, int64_t num_y, int64_t num_z, int proc_count = 1, int my_proc = 0);
     GeneratedMesh() { };
-    ~GeneratedMesh();
+    virtual ~GeneratedMesh();
 
     /**
      * Add a shell block along the specified face of the hex mesh.
@@ -352,6 +354,7 @@ namespace Iogn {
     
     virtual int64_t communication_node_count_proc() const;
     virtual void node_communication_map(MapVector &map, std::vector<int> &proc);
+    virtual void owning_processor(int *owner, int64_t num_node);
     
     /** 
      * Fill the passed in 'map' argument with the node map
@@ -480,39 +483,6 @@ namespace Iogn {
     bool doRotation;
   };
 
-class CustomMesh : public GeneratedMesh
-{
-public:
-    CustomMesh() { }
-    virtual ~CustomMesh() { }
 
-    virtual int64_t node_count() const;
-    virtual int64_t node_count_proc() const;
-    virtual int64_t element_count() const;
-    virtual int64_t element_count(int64_t block_number) const;
-    virtual int64_t block_count() const;
-    virtual int64_t nodeset_count() const;
-    virtual int64_t sideset_count() const;
-    virtual int64_t element_count_proc() const;
-    virtual int64_t element_count_proc(int64_t block_number) const;
-    virtual int64_t nodeset_node_count_proc(int64_t id) const;
-    virtual int64_t sideset_side_count_proc(int64_t id) const;
-    virtual int64_t communication_node_count_proc() const;
-    virtual void coordinates(double *coord) const;
-    virtual void coordinates(std::vector<double> &coord) const;
-    virtual void coordinates(int component, std::vector<double> &xyz) const;
-    virtual void coordinates(std::vector<double> &x, std::vector<double> &y, std::vector<double> &z) const;
-    virtual void connectivity(int64_t block_number, int* connect) const;
-    virtual std::pair<std::string, int> topology_type(int64_t block_number) const;
-    virtual void sideset_elem_sides(int64_t setId, Int64Vector &elem_sides) const;
-    virtual void nodeset_nodes(int64_t nset_id, Int64Vector &nodes) const;
-    virtual void node_communication_map(MapVector &map, std::vector<int> &proc);
-    virtual void node_map(IntVector &map);
-    virtual void node_map(MapVector &map);
-    virtual void element_map(int block_number, IntVector &map) const;
-    virtual void element_map(int64_t block_number, MapVector &map) const;
-    virtual void element_map(MapVector &map) const;
-    virtual void element_map(IntVector &map) const;
-};
 }
 #endif
