@@ -1006,7 +1006,8 @@ isempty(char *line)
 		    (pend[5] == ' ' || pend[5] == '\t' || pend[5] == '\0'))
 		{
 		    *pend = '#';
-		    strcpy(pend+1, pend+5);
+		    //strcpy(pend+1, pend+5);
+		    memmove(pend+1, pend+5, strlen(pend+5)+1);
 		}
 #ifdef MAGIC_MAKE_VARS
 		if (*pend == 'X' && pend[1] == 'V' && pend[2] == 'A' &&
