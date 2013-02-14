@@ -131,18 +131,6 @@ XCOMM ACCESS.tmpl
 #define TempDir /usr/tmp
 #endif
           TEMPDIR = TempDir
-#ifndef HasAbaqus
-#define HasAbaqus       NO
-#endif
-#if HasAbaqus
-#ifndef AbaqusLibrary
-#define AbaqusLibrary AccessInstall/a485s.a
-#endif
-#else
-#ifndef AbaqusLibrary
-#define AbaqusLibrary /**/
-#endif
-#endif
 #ifndef DependCmd
 #define DependCmd makedepend
 #endif
@@ -157,13 +145,13 @@ XCOMM ACCESS.tmpl
  * Extra libraries required
  */
 
-#ifndef RpcLib
-#define RpcLib /**/
-#endif
-
 #ifndef ExtraNetcdfLib
 #if UseNetcdf4 && !defined ExcludeHDF5
+#if defined(BuildParallelAwareExodus) && UseParNetcdf
+#define ExtraNetcdfLib -L$(HDF5ROOT)/lib -lhdf5_hl -lhdf5 -lm -lz -lpnetcdf
+#else
 #define ExtraNetcdfLib -L$(HDF5ROOT)/lib -lhdf5_hl -lhdf5 -lm -lz
+#endif
 #else
 #define ExtraNetcdfLib /**/
 #endif
@@ -283,17 +271,22 @@ XCOMM Set in site.def : ProjectName, ProjectRelease, AccessRoot, AccessInstall
         TFLOPROOT = TflopAccessRoot
        CPLANTROOT = CplantAccessRoot
 
-XCOMM Used to specify location of hdf5 libraries for use with netcdf-4 
+XCOMM Used to specify location of hdf5 libraries for use with netcdf-4
          HDF5ROOT = HDF5_Root
 
 XCOMM Source code for the ACCESS System
         ITOOLSSRC = itools
+#ifndef ExcludeGraphics
       GRAPHICSSRC = graphics
           SVDISRC = svdi
+#endif
      LIBRARIESSRC = libraries
         NETCDFSRC = netcdf
+#ifndef ExcludeHDF5
           HDF5SRC = hdf5
+#endif
      SERIALMPISRC = serial_mpi
+        MATLABSRC = matlab
    APPLICATIONSRC = applications
        SCRIPTSSRC = scripts
         TESTPROBS = test
@@ -328,14 +321,12 @@ XCOMM Translator Subdirectories
      EXOMATLABSRC = exomatlab
         EXOMATSRC = exomat
        EXO2MATSRC = exo2mat
-#if HasMatlab 
        MAT2EXOSRC = mat2exo
-#endif
-
       EX1EX2V2SRC = ex1ex2v2
       EX2EX1V2SRC = ex2ex1v2
        EXODIFFSRC = exodiff
            EPUSRC = epu
+         SLICESRC = slice
         ABAEXOSRC = abaexo
       NEM_JOINSRC = nem_join
      NEM_SLICESRC = nem_slice
@@ -353,17 +344,19 @@ XCOMM Library Subdirectories
          SUPESSRC = supes
        SUPESDPSRC = supesdp
         SUPLIBSRC = suplib
-        LEGACYSRC = legacy
      MAPVARLIBSRC = mapvarlib
+        LEGACYSRC = legacy
         EXODUSSRC = exodus
+#ifndef ExcludeGraphics
            PLTSRC = plt
    VDI_DRIVERSSRC = vdi_drivers
+#endif
           IOSSSRC = ioss
         ZOLTANSRC = zoltan
          CHACOSRC = chaco
        NEMESISSRC = nemesis
     APREPROLIBSRC = aprepro
-         XHELPSRC = xhelp
+
 XCOMM Library Subdirectories for svdi
            CGISRC = cgi
            CDRSRC = cdr
@@ -389,7 +382,9 @@ XCOMM Pre- and Post-processing Subdirectories
        NUMBERSSRC = numbers
       NUMBERS2SRC = numbers2
        EX_JOINSRC = ex_join
+#ifndef ExcludeSpiff
          SPIFFSRC = spiff
+#endif
 
 XCOMM ACCESS installation directories
            BINDIR = BinDir
@@ -418,16 +413,17 @@ XCOMM Override Library directories
          PLIBPATH = PLibPath
       
 XCOMM Libraries
-             IOSS = -lIonit -lIoex  -lIogn -lIotr -lIohb -lIoss
+#if defined(BuildParallelAwareExodus)
+             IOPX = -lIopx -lzoltan -lparmetis -lmetis
+#endif
+             IOSS = -lIonit -lIoex  -lIogn -lIotr -lIohb -lIoss ${IOPX}
              HDF5 = -lhdf5
           HDF5_HL = -lhdf5_hl
             SUPES = -lsupes
           SUPESDP = -lsupesdp
            SUPLIB = -lsuplib
-           LEGACY = -llegacy
         MAPVARLIB = -lmapvarlib
               PLT = -lplt
-           RPCLIB = RpcLib
    EXTRANETCDFLIB = ExtraNetcdfLib
             LCLIB = -lLegacyContact
            NETCDF = -lnetcdf $(EXTRANETCDFLIB)
@@ -435,7 +431,7 @@ XCOMM Libraries
            EXODUS = -lexodus
        EXOIIV2FOR = -lexoIIv2for
      EXOIIV2FOR32 = -lexoIIv2for32
-           ABALIB = AbaqusLibrary
+            MATIO = -lmatio -lz
               CGI = -lcgi
               CDR = -lcdr
           NEMESIS = -lnemesis
@@ -444,7 +440,6 @@ XCOMM Libraries
        NEMESISF32 = -lnemIf32
             CHACO = -lchaco
            ZOLTAN = -lzoltan
- 	    MATIO = -lmatio -lz
 
 XCOMM Libraries and include path used for building parallel executables
          PARFLIBS = ParFLibs
