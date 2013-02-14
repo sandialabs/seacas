@@ -32,11 +32,6 @@ ACCESS.
    untar 
    create symbolic link from hdf5-X.X.X to hdf5-source
 
-*) Download matio library from http://sourceforge.net/projects/matio/
-   cd TPL/matio
-   untar
-   update version number in Imakefile
-
 
 2) cd back to the top-level 'seacas' subdirectory
    -- You can also rename 'seacas' to any other name you desire.
