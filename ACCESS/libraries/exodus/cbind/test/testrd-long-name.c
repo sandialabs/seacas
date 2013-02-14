@@ -854,7 +854,7 @@ int main (int argc, char **argv)
   /* read nodal variables parameters and names */
   num_nod_vars = 0;
   if (num_nodes > 0) {
-    error = ex_get_variable_param (exoid, EX_NODAL, &num_nod_vars);
+    error = ex_get_var_param (exoid, "n", &num_nod_vars);
     printf ("\nafter ex_get_var_param, error = %3d\n", error);
 
     for (i=0; i<num_nod_vars; i++)
@@ -862,7 +862,7 @@ int main (int argc, char **argv)
         var_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
       }
 
-    error = ex_get_variable_names (exoid, EX_NODAL, num_nod_vars, var_names);
+    error = ex_get_var_names (exoid, "n", num_nod_vars, var_names);
     printf ("\nafter ex_get_var_names, error = %3d\n", error);
 
     printf ("There are %2d nodal variables; their names are :\n", num_nod_vars);

@@ -31,41 +31,74 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 
-AR = ar cr
-INCLUDES = -I../../cbind/include -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/include
-F77EXTRAOPTIONS = -I../include 
-CFLAGS = -DADDC_
-CC = /opt/local/bin/clang-mp-3.1
-FC = /opt/local/bin/gfortran-mp-4.8
-RANLIB = true
+INCLUDES = -I../../cbind/include
+F77EXTRAOPTIONS = -I../include
 
-SRCS =	    exo_jack.c 
+SRCS =	    exo_jack.c exgenm_jack.c expenm_jack.c exgnnm_jack.c \
+	    exgvnm_jack.c expvnm_jack.c expnnm_jack.c excopy_jack.c exgem_jack.c \
+	    exgmp_jack.c exgnm_jack.c expem_jack.c expmp_jack.c expnm_jack.c
 
 SRCSF = addrwrap.f
 
-OBJS = ${SRCS:.c=.o} ${SRCSF:.f=.o}l
+OBJS = ${SRCS:.c=.o} ${SRCSF:.f=.o}
 
-all:: libexoIIv2for.a libexoIIv2for32.a
+exo_jack.c:     exo_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exo_jack.src > $@
 
-libexoIIv2for.a: addrwrap.o exo_jack.o
+exgenm_jack.c:  exgenm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgenm_jack.src > $@
+
+expenm_jack.c:  expenm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) expenm_jack.src > $@
+
+exgnnm_jack.c:  exgnnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgnnm_jack.src > $@
+
+expnnm_jack.c:  expnnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) expnnm_jack.src > $@
+
+exgvnm_jack.c:  exgvnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgvnm_jack.src > $@
+
+expvnm_jack.c:  expvnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) expvnm_jack.src > $@
+
+excopy_jack.c:  excopy_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) excopy_jack.src > $@
+
+exgem_jack.c:  exgem_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgem_jack.src > $@
+
+exgmp_jack.c:  exgmp_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgmp_jack.src > $@
+
+exgnm_jack.c:  exgnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgnm_jack.src > $@
+
+expem_jack.c:  expem_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) expem_jack.src > $@
+
+expmp_jack.c:  expmp_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) expmp_jack.src > $@
+
+expnm_jack.c:  expnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
+		./fortc -L . -P $(BITS) -O $(OS_TYPE) expnm_jack.src > $@
+
+all:: libexoIIv2for.a
+libexoIIv2for.a: $(OBJS)
 	$(AR) $@ $?
 	$(RANLIB) $@
 	cp libexoIIv2for.a ../../
 
-libexoIIv2for32.a: exo_jack32.o
-	$(AR) $@ $?
-	$(RANLIB) $@
-	cp libexoIIv2for32.a ../../
+clean::
+	rm -f *.c
 
-exo_jack32.o: exo_jack.c
-	$(CC) -o exo_jack32.o -c $(CFLAGS) $(INCLUDES) -DDEFAULT_REAL_INT exo_jack.c
-		
 clean::
 	rm -f *.CKP *.ln *.BAK *.bak *.o *.M *.mod core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
 
 .SUFFIXES: .c .F .f
 .c.o:
-	$(CC) $(INCLUDES) -c $(CFLAGS) $*.c
+	$(CC) -c $(CFLAGS) $*.c
 .f.o:
 	$(FC) -c $(FFLAGS) $*.f
 .F.o:
