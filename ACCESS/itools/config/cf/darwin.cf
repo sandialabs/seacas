@@ -12,10 +12,10 @@ XCOMM
 #define Build64BitAccess YES
 
 /* #define USE_INTEL 1 */
-/* #define GCC4GFORTRAN */ /* gcc-4.X or later */
+/* #define GCC4GFORTRAN */  /* gcc-4.X or later */
 /* #define GCCG77 1 */      /* gcc-3.4.X */
-/* #define USE_MACPORTS 4.5 */ /* the value represents the version of gcc */
-#define USE_CLANG 3.1
+/* #define USE_MACPORTS 4.6 */ /* the value represents the version of gcc */
+/* #define USE_CLANG 3.3 */
 
 /* Set the following if you want to build with backward compatability with an earlier OS version */
 /* NOTE: for Tiger (10.4) you need to set this to MacOSX10.4u */
@@ -145,16 +145,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  * Search web for 'restFP saveFP' for documentation about the following
  */
 #define ExtraLibraries	-lcc_dynamic
-#endif
-
-#if Parallel
-#define ParRunCmd "mpirun"
-#define NPCmd -n
-#define F90PrecOptions
-#define F77PrecOptions
-#define ParallelCCOptions 
-#define ParallelF77Options 
-#define ParallelF90Options 
 #endif
 
 #if defined(GCC4GFORTRAN) 

@@ -5,6 +5,8 @@ XCOMM site.def file for SNL ACCESS System
 
 /*
  * AccessRoot should specify the path to the ACCESS source directory
+ * i.e., the directory where you untarred the files and which should
+ * now have a subdirectory named 'ACCESS'
  */
 #define AccessRoot /Users/gdsjaar/src/SEACAS-SF
 
@@ -19,14 +21,18 @@ XCOMM site.def file for SNL ACCESS System
 #define BuildSharedExodusLibrary YES
 #endif
 
-/* Change to YES to enable hdf5-based netcdf build */
-#define UseNetcdf4 NO
+/* Change to NO to disable hdf5-based netcdf build */
+#define UseNetcdf4 YES
 
 /* Also, if the HDF5 library is external, specify the path to the installed root.
  *  The {HDF5_Root}/lib and {HDF5_Root}/include should have the hdf5 libraries and
  *  include files. 
  */
 #define HDF5_Root AccessRoot
+
+/* Change to NO to disable the use of parallel-netcdf (pnetcdf) netcdf build */
+/* Only built if PARALLEL_AWARE specified in {os}.cf (e.g. linux.cf) */
+#define UseParNetcdf YES
 
 /*
  * For most cases, leave the Platform define as "normal"; however,
@@ -41,6 +47,7 @@ XCOMM site.def file for SNL ACCESS System
  */
 
 #define TopLevelProject	ACCESS
+
 #define ProjectName "SNLA ACCESS"
 #define ProjectRelease "1.0"
 #define ProjectRoot AccessInstall
