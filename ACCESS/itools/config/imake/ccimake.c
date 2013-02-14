@@ -43,7 +43,7 @@ in this Software without prior written authorization from the X Consortium.
 
 extern int write(int, const void *, unsigned int);
 
-main()
+int main()
 {
 	write(1, imake_ccflags, sizeof(imake_ccflags) - 1);
 	exit(0);
