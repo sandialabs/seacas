@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 2012
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -30,48 +30,47 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_CommSet.h>
-#include <Ioss_DatabaseIO.h>
-#include <Ioss_Field.h>
-#include <Ioss_Property.h>
-#include <assert.h>
-#include <stddef.h>
-#include <string>
+#include <exodusII/Ioex_DatabaseIO.h>   // for Ioex DatabaseIO
+#include <par_exo/Iopx_DatabaseIO.h>    // for Iopx DatabaseIO
 
-#include "Ioss_FieldManager.h"
-#include "Ioss_GroupingEntity.h"
-#include "Ioss_PropertyManager.h"
+#include <par_exo/Iopx_IOFactory.h>    // for IOFactory
 
-Ioss::CommSet::CommSet(Ioss::DatabaseIO *io_database,
-		       const std::string& my_name,
-		       const std::string& entity_type,
-		       size_t entity_count)
-  : Ioss::GroupingEntity(io_database, my_name, entity_count)
-{
-  assert(entity_type == "node" || entity_type == "side");
-  properties.add(Ioss::Property("entity_type",  entity_type));
+#include <stddef.h>                     // for NULL
+#include <string>                       // for string
 
-  // Field contains a pair of type [entity_id, shared_cpu]
-  fields.add(Ioss::Field("entity_processor", field_int_type(), "pair",
-			 Ioss::Field::COMMUNICATION, entity_count));
-  fields.add(Ioss::Field("entity_processor_raw", field_int_type(), "pair",
-			 Ioss::Field::COMMUNICATION, entity_count));
-}
+#include "Ioss_CodeTypes.h"             // for MPI_Comm
+#include "Ioss_DBUsage.h"               // for DatabaseUsage
+#include "Ioss_IOFactory.h"             // for IOFactory
 
-int64_t Ioss::CommSet::internal_get_field_data(const Ioss::Field& field,
-				 void *data, size_t data_size) const
-{
-  return get_database()->get_field(this, field, data, data_size);
-}
+namespace Ioss { class DatabaseIO; }
 
-int64_t Ioss::CommSet::internal_put_field_data(const Ioss::Field& field,
-				 void *data, size_t data_size) const
-{
-  return get_database()->put_field(this, field, data, data_size);
-}
+namespace Iopx {
 
-Ioss::Property
-Ioss::CommSet::get_implicit_property(const std::string& my_name) const
-{
-  return Ioss::GroupingEntity::get_implicit_property(my_name);
+  const IOFactory* IOFactory::factory()
+  {
+    static IOFactory registerThis;
+    return &registerThis;
+  }
+
+  IOFactory::IOFactory()
+    : Ioss::IOFactory("parallel_exodus")
+  {
+    Ioss::IOFactory::alias("parallel_exodus", "dof_exodus");
+    Ioss::IOFactory::alias("parallel_exodus", "dof");
+  }
+
+  Ioss::DatabaseIO* IOFactory::make_IO(const std::string& filename,
+				       Ioss::DatabaseUsage db_usage,
+				       MPI_Comm communicator,
+				       const Ioss::PropertyManager &properties) const
+  {
+    int proc_count = 1;
+    MPI_Comm_size(communicator, &proc_count);
+    if (proc_count > 1) {
+      return new Iopx::DatabaseIO(NULL, filename, db_usage, communicator, properties);
+    } else {
+      return new Ioex::DatabaseIO(NULL, filename, db_usage, communicator, properties);
+    }
+  }
+
 }

@@ -1,4 +1,4 @@
-# Copyright(C) 1999-2010
+# Copyright(C) 2012
 # Sandia Corporation. Under the terms of Contract
 # DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 # certain rights in this software.
@@ -30,30 +30,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-INCLUDES = -I..
-DEFINES = -DNO_XDMF_SUPPORT -DNO_MPI
+CXXEXTRA_INCLUDES = -I..
+EXTRA_INCLUDES = -I..
 
-#if defined(BuildParallelAwareExodus)
-IOPX_DEP = ../libIopx.a
+#if defined SGIArchitecture
+CXXETRA_DEFINES = -ptused -DNO_MPI
+#else
+CXXEXTRA_DEFINES = -DNO_MPI
 #endif
 
-LIBS = -L.. ${IOSS} $(EXOIIV2C) $(NETCDF)
-DEPLIBS = ../libIoex.a ${IOPX_DEP} ../libIogn.a ../libIotr.a ../libIoss.a ../libIonit.a ../libIohb.a
+SRCS =  Iopx_DatabaseIO.C  Iopx_IOFactory.C  Iopx_Internals.C Iopx_DecompositionData.C
 
-PROGS = cth_pressure_map io_info io_shell shell_to_hex sphgen
+OBJS = ${SRCS:.C=.o}
 
-AllTarget($(PROGS))
-
-SRCS = io_info.C volume.C Ioss_GetLongOpt.C
-OBJS = $(SRCS:.C=.o)
-
-NormalCCTarget(cth_pressure_map, cth_pressure_map.o vector3d.o,  $(DEPLIBS), /**/, $(LIBS))
-NormalCCTarget(io_info,          io_info.o volume.o Ioss_GetLongOpt.o info_interface.o, $(DEPLIBS), /**/, $(LIBS))
-NormalCCTarget(io_shell,         io_shell.o,                    $(DEPLIBS), /**/, $(LIBS))
-NormalCCTarget(shell_to_hex,     shell_to_hex.o vector3d.o,     $(DEPLIBS), /**/, $(LIBS))
-NormalCCTarget(sphgen,           sphgen.o,                      $(DEPLIBS), /**/, $(LIBS))
-
-InstallProgram(io_info, $(BINDIR))
-InstallProgram(io_shell,$(BINDIR))
-InstallProgram(sphgen,  $(BINDIR))
+LibraryTargetSubdirs(libIopx.a,$(OBJS),../)
+DependTarget()
 
