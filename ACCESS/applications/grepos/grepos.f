@@ -628,9 +628,6 @@ C     ... See if node equivalencing specified
         write (*,*) 'Equivalencing ', nmatch, ' nodes'
         DELNP = (NMATCH .NE. 0)
         
-        IF (.NOT. DELNP) THEN
-          CALL MDDEL ('IXNP')
-        END IF
       end if
 C     --"Munch" the element blocks
 
@@ -728,21 +725,12 @@ C     --Mark if any elements are deleted
       IF (DELEL) THEN
 
 C     --Make up an index of nodes in the existing element blocks
-         if (.not. delnp) then
-            CALL MDRSRV ('IXNP', KIXNP, NUMNP)
-            CALL MDSTAT (NERR, MEM)
-            IF (NERR .GT. 0) GOTO 40
-         end if
-
          N = NUMNP
          CALL ZMFIXD (NELBLK, IA(KNELB), IA(KNLNK), IA(KLINK),
      *        N, IA(KIXNP))
 
          DELNP = (N .LT. NUMNP)
 
-         IF (.NOT. DELNP) THEN
-            CALL MDDEL ('IXNP')
-         END IF
       END IF
 
 C     --Squeeze the coordinates
@@ -993,11 +981,9 @@ C     can only map sideset variables if the sidesets are the same...
       CALL MDSTAT (NERR, MEM)
       IF (NERR .GT. 0) GOTO 40
 
-      IF (DELNP) THEN
-         CALL MDDEL ('IXNP')
-         CALL MDSTAT (NERR, MEM)
-         IF (NERR .GT. 0) GOTO 40
-      END IF
+      CALL MDDEL ('IXNP')
+      CALL MDSTAT (NERR, MEM)
+      IF (NERR .GT. 0) GOTO 40
 
       CALL MINMAX (NUMNP, A(KXN), XMIN, XMAX)
       CALL MINMAX (NUMNP, A(KYN), YMIN, YMAX)
@@ -1195,6 +1181,16 @@ C           dimensioned as (NUMEL, NVAREL)
      &      TIME,
      *      A(KVARGL), A(KVARNP), A(KVAREL), A(KVARNS), A(KVARSS), *120)
            
+           if (istep .eq. idefst) then
+C ... The model was deformed at this step, zero out the displacements
+C     at this step (Technically, should also subtract off this steps
+C     displacements from every other step, but that isn't supported yet...
+C     Assumes that displacements are the first 'ndim' nodal variables.             
+             do i=1, ndim*numnp
+               a(kvarnp+i-1) = 0.0
+             end do
+           end if
+
            if (inod2el .gt. 0) then
              ioff = 0
              inoff = 0
