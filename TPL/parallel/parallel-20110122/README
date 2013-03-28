@@ -1,0 +1,50 @@
+
+			 GNU Parallel README
+
+Please send problems and feedback to bug-parallel@gnu.org.
+
+= Presentation of GNU Parallel =
+
+GNU Parallel is a shell tool for executing jobs in parallel using one
+or more computers. A job is typically a single command or a small
+script that has to be run for each of the lines in the input. The
+typical input is a list of files, a list of hosts, a list of users, or
+a list of tables.
+
+If you use xargs today you will find GNU Parallel very easy to use. If
+you write loops in shell, you will find GNU Parallel may be able to
+replace most of the loops and make them run faster by running jobs in
+parallel. If you use ppss or pexec you will find GNU Parallel will
+often make the command easier to read.
+
+GNU Parallel also makes sure output from the commands is the same
+output as you would get had you run the commands sequentially. This
+makes it possible to use output from GNU Parallel as input for other
+programs.
+
+
+= Installation =
+
+Installation of GNU Parallel is a simple as:
+
+  ./configure && make && make install
+
+If you are not root you can install in ~/bin and ~/share:
+
+  ./configure --prefix=$HOME && make && make install
+
+After this you should be able to do:
+
+  parallel traceroute ::: foss.org.my gnu.org freenetproject.org
+
+This will run traceroute to 3 different hosts in parallel and print
+the output when the traceroutes are done.
+
+Watch the intro video for a quick introduction:
+http://www.youtube.com/watch?v=OpaiGYxkSuQ or at
+http://tinyogg.com/watch/TORaR/ and http://tinyogg.com/watch/hfxKj/
+
+
+= New versions =
+
+New versions will be released at: ftp://ftp.gnu.org/gnu/parallel/
