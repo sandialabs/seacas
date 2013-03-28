@@ -1,0 +1,230 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+sem - semaphore for executing shell command lines in parallel
+
+=head1 SYNOPSIS
+
+B<sem> [--fg] [--id <id>] [--timeout <secs>] [-j <num>] [--wait] command
+
+=head1 DESCRIPTION
+
+GNU B<sem> is an alias for GNU B<parallel --semaphore>.
+
+It works as a tool for executing shell commands in parallel. GNU
+B<sem> acts as a counting semaphore. When GNU B<sem> is called with
+command it will start the command in the background. When I<num>
+number of commands are running in the background, GNU B<sem> will wait
+for one of these to complete before starting another command.
+
+Before looking at the options you may want to check out the examples
+after the list of options. That will give you an idea of what GNU
+B<sem> is capable of.
+
+=head1 OPTIONS
+
+=over 9
+
+=item I<command>
+
+Command to execute. The command may be followed by arguments for the command.
+
+
+=item B<--count> I<N>
+
+=item B<-j> I<N>
+
+Run up to N commands in parallel. Default is 1 thus acting like a
+mutex.
+
+
+=item B<--id> I<id>
+
+=item B<-i> I<id>
+
+Use B<id> as the name of the semaphore. Default is the name of the
+controlling tty (output from B<tty>).
+
+The default normally works as expected when used interactively, but
+when used in a script I<id> should be set. $$ is often a good value.
+
+
+=item B<--fg>
+
+Do not put command in background.
+
+
+=item B<--timeout> I<secs> (not implemented)
+
+=item B<-t> I<secs> (not implemented)
+
+If the semaphore is not released within I<secs> seconds, take it anyway.
+
+
+=item B<--wait>
+
+=item B<-w>
+
+Wait for all commands to complete.
+
+=back
+
+=head1 EXAMPLE: Gzipping *.log
+
+Run one gzip process per CPU core. Block until a CPU core becomes
+available.
+
+  for i in `ls *.log` ; do
+    echo $i
+    sem -j+0 gzip $i ";" echo done
+  done
+  sem --wait
+
+=head1 EXAMPLE: Protecting pod2html from itself
+
+pod2html creates two files: pod2htmd.tmp and pod2htmi.tmp which it
+does not clean up. It uses these two files for a short time. But if
+you run multiple pod2html in parallel (e.g. in a Makefile with make
+-j) you need to protect pod2html from running twice at the same
+time. B<sem> running as a mutex will do just that:
+
+  sem --fg --id pod2html pod2html foo.pod > foo.html
+  sem --fg --id pod2html rm -f pod2htmd.tmp pod2htmi.tmp
+
+
+=head1 BUGS
+
+Quoting and composed commands are not working.
+
+
+=head1 REPORTING BUGS
+
+Report bugs to <bug-parallel@gnu.org>.
+
+
+=head1 AUTHOR
+
+Copyright (C) 2010,2011 Ole Tange, http://ole.tange.dk and Free
+Software Foundation, Inc.
+
+
+=head1 LICENSE
+
+Copyright (C) 2010,2011 Free Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+at your option any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+=head2 Documentation license I
+
+Permission is granted to copy, distribute and/or modify this documentation
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the file fdl.txt.
+
+=head2 Documentation license II
+
+You are free:
+
+=over 9
+
+=item B<to Share>
+
+to copy, distribute and transmit the work
+
+=item B<to Remix>
+
+to adapt the work
+
+=back
+
+Under the following conditions:
+
+=over 9
+
+=item B<Attribution>
+
+You must attribute the work in the manner specified by the author or
+licensor (but not in any way that suggests that they endorse you or
+your use of the work).
+
+=item B<Share Alike>
+
+If you alter, transform, or build upon this work, you may distribute
+the resulting work only under the same, similar or a compatible
+license.
+
+=back
+
+With the understanding that:
+
+=over 9
+
+=item B<Waiver>
+
+Any of the above conditions can be waived if you get permission from
+the copyright holder.
+
+=item B<Public Domain>
+
+Where the work or any of its elements is in the public domain under
+applicable law, that status is in no way affected by the license.
+
+=item B<Other Rights>
+
+In no way are any of the following rights affected by the license:
+
+=over 2
+
+=item *
+
+Your fair dealing or fair use rights, or other applicable
+copyright exceptions and limitations;
+
+=item *
+
+The author's moral rights;
+
+=item *
+
+Rights other persons may have either in the work itself or in
+how the work is used, such as publicity or privacy rights.
+
+=back
+
+=back
+
+=over 9
+
+=item B<Notice>
+
+For any reuse or distribution, you must make clear to others the
+license terms of this work.
+
+=back
+
+A copy of the full license is included in the file as cc-by-sa.txt.
+
+=head1 DEPENDENCIES
+
+GNU B<sem> uses Perl, and the Perl modules Getopt::Long, 
+Symbol, Fcntl.
+
+
+=head1 SEE ALSO
+
+B<parallel>(1)
+
+=cut
