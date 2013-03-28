@@ -1,0 +1,281 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>niceload - slow down a program when the load average is above a certain limit</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#options">OPTIONS</a></li>
+	<li><a href="#example__see_niceload_in_action">EXAMPLE: See niceload in action</a></li>
+	<li><a href="#example__run_updatedb">EXAMPLE: Run updatedb</a></li>
+	<li><a href="#example__run_rsync">EXAMPLE: Run rsync</a></li>
+	<li><a href="#environment_variables">ENVIRONMENT VARIABLES</a></li>
+	<li><a href="#exit_status">EXIT STATUS</a></li>
+	<li><a href="#reporting_bugs">REPORTING BUGS</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#license">LICENSE</a></li>
+	<ul>
+
+		<li><a href="#documentation_license_i">Documentation license I</a></li>
+		<li><a href="#documentation_license_ii">Documentation license II</a></li>
+	</ul>
+
+	<li><a href="#dependencies">DEPENDENCIES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>niceload - slow down a program when the load average is above a certain limit</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>niceload</strong> [-v] [-n nice] [-l load] [-t time] [-s time|-f factor] command</p>
+<p><strong>niceload</strong> [-v] [-n nice] [-l load] [-t time] [-s time|-f factor] -p=PID</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>GNU <strong>niceload</strong> will run a program when the load average is below a
+certain limit. When the limit is reached the program will be suspended
+for some time. Then resumed again for some time.  Then the load load
+average is checked again and we start over.</p>
+<p>If the load is 3.00 then the default settings will run a program
+like this:</p>
+<p>run 1 second, suspend (3.00-1.00) seconds, run 1 second, suspend
+(3.00-1.00) seconds, run 1 second, ...</p>
+<p>
+</p>
+<hr />
+<h1><a name="options">OPTIONS</a></h1>
+<dl>
+<dt><strong><a name="item__2dn_niceness"><strong>-n</strong> <em>niceness</em></a></strong>
+
+<dd>
+<p>Sets niceness. See <strong>nice</strong>(1).</p>
+</dd>
+</li>
+<dt><strong><a name="item__2dl_maxload"><strong>-l</strong> <em>maxload</em></a></strong>
+
+<dd>
+<p>Max load. The maximal load average before suspending command. Default
+is 1.00.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2dt_sec"><strong>-t</strong> <em>SEC</em></a></strong>
+
+<dd>
+<p>Recheck load time. Sleep SEC seconds before checking load
+again. Default is 1 second.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2ds_sec"><strong>-s</strong> <em>SEC</em></a></strong>
+
+<dd>
+<p>Suspend time. Suspend the command this many seconds when the max load
+average is reached.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2df_factor"><strong>-f</strong> <em>FACTOR</em></a></strong>
+
+<dd>
+<p>Suspend time factor. Dynamically set <strong>-s</strong> as max load average over limit * factor. Default is 1.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2dp_pid"><strong>-p</strong> <em>PID</em></a></strong>
+
+<dd>
+<p>Process ID of process to suspend.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2dv"><strong>-v</strong></a></strong>
+
+<dd>
+<p>Verbose. Print some extra output on what is happening. Use <strong>-v</strong> until
+you know what your are doing.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="example__see_niceload_in_action">EXAMPLE: See niceload in action</a></h1>
+<p>In terminal 1 run: top</p>
+<p>In terminal 2 run:</p>
+<p><strong>niceload perl -e '$|=1;do{$l==$r or print ``.''; $l=$r}until(($r=time-$^T)</strong>&gt;<strong>50)'</strong></p>
+<p>This will print a '.' every second for 50 seconds and eat a lot of
+CPU. When the load rises to 1.0 the process is suspended.</p>
+<p>
+</p>
+<hr />
+<h1><a name="example__run_updatedb">EXAMPLE: Run updatedb</a></h1>
+<p>Running updatedb can often starve the system for disk I/O and thus result in a high load.</p>
+<p>Run updatedb but suspend updatedb if the load is above 2.00:</p>
+<p><strong>niceload -l=2 updatedb</strong></p>
+<p>
+</p>
+<hr />
+<h1><a name="example__run_rsync">EXAMPLE: Run rsync</a></h1>
+<p>rsync can just like updatedb starve the system for disk I/O and thus result in a high load.</p>
+<p>Run rsync but keep load below 3.4. If load reaches 7 sleep for
+(7-3.4)*12 seconds:</p>
+<p><strong>niceload -l=3.4 -f=12 rsync -Ha /home/ /backup/home/</strong></p>
+<p>
+</p>
+<hr />
+<h1><a name="environment_variables">ENVIRONMENT VARIABLES</a></h1>
+<p>None. In future versions $NICELOAD will be able to contain default settings.</p>
+<p>
+</p>
+<hr />
+<h1><a name="exit_status">EXIT STATUS</a></h1>
+<p>Exit status should be the same as the command being run (untested).</p>
+<p>
+</p>
+<hr />
+<h1><a name="reporting_bugs">REPORTING BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:bug-parallel@gnu.org">bug-parallel@gnu.org</a>&gt;.</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Copyright (C) 2004-11-19 Ole Tange, <a href="http://ole.tange.dk">http://ole.tange.dk</a></p>
+<p>Copyright (C) 2005,2006,2006,2008,2009,2010 Ole Tange, <a href="http://ole.tange.dk">http://ole.tange.dk</a></p>
+<p>Copyright (C) 2010,2011 Ole Tange, <a href="http://ole.tange.dk">http://ole.tange.dk</a> and Free
+Software Foundation, Inc.</p>
+<p>
+</p>
+<hr />
+<h1><a name="license">LICENSE</a></h1>
+<p>Copyright (C) 2010 Free Software Foundation, Inc.</p>
+<p>This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+at your option any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</p>
+<p>
+</p>
+<h2><a name="documentation_license_i">Documentation license I</a></h2>
+<p>Permission is granted to copy, distribute and/or modify this documentation
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the file fdl.txt.</p>
+<p>
+</p>
+<h2><a name="documentation_license_ii">Documentation license II</a></h2>
+<p>You are free:</p>
+<dl>
+<dt><strong><a name="item_to_share"><strong>to Share</strong></a></strong>
+
+<dd>
+<p>to copy, distribute and transmit the work</p>
+</dd>
+</li>
+<dt><strong><a name="item_to_remix"><strong>to Remix</strong></a></strong>
+
+<dd>
+<p>to adapt the work</p>
+</dd>
+</li>
+</dl>
+<p>Under the following conditions:</p>
+<dl>
+<dt><strong><a name="item_attribution"><strong>Attribution</strong></a></strong>
+
+<dd>
+<p>You must attribute the work in the manner specified by the author or
+licensor (but not in any way that suggests that they endorse you or
+your use of the work).</p>
+</dd>
+</li>
+<dt><strong><a name="item_share_alike"><strong>Share Alike</strong></a></strong>
+
+<dd>
+<p>If you alter, transform, or build upon this work, you may distribute
+the resulting work only under the same, similar or a compatible
+license.</p>
+</dd>
+</li>
+</dl>
+<p>With the understanding that:</p>
+<dl>
+<dt><strong><a name="item_waiver"><strong>Waiver</strong></a></strong>
+
+<dd>
+<p>Any of the above conditions can be waived if you get permission from
+the copyright holder.</p>
+</dd>
+</li>
+<dt><strong><a name="item_public_domain"><strong>Public Domain</strong></a></strong>
+
+<dd>
+<p>Where the work or any of its elements is in the public domain under
+applicable law, that status is in no way affected by the license.</p>
+</dd>
+</li>
+<dt><strong><a name="item_other_rights"><strong>Other Rights</strong></a></strong>
+
+<dd>
+<p>In no way are any of the following rights affected by the license:</p>
+</dd>
+<ul>
+<li>
+<p>Your fair dealing or fair use rights, or other applicable
+copyright exceptions and limitations;</p>
+</li>
+<li>
+<p>The author's moral rights;</p>
+</li>
+<li>
+<p>Rights other persons may have either in the work itself or in
+how the work is used, such as publicity or privacy rights.</p>
+</li>
+</ul>
+</dl>
+<dl>
+<dt><strong><a name="item_notice"><strong>Notice</strong></a></strong>
+
+<dd>
+<p>For any reuse or distribution, you must make clear to others the
+license terms of this work.</p>
+</dd>
+</li>
+</dl>
+<p>A copy of the full license is included in the file as cc-by-sa.txt.</p>
+<p>
+</p>
+<hr />
+<h1><a name="dependencies">DEPENDENCIES</a></h1>
+<p>GNU <strong>niceload</strong> uses Perl, and the Perl modules POSIX, and
+Getopt::Long.</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><strong>parallel</strong>(1), <strong>nice</strong>(1)</p>
+
+</body>
+
+</html>

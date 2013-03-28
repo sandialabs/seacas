@@ -1,0 +1,276 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>sem - semaphore for executing shell command lines in parallel</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#options">OPTIONS</a></li>
+	<li><a href="#example__gzipping___log">EXAMPLE: Gzipping *.log</a></li>
+	<li><a href="#example__protecting_pod2html_from_itself">EXAMPLE: Protecting pod2html from itself</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#reporting_bugs">REPORTING BUGS</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#license">LICENSE</a></li>
+	<ul>
+
+		<li><a href="#documentation_license_i">Documentation license I</a></li>
+		<li><a href="#documentation_license_ii">Documentation license II</a></li>
+	</ul>
+
+	<li><a href="#dependencies">DEPENDENCIES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>sem - semaphore for executing shell command lines in parallel</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p><strong>sem</strong> [--fg] [--id &lt;id&gt;] [--timeout &lt;secs&gt;] [-j &lt;num&gt;] [--wait] command</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>GNU <strong>sem</strong> is an alias for GNU <strong>parallel --semaphore</strong>.</p>
+<p>It works as a tool for executing shell commands in parallel. GNU
+<strong>sem</strong> acts as a counting semaphore. When GNU <strong>sem</strong> is called with
+command it will start the command in the background. When <em>num</em>
+number of commands are running in the background, GNU <strong>sem</strong> will wait
+for one of these to complete before starting another command.</p>
+<p>Before looking at the options you may want to check out the examples
+after the list of options. That will give you an idea of what GNU
+<strong>sem</strong> is capable of.</p>
+<p>
+</p>
+<hr />
+<h1><a name="options">OPTIONS</a></h1>
+<dl>
+<dt><strong><a name="item_command"><em>command</em></a></strong>
+
+<dd>
+<p>Command to execute. The command may be followed by arguments for the command.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d_2dcount_n"><strong>--count</strong> <em>N</em></a></strong>
+
+<dt><strong><a name="item__2dj_n"><strong>-j</strong> <em>N</em></a></strong>
+
+<dd>
+<p>Run up to N commands in parallel. Default is 1 thus acting like a
+mutex.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d_2did_id"><strong>--id</strong> <em>id</em></a></strong>
+
+<dt><strong><a name="item__2di_id"><strong>-i</strong> <em>id</em></a></strong>
+
+<dd>
+<p>Use <strong>id</strong> as the name of the semaphore. Default is the name of the
+controlling tty (output from <strong>tty</strong>).</p>
+</dd>
+<dd>
+<p>The default normally works as expected when used interactively, but
+when used in a script <em>id</em> should be set. $$ is often a good value.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d_2dfg"><strong>--fg</strong></a></strong>
+
+<dd>
+<p>Do not put command in background.</p>
+</dd>
+</li>
+<dt><strong><a name="item_secs"><strong>--timeout</strong> <em>secs</em> (not implemented)</a></strong>
+
+<dt><strong><strong>-t</strong> <em>secs</em> (not implemented)</strong>
+
+<dd>
+<p>If the semaphore is not released within <em>secs</em> seconds, take it anyway.</p>
+</dd>
+</li>
+<dt><strong><a name="item__2d_2dwait"><strong>--wait</strong></a></strong>
+
+<dt><strong><a name="item__2dw"><strong>-w</strong></a></strong>
+
+<dd>
+<p>Wait for all commands to complete.</p>
+</dd>
+</li>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="example__gzipping___log">EXAMPLE: Gzipping *.log</a></h1>
+<p>Run one gzip process per CPU core. Block until a CPU core becomes
+available.</p>
+<pre>
+  for i in `ls *.log` ; do
+    echo $i
+    sem -j+0 gzip $i &quot;;&quot; echo done
+  done
+  sem --wait</pre>
+<p>
+</p>
+<hr />
+<h1><a name="example__protecting_pod2html_from_itself">EXAMPLE: Protecting pod2html from itself</a></h1>
+<p>pod2html creates two files: pod2htmd.tmp and pod2htmi.tmp which it
+does not clean up. It uses these two files for a short time. But if
+you run multiple pod2html in parallel (e.g. in a Makefile with make
+-j) you need to protect pod2html from running twice at the same
+time. <strong>sem</strong> running as a mutex will do just that:</p>
+<pre>
+  sem --fg --id pod2html pod2html foo.pod &gt; foo.html
+  sem --fg --id pod2html rm -f pod2htmd.tmp pod2htmi.tmp</pre>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Quoting and composed commands are not working.</p>
+<p>
+</p>
+<hr />
+<h1><a name="reporting_bugs">REPORTING BUGS</a></h1>
+<p>Report bugs to &lt;<a href="mailto:bug-parallel@gnu.org">bug-parallel@gnu.org</a>&gt;.</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Copyright (C) 2010,2011 Ole Tange, <a href="http://ole.tange.dk">http://ole.tange.dk</a> and Free
+Software Foundation, Inc.</p>
+<p>
+</p>
+<hr />
+<h1><a name="license">LICENSE</a></h1>
+<p>Copyright (C) 2010,2011 Free Software Foundation, Inc.</p>
+<p>This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+at your option any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</p>
+<p>
+</p>
+<h2><a name="documentation_license_i">Documentation license I</a></h2>
+<p>Permission is granted to copy, distribute and/or modify this documentation
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the file fdl.txt.</p>
+<p>
+</p>
+<h2><a name="documentation_license_ii">Documentation license II</a></h2>
+<p>You are free:</p>
+<dl>
+<dt><strong><a name="item_to_share"><strong>to Share</strong></a></strong>
+
+<dd>
+<p>to copy, distribute and transmit the work</p>
+</dd>
+</li>
+<dt><strong><a name="item_to_remix"><strong>to Remix</strong></a></strong>
+
+<dd>
+<p>to adapt the work</p>
+</dd>
+</li>
+</dl>
+<p>Under the following conditions:</p>
+<dl>
+<dt><strong><a name="item_attribution"><strong>Attribution</strong></a></strong>
+
+<dd>
+<p>You must attribute the work in the manner specified by the author or
+licensor (but not in any way that suggests that they endorse you or
+your use of the work).</p>
+</dd>
+</li>
+<dt><strong><a name="item_share_alike"><strong>Share Alike</strong></a></strong>
+
+<dd>
+<p>If you alter, transform, or build upon this work, you may distribute
+the resulting work only under the same, similar or a compatible
+license.</p>
+</dd>
+</li>
+</dl>
+<p>With the understanding that:</p>
+<dl>
+<dt><strong><a name="item_waiver"><strong>Waiver</strong></a></strong>
+
+<dd>
+<p>Any of the above conditions can be waived if you get permission from
+the copyright holder.</p>
+</dd>
+</li>
+<dt><strong><a name="item_public_domain"><strong>Public Domain</strong></a></strong>
+
+<dd>
+<p>Where the work or any of its elements is in the public domain under
+applicable law, that status is in no way affected by the license.</p>
+</dd>
+</li>
+<dt><strong><a name="item_other_rights"><strong>Other Rights</strong></a></strong>
+
+<dd>
+<p>In no way are any of the following rights affected by the license:</p>
+</dd>
+<ul>
+<li>
+<p>Your fair dealing or fair use rights, or other applicable
+copyright exceptions and limitations;</p>
+</li>
+<li>
+<p>The author's moral rights;</p>
+</li>
+<li>
+<p>Rights other persons may have either in the work itself or in
+how the work is used, such as publicity or privacy rights.</p>
+</li>
+</ul>
+</dl>
+<dl>
+<dt><strong><a name="item_notice"><strong>Notice</strong></a></strong>
+
+<dd>
+<p>For any reuse or distribution, you must make clear to others the
+license terms of this work.</p>
+</dd>
+</li>
+</dl>
+<p>A copy of the full license is included in the file as cc-by-sa.txt.</p>
+<p>
+</p>
+<hr />
+<h1><a name="dependencies">DEPENDENCIES</a></h1>
+<p>GNU <strong>sem</strong> uses Perl, and the Perl modules Getopt::Long, 
+Symbol, Fcntl.</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><strong>parallel</strong>(1)</p>
+
+</body>
+
+</html>
