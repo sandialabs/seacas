@@ -1,7 +1,7 @@
 XCOMM site.def file for SNL ACCESS System
 
+/* Define Owner to be your user id. */
 #define Owner gdsjaar
-#define Group _developer
 
 /*
  * AccessRoot should specify the path to the ACCESS source directory
@@ -9,6 +9,12 @@ XCOMM site.def file for SNL ACCESS System
  * now have a subdirectory named 'ACCESS'
  */
 #define AccessRoot /Users/gdsjaar/src/SEACAS-SF
+
+/* Uncomment the line below and change '_developer' to a valid 
+ * group name on your system if you want the files accessible 
+ * only to a set of people in that group 
+ */
+/* #define Group _developer */
 
 /*
  * Path to installation directories: bin, config, etc, inc, lib, mats, svdi
@@ -38,7 +44,6 @@ XCOMM site.def file for SNL ACCESS System
  * For most cases, leave the Platform define as "normal"; however,
  * if building on "interix", define it as interix;
  * if building for "redstorm", define it as redstorm;
- * if need to enter BootsStrapCFlags, define as "prompt"
  */
 #define Platform normal
 
