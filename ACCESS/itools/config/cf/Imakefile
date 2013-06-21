@@ -30,8 +30,7 @@ sv4Lib.rules \
 Win32.rules \
 xf86.rules \
 noop.rules \
-ACCESS.rules \
-ACCESS.testrules
+ACCESS.rules 
 
 TMPLFILES = \
 Imake.tmpl \
