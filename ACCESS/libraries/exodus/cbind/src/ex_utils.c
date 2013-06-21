@@ -149,8 +149,10 @@ void ex_update_max_name_length(int exoid, int length)
 {
   int status;
   int db_length = 0;
+  int rootid = exoid & EX_FILE_ID_MASK;
+
   /* Get current value of the maximum_name_length attribute... */
-  if ((status = nc_get_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
+  if ((status = nc_get_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = status;
     sprintf(errmsg,
@@ -161,7 +163,7 @@ void ex_update_max_name_length(int exoid, int length)
 
   if (length > db_length) {
     /* Update with new value... */
-    nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
+    nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
   }
 }
 
@@ -1515,7 +1517,7 @@ void ex_compress_variable(int exoid, int varid, int type)
 {
 #if !defined(NOT_NETCDF4)
 
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
 
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
@@ -1534,6 +1536,11 @@ void ex_compress_variable(int exoid, int varid, int type)
     if (deflate_level > 0 && (file->file_type == 2 || file->file_type == 3)) {
       nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
     }
+#if 0
+    if (type != 3) {
+      nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+    }
+#endif
   }
 #endif
 }

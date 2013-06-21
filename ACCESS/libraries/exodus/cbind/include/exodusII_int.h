@@ -64,44 +64,7 @@
 #include <stdio.h>
 
 /* A format string for outputting size_t ... */
-#if 0
-#if (defined(__STDC__) && defined(__STDC_VERSION__))
-# if (__STDC__ && __STDC_VERSION__ >= 199901L)
-# define PRIoSIZE "zo"
-# define PRIuSIZE "zu"
-# define PRIxSIZE "zx"
-# define PRIXSIZE "zX"
-# endif
-#else
-/* ULLONG_MAX is defined in my wrapper if 64-bit integer extensions
-are detected, even if it's not a C99 compiler. */
-# if defined(ULLONG_MAX) && (SIZE_MAX == ULLONG_MAX)
-# define PRIoSIZE "llo"
-# define PRIuSIZE "llu"
-# define PRIxSIZE "llx"
-# define PRIXSIZE "llX"
-# elif (SIZE_MAX == ULONG_MAX)
-# define PRIoSIZE "lo"
-# define PRIuSIZE "lu"
-# define PRIxSIZE "lx"
-# define PRIXSIZE "lX"
-# elif (SIZE_MAX == UINT_MAX)
-# define PRIoSIZE "o"
-# define PRIuSIZE "u"
-# define PRIxSIZE "x"
-# define PRIXSIZE "X"
-# elif (SIZE_MAX == USHRT_MAX)
-# define PRIoSIZE "ho"
-# define PRIuSIZE "hu"
-# define PRIxSIZE "hx"
-# define PRIXSIZE "hX"
-# else
-# error "Platform not supported"
-# endif
-#endif
-#endif
-
-#define ST_ZU "lu"
+#define ST_ZU "zu"
 
 #define MAX_VAR_NAME_LENGTH     32   /**< Internal use only */
 
@@ -120,6 +83,10 @@ are detected, even if it's not a C99 compiler. */
 #define EX_FATAL        -1      /* fatal error flag def                     */
 #define EX_NOERR         0      /* no error flag def                        */
 #define EX_WARN          1      /* warning flag def                         */
+
+/* Used to map between root (file id) and group ids when using groups */
+#define EX_FILE_ID_MASK (0xffff0000) /* Must match FILE_ID_MASK in netcdf nc4internal.h */
+#define EX_GRP_ID_MASK  (0x0000ffff) /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
 /*
  * This file contains defined constants that are used internally in the
@@ -621,7 +588,7 @@ typedef enum ex_coordinate_frame_type ex_coordinate_frame_type;
 
 /* Internal structure declarations */
 
-struct file_item {
+struct ex_file_item {
   int                   file_id;
   nc_type               netcdf_type_code;
   int                   int64_status;
@@ -630,8 +597,8 @@ struct file_item {
   unsigned int          user_compute_wordsize:1; /* 0 for 4 byte or 1 for 8 byte reals */
   unsigned int          shuffle:1;               /* 1 true, 0 false */                   
   unsigned int          file_type:2;             /* 0 - classic, 1 -- 64 bit classic, 2 --netcdf4,  3 --netcdf4 classic */
-
-  struct file_item*     next;
+  unsigned int          is_parallel:1;            /* 1 true, 0 false */
+  struct ex_file_item*     next;
 };
 
 struct elem_blk_parm
@@ -673,12 +640,13 @@ char* ex_dim_num_objects(ex_entity_type obj_type);
 char* ex_name_var_of_object( ex_entity_type, int, int );
 char* ex_name_of_map( ex_entity_type, int );
 
-int ex_conv_ini  (int exoid, int* comp_wordsize, int* io_wordsize, int file_wordsize, int int64_status);
+int ex_conv_ini  (int exoid, int* comp_wordsize, int* io_wordsize, int file_wordsize, int int64_status, int is_parallel);
 void ex_conv_exit  (int exoid);
 
 nc_type nc_flt_code  (int exoid);
 int ex_comp_ws  (int exoid);
 int ex_get_cpu_ws(void);
+int ex_is_parallel(int exoid);
 
 struct list_item** ex_get_counter_list(ex_entity_type obj_type);
 int ex_get_file_item  (int, struct list_item**);
@@ -699,7 +667,8 @@ extern struct obj_stats* exoII_fam;
 extern struct obj_stats* exoII_nm;
 
 
-struct file_item* ex_find_file_item(int exoid);
+struct ex_file_item* ex_find_file_item(int exoid);
+struct ex_file_item* ex_add_file_item(int exoid);
 struct obj_stats *ex_get_stat_ptr  ( int exoid, struct obj_stats** obj_ptr);
 
 void ex_rm_stat_ptr  (int exoid, struct obj_stats** obj_ptr);

@@ -148,9 +148,9 @@ XCOMM ACCESS.tmpl
 #ifndef ExtraNetcdfLib
 #if UseNetcdf4 && !defined ExcludeHDF5
 #if defined(BuildParallelAwareExodus) && UseParNetcdf
-#define ExtraNetcdfLib -L$(HDF5ROOT)/lib -lhdf5_hl -lhdf5 -lm -lz -lpnetcdf
+#define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lm -lz -ldl -lpnetcdf
 #else
-#define ExtraNetcdfLib -L$(HDF5ROOT)/lib -lhdf5_hl -lhdf5 -lm -lz
+#define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lm -lz -ldl
 #endif
 #else
 #define ExtraNetcdfLib /**/
@@ -271,10 +271,10 @@ XCOMM Set in site.def : ProjectName, ProjectRelease, AccessRoot, AccessInstall
         TFLOPROOT = TflopAccessRoot
        CPLANTROOT = CplantAccessRoot
 
-XCOMM Used to specify location of hdf5 libraries for use with netcdf-4
-         HDF5ROOT = HDF5_Root
-
 XCOMM Source code for the ACCESS System
+#ifndef ExcludeAnalysis
+      ANALYSISSRC = analysis 
+#endif
         ITOOLSSRC = itools
 #ifndef ExcludeGraphics
       GRAPHICSSRC = graphics
@@ -386,6 +386,25 @@ XCOMM Pre- and Post-processing Subdirectories
          SPIFFSRC = spiff
 #endif
 
+XCOMM Analysis Subdirectories
+         JAC2DSRC = jac2d
+         JAC3DSRC = jac3d
+        JACQ3DSRC = jacq3d
+         JAS3DSRC = jas3d
+         LCLIBSRC = lclib
+      PRONTO2DSRC = pronto2d
+      PRONTO3DSRC = pronto3d
+    PRONTO3D94SRC = pronto3d-9.4
+        SANCHOSRC = sancho
+        SANTOSSRC = santos
+      SANTOS3DSRC = santos3d
+       MERLIN2SRC = merlin2
+        SUBWAYSRC = subway
+        COYOTESRC = coyote
+
+XCOMM GUI Subdirectories
+           RAPSRC = rap
+
 XCOMM ACCESS installation directories
            BINDIR = BinDir
         CONFIGDIR = ConfigDir
@@ -423,6 +442,7 @@ XCOMM Libraries
           SUPESDP = -lsupesdp
            SUPLIB = -lsuplib
         MAPVARLIB = -lmapvarlib
+           LEGACY = -llegacy
               PLT = -lplt
    EXTRANETCDFLIB = ExtraNetcdfLib
             LCLIB = -lLegacyContact

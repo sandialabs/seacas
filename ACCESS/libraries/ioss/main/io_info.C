@@ -44,6 +44,7 @@
 #include <vector>
 
 #include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -65,6 +66,8 @@
 #include "Ioss_VariableType.h"
 
 #include "info_interface.h"
+#include "exodusII.h"
+
 
 #ifdef HAVE_MPI
 #include <mpi.h>
@@ -74,7 +77,7 @@
 #include <xdmf/Ioxf_Initializer.h>
 #endif
 
-#define OUTPUT std::cerr
+#define OUTPUT std::cout
 
 // ========================================================================
 
@@ -83,7 +86,6 @@ namespace {
   // Data space shared by most field input/output routines...
   std::vector<char> data;
 
-  void show_usage(const std::string &prog);
   void show_step(int istep, double time);
 
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interface, bool summary);
@@ -98,6 +100,7 @@ namespace {
 
   void info_sidesets(Ioss::Region &region, const Info::Interface &interface, bool summary);
   void info_commsets(Ioss::Region &region, bool summary);
+  void info_coordinate_frames(Ioss::Region &region, bool summary);
 
   void info_fields(Ioss::GroupingEntity *ige,
 		   Ioss::Field::RoleType role,
@@ -112,8 +115,8 @@ namespace {
   void info_field_data_internal(Ioss::GroupingEntity *ige,
 				const std::string &field_name);
 
-  void file_info(const std::string& inpfile, const std::string& input_type,
-		 Info::Interface& interface);
+  void file_info(Info::Interface& interface);
+  void group_info(Info::Interface& interface);
 
   std::string name(Ioss::GroupingEntity *entity) {
     return entity->type_string() + " '" + entity->name() + "'";
@@ -162,7 +165,12 @@ int main(int argc, char *argv[])
   OUTPUT << "Input:    '" << interface.filename()  << "', Type: " << interface.type()  << '\n';
   OUTPUT << '\n';
 
-  file_info(interface.filename(), interface.type(), interface);
+  if (interface.list_groups()) {
+    group_info(interface);
+  }
+  else {
+    file_info(interface);
+  }
 
   OUTPUT << "\n" << codename << " execution successful.\n";
 #ifdef HAVE_MPI
@@ -188,8 +196,44 @@ namespace {
     }
   }
 
-  void file_info(const std::string& inpfile, const std::string& input_type, Info::Interface& interface)
+  int print_groups(int exoid, std::string prefix)
   {
+    int idum;
+    float rdum;
+    char group_name[33];
+    // Print name of this group...
+    ex_inquire(exoid, EX_INQ_GROUP_NAME, &idum, &rdum, group_name);
+    OUTPUT << prefix << group_name << '\n';
+    
+    int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
+    std::vector<int> children(num_children);
+    ex_get_group_ids(exoid, NULL, TOPTR(children));
+    prefix += '\t';
+    for (size_t i=0; i < num_children; i++) {
+      print_groups(children[i], prefix);
+    }
+    return 0;
+  }
+
+  void group_info(Info::Interface& interface)
+  {
+    // Assume exodusII...
+    std::string inpfile = interface.filename();
+    float version = 0.0;
+    int CPU_word_size = 0;
+    int IO_word_size = 0;
+
+    int exoid = ex_open (inpfile.c_str(),
+			 EX_READ, &CPU_word_size, &IO_word_size, &version);
+
+    int num_groups = print_groups(exoid,"");
+  }
+
+  void file_info(Info::Interface& interface)
+  {
+    std::string inpfile = interface.filename();
+    std::string input_type = interface.type();
+    
     //========================================================================
     // INPUT ...
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
@@ -202,10 +246,18 @@ namespace {
 
     dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_scheme()));
     dbi->set_field_separator(interface.field_suffix_separator());
-    dbi->set_node_global_id_backward_compatibility(false);
     if (interface.ints_64_bit())
       dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
     
+    if (!interface.groupname().empty()) {
+      bool success = dbi->open_group(interface.groupname());
+      if (!success) {
+	OUTPUT << "ERROR: Unable to open group '" << interface.groupname()
+	       << "' in file '" << inpfile << "\n";
+	return;
+      }
+    }
+
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
 
@@ -224,6 +276,7 @@ namespace {
 
     info_sidesets(region,     interface, summary);
     info_commsets(region,     summary);
+    info_coordinate_frames(region, summary);
 
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
       std::pair<int, double> state_time_max = region.get_max_time();
@@ -249,6 +302,7 @@ namespace {
       
       info_sidesets(region,     interface, summary);
       info_commsets(region,     summary);
+      info_coordinate_frames(region, summary);
     }
     
     if (interface.compute_volume()) {
@@ -331,8 +385,17 @@ namespace {
 	}
 	info_fields(*i, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
 	OUTPUT << "\n";
-      }
 
+	if (interface.compute_bbox()) {
+	  Ioss::AxisAlignedBoundingBox bbox = (*i)->get_bounding_box();
+	  OUTPUT << "\tBounding Box: Minimum X,Y,Z = "
+		 << std::setw(12) << std::setprecision(4) << std::scientific
+		 << bbox.xmin << "\t" << bbox.ymin << "\t" << bbox.zmin << "\n"
+		 << "\t              Maximum X,Y,Z = "
+		 << std::setw(12) << std::setprecision(4) << std::scientific
+		 << bbox.xmax << "\t" << bbox.ymax << "\t" << bbox.zmax << "\n";
+	}
+      }
       ++i;
     }
     if (summary) {
@@ -598,6 +661,30 @@ namespace {
       ++i;
     }
     OUTPUT << '\n';
+  }
+
+  void info_coordinate_frames(Ioss::Region &region, bool summary)
+  {
+    Ioss::CoordinateFrameContainer      cf = region.get_coordinate_frames();
+    Ioss::CoordinateFrameContainer::const_iterator i = cf.begin();
+
+    while (i != cf.end()) {
+      if (!summary) {
+	const double *origin = (*i).origin();
+	const double *a3pt = (*i).axis_3_point();
+	const double *p13pt = (*i).plane_1_3_point();
+	
+	OUTPUT << '\n' << "Coordinate Frame id: " << std::setw(6) << (*i).id()
+	       << ", type tag '" << (*i).tag() << "'\n"
+	       << "\tOrigin:          " << origin[0] << "\t" << origin[1] << "\t" << origin[2] << "\n"
+	       << "\tAxis 3 Point:    " << a3pt[0] << "\t" << a3pt[1] << "\t" << a3pt[2] << "\n"
+	       << "\tPlane 1-3 Point: " << p13pt[0] << "\t" << p13pt[1] << "\t" << p13pt[2] << "\n";
+      }
+      ++i;
+    }
+    if (summary) {
+      OUTPUT << " Number of coordinate frames  =" << std::setw(12) << cf.size() << "\n";
+    }
   }
 
   void info_fields(Ioss::GroupingEntity *ige,
