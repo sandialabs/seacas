@@ -935,3 +935,20 @@ LibraryTargetName(libname): objlist                                     @@\
 	RanLibrary($@)                                                  @@\
 	_LinkBuildLibrary($@)
 
+/*
+ * get project-specific test problem rules
+ */
+#ifdef ProjectTestrulesFile1
+# undef ProjectTestrulesFile1
+#endif
+# define ProjectTestrulesFile1 ACCESS.testrules
+#ifdef ProjectTestrulesFile2
+# undef ProjectTestrulesFile2
+#endif
+# define ProjectTestrulesFile2 <ACCESS.testrules>
+#include ProjectTestrulesFile2
+# ifndef LocalTestrulesFile
+/* need this to make ANSI-style preprocessors happy */
+#define LocalTestrulesFile <noop.rules>
+#endif
+#include LocalTestrulesFile

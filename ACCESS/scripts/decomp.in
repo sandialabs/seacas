@@ -32,6 +32,7 @@ Decomposition methods: [0..3] = speed ranking 0=fastest
 
 Other options:
 --help             Print this message (-h)
+--input            Optional nem_slice input file (-i)
 --spheres_linear   Decompose sphere elements using linear method (matches old behavior)
 --processors #p    Specify number of processors (-p, -j)
 --root root_dir    Root directory to begin the path to on the separate disks (-R)
@@ -51,8 +52,8 @@ function execute_loadbalance {
     decomp_method=$3
     nem_slice_flag=$4
     NEM_SLICE=$5
+    input=$6
 
-    input=$basename.$suffix_input
     output=$basename.decomp.out
     error=$basename.decomp.err
     nemesis=$basename.nem
@@ -84,16 +85,21 @@ function execute_loadbalance {
     echo '| $Revision: 1.57 $, $Date: 2008/05/19 12:29:22 $'           >> $output   
     echo "===========================================================" >> $output
     
-    echo ${txtblu}
-    echo "Executing:"
-    echo "   $NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis"
-    echo "   ...see $output for nem_slice status"
-    echo ${txtrst}
-    if [ -e $input ]
+    if [ -n "$input" -a -e "$input" ]
     then
+	echo ${txtblu}
+	echo "Executing:"
+	echo "   $NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis"
+	echo "   ...see $output for nem_slice status"
+	echo ${txtrst}
 	($NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors -a $input $genesis >> $output) 
 	load_rc=$?
     else
+	echo ${txtblu}
+	echo "Executing:"
+	echo "   $NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors $genesis"
+	echo "   ...see $output for nem_slice status"
+	echo ${txtrst}
 	($NEM_SLICE -e $spheres $decomp_method $nem_slice_flag -o $nemesis -m mesh=$processors $genesis >> $output)
 	load_rc=$?
     fi
@@ -176,7 +182,6 @@ txtrst=$(tput sgr0)       # Text reset
 
 echo "==========================================================="
 echo "| Sandia Engineering Analysis Access procedure for: decomp "
-echo "| Version: 2011/06/10                                      "
 echo "==========================================================="
 
 
@@ -193,13 +198,6 @@ ACCESS=@ACCESSDIR@
 NEM_SLICE=${ACCESS}/bin/nem_slice
 NEM_SPREAD=${ACCESS}/bin/nem_spread
 
-suffix_input='i'
-  
-JUNK=`env | grep "ALEGRA_EXE"`
-if [ -n "$JUNK" ]; then
-  suffix_input='inp'
-fi
-
 if [ $# -eq 0 ] ; then
   usage
 fi
@@ -208,8 +206,8 @@ fi
 # decomp options:
 GETOPT=${ACCESS}/bin/getopt.seacas
 
-TEMP=`${GETOPT} -o hno:p:j:r:R:S: -a \
-    --long help,nem_slice_flag,processors:,rootdir:,subdir:,spheres_linear \
+TEMP=`${GETOPT} -o hni:o:p:j:r:R:S: -a \
+    --long input:,help,nem_slice_flag,processors:,rootdir:,subdir:,spheres_linear \
     --long multikl,rcb,rib,hsfc,spectral,inertial,linear,random,scattered,brick,zpinch \
     -n 'decomp' -- "$@"`
 
@@ -223,6 +221,8 @@ while true ; do
 	      usage ; shift ;;
 	    -n|--nem_slice_flag)
 	      nem_slice_flag="$2" ; shift 2 ;;
+	    -i|--input)
+	      input=$2 ; shift 2 ;;
 	    -p|-j|--processors)
 	      processors=$2 ; shift 2 ;;
 	    -R|--rootdir)
@@ -278,6 +278,21 @@ else
     fi
 fi    
 
+if [ -n "$input" ]
+then
+   if [ ! -e "$input" ]
+   then
+    echo ${txtred}
+	echo "ERROR:******************************************************************"
+	echo "ERROR:"
+	echo "ERROR: Input file $input does not exist."
+	echo "ERROR:"
+	echo "ERROR:******************************************************************"
+	echo ${txtrst}
+	usage
+   fi
+fi
+
 if test -z "$processors"
 then
   echo
@@ -292,8 +307,17 @@ then
   usage
 fi
 
+if [ $processors -eq 1 ]
+then
+    echo ${txtgrn}
+    echo "INFO: No decomposition needed for --processors = 1"
+    echo ${txtrst}
+    echo
+    exit 0
+fi
+
 ########################################################################
-execute_loadbalance "$basename" "$processors" "$decomp_method" "$nem_slice_flag" "$NEM_SLICE"
+execute_loadbalance "$basename" "$processors" "$decomp_method" "$nem_slice_flag" "$NEM_SLICE" "$input"
 if [ $? -ne 0 ]
 then
     echo ${txtred}

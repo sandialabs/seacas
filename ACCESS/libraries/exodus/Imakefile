@@ -71,11 +71,6 @@ AllTarget(libexodus.a libexoIIv2for.a libexoIIv2for32.a)
 AllTarget(libexodus.a libexoIIv2for.a)
 #endif
 
-#if defined(BuildParallelAwareExodus)
-INCLIST3 = exodusII_par.h
-InstallSubdirIncludeList(makeincludes,cbind/include,$(INCLIST3),$(INCDIR))
-#endif
-
 InstallSubdirIncludeList(makeincludes,cbind/include,$(INCLIST1),$(INCDIR))
 
 InstallSubdirIncludeList(makeincludes,forbind/include,$(INCLIST2),$(INCDIR))

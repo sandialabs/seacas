@@ -56,9 +56,9 @@
 
 Info::Interface::Interface()
   : checkNodeStatus_(false), computeVolume_(false), adjacencies_(false),ints64Bit_(false),
-    fieldSuffixSeparator_('_'), summary_(0),
+    computeBBox_(false), listGroups_(false), summary_(0), fieldSuffixSeparator_('_'), 
     surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
-    cwd_(""), filetype_("exodus")
+    filetype_("exodus")
 {
   enroll_options();
 }
@@ -87,12 +87,24 @@ void Info::Interface::enroll_options()
   options_.enroll("compute_volume", Ioss::GetLongOption::NoValue,
 		  "Compute the volume of all hex elements in the mesh. Outputs min/max and count",
 		  NULL);
+  options_.enroll("compute_bbox", Ioss::GetLongOption::NoValue,
+		  "Compute the bounding box of all element blocks in the mesh.",
+		  NULL);
+
+  options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
+		  "Print a list of the names of all groups in this file and then exit.",
+		  NULL);
+
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
 		  "Character used to separate a field suffix from the field basename\n"
 		  "\t\t when recognizing vector, tensor fields. Enter '0' for no separaor", "_");
 
   options_.enroll("db_type", Ioss::GetLongOption::MandatoryValue,
 		  "Database Type: exodus, generated","exodusii");
+
+  options_.enroll("group_name", Ioss::GetLongOption::MandatoryValue,
+		  "List information only for the specified group. Use 'ALL' to see info for all groups",
+		  NULL);
 
   options_.enroll("summary", Ioss::GetLongOption::NoValue,
 		  "Only output counts of nodes, elements, and entities",
@@ -154,14 +166,29 @@ bool Info::Interface::parse_options(int argc, char **argv)
     computeVolume_ = true;
   }
 
+  if (options_.retrieve("compute_bbox")) {
+    computeBBox_ = true;
+  }
+
+  if (options_.retrieve("list_groups")) {
+    listGroups_ = true;
+  }
+
   if (options_.retrieve("summary")) {
-    summary_ = 1;
+    summary_ = true;
   }
 
   {
     const char *temp = options_.retrieve("db_type");
     if (temp != NULL) {
       filetype_ = temp;
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("group_name");
+    if (temp != NULL) {
+      groupname_ = temp;
     }
   }
 

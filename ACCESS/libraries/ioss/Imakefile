@@ -68,6 +68,7 @@ Ioss_CommSet.C \
 Ioss_CompositeVariableType.C \
 Ioss_ConcreteVariableType.C \
 Ioss_ConstructedVariableType.C \
+Ioss_CoordinateFrame.C \
 Ioss_DatabaseIO.C \
 Ioss_Edge2.C \
 Ioss_Edge2D2.C \
@@ -100,7 +101,9 @@ Ioss_Node.C \
 Ioss_ParallelUtils.C \
 Ioss_Property.C \
 Ioss_PropertyManager.C \
+Ioss_Pyramid14.C \
 Ioss_Pyramid13.C \
+Ioss_Pyramid14.C \
 Ioss_Pyramid5.C \
 Ioss_Quad4.C \
 Ioss_Quad8.C \
@@ -114,22 +117,27 @@ Ioss_ShellLine2D2.C \
 Ioss_ShellLine2D3.C \
 Ioss_Sphere.C \
 Ioss_Super.C \
+Ioss_Tet11.C \
 Ioss_Tet10.C \
 Ioss_Tet4.C \
 Ioss_Tet7.C \
 Ioss_Tet8.C \
+Ioss_Tet11.C \
 Ioss_Transform.C \
 Ioss_Tri3.C \
 Ioss_Tri4.C \
 Ioss_Tri4a.C \
 Ioss_Tri6.C \
 Ioss_TriShell3.C \
+Ioss_TriShell4.C \
 Ioss_TriShell6.C \
 Ioss_Unknown.C \
 Ioss_Utils.C \
 Ioss_VariableType.C \
+Ioss_Wedge18.C \
 Ioss_Wedge15.C \
 Ioss_Wedge6.C \
+Ioss_Wedge18.C \
 tokenize.C
 
 OBJS = ${SRCS:.C=.o}
@@ -138,9 +146,11 @@ all:: libIoex.a libIoss.a libIotr.a libIonit.a libIogn.a libIohb.a ${LIB_IOPX} S
 
 INCLIST = \
 	SEACASIoss_config.h \
+	Ioss_BoundingBox.h \
 	Ioss_CodeTypes.h \
 	Ioss_CommSet.h \
 	Ioss_ConcreteVariableType.h \
+	Ioss_CoordinateFrame.h \
 	Ioss_DBUsage.h \
 	Ioss_DataSize.h \
 	Ioss_DatabaseIO.h \
