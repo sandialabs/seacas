@@ -58,8 +58,8 @@
 #endif
 
 /* EXODUS II version number */
-#define EX_API_VERS 5.24f
-#define EX_API_VERS_NODOT 524
+#define EX_API_VERS 6.00f
+#define EX_API_VERS_NODOT 600
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION		EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT	EX_API_VERS_NODOT
@@ -176,6 +176,14 @@ extern "C" {
     EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH  = 48,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
     EX_INQ_DB_MAX_USED_NAME_LENGTH  = 49,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
     EX_INQ_MAX_READ_NAME_LENGTH = 50,     /**< inquire client-specified max size of returned names */
+
+    EX_INQ_NUM_CHILD_GROUPS= 51,     /**< inquire number of groups contained in this (exoid) group */
+    EX_INQ_GROUP_PARENT    = 52,     /**< inquire id of parent of this (exoid) group; returns exoid if at root */
+    EX_INQ_GROUP_ROOT      = 53,     /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
+    EX_INQ_GROUP_NAME_LEN  = 54,     /**< inquire length of name of group exoid */
+    EX_INQ_GROUP_NAME      = 55,     /**< inquire name of group exoid. "/" returned for root group */
+    EX_INQ_FULL_GROUP_NAME_LEN = 56, /**< inquire length of full path name of this (exoid) group */
+    EX_INQ_FULL_GROUP_NAME = 57,     /**< inquire full "/"-separated path name of this (exoid) group */
     EX_INQ_INVALID         = -1};
 
   typedef enum ex_inquiry ex_inquiry;
@@ -345,20 +353,20 @@ extern "C" {
     int  num_glob;
     int  num_node;
     int  num_edge;
-    int* edge_var_tab;
     int  num_face;
-    int* face_var_tab;
     int  num_elem;
-    int* elem_var_tab;
     int  num_nset;
-    int* nset_var_tab;
     int  num_eset;
-    int* eset_var_tab;
     int  num_fset;
-    int* fset_var_tab;
     int  num_sset;
-    int* sset_var_tab;
     int  num_elset;
+    int* edge_var_tab;
+    int* face_var_tab;
+    int* elem_var_tab;
+    int* nset_var_tab;
+    int* eset_var_tab;
+    int* fset_var_tab;
+    int* sset_var_tab;
     int* elset_var_tab;
   } ex_var_params;
   /* @} */
@@ -376,7 +384,12 @@ extern "C" {
 
   EXODUS_EXPORT int ex_create_int (const char *path, int cmode, int *comp_ws, int *io_ws, int my_version);
 
- 
+  EXODUS_EXPORT int ex_create_group (int parent_id, const char *group_name);
+
+  EXODUS_EXPORT int ex_get_group_id(int exoid, const char *group_name, int *group_id);
+
+  EXODUS_EXPORT int ex_get_group_ids(int exoid, int *num_children, int *child_ids);
+  
   EXODUS_EXPORT int ex_get_all_times (int   exoid,
 				      void *time_values);
 
@@ -1976,6 +1989,7 @@ ex_put_elem_cmap(int  exoid,	/* NetCDF/Exodus file ID */
 #define EX_BADPARAM      1005   /**< bad parameter passed                     */
 #define EX_MSG          -1000   /**< message print code - no error implied    */
 #define EX_PRTLASTMSG   -1001   /**< print last error message msg code        */
+#define EX_NOTROOTID    -1002   /**< file id is not the root id; it is a subgroup id */
 #define EX_NULLENTITY   -1006   /**< null entity found                        */
 /* @} */
 

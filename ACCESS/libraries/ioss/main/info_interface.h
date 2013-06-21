@@ -50,11 +50,13 @@ namespace Info {
 
       bool parse_options(int argc, char **argv);
   
-      int summary() const {return summary_;}
+      bool summary() const {return summary_;}
       bool check_node_status() const {return checkNodeStatus_;}
       bool compute_volume()  const {return computeVolume_;}
+      bool compute_bbox()  const {return computeBBox_;}
       bool adjacencies() const {return adjacencies_;}
       bool ints_64_bit() const {return ints64Bit_;}
+      bool list_groups() const {return listGroups_;}
       
       double maximum_time() const {return maximumTime_;}
       double minimum_time() const {return minimumTime_;}
@@ -64,7 +66,7 @@ namespace Info {
       std::string cwd() const {return cwd_;}
       std::string filename() const {return filename_;}
       std::string type() const {return filetype_;}
-      
+      std::string groupname() const {return groupname_;}
   
       //! Dumps representation of data in this class to cerr
       void dump(std::ostream &str) const;
@@ -80,10 +82,12 @@ namespace Info {
       bool computeVolume_;
       bool adjacencies_;
       bool ints64Bit_;
- 
+      bool computeBBox_;
+      bool listGroups_;
+      bool summary_;
+      
       char fieldSuffixSeparator_;
       
-      int summary_;
       int surfaceSplitScheme_;
       
       double minimumTime_;
@@ -91,6 +95,7 @@ namespace Info {
       std::string cwd_;
       std::string filetype_;
       std::string filename_;
+      std::string groupname_;
     };
 }
 #endif

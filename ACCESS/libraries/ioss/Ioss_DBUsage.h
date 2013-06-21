@@ -47,8 +47,10 @@ enum DatabaseUsage {
  enum IfDatabaseExistsBehavior {
    DB_OVERWRITE,
    DB_APPEND,
+   DB_APPEND_GROUP,
    DB_ABORT,
-   DB_ADD_SUFFIX};
+   DB_ADD_SUFFIX
+ };
 
 inline bool is_input_event(Ioss::DatabaseUsage db_usage) {
   return db_usage == Ioss::READ_MODEL || db_usage == Ioss::READ_RESTART;
