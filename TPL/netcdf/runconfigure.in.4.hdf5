@@ -11,6 +11,9 @@ AR_FLAGS='$(ARFLAGS)'; export AR_FLAGS
 # The -L$(USERLIBDIR) is to find the hdf5 library...
 LDFLAGS='-L$(USRLIBDIR) $(LDOPTIONS)'; export LDFLAGS
 
+# Needed for hdf5-1.8.11 and possibly later 
+LIBS='-ldl'; export LIBS
+
 ### SEACAS does not use the Fortran or F90 versions of netcdf library
 FC=''; export FC
 F90=''; export F90
