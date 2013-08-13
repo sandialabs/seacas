@@ -84,6 +84,7 @@ int ex_close (int exoid)
     * call ex_rm_file_item and ex_rm_stat_ptr on each group.
     */
 
+#if !defined(NOT_NETCDF4)
    /* nc_inq_grp_parent() will return NC_ENOGRP error if exoid
     * refers to the root group (which is what we want)
     */
@@ -93,6 +94,7 @@ int ex_close (int exoid)
      ex_err("ex_close",errmsg,exerrval);
      return(EX_FATAL);
    }
+#endif
    
    if ((status = nc_sync(exoid)) != NC_NOERR) {
      exerrval = status;

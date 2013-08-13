@@ -146,7 +146,7 @@ XCOMM ACCESS.tmpl
  */
 
 #ifndef ExtraNetcdfLib
-#if UseNetcdf4 && !defined ExcludeHDF5
+#if UseNetcdf4 == YES && !defined ExcludeHDF5
 #if defined(BuildParallelAwareExodus) && UseParNetcdf
 #define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lm -lz -ldl -lpnetcdf
 #else
