@@ -17,11 +17,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 */
 /* #define NEEDS_HOSTFILE 1 */
 
-#if 0
-#define UseNetcdf4 YES
-#define ExtraNetcdfLib -lhdf5_hl -lhdf5 -lsocket -lnsl -lm -lz
-#endif
-
 #define Build64BitAccess YES
 
 #define UseCCMakeDepend		YES

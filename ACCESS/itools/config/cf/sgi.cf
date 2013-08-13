@@ -21,11 +21,6 @@ XCOMM operating system: OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVer
 #define NeedsDoubleEscape	YES
 #endif
 
-#if 0
-#define UseNetcdf4 YES
-#define ExtraNetcdfLib -lhdf5_hl -lhdf5
-#endif
-
 #if OSMajorVersion >= 6
 #ifdef UseInstalled
 #if Build64BitAccess == YES
