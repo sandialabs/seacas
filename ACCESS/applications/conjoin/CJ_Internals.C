@@ -234,7 +234,7 @@ int Excn::Internals::write_meta_data(const Mesh<INT> &mesh,
   	 
     if (mesh.blockCount > 0) {
       for (size_t i=0; i < mesh.blockCount; i++) {
-	std::strncpy(names[i], blocks[i].name_.c_str(), name_size);
+	std::strncpy(names[i], sorted_blocks[i].name_.c_str(), name_size);
 	names[i][name_size] = 0;
       }
       ex_put_names(exodusFilePtr, EX_ELEM_BLOCK, names);
@@ -1266,8 +1266,8 @@ namespace {
 	    ex_err(routine,errmsg,status);
 	    return(EX_FATAL);
 	  }
+	  ex_compress_variable(exodusFilePtr, varid, 1);
 	}
-	ex_compress_variable(exodusFilePtr, varid, 1);
 
 	if (dimension > 1) {
 	  status=nc_def_var(exodusFilePtr, VAR_COORD_Y, nc_flt_code(exodusFilePtr), 1, dim, &varid);
@@ -1278,8 +1278,8 @@ namespace {
 	    ex_err(routine,errmsg,status);
 	    return(EX_FATAL);
 	  }
+	  ex_compress_variable(exodusFilePtr, varid, 1);
 	}
-	ex_compress_variable(exodusFilePtr, varid, 1);
 
 	if (dimension > 2) {
 	  status=nc_def_var(exodusFilePtr, VAR_COORD_Z, nc_flt_code(exodusFilePtr), 1, dim, &varid);
@@ -1290,8 +1290,8 @@ namespace {
 	    ex_err(routine,errmsg,status);
 	    return(EX_FATAL);
 	  }
+	  ex_compress_variable(exodusFilePtr, varid, 1);
 	}
-	ex_compress_variable(exodusFilePtr, varid, 1);
 
       } else {
 	// node coordinate arrays:  -- all stored together (old method)2
