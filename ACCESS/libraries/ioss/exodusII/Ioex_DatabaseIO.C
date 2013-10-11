@@ -283,7 +283,8 @@ namespace {
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
   
   std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                              const std::string &basename, int length)
+                              const std::string &basename, int length,
+			      bool &db_has_name)
   {
     std::vector<char> buffer(length+1);
     buffer[0] = '\0';
@@ -306,12 +307,15 @@ namespace {
                 << " which does not match the embedded id " << name_id
                 << ".\n         This can cause issues later on; the entity will be renamed to '"
                 << new_name << "' (IOSS)\n\n";
+	    db_has_name = false;
             return new_name;
           }
         }
       }
+      db_has_name = true;
       return (std::string(TOPTR(buffer)));
     } else {
+      db_has_name = false;
       return Ioss::Utils::encode_entity_name(basename, id);
     }
   }
@@ -696,18 +700,20 @@ namespace Ioex {
     size_t num_qa_records = qaRecords.size()/4;
 
     qa_element *qa = new qa_element[num_qa_records+1];
-    for (int i=0; i < num_qa_records+1; i++) {
+    for (size_t i=0; i < num_qa_records+1; i++) {
       for (int j=0; j < 4; j++) {
 	qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH+1];
       }
     }
 
-    int j = 0;
-    for (int i=0; i < num_qa_records; i++) {
-      std::strncpy(qa[i].qa_record[0][0], qaRecords[j++].c_str(), MAX_STR_LENGTH);
-      std::strncpy(qa[i].qa_record[0][1], qaRecords[j++].c_str(), MAX_STR_LENGTH);
-      std::strncpy(qa[i].qa_record[0][2], qaRecords[j++].c_str(), MAX_STR_LENGTH);
-      std::strncpy(qa[i].qa_record[0][3], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+    {
+      int j = 0;
+      for (size_t i=0; i < num_qa_records; i++) {
+	std::strncpy(qa[i].qa_record[0][0], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+	std::strncpy(qa[i].qa_record[0][1], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+	std::strncpy(qa[i].qa_record[0][2], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+	std::strncpy(qa[i].qa_record[0][3], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+      }
     }
 
     Ioss::Utils::time_and_date(qa[num_qa_records].qa_record[0][3],
@@ -736,7 +742,7 @@ namespace Ioex {
     if (ierr < 0)
       exodus_error(get_file_pointer(), __LINE__, myProcessor);
 
-    for (int i=0; i < num_qa_records+1; i++) {
+    for (size_t i=0; i < num_qa_records+1; i++) {
       for (int j=0; j < 4; j++) {
 	delete [] qa[i].qa_record[0][j];
       }
@@ -1026,7 +1032,7 @@ namespace Ioex {
     Ioss::Region *this_region = get_region();
     for (int i=0; i < timestep_count; i++) {
       if (tsteps[i] <= last_time) {
-        this_region->add_state(tsteps[i]);
+        this_region->add_state(tsteps[i]*timeScaleFactor);
       } else {
         if (myProcessor == 0) {
           // NOTE: Don't want to warn on all processors if there are
@@ -1073,8 +1079,14 @@ namespace Ioex {
     int64_t num_border_elems   = 0;
 
     bool nemesis_file = true;
+    // If someone changed to EX_VERBOSE, temporarily change to default
+    // so this call does not report an error in the serial case.
+    // (See Trac 10774)
+    int old_val = ex_opts(EX_DEFAULT); 
     int error = ex_get_init_info(get_file_pointer(),
-				 &num_proc, &num_proc_in_file, &file_type[0]);
+        &num_proc, &num_proc_in_file, &file_type[0]);
+    ex_opts(old_val); // Reset back to what it was.
+
     if (error < 0) {
       // Not a nemesis file
       nemesis_file = false;
@@ -1475,10 +1487,18 @@ namespace Ioex {
       std::string alias = Ioss::Utils::encode_entity_name(basename, id);
       char * const X_type = TOPTR(all_X_type) + iblk * (MAX_STR_LENGTH+1);
 
+      bool db_has_name = false;
       std::string block_name;
       {
         Ioss::SerializeIO	serializeIO__(this);
-        block_name = get_entity_name(get_file_pointer(), entity_type, id, basename, maximumNameLength);
+        block_name = get_entity_name(get_file_pointer(), entity_type, id, basename,
+				     maximumNameLength, db_has_name);
+
+      }
+      if (get_use_generic_canonical_name()) {
+	std::string temp = block_name;
+	block_name = alias;
+	alias = temp;
       }
 
       std::string save_type = X_type;
@@ -1550,6 +1570,13 @@ namespace Ioex {
       }
 
       block->property_add(Ioss::Property("id", id)); // Do before adding for better error messages.
+      if (db_has_name) {
+	std::string *db_name = &block_name;
+	if (get_use_generic_canonical_name()) {
+	  db_name = &alias;
+	}
+	block->property_add(Ioss::Property("db_name", *db_name));
+      }
 
       // Maintain block order on output database...
       block->property_add(Ioss::Property("original_block_order", used_blocks++));
@@ -1583,11 +1610,8 @@ namespace Ioex {
           block->property_add(Ioss::Property(std::string("omitted"), 1));
         }
       }
-      if (block_name != alias) {
-        Ioss::GroupingEntity *test = get_region()->get_entity(alias);
-        if (test == NULL)
-          get_region()->add_alias(block_name, alias);
-      }
+
+      get_region()->add_alias(block_name, alias);
 
       // Check for additional variables.
       add_attribute_fields(entity_type, block, attributes, type);
@@ -2028,9 +2052,12 @@ namespace Ioex {
         {
           Ioss::SerializeIO	serializeIO__(this);
 
+	  bool db_has_name = false;
           side_set_name = get_entity_name(get_file_pointer(), EX_SIDE_SET, id, "surface",
-					  maximumNameLength);
+					  maximumNameLength, db_has_name);
 
+	  std::string alias = Ioss::Utils::encode_entity_name("surface", id);
+	  
           if (side_set_name == "universal_sideset") {
             split_type = Ioss::SPLIT_BY_DONT_SPLIT;
           }
@@ -2043,11 +2070,24 @@ namespace Ioex {
             side_set = get_region()->get_sideset(efs_name);
             check_non_null(side_set, "sideset", efs_name);
           } else {
+	    if (get_use_generic_canonical_name()) {
+	      std::string temp = side_set_name;
+	      side_set_name = alias;
+	      alias = temp;
+	    }
             side_set = new Ioss::SideSet(this, side_set_name);
             side_set->property_add(Ioss::Property("id", id));
+	    if (db_has_name) {
+	      std::string *db_name = &side_set_name;
+	      if (get_use_generic_canonical_name()) {
+		db_name = &alias;
+	      }
+	      side_set->property_add(Ioss::Property("db_name", *db_name));
+	    }
+
             get_region()->add((Ioss::SideSet*)side_set);
 
-            get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("surface", id));
+            get_region()->add_alias(side_set_name, alias);
             get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id));
           }
 
@@ -2067,7 +2107,6 @@ namespace Ioex {
           if (error < 0) {exodus_error(get_file_pointer(), __LINE__, myProcessor);}
 
           int64_t number_sides = set_param[0].num_entry;
-          number_distribution_factors = set_param[0].num_distribution_factor;
 
           Ioss::Int64Vector element(number_sides);
           Ioss::Int64Vector sides(number_sides);
@@ -2532,40 +2571,56 @@ namespace Ioex {
 	      exodus_error(get_file_pointer(), __LINE__, myProcessor);
 	    }
 
-	    for (int ins = 0; ins < count; ins++) {
-	      int64_t id = set_params[ins].id;
-	      int num_attr = 0;
-	      int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
-	      if (ierr < 0)
-		exodus_error(get_file_pointer(), __LINE__, myProcessor);
-	      attributes[ins] = num_attr;
+          for (int ins = 0; ins < count; ins++) {
+            int64_t id = set_params[ins].id;
+            int num_attr = 0;
+            int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
+            if (ierr < 0)
+              exodus_error(get_file_pointer(), __LINE__, myProcessor);
+            attributes[ins] = num_attr;
 
-	      std::string Xset_name = get_entity_name(get_file_pointer(), type, id, base+"list",
-						      maximumNameLength);
+	    bool db_has_name = false;
+            std::string Xset_name = get_entity_name(get_file_pointer(), type, id, base+"list",
+						    maximumNameLength, db_has_name);
 
-	      T* Xset = new T(this, Xset_name, set_params[ins].num_entry);
-	      Xsets[ins] = Xset;
-	      Xset->property_add(Ioss::Property("id", id));
-	      get_region()->add(Xset);
-	      get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base+"list", id));
-	      get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base+"set",  id));
+	    std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
+
+	    if (get_use_generic_canonical_name()) {
+	      std::string temp = Xset_name;
+	      Xset_name = alias;
+	      alias = temp;
 	    }
-	  }
 
-	  // The attribute count will either be 0 if there are no
-	  // entities in the grouping entity on this processor, or it will be
-	  // the number of attributes (> 0). Therefore, if we take the 'max'
-	  // over all processors, each processor will then have the correct
-	  // attribute count...
-	  // This is a collective call...
-	  util().global_array_minmax(attributes, Ioss::ParallelUtils::DO_MAX);
+            T* Xset = new T(this, Xset_name, set_params[ins].num_entry);
+            Xsets[ins] = Xset;
+            Xset->property_add(Ioss::Property("id", id));
+	    if (db_has_name) {
+	      std::string *db_name = &Xset_name;
+	      if (get_use_generic_canonical_name()) {
+		db_name = &alias;
+	      }
+	      Xset->property_add(Ioss::Property("db_name", *db_name));
+	    }
+            get_region()->add(Xset);
+            get_region()->add_alias(Xset_name, alias);
+            get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base+"set",  id));
+          }
+        }
 
-	  for (int ins = 0; ins < count; ins++) {
-	    add_attribute_fields(type, Xsets[ins], attributes[ins], "");
-	    add_results_fields(type, Xsets[ins], ins);
-	  }
-	}
+        // The attribute count will either be 0 if there are no
+        // entities in the grouping entity on this processor, or it will be
+        // the number of attributes (> 0). Therefore, if we take the 'max'
+        // over all processors, each processor will then have the correct
+        // attribute count...
+        // This is a collective call...
+        util().global_array_minmax(attributes, Ioss::ParallelUtils::DO_MAX);
+
+        for (int ins = 0; ins < count; ins++) {
+          add_attribute_fields(type, Xsets[ins], attributes[ins], "");
+          add_results_fields(type, Xsets[ins], ins);
+        }
       }
+    }
 
     void DatabaseIO::get_nodesets()
     {
@@ -2938,12 +2993,12 @@ namespace Ioex {
               } else {
                 if (ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) {
                   int64_t *idata = static_cast<int64_t*>(data);
-                  for (int64_t i=0; i < my_element_count; i++) {
+                  for (size_t i=0; i < my_element_count; i++) {
                     idata[i] = eb_offset_plus_one + i;
                   }
                 } else {
                   int *idata = static_cast<int*>(data);
-                  for (int64_t i=0; i < my_element_count; i++) {
+                  for (size_t i=0; i < my_element_count; i++) {
                     idata[i] = eb_offset_plus_one + i;
                   }
                 }
@@ -3214,6 +3269,8 @@ namespace Ioex {
               set_param[0].extra_list = NULL;
               set_param[0].distribution_factor_list = NULL;
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
+	      if (ierr < 0)
+		exodus_error(get_file_pointer(), __LINE__, myProcessor);
 
               if (set_param[0].num_distribution_factor == 0) {
                 double *rdata = static_cast<double*>(data);
@@ -3492,6 +3549,8 @@ namespace Ioex {
               std::vector<double> real_ids(num_to_get);
               set_param[0].distribution_factor_list = TOPTR(real_ids);
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
+	      if (ierr < 0)
+		exodus_error(get_file_pointer(), __LINE__, myProcessor);
 
               // Need to convert 'double' to 'int' for Sierra use...
               int* ids = static_cast<int*>(data);
@@ -3735,6 +3794,8 @@ namespace Ioex {
               std::vector<char> element(number_sides * int_byte_size_api());
               std::vector<char> sides(number_sides * int_byte_size_api());
               ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(element), TOPTR(sides));
+	      if (ierr < 0)
+		exodus_error(get_file_pointer(), __LINE__, myProcessor);
               //----
               Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, int_byte_size_api(),
                                                           TOPTR(element), TOPTR(sides),
@@ -4400,7 +4461,7 @@ namespace Ioex {
 
           // Get the element block id and element count
           int64_t id = get_id(eb, EX_ELEM_BLOCK, &ids_);
-          int64_t my_element_count = eb->get_property("entity_count").get_int();
+          size_t my_element_count = eb->get_property("entity_count").get_int();
           Ioss::Field::RoleType role = field.get_role();
 
           if (role == Ioss::Field::MESH) {
@@ -4470,7 +4531,7 @@ namespace Ioex {
                 int *side32 = (int*)TOPTR(side);
 
                 int index = 0;
-                for (int i=0; i < my_element_count; i++) {
+                for (size_t i=0; i < my_element_count; i++) {
                   element32[i] = el_side[index++];
                   side32[i]    = el_side[index++];
                 }
@@ -4480,7 +4541,7 @@ namespace Ioex {
                 int64_t *side64 = (int64_t*)TOPTR(side);
 
                 int64_t index = 0;
-                for (int64_t i=0; i < my_element_count; i++) {
+                for (size_t i=0; i < my_element_count; i++) {
                   element64[i] = el_side[index++];
                   side64[i]    = el_side[index++];
                 }
@@ -5695,6 +5756,8 @@ namespace Ioex {
     {
       Ioss::SerializeIO	serializeIO__(this);
 
+      time /= timeScaleFactor;
+      
       state = get_database_step(state);
       if (!is_input()) {
         int ierr = ex_put_time(get_file_pointer(), state, &time);
@@ -5729,6 +5792,7 @@ namespace Ioex {
 
       if (!is_input()) {
         write_reduction_fields();
+	time /= timeScaleFactor;
         finalize_write(time);
         if (minimizeOpenFiles)
           free_file_pointer();
@@ -5960,8 +6024,12 @@ namespace Ioex {
         Ioss::SerializeIO	serializeIO__(this);
 
         if (myProcessor == 0) {
-          put_qa();
-          put_info();
+	  if (!properties.exists("OMIT_QA_RECORDS")) {
+ 	    put_qa();
+	  }
+	  if (!properties.exists("OMIT_INFO_RECORDS")) {
+ 	    put_info();
+ 	  }
         }
 
         // Write the metadata to the exodusII file...
