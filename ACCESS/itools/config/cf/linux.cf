@@ -7,13 +7,11 @@ XCOMM ========================================================================
 XCOMM Define ONE of the following compilers.
 XCOMM
 XCOMM  [GCC4GFORTRAN] gcc, g++, g77  (version 4.1 or later)
-XCOMM  [GCCG77]       gcc, g++, g77  (version 3.X)	   
 XCOMM  [PORTLAND]     pgcc, pgCC, pgf77 (Portland Group)   
 XCOMM  [USE_INTEL]    icc,  ifc (Intel)                    
 XCOMM  [GCC_INTEL]    gcc/g++ to compiler C/C++ code and intel to compile fortran/fortran90 code
 
-/* #define GCC4GFORTRAN 1  */
-/* #define GCCG77 1 */              /* do not use 64-bit if building the fortran codes with this define */
+/* #define GCC4GFORTRAN 1 */
 /* #define PORTLAND 1 */
 /* #define USE_INTEL 1 */
 /* #define GCC_INTEL 1 */
@@ -27,7 +25,6 @@ XCOMM  [GCC_INTEL]    gcc/g++ to compiler C/C++ code and intel to compile fortra
 
 XCOMM   using several compilers:                     Symbol to define
 XCOMM       gcc, g++, g77  (version 4.1 or later)	 [GCC4GFORTRAN]
-XCOMM       gcc, g++, g77  (version 3.X)	         [GCCG77]
 XCOMM       pgcc, pgCC, pgf77 (Portland Group)           [PORTLAND]
 XCOMM       icc,  ifc (Intel)                            [USE_INTEL]
 XCOMM
@@ -43,7 +40,7 @@ XCOMM
 XCOMM Contact gdsjaar@sandia.gov if you have any questions
 XCOMM
 
-#if !defined(GCCG77) && !defined(GCC4GFORTRAN) && !defined(PORTLAND) && !defined(USE_INTEL) && !defined(REDSTORM_LOGIN) && !defined(REDDISH) && !defined(GOODYEAR_GM) && !defined(GOODYEAR_PATH) && !defined(GCC_INTEL) && !defined(BLACKROSE) && !defined(PARALLEL_AWARE)
+#if !defined(GCC4GFORTRAN) && !defined(PORTLAND) && !defined(USE_INTEL) && !defined(REDSTORM_LOGIN) && !defined(REDDISH) && !defined(GOODYEAR_GM) && !defined(GOODYEAR_PATH) && !defined(GCC_INTEL) && !defined(BLACKROSE) && !defined(PARALLEL_AWARE)
 
 #error "Must define which compiler to use or system to build on."
 #endif
@@ -70,18 +67,6 @@ XCOMM
 #if ParallelAwareExodus
 #define BuildParallelAwareExodus
 #define ParAwareExoDefine -DPARALLEL_AWARE_EXODUS
-#endif
-
-#if defined(GCCG77)
-#if Build64BitAccess
-#error "Cannot build 64-bit SEACAS using GCC versions prior to 4.0; Check your defines in ACCESS/itools/config/cf/linux.cf"
-#endif
-#endif
-
-#if defined(GCCG77)
-#ifndef ExcludeAnalysis
-#define ExcludeAnalysis
-#endif
 #endif
 
 #if defined(GOODYEAR_GM) || defined(GOODYEAR_PATH)
@@ -275,45 +260,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define ExtraLoadOptions  
 #endif /* USE_INTEL */
 
-
-#if defined(GCCG77) 
-
-#define CcCmd			gcc
-#define CplusplusCmd		g++
-
-#ifdef i386Architecture
-#define StandardDefines		-Dlinux  -DADDC_ -DADDC__
-#define OptimizedDebugFlags	-O2 
-#endif /* i386Architecture */
-
-#if defined x86_64Architecture
-#if Build64BitAccess
-#define StandardDefines		-m64 -Dlinux  -DADDC_ -DADDC__
-#define F77PrecOptions          -m64 -fno-f2c
-#define ExtraLoadOptions        -m64
-#else
-#define StandardDefines		-m32 -Dlinux  -DADDC_ -DADDC__
-#define F77PrecOptions          -m32 -fno-f2c
-#define ExtraLoadOptions        -m32
-#endif
-#endif /* x86_64Architecture && !Build64BitAccess */
-
-#ifdef AlphaArchitecture
-#define OptimizedDebugFlags	-O2
-#define StandardDefines		-Dlinux -D__alpha__ -DADDC_ 
-#endif /* AlphaArchitecture */
-
-#define HasGcc			YES
-#define HasGcc2			YES
-#define HasGcc2ForCplusplus	YES
-#define GccUsesGas		YES
-#define UseGas			YES
-
-/* g77 */
-#define FortranCmd              g77
-#define Fortran90Cmd		true
-#define DefaultF77Options	 
-#endif  /* GCCCG77 */
 
 #if defined(GCC4GFORTRAN) 
 
