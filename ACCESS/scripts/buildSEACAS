@@ -641,14 +641,16 @@ ExecuteCommand "make install" "makeinstall.log" \
     "$DefaultAccessRootDir/ACCESS" "" ""
 echo ""
 echo ""
+if [ "$DefaultGroup" != "Group" ]; then
 echo "Setting the group id of all files to \"$DefaultGroup\"..."
 cd $DefaultAccessRootDir
 chgrp -R $DefaultGroup *
 cd $FileAccessInstallDir
 chgrp -R $DefaultGroup *
+fi
 echo ""
 echo ""
-echo "Giving the \"$DefaultGroup\" group read and write permission on all SEACAS files..."
+echo "Giving the group read and write permission on all SEACAS files..."
 cd $DefaultAccessRootDir
 find . -type d -exec chmod 775 {} \;
 chmod -R g+rw *
