@@ -74,19 +74,15 @@ Ioss_Edge2.C \
 Ioss_Edge2D2.C \
 Ioss_Edge2D3.C \
 Ioss_Edge3.C \
-Ioss_ElementBlock.C \
-Ioss_FaceBlock.C \
 Ioss_EdgeBlock.C \
-Ioss_NodeBlock.C \
-Ioss_ElementSet.C \
-Ioss_FaceSet.C \
 Ioss_EdgeSet.C \
-Ioss_NodeSet.C \
+Ioss_ElementBlock.C \
+Ioss_ElementSet.C \
 Ioss_ElementTopology.C \
 Ioss_EntityBlock.C \
 Ioss_EntitySet.C \
-Ioss_SideBlock.C \
-Ioss_SideSet.C \
+Ioss_FaceBlock.C \
+Ioss_FaceSet.C \
 Ioss_Field.C \
 Ioss_FieldManager.C \
 Ioss_FileInfo.C \
@@ -94,14 +90,15 @@ Ioss_GroupingEntity.C \
 Ioss_Hex20.C \
 Ioss_Hex27.C \
 Ioss_Hex8.C \
-Ioss_Initializer.C \
 Ioss_IOFactory.C \
+Ioss_Initializer.C \
 Ioss_Map.C \
 Ioss_Node.C \
+Ioss_NodeBlock.C \
+Ioss_NodeSet.C \
 Ioss_ParallelUtils.C \
 Ioss_Property.C \
 Ioss_PropertyManager.C \
-Ioss_Pyramid14.C \
 Ioss_Pyramid13.C \
 Ioss_Pyramid14.C \
 Ioss_Pyramid5.C \
@@ -115,14 +112,15 @@ Ioss_Shell8.C \
 Ioss_Shell9.C \
 Ioss_ShellLine2D2.C \
 Ioss_ShellLine2D3.C \
+Ioss_SideBlock.C \
+Ioss_SideSet.C \
 Ioss_Sphere.C \
 Ioss_Super.C \
-Ioss_Tet11.C \
 Ioss_Tet10.C \
+Ioss_Tet11.C \
 Ioss_Tet4.C \
 Ioss_Tet7.C \
 Ioss_Tet8.C \
-Ioss_Tet11.C \
 Ioss_Transform.C \
 Ioss_Tri3.C \
 Ioss_Tri4.C \
@@ -134,10 +132,9 @@ Ioss_TriShell6.C \
 Ioss_Unknown.C \
 Ioss_Utils.C \
 Ioss_VariableType.C \
-Ioss_Wedge18.C \
 Ioss_Wedge15.C \
-Ioss_Wedge6.C \
 Ioss_Wedge18.C \
+Ioss_Wedge6.C \
 tokenize.C
 
 OBJS = ${SRCS:.C=.o}
@@ -149,41 +146,51 @@ INCLIST = \
 	Ioss_BoundingBox.h \
 	Ioss_CodeTypes.h \
 	Ioss_CommSet.h \
+	Ioss_CompositeVariableType.h \
 	Ioss_ConcreteVariableType.h \
 	Ioss_CoordinateFrame.h \
+	Ioss_ConstructedVariableType.h \
 	Ioss_DBUsage.h \
 	Ioss_DataSize.h \
 	Ioss_DatabaseIO.h \
+	Ioss_EdgeBlock.h \
+	Ioss_EdgeSet.h \
+	Ioss_ElementBlock.h \
+	Ioss_ElementSet.h \
 	Ioss_ElementTopology.h \
+	Ioss_ElementVariableType.h \
 	Ioss_EntityBlock.h \
 	Ioss_EntitySet.h \
 	Ioss_EntityType.h \
+	Ioss_FaceBlock.h \
+	Ioss_FaceSet.h \
 	Ioss_Field.h \
 	Ioss_FieldManager.h \
 	Ioss_FileInfo.h \
 	Ioss_GroupingEntity.h \
 	Ioss_IOFactory.h \
+	Ioss_Initializer.h \
+	Ioss_Map.h \
+	Ioss_NamedSuffixVariableType.h \
+	Ioss_Node.h \
 	Ioss_NodeBlock.h \
-	Ioss_EdgeBlock.h \
-	Ioss_FaceBlock.h \
-	Ioss_ElementBlock.h \
 	Ioss_NodeSet.h \
-	Ioss_EdgeSet.h \
-	Ioss_FaceSet.h \
-	Ioss_ElementSet.h \
-	Ioss_SideBlock.h \
-	Ioss_SideSet.h \
+	Ioss_NullEntity.h \
 	Ioss_ParallelUtils.h \
 	Ioss_Property.h \
 	Ioss_PropertyManager.h \
 	Ioss_Region.h \
 	Ioss_SerializeIO.h \
+	Ioss_SideBlock.h \
+	Ioss_SideSet.h \
+	Ioss_Sphere.h \
 	Ioss_State.h \
-	Ioss_SurfaceSplit.h \
 	Ioss_SubSystem.h \
+	Ioss_Super.h \
+	Ioss_SurfaceSplit.h \
 	Ioss_Transform.h \
-	Ioss_VariableType.h \
-	Ioss_Utils.h 
+	Ioss_Utils.h \
+	Ioss_VariableType.h
 
 # Can be empty.  Is used in Trilinos, so just create dummy here.
 SEACASIoss_config.h:

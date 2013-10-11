@@ -62,8 +62,8 @@ namespace Info {
       double minimum_time() const {return minimumTime_;}
       int surface_split_scheme() const {return surfaceSplitScheme_;}
       char field_suffix_separator() const {return fieldSuffixSeparator_;}
-
-      std::string cwd() const {return cwd_;}
+      bool use_generic_names() const {return useGenericNames_;}
+ 
       std::string filename() const {return filename_;}
       std::string type() const {return filetype_;}
       std::string groupname() const {return groupname_;}
@@ -86,13 +86,13 @@ namespace Info {
       bool listGroups_;
       bool summary_;
       
+      bool useGenericNames_;
       char fieldSuffixSeparator_;
       
       int surfaceSplitScheme_;
       
       double minimumTime_;
       double maximumTime_;
-      std::string cwd_;
       std::string filetype_;
       std::string filename_;
       std::string groupname_;
