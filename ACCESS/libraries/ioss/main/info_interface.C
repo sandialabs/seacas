@@ -56,8 +56,8 @@
 
 Info::Interface::Interface()
   : checkNodeStatus_(false), computeVolume_(false), adjacencies_(false),ints64Bit_(false),
-    computeBBox_(false), listGroups_(false), summary_(0), fieldSuffixSeparator_('_'), 
-    surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
+    computeBBox_(false), useGenericNames_(false), listGroups_(false), summary_(false),
+    fieldSuffixSeparator_('_'),  surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
     filetype_("exodus")
 {
   enroll_options();
@@ -105,6 +105,10 @@ void Info::Interface::enroll_options()
   options_.enroll("group_name", Ioss::GetLongOption::MandatoryValue,
 		  "List information only for the specified group. Use 'ALL' to see info for all groups",
 		  NULL);
+
+  options_.enroll("use_generic_names", Ioss::GetLongOption::NoValue,
+		  "True to use generic names (type_id) instead of names in database",
+ 		  NULL);
 
   options_.enroll("summary", Ioss::GetLongOption::NoValue,
 		  "Only output counts of nodes, elements, and entities",
@@ -172,6 +176,10 @@ bool Info::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("list_groups")) {
     listGroups_ = true;
+  }
+
+  if (options_.retrieve("use_generic_names")) {
+    useGenericNames_ = true;
   }
 
   if (options_.retrieve("summary")) {
