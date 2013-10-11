@@ -177,13 +177,14 @@ extern "C" {
     EX_INQ_DB_MAX_USED_NAME_LENGTH  = 49,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
     EX_INQ_MAX_READ_NAME_LENGTH = 50,     /**< inquire client-specified max size of returned names */
 
-    EX_INQ_NUM_CHILD_GROUPS= 51,     /**< inquire number of groups contained in this (exoid) group */
-    EX_INQ_GROUP_PARENT    = 52,     /**< inquire id of parent of this (exoid) group; returns exoid if at root */
-    EX_INQ_GROUP_ROOT      = 53,     /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
-    EX_INQ_GROUP_NAME_LEN  = 54,     /**< inquire length of name of group exoid */
-    EX_INQ_GROUP_NAME      = 55,     /**< inquire name of group exoid. "/" returned for root group */
-    EX_INQ_FULL_GROUP_NAME_LEN = 56, /**< inquire length of full path name of this (exoid) group */
-    EX_INQ_FULL_GROUP_NAME = 57,     /**< inquire full "/"-separated path name of this (exoid) group */
+    EX_INQ_DB_FLOAT_SIZE = 51,      /**< inquire size of floating-point values stored on database */
+    EX_INQ_NUM_CHILD_GROUPS= 52,     /**< inquire number of groups contained in this (exoid) group */
+    EX_INQ_GROUP_PARENT    = 53,     /**< inquire id of parent of this (exoid) group; returns exoid if at root */
+    EX_INQ_GROUP_ROOT      = 54,     /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
+    EX_INQ_GROUP_NAME_LEN  = 55,     /**< inquire length of name of group exoid */
+    EX_INQ_GROUP_NAME      = 56,     /**< inquire name of group exoid. "/" returned for root group */
+    EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
+    EX_INQ_FULL_GROUP_NAME = 58,     /**< inquire full "/"-separated path name of this (exoid) group */
     EX_INQ_INVALID         = -1};
 
   typedef enum ex_inquiry ex_inquiry;
@@ -236,7 +237,8 @@ extern "C" {
     EX_DEFAULT  = 0,
     EX_VERBOSE  = 1,  /**< verbose mode message flag   */
     EX_DEBUG    = 2,  /**< debug mode def             */
-    EX_ABORT    = 4   /**< abort mode flag def        */
+    EX_ABORT    = 4,   /**< abort mode flag def        */
+    EX_NULLVERBOSE = 8 /**< verbose mode for null entity detection warning */
   };
   typedef enum ex_options ex_options;
   
@@ -731,7 +733,7 @@ extern "C" {
 
   EXODUS_EXPORT void ex_err(const char *module_name, const char *message, int err_num);
   EXODUS_EXPORT void ex_get_err(const char** msg, const char** func, int* errcode);
-  EXODUS_EXPORT void ex_opts(int options);
+  EXODUS_EXPORT int ex_opts(int options);
   EXODUS_EXPORT int ex_inquire(int exoid, int inquiry, void_int*, float*, char*);
   EXODUS_EXPORT int64_t ex_inquire_int(int exoid, int inquiry);
   EXODUS_EXPORT int ex_int64_status(int exoid);
