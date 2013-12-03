@@ -1,0 +1,15 @@
+all:: exodus.py exodus.html
+
+ExtraStuffToClean(exodus.py)
+ExtraStuffToClean(exodus.pyc)
+ExtraStuffToClean(exodus.html)
+
+exodus.py: exodus.py.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ exodus.py.in > exodus.py
+	chmod +x exodus.py
+
+exodus.html:
+	python -m pydoc -w exodus
+
+InstallProgram(exodus.py,$(BINDIR))
+InstallNonExecFile(exodus.html,$(ACCESSDIR)/doc)
