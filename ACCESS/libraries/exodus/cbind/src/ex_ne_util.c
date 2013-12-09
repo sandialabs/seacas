@@ -53,12 +53,11 @@
 /*****************************************************************************/
 /*****************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-
-#include <string.h>
-#include <math.h>
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for sprintf, NULL
+#include <stdlib.h>                     // for malloc
+#include <string.h>                     // for strcpy, strlen
+#include <sys/types.h>                  // for int64_t
 
 #include <netcdf.h>
 #include <exodusII.h>

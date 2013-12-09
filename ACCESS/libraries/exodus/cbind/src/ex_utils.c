@@ -42,14 +42,16 @@
 #include <assert.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
+#include <ctype.h>                      // for tolower, isspace
+#include <errno.h>                      // for errno
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for sprintf, NULL, fprintf, etc
+#include <stdlib.h>                     // for free, calloc, malloc, etc
+#include <string.h>                     // for strcpy, strlen
+#include <sys/types.h>                  // for int64_t, ssize_t
 
-#include "exodusII.h"
-#include "exodusII_int.h"
+#include "exodusII.h"                   // for exerrval, ex_err, etc
+#include "exodusII_int.h"               // for obj_stats, EX_FATAL, etc
 
 struct obj_stats*  exoII_eb = 0;
 struct obj_stats*  exoII_ed = 0;
