@@ -8,6 +8,12 @@ SHARED = --enable-shared
 SHARED = --disable-shared
 #endif
 
+#if defined(BuildParallelAwareExodus)
+PARALLEL_ON_OFF= --enable-parallel
+#else
+DISABLE_ON_OFF = --disable-parallel
+#endif
+
 all:: $(TRUE_HDF5)/Makefile
 	cd $(TRUE_HDF5); $(MAKE)
 	make install
