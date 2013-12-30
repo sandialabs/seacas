@@ -7,13 +7,11 @@ XCOMM Top level Imake file for ACCESS system
 			"F90DEBUGFLAGS=$(F90DEBUGFLAGS)" \
 			"F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
 
-SUBDIRS = \
-$(SERIALMPISRC) \
-$(HDF5SRC) \
-$(NETCDFSRC) \
-$(ZOLTANSRC) \
-parallel \
-matio
+#if defined(BuildParallelAwareExodus) && UseParNetcdf
+PNETCDF = pnetcdf
+#endif
+
+SUBDIRS = serial_mpi hdf5 $(PNETCDF) netcdf zoltan metis parallel matio 
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
 
@@ -25,24 +23,15 @@ TPLs::
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
 
-XCOMM Install include files 
-makeincludes::
-	@if test -d $(LIBRARIESSRC) ; \
-	then \
-	(cd $(LIBRARIESSRC) && make makeincludes) ; \
-	fi;
-	@if test -d $(NETCDFSRC) ; \
-	then \
-	(cd $(NETCDFSRC) && make makeincludes) ; \
-	fi;
-	@if test -d $(HDF5SRC) ; \
-	then \
-	(cd $(HDF5SRC) && make makeincludes) ; \
-	fi;
+MakeTarget(netcdf,     netcdf,     PassDebugFlags)
+MakeTarget(hdf5,       hdf5,       PassDebugFlags)
+MakeTarget(serial_mpi, serial_mpi, PassDebugFlags)
+MakeTarget(zoltan,     zoltan,     PassDebugFlags)
+MakeTarget(parallel,   parallel,   PassDebugFlags)
+MakeTarget(matio,      matio,      PassDebugFlags)
+MakeTarget(metis,      metis,      PassDebugFlags)
+#if defined(BuildParallelAwareExodus) && UseParNetcdf
+MakeTarget(pnetcdf,    pnetcdf,    PassDebugFlags)
+#endif
 
-MakeTarget(netcdf,      $(NETCDFSRC),    PassDebugFlags)
-MakeTarget(hdf5,        $(HDF5SRC),      PassDebugFlags)
-MakeTarget(serial_mpi,  $(SERIALMPISRC), PassDebugFlags)
-MakeTarget(zoltan,      $(ZOLTANSRC),    PassDebugFlags)
-MakeTarget(parallel,    parallel,        PassDebugFlags)
-MakeTarget(matio,       matio,           PassDebugFlags)
+

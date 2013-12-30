@@ -8,9 +8,9 @@ V_BASE = 4.hdf5
 #else
 V_BASE = 4
 #endif
-#V_NUM = netcdf-4.0
-#V_NUM = netcdf-4.1.2
-V_NUM = netcdf-4.2.1.1
+#V_NUM = netcdf-4.1.3
+#V_NUM = netcdf-4.2.1.1
+V_NUM = netcdf-4.3.0
 
 TRUE_NETCDF = $(V_NUM)
 
@@ -18,6 +18,17 @@ TRUE_NETCDF = $(V_NUM)
 SHARED = --enable-shared
 #else
 SHARED = --disable-shared
+#endif
+
+#if defined(BuildParallelAwareExodus)
+PARALLEL_TESTS = --enable-parallel-tests
+#if  UseParNetcdf
+PNETCDF = --enable-pnetcdf
+#else
+PNETCDF = 
+#endif
+#else
+PARALLEL_TESTS = 
 #endif
 
 all:: $(TRUE_NETCDF)/Makefile
