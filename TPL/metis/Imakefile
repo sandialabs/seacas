@@ -1,0 +1,66 @@
+
+TRUE_METIS = metis-5.0.2
+
+#if defined(PARALLEL_AWARE)
+PARMETIS = parmetis
+#endif
+
+all:: metis $(PARMETIS)
+
+metis: $(TRUE_METIS)/Makefile 
+	cd $(TRUE_METIS); $(MAKE)
+	make install
+
+runconfigure: $(TRUE_METIS)/runconfigure
+
+$(TRUE_METIS)/runconfigure: runconfigure.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd runconfigure.in > $(TRUE_METIS)/runconfigure
+	chmod +x $(TRUE_METIS)/runconfigure
+
+$(TRUE_METIS)/Makefile: $(TRUE_METIS)/runconfigure
+	cd $(TRUE_METIS); ./runconfigure
+
+test:: all
+	cd $(TRUE_METIS); $(MAKE) test
+
+install:: 
+	cd $(TRUE_METIS); $(MAKE) install
+
+clean:: $(TRUE_METIS)/Makefile
+	cd $(TRUE_METIS); $(MAKE) clean
+
+distclean:: $(TRUE_METIS)/runconfigure
+	cd $(TRUE_METIS); $(MAKE) distclean
+
+ExtraStuffToClean($(TRUE_METIS)/runconfigure)
+
+#if defined(PARALLEL_AWARE)
+TRUE_PARMETIS = parmetis-4.0.2
+parmetis: $(TRUE_PARMETIS)/Makefile 
+	cd $(TRUE_PARMETIS); $(MAKE)
+	make install
+
+runconfigure: $(TRUE_PARMETIS)/runconfigure
+
+$(TRUE_PARMETIS)/runconfigure: runconfigure.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd runconfigure.in > $(TRUE_PARMETIS)/runconfigure
+	chmod +x $(TRUE_PARMETIS)/runconfigure
+
+$(TRUE_PARMETIS)/Makefile: $(TRUE_PARMETIS)/runconfigure
+	cd $(TRUE_PARMETIS); ./runconfigure
+
+test:: all
+	cd $(TRUE_PARMETIS); $(MAKE) test
+
+install:: 
+	cd $(TRUE_PARMETIS); $(MAKE) install
+
+clean:: $(TRUE_PARMETIS)/Makefile
+	cd $(TRUE_PARMETIS); $(MAKE) clean
+
+distclean:: $(TRUE_PARMETIS)/runconfigure
+	cd $(TRUE_PARMETIS); $(MAKE) distclean
+
+ExtraStuffToClean($(TRUE_PARMETIS)/runconfigure)
+
+#endif
