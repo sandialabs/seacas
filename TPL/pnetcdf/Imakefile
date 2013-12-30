@@ -1,0 +1,34 @@
+
+V_NUM = parallel-netcdf-1.3.1
+
+TRUE_PNETCDF = $(V_NUM)
+
+all:: $(TRUE_PNETCDF)/Makefile
+	cd $(TRUE_PNETCDF); $(MAKE)
+	make install
+
+runconfigure: $(TRUE_PNETCDF)/runconfigure
+
+$(TRUE_PNETCDF)/runconfigure: runconfigure.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd runconfigure.in > $(TRUE_PNETCDF)/runconfigure
+	chmod +x $(TRUE_PNETCDF)/runconfigure
+
+$(TRUE_PNETCDF)/Makefile: $(TRUE_PNETCDF)/runconfigure
+	cd $(TRUE_PNETCDF); ./runconfigure
+
+test:: all
+	cd $(TRUE_PNETCDF); $(MAKE) test
+
+install:: 
+	cd $(TRUE_PNETCDF); $(MAKE) install
+
+clean:: $(TRUE_PNETCDF)/Makefile
+	cd $(TRUE_PNETCDF); $(MAKE) clean
+
+distclean:: $(TRUE_PNETCDF)/runconfigure
+	cd $(TRUE_PNETCDF); $(MAKE) distclean
+
+makeincludes:: $(TRUE_PNETCDF)/Makefile
+	cd $(TRUE_PNETCDF)/src; make install-includeHEADERS
+
+ExtraStuffToClean($(TRUE_PNETCDF)/runconfigure)
