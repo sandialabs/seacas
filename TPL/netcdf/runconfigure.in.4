@@ -13,4 +13,4 @@ LDFLAGS='$(LDOPTIONS) $(EXTRA_LDOPTIONS)'; export LDFLAGS
 FC=''; export FC
 F90=''; export F90
  
-./configure --disable-netcdf-4 --disable-f77 --disable-f90 $(SHARED) --prefix $(PROJECTROOT) --libdir $(SHLIBDIR) --disable-fsync --disable-cdmremote --disable-dap $1
+./configure --disable-netcdf-4 --disable-f77 --disable-f90 $(SHARED) $(PARALLEL_TESTS) --prefix $(PROJECTROOT) --libdir $(SHLIBDIR) --disable-fsync --disable-cdmremote --disable-dap $1
