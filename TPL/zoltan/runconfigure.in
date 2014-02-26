@@ -1,9 +1,9 @@
 #! /bin/sh
 rm -f config.cache
 LIBRARYSUBDIR=lib; export LIBRARYSUBDIR
-CC='$(ACCESSDIR)/siMPI/bin/mpicc'; export CC
+CC=$(PARALLEL_CC); export CC
 CFLAGS='-I../libsrc $(CFLAGS) $(PICFLAGS)'; export CFLAGS
-CXX='$(ACCESSDIR)/siMPI/bin/mpicxx'; export CXX
+CXX=$(PARALLEL_CXX); export CXX
 CXXFLAGS='-I../libsrc $(CXXFLAGS) $(PICFLAGS)'; export CXXFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 AR_FLAGS='$(ARFLAGS)'; export AR_FLAGS

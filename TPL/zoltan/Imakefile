@@ -8,6 +8,14 @@ SHARED = --enable-shared
 SHARED = --disable-shared
 #endif
 
+#if defined(BuildParallelAwareExodus)
+PARALLEL_CC = $(CC)
+PARALLEL_CXX = $(CXX)
+#else
+PARALLEL_CC  = '$(ACCESSDIR)/siMPI/bin/mpicc'
+PARALLEL_CXX = '$(ACCESSDIR)/siMPI/bin/mpicxx'
+#endif
+
 all:: $(ZOLTAN_BLD)/Makefile
 	cd $(ZOLTAN_BLD); $(MAKE)
 	make install
