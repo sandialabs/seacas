@@ -33,7 +33,7 @@ XCOMM  [VACPP]        xlc, xlC, xlf
 
 #if !defined(GCC4GFORTRAN) && !defined(VACPP)
 
-#error "Must define which compiler to use or system to build on."
+#error "linux-pmac.cf: Must define which compiler to use or system to build on."
 #endif
 
 /* Most users should not need to change anything below here. */

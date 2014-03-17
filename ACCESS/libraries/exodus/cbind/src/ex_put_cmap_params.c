@@ -59,9 +59,9 @@
 /*****************************************************************************/
 /*****************************************************************************/
 
-#include <stddef.h>                     // for size_t
-#include <sys/types.h>                  // for int64_t
-#include <stdio.h>                      // for sprintf
+#include <stddef.h>                     /* for size_t */
+#include <sys/types.h>                  /* for int64_t */
+#include <stdio.h>                      /* for sprintf */
 
 #include <netcdf.h>
 

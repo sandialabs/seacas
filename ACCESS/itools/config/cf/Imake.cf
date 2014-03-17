@@ -474,6 +474,12 @@ XCOMM $XConsortium: Imake.cf /main/26 1996/09/28 16:05:09 rws $
 #  undef  LinuxArchitecture
 #  define LinuxArchitecture "ia64"
 # endif
+# ifdef __PPC64__
+#  define ppc_64Architecture
+#  undef __PPC64__
+#  undef  LinuxArchitecture
+#  define LinuxArchitecture "PPC_64"
+# endif
 # if defined(__x86_64__)
 #  undef __x86_64__
 #  define x86_64Architecture

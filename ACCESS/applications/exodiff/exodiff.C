@@ -36,6 +36,16 @@
 #error "PRId64 not defined"
 #endif
 
+#if defined(__STDC_VERSION__)
+#  if (__STDC_VERSION__ >= 199901L)
+#    define ST_ZU   "zu"
+#  else
+#    define ST_ZU   "lu"
+#  endif
+#else
+#  define ST_ZU   "lu"
+#endif
+
 #include <math.h>
 #include <time.h>
 #include <iostream>
@@ -291,7 +301,7 @@ namespace {
       // Calculate proprtion...
       double t1 = file.Time(tbef);
       double t2 = file.Time(tbef+1);
-      tprop.proportion = (t2 - time) / (t2 - t1);
+      tprop.proportion = (time - t1) / (t2 - t1);
       return tprop;
     }
   }
@@ -872,12 +882,12 @@ namespace {
       // Make sure there is an operation to perform (compare times, variables, ...)
       if ((min_num_times == 0 && interface.coord_tol.type == IGNORE) ||
 	  (min_num_times >  0 && interface.time_tol.type == IGNORE &&
-	   interface.glob_var_names.size() == 0 &&
-	   interface.node_var_names.size() == 0 &&
-	   interface.elmt_var_names.size() == 0 &&
-	   interface.elmt_att_names.size() == 0 &&
-	   interface.ns_var_names.size()   == 0 &&
-	   interface.ss_var_names.size()   == 0)) {
+	   interface.glob_var_names.empty() &&
+	   interface.node_var_names.empty() &&
+	   interface.elmt_var_names.empty() &&
+	   interface.elmt_att_names.empty() &&
+	   interface.ns_var_names.empty()   &&
+	   interface.ss_var_names.empty())) {
 	std::cout << "\nWARNING: No comparisons were performed during "
 	  "this execution.\n";
 	diff_flag = true;
@@ -898,7 +908,8 @@ namespace {
     else if (file1.Num_Times() != file2.Num_Times()) {
       if ((file1.Num_Times() - interface.time_step_offset == file2.Num_Times()) ||
 	  (interface.time_step_stop > 0) ||
-	  (interface.explicit_steps.first != 0 && interface.explicit_steps.second != 0)) {
+	  (interface.explicit_steps.first != 0 && interface.explicit_steps.second != 0) ||
+	  (interface.interpolating)){
 	std::cout << "\nexodiff: Files are the same" << std::endl;
 	std::cout << "         The number of timesteps are different but "
 		  << "the timesteps that were compared are the same."
@@ -1126,7 +1137,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 		       elem_id_map, mm_ss, var_vals ) )
       *diff_flag = true;
   } else {
-    if (interface.ns_var_names.size() > 0 || interface.ss_var_names.size() > 0) {
+    if (!interface.ns_var_names.empty() || !interface.ss_var_names.empty()) {
       std::cout << "WARNING: nodeset and sideset variables not (yet) "
 	"compared for partial map\n";
     }
@@ -1151,7 +1162,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     // ----------------------------------------------------------------------
     // Output file containing differences...
     if (out_file_id >= 0) {
-      if (interface.glob_var_names.size() > 0) {
+      if (!interface.glob_var_names.empty()) {
 	SMART_ASSERT(gvals != 0);
 	for (unsigned out_idx = 0; out_idx < interface.glob_var_names.size(); ++out_idx) {
 	  const string& name = (interface.glob_var_names)[out_idx];
@@ -1181,7 +1192,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     // -------------------------------------------------------------------
     // Determine if any diffs and output to terminal
     int name_length = max_string_length(file1.Global_Var_Names())+1;
-    if (!interface.quiet_flag && interface.glob_var_names.size() > 0)
+    if (!interface.quiet_flag && !interface.glob_var_names.empty())
       std::cout << "Global variables:" << std::endl;
     
     for (unsigned out_idx = 0; out_idx < interface.glob_var_names.size(); ++out_idx) {
@@ -1281,7 +1292,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     SMART_ASSERT(!interface.summary_flag && out_file_id <0);
     // ----------------------------------------------------------------------
     // Determine if any diffs and output to terminal
-    if (!interface.quiet_flag && interface.node_var_names.size() > 0)
+    if (!interface.quiet_flag && !interface.node_var_names.empty())
       std::cout << "Nodal variables:" << std::endl;
     int name_length = max_string_length(file1.Nodal_Var_Names())+1;
     
@@ -1308,7 +1319,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	  if (interface.show_all_diffs) {
 	    if (d > interface.node_var[n_idx].value) {
 	      diff_flag = true;
-	      sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (node %lu)",
+	      sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (node "ST_ZU")",
 		      name_length,
 		      name.c_str(), interface.node_var[n_idx].abrstr(),
 		      vals1[n], vals2[n2], d, (size_t)id_map[n]);
@@ -1339,7 +1350,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       if (max_diff.diff > interface.node_var[n_idx].value) {
 	diff_flag = true;
 	if (!interface.quiet_flag) {
-	  sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (node %lu)",
+	  sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (node "ST_ZU")",
 		  name_length,
 		  name.c_str(), interface.node_var[n_idx].abrstr(),
 		  max_diff.val1, max_diff.val2,
@@ -1365,7 +1376,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     
     if (out_file_id >= 0) {SMART_ASSERT(evals != 0);}
   
-    if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag && interface.elmt_var_names.size() > 0)
+    if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag && !interface.elmt_var_names.empty())
       std::cout << "Element variables:" << std::endl;
     
     int name_length = max_string_length(interface.elmt_var_names)+1;
@@ -1477,7 +1488,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	      if (d > interface.elmt_var[e_idx].value) {
 		diff_flag = true;
 		sprintf(buf,
-			"   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block %lu, elmt %lu)",
+			"   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block "ST_ZU", elmt "ST_ZU")",
 			name_length, name.c_str(),
 			interface.elmt_var[e_idx].abrstr(),
 			vals1[e], v2, d, block_id, (size_t)id_map[global_elmt_index]);
@@ -1524,7 +1535,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
         
 	if (!interface.quiet_flag) {
 	  sprintf(buf,
-		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block %lu, elmt %lu)",
+		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block "ST_ZU", elmt "ST_ZU")",
 		  name_length, name.c_str(),
 		  interface.elmt_var[e_idx].abrstr(),
 		  max_diff.val1, max_diff.val2,
@@ -1552,7 +1563,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     int name_length = max_string_length(file1.NS_Var_Names())+1;
       
     if ( out_file_id < 0 && !interface.quiet_flag &&
-	 !interface.summary_flag && interface.ns_var_names.size() > 0 )
+	 !interface.summary_flag && !interface.ns_var_names.empty())
       std::cout << "Nodeset variables:" << std::endl;
     
     for (unsigned e_idx = 0; e_idx < interface.ns_var_names.size(); ++e_idx) {
@@ -1634,7 +1645,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	    if (d > interface.ns_var[e_idx].value) {
 	      diff_flag = true;
 	      sprintf(buf,
-		      "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set %lu, node %lu)",
+		      "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set "ST_ZU", node "ST_ZU")",
 		  name_length, name.c_str(), interface.ns_var[e_idx].abrstr(),
 		      vals1[idx1], v2, d, nset1->Id(), e);
 	      std::cout << buf << std::endl;
@@ -1677,7 +1688,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	if (!interface.quiet_flag) {
 	  Node_Set<INT> *nset = file1.Get_Node_Set_by_Id(max_diff.blk);
 	  sprintf(buf,
-		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set %lu, node %lu)",
+		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set "ST_ZU", node "ST_ZU")",
 		  name_length,
 		  name.c_str(),
 		  interface.ns_var[e_idx].abrstr(),
@@ -1705,7 +1716,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
   
     int name_length = max_string_length(file1.SS_Var_Names())+1;
       
-    if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag && interface.ss_var_names.size() > 0)
+    if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag && !interface.ss_var_names.empty())
       std::cout << "Sideset variables:" << std::endl;
     
     double norm_d = 0.0;
@@ -1784,7 +1795,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	    if (d > interface.ss_var[e_idx].value) {
 	      diff_flag = true;
 	      sprintf(buf,
-		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set %lu, side %lu.%d)",
+		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set "ST_ZU", side "ST_ZU".%d)",
 		      name_length, name.c_str(), interface.ss_var[e_idx].abrstr(),
 		      vals1[ind1], v2, d,
 		      (size_t)sset1->Id(),
@@ -1828,7 +1839,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	if (!interface.quiet_flag) {
 	  Side_Set<INT> *sset = file1.Get_Side_Set_by_Id(max_diff.blk);
 	  sprintf(buf,
-		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set %lu, side %lu.%d)",
+		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set "ST_ZU", side "ST_ZU".%d)",
 		  name_length,
 		  name.c_str(),
 		  interface.ss_var[e_idx].abrstr(),
@@ -1931,7 +1942,7 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 	  if (d > interface.elmt_att[tol_idx].value) {
 	    diff_flag = true;
 	    sprintf(buf,
-		    "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block %lu, elmt %lu)",
+		    "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block "ST_ZU", elmt "ST_ZU")",
 		    name_length, name.c_str(),
 		    interface.elmt_att[tol_idx].abrstr(),
 		    vals1[e], vals2[e], d, block_id, (size_t)id_map[global_elmt_index]);
@@ -1966,7 +1977,7 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
         
 	if (!interface.quiet_flag) {
 	  sprintf(buf,
-		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block %lu, elmt %lu)",
+		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block "ST_ZU", elmt "ST_ZU")",
 		  name_length, name.c_str(),
 		  interface.elmt_att[tol_idx].abrstr(),
 		  max_diff.val1, max_diff.val2,
@@ -2040,7 +2051,7 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
       std::cout << std::endl << "NODAL VARIABLES relative 1.e-6 floor 0.0\n";
       name_length = max_string_length(interface.node_var_names);
       for (i = 0; i < n; ++i) {
-	sprintf(buf, "\t%-*s  # min: %15.8g @ t%d,n%lu\tmax: %15.8g @ t%d,n%lu\n",
+	sprintf(buf, "\t%-*s  # min: %15.8g @ t%d,n"ST_ZU"\tmax: %15.8g @ t%d,n"ST_ZU"\n",
 		name_length, ((interface.node_var_names)[i]).c_str(),
 		mm_node[i].min_val, mm_node[i].min_step,
 		(size_t)node_id_map[mm_node[i].min_id],
@@ -2057,7 +2068,7 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
       std::cout << std::endl << "ELEMENT VARIABLES relative 1.e-6 floor 0.0\n";
       name_length = max_string_length(interface.elmt_var_names);
       for (i = 0; i < n; ++i) {
-	sprintf(buf, "\t%-*s  # min: %15.8g @ t%d,b%lu,e%lu\tmax: %15.8g @ t%d,b%lu,e%lu\n",
+	sprintf(buf, "\t%-*s  # min: %15.8g @ t%d,b"ST_ZU",e"ST_ZU"\tmax: %15.8g @ t%d,b"ST_ZU",e"ST_ZU"\n",
 		name_length, ((interface.elmt_var_names)[i]).c_str(),
 		mm_elmt[i].min_val, mm_elmt[i].min_step,
 		mm_elmt[i].min_blk, (size_t)elem_id_map[mm_elmt[i].min_id],
@@ -2077,7 +2088,7 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 	Node_Set<INT> *nsmin = file1.Get_Node_Set_by_Id(mm_ns[i].min_blk);
 	Node_Set<INT> *nsmax = file1.Get_Node_Set_by_Id(mm_ns[i].max_blk);
 	sprintf(buf,
-		"\t%-*s  # min: %15.8g @ t%d,s%lu,n%lu\tmax: %15.8g @ t%d,s%lu,n%lu\n",
+		"\t%-*s  # min: %15.8g @ t%d,s"ST_ZU",n"ST_ZU"\tmax: %15.8g @ t%d,s"ST_ZU",n"ST_ZU"\n",
 		name_length, ((interface.ns_var_names)[i]).c_str(),
 		mm_ns[i].min_val, mm_ns[i].min_step, mm_ns[i].min_blk,
 		(size_t)node_id_map[nsmin->Node_Id(mm_ns[i].min_id)-1],
@@ -2099,7 +2110,7 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 	std::pair<int,int> min_side = ssmin->Side_Id(mm_ss[i].min_id);
 	std::pair<int,int> max_side = ssmax->Side_Id(mm_ss[i].max_id);
 	sprintf(buf,
-		"\t%-*s  # min: %15.8g @ t%d,s%lu,f%lu.%d\tmax: %15.8g @ t%d,s%lu,f%lu.%d\n",
+		"\t%-*s  # min: %15.8g @ t%d,s"ST_ZU",f"ST_ZU".%d\tmax: %15.8g @ t%d,s"ST_ZU",f"ST_ZU".%d\n",
 		name_length, ((interface.ss_var_names)[i]).c_str(),
 		mm_ss[i].min_val, mm_ss[i].min_step, mm_ss[i].min_blk,
 		(size_t)elem_id_map[min_side.first-1], min_side.second,

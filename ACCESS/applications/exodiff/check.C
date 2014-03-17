@@ -47,6 +47,16 @@
 #include "stringx.h"
 #include "ED_SystemInterface.h"
 
+#if defined(__STDC_VERSION__)
+#  if (__STDC_VERSION__ >= 199901L)
+#    define ST_ZU   "zu"
+#  else
+#    define ST_ZU   "lu"
+#  endif
+#else
+#  define ST_ZU   "lu"
+#endif
+
 using namespace std;
 
 namespace {
@@ -165,7 +175,7 @@ namespace {
 	INT n2 = node_map != 0 ? node_map[n] : n;
 	double dx = interface.coord_tol.Delta(x1[n], x2[n2]);
 	if (dx > interface.coord_tol.value) {
-	  sprintf(buf, "   x coord %s diff: %14.7e ~ %14.7e =%12.5e (node %lu)",
+	  sprintf(buf, "   x coord %s diff: %14.7e ~ %14.7e =%12.5e (node "ST_ZU")",
 		  interface.coord_tol.abrstr(),
 		  x1[n], x2[n2], dx, (size_t)id_map[n]);
 	  std::cout << buf << std::endl;
@@ -176,7 +186,7 @@ namespace {
 	if (file1.Dimension() > 1) {
 	  double dy = interface.coord_tol.Delta(y1[n], y2[n2]);
 	  if (dy > interface.coord_tol.value) {
-	    sprintf(buf, "   y coord %s diff: %14.7e ~ %14.7e =%12.5e (node %lu)",
+	    sprintf(buf, "   y coord %s diff: %14.7e ~ %14.7e =%12.5e (node "ST_ZU")",
 		    interface.coord_tol.abrstr(),
 		    y1[n], y2[n2], dy, (size_t)id_map[n]);
 	    std::cout << buf << std::endl;
@@ -188,7 +198,7 @@ namespace {
 	if (file1.Dimension() > 2) {
 	  double dz = interface.coord_tol.Delta(z1[n], z2[n2]);
 	  if (dz > interface.coord_tol.value) {
-	    sprintf(buf, "   z coord %s diff: %14.7e ~ %14.7e =%12.5e (node %lu)",
+	    sprintf(buf, "   z coord %s diff: %14.7e ~ %14.7e =%12.5e (node "ST_ZU")",
 		    interface.coord_tol.abrstr(),
 		    z1[n], z2[n2], dz, (size_t)id_map[n]);
 	    std::cout << buf << std::endl;
@@ -378,7 +388,7 @@ namespace {
     // Do the following check(s) only if there are nodeset varibles...
     // For each nodeset, check that the order of the nodeset nodes is the same.
     // Eventually need to be able to map the order...
-    if (interface.ns_var_names.size() > 0 || interface.pedantic) {
+    if (!interface.ns_var_names.empty() || interface.pedantic) {
       for (int b = 0; b < file1.Num_Node_Sets(); ++b) {
 	Node_Set<INT>* set1 = file1.Get_Node_Set_by_Index(b);
 	Node_Set<INT>* set2 = file2.Get_Node_Set_by_Id(set1->Id());
@@ -462,7 +472,7 @@ namespace {
     // Do the following check(s) only if there are sideset varibles... (or -pedantic)
     // For each sideset, check that the order of the sideset sides is the same.
     // Eventually need to be able to map the order...
-    if (interface.ss_var_names.size() > 0 || interface.pedantic) {
+    if (!interface.ss_var_names.empty() || interface.pedantic) {
       for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
 	Side_Set<INT>* set1 = file1.Get_Side_Set_by_Index(b);
 	Side_Set<INT>* set2 = file2.Get_Side_Set_by_Id(set1->Id());
