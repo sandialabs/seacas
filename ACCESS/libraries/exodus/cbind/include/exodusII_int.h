@@ -42,7 +42,12 @@
 #define EXODUS_II_INT_HDR
 
 #include "netcdf.h"
+
+#ifdef _WIN32
+#define PRId64 "I64d"
+#else
 #include <inttypes.h>
+#endif
 
 #ifndef __APPLE__
 #if defined __STDC__ || defined __cplusplus

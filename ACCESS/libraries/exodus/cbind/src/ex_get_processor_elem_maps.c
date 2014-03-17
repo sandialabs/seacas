@@ -50,9 +50,9 @@
 /*****************************************************************************/
 /*****************************************************************************/
 
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for sprintf
-#include <sys/types.h>                  // for int64_t
+#include <stddef.h>                     /* for size_t */
+#include <stdio.h>                      /* for sprintf */
+#include <sys/types.h>                  /* for int64_t */
 
 #include <netcdf.h>
 

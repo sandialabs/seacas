@@ -366,7 +366,7 @@ static int ex_inquire_internal (int      exoid,
 				float   *ret_float,
 				char    *ret_char)
 {
-  int dimid, varid, tmp_num;
+  int dimid, varid, tmp_num, rootid;
   void_int *ids = NULL;
   size_t i;
   size_t ldum = 0;
@@ -388,7 +388,7 @@ static int ex_inquire_internal (int      exoid,
     return (EX_FATAL);
   }
     
-  int rootid = exoid & EX_FILE_ID_MASK;
+  rootid = exoid & EX_FILE_ID_MASK;
 
   switch (req_info) {
   case EX_INQ_FILE_TYPE:

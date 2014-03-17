@@ -135,7 +135,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define StandardDefines			-Dlinux -D__i386__ -DADDC_ 
 #endif /* i386Architecture */
 
-#if defined x86_64Architecture
+#if defined x86_64Architecture || defined ppc_64Architecture
 #undef CcCmd
 #undef CplusplusCmd
 #undef FortranCmd
@@ -293,7 +293,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 #endif
 
-#if defined x86_64Architecture
+#if defined x86_64Architecture || defined ppc_64Architecture
 #if Build64BitAccess
 #define X11Lib 		        -L/usr/lib64 -lX11
 #undef StandardDefines
@@ -336,7 +336,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define CcCmd                   mpicc
 #define CplusplusCmd            mpiCC
 
-#if defined x86_64Architecture
+#if defined x86_64Architecture || defined ppc_64Architecture
 #if Build64BitAccess
 #define X11Lib 		        -L/usr/lib64 -lX11
 #undef StandardDefines
