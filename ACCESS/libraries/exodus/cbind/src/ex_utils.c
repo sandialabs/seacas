@@ -42,16 +42,16 @@
 #include <assert.h>
 #endif
 
-#include <ctype.h>                      // for tolower, isspace
-#include <errno.h>                      // for errno
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for sprintf, NULL, fprintf, etc
-#include <stdlib.h>                     // for free, calloc, malloc, etc
-#include <string.h>                     // for strcpy, strlen
-#include <sys/types.h>                  // for int64_t, ssize_t
+#include <ctype.h>                      /* for tolower, isspace */
+#include <errno.h>                      /* for errno */
+#include <stddef.h>                     /* for size_t */
+#include <stdio.h>                      /* for sprintf, NULL, fprintf, etc */
+#include <stdlib.h>                     /* for free, calloc, malloc, etc */
+#include <string.h>                     /* for strcpy, strlen */
+#include <sys/types.h>                  /* for int64_t */
 
-#include "exodusII.h"                   // for exerrval, ex_err, etc
-#include "exodusII_int.h"               // for obj_stats, EX_FATAL, etc
+#include "exodusII.h"                   /* for exerrval, ex_err, etc */
+#include "exodusII_int.h"               /* for obj_stats, EX_FATAL, etc */
 
 struct obj_stats*  exoII_eb = 0;
 struct obj_stats*  exoII_ed = 0;
@@ -1254,14 +1254,18 @@ static void ex_swap64 (int64_t v[], int64_t i, int64_t j)
  * See Sedgewick for further details
  * Define DEBUG_QSORT at the top of this file and recompile to compile
  * in code that verifies that the array is sorted.
+ *
+ * NOTE: The 'int' implementation below assumes that *both* the items
+ *       being sorted and the *number* of items being sorted are both 
+ *       representable as 'int'.
  */
 
 #define EX_QSORT_CUTOFF 12
 
-static int ex_int_median3(int v[], int iv[], int left, int right)
+static int ex_int_median3(int v[], int iv[], int64_t left, int64_t right)
 {
-  ssize_t center;
-  center = ((ssize_t)left + (ssize_t)right) / 2;
+  int64_t center;
+  center = (left + right) / 2;
 
   if (v[iv[left]] > v[iv[center]])
     ex_swap(iv, left, center);
