@@ -41,7 +41,7 @@ FLEX = flex
 
 SRCS = \
 ap_builtin.c  ap_aprepro.c  ap_stat.c     ap_getline_int.c \
-ap_util.c     ap_init.c     ap_hash.c     ap_units.c ap_exodus.c
+ap_util.c     ap_init.c     ap_hash.c     ap_units.c ap_exodus.c ap_array.c
 OSRCS = \
 aprepro.l  aprepro.y  my_aprepro.h
 
@@ -49,7 +49,7 @@ aprepro.l  aprepro.y  my_aprepro.h
 
 SRCS = \
 ap_builtin.c  ap_aprepro.c     ap_stat.c     ap_getline_int.c \
-y.tab.c    lex.yy.c   ap_util.c     ap_init.c    ap_hash.c  ap_exodus.c   ap_units.c
+y.tab.c    lex.yy.c   ap_util.c     ap_init.c    ap_hash.c  ap_exodus.c   ap_units.c ap_array.c
 
 OSRCS = \
 aprepro.l  aprepro.y  my_aprepro.h
@@ -60,7 +60,7 @@ LIBS=$(SUPLIB) $(EXOIIV2C) $(NETCDF) -lm
 
 OBJS = \
 y.tab.o    ap_builtin.o  ap_aprepro.o     ap_stat.o  ap_getline_int.o \
-ap_util.o  ap_init.o     ap_hash.o     ap_units.o ap_exodus.o 
+ap_util.o  ap_init.o     ap_hash.o     ap_units.o ap_exodus.o ap_array.o
 
 DEFINES = $(ALLOCA_DEFINES)
 
@@ -88,10 +88,14 @@ ExtraStuffToClean(lex.yy.c y.tab.c y.tab.h)
 test: check
 
 check: aprepro
-	@echo "****Test should produce the following 4 lines of output to stderr:"
-	@echo "	Aprepro: WARN: Undefined variable \`Parse' (test.inp_app, line 74)"
-	@echo "	Aprepro: ERR:  syntax error (test.inp_app, line 74)"
-	@echo "	Aprepro: WARN: Undefined variable \`T' (test.inp_app, line 159)"
+	@echo "****Test should produce the following 7 lines of output to stderr:"
+	@echo "Aprepro: WARN: Undefined variable 'ifundefined' (test.inp_app, line 49)"
+	@echo "Aprepro: WARN: Undefined variable 'Parse' (test.inp_app, line 78)"
+	@echo "Aprepro: ERROR:  syntax error (test.inp_app, line 78)"
+	@echo "Aprepro: WARN: Undefined variable 'This' (test.inp_app, line 79)"
+	@echo "Aprepro: ERROR:  syntax error (test.inp_app, line 79)"
+	@echo "Aprepro: WARN: User-defined Variable 'a' redefined (_string_, line 1)"
+	@echo "Aprepro: WARN: Undefined variable 'T' (test.inp_app, line 189)"
 	@echo " "
 	rm -f distribution.out
 	./aprepro test.inp_app | grep -v Revision > distribution.out

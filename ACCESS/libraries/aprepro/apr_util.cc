@@ -180,7 +180,7 @@ namespace SEAMS {
     if (length == 0)
       return false;
 
-    if (!isalpha(var[0])) {
+    if (!isalpha(var[0]) && var[0] != '_') {
       return false;
     }
 
@@ -191,5 +191,17 @@ namespace SEAMS {
     }
     return true;
   }
+  double to_double(const std::string & str_val)
+  {
+    char* endptr; errno = 0;
+    double val = strtod(str_val.c_str(), &endptr);
 
+    if (errno == ERANGE) {
+      std::cerr << "Aprepro: ERROR:  Overflow or underflow while converting '"
+		<< str_val << "' to double value.  Aborting..." << std::endl;
+      exit(1);
+    }
+    errno = 0;
+    return val;
+  }
 }
