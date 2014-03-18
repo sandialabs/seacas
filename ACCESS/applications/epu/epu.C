@@ -1722,7 +1722,7 @@ namespace {
     global_element_map.resize(tot_size);
 
     {
-      size_t error = 0;
+      int error = 0;
       size_t offset = 0;
       for (int p = 0; p < part_count; p++) {
 	ExodusFile id(p);
@@ -1904,7 +1904,7 @@ namespace {
     global_node_map.resize(tot_size);
 
     size_t offset = 0;
-    size_t error = 0;
+    int error = 0;
     for (int p = 0; p < part_count; p++) {
       ExodusFile id(p);
       error = ex_get_node_num_map(id, TOPTR(global_node_numbers[p]));

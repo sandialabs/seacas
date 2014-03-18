@@ -65,7 +65,7 @@ void IOShell::Interface::enroll_options()
   options_.usage("[options] input_file[s] output_file");
 
   options_.enroll("help", Ioss::GetLongOption::NoValue,
-		  "Print this summary and exit", 0);
+		  "Print this summary and exit", NULL);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
 		  "Print version and exit", NULL);
@@ -152,11 +152,11 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("debug" , Ioss::GetLongOption::NoValue,
 		  "turn on debugging output",
-		  false);
+		  NULL);
 
   options_.enroll("statistics" , Ioss::GetLongOption::NoValue,
 		  "output parallel io timing statistics",
-		  false);
+		  NULL);
 
   options_.enroll("Maximum_Time", Ioss::GetLongOption::MandatoryValue,
 		  "Maximum time on input database to transfer to output database",

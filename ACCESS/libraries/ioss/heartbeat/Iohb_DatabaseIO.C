@@ -224,7 +224,7 @@ namespace Iohb {
 	  new_this->legend_->add_literal(time_stamp(tsFormat));
 	  new_this->legend_->add_literal(" ");
 	}
-	if (!fileFormat == SPYHIS)
+	if (fileFormat != SPYHIS)
 	  new_this->legend_->add_literal("Legend: ");
 
 	if (!tsFormat.empty()) {
