@@ -23,16 +23,16 @@ SEACAS.
 
    2a) Download netcdf.  The most recent released version is recommended. 
 
-   * Download netcdf-4.2.1.1.tar.gz (or the most recent version) from 
-     http://www.unidata.ucar.edu/downloads/netcdf/ftp
+   * Download the latest netcdf-c release (currently netcdf-4.3.1.1.tar.gz)
+     from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp
      and put it inside SEACAS-XXXX-XX-XX/TPL/netcdf
    * cd TPL/netcdf
-   * tar zxvf netcdf-4.2.1.1.tar.gz
-   * If the untar does not create a netcdf-4.2.1.1 directory, modify the
+   * tar zxvf netcdf-4.3.1.1.tar.gz
+   * If the untar does not create a netcdf-4.3.1.1 directory, modify the
      Imakefile in the current directory such that V_NUM specifies the
      correct name
    * Modify the following defines in 
-     SEACAS-XXXX-XX-XX/TPL/netcdf/netcdf-4.2.1.1/include/netcdf.h
+     SEACAS-XXXX-XX-XX/TPL/netcdf/netcdf-4.3.1.1/include/netcdf.h
 
 	#define NC_MAX_DIMS     65536    /* max dimensions per file */
 	#define NC_MAX_VARS     524288   /* max variables per file */
@@ -61,9 +61,9 @@ SEACAS.
 
    * Download the most recent version of the library from
      http://sourceforge.net/projects/matio/. Currently this is
-     matio-1.5.1.tar.gz. 
+     matio-1.5.2.tar.gz. 
    * cd TPL/matio
-   * tar zxvf /path/to/matio-1.5.1.tar.gz
+   * tar zxvf /path/to/matio-1.5.2.tar.gz
    * Edit the Imakefile in the TPL/matio directory and make sure that
      TRUE_MATIO is set to the version of matio that you downloaded.
 
@@ -82,7 +82,7 @@ SEACAS.
 
    * Download the most recent version of the library from
      ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2. 
-     Currently this is parallel-20130422. 
+     Currently this is parallel-20140322. 
    * cd TPL/parallel
    * tar jxvf /path/to/parallel-latest.tar.bz2
    * Edit the Imakefile in the TPL/parallel directory and make sure that
