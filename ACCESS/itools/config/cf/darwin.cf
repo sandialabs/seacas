@@ -7,7 +7,7 @@ XCOMM       You can change this if you want (possibly) faster execution.
 XCOMM
 XCOMM Contact seacas@sandia.gov if you have any questions
 XCOMM
-/* ========================================================================
+/* ======================================================================== */
 /* Change to NO for 32-bit build; (some defines do it automatically) */
 #define Build64BitAccess YES
 
