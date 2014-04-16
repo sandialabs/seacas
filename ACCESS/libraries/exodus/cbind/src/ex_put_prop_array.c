@@ -33,10 +33,12 @@
  * 
  */
 
-#include "exodusII.h"
-#include "exodusII_int.h"
-#include <string.h>
-#include <stdlib.h> /* for free() */
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for sprintf
+#include <string.h>                     // for strcpy, memset, strlen, etc
+#include "exodusII.h"                   // for ex_err, exerrval, etc
+#include "exodusII_int.h"               // for EX_FATAL, ATT_PROP_NAME, etc
+#include "netcdf.h"                     // for NC_NOERR, nc_set_fill, etc
 
 /*!
 
@@ -103,7 +105,7 @@ int ex_put_prop_array (int   exoid,
   int oldfill = 0;
   int temp;
   int num_props, i, propid, dimid, dims[1], status;
-  int found = FALSE;
+  int found = EX_FALSE;
   int int_type;
   size_t num_obj; 
   char name[MAX_VAR_NAME_LENGTH+1];
@@ -188,7 +190,7 @@ int ex_put_prop_array (int   exoid,
     }
 
     if (strcmp(tmpstr, prop_name) == 0) {
-      found = TRUE;
+      found = EX_TRUE;
       break;
     }
   }

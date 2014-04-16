@@ -33,20 +33,16 @@
  * 
  */
 #include "shell_interface.h"
-#include "Ioss_GetLongOpt.h"                 // for GetLongOption, etc
-#include "Ioss_Utils.h"                 // for GetLongOption, etc
+#include <stddef.h>                     // for NULL
+#include <cstdlib>                      // for exit, strtod, EXIT_SUCCESS, etc
+#include <cstring>                      // for strcmp
+#include <iostream>                     // for operator<<, basic_ostream, etc
+#include <string>                       // for string, char_traits
+#include <vector>                       // for vector
+#include "Ioss_GetLongOpt.h"            // for GetLongOption, etc
+#include "Ioss_Utils.h"                 // for Utils
 
-#include <ctype.h>                      // for tolower
-#include <stddef.h>                     // for size_t
-#include <string>                       // for string, basic_string, etc
-#include <utility>                      // for pair, make_pair
-#include <iostream>
-#include <algorithm>
-#include <vector>
 
-#include <limits.h>
-#include <cstdlib>
-#include <cstring>
 
 #define NPOS std::string::npos
 
@@ -65,7 +61,7 @@ void IOShell::Interface::enroll_options()
   options_.usage("[options] input_file[s] output_file");
 
   options_.enroll("help", Ioss::GetLongOption::NoValue,
-		  "Print this summary and exit", NULL);
+		  "Print this summary and exit", 0);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
 		  "Print version and exit", NULL);

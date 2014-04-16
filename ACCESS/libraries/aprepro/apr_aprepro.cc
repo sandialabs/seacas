@@ -15,7 +15,7 @@
 
 namespace {
   const unsigned int HASHSIZE = 5939;
-  const char* version_string = "4.04 (2014/02/03)";
+  const char* version_string = "4.06 (2014/04/07)";
   
   unsigned hash_symbol (const char *symbol)
   {
@@ -34,9 +34,7 @@ namespace SEAMS {
     : sym_table(HASHSIZE), stateImmutable(false)
   {
     ap_file_list.push(file_rec());
-    init_table(ap_options.comment.c_str());
-    ap_options.debugging = false;
-    ap_options.trace_parsing = false;
+    init_table("#");
     aprepro = this;
 
     // See the random number generator...
@@ -46,6 +44,8 @@ namespace SEAMS {
 
   Aprepro::~Aprepro()
   {
+    delete lexer;
+    
     for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
       for (symrec *ptr = sym_table[hashval]; ptr != NULL; ) {
 	symrec *save = ptr;
@@ -72,8 +72,8 @@ namespace SEAMS {
       echo = false;
     }
 
-    Scanner scanner(*this, &in, &parsingResults);
-    this->lexer = &scanner;
+    Scanner *scanner = new Scanner(*this, &in, &parsingResults);
+    this->lexer = scanner;
 
     Parser parser(*this);
     parser.set_debug_level(ap_options.trace_parsing);
@@ -213,10 +213,6 @@ namespace SEAMS {
     else if (option == "--copyright" || option == "-C") {
       copyright();
     }
-    else if (option == "--comment" || option == "-c") {
-      size_t index = option.find_first_of('=');
-      ap_options.comment = option.substr(index+1).c_str();
-    }
     else if (option == "--message" || option == "-M") {
       ap_options.info_msg = true;
     }
@@ -229,6 +225,9 @@ namespace SEAMS {
     }
     else if (option == "--interactive" || option == "-i") {
       ap_options.interactive = true;
+    }
+    else if (option == "--one_based_index" || option == "-1") {
+      ap_options.one_based_index = true;
     }
     else if (option == "--exit_on" || option == "-e") {
       ap_options.end_on_exit = true;
@@ -244,18 +243,19 @@ namespace SEAMS {
     }
     else if (option == "--help" || option == "-h") {
       std::cerr << "\nAPREPRO PREPROCESSOR OPTIONS:\n"
-		<< "        --debug or -d: Dump all variables, debug loops/if/endif\n"
-		<< "      --version or -v: Print version number to stderr          \n"
-		<< "    --immutable or -X: All variables are immutable--cannot be modified\n"
-		<< "  --interactive or -i: Interactive use, no buffering           \n"
-		<< "  --include=P or -I=P: Include file or include path            \n"
-		<< "                     : If P is path, then optionally prepended to all include filenames\n"
-		<< "                     : If P is file, then processed before processing input file\n"
-		<< "      --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
-		<< "         --help or -h: Print this list                         \n"
-		<< "      --message or -M: Print INFO messages                     \n"
-		<< "    --nowarning or -W: Do not print WARN messages              \n"
-		<< "    --copyright or -C: Print copyright message                 \n\n"
+		<< "          --debug or -d: Dump all variables, debug loops/if/endif\n"
+		<< "        --version or -v: Print version number to stderr          \n"
+		<< "      --immutable or -X: All variables are immutable--cannot be modified\n"
+	        << "--one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
+		<< "    --interactive or -i: Interactive use, no buffering           \n"
+		<< "    --include=P or -I=P: Include file or include path            \n"
+		<< "                       : If P is path, then optionally prepended to all include filenames\n"
+		<< "                       : If P is file, then processed before processing input file\n"
+		<< "        --exit_on or -e: End when 'Exit|EXIT|exit' entered       \n"
+		<< "           --help or -h: Print this list                         \n"
+		<< "        --message or -M: Print INFO messages                     \n"
+		<< "      --nowarning or -W: Do not print WARN messages              \n"
+		<< "      --copyright or -C: Print copyright message                 \n\n"
 	        << "\tUnits Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s\n"
 		<< "\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n"
 		<< "\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n\n"

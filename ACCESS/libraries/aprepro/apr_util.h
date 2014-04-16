@@ -20,6 +20,5 @@ namespace SEAMS {
   void cleanup_memory();
   bool is_directory(const std::string &filepath);
   bool check_valid_var(const char *s);
-  double to_double(const std::string &str_val);
 }
 #endif

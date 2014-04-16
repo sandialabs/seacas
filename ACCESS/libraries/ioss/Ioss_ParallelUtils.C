@@ -212,7 +212,7 @@ void Ioss::ParallelUtils::global_count(const IntVector &local_counts, IntVector 
   // Assumes that ordering is the same on all processors
   global_counts.resize(local_counts.size());
 #ifdef HAVE_MPI
-  if (local_counts.size() > 0 && parallel_size() > 1) {
+  if (!local_counts.empty() && parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       std::ostringstream errmsg;
       errmsg << "Attempting mpi while in barrier owned by " << Ioss::SerializeIO::getOwner();
@@ -243,7 +243,7 @@ void Ioss::ParallelUtils::global_count(const Int64Vector &local_counts, Int64Vec
   // Assumes that ordering is the same on all processors
   global_counts.resize(local_counts.size());
 #ifdef HAVE_MPI
-  if (local_counts.size() > 0 && parallel_size() > 1) {
+  if (!local_counts.empty() && parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       std::ostringstream errmsg;
       errmsg << "Attempting mpi while in barrier owned by " << Ioss::SerializeIO::getOwner();
@@ -357,6 +357,8 @@ void Ioss::ParallelUtils::global_array_minmax(std::vector<T> &local_minmax,  Min
 
 template void Ioss::ParallelUtils::gather(int, std::vector<int>&) const;
 template void Ioss::ParallelUtils::gather(int64_t, std::vector<int64_t>&) const;
+template void Ioss::ParallelUtils::all_gather(int, std::vector<int>&) const;
+template void Ioss::ParallelUtils::all_gather(int64_t, std::vector<int64_t>&) const;
 
 template <typename T>
 void Ioss::ParallelUtils::gather(T my_value, std::vector<T> &result) const
@@ -369,6 +371,28 @@ void Ioss::ParallelUtils::gather(T my_value, std::vector<T> &result) const
     const int success = MPI_Gather((void*)&my_value,  1, mpi_type(T(1)),
 				   (void*)&result[0], 1, mpi_type(T(1)),
 				   0, communicator_);
+    if (success !=  MPI_SUCCESS) {
+      std::ostringstream errmsg;
+      errmsg << "Ioss::ParallelUtils::gather - MPI_Gather failed";
+      IOSS_ERROR(errmsg);
+    }
+  } else {
+    result[0] = my_value;
+  }
+#else
+  result[0] = my_value;
+#endif
+}
+
+template <typename T>
+void Ioss::ParallelUtils::all_gather(T my_value, std::vector<T> &result) const
+{
+  result.resize(parallel_size());
+#ifdef HAVE_MPI
+  if (parallel_size() > 1) {
+    const int success = MPI_Allgather((void*)&my_value,  1, mpi_type(T(1)),
+				      (void*)&result[0], 1, mpi_type(T(1)),
+				      communicator_);
     if (success !=  MPI_SUCCESS) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::gather - MPI_Gather failed";

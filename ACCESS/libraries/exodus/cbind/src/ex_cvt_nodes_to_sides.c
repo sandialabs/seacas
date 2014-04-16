@@ -33,11 +33,15 @@
  *
  */
 
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include "exodusII.h"
-#include "exodusII_int.h"
+#include <ctype.h>                      // for toupper
+#include <inttypes.h>                   // for PRId64
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for sprintf
+#include <stdlib.h>                     // for malloc, NULL, free
+#include <string.h>                     // for strncmp, strlen
+#include <sys/types.h>                  // for int64_t
+#include "exodusII.h"                   // for ex_err, exerrval, ex_block, etc
+#include "exodusII_int.h"               // for elem_blk_parm, EX_FATAL, etc
 
 static void *safe_free(void *array)
 {
@@ -610,7 +614,7 @@ int ex_cvt_nodes_to_sides(int exoid,
     }
 
 
-  same_elem_type[0] = TRUE;
+  same_elem_type[0] = EX_TRUE;
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
     elem_ctr = ((int64_t*)num_elem_per_set)[0];
     for (i=0,k=0;i<tot_num_ss_elem;i++) {
@@ -628,10 +632,10 @@ int ex_cvt_nodes_to_sides(int exoid,
 	elem_ctr += ((int64_t*)num_elem_per_set)[++k];
 
 	el_type = elem_blk_parms[j].elem_type_val;
-	same_elem_type[k] = TRUE;
+	same_elem_type[k] = EX_TRUE;
       }
 
-      if (el_type != elem_blk_parms[j].elem_type_val) same_elem_type[k] = FALSE;
+      if (el_type != elem_blk_parms[j].elem_type_val) same_elem_type[k] = EX_FALSE;
     }
 
     /* Build side set element to node list index and side set element
@@ -684,10 +688,10 @@ int ex_cvt_nodes_to_sides(int exoid,
 	elem_ctr += ((int*)num_elem_per_set)[++k];
 
 	el_type = elem_blk_parms[j].elem_type_val;
-	same_elem_type[k] = TRUE;
+	same_elem_type[k] = EX_TRUE;
       }
 
-      if (el_type != elem_blk_parms[j].elem_type_val) same_elem_type[k] = FALSE;
+      if (el_type != elem_blk_parms[j].elem_type_val) same_elem_type[k] = EX_FALSE;
     }
 
     /* Build side set element to node list index and side set element

@@ -35,11 +35,10 @@
 #ifndef info_SystemInterface_h
 #define info_SystemInterface_h
 
-#include "Ioss_GetLongOpt.h"
+#include <iosfwd>                       // for ostream
+#include <string>                       // for string
+#include "Ioss_GetLongOpt.h"            // for GetLongOption
 
-#include <string>
-#include <iosfwd>
-#include <vector>
 
 namespace Info {
   class Interface
@@ -50,7 +49,7 @@ namespace Info {
 
       bool parse_options(int argc, char **argv);
   
-      bool summary() const {return summary_;}
+      int summary() const {return summary_;}
       bool check_node_status() const {return checkNodeStatus_;}
       bool compute_volume()  const {return computeVolume_;}
       bool compute_bbox()  const {return computeBBox_;}
@@ -63,7 +62,8 @@ namespace Info {
       int surface_split_scheme() const {return surfaceSplitScheme_;}
       char field_suffix_separator() const {return fieldSuffixSeparator_;}
       bool use_generic_names() const {return useGenericNames_;}
- 
+
+      std::string cwd() const {return cwd_;}
       std::string filename() const {return filename_;}
       std::string type() const {return filetype_;}
       std::string groupname() const {return groupname_;}
@@ -84,15 +84,15 @@ namespace Info {
       bool ints64Bit_;
       bool computeBBox_;
       bool listGroups_;
-      bool summary_;
-      
       bool useGenericNames_;
       char fieldSuffixSeparator_;
       
+      int summary_;
       int surfaceSplitScheme_;
       
       double minimumTime_;
       double maximumTime_;
+      std::string cwd_;
       std::string filetype_;
       std::string filename_;
       std::string groupname_;

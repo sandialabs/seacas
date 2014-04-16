@@ -51,7 +51,7 @@ $ Test ifndef - else lines
  This line should be echoed (6)
     This line should be echoed. (7)
 $ Lines a, b, c, d, 1, 4, 6, 7 should be echoed
-$ Check line counting -- should be on line 74: 
+$ Check line counting -- should be on line 78: 
  
 $ ========================================================================
 $ Test if lines
