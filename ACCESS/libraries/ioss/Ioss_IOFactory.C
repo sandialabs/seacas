@@ -31,18 +31,18 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_IOFactory.h>
-#include <Ioss_Utils.h>
-#include <stddef.h>
-#include <map>
-#include <ostream>
-#include <string>
-#include <utility>
+#include <Ioss_Utils.h>                 // for IOSS_ERROR
+#include <stddef.h>                     // for NULL
+#include <map>                          // for _Rb_tree_iterator, etc
+#include <ostream>                      // for operator<<, basic_ostream, etc
+#include <string>                       // for char_traits, string, etc
+#include <utility>                      // for pair
+#include "Ioss_DBUsage.h"               // for DatabaseUsage
+namespace Ioss { class DatabaseIO; }
+namespace Ioss { class PropertyManager; }
 
-#include "Ioss_CodeTypes.h"
-#include "Ioss_DBUsage.h"
 
 namespace Ioss {
-  class DatabaseIO;
   typedef IOFactoryMap::value_type IOFactoryValuePair;
 }  // namespace Ioss
 
@@ -56,7 +56,7 @@ Ioss::DatabaseIO* Ioss::IOFactory::create(const std::string& type,
   Ioss::DatabaseIO *db = NULL;
   Ioss::IOFactoryMap::iterator iter = registry()->find(type);
   if (iter == registry()->end()) {
-    if (registry()->size() == 0) {
+    if (registry()->empty()) {
       std::ostringstream errmsg;
       errmsg << "ERROR: No database types have been registered.\n"
 	     << "       Was Ioss::Init::Initializer() called?\n\n";

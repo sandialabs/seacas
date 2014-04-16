@@ -1,5 +1,22 @@
 XCOMM $Id: Imakefile,v 1.158 2008/06/19 14:57:43 gdsjaar Exp $
 
+AllTarget(exodus.py)
+AllTarget(exodus.html)
+
+ExtraStuffToClean(exodus.py)
+ExtraStuffToClean(exodus.pyc)
+ExtraStuffToClean(exodus.html)
+
+exodus.py: exodus.py.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/MsubCmd +R@ -R@ exodus.py.in > exodus.py
+	chmod +x exodus.py
+
+exodus.html:
+	python -m pydoc -w exodus
+
+InstallProgram(exodus.py,$(BINDIR))
+InstallNonExecFile(exodus.html,$(ACCESSDIR)/doc)
+
 XCOMM Some systems do not have enhanced getopt.  Provide our own copy...
 NormalCTarget(getopt.seacas,getopt.seacas.o,NullParameter,NullParameter,NullParameter)
 InstallProgram(getopt.seacas,$(BINDIR))
@@ -33,6 +50,8 @@ InstallProgram(exo-test-ver,$(BINDIR))
 audit.log::
 	touch audit.log
 	chmod 666 audit.log
+
+INCLUDELIST =  subop.h arguments.h rmscr.h environment.h log.h run.h usage.h format.h parse.h setio.h variables.h
 
 XCOMM Generate the utility scripts
 all:: decomp epup blot fastq post loadbal

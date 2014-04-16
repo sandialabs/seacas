@@ -42,6 +42,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <exodusII.h>
 
 #include "Ioss_CommSet.h"
 #include "Ioss_CoordinateFrame.h"
@@ -66,8 +67,6 @@
 #include "Ioss_VariableType.h"
 
 #include "info_interface.h"
-#include "exodusII.h"
-
 
 #ifdef HAVE_MPI
 #include <mpi.h>
@@ -246,6 +245,10 @@ namespace {
       std::exit(EXIT_FAILURE);
     }
 
+    if (interface.use_generic_names()) {
+      dbi->set_use_generic_canonical_name(true);
+    }
+  
     dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_scheme()));
     dbi->set_field_separator(interface.field_suffix_separator());
     if (interface.ints_64_bit())
@@ -279,7 +282,6 @@ namespace {
     info_sidesets(region,     interface, summary);
     info_commsets(region,     summary);
     info_coordinate_frames(region, summary);
-
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
       std::pair<int, double> state_time_max = region.get_max_time();
       std::pair<int, double> state_time_min = region.get_min_time();

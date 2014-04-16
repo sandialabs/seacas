@@ -62,7 +62,6 @@ SUBDIRS = cbind/include \
 	  cbind/src \
 	  forbind/include \
 	  forbind/src \
-	  pybind \
 	  cbind/test \
 	  forbind/test
 
@@ -71,7 +70,6 @@ AllTarget(libexodus.a libexoIIv2for.a libexoIIv2for32.a)
 #else
 AllTarget(libexodus.a libexoIIv2for.a)
 #endif
-AllTarget(pybind/exodus.py)
 
 InstallSubdirIncludeList(makeincludes,cbind/include,$(INCLIST1),$(INCDIR))
 
@@ -82,9 +80,6 @@ NamedTargetSubdirs(libexodus.a,cbind/src,"making exodus ",PassDebugFlags ExtraOp
 
 /* Directory for exodusII fortran wrappers */
 NamedTargetSubdirs(libexoIIv2for.a,forbind/src,"making exoIIv2for ",PassDebugFlags ExtraOptions,libexoIIv2for.a)
-
-/* Directory for exodus.py */
-NamedTargetSubdirs(pybind/exodus.py,pybind,"making exodus python interface",PassDebugFlags ExtraOptions,all)
 
 #if Build64BitAccess == YES
 NamedTargetSubdirs(libexoIIv2for32.a,forbind/src,"making exoIIv2for32 ",PassDebugFlags ExtraOptions,libexoIIv2for32.a)

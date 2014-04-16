@@ -63,8 +63,8 @@
 
 // ========================================================================
 namespace {
-  int file_info(const std::string& inpfile, const std::string& input_type,
-		SystemInterface& interface);
+  bool file_info(const std::string& inpfile, const std::string& input_type,
+		 SystemInterface& interface);
 
   void output_names(const std::string &type, const Ioss::NameList &fields,
 		    Ioss::GroupingEntity *entity)
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-  int file_info(const std::string& inpfile, const std::string& input_type, SystemInterface &interface)
+  bool file_info(const std::string& inpfile, const std::string& input_type, SystemInterface &interface)
   {
     //========================================================================
     // INPUT ...
@@ -165,7 +165,7 @@ namespace {
 
     Ioss::NameList fields;
     StringIdVector global_vars = interface.global_var_names();
-    if (global_vars.size() > 0) {
+    if (!global_vars.empty()) {
       if (global_vars[0].first == "all") {
 	region.field_describe(Ioss::Field::TRANSIENT, &fields);
       } else if (global_vars[0].first == "none") {
@@ -184,7 +184,7 @@ namespace {
       region.field_describe(Ioss::Field::TRANSIENT, &fields);
     }
 
-    if (fields.size() == 0) {
+    if (fields.empty()) {
       OUTPUT << "No variables selected; no output will be written\n";
       return false;
     }
