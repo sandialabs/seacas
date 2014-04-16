@@ -99,17 +99,18 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define StandardCppDefines 	-DBuild64 -DADDC_ 
 #define DefaultF77Options	-fno-range-check -fcray-pointer -fdefault-real-8 -fdefault-integer-8 MINOS_CFLAGS
 #define DefaultF90Options	-fno-range-check MINOS_CFLAGS
+#define ExtraLoadOptions	MINOS_LFLAGS
 #else
-#define StandardDefines 	-DADDC_ MINOS_CFLAGS
-#define StandardCppDefines 	-DADDC_ 
-#define DefaultF77Options	-fno-range-check MINOS_CFLAGS
-#define DefaultF90Options	-fno-range-check MINOS_CFLAGS
+#define StandardDefines 	-m32 -DADDC_ MINOS_CFLAGS
+#define StandardCppDefines 	-m32 -DADDC_ 
+#define DefaultF77Options	-m32 -fno-range-check MINOS_CFLAGS
+#define DefaultF90Options	-m32 -fno-range-check MINOS_CFLAGS
+#define ExtraLoadOptions	-m32 MINOS_LFLAGS
 #endif
 
 #define NeedsDoubleEscape	NO
 #define CppCmd			/usr/bin/cpp
 #define PreProcessCmd		CppCmd -P
-#define ExtraLoadOptions	MINOS_LFLAGS
 #endif
 
 #if defined (USE_CLANG)
@@ -168,34 +169,15 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define ExtraLibraries	-lcc_dynamic
 #endif
 
-#if defined(PARALLEL_AWARE) 
-
-#define BuildParallelAwareExodus
-
-#define CcCmd                   mpicc
-#define CplusplusCmd            mpiCC
-#define FortranCmd              mpif77
-#define Fortran90Cmd            mpif90
-
-#if Build64BitAccess
-#define StandardDefines 	-DBuild64 -DADDC_ MINOS_CFLAGS -DPARALLEL_AWARE_EXODUS 
-#define StandardCppDefines 	-DBuild64 -DADDC_ 
-#define DefaultF77Options	-fno-range-check -fcray-pointer -fdefault-real-8 -fdefault-integer-8 MINOS_CFLAGS
-#define DefaultF90Options	-fno-range-check MINOS_CFLAGS
-#else
-#define StandardDefines 	-DADDC_ MINOS_CFLAGS -DPARALLEL_AWARE_EXODUS 
-#define StandardCppDefines 	-DADDC_ 
-#define DefaultF77Options	-fno-range-check MINOS_CFLAGS
-#define DefaultF90Options	-fno-range-check MINOS_CFLAGS
+#if Parallel
+#define ParRunCmd "mpirun"
+#define NPCmd -n
+#define F90PrecOptions
+#define F77PrecOptions
+#define ParallelCCOptions 
+#define ParallelF77Options 
+#define ParallelF90Options 
 #endif
-
-#define NeedsDoubleEscape	NO
-#define CppCmd			/usr/bin/cpp
-#define PreProcessCmd		CppCmd -P
-#define ExtraLoadOptions	MINOS_LFLAGS
-
-#define NeedsDoubleEscape	NO
-#endif  /* PARALLEL_AWARE */
 
 #if defined(GCC4GFORTRAN) 
 #define CcCmd			gcc

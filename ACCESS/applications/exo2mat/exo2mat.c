@@ -59,16 +59,15 @@
      gmreese. April 1, 2003.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <assert.h>
-#include "exodusII.h"
+#include <assert.h>                     // for assert
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for fprintf, printf, sprintf, etc
+#include <stdlib.h>                     // for free, calloc, exit, malloc
+#include <string.h>                     // for strcat, strlen, strcpy, etc
+#include "add_to_log.h"                 // for add_to_log
+#include "exodusII.h"                   // for ex_get_variable_param, etc
+#include "matio.h"                      // for Mat_VarCreate, Mat_VarFree, etc
 
-#include "add_to_log.h"
-#include "matio.h"
 
 #define EXT ".mat"
 int textfile=0;
@@ -80,7 +79,7 @@ static char *qainfo[] =
 {
   "exo2mat",
   "2014/01/14",
-  "2.01",
+  "2.02",
 };
 
 
@@ -223,7 +222,7 @@ int main (int argc, char *argv[])
 {
 
   char  
-    *str,**str2,*(*qa_records)[4],*line, *oname, *dot, *filename;
+    *str,**str2,*line, *oname, *dot, *filename;
 
   const char* ext=EXT;
 

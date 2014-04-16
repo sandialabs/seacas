@@ -33,20 +33,20 @@
 #ifndef IOSS_Ioss_Field_h
 #define IOSS_Ioss_Field_h
 
-#include <Ioss_CodeTypes.h>
-#include <string>
+#include <stddef.h>                     // for size_t
+#include <string>                       // for string
+#include <vector>                       // for vector
+namespace Ioss { class Transform; }
+namespace Ioss { class VariableType; }
 
-#include <vector>
 
 namespace Ioss {
 
-  class VariableType;
   class GroupingEntity;
-  class Transform;
 
   class Field {
   public:
-    enum BasicType {INVALID = -1, REAL=1, INTEGER=4, INT32=4, INT64=8, COMPLEX, STRING, CHARACTER};
+    enum BasicType {INVALID = -1, REAL=1, DOUBLE=1, INTEGER=4, INT32=4, INT64=8, COMPLEX, STRING, CHARACTER};
     enum RoleType {INTERNAL, MESH, ATTRIBUTE, COMMUNICATION, INFORMATION, REDUCTION, TRANSIENT};
 
     Field();

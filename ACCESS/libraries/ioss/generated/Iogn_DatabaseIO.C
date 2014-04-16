@@ -31,12 +31,39 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <generated/Iogn_DatabaseIO.h>
-#include <generated/Iogn_GeneratedMesh.h>
+#include <Ioss_CodeTypes.h>             // for Int64Vector, IntVector
+#include <Ioss_SideBlock.h>             // for SideBlock
+#include <Ioss_Utils.h>                 // for Utils, IOSS_ERROR
+#include <assert.h>                     // for assert
+#include <generated/Iogn_GeneratedMesh.h>  // for GeneratedMesh
+#include <math.h>                       // for sqrt
+#include <algorithm>                    // for copy
+#include <iostream>                     // for ostringstream, operator<<, etc
+#include <string>                       // for string, operator==, etc
+#include <utility>                      // for pair
+#include "Ioss_CommSet.h"               // for CommSet
+#include "Ioss_DBUsage.h"               // for DatabaseUsage
+#include "Ioss_DatabaseIO.h"            // for DatabaseIO
+#include "Ioss_ElementBlock.h"          // for ElementBlock
+#include "Ioss_EntityType.h"            // for EntityType, etc
+#include "Ioss_Field.h"                 // for Field, etc
+#include "Ioss_GroupingEntity.h"        // for GroupingEntity
+#include "Ioss_IOFactory.h"             // for IOFactory
+#include "Ioss_Map.h"                   // for Map, MapContainer
+#include "Ioss_NodeBlock.h"             // for NodeBlock
+#include "Ioss_NodeSet.h"               // for NodeSet
+#include "Ioss_ParallelUtils.h"         // for ParallelUtils
+#include "Ioss_Property.h"              // for Property
+#include "Ioss_PropertyManager.h"       // for PropertyManager
+#include "Ioss_Region.h"                // for Region
+#include "Ioss_SideSet.h"               // for SideSet
+#include "Ioss_VariableType.h"          // for VariableType
+namespace Ioss { class EdgeBlock; }
+namespace Ioss { class EdgeSet; }
+namespace Ioss { class ElementSet; }
+namespace Ioss { class FaceBlock; }
+namespace Ioss { class FaceSet; }
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_SubSystem.h>
-#include <Ioss_Utils.h>
-#include <string>
 
 namespace {
   template <typename INT>
@@ -691,24 +718,59 @@ namespace Iogn {
       sideset->property_add(Ioss::Property("id", ifs+1));
       get_region()->add(sideset);
 
-      std::string ef_block_name = name + "_quad4";
-      std::string side_topo_name = "quad4";
-      std::string elem_topo_name = "unknown";
-      int64_t number_faces = m_generatedMesh->sideset_side_count_proc(ifs+1);
+      std::vector<std::string> touching_blocks = m_generatedMesh->sideset_touching_blocks(ifs+1);
+      if(touching_blocks.size() == 1)
+      {
+        std::string ef_block_name = name + "_quad4";
+        std::string side_topo_name = "quad4";
+        std::string elem_topo_name = "unknown";
+        int64_t number_faces = m_generatedMesh->sideset_side_count_proc(ifs+1);
 
-      Ioss::SideBlock *ef_block = new Ioss::SideBlock(this, ef_block_name,
-                                                      side_topo_name,
-                                                      elem_topo_name,
-                                                      number_faces);
-      sideset->add(ef_block);
-      ef_block->property_add(Ioss::Property("id", ifs+1));
+        Ioss::SideBlock *ef_block = new Ioss::SideBlock(this, ef_block_name,
+                                                        side_topo_name,
+                                                        elem_topo_name,
+                                                        number_faces);
+        sideset->add(ef_block);
+        ef_block->property_add(Ioss::Property("id", ifs+1));
 
-      std::string storage = "Real[";
-      storage += Ioss::Utils::to_string(4);
-      storage += "]";
-      ef_block->field_add(Ioss::Field("distribution_factors",
-                                      Ioss::Field::REAL, storage,
-                                      Ioss::Field::MESH, number_faces));
+        std::string storage = "Real[";
+        storage += Ioss::Utils::to_string(4);
+        storage += "]";
+        ef_block->field_add(Ioss::Field("distribution_factors",
+                                        Ioss::Field::REAL, storage,
+                                        Ioss::Field::MESH, number_faces));
+
+        Ioss::ElementBlock * el_block = get_region()->get_element_block(touching_blocks[0]);
+        ef_block->set_parent_element_block(el_block);
+      }
+      else
+      {
+        for(std::vector<std::string>::const_iterator it = touching_blocks.begin(); it != touching_blocks.end(); ++it)
+        {
+          const std::string & touching_block = *it;
+          std::string ef_block_name = "surface_" + touching_block + "_edge2_" + Ioss::Utils::to_string(ifs+1);
+          std::string side_topo_name = "quad4";
+          std::string elem_topo_name = "unknown";
+          int64_t number_faces = m_generatedMesh->sideset_side_count_proc(ifs+1);
+
+          Ioss::SideBlock *ef_block = new Ioss::SideBlock(this, ef_block_name,
+                                                          side_topo_name,
+                                                          elem_topo_name,
+                                                          number_faces);
+          sideset->add(ef_block);
+          ef_block->property_add(Ioss::Property("id", ifs+1));
+
+          std::string storage = "Real[";
+          storage += Ioss::Utils::to_string(4);
+          storage += "]";
+          ef_block->field_add(Ioss::Field("distribution_factors",
+                                          Ioss::Field::REAL, storage,
+                                          Ioss::Field::MESH, number_faces));
+
+          Ioss::ElementBlock * el_block = get_region()->get_element_block(touching_block);
+          ef_block->set_parent_element_block(el_block);
+        }
+      }
     }
   }
 
@@ -738,7 +800,6 @@ namespace Iogn {
     for (size_t i=0; i < var_count; i++) {
       std::string var_name = entity->type_string() + "_" + Ioss::Utils::to_string(i+1);
       entity->field_add(Ioss::Field(var_name, Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT, entity_count));
-      std::cerr << "Adding field '" << var_name << "' to '" << entity->name() << "'.\n";
     }
   }
 }

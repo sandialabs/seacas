@@ -1,6 +1,40 @@
-#include <generated/Iogn_DashSurfaceMesh.h>
+// Copyright(C) 2014
+// Sandia Corporation. Under the terms of Contract
+// DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
+// certain rights in this software.
+//         
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+// 
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+// 
+//     * Redistributions in binary form must reproduce the above
+//       copyright notice, this list of conditions and the following
+//       disclaimer in the documentation and/or other materials provided
+//       with the distribution.
+//     * Neither the name of Sandia Corporation nor the names of its
+//       contributors may be used to endorse or promote products derived
+//       from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <vector>
+#include <generated/Iogn_DashSurfaceMesh.h>
+#include <algorithm>                    // for copy
+#include <vector>                       // for vector
+#include "generated/Iogn_GeneratedMesh.h"  // for MapVector, IntVector, etc
+
 
 namespace Iogn
 {
@@ -198,7 +232,7 @@ void DashSurfaceMesh::node_map(MapVector &map)
     }
 }
 
-void DashSurfaceMesh::element_map(int block_number, IntVector &map) const
+void DashSurfaceMesh::element_map(int64_t block_number, IntVector &map) const
 {
     size_t numElementsInSurface1 = element_count_proc(1);
     size_t numElementsInSurface2 = element_count_proc(2);
@@ -246,10 +280,10 @@ void DashSurfaceMesh::element_map(int64_t block_number, MapVector &map) const
 
 void DashSurfaceMesh::element_map(MapVector &map) const
 {
-    int count = element_count_proc();
+    size_t count = element_count_proc();
     map.resize(count);
 
-    for(int i = 0; i < count; i++)
+    for(size_t i = 0; i < count; i++)
     {
         map[i] = mDashSurfaceData.globalIdsOfLocalElements[i];
     }
@@ -257,10 +291,10 @@ void DashSurfaceMesh::element_map(MapVector &map) const
 
 void DashSurfaceMesh::element_map(IntVector &map) const
 {
-    int count = element_count_proc();
+    size_t count = element_count_proc();
     map.resize(count);
 
-    for(int i = 0; i < count; i++)
+    for(size_t i = 0; i < count; i++)
     {
         map[i] = mDashSurfaceData.globalIdsOfLocalElements[i];
     }
@@ -325,7 +359,7 @@ int64_t ExodusMesh::nodeset_count() const
 
 int64_t ExodusMesh::sideset_count() const
 {
-    return 0;
+    return mExodusData.sidesetConnectivity.size();
 }
 
 int64_t ExodusMesh::element_count_proc() const
@@ -396,7 +430,14 @@ std::pair<std::string, int> ExodusMesh::topology_type(int64_t blockNumber) const
 
 void ExodusMesh::sideset_elem_sides(int64_t setId, Int64Vector &elem_sides) const
 {
-    elem_sides.clear();
+    elem_sides.resize(mExodusData.sidesetConnectivity[setId-1].size());
+    elem_sides.insert(elem_sides.begin(), mExodusData.sidesetConnectivity[setId-1].begin(), mExodusData.sidesetConnectivity[setId-1].end());
+}
+
+
+std::vector<std::string> ExodusMesh::sideset_touching_blocks(int64_t setId) const
+{
+  return mExodusData.sidesetTouchingBlocks[setId-1];
 }
 
 void ExodusMesh::nodeset_nodes(int64_t nset_id, Int64Vector &nodes) const
@@ -437,7 +478,7 @@ void ExodusMesh::node_map(MapVector &map)
     }
 }
 
-void ExodusMesh::element_map(int blockNumber, IntVector &map) const
+void ExodusMesh::element_map(int64_t blockNumber, IntVector &map) const
 {
     int64_t offset = mElementOffsetForBlock[blockNumber-1];
     for(int64_t i=0; i < mExodusData.localNumberOfElementsInBlock[blockNumber-1]; i++)

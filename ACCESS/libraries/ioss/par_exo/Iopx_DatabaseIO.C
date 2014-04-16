@@ -455,6 +455,14 @@ namespace Iopx {
     m_groupCount[EX_GLOBAL]     = 1; // To make some common code work more cleanly.
     m_groupCount[EX_NODE_BLOCK] = 1; // To make some common code work more cleanly.
 
+    if (!is_parallel_consistent()) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: Parallel IO cannot be used in an application that is not guaranteeing "
+	     << "parallel consistent calls of the get and put field data functions.\n"
+	     << "The application created this database with a 'false' setting for the isParallelConsistent property.";
+       IOSS_ERROR(errmsg);
+    }
+
     // A history file is only written on processor 0...
     if (db_usage == Ioss::WRITE_HISTORY)
       isParallel = false;
@@ -554,7 +562,7 @@ namespace Iopx {
         Ioss::SIDESET   | Ioss::SIDEBLOCK | Ioss::REGION    | Ioss::SUPERELEMENT;
   }
 
-  bool DatabaseIO::ok(bool write_message) const
+  bool DatabaseIO::ok(bool write_message, std::string *error_msg, int *bad_count) const
   {
     if (fileExists) {
       // File has already been opened at least once...
@@ -576,7 +584,6 @@ namespace Iopx {
 
     if (!is_input() && exodus_file_ptr < 0) {
       // File didn't exist above, but this OK if is an output file. See if we can create it...
-      io_word_size = cpu_word_size;
       int mode = 0;
       if (int_byte_size_api() == 8)
         mode |= EX_ALL_INT64_DB;
@@ -587,27 +594,40 @@ namespace Iopx {
 
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
     int global_file_ptr = util().global_minmax(exodus_file_ptr, Ioss::ParallelUtils::DO_MIN);
-    if (write_message && global_file_ptr < 0) {
-      // See which processors could not open/create the file...
+    if (global_file_ptr < 0 && (write_message || error_msg != NULL || bad_count != NULL)) {
       Ioss::IntVector status;
-      util().gather(exodus_file_ptr, status);
-      if (myProcessor == 0) {
-        std::string open_create = is_input() ? "open input" : "create output";
-        bool first = true;
-        std::ostringstream errmsg;
-        errmsg << "ERROR: Unable to " << open_create << " database '" << get_filename() << "' of type 'exodusII'";
-        if (isParallel) {
-          errmsg << "\n       on processor(s): ";
-          for (int i=0; i < util().parallel_size(); i++) {
-            if (status[i] < 0) {
-              if (!first) errmsg << ", ";
-              errmsg << i;
-              first = false;
-            }
-          }
-        }
-        errmsg << "\n";
-        std::cerr << errmsg.str();
+      util().all_gather(exodus_file_ptr, status);
+
+      if (write_message || error_msg != NULL) {
+	// See which processors could not open/create the file...
+	std::string open_create = is_input() ? "open input" : "create output";
+	bool first = true;
+	std::ostringstream errmsg;
+	errmsg << "ERROR: Unable to " << open_create << " database '" << get_filename() << "' of type 'exodusII'";
+	if (isParallel) {
+	  errmsg << "\n\ton processor(s): ";
+	  for (int i=0; i < util().parallel_size(); i++) {
+	    if (status[i] < 0) {
+	      if (!first) errmsg << ", ";
+	      errmsg << i;
+	      first = false;
+	    }
+	  }
+	}
+	if (error_msg != NULL) {
+	  *error_msg = errmsg.str();
+	}
+	if (write_message && myProcessor == 0) {
+	  errmsg << "\n";
+	  std::cerr << errmsg.str();
+	}
+      }
+      if (bad_count != NULL) {
+	for (int i=0; i < util().parallel_size(); i++) {
+	  if (status[i] < 0) {
+	    (*bad_count)++;
+	  }
+	}
       }
     }
 
@@ -945,7 +965,7 @@ namespace Iopx {
       // See if the "last_written_time" attribute exists and if it
       // does, check that it matches the largest time in 'tsteps'.
       Iopx::Internals data(get_file_pointer(), maximumNameLength, util());
-      exists = data.read_last_time_attribute(&last_time);
+      data.read_last_time_attribute(&last_time);
     }
 
     // Only add states that are less than or equal to the
@@ -1080,7 +1100,6 @@ namespace Iopx {
           // Clear out the vector...
           Ioss::MapContainer().swap(entity_map.map);
           exodus_error(get_file_pointer(), __LINE__, myProcessor);
-          map_read = false;
         }
 
         // Check for sequential node map.
@@ -1771,7 +1790,7 @@ namespace Iopx {
           // Determine how many side blocks compose this side set.
 
           int64_t number_sides = decomp->side_sets[iss].ioss_count();
-          number_distribution_factors = decomp->side_sets[iss].df_count();
+	  // FIXME: Support-  number_distribution_factors = decomp->side_sets[iss].df_count();
 
           Ioss::Int64Vector element(number_sides);
           Ioss::Int64Vector sides(number_sides);
@@ -2007,7 +2026,7 @@ namespace Iopx {
                 // cases where we don't need to read it, but if we are
                 // already reading it (to split the sidesets), then use
                 // the data when we have it.
-                if (side_map.size() > 0) {
+                if (!side_map.empty()) {
                   // Set a property indicating which element side
                   // (1-based) all sides in this block are applied to.
                   // If they are not all assigned to the same element
@@ -2733,6 +2752,8 @@ namespace Iopx {
 
         } else if (field.get_name() == "distribution_factors") {
           ierr = decomp->get_set_mesh_double(get_file_pointer(), EX_NODE_SET, id, field, static_cast<double*>(data));
+          if (ierr < 0)
+            exodus_error(get_file_pointer(), __LINE__, myProcessor);
         }
       } else if (role == Ioss::Field::ATTRIBUTE) {
         num_to_get = read_attribute_field(type, field, ns, data);
@@ -5976,7 +5997,6 @@ namespace Iopx {
               // Next three attributes are offset from node to CG
               block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR3D(),
                                            Ioss::Field::ATTRIBUTE, my_element_count, offset));
-              offset += 3;
             }
           }
 
@@ -6957,7 +6977,7 @@ namespace Iopx {
                                         Iopx::TopologyMap &side_map,
                                         Ioss::SurfaceSplitType split_type)
     {
-      if (element.size() > 0) {
+      if (!element.empty()) {
         Ioss::ElementBlock *block = NULL;
         // Topology of sides in current element block
         const Ioss::ElementTopology *common_ftopo = NULL;

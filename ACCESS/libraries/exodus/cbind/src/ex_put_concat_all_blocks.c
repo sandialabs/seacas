@@ -43,10 +43,15 @@
 *
 *****************************************************************************/
 
-#include <stdlib.h>
-#include "exodusII.h"
-#include "exodusII_int.h"
-#include <string.h>
+#include <inttypes.h>                   // for PRId64
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for sprintf
+#include <stdlib.h>                     // for NULL, free, malloc
+#include <string.h>                     // for strlen
+#include <sys/types.h>                  // for int64_t
+#include "exodusII.h"                   // for ex_err, exerrval, etc
+#include "exodusII_int.h"               // for EX_FATAL, etc
+#include "netcdf.h"                     // for NC_NOERR, nc_def_var, etc
 
 
 /*!
@@ -176,7 +181,7 @@ int ex_put_concat_all_blocks (int    exoid,
 	if (SNUMNAME[i] == 0) /* Is this a NULL TNAME block? */		\
 	  GSTAT[i] = 0; /* change TNAME block status to NULL */		\
 	else								\
-	  GSTAT[i] = 1; /* change TNAME block status to TRUE */		\
+	  GSTAT[i] = 1; /* change TNAME block status to EX_TRUE */		\
       }									\
 									\
       /* Next, get variable id of status array */			\

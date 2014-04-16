@@ -1,7 +1,45 @@
+// Copyright(C) 2014
+// Sandia Corporation. Under the terms of Contract
+// DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
+// certain rights in this software.
+//         
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+// 
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+// 
+//     * Redistributions in binary form must reproduce the above
+//       copyright notice, this list of conditions and the following
+//       disclaimer in the documentation and/or other materials provided
+//       with the distribution.
+//     * Neither the name of Sandia Corporation nor the names of its
+//       contributors may be used to endorse or promote products derived
+//       from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #ifndef IOSS_Iogn_DashSurfaceMesh_h
 #define IOSS_Iogn_DashSurfaceMesh_h
 
-#include <generated/Iogn_GeneratedMesh.h>
+#include <generated/Iogn_GeneratedMesh.h>  // for GeneratedMesh
+#include <stddef.h>                     // for size_t
+#include <stdint.h>                     // for int64_t
+#include <exception>                    // for exception
+#include <string>                       // for string
+#include <utility>                      // for pair
+#include <vector>                       // for vector
 
 namespace Iogn
 {
@@ -51,14 +89,26 @@ struct ExodusData {
     const std::vector<int> globalIdsOfLocalNodes;
 
     std::vector<SharedNode> *sharedNodes;
+
+    // A sideset' is basically an exodus sideset.  A
+    // sideset has a list of elements and a corresponding local
+    // element side (1-based) The side id is: side_id =
+    // 10*element_id + local_side_number This assumes that all
+    // sides in a sideset are boundary sides.
+    std::vector< std::vector<int> > sidesetConnectivity;
+    std::vector< std::vector<std::string> > sidesetTouchingBlocks;
+
     ExodusData(const std::vector<double> coords, const std::vector< std::vector<int> > elemBlockConnectivity,
                const std::vector<int> globalNumOfElemsInBlock, const std::vector<int> localNumOfElemsInBlock,
                const std::vector<Topology> blockTopoData, int globalNumNodes, const std::vector<int> globalIdsOfLocalElems,
-               const std::vector<int> globalIdsLocalNodes)
+               const std::vector<int> globalIdsLocalNodes,
+               const std::vector< std::vector<int> > & sidesetConn = std::vector< std::vector<int> >(),
+               const std::vector< std::vector<std::string> > & sidesetBlocks = std::vector< std::vector<std::string> >())
     : coordinates(coords), elementBlockConnectivity(elemBlockConnectivity),
       globalNumberOfElementsInBlock(globalNumOfElemsInBlock), localNumberOfElementsInBlock(localNumOfElemsInBlock),
       blockTopologicalData(blockTopoData), globalNumberOfNodes(globalNumNodes), globalIdsOfLocalElements(globalIdsOfLocalElems),
-      globalIdsOfLocalNodes(globalIdsLocalNodes), sharedNodes(0)
+      globalIdsOfLocalNodes(globalIdsLocalNodes), sharedNodes(0), sidesetConnectivity(sidesetConn),
+      sidesetTouchingBlocks(sidesetBlocks)
     {
 
     }
@@ -157,7 +207,7 @@ public:
     virtual void node_map(std::vector<int> &map);
     virtual void node_map(std::vector<int64_t> &map);
 
-    virtual void element_map(int block_number, std::vector<int> &map) const;
+    virtual void element_map(int64_t block_number, std::vector<int> &map) const;
     virtual void element_map(int64_t block_number, std::vector<int64_t> &map) const;
     virtual void element_map(std::vector<int64_t> &map) const;
     virtual void element_map(std::vector<int> &map) const;
@@ -203,6 +253,8 @@ public:
 
     virtual void sideset_elem_sides(int64_t setId, std::vector<int64_t> &elem_sides) const;
 
+    virtual std::vector<std::string> sideset_touching_blocks(int64_t set_id) const;
+
     virtual void nodeset_nodes(int64_t nset_id, std::vector<int64_t> &nodes) const;
 
     virtual void node_communication_map(std::vector<int64_t> &map, std::vector<int> &proc);
@@ -210,7 +262,7 @@ public:
     virtual void node_map(std::vector<int> &map);
     virtual void node_map(std::vector<int64_t> &map);
 
-    virtual void element_map(int block_number, std::vector<int> &map) const;
+    virtual void element_map(int64_t block_number, std::vector<int> &map) const;
     virtual void element_map(int64_t block_number, std::vector<int64_t> &map) const;
     virtual void element_map(std::vector<int64_t> &map) const;
     virtual void element_map(std::vector<int> &map) const;

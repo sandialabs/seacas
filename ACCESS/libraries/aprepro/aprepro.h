@@ -86,7 +86,6 @@ namespace SEAMS {
   {
     std::string include_path;
     std::string include_file;
-    std::string comment;
     bool end_on_exit;
     bool warning_msg;
     bool info_msg;
@@ -94,16 +93,16 @@ namespace SEAMS {
     bool interactive;
     bool immutable;
     bool trace_parsing;    // enable debug output in the bison parser
-
+    bool one_based_index;
     aprepro_options() :
-      comment("#"),
       end_on_exit(false),
       warning_msg(true),
       info_msg(false),
       debugging(false),
       interactive(false),
       immutable(false),
-      trace_parsing(false)
+      trace_parsing(false),
+      one_based_index(false)
     {}
   };
 
@@ -112,12 +111,13 @@ namespace SEAMS {
   {
     std::string name;
     int	  lineno;
-    bool  tmp_file;
     int	  loop_count;
+    bool  tmp_file;
+
     file_rec(const char *my_name, int line_num, bool is_temp, int loop_cnt)
-      : name(my_name), lineno(line_num), tmp_file(is_temp), loop_count(loop_cnt) {}
+      : name(my_name), lineno(line_num), loop_count(loop_cnt), tmp_file(is_temp) {}
     file_rec()
-      : name("UNKNOWN_FILE_NAME"), lineno(0), tmp_file(false), loop_count(0) {}
+      : name("UNKNOWN_FILE_NAME"), lineno(0), loop_count(0), tmp_file(false) {}
   };
 
   /** The Aprepro class brings together all components. It creates an instance of

@@ -2,7 +2,6 @@
 #include <fstream>
 
 #include "aprepro.h"
-#include "apr_util.h"
 
 // This function is used below in the example showing how an
 // application can add its own functions to an aprepro instance.
@@ -41,29 +40,6 @@ int main(int argc, char *argv[])
     else if (arg[0] == '-') {
       aprepro.set_option(argv[ai]);
     } 
-    else if (arg.find('=') != std::string::npos){
-      size_t idx = arg.find('=');
-      std::string var = arg.substr(0,idx);
-      std::string val = arg.substr(idx+1);
-      
-      if (!SEAMS::check_valid_var(var.c_str())) {
-	std::cerr << "ERROR: '" << var
-		  << "' is not a valid form for a variable; it will not be defined\n";
-	continue;
-      } 
-
-      bool immutable = var[0] != '_';
-      if (val[0] == '"') {
-	// String variable. Strip off the leading/trailing "
-	val = val.substr(1,val.size()-2);
-	aprepro.add_variable(var, val, immutable);
-      }
-      else {
-	// Numeric variable.
-	double value = SEAMS::to_double(val);
-	aprepro.add_variable(var, value, immutable);
-      }
-    }
     else {
       // Read and parse a file.  The entire file will be parsed and
       // then the output can be obtained in an std::ostringstream via
