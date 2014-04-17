@@ -1,5 +1,5 @@
 
-TRUE_MATIO = matio-1.5.0
+TRUE_MATIO = matio-1.5.2
 
 #if BuildSharedExodusLibrary
 SHARED = --enable-shared
