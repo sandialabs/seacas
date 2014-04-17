@@ -1,5 +1,5 @@
 
-TRUE_METIS = metis-5.0.2
+TRUE_METIS = metis-5.1.0
 
 #if defined(PARALLEL_AWARE)
 PARMETIS = parmetis
