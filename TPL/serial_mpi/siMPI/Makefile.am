@@ -7,7 +7,7 @@
 #*                                                                        *#
 #**************************************************************************#
 
-bin_PROGRAMS = mpicc mpirun
+bin_PROGRAMS = mpicxx mpicc mpirun
 noinst_PROGRAMS = smoketest 
 
 lib_LIBRARIES = libsimpi.a
@@ -15,6 +15,9 @@ include_HEADERS = mpi.h mpi_implementation.h mpi_prototypes.h mpi_profile.h mpi_
 
 mpicc_SOURCES = \
     mpicc.c
+
+mpicxx_SOURCES = \
+    mpicxx.c
 
 mpirun_SOURCES = \
     mpirun.c
@@ -462,6 +465,7 @@ libsimpi_a_SOURCES = \
 
 $(libsimpi_a_OBJECTS): mpi.h mpi_implementation.h _MPI_UTILITY.h mpi_prototypes.h mpi_profile.h
 $(mpicc_OBJECTS): mpi_path.h
+$(mpicxx_OBJECTS): mpi_path.h
 
 TESTS = smoketest \
 	regressiontest
@@ -470,3 +474,4 @@ EXTRA_DIST = boot testframework mpi_implementation.h mpi_path.h _MPI_UTILITY.h m
 
 smoketest: smoketest.c ./mpicc
 	./mpicc $(CFLAGS) -o smoketest smoketest.c
+	./mpicxx $(CFLAGS) -o cxx-smoketest cxx-smoketest.C
