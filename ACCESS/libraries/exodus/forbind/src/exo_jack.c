@@ -428,6 +428,7 @@ F2C(exgqa,EXGQA) (int *idexo,
     return;
   }
 
+
   /* Allocate space for the QA string ptr array */
   if (!(sptr = malloc((num_qa_records * alen + 1) * sizeof(char *)))) {
     *ierr = EX_MEMFAIL;
