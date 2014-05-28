@@ -47,13 +47,13 @@
  */
 
 /* LINTLIBRARY */
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for sprintf, NULL
-#include <stdlib.h>                     // for free, malloc, calloc
-#include <string.h>                     // for memset, strlen
-#include <sys/types.h>                  // for int64_t
-#include "exodusII.h"                   // for void_int, ex_err, etc
-#include "exodusII_int.h"               // for EX_FATAL, etc
+#include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "netcdf.h"
+#include "exodusII.h"
+#include "exodusII_int.h"
 
 /*
  * The Build64 is for the "normal" SEACAS build which uses compiler
@@ -423,6 +423,10 @@ F2C(exgqa,EXGQA) (int *idexo,
 
   /* do ExodusII C call to find out how many qa records are avail */
   num_qa_records = ex_inquire_int(*idexo, EX_INQ_QA);
+  if (num_qa_records < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   /* Allocate space for the QA string ptr array */
   if (!(sptr = malloc((num_qa_records * alen + 1) * sizeof(char *)))) {
@@ -451,9 +455,8 @@ F2C(exgqa,EXGQA) (int *idexo,
 
   /* do ExodusII C call to get qa records */
   if (ex_get_qa(*idexo, (void *) sptr) == EX_FATAL) {
-    free(sptr);
     *ierr = EX_FATAL;
-    return;
+    goto error_ret;
   }
   iii = 0;                      /* offset counter */
   for (i = 0; i < num_qa_records; i++) {        /* string copy loop */
@@ -464,6 +467,7 @@ F2C(exgqa,EXGQA) (int *idexo,
     }
   }
 
+ error_ret:
   /* Free up the space we used */
   iii = 0;
   for (i = 0; i < num_qa_records; i++) {
@@ -541,6 +545,10 @@ F2C(exginf,EXGINF) (int *idexo,
 
   /* do exodusII C call to find out how many info records are avail */
   num_info = ex_inquire_int(*idexo, EX_INQ_INFO);
+  if (num_info < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   slen = MAX_LINE_LENGTH;       /* max str size */
   if (infolen != MAX_LINE_LENGTH) {
@@ -632,11 +640,21 @@ F2C(expcon,EXPCON) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (coord_nameslen < slen) {
     slen = coord_nameslen;
   }
   /* do ExodusII C call to find out how many dimensions  */
   ndim = ex_inquire_int(*idexo, EX_INQ_DIM);
+  if (ndim < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
 
   /* Allocate space for the name ptr array */
   if (!(aptr = malloc((ndim + 1) * sizeof(char *)))) {
@@ -686,11 +704,21 @@ F2C(exgcon,EXGCON) (int *idexo,
   *ierr = 0;                    /* default no error */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (coord_nameslen < slen) {
     slen = coord_nameslen;
   }
   /* do ExodusII C call to find out how many dimensions */
   ndim = ex_inquire_int(*idexo, EX_INQ_DIM);
+  if (ndim < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
 
   /* allocate memory to stage the coordinate name ptrs into */
   if (!(aptr = malloc((ndim + 1) * sizeof(char *)))) {
@@ -762,16 +790,21 @@ F2C(expclb,EXPCLB) (int *idexo,
              int *ierr,
              int elem_typelen)
 {
-  size_t          num_elem_blk;
+  int     num_elem_blk;
 
-  char          **aptr;         /* ptr to temp staging space for string array
+  char  **aptr;         /* ptr to temp staging space for string array
                                  * ptrs */
-  char           *sptr;         /* ptr to temp staging space for strings */
-  size_t          i, slen;
+  char   *sptr;         /* ptr to temp staging space for strings */
+  int     i;
+  size_t  slen;
 
   *ierr = 0;                    /* default no error */
 
   num_elem_blk = ex_inquire_int(*idexo, EX_INQ_ELEM_BLK);
+  if (num_elem_blk < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   slen = MAX_STR_LENGTH;        /* max str size */
   if (elem_typelen != MAX_STR_LENGTH) {
@@ -996,6 +1029,11 @@ F2C(exgean,EXGEAN) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (nameslen < slen) {
     slen = nameslen;
   }
@@ -1051,6 +1089,11 @@ F2C(expean,EXPEAN) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (nameslen < slen) {
     slen = nameslen;
   }
@@ -1100,6 +1143,11 @@ F2C(expnams,EXPNAMS) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (nameslen < slen) {
     slen = nameslen;
   }
@@ -1148,6 +1196,11 @@ F2C(exgnams,EXGNAMS) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (nameslen < slen) {
     slen = nameslen;
   }
@@ -1203,6 +1256,11 @@ F2C(exppn,EXPPN) (int *idexo,
   *ierr = 0;
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (prop_nameslen < slen) {
     slen = prop_nameslen;
   }
@@ -1259,6 +1317,11 @@ F2C(exgpn,EXGPN) (int *idexo,
   *ierr = 0;
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (prop_nameslen < slen) {
     slen = prop_nameslen;
   }
@@ -1290,6 +1353,10 @@ F2C(exgpn,EXGPN) (int *idexo,
 
   /* do ExodusII C call to find out how many properties */
   num_props = ex_inquire_int(*idexo, inq_code);
+  if (num_props < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   /* Allocate space for the name ptr array */
   if (!(aptr = malloc((num_props + 1) * sizeof(char *)))) {
@@ -1350,6 +1417,11 @@ F2C(expp,EXPP) (int *idexo,
   *ierr = 0;
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (prop_namelen < slen) {
     slen = prop_namelen;
   }
@@ -1384,6 +1456,11 @@ F2C(exgp,EXGP) (int *idexo,
   *ierr = 0;
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (prop_namelen < slen) {
     slen = prop_namelen;
   }
@@ -1419,6 +1496,11 @@ F2C(exgpa,EXGPA) (int *idexo,
   *ierr = 0;
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (prop_namelen < slen) {
     slen = prop_namelen;
   }
@@ -1457,6 +1539,11 @@ F2C(exppa,EXPPA) (int *idexo,
   *ierr = 0;
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (prop_namelen < slen) {
     slen = prop_namelen;
   }
@@ -1584,7 +1671,7 @@ F2C(expcns,EXPCNS) (int *idexo,
              real * node_sets_dist_fact,
              int *ierr)
 {
-  size_t num_node_sets, i;
+  int num_node_sets, i;
   int int_size;
 
   void_int *node_index_ptr, *dist_index_ptr;
@@ -1592,6 +1679,10 @@ F2C(expcns,EXPCNS) (int *idexo,
   *ierr = 0;
 
   num_node_sets = ex_inquire_int(*idexo, EX_INQ_NODE_SETS);
+  if (num_node_sets < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   int_size = sizeof(int);
   if (ex_int64_status(*idexo) & EX_BULK_INT64_API) {
@@ -1644,7 +1735,7 @@ F2C(exgcns,EXGCNS) (int *idexo,
              real * node_sets_dist_fact,
              int *ierr)
 {
-  size_t num_node_sets, i;
+  int num_node_sets, i;
 
   *ierr = ex_get_concat_node_sets(*idexo, node_set_ids, num_nodes_per_set,
 				  num_dist_per_set, node_sets_node_index,
@@ -1652,6 +1743,10 @@ F2C(exgcns,EXGCNS) (int *idexo,
 				  node_sets_dist_fact);
 
   num_node_sets = ex_inquire_int(*idexo, EX_INQ_NODE_SETS);
+  if (num_node_sets < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   if (ex_int64_status(*idexo) & EX_BULK_INT64_API) {
     for (i = 0; i < num_node_sets; i++) { /* change from 0-based to 1 index */
@@ -1788,13 +1883,17 @@ F2C(expcss,EXPCSS) (int *idexo,
              real * side_sets_dist_fact,
              int *ierr)
 {
-  size_t num_side_sets, i;
+  int num_side_sets, i;
   void_int *elem_index_ptr, *dist_index_ptr;
   int int_size;
 
   *ierr = 0;
 
   num_side_sets = ex_inquire_int(*idexo, EX_INQ_SIDE_SETS);
+  if (num_side_sets < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   int_size = sizeof(int);
   if (ex_int64_status(*idexo) & EX_BULK_INT64_API) {
@@ -1849,11 +1948,15 @@ F2C(exgcss,EXGCSS) (int *idexo,
              real * side_sets_dist_fact,
              int *ierr)
 {
-  size_t i, num_side_sets;
+  int i, num_side_sets;
 
   *ierr = 0;
 
   num_side_sets = ex_inquire_int(*idexo, EX_INQ_SIDE_SETS);
+  if (num_side_sets < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   *ierr = ex_get_concat_side_sets(*idexo, side_set_ids, num_elem_per_set,
 				  num_dist_per_set, side_sets_elem_index,
@@ -1887,9 +1990,13 @@ F2C(exgcssf,EXGCSSF) (int *idexo,
               void_int *side_sets_side_list,
               int *ierr)
 {
-  size_t i, num_side_sets;
+  int i, num_side_sets;
 
   num_side_sets = ex_inquire_int(*idexo, EX_INQ_SIDE_SETS);
+  if (num_side_sets < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   *ierr = ex_get_concat_side_sets(*idexo, side_set_ids, num_elem_per_set,
 				  num_dist_per_set, side_sets_elem_index,
@@ -1955,6 +2062,11 @@ F2C(expvan,EXPVAN) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (var_nameslen < slen) {
     slen = var_nameslen;
   }
@@ -2003,6 +2115,11 @@ F2C(exgvan,EXGVAN) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (var_nameslen < slen) {
     slen = var_nameslen;
   }
@@ -2509,6 +2626,10 @@ F2C(exgfrm,EXGFRM) (int *idexo,
 
   /* Determine number of coordinate frames stored in file */
   int             nframe = ex_inquire_int(*idexo, EX_INQ_COORD_FRAMES);
+  if (nframe < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
 
   if (nframe != *nframeo) {
     *ierr = EX_FATAL;
@@ -2605,12 +2726,14 @@ F2C(exerr,EXERR) (char *pname,
   if (!(proc_name = malloc((pnamelen + 1) * sizeof(char)))) {
     ex_err("exerr", "Error: failed to allocate space for process name buffer",
            EX_MEMFAIL);
+    *errcode = EX_MEMFAIL;
     return;
   }
   if (!(error_string = malloc((err_stringlen + 1) * sizeof(char)))) {
     free(proc_name);
     ex_err("exerr", "Error: failed to allocate space for error msg buffer",
            EX_MEMFAIL);
+    *errcode = EX_MEMFAIL;
     return;
   }
   ex_fstrncpy(proc_name, pname, pnamelen);
@@ -2750,6 +2873,11 @@ F2C(exgvnm,EXGVNM) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_MAX_READ_NAME_LENGTH); /* max string size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (var_namelen < slen) {
     slen = var_namelen;
   }
@@ -2869,6 +2997,11 @@ F2C(expvnm,EXPVNM) (int *idexo,
   *ierr = 0;                    /* default no errror */
 
   slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);     /* max str size */
+  if (slen < 0) {
+    *ierr = EX_FATAL;
+    return;
+  }
+
   if (var_namelen < slen) {
     slen = var_namelen;
   }
