@@ -263,8 +263,8 @@ int ex_put_all_var_param_ext ( int   exoid,
     if (define_truth_table(TID, exoid, DVAL, NUMVAR, VTABVAL, VSTATVAL, VIDS, TNAME) != NC_NOERR) \
       goto error_ret;							\
 									\
-    VSTATVAL = safe_free (VSTATVAL);					\
-    VIDS  = safe_free (VIDS);						\
+    VSTATVAL = ex_safe_free (VSTATVAL);					\
+    VIDS  = ex_safe_free (VIDS);						\
 									\
     /* create a variable array in which to store the STNAME variable truth \
      * table								\
@@ -358,23 +358,23 @@ int ex_put_all_var_param_ext ( int   exoid,
         ex_err("ex_put_all_var_param_ext",errmsg,exerrval);
       }
   }
-  safe_free(eblk_ids);
-  safe_free(edblk_ids);
-  safe_free(fablk_ids);
-  safe_free(nset_ids);
-  safe_free(eset_ids);
-  safe_free(fset_ids);
-  safe_free(sset_ids);
-  safe_free(elset_ids);
+  ex_safe_free(eblk_ids);
+  ex_safe_free(edblk_ids);
+  ex_safe_free(fablk_ids);
+  ex_safe_free(nset_ids);
+  ex_safe_free(eset_ids);
+  ex_safe_free(fset_ids);
+  ex_safe_free(sset_ids);
+  ex_safe_free(elset_ids);
 
-  safe_free(eblk_stat);
-  safe_free(edblk_stat);
-  safe_free(fablk_stat);
-  safe_free(nset_stat);
-  safe_free(eset_stat);
-  safe_free(fset_stat);
-  safe_free(sset_stat);
-  safe_free(elset_stat);
+  ex_safe_free(eblk_stat);
+  ex_safe_free(edblk_stat);
+  ex_safe_free(fablk_stat);
+  ex_safe_free(nset_stat);
+  ex_safe_free(eset_stat);
+  ex_safe_free(fset_stat);
+  ex_safe_free(sset_stat);
+  ex_safe_free(elset_stat);
   return(EX_FATAL);
 }
 
@@ -407,7 +407,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
   int status;
   
   dims[0] = dimension;
-  nc_inq_dimid(exoid, DIM_STR_NAME, &dims[1]); /* Checked earlier, so known to exist */
+  (void)nc_inq_dimid(exoid, DIM_STR_NAME, &dims[1]); /* Checked earlier, so known to exist */
 
   if ((status=nc_def_var(exoid, VARIABLE, NC_CHAR, 2, dims, &variable)) != NC_NOERR) {
     if (status == NC_ENAMEINUSE) {
@@ -451,7 +451,7 @@ static int *get_status_array(int exoid, int var_count, const char *VARIABLE, con
      
     if ((status = nc_get_var_int(exoid, varid, stat_vals)) != NC_NOERR) {
       exerrval = status;
-      safe_free(stat_vals);
+      ex_safe_free(stat_vals);
       sprintf(errmsg,
               "Error: failed to get %s status array from file id %d",
               label, exoid);
@@ -495,7 +495,13 @@ static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, i
   int varid;
   int status;
 
-  nc_inq_dimid(exoid, DIM_TIME, &time_dim);
+  if ((status = nc_inq_dimid(exoid, DIM_TIME, &time_dim)) != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+            "Error: failed to locate time dimension in file id %d", exoid);
+    ex_err("ex_put_all_var_param_ext",errmsg,exerrval);
+    return -1;
+  }
 
   if (var_tab == NULL) {
     exerrval = EX_BADPARAM;
