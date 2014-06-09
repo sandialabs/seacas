@@ -641,7 +641,6 @@ void write_exo_mesh(
       INT num_node_per_elem[1];
       INT num_attr_per_block[1];
       int write_map = num_domains > 1 ? EX_TRUE : EX_FALSE;
-      write_map = EX_TRUE;
       num_elem_per_block[0] = loc_num_elements;
       num_node_per_elem[0]  = NUM_NODES_PER_ELEM;
       num_attr_per_block[0] = 0;
