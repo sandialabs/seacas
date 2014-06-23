@@ -997,6 +997,7 @@ char *do_file_to_string(char *filename)
   NEWSTR(lines, ret_string);
   if (line) free(line);
   if (lines) free(lines);
+  fclose(fp);
   return ret_string;
 }
 
