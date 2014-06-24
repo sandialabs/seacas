@@ -1565,12 +1565,19 @@ namespace Iogn {
     else if (type == "nodal") {
       variableCount[Ioss::NODEBLOCK] = count;
     }
+    else if (type == "nodeset") {
+      variableCount[Ioss::NODESET] = count;
+    }
+    else if (type == "surface" || type == "sideset") {
+      variableCount[Ioss::SURFACE] = count;
+    }
+    else {
       std::cerr << "ERROR: (Iogn::GeneratedMesh::set_variable_count)\n"
-          << "       Unrecognized variable type '" << type << "'. Valid types are:\n"
-          << "       global, element, nodal, nodeset, surface, sideset.\n";
-
+		<< "       Unrecognized variable type '" << type << "'. Valid types are:\n"
+		<< "       global, element, nodal, nodeset, surface, sideset.\n";
+    }
   }
-
+  
   void GeneratedMesh::set_rotation(const std::string &axis, double angle_degrees)
   {
     // PI / 180. Used in converting angle in degrees to radians
