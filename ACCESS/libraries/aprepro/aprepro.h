@@ -284,6 +284,10 @@ namespace SEAMS {
 
   public:
     bool stateImmutable;
+
+    // Flag to do Aprepro substitutions within loops. Default value is true. If set to
+    // false, content within the loop will be treated as verbatim text.
+    bool doLoopSubstitution;
   };
 
 } // namespace SEAMS
