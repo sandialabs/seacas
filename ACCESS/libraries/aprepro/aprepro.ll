@@ -512,6 +512,10 @@ integer {D}+({E})?
 				 yyFlexLexer::yypush_buffer_state (
             yyFlexLexer::yy_create_buffer( yyin, YY_BUF_SIZE));
          curr_index = 0;
+
+         if(!aprepro.doIncludeSubstitution)
+           yy_push_state(VERBATIM);
+
 			       } else {
 				 aprepro.warning("Can't open '" +
 						 std::string(yytext) + "'", false);
@@ -736,6 +740,12 @@ namespace SEAMS {
 
         /* Turn echoing back on at end of included files. */
         echo = true;
+
+        // If we are not doing aprepro substitutions for the included file, but
+        // just collecting lines, pop the state from VERBATIM back to what it
+        // was previously.
+        if(!aprepro.doIncludeSubstitution)
+          yy_pop_state();
 
         /* Set immutable mode back to global immutable
         * state at end of included file*/
