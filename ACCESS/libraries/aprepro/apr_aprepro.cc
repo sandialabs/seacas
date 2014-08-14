@@ -4,6 +4,7 @@
 #include <sstream>
 #include <climits>
 #include <iostream>
+#include <iomanip>
 #include <ctime>
 
 #include "aprepro.h"
@@ -229,9 +230,7 @@ namespace SEAMS {
 
     /* If pointer still null, print error message */
     if (pointer == NULL || pointer->bad() || !pointer->good()) {
-      char tmpstr[128];
-      sprintf(tmpstr, "Aprepro: ERROR:  Can't open '%s'",file.c_str()); 
-      perror(tmpstr);
+      error("Can't open " + file, false);
       exit(EXIT_FAILURE);
     }
 
@@ -304,11 +303,7 @@ namespace SEAMS {
       symrec *ptr = getsym(sym_name.c_str());
       if (ptr != NULL) {
 	if (ptr->type != parser_type) {
-	  char tmpstr[128];
-	  sprintf(tmpstr,
-		  "Aprepro: ERROR:  Overloaded function '%s' does not return same type.",
-		  sym_name.c_str()); 
-	  perror(tmpstr);
+    error("Overloaded function " + sym_name + "does not return same type", false);
 	  exit(EXIT_FAILURE);
 	}
 	// Function with this name already exists; return that
@@ -504,52 +499,63 @@ namespace SEAMS {
   void Aprepro::dumpsym (int type, bool doInternal) const
   {
     const char *comment = getsym("_C_")->value.svar;
+    int width = 10; // controls spacing/padding for the variable names
   
     if (type == Parser::token::VAR || type == Parser::token::SVAR || type == Parser::token::AVAR) {
-      printf ("\n%s   Variable    = Value\n", comment);
+      (*infoStream) << "\n" << comment << "   Variable    = Value" << std::endl;
+
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if ((doInternal && ptr->isInternal) || (!doInternal && !ptr->isInternal)) {
 	    if (ptr->type == Parser::token::VAR)
-	      printf ("%s  {%-10s\t= %.10g}\n", comment, ptr->name.c_str(), ptr->value.var);
+        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+                         "\t= " << std::setprecision(10) <<  ptr->value.var << "}" << std::endl;
 	    else if (ptr->type == Parser::token::IMMVAR)
-	      printf ("%s  {%-10s\t= %.10g}\t(immutable)\n", comment, ptr->name.c_str(), ptr->value.var);
-	    else if (ptr->type == Parser::token::SVAR)
-	      printf ("%s  {%-10s\t= \"%s\"}\n", comment, ptr->name.c_str(), ptr->value.svar);
+        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+                         "\t= " << std::setprecision(10) << ptr->value.var << "}\t(immutable)" << std::endl;
+      else if (ptr->type == Parser::token::SVAR)
+        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+                         "\t= \"" << ptr->value.svar << "\"}" << std::endl;
 	    else if (ptr->type == Parser::token::IMMSVAR)
-	      printf ("%s  {%-10s\t= \"%s\"}\t(immutable)\n", comment, ptr->name.c_str(), ptr->value.svar);
+        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+                         "\t= \"" << ptr->value.svar << "\"}\t(immutable)" << std::endl;
 	    else if (ptr->type == Parser::token::AVAR) {
 	      array *arr = ptr->value.avar;
-	      printf ("%s  {%-10s\t (array) rows = %d, cols = %d} \n",
-		      comment, ptr->name.c_str(), arr->rows, arr->cols);
+        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+                         "\t (array) rows = " << arr->rows << ", cols = " << arr->cols <<
+                         "} " << std::endl;
 	    }
 	  }
 	}
       }
     }
     else if (type == Parser::token::FNCT || type == Parser::token::SFNCT || type == Parser::token::AFNCT) {
-      printf ("\nFunctions returning double:\n");
+      (*infoStream) << "\nFunctions returning double:" << std::endl;
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if (ptr->type == Parser::token::FNCT) {
-	    printf ("%-20s:  %s\n", ptr->syntax.c_str(), ptr->info.c_str());
+      (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
+                       ":  " << ptr->info << std::endl;
 	  }
 	}
       }
-      printf ("\nFunctions returning string:\n");
+
+      (*infoStream) << "\nFunctions returning string:" << std::endl;
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if (ptr->type == Parser::token::SFNCT) {
-	    printf ("%-20s:  %s\n", ptr->syntax.c_str(), ptr->info.c_str());
+      (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
+                       ":  " << ptr->info << std::endl;
 	  }
 	}
       }
       
-      printf ("\nFunctions returning array:\n");
+      (*infoStream) << "\nFunctions returning array:" << std::endl;
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if (ptr->type == Parser::token::AFNCT) {
-	    printf ("%-20s:  %s\n", ptr->syntax.c_str(), ptr->info.c_str());
+      (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
+                       ":  " << ptr->info << std::endl;
 	  }
 	}
       }
