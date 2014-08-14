@@ -271,6 +271,10 @@ namespace SEAMS {
     void info(const std::string& msg,
               bool line_info=false, bool prefix=true) const;
 
+    // The info stream. To only print out info messages if the -M option was
+    // specified, use info(...) instead.
+    std::ostream *infoStream;
+
     void set_error_streams(std::ostream* error, std::ostream* warning,
                            std::ostream* info);
 
