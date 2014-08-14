@@ -35,7 +35,8 @@ namespace SEAMS {
     : lexer(NULL), sym_table(HASHSIZE),
       stringInteractive(false), stringScanner(NULL),
       errorStream(&std::cerr), warningStream(&std::cerr), infoStream(&std::cout),
-      stateImmutable(false), doLoopSubstitution(true), isCollectingLoop(false)
+      stateImmutable(false), doLoopSubstitution(true), doIncludeSubstitution(true),
+      isCollectingLoop(false)
   {
     ap_file_list.push(file_rec());
     init_table("#");

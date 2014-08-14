@@ -305,6 +305,11 @@ namespace SEAMS {
     // false, content within the loop will be treated as verbatim text.
     bool doLoopSubstitution;
 
+    // Flag to do Aprepro substitutions when including a file. Default value is true.
+    // If set to false, content within the file will be treated as verbatim text that
+    // needs to be sent through Aprepro again later.
+    bool doIncludeSubstitution;
+
     // Flag to inidicate whether Aprepro is in the middle of collecting lines for a
     // loop.
     bool isCollectingLoop;
