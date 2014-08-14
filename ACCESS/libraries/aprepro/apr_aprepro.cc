@@ -33,8 +33,8 @@ namespace SEAMS {
   Aprepro::Aprepro()
     : lexer(NULL), sym_table(HASHSIZE),
       stringInteractive(false), stringScanner(NULL),
-      errorStream(&std::cerr), warningStream(&std::cerr), infoStream(&std::cerr),
-      stateImmutable(false), doLoopSubstitution(true)
+      errorStream(&std::cerr), warningStream(&std::cerr), infoStream(&std::cout),
+      stateImmutable(false), doLoopSubstitution(true), isCollectingLoop(false)
   {
     ap_file_list.push(file_rec());
     init_table("#");
@@ -378,6 +378,9 @@ namespace SEAMS {
 	ap_options.include_file = file_or_path;
       }
     }
+    else if (option == "--keep_history" || option == "-k") {
+      ap_options.keep_history = true;
+    }
     else if (option == "--help" || option == "-h") {
       std::cerr << "\nAPREPRO PREPROCESSOR OPTIONS:\n"
 		<< "          --debug or -d: Dump all variables, debug loops/if/endif\n"
@@ -392,7 +395,8 @@ namespace SEAMS {
 		<< "           --help or -h: Print this list                         \n"
 		<< "        --message or -M: Print INFO messages                     \n"
 		<< "      --nowarning or -W: Do not print WARN messages              \n"
-		<< "      --copyright or -C: Print copyright message                 \n\n"
+    << "      --copyright or -C: Print copyright message                 \n"
+    << "   --keep_history or -k: Keep a history of aprepro substitutions.\n\n"
 	        << "\tUnits Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s\n"
 		<< "\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n"
 		<< "\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n\n"
@@ -618,5 +622,32 @@ namespace SEAMS {
       output = &std::cout;
     
     (*output) << "COPYRIGHT NOTICE\n";
+  }
+
+  void Aprepro::add_history(const std::string& original, const std::string& substitution)
+  {
+    if(!ap_options.keep_history)
+      return;
+
+    if(!original.empty())
+    {
+      history_data hist;
+      hist.original = original;
+      hist.substitution = substitution;
+      hist.index = outputStream.top()->tellp();
+
+      history.push_back(hist);
+    }
+  }
+
+  const std::vector<history_data>& Aprepro::get_history()
+  {
+    return history;
+  }
+
+  void Aprepro::clear_history()
+  {
+    if(ap_options.keep_history)
+      history.clear();
   }
 }
