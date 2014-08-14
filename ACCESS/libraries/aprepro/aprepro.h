@@ -131,6 +131,7 @@ namespace SEAMS {
     bool immutable;
     bool trace_parsing;    // enable debug output in the bison parser
     bool one_based_index;
+    bool keep_history;  // Flag to keep a history of Aprepro substitutions
     aprepro_options() :
       end_on_exit(false),
       warning_msg(true),
@@ -139,7 +140,8 @@ namespace SEAMS {
       interactive(false),
       immutable(false),
       trace_parsing(false),
-      one_based_index(false)
+      one_based_index(false),
+      keep_history(false)
     {}
   };
 
@@ -155,6 +157,14 @@ namespace SEAMS {
       : name(my_name), lineno(line_num), loop_count(loop_cnt), tmp_file(is_temp) {}
     file_rec()
       : name("STDIN"), lineno(0), loop_count(0), tmp_file(false) {}
+  };
+
+  /* Structure for holding aprepro substitution info */
+  struct history_data
+  {
+    std::string original;
+    std::string substitution;
+    std::streampos index; // Character index in the output where the substitution begins.
   };
 
   /** The Aprepro class brings together all components. It creates an instance of
@@ -280,7 +290,9 @@ namespace SEAMS {
     // For error handling
     std::ostream *errorStream;
     std::ostream *warningStream;
-    std::ostream *infoStream;
+
+    // For substitution history.
+    std::vector<history_data> history;
 
   public:
     bool stateImmutable;
@@ -288,6 +300,17 @@ namespace SEAMS {
     // Flag to do Aprepro substitutions within loops. Default value is true. If set to
     // false, content within the loop will be treated as verbatim text.
     bool doLoopSubstitution;
+
+    // Flag to inidicate whether Aprepro is in the middle of collecting lines for a
+    // loop.
+    bool isCollectingLoop;
+
+    // Record the substitution of the current Aprepro statement. This function will also
+    // reset the historyString and add an entry to the substitution map.
+    void add_history(const std::string& original, const std::string& substitution);
+
+    const std::vector<history_data> &get_history();
+    void clear_history();
   };
 
 } // namespace SEAMS

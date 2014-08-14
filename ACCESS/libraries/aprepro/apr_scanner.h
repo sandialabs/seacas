@@ -65,6 +65,9 @@ public:
 
     /* User arguments.  */
     class Aprepro& aprepro;
+
+    /* save the original string for substitution history */
+    void save_history_string();
 };
 
 } // namespace SEAMS
