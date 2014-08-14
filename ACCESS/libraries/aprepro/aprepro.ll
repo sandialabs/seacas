@@ -941,7 +941,7 @@ namespace SEAMS {
     tmp[len] = '\0';
 
     history_string = tmp;
-    delete tmp;
+    delete [] tmp;
     hist_start = 0;
   }
 }
