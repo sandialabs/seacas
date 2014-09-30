@@ -1,6 +1,6 @@
 /* 
  * Copyright 2007 Sandia Corporation. Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+ * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,22 +67,22 @@ int state_immutable = False;
 int nfile = 0;
 int echo = True;
 
-void initialize_options(aprepro_options *ap_options)
+void initialize_options(aprepro_options *ap_options_in)
 {
   /* Default value of comment character */
-  ap_options->comment = "$";
-  ap_options->include_path = NULL;
+  ap_options_in->comment = "$";
+  ap_options_in->include_path = NULL;
 
-  ap_options->end_on_exit = False;
-  ap_options->warning_msg = True;
-  ap_options->info_msg = False;
-  ap_options->copyright = False;
-  ap_options->quiet = False;
-  ap_options->debugging = False;
-  ap_options->statistics = False;
-  ap_options->interactive = False;
-  ap_options->immutable = False;
-  ap_options->one_based_index = False;
+  ap_options_in->end_on_exit = False;
+  ap_options_in->warning_msg = True;
+  ap_options_in->info_msg = False;
+  ap_options_in->copyright = False;
+  ap_options_in->quiet = False;
+  ap_options_in->debugging = False;
+  ap_options_in->statistics = False;
+  ap_options_in->interactive = False;
+  ap_options_in->immutable = False;
+  ap_options_in->one_based_index = False;
 }
 
 extern void add_input_file(char *filename);
@@ -358,7 +358,8 @@ usage (void)
    ECHO("--one_based_index or -1: Array indexing is one-based (default = zero-based)\n");
    ECHO("      --copyright or -C: Print copyright message                 \n");
    ECHO("          --quiet or -q: Do not output version info to stdout    \n");
-   ECHO("                var=val: Assign value 'val' to variable 'var'  \n\n");
+   ECHO("                var=val: Assign value 'val' to variable 'var'    \n");
+   ECHO("                         Use var=\\\"sval\\\" for a string variable\n\n");
    ECHO("\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n");
    ECHO("\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n");
    ECHO("\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n");
@@ -370,7 +371,7 @@ copyright_output (void)
 {
   ECHOC("%s -------------------------------------------------------------------------\n");
   ECHOC("%s Copyright 2007 Sandia Corporation. Under the terms of Contract\n");
-  ECHOC("%s DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement\n");
+  ECHOC("%s DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government\n");
   ECHOC("%s retains certain rights in this software.\n");
   ECHOC("%s\n");
   ECHOC("%s Redistribution and use in source and binary forms, with or without\n");

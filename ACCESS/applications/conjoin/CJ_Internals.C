@@ -42,10 +42,10 @@
 
 #include <CJ_Internals.h>
 
+extern "C" {
 #define NO_NETCDF_2
 #include <netcdf.h>
 #include <exodusII.h>
-extern "C" {
 #include <exodusII_int.h>
 }
 

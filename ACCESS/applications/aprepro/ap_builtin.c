@@ -1,6 +1,6 @@
 /* 
  * Copyright 2006 Sandia Corporation. Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+ * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -995,9 +995,9 @@ char *do_file_to_string(char *filename)
 
   assert(strlen(lines) <= size);
   NEWSTR(lines, ret_string);
+  fclose(fp);
   if (line) free(line);
   if (lines) free(lines);
-  fclose(fp);
   return ret_string;
 }
 
