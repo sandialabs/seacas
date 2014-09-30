@@ -62,8 +62,11 @@ namespace Iovs {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props) :
-                         Ioss::DatabaseIO (region, filename, db_usage, communicator, props)
-
+                         Ioss::DatabaseIO (region, filename, db_usage, communicator, props),
+                         isInput(false), singleProcOnly(false), doLogging(false),
+                         enableLogging(0), debugLevel(0), underscoreVectors(0),
+                         applyDisplacements(0), createSideSets(0), createNodeSets(0),
+                         nodeCount(0), elementCount(0), nodeBlockCount(0), elementBlockCount(0)
   {
 
     std::ostringstream errmsg;
@@ -926,35 +929,37 @@ namespace Iovs {
   {
     int64_t num_to_get = field.verify(data_size);
 
-    if(field.get_name() != "ids" && field.get_name() != "ids_raw")
-      return num_to_get;
-
-    int id = get_id(ns, EX_NODE_SET, &this->ids_);
-
-    if(this->createNodeSets == 0)
-      num_to_get = 0;
-
-    if (field.get_type() == Ioss::Field::INTEGER)
+    if( num_to_get > 0 &&
+       (field.get_name() == "ids" ||
+        field.get_name() == "ids_raw") )
       {
-      this->nodeMap.reverse_map_data(data, field, num_to_get);
-      if(this->pvcsa)
-        this->pvcsa->CreateNodeSet(ns->name().c_str(),
-                                   id,
-                                   num_to_get,
-                                   static_cast<int*>(data),
-                                   this->DBFilename.c_str());
-      }
-    else if (field.get_type() == Ioss::Field::INT64)
-      {
-      this->nodeMap.reverse_map_data(data, field, num_to_get);
-      if(this->pvcsa)
-        this->pvcsa->CreateNodeSet(ns->name().c_str(),
-                                   id,
-                                   num_to_get,
-                                   static_cast<int64_t*>(data),
-                                   this->DBFilename.c_str());
-      }
 
+      int id = get_id(ns, EX_NODE_SET, &this->ids_);
+
+      if(this->createNodeSets == 0)
+        num_to_get = 0;
+
+      if (field.get_type() == Ioss::Field::INTEGER)
+        {
+        this->nodeMap.reverse_map_data(data, field, num_to_get);
+        if(this->pvcsa)
+          this->pvcsa->CreateNodeSet(ns->name().c_str(),
+                                     id,
+                                     num_to_get,
+                                     static_cast<int*>(data),
+                                     this->DBFilename.c_str());
+        }
+      else if (field.get_type() == Ioss::Field::INT64)
+        {
+        this->nodeMap.reverse_map_data(data, field, num_to_get);
+        if(this->pvcsa)
+          this->pvcsa->CreateNodeSet(ns->name().c_str(),
+                                     id,
+                                     num_to_get,
+                                     static_cast<int64_t*>(data),
+                                     this->DBFilename.c_str());
+        }
+      }
     return num_to_get;
   }
 

@@ -57,7 +57,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  * For gcc or gcc2, define HasGcc or HasGcc2 to YES in site.def
  * For other compilers, define HasSunC to NO in site.def, then 
  *    provide appropriate values for the various compiler related
- *    configuration varibles used here.
+ *    configuration variables used here.
  * 
  * If you say you have the SunPro C compiler, we assume you have 
  * version 2.0.x of the compiler.  If you have version 3.0.x instead, 

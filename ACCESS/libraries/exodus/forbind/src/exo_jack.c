@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+ * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -427,7 +427,6 @@ F2C(exgqa,EXGQA) (int *idexo,
     *ierr = EX_FATAL;
     return;
   }
-
 
   /* Allocate space for the QA string ptr array */
   if (!(sptr = malloc((num_qa_records * alen + 1) * sizeof(char *)))) {
