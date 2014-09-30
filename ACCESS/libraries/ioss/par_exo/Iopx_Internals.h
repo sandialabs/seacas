@@ -328,7 +328,7 @@ namespace Iopx {
   class Mesh
   {
   public:
-    Mesh() :   dimensionality(0)
+    Mesh() : title(), dimensionality(0)
       {}
 
       Mesh(int dim, char* the_title)

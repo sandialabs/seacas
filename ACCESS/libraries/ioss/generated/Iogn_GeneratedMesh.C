@@ -682,7 +682,7 @@ namespace Iogn {
     }
   }
 
-  void GeneratedMesh::node_map(Int64Vector &map)
+  void GeneratedMesh::node_map(Int64Vector &map) const
   {
     int64_t count = node_count_proc();
     map.reserve(count);
@@ -692,7 +692,7 @@ namespace Iogn {
     }
   }
 
-  void GeneratedMesh::node_map(IntVector &map)
+  void GeneratedMesh::node_map(IntVector &map) const
   {
     int count = node_count_proc();
     map.resize(count);
@@ -1573,11 +1573,11 @@ namespace Iogn {
     }
     else {
       std::cerr << "ERROR: (Iogn::GeneratedMesh::set_variable_count)\n"
-		<< "       Unrecognized variable type '" << type << "'. Valid types are:\n"
-		<< "       global, element, nodal, nodeset, surface, sideset.\n";
+          << "       Unrecognized variable type '" << type << "'. Valid types are:\n"
+          << "       global, element, nodal, nodeset, surface, sideset.\n";
     }
   }
-  
+
   void GeneratedMesh::set_rotation(const std::string &axis, double angle_degrees)
   {
     // PI / 180. Used in converting angle in degrees to radians

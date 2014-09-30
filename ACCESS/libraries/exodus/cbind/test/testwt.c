@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+ * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -472,10 +472,6 @@ int main (int argc, char **argv)
 
    free (connect);
 
-
-   /* Add an attribute to block 1 */
-   ex_add_attr(exoid, EX_ELEM_BLOCK, blocks[0].id, 1);
-   
    /* write element block attributes */
    attrib[0] = 3.14159;
    error = ex_put_attr (exoid, EX_ELEM_BLOCK, blocks[0].id, attrib);
