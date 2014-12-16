@@ -617,6 +617,16 @@ int ex_cvt_nodes_to_sides(int exoid,
 	if (elem <= elem_blk_parms[j].elem_ctr) break;
       }
 
+      if (j >= num_elem_blks) {
+	exerrval = EX_INTERNAL;
+	sprintf(errmsg,
+		"Error: internal logic error for file id %d",
+		exoid);
+	ex_err("ex_cvt_nodes_to_sides",errmsg,exerrval);
+	err_stat = EX_FATAL;
+	goto cleanup;
+      }
+      
       if (i==0) {
 	el_type = elem_blk_parms[j].elem_type_val;
       }
@@ -642,10 +652,20 @@ int ex_cvt_nodes_to_sides(int exoid,
 
       for (j=0; j<num_elem_blks; j++) {
 	if (elem <= elem_blk_parms[j].elem_ctr) {
-	  ((int64_t*)ss_parm_ndx)[i] = j;     /* assign parameter block index */
 	  break;
 	}
       }
+      if (j >= num_elem_blks) {
+	exerrval = EX_INTERNAL;
+	sprintf(errmsg,
+		"Error: internal logic error for file id %d",
+		exoid);
+	ex_err("ex_cvt_nodes_to_sides",errmsg,exerrval);
+	err_stat = EX_FATAL;
+	goto cleanup;
+      }
+
+      ((int64_t*)ss_parm_ndx)[i] = j;     /* assign parameter block index */
       ((int64_t*)ss_elem_node_ndx)[i] = node_ctr;     /* assign node list index */
 
       /* determine which side set this element is in; assign to kth side set */
@@ -673,6 +693,16 @@ int ex_cvt_nodes_to_sides(int exoid,
 	if (elem <= elem_blk_parms[j].elem_ctr) break;
       }
 
+      if (j >= num_elem_blks) {
+	exerrval = EX_INTERNAL;
+	sprintf(errmsg,
+		"Error: internal logic error for file id %d",
+		exoid);
+	ex_err("ex_cvt_nodes_to_sides",errmsg,exerrval);
+	err_stat = EX_FATAL;
+	goto cleanup;
+      }
+
       if (i==0) {
 	el_type = elem_blk_parms[j].elem_type_val;
       }
@@ -697,12 +727,21 @@ int ex_cvt_nodes_to_sides(int exoid,
       int elem = ((int*)side_sets_elem_list)[i];
 
       for (j=0; j<num_elem_blks; j++) {
-	if (elem <= elem_blk_parms[j].elem_ctr)
-	  {
-	    ((int*)ss_parm_ndx)[i] = j;     /* assign parameter block index */
-	    break;
-	  }
+	if (elem <= elem_blk_parms[j].elem_ctr) {
+	  break;
+	}
       }
+      if (j >= num_elem_blks) {
+	exerrval = EX_INTERNAL;
+	sprintf(errmsg,
+		"Error: internal logic error for file id %d",
+		exoid);
+	ex_err("ex_cvt_nodes_to_sides",errmsg,exerrval);
+	err_stat = EX_FATAL;
+	goto cleanup;
+      }
+
+      ((int*)ss_parm_ndx)[i] = j;     /* assign parameter block index */
       ((int*)ss_elem_node_ndx)[i] = node_ctr;     /* assign node list index */
 
       /* determine which side set this element is in; assign to kth side set */
@@ -789,6 +828,16 @@ int ex_cvt_nodes_to_sides(int exoid,
 	  locate the node position in the element. The first node position
 	  and the second node position are used with a element type specific
 	  table to determine the side. */
+
+      if (connect == NULL) {
+	sprintf(errmsg,
+		"Error: logic error. Connect pointer is null for elem blk %"PRId64" for file id %d",
+		elem_blk_parms[p_ndx].elem_blk_id,
+		exoid);
+	ex_err("ex_cvt_nodes_to_sides",errmsg,exerrval);
+	err_stat = EX_FATAL;
+	goto cleanup;
+      }
 
       /* calculate the relative element number position in it's block*/
       elem_num_pos = elem_num -

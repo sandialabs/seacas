@@ -128,9 +128,9 @@ function execute_loadbalance {
     NEM_SLICE=$5
     input=$6
 
-    output=$basename.decomp.out
-    error=$basename.decomp.err
-    nemesis=$basename.nem
+    output=$basename.$suffix_mesh.decomp.out
+    error=$basename.$suffix_mesh.decomp.err
+    nemesis=$basename.$suffix_mesh.nem
     genesis=$basename.$suffix_mesh
 
     # Check for valid executable...
@@ -185,12 +185,12 @@ function execute_spread {
     numproc=$4
     NEM_SPREAD=$5
 
-    output=$basename.decomp.out
-    error=$basename.decomp.err
-    nemesis=$basename.nem
+    output=$basename.$suffix_mesh.decomp.out
+    error=$basename.$suffix_mesh.decomp.err
+    nemesis=$basename.$suffix_mesh.nem
     genesis=$basename.$suffix_mesh
 
-    pexsh=$basename.pex
+    pexsh=$basename.$suffix_mesh.pex
 
     # Check for valid executable...
     if [ ! -x $NEM_SPREAD ]
@@ -221,8 +221,13 @@ function execute_spread {
     
     echo "Input FEM file                   = $genesis"                  >  $pexsh
     echo "LB file                          = $nemesis"                  >> $pexsh
+    echo "Parallel Results File Base Name  = $basename"                 >> $pexsh
     echo "File Extension for Spread Files  = .$suffix_spread"           >> $pexsh
     echo "Number of Processors             = $numproc "                 >> $pexsh
+    if [ "$debug_level" != "0" ]
+    then
+    echo "Debug                            = $debug_level"              >> $pexsh
+    fi
     echo "------------------------------------------------------------" >> $pexsh
     echo "                Parallel I/O section"                         >> $pexsh
     echo "------------------------------------------------------------" >> $pexsh
@@ -256,6 +261,7 @@ txtrst=$(tput sgr0)       # Text reset
 
 basename=''
 processors=''
+debug_level='0'
 decomp_method="-l inertial"
 nem_slice_flag="-c"
 rootdir="`pwd`/"
@@ -284,10 +290,10 @@ fi
 ########################################################################
 # decomp options:
 if [ $OLDGETOPT -eq 1 ] ; then
-   TEMP=`getopt Hhn:i:o:p:j:r:R:S:sl: $*`
+   TEMP=`getopt Hhn:i:o:p:j:r:R:S:sl:vd: $*`
 else
-   TEMP=`getopt -o Hhn:i:o:p:j:r:R:S:sl: -a \
-       --long input:,help,nem_slice_flag,processors:,rootdir:,subdir:,spheres_linear \
+   TEMP=`getopt -o Hhn:i:o:p:j:r:R:S:sl:vd: -a \
+       --long input:,help,nem_slice_flag,processors:,rootdir:,subdir:,spheres_linear,verbose,debug: \
        --long multikl,rcb,rcb_ignore_z,rib,hsfc,spectral,inertial,linear,random,scattered,brick,zpinch \
        -n 'decomp' -- "$@"`
 fi
@@ -302,6 +308,10 @@ while true ; do
 	      usage ; shift ;;
 	    -H|--help)
 	      usage_new ; shift ;;
+	    -v|--verbose)
+	      set -x ; shift ;;
+	    -d|--debug)
+	      debug_level="$2" ; shift 2 ;;
 	    -n|--nem_slice_flag)
 	      nem_slice_flag="$2" ; shift 2 ;;
 	    -i|--input)
