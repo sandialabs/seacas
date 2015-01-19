@@ -210,10 +210,7 @@ int ex_open_int (const char  *path,
 #endif
 	  {
 	    /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
-	    if (status == 0)
-	      exerrval = EX_FATAL;
-	    else
-	      exerrval = status;
+	    exerrval = status;
 	    sprintf(errmsg,"Error: failed to open %s write only",path);
 	    ex_err("ex_open",errmsg,exerrval); 
 	    return(EX_FATAL);
