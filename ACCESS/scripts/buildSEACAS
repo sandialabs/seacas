@@ -551,10 +551,10 @@ ExecuteCommand "make Makefiles" "makeTPLMakefiles.log" \
 
 DoMakeTPLs() {
 if [ "$DefaultParallel" = "1" ]; then
-   ExecuteCommand "make TPLs" "makeTPLs.log" "$DefaultAccessRootDir/TPL" "" \
+   ExecuteCommand "make -j8 TPLs" "makeTPLs.log" "$DefaultAccessRootDir/TPL" "" \
                   "with 'make parallelsetup'"
 else
-   ExecuteCommand "make TPLs" "makeTPLs.log" "$DefaultAccessRootDir/TPL" "" \
+   ExecuteCommand "make -j8 TPLs" "makeTPLs.log" "$DefaultAccessRootDir/TPL" "" \
                   "with 'make Makefiles'"
 fi
 }
@@ -627,7 +627,7 @@ ExecuteCommand "make scripts" "makescripts.log" \
 # Making all SEACAS codes:
 
 DoMakeAll() {
-ExecuteCommand "make all" "makeall.log" \
+ExecuteCommand "make -j8 all" "makeall.log" \
                "$DefaultAccessRootDir/ACCESS" "" \
                "with 'make install' in $DefaultAccessRootDir/ACCESS"
 }
