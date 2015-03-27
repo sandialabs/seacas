@@ -32,64 +32,56 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
 C=======================================================================
-      SUBROUTINE DBIST1 (NDB, NVARNP, NUMNP, VARNP, IVAR, *)
+      SUBROUTINE DBINM1 (NDB, OPTION, NELBLK, NVAREL, ISEVOK, IEVOK,
+     &   IERR, NELBDM, *)
 C=======================================================================
-C$Id: dbist1.f,v 1.2 1998/05/20 17:47:55 gdsjaar Exp $
-C$Log: dbist1.f,v $
-CRevision 1.2  1998/05/20 17:47:55  gdsjaar
-CRemoved several unused files that were being compiled and linked in
-Cbut never called.
-C
-CCleaned up main routine output a little
-C
-CUpped max qa and info records to 500
-C
-CAdded output of current memory use if there is memory (SUPES) failure.
-C
-CUpped version number.
-C
-CRevision 1.1.1.1  1994/01/24 23:00:53  vryarbe
-CInitial check-in using ExodusII V 2.00
-C
-c Revision 1.2  1992/04/08  21:13:21  gdsjaar
-c Fixed problem with singly accessing doubly dimensioned array
-c Added params to dbist2 and dbist1 so error messages would print
-c
-c Revision 1.1.1.1  1990/08/14  16:12:59  gdsjaar
-c Testing
-c
-c Revision 1.1  90/08/14  16:12:58  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:12  gdsjaar
-c Initial revision
-c 
-
-C   --*** DBIST1 *** (EXOLIB) Internal to DBISTE, Read nodal variables 
-C   --   Written by Greg Sjaardema 8/8/90, to remove MAX from dimensions
+C   --*** DBINM1 *** (EXOLIB) Internal to DBINAM
 C   --
-C   --DBIST1 reads the database nodal variables for one time step.
+C   --DBINM1 reads the element block variable truth table.
 C   --
 C   --Parameters:
 C   --   NDB - IN - the database number
-C   --   NVARNP - IN - the number of nodal variables
-C   --   NUMNP - IN - the number of nodes
-C   --   VARNP - OUT - the nodal variables for the time step (if OPTION)
-C   --   IVAR  - OUT - the nodal variable number if error on read.
+C   --   OPTION - IN - ' ' to not store, '*' to store all, else store options:
+C   --      'T' to store element block variable truth table
+C   --   NELBLK - IN - the number of element blocks
+C   --   NVAREL - IN - the number of element variables
+C   --   ISEVOK - OUT - the element block variable truth table;
+C   --      variable i of block j exists iff ISEVOK(j,i)
+C   --   IEVOK - OUT - the element block variable truth table;
+C   --      variable i of block j exists iff ISEVOK(j,i) is NOT 0
+C   --   IERR - OUT - the returned read error flag
 C   --   * - return statement if error encountered, including end-of-file;
-C   --      message is printed
+C   --      NO message is printed
 C   --
-      INTEGER NDB
-      INTEGER NVARNP, NUMNP
-      REAL VARNP(*)
+C   --Database must be positioned in front of truth table upon entry;
+C   --upon exit positioned after table.
 
-      iov = 0
-      DO 100 IVAR = 1, NVARNP
-         READ (NDB, END=190, ERR=190, IOSTAT=IERR)
-     &        (VARNP(iov+INP), INP=1,NUMNP)
-         iov = iov+numnp
-  100 CONTINUE
+      INTEGER NDB
+      CHARACTER*(*) OPTION
+      INTEGER NELBLK, NVAREL
+c      LOGICAL ISEVOK(nvarel,*)
+      integer ISEVOK(nvarel,*)
+      INTEGER IEVOK(nvarel,*)
+      INTEGER IERR
+
+      IF ((OPTION .EQ. '*') .OR. (INDEX (OPTION, 'T') .GT. 0)) THEN
+         READ (NDB, END=120, ERR=120, IOSTAT=IERR)
+     &      ((IEVOK(i,IELB), I=1,NVAREL), IELB=1,NELBLK)
+
+         DO 110 IELB = 1, NELBLK
+           DO 100 I = 1, NVAREL
+               if (ievok(i,ielb) .ne. 0) then
+                  isevok(i,ielb) = 1
+               endif
+c               ISEVOK(i,IELB) = (IEVOK(i, IELB) .NE. 0)
+  100       CONTINUE
+  110    CONTINUE
+      ELSE
+         READ (NDB, END=120, ERR=120, IOSTAT=IERR)
+      END IF
+
       RETURN
-  190 CONTINUE
+
+  120 CONTINUE
       RETURN 1
       END

@@ -1,6 +1,0 @@
-#!/bin/csh
-setenv FOR011 ../../data/pullout.exo
-setenv FOR020 pullout.exoII
-./exo1exo2.exe
-echo "diff ... "
-ncdump -d7 pullout.exoII|diff - ../../data/pullout.dmp

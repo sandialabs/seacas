@@ -34,32 +34,7 @@ C
 C=======================================================================
       SUBROUTINE DBIV0 (NQAREC, NINFO)
 C=======================================================================
-C$Id: dbiv0.f,v 1.2 1994/02/11 22:52:28 vryarbe Exp $
-C$Log: dbiv0.f,v $
-CRevision 1.2  1994/02/11 22:52:28  vryarbe
-Cfixed bug causing compiler error w/optimize flag
-C
-c Revision 1.1.1.1  1994/01/24  23:00:54  vryarbe
-c Initial check-in using ExodusII V 2.00
-c
-c Revision 1.3  1990/11/30  09:50:53  gdsjaar
-c Modified to work on Unicos
-c
-c Revision 1.2  90/10/11  16:47:17  gdsjaar
-c Fixed problem with singly/doubly dimensioned array
-c 
-c Revision 1.1.1.1  90/08/14  16:13:11  gdsjaar
-c Testing
-c 
-c Revision 1.1  90/08/14  16:13:09  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:13  gdsjaar
-c Initial revision
-c 
-
 C   --*** DBIV0 *** (EXOLIB) Initialize for DBIVAR
-C   --   Written by Amy Gilkey - revised 11/04/87
 C   --
 C   --DBIV0 and DBIV1 initialize for the DBIVAR routine.
 C   --

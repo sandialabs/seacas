@@ -36,30 +36,7 @@ C=======================================================================
      &   NVARHI, NVARGL, NVARNP, NUMNP, NVAREL, NELBLK, NUMELB, ISEVOK,
      &   TIME, WHOTIM, VARHI, VARGL, VARNP, VAREL, *)
 C=======================================================================
-C$Id: dbiste.f,v 1.1 1994/01/24 23:00:53 vryarbe Exp $
-C$Log: dbiste.f,v $
-CRevision 1.1  1994/01/24 23:00:53  vryarbe
-CInitial revision
-C
-c Revision 1.4  1992/04/08  21:13:20  gdsjaar
-c Fixed problem with singly accessing doubly dimensioned array
-c Added params to dbist2 and dbist1 so error messages would print
-c
-c Revision 1.3  1990/11/30  09:50:52  gdsjaar
-c Modified to work on Unicos
-c
-c Revision 1.1.1.1  90/08/14  16:13:04  gdsjaar
-c Testing
-c 
-c Revision 1.1  90/08/14  16:13:03  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:12  gdsjaar
-c Initial revision
-c 
-
 C   --*** DBISTE *** (EXOLIB) Read database variables for one time step
-C   --   Written by Amy Gilkey - revised 10/14/87
 C   --
 C   --DBISTE reads the database global, nodal, and element variables
 C   --for one time step.

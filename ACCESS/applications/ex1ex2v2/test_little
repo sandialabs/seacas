@@ -1,7 +1,0 @@
-#!/bin/csh
-setenv FOR025 8
-setenv FOR011 ../../data/little.exo
-setenv FOR020 little.exoII
-./exo1exo2.exe
-echo "diff ..."
-ncdump -d7 little.exoII|diff - ../../data/little.dmp
