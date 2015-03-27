@@ -136,9 +136,11 @@ void Exo_Entity::initialize(int file_id, size_t id)
   internal_load_params();
 }
 
-bool Exo_Entity::is_valid_var(size_t var_index) const
+bool Exo_Entity::is_valid_var(int var_index) const
 {
-  SMART_ASSERT((int)var_index < numVars);
+  if (var_index < 0 || var_index >= numVars)
+    return false;
+  
   if (truth_ == NULL) {
     get_truth_table();
   }
@@ -152,7 +154,11 @@ string Exo_Entity::Load_Results(int time_step, int var_index)
   
   if (fileId < 0) return "ERROR:  Invalid file id!";
   if (id_ == EX_INVALID_ID) return "ERROR:  Must initialize block parameters first!";
-  SMART_ASSERT(var_index >= 0 && var_index < numVars);
+  if (var_index < 0 || var_index >= numVars) {
+    std::cout << "Exo_Entity::Load_Results()  ERROR: var_index is invalid. "
+	      << "Aborting..." << std::endl;
+    exit(1);
+  }
   SMART_ASSERT(time_step >= 1 && time_step <= (int)get_num_timesteps(fileId));
   
   if (time_step != currentStep) {
@@ -268,9 +274,13 @@ string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_index
 const double* Exo_Entity::Get_Results(int var_index) const
 {
   SMART_ASSERT(Check_State());
-  if (currentStep == 0) return 0;
+  if (currentStep == 0) return NULL;
   SMART_ASSERT(var_index >= 0 && var_index < numVars);
-  return results_[var_index];
+  if (var_index >= 0 && var_index < numVars) {
+    return results_[var_index];
+  } else {
+    return NULL;
+  }
 }
 
 void Exo_Entity::Free_Results()
