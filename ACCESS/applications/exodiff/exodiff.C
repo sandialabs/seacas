@@ -168,10 +168,10 @@ void Print_Banner(const char *prefix)
 
   template <typename INT>
   const double *get_nodal_values( ExoII_Read<INT> &filen, int time_step,
-				  size_t idx, size_t fno, const string &name, bool *diff_flag );
+				  int idx, size_t fno, const string &name, bool *diff_flag );
   template <typename INT>
   const double *get_nodal_values( ExoII_Read<INT> &filen, const TimeInterp &t,
-				  size_t idx, size_t fno, const string &name, bool *diff_flag );
+				  int idx, size_t fno, const string &name, bool *diff_flag );
 
   template <typename INT>
   void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, TimeInterp t2, int out_file_id, 
@@ -346,7 +346,7 @@ namespace {
     checking_invalid = false;
     invalid_data = false;
   
-    if (sigfillset(&(sigact.sa_mask)) == -1) perror("sigfillset failed");
+    sigfillset(&(sigact.sa_mask));
     sigact.sa_handler = floating_point_exception_handler;
     if (sigaction(SIGFPE, &sigact, 0) == -1) perror("sigaction failed");
 #if defined(LINUX) && defined(GNU)
@@ -1062,11 +1062,11 @@ namespace {
   }
 
   template <typename INT>
-  const double *get_nodal_values(ExoII_Read<INT> &filen, int time_step, size_t idx,
+  const double *get_nodal_values(ExoII_Read<INT> &filen, int time_step, int idx,
 				 int fno, const string &name, bool *diff_flag)
     {
       const double *vals = NULL;
-      if (fno == 1 || !interface.summary_flag) {
+      if (idx >= 0 && (fno == 1 || !interface.summary_flag)) {
 	filen.Load_Nodal_Results(time_step, idx);
 	vals = filen.Get_Nodal_Results(idx);
     
@@ -1082,11 +1082,11 @@ namespace {
     }
 
   template <typename INT>
-  const double *get_nodal_values(ExoII_Read<INT> &filen, const TimeInterp &t, size_t idx,
+  const double *get_nodal_values(ExoII_Read<INT> &filen, const TimeInterp &t, int idx,
 				 int fno, const string &name, bool *diff_flag)
     {
       const double *vals = NULL;
-      if (fno == 1 || !interface.summary_flag) {
+      if (idx >= 0 && (fno == 1 || !interface.summary_flag)) {
 	vals = filen.Get_Nodal_Results(t.step1, t.step2, t.proportion, idx);
     
 	if (vals != NULL) {
@@ -1148,7 +1148,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     // Global variables.
     file1.Load_Global_Results(step1);
     const double* vals1 = file1.Get_Global_Results();
-    const double* vals2 = 0;
+    const double* vals2 = NULL;
     if (!interface.summary_flag) {
       file2.Load_Global_Results(t2.step1, t2.step2, t2.proportion);
       vals2 = file2.Get_Global_Results();
@@ -1602,7 +1602,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	}
 
 	double v2 = 0;
-	double* vals2 = 0;
+	double* vals2 = NULL;
 	if (!interface.summary_flag) {
 	  // Without mapping, get result for this nset
 	  nset2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
@@ -1764,7 +1764,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	}
 
 	double v2 = 0;
-	double* vals2 = 0;
+	double* vals2 = NULL;
 	if (!interface.summary_flag) {
 	  sset2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
 	  vals2 = (double*)sset2->Get_Results(vidx2);

@@ -70,7 +70,7 @@ class Exo_Entity {
   
   void initialize(int file_id, size_t id);
 
-  bool          is_valid_var(size_t var_index) const;
+  bool          is_valid_var(int var_index) const;
   size_t        var_count() const {return numVars;}
   std::string   Load_Results(int time_step_num, int var_index);
   std::string   Load_Results(int t1, int t2, double proportion, int var_index); // Interpolation
