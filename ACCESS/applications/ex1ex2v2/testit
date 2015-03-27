@@ -1,6 +1,0 @@
-#!/bin/csh
-#
-setenv FOR025 "$2"
-./exo1exo2 ../../data/$1.exo $1.exoII
-echo "diff ... "
-ncdump -d7 $1.exoII|diff - ../../data/$1.dmp

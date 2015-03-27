@@ -35,7 +35,6 @@ C
      &     varel, idelb, isevok, ierr)
 C======================================================================
 C -- *** PUTEV *** Put Element Variables in regular netCDF file
-C --     Written by Lynn Clements (RE/SPEC) - 4/14/92
 C --
 C --PUTEV calls the exodus II interface routine that writes the
 C --      element variable values into the regular netCDF file.

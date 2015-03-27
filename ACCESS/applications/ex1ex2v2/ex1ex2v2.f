@@ -36,9 +36,6 @@ C=======================================================================
 C=======================================================================
 
 C   --*** EX1EX2V2 *** EXODUS I to EXODUS II translator
-C   --   Written by Lynn Clements  
-C        12/22/93 - V.R. Yarberry
-C	 Updated to EXODUS II V 2.0 specs
 C   --
 C   --EX1EX2V2 reads EXODUS I database and writes an EXODUS II V2.03 database 
 C   --
