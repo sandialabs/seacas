@@ -1,7 +1,0 @@
-#!/bin/csh
-setenv FOR025 4
-setenv FOR011 ../../data/sph.exo
-setenv FOR020 sph.exoII
-./exo1exo2.exe
-echo "diff ... "
-ncdump -d7 sph.exoII|diff - ../../data/sph.dmp

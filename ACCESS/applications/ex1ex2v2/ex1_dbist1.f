@@ -32,68 +32,32 @@ C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
 C=======================================================================
-      SUBROUTINE DBIST2 (NDB, NVAREL,  NELBLK, NELBDM, ISEVOK,
-     $     VAREL, NUMELB, IVAR, IELB, *)
+      SUBROUTINE DBIST1 (NDB, NVARNP, NUMNP, VARNP, IVAR, *)
 C=======================================================================
-C$Id: dbist2.f,v 1.1 1994/01/24 23:00:53 vryarbe Exp $
-C$Log: dbist2.f,v $
-CRevision 1.1  1994/01/24 23:00:53  vryarbe
-CInitial revision
-C
-c Revision 1.4  1992/04/08  21:13:22  gdsjaar
-c Fixed problem with singly accessing doubly dimensioned array
-c Added params to dbist2 and dbist1 so error messages would print
-c
-c Revision 1.3  1990/11/30  09:50:50  gdsjaar
-c Modified to work on Unicos
-c
-c Revision 1.1.1.1  90/08/14  16:13:01  gdsjaar
-c Testing
-c 
-c Revision 1.1  90/08/14  16:13:00  gdsjaar
-c Initial revision
-c 
-c Revision 1.1  90/08/09  13:39:12  gdsjaar
-c Initial revision
-c 
-
-C   --*** DBIST2 *** (EXOLIB) Internal to DBISTE, Read element variables 
-C   --   Written by Greg Sjaardema 8/8/90, to remove MAX from dimensions
+C   --*** DBIST1 *** (EXOLIB) Internal to DBISTE, Read nodal variables 
 C   --
-C   --DBIST2 reads the database element variables for one time step.
+C   --DBIST1 reads the database nodal variables for one time step.
 C   --
 C   --Parameters:
 C   --   NDB - IN - the database number
-C   --   NVAREL - IN - the number of element variables
-C   --   NVARDM - IN - the row dimension of VAREL
-C   --   NELBLK - IN - the number of element blocks
-C   --   NELBDM - IN - the row dimension of ISEVOK
-C   --   ISEVOK - IN - the element block variable truth table;
-C   --      variable i of block j exists iff ISEVOK(j,i)
-C   --   VAREL - OUT - the element variables for the time step (if OPTION)
+C   --   NVARNP - IN - the number of nodal variables
+C   --   NUMNP - IN - the number of nodes
+C   --   VARNP - OUT - the nodal variables for the time step (if OPTION)
 C   --   IVAR  - OUT - the nodal variable number if error on read.
-C   --   IELB  - OUT - the element block number if error on read.
 C   --   * - return statement if error encountered, including end-of-file;
 C   --      message is printed
 C   --
       INTEGER NDB
-      INTEGER NVAREL, NELBLK, NELBDM
-      INTEGER NUMELB(*)
-c      LOGICAL ISEVOK(nvarel,*)
-      integer ISEVOK(nvarel,*)
-      REAL VAREL(*)
+      INTEGER NVARNP, NUMNP
+      REAL VARNP(*)
 
-      IELo = 0
-      DO 130 IELB = 1, NELBLK
-         DO 120 IVAR = 1, NVAREL
-            IF (ISEVOK(IVAR,IELB) .ne. 0) THEN
-               READ (NDB, END=200, ERR=200, IOSTAT=IERR)
-     &              (VAREL(IELo+N), N=1,NUMELB(IELB))
-               ielo=ielo+numelb(ielb)
-            END IF
-  120    CONTINUE
-  130 CONTINUE
+      iov = 0
+      DO 100 IVAR = 1, NVARNP
+         READ (NDB, END=190, ERR=190, IOSTAT=IERR)
+     &        (VARNP(iov+INP), INP=1,NUMNP)
+         iov = iov+numnp
+  100 CONTINUE
       RETURN
-  200 CONTINUE
+  190 CONTINUE
       RETURN 1
       END
