@@ -8,7 +8,7 @@ XCOMM site.def file for SNL ACCESS System
  * i.e., the directory where you untarred the files and which should
  * now have a subdirectory named 'ACCESS'
  */
-#define AccessRoot /Users/gdsjaar/src/SEACAS-SF
+#define AccessRoot /Users/gdsjaar/src/seacas.git
 
 /* Uncomment the line below and change '_developer' to a valid 
  * group name on your system if you want the files accessible 

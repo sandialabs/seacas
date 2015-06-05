@@ -46,7 +46,7 @@
 #  define ST_ZU   "%lu"
 #endif
 
-#include <math.h>
+#include <cmath>
 #include <time.h>
 #include <iostream>
 #include <fstream>
@@ -168,10 +168,10 @@ void Print_Banner(const char *prefix)
 
   template <typename INT>
   const double *get_nodal_values( ExoII_Read<INT> &filen, int time_step,
-				  int idx, size_t fno, const string &name, bool *diff_flag );
+				  size_t idx, size_t fno, const string &name, bool *diff_flag );
   template <typename INT>
   const double *get_nodal_values( ExoII_Read<INT> &filen, const TimeInterp &t,
-				  int idx, size_t fno, const string &name, bool *diff_flag );
+				  size_t idx, size_t fno, const string &name, bool *diff_flag );
 
   template <typename INT>
   void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, TimeInterp t2, int out_file_id, 
@@ -208,6 +208,9 @@ void Print_Banner(const char *prefix)
   bool diff_sideset( ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int step1, TimeInterp step2,
 		     int out_file_id, const INT *id_map, std::vector<MinMaxData>  &mm_ss,
 		     double *vals );
+
+  template <typename INT>
+  bool diff_sideset_df(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, const INT *id_map);
 
   template <typename INT>
   void output_summary( ExoII_Read<INT>& file1, MinMaxData &mm_time,
@@ -621,6 +624,12 @@ namespace {
 	diff_flag = true;
     }
 
+    // Diff sideset distribution factors...
+    if (!interface.ignore_sideset_df && !interface.summary_flag) {
+      if (diff_sideset_df(file1, file2, elem_id_map))
+	diff_flag = true;
+    }
+
     int min_num_times = file1.Num_Times();
   
     MinMaxData mm_time;   mm_time.type = MinMaxData::mm_time;
@@ -1019,14 +1028,6 @@ namespace {
     return 0;
   }
 
-#if defined(__APPLE__) && !defined(isnan)
-  /* for Mac OSX 10, this isnan function may need to be manually declared;
-   * however, on some g++ versions, isnan is a macro so it doesn't need
-   * to be manually declared...
-   */
-  extern "C" int isnan(double value);
-#endif
-
   bool Invalid_Values(const double *values, size_t count)
   {
     bool valid = true;
@@ -1038,12 +1039,10 @@ namespace {
     
     
       for (size_t i=0; i < count; i++) {
-#if (defined(__GNUC__) && (__GNUC__ == 2 && __GNUC_MINOR__ == 96)) || (defined(linux) && __PGI) || (defined(linux) && __INTEL_COMPILER)
-	if (__isnan(values[i]))
-#elif defined(interix)
+#if defined(interix)
 	  if (values[i] != values[i]) 
 #else
-	    if (isnan(values[i]))
+	    if (std::isnan(values[i]))
 #endif
 	      {
 		valid = false;
@@ -1062,7 +1061,7 @@ namespace {
   }
 
   template <typename INT>
-  const double *get_nodal_values(ExoII_Read<INT> &filen, int time_step, int idx,
+  const double *get_nodal_values(ExoII_Read<INT> &filen, int time_step, size_t idx,
 				 int fno, const string &name, bool *diff_flag)
     {
       const double *vals = NULL;
@@ -1082,7 +1081,7 @@ namespace {
     }
 
   template <typename INT>
-  const double *get_nodal_values(ExoII_Read<INT> &filen, const TimeInterp &t, int idx,
+  const double *get_nodal_values(ExoII_Read<INT> &filen, const TimeInterp &t, size_t idx,
 				 int fno, const string &name, bool *diff_flag)
     {
       const double *vals = NULL;
@@ -1408,8 +1407,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	Exo_Block<INT>* eblock2 = NULL;
 	int b2 = b;
 	if (elmt_map == 0 && !interface.summary_flag) {
-	  size_t id = eblock1->Id();
-	  eblock2 = file2.Get_Elmt_Block_by_Id(id);
+	  if (interface.by_name)
+	    eblock2 = file2.Get_Elmt_Block_by_Name(eblock1->Name());
+	  else
+	    eblock2 = file2.Get_Elmt_Block_by_Id(eblock1->Id());
+	    
 	  SMART_ASSERT(eblock2 != NULL);
 	  if (!eblock2->is_valid_var(vidx2)) {
 	    continue;
@@ -1434,7 +1436,10 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	if (elmt_map == 0 && !interface.summary_flag) {
 	  // Without mapping, get result for this block.
 	  size_t id = eblock1->Id();
-	  eblock2 = file2.Get_Elmt_Block_by_Id(id);
+	  if (interface.by_name)
+	    eblock2 = file2.Get_Elmt_Block_by_Name(eblock1->Name());
+	  else
+	    eblock2 = file2.Get_Elmt_Block_by_Id(id);
 	  eblock2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
 	  vals2 = eblock2->Get_Results(vidx2);
 
@@ -1583,9 +1588,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	Node_Set<INT>* nset2 = NULL;
 	if (!interface.summary_flag) {
 	  size_t id = nset1->Id();
-	  nset2 = file2.Get_Node_Set_by_Id(id);
+	  if (interface.by_name)
+	    nset2 = file2.Get_Node_Set_by_Name(nset1->Name());
+	  else
+	    nset2 = file2.Get_Node_Set_by_Id(id);
 	  SMART_ASSERT(nset2 != NULL);
-	  SMART_ASSERT(nset2->Id() == nset1->Id());
 	  if (!nset2->is_valid_var(vidx2)) continue;
 	}
         
@@ -1746,8 +1753,10 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 
 	Side_Set<INT>* sset2 = NULL;
 	if (!interface.summary_flag) {
-	  size_t id = sset1->Id();
-	  sset2 = file2.Get_Side_Set_by_Id(id);
+	  if (interface.by_name)
+	    sset2 = file2.Get_Side_Set_by_Name(sset1->Name());
+	  else
+	    sset2 = file2.Get_Side_Set_by_Id(sset1->Id());
 	  if (sset2 == NULL || !sset2->is_valid_var(vidx2)) continue;
 	}
         
@@ -1873,6 +1882,122 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
   }
 
 template <typename INT>
+bool diff_sideset_df(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, const INT *id_map)
+{
+  string serr;
+  bool diff_flag = false;
+  
+  std::string name = "Distribution Factors";
+  int name_length = name.length();
+      
+  if (!interface.quiet_flag)
+    std::cout << "Sideset Distribution Factors:" << std::endl;
+    
+  DiffData max_diff;
+  for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
+    Side_Set<INT>* sset1 = file1.Get_Side_Set_by_Index(b);
+    SMART_ASSERT(sset1 != NULL);	
+
+    Side_Set<INT>* sset2 = NULL;
+    if (interface.by_name)
+      sset2 = file2.Get_Side_Set_by_Name(sset1->Name());
+    else
+      sset2 = file2.Get_Side_Set_by_Id(sset1->Id());
+    if (sset2 == NULL) continue;
+        
+    if (sset1->Distribution_Factor_Count() == 0 ||
+	sset2->Distribution_Factor_Count() == 0)
+      continue;
+    
+    const double* vals1 = sset1->Distribution_Factors();
+        
+    if (vals1 != NULL) {
+      if (Invalid_Values(vals1, sset1->Size())) {
+	std::cout << "\tERROR: NaN found for distribution factors in sideset "
+		  << sset1->Id() << ", file 1\n";
+	diff_flag = true;
+      }
+    }
+
+    double* vals2 = (double*)sset2->Distribution_Factors();
+
+    if (vals2 != NULL) {
+      if (Invalid_Values(vals2, sset2->Size())) {
+	std::cout << "\tERROR: NaN found for distribution factors in sideset "
+		  << sset2->Id() << ", file 2\n";
+	diff_flag = true;
+      }
+    }
+        
+    size_t ecount = sset1->Size();
+    if (sset2->Size() == ecount) {
+      for (size_t e = 0; e < ecount; ++e) {
+	std::pair<INT,INT> range1 = sset1->Distribution_Factor_Range(e);
+	std::pair<INT,INT> range2 = sset2->Distribution_Factor_Range(e);
+	SMART_ASSERT(range1.second - range1.first == range2.second - range2.first);
+
+	for (size_t i=0; i < range1.second-range1.first; i++) {
+	  double v1 = vals1[range1.first+i];
+	  double v2 = vals2[range2.first+i];
+
+	  if (interface.show_all_diffs) {
+	    double d = interface.ss_df_tol.Delta(v1, v2);
+	    if (d > interface.ss_df_tol.value) {
+	      diff_flag = true;
+	      sprintf(buf,
+		      "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set " ST_ZU ", side " ST_ZU ".%d-%d)",
+		      name_length, name.c_str(), interface.ss_df_tol.abrstr(),
+		      v1, v2, d,
+		      (size_t)sset1->Id(),
+		      (size_t)id_map[sset1->Side_Id(e).first-1],
+		      (int)sset1->Side_Id(e).second,i+1);
+	      std::cout << buf << std::endl;
+	    }
+	  }
+	  else {
+	    double d = interface.ss_df_tol.Delta(v1, v2);
+	    max_diff.set_max(d, v1, v2, e, sset1->Id());
+	  }
+	}
+      }
+    }
+    else {
+      sprintf(buf,
+	      "   %-*s     diff: sideset side counts differ for sideset " ST_ZU,
+	      name_length, name.c_str(), 
+	      (size_t)sset1->Id());
+      std::cout << buf << std::endl;
+      diff_flag = true;
+    }
+        
+      sset1->Free_Results();
+      sset2->Free_Results();
+  }  // End of sideset loop.
+      
+  if (max_diff.diff > interface.ss_df_tol.value) {
+    diff_flag = true;
+        
+    if (!interface.quiet_flag) {
+      Side_Set<INT> *sset = file1.Get_Side_Set_by_Id(max_diff.blk);
+      sprintf(buf,
+	      "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set " ST_ZU ", side " ST_ZU ".%d)",
+	      name_length,
+	      name.c_str(),
+	      interface.ss_df_tol.abrstr(),
+	      max_diff.val1, max_diff.val2,
+	      max_diff.diff, max_diff.blk,
+	      (size_t)id_map[sset->Side_Id(max_diff.id).first-1],
+	      (int)sset->Side_Id(max_diff.id).second);
+      std::cout << buf << std::endl;
+    }
+    else
+      Die_TS(-1);
+  }
+
+  return diff_flag;
+}
+
+template <typename INT>
 bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, 
 			     INT* elmt_map, const INT *id_map,
 			     Exo_Block<INT> **blocks2)
@@ -1887,7 +2012,12 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 	
     size_t block_id = eblock1->Id();
     
-    Exo_Block<INT> *eblock2 = file2.Get_Elmt_Block_by_Id(block_id);
+    Exo_Block<INT>* eblock2 = NULL;
+    if (interface.by_name)
+      eblock2 = file2.Get_Elmt_Block_by_Name(eblock1->Name());
+    else
+      eblock2 = file2.Get_Elmt_Block_by_Id(block_id);
+
     SMART_ASSERT(eblock2 != NULL);
 
     if (!diff_was_output && (eblock1->attr_count() > 0 || eblock2->attr_count() > 0)) {

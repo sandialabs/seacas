@@ -345,7 +345,6 @@ XCOMM Library Subdirectories
        SUPESDPSRC = supesdp
         SUPLIBSRC = suplib
      MAPVARLIBSRC = mapvarlib
-        LEGACYSRC = legacy
         EXODUSSRC = exodus
 #ifndef ExcludeGraphics
            PLTSRC = plt
@@ -435,14 +434,13 @@ XCOMM Libraries
 #if defined(BuildParallelAwareExodus)
              IOPX = -lIopx -lzoltan -lparmetis -lmetis
 #endif
-             IOSS = -lIonit -lIoex  -lIogn -lIotr -lIohb -lIoss ${IOPX}
+             IOSS = -lIonit -lIofacx -lIofx  ${IOPX} -lIoex  -lIogn -lIotr -lIohb -lIoss
              HDF5 = -lhdf5
           HDF5_HL = -lhdf5_hl
             SUPES = -lsupes
           SUPESDP = -lsupesdp
            SUPLIB = -lsuplib
         MAPVARLIB = -lmapvarlib
-           LEGACY = -llegacy
               PLT = -lplt
    EXTRANETCDFLIB = ExtraNetcdfLib
             LCLIB = -lLegacyContact

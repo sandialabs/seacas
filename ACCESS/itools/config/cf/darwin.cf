@@ -15,7 +15,7 @@ XCOMM
 /* #define GCC4GFORTRAN */  /* gcc-4.X or later */
 /* #define GCCG77 1 */      /* gcc-3.4.X */
 /* #define USE_MACPORTS 4.6 */ /* the value represents the version of gcc */
-#define USE_CLANG 3.4
+#define USE_CLANG 3.6
 /* #define PARALLEL_AWARE */      /* gcc with mpi compilers for parallel-aware exodus, ... */
 
 /* Set the following if you want to build with backward compatability with an earlier OS version */
