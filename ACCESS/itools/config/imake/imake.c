@@ -337,6 +337,14 @@ void    writetmpfile(FILE *fd, char *buf, int cnt, char *fname);
 boolean	verbose = FALSE;
 boolean	show = TRUE;
 
+#ifdef SIGNALRETURNSINT
+int
+#else
+void
+#endif
+catch(int sig);
+
+
 int main(int argc, char **argv)
 {
 	FILE	*tmpfd;
@@ -549,21 +557,21 @@ SetOpts(int argc, char **argv)
 }
 
 char *
-FindImakefile(char *Imakefile)
+FindImakefile(char *Imakefile_)
 {
-	if (Imakefile) {
-		if (access(Imakefile, R_OK) < 0)
-			LogFatal("Cannot find %s.", Imakefile);
+	if (Imakefile_) {
+		if (access(Imakefile_, R_OK) < 0)
+			LogFatal("Cannot find %s.", Imakefile_);
 	} else {
 		if (access("Imakefile", R_OK) < 0)
 			if (access("imakefile", R_OK) < 0)
 				LogFatal("No description file.", "");
 			else
-				Imakefile = "imakefile";
+				Imakefile_ = "imakefile";
 		else
-			Imakefile = "Imakefile";
+			Imakefile_ = "Imakefile";
 	}
-	return(Imakefile);
+	return(Imakefile_);
 }
 
 void
@@ -1006,7 +1014,7 @@ isempty(char *line)
 		    (pend[5] == ' ' || pend[5] == '\t' || pend[5] == '\0'))
 		{
 		    *pend = '#';
-		    //strcpy(pend+1, pend+5);
+		    /* strcpy(pend+1, pend+5); */
 		    memmove(pend+1, pend+5, strlen(pend+5)+1);
 		}
 #ifdef MAGIC_MAKE_VARS
