@@ -1,5 +1,4 @@
-
-TRUE_PARALLEL = parallel-20140622
+TRUE_PARALLEL = parallel-20150522
 
 all:: $(TRUE_PARALLEL)/Makefile
 	cd $(TRUE_PARALLEL); $(MAKE)
