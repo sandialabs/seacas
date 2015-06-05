@@ -136,11 +136,9 @@ void Exo_Entity::initialize(int file_id, size_t id)
   internal_load_params();
 }
 
-bool Exo_Entity::is_valid_var(int var_index) const
+bool Exo_Entity::is_valid_var(size_t var_index) const
 {
-  if (var_index < 0 || var_index >= numVars)
-    return false;
-  
+  SMART_ASSERT((int)var_index < numVars);
   if (truth_ == NULL) {
     get_truth_table();
   }
@@ -386,6 +384,19 @@ int Exo_Entity::Find_Attribute_Index(const std::string &name) const
 
 void Exo_Entity::internal_load_params()
 {
+  int name_size = ex_inquire_int(fileId, EX_INQ_MAX_READ_NAME_LENGTH);
+  {
+    std::vector<char> name(name_size+1);
+    ex_get_name(fileId, exodus_type(), id_, TOPTR(name));
+    if (name[0] != '\0') {
+      name_ = TOPTR(name);
+      to_lower(name_);
+    } else {
+      name_ = short_label();
+      name_ += "_";
+      name_ += to_string(id_);
+    }
+  }
   numVars = get_num_variables(fileId, exodus_type(), label());
   if (numVars) {
     results_ = new double*[numVars];
@@ -398,7 +409,6 @@ void Exo_Entity::internal_load_params()
   if (numAttr) {
     attributes_.resize(numAttr);
 
-    int name_size = ex_inquire_int(fileId, EX_INQ_MAX_READ_NAME_LENGTH);
     char** names = get_name_array(numAttr, name_size);
     int err = ex_get_attr_names(fileId, exodus_type(), id_, names);
     if (err < 0) {

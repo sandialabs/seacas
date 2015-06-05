@@ -7,11 +7,6 @@
 */
 
 
-#ifndef lint
-static char rcsid[] =
-    "$Header: /usr/sharelan/cvs/SEACAS/prepost/spiff/parse.c,v 1.2 2004/10/29 14:00:41 gdsjaar Exp $";
-#endif
-
 #include <string.h>
 
 #include "misc.h"
