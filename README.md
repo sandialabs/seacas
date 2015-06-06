@@ -87,7 +87,6 @@ The owner and group name of the user installing the code should be set.  We have
                    #define        Group seacas 
 ```
 
-```
  * `#define AccessRoot` - path to SEACAS source directory. It should be the same directory path as you set as the SEACAS environment variable.
 
  * `#define BuildSharedExodusLibrary YES` Leave this set to YES unless there are problems building shared libraries on your system.
