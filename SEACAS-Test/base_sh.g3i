@@ -1,0 +1,20 @@
+$ {include(common.h)}
+$ {len1 = sqrt(8.5^2 - 7.428^2)}
+$ {len2 = FR1 - rad1 - len1}
+$ {th = 0.090}
+spline {th}
+LEFT 0.0
+right 0.0
+$ {intr = 73}	{_i=0}
+{Loop(73)}
+{_x = _i/(72) * len1}	{sqrt( (8.5+th/2)^2 - _x^2)} $ {_i++}
+{endloop}
+$ {_i=1}
+{loop(27)}
+{_x = len1 + (_i/27) * len2}	{7.428+th/2}	$ {_i++}
+{endloop}
+end
+sideset back 11
+revolve x -90
+shift y -7.338
+EXIT
