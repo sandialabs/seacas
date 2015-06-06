@@ -108,13 +108,14 @@ NOTE: If you are building on MacOS and using the Mac ports compilers, then defin
 
 The platform.cf configuration file contains system-specific settings; in particular compiler paths.  The linux.cf file is the most complicated due to the multitude of compilers available.  Pick the define corresponding to the compilers you will be using and then search for that #if block and make sure paths are correct; the paths typically only need changing for parallel compiles and if your system has multiple versions of compilers.
 
- * Use the script `ACCESS/scripts/buildSEACAS`, which enters the commands for you.  You should be in the directory specified as your AccessRoot in step 7 above. Then enter:
+## Build 
+Use the script `ACCESS/scripts/buildSEACAS`, which enters the commands for you.  You should be in the directory specified as your `AccessRoot` above. Then enter:
 
 ```
       sh ACCESS/scripts/buildSEACAS -auto
 ```
 
-If you have any problems, send an email to 'gdsjaar@sandia.gov'. Include any log files that were created during your attempted build. These will be in `$SEACAS/Logs`.  Also include the `site.def` and `platform.cf` (e.g. `linux.cf`, `darwin.cf`).  The subject of your email should include "SEACAS build error".
+If you have any problems, send an email to `gdsjaar@sandia.gov`. Include any log files that were created during your attempted build. These will be in `$SEACAS/Logs`.  Also include the `site.def` and `platform.cf` (e.g. `linux.cf`, `darwin.cf`).  The subject of your email should include "SEACAS build error".
 
  Greg Sjaardema  (gsjaardema@gmail.com,  gdsjaar@sandia.gov)
       
