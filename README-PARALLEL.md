@@ -21,10 +21,10 @@ and REALTYPEWIDTH to 64
   * edit parmetis-4.0.3/metis/include/metis.h and change IDXTYPEWIDTH
 and REALTYPEWIDTH to 64
   
-  parallel-netcdf: Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.4.1.tar.gz
+  parallel-netcdf: Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.gz
   * cd TPL/pnetcdf
-  * tar zxvf parallel-netcdf-1.4.1.tar.gz
-  * set V_NUM to parallel-netcdf-1.4.1
+  * tar zxvf parallel-netcdf-1.6.1.tar.gz
+  * set V_NUM to parallel-netcdf-1.6.1
 
 In ACCESS/itools/config/cf/linux.cf, set the compiler type to
 PARALLEL_AWARE.
