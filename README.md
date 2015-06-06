@@ -1,5 +1,4 @@
-
-Instructions for building SEACAS
+# Instructions for building SEACAS
 (See the bottom of the file for contact information)
 
 The SEACAS system uses imake to generate Makefiles for each of its
@@ -34,9 +33,11 @@ SEACAS.
    * Modify the following defines in 
      SEACAS-XXXX-XX-XX/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
 
+```
 	#define NC_MAX_DIMS     65536    /* max dimensions per file */
 	#define NC_MAX_VARS     524288   /* max variables per file */
 	#define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
+```
 
   2b) HDF5: Download hdf5 and get it ready to be built by the buildSEACAS
       script below. 
@@ -122,16 +123,21 @@ NOTE: The site.def and platform.cf files describe below are processed
       X11 libraries and includes files are located on your system
       The following setting should be entered in the site.def file:
 
+```
    #define        Owner owner_username
    #define        Group group_name 
+```
       The owner and group name of the user installing the code should
       be set.  We have created a group called seacas on our systems for
       the support staff that installs and maintains the SEACAS system
       If you do not have or need a group, you can delete the #define Group line.
       Example 2
+```
                    #define        Owner gdsjaar
                    #define        Group seacas 
+```
 
+```
    #define AccessRoot - path to SEACAS source directory
       It should be the same directory path as you set as the SEACAS
       environment variable.
@@ -155,8 +161,8 @@ NOTE: The site.def and platform.cf files describe below are processed
       For most cases, leave the Platform define as "normal"; however,
        * if building on "interix", define it as interix;
        * if building for "redstorm", define it as redstorm;
+```
 
-   ------------------------------------------------------------------------
    b) platform.cf (platform=hardware or os type) [linux.cf, darwin.cf, ?.cf]
 
       If you are building on a 64-bit system, define Build64BitAccess YES.
@@ -184,7 +190,9 @@ NOTE: The site.def and platform.cf files describe below are processed
    for you.  You should be in the directory specified as your AccessRoot
    in step 3 above. Then enter:
 
+```
       sh ACCESS/scripts/buildSEACAS -auto
+```
 
 6) If you have any problems, send an email to 'gdsjaar@sandia.gov'.
    Include any log files that were created during your attempted build.
