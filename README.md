@@ -51,14 +51,14 @@ There are a few externally developed libraries that are required to build SEACAS
    * tar jxvf /path/to/parallel-latest.tar.bz2
    * Edit the Imakefile in the TPL/parallel directory and make sure that TRUE_PARALLEL is set to the version of parallel that you downloaded.
 
-# cd back to the top-level SEACAS subdirectory
+# Edit Configuration Files:
 
-The current directory (SEACAS unless you renamed if) will be your SEACAS root.  Set the environment variable SEACAS to point to this area. 
+cd back to the top-level SEACAS subdirectory. The current directory (SEACAS unless you renamed if) will be your SEACAS root.  Set the environment variable SEACAS to point to this area. 
 ```
     setenv SEACAS `pwd`  (csh/tcsh)
     export SEACAS=`pwd`  (sh/bash)
 ```
-   If you do an `ls $SEACAS/ACCESS`, you should see something similar to:
+If you do `ls $SEACAS/ACCESS`, you should see something similar to:
 ```
    applications  Imakefile  itools  libraries  scripts  
 ```
@@ -72,19 +72,20 @@ NOTE: The site.def and platform.cf files describe below are processed
  * The `#` indicates code processed by CPP; typically the files use `#define`, `#else`, `#endif`, and `#ifdef` to determine options and define values.
  * Most other syntax will cause problems.
 
- * Move into the $SEACAS/ACCESS/itools/config/cf directory and edit the 'site.def' and the configuration file associated with your platform (e.g. linux.cf for linux OS; darwin.cf for MacOS)
+ * Move into the `$SEACAS/ACCESS/itools/config/cf` directory and edit the `site.def` and the configuration file associated with your platform (e.g. `linux.cf` for linux OS; `darwin.cf` for MacOS)
 
- * The `site.def` file contains settings that determine where SEACAS is going to be installed, who owns the source, and where the X11 libraries and includes files are located on your system The following setting should be entered in the site.def file:
-
-```
-   #define        Owner owner_username
-   #define        Group group_name 
-```
-The owner and group name of the user installing the code should be set.  We have created a group called seacas on our systems for the support staff that installs and maintains the SEACAS system. If you do not have or need a group, you can delete the `#define Group` line.
+### site.def
+The `site.def` file contains settings that determine where SEACAS is going to be installed, who owns the source, and where the X11 libraries and includes files are located on your system The following setting should be entered in the site.def file:
 
 ```
-                   #define        Owner gdsjaar
-                   #define        Group seacas 
+	#define        Owner owner_username
+	#define        Group group_name 
+```
+The owner and group name of the user installing the code should be set.  We have created a group called seacas on our systems for the support staff that installs and maintains the SEACAS system. If you do not have or need a group, you can delete the `#define Group` line. As an example:
+
+```
+	#define        Owner gdsjaar
+	#define        Group seacas 
 ```
 
  * `#define AccessRoot` - path to SEACAS source directory. It should be the same directory path as you set as the SEACAS environment variable.
@@ -99,7 +100,8 @@ The owner and group name of the user installing the code should be set.  We have
     * if building on "interix", define it as interix;
     * if building for "redstorm", define it as redstorm;
 
-### platform.cf (platform=hardware or os type) [linux.cf, darwin.cf, ?.cf]
+### platform.cf
+Edit `platform.cf` (platform=hardware or os type) [`linux.cf`, `darwin.cf`, ?.cf]
 If you are building on a 64-bit system, define `Build64BitAccess YES`.
 
 NOTE: If you are using a gcc version prior to 4.1, then you cannot build the fortran-based utilities for 64-bit systems; you must do a 32-bit build. I can tell you the details if you want...  If you are using a non-gnu compiler or using gcc-4.1.0 or later (which gfortran as the fortran compiler), you can do a 64-bit build.
