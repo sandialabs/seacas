@@ -11,7 +11,7 @@ XCOMM Top level Imake file for ACCESS system
 PNETCDF = pnetcdf
 #endif
 
-SUBDIRS = serial_mpi hdf5 $(PNETCDF) netcdf zoltan metis parallel matio 
+SUBDIRS = serial_mpi hdf5 $(PNETCDF) netcdf zoltan parallel matio 
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
 
