@@ -53,7 +53,7 @@ There are a few externally developed libraries that are required to build SEACAS
 
 # cd back to the top-level SEACAS subdirectory
 
-* The current directory (SEACAS unless you renamed if) will be your SEACAS root.  Set the environment variable SEACAS to point to this area. 
+The current directory (SEACAS unless you renamed if) will be your SEACAS root.  Set the environment variable SEACAS to point to this area. 
 ```
     setenv SEACAS `pwd`  (csh/tcsh)
     export SEACAS=`pwd`  (sh/bash)
@@ -88,24 +88,24 @@ The owner and group name of the user installing the code should be set.  We have
 ```
 
 ```
-  * `#define AccessRoot` - path to SEACAS source directory. It should be the same directory path as you set as the SEACAS environment variable.
+ * `#define AccessRoot` - path to SEACAS source directory. It should be the same directory path as you set as the SEACAS environment variable.
 
-  * `#define BuildSharedExodusLibrary YES` Leave this set to YES unless there are problems building shared libraries on your system.
+ * `#define BuildSharedExodusLibrary YES` Leave this set to YES unless there are problems building shared libraries on your system.
 
-  * `#define UseNetcdf4 NO or YES` Set to YES to use the new hdf5-based netcdf-4; leave as NO to use the classic netcdf-4.
+ * `#define UseNetcdf4 NO or YES` Set to YES to use the new hdf5-based netcdf-4; leave as NO to use the classic netcdf-4.
       
-  * `#define HDF5_Root AccessRoot` If `UseNetcdf4` is `YES`, then `HDF5_Root` needs to point to the root of an installed HDF5 library (both libhdf5.a and libhdf5_hl.a) and include files.  `HDF5_Root/lib` holds the libs and `HDF5_Root/include` has the include files. Leave the value as `AccessRoot` unless you have an external installation of HDF5 that you want to use.
+ * `#define HDF5_Root AccessRoot` If `UseNetcdf4` is `YES`, then `HDF5_Root` needs to point to the root of an installed HDF5 library (both libhdf5.a and libhdf5_hl.a) and include files.  `HDF5_Root/lib` holds the libs and `HDF5_Root/include` has the include files. Leave the value as `AccessRoot` unless you have an external installation of HDF5 that you want to use.
          
-  * `#define Platform normal`  For most cases, leave the Platform define as "normal"; however,
+ * `#define Platform normal`  For most cases, leave the Platform define as "normal"; however,
     * if building on "interix", define it as interix;
     * if building for "redstorm", define it as redstorm;
 
-* platform.cf (platform=hardware or os type) [linux.cf, darwin.cf, ?.cf]
- * If you are building on a 64-bit system, define Build64BitAccess YES.
+### platform.cf (platform=hardware or os type) [linux.cf, darwin.cf, ?.cf]
+If you are building on a 64-bit system, define `Build64BitAccess YES`.
 
 NOTE: If you are using a gcc version prior to 4.1, then you cannot build the fortran-based utilities for 64-bit systems; you must do a 32-bit build. I can tell you the details if you want...  If you are using a non-gnu compiler or using gcc-4.1.0 or later (which gfortran as the fortran compiler), you can do a 64-bit build.
 
-NOTE: If you are building on MacOS and using the Mac ports compilers, then define USE_MACPORTS as the version number of the compiler (4.4, 4.5, 4.6, ...)
+NOTE: If you are building on MacOS and using the Mac ports compilers, then define `USE_MACPORTS` as the version number of the compiler (4.4, 4.5, 4.6, ...)
 
 The platform.cf configuration file contains system-specific settings; in particular compiler paths.  The linux.cf file is the most complicated due to the multitude of compilers available.  Pick the define corresponding to the compilers you will be using and then search for that #if block and make sure paths are correct; the paths typically only need changing for parallel compiles and if your system has multiple versions of compilers.
 
@@ -115,7 +115,7 @@ The platform.cf configuration file contains system-specific settings; in particu
       sh ACCESS/scripts/buildSEACAS -auto
 ```
 
- * If you have any problems, send an email to 'gdsjaar@sandia.gov'. Include any log files that were created during your attempted build. These will be in `$SEACAS/Logs`.  Also include the `site.def` and `platform.cf` (e.g. `linux.cf`, `darwin.cf`).  The subject of your email should include "SEACAS build error".
+If you have any problems, send an email to 'gdsjaar@sandia.gov'. Include any log files that were created during your attempted build. These will be in `$SEACAS/Logs`.  Also include the `site.def` and `platform.cf` (e.g. `linux.cf`, `darwin.cf`).  The subject of your email should include "SEACAS build error".
 
  Greg Sjaardema  (gsjaardema@gmail.com,  gdsjaar@sandia.gov)
       
