@@ -13,7 +13,7 @@ git clone https://github.com/gdsjaar/seacas.git SEACAS
 ```
 This will create a directory that will be referred to as _SEACAS_ in the instructions that follow. You can rename this directory to any other name you desire.
 
-# Download external libraries -- netcdf, hdf5, matio, parallel
+## Download external libraries -- netcdf, hdf5, matio, parallel
 There are a few externally developed libraries that are required to build SEACAS.  The netcdf library is required; the hdf5, matio, and parallel libraries are optional. Note that you do not need to build these libraries manually; they will be built by the SEACAS build system. 
 
 1. Download netcdf.  The most recent released version is recommended. 
@@ -51,7 +51,7 @@ There are a few externally developed libraries that are required to build SEACAS
    * tar jxvf /path/to/parallel-latest.tar.bz2
    * Edit the Imakefile in the TPL/parallel directory and make sure that TRUE_PARALLEL is set to the version of parallel that you downloaded.
 
-# Edit Configuration Files:
+## Edit Configuration Files:
 
 cd back to the top-level SEACAS subdirectory. The current directory (SEACAS unless you renamed if) will be your SEACAS root.  Set the environment variable SEACAS to point to this area. 
 ```
