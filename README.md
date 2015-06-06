@@ -16,7 +16,8 @@ This will create a directory that will be referred to as _SEACAS_ in the instruc
 ## Download external libraries -- netcdf, hdf5, matio, parallel
 There are a few externally developed libraries that are required to build SEACAS.  The netcdf library is required; the hdf5, matio, and parallel libraries are optional. Note that you do not need to build these libraries manually; they will be built by the SEACAS build system. 
 
-1. Download netcdf.  The most recent released version is recommended. 
+#### netcdf:
+The most recent released version is recommended. 
 
    * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz)nfrom http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside SEACAS/TPL/netcdf
    * cd TPL/netcdf
@@ -30,13 +31,15 @@ There are a few externally developed libraries that are required to build SEACAS
 	#define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
 ```
 
-2. HDF5: Download hdf5 and get it ready to be built by the buildSEACAS script below. The hdf5 library is used for the netcdf4 capability in netcdf which in turn is used by exodus.  The netcdf4 capability is typically used for large models (>150 million elements); if you are not planning to create or read models of this size, you do not have to build hdf5. In this case, edit the SEACAS/TPL/Imakefile and remove $(HDF5SRC) line. You will also need to make sure that UseNetcdf4 (see below) is defined to NO.
+#### HDF5: 
+Download hdf5 and get it ready to be built by the buildSEACAS script below. The hdf5 library is used for the netcdf4 capability in netcdf which in turn is used by exodus.  The netcdf4 capability is typically used for large models (>150 million elements); if you are not planning to create or read models of this size, you do not have to build hdf5. In this case, edit the SEACAS/TPL/Imakefile and remove $(HDF5SRC) line. You will also need to make sure that UseNetcdf4 (see below) is defined to NO.
 
    * Download hdf5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside SEACAS/TPL/hdf5
    * untar it, creating a directory will will refer to as hdf5-X.X.X
    * Edit the Imakefile in the TPL/hdf5 directory and make sure that TRUE_HDF5 is set to the version of hdf5 that you downloaded.
 
-3. MATIO: The matio library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a matlab binary file.  To use this do:
+#### MATIO:
+The matio library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a matlab binary file.  To use this do:
 
    * Download the most recent version of the library from http://sourceforge.net/projects/matio/. Currently this is matio-1.5.2.tar.gz. 
    * cd TPL/matio
@@ -44,7 +47,8 @@ There are a few externally developed libraries that are required to build SEACAS
    * Edit the Imakefile in the TPL/matio directory and make sure that TRUE_MATIO is set to the version of matio that you downloaded.
     * If you do not want to build matio, you can edit the TPL/Imakefile and remove 'matio' from the list. Also remove the '\' on the previous line.
 
-4. PARALLEL: GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
+#### PARALLEL: 
+GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
    * Download the most recent version of the library from ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2. Currently this is parallel-20150522
    * cd TPL/parallel
