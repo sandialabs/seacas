@@ -123,5 +123,13 @@ Use the script `ACCESS/scripts/buildSEACAS`, which enters the commands for you. 
 
 If you have any problems, send an email to `gdsjaar@sandia.gov`. Include any log files that were created during your attempted build. These will be in `$SEACAS/Logs`.  Also include the `site.def` and `platform.cf` (e.g. `linux.cf`, `darwin.cf`).  The subject of your email should include "SEACAS build error".
 
+## Testing
+
+Once everything builds, you can do a basic correctness test.  cd to the SEACAS-Test subdirectory and type `make`.  It will run through several of the programs building several meshes, joining them into a single mesh, decomposing it for use in a parallel file-per-processor analysis, joining the per-processor files back to a single file using epu and then converting the mesh file to text format and to matlab format.
+
+The exodus library can also be tested by changing directory to the ACCESS/libraries/exodus subdirectory and typing `make check`.  This will test both the C and fortran API.
+
+## Contact information
+
  Greg Sjaardema  (gsjaardema@gmail.com,  gdsjaar@sandia.gov)
       
