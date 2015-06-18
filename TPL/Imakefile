@@ -7,11 +7,15 @@ XCOMM Top level Imake file for ACCESS system
 			"F90DEBUGFLAGS=$(F90DEBUGFLAGS)" \
 			"F77DEBUGFLAGS=$(F77DEBUGFLAGS)"
 
-#if defined(BuildParallelAwareExodus) && UseParNetcdf
+#if defined(BuildParallelAwareExodus)
+#if defined(UseParNetcdf)
 PNETCDF = pnetcdf
 #endif
+METIS = metis
+PARMETIS = parmetis
+#endif
 
-SUBDIRS = serial_mpi hdf5 $(PNETCDF) netcdf zoltan parallel matio 
+SUBDIRS = serial_mpi hdf5 $(PNETCDF) $(METIS) $(PARMETIS) netcdf zoltan parallel matio 
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
 
@@ -30,8 +34,7 @@ MakeTarget(zoltan,     zoltan,     PassDebugFlags)
 MakeTarget(parallel,   parallel,   PassDebugFlags)
 MakeTarget(matio,      matio,      PassDebugFlags)
 MakeTarget(metis,      metis,      PassDebugFlags)
-#if defined(BuildParallelAwareExodus) && UseParNetcdf
+MakeTarget(parmetis,   parmetis,   PassDebugFlags)
 MakeTarget(pnetcdf,    pnetcdf,    PassDebugFlags)
-#endif
 
 
