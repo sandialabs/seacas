@@ -14,6 +14,7 @@ ACCESSLIBSUBDIRS = \
 $(SUPLIBSRC) \
 $(MAPVARLIBSRC) \
 $(EXODUSSRC) \
+$(EXODUSFORSRC) \
 $(PLTSRC) \
 $(NEMESISSRC) \
 $(CHACOSRC) \
@@ -31,9 +32,13 @@ SUBDIRS = $(ACCESSLIBSUBDIRS) $(SUPESSRC) $(SUPESDPSRC)
 #endif
 
 makeincludes::
-	@if test -d $(EXODUSSRC) ;  then \
+	@if test -d $(EXODUSSRC) ; \
+	then \
 	(cd $(EXODUSSRC)/cbind/include   && $(MAKE) install) ; \
-	(cd $(EXODUSSRC)/forbind/include && $(MAKE) install) ; \
+	fi; \
+	if test -d $(EXODUSFORSRC) ; \
+	then \
+	(cd $(EXODUSFORSRC)/forbind/include && $(MAKE) install) ; \
 	fi; \
 	if test -d $(NEMESISSRC) ; \
 	then \
