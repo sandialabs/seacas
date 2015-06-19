@@ -229,7 +229,7 @@ InstallLibrary(Ionit,$(LIBDIR))
 
 #if defined(BuildParallelAwareExodus)
 AllTarget(libIopx.a)
-NamedTargetSubdirs(libIopx.a,  par_exo,   "making Ioss/par_exo",   PassDebugFlags ExtraOptions,libIopx.a)
+NamedTargetSubdirs(libIopx.a,  exo_par,   "making Ioss/exo_par",   PassDebugFlags ExtraOptions,libIopx.a)
 InstallLibrary(Iopx,$(LIBDIR))
 #endif
 
