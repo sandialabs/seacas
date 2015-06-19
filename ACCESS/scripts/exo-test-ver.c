@@ -73,6 +73,9 @@ int main(int argc, char *argv[])
    int CPU_word_size,IO_word_size;
    float version;
    int file_size;
+   int netcdf_based = 0;
+   int hdf5_based = 0;
+   int nc_format = 0;
    
    char cversion[9];
 
@@ -99,8 +102,11 @@ int main(int argc, char *argv[])
     c3 = getc(fid);
     c4 = getc(fid);
     fclose(fid);
-    if ((c1 == 'C' && c2 == 'D' && c3 == 'F') ||
-	(c2 == 'H' && c3 == 'D' && c4 == 'F')) {
+    if (c1 == 'C' && c2 == 'D' && c3 == 'F') {
+      netcdf_based = 1;
+    }
+    else if (c2 == 'H' && c3 == 'D' && c4 == 'F') {
+      hdf5_based = 1;
     } else {
       (void) fprintf(stderr,"         %s is not a netCDF file\n",
 		     filename);
@@ -127,6 +133,26 @@ int main(int argc, char *argv[])
    else
      fprintf(stderr, "\t\tFile size attribute is 'large model'\n");
      
+   /* Determine netcdf file version... */
+   nc_inq_format(exoid, &nc_format);
+   if (nc_format == NC_FORMAT_CLASSIC) {
+     fprintf(stderr, "\t\tNetCDF Variant is 'classic'\n");
+   }
+   else if (nc_format == NC_FORMAT_64BIT) {
+     fprintf(stderr, "\t\tNetCDF Variant is '64-bit offset'\n");
+   }
+   else if (nc_format == NC_FORMAT_NETCDF4) {
+     fprintf(stderr, "\t\tNetCDF Variant is 'netCDF-4'\n");
+   }
+   else if (nc_format == NC_FORMAT_NETCDF4_CLASSIC) {
+     fprintf(stderr, "\t\tNetCDF Variant is 'netCDF-4 classic'\n");
+   }
+   else {
+     fprintf(stderr, "\t\tNetCDF Variant is 'unknown'\n");
+   }
+
+   fprintf(stderr, "\n");
+   
    if (ex_close (exoid) == -1)
 	printf ("ex_close failed");
 
@@ -144,5 +170,4 @@ int main(int argc, char *argv[])
         }
 
    exit(-2);
-
 }
