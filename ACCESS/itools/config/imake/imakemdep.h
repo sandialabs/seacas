@@ -235,7 +235,7 @@ in this Software without prior written authorization from the X Consortium.
  */
 
 #if defined(__APPLE__)
-#define DEFAULT_CPP "/opt/local/bin/cpp-mp-4.8"
+#define DEFAULT_CPP "/opt/local/bin/cpp
 #endif
 
 #ifdef crosslinux
