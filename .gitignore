@@ -240,8 +240,8 @@ ACCESS/applications/fonts/sserif.inp
 ACCESS/applications/fonts/stick.inp
 ACCESS/libraries/zoltan/Utilities/Obj_SEACAS/
 ACCESS/libraries/zoltan/Obj_SEACAS/
-ACCESS/libraries/aprepro/apr_test
-ACCESS/libraries/aprepro/strings
+ACCESS/libraries/aprepro_lib/apr_test
+ACCESS/libraries/aprepro_lib/strings
 ACCESS/libraries/ioss/src/Trios_config.h
 ACCESS/libraries/ioss/src/main/cth_pressure_map
 ACCESS/libraries/ioss/src/main/io_info
