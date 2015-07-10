@@ -261,7 +261,7 @@ if [ $? -eq 0 ]; then
    err_chk=`expr $err_chk + 1`
    PossibleError=YES
 fi
-grep Error $LogFile |grep -v MPI_Error |grep -v ignored |grep -v PrintErrorStackOn >> ${LogFile}.errors 
+grep Error $LogFile |grep -v MPI_Error |grep -v ignored |grep -v PrintErrorStack >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} Error"
    err_chk=`expr $err_chk + 2`
@@ -280,7 +280,7 @@ if [ $? -eq 0 ]; then
    err_chk=`expr $err_chk + 8`
    PossibleError=YES
 fi
-grep -i cannot $LogFile |grep -v optimize >> ${LogFile}.errors 
+grep -i cannot $LogFile |grep -v optimize |grep -v error_msg >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} cannot"
    err_chk=`expr $err_chk + 16`
