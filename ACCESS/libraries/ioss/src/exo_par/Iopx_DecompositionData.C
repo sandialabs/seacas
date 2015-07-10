@@ -102,7 +102,7 @@ namespace {
     return pow2;
   }
 
-  void check_dynamic_cast(void *ptr)
+  void check_dynamic_cast(const void *ptr)
   {
     if (ptr == NULL) {
       std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned NULL\n";
