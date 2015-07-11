@@ -431,6 +431,12 @@ namespace {
 	  const string& name = names[out_idx];
 	  int idx1 = find_string(var_names1, name, interface.nocase_var_names);
 	  int idx2 = find_string(var_names2, name, interface.nocase_var_names);
+	  if (idx1 < 0 || idx2 < 0) {
+	    std::cerr << "ERROR: Unable to find variable named '"
+		      << name << "' on database.\n";
+	    exit(1);
+	  }
+	  
 	  if (set1->is_valid_var(idx1)) {
 	    if (set2->is_valid_var(idx2))
 	      truth_tab[ b * num_vars + out_idx ] = 1;
