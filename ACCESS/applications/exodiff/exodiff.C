@@ -1084,7 +1084,7 @@ bool Equal_Values(const double *values, size_t count, double *value)
 				 int fno, const string &name, bool *diff_flag)
     {
       const double *vals = NULL;
-      if (idx >= 0 && (fno == 1 || !interface.summary_flag)) {
+      if (fno == 1 || !interface.summary_flag) {
 	filen.Load_Nodal_Results(time_step, idx);
 	vals = filen.Get_Nodal_Results(idx);
     
@@ -1104,7 +1104,7 @@ bool Equal_Values(const double *values, size_t count, double *value)
 				 int fno, const string &name, bool *diff_flag)
     {
       const double *vals = NULL;
-      if (idx >= 0 && (fno == 1 || !interface.summary_flag)) {
+      if (fno == 1 || !interface.summary_flag) {
 	vals = filen.Get_Nodal_Results(t.step1, t.step2, t.proportion, idx);
     
 	if (vals != NULL) {
@@ -1181,7 +1181,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	  const string& name = (interface.glob_var_names)[out_idx];
 	  int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
 	  int idx2 = find_string(file2.Global_Var_Names(), name, interface.nocase_var_names);
-	  SMART_ASSERT(idx1 >= 0 && idx2 >= 0);
+	  if (idx1 < 0 || idx2 < 0) {
+	    std::cerr << "ERROR: Unable to find global variable named '"
+		      << name << "' on database.\n";
+	    exit(1);
+	  }
 	  gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interface.output_type);
 	}
 	ex_put_glob_vars(out_file_id, t2.step1, interface.glob_var_names.size(), gvals);
@@ -1195,7 +1199,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       for (unsigned out_idx = 0; out_idx < interface.glob_var_names.size(); ++out_idx) {
 	const string& name = (interface.glob_var_names)[out_idx];
 	int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
-	SMART_ASSERT(idx1 >= 0);
+	if (idx1 < 0) {
+	  std::cerr << "ERROR: Unable to find global variable named '"
+		    << name << "' on database.\n";
+	  exit(1);
+	}
       
 	mm_glob[out_idx].spec_min_max(vals1[idx1], step1);
       }
@@ -1212,7 +1220,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       const string& name = (interface.glob_var_names)[out_idx];
       int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
       int idx2 = find_string(file2.Global_Var_Names(), name, interface.nocase_var_names);
-      SMART_ASSERT(idx1 >= 0 && idx2 >= 0);
+      if (idx1 < 0 || idx2 < 0) {
+	std::cerr << "ERROR: Unable to find global variable named '"
+		  << name << "' on database.\n";
+	exit(1);
+      }
       
       if (Invalid_Values(&vals1[idx1], 1)) {
 	std::cout << "\tERROR: NaN found for variable " << name << " in file 1\n";
@@ -1258,7 +1270,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	const string& name = (interface.node_var_names)[n_idx];
 	int idx1 = find_string(file1.Nodal_Var_Names(), name, interface.nocase_var_names);
 	int idx2 = find_string(file2.Nodal_Var_Names(), name, interface.nocase_var_names);
-	SMART_ASSERT(idx1 >= 0 && idx2 >= 0);
+	if (idx1 < 0 || idx2 < 0) {
+	  std::cerr << "ERROR: Unable to find nodal variable named '"
+		    << name << "' on database.\n";
+	  exit(1);
+	}
       
 	const double* vals1 = get_nodal_values(file1, step1, idx1, 1,
 					       name, &diff_flag);
@@ -1289,7 +1305,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       for (unsigned n_idx = 0; n_idx < interface.node_var_names.size(); ++n_idx) {
 	const string& name = (interface.node_var_names)[n_idx];
 	int idx1 = find_string(file1.Nodal_Var_Names(), name, interface.nocase_var_names);
-	SMART_ASSERT(idx1 >= 0);
+	if (idx1 < 0) {
+	  std::cerr << "ERROR: Unable to find nodal variable named '"
+		    << name << "' on database.\n";
+	  exit(1);
+	}
 	const double* vals1 = get_nodal_values(file1, step1, idx1, 1,
 					       name, &diff_flag);
 
@@ -1313,7 +1333,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       const string& name = (interface.node_var_names)[n_idx];
       int idx1 = find_string(file1.Nodal_Var_Names(), name, interface.nocase_var_names);
       int idx2 = find_string(file2.Nodal_Var_Names(), name, interface.nocase_var_names);
-      SMART_ASSERT(idx1 >= 0 && idx2 >= 0);
+      if (idx1 < 0 || idx2 < 0) {
+	std::cerr << "ERROR: Unable to find nodal variable named '"
+		  << name << "' on database.\n";
+	exit(1);
+      }
       
       const double* vals1 = get_nodal_values(file1, step1, idx1, 1, name, &diff_flag);
       const double* vals2 = get_nodal_values(file2, t2,    idx2, 2, name, &diff_flag);
@@ -1400,7 +1424,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       int vidx2 = 0;
       if (!interface.summary_flag)
 	vidx2 = find_string(file2.Elmt_Var_Names(), name, interface.nocase_var_names);
-      SMART_ASSERT(vidx1 >= 0 && vidx2 >= 0);
+      if (vidx1 < 0 || vidx2 < 0) {
+	std::cerr << "ERROR: Unable to find element variable named '"
+		  << name << "' on database.\n";
+	exit(1);
+      }
       
       double norm_d = 0.0;
       double norm_1 = 0.0;
@@ -1591,7 +1619,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       int vidx2 = 0;
       if (!interface.summary_flag)
 	vidx2 = find_string(file2.NS_Var_Names(), name, interface.nocase_var_names);
-      SMART_ASSERT(vidx1 >= 0 && vidx2 >= 0);
+      if (vidx1 < 0 || vidx2 < 0) {
+	std::cerr << "ERROR: Unable to find nodeset variable named '"
+		  << name << "' on database.\n";
+	exit(1);
+      }
       
       double norm_d = 0.0;
       double norm_1 = 0.0;
@@ -1760,7 +1792,11 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       int vidx2 = 0;
       if (!interface.summary_flag)
 	vidx2 = find_string(file2.SS_Var_Names(), name, interface.nocase_var_names);
-      SMART_ASSERT(vidx1 >= 0 && vidx2 >= 0);
+      if (vidx1 < 0 || vidx2 < 0) {
+	std::cerr << "ERROR: Unable to find sideset variable named '"
+		  << name << "' on database.\n";
+	exit(1);
+      }
       
       DiffData max_diff;
       for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
