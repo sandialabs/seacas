@@ -118,12 +118,14 @@ namespace SEAMS {
     std::strcpy(tmp_name, "./aprepro_temp_XXXXXX");
 #if defined(__CYGWIN__) && defined(__NO_CYGWIN_OPTION__) 
     fd = mkstemps(tmp_name, 0);
-    close(fd);
+    if (fd >= 0)
+      close(fd);
 #elif defined(_WIN32)
     std::strcpy(tmp_name, _mktemp(tmp_name));
 #else
     fd = mkstemp(tmp_name);
-    close(fd);
+    if (fd >= 0)
+      close(fd);
 #endif
     return tmp_name;
   }  
