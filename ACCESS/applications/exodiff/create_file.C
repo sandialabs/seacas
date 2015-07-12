@@ -376,11 +376,11 @@ namespace {
       string name = names[n];  chop_whitespace(name);
       if (name[0] == '!') continue;
       
-      if (find_string(var_names1, name, interface.nocase_var_names) >= 0) {
+      int idx = find_string(var_names1, name, interface.nocase_var_names);
+      if (idx >= 0) {
 	if (interface.summary_flag || find_string(var_names2, name, interface.nocase_var_names) >= 0)
 	  {
 	    tols[tmp_list.size()] = tols[n];
-	    int idx = find_string(var_names1, name, interface.nocase_var_names);
 	    tmp_list.push_back( var_names1[idx] );
 	  }
 	else {
