@@ -229,6 +229,7 @@ char *do_exodus_meta(char *filename)
 	sprintf(cid, "%d ", ids[i]);
 	if (strlen(buffer) + strlen(cid) +1 > size) {
 	  if (realloc(buffer, size *=2) == NULL) {
+	    free(buffer);
 	    yyerror("Error allocating memory.");
 	  }
 	  memset(&buffer[size/2], 0, size/2);
@@ -312,6 +313,7 @@ char *do_exodus_meta(char *filename)
 	  sprintf(cid, format->value.svar, timesteps[i]);
 	  if (strlen(buffer) + strlen(cid) +2 > size) {
 	    if (realloc(buffer, size *=2) == NULL) {
+	      free(buffer);
 	      yyerror("Error allocating memory.");
 	    }
 	    memset(&buffer[size/2], 0, size/2);
