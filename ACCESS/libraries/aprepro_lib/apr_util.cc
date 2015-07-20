@@ -143,7 +143,11 @@ namespace SEAMS {
 
   void undefined_warning (const SEAMS::Aprepro &apr, const std::string &var)
   {
-    apr.warning("Undefined variable '" + var + "'");
+    if (!apr.inIfdefGetvar) {
+      apr.warning("Undefined variable '" + var + "'");
+    } else {
+      apr.inIfdefGetvar = false;
+    }
   }
 
   void redefined_warning (const SEAMS::Aprepro &apr, const SEAMS::symrec* var)
