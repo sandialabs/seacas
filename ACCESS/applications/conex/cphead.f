@@ -32,7 +32,7 @@ C    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C    
 C $Id: cphead.f,v 1.9 2008/03/14 13:50:47 gdsjaar Exp $
 C************************************************************************
-      subroutine cphead (ndbo, ndbi, a, c, qainfo, ioerr)
+      subroutine cphead (ndbo, ndbi, a, ia, c, qainfo, ioerr)
 C************************************************************************
 C
 C     cphead
@@ -62,6 +62,7 @@ C************************************************************************
 
       integer ndbo, ndbi
       dimension a(1)
+      integer ia(1)
       character*1 c(1)
       character*(mxstln) qainfo(6)
       integer ioerr
@@ -391,7 +392,7 @@ C     Reserve memory for element block properties names and values
           return
         end if
         
-        call rwpval (ndbi, ndbo, EXEBLK, numebp, c(iebpn), a(iebpv))
+        call rwpval (ndbi, ndbo, EXEBLK, numebp, c(iebpn), ia(iebpv))
         
         call mcdel ('EBPNAM')
         call mddel ('EBPVAL')
@@ -411,7 +412,7 @@ C************************************************************************
           return
         end if
         
-        call rwpval (ndbi, ndbo, EXNSET, numnsp, c(inspn), a(inspv))
+        call rwpval (ndbi, ndbo, EXNSET, numnsp, c(inspn), ia(inspv))
         
         call mcdel ('NSPNAM')
         call mddel ('NSPVAL')
@@ -431,7 +432,7 @@ C************************************************************************
           return
         end if
         
-        call rwpval (ndbi, ndbo, EXSSET, numssp, c(isspn), a(isspv))
+        call rwpval (ndbi, ndbo, EXSSET, numssp, c(isspn), ia(isspv))
         
         call mcdel ('SSPNAM')
         call mddel ('SSPVAL')
