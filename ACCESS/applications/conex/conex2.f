@@ -384,7 +384,7 @@ C************************************************************************
       END IF
       ropen = .true.
 C     Write Master File Header and Transfer data to Results file
-      call cphead (ndbo, ndbm, a, c, qainfo, ioerr)
+      call cphead (ndbo, ndbm, a, a, c, qainfo, ioerr)
  
 C************************************************************************
 C     write master time results to master_tmax
