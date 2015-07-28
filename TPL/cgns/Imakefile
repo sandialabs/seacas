@@ -1,0 +1,35 @@
+
+TRUE_CGNS = CGNS
+
+#if defined(BuildParallelAwareExodus)
+PARALLEL_ON_OFF= --enable-parallel
+#else
+DISABLE_ON_OFF = --disable-parallel
+#endif
+
+all:: $(TRUE_CGNS)/Makefile
+	cd $(TRUE_CGNS); $(MAKE)
+	make install
+
+$(TRUE_CGNS)/cmake-config: cmake-config.in Imakefile $(CONFIGDIR)/$(MACROFILE)
+	$(ETCDIR)/msub.seacas cmake-config.in > $(TRUE_CGNS)/cmake-config
+	chmod +x $(TRUE_CGNS)/cmake-config
+
+$(TRUE_CGNS)/Makefile: $(TRUE_CGNS)/cmake-config
+	cd $(TRUE_CGNS); ./cmake-config
+
+test:: all
+	cd $(TRUE_CGNS); $(MAKE) test
+
+install:: 
+	cd $(TRUE_CGNS); $(MAKE) install
+
+clean:: $(TRUE_CGNS)/Makefile
+	cd $(TRUE_CGNS); $(MAKE) clean
+
+distclean:: $(TRUE_CGNS)/cmake-config
+	cd $(TRUE_CGNS); $(MAKE) distclean
+
+makeincludes:: $(TRUE_CGNS)/Makefile
+	cd $(TRUE_CGNS)/src; make install-includeHEADERS
+
