@@ -15,7 +15,11 @@ METIS = metis
 PARMETIS = parmetis
 #endif
 
-SUBDIRS = serial_mpi hdf5 $(PNETCDF) $(METIS) $(PARMETIS) netcdf zoltan parallel matio 
+#if UseCGNS
+CGNS = cgns
+#endif
+
+SUBDIRS = serial_mpi hdf5 $(PNETCDF) $(CGNS) $(METIS) $(PARMETIS) netcdf zoltan parallel matio
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
 
@@ -36,5 +40,6 @@ MakeTarget(matio,      matio,      PassDebugFlags)
 MakeTarget(metis,      metis,      PassDebugFlags)
 MakeTarget(parmetis,   parmetis,   PassDebugFlags)
 MakeTarget(pnetcdf,    pnetcdf,    PassDebugFlags)
+MakeTarget(cgns,       cgns,       PassDebugFlags)
 
 
