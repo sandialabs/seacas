@@ -40,6 +40,8 @@ XCOMM site.def file for SNL ACCESS System
 /* Only built if PARALLEL_AWARE specified in {os}.cf (e.g. linux.cf) */
 #define UseParNetcdf YES
 
+#define UseCGNS NO
+
 /*
  * For most cases, leave the Platform define as "normal"; however,
  * if building on "interix", define it as interix;
