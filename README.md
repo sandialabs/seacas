@@ -55,6 +55,13 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
    * tar jxvf /path/to/parallel-latest.tar.bz2
    * Edit the Imakefile in the TPL/parallel directory and make sure that TRUE_PARALLEL is set to the version of parallel that you downloaded.
 
+#### CGNS
+Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download the CGNS library.  To build:
+
+   * Download CGNS via git.
+   * cd TPL/cgns
+   * git clone https://github.com/CGNS/CGNS.git
+
 ## Edit Configuration Files:
 
 cd back to the top-level SEACAS subdirectory. The current directory (SEACAS unless you renamed if) will be your SEACAS root.  Set the environment variable SEACAS to point to this area. 
@@ -103,6 +110,8 @@ The owner and group name of the user installing the code should be set.  We have
  * `#define Platform normal`  For most cases, leave the Platform define as "normal"; however,
     * if building on "interix", define it as interix;
     * if building for "redstorm", define it as redstorm;
+
+ * If you want to enable the experimental CGNS support, change the line "#define UseCGNS NO" to "#define UseCGNS YES"
 
 ### platform.cf
 Edit `platform.cf` (platform=hardware or os type) [`linux.cf`, `darwin.cf`, ?.cf]
