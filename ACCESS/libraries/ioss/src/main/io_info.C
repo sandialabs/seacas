@@ -325,16 +325,23 @@ namespace {
   {
     Ioss::NodeBlockContainer    nbs = region.get_node_blocks();
     Ioss::NodeBlockContainer::const_iterator i = nbs.begin();
-    while (i != nbs.end()) {
-      //      std::string name      = (*i)->name();
-      int64_t    num_nodes = (*i)->get_property("entity_count").get_int();
-      int64_t    degree    = (*i)->get_property("component_degree").get_int();
-      int64_t    num_attrib= (*i)->get_property("attribute_count").get_int();
-      if (summary) {
-	OUTPUT << " Number of spatial dimensions =" << std::setw(12) << degree << "\n";
-	OUTPUT << " Number of nodeblocks         =" << std::setw(12) << 1 << "\t";
-	OUTPUT << " Number of nodes            =" << std::setw(12) << num_nodes << "\n";
-      } else {
+    int64_t total_num_nodes = 0;
+    if (summary) {
+      int64_t    degree    = 0;
+      while (i != nbs.end()) {
+	int64_t    num_nodes = (*i)->get_property("entity_count").get_int();
+	total_num_nodes += num_nodes;
+	degree    = (*i)->get_property("component_degree").get_int();
+	++i;
+      }
+      OUTPUT << " Number of spatial dimensions =" << std::setw(12) << degree << "\n";
+      OUTPUT << " Number of nodeblocks         =" << std::setw(12) << nbs.size() << "\t";
+      OUTPUT << " Number of nodes            =" << std::setw(12) << total_num_nodes << "\n";
+    } else {
+      while (i != nbs.end()) {
+	int64_t    num_nodes = (*i)->get_property("entity_count").get_int();
+	int64_t    degree    = (*i)->get_property("component_degree").get_int();
+	int64_t    num_attrib= (*i)->get_property("attribute_count").get_int();
 	OUTPUT << '\n' << name(*i) 
 	       << std::setw(12) << num_nodes << " nodes, "
 	       << std::setw(3) << num_attrib << " attributes.\n";
@@ -360,8 +367,8 @@ namespace {
 	info_aliases(region, *i, false, true);
 	info_fields(*i, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
 	info_fields(*i, Ioss::Field::TRANSIENT, "\tTransient: ");
+	++i;
       }
-      ++i;
     }
   }
 
