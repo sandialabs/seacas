@@ -292,7 +292,7 @@ if [ $? -eq 0 ]; then
    err_chk=`expr $err_chk + 32`
    PossibleError=YES
 fi
-grep -i "not found" $LogFile |grep -v warning |grep -v CUNIT >> ${LogFile}.errors 
+grep -i "not found" $LogFile |grep -v warning |grep -v CUNIT |grep -v Multi_Dataset >> ${LogFile}.errors 
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} not found"
    err_chk=`expr $err_chk + 64`
