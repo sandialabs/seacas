@@ -35,6 +35,7 @@ $(NEM_SLICESRC) \
 $(NEM_SPREADSRC) \
 ${NUMBERSSRC} \
 $(SPIFFSRC) \
+exo_format \
 $(TXTEXOSRC)
 
 MakeAllTargets($(SUBDIRS),PassDebugFlags)
