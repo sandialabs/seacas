@@ -435,7 +435,10 @@ XCOMM Libraries
 #if defined(BuildParallelAwareExodus)
              IOPX = -lIopx -lzoltan -lparmetis -lmetis
 #endif
-             IOSS = -lIonit -lIofacx -lIofx  ${IOPX} -lIoex  -lIogn -lIotr -lIohb -lIoss
+#if UseCGNS
+           IOCGNS = -lIocgns -lcgns
+#endif
+             IOSS = -lIonit -lIofacx -lIofx  ${IOPX} -lIoex $(IOCGNS)  -lIogn -lIotr -lIohb -lIoss 
              HDF5 = -lhdf5
           HDF5_HL = -lhdf5_hl
             SUPES = -lsupes
