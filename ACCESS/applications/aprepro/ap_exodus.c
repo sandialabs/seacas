@@ -81,7 +81,7 @@ char *do_exodus_info(char *filename)
   exoid = open_exodus_file(filename);
   if (exoid < 0) return "";
 
-  ex_inquire(exoid, EX_INQ_INFO, &count, (float *) NULL, (char *) NULL);
+  count = ex_inquire_int(exoid, EX_INQ_INFO);
   
   if (count > 0) {
     info = (char**)malloc(count * sizeof(char*));
@@ -290,8 +290,7 @@ char *do_exodus_meta(char *filename)
 
   {
     /* Get timestep count */
-    int ts_count;
-    ex_inquire(exoid, EX_INQ_TIME, &ts_count, (float *) NULL, (char *) NULL);
+    int ts_count = ex_inquire_int(exoid, EX_INQ_TIME);
     ptr = putsym("ex_timestep_count", VAR, 0);
     ptr->value.var = ts_count;
     
