@@ -1517,7 +1517,6 @@ int check_inp_specs(std::string &exoII_inp_file,
   char **var_names;
   int cnt;
   int exoid, cpu_ws=0, io_ws=0, nvars, tmp_vindx=0;
-  int   ntimes;
   float version;
   FILE *inp_fd;
   int   exid_inp, icpu_ws=0, iio_ws=0;
@@ -1801,12 +1800,7 @@ int check_inp_specs(std::string &exoII_inp_file,
       return 0;
     }
 
-    if(ex_inquire(exoid, EX_INQ_TIME, &ntimes, NULL, NULL) < 0)
-    {
-      Gen_Error(0, "fatal: can't get number of time steps in weighting file");
-      ex_close(exoid);
-      return 0;
-    }
+    int ntimes = ex_inquire_int(exoid, EX_INQ_TIME);
 
     /* Check the time index */
     if(weight->exo_tindx <= 0)
