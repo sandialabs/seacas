@@ -37,8 +37,6 @@ $(NEM_JOINSRC) \
 ${NUMBERSSRC} \
 $(SPIFFSRC) \
 $(EXOTEC2SRC) \
-$(SPHGEN3DSRC) \
-$(GENHXSHLSRC) \
 exo_format \
 $(TXTEXOSRC)
 
