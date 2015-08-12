@@ -1,0 +1,23 @@
+Input FEM file                   = z_pinch1.gen
+LB file                          = z_pinch1.nem
+Number of Processors             = 8
+Parallel Results File Base Name  = z_pinch1.exo
+scalar results fem file		 = z_pinch1_parse_nod1_mpi2.exo
+Use Scalar Mesh File             = no
+#step list		 	 = {1 - 3/ 4 6/8/9-11,2}
+step list		 	 = {8/4 6/9-11,2/ 1 - 3}
+#time step list		 	 = 1 - 11 by 1
+#time step list		 	 = 1 - 11 by 3
+#nodal variable list		 = all
+#nodal variable list		 = displx, by, jz, velx
+nodal variable list		 = DISPLX, BY, JZ, VELX
+#elem var list		 = all
+#elem var list		 = bex, jez, density, pressure
+elem var list		 = BEX, JEZ, DENSITY, PRESSURE
+------------------------------------------------------------
+                Parallel I/O section
+------------------------------------------------------------
+Parallel Disk Info= number=1, stage_off, 
+#Parallel Disk Info= number=1, offset=1 , stage_off, 
+Parallel file location = root=/projects/nemesis/data/parse_101700_, subdir=./
+#Parallel file location = root=/pfs_grande/multi/tmp_, subdir=jesturt/./z_pinch1

@@ -1,0 +1,49 @@
+''' ====================================================================
+''' ------------------------
+''' | CVS File Information |
+''' ------------------------
+'''
+''' $RCSfile: nem_join.man,v $
+'''
+''' $Author: rwstotz $
+'''
+''' $Date: 1999/01/22 22:35:41 $
+'''
+''' $Revision: 1.10 $
+'''
+''' $Name:  $
+'''====================================================================
+.TH NEM_JOIN 1 LOCAL
+
+.SH NAME
+nem_join - join the results from a group of parallel ExodusII files
+and append them to an existing ExodusII mesh file.
+
+.SH SYNOPSIS
+.B nem_join
+<
+.B input command file
+>
+
+.SH DESCRIPTION
+.I nem_join
+reads it's input command file (default name nem_join.inp), takes
+the parallel file description and the named ExodusII, combines
+the results (located in the parallel files) and writes them to
+the ExodusII file.
+
+.SH INPUT FILE FORMAT
+An example input file named nem_join.inp should be included in the
+distribution. If you didn't obtain this file you can contact one of
+the authors whose name and email is given at the bottom.
+
+.SH AUTHORS
+Gary L. Hennigan, Sandia National Labs, Dept. 9221
+.br
+email: glhenni@cs.sandia.gov
+.PP
+.br
+.br
+Matt M. St. John, Sandia National Labs, Dept. 9221
+.br
+email: mmstjoh@cs.sandia.gov

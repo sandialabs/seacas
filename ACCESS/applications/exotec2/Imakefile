@@ -1,0 +1,14 @@
+CODE = exotec2
+
+SRCS = exotec2.c tec.c
+
+OBJS = exotec2.o tec.o
+
+LIBS = $(EXOIIV2C) $(NETCDF)
+
+NormalCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+
+InstallProgram($(CODE),$(BINDIR))
+
+CleanTarget()
+

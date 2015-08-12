@@ -1,0 +1,15 @@
+XCOMM $Id: Imakefile,v 1.3 1999/02/18 22:29:20 gdsjaar Exp $
+
+CODE = sphgen3d
+
+SRCS = sphgen3d.f
+
+OBJS = ${SRCS:.f=.o}
+
+LIBS = $(EXOIIV2FOR) $(EXOIIV2C) $(NETCDF) $(SUPLIB) $(SUPES) 
+
+NormalFortranTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+
+InstallTarget(install,$(CODE),$(INSTBINFLAGS),$(BINDIR))
+
+DependTarget()

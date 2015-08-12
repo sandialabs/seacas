@@ -1,0 +1,44 @@
+XCOMM $Id: Imakefile,v 1.14 2005/03/14 14:05:23 gdsjaar Exp $
+XCOMM Imakefile for nem_join
+
+#if defined(OSF1Architecture)
+CDEBUGFLAGS=-O
+CCOPTIONS=
+#endif
+
+CODE = nem_join
+
+NESRCS = \
+el_elm_info.c        el_exoII_io_util.c   jo_check_inp.c \
+jo_elem_blk.c        jo_get_maps.c        jo_main.c \
+jo_mesh.c            jo_node_set.c \
+jo_put_results.c     jo_read_global.c     jo_read_init.c \
+jo_setup_sc_file.c   jo_side_set.c        jo_util.c \
+pe_input.c           pe_str_util.c        pe_util.c \
+rf_allo.c            rf_comm.c            rf_fanin.c \
+rf_util.c            sort_utils.c         io_util.c
+
+
+#if defined(OSF1Architecture)
+MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
+#elif defined(SunArchitecture)
+MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
+#elif defined(SGIArchitecture)
+MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
+#elif defined(HPArchitecture)
+MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
+#elif defined(LinuxArchitecture)
+MDSRCS          = md_timer_getrusage.c md_wrap_generic_c.c
+#else
+MDSRCS          = md_timer_generic.c md_wrap_generic_c.c
+#endif
+LIBS = $(SUPLIB) $(EXOIIV2C) $(NETCDF) -lm
+
+NEOBJS = ${NESRCS:.c=.o}
+MDOBJS = ${MDSRCS:.c=.o}
+OBJS   = $(NEOBJS) $(MDOBJS)
+
+NormalCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+
+InstallTarget(install,$(CODE),$(INSTBINFLAGS),$(BINDIR))
+
