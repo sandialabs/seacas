@@ -88,9 +88,9 @@ InstallProgram(fastq,       $(BINDIR))
 InstallProgram(decomp,      $(BINDIR))
 InstallProgram(epup,        $(BINDIR))
 InstallProgram(post,        $(BINDIR))
+InstallProgram(loadbal,     $(BINDIR))
 
 InstallProgram(failprob,    $(ETCDIR))
-InstallProgram(loadbal,     $(ETCDIR))
 InstallProgram(sfmakedepend,$(ETCDIR))
 
 InstallProgram(buildSEACAS,$(ETCDIR))
