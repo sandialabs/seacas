@@ -1,0 +1,24 @@
+XCOMM $Id: Imakefile,v 1.9 1999/11/30 14:30:52 rwstotz Exp $
+
+CODE = genhxshl
+
+#if defined(CrossLinuxArchitecture)
+CXXSTD_DEFINES = -Dlinux -D__alpha__ -DADDC_ $(CXXPROJECT_DEFINES)
+#endif
+
+LIBS = $(EXOIIV2C) $(NETCDF) -lm
+
+SRCS = genhxshl.C Nodeset.C banner.C Element_Block.C Sideset.C Mesh.C Node.C \
+       UserInput.C Hexshell.C QA_Records.C Info_Records.C HSjoint.C Command.C \
+       Combine.C Combine_Pairs.C
+
+OBJS = genhxshl.o Nodeset.o banner.o Element_Block.o Sideset.o Mesh.o Node.o \
+       UserInput.o Hexshell.o QA_Records.o Info_Records.o HSjoint.o Command.o \
+       Combine.o Combine_Pairs.o
+
+NormalCCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+ 
+InstallNamedTarget(install,$(CODE),NullParameter,$(BINDIR),genhxshl)
+
+DependTarget()
+
