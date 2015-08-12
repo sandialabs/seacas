@@ -284,6 +284,7 @@ C
 C
       call exclos(ndbin, ierr)
       call exclos(ndbout, ierr)
+      call addlog ('sphgen3d')
 
       RETURN
 C
