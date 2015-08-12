@@ -10,6 +10,7 @@
 #include "UserInput.h"
 #include "exodusII.h"
 #include <assert.h>
+#include "add_to_log.h"                 // for add_to_log
 
 int main(int argc , char *argv[] )
 {
@@ -36,6 +37,7 @@ int main(int argc , char *argv[] )
 // Write the new mesh
   mesh1.write_exodus( Output_Mesh );
 
+  add_to_log(argv[0], 0.0);
   return(0);   
 }
 

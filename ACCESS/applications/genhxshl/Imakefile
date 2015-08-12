@@ -6,7 +6,7 @@ CODE = genhxshl
 CXXSTD_DEFINES = -Dlinux -D__alpha__ -DADDC_ $(CXXPROJECT_DEFINES)
 #endif
 
-LIBS = $(EXOIIV2C) $(NETCDF) -lm
+LIBS = $(SUPLIB) $(EXOIIV2C) $(NETCDF) -lm
 
 SRCS = genhxshl.C Nodeset.C banner.C Element_Block.C Sideset.C Mesh.C Node.C \
        UserInput.C Hexshell.C QA_Records.C Info_Records.C HSjoint.C Command.C \
@@ -17,7 +17,7 @@ OBJS = genhxshl.o Nodeset.o banner.o Element_Block.o Sideset.o Mesh.o Node.o \
        Combine.o Combine_Pairs.o
 
 NormalCCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
- 
+
 InstallNamedTarget(install,$(CODE),NullParameter,$(BINDIR),genhxshl)
 
 DependTarget()

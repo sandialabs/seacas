@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "add_to_log.h"                 // for add_to_log
 
 extern void tec(int iexi, const char *filename);
 
@@ -51,4 +52,6 @@ int main(int argc, char *argv[])
   tec(exoid, filename);
 
   ex_close(exoid);
+
+  add_to_log(argv[0], 0.0);
 }
