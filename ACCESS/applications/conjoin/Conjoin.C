@@ -1679,14 +1679,15 @@ namespace {
       ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
 
       /// \todo Check for name collision on status variables.
+	std::string status;
 	if (vars.type() == EX_ELEM_BLOCK || vars.type() == EX_NODAL) {
 	  if (vars.type() == EX_ELEM_BLOCK) {
-	    std::string status = si.element_status_variable();
+	    status = si.element_status_variable();
 	    if (status != "NONE")
 	      strcpy(input_name_list[num_input_vars-1], status.c_str());
 	  }
 	  else if (vars.type() == EX_NODAL) {
-	    std::string status = si.nodal_status_variable();
+	    status = si.nodal_status_variable();
 	    if (status != "NONE")
 	      strcpy(input_name_list[num_input_vars-1], status.c_str());
 	  }
@@ -1704,6 +1705,21 @@ namespace {
 	    }
 	  }
 	}
+
+	// See if any of the variable names conflict with the status variable name...
+	if (status != "NONE") {
+	  for (size_t i=0; i < vars.count(OUT)-1; i++) {
+	    if (case_compare(output_name_list[i], status) == 0) {
+	      // Error -- duplicate element variable names on output database.
+	      std::cerr << "\nERROR: A " << vars.label()
+			<< " variable already exists on the input database with the "
+			<< "same name as the status variable '" << status
+			<< "'. This is not allowed.\n\n";
+	      exit(EXIT_FAILURE);
+	  }
+	  }
+	}
+
 	maxlen += 2;
 	// Assume 8 characters for initial tab...
 	int width = si.screen_width();
