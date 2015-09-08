@@ -123,15 +123,15 @@ fi
 
 
 # Function for getting the SEACAS root directory and other settings from
-# the ACCESS/itools/config/cf/site.def file
+# the src/itools/config/cf/site.def file
 
 GetDefaultAccessRootDir() {
 DefaultAccessRootDir=`/bin/pwd`
-SiteConfig="ACCESS/itools/config/cf/site.def"    
+SiteConfig="src/itools/config/cf/site.def"    
 
-if [ ! -d $DefaultAccessRootDir/ACCESS/itools/config/cf ]; then
+if [ ! -d $DefaultAccessRootDir/src/itools/config/cf ]; then
     echo "${txtred}"
-    echo "\"$DefaultAccessRootDir/ACCESS/itools/config/cf\" does not exist!"
+    echo "\"$DefaultAccessRootDir/src/itools/config/cf\" does not exist!"
     echo "The basic SEACAS directory structure is not setup correctly"
     echo "or you are running the script from the wrong directory!"
     echo "Exiting the script..."
@@ -506,23 +506,23 @@ fi
 # end of ExecuteCommand
 
 
-# Function for executing "make World" in ACCESS/itools:
+# Function for executing "make World" in src/itools:
 
 DoMakeWorld() {
 ExecuteCommand "make World" "makeWorld.log" \
-               "$DefaultAccessRootDir/ACCESS/itools" "$LocalBootStrapCFlags" \
-               "with 'make install' in $DefaultAccessRootDir/ACCESS/itools" \
+               "$DefaultAccessRootDir/src/itools" "$LocalBootStrapCFlags" \
+               "with 'make install' in $DefaultAccessRootDir/src/itools" \
                "$LocalExtraBootStrapCFlags"
 }
 
 
-# Function for executing "make install" in ACCESS/itools:
+# Function for executing "make install" in src/itools:
 DoMakeInstallItools() {
 InDoMakeInstallAccess=NO
 InDoMakeInstallItools=YES
 ExecuteCommand "make install" "makeinstallItools.log" \
-               "$DefaultAccessRootDir/ACCESS/itools" "" \
-               "with 'accmkmf' in $DefaultAccessRootDir/ACCESS/"
+               "$DefaultAccessRootDir/src/itools" "" \
+               "with 'accmkmf' in $DefaultAccessRootDir/src/"
 
 ACCESS=$DefaultAccessRootDir; export ACCESS
 PATH=$ACCESS/etc:$ACCESS/bin:$PATH; export PATH
@@ -530,9 +530,9 @@ InDoMakeInstallItools=NO
 }
 
 
-# Function for executing "accmkmf" in ACCESS:
+# Function for executing "accmkmf" in src:
 DoAccmkmf() {
-   ExecuteCommand "accmkmf" "accmkmf.log" "$DefaultAccessRootDir/ACCESS" "" \
+   ExecuteCommand "accmkmf" "accmkmf.log" "$DefaultAccessRootDir/src" "" \
                   "with 'accmkmfTPL'"
 }
 
@@ -563,21 +563,21 @@ fi
 # Making parallel setup (only needed for Parallel=1):
 DoMakeParallelsetup() {
 ExecuteCommand "make parallelsetup" "makeparallelsetup.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/src" "" \
                "with 'make Makefiles'"
 }
 
 # Making Makefiles:
 DoMakeMakefiles() {
 ExecuteCommand "make Makefiles" "makeMakefiles.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/src" "" \
                "with 'make makeincludes'"
 }
 
 # Making makeincludes:
 DoMakeMakeincludes() {
 ExecuteCommand "make makeincludes" "makemakeincludes.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/src" "" \
                "with 'make clean'"
 }
 
@@ -591,11 +591,11 @@ ExecuteCommand "make clean" "makeclean.log" "$1" "" ""
 DoMakeLibraries() {
 if [ "$DefaultParallel" = "1" ]; then
    ExecuteCommand "make libraries" "makelibraries.log" \
-                  "$DefaultAccessRootDir/ACCESS" "" \
+                  "$DefaultAccessRootDir/src" "" \
                   "with 'make parallellibraries'"
 else
    ExecuteCommand "make libraries" "makelibraries.log" \
-                  "$DefaultAccessRootDir/ACCESS" "" \
+                  "$DefaultAccessRootDir/src" "" \
                   "with 'make applications'"
 fi
 }
@@ -604,7 +604,7 @@ fi
 
 DoMakeParallellibraries() {
 ExecuteCommand "make parallellibraries" "makeparallellibraries.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/src" "" \
                "with 'make applications'"
 }
 
@@ -612,7 +612,7 @@ ExecuteCommand "make parallellibraries" "makeparallellibraries.log" \
 
 DoMakeApplications() {
 ExecuteCommand "make applications" "makeapplications.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
+               "$DefaultAccessRootDir/src" "" \
                "with 'make scripts'"
 }
 
@@ -620,16 +620,16 @@ ExecuteCommand "make applications" "makeapplications.log" \
 
 DoMakeScripts() {
 ExecuteCommand "make scripts" "makescripts.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
-               "with 'make install' in $DefaultAccessRootDir/ACCESS"
+               "$DefaultAccessRootDir/src" "" \
+               "with 'make install' in $DefaultAccessRootDir/src"
 }
 
 # Making all SEACAS codes:
 
 DoMakeAll() {
 ExecuteCommand "make -j8 all" "makeall.log" \
-               "$DefaultAccessRootDir/ACCESS" "" \
-               "with 'make install' in $DefaultAccessRootDir/ACCESS"
+               "$DefaultAccessRootDir/src" "" \
+               "with 'make install' in $DefaultAccessRootDir/src"
 }
 
 # Installing the SEACAS codes:
@@ -638,7 +638,7 @@ DoMakeInstallAccess() {
 InDoMakeInstallItools=NO
 InDoMakeInstallAccess=YES
 ExecuteCommand "make install" "makeinstall.log" \
-    "$DefaultAccessRootDir/ACCESS" "" ""
+    "$DefaultAccessRootDir/src" "" ""
 echo ""
 echo ""
 if [ "$DefaultGroup" != "Group" ]; then
@@ -722,11 +722,11 @@ do
    echo "            *** Command Selection ***"
    echo ""
    echo ""
-   echo "In $DefaultAccessRootDir/ACCESS/itools:" 
+   echo "In $DefaultAccessRootDir/src/itools:" 
    echo ""
    echo " 1) make World                   2) make install"
    echo ""
-   echo "In $DefaultAccessRootDir/ACCESS:"
+   echo "In $DefaultAccessRootDir/src:"
    echo ""
    echo " 3) accmkmf                      4) make parallelsetup"
    echo " 5) make Makefiles               6) make makeincludes" 
@@ -768,30 +768,30 @@ do
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
           7 ) MakeCleanSelected=YES
-              DoMakeClean "$DefaultAccessRootDir/ACCESS"
+              DoMakeClean "$DefaultAccessRootDir/src"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         10 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/libraries"
+         10 ) CheckMakeClean "$DefaultAccessRootDir/src/libraries"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeLibraries
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         11 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/parallellibraries"
+         11 ) CheckMakeClean "$DefaultAccessRootDir/src/parallellibraries"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeParallellibraries
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         15 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/applications"
+         15 ) CheckMakeClean "$DefaultAccessRootDir/src/applications"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeApplications
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         16 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS/scripts"
+         16 ) CheckMakeClean "$DefaultAccessRootDir/src/scripts"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeScripts
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               break ;;
-         20 ) CheckMakeClean "$DefaultAccessRootDir/ACCESS"
+         20 ) CheckMakeClean "$DefaultAccessRootDir/src"
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
               DoMakeAll
               if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -891,7 +891,7 @@ do
    echo ""
    echo "This script assumes that you have already modified the configuration files"
    echo "\"site.def\" and \"your-system.cf\" (for example \"linux.cf\") required for"
-   echo "this build. The files are in ACCESS/itools/config/cf."
+   echo "this build. The files are in src/itools/config/cf."
    echo "" 
    echo "Please make sure before continuing that the settings below"
    echo "are set to what you want:"
@@ -931,7 +931,7 @@ if [ $automatic ]; then
     fi
     DoMakeMakefiles
     DoMakeMakeincludes
-    DoMakeClean "$DefaultAccessRootDir/ACCESS"
+    DoMakeClean "$DefaultAccessRootDir/src"
     DoMakeAllDoMakeInstall
     exit
 else
@@ -963,7 +963,7 @@ else
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeMakeincludes
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeClean "$DefaultAccessRootDir/ACCESS"
+             DoMakeClean "$DefaultAccessRootDir/src"
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAllDoMakeInstall
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
@@ -1006,7 +1006,7 @@ else
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeMakeincludes
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
-             DoMakeClean "$DefaultAccessRootDir/ACCESS"
+             DoMakeClean "$DefaultAccessRootDir/src"
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
              DoMakeAllDoMakeInstall
              if [ "$ReturnToMenu" = "YES" ]; then ReturnToMenu=NO; break; fi
