@@ -168,18 +168,19 @@ int cmd_line_arg_parse(
   }
 
   /* Loop over each command line option */
-  while((opt_let=getopt(argc, argv, "64a:hm:l:nes:x:w:vo:cg:fpS")) != EOF) {
+  while((opt_let=getopt(argc, argv, "64a:hm:l:nes:x:w:vyo:cg:fpS")) != EOF) {
 
     /* case over the option letter */
     switch(opt_let)
     {
     case 'v':
       /* Should an ouput visualization file be output */
-      if(prob->vis_out == ELB_TRUE)
-        prob->vis_out = ELB_FALSE;
-      else
-        prob->vis_out =  ELB_TRUE;
+      prob->vis_out = 1;
+      break;
 
+    case 'y':
+      /* Should an ouput visualization file be output */
+      prob->vis_out = 2;
       break;
 
     case 'x':
@@ -834,7 +835,7 @@ int read_cmd_file(std::string &ascii_inp_file,
             }
             else
             {
-              if(problem->vis_out != 1)
+              if(problem->vis_out != 1 && problem->vis_out != 2)
                 problem->vis_out = 0;
             }
           }
