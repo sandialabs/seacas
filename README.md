@@ -19,7 +19,7 @@ There are a few externally developed libraries that are required to build SEACAS
 #### netcdf:
 The most recent released version is recommended. 
 
-   * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz)nfrom http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside SEACAS/TPL/netcdf
+   * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside SEACAS/TPL/netcdf
    * cd TPL/netcdf
    * tar zxvf netcdf-4.3.3.1.tar.gz
    * If the untar does not create a netcdf-4.3.3.1 directory, modify the Imakefile in the current directory such that V_NUM specifies the correct name
@@ -69,7 +69,7 @@ cd back to the top-level SEACAS subdirectory. The current directory (SEACAS unle
     setenv SEACAS `pwd`  (csh/tcsh)
     export SEACAS=`pwd`  (sh/bash)
 ```
-If you do `ls $SEACAS/ACCESS`, you should see something similar to:
+If you do `ls $SEACAS/src`, you should see something similar to:
 ```
    applications  Imakefile  itools  libraries  scripts  
 ```
@@ -83,7 +83,7 @@ NOTE: The site.def and platform.cf files describe below are processed
  * The `#` indicates code processed by CPP; typically the files use `#define`, `#else`, `#endif`, and `#ifdef` to determine options and define values.
  * Most other syntax will cause problems.
 
- * Move into the `$SEACAS/ACCESS/itools/config/cf` directory and edit the `site.def` and the configuration file associated with your platform (e.g. `linux.cf` for linux OS; `darwin.cf` for MacOS)
+ * Move into the `$SEACAS/src/itools/config/cf` directory and edit the `site.def` and the configuration file associated with your platform (e.g. `linux.cf` for linux OS; `darwin.cf` for MacOS)
 
 ### site.def
 The `site.def` file contains settings that determine where SEACAS is going to be installed, who owns the source, and where the X11 libraries and includes files are located on your system The following setting should be entered in the site.def file:
@@ -124,10 +124,10 @@ NOTE: If you are building on MacOS and using the Mac ports compilers, then defin
 The platform.cf configuration file contains system-specific settings; in particular compiler paths.  The linux.cf file is the most complicated due to the multitude of compilers available.  Pick the define corresponding to the compilers you will be using and then search for that #if block and make sure paths are correct; the paths typically only need changing for parallel compiles and if your system has multiple versions of compilers.
 
 ## Build 
-Use the script `ACCESS/scripts/buildSEACAS`, which enters the commands for you.  You should be in the directory specified as your `AccessRoot` above. Then enter:
+Use the script `src/scripts/buildSEACAS`, which enters the commands for you.  You should be in the directory specified as your `AccessRoot` above. Then enter:
 
 ```
-      sh ACCESS/scripts/buildSEACAS -auto
+      sh src/scripts/buildSEACAS -auto
 ```
 
 If you have any problems, send an email to `gdsjaar@sandia.gov`. Include any log files that were created during your attempted build. These will be in `$SEACAS/Logs`.  Also include the `site.def` and `platform.cf` (e.g. `linux.cf`, `darwin.cf`).  The subject of your email should include "SEACAS build error".
@@ -136,7 +136,7 @@ If you have any problems, send an email to `gdsjaar@sandia.gov`. Include any log
 
 Once everything builds, you can do a basic correctness test.  cd to the SEACAS-Test subdirectory and type `make`.  It will run through several of the programs building several meshes, joining them into a single mesh, decomposing it for use in a parallel file-per-processor analysis, joining the per-processor files back to a single file using epu and then converting the mesh file to text format and to matlab format.
 
-The exodus library can also be tested by changing directory to the ACCESS/libraries/exodus subdirectory and typing `make check`.  This will test both the C and fortran API.
+The exodus library can also be tested by changing directory to the src/libraries/exodus subdirectory and typing `make check`.  This will test both the C and fortran API.
 
 ## Contact information
 
