@@ -34,6 +34,7 @@
  */
 
 #include "elb_output.h"
+#include <iostream>
 #include <exodusII.h>                   // for ex_close, ex_opts, etc
 #include <stddef.h>                     // for size_t, NULL
 #include <stdio.h>                      // for printf, sprintf, fprintf, etc
@@ -562,447 +563,327 @@ int write_nemesis(std::string &nemI_out_file,
 			 Mesh_Description<int64_t>* mesh, LB_Description<int64_t>* lb);
 
 
-  template <typename INT>
-    int write_vis(std::string &nemI_out_file,
-		  std::string &exoII_inp_file,
-		  Machine_Description* machine,
-		  Problem_Description* prob,
-		  Mesh_Description<INT>* mesh,
-		  LB_Description<INT>* lb)
-    {
-      int    exid_vis, exid_inp, acc_vis;
+template <typename INT>
+int write_vis(std::string &nemI_out_file,
+	      std::string &exoII_inp_file,
+	      Machine_Description* machine,
+	      Problem_Description* prob,
+	      Mesh_Description<INT>* mesh,
+	      LB_Description<INT>* lb)
+{
+  int    exid_vis, exid_inp;
 
-      char  title[MAX_LINE_LENGTH+1];
-      const char   *coord_names[] = {"X", "Y", "Z"};
+  char  title[MAX_LINE_LENGTH+1];
+  const char   *coord_names[] = {"X", "Y", "Z"};
 
-      /*-----------------------------Execution Begins------------------------------*/
+  /*-----------------------------Execution Begins------------------------------*/
 
-      /* Generate the file name for the visualization file */
-      std::string vis_file_name = remove_extension(nemI_out_file);
-      vis_file_name += "-vis.exoII";
+  /* Generate the file name for the visualization file */
+  std::string vis_file_name = remove_extension(nemI_out_file);
+  vis_file_name += "-vis.exoII";
 
-      /* Generate the title for the file */
-      strcpy(title, UTIL_NAME);
-      strcat(title, " ");
-      strcat(title, ELB_VERSION);
-      strcat(title, " load balance visualization file");
+  /* Generate the title for the file */
+  strcpy(title, UTIL_NAME);
+  strcat(title, " ");
+  strcat(title, ELB_VERSION);
+  strcat(title, " load balance visualization file");
 
-      /*
-       * If the vis technique is to be by element block then calculate the
-       * number of element blocks.
-       */
-      int    vis_nelem_blks;
-      if(prob->type == ELEMENTAL)
-	vis_nelem_blks = machine->num_procs;
-      else
-	vis_nelem_blks = machine->num_procs + 1;
+  /*
+   * If the vis technique is to be by element block then calculate the
+   * number of element blocks.
+   */
+  int    vis_nelem_blks;
+  if(prob->type == ELEMENTAL)
+    vis_nelem_blks = machine->num_procs;
+  else
+    vis_nelem_blks = machine->num_procs + 1;
 
-      /* Create the ExodusII file */
-      fprintf(stdout, "Outputting load balance visualization file %s\n",
-	      vis_file_name.c_str());
-      int cpu_ws = 0;
-      int io_ws = 0;
-      int mode = EX_CLOBBER;
-      if (prob->int64db|prob->int64api) {
-	mode |= EX_NETCDF4|EX_NOCLASSIC|prob->int64db|prob->int64api;
-      }
-      if((exid_vis=ex_create(vis_file_name.c_str(), mode, &cpu_ws, &io_ws)) < 0)
-	{
-	  Gen_Error(0, "fatal: unable to create visualization output file");
-	  return 0;
-	}
+  /* Create the ExodusII file */
+  std::cout << "Outputting load balance visualization file " << vis_file_name.c_str() << "\n";
+  int cpu_ws = 0;
+  int io_ws = 0;
+  int mode = EX_CLOBBER;
+  if (prob->int64db|prob->int64api) {
+    mode |= EX_NETCDF4|EX_NOCLASSIC|prob->int64db|prob->int64api;
+  }
+  if((exid_vis=ex_create(vis_file_name.c_str(), mode, &cpu_ws, &io_ws)) < 0) {
+    Gen_Error(0, "fatal: unable to create visualization output file");
+    return 0;
+  }
 
-      /*
-       * Open the original input ExodusII file, read the values for the
-       * element blocks and output them to the visualization file.
-       */
-      int icpu_ws=0;
-      int iio_ws=0;
-      float vers=0.0;
-      mode = EX_READ | prob->int64api;
-      if((exid_inp=ex_open(exoII_inp_file.c_str(), mode, &icpu_ws, &iio_ws, &vers)) < 0)
-	{
-	  Gen_Error(0, "fatal: unable to open input ExodusII file");
-	  ex_close(exid_vis);
-	  return 0;
-	}
+  /*
+   * Open the original input ExodusII file, read the values for the
+   * element blocks and output them to the visualization file.
+   */
+  int icpu_ws=0;
+  int iio_ws=0;
+  float vers=0.0;
+  mode = EX_READ | prob->int64api;
+  if((exid_inp=ex_open(exoII_inp_file.c_str(), mode, &icpu_ws, &iio_ws, &vers)) < 0) {
+    Gen_Error(0, "fatal: unable to open input ExodusII file");
+    ex_close(exid_vis);
+    return 0;
+  }
 
-      INT *el_blk_ids = (INT*)malloc((4*(mesh->num_el_blks)+2*mesh->num_elems+
-				      vis_nelem_blks+1)
-				     *sizeof(INT));
-      char **elem_type  = (char**)array_alloc(2, mesh->num_el_blks, MAX_STR_LENGTH+1,
-					      sizeof(char));
-      if(!el_blk_ids || !elem_type)
-	{
-	  Gen_Error(0, "fatal: insufficient memory");
-	  ex_close(exid_vis);
-	  return 0;
-	}
-      INT *el_cnt_blk     = el_blk_ids + mesh->num_el_blks;
-      INT *node_pel_blk   = el_cnt_blk + mesh->num_el_blks;
-      INT *nattr_el_blk   = node_pel_blk + mesh->num_el_blks;
-      INT *elem_block     = nattr_el_blk + mesh->num_el_blks;
-      INT *vis_el_blk_ptr = elem_block + mesh->num_elems;
-      INT *elem_map       = vis_el_blk_ptr + (vis_nelem_blks+1);
+  char **elem_type  = (char**)array_alloc(2, mesh->num_el_blks, MAX_STR_LENGTH+1,
+					  sizeof(char));
+  if(!elem_type) {
+    Gen_Error(0, "fatal: insufficient memory");
+    ex_close(exid_vis);
+    return 0;
+  }
 
-      if(ex_get_elem_blk_ids(exid_inp, el_blk_ids) < 0)
-	{
-	  Gen_Error(0, "fatal: unable to get element block IDs");
-	  ex_close(exid_vis);
-	  ex_close(exid_inp);
-	  return 0;
-	}
+  std::vector<INT> el_blk_ids(mesh->num_el_blks);
+  std::vector<INT> el_cnt_blk(mesh->num_el_blks);
+  std::vector<INT> node_pel_blk(mesh->num_el_blks);
+  std::vector<INT> nattr_el_blk(mesh->num_el_blks);
 
-      acc_vis = ELB_TRUE;
-      size_t nsize = 0;
+  if(ex_get_elem_blk_ids(exid_inp, TOPTR(el_blk_ids)) < 0) {
+    Gen_Error(0, "fatal: unable to get element block IDs");
+    ex_close(exid_vis);
+    ex_close(exid_inp);
+    return 0;
+  }
 
-      /*
-       * Find out if the mesh consists of mixed elements. If not then
-       * element blocks will be used to visualize the partitioning. Otherwise
-       * nodal results will be used.
-       */
-      for(size_t ecnt=0; ecnt < mesh->num_el_blks; ecnt++)
-	{
-	  if(ex_get_elem_block(exid_inp, el_blk_ids[ecnt], elem_type[ecnt],
-			       &el_cnt_blk[ecnt], &node_pel_blk[ecnt],
-			       &nattr_el_blk[ecnt]) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to get element block parameters");
-	      ex_close(exid_vis);
-	      ex_close(exid_inp);
-	      return 0;
-	    }
+  int acc_vis = ELB_TRUE; // Output a different element block per processor
+  if (prob->vis_out == 2)
+    acc_vis = ELB_FALSE; // Output a nodal/element variable showing processor
 
-	  nsize += el_cnt_blk[ecnt]*node_pel_blk[ecnt];
+  size_t nsize = 0;
 
-	  if(strcmp(elem_type[0], elem_type[ecnt]) == 0 && acc_vis != ELB_FALSE)
-	    {
-	      if(node_pel_blk[0] == node_pel_blk[ecnt])
-		acc_vis = ELB_TRUE;
-	      else
-		acc_vis = ELB_FALSE;
-	    }
-	  else
-	    acc_vis = ELB_FALSE;
-	}
-
-      /*
-       * For clearer, more accurate, element block visualization of the
-       * partitioning.
-       */
-      if(acc_vis == ELB_TRUE)
-	{
-
-	  /* Output the initial information */
-	  if(ex_put_init(exid_vis, title, mesh->num_dims, mesh->num_nodes,
-			 mesh->num_elems, vis_nelem_blks, 0, 0) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output initial params to vis file");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  /* Output the nodal coordinates */
-	  float *xptr = NULL;
-	  float *yptr = NULL;
-	  float *zptr = NULL;
-	  switch(mesh->num_dims)
-	    {
-	    case 3:
-	      zptr = (mesh->coords) + 2*mesh->num_nodes;
-	      /* FALLTHRU */
-	    case 2:
-	      yptr = (mesh->coords) + mesh->num_nodes;
-	      /* FALLTHRU */
-	    case 1:
-	      xptr = mesh->coords;
-	    }
-	  if(ex_put_coord(exid_vis, xptr, yptr, zptr) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output coords to vis file");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  if(ex_put_coord_names(exid_vis, (char**)coord_names) < 0) {
-	    Gen_Error(0, "fatal: unable to output coordinate names");
-	    ex_close(exid_vis);
-	    return 0;
-	  }
-
-	  INT* tmp_connect = (INT*)malloc(nsize*sizeof(INT));
-	  if(!tmp_connect)
-	    {
-	      Gen_Error(0, "fatal: insufficient memory");
-	      ex_close(exid_inp);
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-	  for(size_t ecnt=0; ecnt < mesh->num_elems; ecnt++)
-	    {
-	      elem_map[ecnt] = ecnt+1;
-	      if(prob->type == ELEMENTAL)
-		elem_block[ecnt] = lb->vertex2proc[ecnt];
-	      else
-		{
-		  int proc   = lb->vertex2proc[mesh->connect[ecnt][0]];
-		  int nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
-		  elem_block[ecnt] = proc;
-		  for(int ncnt=1; ncnt < nnodes; ncnt++) {
-		    if(lb->vertex2proc[mesh->connect[ecnt][ncnt]] != proc) {
-		      elem_block[ecnt] = machine->num_procs;
-		      break;
-		    }
-		  }
-		}
-	    }
-
-	  int ccnt = 0;
-	  for(INT bcnt=0; bcnt < vis_nelem_blks; bcnt++) {
-	      vis_el_blk_ptr[bcnt] = ccnt;
-	      int pos = 0;
-	      int old_pos = 0;
-	      INT* el_ptr = elem_block;
-	      size_t ecnt   = mesh->num_elems;
-	      while(pos != -1)
-		{
-		  pos = in_list(bcnt, ecnt, el_ptr);
-		  if(pos != -1)
-		    {
-		      old_pos += pos + 1;
-		      ecnt     = mesh->num_elems - old_pos;
-		      el_ptr   = elem_block + old_pos;
-		      int nnodes = get_elem_info(NNODES, mesh->elem_type[old_pos-1]);
-		      for(int ncnt=0; ncnt < nnodes; ncnt++)
-			tmp_connect[ccnt++] = mesh->connect[old_pos-1][ncnt] + 1;
-		    }
-		}
-	    }
-	  vis_el_blk_ptr[vis_nelem_blks] = ccnt;
-
-	  /* Output the element map */
-	  if(ex_put_map(exid_vis, elem_map) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output element number map");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  /* Output the visualization element blocks */
-	  for(int bcnt=0; bcnt < vis_nelem_blks; bcnt++)
-	    {
-	      /*
-	       * Note this assumes all the blocks contain the same type
-	       * element.
-	       */
-	      int ecnt = (vis_el_blk_ptr[bcnt+1]-vis_el_blk_ptr[bcnt])/node_pel_blk[0];
-	      if(ex_put_elem_block(exid_vis, bcnt+1, elem_type[0],
-				   ecnt, node_pel_blk[0], 0) < 0)
-		{
-		  Gen_Error(0, "fatal: unable to output element block params");
-		  ex_close(exid_vis);
-		  return 0;
-		}
-
-	      /* Output the connectivity */
-	      if(ex_put_elem_conn(exid_vis, bcnt+1,
-				  &tmp_connect[vis_el_blk_ptr[bcnt]]) < 0)
-		{
-		  Gen_Error(0, "fatal: unable to output element connectivity");
-		  ex_close(exid_vis);
-		  return 0;
-		}
-	    }
-
-	  /* Free some unused memory */
-	  if(tmp_connect)
-	    free(tmp_connect);
-	  if(el_blk_ids)
-	    free(el_blk_ids);
-	  if(elem_type)
-	    free(elem_type);
-
-	}
-      else	/* For nodal results visualization of the partioning. */
-	{
-	  /* Output the initial information */
-	  if(ex_put_init(exid_vis, title, mesh->num_dims, mesh->num_nodes,
-			 mesh->num_elems, mesh->num_el_blks, 0, 0) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output initial params to vis file");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  /* Output the nodal coordinates */
-	  float *xptr = NULL;
-	  float *yptr = NULL;
-	  float *zptr = NULL;
-	  switch(mesh->num_dims)
-	    {
-	    case 3:
-	      zptr = (mesh->coords) + 2*mesh->num_nodes;
-	      /* FALLTHRU */
-	    case 2:
-	      yptr = (mesh->coords) + mesh->num_nodes;
-	      /* FALLTHRU */
-	    case 1:
-	      xptr = mesh->coords;
-	    }
-	  if(ex_put_coord(exid_vis, xptr, yptr, zptr) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output coords to vis file");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-	  if(ex_put_coord_names(exid_vis, (char**)coord_names) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output coordinate names");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  size_t nsize_old = 0;
-	  INT *tmp_connect = NULL;
-	  for(size_t ecnt=0; ecnt < mesh->num_el_blks; ecnt++)
-	    {
-	      nsize = el_cnt_blk[ecnt] * node_pel_blk[ecnt] * sizeof(INT);
-	      if(nsize > nsize_old)
-		{
-		  if(nsize_old == 0) {
-		    tmp_connect = (INT*)malloc(nsize);
-		    nsize_old = nsize;
-		  }
-		  else
-		    {
-		      tmp_connect = (INT*)realloc(tmp_connect, nsize);
-		      nsize_old = nsize;
-		    }
-
-		  if(!tmp_connect)
-		    {
-		      Gen_Error(0, "fatal: insufficient memory");
-		      ex_close(exid_vis);
-		      ex_close(exid_inp);
-		      return 0;
-		    }
-		}
-
-	      if(ex_get_elem_conn(exid_inp, el_blk_ids[ecnt], tmp_connect) < 0)
-		{
-		  Gen_Error(0, "fatal: unable to get element connectivity");
-		  ex_close(exid_vis);
-		  ex_close(exid_inp);
-		  return 0;
-		}
-
-	      if(ex_put_elem_block(exid_vis, el_blk_ids[ecnt], elem_type[ecnt],
-				   el_cnt_blk[ecnt], node_pel_blk[ecnt],
-				   nattr_el_blk[ecnt]) < 0)
-		{
-		  Gen_Error(0, "fatal: unable to output element block parameters");
-		  ex_close(exid_vis);
-		  ex_close(exid_inp);
-		  return 0;
-		}
-
-	      if(ex_put_elem_conn(exid_vis, el_blk_ids[ecnt], tmp_connect) < 0)
-		{
-		  Gen_Error(0, "fatal: unable to output element connectivity");
-		  ex_close(exid_vis);
-		  ex_close(exid_inp);
-		  return 0;
-		}
-
-	    }
-
-
-	  /* Free some memory */
-	  if(tmp_connect)
-	    free(tmp_connect);
-
-	  if(el_blk_ids)
-	    free(el_blk_ids);
-
-	  if(elem_type)
-	    free(elem_type);
-
-	  /* Allocate memory for the nodal values */
-	  float *node_vals = (float*)malloc(mesh->num_nodes * sizeof(float));
-	  if(!node_vals)
-	    {
-	      Gen_Error(0, "fatal: insufficient memory");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  /* Set up the file for nodal results */
-	  float time_val = 0.0;
-	  if(ex_put_time(exid_vis, 1, &time_val) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output time to vis file");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-	  if(ex_put_variable_param(exid_vis, EX_NODAL, 1) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output var params to vis file");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  const char  *var_names[] = {"proc"};
-	  if(ex_put_variable_names(exid_vis, EX_NODAL, 1, (char**)var_names) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output variable name");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  /* Do some problem specific assignment */
-	  if(prob->type == NODAL)
-	    {
-	      for(size_t ncnt=0; ncnt < mesh->num_nodes; ncnt++)
-		node_vals[ncnt] = lb->vertex2proc[ncnt];
-
-	      for(int pcnt=0; pcnt < machine->num_procs; pcnt++)
-		{
-		  for(size_t ncnt=0; ncnt < lb->bor_nodes[pcnt].size(); ncnt++)
-		    node_vals[lb->bor_nodes[pcnt][ncnt]] = machine->num_procs + 1;
-		}
-
-	    }
-	  else if(prob->type == ELEMENTAL)
-	    {
-	      for(int pcnt=0; pcnt < machine->num_procs; pcnt++)
-		{
-		  for(size_t ncnt=0; ncnt < lb->int_nodes[pcnt].size(); ncnt++)
-		    node_vals[lb->int_nodes[pcnt][ncnt]] = pcnt;
-
-		  for(size_t ncnt=0; ncnt < lb->bor_nodes[pcnt].size(); ncnt++)
-		    node_vals[lb->bor_nodes[pcnt][ncnt]] = machine->num_procs;
-		}
-	    }
-
-	  /* Output the nodal variables */
-	  if(ex_put_nodal_var(exid_vis, 1, 1, mesh->num_nodes, node_vals) < 0)
-	    {
-	      Gen_Error(0, "fatal: unable to output nodal variables");
-	      ex_close(exid_vis);
-	      return 0;
-	    }
-
-	  /* Free unused memory */
-	  free(node_vals);
-	}
-
-      /* Close the visualization file */
+  /*
+   * Find out if the mesh consists of mixed elements. If not then
+   * element blocks will be used to visualize the partitioning. Otherwise
+   * nodal/element results will be used.
+   */
+  for(size_t ecnt=0; ecnt < mesh->num_el_blks; ecnt++) {
+    if(ex_get_elem_block(exid_inp, el_blk_ids[ecnt], elem_type[ecnt],
+			 &el_cnt_blk[ecnt], &node_pel_blk[ecnt],
+			 &nattr_el_blk[ecnt]) < 0) {
+      Gen_Error(0, "fatal: unable to get element block parameters");
       ex_close(exid_vis);
-
-      /* Close the input ExodusII file */
       ex_close(exid_inp);
+      return 0;
+    }
 
-      return 1;
+    nsize += el_cnt_blk[ecnt]*node_pel_blk[ecnt];
 
-    } /*---------------------------End write_vis()-------------------------------*/
+    if(strcmp(elem_type[0], elem_type[ecnt]) == 0) {
+      if(node_pel_blk[0] != node_pel_blk[ecnt])
+	acc_vis = ELB_FALSE;
+    }
+    else
+      acc_vis = ELB_FALSE;
+  }
+
+  if(acc_vis == ELB_TRUE) {
+    /* Output the initial information */
+    if(ex_put_init(exid_vis, title, mesh->num_dims, mesh->num_nodes,
+		   mesh->num_elems, vis_nelem_blks, 0, 0) < 0) {
+      Gen_Error(0, "fatal: unable to output initial params to vis file");
+      ex_close(exid_vis);
+      return 0;
+    }
+	
+    /* Output the nodal coordinates */
+    float *xptr = NULL;
+    float *yptr = NULL;
+    float *zptr = NULL;
+    switch(mesh->num_dims) {
+    case 3:
+      zptr = (mesh->coords) + 2*mesh->num_nodes;
+      /* FALLTHRU */
+    case 2:
+      yptr = (mesh->coords) + mesh->num_nodes;
+      /* FALLTHRU */
+    case 1:
+      xptr = mesh->coords;
+    }
+    if(ex_put_coord(exid_vis, xptr, yptr, zptr) < 0) {
+      Gen_Error(0, "fatal: unable to output coords to vis file");
+      ex_close(exid_vis);
+      return 0;
+    }
+	
+    if(ex_put_coord_names(exid_vis, (char**)coord_names) < 0) {
+      Gen_Error(0, "fatal: unable to output coordinate names");
+      ex_close(exid_vis);
+      return 0;
+    }
+
+    std::vector<INT> elem_block(mesh->num_elems);
+    std::vector<INT> elem_map(mesh->num_elems);
+    std::vector<INT> tmp_connect(nsize);
+    for(size_t ecnt=0; ecnt < mesh->num_elems; ecnt++) {
+      elem_map[ecnt] = ecnt+1;
+      if(prob->type == ELEMENTAL)
+	elem_block[ecnt] = lb->vertex2proc[ecnt];
+      else {
+	int proc   = lb->vertex2proc[mesh->connect[ecnt][0]];
+	int nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
+	elem_block[ecnt] = proc;
+	for(int ncnt=1; ncnt < nnodes; ncnt++) {
+	  if(lb->vertex2proc[mesh->connect[ecnt][ncnt]] != proc) {
+	    elem_block[ecnt] = machine->num_procs;
+	    break;
+	  }
+	}
+      }
+    }
+
+    int ccnt = 0;
+    std::vector<INT> vis_el_blk_ptr(vis_nelem_blks+1);
+    for(INT bcnt=0; bcnt < vis_nelem_blks; bcnt++) {
+      vis_el_blk_ptr[bcnt] = ccnt;
+      int pos = 0;
+      int old_pos = 0;
+      INT* el_ptr = TOPTR(elem_block);
+      size_t ecnt   = mesh->num_elems;
+      while(pos != -1) {
+	pos = in_list(bcnt, ecnt, el_ptr);
+	if(pos != -1) {
+	  old_pos += pos + 1;
+	  ecnt     = mesh->num_elems - old_pos;
+	  el_ptr   = TOPTR(elem_block) + old_pos;
+	  int nnodes = get_elem_info(NNODES, mesh->elem_type[old_pos-1]);
+	  for(int ncnt=0; ncnt < nnodes; ncnt++)
+	    tmp_connect[ccnt++] = mesh->connect[old_pos-1][ncnt] + 1;
+	}
+      }
+    }
+    vis_el_blk_ptr[vis_nelem_blks] = ccnt;
+	
+    /* Output the element map */
+    if(ex_put_map(exid_vis, TOPTR(elem_map)) < 0) {
+      Gen_Error(0, "fatal: unable to output element number map");
+      ex_close(exid_vis);
+      return 0;
+    }
+	
+    /* Output the visualization element blocks */
+    for(int bcnt=0; bcnt < vis_nelem_blks; bcnt++) {
+      /*
+       * Note this assumes all the blocks contain the same type
+       * element.
+       */
+      int ecnt = (vis_el_blk_ptr[bcnt+1]-vis_el_blk_ptr[bcnt])/node_pel_blk[0];
+      if(ex_put_elem_block(exid_vis, bcnt+1, elem_type[0],
+			   ecnt, node_pel_blk[0], 0) < 0) {
+	Gen_Error(0, "fatal: unable to output element block params");
+	ex_close(exid_vis);
+	return 0;
+      }
+	  
+      /* Output the connectivity */
+      if(ex_put_elem_conn(exid_vis, bcnt+1,
+			  &tmp_connect[vis_el_blk_ptr[bcnt]]) < 0) {
+	Gen_Error(0, "fatal: unable to output element connectivity");
+	ex_close(exid_vis);
+	return 0;
+      }
+    }
+
+    /* Free some unused memory */
+    if(elem_type)
+      free(elem_type);
+	
+  }
+
+  else {	/* For nodal/element results visualization of the partioning. */
+    // Copy the mesh portion to the vis file.
+    ex_copy(exid_inp, exid_vis);
+
+    /* Set up the file for nodal/element results */
+    float time_val = 0.0;
+    if(ex_put_time(exid_vis, 1, &time_val) < 0) {
+      Gen_Error(0, "fatal: unable to output time to vis file");
+      ex_close(exid_vis);
+      return 0;
+    }
+
+    const char  *var_names[] = {"proc"};
+    if(prob->type == NODAL) {
+      /* Allocate memory for the nodal values */
+      std::vector<float> proc_vals(mesh->num_nodes);
+
+      if(ex_put_variable_param(exid_vis, EX_NODAL, 1) < 0) {
+	Gen_Error(0, "fatal: unable to output var params to vis file");
+	ex_close(exid_vis);
+	return 0;
+      }
+
+      if(ex_put_variable_names(exid_vis, EX_NODAL, 1, (char**)var_names) < 0) {
+	Gen_Error(0, "fatal: unable to output variable name");
+	ex_close(exid_vis);
+	return 0;
+      }
+
+      /* Do some problem specific assignment */
+      for(size_t ncnt=0; ncnt < mesh->num_nodes; ncnt++)
+	proc_vals[ncnt] = lb->vertex2proc[ncnt];
+
+      for(int pcnt=0; pcnt < machine->num_procs; pcnt++) {
+	for(size_t ncnt=0; ncnt < lb->bor_nodes[pcnt].size(); ncnt++)
+	  proc_vals[lb->bor_nodes[pcnt][ncnt]] = machine->num_procs + 1;
+      }
+
+      /* Output the nodal variables */
+      if(ex_put_nodal_var(exid_vis, 1, 1, mesh->num_nodes, TOPTR(proc_vals)) < 0) {
+	Gen_Error(0, "fatal: unable to output nodal variables");
+	ex_close(exid_vis);
+	return 0;
+      }
+    }
+    else if(prob->type == ELEMENTAL) {
+      /* Allocate memory for the element values */
+      std::vector<float> proc_vals(mesh->num_elems);
+
+      if(ex_put_variable_param(exid_vis, EX_ELEM_BLOCK, 1) < 0) {
+	Gen_Error(0, "fatal: unable to output var params to vis file");
+	ex_close(exid_vis);
+	return 0;
+      }
+
+      if(ex_put_variable_names(exid_vis, EX_ELEM_BLOCK, 1, (char**)var_names) < 0) {
+	Gen_Error(0, "fatal: unable to output variable name");
+	ex_close(exid_vis);
+	return 0;
+      }
+
+      /* Do some problem specific assignment */
+      for(int proc=0; proc < machine->num_procs; proc++) {
+	for (size_t e = 0; e < lb->int_elems[proc].size(); e++) {
+	  size_t ecnt = lb->int_elems[proc][e];
+	  proc_vals[ecnt] = proc;
+	}
+
+	for (size_t e = 0; e < lb->bor_elems[proc].size(); e++) {
+	  size_t ecnt = lb->bor_elems[proc][e];
+	  proc_vals[ecnt] = proc;
+	}
+      }
+
+      /* Output the element variables */
+      size_t offset = 0;
+      for (size_t i=0; i < mesh->num_el_blks; i++) {
+	if(ex_put_var(exid_vis, 1, EX_ELEM_BLOCK, 1, el_blk_ids[i],
+		      el_cnt_blk[i], &proc_vals[offset]) < 0) {
+	  Gen_Error(0, "fatal: unable to output nodal variables");
+	  ex_close(exid_vis);
+	  return 0;
+	}
+	offset += el_cnt_blk[i];
+      }
+    }
+  }
+
+  /* Close the visualization file */
+  ex_close(exid_vis);
+
+  /* Close the input ExodusII file */
+  ex_close(exid_inp);
+
+  return 1;
+
+} /*---------------------------End write_vis()-------------------------------*/
 
