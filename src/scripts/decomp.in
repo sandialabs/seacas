@@ -315,7 +315,7 @@ while true ; do
 	    -v|--verbose)
 	      set -x ; shift ;;
 	    -V|--viz_mesh)
-	      do_viz="-v" ; shift ;;
+	      do_viz="-y" ; shift ;; 
 	    -d|--debug)
 	      debug_level="$2" ; shift 2 ;;
 	    -n|--nem_slice_flag)
