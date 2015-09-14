@@ -188,6 +188,7 @@ C     --Open the input database and read the initial variables
 
       call exinq(ndbin, EXDBMXUSNM, namlen, rdum, cdum, ierr)
       if (name_len .eq. 0) then
+        if (namlen < 32) namlen = 32
         if (namlen .gt. mxname) then
           namlen = mxname 
           maxnam = mxname
