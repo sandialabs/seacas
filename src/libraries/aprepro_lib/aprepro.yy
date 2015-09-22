@@ -49,7 +49,7 @@ namespace SEAMS {
  %}
 
 /* Require bison 2.4 or later */
-%require "2.4"
+%require "3.0"
 
 /* add debug output code to generated parser. disable this for release
  * versions. */
