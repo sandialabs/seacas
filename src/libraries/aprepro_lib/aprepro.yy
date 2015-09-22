@@ -62,10 +62,10 @@ namespace SEAMS {
 %skeleton "lalr1.cc"
 
 /* namespace to enclose parser in */
-%name-prefix="SEAMS"
+%name-prefix "SEAMS"
 
 /* set the parser's class identifier */
-%define "parser_class_name" "Parser"
+%define "parser_class_name" {Parser}
 
 %error-verbose
 
@@ -524,7 +524,7 @@ exp:	  NUM			{ $$ = $1; 				}
 /* End of grammar */
 %%
 
-void SEAMS::Parser::error(const Parser::location_type&, const std::string& m)
+void SEAMS::Parser::error(const std::string& m)
 {
     aprepro.error(m);
 }
