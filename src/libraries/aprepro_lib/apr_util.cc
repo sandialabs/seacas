@@ -36,12 +36,6 @@
 #include <errno.h>                      // for errno, EDOM, ERANGE
 #include <stddef.h>                     // for size_t
 #include <sys/stat.h>                   // for stat, S_ISDIR
-#ifdef _WIN32
-  #include <fcntl.h>
-  #include <io.h>
-#else
-  #include <unistd.h>                     // for close
-#endif
 #include <cstdio>                       // for perror
 #include <cstdlib>                      // for mkstemp
 #include <cstring>                      // for strlen, strcpy, memcpy, etc
@@ -51,6 +45,14 @@
 #include <vector>                       // for vector
 #include "aprepro.h"                    // for file_rec, Aprepro, symrec, etc
 #include "aprepro_parser.h"             // for Parser, Parser::token, etc
+
+#ifdef _WIN32
+#  include <fcntl.h>
+#  include <io.h>
+#  include <windows.h>
+#else
+#  include <unistd.h>                     // for close
+#endif
 
 #if !defined(S_ISDIR) && defined(_WIN32)
   #define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
