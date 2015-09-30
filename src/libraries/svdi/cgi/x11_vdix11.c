@@ -1444,6 +1444,7 @@ void vdstfc(int *color_index)
    /* check valid color index */
    if (loc_index < 0 || loc_index > 255) {
      fprintf(stderr, " SVDI Error Number %d, Severity Code %d\n",724,5);
+     loc_index = def_fc_index;
    }
 
    if (loc_index > ncolors-1) loc_index = def_fc_index;
@@ -1461,6 +1462,7 @@ int *color_index;
 
    if (loc_index < 0 || loc_index > 255)
       { fprintf(stderr, " SVDI Error Number %d, Severity Code %d\n",724,5);
+	loc_index = def_bc_index;
       }
 
    if (loc_index > ncolors-1) loc_index = def_bc_index;

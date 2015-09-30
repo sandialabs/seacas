@@ -36,9 +36,9 @@
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *----------------------------------------------------------------------------
  * Functions contained in this file:
- *	cmd_line_arg_parse()
- *	read_cmd_file()
- *	check_inp_specs()
+ *      cmd_line_arg_parse()
+ *      read_cmd_file()
+ *      check_inp_specs()
  *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 #include "elb_inp.h"
 #include <exodusII.h>                   // for ex_close, EX_READ, etc
@@ -52,7 +52,7 @@
 #include "elb_util.h"                   // for strip_string, token_compare, etc
 #include "getopt.h"                     // for getopt
 #include "md_getsubopt.h"               // for md_getsubopt
-
+#include "scopeguard.h"
 
 
 namespace {
@@ -75,28 +75,28 @@ namespace {
  * in the appropriate data locations.
  *---------------------------------------------------------------------------*/
 template int cmd_line_arg_parse(int argc, char *argv[],
-				std::string &exoII_inp_file, std::string &ascii_inp_file, std::string &nemI_out_file,	
-				Machine_Description* machine, LB_Description<int>* lb,
-				Problem_Description* prob, Solver_Description* solver,
-				Weight_Description<int>* weight);
+                                std::string &exoII_inp_file, std::string &ascii_inp_file, std::string &nemI_out_file,   
+                                Machine_Description* machine, LB_Description<int>* lb,
+                                Problem_Description* prob, Solver_Description* solver,
+                                Weight_Description<int>* weight);
 
 template int cmd_line_arg_parse(int argc, char *argv[],
-				std::string &exoII_inp_file, std::string &ascii_inp_file, std::string &nemI_out_file,	
-				Machine_Description* machine, LB_Description<int64_t>* lb,
-				Problem_Description* prob, Solver_Description* solver,
-				Weight_Description<int64_t>* weight);
+                                std::string &exoII_inp_file, std::string &ascii_inp_file, std::string &nemI_out_file,   
+                                Machine_Description* machine, LB_Description<int64_t>* lb,
+                                Problem_Description* prob, Solver_Description* solver,
+                                Weight_Description<int64_t>* weight);
 
 template <typename INT>
 int cmd_line_arg_parse(
-  int argc, char *argv[],	/* Args as passed by main() */
-  std::string &exoII_inp_file,	/* The input ExodusII file name */
-  std::string &ascii_inp_file,	/* The ASCII input file name */
-  std::string &nemI_out_file,		/* Output NemesisI file name */
-  Machine_Description* machine,		/* Structure for machine description */
-  LB_Description<INT>* lb,		/* Structure for load balance description */
-  Problem_Description* prob,		/* Structure for various problem params */
-  Solver_Description* solver,	/* Structure for eigen solver params */
-  Weight_Description<INT>* weight	/* Structure for weighting graph */
+  int argc, char *argv[],       /* Args as passed by main() */
+  std::string &exoII_inp_file,  /* The input ExodusII file name */
+  std::string &ascii_inp_file,  /* The ASCII input file name */
+  std::string &nemI_out_file,           /* Output NemesisI file name */
+  Machine_Description* machine,         /* Structure for machine description */
+  LB_Description<INT>* lb,              /* Structure for load balance description */
+  Problem_Description* prob,            /* Structure for various problem params */
+  Solver_Description* solver,   /* Structure for eigen solver params */
+  Weight_Description<INT>* weight       /* Structure for weighting graph */
   )
 {
   int   opt_let, iret, el_blk, wgt, max_dim=0, i;
@@ -221,7 +221,7 @@ int cmd_line_arg_parse(
 
     case 'w':
       /* Weighting options */
-      sub_opt = optarg;
+      sub_opt = (optarg == NULL) ? '\0' : optarg;
       while(sub_opt != NULL && *sub_opt != '\0')
       {
         switch(md_getsubopt(&sub_opt, weight_subopts, &value))
@@ -343,13 +343,13 @@ int cmd_line_arg_parse(
           }
           if(el_blk <= 0)
           {
-            printf(ctemp, "invalid element block, %d", el_blk);
+            sprintf(ctemp, "invalid element block, %d", el_blk);
             Gen_Error(0, ctemp);
             return 0;
           }
           if(wgt < 0)
           {
-            printf(ctemp, "invalid weight, %d", wgt);
+            sprintf(ctemp, "invalid weight, %d", wgt);
             Gen_Error(0, ctemp);
             return 0;
           }
@@ -387,12 +387,12 @@ int cmd_line_arg_parse(
 
     case 'a':
       /* Only an ASCII input file name */
-      ascii_inp_file = optarg;
+      ascii_inp_file = (optarg == NULL) ? '\0' : optarg;
       break;
 
     case 'o':
       /* Output NemesisI file name */
-      nemI_out_file = optarg;
+      nemI_out_file = (optarg == NULL) ? '\0' : optarg;
       break;
 
     case 'n':
@@ -586,8 +586,8 @@ int cmd_line_arg_parse(
             return 0;
           }
           char tmpstr[2048];
-	  iret = sscanf(value, "%s", tmpstr);
-	  lb->file = tmpstr;
+          iret = sscanf(value, "%s", tmpstr);
+          lb->file = tmpstr;
           if(iret != 1)
           {
             Gen_Error(0, "fatal: invalid value associated with file");
@@ -633,8 +633,8 @@ int cmd_line_arg_parse(
             return 0;
           }
           iret = sscanf(value, "%s", tmpstr);
-	  lb->file = tmpstr;
-	  if(iret != 1)
+          lb->file = tmpstr;
+          if(iret != 1)
           {
             Gen_Error(0, "fatal: invalid value associated with outfile");
             return 0;
@@ -720,8 +720,8 @@ value\n");
       /* group designations */
       /* allocate string to hold designation */
       if (optarg != NULL) {
-	prob->groups = (char*)malloc(strlen(optarg) + 1);
-	strcpy(prob->groups, optarg);
+        prob->groups = (char*)malloc(strlen(optarg) + 1);
+        strcpy(prob->groups, optarg);
       }
       break;
 
@@ -759,24 +759,24 @@ value\n");
 /* This function reads in the ASCII command file.
  *---------------------------------------------------------------------------*/
 template int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file, std::string &nemI_out_file,
-			   Machine_Description* machine, LB_Description<int>* lb,
-			   Problem_Description* problem, Solver_Description* solver,
-			   Weight_Description<int>* weight);
+                           Machine_Description* machine, LB_Description<int>* lb,
+                           Problem_Description* problem, Solver_Description* solver,
+                           Weight_Description<int>* weight);
 template int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file, std::string &nemI_out_file,
-			   Machine_Description* machine, LB_Description<int64_t>* lb,
-			   Problem_Description* problem, Solver_Description* solver,
-			   Weight_Description<int64_t>* weight);
+                           Machine_Description* machine, LB_Description<int64_t>* lb,
+                           Problem_Description* problem, Solver_Description* solver,
+                           Weight_Description<int64_t>* weight);
 
 
 template <typename INT>
 int read_cmd_file(std::string &ascii_inp_file,
-		  std::string &exoII_inp_file,
-		  std::string &nemI_out_file,
-		  Machine_Description* machine,
-		  LB_Description<INT>* lb,
-		  Problem_Description* problem,
-		  Solver_Description* solver,
-		  Weight_Description<INT>* weight)
+                  std::string &exoII_inp_file,
+                  std::string &nemI_out_file,
+                  Machine_Description* machine,
+                  LB_Description<INT>* lb,
+                  Problem_Description* problem,
+                  Solver_Description* solver,
+                  Weight_Description<INT>* weight)
 {
   FILE *inp_fd;
   char  ctemp[1024], inp_line[MAX_INP_LINE];
@@ -793,7 +793,7 @@ int read_cmd_file(std::string &ascii_inp_file,
     Gen_Error(0, ctemp);
     return 0;
   }
-
+  ON_BLOCK_EXIT(fclose, inp_fd);
   /* Begin parsing the input file */
   while(fgets(inp_line, MAX_INP_LINE, inp_fd))
   {
@@ -806,9 +806,9 @@ int read_cmd_file(std::string &ascii_inp_file,
       {
         /* The input ExodusII file name */
         if(exoII_inp_file.empty()) {
-	cptr = strtok(NULL, "\t=");
-	strip_string(cptr, " \t\n");
-	exoII_inp_file = cptr;
+        cptr = strtok(NULL, "\t=");
+        strip_string(cptr, " \t\n");
+        exoII_inp_file = cptr;
         }
       }
       else if(token_compare(cptr, "output visualization file"))
@@ -934,7 +934,7 @@ int read_cmd_file(std::string &ascii_inp_file,
 
                 cptr2++;
                 iret = sscanf(cptr2, "%s", tmpstr);
-		lb->file = tmpstr;
+                lb->file = tmpstr;
                 if(iret != 1)
                 {
                   Gen_Error(0, "fatal: invalid value for infile");
@@ -996,7 +996,7 @@ int read_cmd_file(std::string &ascii_inp_file,
 
                 cptr2++;
                 iret = sscanf(cptr2, "%s", tmpstr);
-		lb->file = tmpstr;
+                lb->file = tmpstr;
                 if(iret != 1)
                 {
                   Gen_Error(0, "fatal: invalid value for outfile");
@@ -1011,6 +1011,7 @@ int read_cmd_file(std::string &ascii_inp_file,
                       " file",
                       cptr);
               Gen_Error(0, ctemp);
+              return 0;
             }
             cptr = strtok(NULL, ",");
           }
@@ -1256,7 +1257,7 @@ int read_cmd_file(std::string &ascii_inp_file,
                           " \"var_name\"");
                 return 0;
               }
-	      weight->exo_varname = cptr2;
+              weight->exo_varname = cptr2;
             }
             else if(strstr(cptr, "var_index"))
             {
@@ -1316,13 +1317,13 @@ int read_cmd_file(std::string &ascii_inp_file,
               }
               if(el_blk <= 0)
               {
-                printf(ctemp, "invalid element block, %d", el_blk);
+                sprintf(ctemp, "invalid element block, %d", el_blk);
                 Gen_Error(0, ctemp);
                 return 0;
               }
               if(wgt < 1)
               {
-                printf(ctemp, "invalid weight, %d", wgt);
+                sprintf(ctemp, "invalid weight, %d", wgt);
                 Gen_Error(0, ctemp);
                 return 0;
               }
@@ -1484,12 +1485,7 @@ int read_cmd_file(std::string &ascii_inp_file,
     } /* End "if(inp_line[0] != '#')" */
 
   } /* End "while(fgets(inp_line, MAX_INP_LINE, inp_fd))" */
-
-  /* Close the input ascii command file */
-  fclose(inp_fd);
-
   return 1;
-
 } /*------------End read_cmd_file()---------------*/
 
 /*****************************************************************************/
@@ -1498,23 +1494,24 @@ int read_cmd_file(std::string &ascii_inp_file,
 /* This function performs error checks on the user input.
  *---------------------------------------------------------------------------*/
 template int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file, Machine_Description* machine,
-			     LB_Description<int>* lb, Problem_Description* prob, Solver_Description* solver,
-			     Weight_Description<int>* weight);
+                             LB_Description<int>* lb, Problem_Description* prob, Solver_Description* solver,
+                             Weight_Description<int>* weight);
 
 template int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file, Machine_Description* machine,
-			     LB_Description<int64_t>* lb, Problem_Description* prob, Solver_Description* solver,
-			     Weight_Description<int64_t>* weight);
+                             LB_Description<int64_t>* lb, Problem_Description* prob, Solver_Description* solver,
+                             Weight_Description<int64_t>* weight);
 
 template <typename INT>
 int check_inp_specs(std::string &exoII_inp_file,
-		    std::string &nemI_out_file,
-		    Machine_Description* machine,
-		    LB_Description<INT>* lb,
-		    Problem_Description* prob,
-		    Solver_Description* solver,
-		    Weight_Description<INT>* weight)
+                    std::string &nemI_out_file,
+                    Machine_Description* machine,
+                    LB_Description<INT>* lb,
+                    Problem_Description* prob,
+                    Solver_Description* solver,
+                    Weight_Description<INT>* weight)
 {
   char  ctemp[1024];
+  ex_entity_type type;
   char **var_names;
   int cnt;
   int exoid, cpu_ws=0, io_ws=0, nvars, tmp_vindx=0;
@@ -1636,10 +1633,10 @@ int check_inp_specs(std::string &exoII_inp_file,
     lb->refine = KL_REFINE;
 
   if(lb->refine != KL_REFINE && lb->refine != NO_REFINE)
-    lb->refine = NO_REFINE;	/* Default if not specified */
+    lb->refine = NO_REFINE;     /* Default if not specified */
 
   if(lb->num_sects <= 0)
-      lb->num_sects = 1;	/* Default if not specified */
+      lb->num_sects = 1;        /* Default if not specified */
 
   if(lb->cnctd_dom < 0)
     lb->cnctd_dom = 0;
@@ -1770,16 +1767,6 @@ int check_inp_specs(std::string &exoII_inp_file,
 /*                 Check the weighting specifications                        */
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
   if(weight->exo_filename.length() > 0) {
-    /* Check for the existence of the specified file */
-    if(!(inp_fd=fopen(weight->exo_filename.c_str(), "r")))
-    {
-      sprintf(ctemp, "fatal: unable to open ExodusII weighting file %s",
-              weight->exo_filename.c_str());
-      Gen_Error(0, ctemp);
-      return 0;
-    }
-    fclose(inp_fd);
-
     /* Check that a variable name and/or index was specified. */
     if(strlen(weight->exo_varname.c_str()) == 0 && weight->exo_vindx <= 0)
     {
@@ -1805,7 +1792,7 @@ int check_inp_specs(std::string &exoII_inp_file,
 
     /* Check the time index */
     if(weight->exo_tindx <= 0)
-      weight->exo_tindx = 1;	/* Defaults to 1 */
+      weight->exo_tindx = 1;    /* Defaults to 1 */
 
     if(weight->exo_tindx > ntimes)
     {
@@ -1817,15 +1804,15 @@ int check_inp_specs(std::string &exoII_inp_file,
     }
 
     if(prob->type == NODAL)
-      strcpy(ctemp, "n");
+      type = EX_NODAL;
     else
-      strcpy(ctemp, "e");
+      type = EX_ELEM_BLOCK;
 
     /*
      * First check that there are variables of the requested type in the
      * specified ExodusII file.
      */
-    if(ex_get_var_param(exoid, ctemp, &nvars) < 0)
+    if(ex_get_variable_param(exoid, type, &nvars) < 0)
     {
       Gen_Error(0, "fatal: unable to get variable params from ExodusII"
                 " weighting file");
@@ -1850,15 +1837,15 @@ int check_inp_specs(std::string &exoII_inp_file,
       ex_set_max_name_length(exoid, max_name_length);
       
       for(cnt=0; cnt < nvars; cnt++) {
-	var_names[cnt] = (char*)malloc((max_name_length+1)*sizeof(char));
-	if(!var_names[cnt]) {
-	  Gen_Error(0, "fatal: insufficient memory");
-	  return 0;
-	}
+        var_names[cnt] = (char*)malloc((max_name_length+1)*sizeof(char));
+        if(!var_names[cnt]) {
+          Gen_Error(0, "fatal: insufficient memory");
+          return 0;
+        }
       }
     }
 
-    if(ex_get_var_names(exoid, ctemp, nvars, var_names) < 0) {
+    if(ex_get_variable_names(exoid, type, nvars, var_names) < 0) {
       Gen_Error(0, "fatal: unable to obtain variable names for weighting");
       return 0;
     }

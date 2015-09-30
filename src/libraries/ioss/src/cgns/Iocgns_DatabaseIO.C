@@ -291,6 +291,7 @@ namespace Iocgns {
 	    bool added = get_region()->add(eblock);
 	    if(!added) {
 	      delete eblock;
+	      eblock = NULL;
 	    }
 	  }
 	  else {

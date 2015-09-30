@@ -1635,8 +1635,9 @@ namespace {
 					   global_node);
 	  if (iter == global_node_map.end()) {
 	    NodeInfo n = global_node;
-	    std::cerr << n.id << "\t" << n.x << "\t" << n.y << "\t" << n.z << "\n";
-	    SMART_ASSERT(iter != global_node_map.end());
+	    std::cerr << "Bad Node in build_reverse_node_map: "
+		      << n.id << "\tat location: " << n.x << "\t" << n.y << "\t" << n.z << "\n";
+	    exit(EXIT_FAILURE);
 	  }
 	  cur_pos = iter;
 	}
@@ -2195,7 +2196,11 @@ namespace {
 	  set.entry_list = NULL;
 	  set.extra_list = NULL;
 	  set.distribution_factor_list = NULL;
-	  ex_get_sets(id, 1, &set);
+	  int error = ex_get_sets(id, 1, &set);
+	  if (error != EX_NOERR) {
+	    std::cerr << "ERROR: Cannot get side set with id " << set.id << "\n";
+	    exit(EXIT_FAILURE);
+	  }
 
 	  sets[p][i].sideCount = set.num_entry;
 	  sets[p][i].dfCount = set.num_distribution_factor;

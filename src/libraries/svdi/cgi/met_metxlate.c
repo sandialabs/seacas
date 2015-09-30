@@ -619,7 +619,7 @@ anything *surf_list[];
   int   index;          /* which state is this surface linked to */
 
    index = ((surf_statelist *) surf_list[0] ) -> this_index; 
-   if ( (index >= 0) && (index <= MAX_DEVICE_SURFACES) ) {
+   if ( (index >= 0) && (index < MAX_DEVICE_SURFACES) ) {
       surf_states [index]. next_free_state = first_free_state;
       first_free_state = index;
    } /* end if */
@@ -4938,6 +4938,7 @@ set_clipping( cur_state )
 surf_statelist *cur_state;
 {
   point clip1, clip2;                   /* temp clip values */
+  clip1.x = clip1.y = clip2.x = clip2.y = 0;
 
   /* The clip region depends on clip indicator and drawing surface 
    * clip indicator. 
@@ -5149,7 +5150,7 @@ surf_statelist *surf_state;
 int colors[3];
 {
   int   i;                      /* loop index */
-  int   index;                  /* color index */
+  int   index=0;                /* color index */
   float dr,dg,db,dmin,dist;     /* for finding the closet index */
   int   one = 1;
   float epsilon = .001;
@@ -5705,49 +5706,49 @@ nmtbuf( numwds, outary)
 int *numwds;   /* number of words in OUTARY, 0 = buffer flush */
 unsigned outary[];  /* data to be buffered */
 {
-   static unsigned mask1 = ~(~0 << 8)<< 8; /* mask off higher 8 bits */
-   static unsigned mask2 = ~(~0 << 8);     /* mask off lower 8 bits */
+  static unsigned mask1 = ~(~0 << 8)<< 8; /* mask off higher 8 bits */
+  static unsigned mask2 = ~(~0 << 8);     /* mask off lower 8 bits */
 
-   int i;   /* loop variable */
-   int istat;    /* error reporting */
-   char err[50]; /* for error reporting */
+  int i;   /* loop variable */
+  int istat;    /* error reporting */
+  char err[50]; /* for error reporting */
 
-   /* cur_state is global and points to the current state */
+  /* cur_state is global and points to the current state */
 
-   /* check for buffer flush and if there is something to flush */
-   if( *numwds <= 0 && cur_state -> buff_ptr > 0 ){
+  /* check for buffer flush and if there is something to flush */
+  if( *numwds <= 0 && cur_state -> buff_ptr > 0 ){
 
-      /* write out the data as a byte stream. */
-      if(istat = write(cur_state-> file_d, cur_state-> buffer,
-                                   cur_state -> buff_ptr ) == -1) {
-          sprintf(err,"%s","NMTBUF: write error");
-          perror(err);
-      } /* end write buffer */
+    /* write out the data as a byte stream. */
+    if(istat = write(cur_state-> file_d, cur_state-> buffer,
+		     cur_state -> buff_ptr ) == -1) {
+      sprintf(err,"%s","NMTBUF: write error");
+      perror(err);
+    } /* end write buffer */
    
       /* reset buff pointer */
-      cur_state -> buff_ptr = 0;
+    cur_state -> buff_ptr = 0;
 
-   } /* end if buffer flush */
+  } /* end if buffer flush */
 
-   else   /* pack outary into buffer */
+  else   /* pack outary into buffer */
 
-     for( i=0; i<*numwds; i++) {
-     cur_state-> buffer[cur_state-> buff_ptr++] = (outary[i] & mask1)>>8;
-     cur_state-> buffer[cur_state-> buff_ptr++] = (outary[i] & mask2);
+    for( i=0; i<*numwds; i++) {
+      cur_state-> buffer[cur_state-> buff_ptr++] = (outary[i] & mask1)>>8;
+      cur_state-> buffer[cur_state-> buff_ptr++] = (outary[i] & mask2);
 
-        if( cur_state -> buff_ptr >= BUFFER_SIZE ) {
+      if( cur_state -> buff_ptr > BUFFER_SIZE ) {
 
-          /* write out the data as a byte stream. */
-          if(istat = write(cur_state-> file_d, cur_state-> buffer, 
-                                       cur_state -> buff_ptr) == -1) {
-            sprintf(err,"%s","NMTBUF: write error");
-            perror(err);
+	/* write out the data as a byte stream. */
+	if(istat = write(cur_state-> file_d, cur_state-> buffer, 
+			 cur_state -> buff_ptr) == -1) {
+	  sprintf(err,"%s","NMTBUF: write error");
+	  perror(err);
 
-          } /* end write buffer */
+	} /* end write buffer */
    
           /* reset buff pointer */
-          cur_state -> buff_ptr = 0;
+	cur_state -> buff_ptr = 0;
 
-        } /* end if > BUFFER_SIZE */
-      } /* end for i=... */
+      } /* end if > BUFFER_SIZE */
+    } /* end for i=... */
 } /* end nmtbuf */

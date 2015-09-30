@@ -47,7 +47,7 @@
 #include "elb_elem.h"                   // for NNODES, get_elem_info
 #include "elb_err.h"                    // for Gen_Error, error_lev
 #include "elb_util.h"                   // for gds_qsort, qsort2, in_list, etc
-
+#include "scopeguard.h"
 
 
 namespace {
@@ -117,7 +117,8 @@ int write_nemesis(std::string &nemI_out_file,
       return 0;
     }
   }
-
+  ON_BLOCK_EXIT(ex_close, exoid);
+  
   /* Set the error reporting value */
   if (error_lev > 1)
     ex_opts(EX_VERBOSE | EX_DEBUG);
@@ -257,7 +258,6 @@ int write_nemesis(std::string &nemI_out_file,
 
   if(ex_put_qa(exoid, 1, (char *(*)[4]) &lqa_record[0]) < 0) {
     Gen_Error(0, "fatal: unable to output QA records");
-    ex_close(exoid);
     return 0;
   }
 
@@ -271,7 +271,6 @@ int write_nemesis(std::string &nemI_out_file,
   if(ex_put_init_global(exoid, mesh->num_nodes, mesh->num_elems,
                         mesh->num_el_blks, 0, 0) < 0) {
     Gen_Error(0, "fatal: failed to output initial Nemesis parameters");
-    ex_close(exoid);
     return 0;
   }
   
@@ -300,7 +299,6 @@ int write_nemesis(std::string &nemI_out_file,
 
   if(ex_put_init_info(exoid, machine->num_procs, machine->num_procs, (char*)"s") < 0) {
     Gen_Error(0, "fatal: unable to output init info");
-    ex_close(exoid);
     return 0;
   }
 
@@ -326,7 +324,6 @@ int write_nemesis(std::string &nemI_out_file,
 			       TOPTR(num_emap_cnts)) < 0)
       {
 	Gen_Error(0, "fatal: unable to output load-balance parameters");
-	ex_close(exoid);
 	return 0;
       }
   }
@@ -334,15 +331,9 @@ int write_nemesis(std::string &nemI_out_file,
   if(problem->type == NODAL)		/* Nodal load balance output */
     {
       /* Set up for the concatenated communication map parameters */
-      INT *node_proc_ptr = (INT*)malloc(((3*machine->num_procs)+1)*sizeof(INT));
-      if(!node_proc_ptr)
-	{
-	  Gen_Error(0, "fatal: insufficient memory");
-	  ex_close(exoid);
-	  return 0;
-	}
-      INT *node_cmap_ids_cc  = node_proc_ptr + machine->num_procs + 1;
-      INT *node_cmap_cnts_cc = node_cmap_ids_cc + machine->num_procs;
+      std::vector<INT> node_proc_ptr(machine->num_procs+1);
+      std::vector<INT> node_cmap_ids_cc(machine->num_procs);
+      std::vector<INT> node_cmap_cnts_cc(machine->num_procs);
 
       node_proc_ptr[0] = 0;
       for(int proc=0; proc < machine->num_procs; proc++) {
@@ -352,11 +343,11 @@ int write_nemesis(std::string &nemI_out_file,
       }
 
       /* Output the communication map parameters */
-      if(ex_put_cmap_params_cc(exoid, node_cmap_ids_cc, node_cmap_cnts_cc,
-			       node_proc_ptr, NULL, NULL, NULL) < 0)
+      if(ex_put_cmap_params_cc(exoid, TOPTR(node_cmap_ids_cc),
+			       TOPTR(node_cmap_cnts_cc),
+			       TOPTR(node_proc_ptr), NULL, NULL, NULL) < 0)
 	{
 	  Gen_Error(0, "fatal: unable to output communication map parameters");
-	  ex_close(exoid);
 	  return 0;
 	}
 
@@ -369,7 +360,6 @@ int write_nemesis(std::string &nemI_out_file,
 				      TOPTR(lb->ext_nodes[proc]), proc) < 0)
 	  {
 	    Gen_Error(0, "fatal: failed to output node map");
-	    ex_close(exoid);
 	    return 0;
 	  }
 
@@ -377,7 +367,6 @@ int write_nemesis(std::string &nemI_out_file,
 	if(ex_put_processor_elem_maps(exoid, TOPTR(lb->int_elems[proc]), NULL, proc) < 0)
 	  {
 	    Gen_Error(0, "fatal: failed to output element map");
-	    ex_close(exoid);
 	    return 0;
 	  }
 
@@ -395,25 +384,16 @@ int write_nemesis(std::string &nemI_out_file,
 			    TOPTR(lb->ext_procs[proc]), proc) < 0)
 	  {
 	    Gen_Error(0, "fatal: failed to output nodal communication map");
-	    ex_close(exoid);
 	    return 0;
 	  }
 
       } /* End "for(proc=0; proc < machine->num_procs; proc++)" */
-
-      free(node_proc_ptr);
     }
   else if(problem->type == ELEMENTAL)	/* Elemental load balance output */
     {
-      INT *node_proc_ptr = (INT*)malloc(((3*machine->num_procs)+1) * sizeof(INT));
-      if(!node_proc_ptr)
-	{
-	  Gen_Error(0, "fatal: insufficient memory");
-	  ex_close(exoid);
-	  return 0;
-	}
-      INT *node_cmap_ids_cc  = node_proc_ptr + machine->num_procs + 1;
-      INT *node_cmap_cnts_cc = node_cmap_ids_cc + machine->num_procs;
+      std::vector<INT> node_proc_ptr(machine->num_procs+1);
+      std::vector<INT> node_cmap_ids_cc(machine->num_procs);
+      std::vector<INT> node_cmap_cnts_cc(machine->num_procs);
 
       node_proc_ptr[0] = 0;
       for(int proc=0; proc < machine->num_procs; proc++) {
@@ -426,15 +406,9 @@ int write_nemesis(std::string &nemI_out_file,
 	node_cmap_ids_cc[proc]  = 1;
       }
 
-      INT *elem_proc_ptr = (INT*)malloc(((3*machine->num_procs)+1) * sizeof(INT));
-      if(!elem_proc_ptr)
-	{
-	  Gen_Error(0, "fata: insufficient memory");
-	  ex_close(exoid);
-	  return 0;
-	}
-      INT *elem_cmap_ids_cc  = elem_proc_ptr + machine->num_procs + 1;
-      INT *elem_cmap_cnts_cc = elem_cmap_ids_cc + machine->num_procs;
+      std::vector<INT> elem_proc_ptr(machine->num_procs+1);
+      std::vector<INT> elem_cmap_ids_cc(machine->num_procs);
+      std::vector<INT> elem_cmap_cnts_cc(machine->num_procs);
 
       elem_proc_ptr[0] = 0;
       for(int proc=0; proc < machine->num_procs; proc++) {
@@ -444,16 +418,13 @@ int write_nemesis(std::string &nemI_out_file,
       }
 
       /* Output the communication map parameters */
-      if(ex_put_cmap_params_cc(exoid, node_cmap_ids_cc, node_cmap_cnts_cc,
-			       node_proc_ptr, elem_cmap_ids_cc,
-			       elem_cmap_cnts_cc, elem_proc_ptr) < 0)
+      if(ex_put_cmap_params_cc(exoid, TOPTR(node_cmap_ids_cc), TOPTR(node_cmap_cnts_cc),
+			       TOPTR(node_proc_ptr), TOPTR(elem_cmap_ids_cc),
+			       TOPTR(elem_cmap_cnts_cc), TOPTR(elem_proc_ptr)) < 0)
 	{
 	  Gen_Error(0, "fatal: unable to output communication map parameters");
-	  ex_close(exoid);
 	  return 0;
 	}
-      free(elem_proc_ptr);
-      free(node_proc_ptr);
 
       /* Output the node and element maps */
       for(int proc=0; proc < machine->num_procs; proc++)
@@ -465,7 +436,6 @@ int write_nemesis(std::string &nemI_out_file,
 					NULL, proc) < 0)
 	    {
 	      Gen_Error(0, "fatal: failed to output node map");
-	      ex_close(exoid);
 	      return 0;
 	    }
 
@@ -476,7 +446,6 @@ int write_nemesis(std::string &nemI_out_file,
 					proc) < 0)
 	    {
 	      Gen_Error(0, "fatal: failed to output element map");
-	      ex_close(exoid);
 	      return 0;
 	    }
 
@@ -489,14 +458,8 @@ int write_nemesis(std::string &nemI_out_file,
 	    nsize += lb->born_procs[proc][cnt].size();
 
 	  if (nsize > 0) {
-	    INT *n_cmap_nodes = (INT*)malloc(2*nsize*sizeof(INT));
-	    if(!n_cmap_nodes)
-	      {
-		Gen_Error(0, "fatal: insufficient memory");
-		ex_close(exoid);
-		return 0;
-	      }
-	    INT *n_cmap_procs = n_cmap_nodes + nsize;
+	    std::vector<INT> n_cmap_nodes(nsize);
+	    std::vector<INT> n_cmap_procs(nsize);
 
 	    size_t cnt3 = 0;
 	    for(size_t cnt=0; cnt < lb->bor_nodes[proc].size(); cnt++) {
@@ -511,18 +474,13 @@ int write_nemesis(std::string &nemI_out_file,
 	     * by processor and then by global ID.
 	     */
 	    /* This is a 2-key sort */
-	    qsort2(n_cmap_procs, n_cmap_nodes, cnt3);
+	    qsort2(TOPTR(n_cmap_procs), TOPTR(n_cmap_nodes), cnt3);
 
 	    /* Output the nodal communication map */
-	    if(ex_put_node_cmap(exoid, 1, n_cmap_nodes, n_cmap_procs, proc) < 0)
-	      {
-		Gen_Error(0, "fatal: unable to output nodal communication map");
-		ex_close(exoid);
-		return 0;
-	      }
-
-	    free(n_cmap_nodes);
-
+	    if(ex_put_node_cmap(exoid, 1, TOPTR(n_cmap_nodes), TOPTR(n_cmap_procs), proc) < 0) {
+	      Gen_Error(0, "fatal: unable to output nodal communication map");
+	      return 0;
+	    }
 	  } /* End "if (nsize > 0)" */
 
 	    /* Output the elemental communication map */
@@ -533,7 +491,6 @@ int write_nemesis(std::string &nemI_out_file,
 				TOPTR(lb->e_cmap_procs[proc]), proc) < 0)
 	      {
 		Gen_Error(0, "fatal: unable to output elemental communication map");
-		ex_close(exoid);
 		return 0;
 	      }
 	  }
@@ -541,12 +498,7 @@ int write_nemesis(std::string &nemI_out_file,
 	} /* End "for(proc=0; proc < machine->num_procs; proc++)" */
 
     }
-
-  /* Close the Nemesis file */
-  ex_close(exoid);
-
   return 1;
-
 } /*------------------------End write_nemesis()------------------------------*/
 
   /*****************************************************************************/
@@ -610,6 +562,7 @@ int write_vis(std::string &nemI_out_file,
     Gen_Error(0, "fatal: unable to create visualization output file");
     return 0;
   }
+  ON_BLOCK_EXIT(ex_close, exid_vis);
 
   /*
    * Open the original input ExodusII file, read the values for the
@@ -621,17 +574,17 @@ int write_vis(std::string &nemI_out_file,
   mode = EX_READ | prob->int64api;
   if((exid_inp=ex_open(exoII_inp_file.c_str(), mode, &icpu_ws, &iio_ws, &vers)) < 0) {
     Gen_Error(0, "fatal: unable to open input ExodusII file");
-    ex_close(exid_vis);
     return 0;
   }
-
+  ON_BLOCK_EXIT(ex_close, exid_inp);
+  
   char **elem_type  = (char**)array_alloc(2, mesh->num_el_blks, MAX_STR_LENGTH+1,
 					  sizeof(char));
   if(!elem_type) {
     Gen_Error(0, "fatal: insufficient memory");
-    ex_close(exid_vis);
     return 0;
   }
+  ON_BLOCK_EXIT(free, elem_type);
 
   std::vector<INT> el_blk_ids(mesh->num_el_blks);
   std::vector<INT> el_cnt_blk(mesh->num_el_blks);
@@ -640,8 +593,6 @@ int write_vis(std::string &nemI_out_file,
 
   if(ex_get_elem_blk_ids(exid_inp, TOPTR(el_blk_ids)) < 0) {
     Gen_Error(0, "fatal: unable to get element block IDs");
-    ex_close(exid_vis);
-    ex_close(exid_inp);
     return 0;
   }
 
@@ -661,8 +612,6 @@ int write_vis(std::string &nemI_out_file,
 			 &el_cnt_blk[ecnt], &node_pel_blk[ecnt],
 			 &nattr_el_blk[ecnt]) < 0) {
       Gen_Error(0, "fatal: unable to get element block parameters");
-      ex_close(exid_vis);
-      ex_close(exid_inp);
       return 0;
     }
 
@@ -681,7 +630,6 @@ int write_vis(std::string &nemI_out_file,
     if(ex_put_init(exid_vis, title, mesh->num_dims, mesh->num_nodes,
 		   mesh->num_elems, vis_nelem_blks, 0, 0) < 0) {
       Gen_Error(0, "fatal: unable to output initial params to vis file");
-      ex_close(exid_vis);
       return 0;
     }
 	
@@ -701,13 +649,11 @@ int write_vis(std::string &nemI_out_file,
     }
     if(ex_put_coord(exid_vis, xptr, yptr, zptr) < 0) {
       Gen_Error(0, "fatal: unable to output coords to vis file");
-      ex_close(exid_vis);
       return 0;
     }
 	
     if(ex_put_coord_names(exid_vis, (char**)coord_names) < 0) {
       Gen_Error(0, "fatal: unable to output coordinate names");
-      ex_close(exid_vis);
       return 0;
     }
 
@@ -756,7 +702,6 @@ int write_vis(std::string &nemI_out_file,
     /* Output the element map */
     if(ex_put_map(exid_vis, TOPTR(elem_map)) < 0) {
       Gen_Error(0, "fatal: unable to output element number map");
-      ex_close(exid_vis);
       return 0;
     }
 	
@@ -770,7 +715,6 @@ int write_vis(std::string &nemI_out_file,
       if(ex_put_elem_block(exid_vis, bcnt+1, elem_type[0],
 			   ecnt, node_pel_blk[0], 0) < 0) {
 	Gen_Error(0, "fatal: unable to output element block params");
-	ex_close(exid_vis);
 	return 0;
       }
 	  
@@ -778,15 +722,9 @@ int write_vis(std::string &nemI_out_file,
       if(ex_put_elem_conn(exid_vis, bcnt+1,
 			  &tmp_connect[vis_el_blk_ptr[bcnt]]) < 0) {
 	Gen_Error(0, "fatal: unable to output element connectivity");
-	ex_close(exid_vis);
 	return 0;
       }
     }
-
-    /* Free some unused memory */
-    if(elem_type)
-      free(elem_type);
-	
   }
 
   else {	/* For nodal/element results visualization of the partioning. */
@@ -797,7 +735,6 @@ int write_vis(std::string &nemI_out_file,
     float time_val = 0.0;
     if(ex_put_time(exid_vis, 1, &time_val) < 0) {
       Gen_Error(0, "fatal: unable to output time to vis file");
-      ex_close(exid_vis);
       return 0;
     }
 
@@ -808,13 +745,11 @@ int write_vis(std::string &nemI_out_file,
 
       if(ex_put_variable_param(exid_vis, EX_NODAL, 1) < 0) {
 	Gen_Error(0, "fatal: unable to output var params to vis file");
-	ex_close(exid_vis);
 	return 0;
       }
 
       if(ex_put_variable_names(exid_vis, EX_NODAL, 1, (char**)var_names) < 0) {
 	Gen_Error(0, "fatal: unable to output variable name");
-	ex_close(exid_vis);
 	return 0;
       }
 
@@ -830,7 +765,6 @@ int write_vis(std::string &nemI_out_file,
       /* Output the nodal variables */
       if(ex_put_nodal_var(exid_vis, 1, 1, mesh->num_nodes, TOPTR(proc_vals)) < 0) {
 	Gen_Error(0, "fatal: unable to output nodal variables");
-	ex_close(exid_vis);
 	return 0;
       }
     }
@@ -840,13 +774,11 @@ int write_vis(std::string &nemI_out_file,
 
       if(ex_put_variable_param(exid_vis, EX_ELEM_BLOCK, 1) < 0) {
 	Gen_Error(0, "fatal: unable to output var params to vis file");
-	ex_close(exid_vis);
 	return 0;
       }
 
       if(ex_put_variable_names(exid_vis, EX_ELEM_BLOCK, 1, (char**)var_names) < 0) {
 	Gen_Error(0, "fatal: unable to output variable name");
-	ex_close(exid_vis);
 	return 0;
       }
 
@@ -869,21 +801,12 @@ int write_vis(std::string &nemI_out_file,
 	if(ex_put_var(exid_vis, 1, EX_ELEM_BLOCK, 1, el_blk_ids[i],
 		      el_cnt_blk[i], &proc_vals[offset]) < 0) {
 	  Gen_Error(0, "fatal: unable to output nodal variables");
-	  ex_close(exid_vis);
 	  return 0;
 	}
 	offset += el_cnt_blk[i];
       }
     }
   }
-
-  /* Close the visualization file */
-  ex_close(exid_vis);
-
-  /* Close the input ExodusII file */
-  ex_close(exid_inp);
-
   return 1;
-
 } /*---------------------------End write_vis()-------------------------------*/
 
