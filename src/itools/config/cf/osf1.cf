@@ -105,9 +105,6 @@ XCOMM operating system: OSName (OSMajorVersion.OSMinorVersion)
 #define ExtraLoadFlags
 #endif
 #endif
-#if OSMajorVersion > 3
-#define TermcapLibrary		-lcurses
-#endif
 #endif
 
 /*

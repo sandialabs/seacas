@@ -84,10 +84,6 @@ XCOMM
 
 XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
 
-/* For ACCESS/prepost/spiff */
-#define TermcapLibrary -lncurses
-#define TermcapDefine  -DM_TERMINFO
-
 /* C and C++ Compilers */
 /* Portland Group  http://www.pgroup.com */
 /*
@@ -395,9 +391,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 
 #define ArCmd			ar cr
-
-#define TermcapLibrary          -lncurses
-#define TermcapDefine           -DM_TERMINFO
 
 /* Following are left over from X11 use */
 #define LdCombineFlags		-r

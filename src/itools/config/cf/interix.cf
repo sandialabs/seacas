@@ -20,10 +20,6 @@ XCOMM   Can also define in site.def
 #endif
 /* ======================================================================== */
 
-/* For ACCESS/prepost/spiff */
-#define TermcapLibrary -lncurses
-#define TermcapDefine  -DM_TERMINFO
-
 #define LnCmd ln
 #define RanlibCmd touch
 
