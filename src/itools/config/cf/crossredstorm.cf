@@ -16,7 +16,6 @@ XCOMM
 XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
 
 #define ExcludeGraphics 
-#define ExcludeSpiff
 
 /* C and C++ Compilers */
 

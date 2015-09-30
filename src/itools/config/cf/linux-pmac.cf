@@ -46,10 +46,6 @@ XCOMM  [VACPP]        xlc, xlC, xlf
 
 XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
 
-/* For ACCESS/prepost/spiff */
-#define TermcapLibrary -lncurses
-#define TermcapDefine  -DM_TERMINFO
-
 #if defined(GCC4GFORTRAN) 
 
 #define PositionIndependentCFlags -fpic
@@ -143,9 +139,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define UseCCMakeDepend		YES
 
 #define ArCmd			ar cr
-
-#define TermcapLibrary          -lncurses
-#define TermcapDefine           -DM_TERMINFO
 
 /* Following are left over from X11 use */
 #define LdCombineFlags		-r
