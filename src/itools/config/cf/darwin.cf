@@ -14,8 +14,8 @@ XCOMM
 /* #define USE_INTEL 1 */
 /* #define GCC4GFORTRAN */  /* gcc-4.X or later */
 /* #define GCCG77 1 */      /* gcc-3.4.X */
-/* #define USE_MACPORTS 4.6 */ /* the value represents the version of gcc */
-#define USE_CLANG 3.6
+#define USE_MACPORTS 5 /* the value represents the version of gcc */
+/* #define USE_CLANG 3.6 */
 /* #define PARALLEL_AWARE */      /* gcc with mpi compilers for parallel-aware exodus, ... */
 
 /* Set the following if you want to build with backward compatability with an earlier OS version */
@@ -84,10 +84,6 @@ XCOMM
 
 XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVersion)
 
-/* For ACCESS/prepost/spiff */
-#define TermcapLibrary -lncurses
-#define TermcapDefine  -DM_TERMINFO
-
 #if defined (USE_MACPORTS)
 #define CcCmd			/opt/local/bin/gcc-mp-USE_MACPORTS
 #define CplusplusCmd		/opt/local/bin/g++-mp-USE_MACPORTS
@@ -116,8 +112,8 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #if defined (USE_CLANG)
 #define CcCmd			/opt/local/bin/clang-mp-USE_CLANG
 #define CplusplusCmd		/opt/local/bin/clang++-mp-USE_CLANG
-#define FortranCmd		/opt/local/bin/gfortran-mp-4.8
-#define Fortran90Cmd		/opt/local/bin/gfortran-mp-4.8
+#define FortranCmd		/opt/local/bin/gfortran-mp-5
+#define Fortran90Cmd		/opt/local/bin/gfortran-mp-5
 
 #if Build64BitAccess
 #define StandardDefines 	-DBuild64 -DADDC_ MINOS_CFLAGS

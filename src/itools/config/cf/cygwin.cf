@@ -9,7 +9,6 @@
 # define OSMinorVersion		DefaultOSMinorVersion
 # define OSTeenyVersion		DefaultOSTeenyVersion
 
-#define ExcludeSpiff
 #define NeedsGetSubopt 		YES
 
 #if defined NO_CYGWIN_OPTION
@@ -83,12 +82,6 @@
 
 /* We don't need -lm */
 #define MathLibrary		/**/
-
-/*
- * /lib/libtermcap.a doesn't have tgetent, which is needed for
- * xc/programs/xterm/resize.exe
- */
-#define TermcapLibrary		-lncurses.dll
 
 #define AvoidNullMakeCommand	YES
 #define StripInstalledPrograms	NO

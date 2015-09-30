@@ -158,18 +158,6 @@ XCOMM ACCESS.tmpl
 #endif
 
 /*
- * Needed for ACCESS/prepost/spiff.  
- * Other options for library are -lncures     or -ltermcap
- * Other options for define are  -DM_TERMINFO or -DM_TERMCAP
- */
-#ifndef TermcapLibrary
-#define TermcapLibrary -lcurses
-#endif
-#ifndef TermcapDefine
-#define TermcapDefine -DM_TERMINFO
-#endif
-
-/*
  * Directory Definitions for ACCESS source code
  */
 XCOMM PROJECTNAME     : name of project
@@ -382,9 +370,6 @@ XCOMM Pre- and Post-processing Subdirectories
        NUMBERSSRC = numbers
       NUMBERS2SRC = numbers2
        EX_JOINSRC = ex_join
-#ifndef ExcludeSpiff
-         SPIFFSRC = spiff
-#endif
 
 XCOMM Analysis Subdirectories
          JAC2DSRC = jac2d
