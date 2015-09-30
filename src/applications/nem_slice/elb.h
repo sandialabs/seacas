@@ -90,7 +90,7 @@ struct Machine_Description
   int num_procs;
 
   Machine_Description() :
-    type(-1), num_dims(-1), num_boxes(-1), procs_per_box(-1)
+    type(-1), num_dims(-1), num_boxes(-1), procs_per_box(-1), num_procs(-1)
   { dim[0] = dim[1] = dim[2] = -1;}
 };
 
@@ -203,7 +203,7 @@ struct Weight_Description
   std::vector<float> edges;
 
   Weight_Description<INT>() :
-    type(-1), ow_read(0), exo_tindx(-1), exo_vindx(-1)
+    type(-1), ow_read(0), exo_tindx(-1), exo_vindx(-1), nvals(0)
   {}
 };
 

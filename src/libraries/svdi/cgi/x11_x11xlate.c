@@ -617,7 +617,7 @@ xdeactivate(anything **params, anything **surf_list)
   int   index;          /* which state is this surface linked to */
 
    index = ((surf_statelist *) surf_list[0] ) -> this_index; 
-   if ( (index >= 0) && (index <= MAX_DEVICE_SURFACES) ) {
+   if ( (index >= 0) && (index < MAX_DEVICE_SURFACES) ) {
       surf_states [index]. next_free_state = first_free_state;
       first_free_state = index;
    } /* end if */
@@ -4781,7 +4781,8 @@ static void
 set_clipping(surf_statelist *cur_state)
 {
   point clip1, clip2;                   /* temp clip values */
-
+  clip1.x = clip1.y = clip2.x = clip2.y = 0;
+  
   /* The clip region depends on clip indicator and drawing surface 
    * clip indicator. 
    */ 
@@ -4988,7 +4989,7 @@ static void
 set_background_color(surf_statelist *surf_state, int *colors)
 {
   int   i;                      /* loop index */
-  int   index;                  /* color index */
+  int   index=0;                /* color index */
   float dr,dg,db,dmin,dist;     /* for finding the closet index */
   int   one = 1;
   float epsilon = .001;

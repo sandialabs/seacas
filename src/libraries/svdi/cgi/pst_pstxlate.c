@@ -624,7 +624,7 @@ anything *surf_list[];
   int   index;          /* which state is this surface linked to */
 
    index = ((surf_statelist *) surf_list[0] ) -> this_index; 
-   if ( (index >= 0) && (index <= MAX_DEVICE_SURFACES) ) {
+   if ( (index >= 0) && (index < MAX_DEVICE_SURFACES) ) {
       surf_states [index]. next_free_state = first_free_state;
       first_free_state = index;
    } /* end if */
@@ -4943,6 +4943,7 @@ set_clipping( cur_state )
 surf_statelist *cur_state;
 {
   point clip1, clip2;                   /* temp clip values */
+  clip1.x = clip1.y = clip2.x = clip2.y = 0;
 
   /* The clip region depends on clip indicator and drawing surface 
    * clip indicator. 
@@ -5154,7 +5155,7 @@ surf_statelist *surf_state;
 int colors[3];
 {
   int   i;                      /* loop index */
-  int   index;                  /* color index */
+  int   index=0;                /* color index */
   float dr,dg,db,dmin,dist;     /* for finding the closet index */
   int   one = 1;
   float epsilon = .001;
@@ -5495,34 +5496,31 @@ point *bmin, *bmax;
 int bound_num;
 {
   point temp;
-
+  temp.x = temp.y = 0;
+  
    switch( bound_num ) {
      case 0: /* top */
       temp.x =
        p1->x + (p2->x - p1->x ) * (bmax->y - p1->y ) / (p2->y - p1->y );
       temp.y = bmax->y;
-      return( temp );
       break;
 
      case 1: /* right */
       temp.y = 
        p1->y + (p2->y - p1->y ) * (bmax->x - p1->x ) / (p2->x - p1->x );
       temp.x = bmax->x;
-      return( temp );
       break;
 
      case 2: /* bottom */
       temp.x = 
        p1->x + (p2->x - p1->x ) * (bmin->y - p1->y ) / (p2->y - p1->y );
       temp.y = bmin->y;
-      return( temp );
       break;
 
      case 3: /* left */
       temp.y = 
        p1->y + (p2->y - p1->y ) * (bmin->y - p1->x ) / (p2->x - p1->x );
       temp.x = bmin->x;
-      return( temp );
       break;
 
     default:
@@ -5530,6 +5528,8 @@ int bound_num;
       break;
 
    } /* end switch */
+
+   return( temp );
 } /* end intersect_bnd */
 
 
