@@ -17,10 +17,9 @@ void tec(int exoid, const char *filename) {
 
   int i,j,k,idum;
   int ndim,nnode,nelem,nblk,nnset,neset,nvar,ntime,itime;
-  char title[MAX_LINE_LENGTH+1],cdum;
+  char title[MAX_LINE_LENGTH+1];
   char *nameco[3],**varnames=NULL;
   double *x[3],**q=NULL, *time;
-  float fdum;
   int *elem_id=NULL,*node_per_elem=NULL,*elem_per_blk=NULL,*attr_per_blk=NULL;
   int **icon=NULL,*ic=NULL,izone;
   char **elem_type=NULL;
@@ -88,8 +87,7 @@ void tec(int exoid, const char *filename) {
   /*
    *  Read time step information
    */
-  ntime=0;
-  ex_inquire(exoid,EX_INQ_TIME,&ntime,&fdum,&cdum);
+  ntime=ex_inquire_int(exoid,EX_INQ_TIME);
   if (ntime > 0) {
     time = (double *) malloc(ntime*sizeof(double));
     ex_get_all_times(exoid,time);
