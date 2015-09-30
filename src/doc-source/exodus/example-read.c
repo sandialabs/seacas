@@ -3,17 +3,6 @@
 #include <string.h>
 #include "exodusII.h"
 
-int ex_inquire_int(int exoid, int inquiry)
-{
-  char *cdummy = NULL; // Needed just for function call, unused.
-  float fdummy = 0;    // Needed just for function call, unused.
-  int   ret_val = 0;
-  int error = ex_inquire(exoid, inquiry, &ret_val, &fdummy, cdummy);
-  if (error < 0)
-    ;
-  return ret_val;
-}
-
 int main(int argc, char **argv)
 {
   int exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
