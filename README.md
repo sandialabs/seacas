@@ -7,6 +7,9 @@ imake and its associated tools, set your SEACAS environment variable
 and path, then generate Makefiles for SEACAS to build and install
 SEACAS.
 
+If all you need is the exodus library, it can be built by itself using
+cmake.  See the "exodus cmake" section below for more information.
+
 ## Clone the SEACAS distribution to the directory of your choice:
 ```
 git clone https://github.com/gdsjaar/seacas.git SEACAS
@@ -137,6 +140,20 @@ If you have any problems, send an email to `gdsjaar@sandia.gov`. Include any log
 Once everything builds, you can do a basic correctness test.  cd to the SEACAS-Test subdirectory and type `make`.  It will run through several of the programs building several meshes, joining them into a single mesh, decomposing it for use in a parallel file-per-processor analysis, joining the per-processor files back to a single file using epu and then converting the mesh file to text format and to matlab format.
 
 The exodus library can also be tested by changing directory to the src/libraries/exodus subdirectory and typing `make check`.  This will test both the C and fortran API.
+
+# Exodus CMake
+If you only need the exodus library and do not want to mess with imake and the building of all the SEACAS applications and libraries, you can use cmake and just build the exodus library.
+
+To do this, cd to the exodus subdirectory at src/libraries/exodus and enter the cmake command
+
+ "cmake -DUSE_TRIBITS=OFF ." 
+
+followed by "make" if the cmake step is successful.  You may have to tell cmake how to find your netcdf and optionally hdf5 and hdf5_hl libraries if it cannot find them automatically.
+
+Additional options for cmake are:
+ -DSEACAS_ENABLE_NETCDF4_SUPPORT=ON  -- if your netcdf has netcdf-4 enabled
+ -DBUILD_TESTING=1 -- to build the exodus tests.  Use "make check" to run them
+ -DBUILD_SHARED_LIBS=ON -- to build shared libraries instead of static.
 
 ## Contact information
 
