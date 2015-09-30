@@ -106,7 +106,6 @@ struct termio   new_termio, old_termio;
 static void
 gl_char_init()			/* turn off input echo */
 {
-#if !defined(REDS)
 #ifdef POSIX
     tcgetattr(0, &old_termios);
     gl_intrc = old_termios.c_cc[VINTR];
@@ -150,13 +149,12 @@ gl_char_init()			/* turn off input echo */
     ioctl(0, TCSETA, &new_termio);
 #endif /* TIOCSETN */
 #endif /* POSIX */
-#endif /* REDS */
+
 }
 
 static void 
 gl_char_cleanup (void)		/* undo effects of gl_char_init */
 {
-#if !defined(REDS)
 #ifdef POSIX 
     tcsetattr(0, TCSANOW, &old_termios);
 #else 			/* not POSIX */
@@ -166,7 +164,6 @@ gl_char_cleanup (void)		/* undo effects of gl_char_init */
     ioctl(0, TCSETA, &old_termio);
 #endif /* TIOCSETN */
 #endif /* POSIX */
-#endif /* REDS */
 }
 
 static int 
@@ -322,7 +319,7 @@ char *getline_int(char *prompt)
 	      case '\014': gl_redraw();				/* ^L */
 		break;
 	      case '\016': 					/* ^N */
-		strcpy(gl_buf, hist_next());
+		strncpy(gl_buf, hist_next(), BUF_SIZE-1);
                 if (gl_in_hook)
 	            gl_in_hook(gl_buf);
 		gl_fixup(gl_prompt, 0, BUF_SIZE);
@@ -330,7 +327,7 @@ char *getline_int(char *prompt)
 	      case '\017': gl_overwrite = !gl_overwrite;       	/* ^O */
 		break;
 	      case '\020': 					/* ^P */
-		strcpy(gl_buf, hist_prev());
+		strncpy(gl_buf, hist_prev(), BUF_SIZE-1);
                 if (gl_in_hook)
 	            gl_in_hook(gl_buf);
 		gl_fixup(gl_prompt, 0, BUF_SIZE);
@@ -350,13 +347,13 @@ char *getline_int(char *prompt)
 		if (c == '[') {
 		    switch(c = gl_getc()) {
 		      case 'A':             			/* up */
-		        strcpy(gl_buf, hist_prev());
+		        strncpy(gl_buf, hist_prev(), BUF_SIZE-1);
                         if (gl_in_hook)
 	                    gl_in_hook(gl_buf);
 		        gl_fixup(gl_prompt, 0, BUF_SIZE);
 		        break;
 		      case 'B':                         	/* down */
-		        strcpy(gl_buf, hist_next());
+		        strncpy(gl_buf, hist_next(), BUF_SIZE-1);
                         if (gl_in_hook)
 	                    gl_in_hook(gl_buf);
 		        gl_fixup(gl_prompt, 0, BUF_SIZE);
@@ -524,7 +521,7 @@ gl_kill (int pos)
 /* delete from pos to the end of line */
 {
     if (pos < gl_cnt) {
-	strcpy(gl_killbuf, gl_buf + pos);
+        strncpy(gl_killbuf, gl_buf + pos, BUF_SIZE-1);
 	gl_buf[pos] = '\0';
 	gl_fixup(gl_prompt, pos, pos);
     } else
@@ -596,14 +593,14 @@ gl_fixup (char *prompt, int change, int cursor)
 	gl_pos = gl_cnt = gl_shift = off_right = off_left = 0;
 	gl_putc('\r');
 	gl_puts(prompt);
-	strcpy(last_prompt, prompt);
+	strncpy(last_prompt, prompt, 79);
 	change = 0;
         gl_width = gl_termw - gl_strlen(prompt);
     } else if (strcmp(prompt, last_prompt) != 0) {
 	l1 = gl_strlen(last_prompt);
 	l2 = gl_strlen(prompt);
 	gl_cnt = gl_cnt + l1 - l2;
-	strcpy(last_prompt, prompt);
+	strncpy(last_prompt, prompt, 79);
 	gl_putc('\r');
 	gl_puts(prompt);
 	gl_pos = gl_shift;
@@ -874,7 +871,7 @@ search_addchar (int c)
 	    gl_buf[0] = 0;
 	    hist_pos = hist_last;
 	}
-	strcpy(gl_buf, hist_buf[hist_pos]);
+	strncpy(gl_buf, hist_buf[hist_pos], BUF_SIZE-1);
     }
     if ((loc = strstr(gl_buf, search_string)) != 0) {
       gl_fixup(search_prompt, 0, (int)(loc - gl_buf));
@@ -921,7 +918,7 @@ search_back (int new_search)
 	       gl_fixup(search_prompt, 0, 0);
 	       found = 1;
 	    } else if ((loc = strstr(p, search_string)) != 0) {
-	       strcpy(gl_buf, p);
+	      strncpy(gl_buf, p, BUF_SIZE-1);
 	       gl_fixup(search_prompt, 0, (int)(loc - p));
 	       if (new_search)
 		   search_last = hist_pos;
@@ -954,7 +951,7 @@ search_forw (int new_search)
 	       gl_fixup(search_prompt, 0, 0);
 	       found = 1;
 	    } else if ((loc = strstr(p, search_string)) != 0) {
-	       strcpy(gl_buf, p);
+	       strncpy(gl_buf, p, BUF_SIZE-1);
 	       gl_fixup(search_prompt, 0, (int)(loc - p));
 	       if (new_search)
 		   search_last = hist_pos;
