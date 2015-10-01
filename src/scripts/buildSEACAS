@@ -255,7 +255,7 @@ err_chk=0
 srch_for=""
 rm -f ${LogFile}.errors
 touch ${LogFile}.errors
-grep ERROR $LogFile |grep -v MPI_ERRORS |grep -v warning: | grep -v _ERROR |grep -v FAIL_ |grep -v define >> ${LogFile}.errors
+grep ERROR $LogFile |grep -v MPI_ERRORS |grep -v warning: | grep -v _ERROR |grep -v FAIL_ |grep -v define |grep -v HERROR |grep -v HGOTO_ERROR >> ${LogFile}.errors
 if [ $? -eq 0 ]; then
    srch_for="${srch_for} ERROR"
    err_chk=`expr $err_chk + 1`
