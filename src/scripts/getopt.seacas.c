@@ -198,7 +198,7 @@ int generate_output(char * argv[],int argc,const char *optstr,
 					printf(" %s",
 					       normalize(optarg?optarg:""));
 			} else if (opt == NON_OPT) 
-				printf(" %s",normalize(optarg)); 
+				printf(" %s",normalize(optarg?optarg:"")); 
 			else {
 				printf(" -%c",opt);
 				charptr = strchr(optstr,opt);
@@ -404,17 +404,17 @@ int main(int argc, char *argv[])
 		case 'o':
 			if (optstr)
 				free(optstr);
-			optstr=our_malloc(strlen(optarg)+1);
-			strcpy(optstr,optarg);
+			optstr=our_malloc(strlen(optarg?optarg:"")+1);
+			strcpy(optstr,optarg?optarg:"");
 			break;
 		case 'l':
-			add_long_options(optarg);
+			add_long_options(optarg?optarg:"");
 			break;
 		case 'n':
 			if (name)
 				free(name);
-			name=our_malloc(strlen(optarg)+1);
-			strcpy(name,optarg);
+			name=our_malloc(strlen(optarg?optarg:"")+1);
+			strcpy(name,optarg?optarg:"");
 			break;
 		case 'q':
 			quiet_errors=1;
@@ -423,7 +423,7 @@ int main(int argc, char *argv[])
 			quiet_output=1;
 			break;
 		case 's':
-			set_shell(optarg);
+			set_shell(optarg?optarg:"");
 			break;
 		case 'T':
 			exit(4);
