@@ -1,5 +1,5 @@
 
-TRUE_HDF5 = hdf5-1.8.15
+TRUE_HDF5 = hdf5-1.8.15-patch1
 
 
 #if BuildSharedExodusLibrary
