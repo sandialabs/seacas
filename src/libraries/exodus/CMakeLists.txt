@@ -1,9 +1,9 @@
-option(USE_TRIBITS "Use the Tribits modules to build Exodus" ON)
-if(USE_TRIBITS)
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  INCLUDE(TribitsPackageMacros)
+  TRIBITS_PACKAGE(Exodus)
+else()
   INCLUDE(TribitsSubPackageMacros)
   TRIBITS_SUBPACKAGE(Exodus)
-else()
-  cmake_minimum_required(VERSION 3.3)
 endif()
 
 SET(EXODUSII_VERSION_MAJOR "6")
@@ -14,6 +14,8 @@ SET(EXODUSII_VERSION_FULL "${EXODUSII_VERSION}.${EXODUSII_VERSION_PATCH}")
 
 ADD_SUBDIRECTORY(cbind)
 
-if(USE_TRIBITS)
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  TRIBITS_PACKAGE_POSTPROCESS()
+else()
   TRIBITS_SUBPACKAGE_POSTPROCESS()
 endif()
