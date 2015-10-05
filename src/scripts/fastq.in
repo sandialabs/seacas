@@ -46,6 +46,7 @@ echo ""
 
 codename=fastq
 ACCESS=@ACCESSDIR@
+sep=@SEPARATOR@
 
 # Text color variables
 txtund=$(tput sgr 0 1)    # Underline
@@ -166,9 +167,9 @@ else
     export EXT01=${device}
 fi
 
-if [ ! -x "${ACCESS}/bin/${codename}.${device}" ]
+if [ ! -x "${ACCESS}/bin/${codename}${sep}${device}" ]
 then
-   echo "${txtred}ERROR: ${ACCESS}/bin/${codename}.${device} does not exist.${txtrst}"
+   echo "${txtred}ERROR: ${ACCESS}/bin/${codename}${sep}${device} does not exist.${txtrst}"
    echo "    Contact gdsjaar@sandia.gov if you need this device;"
    echo "    otherwise use one of the supported devices:"
    show_device
@@ -176,7 +177,7 @@ then
 fi
 
 # Run the code, --
-${ACCESS}/bin/${codename}.${device} -basename ${filename} 
+${ACCESS}/bin/${codename}${sep}${device} -basename ${filename} 
 
 if [ ! -z ${filename} ] && [ "${device}" != "dual" ] && [ "${device}" != "xcps" ]
 then
