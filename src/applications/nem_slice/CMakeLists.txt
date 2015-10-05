@@ -1,9 +1,14 @@
-INCLUDE(TribitsSubPackageMacros)
 INCLUDE(TribitsAddExecutable)
 INCLUDE(TribitsLibraryMacros)
 INCLUDE(CheckIncludeFile)
+INCLUDE(FortranSettings)
 
-TRIBITS_SUBPACKAGE(Nemslice)
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  TRIBITS_PACKAGE(Nemslice)
+else()
+  INCLUDE(TribitsSubPackageMacros)
+  TRIBITS_SUBPACKAGE(Nemslice)
+endif()
 
 IF (${PACKAGE_NAME}_ENABLE_Zoltan)
    INCLUDE_DIRECTORIES(${Zoltan_INCLUDE_DIRS})
@@ -26,5 +31,9 @@ TRIBITS_ADD_EXECUTABLE(
   )
 install_executable(nem_slice)
 
-TRIBITS_SUBPACKAGE_POSTPROCESS()
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  TRIBITS_PACKAGE_POSTPROCESS()
+else()
+  TRIBITS_SUBPACKAGE_POSTPROCESS()
+endif()
 
