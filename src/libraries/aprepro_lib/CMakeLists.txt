@@ -1,9 +1,8 @@
-
-option(USE_TRIBITS "Use the Tribits modules to build Aprepro" ON)
-if(USE_TRIBITS)
+INCLUDE(TribitsLibraryMacros)
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  TRIBITS_PACKAGE(Aprepro_lib)
+else()
   INCLUDE(TribitsSubPackageMacros)
-  INCLUDE(TribitsLibraryMacros)
-
   TRIBITS_SUBPACKAGE(Aprepro_lib)
 endif()
 
@@ -67,16 +66,16 @@ if(GENERATE_BISON_FILES)
                      )
 endif()
 
-if(USE_TRIBITS)
-  TRIBITS_ADD_LIBRARY(
-    aprepro_lib
-    HEADERS	${HEADERS}
-    SOURCES ${SOURCES}
-  )
-  TRIBITS_SUBPACKAGE_POSTPROCESS()
+TRIBITS_ADD_LIBRARY(
+  aprepro_lib
+  HEADERS	${HEADERS}
+  SOURCES ${SOURCES}
+)
 
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  TRIBITS_PACKAGE_POSTPROCESS()
 else()
-  add_library(aprepro_lib ${HEADERS} ${SOURCES})
+  TRIBITS_SUBPACKAGE_POSTPROCESS()
 endif()
 
 option(BUILD_TEST_APP "Build the test application" OFF)
