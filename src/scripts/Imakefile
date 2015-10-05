@@ -7,6 +7,8 @@ ExtraStuffToClean(exodus.py)
 ExtraStuffToClean(exodus.pyc)
 ExtraStuffToClean(exodus.html)
 
+SEPARATOR="."
+
 exodus.py: exodus.py.in Imakefile $(CONFIGDIR)/$(MACROFILE)
 	$(ETCDIR)/MsubCmd +R@ -R@ exodus.py.in > exodus.py
 	chmod +x exodus.py
