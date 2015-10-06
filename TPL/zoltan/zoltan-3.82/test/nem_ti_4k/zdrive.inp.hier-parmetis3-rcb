@@ -1,0 +1,7 @@
+Decomposition Method 	= hier
+Zoltan Parameters       =
+File Type               = NemesisI
+File Name               = ti_4k-m9-r.par
+Parallel Disk Info      = number=2,offset=1,zeros
+Parallel file location  = root=pio_, subdir=.
+zoltanParams file       = hier-parmetis3-rcb.inp

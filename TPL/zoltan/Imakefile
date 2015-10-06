@@ -1,6 +1,6 @@
 
 ZOLTAN_BLD = zoltan-build
-ZOLTAN_SRC = zoltan-3.601
+ZOLTAN_SRC = zoltan-3.82
 
 #if BuildSharedExodusLibrary
 SHARED = --enable-shared

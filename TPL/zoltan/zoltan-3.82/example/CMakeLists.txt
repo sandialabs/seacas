@@ -1,0 +1,14 @@
+# Required modules
+
+
+# Example definitions
+
+ADD_SUBDIRECTORY(C)
+
+IF (${PROJECT_NAME}_ENABLE_CXX)
+  ADD_SUBDIRECTORY(CPP)
+ENDIF()
+
+IF (ZOLTAN_BUILD_ZFDRIVE)
+  ADD_SUBDIRECTORY(Fortran)
+ENDIF()
