@@ -63,7 +63,8 @@ class ScopeGuardImplBase
       }
 };
 
-typedef const ScopeGuardImplBase& ScopeGuard;
+//typedef const ScopeGuardImplBase& ScopeGuard;
+__attribute__((unused)) typedef const ScopeGuardImplBase& ScopeGuard;
 
 template <typename F>
 class ScopeGuardImpl0 : public ScopeGuardImplBase
