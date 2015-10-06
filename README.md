@@ -81,18 +81,20 @@ The matio library is used in the exo2mat and mat2exo programs which convert an e
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
    * Download the most recent version of the library from ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2. Currently this is parallel-20150522
-   * cd TPL/parallel
-   * tar jxvf /path/to/parallel-latest.tar.bz2
-   * cd parallel-20150522 and enter the command:
 ```
-     ./configure --prefix ${ACCESS}
+   cd TPL/parallel
+   tar jxvf /path/to/parallel-latest.tar.bz2
+   cd parallel-20150522
+   ./configure --prefix ${ACCESS}
 ```
 #### CGNS
 Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download the CGNS library.  To build:
 
-   * Download CGNS via git.
-   * cd TPL/cgns
-   * git clone https://github.com/CGNS/CGNS.git
+   * Download CGNS via git:
+```
+   cd TPL/cgns
+   git clone https://github.com/CGNS/CGNS.git
+```
    * build using cmake.  See TPL/cgns/cmake-config.in as example
 
 ## Configure, Build, and Install SEACAS
@@ -100,23 +102,23 @@ At this time, you should have all external TPL libraries built and
 installed into ${ACCESS}/lib and ${ACCESS}/include. You are now ready
 to configure the SEACAS CMake build.
 
-   * cd $ACCESS
-   * mkdir build
-   * cd build
+   * `cd $ACCESS`
+   * `mkdir build`
+   * `cd build`
    * edit the ${ACCESS}cmake-config file and adjust compilers and
      other settings as needed. The hdf5 linking with netcdf isn't
 configured correctly yet, so the line specifying the
 SEACAS_EXTRA_LINK_FLAGS may be needed for a proper link.
-   * enter the command ../cmake-config and cmake should configure
+   * enter the command `../cmake-config` and cmake should configure
 everything for the build.
-   * make -j4; make install
+   * `make -j4; make install`
    * If everything works, your applications should be in ${ACCESS}/bin
 
 ## EXODUS
 If you only want the exodus library, then follow most of the above
 instructions with the following exceptions:
   * You only need the netcdf and optionally hdf5 libraries
-  * Use the cmake-exodus file instead of cmake-config.
+  * Use the `cmake-exodus` file instead of cmake-config.
   * This will build, by default, a shared exodus library and also
 install the exodus.py python interface.
 
