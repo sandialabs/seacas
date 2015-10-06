@@ -1,5 +1,11 @@
 TRIBITS_REPOSITORY_DEFINE_PACKAGES(
+#
+# Included TPLs
+# 
+Zoltan		TPL/zoltan/zoltan-3.82          PT
+#
 # Libraries
+#
 Exodus		src/libraries/exodus		PT
 Exodus_for	src/libraries/exodus_for	PT
 Nemesis		src/libraries/nemesis		PT
