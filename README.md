@@ -1,7 +1,7 @@
 # Instructions for building SEACAS
-(See the bottom of the file for contact information)
-(If you want to use the old imake-based build, see the file
-INSTALL.IMAKE.TXT)
+ * See the bottom of the file for contact information
+ * If you want to use the old imake-based build, see the file INSTALL.IMAKE.TXT
+ * If you just need the exodus library, see EXODUS below.
 
 ## Clone the SEACAS distribution to the directory of your choice:
 ```
@@ -90,7 +90,7 @@ Experimental support for CGNS in the IOSS library is being added.  To use this c
    * git clone https://github.com/CGNS/CGNS.git
    * build using cmake.  See TPL/cgns/cmake-config.in as example
 
-## Configure SEACAS
+## Configure, Build, and Install SEACAS
 At this time, you should have all external TPL libraries built and
 installed into ${ACCESS}/lib and ${ACCESS}/include. You are now ready
 to configure the SEACAS CMake build.
@@ -106,6 +106,14 @@ SEACAS_EXTRA_LINK_FLAGS may be needed for a proper link.
 everything for the build.
    * make -j4; make install
    * If everything works, your applications should be in ${ACCESS}/bin
+
+## EXODUS
+If you only want the exodus library, then follow most of the above
+instructions with the following exceptions:
+  * You only need the netcdf and optionally hdf5 libraries
+  * Use the cmake-exodus file instead of cmake-config.
+  * This will build, by default, a shared exodus library and also
+install the exodus.py python interface.
 
 ## Contact information
 
