@@ -10,8 +10,10 @@ git clone https://github.com/gdsjaar/seacas.git SEACAS
 This will create a directory that will be referred to as _SEACAS_ in
 the instructions that follow. You can rename this directory to any
 other name you desire. Set an environment variable pointing to this
-location by doing "cd SEACAS; export ACCESS=`pwd`"
-
+location by doing:
+```
+     "cd SEACAS; export ACCESS=`pwd`"
+```
 ## Download external libraries -- netcdf, hdf5, matio, parallel
 There are a few externally developed libraries that are required to
 build SEACAS.  The netcdf library is required; the hdf5, matio, and
@@ -50,12 +52,15 @@ The most recent released version is recommended.
 	#define NC_MAX_VARS     524288   /* max variables per file */
 	#define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
 ```
+
     * cd netcdf-4.3.3.1 and enter the command:
+
 ```
 	./configure --enable-netcdf-4  --enable-shared \
 	            --disable-fsync --prefix ${ACCESS} \
 		    --disable-dap --disable-cdmremote
 ```
+
     * make; make install
 
 #### MATIO:
@@ -67,7 +72,7 @@ The matio library is used in the exo2mat and mat2exo programs which convert an e
    * cd matio-1.5.2 and enter the command:
 ```
      # The -L is to find the hdf5 library...
-     LDFLAGS='-L${ACCESS}/lib    '; export LDFLAGS
+     export LDFLAGS='-L${ACCESS}/lib'
      ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
 ```
    * make; make install
