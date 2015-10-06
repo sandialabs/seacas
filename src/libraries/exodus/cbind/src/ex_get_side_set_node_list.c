@@ -87,7 +87,6 @@ int ex_get_side_set_node_list(int exoid,
 			      void_int *side_set_node_cnt_list,
 			      void_int *side_set_node_list)
 {
-  size_t m;
   size_t i, j; 
   int64_t elem, side;
   int64_t num_side_sets, num_elem_blks, num_df, ndim;

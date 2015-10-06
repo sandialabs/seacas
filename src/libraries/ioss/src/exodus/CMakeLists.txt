@@ -1,6 +1,5 @@
 INCLUDE(TribitsLibraryMacros)
 if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  MESSAGE("Treating Ioex as subpackage")
   TRIBITS_SUBPACKAGE(Ioex)
 endif()
 
