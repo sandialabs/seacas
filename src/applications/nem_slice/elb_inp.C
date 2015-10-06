@@ -1518,7 +1518,6 @@ int check_inp_specs(std::string &exoII_inp_file,
   int cnt;
   int exoid, cpu_ws=0, io_ws=0, nvars, tmp_vindx=0;
   float version;
-  FILE *inp_fd;
   int   exid_inp, icpu_ws=0, iio_ws=0;
   float vers;
 
