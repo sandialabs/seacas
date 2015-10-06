@@ -42,10 +42,10 @@ create or read models of this size, you do not have to build hdf5.
 #### netcdf:
 The most recent released version is recommended. 
 
-   * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside SEACAS/TPL/netcdf
-   * cd TPL/netcdf
-   * tar zxvf netcdf-4.3.3.1.tar.gz
-   * Modify the following defines in SEACAS/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
+ * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside SEACAS/TPL/netcdf
+ * cd TPL/netcdf
+ * tar zxvf netcdf-4.3.3.1.tar.gz
+ * Modify the following defines in SEACAS/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
 
 ```
 	#define NC_MAX_DIMS     65536    /* max dimensions per file */
@@ -53,7 +53,7 @@ The most recent released version is recommended.
 	#define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
 ```
 
-    * cd netcdf-4.3.3.1 and enter the command:
+ * cd netcdf-4.3.3.1 and enter the command:
 
 ```
 	./configure --enable-netcdf-4  --enable-shared \
@@ -61,7 +61,7 @@ The most recent released version is recommended.
 		    --disable-dap --disable-cdmremote
 ```
 
-    * make; make install
+ * make; make install
 
 #### MATIO:
 The matio library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a matlab binary file.  To use this do:
