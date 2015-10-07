@@ -5,14 +5,14 @@
 
 ## Clone the SEACAS distribution to the directory of your choice:
 ```
-git clone https://github.com/gdsjaar/seacas.git SEACAS
+   git clone https://github.com/gdsjaar/seacas.git
 ```
-This will create a directory that will be referred to as _SEACAS_ in
+This will create a directory that will be referred to as _seacas.git_ in
 the instructions that follow. You can rename this directory to any
 other name you desire. Set an environment variable pointing to this
 location by doing:
 ```
-     "cd SEACAS; export ACCESS=`pwd`"
+     "cd seacas.git; export ACCESS=`pwd`"
 ```
 ## Download external libraries -- netcdf, hdf5, matio, parallel
 There are a few externally developed libraries that are required to
@@ -31,7 +31,7 @@ turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5. 
 
-   * Download hdf5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside SEACAS/TPL/hdf5
+   * Download hdf5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside seacas.git/TPL/hdf5
    * untar it, creating a directory will will refer to as hdf5-X.X.X
    * cd to that directory and enter the command:
 ```
@@ -42,10 +42,10 @@ create or read models of this size, you do not have to build hdf5.
 #### netcdf:
 The most recent released version is recommended. 
 
- * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside SEACAS/TPL/netcdf
+ * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside seacas.git/TPL/netcdf
  * cd TPL/netcdf
  * tar zxvf netcdf-4.3.3.1.tar.gz
- * Modify the following defines in SEACAS/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
+ * Modify the following defines in seacas.git/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
 
 ```
 	#define NC_MAX_DIMS     65536    /* max dimensions per file */
