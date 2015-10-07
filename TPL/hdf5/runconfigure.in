@@ -11,4 +11,4 @@ LDFLAGS='$(LDOPTIONS) $(EXTRA_LDOPTIONS)'; export LDFLAGS
 FC=''; export FC
 F90=''; export F90
  
-./configure --prefix=$(PROJECTROOT) --libdir $(SHLIBDIR) --includedir=$(PROJECTROOT)/inc $(SHARED) ${PARALLEL_ON_OFF} --enable-production --enable-debug=no --enable-static-exec $1
+./configure --prefix=$(PROJECTROOT) --libdir $(SHLIBDIR) --includedir=$(PROJECTROOT)/include $(SHARED) ${PARALLEL_ON_OFF} --enable-production --enable-debug=no --enable-static-exec $1
