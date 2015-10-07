@@ -1,11 +1,17 @@
 EXTRA_ARGS=$@
 
+### Change this to point to the compilers you want to use
 CC=/opt/local/bin/gcc-mp-4.8
+
+### Change this to point to the root of your SEACAS sources...
+ACCESS=/Users/gdsjaar/src/seacas.git
 TPL=${ACCESS}
 INSTALL=${ACCESS}
 MPI=OFF
 
+### You can add these below if you want more verbosity...
 #-D SEACAS_VERBOSE_CONFIGURE=ON \
+#-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 
 rm -f CMakeCache.txt
 
@@ -14,15 +20,15 @@ cmake  \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL} \
 -D BUILD_SHARED_LIBS:BOOL=ON \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
+-D TPL_ENABLE_HDF5:BOOL=ON \
 -D TPL_ENABLE_Netcdf:BOOL=ON \
 -D TPL_ENABLE_MPI=${MPI} \
--D CMAKE_VERBOSE_MAKEFILE:BOOL=OFF \
 \
--D Netcdf_LIBRARY_DIRS:PATH=${TPL}/lib \
--D TPL_Netcdf_INCLUDE_DIRS:PATH=${TPL}/include \
+-D NetCDF_DIR:PATH=${TPL} \
+-D HDF5_ROOT:PATH=${TPL} \
+-D HDF5_NO_SYSTEM_PATHS=ON \
 \
 -D SEACAS_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
--D SEACAS_EXTRA_LINK_FLAGS:STRING="-L${TPL}/lib -lhdf5_hl -lhdf5 -lz" \
 $EXTRA_ARGS \
 ../
 
