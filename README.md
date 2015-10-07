@@ -66,16 +66,22 @@ The most recent released version is recommended.
 #### MATIO:
 The matio library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a matlab binary file.  To use this do:
 
-   * Download the most recent version of the library from http://sourceforge.net/projects/matio/. Currently this is matio-1.5.2.tar.gz. 
-   * cd TPL/matio
-   * tar zxvf /path/to/matio-1.5.2.tar.gz
-   * cd matio-1.5.2 and enter the command:
+ * Download the most recent version of the library from http://sourceforge.net/projects/matio/. Currently this is matio-1.5.2.tar.gz. 
+ * cd TPL/matio
+ * tar zxvf /path/to/matio-1.5.2.tar.gz
+ * There is a bug related to reading version 7.3 files.  To fix the
+bug, enter the command:
+```
+   patch -p3 < MATIO-fix-issue-reading-version-7.3-files.patch
+```
+
+ * cd matio-1.5.2 and enter the command:
 ```
      # The -L is to find the hdf5 library...
      export LDFLAGS='-L${ACCESS}/lib'
      ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
 ```
-   * make; make install
+ * make; make install
 
 #### PARALLEL: 
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:

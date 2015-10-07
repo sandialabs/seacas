@@ -1,0 +1,54 @@
+From e726b31fcb1a382df6df2bb2e8796587e8b7775d Mon Sep 17 00:00:00 2001
+From: Greg Sjaardema <gdsjaar@sandia.gov>
+Date: Wed, 7 Oct 2015 12:08:16 -0600
+Subject: [PATCH 4/4] TPL: MATIO - fix issue reading version 7.3 files
+
+---
+ TPLs_src/matio/matio-1.5.2/src/mat.c |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+diff --git a/TPLs_src/matio/matio-1.5.2/src/mat.c b/TPLs_src/matio/matio-1.5.2/src/mat.c
+index d89e1e8..1ee5c54 100644
+--- a/TPL/matio/matio-1.5.2/src/mat.c
++++ b/TPL/matio/matio-1.5.2/src/mat.c
+@@ -1618,6 +1618,8 @@ Mat_VarReadInfo( mat_t *mat, const char *name )
+         return NULL;
+ 
+     if ( mat->version == MAT_FT_MAT73 ) {
++        fpos = mat->next_index;
++        mat->next_index = 0;
+         do {
+             matvar = Mat_VarReadNextInfo(mat);
+             if ( matvar != NULL ) {
+@@ -1633,6 +1635,7 @@ Mat_VarReadInfo( mat_t *mat, const char *name )
+                 break;
+             }
+         } while ( NULL == matvar && mat->next_index < mat->num_datasets);
++	mat->next_index = fpos;
+     } else {
+         fpos = ftell(mat->fp);
+         fseek(mat->fp,mat->bof,SEEK_SET);
+@@ -1677,6 +1680,10 @@ Mat_VarRead( mat_t *mat, const char *name )
+ 
+     if ( MAT_FT_MAT73 != mat->version )
+         fpos = ftell(mat->fp);
++    else {
++        fpos = mat->next_index;
++        mat->next_index = 0;
++    }
+ 
+     matvar = Mat_VarReadInfo(mat,name);
+     if ( matvar )
+@@ -1684,6 +1691,9 @@ Mat_VarRead( mat_t *mat, const char *name )
+ 
+     if ( MAT_FT_MAT73 != mat->version )
+         fseek(mat->fp,fpos,SEEK_SET);
++    else {
++        mat->next_index = fpos;
++    }
+     return matvar;
+ }
+ 
+-- 
+1.7.3
+
