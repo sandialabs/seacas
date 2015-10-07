@@ -1505,7 +1505,7 @@ xcpl (anything **params, int num_surfaces, anything **surf_list)
   float cur_x, cur_y;           /* line end points */
   float save_x, save_y;         /* used for clipping */
   int prev_code, cur_code;      /* encoded endpoints - for clipping */
-  int mode, done;               /* stuff used for clipping */
+  int mode=0, done;               /* stuff used for clipping */
   static unsigned mask = ~(~0 << 1);  /* for masking off bits */
 
    for (i = 0; i < num_surfaces; ++i) {
@@ -2265,7 +2265,6 @@ xcca (anything **params, int num_surfaces, anything **surf_list)
   int   index,index_inc,count;  /* array indices */ 
   int   nx,ny;                  /* number of cells in x,y */
   int   nx1,ny1;                /* number of cells in x,y after clipping */
-  int   lcp;                    /* local color precision -ignored for now */
   int   *cells;                 /* color values */
   int   ix,iy,yinc;             /* SVDI logical raster coordinates */
   float x1,x2,y1,y2;            /* corners of rectangle in NDC */
@@ -2283,7 +2282,6 @@ xcca (anything **params, int num_surfaces, anything **surf_list)
    nx = nx1 = abs(*(int *)params[7]);
    ny = ny1 = abs(*(int *)params[8]);
 
-   lcp = *(int *)params[9];
    cells = (int *)params[10];
 
    for (i = 0; i < num_surfaces; ++i) {

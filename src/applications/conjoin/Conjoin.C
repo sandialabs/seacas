@@ -1708,7 +1708,7 @@ namespace {
 
       // See if any of the variable names conflict with the status variable name...
       if (status != "NONE") {
-	for (size_t i=0; i < vars.count(OUT)-1; i++) {
+	for (size_t i=0; i < (size_t)vars.count(OUT)-1; i++) {
 	  if (case_compare(output_name_list[i], status) == 0) {
 	    // Error -- duplicate element variable names on output database.
 	    std::cerr << "\nERROR: A " << vars.label()

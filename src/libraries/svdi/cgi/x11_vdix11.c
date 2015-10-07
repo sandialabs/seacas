@@ -628,7 +628,6 @@ int *justif;
   unsigned long valuemask;
   unsigned int d_width, d_height;
   char *geometry = NULL, *bufferpic = NULL, *allcolors = NULL;
-  int geom_result;
   XSetWindowAttributes setwinattr;
   XWindowAttributes winattr;
   XWMHints wmhints;
@@ -696,7 +695,7 @@ int *justif;
   /* use user-supplied default geometry if available */
   geometry = XGetDefault(display,"svdi","Geometry");
   if (geometry) 
-    geom_result = XParseGeometry(geometry,&xpos,&ypos,&x_width,&x_height);
+    XParseGeometry(geometry,&xpos,&ypos,&x_width,&x_height);
 
   /* setup colors */
   /* first try for a 24 bit visual */

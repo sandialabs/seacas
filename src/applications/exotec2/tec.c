@@ -559,7 +559,7 @@ void siftDown( int *a, int start, int end)
  */
 int hunt(int node, int n, int *key, int *iguess) {
 
-  int i,j,k,inc;
+  int i=0,j=0,k=0,inc=0;
   static int hunt=1;
 
   if (node == key[*iguess-1]) return *iguess;
