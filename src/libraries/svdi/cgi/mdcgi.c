@@ -377,7 +377,6 @@ void xcsol_ (anything **surface_id)
    short	dev;			/* which device to look at now */
    short	dev_found;		/* which device was it found on */
    short	surf;			/* which surface on device to look at */
-   short	surf_found;		/* which active_surface was found */
 
 
    /* search devices for this surface */
@@ -385,7 +384,7 @@ void xcsol_ (anything **surface_id)
    for (dev = 0; (dev < num_devices) && (dev_found == -1); ++dev) {
       for (surf = 0; surf < devices [dev]. num_active_surfaces; ++surf) {
          if (*surface_id == devices[dev]. statelist [surf]) {
-            dev_found = dev; surf_found = surf; break;
+            dev_found = dev; break;
          } /* end if found on list */
       } /* end for */
    } /* end for all devices */
