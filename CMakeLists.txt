@@ -8,6 +8,7 @@ if(DEFINED ${CMAKE_PROJECT_NAME} AND ${CMAKE_PROJECT_NAME} STREQUAL "Trilinos")
   #
   # This is being built as a package in Trilinos
   #
+  MESSAGE("----Building SEACAS as package in Trilinos")
 
   TRIBITS_PACKAGE_DECL( SEACAS ENABLE_SHADOWING_WARNINGS DISABLE_STRONG_WARNINGS )
 
@@ -30,8 +31,8 @@ else()
   #
   # This is being built as a standalone project
   #
+  MESSAGE("----Building as standalone SEACAS")
   CMAKE_MINIMUM_REQUIRED(VERSION 3.3.1 FATAL_ERROR)
-
   # Make CMake set WIN32 with CYGWIN for older CMake versions.  CMake requires
   # this to be in the top-level CMakeLists.txt file and not an include file :-(
   SET(CMAKE_LEGACY_CYGWIN_WIN32 1 CACHE BOOL "" FORCE)
@@ -47,6 +48,7 @@ else()
   SET(${PROJECT_NAME}_ENABLE_Fortran_DEFAULT TRUE)
 
   INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tribits/TriBITS.cmake)
+  SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
 
   SET(SUBDIR "src/")
 
@@ -72,6 +74,5 @@ endif()
 
 # For decomp, blot, fastq, and exodus.py
 ADD_SUBDIRECTORY(${SUBDIR}scripts)
-
 
 

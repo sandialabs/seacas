@@ -1,17 +1,24 @@
 EXTRA_ARGS=$@
 
-MPI=OFF
 
+### Change this to point to the compilers you want to use
 CXX=/opt/local/bin/g++-mp-4.8
 CC=/opt/local/bin/gcc-mp-4.8
 FC=/opt/local/bin/gfortran-mp-4.8
 
+### Change this to point to the root of your SEACAS sources...
+ACCESS=/Users/gdsjaar/src/seacas.git
+
 TPL=${ACCESS}
 INSTALL=${ACCESS}
-
-#-D SEACAS_VERBOSE_CONFIGURE=ON \
+MPI=OFF
 
 rm -f CMakeCache.txt
+
+### You can add these below if you want more verbosity...
+#-D SEACAS_VERBOSE_CONFIGURE=ON \
+#-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+
 
 cmake  \
 -D SEACAS_ENABLE_ALL_PACKAGES:BOOL=ON \
@@ -20,21 +27,21 @@ cmake  \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
+-D TPL_ENABLE_HDF5:BOOL=ON \
 -D TPL_ENABLE_Netcdf:BOOL=ON \
 -D TPL_ENABLE_Matio:BOOL=ON \
 -D TPL_ENABLE_MPI=${MPI} \
 -D TPL_ENABLE_Pamgen=OFF \
--D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 \
--D Netcdf_LIBRARY_DIRS:PATH=${TPL}/lib \
--D TPL_Netcdf_INCLUDE_DIRS:PATH=${TPL}/include \
+-D NetCDF_DIR:PATH=${TPL} \
+-D HDF5_ROOT:PATH=${TPL} \
+-D HDF5_NO_SYSTEM_PATHS=ON \
 \
 -D Matio_LIBRARY_DIRS:PATH=${TPL}/lib \
 -D TPL_Matio_INCLUDE_DIRS:PATH=${TPL}/include \
 \
 -D TPL_X11_INCLUDE_DIRS:PATH=/usr/X11R6/include \
 -D SEACAS_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
--D SEACAS_EXTRA_LINK_FLAGS:STRING="-L${TPL}/lib -lhdf5_hl -lhdf5 -lz" \
 $EXTRA_ARGS \
 ../
 

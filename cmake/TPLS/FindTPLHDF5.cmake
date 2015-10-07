@@ -53,7 +53,9 @@
 # ************************************************************************
 # @HEADER
 
-TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( HDF5
-  REQUIRED_HEADERS hdf5.h
-  REQUIRED_LIBS_NAMES hdf5 hdf5_hl z
-  )
+find_package(HDF5 REQUIRED COMPONENTS C HL)
+
+#TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES(HDF5
+#  REQUIRED_HEADERS hdf5.h
+#  REQUIRED_LIBS_NAMES hdf5_hl hdf5 z
+#  )
