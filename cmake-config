@@ -9,6 +9,11 @@ FC=/opt/local/bin/gfortran-mp-4.8
 ### Change this to point to the root of your SEACAS sources...
 ACCESS=/Users/gdsjaar/src/seacas.git
 
+### Change this to regenerate the flex and bison files for aprepro and aprepro_lib
+### May have to touch aprepro.l aprepro.y aprepro.ll and aprepro.yy to have them regenerate
+#-D GENERATE_FLEX_FILES=ON \
+#-D GENERATE_BISON_FILES=ON \
+
 TPL=${ACCESS}
 INSTALL=${ACCESS}
 MPI=OFF
