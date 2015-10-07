@@ -2340,7 +2340,6 @@ anything *surf_list[];
   int   index,index_inc,count;  /* array indices */ 
   int   nx,ny;                  /* number of cells in x,y */
   int   nx1,ny1;                /* number of cells in x,y after clipping */
-  int   lcp;                    /* local color precision -ignored for now */
   int   *cells;                 /* color values */
   int   ix,iy,yinc;             /* SVDI logical raster coordinates */
   float x1,x2,y1,y2;            /* corners of rectangle in NDC */
@@ -2358,7 +2357,6 @@ anything *surf_list[];
    nx = nx1 = abs(*(int *)params[7]);
    ny = ny1 = abs(*(int *)params[8]);
 
-   lcp = *(int *)params[9];
    cells = (int *)params[10];
 
    for (i = 0; i < num_surfaces; ++i) {
@@ -2707,7 +2705,6 @@ anything *surf_list[];
   float xmin,xmax,ymin,ymax;    /* SVDI raster viewport after clipping */
   int   ok;                     /* flag TRUE =line lies in clip region */
   int   skipx, skipy;           /* count pixels skipped in xmin,ymin */
-  char  map[10];                /* string used to set raster mapping */
   int   imap;
   int   qrs_index;              /* index for SVDI inquiries */
   float temp_array[2];          /* temporary array for SVDI inquiries */
@@ -2875,13 +2872,6 @@ anything *surf_list[];
       /* set the raster viewport */
       vdstrv( &xmin, &xmax, &ymin, &ymax );
 
-      /* set mapping to replicate and freeform */
-      /*
-      sprintf(map,"%s","REPLICATE");
-      vdstmp(map,8L);
-      sprintf(map,"%s","FREEFORM");
-      vdstmp(map,9L);
-      */
       imap = 2;
       vbstmp(&imap);
       imap = 5;
