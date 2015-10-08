@@ -114,8 +114,6 @@ namespace {
 
   const std::string SEP() {return std::string("@");} // Separator for attribute offset storage
   const std::string SCALAR()     {return std::string("scalar");}
-  const std::string VECTOR3D()   {return std::string("vector_3d");}
-  const std::string SYM_TENSOR() {return std::string("sym_tensor_33");}
 
   const char *complex_suffix[] = {".re", ".im"};
 
@@ -173,10 +171,6 @@ namespace {
     if (ierr < 0)
       Ioex::exodus_error(exoid, __LINE__, -1);
   }
-
-  void check_variable_consistency(const ex_var_params &exo_params,
-                                  int my_processor, const std::string &filename,
-                                  const Ioss::ParallelUtils &util);
 
   template <typename T>
   void compute_internal_border_maps(T* entities, T* internal, size_t count, size_t entity_count)
@@ -4305,14 +4299,6 @@ namespace Iopx {
       assert(node_blocks.size() == 1);
       nodeCount =        node_blocks[0]->get_property("entity_count").get_int();
       spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
-
-      // See if the nodeOwningProcessor vector has been populated...
-      size_t locally_owned = nodeCount;
-      if (node_blocks[0]->property_exists("locally_owned_count")) {
-        locally_owned = node_blocks[0]->get_property("locally_owned_count").get_int();
-      } else if (!nodeOwningProcessor.empty()) {
-        locally_owned = std::count(nodeOwningProcessor.begin(), nodeOwningProcessor.end(), myProcessor);
-      } 
 
       char the_title[max_line_length+1];
 
