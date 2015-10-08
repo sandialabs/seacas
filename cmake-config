@@ -13,17 +13,25 @@ NETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 
+### Set to ON for parallel compile; otherwise OFF for serial (default)
+MPI=OFF
+
 ### Change this to point to the compilers you want to use
-CXX=/opt/local/bin/g++-mp-4.8
-CC=/opt/local/bin/gcc-mp-4.8
-FC=/opt/local/bin/gfortran-mp-4.8
+if [ "$MPI" == "ON" ]
+then
+  CXX=mpicxx
+  CC=mpicc
+  FC=mpif77
+else
+  CXX=/opt/local/bin/g++-mp-4.8
+  CC=/opt/local/bin/gcc-mp-4.8
+  FC=/opt/local/bin/gfortran-mp-4.8
+fi
 
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then you will need
 ### to add the line below.  It will disable blot and fastq
 #-D TPL_ENABLE_X11=OFF \
-
-MPI=OFF
 
 rm -f CMakeCache.txt
 
