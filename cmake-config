@@ -18,6 +18,11 @@ CXX=/opt/local/bin/g++-mp-4.8
 CC=/opt/local/bin/gcc-mp-4.8
 FC=/opt/local/bin/gfortran-mp-4.8
 
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then you will need
+### to add the line below.  It will disable blot and fastq
+#-D TPL_ENABLE_X11=OFF \
+
 MPI=OFF
 
 rm -f CMakeCache.txt
