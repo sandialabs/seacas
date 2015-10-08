@@ -10,6 +10,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
     Iohb        src/heartbeat     PT  REQUIRED
     Iotr        src/transform     PT  REQUIRED
     Ionit       src/init          PT  REQUIRED
+    IoMain	src/main          PT  REQUIRED
     )
 
   SET(LIB_OPTIONAL_DEP_PACKAGES Exodus)
