@@ -262,7 +262,9 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
     if(NetCDF_NEEDS_HDF5) 
         message(STATUS "NetCDF requires HDF5")
-        add_package_dependency(NetCDF DEPENDS_ON HDF5)
+	if ( NOT TARGET hdf5)
+          add_package_dependency(NetCDF DEPENDS_ON HDF5)
+	endif()
     endif()
 
 endif(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )    
