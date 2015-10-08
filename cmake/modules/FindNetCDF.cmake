@@ -253,6 +253,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             if (${_has_hdf5} ) 
                 set(NetCDF_NEEDS_HDF5 True)
             else()
+                set(NetCDF_NEEDS_HDF5 False)
                 message(STATUS "NetCDF does not require HDF5")
             endif()    
 
@@ -284,17 +285,15 @@ if ( NOT NetCDF_FIND_QUIETLY )
   # Create a not found list
 
 #  message(STATUS "NetCDF Version: ${NetCDF_VERSION}")
-  message(STATUS "\tNetCDF_INCLUDE_DIRS      =${NetCDF_INCLUDE_DIRS}")
-  message(STATUS "\tNetCDF_LIBRARY_TARGETS   =${NetCDF_LIBRARY_TARGETS}")
-  message(STATUS "\tNetCDF_LIBRARIES         =${NetCDF_LIBRARIES}")
-  message(STATUS "\tNetCDF_LIBRARIES_EXPORT  =${NetCDF_LIBRARIES_EXPORT}")
-  message(STATUS "\tNetCDF_LINK_LIBRARIES    =${NetCDF_LINK_LIBRARIES}")
-  message(STATUS "\tNetCDF_IS_PARALLEL       =${NetCDF_IS_PARALLEL}")
+  message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
+  message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
+  message(STATUS "\tNetCDF_NEEDS_HDF5        = ${NetCDF_NEEDS_HDF5}")
 
 endif()
 # For compatability with TriBITS:
 SET(DOCSTR "List of semi-colon separated paths to look for the TPL Netcdf")
 
+set(TPL_Netcdf_Enables_Netcdf4 ${NetCDF_NEEDS_HDF5} CACHE BOOL "True if netcdf enables netcdf-4")
 set(TPL_Netcdf_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH ${DOCSTR})
 set(TPL_Netcdf_LIBRARIES ${NetCDF_LIBRARIES} CACHE PATH ${DOCSTR})
 set(TPL_Netcdf_INCLUDE_DIRS ${NetCDF_INCLUDE_DIRS} CACHE PATH ${DOCSTR})
