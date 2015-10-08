@@ -32,6 +32,13 @@ IF (NOT ${ENABLED}_ENABLE_MPI)
   LIST(REMOVE_ITEM HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/exodusII_par.h")
 ENDIF()
 
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  ASSERT_DEFINED(TPL_Netcdf_Enables_Netcdf4)
+  if(NOT ${TPL_Netcdf_Enables_Netcdf4}) 
+         ADD_DEFINITIONS(-DNOT_NETCDF4)
+  endif()
+endif()
+
 TRIBITS_ADD_LIBRARY(
 	exodus
 	HEADERS	${HEADERS}
