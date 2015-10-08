@@ -376,6 +376,7 @@ namespace {
     dist[proc_count] = sum;
   }
 
+#if !defined(NO_PARMETIS_SUPPORT)
   int get_common_node_count(const std::vector<Iopx::BlockDecompositionData> &el_blocks,
                             MPI_Comm comm)
   {
@@ -413,6 +414,7 @@ namespace {
     //    std::cerr << "Setting common_nodes to " << common_nodes << "\n";
     return common_nodes;
   }
+#endif
 }
 
 namespace Iopx {
