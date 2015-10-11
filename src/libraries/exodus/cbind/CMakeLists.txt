@@ -34,7 +34,7 @@ ENDIF()
 
 if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
   ASSERT_DEFINED(TPL_Netcdf_Enables_Netcdf4)
-  if(NOT ${TPL_Netcdf_Enables_Netcdf4}) 
+  if(NOT TPL_Netcdf_Enables_Netcdf4) 
          ADD_DEFINITIONS(-DNOT_NETCDF4)
   endif()
 endif()
