@@ -32,7 +32,7 @@ else()
   # This is being built as a standalone project
   #
   MESSAGE("----Building as standalone SEACAS")
-  CMAKE_MINIMUM_REQUIRED(VERSION 3.3.1 FATAL_ERROR)
+  cmake_minimum_required(VERSION 3.0)
   # Make CMake set WIN32 with CYGWIN for older CMake versions.  CMake requires
   # this to be in the top-level CMakeLists.txt file and not an include file :-(
   SET(CMAKE_LEGACY_CYGWIN_WIN32 1 CACHE BOOL "" FORCE)

@@ -31,7 +31,7 @@ else()
 endif()
 SET(ENABLED ${SEACAS_PREFIX}Exodus)
 ASSERT_DEFINED(${PREFIX}_ENABLE_${ENABLED})
-IF (${${PREFIX}_ENABLE_${ENABLED}})
+IF (${PREFIX}_ENABLE_${ENABLED})
   TRIBITS_ADD_EXECUTABLE(
     Utst_superelement
     SOURCES Utst_superelement.C
