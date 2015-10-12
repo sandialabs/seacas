@@ -4,34 +4,11 @@
 #                                                                               #
 #################################################################################
 
-if(DEFINED ${CMAKE_PROJECT_NAME} AND ${CMAKE_PROJECT_NAME} STREQUAL "Trilinos")
-  #
-  # This is being built as a package in Trilinos
-  #
-  MESSAGE("----Building SEACAS as package in Trilinos")
-
-  TRIBITS_PACKAGE_DECL( SEACAS ENABLE_SHADOWING_WARNINGS DISABLE_STRONG_WARNINGS )
-
-  TRIBITS_ADD_DEBUG_OPTION()
-  TRIBITS_ADD_SHOW_DEPRECATED_WARNINGS_OPTION()
-
-  TRIBITS_PROCESS_SUBPACKAGES()
-
-  TRIBITS_PACKAGE_DEF()
-  TRIBITS_PACKAGE_POSTPROCESS()
-
-  TRIBITS_EXCLUDE_FILES(doc)
-
-  SET(SUBDIR "")
-
-  # Used for dependencies SEACASExodus vs Exodus
-  SET(SEACAS_PREFIX "SEACAS")
-  SET(IOSS_PREFIX "SEACAS")
-else()
+if(NOT CMAKE_PROJECT_NAME)
   #
   # This is being built as a standalone project
   #
-  MESSAGE("----Building as standalone SEACAS")
+  MESSAGE("----Building SEACAS standalone")
   cmake_minimum_required(VERSION 3.0)
   # Make CMake set WIN32 with CYGWIN for older CMake versions.  CMake requires
   # this to be in the top-level CMakeLists.txt file and not an include file :-(
@@ -55,6 +32,29 @@ else()
   # Used for dependencies SEACASExodus vs Exodus
   SET(SEACAS_PREFIX "")  
   SET(IOSS_PREFIX "IOSS")
+else()
+  #
+  # This is being built as a package in Trilinos
+  #
+  MESSAGE("----Building SEACAS as package in ${CMAKE_PROJECT_NAME}")
+
+  TRIBITS_PACKAGE_DECL( SEACAS ENABLE_SHADOWING_WARNINGS DISABLE_STRONG_WARNINGS )
+
+  TRIBITS_ADD_DEBUG_OPTION()
+  TRIBITS_ADD_SHOW_DEPRECATED_WARNINGS_OPTION()
+
+  TRIBITS_PROCESS_SUBPACKAGES()
+
+  TRIBITS_PACKAGE_DEF()
+  TRIBITS_PACKAGE_POSTPROCESS()
+
+  TRIBITS_EXCLUDE_FILES(doc)
+
+  SET(SUBDIR "")
+
+  # Used for dependencies SEACASExodus vs Exodus
+  SET(SEACAS_PREFIX "SEACAS")
+  SET(IOSS_PREFIX "SEACAS")
 endif()
 
 INCLUDE(TribitsGlobalMacros)
