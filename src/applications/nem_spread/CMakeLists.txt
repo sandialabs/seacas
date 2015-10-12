@@ -1,11 +1,6 @@
 INCLUDE(TribitsAddExecutable)
 INCLUDE(FortranSettings)
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  TRIBITS_PACKAGE(Nemspread)
-else()
-  INCLUDE(TribitsSubPackageMacros)
-  TRIBITS_SUBPACKAGE(Nemspread)
-endif()
+SEACAS_PACKAGE(Nemspread)
 
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -23,9 +18,6 @@ TRIBITS_ADD_EXECUTABLE(
   )
 install_executable(nem_spread)
 
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  TRIBITS_PACKAGE_POSTPROCESS()
-else()
-  TRIBITS_SUBPACKAGE_POSTPROCESS()
-endif()
+SEACAS_POSTPROCESS()
+
 

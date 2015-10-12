@@ -1,11 +1,6 @@
 INCLUDE(TribitsAddExecutable)
 INCLUDE(FortranSettings)
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  TRIBITS_PACKAGE(Mapvar-kd)
-else()
-  INCLUDE(TribitsSubPackageMacros)
-  TRIBITS_SUBPACKAGE(Mapvar-kd)
-endif()
+SEACAS_PACKAGE(Mapvar-kd)
 
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -25,9 +20,5 @@ TRIBITS_ADD_EXECUTABLE(
   )
 install_executable(mapvar-kd)
 
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  TRIBITS_PACKAGE_POSTPROCESS()
-else()
-  TRIBITS_SUBPACKAGE_POSTPROCESS()
-endif()
+SEACAS_POSTPROCESS()
 
