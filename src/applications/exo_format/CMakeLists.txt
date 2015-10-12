@@ -1,12 +1,7 @@
 INCLUDE(TribitsAddExecutable)
 INCLUDE(TribitsLibraryMacros)
 
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  TRIBITS_PACKAGE(Exo_format)
-else()
-  INCLUDE(TribitsSubPackageMacros)
-  TRIBITS_SUBPACKAGE(Exo_format)
-endif()
+SEACAS_PACKAGE(Exo_format)
 
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -29,9 +24,5 @@ IF(NOT __LINUX_COMPILER_PGI)
   install_executable(exo_format)
 ENDIF()
 
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-  TRIBITS_PACKAGE_POSTPROCESS()
-else()
-  TRIBITS_SUBPACKAGE_POSTPROCESS()
-endif()
+SEACAS_POSTPROCESS()
 
