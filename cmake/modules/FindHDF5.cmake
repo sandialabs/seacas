@@ -502,7 +502,7 @@ foreach( tool ${_hdf5_TOOLS})
                ${tool}
                HINTS ${_hdf5_BINARY_SEARCH_DIRS}
                ${_hdf5_FIND_OPTIONS})
-  if (${_hdf5_VAR_NAME})
+  if ("${_hdf5_VAR_NAME}")
     list(APPEND HDF5_TOOLS_FOUND ${tool})
   endif()
 endforeach()
