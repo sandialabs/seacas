@@ -4,6 +4,27 @@
 #                                                                               #
 #################################################################################
 
+macro(SEACAS_PACKAGE target)
+  if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+    TRIBITS_PACKAGE(${target})
+  else()
+    INCLUDE(TribitsSubPackageMacros)
+    TRIBITS_SUBPACKAGE(${target})
+  endif()
+endmacro()
+
+macro(SEACAS_POSTPROCESS)
+  if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+    TRIBITS_PACKAGE_POSTPROCESS()
+  else()
+    TRIBITS_SUBPACKAGE_POSTPROCESS()
+  endif()
+endmacro()
+
+function(install_executable target)
+  INSTALL(TARGETS ${target} COMPONENT ${PACKAGE_NAME} RUNTIME DESTINATION ${${PROJECT_NAME}_INSTALL_RUNTIME_DIR})
+endfunction()
+
 if(NOT CMAKE_PROJECT_NAME OR "${CMAKE_PROJECT_NAME}" STREQUAL "SEACAS")
   #
   # This is being built as a standalone project
@@ -60,27 +81,6 @@ endif()
 INCLUDE(TribitsGlobalMacros)
 INCLUDE(TribitsPackageMacros)
 INCLUDE(TribitsAddOptionAndDefine)
-
-function(SEACAS_PACKAGE target)
-  if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-    TRIBITS_PACKAGE(${target})
-  else()
-    INCLUDE(TribitsSubPackageMacros)
-    TRIBITS_SUBPACKAGE(${target})
-  endif()
-endfunction()
-
-function(SEACAS_POSTPROCESS)
-  if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
-    TRIBITS_PACKAGE_POSTPROCESS()
-  else()
-    TRIBITS_SUBPACKAGE_POSTPROCESS()
-  endif()
-endfunction()
-
-function(install_executable target)
-  INSTALL(TARGETS ${target} COMPONENT ${PACKAGE_NAME} RUNTIME DESTINATION ${${PROJECT_NAME}_INSTALL_RUNTIME_DIR})
-endfunction()
 
 if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
   # Do all of the processing for this Tribits project
