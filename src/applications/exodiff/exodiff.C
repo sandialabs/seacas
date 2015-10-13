@@ -2083,7 +2083,7 @@ bool diff_sideset_df(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, const INT *
 	std::pair<INT,INT> range2 = sset2->Distribution_Factor_Range(e);
 	SMART_ASSERT(range1.second - range1.first == range2.second - range2.first);
 
-	for (size_t i=0; i < range1.second-range1.first; i++) {
+	for (INT i=0; i < range1.second-range1.first; i++) {
 	  double v1 = vals1[range1.first+i];
 	  double v2 = vals2[range2.first+i];
 
