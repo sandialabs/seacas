@@ -202,7 +202,7 @@ void Side_Set<INT>::load_df() const
   }
 
   // Convert raw counts to index...
-  INT index = 0;
+  size_t index = 0;
   for (size_t i=0; i < numEntity; i++) {
     dfIndex[i] = index;
     index += count[i];
