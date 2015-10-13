@@ -1,5 +1,9 @@
 INCLUDE(TribitsAddExecutableAndTest)
 
+if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+  TRIBITS_SUBPACKAGE(IoUtest)
+endif()
+
 SET(HEADERS "")
 SET(SOURCES "")
 
@@ -36,7 +40,6 @@ IF (${PREFIX}_ENABLE_${ENABLED})
     Utst_superelement
     SOURCES Utst_superelement.C
     NOEXEPREFIX NOEXESUFFIX
-    DEPLIBS Ioex
   )
 
   TRIBITS_ADD_TEST(

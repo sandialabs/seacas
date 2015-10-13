@@ -11,6 +11,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
     Iotr        src/transform     PT  REQUIRED
     Ionit       src/init          PT  REQUIRED
     IoMain	src/main          PT  REQUIRED
+    IoUtest	src/utest         PT  REQUIRED
     )
 
   SET(LIB_OPTIONAL_DEP_PACKAGES Exodus)
