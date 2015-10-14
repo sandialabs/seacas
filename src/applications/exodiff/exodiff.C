@@ -1163,6 +1163,9 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 		    int out_file_id, std::vector<MinMaxData> &mm_glob, double *gvals)
   {
     bool diff_flag = false;
+    if (interface.glob_var_names.empty()) {
+      return diff_flag;
+    }
   
     // Global variables.
     file1.Load_Global_Results(step1);
@@ -1185,21 +1188,19 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
     // ----------------------------------------------------------------------
     // Output file containing differences...
     if (out_file_id >= 0) {
-      if (!interface.glob_var_names.empty()) {
-	SMART_ASSERT(gvals != 0);
-	for (unsigned out_idx = 0; out_idx < interface.glob_var_names.size(); ++out_idx) {
-	  const string& name = (interface.glob_var_names)[out_idx];
-	  int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
-	  int idx2 = find_string(file2.Global_Var_Names(), name, interface.nocase_var_names);
-	  if (idx1 < 0 || idx2 < 0 || vals1 == NULL || vals2 == NULL) {
-	    std::cerr << "ERROR: Unable to find global variable named '"
-		      << name << "' on database.\n";
-	    exit(1);
-	  }
-	  gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interface.output_type);
+      SMART_ASSERT(gvals != 0);
+      for (unsigned out_idx = 0; out_idx < interface.glob_var_names.size(); ++out_idx) {
+	const string& name = (interface.glob_var_names)[out_idx];
+	int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
+	int idx2 = find_string(file2.Global_Var_Names(), name, interface.nocase_var_names);
+	if (idx1 < 0 || idx2 < 0 || vals1 == NULL || vals2 == NULL) {
+	  std::cerr << "ERROR: Unable to find global variable named '"
+		    << name << "' on database.\n";
+	  exit(1);
 	}
-	ex_put_glob_vars(out_file_id, t2.step1, interface.glob_var_names.size(), gvals);
+	gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interface.output_type);
       }
+      ex_put_glob_vars(out_file_id, t2.step1, interface.glob_var_names.size(), gvals);
       return diff_flag;
     }
 
@@ -1368,13 +1369,17 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       const double* vals2 = get_nodal_values(file2, t2,    idx2, 2, name, &diff_flag);
 
       if (vals1 == NULL) {
-	std::cout << "\tERROR: Could not find nodal variables on file 1\n";
-	exit(1);
+	std::cout << "\tERROR: Could not find nodal variable "
+		  << name << " on file 1\n";
+	diff_flag = true;
+	continue;
       }
 
       if (vals2 == NULL) {
-	std::cout << "\tERROR: Could not find nodal variables on file 2\n";
-	exit(1);
+	std::cout << "\tERROR: Could not find nodal variable "
+		  << name << " on file 2\n";
+	diff_flag = true;
+	continue;
       }
 
       DiffData max_diff;
@@ -1480,6 +1485,9 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	Exo_Block<INT>* eblock1 = file1.Get_Elmt_Block_by_Index(b);
 	if (!eblock1->is_valid_var(vidx1)) {
 	  global_elmt_index += eblock1->Size();
+	  continue;
+	}
+	if (eblock1->Size() == 0) {
 	  continue;
 	}
         
@@ -1678,6 +1686,9 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 
       for (int b = 0; b < file1.Num_Node_Sets(); ++b) {
 	Node_Set<INT>* nset1 = file1.Get_Node_Set_by_Index(b);
+	if (nset1->Size() == 0) {
+	  continue;
+	}
 	if (!nset1->is_valid_var(vidx1)) {
 	  continue;
 	}
@@ -1861,6 +1872,9 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
 	Side_Set<INT>* sset1 = file1.Get_Side_Set_by_Index(b);
 	SMART_ASSERT(sset1 != NULL);	
+	if (sset1->Size() == 0) {
+	  continue;
+	}
 	if (!sset1->is_valid_var(vidx1)) {
 	  continue;
 	}
@@ -1993,8 +2007,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	  Side_Set<INT> *sset = file1.Get_Side_Set_by_Id(max_diff.blk);
 	  sprintf(buf,
 		  "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set " ST_ZU ", side " ST_ZU ".%d)",
-		  name_length,
-		  name.c_str(),
+		  name_length, name.c_str(),
 		  interface.ss_var[e_idx].abrstr(),
 		  max_diff.val1, max_diff.val2,
 		  max_diff.diff, max_diff.blk,
@@ -2206,7 +2219,8 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 	std::cout << "\tERROR: Could not find element attribute "
 		  << name << " in block "
 		  << eblock1->Id() << ", file 1\n";
-	exit(1);
+	diff_flag = true;
+	continue;
       }
 
       if (Invalid_Values(vals1, eblock1->Size())) {
@@ -2224,7 +2238,8 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 	std::cout << "\tERROR: Could not find element attribute "
 		  << name << " in block "
 		  << eblock2->Id() << ", file 2\n";
-	exit(1);
+	diff_flag = true;
+	continue;
       }
 
       if (Invalid_Values(vals2, eblock2->Size())) {
