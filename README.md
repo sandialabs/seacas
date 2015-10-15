@@ -39,7 +39,7 @@ create or read models of this size, you do not have to build hdf5.
 ```
    * make; make install
 
-#### netcdf:
+#### NetCDF:
 The most recent released version is recommended. 
 
  * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside seacas.git/TPL/netcdf
@@ -59,6 +59,14 @@ The most recent released version is recommended.
 	./configure --enable-netcdf-4  --enable-shared \
 	            --disable-fsync --prefix ${ACCESS} \
 		    --disable-dap --disable-cdmremote
+```
+
+ * If the configure step complains about not being able to find the
+   HDF5 library, you may need to do the following and then redo the
+   configure step
+```
+	CFLAGS='-I{HDF5_ROOT}/include'; export CFLAGS
+	LDFLAGS='-L{HDF5_ROOT}/lib   '; export LDFLAGS
 ```
 
  * make; make install
@@ -93,7 +101,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
    cd parallel-20150522
    ./configure --prefix ${ACCESS}
 ```
-#### CGNS
+#### CGNS:
 Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download the CGNS library.  To build:
 
    * Download CGNS via git:
