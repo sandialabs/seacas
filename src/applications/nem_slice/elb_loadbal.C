@@ -934,6 +934,7 @@ int generate_loadbal(Machine_Description* machine,
     vec_free(weight->vertices);
     vec_free(weight->edges);
   }
+  if (fp != NULL) fclose(fp);
   return 1;
 
  cleanup:
