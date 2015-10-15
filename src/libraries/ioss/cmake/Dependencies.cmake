@@ -5,6 +5,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
     Iofx        src/exo_fpp       PT  OPTIONAL
     Iopx        src/exo_par       PT  OPTIONAL
     Ioexo_fac   src/exo_fac       PT  OPTIONAL
+    Iocgns	src/cgns	  PT  OPTIONAL
     Iogn        src/generated     PT  REQUIRED
     Iopg        src/pamgen        PT  OPTIONAL
     Iohb        src/heartbeat     PT  REQUIRED
@@ -15,11 +16,11 @@ if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
     )
 
   SET(LIB_OPTIONAL_DEP_PACKAGES Exodus)
-  SET(LIB_OPTIONAL_DEP_TPLS XDMF HDF5 Pamgen Zoltan MPI)
+  SET(LIB_OPTIONAL_DEP_TPLS XDMF HDF5 CGNS Pamgen Zoltan MPI)
 
 else()
   SET(LIB_OPTIONAL_DEP_PACKAGES SEACASExodus Pamgen Zoltan)
-  SET(LIB_OPTIONAL_DEP_TPLS XDMF HDF5)
+  SET(LIB_OPTIONAL_DEP_TPLS XDMF HDF5 CGNS)
 endif()
 
 SET(LIB_REQUIRED_DEP_PACKAGES)
