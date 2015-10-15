@@ -45,6 +45,7 @@
 #include "rf_allo.h"                    // for array_alloc
 #include "rf_io_const.h"                // for MAX_INPUT_STR_LN, ExoFile, etc
 #include "nem_spread.h"
+#include "scopeguard.h"
 
 #define TLIST_CNT 5
 
@@ -59,6 +60,7 @@ int read_mesh_file_name(const char *filename)
   /* Open the file */
   if((file_cmd=fopen(filename, "r")) == NULL)
     return -1;
+  ON_BLOCK_EXIT(fclose, file_cmd);
   
   /* Begin parsing the input file */
   while(fgets(inp_line, MAX_INPUT_STR_LN, file_cmd)) {
@@ -558,10 +560,6 @@ int read_pexoII_info(NemSpread<T,INT> &spreader, const char *filename)
       *cPtr = '\0';
     }
   }
-  
-  /* Close the command file */
-  fclose(file_cmd);
-
   return 0;
 }
 
