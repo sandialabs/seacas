@@ -56,6 +56,7 @@ SET( SEACAS_TPLS_FINDMODS_CLASSIFICATIONS
   Zlib            "cmake/TPLs/"    SS
   Pnetcdf         "cmake/TPLs/"    SS
   Netcdf          "cmake/TPLs/"    SS
+  CGNS		  "cmake/TPLs/"	   SS
   METIS           "cmake/TPLs/"    TS
   ParMETIS        "cmake/TPLs/"    SS
   Pamgen          "cmake/TPLs/"    SS
