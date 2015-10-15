@@ -108,7 +108,8 @@ int main(int argc, char *argv[])
 
   /* Unitialized local variables */
   int     ne_file_id;
-  char    test_direc[256], file_name[256];
+  char    test_direc[256];
+  char    *file_name = "./ne_test.exoII";
   float	  version;
 
   /* Initialized local variables */
@@ -120,53 +121,6 @@ int main(int argc, char *argv[])
   int    debug_flag=0;
 
 /*-----------------------------Execution Begins-----------------------------*/
-
-  /* Get the location of the temporary file to use for the test */
-  if (argc <= 1) {
-    /* Nothing specified. Use defaults. */
-    strcpy(file_name, "./ne_test.exoII");
-  }
-  else if (argc == 2) {
-    /* Test for the help flag */
-    if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "-?") == 0) {
-      /* Output the help line */
-      printf("Usage:\n\tne_test <optional directory> <optional file name>\n");
-      exit(0);
-    }
-    /* Test for the debug flag */
-    else if (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "-d") == 0) {
-      printf("****DEBUG MODE****\n");
-      ex_opts(EX_VERBOSE | EX_DEBUG);
-      strcpy(file_name, "./ne_test.exoII");
-      debug_flag = 1;
-    }
-    /* Else get the directory name and assign default name */
-    else {
-      strcpy(test_direc, argv[1]);
-      if (test_direc[strlen(test_direc)-1] != '/') {
-        strcpy(file_name, test_direc);
-        strcat(file_name, "/ne_test.exoII");
-      }
-      else {
-        strcpy(file_name, test_direc);
-        strcat(file_name, "ne_test.exoII");
-      }
-    }
-  }
-  else if (argc == 3) {
-    /* Both directory and file name specified */
-    strcpy(test_direc, argv[1]);
-    if (test_direc[strlen(test_direc)-1] == '/') {
-      strcpy(file_name, test_direc);
-      strcat(file_name, "/");
-      strcat(file_name, argv[2]);
-    }
-    else {
-      strcpy(file_name, test_direc);
-      strcat(file_name, argv[2]);
-    }
-  }
-
 /*---------------------------------------------------------------------------*/
 /*                      OUTPUT TEST SECTION                                  */
 /*---------------------------------------------------------------------------*/
