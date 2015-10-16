@@ -552,11 +552,13 @@ void NemSpread<T,INT>::load_mesh()
     /* There is a path separator.  Get the portion after the
      * separator
      */
-    strcpy(cTemp, strrchr(Output_File_Base_Name, '/')+1);
+    strncpy(cTemp, strrchr(Output_File_Base_Name, '/')+1, 511);
+    cTemp[511] = '\0';
   } else {
 
     /* No separator; this is already just the basename... */
-    strcpy(cTemp, Output_File_Base_Name);
+    strncpy(cTemp, Output_File_Base_Name, 511);
+    cTemp[511] = '\0';
   }
 
   if (strlen(PIO_Info.Exo_Extension) == 0)

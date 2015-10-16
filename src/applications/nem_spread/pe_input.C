@@ -53,7 +53,7 @@
 int read_mesh_file_name(const char *filename)
 {
 /* local declarations */
-  FILE *file_cmd;
+  FILE *file_cmd = NULL;
   char  inp_line[MAX_INPUT_STR_LN + 1];
   char  inp_copy[MAX_INPUT_STR_LN + 1];
 
@@ -105,7 +105,7 @@ int read_pexoII_info(NemSpread<T,INT> &spreader, const char *filename)
 /* local declarations */
   static const char *yo = "read_pexoII_info";
 
-  FILE *file_cmd;
+  FILE *file_cmd = NULL;
   char  inp_line[MAX_INPUT_STR_LN + 1];
   char  inp_copy[MAX_INPUT_STR_LN + 1];
   char *cptr, *cptr2, *cptr3;
@@ -116,6 +116,7 @@ int read_pexoII_info(NemSpread<T,INT> &spreader, const char *filename)
   /* Open the file */
   if((file_cmd=fopen(filename, "r")) == NULL)
     return -1;
+  ON_BLOCK_EXIT(fclose, file_cmd);
 
   /* Begin parsing the input file */
   while(fgets(inp_line, MAX_INPUT_STR_LN, file_cmd)) {
