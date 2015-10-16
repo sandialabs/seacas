@@ -43,13 +43,15 @@ namespace {
   {
     // Query number of coordinate frames...
     int nframes = 0;
-    ex_get_coordinate_frames(exoid, &nframes, NULL, NULL, NULL);
+    int ierr = ex_get_coordinate_frames(exoid, &nframes, NULL, NULL, NULL);
+    if (ierr < 0)
+      Ioex::exodus_error(exoid, __LINE__, -1);
 
     if (nframes > 0) {
       std::vector<char> tags(nframes);
       std::vector<double> coord(nframes*9);
       std::vector<INT>  ids(nframes);
-      int ierr = ex_get_coordinate_frames(exoid, &nframes, TOPTR(ids), TOPTR(coord), TOPTR(tags));
+      ierr = ex_get_coordinate_frames(exoid, &nframes, TOPTR(ids), TOPTR(coord), TOPTR(tags));
       if (ierr < 0)
 	Ioex::exodus_error(exoid, __LINE__, -1);
 
