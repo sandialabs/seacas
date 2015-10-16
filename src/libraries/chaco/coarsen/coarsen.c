@@ -187,13 +187,7 @@ coarsen (
     }
 
     /* Otherwise I have to coarsen. */
-
-    if (coords != NULL) {
-	ccoords = smalloc(igeom * sizeof(float *));
-    }
-    else {
-	ccoords = NULL;
-    }
+    ccoords = smalloc(igeom * sizeof(float *));
     coarsen1(graph, nvtxs, nedges, &cgraph, &cnvtxs, &cnedges,
 	     &v2cv, igeom, coords, ccoords, using_ewgts);
 
