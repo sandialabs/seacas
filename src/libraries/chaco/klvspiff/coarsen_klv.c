@@ -296,12 +296,7 @@ coarsen_klv (
 
     /* Otherwise I have to coarsen. */
     flattened = FALSE;
-    if (coords != NULL) {
-        ccoords = smalloc(igeom * sizeof(float *));
-    }
-    else {
-        ccoords = NULL;
-    }
+    ccoords = smalloc(igeom * sizeof(float *));
     if (FLATTEN && step == 0) {
 	flattened = flatten(graph, nvtxs, nedges, &cgraph, &cnvtxs, &cnedges, &v2cv,
 			    using_ewgts && COARSEN_EWGTS,
