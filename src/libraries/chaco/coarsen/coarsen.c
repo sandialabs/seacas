@@ -183,6 +183,10 @@ coarsen (
 	sfree(space);
 	if (vwsqrt != NULL)
 	    sfree(vwsqrt);
+	if (twptr_save != NULL) {
+	  sfree(twptr_save);
+	  twptr_save = NULL;
+	}
 	return;
     }
 
@@ -392,6 +396,11 @@ coarsen (
     }
     if (DEBUG_COARSEN > 0) {
 	printf(" Leaving coarsen, step=%d\n", step);
+    }
+
+    if (twptr_save != NULL) {
+	sfree(twptr_save);
+	twptr_save = NULL;
     }
 
     /* Free the space that was allocated. */
