@@ -86,8 +86,8 @@ coarsen (
     float    *cterm_wgts[MAXSETS];	/* coarse graph terminal weights */
     float    *new_term_wgts[MAXSETS];	/* terminal weights for Bui's method*/
     float   **real_term_wgts;	/* one of the above */
-    float    *twptr;		/* loops through term_wgts */
-    float    *twptr_save;	/* copy of twptr */
+    float    *twptr = NULL;	/* loops through term_wgts */
+    float    *twptr_save = NULL;/* copy of twptr */
     float    *ctwptr;		/* loops through cterm_wgts */
     double   *vwsqrt = NULL;	/* square root of vertex weights */
     double    norm, alpha;	/* values used for orthogonalization */
@@ -244,7 +244,7 @@ coarsen (
 
     ch_interpolate(yvecs, cyvecs, ndims, graph, nvtxs, v2cv, using_ewgts);
 
-    sfree(cterm_wgts[1]);
+    sfree(twptr_save);
     sfree(v2cv);
 
     /* I need to do Rayleigh Quotient Iteration each nstep stages. */
