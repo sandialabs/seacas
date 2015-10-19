@@ -15,6 +15,10 @@ share
 doc/html
 /lib
 /include
+SEACAS-Test/*.g3
+SEACAS-Test/baseline.gt
+SEACAS-Test/baseline.mat
+SEACAS-Test/baseline.t
 src/libraries/exodus/cbind/test/*.res
 src/libraries/exodus/forbind/test/*.res
 src/libraries/exodus/CMakeCache.txt
