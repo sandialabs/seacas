@@ -69,8 +69,20 @@ TRIBITS_ADD_LIBRARY(
 
 SEACAS_POSTPROCESS()
 
-option(BUILD_TEST_APP "Build the test application" OFF)
-if(BUILD_TEST_APP)
+if(Aprepro_lib_ENABLE_TESTS)
   add_executable(aprepro_test_app apr_test.cc)
   target_link_libraries(aprepro_test_app aprepro_lib)
 endif()
+
+TRIBITS_ADD_ADVANCED_TEST(
+ aprepro_lib_unit_test
+ TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/aprepro_test_app ARGS -q ${CMAKE_CURRENT_SOURCE_DIR}/test.inp_app
+  OUTPUT_FILE test.output
+  PASS_ANY
+ TEST_1 CMND diff ARGS -w
+		       ${CMAKE_CURRENT_SOURCE_DIR}/test_standard.out
+		       ${CMAKE_CURRENT_BINARY_DIR}/test.output
+ COMM serial		      
+ FINAL_PASS_REGULAR_EXPRESSION 
+)
+
