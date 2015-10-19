@@ -223,8 +223,6 @@ median (
 	    for (i = 0; i < myactive; i++) {
 		if (vals[*aptr] <= guess) {
 		    ++removed;
-		    if (vals[*aptr] == guess) 
-		        neardown = guess;
 		}
 		else
 		    *aptr2++ = *aptr;
