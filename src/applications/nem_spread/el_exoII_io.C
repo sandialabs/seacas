@@ -75,19 +75,25 @@ int check_sizes(int num_proc, INT *Elem_Blk_Ids, INT *Node_Set_Ids, INT *Side_Se
   {
     /* Do we need 64-bit to write the entity (block/set) ids? */
     bool ids64bit = false;
-    for (int i=0; i < globals.Num_Elem_Blk && !ids64bit; i++) {
-      if (Elem_Blk_Ids[i] >= INT_MAX) {
-	ids64bit = true;
+    if (Elem_Blk_Ids) {
+      for (int i=0; i < globals.Num_Elem_Blk && !ids64bit; i++) {
+	if (Elem_Blk_Ids[i] >= INT_MAX) {
+	  ids64bit = true;
+	}
       }
     }
-    for (int i=0; i < globals.Num_Node_Set && !ids64bit; i++) {
-      if (Node_Set_Ids[i] >= INT_MAX) {
-	ids64bit = true;
+    if (Node_Set_Ids) {
+      for (int i=0; i < globals.Num_Node_Set && !ids64bit; i++) {
+	if (Node_Set_Ids[i] >= INT_MAX) {
+	  ids64bit = true;
+	}
       }
     }
-    for (int i=0; i < globals.Num_Side_Set && !ids64bit; i++) {
-      if (Side_Set_Ids[i] >= INT_MAX) {
-	ids64bit = true;
+    if (Side_Set_Ids) {
+      for (int i=0; i < globals.Num_Side_Set && !ids64bit; i++) {
+	if (Side_Set_Ids[i] >= INT_MAX) {
+	  ids64bit = true;
+	}
       }
     }
 
@@ -574,12 +580,13 @@ void NemSpread<T,INT>::load_mesh()
   }
     
   for (int iproc=Proc_Info[4]; iproc <Proc_Info[4]+Proc_Info[5]; iproc++) {
-    char Parallel_File_Name[MAX_FNL];
-    gen_par_filename(cTemp, Parallel_File_Name, Proc_Ids[iproc],Proc_Info[0]);
+    std::string Parallel_File_Name = gen_par_filename(cTemp,
+						      Proc_Ids[iproc],
+						      Proc_Info[0]);
 
     /* Create the parallel Exodus II file for writing */
     if (Debug_Flag >= 7)
-      printf("%sParallel mesh file name is %s\n", yo, Parallel_File_Name);
+      printf("%sParallel mesh file name is %s\n", yo, Parallel_File_Name.c_str());
     else {
       if (iproc%10 == 0 || iproc ==Proc_Info[2]-1)
 	printf("%d", iproc);
@@ -590,10 +597,11 @@ void NemSpread<T,INT>::load_mesh()
     int mode = EX_CLOBBER;
     mode |= int64api;
     mode |= db_mode;
-    if ((mesh_exoid=ex_create(Parallel_File_Name, mode, &cpu_ws, &io_ws)) == -1) {
+    if ((mesh_exoid=ex_create(Parallel_File_Name.c_str(),
+			      mode, &cpu_ws, &io_ws)) == -1) {
 
       fprintf(stderr,"[%s] Could not create parallel Exodus II file:\n\t%s\n",
-	      yo, Parallel_File_Name);
+	      yo, Parallel_File_Name.c_str());
       exit(1);
     }
 
