@@ -108,7 +108,6 @@ int main(int argc, char *argv[])
 
   /* Unitialized local variables */
   int     ne_file_id;
-  char    test_direc[256];
   char    *file_name = "./ne_test.exoII";
   float	  version;
 
