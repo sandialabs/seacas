@@ -801,10 +801,16 @@ int generate_loadbal(Machine_Description* machine,
       free(tmp_adj);
     }
     free (tmp_v2p);
-    if (FREE_GRAPH == 0) {
+    if (!FREE_GRAPH) {
       if (nloops > 1) {
-	if (tmp_vwgts) free (tmp_vwgts);
-	if (tmp_ewgts) free (tmp_ewgts);
+	if (tmp_vwgts) {
+	  free (tmp_vwgts);
+	  tmp_vwgts = NULL;
+	}
+	if (tmp_ewgts) {
+	  free (tmp_ewgts);
+	  tmp_ewgts = NULL;
+	}
       }
     }
     if (tmp_x)     free (tmp_x);
@@ -932,7 +938,7 @@ int generate_loadbal(Machine_Description* machine,
   }
 
   /* since Chaco didn't free the graph, need to do it here */
-  if (FREE_GRAPH == 0) {
+  if (!FREE_GRAPH) {
     if (nloops > 1) {
       if (tmp_vwgts) free (tmp_vwgts);
       if (tmp_ewgts) free (tmp_ewgts);
@@ -965,7 +971,7 @@ int generate_loadbal(Machine_Description* machine,
       free(tmp_adj);
     }
     free (tmp_v2p);
-    if (FREE_GRAPH == 0) {
+    if (!FREE_GRAPH) {
       if (nloops > 1) {
 	if (tmp_vwgts) free (tmp_vwgts);
 	if (tmp_ewgts) free (tmp_ewgts);
