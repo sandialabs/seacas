@@ -1019,6 +1019,12 @@ C     --Open the output database
       endif
       call exmxnm(ndbout, maxnam, ierr)
 
+      if (l64bit) then
+C ... Compress the output
+        call exsetopt(ndbout, EX_OPT_COMPRESSION_LEVEL, 1, ierr)
+        call exsetopt(ndbout, EX_OPT_COMPRESSION_SHUFFLE, 1, ierr)
+      end if
+
 C     --Write the QA records
       CALL DBOQA (NDBOUT, QAINFO, NQAREC, c(kqarec),
      &     NINFO, c(kinfo), ' Grepos:  ', FILIN)
