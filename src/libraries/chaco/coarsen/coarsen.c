@@ -180,13 +180,9 @@ coarsen (
 	if (real_term_wgts != term_wgts && new_term_wgts[1] != NULL) {
 	    sfree(real_term_wgts[1]);
 	}
-	sfree(space);
-	if (vwsqrt != NULL)
-	    sfree(vwsqrt);
-	if (twptr_save != NULL) {
-	  sfree(twptr_save);
-	  twptr_save = NULL;
-	}
+	sfree(space); space = NULL;
+	sfree(vwsqrt); vwsqrt = NULL;
+	sfree(twptr_save); twptr_save = NULL;
 	return;
     }
 
@@ -248,8 +244,8 @@ coarsen (
 
     ch_interpolate(yvecs, cyvecs, ndims, graph, nvtxs, v2cv, using_ewgts);
 
-    sfree(twptr_save);
-    sfree(v2cv);
+    sfree(twptr_save); twptr_save = NULL;
+    sfree(v2cv); v2cv = NULL;
 
     /* I need to do Rayleigh Quotient Iteration each nstep stages. */
     time = seconds();
@@ -369,9 +365,10 @@ coarsen (
 
 	    rqi_ext();
 
-	    sfree(gvec);
+	    sfree(gvec); gvec = NULL;
 	    if (real_term_wgts != term_wgts && new_term_wgts[1] != NULL) {
 		sfree(new_term_wgts[1]);
+		new_term_wgts[1] = NULL;
 	    }
 	}
 	else {
@@ -390,18 +387,14 @@ coarsen (
 	    orthlist = newlink;
 	}
 	sfree(r1);
-	if (vwsqrt != NULL)
-	    sfree(vwsqrt);
+	sfree(vwsqrt); vwsqrt = NULL;
 	PERTURB = oldperturb;
     }
     if (DEBUG_COARSEN > 0) {
 	printf(" Leaving coarsen, step=%d\n", step);
     }
 
-    if (twptr_save != NULL) {
-	sfree(twptr_save);
-	twptr_save = NULL;
-    }
+    sfree(twptr_save); twptr_save = NULL;
 
     /* Free the space that was allocated. */
     if (ccoords != NULL) {
