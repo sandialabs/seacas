@@ -32,6 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
+#include <iostream>
 #include <assert.h>                     // for assert
 #include <limits.h>                     // for INT_MAX
 #include <stdio.h>                      // for printf, fprintf, NULL, etc
@@ -166,8 +167,8 @@ template <typename T, typename INT>
 void NemSpread<T,INT>::load_mesh()
 {
 
-  /* Function which reads the EXODUS II database which contains the mesh.  It
-   * does this under the control of another EXODUS II database file which
+  /* Function which reads the EXODUS database which contains the mesh.  It
+   * does this under the control of another EXODUS database file which
    * contains the load-balance information.  The load balance information must
    * have been already read.
    *
@@ -176,22 +177,22 @@ void NemSpread<T,INT>::load_mesh()
    * Functions called:
    *
    * check_exodus_error -- function which handles the error code returned by
-   *                        calls to EXODUS II API routines.
+   *                        calls to EXODUS API routines.
    * construct_lb_filename --  function which appends the string '-#' where
    *                            '#' is the number of processors to the name of
-   *                            the EXODUS II filename.
+   *                            the EXODUS filename.
    * read_lb          -- function which reads the load-balance information
-   *                     from an EXODUS II database for a given processor.
+   *                     from an EXODUS database for a given processor.
    * read_coord       -- function which reads the nodal coordinates information
-   *                     from an EXODUS II database for a given processor.
+   *                     from an EXODUS database for a given processor.
    * read_elem_blk_ids-- Function which read the element block ids and other
    *                     global information specific to the element block level.
    * read_elem_blk    -- Function which reads the element level information
    *                     for each element block in the mesh
    * read_node_sets   -- function which reads the node sets information from an
-   *                     EXODUS II database for a given processor.
+   *                     EXODUS database for a given processor.
    * read_side_sets   -- function which reads the side sets information from an
-   *                     EXODUS II database for a given processor.
+   *                     EXODUS database for a given processor.
    *
    *----------------------------------------------------------------------------
    */
@@ -288,7 +289,7 @@ void NemSpread<T,INT>::load_mesh()
     exit(1);
   }
 
-  /* Open the EXODUS II mesh file */
+  /* Open the EXODUS mesh file */
 
   /* computing precision should be the same as the database precision
    *
@@ -406,7 +407,7 @@ void NemSpread<T,INT>::load_mesh()
     Elem_Blk_Attr_Names = (char***) array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem_Blk,
 						sizeof(char**));
   } else {
-    fprintf(stderr,"ERROR, globals.Num_Elem_Blk = %d\n", globals.Num_Elem_Blk);
+    std::cerr << "ERROR, globals.Num_Elem_Blk = " << globals.Num_Elem_Blk << "\n";
     exit(1);
   }
 
@@ -485,7 +486,7 @@ void NemSpread<T,INT>::load_mesh()
 	 second() - start_time);
 
   /*
-   * Read the mesh information from the exodus II file and broadcast it to the
+   * Read the mesh information from the exodus file and broadcast it to the
    * processors.  NOTE: this will only read as much information as will fit in
    * the communication buffer.  It will then send the information to all the
    * processors so they can extract the information they need. Then, the next
@@ -541,7 +542,7 @@ void NemSpread<T,INT>::load_mesh()
     printf("\tTime to read side sets: %.2f\n", second() - start_time);
   }
 
-  /* Close the EXODUS II  mesh file */
+  /* Close the EXODUS  mesh file */
   check_exodus_error(ex_close(mesh_exoid), "ex_close");
 
   /************* Output the information to the parallel disks *****************/
@@ -551,7 +552,7 @@ void NemSpread<T,INT>::load_mesh()
   /* Generate the processor to disk map */
   gen_disk_map(&PIO_Info,Proc_Info, 0, 1);
 
-  /* Generate the parallel exodus II file name */
+  /* Generate the parallel exodus file name */
   /* See if any '/' in the name.  IF present, isolate the basename of the file */
   if (strrchr(Output_File_Base_Name, '/') != NULL) {
 
@@ -584,7 +585,7 @@ void NemSpread<T,INT>::load_mesh()
 						      Proc_Ids[iproc],
 						      Proc_Info[0]);
 
-    /* Create the parallel Exodus II file for writing */
+    /* Create the parallel Exodus file for writing */
     if (Debug_Flag >= 7)
       printf("%sParallel mesh file name is %s\n", yo, Parallel_File_Name.c_str());
     else {
@@ -600,7 +601,7 @@ void NemSpread<T,INT>::load_mesh()
     if ((mesh_exoid=ex_create(Parallel_File_Name.c_str(),
 			      mode, &cpu_ws, &io_ws)) == -1) {
 
-      fprintf(stderr,"[%s] Could not create parallel Exodus II file:\n\t%s\n",
+      fprintf(stderr,"[%s] Could not create parallel Exodus file:\n\t%s\n",
 	      yo, Parallel_File_Name.c_str());
       exit(1);
     }
@@ -620,9 +621,9 @@ void NemSpread<T,INT>::load_mesh()
     write_parExo_data(mesh_exoid, max_name_length, iproc, 
 		      num_nodes_in_node_set, num_elem_in_ssets, Num_Elem_In_Blk);
 
-    /* Close the parallel exodus II file */
+    /* Close the parallel exodus file */
     if (ex_close(mesh_exoid) == -1) {
-      fprintf(stderr, "%sCould not close the parallel Exodus II file\n",
+      fprintf(stderr, "%sCould not close the parallel Exodus file\n",
 	      yo);
       exit(1);
     }
@@ -720,7 +721,7 @@ void NemSpread<T,INT>::load_mesh()
     void NemSpread<T,INT>::read_elem_blk_ids(int mesh_exoid, int max_name_length)
     {
 
-    /* This function reads part of the element block info from the EXODUS II file.
+    /* This function reads part of the element block info from the EXODUS file.
      * It reads all information having a length equal to the number of elements
      * blocks, specifically.
      *
@@ -784,7 +785,7 @@ void NemSpread<T,INT>::load_mesh()
 					     INT num_df_in_nsets[], int max_name_length)
 
     /*
-     * This function reads part of the node set info from the EXODUS II file.  It
+     * This function reads part of the node set info from the EXODUS file.  It
      * reads all information having a length equal to the number of node sets,
      * specifically.
      *
@@ -840,7 +841,7 @@ void NemSpread<T,INT>::load_mesh()
     void NemSpread<T,INT>::read_side_set_ids(int mesh_exoid, INT num_elem_in_ssets[],
 					     INT num_df_in_ssets[], int max_name_length)
 
-    /* This function reads part of the side set info from the EXODUS II file.  It
+    /* This function reads part of the side set info from the EXODUS file.  It
      * reads all information having a length equal to the number of side sets,
      * specifically.
      *
@@ -898,7 +899,7 @@ template <typename T, typename INT>
 void NemSpread<T,INT>::read_coord(int exoid, int max_name_length)
 {
 
-  /* Function which reads the nodal coordinates information from an * EXODUS II
+  /* Function which reads the nodal coordinates information from an * EXODUS
    * database for a given processor.
    */
 
@@ -981,11 +982,11 @@ void NemSpread<T,INT>::read_coord(int exoid, int max_name_length)
     // If not, output a warning and disable the map.
     for (size_t i=0; i < globals.Num_Node; i++) {
       if (global_node_ids[i] <= 0) {
-	fprintf(stderr,"---------------------------------------------------------------------\n"
-		"ERROR: Local node " ST_ZU " has a global id of %ld which is invalid.\n"
-		"       All global ids must be greater than 0. The map will be ignored.\n"
-                "---------------------------------------------------------------------\n",
-		i+1, (int64_t)global_node_ids[i]);
+	std::cerr << "---------------------------------------------------------------------\n"
+		  << "ERROR: Local node " << i+1
+		  << " has a global id of " << global_node_ids[i] << " which is invalid.\n"
+		  << "       All global ids must be greater than 0. The map will be ignored.\n"
+		  << "---------------------------------------------------------------------\n";
 	sequential = 1; // Map is invalid, ignore it.
 	break;
       }
@@ -1105,7 +1106,7 @@ void NemSpread<T,INT>::read_coord(int exoid, int max_name_length)
 	    globals.Proc_Nodes_Per_Elem[iproc][i] = 0;
 
 	} else {
-	  fprintf(stderr, "ERROR globals.Num_Elem_Blk = %d\n", globals.Num_Elem_Blk);
+	  std::cerr << "ERROR globals.Num_Elem_Blk = " << globals.Num_Elem_Blk << "\n";
 	  exit(1);
 	}
 
@@ -1193,7 +1194,7 @@ void NemSpread<T,INT>::read_coord(int exoid, int max_name_length)
   template <typename T, typename INT>
     void NemSpread<T,INT>::read_elem_blk(int exoid)
 
-    /* Function which reads the element block information from an EXODUS II
+    /* Function which reads the element block information from an EXODUS
      * database.  If an error is tripped, the program will set a flag, and abort at
      * the end of the routine.
      *
@@ -1288,7 +1289,7 @@ void NemSpread<T,INT>::read_coord(int exoid, int max_name_length)
 
       /*
        * READ THE ELEMENT CONNECTIVITY AND ATTRIBUTE INFORMATION
-       * FROM THE EXODUS II FILE FOR EACH ELEMENT BLOCK
+       * FROM THE EXODUS FILE FOR EACH ELEMENT BLOCK
        */
       for(int ielem_blk=0; ielem_blk < globals.Num_Elem_Blk; ielem_blk++) {
 	if (Num_Elem_In_Blk[ielem_blk] > 0) {
@@ -1396,7 +1397,7 @@ void NemSpread<T,INT>::read_coord(int exoid, int max_name_length)
 	      printf("\n\n\n");
 	      print_line("=", 79);
 	      printf("Printout of Element connectivity list obtained from "
-		     "Exodus II file:\n");
+		     "Exodus file:\n");
 	      printf("\tGlobal element block number = %d\n", ielem_blk);
 	      printf("\tElement ID number     = " ST_ZU "\n",
 		     (size_t)Elem_Blk_Ids[ielem_blk]);
@@ -1994,7 +1995,7 @@ template <typename T, typename INT>
 void NemSpread<T,INT>::read_node_sets(int exoid, INT *num_nodes_in_node_set,
 				      INT *num_df_in_nsets)
 
-/* Function which reads the node sets information from an EXODUS II database.
+/* Function which reads the node sets information from an EXODUS database.
  * It read information in chunks.  Then, it broadcasts the chunk to all
  * processors.  Each processor, then searches for the chunk for what it is
  * responsible for.  This function is called by all processors.
@@ -2409,7 +2410,7 @@ void NemSpread<T,INT>::read_side_sets(int exoid, INT *num_elem_in_ssets,
 				      INT *num_df_in_ssets)
 {
   /*
-   * Function which reads the side sets information from an EXODUS II database
+   * Function which reads the side sets information from an EXODUS database
    * for a given processor. It then broadcasts all information to every
    * processor. Each processor extracts and keeps only the information that it
    * needs to run its local problem.
