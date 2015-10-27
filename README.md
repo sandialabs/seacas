@@ -11,6 +11,7 @@ This will create a directory that will be referred to as _seacas.git_ in
 the instructions that follow. You can rename this directory to any
 other name you desire. Set an environment variable pointing to this
 location by doing:
+
 ```
      "cd seacas.git; export ACCESS=`pwd`"
 ```
@@ -34,6 +35,7 @@ create or read models of this size, you do not have to build hdf5.
    * Download hdf5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside seacas.git/TPL/hdf5
    * untar it, creating a directory will will refer to as hdf5-X.X.X
    * cd to that directory and enter the command:
+
 ```
       ./configure --prefix=${ACCESS} --enable-shared --enable-production --enable-debug=no --enable-static-exec
 ```
@@ -79,11 +81,13 @@ The matio library is used in the exo2mat and mat2exo programs which convert an e
  * tar zxvf /path/to/matio-1.5.2.tar.gz
  * There is a bug related to reading version 7.3 files.  To fix the
 bug, enter the command:
+
 ```
    patch -p3 < MATIO-fix-issue-reading-version-7.3-files.patch
 ```
 
  * cd matio-1.5.2 and enter the command:
+
 ```
      # The -L is to find the hdf5 library...
      export LDFLAGS='-L${ACCESS}/lib'
@@ -95,6 +99,7 @@ bug, enter the command:
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
    * Download the most recent version of the library from ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2. Currently this is parallel-20150522
+
 ```
    cd TPL/parallel
    tar jxvf /path/to/parallel-latest.tar.bz2
@@ -105,6 +110,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
 Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download the CGNS library.  To build:
 
    * Download CGNS via git:
+
 ```
    cd TPL/cgns
    git clone https://github.com/CGNS/CGNS.git
