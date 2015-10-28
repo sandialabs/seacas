@@ -2,12 +2,12 @@ XCOMM $Id: Imakefile,v 1.2 2006/01/19 16:29:48 gdsjaar Exp $
 
 CODE = mat2exo
 
-SRC = mat2exo.c
+SRC = mat2exo.C
 
-OBJS = $(SRC:.c=.o)
+OBJS = $(SRC:.C=.o)
 
 LIBS = $(SUPLIB) $(EXOIIV2C) $(NETCDF) $(MATIO) -lm
 
-NormalCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
+NormalCCTarget($(CODE),$(OBJS),NullParameter,NullParameter,$(LIBS))
 
 InstallTarget(install,$(CODE),$(INSTBINFLAGS),$(BINDIR))
