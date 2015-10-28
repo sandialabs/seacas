@@ -65,6 +65,7 @@
 #include <stdio.h>                      // for sprintf, NULL, printf, etc
 #include <stdlib.h>                     // for calloc, free, exit
 #include <string.h>                     // for strtok, memcpy, strcat, etc
+#include <assert.h>
 #include "add_to_log.h"                 // for add_to_log
 #include "matio.h"                      // for matvar_t, Mat_VarFree, etc
 
@@ -89,8 +90,8 @@ static const char *qainfo[] =
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name);
 
 int matGetStr  (const char *name,char *str);
-int matGetDbl  (const char *name,int n1,int n2, std::vector<double> &data);
-int matGetInt  (const char *name,int n1,int n2, std::vector<int> &data);
+int matGetDbl  (const char *name,size_t n1,size_t n2, std::vector<double> &data);
+int matGetInt  (const char *name,size_t n1,size_t n2, std::vector<int> &data);
 int matGetInt  (const char *name);
 int matArrNRow (const char *name);
 int matArrNCol (const char *name);
@@ -442,11 +443,14 @@ int matGetStr (const char *name,char *data)
 }
 
 /**********************************************************************/
-int matGetDbl (const char *name,int n1,int n2, std::vector<double> &data)
+int matGetDbl (const char *name,size_t n1,size_t n2, std::vector<double> &data)
 {
     matvar_t *matvar = Mat_VarRead(mat_file, name);
     if (matvar == NULL)
       return -1;
+
+    assert(matvar->dims[0] == n1);
+    assert(matvar->dims[1] == n2);
 
     data.resize(n1*n2);
     memcpy(data.data(), static_cast<int*>(matvar->data), n1*n2*sizeof(double));
@@ -456,11 +460,14 @@ int matGetDbl (const char *name,int n1,int n2, std::vector<double> &data)
 }
 
 /**********************************************************************/
-int matGetInt (const char *name,int n1,int n2, std::vector<int> &data)
+int matGetInt (const char *name,size_t n1,size_t n2, std::vector<int> &data)
 {
     matvar_t *matvar = Mat_VarRead(mat_file, name);
     if (matvar == NULL)
       return -1;
+
+    assert(matvar->dims[0] == n1);
+    assert(matvar->dims[1] == n2);
 
     data.resize(n1*n2);
     memcpy(data.data(), static_cast<int*>(matvar->data), n1*n2*sizeof(int));
@@ -475,6 +482,9 @@ int matGetInt (const char *name)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == NULL)
     return -1;
+
+  assert(matvar->dims[0] == 1);
+  assert(matvar->dims[1] == 1);
 
   int data = static_cast<int*>(matvar->data)[0];
 
