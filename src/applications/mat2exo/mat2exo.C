@@ -89,8 +89,8 @@ static const char *qainfo[] =
 /**********************************************************************/
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name);
 void get_put_vars(int exo_file, ex_entity_type type, const std::vector<int> &ids,
-		  int num_blocks, int num_vars, int num_time_steps,
-		  const std::vector<int> &num_per_block, const char* mname);
+                  int num_blocks, int num_vars, int num_time_steps,
+                  const std::vector<int> &num_per_block, const char* mname);
 
 int matGetStr  (const char *name,char *str);
 int matGetDbl  (const char *name,size_t n1,size_t n2, std::vector<double> &data);
@@ -101,14 +101,14 @@ int matArrNCol (const char *name);
 void del_arg(int *argc, char* argv[], int j);
 
 /**********************************************************************/
-int main (int argc, char *argv[]){
+int main (int argc, char *argv[]) {
 
   /* QA Info */
   printf("%s: %s, %s\n", qainfo[0], qainfo[2], qainfo[1]);
 
   /* usage message*/
-  if(argc != 2){
-    printf("%s matlab_file_name.\n",argv[0]);
+  if (argc != 2) {
+    printf("%s matlab_file_name.\n", argv[0]);
     printf("   the matlab_file_name is required\n");
     printf("%d", argc);
     exit(1);
@@ -132,52 +132,49 @@ int main (int argc, char *argv[]){
   strcpy(line,argv[1]);
   strtok(line,".");
   strcat(line,ext);
-  int exo_file = ex_create(line,EX_CLOBBER,&cpu_word_size,&io_word_size);
-  if (exo_file < 0){
+  int exo_file = ex_create(line, EX_CLOBBER, &cpu_word_size, &io_word_size);
+  if (exo_file < 0) {
     printf("error creating %s\n",line);
     exit(1);
   }
 
-  /* print */
   fprintf(stderr,"translating %s to %s ... ",argv[1],line);
 
-  /* read database parameters */
-  int num_axes = matGetInt("naxes");
-  int num_nodes = matGetInt("nnodes");
-  int num_elements = matGetInt("nelems");
-  int num_blocks   = matGetInt("nblks");
-  int num_node_sets = matGetInt("nnsets");
-  int num_side_sets = matGetInt("nssets");
-  int num_time_steps = matGetInt("nsteps");
-  int num_global_vars = matGetInt("ngvars");
-  int num_nodal_vars = matGetInt("nnvars");
+  int num_axes         = matGetInt("naxes");
+  int num_nodes        = matGetInt("nnodes");
+  int num_elements     = matGetInt("nelems");
+  int num_blocks       = matGetInt("nblks");
+  int num_node_sets    = matGetInt("nnsets");
+  int num_side_sets    = matGetInt("nssets");
+  int num_time_steps   = matGetInt("nsteps");
+  int num_global_vars  = matGetInt("ngvars");
+  int num_nodal_vars   = matGetInt("nnvars");
   int num_element_vars = matGetInt("nevars");
   int num_nodeset_vars = matGetInt("nnsvars");
   int num_sideset_vars = matGetInt("nssvars");
 
-  /*export parameters */
   ex_put_init(exo_file,line,
               num_axes,num_nodes,num_elements,num_blocks,
               num_node_sets,num_side_sets);
   free(line);
 
-  if ( num_global_vars > 0 ){
+  if ( num_global_vars > 0 ) {
     ex_put_variable_param(exo_file,EX_GLOBAL,num_global_vars);
   }
 
-  if ( num_nodal_vars > 0 ){
+  if ( num_nodal_vars > 0 ) {
     ex_put_variable_param(exo_file,EX_NODAL,num_nodal_vars);
   }
 
-  if ( num_element_vars > 0 ){
+  if ( num_element_vars > 0 ) {
     ex_put_variable_param(exo_file,EX_ELEM_BLOCK,num_element_vars);
   }
 
-  if ( num_nodeset_vars > 0 ){
+  if ( num_nodeset_vars > 0 ) {
     ex_put_variable_param(exo_file,EX_NODE_SET,num_nodeset_vars);
   }
 
-  if ( num_sideset_vars > 0 ){
+  if ( num_sideset_vars > 0 ) {
     ex_put_variable_param(exo_file,EX_SIDE_SET,num_sideset_vars);
   }
 
@@ -189,7 +186,7 @@ int main (int argc, char *argv[]){
     matGetDbl("x0", num_nodes, 1, x);
     if (num_axes > 1)
       matGetDbl("y0", num_nodes, 1, y);
-    if (num_axes == 3) {
+    if (num_axes > 2) {
       matGetDbl("z0", num_nodes,1,z);
     }
     ex_put_coord(exo_file, TOPTR(x), TOPTR(y), TOPTR(z));
@@ -199,21 +196,17 @@ int main (int argc, char *argv[]){
 
   /* side sets */
   std::vector<int> num_sideset_sides(num_side_sets);
-  if(num_side_sets > 0){
-    /* ssids */
+  if(num_side_sets > 0) {
+
     matGetInt("ssids",num_side_sets, 1, ids);
-
-    /* num_sides_in_sset */
     matGetInt("nsssides",num_side_sets,1,num_sideset_sides);
-
-    /* nssdfac */
     std::vector<int> nssdfac(num_side_sets);
     matGetInt("nssdfac",num_side_sets,1,nssdfac);
 
     std::vector<int> elem_list;
     std::vector<int> side_list;
-    std::vector<double> escr;
-    for (int i=0;i<num_side_sets;i++){
+    std::vector<double> dist_fact;
+    for (int i=0; i<num_side_sets; i++) {
       char name[32];
 
       ex_put_set_param(exo_file,EX_SIDE_SET,ids[i],num_sideset_sides[i],nssdfac[i]);
@@ -226,28 +219,24 @@ int main (int argc, char *argv[]){
       ex_put_set(exo_file,EX_SIDE_SET,ids[i], TOPTR(elem_list), TOPTR(side_list));
 
       sprintf(name,"ssfac%02d",i+1);
-      matGetDbl(name,nssdfac[i],1,escr);
-      ex_put_set_dist_fact(exo_file,EX_SIDE_SET,ids[i], TOPTR(escr));
+      matGetDbl(name,nssdfac[i],1,dist_fact);
+      ex_put_set_dist_fact(exo_file,EX_SIDE_SET,ids[i], TOPTR(dist_fact));
     }
 
   }
 
   /* node sets */
   std::vector<int> num_nodeset_nodes;
-  if(num_node_sets > 0){
+  if(num_node_sets > 0) {
 
-    /* nsids */
     matGetInt("nsids",num_node_sets, 1, ids);
-
     matGetInt("nnsnodes",num_node_sets,1,num_nodeset_nodes);
-
-    /* nnsdfac */
     std::vector<int> nnsdfac;
     matGetInt("nnsdfac",num_node_sets,1,nnsdfac);
 
-    std::vector<double> escr;
+    std::vector<double> dist_fact;
     std::vector<int> node_list;
-    for (int i=0;i<num_node_sets;i++){
+    for (int i=0; i<num_node_sets; i++) {
       char name[32];
 
       ex_put_set_param(exo_file,EX_NODE_SET,ids[i],num_nodeset_nodes[i],nnsdfac[i]);
@@ -257,53 +246,53 @@ int main (int argc, char *argv[]){
       ex_put_set(exo_file,EX_NODE_SET,ids[i], TOPTR(node_list),NULL);
 
       sprintf(name,"nsfac%02d",i+1);
-      matGetDbl(name,nnsdfac[i],1,escr);
-      ex_put_set_dist_fact(exo_file,EX_NODE_SET,ids[i], TOPTR(escr));
+      matGetDbl(name,nnsdfac[i],1,dist_fact);
+      ex_put_set_dist_fact(exo_file,EX_NODE_SET,ids[i], TOPTR(dist_fact));
     }
   }
 
 
   /* element blocks */
-  /* get elem block ids */
   matGetInt("blkids",num_blocks,1, ids);
 
   /* get elem block types */
   char *blknames = (char *) calloc(num_blocks*(MAX_STR_LENGTH+1),sizeof(char));
   matGetStr("blknames",blknames);
   std::vector<int> num_elem_in_block(num_blocks);
-  std::vector<int> iscr;
+  std::vector<int> connect;
   char *curr = blknames;
   curr = strtok(curr,"\n");
-  for (int i=0;i<num_blocks;i++){
+  for (int i=0; i<num_blocks; i++) {
     char name[32];
 
     sprintf(name,"blk%02d",i+1);
-    int n1 = matArrNRow(name);
-    int n = matArrNCol(name);
-    matGetInt(name,n1,n,iscr);
-    num_elem_in_block[i]=n;
-    ex_put_elem_block(exo_file,ids[i],curr,n,n1,0);
-    ex_put_conn(exo_file,EX_ELEM_BLOCK,ids[i], TOPTR(iscr),NULL,NULL);
+    int num_node_per_elem = matArrNRow(name);
+    num_elem_in_block[i]  = matArrNCol(name);
+    matGetInt(name,num_node_per_elem, num_elem_in_block[i],connect);
+
+    ex_put_block(exo_file, EX_ELEM_BLOCK, ids[i], curr,
+                 num_elem_in_block[i], num_node_per_elem, 0, 0, 0);
+    ex_put_conn(exo_file,EX_ELEM_BLOCK,ids[i], TOPTR(connect),NULL,NULL);
     curr = strtok(NULL, "\n");
   }
   free(blknames);
 
   /* time values */
-  if (num_time_steps > 0 ) {
-    std::vector<double> scr;
-    matGetDbl( "time", num_time_steps, 1,scr);
-    for (int i=0;i<num_time_steps;i++){
-      ex_put_time(exo_file,i+1,&scr[i]);
+  if (num_time_steps > 0) {
+    std::vector<double> times;
+    matGetDbl( "time", num_time_steps, 1,times);
+    for (int i=0; i<num_time_steps; i++) {
+      ex_put_time(exo_file, i+1, &times[i]);
     }
   }
 
   /* global variables */
-  if (num_global_vars > 0 ){
+  if (num_global_vars > 0) {
     get_put_names(exo_file, EX_GLOBAL, num_global_vars, "gnames");
 
     std::vector<double> var_vals(num_global_vars*num_time_steps);
     std::vector<double> temp(num_time_steps);
-    for (int j=0;j<num_global_vars;j++) {
+    for (int j=0; j<num_global_vars; j++) {
       char name[32];
       sprintf(name,"gvar%02d",j+1);
       matGetDbl(name,num_time_steps,1,temp);
@@ -319,62 +308,57 @@ int main (int argc, char *argv[]){
 
 
   /* nodal variables */
-  if (num_nodal_vars > 0){
+  if (num_nodal_vars > 0) {
     get_put_names(exo_file, EX_NODAL, num_nodal_vars, "nnames");
 
     std::vector<int> ids(1,1);
     std::vector<int> node_block(1, num_nodes);
-    
+
     get_put_vars(exo_file, EX_NODAL, ids, 1, num_nodal_vars, num_time_steps,
-		 node_block, "nvar%02d");
+                 node_block, "nvar%02d");
   }
 
-  /* elemental variables */
-  if (num_element_vars > 0){
+  /* element variables */
+  if (num_element_vars > 0) {
     matGetInt("blkids",num_blocks,1, ids);
     get_put_names(exo_file, EX_ELEM_BLOCK, num_element_vars, "enames");
 
     get_put_vars(exo_file, EX_ELEM_BLOCK, ids, num_blocks, num_element_vars, num_time_steps,
-		 num_elem_in_block, "evar%02d");
+                 num_elem_in_block, "evar%02d");
   }
 
   /* nodeset variables */
-  if (num_nodeset_vars > 0){
+  if (num_nodeset_vars > 0) {
     matGetInt("nsids",num_node_sets, 1, ids);
     get_put_names(exo_file, EX_NODE_SET, num_nodeset_vars, "nsnames");
 
     get_put_vars(exo_file, EX_NODE_SET, ids, num_node_sets, num_nodeset_vars, num_time_steps,
-		 num_nodeset_nodes, "nsvar%02d");
+                 num_nodeset_nodes, "nsvar%02d");
   }
 
   /* sideset variables */
-  if (num_sideset_vars > 0){
+  if (num_sideset_vars > 0) {
     matGetInt("ssids",num_side_sets, 1, ids);
     get_put_names(exo_file, EX_SIDE_SET, num_sideset_vars, "ssnames");
 
     get_put_vars(exo_file, EX_SIDE_SET, ids, num_side_sets, num_sideset_vars, num_time_steps,
-		 num_sideset_sides, "ssvar%02d");
+                 num_sideset_sides, "ssvar%02d");
   }
 
   /* node and element number maps */
-  if ( !matGetInt("node_num_map",num_nodes,1, ids)){
+  if ( !matGetInt("node_num_map",num_nodes,1, ids)) {
     ex_put_node_num_map(exo_file,TOPTR(ids));
   }
 
-  if ( !matGetInt("elem_num_map",num_elements,1,ids)){
+  if ( !matGetInt("elem_num_map",num_elements,1,ids)) {
     ex_put_elem_num_map(exo_file,TOPTR(ids));
   }
 
-  /* close exo file */
   ex_close(exo_file);
-
-  /* close mat file */
   Mat_Close(mat_file);
 
-  /* */
   fprintf(stderr,"done.\n");
 
-  /* exit status */
   add_to_log("mat2exo", 0);
   return(0);
 }
@@ -476,8 +460,9 @@ int matArrNCol (const char *name)
 /* remove an argument from the list */
 void del_arg(int *argc, char* argv[], int j)
 {
-  for (int jj=j+1; jj<*argc; jj++)
+  for (int jj=j+1; jj<*argc; jj++) {
     argv[jj-1]=argv[jj];
+  }
   (*argc)--;
   argv[*argc]=0;
 }
@@ -499,22 +484,21 @@ void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std:
 }
 
 void get_put_vars(int exo_file, ex_entity_type type, const std::vector<int> &ids,
-		  int num_blocks, int num_vars, int num_time_steps,
-		  const std::vector<int> &num_per_block, const char* mname)
+                  int num_blocks, int num_vars, int num_time_steps,
+                  const std::vector<int> &num_per_block, const char* mname)
 {
   size_t num_entity = std::accumulate(num_per_block.begin(), num_per_block.end(), 0);
-  std::vector<double> scr(num_entity * num_time_steps);
 
-  for (int i=0;i<num_vars;i++) {
+  for (int i=0; i<num_vars; i++) {
     char name[32];
-    sprintf(name,mname,i+1);
+    sprintf(name, mname, i+1);
     std::vector<double> var_vals;
     matGetDbl(name, num_entity, num_time_steps, var_vals);
     size_t n=0;
-    for (int j=0;j<num_time_steps;j++) {
+    for (int j=0; j<num_time_steps; j++) {
       for (int k=0; k<num_blocks; k++) {
-	ex_put_var(exo_file, j+1, type, i+1, ids[k], num_per_block[k],&var_vals[n]);
-	n=n+num_per_block[k];
+        ex_put_var(exo_file, j+1, type, i+1, ids[k], num_per_block[k], &var_vals[n]);
+        n += num_per_block[k];
       }
     }
   }
