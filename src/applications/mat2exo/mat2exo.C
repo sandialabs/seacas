@@ -470,6 +470,7 @@ void del_arg(int *argc, char* argv[], int j)
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name)
 {
   int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+  max_name_length = max_name_length < 32 ? 32 : max_name_length;
   char *str = (char *) calloc(num_vars * (max_name_length+1), sizeof(char));
   matGetStr(name.c_str(), str);
   char **str2 = (char **) calloc(num_vars,sizeof(char*));
