@@ -78,6 +78,7 @@ int textfile=0;
 
 FILE* m_file=NULL;     /* file for m file output */
 mat_t *mat_file=NULL;  /* file for binary .mat output */
+int debug = 0;
 
 static const char *qainfo[] =
 {
@@ -86,15 +87,42 @@ static const char *qainfo[] =
   "3.02",
 };
 
+std::string time_stamp(const std::string &format)
+{
+  if (format == "") {
+    return std::string("");
+  } else {
+    const int length=256;
+    static char time_string[length];
+
+    time_t calendar_time = time(NULL);
+    struct tm *local_time = localtime(&calendar_time);
+
+    int error = strftime(time_string, length, format.c_str(), local_time);
+    if (error != 0) {
+      time_string[length-1] = (char)NULL;
+      return std::string(time_string);
+    } else {
+      return std::string("[ERROR]");
+    }
+  }
+}
+
+void logger(const char *message)
+{
+  const std::string tsFormat = "[%H:%M:%S] ";
+  std::clog << time_stamp(tsFormat) << ": " << message << "\n";
+}
+
 void usage()
 {
   std::cout << "exo2mat [options] exodus_file_name.\n"
             << "   the exodus_file_name is required (exodus only).\n"
             << "   Options:\n"
-            << "   -t   write a text (.m) file rather than a binary .mat\n"
-            << "   -o   output file name (rather than auto generate)\n"
-            << "   -v5  output version 5 mat file\n"
-            << "   -v73 output version 7.3 mat file (hdf5-based) [default]\n"
+            << "   -t    write a text (.m) file rather than a binary .mat\n"
+            << "   -o    output file name (rather than auto generate)\n"
+            << "   -v5   output version 5 mat file\n"
+            << "   -v73  output version 7.3 mat file (hdf5-based) [default]\n"
             << "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
             << " ** note **\n"
             << "Binary files are written by default on all platforms.\n";
@@ -162,8 +190,9 @@ void mPutInt (const char *name,int n1,int n2, int *pd)
 
 
 /* put string in mat file*/
-void matPutStr (const char *name, char *str)
+int matPutStr (const char *name, char *str)
 {
+  int error = 0;
   matvar_t *matvar = NULL;
   size_t dims[2];
 
@@ -171,13 +200,19 @@ void matPutStr (const char *name, char *str)
   dims[1] = strlen(str);
 
   matvar = Mat_VarCreate(name, MAT_C_CHAR, MAT_T_UINT8, 2, dims, str, MAT_F_DONT_COPY_DATA);
-  Mat_VarWrite(mat_file, matvar, MAT_COMPRESSION_NONE);
-  Mat_VarFree(matvar);
+  if (matvar != NULL) {
+    error = Mat_VarWrite(mat_file, matvar, MAT_COMPRESSION_NONE);
+    Mat_VarFree(matvar);
+  } else {
+    error = 1;
+  }
+  return error;
 }
 
 /* put double in mat file*/
-void matPutDbl (const char *name,int n1,int n2,double *pd)
+int matPutDbl (const char *name,int n1,int n2,double *pd)
 {
+  int error = 0;
   matvar_t *matvar = NULL;
 
   size_t dims[2];
@@ -185,13 +220,19 @@ void matPutDbl (const char *name,int n1,int n2,double *pd)
   dims[1] = n2;
 
   matvar = Mat_VarCreate(name, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, pd, MAT_F_DONT_COPY_DATA);
-  Mat_VarWrite(mat_file, matvar, MAT_COMPRESSION_ZLIB);
-  Mat_VarFree(matvar);
+  if (matvar != NULL) {
+    error = Mat_VarWrite(mat_file, matvar, MAT_COMPRESSION_ZLIB);
+    Mat_VarFree(matvar);
+  } else {
+    error = 1;
+  }
+  return error;
 }
 
 /* put integer in mat file*/
-void matPutInt (const char *name,int n1,int n2, int *pd)
+int matPutInt (const char *name,int n1,int n2, int *pd)
 {
+  int error = 0;
   matvar_t *matvar = NULL;
 
   size_t dims[2];
@@ -199,8 +240,13 @@ void matPutInt (const char *name,int n1,int n2, int *pd)
   dims[1] = n2;
 
   matvar = Mat_VarCreate(name, MAT_C_INT32, MAT_T_INT32, 2, dims, pd, MAT_F_DONT_COPY_DATA);
-  Mat_VarWrite(mat_file, matvar, MAT_COMPRESSION_ZLIB);
-  Mat_VarFree(matvar);
+  if (matvar != NULL) {
+    error = Mat_VarWrite(mat_file, matvar, MAT_COMPRESSION_ZLIB);
+    Mat_VarFree(matvar);
+  } else {
+    error = 1;
+  }
+  return error;
 }
 
 /* wrappers for the output routine types */
@@ -212,28 +258,34 @@ void PutStr (const char *name, const char *str)
     matPutStr(name,(char*)str);
 }
 
-void PutInt (const char *name,int pd)
+int PutInt (const char *name,int pd)
 {
+  int error = 0;
   if ( textfile )
     mPutInt(name,pd);
   else
-    matPutInt(name,1,1,&pd);
+    error = matPutInt(name,1,1,&pd);
+  return error;
 }
 
-void PutInt (const char *name,int n1,int n2,int *pd)
+int PutInt (const char *name,int n1,int n2,int *pd)
 {
+  int error = 0;
   if ( textfile )
     mPutInt(name,n1,n2,pd);
   else
-    matPutInt(name,n1,n2,pd);
+    error = matPutInt(name,n1,n2,pd);
+  return error;
 }
 
-void PutDbl (const char *name,int n1,int n2,double *pd)
+int PutDbl (const char *name,int n1,int n2,double *pd)
 {
+  int error = 0;
   if ( textfile )
     mPutDbl(name,n1,n2,pd);
   else
-    matPutDbl(name,n1,n2,pd);
+    error = matPutDbl(name,n1,n2,pd);
+  return error;
 }
 
 char ** get_exodus_names(size_t count, int size)
@@ -255,8 +307,10 @@ void delete_exodus_names(char **names, int count)
 void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *mname)
 {
   int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-  char **names = get_exodus_names(num_vars, max_name_length);
+  max_name_length = max_name_length < 32 ? 32 : max_name_length;
+  char **names = get_exodus_names(num_vars, max_name_length+1);
 
+  if (debug) logger("\tReading variable names");
   ex_get_variable_names(exo_file, type, num_vars, names);
 
   std::string mat;
@@ -264,6 +318,7 @@ void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *
     mat += names[i];
     mat += "\n";
   }
+  if (debug) logger("\tWriting variable names");
   PutStr(mname, mat.c_str());
 
   delete_exodus_names(names, num_vars);
@@ -274,6 +329,7 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
 
 {
   /* truth table */
+  if (debug) logger("\tTruth Table");
   std::vector<int> truth_table(num_vars*num_blocks);
   ex_get_truth_table(exo_file, type, num_blocks, num_vars,TOPTR(truth_table));
 
@@ -285,6 +341,7 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
 
   char str[32];
   for (int i=0; i < num_vars; i++) {
+    if (debug) logger("\tReading");
     std::fill(scr.begin(), scr.end(), 0.0);
     size_t n=0;
     sprintf(str,mname,i+1);
@@ -296,6 +353,7 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
         n=n+num_per_block[k];
       }
     }
+    if (debug) logger("\tWriting");
     PutDbl(str,num_entity,num_time_steps,TOPTR(scr));
   }
 }
@@ -312,7 +370,6 @@ void del_arg(int *argc, char* argv[], int j)
 /**********************************************************************/
 int main (int argc, char *argv[])
 {
-
   char *oname = NULL, *dot = NULL, *filename = NULL;
   char str[32];
 
@@ -342,6 +399,12 @@ int main (int argc, char *argv[])
       del_arg(&argc,argv,j);
       usage();
       exit(1);
+    }
+    if ( strcmp(argv[j],"-d")==0){    /* write help info */
+      del_arg(&argc,argv,j);
+      j--;
+      debug = 1;
+      continue;
     }
     if ( strcmp(argv[j],"-v73")==0){    /* Version 7.3 */
       del_arg(&argc,argv,j);
@@ -501,6 +564,7 @@ int main (int argc, char *argv[])
 
   /* nodal coordinates */
   {
+    if (debug) {logger("Coordinates");}
     std::vector<double> x, y, z;
     x.resize(num_nodes);
     if (num_axes >= 2) y.resize(num_nodes);
@@ -519,6 +583,7 @@ int main (int argc, char *argv[])
   std::vector<int> num_sideset_sides(num_side_sets);
   std::vector<int> ids;
   if (num_side_sets > 0) {
+    if (debug) {logger("Side Sets");}
     ids.resize(num_side_sets);
     ex_get_ids(exo_file,EX_SIDE_SET,TOPTR(ids));
     PutInt( "ssids",num_side_sets, 1,TOPTR(ids));
@@ -595,6 +660,7 @@ int main (int argc, char *argv[])
   /* node sets (section by dgriffi) */
   std::vector<int> num_nodeset_nodes(num_node_sets);
   if (num_node_sets > 0){
+    if (debug) {logger("Node Sets");}
     std::vector<int> iscr;
     std::vector<double> scr;
     ids.resize(num_node_sets);
@@ -626,6 +692,7 @@ int main (int argc, char *argv[])
   }
 
   /* element blocks */
+  if (debug) {logger("Element Blocks");}
   std::vector<int> num_elem_in_block(num_blocks);
   {
     ids.resize(num_blocks);
@@ -650,6 +717,7 @@ int main (int argc, char *argv[])
 
   /* time values */
   if (num_time_steps > 0 ) {
+    if (debug) {logger("Time Steps");}
     std::vector<double> scr(num_time_steps);
     ex_get_all_times (exo_file, TOPTR(scr));
     PutDbl( "time", num_time_steps, 1, TOPTR(scr));
@@ -657,6 +725,7 @@ int main (int argc, char *argv[])
 
   /* global variables */
   if (num_global_vars > 0 ) {
+    if (debug) {logger("Global Variables");}
     get_put_names(exo_file, EX_GLOBAL, num_global_vars, "gnames");
 
     std::vector<double> scr(num_time_steps);
@@ -669,20 +738,26 @@ int main (int argc, char *argv[])
 
   /* nodal variables */
   if (num_nodal_vars > 0 ) {
+    if (debug) {logger("Nodal Variables");}
+    if (debug) {logger("\tNames");}
     get_put_names(exo_file, EX_NODAL, num_nodal_vars, "nnames");
 
     std::vector<double> scr(num_nodes*num_time_steps);
     for (int i=0; i<num_nodal_vars; i++){
       sprintf(str,"nvar%02d",i+1);
-      for (int j=0; j<num_time_steps; j++)
+      if (debug) {logger("\tReading");}
+      for (int j=0; j<num_time_steps; j++) {
         ex_get_nodal_var(exo_file,j+1,i+1,num_nodes,
                          &scr[num_nodes*j]);
+      }
+      if (debug) {logger("\tWriting");}
       PutDbl(str,num_nodes,num_time_steps,TOPTR(scr));
     }
   }
 
   /* element variables */
   if (num_element_vars > 0 ) {
+    if (debug) {logger("Element Variables");}
     get_put_names(exo_file, EX_ELEM_BLOCK, num_element_vars, "enames");
 
     get_put_vars(exo_file, EX_ELEM_BLOCK,
@@ -691,6 +766,7 @@ int main (int argc, char *argv[])
 
   /* nodeset variables */
   if (num_nodeset_vars > 0 ) {
+    if (debug) {logger("Nodeset Variables");}
     get_put_names(exo_file, EX_NODE_SET, num_nodeset_vars, "nsnames");
 
     get_put_vars(exo_file,EX_NODE_SET,
@@ -699,6 +775,7 @@ int main (int argc, char *argv[])
 
   /* sideset variables */
   if (num_sideset_vars > 0 ) {
+    if (debug) {logger("Sideset Variables");}
     get_put_names(exo_file, EX_SIDE_SET, num_sideset_vars, "ssnames");
 
     get_put_vars(exo_file,EX_SIDE_SET,
@@ -706,6 +783,7 @@ int main (int argc, char *argv[])
   }
 
   /* node and element number maps */
+  if (debug) {logger("Node and Element Number Maps");}
   ex_opts(0);  /* turn off error reporting. It is not an error to have no map*/
   ids.resize(num_nodes);
   err = ex_get_node_num_map(exo_file,TOPTR(ids));
@@ -719,6 +797,7 @@ int main (int argc, char *argv[])
     PutInt("elem_num_map",num_elements,1,TOPTR(ids));
   }
 
+  if (debug) {logger("Closing file");}
   ex_close(exo_file);
 
   if ( textfile )
