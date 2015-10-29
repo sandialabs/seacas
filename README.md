@@ -1,6 +1,6 @@
 # Instructions for building SEACAS
  * See the bottom of the file for contact information
- * If you want to use the old imake-based build, see the file INSTALL.IMAKE.TXT
+ * The old imake-based build has been removed.
  * If you just need the exodus library, see EXODUS below.
 
 ## Clone the SEACAS distribution to the directory of your choice:
