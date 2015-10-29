@@ -1,9 +1,0 @@
-PortingNotes
-Last modified 03 Mar 93 Paul DuBois dubois@primate.wisc.edu
-
-The files in this directory contain information about porting the imake
-distribution to machines other than those for which *.cf files are listed
-in the book, and about errors in the book instructions.
-
-If you have something to contribute to our knowledge, please send it
-to dubois@primate.wisc.edu.  Thanks.
