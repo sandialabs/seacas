@@ -33,6 +33,19 @@ fi
 BUILD_TYPE=Release
 #BUILD_TYPE=Debug
 
+### To use the clang sanitizers:
+#sanitizer=address     #: AddressSanitizer, a memory error detector.
+#sanitizer=integer     #: Enables checks for undefined or suspicious integer behavior.
+#sanitizer=thread      #: ThreadSanitizer, a data race detector.
+#sanitizer=memory      #: MemorySanitizer, experimental detector of uninitialized reads.
+#sanitizer=undefined   #: Fast and compatible undefined behavior checker. 
+#sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
+#sanitizer=cfi         #: control flow integrity checks. Requires -flto.
+#sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
+#-D CMAKE_CXX_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer -fPIC" \
+#-D CMAKE_C_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
+#-D CMAKE_Fortran_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
+
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then you will need
 ### to add the line below.  It will disable blot and fastq
