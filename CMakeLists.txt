@@ -91,6 +91,8 @@ INCLUDE(TribitsGlobalMacros)
 INCLUDE(TribitsPackageMacros)
 INCLUDE(TribitsAddOptionAndDefine)
 
+SET(${CMAKE_PROJECT_NAME}_ENABLE_CXX11_DEFAULT TRUE)
+
 if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
   # Do all of the processing for this Tribits project
   TRIBITS_PROJECT()
