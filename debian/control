@@ -4,7 +4,9 @@ Maintainer: Nico Schlömer <nico.schloemer@gmail.com>
 Uploaders: Nico Schlömer <nico.schloemer@gmail.com>
 Build-Depends: debhelper (>= 9),
   cmake (>= 2.8.12),
-  g++ (>= 4.0.0),
+  gcc, g++, gfortran,
+  libhdf5-dev,
+  libmatio-dev,
   libmetis-dev,
   libnetcdf-dev,
   libparmetis-dev,
