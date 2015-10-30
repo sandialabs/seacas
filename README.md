@@ -142,6 +142,11 @@ instructions with the following exceptions:
   * This will build, by default, a shared exodus library and also
 install the exodus.py python interface.
 
+## LICENSE
+
+SEACAS is licensed under the Modified BSD License.  See the LICENSE 
+file for details.
+
 ## Contact information
 
  Greg Sjaardema  (gsjaardema@gmail.com,  gdsjaar@sandia.gov)
