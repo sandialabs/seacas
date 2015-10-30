@@ -95,7 +95,6 @@ IF (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP)
     test_nemesis
     create_mesh
     rd_wt_mesh
-    test-empty
   )
 
   CONFIGURE_FILE(
