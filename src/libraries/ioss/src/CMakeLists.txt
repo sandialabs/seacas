@@ -33,7 +33,7 @@ TRIBITS_ADD_LIBRARY(
 # and the other libraries are subpackages which are listed in
 # cmake/Dependencies.cmake
 
-if(${CMAKE_PROJECT_NAME} STREQUAL "SEACAS")
+if(CMAKE_PROJECT_NAME STREQUAL "SEACAS")
   TRIBITS_PACKAGE_POSTPROCESS()
 else()
   ASSERT_DEFINED(${PACKAGE_NAME}_ENABLE_SEACASExodus)
