@@ -251,17 +251,23 @@ endif()
 
 # Add the usual paths for searching using the HDF5_ROOT variable
 if (HDF5_ROOT)
-  list(APPEND _hdf5_INCLUDE_SEARCH_DIRS 
-              ${HDF5_ROOT}/include
-              ${HDF5_ROOT})
- 
-  list(APPEND _hdf5_LIBRARY_SEARCH_DIRS 
-              ${HDF5_ROOT}/lib
-              ${HDF5_ROOT})
-  
-            list(APPEND _hdf5_BINARY_SEARCH_DIRS 
-              ${HDF5_ROOT}/bin
-              ${HDF5_ROOT})
+  list(APPEND _hdf5_INCLUDE_SEARCH_DIRS
+    ${HDF5_ROOT}/include/hdf5/serial
+    ${HDF5_ROOT}/include
+    ${HDF5_ROOT}
+    )
+
+  list(APPEND _hdf5_LIBRARY_SEARCH_DIRS
+    ${HDF5_ROOT}/x86_64-linux-gnu/hdf5/serial
+    ${HDF5_ROOT}/x86_64-linux-gnu
+    ${HDF5_ROOT}/lib
+    ${HDF5_ROOT}
+    )
+
+  list(APPEND _hdf5_BINARY_SEARCH_DIRS
+    ${HDF5_ROOT}/bin
+    ${HDF5_ROOT}
+    )
 endif()
  
 # Restrict the search to HDF5_ROOT if user does not want other
@@ -368,8 +374,9 @@ else()
   if ( NOT HDF5_INCLUDE_DIRS )
     find_path(HDF5_INCLUDE_DIR
               NAMES hdf5.h
-              HINTS ${_hdf5_INCLUDE_SEARCH_DIRS}
-              ${_hdf5_FIND_OPTIONS})
+              PATHS ${_hdf5_INCLUDE_SEARCH_DIRS}
+              ${_hdf5_FIND_OPTIONS}
+              )
 
     if ( NOT HDF5_INCLUDE_DIR )
       message(FATAL_ERROR "Failed to locate HDF5 include file")
@@ -392,9 +399,10 @@ else()
 
     # --- Search for the C library 
     find_library(_HDF5_C_LIBRARY
-                 NAMES hdf5
-                 HINTS ${_hdf5_LIBRARY_SEARCH_DIRS}
-                 ${_hdf5_FIND_OPTIONS})
+                 NAMES hdf5 hdf5_serial
+                 PATHS ${_hdf5_LIBRARY_SEARCH_DIRS}
+                 ${_hdf5_FIND_OPTIONS}
+                 )
 
     # Since all other libraries need this core library, throw a
     # fatal error her if it is not found.
