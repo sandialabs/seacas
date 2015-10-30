@@ -1,0 +1,50 @@
+Source: seacas
+Priority: extra
+Maintainer: Nico Schlömer <nico.schloemer@gmail.com>
+Uploaders: Nico Schlömer <nico.schloemer@gmail.com>
+Build-Depends: debhelper (>= 9),
+  cmake (>= 2.8.12),
+  g++ (>= 4.0.0),
+  libmetis-dev,
+  libnetcdf-dev,
+  libparmetis-dev,
+  libz-dev
+Standards-Version: 3.9.6
+Section: libs
+Homepage: https://github.com/gdsjaar/seacas
+
+Package: libseacas-dev
+Section: libdevel
+Architecture: any
+Depends: libseacas0 (= ${binary:Version}), ${misc:Depends}
+Description: processing tools and applications for finite element analysis
+  The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
+  preprocessing, postprocessing, translation, and utility applications
+  supporting finite element analysis software using the ExodusII database file
+  format.
+  .
+  This package contains development headers.
+
+Package: libseacas0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: processing tools and applications for finite element analysis
+  The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
+  preprocessing, postprocessing, translation, and utility applications
+  supporting finite element analysis software using the ExodusII database file
+  format.
+  .
+  This package contains the libraries.
+
+Package: seacas-bin
+Section: libs
+Architecture: any
+Depends: libseacas0, ${misc:Depends}
+Description: processing tools and applications for finite element analysis
+  The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
+  preprocessing, postprocessing, translation, and utility applications
+  supporting finite element analysis software using the ExodusII database file
+  format.
+  .
+  This package contains executables.
