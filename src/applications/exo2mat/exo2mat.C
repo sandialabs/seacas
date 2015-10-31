@@ -769,7 +769,7 @@ int main (int argc, char *argv[])
     if (debug) {logger("Nodeset Variables");}
     get_put_names(exo_file, EX_NODE_SET, num_nodeset_vars, "nsnames");
 
-    get_put_vars(exo_file,EX_NODE_SET,
+    get_put_vars(exo_file, EX_NODE_SET,
                  num_node_sets, num_nodeset_vars, num_time_steps, num_nodeset_nodes, "nsvar%02d");
   }
 
@@ -778,7 +778,7 @@ int main (int argc, char *argv[])
     if (debug) {logger("Sideset Variables");}
     get_put_names(exo_file, EX_SIDE_SET, num_sideset_vars, "ssnames");
 
-    get_put_vars(exo_file,EX_SIDE_SET,
+    get_put_vars(exo_file, EX_SIDE_SET,
                  num_side_sets, num_sideset_vars, num_time_steps, num_sideset_sides, "ssvar%02d");
   }
 
