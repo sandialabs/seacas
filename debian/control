@@ -1,7 +1,6 @@
 Source: seacas
 Priority: extra
 Maintainer: Nico Schlömer <nico.schloemer@gmail.com>
-Uploaders: Nico Schlömer <nico.schloemer@gmail.com>
 Build-Depends: debhelper (>= 9),
   cmake (>= 3.0.0),
   gfortran,
