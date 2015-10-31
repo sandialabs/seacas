@@ -70,7 +70,6 @@ TRIBITS_ADD_LIBRARY(
 if(${SEACAS_PREFIX}Aprepro_lib_ENABLE_TESTS)
   add_executable(aprepro_test_app apr_test.cc)
   target_link_libraries(aprepro_test_app aprepro_lib)
-endif()
 
 TRIBITS_ADD_ADVANCED_TEST(
  aprepro_lib_unit_test
@@ -100,6 +99,7 @@ TRIBITS_ADD_ADVANCED_TEST(
  COMM serial		      
  FINAL_PASS_REGULAR_EXPRESSION 
 )
+endif()
 
 SEACAS_POSTPROCESS()
 
