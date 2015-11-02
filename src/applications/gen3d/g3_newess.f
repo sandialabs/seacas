@@ -347,14 +347,36 @@ C     a negative element number (and remember to change back in wress)
              end if
              NLINK = 4
              NEND = N + NLINK + 1
-             DO 140 I = 1, NLINK
+             DO I = 1, NLINK
                INP = LINK(I,IEL)
                JNP = IXNP(INP)
                N = N + 1
                IF (NFRO .GT. 0) NSSFRO(N) = JNP
                IF (NBCK .GT. 0) NSSBCK(NEND-I) = JNP + NRNP(INP)-1
- 140         CONTINUE
+             end do
+           ELSE IF (LINK(3,IEL) .NE. -1 .AND. LINK(4,IEL) .EQ. -1) then
+C ... Triangle to Wedge
+             NESUR = NESUR + 1
+             JEL = IXEL(IEL)
+C ... Need to tell wress that this is a wedge and not a hex.
+C     Use the same negative element kluge since the faces 
+C     work out the same... Flag it with
+C     a negative element number (and remember to change back in wress)          
+             IF (NFRO .GT. 0) ISSFRO(IEL) = -JEL
+             IF (NBCK .GT. 0) then
+               ISSBCK(IEL) = -(JEL + nrel(iel)*INCEL(IEL)-1)
+             end if
+             NLINK = 3
+             NEND = N + NLINK + 1
+             DO I = 1, NLINK
+               INP = LINK(I,IEL)
+               JNP = IXNP(INP)
+               N = N + 1
+               IF (NFRO .GT. 0) NSSFRO(N) = JNP
+               IF (NBCK .GT. 0) NSSBCK(NEND-I) = JNP + NRNP(INP)-1
+             end do
            end if
+
  150     CONTINUE
          NSSUR = N
        END IF

@@ -50,7 +50,7 @@ C   --
       INTEGER LINK(NUMLNK,NUMELB)
 
       IF ((NUMLNK .EQ. 8) .AND. (NUMELB .GT. 0)) THEN
-         DO 10 NE = 1, NUMELB
+         DO NE = 1, NUMELB
             ILTMP = LINK (2,NE)
             LINK(2,NE) = LINK(4,NE)
             LINK(4,NE) = ILTMP
@@ -58,7 +58,18 @@ C   --
             ILTMP = LINK (6,NE)
             LINK(6,NE) = LINK(8,NE)
             LINK(8,NE) = ILTMP
-   10    CONTINUE
+          end do
+        ELSE IF ((NUMLNK .EQ. 6) .AND. (NUMELB .GT. 0)) THEN
+C ... UNTESTED
+         DO NE = 1, NUMELB
+            ILTMP = LINK (2,NE)
+            LINK(2,NE) = LINK(3,NE)
+            LINK(3,NE) = ILTMP
+
+            ILTMP = LINK (5,NE)
+            LINK(5,NE) = LINK(6,NE)
+            LINK(6,NE) = ILTMP
+          end do
       END IF
 
       RETURN
