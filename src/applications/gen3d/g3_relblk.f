@@ -59,7 +59,7 @@ C   --   Uses NDBIN of /DBASE/
       INCLUDE 'g3_dbase.blk'
 
       INTEGER LINK(4,NUMELB)
-      INTEGER LNKTMP(2,NUMELB)
+      INTEGER LNKTMP(NUMLNK, NUMELB)
       REAL ATRIB(*)
 
       CHARACTER*5 STRA
