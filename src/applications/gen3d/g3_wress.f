@@ -31,7 +31,6 @@ C (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 C OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C 
 
-C     $Id: wress.f,v 1.8 2003/08/19 17:56:44 gdsjaar Exp $
 C=======================================================================
       SUBROUTINE WRESS (A, IA, IDFRO, IDBCK,
      &     ISSFRO, ISSBCK, NSSUR, NESUR, NSSFRO, NSSBCK,
