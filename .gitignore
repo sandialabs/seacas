@@ -115,8 +115,6 @@ src/applications/exodiff/exodiff
 src/applications/exo2mat/exo2mat 
 src/applications/epu/epu 
 src/applications/emerge/emerge 
-src/applications/conex2/conex2 
-src/applications/conex/conex
 src/applications/algebra/algebra
 src/applications/ex1ex2v2/ex1ex2v2
 src/applications/ex2ex1v2/ex2ex1v2
@@ -158,7 +156,6 @@ src/scripts/txtexo
 src/scripts/algebra
 src/scripts/blot
 src/scripts/combinemp
-src/scripts/conex
 src/scripts/emerge
 src/scripts/ex1ex2v2
 src/applications/blot/blot.cps
@@ -198,7 +195,6 @@ src/applications/numbers2/numbers2
 src/applications/numbers/numbers
 src/applications/spiff/spiff
 src/applications/algebra2/algebra2
-src/applications/conex2/conex2
 src/applications/emerge/emerge
 src/applications/ejoin/ejoin
 src/applications/epu/epu
