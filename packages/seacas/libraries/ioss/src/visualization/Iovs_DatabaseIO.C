@@ -62,8 +62,11 @@ namespace Iovs {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props) :
-                         Ioss::DatabaseIO (region, filename, db_usage, communicator, props)
-
+                         Ioss::DatabaseIO (region, filename, db_usage, communicator, props),
+                         isInput(false), singleProcOnly(false), doLogging(false),
+                         enableLogging(0), debugLevel(0), underscoreVectors(0),
+                         applyDisplacements(0), createSideSets(0), createNodeSets(0),
+                         nodeCount(0), elementCount(0), nodeBlockCount(0), elementBlockCount(0)
   {
 
     std::ostringstream errmsg;
@@ -1035,10 +1038,10 @@ namespace Iovs {
              CreateSideSet is called once for each block which the sideset
              spans, and the eb->name() for the side set is the ebowner->name()
              with additional characters to indicate which block we are doing.
-             The current implementation of the sierra sideset construction
-             creates a single independent sideset and collects all the
-             nodes and elements from the side set from each block spanned by
-             the sideset into that single sideset.  It needs to have the
+             The current implementation of the sierra/catalyst sideset
+             construction creates a single independent sideset and collects all
+             the nodes and elements from the side set from each block spanned
+             by the sideset into that single sideset.  It needs to have the
              ebowner->name(), not the eb->name(), because that is the name
              in the input deck for the sideset for reference for things like
              extractblock.  It may become necessary at a later date to
@@ -1100,10 +1103,10 @@ namespace Iovs {
              CreateSideSet is called once for each block which the sideset
              spans, and the eb->name() for the side set is the ebowner->name()
              with additional characters to indicate which block we are doing.
-             The current implementation of the sierra sideset construction
-             creates a single independent sideset and collects all the
-             nodes and elements from the side set from each block spanned by
-             the sideset into that single sideset.  It needs to have the
+             The current implementation of the sierra/catalyst sideset
+             construction creates a single independent sideset and collects all
+             the nodes and elements from the side set from each block spanned
+             by the sideset into that single sideset.  It needs to have the
              ebowner->name(), not the eb->name(), because that is the name
              in the input deck for the sideset for reference for things like
              extractblock.  It may become necessary at a later date to
