@@ -12,7 +12,10 @@
 namespace {
   const size_t max_line_length   = MAX_LINE_LENGTH;
 
+  const std::string SEP() {return std::string("@");} // Separator for attribute offset storage
   const std::string SCALAR()     {return std::string("scalar");}
+  const std::string VECTOR3D()   {return std::string("vector_3d");}
+  const std::string SYM_TENSOR() {return std::string("sym_tensor_33");}
 
   template <typename INT>
   void internal_write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames, INT /*dummy*/)
@@ -32,9 +35,7 @@ namespace {
 	  coordinates[9*i+j] = coord[j];
 	}
       }
-      int ierr = ex_put_coordinate_frames(exoid, nframes, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
-      if (ierr < 0)
-	Ioex::exodus_error(exoid, __LINE__, -1);
+      ex_put_coordinate_frames(exoid, nframes, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
     }
   }
 
@@ -43,17 +44,13 @@ namespace {
   {
     // Query number of coordinate frames...
     int nframes = 0;
-    int ierr = ex_get_coordinate_frames(exoid, &nframes, NULL, NULL, NULL);
-    if (ierr < 0)
-      Ioex::exodus_error(exoid, __LINE__, -1);
+    ex_get_coordinate_frames(exoid, &nframes, NULL, NULL, NULL);
 
     if (nframes > 0) {
       std::vector<char> tags(nframes);
       std::vector<double> coord(nframes*9);
       std::vector<INT>  ids(nframes);
-      ierr = ex_get_coordinate_frames(exoid, &nframes, TOPTR(ids), TOPTR(coord), TOPTR(tags));
-      if (ierr < 0)
-	Ioex::exodus_error(exoid, __LINE__, -1);
+      ex_get_coordinate_frames(exoid, &nframes, TOPTR(ids), TOPTR(coord), TOPTR(tags));
 
       for (int i=0; i<nframes; i++) {
 	Ioss::CoordinateFrame cf(ids[i], tags[i], &coord[9*i]);
