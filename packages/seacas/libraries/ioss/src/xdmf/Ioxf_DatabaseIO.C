@@ -140,14 +140,12 @@ namespace Ioxf {
 			 Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
 			 const Ioss::PropertyManager &properties_x) :
     Ioss::DatabaseIO(region, filename, db_usage, communicator, properties_x),
-    databaseTitle(""), spatialDimension(0),
-    nodeCount(0), elementCount(0),
+    databaseTitle(""), spatialDimension(0), nodeCount(0), elementCount(0),
     nodeBlockCount(0), elementBlockCount(0), nodesetCount(0), sidesetCount(0),
-    nodeCmapIds(NULL), nodeCmapNodeCnts(NULL),
-    elemCmapIds(NULL), elemCmapElemCnts(NULL), commsetNodeCount(0), commsetElemCount(0),
-    nodeMap("node"), elemMap("elem"),
+    nodeCmapIds(NULL), nodeCmapNodeCnts(NULL), elemCmapIds(NULL),
+    elemCmapElemCnts(NULL), commsetNodeCount(0), commsetElemCount(0),
     elementTruthTable(NULL), nodesetTruthTable(NULL), sidesetTruthTable(NULL),
-    fileExists(false)
+    nodeMap("node"), elemMap("elem"), fileExists(false)
   {
     // A history file is only written on processor 0...
     if (db_usage == Ioss::WRITE_HISTORY)
