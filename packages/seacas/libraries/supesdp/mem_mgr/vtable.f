@@ -1,0 +1,1 @@
+../../supes/mem_mgr/vtable.f
