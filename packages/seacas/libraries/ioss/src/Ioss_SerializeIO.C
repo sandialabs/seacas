@@ -116,8 +116,8 @@ SerializeIO::~SerializeIO()
   else if (s_groupFactor > 0) {
     if (m_manualOwner == -1) {
       m_databaseIO->closeDatabase();
-#ifdef HAVE_MPI
       s_owner = s_groupRank;
+#ifdef HAVE_MPI
       const Ioss::ParallelUtils util = m_databaseIO->util();
       do {
 	MPI_Barrier(util.communicator());

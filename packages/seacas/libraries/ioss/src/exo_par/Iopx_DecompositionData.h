@@ -96,9 +96,9 @@ namespace Iopx {
   class SetDecompositionData 
   {
     public:
-      SetDecompositionData()
-      : fileCount(0), id_(0), root_(0),
-        distributionFactorValsPerEntity(-1), distributionFactorCount(0),
+      SetDecompositionData() :
+        root_(0), fileCount(0), id_(0), distributionFactorCount(0),
+        distributionFactorValsPerEntity(-1),
         distributionFactorValue(0.0), distributionFactorConstant(false)
     {}
 
