@@ -20,8 +20,8 @@ TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
   Exodiff     applications/exodiff    SS  REQUIRED
   Exomatlab   applications/exomatlab  SS  REQUIRED
   Exotxt      applications/exotxt     SS  REQUIRED
+  Exo_format  applications/exo_format SS  REQUIRED
   Ex1ex2v2    applications/ex1ex2v2   SS  OPTIONAL
-  Ex2ex1v2    applications/ex2ex1v2   SS  OPTIONAL
   Fastq       applications/fastq      SS  OPTIONAL
   Gjoin       applications/gjoin      SS  REQUIRED
   Gen3D       applications/gen3d      SS  REQUIRED
@@ -36,6 +36,8 @@ TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
   Nemspread   applications/nem_spread SS  REQUIRED
   Numbers     applications/numbers    SS  REQUIRED
   Txtexo      applications/txtexo     SS  REQUIRED
+  Ex2ex1v2    applications/ex2ex1v2   SS  OPTIONAL
+  Conex       applications/conex      SS  OPTIONAL
 )
 
 SET(LIB_REQUIRED_DEP_PACKAGES)
