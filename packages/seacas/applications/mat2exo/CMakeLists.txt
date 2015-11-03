@@ -1,0 +1,25 @@
+IF (TPL_ENABLE_Matio)
+INCLUDE(TribitsAddExecutable)
+INCLUDE(TribitsLibraryMacros)
+SEACAS_PACKAGE(Mat2exo)
+
+LINK_DIRECTORIES(${Matio_LIBRARY_DIRS})
+INCLUDE_DIRECTORIES(
+  "${Matio_INCLUDE_DIRS}"
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+SET(CODE mat2exo)
+SET(HEADERS "")
+
+TRIBITS_ADD_EXECUTABLE(
+  ${CODE}
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES mat2exo.C
+  COMM serial mpi
+  )
+install_executable(${CODE})
+
+SEACAS_POSTPROCESS()
+ENDIF()

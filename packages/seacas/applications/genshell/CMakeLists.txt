@@ -1,0 +1,25 @@
+INCLUDE(TribitsAddExecutable)
+INCLUDE(FortranSettings)
+SEACAS_PACKAGE(Genshell)
+
+INCLUDE_DIRECTORIES(
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+SET(HEADERS "")
+
+APPEND_GLOB(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.f)
+TRIBITS_ADD_EXECUTABLE(
+  genshell
+  NOEXEPREFIX
+  NOEXESUFFIX
+  LINKER_LANGUAGE Fortran
+  SOURCES ${SOURCES}
+  COMM serial mpi
+  )
+
+install_executable(genshell)
+
+SEACAS_POSTPROCESS()
+
+

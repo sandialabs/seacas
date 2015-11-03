@@ -1,0 +1,25 @@
+INCLUDE(TribitsSubPackageMacros)
+INCLUDE(TribitsAddExecutable)
+INCLUDE(FortranSettings)
+
+SEACAS_PACKAGE(Algebra)
+
+INCLUDE_DIRECTORIES(
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+SET(HEADERS "")
+APPEND_GLOB(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.f)
+TRIBITS_ADD_EXECUTABLE(
+  algebra
+  NOEXEPREFIX
+  NOEXESUFFIX
+  HEADERS ${HEADERS}
+  LINKER_LANGUAGE Fortran
+  SOURCES ${SOURCES}
+  COMM serial mpi
+  )
+install_executable(algebra)
+
+SEACAS_POSTPROCESS()
+

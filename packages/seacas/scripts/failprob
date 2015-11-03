@@ -1,0 +1,104 @@
+#!/bin/bash -f
+# Script to run FAILPROB -- A code to compute the probability
+#                         of failure using the NASA CARES/LIFE
+#                         techniques and then write the results
+#                         into an EXODUS file
+#
+#
+# Format1: failprob cmdin outfil exoin exoout
+#
+# Format2: failprob
+#          script will prompt for files to attach
+#
+# Format3: failprob basename
+#          script will append appropriate extensions to basename
+#          equivalent to:
+#          failprob basename.cmd basename.o basename.e basename.a
+#          only basename.cmd and basename.e are required
+#          basename.o and basename.f will be created.
+#
+#
+function usage {
+  echo " "
+  echo "${txtred}*** ERROR IN COMMAND***${txtrst} "
+  echo " "
+  echo "   Command syntax"
+  echo "      ${txtpur}failprob cmdin outfil exoin exoout${txtrst}"
+  echo "   or"
+  echo "     ${txtpur}failprob${txtrst} (will prompt for files)"
+  echo "   or"
+  echo "     ${txtpur}failprob basename${txtrst}"
+  echo "            basename.cmd  and  basename.e  must exist"
+  echo " "
+exit 1
+}
+
+# Text color variables
+txtund=$(tput sgr 0 1)    # Underline
+txtbld=$(tput bold)       # Bold
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+txtblu=$(tput setaf 4)    # Blue
+txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
+errflg=0
+echo " "
+
+case $# in
+4)
+  cmdin=$1
+  outfil=$2
+  exoin=$3
+  exoout=$4
+  ;;
+0)
+  read -p "${txtpur}Enter the input command filename:${txtrst} " cmdin
+  read -p "      ${txtpur}Enter text output filename:${txtrst} " outfil
+  read -p "     ${txtpur}Enter EXODUS input filename:${txtrst} " exoin
+  read -p "    ${txtpur}Enter EXODUS output filename:${txtrst} " exoout
+  echo " "
+  ;;
+1)
+  cmdin=${1}'.cmd'
+  outfil=${1}'.o'
+  exoin=${1}'.e'
+  exoout=${1}'.a'
+;;
+*)
+  usage
+;;
+esac
+
+export FOR006=$cmdin
+export FOR007=$outfil
+export FOR011=$exoin
+export FOR012=$exoout
+
+if [ -e ${FOR006} ] ; then
+  echo "Command input file   = ${FOR006}"
+else
+  echo "Command input file   = ${FOR006} ${txtred}does not exist${txtrst}"
+  errflg=1
+fi
+
+echo "Text output file     = ${FOR007}"
+
+if [ -e ${FOR011} ] ; then
+  echo "EXODUS input file    = ${FOR011}"
+else
+  echo "EXODUS input file    = ${FOR011} ${txtred}does not exist${txtrst}"
+  errflg=1
+fi
+
+echo "EXODUS output file   = ${FOR012}"
+
+if [ ${errflg} == 0 ] ; then
+  ${ACCESS}/bin/failprob
+else
+ usage
+fi
+exit

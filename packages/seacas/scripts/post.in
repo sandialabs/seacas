@@ -1,0 +1,113 @@
+#!/bin/bash -f
+
+function usage {
+USAGE="Usage: post filename device [postcript option | list]"
+   echo ""
+   echo "${USAGE}"
+   echo "    "
+   echo "  Contact: gdsjaar@sandia.gov"
+   echo "  Information: http://www.jal.sandia.gov/SEACAS/SEACAS.html (IRN)"
+   echo "               file://${ACCESS}/doc/index.html  (local)"
+   echo "  "
+    show_device
+exit 1
+}
+
+function show_device {
+ echo " "
+ tempA=`find ${ACCESS}/bin -name ${codename}.\* |grep -v ${codename}.o |sed -e s:${ACCESS}/bin/${codename}.::`
+ echo "Standard options for 'device':" 
+ echo "${txtgrn}" $tempA "${txtrst}"
+ echo " "
+}
+
+function show_ps_option {
+echo ""
+echo "The PostScript drivers have seven options."
+echo "     1. black & white, no polygon fill"
+echo "     3. black & white, polygon fill"
+echo "     5. color,"
+echo "     7. color, black-white interchange"
+echo "     8. gray-scale, black-white interchange"
+echo "     9. color, black background"
+echo "    10. gray-scale, black background"
+echo " "
+echo "Enter <num> as last option to select one."
+echo "Default is '7'"
+echo ""
+}
+
+codename=post
+ACCESS=@ACCESSDIR@
+
+# Text color variables
+txtund=$(tput sgr 0 1)    # Underline
+txtbld=$(tput bold)       # Bold
+txtred=$(tput setaf 1)    # Red
+txtgrn=$(tput setaf 2)    # Green
+txtylw=$(tput setaf 3)    # Yellow
+txtblu=$(tput setaf 4)    # Blue
+txtpur=$(tput setaf 5)    # Purple
+txtcyn=$(tput setaf 6)    # Cyan
+txtwht=$(tput setaf 7)    # White
+txtrst=$(tput sgr0)       # Text reset
+
+echo " "
+echo "=============================================================="
+echo "| Sandia Engineering Analysis Access procedure for: ${codename}"
+echo "| Send email to gdsjaar@sandia.gov for help"
+echo "=============================================================="
+
+
+if [ $# -lt 2 ] ; then
+    if [ $# -eq 0 ] ; then
+       echo "${txtred}ERROR: Missing filename and device.${txtrst}"
+    elif [ $# -eq 1 ] ; then
+       echo "${txtred}ERROR: Missing device.${txtrst}"
+    fi
+    usage
+fi
+
+export file55="$1"
+
+if [ ! -e ${file55} ] ; then
+    echo "File $file55 does not exist"
+    usage
+fi
+
+device="$2"
+
+# Check if there is another option following the device type. 
+# If there is, use it as the option number to the cps/eps device.
+if [ $# -eq 3 ] ; then
+  if [ "$device" == "cps" ] || [ "$device" == "eps" ] ; then
+    devopt="$3"
+  elif [ "$3" == "list" ] || [ "$3" == "help" ] ; then
+     show_ps_option
+     exit
+  fi
+  devopt="false"
+fi
+
+if [ ! -x "${ACCESS}/bin/${codename}.${device}" ]
+then
+   echo "${txtred}ERROR: ${ACCESS}/bin/${codename}.${device} does not exist.${txtrst}"
+   echo "    Contact gdsjaar@sandia.gov if you need this device;"
+   echo "    otherwise use one of the supported devices:"
+   show_device
+   exit 1
+fi
+
+# Tell users what to do
+if [  $device == "x11" ] ; then
+    echo "Place cursor in window and hit space bar to progress through frames"
+fi
+
+# Run the code, --
+if [ $devopt != "false" ] ; then
+    echo $devopt | $ACCESS/bin/$codename.$device
+else
+   $ACCESS/bin/$codename.$device
+fi
+
+echo "${txtgrn}POST Successful Execution${txtrst}"
