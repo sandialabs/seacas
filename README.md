@@ -47,7 +47,7 @@ create or read models of this size, you do not have to build hdf5.
 #### NetCDF:
 The most recent released version is recommended. 
 
- * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from htttp://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside seacas.git/TPL/netcdf
+ * Download the latest netcdf-c release (currently netcdf-4.3.3.1.tar.gz) from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside seacas.git/TPL/netcdf
  * cd TPL/netcdf
  * tar zxvf netcdf-4.3.3.1.tar.gz
  * Modify the following defines in seacas.git/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
