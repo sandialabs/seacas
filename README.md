@@ -24,6 +24,8 @@ the libraries for you, but with the current cmake-based build system,
 you must build and install the libraries manually prior to building
 SEACAS.
 
+#### Zoltan:
+A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas.git/packages/zoltan.  This will be built automatically as part of the seacas build process.
 
 #### HDF5: 
 If you are using the netcdf-4 capability in the netcdf library or are using the matio library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
