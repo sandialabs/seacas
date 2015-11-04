@@ -1,9 +1,0 @@
-Decomposition Method 	= phg
-Zoltan Parameters       = lb_approach=partition
-Zoltan Parameters       = phg_coarsening_limit=2
-Zoltan Parameters       = num_gid_entries=3
-Zoltan Parameters       = num_global_parts=2
-File Type		= NemesisI
-File Name		= simple-r.par
-Parallel Disk Info	= number=1,offset=1,zeros
-Parallel file location  = root=pio_, subdir=.

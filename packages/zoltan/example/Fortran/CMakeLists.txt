@@ -2,7 +2,7 @@
 
 TRIBITS_ADD_EXECUTABLE_AND_TEST(
   simpleRCB_f90
-  SOURCES simpleRCB.f90 zoltanRCBmod.f90 mpi_h.f
+  SOURCES simpleRCB.f90 zoltanRCBmod.f90
   ARGS 
   COMM mpi
   NUM_MPI_PROCS 1-4

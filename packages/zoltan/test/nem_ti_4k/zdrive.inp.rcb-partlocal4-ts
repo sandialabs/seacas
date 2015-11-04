@@ -1,8 +1,0 @@
-Decomposition Method 	= rcb
-Zoltan Parameters	= tflops_special=1
-Zoltan Parameters       = 
-File Type		= NemesisI
-File Name		= ti_4k-m9-r.par
-Parallel Disk Info	= number=2,offset=1,zeros
-Parallel file location  = root=pio_, subdir=.
-Test local partitions   = 4
