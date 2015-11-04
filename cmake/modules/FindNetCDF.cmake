@@ -144,8 +144,8 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             )
             set(NetCDF_LARGE_DIMS TRUE)
         else()
-            message(WARNING "The NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS, NC_MAX_VARS and NC_MAX_VAR_DIMS\n"
-                             "It may not be compatible with other TPL libraries such MOAB and ExodusII\n" )
+            message(WARNING "\nThe NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS, NC_MAX_VARS and NC_MAX_VAR_DIMS. "
+                             "It may not be compatible with Exodus\n" )
             set(NetCDF_LARGE_DIMS FALSE)
         endif()
 
@@ -233,7 +233,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
     # Need to find the NetCDF config script to check for HDF5
     if ( NetCDF_DIR OR NetCDF_BIN_DIR )
-        MESSAGE("NetCDF_DIR is ${NetCDF_DIR}")
+        MESSAGE(STATUS "\tNetCDF_DIR is ${NetCDF_DIR}")
         find_program(netcdf_config nc-config 
                        PATHS ${NetCDF_DIR}/bin ${NetCDF_BIN_DIR}
 		       NO_DEFAULT_PATH
@@ -254,9 +254,14 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
                 set(NetCDF_NEEDS_HDF5 True)
             else()
                 set(NetCDF_NEEDS_HDF5 False)
-                message(STATUS "NetCDF does not require HDF5")
             endif()    
 
+            execute_process(COMMAND "${netcdf_config}" "--version"
+                            RESULT_VARIABLE _ret_code
+                            OUTPUT_VARIABLE _stdout
+                            ERROR_VARIABLE  _stderr
+                           )
+            string(REGEX REPLACE "[\n\r]" "" NetCDF_VERSION ${_stdout})
         endif()
     endif()    
 
@@ -265,6 +270,8 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 	if ( NOT TARGET hdf5)
           add_package_dependency(NetCDF DEPENDS_ON HDF5)
 	endif()
+    else()
+        message(STATUS "NetCDF does not require HDF5")
     endif()
 
 endif(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )    
@@ -286,7 +293,7 @@ if ( NOT NetCDF_FIND_QUIETLY )
 
   # Create a not found list
 
-#  message(STATUS "NetCDF Version: ${NetCDF_VERSION}")
+  message(STATUS "NetCDF Version: ${NetCDF_VERSION}")
   message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
   message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
   message(STATUS "\tNetCDF_NEEDS_HDF5        = ${NetCDF_NEEDS_HDF5}")
