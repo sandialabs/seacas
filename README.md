@@ -2,8 +2,9 @@
  * See the bottom of the file for contact information
  * The old imake-based build has been removed.
  * If you just need the exodus library, see EXODUS below.
+ * For Ubuntu package, see UBUNTU below.
 
-## Clone the SEACAS distribution to the directory of your choice:
+## Clone the SEACAS distribution:
 ```
    git clone https://github.com/gdsjaar/seacas.git
 ```
@@ -146,6 +147,20 @@ install the exodus.py python interface.
 
 SEACAS is licensed under the Modified BSD License.  See the LICENSE 
 file for details.
+
+## UBUNTU
+There is a PPA available for [SEACAS](https://launchpad.net/~nschloe/+archive/ubuntu/seacas-nightly/+packages) that is updated nightly from SEACAS master. Anyone using ubuntu can now just add the PPA and do
+
+```
+sudo add-apt-repository ppa:nschloe/seacas-nightly
+sudo apt-get update
+```
+and then
+
+```
+sudo apt-get install seacas
+```
+to get SEACAS.  This is provided by Nico Schlomer.
 
 ## Contact information
 
