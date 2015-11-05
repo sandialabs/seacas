@@ -4,6 +4,7 @@
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
 * [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
+* [Testing](#testing)
 * [Exodus](#exodus)
 * [License](#license)
 * [Ubuntu](#ubuntu)
@@ -40,7 +41,7 @@ build SEACAS.
 A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas.git/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 #### HDF5
-If you are using the netcdf-4 capability in the netcdf library or are using the matio library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
+If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
@@ -143,6 +144,17 @@ to configure the SEACAS CMake build.
    * enter the command `../cmake-config` and cmake should configure everything for the build.
    * `make && make install`
    * If everything works, your applications should be in `${ACCESS}/bin`
+
+## Testing
+There are a few unit tests for zoltan, exodus, and aprepro that can be run via `make test` if you configured with `-D SEACASProj_ENABLE_TESTS=ON`.
+
+There is also a system-level test that just verifies that the applications can read and write exodus files correctly.  This test runs off of the installed applications.  To run do:
+
+ * `make install`
+ * `cd ../SEACAS-Test`
+ * `make clean; make`
+
+This will run through several of the SEACAS applications creating a mesh (exodus file) and then performing various manipulations on the mesh.  If the test runs successfully, there is some hope that everything has built and is running correctly. 
 
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
