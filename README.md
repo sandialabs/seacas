@@ -1,6 +1,7 @@
 # SEACAS
 [![Build Status](https://travis-ci.org/gdsjaar/seacas.svg?branch=master)](https://travis-ci.org/gdsjaar/seacas)
 
+* [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
 * [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
 * [Exodus](#exodus)
@@ -9,7 +10,7 @@
 * [Contact information](#contact-information)
 *  NOTE: The old imake-based build has been removed.
 
-### Get the sources
+## Get the sources
 ```
 git clone https://github.com/gdsjaar/seacas.git
 ```
@@ -25,12 +26,15 @@ cd seacas.git && export ACCESS=`pwd`
 
 ### Download and build dependencies
 
-There are a few externally developed libraries that are required to
-build SEACAS.  The NetCDF library is required; the HDF5, matio, and
-GNU Parallel libraries are optional.  The old imake system used to build
-the libraries for you, but with the current cmake-based build system,
-you must build and install the libraries manually prior to building
-SEACAS.
+There are a few externally developed third-party libraries (TPL) that are required to
+build SEACAS. 
+
+ * [Zoltan](#zoltan) -- required, supplied
+ * [HDF5](#hdf5) -- optional
+ * [NetCDF](#netcdf) -- required with modifications
+ * [MatIO](#matio) -- optional with patch
+ * [GNU Parallel](#gnu-parallel) -- optional
+ * [CGNS](#cgns) -- experimental optional
 
 #### Zoltan
 A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas.git/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
@@ -142,6 +146,7 @@ to configure the SEACAS CMake build.
 
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
+
   * You only need the netcdf and optionally hdf5 libraries
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
