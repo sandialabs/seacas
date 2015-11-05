@@ -1,0 +1,38 @@
+sudo: required
+dist: trusty
+
+language: c++
+
+compiler:
+  - gcc
+  - clang
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get -y install cmake
+  - sudo apt-get -y install libcgns-dev
+  - sudo apt-get -y install libmatio-dev
+  - sudo apt-get -y install libnetcdf-dev
+  - sudo apt-get -y install libz-dev
+
+install:
+  - cmake \
+    -DBUILD_SHARED_LIBS:BOOL=ON \
+    -DHDF5_ROOT:PATH=/usr/ \
+    -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
+    -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
+    -DSEACASProj_ENABLE_TESTS:BOOL=ON \
+    -DSEACASProj_USE_GNUINSTALLDIRS:BOOL=ON \
+    -DTPL_ENABLE_CGNS:BOOL=ON \
+    -DTPL_ENABLE_Matio:BOOL=ON \
+    -DTPL_ENABLE_METIS:BOOL=OFF \
+    -DTPL_ENABLE_ParMETIS:BOOL=OFF \
+    -DTPL_ENABLE_Netcdf:BOOL=ON \
+    -DTPL_ENABLE_MPI:BOOL=OFF \
+    -DTPL_ENABLE_Pamgen:BOOL=OFF \
+    -DTPL_ENABLE_X11:BOOL=ON \
+    -DTPL_ENABLE_Zlib:BOOL=ON
+  - make
+
+script:
+  - ctest -VV
