@@ -1,6 +1,0 @@
-#! /bin/sh
-# This should be run to generate configure and Makefile.in
-aclocal
-autoheader
-automake -i --add-missing --foreign
-autoconf
