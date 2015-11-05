@@ -16,6 +16,7 @@ before_install:
   - sudo apt-get -y install libz-dev
 
 install:
+  - mkdir build && cd build
   - >
     cmake
     -DBUILD_SHARED_LIBS:BOOL=ON
