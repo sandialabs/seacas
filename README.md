@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/gdsjaar/seacas.svg?branch=master)](https://travis-ci.org/gdsjaar/seacas)
 
 * [Build instructions](#build-instructions)
-* [Configure, Build, and Install SEACAS](#configure,-build,-and-install-seacas)
+* [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
 * [Exodus](#exodus)
 * [License](#license)
 * [Ubuntu](#ubuntu)
