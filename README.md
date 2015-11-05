@@ -1,10 +1,13 @@
 # SEACAS
 [![Build Status](https://travis-ci.org/gdsjaar/seacas.svg?branch=master)](https://travis-ci.org/gdsjaar/seacas)
 
- * See the bottom of the file for contact information
- * The old imake-based build has been removed.
- * If you just need the exodus library, see _Exodus_ below.
- * For Ubuntu package, see _Ubuntu_ below.
+* [Build instructions](#build-instructions)
+* [Configure, Build, and Install SEACAS](#configure,-build,-and-install-seacas)
+* [Exodus](#exodus)
+* [License](#license)
+* [Ubuntu](#ubuntu)
+* [Contact information](#contact-information)
+*  NOTE: The old imake-based build has been removed.
 
 ### Get the sources
 ```
@@ -131,8 +134,8 @@ to configure the SEACAS CMake build.
    * `cd $ACCESS`
    * `mkdir build`
    * `cd build`
-   * edit the `${ACCESS}cmake`-config file and adjust compilers and
-     other settings as needed. The HDF5 linking with NetCDF isn't configured correctly yet, so the line specifying the `SEACAS_EXTRA_LINK_FLAGS` may be needed for a proper link.
+   * edit the `${ACCESS}cmake-config` file and adjust compilers and
+     other settings as needed. 
    * enter the command `../cmake-config` and cmake should configure everything for the build.
    * `make && make install`
    * If everything works, your applications should be in `${ACCESS}/bin`
