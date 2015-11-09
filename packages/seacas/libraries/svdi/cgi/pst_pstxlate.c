@@ -1235,8 +1235,10 @@ anything *surf_list[];
    /* device id */
    vdiqdc( &qdc_index, &value );
    cgi_devid = get_devid_char( value );
-   if( cgi_devid != NULL ) 
+   if( cgi_devid != NULL ) {
       strncpy(dev_descrip. dev_id, cgi_devid, 3);
+      dev_descrip.dev_id[3] = '\0';
+   }
 
   } /* end if not set */
 
@@ -5546,11 +5548,12 @@ cdrofs(ifilcd)
 int *ifilcd; /* FORTRAN unit number ignored, provide for compatability */
 {
   int errnum, errsev;
-  char symbol[100];
+  char symbol[1024];
   char err[50];
   int qdc_index;
   float value;
   char *devid;
+  char *env;
   static int file_cnt = 1;
 
 
@@ -5570,8 +5573,9 @@ int *ifilcd; /* FORTRAN unit number ignored, provide for compatability */
  strcpy( symbol, cur_state -> filename );
 
  /* check the environment to see if a file name has been assigned */
- if(getenv(symbol) != 0)
-   sprintf(symbol,"%s",getenv(symbol));
+ env = getenv(symbol);
+ if(env != 0 && strlen(env) < 1024)
+   sprintf(symbol,"%s", env);
 
  /* open the file  - if it doesn't exist, create it with mode 664 */
  /* -- open returns a file descriptor which is stored in the statelist */
