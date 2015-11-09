@@ -3,29 +3,79 @@ SEACAS. This includes a "parallel-aware" version of the exodus library
 and a parallel version of the Ioss library. The modifications to the
 build process described in the README file are shown below:
 
-1. Additional libraries. You will also need the metis, parmetis, and
-parallel-netcdf (pnetcdf) libraries.
+## Additional Libraries
 
-  metis: Download http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
-  * cd TPL/metis
-  * tar zxvf metis-5.1.0.tar.gz
-  * edit metis-5.1.0/include/metis.h and change IDXTYPEWIDTH
-and REALTYPEWIDTH to 64
+You will need the following libraries:
 
-  parmetis: Download http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/parmetis-4.0.3.tar.gz
-  * cd TPL/metis
-  * tar zxvf parmetis-4.0.3.tar.gz
-  * edit parmetis-4.0.3/metis/include/metis.h and change IDXTYPEWIDTH
-and REALTYPEWIDTH to 64
+* [Metis](#metis)
+* [ParMetis](#parmetis)
+* [Parallel-NetCDF](#parallel-netcdf)
+
+In addition, the HDF5 and NetCDF libraries need to be compiled with parallel capability enabled.
+
+* [HDF5](#hdf5)
+* [NetCDF](#netcdf)
+
+For all of the libraries, there should exist a
+`TPL/{lib_name}/runconfigure.sh` file.  You can look at this file and make any changes needed; then cd to the library source directory, do `../runconfigure.sh` and it will hopefully correctly configure the library.
+
+#### Metis
+
+  * Download http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
+  * `cd TPL/metis`
+  * `tar zxvf metis-5.1.0.tar.gz`
+  *  edit `metis-5.1.0/include/metis.h` and change `IDXTYPEWIDTH`
+and `REALTYPEWIDTH` to 64
+
+#### ParMetis
+
+  * Download http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/parmetis-4.0.3.tar.gz
+  * `cd TPL/metis`
+  * `tar zxvf parmetis-4.0.3.tar.gz`
+  * edit `parmetis-4.0.3/metis/include/metis.h` and change `IDXTYPEWIDTH`
+and `REALTYPEWIDTH` to 64
   
-  parallel-netcdf: Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.gz
-  * cd TPL/pnetcdf
-  * tar zxvf parallel-netcdf-1.6.1.tar.gz
+#### Parallel-NetCDF
+  * Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.gz
+  * `cd TPL/pnetcdf`
+  * `tar zxvf parallel-netcdf-1.6.1.tar.gz`
 
-Build as shown in README.md with MPI set to ON
+#### HDF5
+   * `cd` to the hdf5 source directory and enter the command:
+    ```
+    export CC=mpicc
+    ./configure --prefix=${ACCESS} --enable-shared --enable-production --enable-debug=no --enable-static-exec --enable-parallel
+    ```
 
-NOTE: May be issues with metis/parmetis build... I had to go into
-TPL/metis subdirectories and run the runconfigure manually... then at
-metis level run "make -k install"
+#### NetCDF
+ * `cd netcdf-4.3.3.1` and enter the command:
+    ```
+    export CC=mpicc
+    ./configure --enable-netcdf-4  --enable-shared \
+      --disable-fsync --prefix ${ACCESS} \
+      --disable-dap --disable-cdmremote 
+      --enable-parallel --enable-pnetcdf
+    ```
 
+ * If the configure step complains about not being able to find the
+   HDF5 library, you may need to do the following and then redo the
+   configure step
+    ```
+    CFLAGS='-I{HDF5_ROOT}/include'; export CFLAGS
+    LDFLAGS='-L{HDF5_ROOT}/lib   '; export LDFLAGS
+    ```
+
+## Configure, Build, and Install SEACAS
+Build as described in README.md.  If you are using the `cmake-config`
+script, the change `MPI` to `ON` and then continue.
+
+If using your own cmake script or directly calling cmake, specify the
+correct mpi-aware compilers 
+
+```
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} 
+-D CMAKE_C_COMPILER:FILEPATH=${CC} 
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} 
+-D TPL_ENABLE_MPI:BOOL=ON
+```
 
