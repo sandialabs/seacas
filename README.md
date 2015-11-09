@@ -9,7 +9,8 @@
 * [License](#license)
 * [Ubuntu](#ubuntu)
 * [Contact information](#contact-information)
-*  NOTE: The old imake-based build has been removed.
+* For information on building with MPI, see [README-PARALLEL.md](README-PARALLEL.md)
+* NOTE: The old imake-based build has been removed.
 
 ## Get the sources
 ```
@@ -57,12 +58,12 @@ create or read models of this size, you do not have to build hdf5.
    * `make && make install`
 
 #### NetCDF
-The most recent released version is recommended. 
+The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
  * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside `seacas.git/TPL/netcdf`
  * `cd TPL/netcdf`
  * `tar zxvf netcdf-4.3.3.1.tar.gz`
- * Modify the following defines in seacas.git/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h
+ * Modify the following defines in seacas.git/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h.
 
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
