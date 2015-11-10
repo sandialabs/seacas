@@ -71,31 +71,16 @@
 #endif
 
 namespace {
-  struct qa_element {
-    qa_element() {
-      for (int j=0; j < 4; j++) {
-        qa_record[0][j] = new char[MAX_STR_LENGTH+1];
-	qa_record[0][j][0] = '\0';
-      }
-    }
-    ~qa_element() {
-      for (int j=0; j < 4; j++) {
-        delete [] qa_record[0][j];
-      }
-    }
-    char* qa_record[1][4];
-  };
-
-  template <typename T>
-  bool approx_equal(T v1, T v2)
-  {
+template <typename T>
+bool approx_equal(T v1, T v2)
+{
 #if 0
-    static const T tolerance = 100.0 * std::numeric_limits<T>::epsilon();
-    return std::fabs(v1 - v2) <= std::fabs(v1+v2)*tolerance;
+  static const T tolerance = 100.0 * std::numeric_limits<T>::epsilon();
+  return std::fabs(v1 - v2) <= std::fabs(v1+v2)*tolerance;
 #else
-    return (float)v1 == (float)v2;
+  return (float)v1 == (float)v2;
 #endif
-  }
+}
 }
 
 struct NodeInfo {
@@ -969,16 +954,26 @@ namespace {
     free_name_array(info_records, num_info_records+extra_info);
 
     // II. Get and store QA records, if they exist
+    struct qa_element {
+      char *qa_record[1][4];
+    };
+    
     int num_qa_records = ex_inquire_int(id, EX_INQ_QA);
-    std::vector<qa_element> qaRecord(num_qa_records+1);
-    if (num_qa_records > 0)
-      error += ex_get_qa(id, qaRecord[0].qa_record);
+    qa_element *qaRecord = new qa_element[num_qa_records+1];
+    for (int i=0; i < num_qa_records+1; i++) {
+      for (int j=0; j < 4; j++) {
+	qaRecord[i].qa_record[0][j] = new char[MAX_STR_LENGTH+1];
+	qaRecord[i].qa_record[0][j][0] = '\0';
+      }
+    }
+    if (num_qa_records) error += ex_get_qa(id, qaRecord[0].qa_record);
+
+    char buffer[MAX_STR_LENGTH+1];
 
     strncpy(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH); // Code
     strncpy(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH); // Version
 
     time_t date_time = time(NULL);
-    char buffer[MAX_STR_LENGTH+1];
     strftime( buffer, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time) );
 
     strncpy(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH);
