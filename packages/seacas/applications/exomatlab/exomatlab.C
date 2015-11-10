@@ -100,27 +100,26 @@ int main(int argc, char *argv[])
   if (ind != std::string::npos)
     codename = codename.substr(ind+1, codename.size());
 
-  SystemInterface::show_version();
-  Ioss::Init::Initializer io;
+  try {
+    SystemInterface::show_version();
+    Ioss::Init::Initializer io;
 
-  SystemInterface interface;
-  bool ok = interface.parse_options(argc, argv);
+    SystemInterface interface;
+    bool ok = interface.parse_options(argc, argv);
 
-  if (ok) {
-    std::string in_file = interface.input_file();
-    std::string output_file = interface.output_file();
+    if (ok) {
+      std::string in_file = interface.input_file();
+      std::string output_file = interface.output_file();
 
-    OUTPUT << "Input:    '" << in_file  << "', Type: " << in_type  << '\n';
-    OUTPUT << "Output:   '" << output_file << "', Type: matlab script\n\n";
+      OUTPUT << "Input:    '" << in_file  << "', Type: " << in_type  << '\n';
+      OUTPUT << "Output:   '" << output_file << "', Type: matlab script\n\n";
 
-    try {
       ok = file_info(in_file, in_type, interface);
     }
-    catch (std::exception &e) {
-      std::cerr << "ERROR: (EXOMATLAB) Standard exception: " << e.what() << std::endl;
-    }
   }
-
+  catch (std::exception &e) {
+    std::cerr << "ERROR: (EXOMATLAB) Standard exception: " << e.what() << std::endl;
+  }
   std::string success = ok ? "successful" : "unsuccessful";
   OUTPUT << "\n" << codename << " execution " << success << ".\n";
   time_t end_time = time(NULL);

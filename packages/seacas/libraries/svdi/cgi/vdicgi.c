@@ -726,24 +726,18 @@ void vdinit_ (float *aspect, int *justif)
 void vflush()
 /*  flush polyline buffer */
 {
-  int temp1, temp2;
-  float temp3;
+  if (alpha_mode) {
+    int temp1 = XEAGMD;
+    int temp2 = 1;
+    float temp3 = 1.;    /*  graphics  */
+    cesc2_(&temp1, &temp2, &temp3);
+    alpha_mode = FALSE;
+  }
 
-  if (alpha_mode)
-    {
-      temp1 = XEAGMD;
-      temp2 = 1;
-      temp3 = 1.;    /*  graphics  */
-      cesc2_(&temp1, &temp2, &temp3);
-      alpha_mode = FALSE;
-    }
-
-  if (nvert > 0)
-    {
-      cpl_(&nvert, vlist_x, vlist_y);
-      nvert = 0;
-    }
-
+  if (nvert > 0) {
+    cpl_(&nvert, vlist_x, vlist_y);
+    nvert = 0;
+  }
 }
 
 void
@@ -1021,7 +1015,10 @@ void vdlina_ (float *x, float *y)
     }
 
   /*  append to polyline buffer (if full, flush it first)  */
-  if (nvert >= VBUF_SIZE) vflush();
+  if (nvert >= VBUF_SIZE) {
+    vflush();
+    nvert = 0; /* vflush sets this, but static analysis still warns. */
+  }
   vlist_x[nvert] = map_x(*x);
   vlist_y[nvert] = map_y(*y);
   nvert++;
