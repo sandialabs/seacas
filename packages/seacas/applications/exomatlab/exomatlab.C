@@ -41,6 +41,8 @@
 #include <math.h>
 #include <string>
 #include <cstring>
+#include <exception>
+#include <stdexcept>
 #include <time.h>
 
 #include "EML_CodeTypes.h"
@@ -111,7 +113,12 @@ int main(int argc, char *argv[])
     OUTPUT << "Input:    '" << in_file  << "', Type: " << in_type  << '\n';
     OUTPUT << "Output:   '" << output_file << "', Type: matlab script\n\n";
 
-    ok = file_info(in_file, in_type, interface);
+    try {
+      ok = file_info(in_file, in_type, interface);
+    }
+    catch (std::exception &e) {
+      std::cerr << "ERROR: (EXOMATLAB) Standard exception: " << e.what() << std::endl;
+    }
   }
 
   std::string success = ok ? "successful" : "unsuccessful";
