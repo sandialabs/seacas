@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
   time_t begin_time = time(NULL);
   std::string in_type = "exodusII";
 
+  bool ok = false;
   codename = argv[0];
   size_t ind = codename.find_last_of("/", codename.size());
   if (ind != std::string::npos)
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
     Ioss::Init::Initializer io;
 
     SystemInterface interface;
-    bool ok = interface.parse_options(argc, argv);
+    ok = interface.parse_options(argc, argv);
 
     if (ok) {
       std::string in_file = interface.input_file();
@@ -116,12 +117,12 @@ int main(int argc, char *argv[])
 
       ok = file_info(in_file, in_type, interface);
     }
+    std::string success = ok ? "successful" : "unsuccessful";
+    OUTPUT << "\n" << codename << " execution " << success << ".\n";
   }
   catch (std::exception &e) {
     std::cerr << "ERROR: (EXOMATLAB) Standard exception: " << e.what() << std::endl;
   }
-  std::string success = ok ? "successful" : "unsuccessful";
-  OUTPUT << "\n" << codename << " execution " << success << ".\n";
   time_t end_time = time(NULL);
   add_to_log(codename.c_str(), (int)(end_time - begin_time));
 #ifdef HAVE_MPI
