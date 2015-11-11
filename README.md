@@ -1,6 +1,7 @@
-# SEACAS
+# SEACAS  [[Documentation](http://gdsjaar.github.io/seacas/)]
 [![Build Status](https://travis-ci.org/gdsjaar/seacas.svg?branch=master)](https://travis-ci.org/gdsjaar/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/seacas)
+
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
 * [Configure, Build, and Install SEACAS](#configure-build-and-install-seacas)
@@ -101,6 +102,22 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
 
  * `cd matio-1.5.2` and enter the command:
     ```
+    # The -L is to find the hdf5 library...
+    export LDFLAGS='-L${ACCESS}/lib'
+    ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
+    ```
+    
+ * `make && make install`
+
+Alternatively, you can use a forked version of MatIO library that has
+had the above referenced patch applied and some other
+modfications. The instructions for this version are:
+
+ * `cd TPL/matio`
+ * `git clone git://git.code.sf.net/u/gdsjaar/matio matio`
+ * `cd matio` and enter the command:
+    ```
+    ./autogen.sh
     # The -L is to find the hdf5 library...
     export LDFLAGS='-L${ACCESS}/lib'
     ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
