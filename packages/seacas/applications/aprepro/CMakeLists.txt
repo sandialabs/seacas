@@ -4,17 +4,25 @@ INCLUDE(TribitsAddExecutable)
 TRIBITS_SUBPACKAGE(Aprepro)
 
 INCLUDE_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_BINARY_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 ADD_DEFINITIONS(-DNO_EXODUSII)
+option(GENERATE_FLEX_FILES "Generate source files using flex" OFF)
+option(GENERATE_BISON_FILES "Generate source files using bison" OFF)
+
+if(GENERATE_BISON_FILES)
+  set(BISON_SOURCE ${CMAKE_CURRENT_BINARY_DIR}/y.tab.c)
+else()
+  set(BISON_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.c)
+endif()
 
 SET(HEADERS "")
 SET(SOURCES
   ap_builtin.c
   ap_stat.c
-  y.tab.c
+  ${BISON_SOURCE}
   ap_util.c
   ap_init.c
   ap_hash.c
@@ -34,7 +42,7 @@ TRIBITS_ADD_EXECUTABLE(
   )
 install_executable(aprepro)
 
-option(GENERATE_FLEX_FILES "Generate source files using flex" OFF)
+
 if(GENERATE_FLEX_FILES)
   find_program(FLEX_EXE NAMES flex
                DOC "Flex Executable")
@@ -42,15 +50,14 @@ if(GENERATE_FLEX_FILES)
     message(SEND_ERROR "The CMake variable FLEX_EXE does not point to a valid flex executable.")
   endif()
 
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/lex.yy.c
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c
                      COMMAND ${FLEX_EXE}
-                     ARGS aprepro.l
+                     ARGS ${CMAKE_CURRENT_SOURCE_DIR}/aprepro.l
                      MAIN_DEPENDENCY aprepro.l
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      )
 endif()
 
-option(GENERATE_BISON_FILES "Generate source files using bison" OFF)
 if(GENERATE_BISON_FILES)
   find_program(BISON_EXE NAMES bison
                DOC "Bison Executable")
@@ -63,12 +70,12 @@ if(GENERATE_BISON_FILES)
     set(ENV{PATH} "${BISON_PATH};$ENV{PATH}")
   endif(WIN32)
 
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.h
-                            ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.c
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/y.tab.h
+                            ${CMAKE_CURRENT_BINARY_DIR}/y.tab.c
                      COMMAND ${BISON_EXE}
-                     ARGS --yacc --defines aprepro.y
+                     ARGS --yacc --defines ${CMAKE_CURRENT_SOURCE_DIR}/aprepro.y
                      MAIN_DEPENDENCY aprepro.y
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      )
 endif()
 

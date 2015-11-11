@@ -17,16 +17,32 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+option(GENERATE_FLEX_FILES "Generate source files using flex" OFF)
+option(GENERATE_BISON_FILES "Generate source files using bison" OFF)
+
+if(GENERATE_BISON_FILES)
+  set(BISON_LIB_SOURCE ${CMAKE_CURRENT_BINARY_DIR}/apr_parser.cc)
+else()
+  set(BISON_LIB_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/apr_parser.cc)
+endif()
+
 SET(HEADERS
   aprepro.h
 )
 
 SET(SOURCES
- apr_aprepro.cc apr_util.cc apr_stats.cc apr_init.cc apr_builtin.cc apr_units.cc apr_tokenize.cc
- apr_scanner.cc  apr_parser.cc apr_array.cc
+ apr_aprepro.cc 
+ apr_util.cc 
+ apr_stats.cc 
+ apr_init.cc 
+ apr_builtin.cc 
+ apr_units.cc 
+ apr_tokenize.cc
+ apr_scanner.cc  
+ ${BISON_LIB_SOURCE}
+ apr_array.cc
 )
 
-option(GENERATE_FLEX_FILES "Generate source files using flex" OFF)
 if(GENERATE_FLEX_FILES)
   find_program(FLEX_EXE NAMES flex
                DOC "Flex Executable")
@@ -34,16 +50,15 @@ if(GENERATE_FLEX_FILES)
     message(SEND_ERROR "The CMake variable FLEX_EXE does not point to a valid flex executable.")
   endif()
 
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/apr_scanner.cc
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/apr_scanner.cc
                      COMMAND ${FLEX_EXE}
                      ARGS -o apr_scanner.cc
-                          aprepro.ll
+		        ${CMAKE_CURRENT_SOURCE_DIR}/aprepro.ll
                      MAIN_DEPENDENCY aprepro.ll
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      )
 endif()
 
-option(GENERATE_BISON_FILES "Generate source files using bison" OFF)
 if(GENERATE_BISON_FILES)
   find_program(BISON_EXE NAMES bison
                DOC "Bison Executable")
@@ -56,14 +71,12 @@ if(GENERATE_BISON_FILES)
     set(ENV{PATH} "${BISON_PATH};$ENV{PATH}")
   endif(WIN32)
 
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/aprepo_parser.h
-                            ${CMAKE_CURRENT_SOURCE_DIR}/apr_parser.cc
+  add_custom_command(OUTPUT  apr_parser.cc
                      COMMAND ${BISON_EXE}
-                     ARGS -y --defines=aprepro_parser.h
-                          -o apr_parser.cc
-                          aprepro.yy
+                     ARGS --yacc --defines=aprepro_parser.h --output apr_parser.cc
+                        ${CMAKE_CURRENT_SOURCE_DIR}/aprepro.yy
                      MAIN_DEPENDENCY aprepro.yy
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                      )
 endif()
 
