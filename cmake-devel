@@ -33,6 +33,19 @@ fi
 BUILD_TYPE=Release
 #BUILD_TYPE=Debug
 
+### To use the clang sanitizers:
+#sanitizer=address     #: AddressSanitizer, a memory error detector.
+#sanitizer=integer     #: Enables checks for undefined or suspicious integer behavior.
+#sanitizer=thread      #: ThreadSanitizer, a data race detector.
+#sanitizer=memory      #: MemorySanitizer, experimental detector of uninitialized reads.
+sanitizer=undefined   #: Fast and compatible undefined behavior checker. 
+#sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
+#sanitizer=cfi         #: control flow integrity checks. Requires -flto.
+#sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
+#-D CMAKE_CXX_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer -fPIC" \
+#-D CMAKE_C_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
+#-D CMAKE_Fortran_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
+
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then you will need
 ### to add the line below.  It will disable blot and fastq
@@ -40,9 +53,23 @@ BUILD_TYPE=Release
 
 rm -f CMakeCache.txt
 
+### You can add these below if you want more verbosity...
+#-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+#-D SEACASProj_VERBOSE_CONFIGURE=ON \
+
+### You can add these below to regenerate the flex and bison files for
+### aprepro and aprepro_lib May have to touch aprepro.l aprepro.y
+### aprepro.ll and aprepro.yy to have them regenerate 
+#-D GENERATE_FLEX_FILES=ON \
+#-D GENERATE_BISON_FILES=ON \
+
+
 ###------------------------------------------------------------------------
 cmake  \
--D BUILD_SHARED_LIBS:BOOL=OFF \
+-D BUILD_SHARED_LIBS:BOOL=ON \
+-D SEACASProj_ENABLE_SEACASSVDI=ON \
+-D GENERATE_FLEX_FILES=OFF \
+-D GENERATE_BISON_FILES=OFF \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
@@ -70,3 +97,6 @@ cmake  \
 \
 $EXTRA_ARGS \
 ..
+
+
+
