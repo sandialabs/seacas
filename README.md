@@ -83,8 +83,8 @@ The most recent released version is recommended. For use with Exodus, some local
    HDF5 library, you may need to do the following and then redo the
    configure step
     ```
-    CFLAGS='-I{HDF5_ROOT}/include'; export CFLAGS
-    LDFLAGS='-L{HDF5_ROOT}/lib   '; export LDFLAGS
+    CFLAGS="-I{HDF5_ROOT}/include"; export CFLAGS
+    LDFLAGS="-L{HDF5_ROOT}/lib   "; export LDFLAGS
     ```
 
  * `make && make install`
@@ -103,7 +103,7 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
  * `cd matio-1.5.2` and enter the command:
     ```
     # The -L is to find the hdf5 library...
-    export LDFLAGS='-L${ACCESS}/lib'
+    export LDFLAGS="-L${ACCESS}/lib"
     ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
     ```
     
@@ -119,7 +119,7 @@ modfications. The instructions for this version are:
     ```
     ./autogen.sh
     # The -L is to find the hdf5 library...
-    export LDFLAGS='-L${ACCESS}/lib'
+    export LDFLAGS="-L${ACCESS}/lib"
     ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
     ```
     
