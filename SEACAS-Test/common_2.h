@@ -28,6 +28,6 @@ $ Radii for Fireset Base
 
 {FireSet	= 1}
 {TapeJoint	= 2}
-{Case		= 3}
+{Case_		= 3}
 {Ring		= 4}
 {Rigid		= 5}
