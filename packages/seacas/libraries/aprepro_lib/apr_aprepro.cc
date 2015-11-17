@@ -367,14 +367,18 @@ namespace SEAMS {
     return ptr;
   }
 
-  bool Aprepro::set_option(const std::string &option)
+  int Aprepro::set_option(const std::string &option, const std::string &optional_value)
   {
     // Option should be of the form "--option" or "-O"
     // I.e., double dash for long option, single dash for short.
     // Option can be followed by "=value" if the option requires
-    // a value.
+    // a value.  The value will either be part of 'option' if it contains
+    // an '=', or it will be in 'optional_value'.  if 'optional_value' used,
+    // return 1; else return 0;
 
+    
     // Some options (--include) 
+    int ret_value = 0;
     
     if (option == "--debug" || option == "-d") {
       ap_options.debugging = true;
@@ -407,18 +411,47 @@ namespace SEAMS {
     else if (option == "--exit_on" || option == "-e") {
       ap_options.end_on_exit = true;
     }
-    else if (option.find("--include=") != std::string::npos || (option[1] == 'I' && option[2] == '=')) {
+    else if (option.find("--include") != std::string::npos || (option[1] == 'I')) {
+      std::string value("");
+      
       size_t index = option.find_first_of('=');
-      std::string file_or_path = option.substr(index+1);
-      if (is_directory(file_or_path)) {
-	ap_options.include_path = file_or_path;
+      if (index != std::string::npos) {
+	value = option.substr(index+1);
+      }
+      else {
+	value = optional_value;
+	ret_value = 1;
+      }
+
+      if (is_directory(value)) {
+	ap_options.include_path = value;
       } else {
-	ap_options.include_file = file_or_path;
+	ap_options.include_file = value;
       }
     }
     else if (option == "--keep_history" || option == "-k") {
       ap_options.keep_history = true;
     }
+
+    else if (option.find("--comment") != std::string::npos || (option[1] == 'c')) {
+      std::string comment = "";
+      size_t index = option.find_first_of('=');
+      if (index != std::string::npos) {
+	comment = option.substr(index+1);
+      }
+      else {
+	comment = optional_value;
+	ret_value = 1;
+      }
+
+      symrec *ptr = getsym("_C_");
+      if (ptr != NULL) {
+	char *tmp = NULL;
+	new_string(comment.c_str(), &tmp);
+	ptr->value.svar = tmp;
+      }
+    }
+
     else if (option == "--help" || option == "-h") {
       std::cerr << "\nAPREPRO PREPROCESSOR OPTIONS:\n"
 		<< "          --debug or -d: Dump all variables, debug loops/if/endif\n"
@@ -433,14 +466,18 @@ namespace SEAMS {
 		<< "           --help or -h: Print this list                         \n"
 		<< "        --message or -M: Print INFO messages                     \n"
 		<< "      --nowarning or -W: Do not print WARN messages              \n"
-    << "      --copyright or -C: Print copyright message                 \n"
-    << "   --keep_history or -k: Keep a history of aprepro substitutions.\n\n"
+		<< "  --comment=char or -c=char: Change comment character to 'char'      \n"
+		<< "      --copyright or -C: Print copyright message                 \n"
+		<< "   --keep_history or -k: Keep a history of aprepro substitutions.\n"
+		<< "          --quiet or -q: (ignored)                               \n"
+		<< "                var=val: Assign value 'val' to variable 'var'    \n"
+		<< "                         Use var=\\\"sval\\\" for a string variable\n\n"
 	        << "\tUnits Systems: si, cgs, cgs-ev, shock, swap, ft-lbf-s, ft-lbm-s, in-lbf-s\n"
 		<< "\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n"
 		<< "\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n\n"
 		<< "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n";
     }
-    return true;
+    return ret_value;
   }
   
   void Aprepro::add_variable(const std::string &sym_name, const std::string &sym_value, bool immutable)
