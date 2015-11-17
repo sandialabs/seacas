@@ -1,4 +1,4 @@
-// Copyright (c) 2014, Sandia Corporation.
+// Copyright (c) 2015, Sandia Corporation.
 // Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 // the U.S. Government retains certain rights in this software.
 // 
@@ -36,12 +36,6 @@
 
 #include "aprepro.h"
 
-// This function is used below in the example showing how an
-// application can add its own functions to an aprepro instance.
-double succ(double i) {
-  return ++i;
-}
-
 int main(int argc, char *argv[])
 {
   SEAMS::Aprepro aprepro;
@@ -50,7 +44,7 @@ int main(int argc, char *argv[])
   // Parse all options...
   for(int ai = 1; ai < argc; ++ai) {
     std::string arg = argv[ai];
-    if (arg[0] == '-') {
+    if (arg[0] == '-') { // Parse "--arg [val]" or "--arg=val" or "--arg"
       std::string val = ai+1 < argc ? argv[ai+1] : "";
       ai += aprepro.set_option(arg, val);
     } 
@@ -58,7 +52,6 @@ int main(int argc, char *argv[])
       size_t index = arg.find_first_of('=');
       std::string var   = arg.substr(0,index);
       std::string value = arg.substr(index+1);
-      std::cerr << "setting " << var << " equal to " << value << "\n";
       if (value[0] == '\"') {
 	value = value.substr(1,value.length()-1);
 	aprepro.add_variable(var, value, true);  // Make it immutable
@@ -69,9 +62,6 @@ int main(int argc, char *argv[])
       }
     }
     else {
-      // Read and parse a file.  The entire file will be parsed and
-      // then the output can be obtained in an std::ostringstream via
-      // Aprepro::parsing_results()
       input_files.push_back(argv[ai]);
     }
   }
@@ -88,11 +78,15 @@ int main(int argc, char *argv[])
   else {
     std::fstream infile(input_files[0].c_str());
     if (!infile.good()) {
-      std::cerr << "APREPRO: Could not open file: " << input_files[0] << std::endl;
+      std::cerr << "APREPRO: ERROR: Could not open file: " << input_files[0] << std::endl;
       return 0;
     }
 
+    // Read and parse a file.  The entire file will be parsed and
+    // then the output can be obtained in an std::ostringstream via
+    // Aprepro::parsing_results()
     bool result = aprepro.parse_stream(infile, input_files[0]);
+
     if (result) {
       if (input_files.size() > 1) {
 	std::ofstream ofile(input_files[1].c_str());
