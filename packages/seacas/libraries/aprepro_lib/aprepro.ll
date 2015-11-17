@@ -818,7 +818,7 @@ namespace SEAMS {
         if (--aprepro.ap_file_list.top().loop_count <= 0)  {
           // On Windows, you can't remove the temp file until all the references to the
           // file object have been released, so we will delete it here.
-          delete yyin;
+          delete yyin; yyin = NULL;
 
           if (strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) != 0) {
             if (!aprepro.ap_options.debugging)
@@ -833,7 +833,7 @@ namespace SEAMS {
         }
         else {
           // Do not pop ap_file_list; we are rereading that file...
-          delete yyin;
+          delete yyin; yyin = NULL;
           yyFlexLexer::yypop_buffer_state();
           yyin = aprepro.open_file(aprepro.ap_file_list.top().name, "r");
           yyFlexLexer::yypush_buffer_state (yyFlexLexer::yy_create_buffer(yyin, YY_BUF_SIZE));
@@ -841,9 +841,14 @@ namespace SEAMS {
         }
       }
       else {
-        delete yyin;
+        delete yyin; yyin=NULL;
         yyFlexLexer::yypop_buffer_state();
         aprepro.ap_file_list.pop();
+
+	if (aprepro.ap_file_list.top().name == "standard input")
+	  yyin = &std::cin;
+	else
+	  yyin = aprepro.open_file(aprepro.ap_file_list.top().name, "r");
 
         /* Turn echoing back on at end of included files. */
         echo = true;
@@ -860,7 +865,9 @@ namespace SEAMS {
       }
 
       // Reset the current character index.
-      curr_index = yyin->tellg();
+      curr_index = 0;
+      if (yyin != NULL)
+	curr_index = yyin->tellg();
 
       return (0);
     }
