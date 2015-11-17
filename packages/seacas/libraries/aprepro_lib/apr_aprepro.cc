@@ -58,6 +58,7 @@ namespace {
       hashval = *symbol + 65599 * hashval;
     return (hashval % HASHSIZE);
   }
+  void output_copyright();
 }
 
 namespace SEAMS {
@@ -216,7 +217,7 @@ namespace SEAMS {
 
     if(line_info) {
       ss << " (" << ap_file_list.top().name <<
-            ", line " << ap_file_list.top().lineno + 1 << ")";
+	", line " << ap_file_list.top().lineno + 1 << ")";
     }
     ss << "\n";
 
@@ -237,7 +238,7 @@ namespace SEAMS {
 
     if(line_info) {
       ss << " (" << ap_file_list.top().name <<
-            ", line " << ap_file_list.top().lineno + 1 << ")";
+	", line " << ap_file_list.top().lineno + 1 << ")";
     }
     ss << "\n";
 
@@ -348,7 +349,7 @@ namespace SEAMS {
       symrec *ptr = getsym(sym_name.c_str());
       if (ptr != NULL) {
 	if (ptr->type != parser_type) {
-    error("Overloaded function " + sym_name + "does not return same type", false);
+	  error("Overloaded function " + sym_name + "does not return same type", false);
 	  exit(EXIT_FAILURE);
 	}
 	// Function with this name already exists; return that
@@ -386,13 +387,15 @@ namespace SEAMS {
       ap_options.debugging = true;
     }
     else if (option == "--version" || option == "-v") {
-      std::cerr << "Aprepro version " << version() << "\n";
+      std::cerr << "Algebraic Preprocessor (Aprepro) version " << version() << "\n";
+      exit(EXIT_SUCCESS);
     }
     else if (option == "--nowarning" || option == "-W") {
       ap_options.warning_msg = false;
     }
     else if (option == "--copyright" || option == "-C") {
-      copyright();
+      output_copyright();
+      exit(EXIT_SUCCESS);
     }
     else if (option == "--message" || option == "-M") {
       ap_options.info_msg = true;
@@ -487,11 +490,11 @@ namespace SEAMS {
   void Aprepro::add_variable(const std::string &sym_name, const std::string &sym_value, bool immutable)
   {
     if (check_valid_var(sym_name.c_str())) {
-    SYMBOL_TYPE type = immutable ? IMMUTABLE_STRING_VARIABLE : STRING_VARIABLE;
-    symrec *var = putsym(sym_name, type, false);
-    char *tmp = NULL;
-    new_string(sym_value.c_str(), &tmp);
-    var->value.svar = tmp;
+      SYMBOL_TYPE type = immutable ? IMMUTABLE_STRING_VARIABLE : STRING_VARIABLE;
+      symrec *var = putsym(sym_name, type, false);
+      char *tmp = NULL;
+      new_string(sym_value.c_str(), &tmp);
+      var->value.svar = tmp;
     }
     else {
       warning("Invalid variable name syntax '" + sym_name + "'. Variable not defined.\n", false);
@@ -515,29 +518,29 @@ namespace SEAMS {
     std::vector<std::string> names;
 
     for(unsigned int hashval = 0; hashval < HASHSIZE; hashval++)
-    {
-      for(symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next)
       {
-        if(ptr->isInternal != doInternal)
-          continue;
+	for(symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next)
+	  {
+	    if(ptr->isInternal != doInternal)
+	      continue;
 
-        switch(ptr->type)
-        {
-          case Parser::token::VAR:
-          case Parser::token::IMMVAR:
-          case Parser::token::SVAR:
-          case Parser::token::IMMSVAR:
-          case Parser::token::AVAR:
-            // Add to our vector
-            names.push_back(ptr->name);
-            break;
+	    switch(ptr->type)
+	      {
+	      case Parser::token::VAR:
+	      case Parser::token::IMMVAR:
+	      case Parser::token::SVAR:
+	      case Parser::token::IMMSVAR:
+	      case Parser::token::AVAR:
+		// Add to our vector
+		names.push_back(ptr->name);
+		break;
 
-          default:
-            // Do nothing
-            break;
-        }
+	      default:
+		// Do nothing
+		break;
+	      }
+	  }
       }
-    }
 
     return names;
   }
@@ -546,52 +549,52 @@ namespace SEAMS {
   {
     symrec *ptr = getsym(sym_name.c_str());
     bool is_valid_variable =
-        (ptr != NULL) && (!ptr->isInternal) &&
-        ((ptr->type == Parser::token::VAR) ||
-         (ptr->type == Parser::token::SVAR) ||
-         (ptr->type == Parser::token::AVAR) ||
-         (ptr->type == Parser::token::IMMVAR) ||
-         (ptr->type == Parser::token::IMMSVAR) ||
-         (ptr->type == Parser::token::UNDVAR));
+      (ptr != NULL) && (!ptr->isInternal) &&
+      ((ptr->type == Parser::token::VAR) ||
+       (ptr->type == Parser::token::SVAR) ||
+       (ptr->type == Parser::token::AVAR) ||
+       (ptr->type == Parser::token::IMMVAR) ||
+       (ptr->type == Parser::token::IMMSVAR) ||
+       (ptr->type == Parser::token::UNDVAR));
 
     if(is_valid_variable)
-    {
-      int hashval = hash_symbol(sym_name.c_str());
-      symrec *hash_ptr = sym_table[hashval];
-
-      // Handle the case if the variable we want to delete is first in the
-      // linked list.
-      if(ptr == hash_ptr)
       {
-        // NOTE: If ptr is the only thing in the linked list, ptr->next will be
-        // NULL, which is what we want in sym_table when we delete ptr.
-        sym_table[hashval] = ptr->next;
-        delete ptr;
-      }
+	int hashval = hash_symbol(sym_name.c_str());
+	symrec *hash_ptr = sym_table[hashval];
 
-      // Handle the case where the variable we want to delete is somewhere
-      // in the middle or at the end of the linked list.
-      else
-      {
-        // Find the preceeding ptr (singly linked list).
-        // NOTE: We don't have a check for NULL here because the fact that
-        // ptr != hash_ptr tells us that we must have more than one item in our
-        // linked list, in which case hash_ptr->next will not be NULL until we
-        // reach the end of the list. hash_ptr->next should be equal to ptr
-        // before that happens.
-        while(hash_ptr->next != ptr)
-          hash_ptr = hash_ptr->next;
+	// Handle the case if the variable we want to delete is first in the
+	// linked list.
+	if(ptr == hash_ptr)
+	  {
+	    // NOTE: If ptr is the only thing in the linked list, ptr->next will be
+	    // NULL, which is what we want in sym_table when we delete ptr.
+	    sym_table[hashval] = ptr->next;
+	    delete ptr;
+	  }
 
-        // NOTE: If ptr is at the end of the list ptr->next will be NULL, in
-        // which case this will change hash_ptr to be the end of the list.
-        hash_ptr->next = ptr->next;
-        delete ptr;
+	// Handle the case where the variable we want to delete is somewhere
+	// in the middle or at the end of the linked list.
+	else
+	  {
+	    // Find the preceeding ptr (singly linked list).
+	    // NOTE: We don't have a check for NULL here because the fact that
+	    // ptr != hash_ptr tells us that we must have more than one item in our
+	    // linked list, in which case hash_ptr->next will not be NULL until we
+	    // reach the end of the list. hash_ptr->next should be equal to ptr
+	    // before that happens.
+	    while(hash_ptr->next != ptr)
+	      hash_ptr = hash_ptr->next;
+
+	    // NOTE: If ptr is at the end of the list ptr->next will be NULL, in
+	    // which case this will change hash_ptr to be the end of the list.
+	    hash_ptr->next = ptr->next;
+	    delete ptr;
+	  }
       }
-    }
     else
-    {
-      warning("Variable '" + sym_name + "' not defined.\n", false);
-    }
+      {
+	warning("Variable '" + sym_name + "' not defined.\n", false);
+      }
   }
 
   symrec *Aprepro::getsym (const char *sym_name) const
@@ -615,22 +618,22 @@ namespace SEAMS {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if ((doInternal && ptr->isInternal) || (!doInternal && !ptr->isInternal)) {
 	    if (ptr->type == Parser::token::VAR)
-        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
-                         "\t= " << std::setprecision(10) <<  ptr->value.var << "}" << std::endl;
+	      (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+		"\t= " << std::setprecision(10) <<  ptr->value.var << "}" << std::endl;
 	    else if (ptr->type == Parser::token::IMMVAR)
-        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
-                         "\t= " << std::setprecision(10) << ptr->value.var << "}\t(immutable)" << std::endl;
-      else if (ptr->type == Parser::token::SVAR)
-        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
-                         "\t= \"" << ptr->value.svar << "\"}" << std::endl;
+	      (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+		"\t= " << std::setprecision(10) << ptr->value.var << "}\t(immutable)" << std::endl;
+	    else if (ptr->type == Parser::token::SVAR)
+	      (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+		"\t= \"" << ptr->value.svar << "\"}" << std::endl;
 	    else if (ptr->type == Parser::token::IMMSVAR)
-        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
-                         "\t= \"" << ptr->value.svar << "\"}\t(immutable)" << std::endl;
+	      (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+		"\t= \"" << ptr->value.svar << "\"}\t(immutable)" << std::endl;
 	    else if (ptr->type == Parser::token::AVAR) {
 	      array *arr = ptr->value.avar;
-        (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
-                         "\t (array) rows = " << arr->rows << ", cols = " << arr->cols <<
-                         "} " << std::endl;
+	      (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name <<
+		"\t (array) rows = " << arr->rows << ", cols = " << arr->cols <<
+		"} " << std::endl;
 	    }
 	  }
 	}
@@ -641,8 +644,8 @@ namespace SEAMS {
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if (ptr->type == Parser::token::FNCT) {
-      (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
-                       ":  " << ptr->info << std::endl;
+	    (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
+	      ":  " << ptr->info << std::endl;
 	  }
 	}
       }
@@ -651,8 +654,8 @@ namespace SEAMS {
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if (ptr->type == Parser::token::SFNCT) {
-      (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
-                       ":  " << ptr->info << std::endl;
+	    (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
+	      ":  " << ptr->info << std::endl;
 	  }
 	}
       }
@@ -661,8 +664,8 @@ namespace SEAMS {
       for (unsigned hashval = 0; hashval < HASHSIZE; hashval++) {
 	for (symrec *ptr = sym_table[hashval]; ptr != NULL; ptr = ptr->next) {
 	  if (ptr->type == Parser::token::AFNCT) {
-      (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
-                       ":  " << ptr->info << std::endl;
+	    (*infoStream) << std::left << std::setw(2*width) << ptr->syntax <<
+	      ":  " << ptr->info << std::endl;
 	  }
 	}
       }
@@ -728,29 +731,20 @@ namespace SEAMS {
       (*output) << longer << " chain(s) of length " << MAXLEN << " or longer\n";
   }
 
-  void Aprepro::copyright(std::ostream *out) const
-  {
-    std::ostream *output = out;
-    if (output == NULL)
-      output = &std::cout;
-    
-    (*output) << "COPYRIGHT NOTICE\n";
-  }
-
   void Aprepro::add_history(const std::string& original, const std::string& substitution)
   {
     if(!ap_options.keep_history)
       return;
 
     if(!original.empty())
-    {
-      history_data hist;
-      hist.original = original;
-      hist.substitution = substitution;
-      hist.index = outputStream.top()->tellp();
+      {
+	history_data hist;
+	hist.original = original;
+	hist.substitution = substitution;
+	hist.index = outputStream.top()->tellp();
 
-      history.push_back(hist);
-    }
+	history.push_back(hist);
+      }
   }
 
   const std::vector<history_data>& Aprepro::get_history()
@@ -764,3 +758,41 @@ namespace SEAMS {
       history.clear();
   }
 }
+
+namespace {
+  void output_copyright()
+  {
+    std::cerr
+      << "\n\tCopyright (c) 2014 Sandia Corporation.\n"
+      << "\tUnder the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,\n"
+      << "\tthe U.S. Government retains certain rights in this software.\n"
+      << "\n"
+      << "\tRedistribution and use in source and binary forms, with or without\n"
+      << "\tmodification, are permitted provided that the following conditions\n"
+      << "\tare met:\n"
+      << "\n"
+      << "\t   * Redistributions of source code must retain the above copyright\n"
+      << "\t     notice, this list of conditions and the following disclaimer.\n"
+      << "\t   * Redistributions in binary form must reproduce the above\n"
+      << "\t     copyright notice, this list of conditions and the following\n"
+      << "\t     disclaimer in the documentation and/or other materials provided\n"
+      << "\t     with the distribution.\n"
+      << "\t   * Neither the name of Sandia Corporation nor the names of its\n"
+      << "\t     contributors may be used to endorse or promote products derived\n"
+      << "\t     from this software without specific prior written permission.\n"
+      << "\n"
+      << "\tTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
+      << "\t'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
+      << "\tLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n"
+      << "\tA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
+      << "\tOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n"
+      << "\tSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n"
+      << "\tLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"
+      << "\tDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"
+      << "\tTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
+      << "\t(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
+      << "\tOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
+
+  } 
+}
+
