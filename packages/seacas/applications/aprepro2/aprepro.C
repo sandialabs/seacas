@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     }
   }
   else {
-    std::fstream infile(input_files[0]);
+    std::fstream infile(input_files[0].c_str());
     if (!infile.good()) {
       std::cerr << "APREPRO: Could not open file: " << input_files[0] << std::endl;
       return 0;
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     bool result = aprepro.parse_stream(infile, input_files[0]);
     if (result) {
       if (input_files.size() > 1) {
-	std::ofstream ofile(input_files[1]);
+	std::ofstream ofile(input_files[1].c_str());
 	ofile << aprepro.parsing_results().str();
       }
       else {
