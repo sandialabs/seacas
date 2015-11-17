@@ -49,7 +49,7 @@
 
 namespace {
   const unsigned int HASHSIZE = 5939;
-  const char* version_string = "4.23 (2015/07/20)";
+  const char* version_string = "4.24 (2015/11/16)";
   
   unsigned hash_symbol (const char *symbol)
   {
@@ -75,7 +75,7 @@ namespace SEAMS {
     init_table("#");
     aprepro = this;
 
-    // See the random number generator...
+    // Seed the random number generator...
     time_t time_val = std::time ((time_t*)NULL);
     srand((unsigned)time_val);
   }
@@ -108,6 +108,7 @@ namespace SEAMS {
   
   bool Aprepro::parse_stream(std::istream& in, const std::string& in_name)
   {
+    std::istream *in_cpy = &in;
     ap_file_list.top().name = in_name;
 
     if (!ap_options.include_file.empty()) {
@@ -117,9 +118,10 @@ namespace SEAMS {
       // Will revert to global settings at end of file.
       stateImmutable = true;
       echo = false;
+      in_cpy = open_file(ap_file_list.top().name, "r");
     }
-
-    Scanner *scanner = new Scanner(*this, &in, &parsingResults);
+    
+    Scanner *scanner = new Scanner(*this, in_cpy, &parsingResults);
     this->lexer = scanner;
 
     Parser parser(*this);
@@ -453,7 +455,8 @@ namespace SEAMS {
     }
 
     else if (option == "--help" || option == "-h") {
-      std::cerr << "\nAPREPRO PREPROCESSOR OPTIONS:\n"
+      std::cerr << "\nAprepro version " << version() << "\n"
+		<< "\nUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n"
 		<< "          --debug or -d: Dump all variables, debug loops/if/endif\n"
 		<< "        --version or -v: Print version number to stderr          \n"
 		<< "      --immutable or -X: All variables are immutable--cannot be modified\n"
@@ -476,6 +479,7 @@ namespace SEAMS {
 		<< "\tEnter {DUMP_FUNC()} for list of functions recognized by aprepro\n"
 		<< "\tEnter {DUMP_PREVAR()} for list of predefined variables in aprepro\n\n"
 		<< "\t->->-> Send email to gdsjaar@sandia.gov for aprepro support.\n\n";
+      exit(EXIT_SUCCESS);
     }
     return ret_value;
   }

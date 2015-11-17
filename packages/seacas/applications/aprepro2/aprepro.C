@@ -84,11 +84,6 @@ int main(int argc, char *argv[])
   if (input_files.empty()) {
     aprepro.ap_options.interactive = true;
     bool result = aprepro.parse_stream(std::cin, "standard input");
-
-    if (result) {
-      std::string res_str = aprepro.parsing_results().str();
-      std::cout << res_str;
-    }
   }
   else {
     std::fstream infile(input_files[0].c_str());
