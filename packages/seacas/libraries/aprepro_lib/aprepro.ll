@@ -847,8 +847,6 @@ namespace SEAMS {
 
 	if (aprepro.ap_file_list.top().name == "standard input")
 	  yyin = &std::cin;
-	else
-	  yyin = aprepro.open_file(aprepro.ap_file_list.top().name, "r");
 
         /* Turn echoing back on at end of included files. */
         echo = true;
