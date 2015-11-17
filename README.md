@@ -17,12 +17,12 @@
 ```
 git clone https://github.com/gdsjaar/seacas.git
 ```
-This will create a directory that will be referred to as _seacas.git_ in
+This will create a directory that will be referred to as _seacas_ in
 the instructions that follow. You can rename this directory to any
 other name you desire. Set an environment variable pointing to this
 location by doing:
 ```
-cd seacas.git && export ACCESS=`pwd`
+cd seacas && export ACCESS=`pwd`
 ```
 
 ## Build instructions
@@ -40,7 +40,7 @@ build SEACAS.
  * [CGNS](#cgns) -- experimental optional
 
 #### Zoltan
-A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas.git/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
+A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 #### HDF5
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
@@ -50,7 +50,7 @@ turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5. 
 
-   * Download HDF5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside `seacas.git/TPL/hdf5`
+   * Download HDF5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside `seacas/TPL/hdf5`
    * untar it, creating a directory will will refer to as `hdf5-X.X.X`
    * `cd` to that directory and enter the command:
     ```
@@ -61,10 +61,10 @@ create or read models of this size, you do not have to build hdf5.
 #### NetCDF
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
- * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside `seacas.git/TPL/netcdf`
+ * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
  * `tar zxvf netcdf-4.3.3.1.tar.gz`
- * Modify the following defines in seacas.git/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h.
+ * Modify the following defines in seacas/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h.
 
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
