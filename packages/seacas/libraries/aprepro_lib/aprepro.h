@@ -295,7 +295,7 @@ namespace SEAMS {
     std::vector<std::string> get_variable_names(bool doInternal = false);
     void remove_variable(const std::string &sym_name);
 
-    bool set_option(const std::string &option);
+    int set_option(const std::string &option, const std::string &optional_value=std::string(""));
     
     std::fstream *open_file(const std::string &file, const char *mode);
     std::fstream *check_open_file(const std::string &file, const char *mode);

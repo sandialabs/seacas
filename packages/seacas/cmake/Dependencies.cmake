@@ -12,6 +12,7 @@ TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
   PLT         libraries/plt           SS  OPTIONAL
   Algebra     applications/algebra    SS  REQUIRED
   Aprepro     applications/aprepro    SS  REQUIRED
+  Aprepro2    applications/aprepro2   SS  REQUIRED
   Blot        applications/blot       SS  OPTIONAL
   Conjoin     applications/conjoin    SS  REQUIRED
   Ejoin       applications/ejoin      SS  REQUIRED

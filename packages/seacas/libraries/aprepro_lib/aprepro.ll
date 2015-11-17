@@ -48,6 +48,7 @@
 #include "apr_scanner.h"
 #include "aprepro.h"
 #include "apr_util.h"
+#include "apr_getline_int.h"
 
 #define YY_NO_UNISTD_H
 /* import the parser's token type into a local typedef */
@@ -734,17 +735,51 @@ namespace SEAMS {
     // Do this before writing so that we have the correct index in the
     // output stream.
     if(aprepro.ap_options.keep_history)
-    {
-      aprepro.add_history(history_string, buf);
-      history_string.clear();
-      hist_start = 0;
-    }
+      {
+	aprepro.add_history(history_string, buf);
+	history_string.clear();
+	hist_start = 0;
+      }
 
     aprepro.outputStream.top()->write( buf, size );
     if (aprepro.ap_options.interactive && aprepro.outputStream.size() == 1) {
       // In interactive mode, output to stdout in addition to the
       // output stream, unless user has redirected output...
       std::cout << buf;
+    }
+  }
+
+  int Scanner::LexerInput( char* buf, int max_size )
+  {
+    if ( yyin->eof() || yyin->fail() )
+      return 0;
+
+    if (aprepro.ap_options.interactive && yyin == &std::cin &&
+	isatty(0) != 0 && isatty(1) != 0) {
+      char *line = getline_int(NULL);
+
+      if (strlen(line) == 0)
+	return 0;
+
+      gl_histadd(line);
+  
+      if (strlen(line) > max_size - 2) {
+	yyerror("input line is too long");
+	return 0;
+      }
+
+      strcpy(buf, line);
+      strcat(buf, "\n");
+  
+      return strlen(buf);
+    }
+    else {
+      (void) yyin->read( buf, max_size );
+
+      if ( yyin->bad() )
+	return -1;
+      else
+	return yyin->gcount();
     }
   }
 
@@ -758,21 +793,21 @@ namespace SEAMS {
     // If we are using the string interactive method, we want to return to
     // our original state if parsing was cutoff prematurely.
     if(aprepro.string_interactive() && YY_START == PARSING)
-    {  
+      {  
 
 
-      if (switch_skip_to_endcase)
-        BEGIN(END_CASE_SKIP);
-      else
-        BEGIN(if_state[if_lvl]);
-    }
+	if (switch_skip_to_endcase)
+	  BEGIN(END_CASE_SKIP);
+	else
+	  BEGIN(if_state[if_lvl]);
+      }
 
 
     if (aprepro.ap_file_list.size() <= 1) {		/* End of main file, not in nested include */
       return (1);
     }
     else if (aprepro.string_interactive() && loop_lvl) {
-        return (1);
+      return (1);
     }
     else {
       /* We are in an included or looping file */
@@ -819,7 +854,7 @@ namespace SEAMS {
           yy_pop_state();
 
         /* Set immutable mode back to global immutable
-        * state at end of included file*/
+	 * state at end of included file*/
         aprepro.stateImmutable = aprepro.ap_options.immutable;
       }
 
