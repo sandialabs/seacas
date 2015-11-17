@@ -280,7 +280,6 @@ namespace SEAMS {
     bool parse_file(const std::string& filename);
 
     void statistics(std::ostream *out = NULL) const;
-    void copyright(std::ostream *out = NULL) const;
     
     aprepro_options ap_options;
     std::stack<file_rec> ap_file_list;
