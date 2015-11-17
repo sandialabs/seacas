@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h> 
+#include <unistd.h>
 
 #include "apr_scanner.h"
 #include "aprepro.h"
