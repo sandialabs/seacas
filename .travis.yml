@@ -43,11 +43,9 @@ addons:
 
     build_command_prepend: 
     -  mkdir coverity && cd coverity
-    -  ./cmake-travis.sh
-    -  cd ..
+    -  ../cmake-travis.sh
 
     build_command: 
-    - cd coverity
     - make -j 4
 
     branch_pattern: coverity_scan
