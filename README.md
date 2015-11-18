@@ -139,7 +139,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
     ```
     
 #### CGNS
-Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download the CGNS library.  To build:
+Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and insall the CGNS library:
 
    * Download CGNS via git:
 
@@ -147,7 +147,12 @@ Experimental support for CGNS in the IOSS library is being added.  To use this c
     cd TPL/cgns
     git clone https://github.com/CGNS/CGNS.git
     ```
-   * Build using CMake.  See `TPL/cgns/cmake-config.in` as example.
+   * Build using CMake.
+     * Modify `TPL/cgns/runconfigure.sh` to meet your environment
+     * `mkdir build`
+     * `cd build`
+     * `../../runconfigure.sh`
+     * `make && make install`
 
 ## Configure, Build, and Install SEACAS
 At this time, you should have all external TPL libraries built and
