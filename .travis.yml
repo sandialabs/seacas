@@ -14,11 +14,9 @@ before_install:
 
 before_script:
 
-install:
-  - /bin/true
+install: true
 
-script:
-  - /bin/true
+script: true
 
 env:
   global:
