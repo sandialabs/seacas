@@ -45,7 +45,6 @@ addons:
     -  mkdir coverity && cd coverity
     -  ../cmake-travis.sh
 
-    build_command: 
-    - make -j 4
+    build_command: "make"
 
     branch_pattern: coverity_scan
