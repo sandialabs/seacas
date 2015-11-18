@@ -16,27 +16,33 @@ before_install:
   - sudo apt-get -y install libnetcdf-dev
   - sudo apt-get -y install libz-dev
 
+before_script:
+
 install:
   - mkdir build && cd build
-  - >
-    cmake
-    -DBUILD_SHARED_LIBS:BOOL=ON
-    -DHDF5_ROOT:PATH=/usr/
-    -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON
-    -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON
-    -DSEACASProj_ENABLE_TESTS:BOOL=ON
-    -DSEACASProj_USE_GNUINSTALLDIRS:BOOL=ON
-    -DTPL_ENABLE_CGNS:BOOL=ON
-    -DTPL_ENABLE_Matio:BOOL=ON
-    -DTPL_ENABLE_METIS:BOOL=OFF
-    -DTPL_ENABLE_ParMETIS:BOOL=OFF
-    -DTPL_ENABLE_Netcdf:BOOL=ON
-    -DTPL_ENABLE_MPI:BOOL=OFF
-    -DTPL_ENABLE_Pamgen:BOOL=OFF
-    -DTPL_ENABLE_X11:BOOL=ON
-    -DTPL_ENABLE_Zlib:BOOL=ON
-    ../
+  - ../cmake-travis.sh
   - make
+  - cd ..
 
 script:
+  - cd build
   - ctest -VV
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "MrWZZDYlZlDQH7hP/3dZRdMns2Fo/MJRQ8yHLv7L3BEK+lO5m1vP3P4SDJ1vCs2DQOms3OAseqLg9/Wx6x7oytGmTMYq3qY865u8eiUC062523J8esi5oHzT7ofoPvYdomdE+rb6jaYyHsvAg2Tehm3f256QNheZFa9BKYenmfjQ4CUjcBWe22Fyhi9rmAdxxqhIiYfALEWk3c+pxcbO/k0Yk4uRaO0jZdHvPeX18s6t/NJFadbmziQkjt11EnQwofw1qJ+QhY+vfWruE3o1ZrYgHXm9c6g4GLHcaxpocX4XkfAilRWto07FKN2g8qqqQl6nLpKuAnjUa0lZnSNRSLVGtAlzb8mgCYEKqhcszmRKWGBKJM+vesvQBulLdLLWTvd6yCr7YEZgvQvQJ9EU6a+O07heanhK4GnMoGnpoyC4N6bycCCyJHXEmU9KC8oFzJq0V+q2SSCtSbdA8TpqKngXb/Kq42ntbYT+h7pX7K9dN/y2Vjo5F3UXNfV0bIkZ5v8kIqsRGtrRrg8vVbx1pm4VaMtLDZnRT5tWOgA9sIUntEg9hiiItYplfmsMdFz/WwDW0lota3L+9HNX8viIzyHtbZhnCzEKCeZ9f2V78ZW/IVLgwk+dtg78fCVweMNdyQwTdbENb1WFnyUgfv8hh4q5g+jWggdTTqubFQmTzAk="
+
+addons:
+  coverity_scan:
+    project:
+      name: "gsjaardema/seacas"
+      description: "Build submitted via Travis CI"
+    notification_email: gsjaardema@gmail.com
+
+    build_command_prepend: "mkdir coverity && cd coverity && ../cmake-travis.sh && cd .."
+
+    build_command: "cd coverity && make -j 4"
+
+    branch_pattern: coverity_scan
