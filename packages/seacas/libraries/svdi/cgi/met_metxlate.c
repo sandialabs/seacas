@@ -5483,34 +5483,32 @@ point *bmin, *bmax;
 int bound_num;
 {
   point temp;
+  temp.x = 0;
+  temp.y = 0;
 
    switch( bound_num ) {
      case 0: /* top */
       temp.x =
        p1->x + (p2->x - p1->x ) * (bmax->y - p1->y ) / (p2->y - p1->y );
       temp.y = bmax->y;
-      return( temp );
       break;
 
      case 1: /* right */
       temp.y = 
        p1->y + (p2->y - p1->y ) * (bmax->x - p1->x ) / (p2->x - p1->x );
       temp.x = bmax->x;
-      return( temp );
       break;
 
      case 2: /* bottom */
       temp.x = 
        p1->x + (p2->x - p1->x ) * (bmin->y - p1->y ) / (p2->y - p1->y );
       temp.y = bmin->y;
-      return( temp );
       break;
 
      case 3: /* left */
       temp.y = 
        p1->y + (p2->y - p1->y ) * (bmin->y - p1->x ) / (p2->x - p1->x );
       temp.x = bmin->x;
-      return( temp );
       break;
 
     default:
@@ -5518,6 +5516,7 @@ int bound_num;
       break;
 
    } /* end switch */
+   return temp;
 } /* end intersect_bnd */
 
 
@@ -5727,13 +5726,13 @@ unsigned outary[];  /* data to be buffered */
   else   /* pack outary into buffer */
 
     for( i=0; i<*numwds; i++) {
-      cur_state-> buffer[cur_state-> buff_ptr++] = (outary[i] & mask1)>>8;
-      cur_state-> buffer[cur_state-> buff_ptr++] = (outary[i] & mask2);
+      cur_state->buffer[cur_state->buff_ptr++] = (outary[i] & mask1)>>8;
+      cur_state->buffer[cur_state->buff_ptr++] = (outary[i] & mask2);
 
-      if( cur_state->buff_ptr > BUFFER_SIZE ) {
+      if( cur_state->buff_ptr > BUFFER_SIZE-2 ) {
 
 	/* write out the data as a byte stream. */
-	if(istat = write(cur_state-> file_d, cur_state-> buffer, 
+	if(istat = write(cur_state->file_d, cur_state->buffer, 
 			 cur_state->buff_ptr) == -1) {
 	  sprintf(err,"%s","NMTBUF: write error");
 	  perror(err);
