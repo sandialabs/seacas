@@ -21,7 +21,7 @@ before_script:
 install:
   - mkdir build && cd build
   - ../cmake-travis.sh
-  - make
+  - make -j4
   - cd ..
 
 script:
@@ -40,11 +40,6 @@ addons:
       name: "gsjaardema/seacas"
       description: "Build submitted via Travis CI"
     notification_email: gsjaardema@gmail.com
-
-    build_command_prepend: 
-    -  mkdir coverity && cd coverity
-    -  ../cmake-travis.sh
-
+    build_command_prepend: "mkdir coverity && cd coverity && ../cmake-travis.sh"
     build_command: "make"
-
     branch_pattern: coverity_scan

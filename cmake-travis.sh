@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/usr/bin/env sh
 
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
