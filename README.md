@@ -1,4 +1,4 @@
-# SEACAS  [[Documentation](http://gdsjaar.github.io/seacas/)]
+# SEACAS  [[Documentation](http://gsjaardema.github.io/seacas/)]
 [![Build Status](https://travis-ci.org/gdsjaar/seacas.svg?branch=master)](https://travis-ci.org/gdsjaar/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/seacas)
 
@@ -15,7 +15,7 @@
 
 ## Get the sources
 ```
-git clone https://github.com/gdsjaar/seacas.git
+git clone https://github.com/gsjaardema/seacas.git
 ```
 This will create a directory that will be referred to as _seacas_ in
 the instructions that follow. You can rename this directory to any
