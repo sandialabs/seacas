@@ -493,7 +493,7 @@ void vbinq()
   int nreq, first, ntotal, lntyp[6], nlist;
   int nsimul, navail, nint, cmode, overit, monoc, txp, chhit, i;
   float width, height;
-  char *devid;
+  char devid[4];
 
   /*  INQUIRE DEVICE IDENTIFICATION */
   maxchr = 3;
