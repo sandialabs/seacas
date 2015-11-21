@@ -116,9 +116,19 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
         message(SEND_ERROR "Can not locate NetCDF include directory")
     endif()
 
-    # Large dimension check here
+    # Large dimension and parallel check here
     if ( NetCDF_INCLUDE_DIR ) 
        
+        if (TPL_ENABLE_MPI)
+          find_path(par_include_path
+	            NAMES "netcdf_par.h"
+                    HINTS ${NetCDF_INCLUDE_DIR}
+                    NO_DEFAULT_PATH)
+          if(NOT par_include_path)
+             message(SEND_ERROR "Can not locate netcdf_par.h in ${NetCDF_INCLUDE_DIR}")
+          endif()
+	endif()
+
         set(netcdf_h "${NetCDF_INCLUDE_DIR}/netcdf.h" )
         message(STATUS "NetCDF include file ${netcdf_h} will be searched for define values")
 
