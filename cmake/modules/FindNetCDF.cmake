@@ -148,14 +148,12 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
         if ( 
              ( (netcdf_max_dims EQUAL 65536)  OR (netcdf_max_dims GREATER 65536) ) AND
-             ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) ) AND
-             ( (netcdf_max_var_dims EQUAL 8)  OR  (netcdf_max_var_dims GREATER 8)  )
-
+             ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) )
             )
             set(NetCDF_LARGE_DIMS TRUE)
         else()
-            message(WARNING "\nThe NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS, NC_MAX_VARS and NC_MAX_VAR_DIMS. "
-                             "It may not be compatible with Exodus\n" )
+            message(WARNING "\nThe NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
+                             "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
             set(NetCDF_LARGE_DIMS FALSE)
         endif()
 
