@@ -43,6 +43,10 @@
 #include <vector>
 #include <cgnslib.h>
 
+#if !defined(CGNSLIB_H)
+#error "Could not include cgnslib.h"
+#endif
+
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EntityType.h"
