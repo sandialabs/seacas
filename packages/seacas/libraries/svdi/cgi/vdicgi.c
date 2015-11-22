@@ -394,6 +394,7 @@ int i;
 #endif
 #endif
 
+
 /* f2cchar macro definition */
 #if !defined(CRA) && !defined(ardent)
 #define f2cchar(fptr)  (fptr)
@@ -402,17 +403,8 @@ int i;
 #include <fortran.h>
 #define f2cchar(fptr)  (_fcdtocp((_fcd) fptr))
 #endif
-#if defined(ardent)
-struct FortranStr {
-        char *str;
-        int len;
-        char id;
-};
 
-typedef struct FortranStr Fortran_Str; /* Make the declarations in the */
-                                       /* source more tractable. */
-#define f2cchar(fptr)  (fptr->str)
-#endif /* ardent */
+#include "sdcgi.h"
 
 /* current position */
 static float xcp = 0.;
@@ -451,6 +443,8 @@ static int init_colors[24] = { 0, 0, 0, 255, 0, 0,
                                0, 0, 255, 255, 0, 255,
                                0, 255, 255, 255, 255, 255 };
 
+
+
 #ifndef TRUE
 #define TRUE 1
 #define FALSE 0
@@ -483,7 +477,7 @@ void vdicgi_errh(char errmsg[])
   fprintf(stderr," %s\n", errmsg);
 }
 
-void vbinq()
+void vbinq(void)
 /* --  THIS IS WHERE CHANGES TO DEV_CAP OCCUR -- */
 {
   int vstat, hscopy, disp, bcolor, dynbc, dynvdm, dx1, dy1, dx2, dy2, pixloc;
@@ -620,7 +614,8 @@ void vdinit_ (float *aspect, int *justif)
   int just, temp, temp2, vstat, vconc;
   float xconc, yconc, x1, y1, x2, y2, x3, y3, x4, y4, temp_xcp, temp_ycp;
   float scaled_ndc_xmax, scaled_ndc_ymax;
-
+  float rtemp = 0.0;
+  float itemp = 0;
   xconc = 0.0;
   yconc = 0.0;
   x1 = 0.0;
@@ -676,8 +671,8 @@ void vdinit_ (float *aspect, int *justif)
   scale = 32767.;
   scaled_ndc_xmax = map_x(ndc_xmax);
   scaled_ndc_ymax = map_y(ndc_ymax);
-  temp = 0.;
-  cvdcx_(&temp, &temp, &scaled_ndc_xmax, &scaled_ndc_ymax);
+  rtemp = 0.0;
+  cvdcx_(&rtemp, &rtemp, &scaled_ndc_xmax, &scaled_ndc_ymax);
 
   /*  Set color mode to index, and set color index precision to 8 bits  */
   temp = CINDEX;
@@ -723,7 +718,7 @@ void vdinit_ (float *aspect, int *justif)
 }
 
 
-void vflush()
+void vflush(void)
 /*  flush polyline buffer */
 {
   if (alpha_mode) {

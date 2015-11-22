@@ -440,15 +440,20 @@ namespace SEAMS {
 
     else if (option.find("--comment") != std::string::npos || (option[1] == 'c')) {
       std::string comment = "";
-      size_t index = option.find_first_of('=');
-      if (index != std::string::npos) {
-	comment = option.substr(index+1);
+      // In short version, do not require equal sign (-c#)
+      if (option[1] == 'c' && option.length() == 3) {
+	comment = option[2];
       }
       else {
-	comment = optional_value;
-	ret_value = 1;
+	size_t index = option.find_first_of('=');
+	if (index != std::string::npos) {
+	  comment = option.substr(index+1);
+	}
+	else {
+	  comment = optional_value;
+	  ret_value = 1;
+	}
       }
-
       symrec *ptr = getsym("_C_");
       if (ptr != NULL) {
 	char *tmp = NULL;

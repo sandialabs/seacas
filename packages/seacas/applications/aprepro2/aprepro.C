@@ -41,9 +41,16 @@ int main(int argc, char *argv[])
   SEAMS::Aprepro aprepro;
   std::vector<std::string> input_files;
   
+  bool quiet = false;
+  
   // Parse all options...
   for(int ai = 1; ai < argc; ++ai) {
     std::string arg = argv[ai];
+    if ( (arg[0] == '-' && arg[1] == 'q') ||
+	 (arg[0] == '-' && arg[1] == '-' && arg[2] == 'q')) {
+      quiet = true;
+    }
+
     if (arg[0] == '-') { // Parse "--arg [val]" or "--arg=val" or "--arg"
       std::string val = ai+1 < argc ? argv[ai+1] : "";
       ai += aprepro.set_option(arg, val);
@@ -53,7 +60,7 @@ int main(int argc, char *argv[])
       std::string var   = arg.substr(0,index);
       std::string value = arg.substr(index+1);
       if (value[0] == '\"') {
-	value = value.substr(1,value.length()-1);
+	value = value.substr(1,value.length()-2);
 	aprepro.add_variable(var, value, true);  // Make it immutable
       } 
       else {
@@ -72,6 +79,11 @@ int main(int argc, char *argv[])
   // 2 -- read from  input_files[0], output to input_files[1]
   
   if (input_files.empty()) {
+    if (!quiet) {
+      const char *comment = aprepro.getsym("_C_")->value.svar;
+      std::cout << comment << " Algebraic Preprocessor (Aprepro) version "
+		<< aprepro.version() << "\n";
+    }
     aprepro.ap_options.interactive = true;
     bool result = aprepro.parse_stream(std::cin, "standard input");
   }
@@ -90,9 +102,19 @@ int main(int argc, char *argv[])
     if (result) {
       if (input_files.size() > 1) {
 	std::ofstream ofile(input_files[1].c_str());
+	if (!quiet) {
+	  const char *comment = aprepro.getsym("_C_")->value.svar;
+	  ofile << comment << " Algebraic Preprocessor (Aprepro) version "
+		<< aprepro.version() << "\n";
+	}
 	ofile << aprepro.parsing_results().str();
       }
       else {
+	if (!quiet) {
+	  const char *comment = aprepro.getsym("_C_")->value.svar;
+	  std::cout << comment << " Algebraic Preprocessor (Aprepro) version "
+		    << aprepro.version() << "\n";
+	}
 	std::cout << aprepro.parsing_results().str();
       }
     }

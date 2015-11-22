@@ -116,9 +116,19 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
         message(SEND_ERROR "Can not locate NetCDF include directory")
     endif()
 
-    # Large dimension check here
+    # Large dimension and parallel check here
     if ( NetCDF_INCLUDE_DIR ) 
        
+        if (TPL_ENABLE_MPI)
+          find_path(par_include_path
+	            NAMES "netcdf_par.h"
+                    HINTS ${NetCDF_INCLUDE_DIR}
+                    NO_DEFAULT_PATH)
+          if(NOT par_include_path)
+             message(SEND_ERROR "Can not locate netcdf_par.h in ${NetCDF_INCLUDE_DIR}")
+          endif()
+	endif()
+
         set(netcdf_h "${NetCDF_INCLUDE_DIR}/netcdf.h" )
         message(STATUS "NetCDF include file ${netcdf_h} will be searched for define values")
 
@@ -138,14 +148,12 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
         if ( 
              ( (netcdf_max_dims EQUAL 65536)  OR (netcdf_max_dims GREATER 65536) ) AND
-             ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) ) AND
-             ( (netcdf_max_var_dims EQUAL 8)  OR  (netcdf_max_var_dims GREATER 8)  )
-
+             ( (netcdf_max_vars EQUAL 524288) OR (netcdf_max_vars GREATER 524288) )
             )
             set(NetCDF_LARGE_DIMS TRUE)
         else()
-            message(WARNING "\nThe NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS, NC_MAX_VARS and NC_MAX_VAR_DIMS. "
-                             "It may not be compatible with Exodus\n" )
+            message(WARNING "\nThe NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
+                             "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
             set(NetCDF_LARGE_DIMS FALSE)
         endif()
 
@@ -262,6 +270,23 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
                             ERROR_VARIABLE  _stderr
                            )
             string(REGEX REPLACE "[\n\r]" "" NetCDF_VERSION ${_stdout})
+
+# If --has-pnetcdf returns true, then add pnetcdf as dependent library.
+            execute_process(COMMAND "${netcdf_config}" "--has-pnetcdf"
+                            RESULT_VARIABLE _ret_code
+                            OUTPUT_VARIABLE _stdout
+                            ERROR_VARIABLE  _stderr
+                           )
+            string(REGEX REPLACE "[\n\r ]" "" _pnetcdf_answer ${_stdout})
+            message(STATUS "${netcdf_config} --has-pnetcdf returned '${_pnetcdf_answer}'")
+            string(COMPARE EQUAL "${_pnetcdf_answer}" "yes" _has_pnetcdf)
+            if (${_has_pnetcdf} ) 
+                set(NetCDF_NEEDS_PNetCDF True)
+            else()
+                set(NetCDF_NEEDS_PNetCDF False)
+            endif()    
+
+
         endif()
     endif()    
 
@@ -272,6 +297,15 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 	endif()
     else()
         message(STATUS "NetCDF does not require HDF5")
+    endif()
+
+    if(NetCDF_NEEDS_PNetCDF) 
+        message(STATUS "NetCDF requires PNetCDF")
+	if ( NOT TARGET pnetcdf)
+          add_package_dependency(NetCDF DEPENDS_ON PNetCDF)
+	endif()
+    else()
+        message(STATUS "NetCDF does not require PNetCDF")
     endif()
 
 endif(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )    
@@ -297,12 +331,14 @@ if ( NOT NetCDF_FIND_QUIETLY )
   message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
   message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
   message(STATUS "\tNetCDF_NEEDS_HDF5        = ${NetCDF_NEEDS_HDF5}")
+  message(STATUS "\tNetCDF_NEEDS_PNetCDF     = ${NetCDF_NEEDS_PNetCDF}")
 
 endif()
 # For compatability with TriBITS:
 SET(DOCSTR "List of semi-colon separated paths to look for the TPL Netcdf")
 
 set(TPL_Netcdf_Enables_Netcdf4 ${NetCDF_NEEDS_HDF5} CACHE BOOL "True if netcdf enables netcdf-4")
+set(TPL_Netcdf_Enables_PNetcdf ${NetCDF_NEEDS_PNetCDF} CACHE BOOL "True if netcdf enables pnetcdf")
 set(TPL_Netcdf_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH ${DOCSTR})
 set(TPL_Netcdf_LIBRARIES ${NetCDF_LIBRARIES} CACHE PATH ${DOCSTR})
 set(TPL_Netcdf_INCLUDE_DIRS ${NetCDF_INCLUDE_DIRS} CACHE PATH ${DOCSTR})

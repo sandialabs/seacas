@@ -337,6 +337,7 @@
  * Sun Nov 19 12:02:52 MST 1989 - last date modified
  */
 
+#include "svdi.h"
 /******************************************************************************/
 /*                                                                            */
 /*      type and constant declarations                                        */
@@ -634,6 +635,7 @@ xci(anything **params, int num_surfaces, anything **surf_list)
 {
   int   i;                      /* index for loop on surf_list */
   float zero = 0.;
+  int   izero = 0;
 
    for (i = 0; i < num_surfaces; ++i) {
 
@@ -645,7 +647,7 @@ xci(anything **params, int num_surfaces, anything **surf_list)
 
       if( cur_state->cgi_inited == CNO ) { /* this surface has never been
                                              initialized */
-        vdinit( &zero, &zero ); 
+        vdinit( &zero, &izero ); 
 
         /* set device descript table for this device only once */
         if( dev_descrip.set_flag == FALSE ) {
@@ -3477,21 +3479,21 @@ xcct (anything **params, int num_surfaces, anything **surf_list)
      /* 2. caller setting index 1  - set index fg_index */
      if( starti <= 1 && (starti + num_cols > 1))
        vdstco( &one, &dev_descrip.index_array[ cur_state->fg_index ], 
-         &color_array[1][0], &dev_descrip.col_mode);
+         &color_array[1], &dev_descrip.col_mode);
 
      /* 3. caller setting index bg_index  - set index 0 */
      if( cur_state->bg_index != 0 )   /* .. don't do it twice */
        if( starti <= cur_state->bg_index && 
            (starti + num_cols > cur_state->bg_index )) 
          vdstco( &one, &dev_descrip.index_array[0], 
-           &color_array[cur_state->bg_index][0], &dev_descrip.col_mode);
+           &color_array[cur_state->bg_index], &dev_descrip.col_mode);
 
      /* 4. caller setting index fg_index  - set index 1 */
      if( cur_state->fg_index != 1 )   /* .. don't do it twice */
        if( starti <= cur_state->fg_index && 
            (starti + num_cols > cur_state->fg_index )) 
          vdstco( &one, &dev_descrip.index_array[1], 
-           &color_array[cur_state->fg_index][0], &dev_descrip.col_mode);
+           &color_array[cur_state->fg_index], &dev_descrip.col_mode);
  
      /* now do all the rest */
      /* ...sort for convenience */
@@ -3514,7 +3516,7 @@ xcct (anything **params, int num_surfaces, anything **surf_list)
        num_set = min(index1 - 2,maxindex - 1); 
        if( num_set > 0 ) {
          vdstco( &num_set, &dev_descrip.index_array[2], 
-           &color_array[2][0], &dev_descrip.col_mode);
+           &color_array[2], &dev_descrip.col_mode);
          indx_ptr = index1 + 1;
        }
      }
@@ -3527,7 +3529,7 @@ xcct (anything **params, int num_surfaces, anything **surf_list)
        num_set = min(index2 - indx_ptr, maxindex - indx_ptr + 1);
        if( num_set > 0 ) {
          vdstco( &num_set, &dev_descrip.index_array[indx_ptr], 
-           &color_array[indx_ptr][0], &dev_descrip.col_mode);
+           &color_array[indx_ptr], &dev_descrip.col_mode);
          indx_ptr = index2 + 1; 
        }
      }
@@ -3540,7 +3542,7 @@ xcct (anything **params, int num_surfaces, anything **surf_list)
        num_set = maxindex - indx_ptr + 1;  
        if( num_set > 0 )
          vdstco( &num_set, &dev_descrip.index_array[indx_ptr], 
-           &color_array[indx_ptr][0], &dev_descrip.col_mode);
+           &color_array[indx_ptr], &dev_descrip.col_mode);
      }
  
    } /* end for each surface */
@@ -5057,7 +5059,7 @@ set_background_color(surf_statelist *surf_state, int *colors)
 
        cur_state->bg_index = 0;     
        vdstco( &one, &dev_descrip.index_array[cur_state->bg_index], 
-               cur_state->vdi_attrib.bg_rgb, &dev_descrip.col_mode);
+               &cur_state->vdi_attrib.bg_rgb, &dev_descrip.col_mode);
        cur_state->color_set = TRUE; /* flag that CT has been set */
      } /* end else not close enough */
 
@@ -5067,7 +5069,7 @@ set_background_color(surf_statelist *surf_state, int *colors)
 
      /* set SVDI color table */
      vdstco( &one, &dev_descrip.index_array[cur_state->bg_index], 
-             cur_state->vdi_attrib.bg_rgb, &dev_descrip.col_mode);
+             &cur_state->vdi_attrib.bg_rgb, &dev_descrip.col_mode);
 
    } /* end else has been set */
 
