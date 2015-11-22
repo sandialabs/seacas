@@ -66,48 +66,48 @@
 #include "Ioss_VariableType.h"
 
 namespace {
-  std::string map_cgns_to_topology_type(ElementType_t type)
+  std::string map_cgns_to_topology_type(CG_ElementType_t type)
   {
     std::string topology = "unknown";
     switch (type)
       {
-      case NODE:
+      case CG_NODE:
 	topology = "tetra4"; break;
-      case BAR_2:
+      case CG_BAR_2:
 	topology = "bar2"; break;
-      case BAR_3:
+      case CG_BAR_3:
 	topology = "bar3"; break;
-      case TRI_3:
+      case CG_TRI_3:
 	topology = "tri3"; break;
-      case TRI_6:
+      case CG_TRI_6:
 	topology = "tri6"; break;
-      case QUAD_4:
+      case CG_QUAD_4:
 	topology = "quad4"; break;
-      case QUAD_8:
+      case CG_QUAD_8:
 	topology = "quad8"; break;
-      case QUAD_9:
+      case CG_QUAD_9:
 	topology = "quad9"; break;
-      case TETRA_4:
+      case CG_TETRA_4:
 	topology = "tetra4"; break;
-      case TETRA_10:
+      case CG_TETRA_10:
 	topology = "tetra10"; break;
-      case PYRA_5:
+      case CG_PYRA_5:
 	topology = "pyramid5"; break;
-      case PYRA_13:
+      case CG_PYRA_13:
 	topology = "pyramid13"; break;
-      case PYRA_14:
+      case CG_PYRA_14:
 	topology = "pyramid14"; break;
-      case PENTA_6:
+      case CG_PENTA_6:
 	topology = "wedge6"; break;
-      case PENTA_15:
+      case CG_PENTA_15:
 	topology = "wedge15"; break;
-      case PENTA_18:
+      case CG_PENTA_18:
 	topology = "wedge18"; break;
-      case HEXA_8:
+      case CG_HEXA_8:
 	topology = "hex8"; break;
-      case HEXA_20:
+      case CG_HEXA_20:
 	topology = "hex20"; break;
-      case HEXA_27:
+      case CG_HEXA_27:
 	topology = "hex27"; break;
       default:
 	topology = "unknown";
@@ -226,11 +226,11 @@ namespace Iocgns {
     size_t num_node = 0;
     size_t num_elem = 0;
     for (cgsize_t zone=1; zone <= num_zones; zone++) {
-      ZoneType_t zone_type;
+      CG_ZoneType_t zone_type;
       cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
 
       // See if all zones are "Unstructured" which is all we currently support...
-      if (zone_type != Unstructured) {
+      if (zone_type != CG_Unstructured) {
         std::ostringstream errmsg;
         errmsg << "ERROR: CGNS: Zone " << zone
 	       << " is not of type Unstructured which is the only type currently supported";
@@ -270,7 +270,7 @@ namespace Iocgns {
 	
 	for (cgsize_t is = 1; is <= num_sections; is++) {
 	  char section_name[33];
-	  ElementType_t e_type;
+	  CG_ElementType_t e_type;
 	  cgsize_t el_start = 0;
 	  cgsize_t el_end = 0;
 	  cgsize_t num_bndry = 0;
