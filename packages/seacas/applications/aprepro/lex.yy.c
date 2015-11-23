@@ -2401,12 +2401,12 @@ YY_RULE_SETUP
 case 91:
 YY_RULE_SETUP
 #line 600 "aprepro.l"
-{ if (echo) fwrite( "{", 1, 1, yyout ); }
+{ if (echo) (void)fwrite( "{", 1, 1, yyout ); }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
 #line 602 "aprepro.l"
-{ if (echo) fwrite( "}", 1, 1, yyout ); }
+{ if (echo) (void)fwrite( "}", 1, 1, yyout ); }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP

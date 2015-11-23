@@ -81,8 +81,10 @@ int main(int argc, char *argv[])
   if (input_files.empty()) {
     if (!quiet) {
       const char *comment = aprepro.getsym("_C_")->value.svar;
-      std::cout << comment << " Algebraic Preprocessor (Aprepro) version "
-		<< aprepro.version() << "\n";
+      if (comment != NULL) {
+	std::cout << comment << " Algebraic Preprocessor (Aprepro) version "
+		  << aprepro.version() << "\n";
+      }
     }
     aprepro.ap_options.interactive = true;
     bool result = aprepro.parse_stream(std::cin, "standard input");

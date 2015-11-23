@@ -597,9 +597,9 @@ integer {D}+({E})?
   }
 } /* End of <PARSING> start condition block */
 
-\\\{                      { if (echo) fwrite( "{", 1, 1, yyout ); }
+\\\{                      { if (echo) (void)fwrite( "{", 1, 1, yyout ); }
 
-\\\}                      { if (echo) fwrite( "}", 1, 1, yyout ); }
+\\\}                      { if (echo) (void)fwrite( "}", 1, 1, yyout ); }
 
 "{"                        { BEGIN(PARSING); return('{'); }
 
