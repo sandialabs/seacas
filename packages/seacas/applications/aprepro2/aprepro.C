@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     if (!quiet) {
       const char *comment = aprepro.getsym("_C_")->value.svar;
       if (comment != NULL) {
-	std::cout << comment << " Algebraic Preprocessor (Aprepro) version "
+	std::cout << comment << " Algebraic Preprocessor -- Aprepro, version "
 		  << aprepro.version() << "\n";
       }
     }
