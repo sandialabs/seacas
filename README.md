@@ -69,7 +69,6 @@ The most recent released version is recommended. For use with Exodus, some local
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
-    #define NC_MAX_VAR_DIMS 8        /* max per variable dimensions */
     ```
 
  * `cd netcdf-4.3.3.1` and enter the command:
