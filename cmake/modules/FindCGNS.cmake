@@ -190,9 +190,14 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
     set(CGNS_LIBRARIES    ${CGNS_CXX_LIBRARY} ${CGNS_LIBRARY})
 
     # Need to find the CGNS config script to check for HDF5
-    message(STATUS "CGNS requires HDF5")
-    if ( NOT TARGET hdf5)
-      add_package_dependency(CGNS DEPENDS_ON HDF5)
+    set(cgns_config_h "${CGNS_INCLUDE_DIR}/cgnsconfig.h" )
+    file(STRINGS "${cgns_config_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
+    string(REGEX REPLACE "[^0-9]" "" cg_build_hdf5 "${cg_build_hdf5_string}")
+    if ( cg_build_hdf5 EQUAL 51 ) # Kluge: define is 1, but the 5 comes from hdf5
+        message(STATUS "CGNS requires HDF5")
+	if ( NOT TARGET hdf5)
+          add_package_dependency(CGNS DEPENDS_ON HDF5)
+	endif()
     endif()
 
 endif(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )    
