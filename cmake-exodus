@@ -3,8 +3,8 @@ EXTRA_ARGS=$@
 ### Change this to point to the compilers you want to use
 CC=gcc
 
-### Change this to point to the root of your SEACAS sources...
-ACCESS=/Users/gdsjaar/src/seacas.git
+### The following assumes you are building in a subdirectory of ACCESS Root
+ACCESS=$(cd ..; pwd)
 
 TPL=${ACCESS}
 MPI=OFF

@@ -1,7 +1,8 @@
+#!/bin/sh
 EXTRA_ARGS=$@
 
-### Change this to point to the root of your SEACAS sources...
-ACCESS=/Users/gdsjaar/src/seacas
+### The following assumes you are building in a subdirectory of ACCESS Root
+ACCESS=$(cd ..; pwd)
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
