@@ -433,9 +433,9 @@ namespace SEAMS {
 
     else if (option.find("--comment") != std::string::npos || (option[1] == 'c')) {
       std::string comment = "";
-      // In short version, do not require equal sign (-c#)
-      if (option[1] == 'c' && option.length() == 3) {
-	comment = option[2];
+      // In short version, do not require equal sign (-c# -c// )
+      if (option[1] == 'c' && option.length() > 2 && option[2] != '=') {
+	comment = option.substr(2);
       }
       else {
 	size_t index = option.find_first_of('=');
