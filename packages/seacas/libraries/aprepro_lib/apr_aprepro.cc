@@ -73,7 +73,7 @@ namespace SEAMS {
       isCollectingLoop(false), inIfdefGetvar(false)
   {
     ap_file_list.push(file_rec());
-    init_table("#");
+    init_table("$");
     aprepro = this;
 
     // Seed the random number generator...

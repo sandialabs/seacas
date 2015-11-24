@@ -60,6 +60,34 @@ TRIBITS_ADD_ADVANCED_TEST(
  FINAL_PASS_REGULAR_EXPRESSION 
 )
 
+TRIBITS_ADD_ADVANCED_TEST(
+ aprepro2_command_line_vars_test
+ TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/aprepro2
+	ARGS -q var=42 svar='String' ${CMAKE_CURRENT_SOURCE_DIR}/test-dump.i
+	test-vars.out
+  OUTPUT_FILE test-vars.stderr
+  PASS_ANY
+ TEST_1 CMND diff ARGS -w
+		       ${CMAKE_CURRENT_SOURCE_DIR}/test-dump.gold
+		       ${CMAKE_CURRENT_BINARY_DIR}/test-vars.stderr
+ COMM serial		      
+ FINAL_PASS_REGULAR_EXPRESSION 
+)
+
+TRIBITS_ADD_ADVANCED_TEST(
+ aprepro2_command_line_include_test
+ TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/aprepro2
+	ARGS -q --include ${CMAKE_CURRENT_SOURCE_DIR}/test-include.i ${CMAKE_CURRENT_SOURCE_DIR}/test-dump.i
+	test-include.out
+  OUTPUT_FILE test-include.stderr
+  PASS_ANY
+ TEST_1 CMND diff ARGS -w
+		       ${CMAKE_CURRENT_SOURCE_DIR}/test-dump.gold
+		       ${CMAKE_CURRENT_BINARY_DIR}/test-include.stderr
+ COMM serial		      
+ FINAL_PASS_REGULAR_EXPRESSION 
+)
+
 endif()
 
 TRIBITS_SUBPACKAGE_POSTPROCESS()
