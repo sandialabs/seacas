@@ -569,33 +569,15 @@ integer {D}+({E})?
 				 pt = yytext;
 			       }
 			       
-			       if (file_must_exist)
-				 yytmp = aprepro.open_file(pt, "r");
-			       else
-				 yytmp = aprepro.check_open_file(pt, "r");
-             if (yytmp != NULL) {
-				 yyin = yytmp;
-				 aprepro.info("Included File: '" +
-					      std::string(pt) + "'", true);
+			       add_include_file(pt, file_must_exist);
 
-				 SEAMS::file_rec new_file(pt, 0, false, 0);
-				 aprepro.ap_file_list.push(new_file);
+			       if(!aprepro.doIncludeSubstitution)
+				 yy_push_state(VERBATIM);
 
-				 yyFlexLexer::yypush_buffer_state (
-            yyFlexLexer::yy_create_buffer( yyin, YY_BUF_SIZE));
-         curr_index = 0;
-
-         if(!aprepro.doIncludeSubstitution)
-           yy_push_state(VERBATIM);
-
-			       } else {
-				 aprepro.warning("Can't open '" +
-						 std::string(yytext) + "'", false);
-			       }
 			       aprepro.ap_file_list.top().lineno++;
-			     }
-			   }
-
+			      }
+			    }
+			     
 <PARSING>{integer}  |        
 <PARSING>{number}	   { sscanf (yytext, "%lf", &yylval->val);
                        return(token::NUM); }
@@ -731,6 +713,33 @@ namespace SEAMS {
   Scanner::~Scanner()
   { }
 
+  void Scanner::add_include_file(const std::string &filename, bool must_exist)
+  {
+    std::fstream *yytmp = nullptr;
+    if (must_exist)
+      yytmp = aprepro.open_file(filename.c_str(), "r");
+    else
+      yytmp = aprepro.check_open_file(filename.c_str(), "r");
+
+    if (yytmp) {
+      if (yyin && !yy_init) {
+	yyFlexLexer::yypush_buffer_state (
+  	  yyFlexLexer::yy_create_buffer( yyin, YY_BUF_SIZE));
+      }
+
+      yyin = yytmp;
+      aprepro.info("Included File: '" + filename + "'", true);
+
+      SEAMS::file_rec new_file(filename.c_str(), 0, false, 0);
+      aprepro.ap_file_list.push(new_file);
+
+    
+      yyFlexLexer::yypush_buffer_state (
+	yyFlexLexer::yy_create_buffer( yytmp, YY_BUF_SIZE));
+      curr_index = 0;
+    }
+  }
+
   void Scanner::LexerOutput(const char* buf, int size )
   {
     // Do this before writing so that we have the correct index in the
@@ -842,8 +851,8 @@ namespace SEAMS {
       }
       else {
         delete yyin; yyin=NULL;
-        yyFlexLexer::yypop_buffer_state();
         aprepro.ap_file_list.pop();
+        yyFlexLexer::yypop_buffer_state();
 
 	if (aprepro.ap_file_list.top().name == "standard input")
 	  yyin = &std::cin;
