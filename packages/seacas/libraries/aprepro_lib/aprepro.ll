@@ -540,44 +540,45 @@ integer {D}+({E})?
                              file_must_exist = true; }
 <INITIAL>{WS}"{"[Cc]"include"{WS}"("          { BEGIN(GET_FILENAME);
                              file_must_exist = !true; }
-<GET_FILENAME>.+")"{WS}"}"{NL}* { BEGIN(INITIAL); 
-			     {
-			       symrec *s;
-			       int quoted = false;
-			       std::fstream *yytmp;
-			       char *pt = strchr(yytext, ')');
-			       *pt = '\0';
-			       /* Check to see if surrounded by double quote */ 
-			       if ((pt = strchr(yytext, '"')) != NULL) {
-				 yytext++;
-				 quoted = true;
-			       }
-			       if ((pt = strrchr(yytext, '"')) != NULL) {
-				 *pt = '\0';
-				 quoted = true;
-			       }
+<GET_FILENAME>.+")"{WS}"}"{NL}* {
+  BEGIN(INITIAL); 
+  {
+    symrec *s;
+    int quoted = false;
+    std::fstream *yytmp;
+    char *pt = strchr(yytext, ')');
+    *pt = '\0';
+    /* Check to see if surrounded by double quote */ 
+    if ((pt = strchr(yytext, '"')) != NULL) {
+      yytext++;
+      quoted = true;
+    }
+    if ((pt = strrchr(yytext, '"')) != NULL) {
+      *pt = '\0';
+      quoted = true;
+    }
+    
+    if (quoted == false) {
+      /* See if this is an aprepro variable referring to a name */
+      s = aprepro.getsym(yytext);
+      if (s == 0 || (s->type != token::SVAR && s->type != token::IMMSVAR)) {
+	pt = yytext;
+      } else {
+	pt = (char*)s->value.svar;
+      }
+    } else {
+      pt = yytext;
+    }
+    
+    add_include_file(pt, file_must_exist);
+    
+    if(!aprepro.doIncludeSubstitution)
+      yy_push_state(VERBATIM);
+    
+    aprepro.ap_file_list.top().lineno++;
+  }
+}
 
-			       if (quoted == false) {
-				 /* See if this is an aprepro variable referring to a name */
-				 s = aprepro.getsym(yytext);
-				 if (s == 0 || (s->type != token::SVAR && s->type != token::IMMSVAR)) {
-				   pt = yytext;
-				 } else {
-				   pt = (char*)s->value.svar;
-				 }
-			       } else {
-				 pt = yytext;
-			       }
-			       
-			       add_include_file(pt, file_must_exist);
-
-			       if(!aprepro.doIncludeSubstitution)
-				 yy_push_state(VERBATIM);
-
-			       aprepro.ap_file_list.top().lineno++;
-			      }
-			    }
-			     
 <PARSING>{integer}  |        
 <PARSING>{number}	   { sscanf (yytext, "%lf", &yylval->val);
                        return(token::NUM); }
@@ -673,14 +674,14 @@ integer {D}+({E})?
   }
 
 [Ee][Xx][Ii][Tt] |
-[Qq][Uu][Ii][Tt]           { if (aprepro.ap_options.end_on_exit)
-			       {
-				 if (echo) ECHO;
-				 return((token::yytokentype)-1);  
-			       }
-                              else 
-                               if (echo) ECHO;
-			   }
+[Qq][Uu][Ii][Tt] {
+  if (aprepro.ap_options.end_on_exit) {
+    if (echo) ECHO;
+    return((token::yytokentype)-1);  
+  }
+  else 
+    if (echo) ECHO;
+}
 
 
 \$			   { if (echo) ECHO; }
