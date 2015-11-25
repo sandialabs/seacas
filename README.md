@@ -199,9 +199,9 @@ and then
 ```
 sudo apt-get install seacas
 ```
-to get SEACAS. This is provided by Nico Schlömer (@nschloe)
+to get SEACAS. This is provided by Nico Schlömer.
 
 ## Contact information
 
- Greg Sjaardema  (gsjaardema@gmail.com, gdsjaar@sandia.gov, @gsjaardema)
+ Greg Sjaardema  (gsjaardema@gmail.com, gdsjaar@sandia.gov)
       
