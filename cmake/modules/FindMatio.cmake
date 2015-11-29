@@ -162,7 +162,7 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
     set(Matio_LIBRARIES    ${Matio_CXX_LIBRARY} ${Matio_LIBRARY})
 
     # Need to find the Matio config script to check for HDF5
-    message(STATUS "Matio requires HDF5")
+    message(STATUS "Assuming that Matio requires HDF5")
     if ( NOT TARGET hdf5)
       add_package_dependency(Matio DEPENDS_ON HDF5)
     endif()
