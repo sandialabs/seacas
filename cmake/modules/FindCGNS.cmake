@@ -191,7 +191,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
 
     # Need to find the CGNS config script to check for HDF5
     set(cgns_config_h "${CGNS_INCLUDE_DIR}/cgnsconfig.h" )
-    if (EXISTS cgns_config_h)
+    if (EXISTS ${cgns_config_h})
       file(STRINGS "${cgns_config_h}" cg_build_hdf5_string REGEX "^#define CG_BUILD_HDF5")
       string(REGEX REPLACE "[^0-9]" "" cg_build_hdf5 "${cg_build_hdf5_string}")
       if ( cg_build_hdf5 EQUAL 51 ) # Kluge: define is 1, but the 5 comes from hdf5
@@ -205,6 +205,20 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
       if ( NOT TARGET hdf5)
 	 add_package_dependency(CGNS DEPENDS_ON HDF5)
       endif()
+    endif()
+
+    # Need to find the CGNS types include to check for SCOPING
+    set(cgns_types_h "${CGNS_INCLUDE_DIR}/cgnstypes.h" )
+    if (EXISTS ${cgns_types_h})
+      file(STRINGS "${cgns_types_h}" cg_scoping_string REGEX "^#define CG_BUILD_SCOPE")
+      string(REGEX REPLACE "[^0-9]" "" cg_scoping "${cg_scoping_string}")
+      if ( cg_scoping EQUAL 1 )
+          message(STATUS "CGNS Scoping Enabled as Required")
+      else()
+          message(SEND_ERROR "CGNS Scoping *Not* Enabled as Required. Rebuild CGNS library with CGNS_ENABLE_SCOPING defined.")
+      endif()
+    else()
+      message(SEND_ERROR "CGNS: Could not find cgnstypes.h")
     endif()
 endif(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )    
 
