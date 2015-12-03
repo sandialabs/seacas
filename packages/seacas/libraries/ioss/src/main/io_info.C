@@ -42,6 +42,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <algorithm>
+#include <functional>
 #include <unordered_set>
 
 #if !defined(NO_EXODUS_SUPPORT)
