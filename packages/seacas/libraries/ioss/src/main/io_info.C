@@ -107,6 +107,14 @@ namespace {
     size_t elementCount_;
   };
 
+  struct FaceHash
+  {
+    bool operator()(const Face *face) const
+    {
+      return face->id_;
+    }
+  };
+
   struct FaceEqual
   {
     bool operator()(const Face *left, const Face *right) const
@@ -130,20 +138,8 @@ namespace {
       std::vector<size_t>(vertices).swap(vertices);
       return vertices.size() == left->connectivity_.size();
     }
-};
-}  
-
-namespace std {
-  template <>
-  struct std::hash<Face*>
-  {
-    size_t operator()(Face const * x) const noexcept {
-      return (x->id_);
-    }
   };
-}
 
-namespace {
   // Data space shared by most field input/output routines...
   std::vector<char> data;
 
@@ -479,7 +475,7 @@ namespace {
     }
   }
 
-  void create_face(std::unordered_set<Face*,std::hash<Face*>,FaceEqual> &faces, size_t id,
+  void create_face(std::unordered_set<Face*,FaceHash,FaceEqual> &faces, size_t id,
 		   std::vector<size_t> &conn, size_t element)
   {
     Face test(id, conn);
@@ -509,7 +505,7 @@ namespace {
       }
     }
 
-    std::unordered_set<Face*,std::hash<Face*>,FaceEqual> faces;
+    std::unordered_set<Face*,FaceHash,FaceEqual> faces;
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
@@ -529,7 +525,7 @@ namespace {
       size_t num_elem = (*i)->get_property("entity_count").get_int();
 
       for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
-	for (int face = 0; face < num_face_per_elem; face++) {
+ 	for (int face = 0; face < num_face_per_elem; face++) {
 	  size_t id = 0;
 	  assert(topo->number_nodes_face(face+1) == face_conn[face].size());
 	  std::vector<size_t> conn;
