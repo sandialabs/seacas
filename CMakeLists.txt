@@ -6,6 +6,8 @@
 # We set the project name in a separate file so CTest scripts can use it.
 INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
 
+SET(SEACASProj_ENABLE_CXX11_DEFAULT ON)
+
 # Define the TriBITS minimum required CMake version
 SET(TRIBITS_CMAKE_MINIMUM_REQUIRED 2.8.11)
 
