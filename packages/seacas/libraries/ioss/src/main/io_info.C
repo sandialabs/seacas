@@ -88,6 +88,9 @@
 
 namespace {
 
+  size_t cheap = 0;
+  size_t expensive = 0;
+  
   class Face
   {
   public:
@@ -119,9 +122,11 @@ namespace {
   {
     bool operator()(const Face *left, const Face *right) const
     {
+      cheap++;
       if (left->id_ != right->id_) return false;
       if (left->connectivity_.size() != right->connectivity_.size()) return false;
       
+      expensive++;
       // Hash (id_) is equal and they point to same type of face (quad/tri)
       // Check whether same vertices (can be in different order)
       std::vector<size_t> vertices;
@@ -559,6 +564,8 @@ namespace {
 	   << "\tInterior = " << interior
 	   << "\tBoundary = " << boundary
 	   << "\tError = " << error << "\n";
+    OUTPUT << "Expensive Comparisons = " << expensive << "\n";
+    OUTPUT << "Cheap Comparisons = " << cheap-expensive << "\n";
   }
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface, bool summary)
