@@ -88,9 +88,6 @@
 
 namespace {
 
-  size_t cheap = 0;
-  size_t expensive = 0;
-  
   class Face
   {
   public:
@@ -98,7 +95,7 @@ namespace {
     Face(size_t id, std::vector<size_t> conn)
       : id_(id), connectivity_(conn), elementCount_(0) {}
     
-    void add_element(size_t element_id)
+    void add_element(size_t element_id) const
     {
       assert(elementCount_ < 2);
       element[elementCount_++] = element_id;
@@ -106,42 +103,50 @@ namespace {
     
     size_t id_;
     std::vector<size_t> connectivity_;
-    size_t element[2];
-    size_t elementCount_;
+    mutable size_t element[2];
+    mutable size_t elementCount_;
   };
 
   struct FaceHash
   {
-    bool operator()(const Face *face) const
+    size_t operator()(const Face &face) const
     {
-      return face->id_;
+      return face.id_;
     }
   };
 
   struct FaceEqual
   {
-    bool operator()(const Face *left, const Face *right) const
+    bool operator()(const Face &left, const Face &right) const
     {
-      cheap++;
-      if (left->id_ != right->id_) return false;
-      if (left->connectivity_.size() != right->connectivity_.size()) return false;
+      if (left.id_ != right.id_) return false;
+      if (left.connectivity_.size() != right.connectivity_.size()) return false;
       
-      expensive++;
       // Hash (id_) is equal and they point to same type of face (quad/tri)
       // Check whether same vertices (can be in different order)
+#if 1
+      for (auto lvert : left.connectivity_) {
+	if (std::find(right.connectivity_.begin(), right.connectivity_.end(), lvert) == right.connectivity_.end()) {
+	  // Not found, therefore not the same.
+	  return false;
+	}
+      }
+      return true;
+#else
       std::vector<size_t> vertices;
-      vertices.reserve(2*left->connectivity_.size());
-      for (size_t id : left->connectivity_) {
+      vertices.reserve(2*left.connectivity_.size());
+      for (size_t id : left.connectivity_) {
 	vertices.push_back(id);
       }
-      for (size_t id : right->connectivity_) {
+      for (size_t id : right.connectivity_) {
 	vertices.push_back(id);
       }
       std::sort(vertices.begin(), vertices.end());
       vertices.erase(std::unique(vertices.begin(), vertices.end()), vertices.end());
       // shrink-to-fit...
       std::vector<size_t>(vertices).swap(vertices);
-      return vertices.size() == left->connectivity_.size();
+      return vertices.size() == left.connectivity_.size();
+#endif
     }
   };
 
@@ -480,18 +485,13 @@ namespace {
     }
   }
 
-  void create_face(std::unordered_set<Face*,FaceHash,FaceEqual> &faces, size_t id,
+  void create_face(std::unordered_set<Face,FaceHash,FaceEqual> &faces, size_t id,
 		   std::vector<size_t> &conn, size_t element)
   {
-    Face test(id, conn);
-    auto face_iter = faces.find(&test);
-    if (face_iter == faces.end()) {
-      Face *face = new Face(id, conn);
-      faces.insert(face);
-      face->add_element(element);
-    } else {
-      (*face_iter)->add_element(element);
-    }
+    Face face(id, conn);
+    auto face_iter = faces.insert(face);
+
+    (*(face_iter.first)).add_element(element);
   }
 
   void generate_faces(Ioss::Region &region)
@@ -510,7 +510,8 @@ namespace {
       }
     }
 
-    std::unordered_set<Face*,FaceHash,FaceEqual> faces;
+    size_t numel = region.get_property("element_count").get_int();
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
@@ -552,20 +553,22 @@ namespace {
     size_t interior = 0;
     size_t boundary = 0;
     size_t error = 0;
-    for (auto face : faces) {
-      if (face->elementCount_ == 2)
+
+    for (auto& face : faces) {
+      if (face.elementCount_ == 2)
 	interior++;
-      else if (face->elementCount_ == 1)
+      else if (face.elementCount_ == 1)
 	boundary++;
       else
 	error++;
     }
+
     OUTPUT << "Face count = " << faces.size()
 	   << "\tInterior = " << interior
 	   << "\tBoundary = " << boundary
 	   << "\tError = " << error << "\n";
-    OUTPUT << "Expensive Comparisons = " << expensive << "\n";
-    OUTPUT << "Cheap Comparisons = " << cheap-expensive << "\n";
+    OUTPUT << "Buckets = " << faces.bucket_count() << "\n";
+    OUTPUT << "Load = " << faces.load_factor() << "\n";
   }
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface, bool summary)
