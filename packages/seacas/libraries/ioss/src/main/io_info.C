@@ -42,6 +42,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <algorithm>
+#include <functional>
+#include <unordered_set>
+
 #if !defined(NO_EXODUS_SUPPORT)
 #include <exodusII.h>
 #endif
@@ -84,9 +88,72 @@
 
 namespace {
 
+  class Face
+  {
+  public:
+    Face() : id_(0), elementCount_(0) {}
+    Face(size_t id, std::vector<size_t> conn)
+      : id_(id), connectivity_(conn), elementCount_(0) {}
+    
+    void add_element(size_t element_id) const
+    {
+      assert(elementCount_ < 2);
+      element[elementCount_++] = element_id;
+    }
+    
+    size_t id_;
+    std::vector<size_t> connectivity_;
+    mutable size_t element[2];
+    mutable size_t elementCount_;
+  };
+
+  struct FaceHash
+  {
+    size_t operator()(const Face &face) const
+    {
+      return face.id_;
+    }
+  };
+
+  struct FaceEqual
+  {
+    bool operator()(const Face &left, const Face &right) const
+    {
+      if (left.id_ != right.id_) return false;
+      if (left.connectivity_.size() != right.connectivity_.size()) return false;
+      
+      // Hash (id_) is equal and they point to same type of face (quad/tri)
+      // Check whether same vertices (can be in different order)
+#if 1
+      for (auto lvert : left.connectivity_) {
+	if (std::find(right.connectivity_.begin(), right.connectivity_.end(), lvert) == right.connectivity_.end()) {
+	  // Not found, therefore not the same.
+	  return false;
+	}
+      }
+      return true;
+#else
+      std::vector<size_t> vertices;
+      vertices.reserve(2*left.connectivity_.size());
+      for (size_t id : left.connectivity_) {
+	vertices.push_back(id);
+      }
+      for (size_t id : right.connectivity_) {
+	vertices.push_back(id);
+      }
+      std::sort(vertices.begin(), vertices.end());
+      vertices.erase(std::unique(vertices.begin(), vertices.end()), vertices.end());
+      // shrink-to-fit...
+      std::vector<size_t>(vertices).swap(vertices);
+      return vertices.size() == left.connectivity_.size();
+#endif
+    }
+  };
+
   // Data space shared by most field input/output routines...
   std::vector<char> data;
 
+  void generate_faces(Ioss::Region &region);
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interface, bool summary);
   void info_edgeblock(Ioss::Region &region, bool summary);
   void info_faceblock(Ioss::Region &region, bool summary);
@@ -124,6 +191,57 @@ namespace {
     return id;
   }
 
+  // CMWC working parts
+#define CMWC_CYCLE 4096 // as Marsaglia recommends
+#define CMWC_C_MAX 809430660 // as Marsaglia recommends
+  static uint32_t Q[CMWC_CYCLE];
+  static uint32_t c = 362436; // must be limited with CMWC_C_MAX (we will reinit it with seed)
+
+  // Make 32 bit random number (some systems use 16 bit RAND_MAX)
+  uint32_t rand32(void)
+  {
+    uint32_t result = 0;
+    result = rand();
+    result <<= 16;
+    result |= rand();
+    return result;
+  }
+
+  // Init all engine parts with seed
+  void initCMWC(unsigned int seed)
+  {
+    srand(seed);
+    for (int i = 0; i < CMWC_CYCLE; i++) Q[i] = rand32();
+    do c = rand32(); while (c >= CMWC_C_MAX);
+  }
+
+  // CMWC engine
+  uint32_t randCMWC(void)
+  {
+    static uint32_t i = CMWC_CYCLE - 1;
+    uint64_t t = 0;
+    uint64_t a = 18782; // as Marsaglia recommends
+    uint32_t r = 0xfffffffe; // as Marsaglia recommends
+    uint32_t x = 0;
+
+    i = (i + 1) & (CMWC_CYCLE - 1);
+    t = a * Q[i] + c;
+    c = t >> 32;
+    x = t + c;
+    if (x < c)
+      {
+        x++;
+        c++;
+      }
+
+    return Q[i] = r - x;
+  }
+
+  size_t id_rand(size_t id)
+  {
+    initCMWC(id);
+    return randCMWC();
+  }
 
 }
 void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates);
@@ -271,6 +389,7 @@ namespace {
     info_faceblock(region,    summary);
     info_elementblock(region, interface, summary);
 
+    
     info_nodesets(region,     summary);
     info_edgesets(region,     summary);
     info_facesets(region,     summary);
@@ -308,6 +427,10 @@ namespace {
     
     if (interface.compute_volume()) {
       element_volume(region);
+    }
+
+    if (interface.create_faces()) {
+      generate_faces(region);
     }
   }
 
@@ -360,6 +483,92 @@ namespace {
 	++i;
       }
     }
+  }
+
+  void create_face(std::unordered_set<Face,FaceHash,FaceEqual> &faces, size_t id,
+		   std::vector<size_t> &conn, size_t element)
+  {
+    Face face(id, conn);
+    auto face_iter = faces.insert(face);
+
+    (*(face_iter.first)).add_element(element);
+  }
+
+  void generate_faces(Ioss::Region &region)
+  {
+    Ioss::NodeBlock *nb = region.get_node_blocks()[0];
+
+    std::vector<size_t> hash_ids;
+    {
+      std::vector<int>  ids;
+      nb->get_field_data("ids", ids);
+
+      // Convert ids into hashed-ids
+      hash_ids.reserve(ids.size());
+      for (size_t i=0; i < ids.size(); i++) {
+	hash_ids.push_back(id_rand(ids[i]));
+      }
+    }
+
+    size_t numel = region.get_property("element_count").get_int();
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
+
+    Ioss::ElementBlockContainer ebs = region.get_element_blocks();
+    Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
+    while (i != ebs.end()) {
+
+      const Ioss::ElementTopology *topo = (*i)->topology();
+      std::vector<int> connectivity;
+      (*i)->get_field_data("connectivity_raw", connectivity);
+
+      int num_face_per_elem = topo->number_faces();
+      std::vector<Ioss::IntVector> face_conn(num_face_per_elem);
+      for (int face = 0; face < num_face_per_elem; face++) {
+	face_conn[face] = topo->face_connectivity(face+1);
+      }
+      
+      int num_node_per_elem = topo->number_nodes();
+      size_t num_elem = (*i)->get_property("entity_count").get_int();
+
+      for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
+ 	for (int face = 0; face < num_face_per_elem; face++) {
+	  size_t id = 0;
+	  assert(topo->number_nodes_face(face+1) == face_conn[face].size());
+	  std::vector<size_t> conn;
+	  conn.reserve(topo->number_nodes_face(face+1));
+	  for (size_t j = 0; j < topo->number_nodes_face(face+1); j++) {
+	    size_t fnode = offset + face_conn[face][j];
+	    size_t gnode = connectivity[fnode];
+	    conn.push_back(gnode);
+	    id += hash_ids[gnode];
+	  }
+	  create_face(faces, id, conn, elem+1);
+	}
+      }
+      ++i;
+    }
+    
+    // Faces have been generated at this point.
+    // Categorize (boundary/interior)
+    size_t interior = 0;
+    size_t boundary = 0;
+    size_t error = 0;
+
+    for (auto& face : faces) {
+      if (face.elementCount_ == 2)
+	interior++;
+      else if (face.elementCount_ == 1)
+	boundary++;
+      else
+	error++;
+    }
+
+    OUTPUT << "Face count = " << faces.size()
+	   << "\tInterior = " << interior
+	   << "\tBoundary = " << boundary
+	   << "\tError = " << error << "\n";
+    OUTPUT << "Buckets = " << faces.bucket_count() << "\n";
+    OUTPUT << "Load = " << faces.load_factor() << "\n";
   }
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface, bool summary)
