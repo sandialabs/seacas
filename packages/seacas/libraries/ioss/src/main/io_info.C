@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <functional>
 #include <unordered_set>
+#include <random>
 
 #if !defined(NO_EXODUS_SUPPORT)
 #include <exodusII.h>
@@ -191,56 +192,11 @@ namespace {
     return id;
   }
 
-  // CMWC working parts
-#define CMWC_CYCLE 4096 // as Marsaglia recommends
-#define CMWC_C_MAX 809430660 // as Marsaglia recommends
-  static uint32_t Q[CMWC_CYCLE];
-  static uint32_t c = 362436; // must be limited with CMWC_C_MAX (we will reinit it with seed)
-
-  // Make 32 bit random number (some systems use 16 bit RAND_MAX)
-  uint32_t rand32(void)
-  {
-    uint32_t result = 0;
-    result = rand();
-    result <<= 16;
-    result |= rand();
-    return result;
-  }
-
-  // Init all engine parts with seed
-  void initCMWC(unsigned int seed)
-  {
-    srand(seed);
-    for (int i = 0; i < CMWC_CYCLE; i++) Q[i] = rand32();
-    do c = rand32(); while (c >= CMWC_C_MAX);
-  }
-
-  // CMWC engine
-  uint32_t randCMWC(void)
-  {
-    static uint32_t i = CMWC_CYCLE - 1;
-    uint64_t t = 0;
-    uint64_t a = 18782; // as Marsaglia recommends
-    uint32_t r = 0xfffffffe; // as Marsaglia recommends
-    uint32_t x = 0;
-
-    i = (i + 1) & (CMWC_CYCLE - 1);
-    t = a * Q[i] + c;
-    c = t >> 32;
-    x = t + c;
-    if (x < c)
-      {
-        x++;
-        c++;
-      }
-
-    return Q[i] = r - x;
-  }
-
   size_t id_rand(size_t id)
   {
-    initCMWC(id);
-    return randCMWC();
+    std::mt19937_64 rng;
+    rng.seed(id);
+    return rng();
   }
 
 }
@@ -505,8 +461,8 @@ namespace {
 
       // Convert ids into hashed-ids
       hash_ids.reserve(ids.size());
-      for (size_t i=0; i < ids.size(); i++) {
-	hash_ids.push_back(id_rand(ids[i]));
+      for (auto id : ids) {
+	hash_ids.push_back(id_rand(id));
       }
     }
 
