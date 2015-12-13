@@ -181,9 +181,13 @@ namespace {
 
   size_t id_rand(size_t id)
   {
+#if 0
     std::mt19937_64 rng;
     rng.seed(id);
     return rng();
+#else
+    return id;
+#endif
   }
 
 }
@@ -444,19 +448,22 @@ namespace {
     Ioss::NodeBlock *nb = region.get_node_blocks()[0];
 
     std::vector<size_t> hash_ids;
-    {
-      std::vector<int>  ids;
-      nb->get_field_data("ids", ids);
+    std::vector<int>  ids;
+    nb->get_field_data("ids", ids);
 
-      // Convert ids into hashed-ids
-      hash_ids.reserve(ids.size());
-      for (auto id : ids) {
-	hash_ids.push_back(id_rand(id));
-      }
+    // Convert ids into hashed-ids
+    hash_ids.reserve(ids.size());
+    auto starth = std::chrono::steady_clock::now();
+    for (auto id : ids) {
+      hash_ids.push_back(id_rand(id));
     }
+    auto endh =  std::chrono::steady_clock::now();
+    // Done with ids vector...
+    std::vector<int>().swap(ids);
+    assert(ids.capacity() == 0);
 
     size_t numel = region.get_property("element_count").get_int();
-    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(33*numel/10);
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
@@ -467,9 +474,12 @@ namespace {
       (*i)->get_field_data("connectivity_raw", connectivity);
 
       int num_face_per_elem = topo->number_faces();
-      std::vector<Ioss::IntVector> face_conn(num_face_per_elem);
+      assert(num_face_per_elem <= 6);
+      std::array<Ioss::IntVector,6> face_conn;
+      std::array<int,6> face_count;
       for (int face = 0; face < num_face_per_elem; face++) {
 	face_conn[face] = topo->face_connectivity(face+1);
+	face_count[face] = topo->number_edges_face(face+1);
       }
       
       int num_node_per_elem = topo->number_nodes();
@@ -481,10 +491,9 @@ namespace {
       for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
  	for (int face = 0; face < num_face_per_elem; face++) {
 	  size_t id = 0;
-	  assert(topo->number_edges_face(face+1) <= face_conn[face].size());
-	  assert(topo->number_edges_face(face+1) <= 4);
+	  assert(face_count[face] <= 4);
 	  std::array<size_t,4> conn = {0,0,0,0};
-	  for (size_t j = 0; j < topo->number_edges_face(face+1); j++) {
+	  for (size_t j = 0; j < face_count[face]; j++) {
 	    size_t fnode = offset + face_conn[face][j];
 	    size_t gnode = connectivity[fnode];
 	    conn[j] = gnode;
