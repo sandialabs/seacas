@@ -240,3 +240,4 @@ autom4te.cache
 SNTools.project
 *.cproject
 *.project
+*.settings
