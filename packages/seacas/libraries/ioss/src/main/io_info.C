@@ -453,11 +453,11 @@ namespace {
 
     // Convert ids into hashed-ids
     hash_ids.reserve(ids.size());
-    auto starth = std::chrono::steady_clock::now();
+
     for (auto id : ids) {
       hash_ids.push_back(id_rand(id));
     }
-    auto endh =  std::chrono::steady_clock::now();
+
     // Done with ids vector...
     std::vector<int>().swap(ids);
     assert(ids.capacity() == 0);
