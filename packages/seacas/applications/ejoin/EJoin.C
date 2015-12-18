@@ -360,7 +360,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
   node_count = global_node_map.size();
   size_t merged = local_node_map.size() - global_node_map.size();
   if (merged > 0) {
-    std::cerr << "*** " << merged << " Nodes were merged/omitted.\n";
+    std::cout << "*** " << merged << " Nodes were merged/omitted.\n";
   }
 
   // Verify nodemap...
@@ -494,7 +494,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
   }
 
   output_region.begin_mode(Ioss::STATE_TRANSIENT);
-  std::cerr << "\n";
+  std::cout << "\n";
   int ts_min  = interface.step_min();
   int ts_max  = interface.step_max();
   int ts_step = interface.step_interval();
@@ -506,17 +506,17 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
   }
   ts_max = ts_max < num_steps ? ts_max : num_steps;
 
-  std::ios::fmtflags f(std::cerr.flags());
+  std::ios::fmtflags f(std::cout.flags());
   for (int step=ts_min-1; step < ts_max; step+=ts_step) {
     int ostep = output_region.add_state(global_times[step]);
     output_region.begin_state(ostep);
     output_transient_state(output_region, part_mesh, global_times[step], local_node_map, interface);
-    std::cerr << "\rWrote step " << std::setw(4) << step+1 << "/" << global_times.size() << ", time "
+    std::cout << "\rWrote step " << std::setw(4) << step+1 << "/" << global_times.size() << ", time "
 	      << std::scientific << std::setprecision(4) << global_times[step];
     output_region.end_state(ostep);
   }
-  std::cerr << "\n";
-  std::cerr.flags(f);
+  std::cout << "\n";
+  std::cout.flags(f);
   output_region.end_mode(Ioss::STATE_TRANSIENT);
   
   /*************************************************************************/
