@@ -46,6 +46,9 @@
 #include <stddef.h>
 #include <sys/select.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <tokenize.h>
 #include <algorithm>
 #include <cctype>
@@ -85,10 +88,6 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"
 #include "Ioss_VariableType.h"
-
-#ifdef HAVE_MPI    
-#include "Ioss_FileInfo.h"
-#endif
 
 // ========================================================================
 // Static internal helper functions
@@ -306,7 +305,7 @@ namespace Iofx {
                                     &cpu_word_size, &dbRealWordSize);
           if (exodusFilePtr < 0) {
             if (myProcessor == 0){
-              Ioss::FileInfo path = Ioss::FileInfo(decoded_filename.c_str());
+              Ioss::FileInfo path = Ioss::FileInfo(decoded_filename);
               Ioss::Utils::create_path(path.pathname());
             }
 #ifdef HAVE_MPI
