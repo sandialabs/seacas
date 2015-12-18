@@ -524,7 +524,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
   if (debug_level & 1)
     std::cerr << time_stamp(tsFormat);
   output_region.output_summary(std::cout);
-  std::cerr << "******* END *******\n";
+  std::cout << "******* END *******\n";
   return(0);
 }
 
