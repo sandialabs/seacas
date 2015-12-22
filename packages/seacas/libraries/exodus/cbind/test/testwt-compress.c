@@ -89,8 +89,9 @@ int main (int argc, char **argv)
    char *title = "This is a test";
 
    struct ex_block blocks[10];
+   int mode;
    
-   ex_opts (EX_VERBOSE );
+   ex_opts (EX_VERBOSE | EX_ABORT );
 
 /* Specify compute and i/o word size */
 
@@ -99,15 +100,20 @@ int main (int argc, char **argv)
 
 /* create EXODUS II file */
 
-   exoid = ex_create ("test.exo",       /* filename path */
-                       EX_CLOBBER,      /* create mode */
-                       &CPU_word_size,  /* CPU float word size in bytes */
-                       &IO_word_size);  /* I/O float word size in bytes */
+   mode = EX_CLOBBER|EX_NETCDF4;
+   
+   exoid = ex_create ("test-compress.exo",       /* filename path */
+		      mode,      /* create mode */
+		      &CPU_word_size,  /* CPU float word size in bytes */
+		      &IO_word_size);  /* I/O float word size in bytes */
    printf ("after ex_create for test.exo, exoid = %d\n", exoid);
    printf (" cpu word size: %d io word size: %d\n",CPU_word_size,IO_word_size);
 
-/* initialize file with parameters */
 
+   ex_set_option(exoid, EX_OPT_COMPRESSION_LEVEL,   1);
+   ex_set_option(exoid, EX_OPT_COMPRESSION_SHUFFLE, 1);
+
+   /* initialize file with parameters */
    num_dim = 3;
    num_nodes = 33;
    num_elem = 7;
@@ -304,12 +310,6 @@ int main (int argc, char **argv)
    blocks[4].id = 14;
    blocks[5].id = 15;
    blocks[6].id = 16;
-
-   /* Generate an error that name is not found since blocks have not
-      yet been defined
-   */
-   error = ex_put_name(exoid, EX_ELEM_BLOCK, blocks[0].id, block_names[0]);
-   printf ("after ex_put_name, error = %d\n", error);
 
    error = ex_put_block_params(exoid, num_elem_blk, blocks);
    printf ("after ex_put_block_params, error = %d\n", error);
@@ -962,7 +962,7 @@ int main (int argc, char **argv)
    /*              12345678901234567890123456789012 */
    var_names[0] = "this_variable_name_is_short";
    var_names[1] = "this_variable_name_is_just_right";
-   var_names[2] = "this_variable_name_is_tooooo_long";
+   var_names[2] = "this_variable_name_is_ok";
 
    error = ex_put_var_param (exoid, "e", num_ele_vars);
    printf ("after ex_put_var_param, error = %d\n", error);
