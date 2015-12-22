@@ -476,14 +476,14 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
 	std::copy(times.begin(), times.end(), std::back_inserter(global_times));
       } else {
 	if (global_times.size() != times.size()) {
-	  std::cerr << "Time step sizes must match.";
+	  std::cerr << "ERROR: Time step sizes must match.";
 	  SMART_ASSERT(global_times.size() == times.size())(global_times.size())(times.size())(p);
 	  exit(EXIT_FAILURE);
 	}
 
 	for (size_t i=0; i < global_times.size(); i++) {
 	  if (!approx_equal(global_times[i], times[i], global_times[0])) {
-	    std::cerr << "Time step " << i+1 << " in part " << p+1
+	    std::cerr << "ERROR: Time step " << i+1 << " in part " << p+1
 		      << " does not match time steps in previous part(s): previous: "
 		      << global_times[i] << ", current: " << times[i] << "\n";
 	    exit(EXIT_FAILURE);
