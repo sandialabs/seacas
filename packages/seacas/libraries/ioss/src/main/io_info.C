@@ -1,3 +1,4 @@
+
 // Copyright(C) 1999-2010
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
@@ -42,6 +43,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <array>
 #include <algorithm>
 #include <functional>
 #include <unordered_set>
@@ -93,8 +95,9 @@ namespace {
   {
   public:
     Face() : id_(0), elementCount_(0) {}
-    Face(size_t id, std::vector<size_t> conn)
-      : id_(id), connectivity_(conn), elementCount_(0) {}
+    Face(size_t id, const std::array<size_t,4> &conn)
+      : id_(id), connectivity_(conn), elementCount_(0)
+    {}
     
     void add_element(size_t element_id) const
     {
@@ -103,9 +106,9 @@ namespace {
     }
     
     size_t id_;
-    std::vector<size_t> connectivity_;
     mutable size_t element[2];
     mutable size_t elementCount_;
+    std::array<size_t,4> connectivity_;
   };
 
   struct FaceHash
@@ -121,33 +124,17 @@ namespace {
     bool operator()(const Face &left, const Face &right) const
     {
       if (left.id_ != right.id_) return false;
-      if (left.connectivity_.size() != right.connectivity_.size()) return false;
-      
-      // Hash (id_) is equal and they point to same type of face (quad/tri)
+      // Hash (id_) is equal
       // Check whether same vertices (can be in different order)
-#if 1
       for (auto lvert : left.connectivity_) {
-	if (std::find(right.connectivity_.begin(), right.connectivity_.end(), lvert) == right.connectivity_.end()) {
+	if (std::find(right.connectivity_.begin(),
+		      right.connectivity_.end(),
+		      lvert) == right.connectivity_.end()) {
 	  // Not found, therefore not the same.
 	  return false;
 	}
       }
       return true;
-#else
-      std::vector<size_t> vertices;
-      vertices.reserve(2*left.connectivity_.size());
-      for (size_t id : left.connectivity_) {
-	vertices.push_back(id);
-      }
-      for (size_t id : right.connectivity_) {
-	vertices.push_back(id);
-      }
-      std::sort(vertices.begin(), vertices.end());
-      vertices.erase(std::unique(vertices.begin(), vertices.end()), vertices.end());
-      // shrink-to-fit...
-      std::vector<size_t>(vertices).swap(vertices);
-      return vertices.size() == left.connectivity_.size();
-#endif
     }
   };
 
@@ -194,9 +181,13 @@ namespace {
 
   size_t id_rand(size_t id)
   {
+#if 0
     std::mt19937_64 rng;
     rng.seed(id);
     return rng();
+#else
+    return id;
+#endif
   }
 
 }
@@ -441,8 +432,9 @@ namespace {
     }
   }
 
-  void create_face(std::unordered_set<Face,FaceHash,FaceEqual> &faces, size_t id,
-		   std::vector<size_t> &conn, size_t element)
+  void create_face(std::unordered_set<Face,FaceHash,FaceEqual> &faces,
+		   size_t id, std::array<size_t,4> &conn,
+		   size_t element)
   {
     Face face(id, conn);
     auto face_iter = faces.insert(face);
@@ -450,24 +442,28 @@ namespace {
     (*(face_iter.first)).add_element(element);
   }
 
+  // Using array vs vector -- 21.9 vs 38.2 for 128x128x128+tets
   void generate_faces(Ioss::Region &region)
   {
     Ioss::NodeBlock *nb = region.get_node_blocks()[0];
 
     std::vector<size_t> hash_ids;
-    {
-      std::vector<int>  ids;
-      nb->get_field_data("ids", ids);
+    std::vector<int>  ids;
+    nb->get_field_data("ids", ids);
 
-      // Convert ids into hashed-ids
-      hash_ids.reserve(ids.size());
-      for (auto id : ids) {
-	hash_ids.push_back(id_rand(id));
-      }
+    // Convert ids into hashed-ids
+    hash_ids.reserve(ids.size());
+
+    for (auto id : ids) {
+      hash_ids.push_back(id_rand(id));
     }
 
+    // Done with ids vector...
+    std::vector<int>().swap(ids);
+    assert(ids.capacity() == 0);
+
     size_t numel = region.get_property("element_count").get_int();
-    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(33*numel/10);
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
@@ -478,24 +474,29 @@ namespace {
       (*i)->get_field_data("connectivity_raw", connectivity);
 
       int num_face_per_elem = topo->number_faces();
-      std::vector<Ioss::IntVector> face_conn(num_face_per_elem);
+      assert(num_face_per_elem <= 6);
+      std::array<Ioss::IntVector,6> face_conn;
+      std::array<int,6> face_count;
       for (int face = 0; face < num_face_per_elem; face++) {
 	face_conn[face] = topo->face_connectivity(face+1);
+	face_count[face] = topo->number_edges_face(face+1);
       }
       
       int num_node_per_elem = topo->number_nodes();
       size_t num_elem = (*i)->get_property("entity_count").get_int();
 
+      // NOTE: By using number_edges_face instead of number_nodes_face,
+      //       we get the essential topological shape (QUAD vs TRI)
+      //       which is all that is needed here.
       for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
  	for (int face = 0; face < num_face_per_elem; face++) {
 	  size_t id = 0;
-	  assert(topo->number_nodes_face(face+1) == face_conn[face].size());
-	  std::vector<size_t> conn;
-	  conn.reserve(topo->number_nodes_face(face+1));
-	  for (size_t j = 0; j < topo->number_nodes_face(face+1); j++) {
+	  assert(face_count[face] <= 4);
+	  std::array<size_t,4> conn = {0,0,0,0};
+	  for (size_t j = 0; j < face_count[face]; j++) {
 	    size_t fnode = offset + face_conn[face][j];
 	    size_t gnode = connectivity[fnode];
-	    conn.push_back(gnode);
+	    conn[j] = gnode;
 	    id += hash_ids[gnode];
 	  }
 	  create_face(faces, id, conn, elem+1);
