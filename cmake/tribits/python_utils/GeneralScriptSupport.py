@@ -46,8 +46,8 @@ Python module containing general support functions for creating scripts
 #
 
 import sys
-if sys.version < '2.4':
-   print "Error, Python version is "+sys.version+" < 2.4!"
+if sys.version < '2.6':
+   print "Error, Python version is "+sys.version+" < 2.6!"
    sys.exit(1)
 
 #
@@ -152,7 +152,7 @@ def extractLinesAfterRegex(string_in, regex_in):
   reMatch = re.compile(regex_in)
   linesExtracted = ""
   foundRegex = False
-  for line in string_in.strip().split("\n"):
+  for line in string_in.strip().splitlines():
     #print "line = '" + line + "'"
     if not foundRegex:
       matchObj = reMatch.match(line)
@@ -248,7 +248,7 @@ class SysCmndInterceptor:
     self.__allowExtraCmnds = True
 
   def readCommandsFromStr(self, cmndsStr):
-    lines = cmndsStr.split('\n')
+    lines = cmndsStr.splitlines()
     for line in lines:
       #print "line: '"+line+"'"
       if line == "":
@@ -260,11 +260,18 @@ class SysCmndInterceptor:
       if tag == "FT":
         self.__fallThroughCmndRegexList.append(entry.strip())
       elif tag == "IT":
-        (cmndRegex, cmndReturn, cmndOutput) = entry.split(';')
+        entryArray = entry.split(';')
+        if len(entryArray) < 3:
+          raise Exception("Error, invalid line {"+line+"}")
+        cmndRegex = entryArray[0]
+        cmndReturn = entryArray[1]
+        cmndOutput = ""
+        for cmndOutputEntry in entryArray[2:]:
+          #print "cmndOutputEntry = {"+cmndOutputEntry+"}"
+          cmndOutput += cmndOutputEntry.strip()[1:-1]+"\n"
         #print "(cmndRegex, cmndReturn, cmndOutput) =", (cmndRegex, cmndReturn, cmndOutput)
         self.__interceptedCmndStructList.append(
-          InterceptedCmndStruct(cmndRegex.strip(), int(cmndReturn),
-            cmndOutput.strip()[1:-1] )
+          InterceptedCmndStruct(cmndRegex.strip(), int(cmndReturn), cmndOutput)
           )
       else:
         raise Exception("Error, invalid tag = '"+tag+"'!")
@@ -403,17 +410,20 @@ def echoRunSysCmnd(cmnd, throwExcept=True, outFile=None, msg=None,
 
 
 def getCmndOutput(cmnd, stripTrailingSpaces=False, throwOnError=True, workingDir="", \
-  getStdErr=False \
+  getStdErr=False, rtnCode=False \
   ):
   """Run a shell command and return its output"""
-  (data, err) = runSysCmndInterface(cmnd, rtnOutput=True, workingDir=workingDir,
+  (data, errCode) = runSysCmndInterface(cmnd, rtnOutput=True, workingDir=workingDir,
     getStdErr=getStdErr)
-  if err:
+  if errCode != 0:
     if throwOnError:
-      raise RuntimeError, '%s failed w/ exit code %d:\n\n%s' % (cmnd, err, data)
+      raise RuntimeError, '%s failed w/ exit code %d:\n\n%s' % (cmnd, errCode, data)
+  dataToReturn = data
   if stripTrailingSpaces:
-    return data.rstrip()
-  return data
+    dataToReturn = data.rstrip()
+  if rtnCode:
+    return (dataToReturn, errCode)
+  return dataToReturn
 
 
 def pidStillRunning(pid):

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # @HEADER
 # ************************************************************************
 #
@@ -39,37 +37,12 @@
 # ************************************************************************
 # @HEADER
 
-from TribitsPackageFilePathUtils import *
 
-
-#
-# Read in the commandline arguments
-#
-
-usageHelp = r"""get-tribits-packages-from-files-list.py --file=<FILES_LIST_FILE>
-"""
-
-from optparse import OptionParser
-
-clp = OptionParser(usage=usageHelp)
-
-clp.add_option(
-  "--files-list-file", dest="filesListFile", type="string", default=None,
-  help="File containing the list of modified files." )
-
-clp.add_option(
-  "--deps-xml-file", dest="depsXmlFile", type="string",
-  help="File containing the listing of packages, dir names, dependencies, etc.")
-
-(options, args) = clp.parse_args()
-
-if not options.filesListFile:
-  raise Exception("Error, the option --files-list-file=FILENAME must be set!")
-
-filesList = readStrFromFile(options.filesListFile).splitlines()
-
-trilinosDependencies = getProjectDependenciesFromXmlFile(options.depsXmlFile)
-
-packagesList = getPackagesListFromFilePathsList(trilinosDependencies, filesList, True)
-
-print ';'.join(packagesList)
+FUNCTION(TRIBITS_GET_CATEGORIES_STRING  CATEGORIES_IN  CATEGORIES_STR_OUT)
+  IF (CATEGORIES_IN)
+    STRING(REPLACE ";" ", " CATEGORIES_STR "${CATEGORIES_IN}")
+  ELSE()
+    SET(CATEGORIES_STR "BASIC")
+  ENDIF()
+  SET(${CATEGORIES_STR_OUT} "${CATEGORIES_STR}" PARENT_SCOPE)
+ENDFUNCTION()
