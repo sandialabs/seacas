@@ -207,7 +207,6 @@ ENDFUNCTION()
 #
 #   TRIBITS_ADD_LIBRARY(
 #     <libBaseName>
-#     [STATIC] [SHARED]
 #     [HEADERS <h0> <h1> ...]
 #     [HEADERS_INSTALL_SUBDIR <headerssubdir>]
 #     [NOINSTALLHEADERS <nih0> <hih1> ...]
@@ -247,16 +246,6 @@ ENDFUNCTION()
 #     Linux prefix = ``'lib'``, postfix = ``'.so'`` for shared lib and postfix
 #     = ``'.a'`` static lib) (see documentation for the built-in CMake command
 #     ``ADD_LIBRARY()``.
-#
-#   ``STATIC``
-#
-#     Build this library as a static archive library even the project has enabled 
-#     the building of shared libraries.
-#
-#   ``SHARED``
-#
-#     Build this library as a shared dynamic library even the project has not enabled 
-#     the building of shared libraries.
 #
 #   ``HEADERS <h0> <h1> ...``
 #
@@ -443,7 +432,7 @@ FUNCTION(TRIBITS_ADD_LIBRARY LIBRARY_NAME_IN)
   PARSE_ARGUMENTS(
     PARSE #prefix
     "HEADERS;HEADERS_INSTALL_SUBDIR;NOINSTALLHEADERS;SOURCES;DEPLIBS;IMPORTEDLIBS;DEFINES;ADDED_LIB_TARGET_NAME_OUT" # Lists
-    "STATIC;TESTONLY;NO_INSTALL_LIB_OR_HEADERS;CUDALIBRARY" #Options
+    "TESTONLY;NO_INSTALL_LIB_OR_HEADERS;CUDALIBRARY" #Options
     ${ARGN} # Remaining arguments passed in
     )
 
@@ -707,16 +696,9 @@ FUNCTION(TRIBITS_ADD_LIBRARY LIBRARY_NAME_IN)
       ADD_DEFINITIONS(${PARSE_DEFINES})
     ENDIF()
 
-    IF (PARSE_STATIC)
-        SET(STATIC_OR_SHARED "STATIC")
-    ELSEIF (PARSE_SHARED)
-        SET(STATIC_OR_SHARED "SHARED")
-    ENDIF()
-
     IF (NOT PARSE_CUDALIBRARY)
       ADD_LIBRARY(
         ${LIBRARY_NAME}
-	${STATIC_OR_SHARED}
         ${PARSE_HEADERS}
         ${PARSE_NOINSTALLHEADERS}
         ${PARSE_SOURCES}

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # @HEADER
 # ************************************************************************
 #
@@ -39,37 +37,16 @@
 # ************************************************************************
 # @HEADER
 
-from TribitsPackageFilePathUtils import *
+
+INCLUDE(AppendStringVar)
 
 
-#
-# Read in the commandline arguments
-#
-
-usageHelp = r"""get-tribits-packages-from-files-list.py --file=<FILES_LIST_FILE>
-"""
-
-from optparse import OptionParser
-
-clp = OptionParser(usage=usageHelp)
-
-clp.add_option(
-  "--files-list-file", dest="filesListFile", type="string", default=None,
-  help="File containing the list of modified files." )
-
-clp.add_option(
-  "--deps-xml-file", dest="depsXmlFile", type="string",
-  help="File containing the listing of packages, dir names, dependencies, etc.")
-
-(options, args) = clp.parse_args()
-
-if not options.filesListFile:
-  raise Exception("Error, the option --files-list-file=FILENAME must be set!")
-
-filesList = readStrFromFile(options.filesListFile).splitlines()
-
-trilinosDependencies = getProjectDependenciesFromXmlFile(options.depsXmlFile)
-
-packagesList = getPackagesListFromFilePathsList(trilinosDependencies, filesList, True)
-
-print ';'.join(packagesList)
+FUNCTION(TRIBITS_STRIP_COMMENTS_FROM_CMAKE_CACHE_FILE  INPUT_FILE  OUTPUT_FILE)
+  EXECUTE_PROCESS(
+    COMMAND cat "${INPUT_FILE}"
+    COMMAND grep -v "^#"
+    COMMAND grep -v "^//"
+    COMMAND grep -v "^$"
+    OUTPUT_FILE "${OUTPUT_FILE}"
+    )
+ENDFUNCTION()
