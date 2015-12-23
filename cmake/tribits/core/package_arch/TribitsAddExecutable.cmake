@@ -130,11 +130,16 @@ INCLUDE(ParseVariableArguments)
 #
 #   ``DIRECTORY <dir>``
 #
-#     If specified, then the sources for the executable listed in ``SOURCES
-#     <src0> <src1> ...`` are assumed to be in the relative or absolute
-#     directory ``<dir>`` instead of the current source directory.  This
-#     directory path is prepended to each source file name ``<srci>`` unless
-#     ``<srci>`` is an absolute path.
+#     If specified, then the generated executable ``<exeTargetName>`` is
+#     placed in the relative or absolute directory ``<dir>``.  If ``<dir>`` is
+#     not an absolute path, then the generated executable is placed in the
+#     directory ``${CMAKE_CURRENT_BINARY_DIR}/<dir>/``.  Also, the sources for
+#     the executable listed in ``SOURCES <src0> <src1> ...`` are assumed to be
+#     in the relative or absolute directory ``<dir>`` instead of the current
+#     source directory.  This directory path is prepended to each source file
+#     name ``<srci>`` unless ``<srci>`` is an absolute path.  If ``<dir>`` is
+#     not an absolute path, then source files listed in ``SOURCES`` are
+#     assumed to be in the directory ``${CMAKE_CURRENT_SOURCE_DIR}/<dir>/``.
 #
 #   ``CATEGORIES <category0> <category1> ...``
 #
