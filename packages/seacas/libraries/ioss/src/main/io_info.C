@@ -43,6 +43,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <chrono>
 #include <array>
 #include <algorithm>
 #include <functional>
@@ -460,17 +461,17 @@ namespace {
 
     // Convert ids into hashed-ids
     hash_ids.reserve(ids.size());
-
+    auto starth = std::chrono::steady_clock::now();
     for (auto id : ids) {
       hash_ids.push_back(id_rand(id));
     }
-
+    auto endh =  std::chrono::steady_clock::now();
     // Done with ids vector...
     std::vector<INT>().swap(ids);
     assert(ids.capacity() == 0);
 
     size_t numel = region.get_property("element_count").get_int();
-    std::unordered_set<Face,FaceHash,FaceEqual> faces(33*numel/10);
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
@@ -512,6 +513,17 @@ namespace {
       ++i;
     }
     
+    auto endf = std::chrono::steady_clock::now();
+
+    auto diffh = endh - starth;
+    auto difff = endf - endh;
+
+    std::cout << "Node ID hash time:   \t" << std::chrono::duration<double, std::milli> (diffh).count() << " ms\t"
+	      << std::chrono::duration<double, std::micro> (diffh).count()/hash_ids.size() << " us/node\n";
+    std::cout << "Face generation time:\t" << std::chrono::duration<double, std::milli> (difff).count() << " ms\t"
+	      << faces.size()/std::chrono::duration<double> (difff).count() << " faces/second.\n";
+    std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endf-starth).count() << " ms\n\n";
+
     // Faces have been generated at this point.
     // Categorize (boundary/interior)
     size_t interior = 0;
