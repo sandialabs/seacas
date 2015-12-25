@@ -141,7 +141,8 @@ namespace {
   // Data space shared by most field input/output routines...
   std::vector<char> data;
 
-  void generate_faces(Ioss::Region &region);
+  template <typename INT> 
+  void generate_faces(Ioss::Region &region, INT /*dummy*/);
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interface, bool summary);
   void info_edgeblock(Ioss::Region &region, bool summary);
   void info_faceblock(Ioss::Region &region, bool summary);
@@ -377,7 +378,12 @@ namespace {
     }
 
     if (interface.create_faces()) {
-      generate_faces(region);
+      if (interface.ints_64_bit()) {
+	generate_faces(region, (int64_t)0);
+      }
+      else {
+	generate_faces(region, (int)0);
+      }
     }
   }
 
@@ -443,12 +449,13 @@ namespace {
   }
 
   // Using array vs vector -- 21.9 vs 38.2 for 128x128x128+tets
-  void generate_faces(Ioss::Region &region)
+  template <typename INT>
+  void generate_faces(Ioss::Region &region, INT /*dummy*/)
   {
     Ioss::NodeBlock *nb = region.get_node_blocks()[0];
 
     std::vector<size_t> hash_ids;
-    std::vector<int>  ids;
+    std::vector<INT>  ids;
     nb->get_field_data("ids", ids);
 
     // Convert ids into hashed-ids
@@ -459,7 +466,7 @@ namespace {
     }
 
     // Done with ids vector...
-    std::vector<int>().swap(ids);
+    std::vector<INT>().swap(ids);
     assert(ids.capacity() == 0);
 
     size_t numel = region.get_property("element_count").get_int();
@@ -470,7 +477,7 @@ namespace {
     while (i != ebs.end()) {
 
       const Ioss::ElementTopology *topo = (*i)->topology();
-      std::vector<int> connectivity;
+      std::vector<INT> connectivity;
       (*i)->get_field_data("connectivity_raw", connectivity);
 
       int num_face_per_elem = topo->number_faces();
