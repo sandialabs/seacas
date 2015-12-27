@@ -94,6 +94,7 @@
 
 namespace {
 
+#ifdef HAVE_MPI
   MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
   MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
   MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
@@ -206,6 +207,7 @@ namespace {
     return MPI_Alltoallv(TOPTR(sendbuf), (int*)TOPTR(sendcnts), (int*)TOPTR(senddisp), mpi_type(T(0)),
                          TOPTR(recvbuf), (int*)TOPTR(recvcnts), (int*)TOPTR(recvdisp), mpi_type(T(0)), comm);
   }
+#endif
 
   template <typename T>
   void generate_index(std::vector<T> &index)
