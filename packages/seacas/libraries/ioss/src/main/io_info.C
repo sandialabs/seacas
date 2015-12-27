@@ -76,6 +76,8 @@
 #include "Ioss_SideSet.h"
 #include "Ioss_VariableType.h"
 
+#include <assert.h>
+
 #include "info_interface.h"
 
 #ifdef HAVE_MPI
@@ -92,12 +94,137 @@
 
 namespace {
 
+  MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
+  MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
+  MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
+  MPI_Datatype mpi_type(size_t /*dummy*/)  {assert(sizeof(size_t) == sizeof(int64_t)); return MPI_LONG_LONG_INT;}
+
+  int power_2(int count)
+  {
+    // Return the power of two which is equal to or greater than 'count'
+    // count = 15 -> returns 16
+    // count = 16 -> returns 16
+    // count = 17 -> returns 32
+
+    // Use brute force...
+    int pow2 = 1;
+    while (pow2 < count) {
+      pow2 *= 2;
+    }
+    return pow2;
+  }
+
+  template <typename T>
+  int MY_Alltoallv64(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts, const std::vector<int64_t> &senddisp,
+                     std::vector<T> &recvbuf, const std::vector<int64_t> &recvcounts, const std::vector<int64_t> &recvdisp, MPI_Comm  comm)
+  {
+    int processor_count = 0;
+    int my_processor = 0;
+    MPI_Comm_size(comm, &processor_count);
+    MPI_Comm_rank(comm, &my_processor);
+
+    // Verify that all 'counts' can fit in an integer. Symmetric
+    // communication, so recvcounts are sendcounts on another processor.
+    for (int i=0; i < processor_count; i++) {
+      int snd_cnt = (int)sendcounts[i];
+      if ((int64_t)snd_cnt != sendcounts[i]) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
+               << "       processor " << my_processor << " to processor " << i << " is " << sendcounts[i]
+               << "\n       which exceeds the storage capacity of the integers used by MPI functions.\n";
+        std::cerr << errmsg.str();
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    size_t pow_2=power_2(processor_count);
+
+    for(size_t i=1; i < pow_2; i++) {
+      MPI_Status status;
+
+      int tag = 24713;
+      size_t exchange_proc = i ^ my_processor;
+      if(exchange_proc < (size_t)processor_count){
+        int snd_cnt = (int)sendcounts[exchange_proc]; // Converts from int64_t to int as needed by mpi
+        int rcv_cnt = (int)recvcounts[exchange_proc];
+        if ((size_t)my_processor < exchange_proc) {
+          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
+          MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
+        }
+        else {
+          MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
+          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
+        }
+      }
+    }
+
+    // Take care of this processor's data movement...
+    std::copy(&sendbuf[senddisp[my_processor]],
+              &sendbuf[senddisp[my_processor]+sendcounts[my_processor]],
+              &recvbuf[recvdisp[my_processor]]);
+    return 0;
+  }
+
+  template <typename T>
+  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts, const std::vector<int64_t> &senddisp, 
+                   std::vector<T> &recvbuf, const std::vector<int64_t> &recvcnts, const std::vector<int64_t> &recvdisp, MPI_Comm comm)
+  {
+    // Wrapper to handle case where send/recv counts and displacements are 64-bit integers.
+    // Two cases:
+    // 1) They are of type 64-bit integers, but only storing data in the 32-bit integer range.
+    //    -- if (sendcnts[#proc-1] + senddisp[#proc-1] < 2^31, then we are ok
+    // 2) They are of type 64-bit integers, and storing data in the 64-bit integer range.
+    //    -- call special alltoallv which does point-to-point sends
+    int processor_count = 0;
+    MPI_Comm_size(comm, &processor_count);
+    size_t max_comm = sendcnts[processor_count-1] + senddisp[processor_count-1];
+    size_t one = 1;
+    if (max_comm < one<<31) {
+      // count and displacement data in range, need to copy to integer vector.
+      std::vector<int> send_cnt(sendcnts.begin(), sendcnts.end());
+      std::vector<int> send_dis(senddisp.begin(), senddisp.end());
+      std::vector<int> recv_cnt(recvcnts.begin(), recvcnts.end());
+      std::vector<int> recv_dis(recvdisp.begin(), recvdisp.end());
+      return MPI_Alltoallv(TOPTR(sendbuf), (int*)TOPTR(send_cnt), (int*)TOPTR(send_dis), mpi_type(T(0)),
+                           TOPTR(recvbuf), (int*)TOPTR(recv_cnt), (int*)TOPTR(recv_dis), mpi_type(T(0)), comm);
+    }
+    else {
+      // Same as if each processor sent a message to every other process with:
+      //     MPI_Send(sendbuf+senddisp[i]*sizeof(sendtype),sendcnts[i], sendtype, i, tag, comm);
+      // And received a message from each processor with a call to:
+      //     MPI_Recv(recvbuf+recvdisp[i]*sizeof(recvtype),recvcnts[i], recvtype, i, tag, comm);
+      return MY_Alltoallv64(sendbuf, sendcnts, senddisp, recvbuf, recvcnts, recvdisp, comm);
+
+    }
+  }
+
+  template <typename T>
+  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int> &sendcnts, const std::vector<int> &senddisp, 
+                   std::vector<T> &recvbuf, const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
+                   MPI_Comm comm)
+  {
+    return MPI_Alltoallv(TOPTR(sendbuf), (int*)TOPTR(sendcnts), (int*)TOPTR(senddisp), mpi_type(T(0)),
+                         TOPTR(recvbuf), (int*)TOPTR(recvcnts), (int*)TOPTR(recvdisp), mpi_type(T(0)), comm);
+  }
+
+  template <typename T>
+  void generate_index(std::vector<T> &index)
+  {
+    T sum = 0;
+    for (size_t i=0; i < index.size(); i++) {
+      T cnt = index[i];
+      index[i] = sum;
+      sum += cnt;
+    }
+  }
+
   class Face
   {
   public:
     Face() : id_(0), elementCount_(0) {}
     Face(size_t id, const std::array<size_t,4> &conn)
-      : id_(id), connectivity_(conn), elementCount_(0)
+      : id_(id), elementCount_(0),
+        sharedWithProc_(-1), connectivity_(conn)
     {}
     
     void add_element(size_t element_id) const
@@ -109,6 +236,7 @@ namespace {
     size_t id_;
     mutable size_t element[2];
     mutable size_t elementCount_;
+    mutable int sharedWithProc_;
     std::array<size_t,4> connectivity_;
   };
 
@@ -373,8 +501,8 @@ namespace {
       info_commsets(region,     summary);
       info_coordinate_frames(region, summary);
     }
-    
-#endif
+
+
     if (interface.compute_volume()) {
       element_volume(region);
     }
@@ -450,29 +578,25 @@ namespace {
     (*(face_iter.first)).add_element(element);
   }
 
-  // Using array vs vector -- 21.9 vs 38.2 for 128x128x128+tets
   template <typename INT>
   void generate_faces(Ioss::Region &region, INT /*dummy*/)
   {
     Ioss::NodeBlock *nb = region.get_node_blocks()[0];
 
-    std::vector<size_t> hash_ids;
     std::vector<INT>  ids;
     nb->get_field_data("ids", ids);
 
     // Convert ids into hashed-ids
-    hash_ids.reserve(ids.size());
     auto starth = std::chrono::steady_clock::now();
+    std::vector<size_t> hash_ids;
+    hash_ids.reserve(ids.size());
     for (auto id : ids) {
       hash_ids.push_back(id_rand(id));
     }
     auto endh =  std::chrono::steady_clock::now();
-    // Done with ids vector...
-    std::vector<INT>().swap(ids);
-    assert(ids.capacity() == 0);
 
     size_t numel = region.get_property("element_count").get_int();
-    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(3.3*numel);
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
@@ -482,6 +606,9 @@ namespace {
       std::vector<INT> connectivity;
       (*i)->get_field_data("connectivity_raw", connectivity);
 
+      std::vector<INT> elem_ids;
+      (*i)->get_field_data("ids", elem_ids);
+      
       int num_face_per_elem = topo->number_faces();
       assert(num_face_per_elem <= 6);
       std::array<Ioss::IntVector,6> face_conn;
@@ -498,54 +625,257 @@ namespace {
       //       we get the essential topological shape (QUAD vs TRI)
       //       which is all that is needed here.
       for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
- 	for (int face = 0; face < num_face_per_elem; face++) {
-	  size_t id = 0;
-	  assert(face_count[face] <= 4);
-	  std::array<size_t,4> conn = {0,0,0,0};
-	  for (size_t j = 0; j < face_count[face]; j++) {
-	    size_t fnode = offset + face_conn[face][j];
-	    size_t gnode = connectivity[fnode];
-	    conn[j] = gnode;
-	    id += hash_ids[gnode];
-	  }
-	  create_face(faces, id, conn, elem+1);
-	}
+        for (int face = 0; face < num_face_per_elem; face++) {
+          size_t id = 0;
+          assert(face_count[face] <= 4);
+          std::array<size_t,4> conn = {0,0,0,0};
+          for (size_t j = 0; j < face_count[face]; j++) {
+            size_t fnode = offset + face_conn[face][j];
+            size_t gnode = connectivity[fnode];
+            conn[j] = ids[gnode-1];
+            id += hash_ids[gnode-1];
+          }
+          create_face(faces, id, conn, elem_ids[elem]);
+        }
       }
       ++i;
     }
     
     auto endf = std::chrono::steady_clock::now();
 
+    size_t my_rank = region.get_database()->parallel_rank();
+    size_t proc_count = region.get_database()->util().parallel_size();
+
+#ifdef HAVE_MPI
+    if (proc_count > 1) {
+      // If parallel, resolve faces on processor boundaries.
+      // For each boundary face, need to check whether all of the nodes on
+      // the face are shared with the same processor.  If so, then that face
+      // is *possibly* shared with that processor.
+      //
+      // With the current continuum element only restriction, then a face
+      // can only be shared with one other processor...
+
+      // get nodal communication data CommSet...
+      Ioss::CommSet  *css = region.get_commset("commset_node");
+
+      std::vector<std::pair<INT,INT>> proc_entity;
+      {
+        // entity_processor consists of node,proc, node,proc, entries.
+        std::vector<INT> entity_processor;
+        css->get_field_data("entity_processor_raw", entity_processor);
+
+        proc_entity.reserve(entity_processor.size()/2);
+        for (size_t i = 0; i < entity_processor.size(); i+= 2) {
+          // Converts from 1-based to 0-based local nodes.
+          proc_entity.push_back(std::make_pair(entity_processor[i+1], entity_processor[i]-1));
+        }
+      }
+      
+      // 'id_span' gives index into proc_entity for all nodes.
+      // 'id_span[local_node_id] .. id_span[local_node_id+1]' gives
+      // the location in 'proc_entity' of the sharing information
+      // for node 'local_node_id'
+      std::vector<size_t> id_span(hash_ids.size()+1);
+      INT proc_last = 0;
+      for (size_t i = 0; i < proc_entity.size(); i++) {
+        INT node = proc_entity[i].second;
+        assert(node >= 0 && node < id_span.size()-1);
+        id_span[node]++;
+      }
+      generate_index(id_span);
+      
+      // Each boundary face ...
+      // .. See if all of its nodes are shared with same processor.
+      //  .. Iterate face nodes
+      //  .. Determine shared proc.
+      //  .. (for now, use a map of <proc,count>
+      //   .. if potentially shared with 'proc', then count == num_nodes_face
+      
+      std::vector<int> potential_count(proc_count); // SIZE_T
+      std::vector<int>    shared_with(faces.size(),my_rank);
+
+      for (auto& face : faces) {
+        if (face.elementCount_ == 1) {
+          // On 'boundary' -- try to determine whether on processor or exterior boundary
+          std::map<int,int> shared_nodes;
+          int face_node_count = 0;
+          for (auto &gnode : face.connectivity_) {
+            if (gnode > 0) {
+              auto node = region.get_database()->node_global_to_local(gnode, true) - 1;
+              face_node_count++;
+              size_t begin = id_span[node];
+              size_t end   = id_span[node+1];
+              for (size_t j=begin; j < end; j++) {
+                assert(proc_entity[j].second == node);
+                int proc = proc_entity[j].first;
+                shared_nodes[proc]++;
+              }
+            }
+          }
+          for (auto &proc_count : shared_nodes) {
+            if (proc_count.second == face_node_count) {
+              potential_count[proc_count.first]++;
+            }
+          }
+        }
+      }
+
+      std::vector<int> potential_offset(potential_count.begin(), potential_count.end());
+      generate_index(potential_offset);
+
+      size_t potential = potential_offset[proc_count-1]+potential_count[proc_count-1];
+      std::vector<size_t> potential_faces(6*potential);
+
+      for (auto& face : faces) {
+        if (face.elementCount_ == 1) {
+          // On 'boundary' -- try to determine whether on processor or exterior boundary
+          std::map<int,int> shared_nodes;
+          int face_node_count = 0;
+          for (auto &gnode : face.connectivity_) {
+            if (gnode > 0) {
+              auto node = region.get_database()->node_global_to_local(gnode, true) - 1;
+              face_node_count++;
+              size_t begin = id_span[node];
+              size_t end   = id_span[node+1];
+              for (size_t j=begin; j < end; j++) {
+                assert(proc_entity[j].second == node);
+                int proc = proc_entity[j].first;
+                shared_nodes[proc]++;
+              }
+            }
+          }
+          for (auto &proc_count : shared_nodes) {
+            if (proc_count.second == face_node_count) {
+	      size_t offset = potential_offset[proc_count.first];
+	      potential_faces[6*offset+0] = face.id_;
+	      potential_faces[6*offset+1] = face.connectivity_[0];
+	      potential_faces[6*offset+2] = face.connectivity_[1];
+	      potential_faces[6*offset+3] = face.connectivity_[2];
+	      potential_faces[6*offset+4] = face.connectivity_[3];
+	      potential_faces[6*offset+5] = face.element[0];
+	      assert(face.elementCount_ == 1);
+	      potential_offset[proc_count.first]++;
+            }
+          }
+        }
+      }
+
+      // Regenerate potential_offset since it was modified above...
+      std::copy(potential_count.begin(), potential_count.end(), potential_offset.begin());
+      generate_index(potential_offset);
+
+      // Now need to send to the other processors... 
+      // For now, use all-to-all; optimization is just send to processors with data...
+      std::vector<int> check_count(proc_count); // SIZE_T
+      MPI_Alltoall(TOPTR(potential_count), 1, mpi_type((int)0),
+                   TOPTR(check_count),     1, mpi_type((int)0),
+                   region.get_database()->util().communicator());
+
+      const int values_per_face = 6;
+      auto sum = std::accumulate(check_count.begin(), check_count.end(), 0);
+      std::vector<size_t> check_faces(values_per_face*sum);
+
+      std::vector<int> check_offset(check_count.begin(), check_count.end());
+      generate_index(check_offset);
+      
+      // Need to adjust counts and offsets to account for sending 6 values per face...
+      for (size_t i=0; i < proc_count; i++) {
+        potential_count[i] *= values_per_face;
+        potential_offset[i] *= values_per_face;
+        check_count[i] *= values_per_face;
+        check_offset[i] *= values_per_face;
+      }
+      
+      MY_Alltoallv(potential_faces, potential_count, potential_offset,
+		   check_faces,     check_count,     check_offset,
+		   region.get_database()->util().communicator());
+
+      // Now iterate the check_faces and see if any of them match one
+      // of this processors faces...  If so, then mark as shared and
+      // add the element...
+      for (size_t i=0; i < check_faces.size(); i+= values_per_face) {
+        size_t id = check_faces[i+0];
+        std::array<size_t,4> conn;
+        conn[0] = check_faces[i+1];
+        conn[1] = check_faces[i+2];
+        conn[2] = check_faces[i+3];
+        conn[3] = check_faces[i+4];
+        size_t element = check_faces[i+5];
+        Face face(id, conn);
+        auto face_iter = faces.find(face);
+        if (face_iter != faces.end()) {
+          // we have a match... This is a shared interior face
+          (*face_iter).add_element(element);
+
+          int proc = 0;
+          for (int j=0; j < check_count.size(); j++) {
+            if (check_count[j] > 0 && check_offset[j] == i) {
+              break;
+            }
+            proc++;
+          }
+          (*face_iter).sharedWithProc_ = proc;
+        }
+      }
+      
+    }
+#endif
+    auto endp = std::chrono::steady_clock::now();
+
     auto diffh = endh - starth;
     auto difff = endf - endh;
+    auto diffp = endp - endf;
 
     std::cout << "Node ID hash time:   \t" << std::chrono::duration<double, std::milli> (diffh).count() << " ms\t"
-	      << std::chrono::duration<double, std::micro> (diffh).count()/hash_ids.size() << " us/node\n";
+              << std::chrono::duration<double, std::micro> (diffh).count()/hash_ids.size() << " us/node\n";
     std::cout << "Face generation time:\t" << std::chrono::duration<double, std::milli> (difff).count() << " ms\t"
-	      << faces.size()/std::chrono::duration<double> (difff).count() << " faces/second.\n";
-    std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endf-starth).count() << " ms\n\n";
+              << faces.size()/std::chrono::duration<double> (difff).count() << " faces/second.\n";
+    if (proc_count > 1) {
+      std::cout << "Parallel time:       \t" << std::chrono::duration<double, std::milli> (diffp).count() << " ms\t"
+		<< faces.size()/std::chrono::duration<double> (diffp).count() << " faces/second.\n";
+    }
+    std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endp-starth).count() << " ms\n\n";
 
     // Faces have been generated at this point.
     // Categorize (boundary/interior)
     size_t interior = 0;
     size_t boundary = 0;
     size_t error = 0;
+    size_t pboundary = 0;
 
     for (auto& face : faces) {
-      if (face.elementCount_ == 2)
-	interior++;
+      if (face.elementCount_ == 2) {
+        interior++;
+        if (face.sharedWithProc_ != -1)
+          pboundary++;
+      }
       else if (face.elementCount_ == 1)
-	boundary++;
+        boundary++;
       else
-	error++;
+        error++;
     }
 
-    OUTPUT << "Face count = " << faces.size()
-	   << "\tInterior = " << interior
-	   << "\tBoundary = " << boundary
-	   << "\tError = " << error << "\n";
-    OUTPUT << "Buckets = " << faces.bucket_count() << "\n";
-    OUTPUT << "Load = " << faces.load_factor() << "\n";
+#ifdef HAVE_MPI
+    Ioss::Int64Vector counts(3), global(3);
+    counts[0] = interior;
+    counts[1] = boundary;
+    counts[2] = pboundary;
+    region.get_database()->util().global_count(counts, global);
+    interior = global[0];
+    boundary = global[1];
+    pboundary= global[2];
+#endif
+
+    if (my_rank == 0) {
+      OUTPUT << "Face count = " << interior+boundary-pboundary/2
+             << "\tInterior = " << interior-pboundary/2
+             << "\tBoundary = " << boundary
+             << "\tShared   = " << pboundary
+             << "\tError = " << error << "\n";
+      OUTPUT << "Buckets = " << faces.bucket_count() << "\n";
+      OUTPUT << "Load = " << faces.load_factor() << "\n";
+    }
   }
 
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface, bool summary)
