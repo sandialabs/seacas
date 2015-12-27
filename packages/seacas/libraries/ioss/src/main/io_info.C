@@ -43,6 +43,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <chrono>
 #include <array>
 #include <algorithm>
 #include <functional>
@@ -141,7 +142,8 @@ namespace {
   // Data space shared by most field input/output routines...
   std::vector<char> data;
 
-  void generate_faces(Ioss::Region &region);
+  template <typename INT> 
+  void generate_faces(Ioss::Region &region, INT /*dummy*/);
   void info_nodeblock(Ioss::Region &region, const Info::Interface &interface, bool summary);
   void info_edgeblock(Ioss::Region &region, bool summary);
   void info_faceblock(Ioss::Region &region, bool summary);
@@ -377,7 +379,12 @@ namespace {
     }
 
     if (interface.create_faces()) {
-      generate_faces(region);
+      if (interface.ints_64_bit()) {
+	generate_faces(region, (int64_t)0);
+      }
+      else {
+	generate_faces(region, (int)0);
+      }
     }
   }
 
@@ -443,34 +450,35 @@ namespace {
   }
 
   // Using array vs vector -- 21.9 vs 38.2 for 128x128x128+tets
-  void generate_faces(Ioss::Region &region)
+  template <typename INT>
+  void generate_faces(Ioss::Region &region, INT /*dummy*/)
   {
     Ioss::NodeBlock *nb = region.get_node_blocks()[0];
 
     std::vector<size_t> hash_ids;
-    std::vector<int>  ids;
+    std::vector<INT>  ids;
     nb->get_field_data("ids", ids);
 
     // Convert ids into hashed-ids
     hash_ids.reserve(ids.size());
-
+    auto starth = std::chrono::steady_clock::now();
     for (auto id : ids) {
       hash_ids.push_back(id_rand(id));
     }
-
+    auto endh =  std::chrono::steady_clock::now();
     // Done with ids vector...
-    std::vector<int>().swap(ids);
+    std::vector<INT>().swap(ids);
     assert(ids.capacity() == 0);
 
     size_t numel = region.get_property("element_count").get_int();
-    std::unordered_set<Face,FaceHash,FaceEqual> faces(33*numel/10);
+    std::unordered_set<Face,FaceHash,FaceEqual> faces(3*numel);
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
     while (i != ebs.end()) {
 
       const Ioss::ElementTopology *topo = (*i)->topology();
-      std::vector<int> connectivity;
+      std::vector<INT> connectivity;
       (*i)->get_field_data("connectivity_raw", connectivity);
 
       int num_face_per_elem = topo->number_faces();
@@ -505,6 +513,17 @@ namespace {
       ++i;
     }
     
+    auto endf = std::chrono::steady_clock::now();
+
+    auto diffh = endh - starth;
+    auto difff = endf - endh;
+
+    std::cout << "Node ID hash time:   \t" << std::chrono::duration<double, std::milli> (diffh).count() << " ms\t"
+	      << std::chrono::duration<double, std::micro> (diffh).count()/hash_ids.size() << " us/node\n";
+    std::cout << "Face generation time:\t" << std::chrono::duration<double, std::milli> (difff).count() << " ms\t"
+	      << faces.size()/std::chrono::duration<double> (difff).count() << " faces/second.\n";
+    std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endf-starth).count() << " ms\n\n";
+
     // Faces have been generated at this point.
     // Categorize (boundary/interior)
     size_t interior = 0;
