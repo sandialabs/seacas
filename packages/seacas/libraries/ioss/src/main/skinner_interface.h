@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
  * 
@@ -49,51 +49,33 @@ namespace Skinner {
 
       bool parse_options(int argc, char **argv);
   
-      int summary() const {return summary_;}
-      bool check_node_status() const {return checkNodeStatus_;}
-      bool compute_volume()  const {return computeVolume_;}
-      bool create_faces()  const {return createFaces_;}
-      bool compute_bbox()  const {return computeBBox_;}
-      bool adjacencies() const {return adjacencies_;}
       bool ints_64_bit() const {return ints64Bit_;}
-      bool list_groups() const {return listGroups_;}
-      
-      int surface_split_scheme() const {return surfaceSplitScheme_;}
-      char field_suffix_separator() const {return fieldSuffixSeparator_;}
-      bool use_generic_names() const {return useGenericNames_;}
 
-      std::string cwd() const {return cwd_;}
-      std::string filename() const {return filename_;}
-      std::string type() const {return filetype_;}
-      std::string groupname() const {return groupname_;}
-  
-      //! Dumps representation of data in this class to cerr
-  
+      std::string input_filename() const {return inputFile_;}
+      std::string output_filename() const {return outputFile_;}
+      std::string input_type() const {return inFiletype_;}
+      std::string output_type() const {return outFiletype_;}
   
     private:
       void enroll_options();
 
       Ioss::GetLongOption options_;
       
-      bool checkNodeStatus_;
-      bool computeVolume_;
-      bool createFaces_;
-      bool adjacencies_;
+      std::string inputFile_;
+      std::string outputFile_;
+      std::string inFiletype_;
+      std::string outFiletype_;
+
+    public:
+      std::string decomp_method;
+      std::string compose_output;
+      int  compression_level;
+      bool shuffle;
+      bool debug;
+      bool statistics;
       bool ints64Bit_;
-      bool computeBBox_;
-      bool listGroups_;
-      bool useGenericNames_;
-      char fieldSuffixSeparator_;
-      
-      int summary_;
-      int surfaceSplitScheme_;
-      
-      double minimumTime_;
-      double maximumTime_;
-      std::string cwd_;
-      std::string filetype_;
-      std::string filename_;
-      std::string groupname_;
+      bool netcdf4;
+      bool ignoreFaceIds_;
     };
 }
 #endif
