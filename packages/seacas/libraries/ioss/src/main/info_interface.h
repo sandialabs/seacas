@@ -52,7 +52,6 @@ namespace Info {
       int summary() const {return summary_;}
       bool check_node_status() const {return checkNodeStatus_;}
       bool compute_volume()  const {return computeVolume_;}
-      bool create_faces()  const {return createFaces_;}
       bool compute_bbox()  const {return computeBBox_;}
       bool adjacencies() const {return adjacencies_;}
       bool ints_64_bit() const {return ints64Bit_;}
@@ -77,7 +76,6 @@ namespace Info {
       
       bool checkNodeStatus_;
       bool computeVolume_;
-      bool createFaces_;
       bool adjacencies_;
       bool ints64Bit_;
       bool computeBBox_;
