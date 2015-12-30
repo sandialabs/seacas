@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2010 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
  * 
@@ -38,16 +38,15 @@
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for char_traits, string
 #include "Ioss_GetLongOpt.h"            // for GetLongOption, etc
+#include "Ioss_Utils.h"
 
 
 
 
 Skinner::Interface::Interface()
-  : checkNodeStatus_(false), computeVolume_(false), createFaces_(false),
-    adjacencies_(false), ints64Bit_(false), computeBBox_(false), listGroups_(false),
-    useGenericNames_(false), fieldSuffixSeparator_('_'), summary_(0),
-    surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
-    cwd_(""), filetype_("exodus")
+  :   compose_output("none"), compression_level(0),
+      shuffle(false), debug(false), statistics(false), ints64Bit_(false),
+      netcdf4(false), ignoreFaceIds_(false)
 {
   enroll_options();
 }
@@ -56,7 +55,7 @@ Skinner::Interface::~Interface() {}
 
 void Skinner::Interface::enroll_options()
 {
-  options_.usage("[options] basename");
+  options_.usage("[options] input_file[s] output_file");
 
   options_.enroll("help", Ioss::GetLongOption::NoValue,
 		  "Print this summary and exit", 0);
@@ -64,52 +63,87 @@ void Skinner::Interface::enroll_options()
   options_.enroll("version", Ioss::GetLongOption::NoValue,
 		  "Print version and exit", NULL);
 
-  options_.enroll("check_node_status", Ioss::GetLongOption::NoValue,
-		  "Check whether there are any nodes not connected to any elements",
-		  NULL);
-  options_.enroll("adjacencies", Ioss::GetLongOption::NoValue,
-		  "Calculate which element blocks touch which surfaces and other element blocks",
-		  NULL);
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
 		  "True if using 64-bit integers",
 		  NULL);
-  options_.enroll("compute_volume", Ioss::GetLongOption::NoValue,
-		  "Compute the volume of all hex elements in the mesh. Outputs min/max and count",
-		  NULL);
-  options_.enroll("create_faces", Ioss::GetLongOption::NoValue,
-		  "(EXPERIMENTAL) Create faces and output the total, interior, and boundary face counts",
-		  NULL);
-  options_.enroll("compute_bbox", Ioss::GetLongOption::NoValue,
-		  "Compute the bounding box of all element blocks in the mesh.",
-		  NULL);
+  options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
+		  "Database type for input file: pamgen|generated|exodus. exodus is the default.",
+		  "exodus");
 
-  options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
-		  "Print a list of the names of all groups in this file and then exit.",
+  options_.enroll("out_type", Ioss::GetLongOption::MandatoryValue,
+		  "Database type for output file: exodus. exodus is the default.",
+		  "exodus");
+
+  options_.enroll("ignore_face_ids", Ioss::GetLongOption::NoValue,
+		  "Ignore internal face ids and just use 1..num_face",
 		  NULL);
 
-  options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
-		  "Character used to separate a field suffix from the field basename\n"
-		  "\t\t when recognizing vector, tensor fields. Enter '0' for no separaor", "_");
-
-  options_.enroll("db_type", Ioss::GetLongOption::MandatoryValue,
-		  "Database Type: exodus, generated","exodusii");
-
-  options_.enroll("group_name", Ioss::GetLongOption::MandatoryValue,
-                 "List skinnerrmation only for the specified group.",
-                 NULL);
-
-  options_.enroll("use_generic_names", Ioss::GetLongOption::NoValue,
-		  "True to use generic names (type_id) instead of names in database",
-		  NULL);
-
-  options_.enroll("summary", Ioss::GetLongOption::NoValue,
-		  "Only output counts of nodes, elements, and entities",
+  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
+		  "Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format",
 		  NULL);
   
-  options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
-		  "Method used to split sidesets into homogenous blocks\n"
-		  "\t\tOptions are: TOPOLOGY, BLOCK, NOSPLIT",
-		  "TOPOLOGY");
+  options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
+		  "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
+		  NULL);
+  
+  options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
+		  "Specify the hdf5 compression level [0..9] to be used on the output file.",
+		  NULL);
+  
+  options_.enroll("compose", Ioss::GetLongOption::MandatoryValue,
+		  "Specify the parallel-io method to be used to output a single file in a parallel run. "
+		  "Options are default, mpiio, mpiposix, pnetcdf",
+		  NULL);
+
+  options_.enroll("rcb", Ioss::GetLongOption::NoValue,
+		  "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
+		  NULL);
+  options_.enroll("rib", Ioss::GetLongOption::NoValue,
+		  "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
+		  NULL);
+
+  options_.enroll("hsfc", Ioss::GetLongOption::NoValue,
+		  "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
+		  NULL);
+
+  options_.enroll("metis_sfc", Ioss::GetLongOption::NoValue,
+		  "Use the metis space-filling-curve method to decompose the input mesh in a parallel run.",
+		  NULL);
+  
+  options_.enroll("kway", Ioss::GetLongOption::NoValue,
+		  "Use the metis kway graph-based method to decompose the input mesh in a parallel run.",
+		  NULL);
+
+  options_.enroll("kway_geom", Ioss::GetLongOption::NoValue,
+		  "Use the metis kway graph-based method with geometry speedup to decompose the input mesh in a parallel run.",
+		  NULL);
+
+  options_.enroll("linear", Ioss::GetLongOption::NoValue,
+		  "Use the linear method to decompose the input mesh in a parallel run. "
+		  "elements in order first n/p to proc 0, next to proc 1.",
+		  NULL);
+
+  options_.enroll("cyclic", Ioss::GetLongOption::NoValue,
+		  "Use the cyclic method to decompose the input mesh in a parallel run. "
+		  "elements handed out to id % proc_count",
+		  NULL);
+
+  options_.enroll("random", Ioss::GetLongOption::NoValue,
+		  "Use the random method to decompose the input mesh in a parallel run."
+		  "elements assigned randomly to processors in a way that preserves balance (do not use for a real run)",
+		  NULL);
+
+  options_.enroll("external", Ioss::GetLongOption::NoValue,
+		  "Files are decomposed externally into a file-per-processor in a parallel run.",
+		  NULL);
+
+  options_.enroll("debug" , Ioss::GetLongOption::NoValue,
+		  "turn on debugging output",
+		  NULL);
+
+  options_.enroll("statistics" , Ioss::GetLongOption::NoValue,
+		  "output parallel io timing statistics",
+		  NULL);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue,
 		  "Show copyright and license data.",
@@ -146,66 +180,101 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
     exit(0);
   }
   
-  if (options_.retrieve("check_node_status")) {
-    checkNodeStatus_ = true;
-  }
-
-  if (options_.retrieve("adjacencies")) {
-    adjacencies_ = true;
-  }
-
   if (options_.retrieve("64-bit")) {
     ints64Bit_ = true;
   }
 
-  if (options_.retrieve("compute_volume")) {
-    computeVolume_ = true;
+  if (options_.retrieve("netcdf4")) {
+    netcdf4 = true;
   }
 
-  if (options_.retrieve("create_faces")) {
-    createFaces_ = true;
+  if (options_.retrieve("shuffle")) {
+    shuffle = true;
   }
 
-  if (options_.retrieve("compute_bbox")) {
-    computeBBox_ = true;
-  }
-
-  if (options_.retrieve("list_groups")) {
-    listGroups_ = true;
-  }
-
-  if (options_.retrieve("use_generic_names")) {
-    useGenericNames_ = true;
-  }
-
-  if (options_.retrieve("summary")) {
-    summary_ = 1;
+  if (options_.retrieve("ignore_face_ids")) {
+    ignoreFaceIds_ = true;
   }
 
   {
-    const char *temp = options_.retrieve("db_type");
+    const char *temp = options_.retrieve("compress");
     if (temp != NULL) {
-      filetype_ = temp;
+      compression_level = std::strtol(temp, NULL, 10);
+    }
+  }
+
+  if (options_.retrieve("rcb")) {
+    decomp_method = "RCB";
+  }
+
+  if (options_.retrieve("rib")) {
+    decomp_method = "RIB";
+  }
+
+  if (options_.retrieve("hsfc")) {
+    decomp_method = "HSFC";
+  }
+
+  if (options_.retrieve("metis_sfc")) {
+    decomp_method = "METIS_SFC";
+  }
+
+  if (options_.retrieve("kway")) {
+    decomp_method = "KWAY";
+  }
+
+  if (options_.retrieve("kway_geom")) {
+    decomp_method = "KWAY_GEOM";
+  }
+
+  if (options_.retrieve("linear")) {
+    decomp_method = "LINEAR";
+  }
+
+  if (options_.retrieve("cyclic")) {
+    decomp_method = "CYCLIC";
+  }
+
+  if (options_.retrieve("random")) {
+    decomp_method = "RANDOM";
+  }
+
+  if (options_.retrieve("external")) {
+    decomp_method = "EXTERNAL";
+  }
+
+  if (options_.retrieve("debug")) {
+    debug = true;
+  }
+
+  if (options_.retrieve("statistics")) {
+    statistics = true;
+  }
+
+  {
+    const char *temp = options_.retrieve("in_type");
+    if (temp != NULL) {
+      inFiletype_ = temp;
     }
   }
 
   {
-    const char *temp = options_.retrieve("group_name");
+    const char *temp = options_.retrieve("out_type");
     if (temp != NULL) {
-      groupname_ = temp;
+      outFiletype_ = temp;
     }
   }
 
   {
-    const char *temp = options_.retrieve("field_suffix_separator");
+    const char *temp = options_.retrieve("compose");
     if (temp != NULL) {
-      fieldSuffixSeparator_ = temp[0];
+      compose_output = Ioss::Utils::lowercase(temp);
     }
   }
 
   if (options_.retrieve("copyright")) {
     std::cerr << "\n"
-	      << "Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract\n"
+	      << "Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract\n"
 	      << "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains\n"
 	      << "certain rights in this software\n"
 	      << "\n"
@@ -240,10 +309,11 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   }  
   
   // Parse remaining options as directory paths.
-  if (option_index < argc) {
-    filename_ = argv[option_index];
+  if (option_index < argc-1) {
+    inputFile_  = argv[option_index++];
+    outputFile_ = argv[option_index];
   } else {
-    std::cerr << "\nERROR: filename not specified\n\n";
+    std::cerr << "\nERROR: input and output filename not specified\n\n";
     return false;
   }
   return true;

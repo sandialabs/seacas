@@ -160,8 +160,9 @@ namespace {
 
   size_t id_rand(size_t id)
   {
-#if 1
-    std::mt19937_64 rng;
+#if 0
+    std::ranlux48 rng;
+    //    std::mt19937_64 rng;
     rng.seed(id);
     return rng();
 #else
@@ -174,13 +175,15 @@ namespace {
 
 namespace {
   std::string codename;
-  std::string version = "1.0";
+  std::string version = "0.6";
 }
 
 int main(int argc, char *argv[])
 {
+  int my_rank = 0;
 #ifdef HAVE_MPI
   MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
   
   Skinner::Interface interface;
@@ -195,10 +198,15 @@ int main(int argc, char *argv[])
 
   Ioss::Init::Initializer io;
 
-  OUTPUT << "Input:    '" << interface.filename()  << "', Type: " << interface.type()  << '\n';
+  if (my_rank == 0) {
+    OUTPUT << "Input:    '" << interface.input_filename()  << "', Type: " << interface.input_type()  << '\n';
+    OUTPUT << "Output:   '" << interface.output_filename()  << "', Type: " << interface.output_type()  << '\n';
+  }
   skinner(interface);
 
-  OUTPUT << "\n" << codename << " execution successful.\n";
+  if (my_rank == 0) {
+    OUTPUT << "\n" << codename << " execution successful.\n";
+  }
 #ifdef HAVE_MPI
   MPI_Finalize();
 #endif
@@ -208,15 +216,27 @@ int main(int argc, char *argv[])
 namespace {
   void skinner(Skinner::Interface& interface)
   {
-    std::string inpfile = interface.filename();
-    std::string input_type = interface.type();
+    std::string inpfile = interface.input_filename();
+    std::string input_type = interface.input_type();
     
+    Ioss::PropertyManager properties;
+    if (interface.ints_64_bit()) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB",  8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+    }
+
+    if (interface.debug)
+      properties.add(Ioss::Property("LOGGING", 1));
+
+    if (!interface.decomp_method.empty()) {
+      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
+    }
     //========================================================================
     // INPUT ...
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
-                                                    (MPI_Comm)MPI_COMM_WORLD);
+                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
     if (dbi == NULL || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -433,7 +453,6 @@ namespace {
   {
     Ioss::NodeBlock *nb = region.get_node_blocks()[0];
 
-    std::cout << "Integers are " << sizeof(INT) << "\n";
     std::vector<INT>  ids;
     nb->get_field_data("ids", ids);
 
@@ -510,7 +529,6 @@ namespace {
     std::cout << "Parallel time:       \t" << std::chrono::duration<double, std::milli> (diffp).count() << " ms\t"
 	      << faces.size()/std::chrono::duration<double> (diffp).count() << " faces/second.\n";
     std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endp-starth).count() << " ms\n\n";
-
     // Faces have been generated at this point.
     // Categorize (boundary/interior)
     size_t interior = 0;
@@ -586,7 +604,26 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
-    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", "skin.out",
+    if (interface.compression_level > 0 || interface.shuffle) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", interface.shuffle));
+    }
+      
+    if (interface.compose_output != "none") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+      if (interface.compose_output != "default")
+	properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
+    }
+
+    if (interface.netcdf4) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+    
+    std::string file = interface.output_filename();
+    std::string type = interface.output_type();
+    Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(type, file,
 						    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD,
 						    properties);
     if (dbo == NULL || !dbo->ok(true)) {
@@ -628,9 +665,16 @@ namespace {
     tri_conn.reserve(3*tri);
     tri_ids.reserve(tri);
 
+    bool use_face_ids = !interface.ignoreFaceIds_;
+    INT fid = 1;
     for (auto& face : boundary_faces) {
-      INT fid = face.id_;
-      if (fid < 0) fid = -fid;
+      if (use_face_ids) {
+	fid = face.id_;
+	if (fid < 0) fid = -fid;
+      } else {
+	fid++;
+      }
+
       if (face.connectivity_[3] != 0) {
 	for (int i=0; i < 4; i++) {
 	  quad_conn.push_back(face.connectivity_[i]);
@@ -676,6 +720,7 @@ namespace {
              << "\tError = " << error << "\n";
       OUTPUT << "Buckets = " << faces.bucket_count() << "\n";
       OUTPUT << "Load = " << faces.load_factor() << "\n";
+      OUTPUT << "Faces/Element ratio = " << (double)faces.size() / numel << "\n";
     }
   }
 
