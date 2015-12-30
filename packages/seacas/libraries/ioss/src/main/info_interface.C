@@ -43,7 +43,7 @@
 
 
 Info::Interface::Interface()
-  : checkNodeStatus_(false), computeVolume_(false), createFaces_(false),
+  : checkNodeStatus_(false), computeVolume_(false), 
     adjacencies_(false), ints64Bit_(false), computeBBox_(false), listGroups_(false),
     useGenericNames_(false), fieldSuffixSeparator_('_'), summary_(0),
     surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
@@ -75,9 +75,6 @@ void Info::Interface::enroll_options()
 		  NULL);
   options_.enroll("compute_volume", Ioss::GetLongOption::NoValue,
 		  "Compute the volume of all hex elements in the mesh. Outputs min/max and count",
-		  NULL);
-  options_.enroll("create_faces", Ioss::GetLongOption::NoValue,
-		  "(EXPERIMENTAL) Create faces and output the total, interior, and boundary face counts",
 		  NULL);
   options_.enroll("compute_bbox", Ioss::GetLongOption::NoValue,
 		  "Compute the bounding box of all element blocks in the mesh.",
@@ -160,10 +157,6 @@ bool Info::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("compute_volume")) {
     computeVolume_ = true;
-  }
-
-  if (options_.retrieve("create_faces")) {
-    createFaces_ = true;
   }
 
   if (options_.retrieve("compute_bbox")) {
