@@ -47,7 +47,7 @@ Info::Interface::Interface()
     adjacencies_(false), ints64Bit_(false), computeBBox_(false), listGroups_(false),
     useGenericNames_(false), fieldSuffixSeparator_('_'), summary_(0),
     surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
-    cwd_(""), filetype_("exodus")
+    filetype_("exodus")
 {
   enroll_options();
 }
