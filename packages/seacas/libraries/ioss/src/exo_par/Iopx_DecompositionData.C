@@ -62,10 +62,6 @@
 #endif
 
 namespace {
-  MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
-  MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
-  MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
-
   template <typename T>
   bool is_sorted(const std::vector<T> &vec)
   {
@@ -87,126 +83,12 @@ namespace {
     }
   }
 
-  int power_2(int count)
-  {
-    // Return the power of two which is equal to or greater than 'count'
-    // count = 15 -> returns 16
-    // count = 16 -> returns 16
-    // count = 17 -> returns 32
-
-    // Use brute force...
-    int pow2 = 1;
-    while (pow2 < count) {
-      pow2 *= 2;
-    }
-    return pow2;
-  }
-
   void check_dynamic_cast(const void *ptr)
   {
     if (ptr == NULL) {
       std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned NULL\n";
       exit(EXIT_FAILURE);
     }
-  }
-
-  template <typename T>
-  int MY_Alltoallv64(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts, const std::vector<int64_t> &senddisp,
-                     std::vector<T> &recvbuf, const std::vector<int64_t> &recvcounts, const std::vector<int64_t> &recvdisp, MPI_Comm  comm)
-  {
-    int processor_count = 0;
-    int my_processor = 0;
-    MPI_Comm_size(comm, &processor_count);
-    MPI_Comm_rank(comm, &my_processor);
-
-    // Verify that all 'counts' can fit in an integer. Symmetric
-    // communication, so recvcounts are sendcounts on another processor.
-    for (int i=0; i < processor_count; i++) {
-      int snd_cnt = (int)sendcounts[i];
-      if ((int64_t)snd_cnt != sendcounts[i]) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
-               << "       processor " << my_processor << " to processor " << i << " is " << sendcounts[i]
-               << "\n       which exceeds the storage capacity of the integers used by MPI functions.\n";
-        std::cerr << errmsg.str();
-        exit(EXIT_FAILURE);
-      }
-    }
-
-    size_t pow_2=power_2(processor_count);
-
-    for(size_t i=1; i < pow_2; i++) {
-      MPI_Status status;
-
-      int tag = 24713;
-      size_t exchange_proc = i ^ my_processor;
-      if(exchange_proc < (size_t)processor_count){
-        int snd_cnt = (int)sendcounts[exchange_proc]; // Converts from int64_t to int as needed by mpi
-        int rcv_cnt = (int)recvcounts[exchange_proc];
-        if ((size_t)my_processor < exchange_proc) {
-          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
-          MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
-        }
-        else {
-          MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
-          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
-        }
-      }
-    }
-
-    // Take care of this processor's data movement...
-    std::copy(&sendbuf[senddisp[my_processor]],
-              &sendbuf[senddisp[my_processor]+sendcounts[my_processor]],
-              &recvbuf[recvdisp[my_processor]]);
-    return 0;
-  }
-
-  template <typename T>
-  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts, const std::vector<int64_t> &senddisp, 
-                   std::vector<T> &recvbuf, const std::vector<int64_t> &recvcnts, const std::vector<int64_t> &recvdisp, MPI_Comm comm)
-  {
-    // Wrapper to handle case where send/recv counts and displacements are 64-bit integers.
-    // Two cases:
-    // 1) They are of type 64-bit integers, but only storing data in the 32-bit integer range.
-    //    -- if (sendcnts[#proc-1] + senddisp[#proc-1] < 2^31, then we are ok
-    // 2) They are of type 64-bit integers, and storing data in the 64-bit integer range.
-    //    -- call special alltoallv which does point-to-point sends
-    assert(is_sorted(senddisp));
-    assert(is_sorted(recvdisp));
-
-    int processor_count = 0;
-    MPI_Comm_size(comm, &processor_count);
-    size_t max_comm = sendcnts[processor_count-1] + senddisp[processor_count-1];
-    size_t one = 1;
-    if (max_comm < one<<31) {
-      // count and displacement data in range, need to copy to integer vector.
-      std::vector<int> send_cnt(sendcnts.begin(), sendcnts.end());
-      std::vector<int> send_dis(senddisp.begin(), senddisp.end());
-      std::vector<int> recv_cnt(recvcnts.begin(), recvcnts.end());
-      std::vector<int> recv_dis(recvdisp.begin(), recvdisp.end());
-      return MPI_Alltoallv(TOPTR(sendbuf), (int*)TOPTR(send_cnt), (int*)TOPTR(send_dis), mpi_type(T(0)),
-                           TOPTR(recvbuf), (int*)TOPTR(recv_cnt), (int*)TOPTR(recv_dis), mpi_type(T(0)), comm);
-    }
-    else {
-      // Same as if each processor sent a message to every other process with:
-      //     MPI_Send(sendbuf+senddisp[i]*sizeof(sendtype),sendcnts[i], sendtype, i, tag, comm);
-      // And received a message from each processor with a call to:
-      //     MPI_Recv(recvbuf+recvdisp[i]*sizeof(recvtype),recvcnts[i], recvtype, i, tag, comm);
-      return MY_Alltoallv64(sendbuf, sendcnts, senddisp, recvbuf, recvcnts, recvdisp, comm);
-
-    }
-  }
-
-  template <typename T>
-  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int> &sendcnts, const std::vector<int> &senddisp, 
-                   std::vector<T> &recvbuf, const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
-                   MPI_Comm comm)
-  {
-    assert(is_sorted(senddisp));
-    assert(is_sorted(recvdisp));
-
-    return MPI_Alltoallv(TOPTR(sendbuf), (int*)TOPTR(sendcnts), (int*)TOPTR(senddisp), mpi_type(T(0)),
-                         TOPTR(recvbuf), (int*)TOPTR(recvcnts), (int*)TOPTR(recvdisp), mpi_type(T(0)), comm);
   }
 
   template <typename T>
@@ -735,8 +617,8 @@ namespace Iopx {
     exportElementCount[myProcessor] = 0;
 
     importElementCount.resize(processorCount+1);
-    MPI_Alltoall(TOPTR(exportElementCount), 1, mpi_type((INT)0),
-                 TOPTR(importElementCount), 1, mpi_type((INT)0), comm_);
+    MPI_Alltoall(TOPTR(exportElementCount), 1, Ioss::mpi_type((INT)0),
+                 TOPTR(importElementCount), 1, Ioss::mpi_type((INT)0), comm_);
 
     // Now fill the vectors with the elements ...
     size_t exp_size = std::accumulate(exportElementCount.begin(), exportElementCount.end(), 0);
@@ -762,8 +644,8 @@ namespace Iopx {
     std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
     generate_index(importElementIndex);
 
-    MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex, 
-                 importElementMap, importElementCount, importElementIndex, comm_);
+    Ioss::MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex, 
+		       importElementMap, importElementCount, importElementIndex, comm_);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << ":\t"
@@ -1023,8 +905,8 @@ namespace Iopx {
       }
     }
 
-    MPI_Alltoall(TOPTR(export_conn_size), 1, mpi_type((INT)0),
-                 TOPTR(import_conn_size), 1, mpi_type((INT)0), comm_);
+    MPI_Alltoall(TOPTR(export_conn_size), 1, Ioss::mpi_type((INT)0),
+                 TOPTR(import_conn_size), 1, Ioss::mpi_type((INT)0), comm_);
 
     // Now fill the vectors with the nodes ...
     size_t exp_size = std::accumulate(export_conn_size.begin(), export_conn_size.end(), 0);
@@ -1064,8 +946,8 @@ namespace Iopx {
     {
       std::vector<INT> import_conn(imp_size);
 
-      MY_Alltoallv(export_conn, export_conn_size, export_disp,
-                   import_conn, import_conn_size, import_disp, comm_);
+      Ioss::MY_Alltoallv(export_conn, export_conn_size, export_disp,
+			 import_conn, import_conn_size, import_disp, comm_);
 
       // Done with export_conn...
       std::vector<INT>().swap(export_conn);
@@ -1108,8 +990,8 @@ namespace Iopx {
     // Tell other processors how many nodes I will be importing from
     // them...
     importNodeCount[myProcessor] = 0;
-    MPI_Alltoall(TOPTR(importNodeCount), 1, mpi_type((INT)0),
-                 TOPTR(exportNodeCount), 1, mpi_type((INT)0), comm_);
+    MPI_Alltoall(TOPTR(importNodeCount), 1, Ioss::mpi_type((INT)0),
+                 TOPTR(exportNodeCount), 1, Ioss::mpi_type((INT)0), comm_);
 
     size_t import_sum = std::accumulate(importNodeCount.begin(), importNodeCount.end(), 0);
     size_t export_sum = std::accumulate(exportNodeCount.begin(), exportNodeCount.end(), 0);
@@ -1146,8 +1028,8 @@ namespace Iopx {
     std::copy(importNodeCount.begin(), importNodeCount.end(), importNodeIndex.begin());
     generate_index(importNodeIndex);
 
-    MY_Alltoallv(import_nodes,  importNodeCount, importNodeIndex, 
-                 exportNodeMap, exportNodeCount, exportNodeIndex, comm_);
+    Ioss::MY_Alltoallv(import_nodes,  importNodeCount, importNodeIndex, 
+		       exportNodeMap, exportNodeCount, exportNodeIndex, comm_);
 
     // Map that converts nodes from the global index (1-based) to a local-per-processor index (1-based)
     nodeGTL.swap(nodes);
@@ -1254,15 +1136,15 @@ namespace Iopx {
 
     // Tell other processors how many nodes/procs I am sending them...
     std::vector<INT> recv_comm_map_count(processorCount);
-    MPI_Alltoall(TOPTR(send_comm_map_count), 1, mpi_type((INT)0),
-                 TOPTR(recv_comm_map_count), 1, mpi_type((INT)0), comm_);
+    MPI_Alltoall(TOPTR(send_comm_map_count), 1, Ioss::mpi_type((INT)0),
+                 TOPTR(recv_comm_map_count), 1, Ioss::mpi_type((INT)0), comm_);
 
 
     std::vector<INT> recv_comm_map_disp(recv_comm_map_count);
     generate_index(recv_comm_map_disp);
     nodeCommMap.resize(recv_comm_map_disp[processorCount-1] + recv_comm_map_count[processorCount-1]);
-    MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, 
-                 nodeCommMap, recv_comm_map_count, recv_comm_map_disp, comm_);
+    Ioss::MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, 
+		       nodeCommMap, recv_comm_map_count, recv_comm_map_disp, comm_);
 
     // Map global 0-based index to local 1-based index.
     for (size_t i=0; i < nodeCommMap.size(); i+=2) {
@@ -1837,8 +1719,8 @@ namespace Iopx {
 
     // Tell each processor how many nodes worth of data to send to
     // every other processor...
-    MPI_Alltoall(TOPTR(recv_count), 1, mpi_type((INT)0),
-                 TOPTR(send_count), 1, mpi_type((INT)0), comm_);
+    MPI_Alltoall(TOPTR(recv_count), 1, Ioss::mpi_type((INT)0),
+                 TOPTR(send_count), 1, Ioss::mpi_type((INT)0), comm_);
 
     send_count[myProcessor] = 0;
 
@@ -1873,8 +1755,8 @@ namespace Iopx {
       }
     }
 
-    MY_Alltoallv(node_comm_recv, recv_count, recv_disp, 
-                 node_comm_send, send_count, send_disp, comm_);
+    Ioss::MY_Alltoallv(node_comm_recv, recv_count, recv_disp, 
+		       node_comm_send, send_count, send_disp, comm_);
 
     // At this point, 'node_comm_send' contains the list of nodes that I need to provide
     // coordinate data for.
@@ -1920,8 +1802,8 @@ namespace Iopx {
       recv_disp[i]  *= spatialDimension;
     }
 
-    MY_Alltoallv(coord_send, send_count, send_disp, 
-                 coord_recv, recv_count, recv_disp, comm_);
+    Ioss::MY_Alltoallv(coord_send, send_count, send_disp, 
+		       coord_recv, recv_count, recv_disp, comm_);
 
     // Don't need coord_send data anymore ... clean out the vector.
     std::vector<double>().swap(coord_send);
@@ -2093,8 +1975,8 @@ namespace Iopx {
       }
 
       // Get my imported data and send my exported data...
-      MY_Alltoallv(export_data, exportNodeCount, exportNodeIndex,
-                   import_data, importNodeCount, importNodeIndex, comm_);
+      Ioss::MY_Alltoallv(export_data, exportNodeCount, exportNodeIndex,
+			 import_data, importNodeCount, importNodeIndex, comm_);
 
       // Copy the imported data into ioss_data...
       for (size_t i=0; i < importNodeMap.size(); i++) {
@@ -2134,8 +2016,8 @@ namespace Iopx {
       }
 
       // Get my imported data and send my exported data...
-      MY_Alltoallv(export_data, export_count, export_disp, 
-                   import_data, import_count, import_disp, comm_);
+      Ioss::MY_Alltoallv(export_data, export_count, export_disp, 
+			 import_data, import_count, import_disp, comm_);
 
       // Copy the imported data into ioss_data...
       for (size_t i=0; i < importNodeMap.size(); i++) {
@@ -2176,8 +2058,8 @@ namespace Iopx {
       }
 
       // Get my imported data and send my exported data...
-      MY_Alltoallv(export_data, exportElementCount, exportElementIndex, 
-                   import_data, importElementCount, importElementIndex, comm_);
+      Ioss::MY_Alltoallv(export_data, exportElementCount, exportElementIndex, 
+			 import_data, importElementCount, importElementIndex, comm_);
 
       // Copy the imported data into ioss_data...
       // Some comes before the local data...
@@ -2219,8 +2101,8 @@ namespace Iopx {
       }
 
       // Get my imported data and send my exported data...
-      MY_Alltoallv(export_data, export_count, export_disp, 
-                   import_data, import_count, import_disp, comm_);
+      Ioss::MY_Alltoallv(export_data, export_count, export_disp, 
+			 import_data, import_count, import_disp, comm_);
 
       // Copy the imported data into ioss_data...
       // Some comes before the local data...
@@ -2368,8 +2250,8 @@ namespace Iopx {
       }
 
       // Get my imported data and send my exported data...
-      MY_Alltoallv(exports, blk.exportCount, blk.exportIndex, 
-                   imports, blk.importCount, blk.importIndex, comm_);
+      Ioss::MY_Alltoallv(exports, blk.exportCount, blk.exportIndex, 
+			 imports, blk.importCount, blk.importIndex, comm_);
 
       // Map local and imported data to ioss_data.
       for (size_t i=0; i < blk.localMap.size(); i++) {
@@ -2399,8 +2281,8 @@ namespace Iopx {
       }
 
       // Get my imported data and send my exported data...
-      MY_Alltoallv(exports, export_count, export_disp, 
-                   imports, import_count, import_disp, comm_);
+      Ioss::MY_Alltoallv(exports, export_count, export_disp, 
+			 imports, import_count, import_disp, comm_);
 
       // Map local and imported data to ioss_data.
       for (size_t i=0; i < blk.localMap.size(); i++) {
@@ -3218,8 +3100,8 @@ namespace Iopx {
     generate_index(rcv_offset);
     std::vector<int64_t> rcv_list(*rcv_offset.rbegin() + *rcv_count.rbegin());
 
-    MY_Alltoallv(snd_list, snd_count, snd_offset,
-                 rcv_list, rcv_count, rcv_offset, comm_);
+    Ioss::MY_Alltoallv(snd_list, snd_count, snd_offset,
+		       rcv_list, rcv_count, rcv_offset, comm_);
 
     // Iterate rcv_list and convert global ids to the global-implicit position...
     for (size_t i=0; i < rcv_list.size(); i++) {
@@ -3229,8 +3111,8 @@ namespace Iopx {
     }
 
     // Send the data back now...
-    MY_Alltoallv(rcv_list, rcv_count, rcv_offset,
-                 snd_list, snd_count, snd_offset, comm_);
+    Ioss::MY_Alltoallv(rcv_list, rcv_count, rcv_offset,
+		       snd_list, snd_count, snd_offset, comm_);
 
     // Fill in the remaining portions of the global_implicit_map...
     std::vector<int64_t> tmp_disp(snd_offset);
