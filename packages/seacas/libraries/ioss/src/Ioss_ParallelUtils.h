@@ -40,6 +40,10 @@
 #include <vector>                       // for vector
 #include <assert.h>
 
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
+
 namespace Ioss {
 
   class ParallelUtils {
@@ -120,6 +124,7 @@ namespace Ioss {
     MPI_Comm communicator_;
   };
 
+#ifdef HAVE_MPI
   inline MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
   inline MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
   inline MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
@@ -235,4 +240,5 @@ namespace Ioss {
                          TOPTR(recvbuf), (int*)TOPTR(recvcnts), (int*)TOPTR(recvdisp), mpi_type(T(0)), comm);
   }
 }
+#endif
 #endif
