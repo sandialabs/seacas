@@ -66,8 +66,8 @@ namespace {
   size_t id_rand(size_t id)
   {
 #if 0
-    std::ranlux48 rng;
-    //    std::mt19937_64 rng;
+    //std::ranlux48 rng;
+    std::mt19937_64 rng;
     rng.seed(id);
     return rng();
 #else
@@ -87,9 +87,9 @@ namespace {
 
   template <typename INT>
   void resolve_parallel_faces(Ioss::Region &region,
-			      std::unordered_set<Ioss::Face,Ioss::FaceHash,Ioss::FaceEqual> &faces,
-			      const std::vector<size_t> &hash_ids,
-			      INT /*dummy*/)
+                              std::unordered_set<Ioss::Face,Ioss::FaceHash,Ioss::FaceEqual> &faces,
+                              const std::vector<size_t> &hash_ids,
+                              INT /*dummy*/)
   {
 #ifdef HAVE_MPI
     size_t my_rank = region.get_database()->parallel_rank();
@@ -192,15 +192,15 @@ namespace {
           }
           for (auto &proc_count : shared_nodes) {
             if (proc_count.second == face_node_count) {
-	      size_t offset = potential_offset[proc_count.first];
-	      potential_faces[6*offset+0] = face.id_;
-	      potential_faces[6*offset+1] = face.connectivity_[0];
-	      potential_faces[6*offset+2] = face.connectivity_[1];
-	      potential_faces[6*offset+3] = face.connectivity_[2];
-	      potential_faces[6*offset+4] = face.connectivity_[3];
-	      potential_faces[6*offset+5] = face.element[0];
-	      assert(face.elementCount_ == 1);
-	      potential_offset[proc_count.first]++;
+              size_t offset = potential_offset[proc_count.first];
+              potential_faces[6*offset+0] = face.id_;
+              potential_faces[6*offset+1] = face.connectivity_[0];
+              potential_faces[6*offset+2] = face.connectivity_[1];
+              potential_faces[6*offset+3] = face.connectivity_[2];
+              potential_faces[6*offset+4] = face.connectivity_[3];
+              potential_faces[6*offset+5] = face.element[0];
+              assert(face.elementCount_ == 1);
+              potential_offset[proc_count.first]++;
             }
           }
         }
@@ -212,7 +212,7 @@ namespace {
 
       // Now need to send to the other processors... 
       // For now, use all-to-all; optimization is just send to processors with data...
-      std::vector<INT> check_count(proc_count); // SIZE_T
+      std::vector<INT> check_count(proc_count);
       MPI_Alltoall(TOPTR(potential_count), 1, Ioss::mpi_type((INT)0),
                    TOPTR(check_count),     1, Ioss::mpi_type((INT)0),
                    region.get_database()->util().communicator());
@@ -233,8 +233,8 @@ namespace {
       }
       
       Ioss::MY_Alltoallv(potential_faces, potential_count, potential_offset,
-			 check_faces,     check_count,     check_offset,
-			 region.get_database()->util().communicator());
+                         check_faces,     check_count,     check_offset,
+                         region.get_database()->util().communicator());
 
       // Now iterate the check_faces and see if any of them match one
       // of this processors faces...  If so, then mark as shared and
@@ -305,8 +305,10 @@ namespace Ioss {
       const Ioss::ElementTopology *topo = (*i)->topology();
 
       // Only handle continuum elements at this time...
-      if (topo->parametric_dimension() != 3)
-	continue;
+      if (topo->parametric_dimension() != 3) {
+	++i;
+        continue;
+      }
       
       std::vector<INT> connectivity;
       (*i)->get_field_data("connectivity_raw", connectivity);
@@ -357,7 +359,7 @@ namespace Ioss {
     std::cout << "Face generation time:\t" << std::chrono::duration<double, std::milli> (difff).count() << " ms\t"
               << faces_.size()/std::chrono::duration<double> (difff).count() << " faces/second.\n";
     std::cout << "Parallel time:       \t" << std::chrono::duration<double, std::milli> (diffp).count() << " ms\t"
-	      << faces_.size()/std::chrono::duration<double> (diffp).count() << " faces/second.\n";
+              << faces_.size()/std::chrono::duration<double> (diffp).count() << " faces/second.\n";
     std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endp-starth).count() << " ms\n\n";
   }
 }
