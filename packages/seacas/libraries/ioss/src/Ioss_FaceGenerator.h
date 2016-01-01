@@ -92,16 +92,17 @@ namespace Ioss {
     }
   };
 
+  typedef std::unordered_set<Face,FaceHash,FaceEqual>  FaceUnorderedSet;
   class FaceGenerator {
   public:
     FaceGenerator(Ioss::Region &region);
 
     template <typename INT> 
       void generate_faces(INT /*dummy*/);
-    std::unordered_set<Face,FaceHash,FaceEqual> &faces() {return faces_;}
+    FaceUnorderedSet &faces() {return faces_;}
   private:
     Ioss::Region &region_;
-    std::unordered_set<Face,FaceHash,FaceEqual> faces_;    
+    FaceUnorderedSet faces_;    
   };
 }
 
