@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 2016
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -155,7 +155,7 @@ namespace {
     Ioss::FaceGenerator face_generator(region);
     face_generator.generate_faces((INT)0);
 
-    std::unordered_set<Ioss::Face,Ioss::FaceHash,Ioss::FaceEqual> &faces = face_generator.faces();
+    Ioss::FaceUnorderedSet &faces = face_generator.faces();
     
     // Faces have been generated at this point.
     // Categorize (boundary/interior)
@@ -181,7 +181,7 @@ namespace {
     boundary_faces.reserve(boundary);
     for (auto& face : faces) {
       if (face.elementCount_ == 1) {
-	boundary_faces.push_back(face);
+        boundary_faces.push_back(face);
       }
     }
 
@@ -193,16 +193,16 @@ namespace {
     for (const auto& face : boundary_faces) {
       size_t face_node_count = 0;
       for (auto &gnode : face.connectivity_) {
-	if (gnode > 0) {
-	  face_node_count++;
-	  auto node = region.get_database()->node_global_to_local(gnode, true) - 1;
-	  ref_nodes[node] = 1;
-	}
+        if (gnode > 0) {
+          face_node_count++;
+          auto node = region.get_database()->node_global_to_local(gnode, true) - 1;
+          ref_nodes[node] = 1;
+        }
       }
       if (face_node_count == 3)
-	tri++;
+        tri++;
       else if (face_node_count == 4)
-	quad++;
+        quad++;
     }
 
     size_t ref_count = std::accumulate(ref_nodes.begin(), ref_nodes.end(), 0);
@@ -223,10 +223,10 @@ namespace {
     size_t j = 0;
     for (size_t i=0; i < ref_nodes.size(); i++) {
       if (ref_nodes[i] == 1) {
-	coord_out[3*j+0] = coord_in[3*i+0];
-	coord_out[3*j+1] = coord_in[3*i+1];
-	coord_out[3*j+2] = coord_in[3*i+2];
-	ref_ids[j++] = ids[i];
+        coord_out[3*j+0] = coord_in[3*i+0];
+        coord_out[3*j+1] = coord_in[3*i+1];
+        coord_out[3*j+2] = coord_in[3*i+2];
+        ref_ids[j++] = ids[i];
       }
     }
     
@@ -241,7 +241,7 @@ namespace {
       properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
       if (interface.compose_output != "default")
-	properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
+        properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
     }
 
     if (interface.netcdf4) {
@@ -251,8 +251,8 @@ namespace {
     std::string file = interface.output_filename();
     std::string type = interface.output_type();
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(type, file,
-						    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD,
-						    properties);
+                                                    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD,
+                                                    properties);
     if (dbo == NULL || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -296,23 +296,23 @@ namespace {
     INT fid = 1;
     for (auto& face : boundary_faces) {
       if (use_face_ids) {
-	fid = face.id_;
-	if (fid < 0) fid = -fid;
+        fid = face.id_;
+        if (fid < 0) fid = -fid;
       } else {
-	fid++;
+        fid++;
       }
 
       if (face.connectivity_[3] != 0) {
-	for (int i=0; i < 4; i++) {
-	  quad_conn.push_back(face.connectivity_[i]);
-	}
-	quad_ids.push_back(fid);
+        for (int i=0; i < 4; i++) {
+          quad_conn.push_back(face.connectivity_[i]);
+        }
+        quad_ids.push_back(fid);
       }
       else {
-	for (int i=0; i < 3; i++) {
-	  tri_conn.push_back(face.connectivity_[i]);
-	}
-	tri_ids.push_back(fid);
+        for (int i=0; i < 3; i++) {
+          tri_conn.push_back(face.connectivity_[i]);
+        }
+        tri_ids.push_back(fid);
       }
     }
 
