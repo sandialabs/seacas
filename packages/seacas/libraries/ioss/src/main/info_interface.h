@@ -52,7 +52,6 @@ namespace Info {
       int summary() const {return summary_;}
       bool check_node_status() const {return checkNodeStatus_;}
       bool compute_volume()  const {return computeVolume_;}
-      bool create_faces()  const {return createFaces_;}
       bool compute_bbox()  const {return computeBBox_;}
       bool adjacencies() const {return adjacencies_;}
       bool ints_64_bit() const {return ints64Bit_;}
@@ -62,7 +61,6 @@ namespace Info {
       char field_suffix_separator() const {return fieldSuffixSeparator_;}
       bool use_generic_names() const {return useGenericNames_;}
 
-      std::string cwd() const {return cwd_;}
       std::string filename() const {return filename_;}
       std::string type() const {return filetype_;}
       std::string groupname() const {return groupname_;}
@@ -77,7 +75,6 @@ namespace Info {
       
       bool checkNodeStatus_;
       bool computeVolume_;
-      bool createFaces_;
       bool adjacencies_;
       bool ints64Bit_;
       bool computeBBox_;
@@ -90,7 +87,6 @@ namespace Info {
       
       double minimumTime_;
       double maximumTime_;
-      std::string cwd_;
       std::string filetype_;
       std::string filename_;
       std::string groupname_;

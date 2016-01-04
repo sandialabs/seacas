@@ -47,12 +47,6 @@
 #include <mpi.h>
 #include <Ioss_SerializeIO.h>
 
-namespace {
-  MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
-  MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
-  MPI_Datatype mpi_type(unsigned int /*dummy*/)     {return MPI_UNSIGNED;}
-  MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
-}
 #endif
 
 Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator)
