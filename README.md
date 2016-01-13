@@ -91,29 +91,9 @@ The most recent released version is recommended. For use with Exodus, some local
 #### MatIO
 The MatIO library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
 
- * Download the most recent version of the library from http://sourceforge.net/projects/matio/.
+ * Download matio via git:
  * `cd TPL/matio`
- * `tar zxvf /path/to/matio-1.5.2.tar.gz`
- * There is a bug related to reading version 7.3 files. To fix the bug, enter the command:
-   ```
-   patch -p3 < MATIO-fix-issue-reading-version-7.3-files.patch
-   ```
-
- * `cd matio-1.5.2` and enter the command:
-    ```
-    # The -L is to find the hdf5 library...
-    export LDFLAGS="-L${ACCESS}/lib"
-    ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
-    ```
-    
- * `make && make install`
-
-Alternatively, you can use a forked version of MatIO library that has
-had the above referenced patch applied and some other
-modfications. The instructions for this version are:
-
- * `cd TPL/matio`
- * `git clone git://git.code.sf.net/u/gdsjaar/matio matio`
+ * `git clone https://github.com/tbeu/matio.git`
  * `cd matio` and enter the command:
     ```
     ./autogen.sh
