@@ -35,7 +35,7 @@ build SEACAS.
  * [Zoltan](#zoltan) -- required, supplied
  * [HDF5](#hdf5) -- optional
  * [NetCDF](#netcdf) -- required with modifications
- * [MatIO](#matio) -- optional with patch
+ * [MatIO](#matio) -- optional
  * [GNU Parallel](#gnu-parallel) -- optional
  * [CGNS](#cgns) -- experimental optional
 
