@@ -118,7 +118,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
     ```
     
 #### CGNS
-Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and insall the CGNS library:
+Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
 
    * Download CGNS via git:
 
