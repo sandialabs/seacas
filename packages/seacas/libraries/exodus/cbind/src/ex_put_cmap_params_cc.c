@@ -186,7 +186,7 @@ file ID %d",
     /* get the communication map info index */
     if (index_type == NC_INT64) {
       ((int64_t*)n_var_idx)[0] = 0;
-      status = nc_get_var_longlong(exoid, n_varid_idx, &((int64_t*)n_var_idx)[1]);
+      status = nc_get_var_longlong(exoid, n_varid_idx, &((long long*)n_var_idx)[1]);
     } else {
       ((int*)n_var_idx)[0] = 0;
       status = nc_get_var_int(exoid, n_varid_idx, &((int*)n_var_idx)[1]);
@@ -246,7 +246,7 @@ file ID %d",
     /* get the communication map info index */
     if (index_type == NC_INT64) {
       ((int64_t*)e_var_idx)[0] = 0;
-      status = nc_get_var_longlong(exoid, e_varid_idx, &((int64_t*)e_var_idx)[1]);
+      status = nc_get_var_longlong(exoid, e_varid_idx, &((long long*)e_var_idx)[1]);
     } else {
       ((int*)e_var_idx)[0] = 0;
       status = nc_get_var_int(exoid, e_varid_idx, &((int*)e_var_idx)[1]);
