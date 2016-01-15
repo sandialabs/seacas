@@ -266,7 +266,7 @@ namespace Iocgns {
 	// ========================================================================
 	// Read the sections and create an element block for the ones that
 	// define elements.  Some define boundary conditions...
-	Ioss::ElementBlock *eblock = NULL;
+	Ioss::ElementBlock *eblock = nullptr;
 	
 	for (cgsize_t is = 1; is <= num_sections; is++) {
 	  char section_name[33];
@@ -295,23 +295,23 @@ namespace Iocgns {
 	    bool added = get_region()->add(eblock);
 	    if(!added) {
 	      delete eblock;
-	      eblock = NULL;
+	      eblock = nullptr;
 	    }
 	  }
 	  else {
 	    // This is a boundary-condition -- sideset (?)
 	    // See if there is an existing sideset with this name...
 	    Ioss::SideSet *sset = get_region()->get_sideset(section_name);
-	    if (sset == NULL) {
+	    if (sset == nullptr) {
 	      Ioss::SideSet *sset = new Ioss::SideSet(this, section_name);
 	      bool added = get_region()->add(sset);
 	      if(!added) {
 		delete sset;
-		sset = NULL;
+		sset = nullptr;
 	      }
 	    }
 
-	    if (sset != NULL) {
+	    if (sset != nullptr) {
 	      std::string block_name(zone_name);
 	      block_name += "/";
 	      block_name += section_name;
@@ -319,13 +319,13 @@ namespace Iocgns {
 	      std::cerr << "Added sideset " << block_name << " of topo " << face_topo
 			<< " with " << num_entity << " faces\n";
 	      
-	      std::string parent_topo = eblock == NULL ? "unknown" : eblock->topology()->name();
+	      std::string parent_topo = eblock == nullptr ? "unknown" : eblock->topology()->name();
 	      Ioss::SideBlock *sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
 							  num_entity);
 	      sblk->property_add(Ioss::Property("base", base));
 	      sblk->property_add(Ioss::Property("zone", zone));
 	      sblk->property_add(Ioss::Property("section", is));
-	      if (eblock != NULL) {
+	      if (eblock != nullptr) {
 		sblk->set_parent_element_block(eblock);
 	      }
 	      sset->add(sblk);
@@ -375,21 +375,21 @@ namespace Iocgns {
 	double *rdata = static_cast<double*>(data);
 
 
-	int ierr = ex_get_coord(get_file_pointer(), rdata, NULL, NULL);
+	int ierr = ex_get_coord(get_file_pointer(), rdata, nullptr, nullptr);
 	if (ierr < 0)
 	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
       }
       
       else if (field.get_name() == "mesh_model_coordinates_y") {
 	double *rdata = static_cast<double*>(data);
-	int ierr = ex_get_coord(get_file_pointer(), NULL, rdata, NULL);
+	int ierr = ex_get_coord(get_file_pointer(), nullptr, rdata, nullptr);
 	if (ierr < 0)
 	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
       }
       
       else if (field.get_name() == "mesh_model_coordinates_z") {
 	double *rdata = static_cast<double*>(data);
-	int ierr = ex_get_coord(get_file_pointer(), NULL, NULL, rdata);
+	int ierr = ex_get_coord(get_file_pointer(), nullptr, nullptr, rdata);
 	if (ierr < 0)
 	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
       }

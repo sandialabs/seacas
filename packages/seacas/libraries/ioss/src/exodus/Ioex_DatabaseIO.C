@@ -359,7 +359,7 @@ namespace Ioex {
     std::strcpy(qa[num_qa_records].qa_record[0][1], buffer);
     
     int ierr = ex_put_qa(get_file_pointer(), num_qa_records+1,
-			 myProcessor == 0 ? qa[0].qa_record : NULL);
+			 myProcessor == 0 ? qa[0].qa_record : nullptr);
     if (ierr < 0)
       Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
 
@@ -411,7 +411,7 @@ namespace Ioex {
       info[i][max_line_length] = '\0'; // Once more for good luck...
     }
 
-    int ierr = ex_put_info(get_file_pointer(), total_lines, myProcessor == 0 ? info : NULL);
+    int ierr = ex_put_info(get_file_pointer(), total_lines, myProcessor == 0 ? info : nullptr);
     if (ierr < 0)
       Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
 
@@ -509,13 +509,13 @@ namespace Ioex {
       }
 
       size_t number_sides = element_side.size() / 2;
-      Ioss::ElementBlock *block = NULL;
+      Ioss::ElementBlock *block = nullptr;
       for (size_t iel = 0; iel < number_sides; iel++) {
 	int64_t elem_id = element_side[2*iel];  // Vector contains both element and side.
 	elem_id = elemMap.global_to_local(elem_id);
-	if (block == NULL || !block->contains(elem_id)) {
+	if (block == nullptr || !block->contains(elem_id)) {
 	  block = get_region()->get_element_block(elem_id);
-	  assert(block != NULL);
+	  assert(block != nullptr);
 	  int block_order = block->get_property("original_block_order").get_int();
 	  block_ids[block_order] = 1;
 	}
@@ -958,7 +958,7 @@ namespace Ioex {
 	}
 
 	int offset = position*nvar;
-	int *local_truth = NULL;
+	int *local_truth = nullptr;
 	if (!truth_table.empty())
 	  local_truth = &truth_table[offset];
 
@@ -1335,7 +1335,7 @@ namespace Ioex {
     bool do_flush = true;
     if (dbUsage == Ioss::WRITE_HISTORY || !isParallel) {
       assert (myProcessor == 0);
-      time_t cur_time = time(NULL);
+      time_t cur_time = time(nullptr);
       if (cur_time - timeLastFlush >= 10) {
 	timeLastFlush = cur_time;
 	do_flush = true;
@@ -1378,7 +1378,7 @@ namespace Ioex {
     // Always create a variable "attribute" which contains a single
     // field for all attributes...
 
-    assert(block != NULL);
+    assert(block != nullptr);
     if (attribute_count > 0) {
       std::string block_name = block->name();
       size_t my_element_count = block->get_property("entity_count").get_int();
@@ -1445,7 +1445,7 @@ namespace Ioex {
       if (attributes_named) {
 	std::vector<Ioss::Field> attributes;
 	Ioex::get_fields(my_element_count, names, attribute_count,
-			 Ioss::Field::ATTRIBUTE, field_suffix_separator, NULL,
+			 Ioss::Field::ATTRIBUTE, field_suffix_separator, nullptr,
 			 attributes);
 	int offset = 1;
 	std::vector<Ioss::Field>::const_iterator IF;

@@ -78,12 +78,12 @@ Ioss::SideBlock* Ioss::SideSet::get_block(size_t which) const
   if (which < sideBlocks.size())
     return sideBlocks[which];
   else
-    return NULL;
+    return nullptr;
 }
 
 Ioss::SideBlock* Ioss::SideSet::get_side_block(const std::string& my_name) const
 {
-  Ioss::SideBlock *ge = NULL;
+  Ioss::SideBlock *ge = nullptr;
   Ioss::SideBlockContainer::const_iterator i = sideBlocks.begin();
   while (i != sideBlocks.end()) {
     if ((*i)->name() == my_name) {

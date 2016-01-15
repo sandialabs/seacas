@@ -96,7 +96,7 @@ namespace {
     std::string name = entity->name();
     const Ioss::GroupingEntity *old_ge = region->get_entity(name);
 
-    if (old_ge != NULL && !(old_ge->type() == Ioss::SIDEBLOCK || old_ge->type() == Ioss::SIDESET)) {
+    if (old_ge != nullptr && !(old_ge->type() == Ioss::SIDEBLOCK || old_ge->type() == Ioss::SIDESET)) {
       std::string filename = region->get_database()->get_filename();
       std::ostringstream errmsg;
       int64_t id1 = 0;
@@ -122,7 +122,7 @@ namespace Ioss {
     : GroupingEntity(iodatabase, my_name, 1), currentState(-1), stateCount(0),
       modelDefined(false), transientDefined(false)
   {
-    assert(iodatabase != NULL);
+    assert(iodatabase != nullptr);
     iodatabase->set_region(this);
 
     if (iodatabase->usage() != Ioss::WRITE_HEARTBEAT &&
@@ -964,7 +964,7 @@ namespace Ioss {
     // See if an entity with this name already exists...
     std::string db_name = ge->name();
     const GroupingEntity *old_ge = get_entity(db_name);
-    if (old_ge != NULL && ge != old_ge) {
+    if (old_ge != nullptr && ge != old_ge) {
       if (!((old_ge->type() == SIDEBLOCK &&     ge->type() == SIDESET) ||
       (    ge->type() == SIDEBLOCK && old_ge->type() == SIDESET))) {
 	ssize_t old_id = -1;
@@ -1082,34 +1082,34 @@ namespace Ioss {
     } else if (io_type == SIDEBLOCK) {
       return get_sideblock(my_name);
     }
-    return NULL;
+    return nullptr;
   }
 
   GroupingEntity* Region::get_entity(const std::string& my_name) const
   {
-    GroupingEntity *entity = NULL;
+    GroupingEntity *entity = nullptr;
     entity = get_node_block(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_element_block(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_face_block(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_edge_block(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_sideset(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_nodeset(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_edgeset(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_faceset(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_elementset(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_commset(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
     entity = get_sideblock(my_name);
-    if (entity != NULL) { return entity;}
+    if (entity != nullptr) { return entity;}
 
     return entity;
   }
@@ -1117,7 +1117,7 @@ namespace Ioss {
   NodeBlock*    Region::get_node_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    NodeBlock *ge = NULL;
+    NodeBlock *ge = nullptr;
     NodeBlockContainer::const_iterator i = nodeBlocks.begin();
     while (i != nodeBlocks.end()) {
       if ((*i)->name() == db_name) {
@@ -1132,7 +1132,7 @@ namespace Ioss {
   EdgeBlock*    Region::get_edge_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    EdgeBlock *ge = NULL;
+    EdgeBlock *ge = nullptr;
     EdgeBlockContainer::const_iterator i = edgeBlocks.begin();
     while (i != edgeBlocks.end()) {
       if ((*i)->name() == db_name) {
@@ -1147,7 +1147,7 @@ namespace Ioss {
   FaceBlock*    Region::get_face_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    FaceBlock *ge = NULL;
+    FaceBlock *ge = nullptr;
     FaceBlockContainer::const_iterator i = faceBlocks.begin();
     while (i != faceBlocks.end()) {
       if ((*i)->name() == db_name) {
@@ -1162,7 +1162,7 @@ namespace Ioss {
   ElementBlock* Region::get_element_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    ElementBlock *ge = NULL;
+    ElementBlock *ge = nullptr;
     ElementBlockContainer::const_iterator i = elementBlocks.begin();
     while (i != elementBlocks.end()) {
       if ((*i)->name() == db_name) {
@@ -1177,7 +1177,7 @@ namespace Ioss {
   SideSet* Region::get_sideset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    SideSet *ge = NULL;
+    SideSet *ge = nullptr;
     SideSetContainer::const_iterator i = sideSets.begin();
     while (i != sideSets.end()) {
       if ((*i)->name() == db_name) {
@@ -1191,11 +1191,11 @@ namespace Ioss {
 
   SideBlock* Region::get_sideblock(const std::string& my_name) const
   {
-    SideBlock *ge = NULL;
+    SideBlock *ge = nullptr;
     SideSetContainer::const_iterator i = sideSets.begin();
     while (i != sideSets.end()) {
       ge = (*i)->get_side_block(my_name);
-      if (ge != NULL)
+      if (ge != nullptr)
 	break;
       ++i;
     }
@@ -1205,7 +1205,7 @@ namespace Ioss {
   NodeSet* Region::get_nodeset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    NodeSet *ge = NULL;
+    NodeSet *ge = nullptr;
     NodeSetContainer::const_iterator i = nodeSets.begin();
     while (i != nodeSets.end()) {
       if ((*i)->name() == db_name) {
@@ -1220,7 +1220,7 @@ namespace Ioss {
   EdgeSet* Region::get_edgeset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    EdgeSet *ge = NULL;
+    EdgeSet *ge = nullptr;
     EdgeSetContainer::const_iterator i = edgeSets.begin();
     while (i != edgeSets.end()) {
       if ((*i)->name() == db_name) {
@@ -1235,7 +1235,7 @@ namespace Ioss {
   FaceSet* Region::get_faceset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    FaceSet *ge = NULL;
+    FaceSet *ge = nullptr;
     FaceSetContainer::const_iterator i = faceSets.begin();
     while (i != faceSets.end()) {
       if ((*i)->name() == db_name) {
@@ -1250,7 +1250,7 @@ namespace Ioss {
   ElementSet* Region::get_elementset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    ElementSet *ge = NULL;
+    ElementSet *ge = nullptr;
     ElementSetContainer::const_iterator i = elementSets.begin();
     while (i != elementSets.end()) {
       if ((*i)->name() == db_name) {
@@ -1265,7 +1265,7 @@ namespace Ioss {
   CommSet* Region::get_commset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
-    CommSet *ge = NULL;
+    CommSet *ge = nullptr;
     CommSetContainer::const_iterator i = commSets.begin();
     while (i != commSets.end()) {
       if ((*i)->name() == db_name) {
@@ -1293,47 +1293,47 @@ namespace Ioss {
 				  std::string *my_type) const
   {
     // Search all entities defined on this region for the name 'my_name'.
-    // If found, then set 'type' (if non-NULL) to the type of the entity
+    // If found, then set 'type' (if non-nullptr) to the type of the entity
     // (the 'type' values are from client code that was developed prior
     // to this function, so they are somewhat exodusII specific...).
-    if ((io_type & NODEBLOCK) && get_node_block(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "NODE_BLOCK";
+    if ((io_type & NODEBLOCK) && get_node_block(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "NODE_BLOCK";
       return true;
-    } else if ((io_type & EDGEBLOCK) && get_edge_block(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "EDGE_BLOCK";
+    } else if ((io_type & EDGEBLOCK) && get_edge_block(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "EDGE_BLOCK";
       return true;
-    } else if ((io_type & FACEBLOCK) && get_face_block(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "FACE_BLOCK";
+    } else if ((io_type & FACEBLOCK) && get_face_block(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "FACE_BLOCK";
       return true;
-    } else if ((io_type & ELEMENTBLOCK) && get_element_block(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "ELEMENT_BLOCK";
+    } else if ((io_type & ELEMENTBLOCK) && get_element_block(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "ELEMENT_BLOCK";
       return true;
-    } else if ((io_type & SIDESET) && get_sideset(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "SURFACE";
+    } else if ((io_type & SIDESET) && get_sideset(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "SURFACE";
       return true;
-    } else if ((io_type & NODESET) && get_nodeset(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "NODESET";
+    } else if ((io_type & NODESET) && get_nodeset(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "NODESET";
       return true;
-    } else if ((io_type & EDGESET) && get_edgeset(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "EDGESET";
+    } else if ((io_type & EDGESET) && get_edgeset(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "EDGESET";
       return true;
-    } else if ((io_type & FACESET) && get_faceset(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "FACESET";
+    } else if ((io_type & FACESET) && get_faceset(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "FACESET";
       return true;
-    } else if ((io_type & ELEMENTSET) && get_elementset(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "ELEMENTSET";
+    } else if ((io_type & ELEMENTSET) && get_elementset(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "ELEMENTSET";
       return true;
-    } else if ((io_type & COMMSET) && get_commset(my_name) != NULL) {
-      if (my_type != NULL) *my_type = "COMMSET";
+    } else if ((io_type & COMMSET) && get_commset(my_name) != nullptr) {
+      if (my_type != nullptr) *my_type = "COMMSET";
       return true;
     }
-    if (my_type != NULL) *my_type = "INVALID";
+    if (my_type != nullptr) *my_type = "INVALID";
     return false;
   }
 
   // Retrieve the element block that contains the specified element
   // The 'local_id' is the local database id (1-based), not the global id.
-  // returns NULL if no element block contains this element (local_id <= 0
+  // returns nullptr if no element block contains this element (local_id <= 0
   // or greater than number of elements in database)
   ElementBlock* Region::get_element_block(size_t local_id) const
   {
@@ -1347,7 +1347,7 @@ namespace Ioss {
     std::ostringstream errmsg;
     errmsg << "Internal Program Error...Invalid local_id " << local_id << " specified";
     IOSS_ERROR(errmsg);
-    return NULL;
+    return nullptr;
   }
 
   Property Region::get_implicit_property(const std::string& my_name) const
@@ -1464,7 +1464,7 @@ namespace Ioss {
     while (I != IE) {
       std::string alias = (*I).first;
       std::string base  = (*I).second;
-      if (alias != base && to->get_entity(base) != NULL) {
+      if (alias != base && to->get_entity(base) != nullptr) {
 	to->add_alias(base, alias);
       }
       ++I;
@@ -1520,10 +1520,10 @@ namespace Ioss {
 	// to by the 'alias'
 	GroupingEntity *ge = from->get_entity(base);
 
-	if (ge != NULL) {
-	  // Get the entity from this region... Must be non-NULL
+	if (ge != nullptr) {
+	  // Get the entity from this region... Must be non-nullptr
 	  GroupingEntity *this_ge = get_entity(base);
-	  if (this_ge == NULL) {
+	  if (this_ge == nullptr) {
 	    std::ostringstream errmsg;
 	    errmsg << "INTERNAL ERROR: Could not find entity '" << base << "' in synchronize_id_and_name() "
 		   << "                [" << get_database()->get_filename() << "]\n";
@@ -1622,7 +1622,7 @@ namespace Ioss {
 
       if (alias != base) {
 	GroupingEntity *ge = get_entity(base);
-	if (ge != NULL) {
+	if (ge != nullptr) {
 	  add_alias(base, alias);
 	}
       }

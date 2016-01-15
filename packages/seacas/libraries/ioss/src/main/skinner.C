@@ -142,7 +142,7 @@ namespace {
     //========================================================================
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
                                                     (MPI_Comm)MPI_COMM_WORLD, properties);
-    if (dbi == NULL || !dbi->ok(true)) {
+    if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
 
@@ -253,7 +253,7 @@ namespace {
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(type, file,
                                                     Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD,
                                                     properties);
-    if (dbo == NULL || !dbo->ok(true)) {
+    if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
 
@@ -265,8 +265,8 @@ namespace {
     Ioss::NodeBlock *nbo = new Ioss::NodeBlock(output_region.get_database(), "nodeblock_1", ref_count, 3);
     output_region.add(nbo);
     
-    Ioss::ElementBlock *quadblock = NULL;
-    Ioss::ElementBlock *triblock = NULL;
+    Ioss::ElementBlock *quadblock = nullptr;
+    Ioss::ElementBlock *triblock = nullptr;
     if (quad > 0) {
       quadblock = new Ioss::ElementBlock(output_region.get_database(), "quad", "shell", quad);
       output_region.add(quadblock);

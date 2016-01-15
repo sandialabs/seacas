@@ -85,8 +85,8 @@ namespace {
 
   void check_dynamic_cast(const void *ptr)
   {
-    if (ptr == NULL) {
-      std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned NULL\n";
+    if (ptr == nullptr) {
+      std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
       exit(EXIT_FAILURE);
     }
   }
@@ -263,16 +263,16 @@ namespace {
     for (size_t i=0; i < el_blocks.size(); i++) {
       std::string type = Ioss::Utils::lowercase(el_blocks[i].topologyType);
       Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(type, false);
-      if (topology != NULL) {
+      if (topology != nullptr) {
         Ioss::ElementTopology *boundary = topology->boundary_type(0);
-        if (boundary != NULL) {
+        if (boundary != nullptr) {
           common_nodes = std::min(common_nodes, boundary->number_boundaries());
         } else {
           // Different topologies on some element faces...
           size_t nb = topology->number_boundaries();
           for (size_t b=1; b <= nb; b++) {
             boundary = topology->boundary_type(b);
-            if (boundary != NULL) {
+            if (boundary != nullptr) {
               common_nodes = std::min(common_nodes, boundary->number_boundaries());
             }
           }
@@ -663,7 +663,7 @@ namespace Iopx {
                                                         idx_t *elem_partition)
   {
     idx_t wgt_flag = 0; // No weights
-    idx_t *elm_wgt = NULL;
+    idx_t *elm_wgt = nullptr;
     idx_t ncon = 1;
     idx_t num_flag = 0; // Use C-based numbering
     idx_t common_nodes = get_common_node_count(el_blocks, comm_);
@@ -698,8 +698,8 @@ namespace Iopx {
     }
     else if (method == "GEOM_KWAY" || method == "KWAY_GEOM") {
 
-      idx_t *dual_xadj = NULL;
-      idx_t *dual_adjacency = NULL;
+      idx_t *dual_xadj = nullptr;
+      idx_t *dual_adjacency = nullptr;
       int rc = ParMETIS_V3_Mesh2Dual(element_dist, pointer, adjacency,
                                      &num_flag, &common_nodes, &dual_xadj, &dual_adjacency, &comm_);
 
@@ -748,7 +748,7 @@ namespace Iopx {
   void DecompositionData<INT>::zoltan_decompose(const std::string &method)
   {
     float version = 0.0;
-    Zoltan_Initialize(0, NULL, &version);
+    Zoltan_Initialize(0, nullptr, &version);
 
     Zoltan zz(comm_);
 
@@ -774,14 +774,14 @@ namespace Iopx {
     int num_local  = 0;
     int num_import = 1;
     int  num_export = 1;
-    ZOLTAN_ID_PTR import_global_ids = NULL;
-    ZOLTAN_ID_PTR import_local_ids  = NULL;
-    ZOLTAN_ID_PTR export_global_ids = NULL;
-    ZOLTAN_ID_PTR export_local_ids  = NULL;
-    int *import_procs   = NULL;
-    int *import_to_part = NULL;
-    int *export_procs   = NULL;
-    int *export_to_part = NULL;
+    ZOLTAN_ID_PTR import_global_ids = nullptr;
+    ZOLTAN_ID_PTR import_local_ids  = nullptr;
+    ZOLTAN_ID_PTR export_global_ids = nullptr;
+    ZOLTAN_ID_PTR export_local_ids  = nullptr;
+    int *import_procs   = nullptr;
+    int *import_to_part = nullptr;
+    int *export_procs   = nullptr;
+    int *export_to_part = nullptr;
 
     num_local  = 1;
 
@@ -1230,7 +1230,7 @@ namespace Iopx {
       }
       fileBlockIndex[b+1] = fileBlockIndex[b] + ebs[b].num_entry;
       el_blocks[b].topologyType = ebs[b].topology;
-      if (ebs[b].num_entry == 0 && (std::strcmp(ebs[b].topology, "NULL") == 0))
+      if (ebs[b].num_entry == 0 && (std::strcmp(ebs[b].topology, "nullptr") == 0))
         el_blocks[b].topologyType = "sphere";
         
       el_blocks[b].nodesPerEntity = ebs[b].num_nodes_per_entry;
@@ -1274,7 +1274,7 @@ namespace Iopx {
 #if DEBUG_OUTPUT
         std::cerr << "Processor " << myProcessor << " has " << overlap << " elements on element block " << id << "\n";
 #endif
-        ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity), NULL, NULL);
+        ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity), nullptr, nullptr);
         size_t el = 0;
         for (size_t elem = 0; elem < overlap; elem++) {
           pointer.push_back(adjacency.size());
@@ -1345,9 +1345,9 @@ namespace Iopx {
       node_sets[i].id_ = ids[i];
       sets[i].id = ids[i];
       sets[i].type = EX_NODE_SET;
-      sets[i].entry_list = NULL;
-      sets[i].extra_list = NULL;
-      sets[i].distribution_factor_list = NULL;
+      sets[i].entry_list = nullptr;
+      sets[i].extra_list = nullptr;
+      sets[i].distribution_factor_list = nullptr;
     }
 
     ex_get_sets(exodusId, sets.size(), TOPTR(sets));
@@ -1380,7 +1380,7 @@ namespace Iopx {
       if (myProcessor == root) {
         size_t offset = 0;
         for (size_t i=0; i < set_count; i++) {
-          ex_get_set(exodusId, EX_NODE_SET, sets[i].id, &nodelist[offset], NULL);
+          ex_get_set(exodusId, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
           offset += sets[i].num_entry;
         }
         assert(offset == nodelist_size);
@@ -1490,9 +1490,9 @@ namespace Iopx {
       side_sets[i].id_ = ids[i];
       sets[i].id = ids[i];
       sets[i].type = EX_SIDE_SET;
-      sets[i].entry_list = NULL;
-      sets[i].extra_list = NULL;
-      sets[i].distribution_factor_list = NULL;
+      sets[i].entry_list = nullptr;
+      sets[i].extra_list = nullptr;
+      sets[i].distribution_factor_list = nullptr;
     }
 
     ex_get_sets(exodusId, sets.size(), TOPTR(sets));
@@ -1525,7 +1525,7 @@ namespace Iopx {
       if (myProcessor == root) {
         size_t offset = 0;
         for (size_t i=0; i < set_count; i++) {
-          ex_get_set(exodusId, EX_SIDE_SET, sets[i].id, &elemlist[offset], NULL);
+          ex_get_set(exodusId, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
           offset += sets[i].num_entry;
         }
         assert(offset == elemlist_size);
@@ -2130,21 +2130,21 @@ namespace Iopx {
     int ierr = 0;
     if (field.get_name() == "mesh_model_coordinates_x") {
       ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
-                                  TOPTR(tmp), NULL, NULL);
+                                  TOPTR(tmp), nullptr, nullptr);
       if (ierr >= 0)
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
       ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
-                                  NULL, TOPTR(tmp), NULL);
+                                  nullptr, TOPTR(tmp), nullptr);
       if (ierr >= 0)
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
       ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
-                                  NULL, NULL, TOPTR(tmp));
+                                  nullptr, nullptr, TOPTR(tmp));
       if (ierr >= 0)
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
@@ -2171,7 +2171,7 @@ namespace Iopx {
 
       for (size_t d = 0; d < spatialDimension; d++) {
         double* coord[3];
-        coord[0] = coord[1] = coord[2] = NULL;
+        coord[0] = coord[1] = coord[2] = nullptr;
         coord[d] = TOPTR(tmp);
         ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
                                     coord[0], coord[1], coord[2]);
@@ -2210,7 +2210,7 @@ namespace Iopx {
 
     assert(sizeof(INT) == exodus_byte_size_api(exodusId));
     std::vector<INT> file_conn(count * nnpe);
-    ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_conn), NULL, NULL);
+    ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_conn), nullptr, nullptr);
     communicate_block_data(TOPTR(file_conn), data, blk_seq, nnpe);
 
     for (size_t i=0; i < blk.iossCount * nnpe; i++) {
@@ -2780,12 +2780,12 @@ namespace Iopx {
       // Read the nodeset data from the file..
       if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
         file_data.resize(set.file_count());
-        ierr = ex_get_set(exodusId, type, id, TOPTR(file_data), NULL);
+        ierr = ex_get_set(exodusId, type, id, TOPTR(file_data), nullptr);
       } else if (field.get_name() == "sides") {
         // Sideset only...
         if (type == EX_SIDE_SET) {
           file_data.resize(set.file_count());
-          ierr = ex_get_set(exodusId, type, id, NULL, TOPTR(file_data));
+          ierr = ex_get_set(exodusId, type, id, nullptr, TOPTR(file_data));
         } else {
           return -1;
         }
@@ -2793,9 +2793,9 @@ namespace Iopx {
         ex_set set_param[1];
         set_param[0].id = id;
         set_param[0].type = type;
-        set_param[0].entry_list = NULL;
-        set_param[0].extra_list = NULL;
-        set_param[0].distribution_factor_list = NULL;
+        set_param[0].entry_list = nullptr;
+        set_param[0].extra_list = nullptr;
+        set_param[0].distribution_factor_list = nullptr;
         ierr = ex_get_sets(exodusId, 1, set_param);
 
         if (set_param[0].num_distribution_factor == 0) {
@@ -2864,9 +2864,9 @@ namespace Iopx {
         ex_set set_param[1];
         set_param[0].id = id;
         set_param[0].type = EX_SIDE_SET;
-        set_param[0].entry_list = NULL;
-        set_param[0].extra_list = NULL;
-        set_param[0].distribution_factor_list = NULL;
+        set_param[0].entry_list = nullptr;
+        set_param[0].extra_list = nullptr;
+        set_param[0].distribution_factor_list = nullptr;
         ex_get_sets(exodusId, 1, set_param);
         if (set_param[0].num_distribution_factor == 0) {
           // This should have been caught above.
@@ -2898,8 +2898,8 @@ namespace Iopx {
         ex_set set_param[1];
         set_param[0].id = id;
         set_param[0].type = EX_SIDE_SET;
-        set_param[0].entry_list = NULL;
-        set_param[0].extra_list = NULL;
+        set_param[0].entry_list = nullptr;
+        set_param[0].extra_list = nullptr;
         set_param[0].distribution_factor_list = TOPTR(file_data);
         ierr = ex_get_sets(exodusId, 1, set_param);
       }
@@ -2916,9 +2916,9 @@ namespace Iopx {
       ex_set set_param[1];
       set_param[0].id = id;
       set_param[0].type = EX_SIDE_SET;
-      set_param[0].entry_list = NULL;
-      set_param[0].extra_list = NULL;
-      set_param[0].distribution_factor_list = NULL;
+      set_param[0].entry_list = nullptr;
+      set_param[0].extra_list = nullptr;
+      set_param[0].distribution_factor_list = nullptr;
       ex_get_sets(exodusId, 1, set_param);
       df_count = set_param[0].num_distribution_factor;
     }
@@ -2967,8 +2967,8 @@ namespace Iopx {
       ex_set set_param[1];
       set_param[0].id = id;
       set_param[0].type = EX_SIDE_SET;
-      set_param[0].entry_list = NULL;
-      set_param[0].extra_list = NULL;
+      set_param[0].entry_list = nullptr;
+      set_param[0].extra_list = nullptr;
       set_param[0].distribution_factor_list = TOPTR(file_data);
       ex_get_sets(exodusId, 1, set_param);
     }
