@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
   setlinebuf(stderr);
 #endif
   try {
-  time_t begin_time = time(NULL);
+  time_t begin_time = time(nullptr);
   SystemInterface::show_version();
   Ioss::Init::Initializer io;
 
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
   for (size_t p=0; p < interface.inputFiles_.size(); p++) {
     dbi[p] = Ioss::IOFactory::create("exodusII", interface.inputFiles_[p],
 				     Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-    if (dbi[p] == NULL || !dbi[p]->ok(true))
+    if (dbi[p] == nullptr || !dbi[p]->ok(true))
       std::exit(EXIT_FAILURE);
 
     if (dbi[p]->int_byte_size_api() > int_byte_size)
@@ -245,7 +245,7 @@ int main(int argc, char* argv[])
       Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
       Ioss::Field coord = nb->get_field("mesh_model_coordinates");
       Ioss::Transform* transform = Iotr::Factory::create("offset3D");
-      assert(transform != NULL);
+      assert(transform != nullptr);
       std::vector<double> values(3);
       values[0] = offset.x * p; values[1] = offset.y * p; values[2] = offset.z * p;
       transform->set_properties("offset", values);
@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
     delete part_mesh[p];
   }
   
-  time_t end_time = time(NULL);
+  time_t end_time = time(nullptr);
   add_to_log(argv[0], (int)(end_time-begin_time));
 
 #ifdef HAVE_MPI
@@ -297,7 +297,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
 
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodusII", interface.outputName_, Ioss::WRITE_RESTART,
 						  (MPI_Comm)MPI_COMM_WORLD, properties);
-  if (dbo == NULL || !dbo->ok(true)) {
+  if (dbo == nullptr || !dbo->ok(true)) {
     std::exit(EXIT_FAILURE);
   }
   
@@ -548,9 +548,9 @@ namespace {
       Ioss::ElementBlock *eb = *i;
       if (!entity_is_omitted(eb)) {
 	std::string name = eb->name();
-	if (output_region.get_element_block(name) != NULL) {
+	if (output_region.get_element_block(name) != nullptr) {
 	  name = prefix + "_" + eb->name();
-	  if (output_region.get_element_block(name) != NULL) {
+	  if (output_region.get_element_block(name) != nullptr) {
 	    std::cerr << "ERROR: Duplicate element blocks named '" << name << "'\n";
 	    exit(EXIT_FAILURE);
 	  }
@@ -591,9 +591,9 @@ namespace {
     while (i != fss.end()) {
       if (!entity_is_omitted(*i)) {
 	std::string name = (*i)->name();
-	if (output_region.get_sideset(name) != NULL) {
+	if (output_region.get_sideset(name) != nullptr) {
 	  name = prefix + "_" + (*i)->name();
-	  if (output_region.get_sideset(name) != NULL) {
+	  if (output_region.get_sideset(name) != nullptr) {
 	    std::cerr << "ERROR: Duplicate side sets named '" << name << "'\n";
 	    exit(EXIT_FAILURE);
 	  }
@@ -630,7 +630,7 @@ namespace {
     std::string prefix = region.name();
 
     std::string name = prefix + "_nodes";
-    if (output_region.get_nodeset(name) != NULL) {
+    if (output_region.get_nodeset(name) != nullptr) {
       std::cerr << "ERROR: Duplicate node sets named '" << name << "'\n";
       exit(EXIT_FAILURE);
     }
@@ -652,10 +652,10 @@ namespace {
       if (interface.convert_nodes_to_nodesets(p+1)) {
 	std::string name = part_mesh[p]->name() + "_nodes";
 	Ioss::NodeSet *ons = output_region.get_nodeset(name);
-	SMART_ASSERT(ons != NULL)(name);
+	SMART_ASSERT(ons != nullptr)(name);
 
 	Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
-	SMART_ASSERT(nb != NULL);
+	SMART_ASSERT(nb != nullptr);
 	size_t node_offset = part_mesh[p]->get_property("node_offset").get_int();
 
 	std::vector<INT> nodelist;
@@ -684,10 +684,10 @@ namespace {
 	// Find nodeset in output region corresponding to the nodes in this part...
 	std::string name = part_mesh[p]->name() + "_nodes";
 	Ioss::NodeSet *ons = output_region.get_nodeset(name);
-	SMART_ASSERT(ons != NULL)(name);
+	SMART_ASSERT(ons != nullptr)(name);
 	
 	Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
-	SMART_ASSERT(nb != NULL);
+	SMART_ASSERT(nb != nullptr);
 
 	SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() == nb->get_property("entity_count").get_int());
 
@@ -713,9 +713,9 @@ namespace {
     while (i != nss.end()) {
       if (!entity_is_omitted(*i)) {
 	std::string name = (*i)->name();
-	if (output_region.get_nodeset(name) != NULL) {
+	if (output_region.get_nodeset(name) != nullptr) {
 	  name = prefix + "_" + (*i)->name();
-	  if (output_region.get_nodeset(name) != NULL) {
+	  if (output_region.get_nodeset(name) != nullptr) {
 	    std::cerr << "ERROR: Duplicate node sets named '" << name << "'\n";
 	    exit(EXIT_FAILURE);
 	  }
@@ -738,12 +738,12 @@ namespace {
       const int length=256;
       static char time_string[length];
 
-      time_t calendar_time = time(NULL);
+      time_t calendar_time = time(nullptr);
       struct tm *local_time = localtime(&calendar_time);
 
       int error = strftime(time_string, length, format.c_str(), local_time);
       if (error != 0) {
-        time_string[length-1] = (char)NULL;
+        time_string[length-1] = '\0';
         return std::string(time_string);
       } else {
         return std::string("[ERROR]");
@@ -790,7 +790,7 @@ namespace {
 			std::vector<INT> &global_node_map)
   {
     Ioss::NodeBlock *onb = output_region.get_node_blocks()[0];
-    SMART_ASSERT(onb != NULL);
+    SMART_ASSERT(onb != nullptr);
 
     onb->put_field_data("ids", global_node_map);
 
@@ -799,7 +799,7 @@ namespace {
     size_t part_count = part_mesh.size();
     for (size_t p = 0; p < part_count; p++) {
       Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
-      SMART_ASSERT(nb != NULL);
+      SMART_ASSERT(nb != nullptr);
       std::vector<double> coordinates;
       nb->get_field_data("mesh_model_coordinates", coordinates);
       size_t node_count = nb->get_property("entity_count").get_int();
@@ -851,11 +851,11 @@ namespace {
 	Ioss::ElementBlock *ieb = *J;
 	std::string name = part_mesh[p]->name() + "_" + ieb->name();
 	Ioss::ElementBlock *oeb = output_region.get_element_block(name);
-	if (oeb == NULL) {
+	if (oeb == nullptr) {
 	  name = ieb->name();
 	  oeb = output_region.get_element_block(name);
 	}
-	if (oeb != NULL) {
+	if (oeb != nullptr) {
 	  std::vector<INT> connectivity;
 	  ieb->get_field_data("connectivity", connectivity);
 	
@@ -897,11 +897,11 @@ namespace {
 	
 	  std::string name = part_mesh[p]->name() + "_" + (*J)->name();
 	  Ioss::NodeSet *ons = output_region.get_nodeset(name);
-	  if (ons == NULL) {
+	  if (ons == nullptr) {
 	    name = (*J)->name();
 	    ons = output_region.get_nodeset(name);
 	  }
-	  SMART_ASSERT(ons != NULL)(name);
+	  SMART_ASSERT(ons != nullptr)(name);
 	  SMART_ASSERT((*J)->get_property("entity_count").get_int() == ons->get_property("entity_count").get_int());
 
 	  // This needs to make sure that the nodelist comes back as local id (1..numnodes)
@@ -997,7 +997,7 @@ namespace {
     size_t part_count = part_mesh.size();
 
     Ioss::NodeBlock *onb = output_region.get_node_blocks()[0];
-    SMART_ASSERT(onb != NULL);
+    SMART_ASSERT(onb != nullptr);
     size_t node_count = onb->get_property("entity_count").get_int();
 
     Ioss::NameList fields;
@@ -1010,7 +1010,7 @@ namespace {
 	if (!interface.convert_nodes_to_nodesets(p+1)) {
 	  size_t offset = part_mesh[p]->get_property("node_offset").get_int();
 	  Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
-	  SMART_ASSERT(nb != NULL);
+	  SMART_ASSERT(nb != nullptr);
 	  if (nb->field_exists(*IF)) {
 	    SMART_ASSERT((int)comp_count == nb->get_field(*IF).raw_storage()->component_count());
 	    std::vector<double> loc_data;
@@ -1043,10 +1043,10 @@ namespace {
 	// Find nodeset in output region corresponding to the nodes in this part...
 	std::string name = part_mesh[p]->name() + "_nodes";
 	Ioss::NodeSet *ons = output_region.get_nodeset(name);
-	SMART_ASSERT(ons != NULL)(name);
+	SMART_ASSERT(ons != nullptr)(name);
 	
 	Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
-	SMART_ASSERT(nb != NULL);
+	SMART_ASSERT(nb != nullptr);
 
 	SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() == nb->get_property("entity_count").get_int());
 
@@ -1078,11 +1078,11 @@ namespace {
 	if (!entity_is_omitted(ieb)) {
 	  std::string name = part_mesh[p]->name() + "_" + ieb->name();
 	  Ioss::ElementBlock *oeb = output_region.get_element_block(name);
-	  if (oeb == NULL) {
+	  if (oeb == nullptr) {
 	    name = ieb->name();
 	    oeb = output_region.get_element_block(name);
 	  }
-	  if (oeb != NULL) {
+	  if (oeb != nullptr) {
 	    Ioss::NameList fields;
 	    ieb->field_describe(Ioss::Field::TRANSIENT, &fields);
 	    Ioss::NameList::const_iterator IF;
@@ -1112,11 +1112,11 @@ namespace {
 	if (!entity_is_omitted(*J)) {
 	  std::string name = part_mesh[p]->name() + "_" + (*J)->name();
 	  Ioss::NodeSet *ons = output_region.get_nodeset(name);
-	  if (ons == NULL) {
+	  if (ons == nullptr) {
 	    name = (*J)->name();
 	    ons = output_region.get_nodeset(name);
 	  }
-	  SMART_ASSERT(ons != NULL)(name);
+	  SMART_ASSERT(ons != nullptr)(name);
 
 	  Ioss::NameList fields;
 	  (*J)->field_describe(Ioss::Field::TRANSIENT, &fields);
@@ -1309,14 +1309,14 @@ namespace {
     if (!variable_list.empty() && variable_list[0].first == "none")
       return;
     Ioss::NodeBlock *onb = output_region.get_node_blocks()[0];
-    SMART_ASSERT(onb != NULL);
+    SMART_ASSERT(onb != nullptr);
     size_t node_count = onb->get_property("entity_count").get_int();
     size_t part_count = part_mesh.size();
     for (size_t p=0; p<part_count; p++) {
       if (!interface.convert_nodes_to_nodesets(p+1)) {
 	Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
 	Ioss::NameList fields;
-	SMART_ASSERT(nb != NULL);
+	SMART_ASSERT(nb != nullptr);
 	nb->field_describe(Ioss::Field::TRANSIENT, &fields);
 	Ioss::NameList::const_iterator IF;
 	for (IF = fields.begin(); IF != fields.end(); ++IF) {
@@ -1344,11 +1344,11 @@ namespace {
 	if (!entity_is_omitted(*J)) {
 	  std::string name = part_mesh[p]->name() + "_" + (*J)->name();
 	  Ioss::ElementBlock *oeb = output_region.get_element_block(name);
-	  if (oeb == NULL) {
+	  if (oeb == nullptr) {
 	    name = (*J)->name();
 	    oeb = output_region.get_element_block(name);
 	  }
-	  if (oeb != NULL) {
+	  if (oeb != nullptr) {
 	    size_t id = oeb->get_property("id").get_int();
 	    Ioss::NameList fields;
 	    (*J)->field_describe(Ioss::Field::TRANSIENT, &fields);
@@ -1381,11 +1381,11 @@ namespace {
 	if (!entity_is_omitted(*J)) {
 	  std::string name = part_mesh[p]->name() + "_" + (*J)->name();
 	  Ioss::NodeSet *ons = output_region.get_nodeset(name);
-	  if (ons == NULL) {
+	  if (ons == nullptr) {
 	    name = (*J)->name();
 	    ons = output_region.get_nodeset(name);
 	  }
-	  SMART_ASSERT(ons != NULL)(name);
+	  SMART_ASSERT(ons != nullptr)(name);
 
 	  size_t id = (*J)->get_property("id").get_int();
 	  Ioss::NameList fields;
@@ -1509,7 +1509,7 @@ namespace {
 	} else {
 	  for (size_t nset = 0; nset < omit[p].size(); nset++) {
 	    Ioss::NodeSet *ns = part_mesh[p]->get_nodeset(omit[p][nset]);
-	    if (ns != NULL) {
+	    if (ns != nullptr) {
 	      ns->property_add(Ioss::Property(std::string("omitted"), 1));
 	    }
 	  }
@@ -1533,7 +1533,7 @@ namespace {
 	} else {
 	  for (size_t sset = 0; sset < omit[p].size(); sset++) {
 	    Ioss::SideSet *ss = part_mesh[p]->get_sideset(omit[p][sset]);
-	    if (ss != NULL) {
+	    if (ss != nullptr) {
 	      ss->property_add(Ioss::Property(std::string("omitted"), 1));
 	    }
 	  }

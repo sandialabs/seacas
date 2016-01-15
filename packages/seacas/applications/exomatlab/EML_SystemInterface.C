@@ -37,7 +37,7 @@
 #include <Ioss_FileInfo.h>              // for FileInfo
 #include <ctype.h>                      // for tolower
 #include <stddef.h>                     // for size_t
-#include <stdlib.h>                     // for NULL, exit, strtod, etc
+#include <stdlib.h>                     // for nullptr, exit, strtod, etc
 #include <string.h>                     // for strcmp
 #include <algorithm>                    // for sort, transform
 #include <iostream>                     // for operator<<, basic_ostream, etc
@@ -75,7 +75,7 @@ void SystemInterface::enroll_options()
 		  "Print this summary and exit", 0);
 
   options_.enroll("version", GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+		  "Print version and exit", nullptr);
 
   options_.enroll("field_suffix", GetLongOption::MandatoryValue,
 		  "Character used to separate a field component suffix from the field name.\n"
@@ -90,7 +90,7 @@ void SystemInterface::enroll_options()
   
   options_.enroll("list", GetLongOption::MandatoryValue,
 		  "List global, nodal, element, nodeset, or sideset variables.\n\t\tEnter 'all' to list all types.\n"
-		  "\t\tCode exits after listing variable names.", NULL);
+		  "\t\tCode exits after listing variable names.", nullptr);
   
   options_.enroll("gvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of global variables to be output or ALL or NONE.",
@@ -120,7 +120,7 @@ void SystemInterface::enroll_options()
 
   options_.enroll("copyright", GetLongOption::NoValue,
 		  "Show copyright and license data.",
-		  NULL);
+		  nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -131,7 +131,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("exomatlab");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the EXOMATLAB_OPTIONS environment variable:\n"
 	      << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
@@ -163,7 +163,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("list");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       listVars_ = true;
       parse_variable_names(temp, &varsToList_);
     }
@@ -199,14 +199,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("minimum_time");
-    if (temp != NULL)
-      minimumTime_  = strtod(temp, NULL);
+    if (temp != nullptr)
+      minimumTime_  = strtod(temp, nullptr);
   }
   
   {
     const char *temp = options_.retrieve("maximum_time");
-    if (temp != NULL)
-      maximumTime_  = strtod(temp, NULL);
+    if (temp != nullptr)
+      maximumTime_  = strtod(temp, nullptr);
   }
   
   if (options_.retrieve("copyright")) {
@@ -290,7 +290,7 @@ namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       std::string token_string(tokens);
       StringVector var_list;
       SLIB::tokenize(token_string, ",", var_list);
@@ -311,7 +311,7 @@ namespace {
 	} else {
 	  for (size_t i=1; i < name_id.size(); i++) {
 	    // Convert string to integer...
-	    int id = strtoul(name_id[i].c_str(), NULL, 0);
+	    int id = strtoul(name_id[i].c_str(), nullptr, 0);
 	    (*variable_list).push_back(std::make_pair(var_name,id));
 	  }
 	}

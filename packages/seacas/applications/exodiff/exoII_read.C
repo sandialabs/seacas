@@ -248,7 +248,7 @@ Exo_Block<INT>* ExoII_Read<INT>::Get_Elmt_Block_by_Id(size_t id) const
       return &eblocks[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -260,7 +260,7 @@ Exo_Block<INT>* ExoII_Read<INT>::Get_Elmt_Block_by_Name(const std::string &name)
       return &eblocks[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -279,7 +279,7 @@ Exo_Entity* ExoII_Read<INT>::Get_Entity_by_Index(EXOTYPE type, size_t block_inde
     SMART_ASSERT(block_index < num_side_sets);
     return &ssets[block_index];
   default:
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -310,9 +310,9 @@ Exo_Entity* ExoII_Read<INT>::Get_Entity_by_Id(EXOTYPE type, size_t id) const
     }
     break;
   default:
-    return NULL;
+    return nullptr;
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -342,9 +342,9 @@ Exo_Entity* ExoII_Read<INT>::Get_Entity_by_Name(EXOTYPE type, const std::string 
     }
     break;
   default:
-    return NULL;
+    return nullptr;
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -356,7 +356,7 @@ Node_Set<INT>* ExoII_Read<INT>::Get_Node_Set_by_Id(size_t set_id) const
       return &nsets[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -368,7 +368,7 @@ Node_Set<INT>* ExoII_Read<INT>::Get_Node_Set_by_Name(const std::string &name) co
       return &nsets[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -380,7 +380,7 @@ Side_Set<INT>* ExoII_Read<INT>::Get_Side_Set_by_Id(size_t set_id) const
       return &ssets[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -392,7 +392,7 @@ Side_Set<INT>* ExoII_Read<INT>::Get_Side_Set_by_Name(const std::string &name) co
       return &ssets[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 template <typename INT>
@@ -646,15 +646,15 @@ string ExoII_Read<INT>::Load_Nodal_Results(int time_step_num, int var_index)
 template <typename INT>
 const double* ExoII_Read<INT>::Get_Nodal_Results(int t1, int t2, double proportion, int var_index) const // Interpolated results.
 {
-  static double *st_results  = NULL;
-  static double *st_results2 = NULL;
+  static double *st_results  = nullptr;
+  static double *st_results2 = nullptr;
 
   SMART_ASSERT(Check_State());
   SMART_ASSERT(t1 > 0 && t1 <= num_times);
   SMART_ASSERT(t2 > 0 && t2 <= num_times);
   SMART_ASSERT(var_index >= 0 && (unsigned)var_index < nodal_vars.size());
   
-  if (!Open()) return NULL;
+  if (!Open()) return nullptr;
 
   if (!st_results) {
     st_results = new double[num_nodes];
@@ -801,7 +801,7 @@ Side_Set<INT>* ExoII_Read<INT>::Get_Side_Set_by_Index(size_t side_set_index) con
 {
   SMART_ASSERT(Check_State());
   
-  if (side_set_index >= num_side_sets) return NULL;
+  if (side_set_index >= num_side_sets) return nullptr;
   
   return &ssets[side_set_index];
 }
@@ -812,7 +812,7 @@ Node_Set<INT>* ExoII_Read<INT>::Get_Node_Set_by_Index(size_t set_index) const
 {
   SMART_ASSERT(Check_State());
   
-  if (set_index >= num_node_sets) return NULL;
+  if (set_index >= num_node_sets) return nullptr;
   
   return &nsets[set_index];
 }
@@ -1082,7 +1082,7 @@ string ExoII_Read<INT>::Open_File(const char* fname)
     // ExodusII library could not open file.  See if a file (exodusII
     // or not) exists with the specified name.
     FILE *fid = fopen(file_name.c_str(),"r");
-    if (fid != NULL) {
+    if (fid != nullptr) {
       oss << " File exists, but is not an exodusII file.";
       fclose(fid);
     } else {

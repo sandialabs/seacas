@@ -47,7 +47,7 @@ namespace SEAMS {
   void load_conversion(struct var_init *base, struct svar_init *label);
 
 #define DEFINE_VAR(name, val, label) do {	\
-    if ((ptr = aprepro->getsym((name))) == NULL) \
+    if ((ptr = aprepro->getsym((name))) == nullptr) \
       ptr = aprepro->putsym((name), SEAMS::Aprepro::VARIABLE, 1);	\
     ptr->value.var = (val);		\
     if (echo) { \
@@ -335,14 +335,14 @@ const char *do_Units(char *type)
   if (systems[i].name != 0) {
     /* Found a match */
     for (j = 0; systems[i].label[j].vname != 0; j++) {
-      if ((ptr = aprepro->getsym(systems[i].label[j].vname)) == NULL) {
+      if ((ptr = aprepro->getsym(systems[i].label[j].vname)) == nullptr) {
 	ptr = aprepro->putsym(systems[i].label[j].vname, SEAMS::Aprepro::STRING_VARIABLE, 1);
       }
       ptr->value.svar = systems[i].label[j].value;
     }
 
     for (j = 0; systems[i].base[j].vname != 0; j++) {
-      if ((ptr = aprepro->getsym(systems[i].base[j].vname)) == NULL) {
+      if ((ptr = aprepro->getsym(systems[i].base[j].vname)) == nullptr) {
 	ptr = aprepro->putsym(systems[i].base[j].vname, SEAMS::Aprepro::VARIABLE, 1);
       }
       ptr->value.var = systems[i].base[j].value;

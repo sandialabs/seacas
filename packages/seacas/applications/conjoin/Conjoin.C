@@ -67,7 +67,7 @@
 #if __cplusplus > 199711L
 #define TOPTR(x) x.data()
 #else
-#define TOPTR(x) (x.empty() ? NULL : &x[0])
+#define TOPTR(x) (x.empty() ? nullptr : &x[0])
 #endif
 
 namespace {
@@ -169,7 +169,7 @@ namespace {
   }
 
   char **get_name_array(int size, size_t length) {
-    char **names = NULL;
+    char **names = nullptr;
     if (size > 0) {
       names = new char* [size];
       for (int i=0; i < size; i++) {
@@ -185,7 +185,7 @@ namespace {
       delete [] names[i];
     }
     delete [] names;
-    names = NULL;
+    names = nullptr;
   }
 }
 
@@ -251,7 +251,7 @@ void get_variable_params(int id, Excn::Variables &vars,
 			 const StringIdVector &variable_list);
 
 void get_put_variable_names(int id, int idout, Excn::Variables &vars, Excn::SystemInterface &interface,
-			      int *combined_status_variable_index = NULL);
+			      int *combined_status_variable_index = nullptr);
 
 template <typename INT>
 void build_reverse_node_map(std::vector<Excn::Mesh<INT> > &local_mesh,
@@ -359,7 +359,7 @@ int main(int argc, char* argv[])
   setlinebuf(stderr);
 #endif
   try {
-  time_t begin_time = time(NULL);
+  time_t begin_time = time(nullptr);
   SystemInterface::show_version();
 
   SystemInterface interface;
@@ -403,7 +403,7 @@ int main(int argc, char* argv[])
 
   ExodusFile::close_all();
 
-  time_t end_time = time(NULL);
+  time_t end_time = time(nullptr);
   add_to_log(argv[0], end_time-begin_time);
   return (error);
   }
@@ -973,7 +973,7 @@ namespace {
     strncpy(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH); // Code
     strncpy(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH); // Version
 
-    time_t date_time = time(NULL);
+    time_t date_time = time(nullptr);
     strftime( buffer, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time) );
 
     strncpy(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH);
@@ -2068,7 +2068,7 @@ namespace {
 	    NodeSet<INT> &nset = nodesets[p][ns];
 	    size_t nnodes = nset.entity_count();
 	    nset.nodeOrderMap.resize(nnodes);
-	    ex_get_set(id, EX_NODE_SET, nset.id, &nset.nodeOrderMap[0], NULL);
+	    ex_get_set(id, EX_NODE_SET, nset.id, &nset.nodeOrderMap[0], nullptr);
 	    
 	    for (size_t i=0; i < nnodes; i++) {
 	      size_t local_node = nset.nodeOrderMap[i];                       // 1-based
@@ -2195,9 +2195,9 @@ namespace {
 	  ex_set set;
 	  set.type = EX_SIDE_SET;
 	  set.id = sets[p][i].id;
-	  set.entry_list = NULL;
-	  set.extra_list = NULL;
-	  set.distribution_factor_list = NULL;
+	  set.entry_list = nullptr;
+	  set.extra_list = nullptr;
+	  set.distribution_factor_list = nullptr;
 	  int error = ex_get_sets(id, 1, &set);
 	  if (error != EX_NOERR) {
 	    std::cerr << "ERROR: Cannot get side set with id " << set.id << "\n";
@@ -2580,7 +2580,7 @@ namespace {
   void add_info_record(char *info_record, int size)
   {
     // Add 'uname' output to the passed in character string.
-    // Maximum size of string is 'size' (not including terminating NULL)
+    // Maximum size of string is 'size' (not including terminating nullptr)
     // This is used as information data in the concatenated results file
     // to help in tracking when/where/... the file was created
     struct utsname sys_info;
@@ -2604,7 +2604,7 @@ namespace {
   inline bool is_whitespace(char c)
   {
     static char white_space[] = {' ', '\t', '\n', '\r', ',', '\0'};
-    return (std::strchr(white_space, c) != NULL);
+    return (std::strchr(white_space, c) != nullptr);
   }
 
   void compress_white_space(char *str)
@@ -2616,7 +2616,7 @@ namespace {
     int cnt = 0;
 
     // Don't process an empty string.
-    if (str == NULL)
+    if (str == nullptr)
       return;
 
     // Skip leading...
@@ -2651,7 +2651,7 @@ namespace {
       const int length=256;
       static char time_string[length];
 
-      time_t calendar_time = time(NULL);
+      time_t calendar_time = time(nullptr);
       struct tm *local_time = localtime(&calendar_time);
 
       int error = strftime(time_string, length, format.c_str(), local_time);

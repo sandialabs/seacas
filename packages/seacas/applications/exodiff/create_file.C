@@ -32,7 +32,7 @@
 // 
 
 #include <stddef.h>                     // for size_t
-#include <cstdio>                       // for sprintf, NULL
+#include <cstdio>                       // for sprintf, nullptr
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for string, char_traits, etc
 #include <vector>                       // for vector
@@ -414,13 +414,13 @@ namespace {
       
       for (size_t b = 0; b < num_entity; ++b) {
 	Exo_Entity *set1 = file1.Get_Entity_by_Index(type, b);
-	Exo_Entity *set2 = NULL;
+	Exo_Entity *set2 = nullptr;
 	if (interface.by_name)
 	  set2 = file2.Get_Entity_by_Name(type, set1->Name());
 	else
 	  set2 = file2.Get_Entity_by_Id(type, set1->Id());
 
-	if (set2 == NULL) {
+	if (set2 == nullptr) {
 	  *diff_found = true;
 	  std::cout << "exodiff: WARNING " << label << " id " << set1->Id()
 		    << " exists in first file but not the second...\n";

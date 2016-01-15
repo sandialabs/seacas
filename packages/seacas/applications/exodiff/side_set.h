@@ -67,7 +67,7 @@ class Side_Set: public Exo_Entity {
   Side_Set(const Side_Set&);  // Not written.
   const Side_Set& operator=(const Side_Set&);  // Not written.
   
-  void load_sides(const INT *elmt_map = NULL) const;
+  void load_sides(const INT *elmt_map = nullptr) const;
   void load_df() const;
   void entity_load_params();
 

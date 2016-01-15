@@ -87,7 +87,7 @@ namespace {
     errmsg << "Exodus error (" << exerrval << ")" << nc_strerror(exerrval) << " at line " << lineno
 	   << " in file epu.C. Please report to gdsjaar@sandia.gov if you need help.";
 
-    ex_err(NULL, NULL, EX_PRTLASTMSG);
+    ex_err(nullptr, nullptr, EX_PRTLASTMSG);
     std::cerr << errmsg.str() << "\n";
     exit(EXIT_FAILURE);
   }
@@ -111,7 +111,7 @@ namespace {
   }
 
   char **get_name_array(int size, int length) {
-    char **names = NULL;
+    char **names = nullptr;
     if (size > 0) {
       names = new char* [size];
       for (int i=0; i < size; i++) {
@@ -127,7 +127,7 @@ namespace {
       delete [] names[i];
     }
     delete [] names;
-    names = NULL;
+    names = nullptr;
   }
 
   template <typename INT>
@@ -303,7 +303,7 @@ int main(int argc, char* argv[])
   setlinebuf(stderr);
 #endif
   try {
-  time_t begin_time = time(NULL);
+  time_t begin_time = time(nullptr);
   SystemInterface::show_version();
 
   SystemInterface interface;
@@ -430,7 +430,7 @@ int main(int argc, char* argv[])
     
   }
 
-  time_t end_time = time(NULL);
+  time_t end_time = time(nullptr);
   add_to_log(argv[0], (int)(end_time-begin_time));
   return (error);
   }
@@ -1250,7 +1250,7 @@ namespace {
     strncpy(qaRecord[num_qa_records].qa_record[0][0], qainfo[0], MAX_STR_LENGTH); // Code
     strncpy(qaRecord[num_qa_records].qa_record[0][1], qainfo[2], MAX_STR_LENGTH); // Version
 
-    time_t date_time = time(NULL);
+    time_t date_time = time(nullptr);
     strftime( buffer, MAX_STR_LENGTH, "%Y/%m/%d", localtime(&date_time) );
 
     strncpy(qaRecord[num_qa_records].qa_record[0][2], buffer, MAX_STR_LENGTH);
@@ -1584,7 +1584,7 @@ namespace {
       if (max_nodes > 0) {
 	linkage[b] = new INT[max_nodes];
       } else {
-	linkage[b] = NULL;
+	linkage[b] = nullptr;
       }
       INT *block_linkage = linkage[b];
 
@@ -1666,7 +1666,7 @@ namespace {
       // Write out block info
       int id_out = ExodusFile::output();// output file identifier
 
-      if (linkage[b] != NULL) {
+      if (linkage[b] != nullptr) {
 	error = ex_put_conn(id_out, EX_ELEM_BLOCK, glob_blocks[b].id, linkage[b], 0, 0);
 	if (error < 0)
 	  exodus_error(__LINE__);
@@ -2208,9 +2208,9 @@ namespace {
       while (I != IE) {
 	sets[i].id = *I++;
 	sets[i].type = EX_NODE_SET;
-	sets[i].entry_list = NULL;
-	sets[i].extra_list = NULL;
-	sets[i].distribution_factor_list = NULL;
+	sets[i].entry_list = nullptr;
+	sets[i].extra_list = nullptr;
+	sets[i].distribution_factor_list = nullptr;
 	i++;
       }
       
@@ -2346,7 +2346,7 @@ namespace {
 	    NodeSet<INT>  &nset = nodesets[p][ns];
 	    size_t nnodes = nset.entity_count();
 	    nset.nodeOrderMap.resize(nnodes);
-	    int error = ex_get_set(id, EX_NODE_SET, nset.id, TOPTR(nset.nodeOrderMap), NULL);
+	    int error = ex_get_set(id, EX_NODE_SET, nset.id, TOPTR(nset.nodeOrderMap), nullptr);
 	    if (error < 0)
 	      exodus_error(__LINE__);
 	    
@@ -2458,9 +2458,9 @@ namespace {
 	while (I != IE) {
 	  exosets[j].id = *I++;
 	  exosets[j].type = EX_SIDE_SET;
-	  exosets[j].entry_list = NULL;
-	  exosets[j].extra_list = NULL;
-	  exosets[j].distribution_factor_list = NULL;
+	  exosets[j].entry_list = nullptr;
+	  exosets[j].extra_list = nullptr;
+	  exosets[j].distribution_factor_list = nullptr;
 	  j++;
 	}
       
@@ -2852,7 +2852,7 @@ namespace {
   void add_info_record(char *info_record, int size)
   {
     // Add 'uname' output to the passed in character string.
-    // Maximum size of string is 'size' (not including terminating NULL)
+    // Maximum size of string is 'size' (not including terminating nullptr)
     // This is used as information data in the concatenated results file
     // to help in tracking when/where/... the file was created
     struct utsname sys_info;
@@ -2876,7 +2876,7 @@ namespace {
   inline bool is_whitespace(char c)
   {
     static char white_space[] = {' ', '\t', '\n', '\r', ',', '\0'};
-    return (strchr(white_space, c) != NULL);
+    return (strchr(white_space, c) != nullptr);
   }
 
   void compress_white_space(char *str)
@@ -2888,7 +2888,7 @@ namespace {
     int cnt = 0;
 
     // Don't process an empty string.
-    if (str == NULL)
+    if (str == nullptr)
       return;
 
     // Skip leading...
@@ -2923,12 +2923,12 @@ namespace {
       const int length=256;
       static char time_string[length];
 
-      time_t calendar_time = time(NULL);
+      time_t calendar_time = time(nullptr);
       struct tm *local_time = localtime(&calendar_time);
 
       int error = strftime(time_string, length, format.c_str(), local_time);
       if (error != 0) {
-        time_string[length-1] = (char)NULL;
+        time_string[length-1] = '\0';
         return std::string(time_string);
       } else {
         return std::string("[ERROR]");
