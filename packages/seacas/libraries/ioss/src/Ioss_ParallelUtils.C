@@ -56,8 +56,8 @@ Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator)
 bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &value, bool sync_parallel) const
 {
 #ifdef HAVE_MPI
-  char *result_string = NULL;
-  char *broadcast_string = NULL;
+  char *result_string = nullptr;
+  char *broadcast_string = nullptr;
   int string_length = 0;
 
   int rank = parallel_rank();
@@ -92,12 +92,12 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
   return string_length > 0;
 #else
   char *result_string = std::getenv(name.c_str());
-  if (result_string != NULL) {
+  if (result_string != nullptr) {
     value = std::string(result_string);
   } else {
     value = std::string("");
   }
-  return (result_string != NULL);
+  return (result_string != nullptr);
 #endif
 }
 
@@ -116,7 +116,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, bool sync_par
   // Return true if 'name' defined, no matter what the value.
   // Return false if 'name' not defined.
 #ifdef HAVE_MPI
-  char *result_string = NULL;
+  char *result_string = nullptr;
   int string_length = 0;
 
   int rank = Ioss::ParallelUtils::parallel_rank();
@@ -131,7 +131,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, bool sync_par
   return string_length > 0;
 #else
   char *result_string = std::getenv(name.c_str());
-  return (result_string != NULL);
+  return (result_string != nullptr);
 #endif
 }
 
@@ -154,7 +154,7 @@ int Ioss::ParallelUtils::parallel_size() const
 {
   int my_size = 1;
 #ifdef HAVE_MPI
-  if (communicator_ != MPI_COMM_NULL) {
+  if (communicator_ != MPI_COMM_nullptr) {
     MPI_Comm_size(communicator_, &my_size);
   }
 #endif
@@ -165,7 +165,7 @@ int Ioss::ParallelUtils::parallel_rank() const
 {
   int my_rank = 0;
 #ifdef HAVE_MPI
-  if (communicator_ != MPI_COMM_NULL) {
+  if (communicator_ != MPI_COMM_nullptr) {
     MPI_Comm_rank(communicator_, &my_rank);
   }
 #endif

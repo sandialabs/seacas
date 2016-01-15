@@ -33,7 +33,7 @@
  * 
  */
 #include "info_interface.h"
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include <cstdlib>                      // for exit, EXIT_SUCCESS, getenv
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for char_traits, string
@@ -62,27 +62,27 @@ void Info::Interface::enroll_options()
 		  "Print this summary and exit", 0);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+		  "Print version and exit", nullptr);
 
   options_.enroll("check_node_status", Ioss::GetLongOption::NoValue,
 		  "Check whether there are any nodes not connected to any elements",
-		  NULL);
+		  nullptr);
   options_.enroll("adjacencies", Ioss::GetLongOption::NoValue,
 		  "Calculate which element blocks touch which surfaces and other element blocks",
-		  NULL);
+		  nullptr);
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
 		  "True if using 64-bit integers",
-		  NULL);
+		  nullptr);
   options_.enroll("compute_volume", Ioss::GetLongOption::NoValue,
 		  "Compute the volume of all hex elements in the mesh. Outputs min/max and count",
-		  NULL);
+		  nullptr);
   options_.enroll("compute_bbox", Ioss::GetLongOption::NoValue,
 		  "Compute the bounding box of all element blocks in the mesh.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
 		  "Print a list of the names of all groups in this file and then exit.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
 		  "Character used to separate a field suffix from the field basename\n"
@@ -93,15 +93,15 @@ void Info::Interface::enroll_options()
 
   options_.enroll("group_name", Ioss::GetLongOption::MandatoryValue,
                  "List information only for the specified group.",
-                 NULL);
+                 nullptr);
 
   options_.enroll("use_generic_names", Ioss::GetLongOption::NoValue,
 		  "True to use generic names (type_id) instead of names in database",
-		  NULL);
+		  nullptr);
 
   options_.enroll("summary", Ioss::GetLongOption::NoValue,
 		  "Only output counts of nodes, elements, and entities",
-		  NULL);
+		  nullptr);
   
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
 		  "Method used to split sidesets into homogenous blocks\n"
@@ -110,7 +110,7 @@ void Info::Interface::enroll_options()
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue,
 		  "Show copyright and license data.",
-		  NULL);
+		  nullptr);
 }
 
 bool Info::Interface::parse_options(int argc, char **argv)
@@ -121,7 +121,7 @@ bool Info::Interface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("IO_INFO_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the IO_INFO_OPTIONS environment variable:\n"
 	      << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
@@ -177,21 +177,21 @@ bool Info::Interface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("db_type");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       filetype_ = temp;
     }
   }
 
   {
     const char *temp = options_.retrieve("group_name");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       groupname_ = temp;
     }
   }
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       fieldSuffixSeparator_ = temp[0];
     }
   }

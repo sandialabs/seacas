@@ -43,7 +43,7 @@ namespace Ioss {
     
     int enroll(const char * const opt, const OptType t,
 	       const char * const desc, const char * const val,
-	       const char * const opt_val=NULL);
+	       const char * const opt_val=nullptr);
     const char *retrieve(const char * const opt) const;
     
     void usage(std::ostream &outfile = std::cout) const;

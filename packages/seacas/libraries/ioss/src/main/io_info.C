@@ -222,7 +222,7 @@ namespace {
     
     int num_children = ex_inquire_int(exoid, EX_INQ_NUM_CHILD_GROUPS);
     std::vector<int> children(num_children);
-    ex_get_group_ids(exoid, NULL, TOPTR(children));
+    ex_get_group_ids(exoid, nullptr, TOPTR(children));
     prefix += '\t';
     for (int i=0; i < num_children; i++) {
       print_groups(children[i], prefix);
@@ -258,7 +258,7 @@ namespace {
     //========================================================================
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
                                                     (MPI_Comm)MPI_COMM_WORLD);
-    if (dbi == NULL || !dbi->ok(true)) {
+    if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
 

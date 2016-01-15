@@ -62,7 +62,7 @@ Ioss::Utils::Utils() {}
 void Ioss::Utils::time_and_date(char* time_string, char* date_string,
 				size_t length)
 {
-  time_t calendar_time = time(NULL);
+  time_t calendar_time = time(nullptr);
   struct tm *local_time = localtime(&calendar_time);
 
   strftime(time_string, length, "%H:%M:%S", local_time);
@@ -265,7 +265,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
 						 int64_t number_sides,
 						 const Ioss::Region *region)
 {
-  assert(ef_blk != NULL);
+  assert(ef_blk != nullptr);
   
   face_is_member.reserve(number_sides);
   
@@ -275,25 +275,25 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
   // Topology of parent element for faces in this face block
   const ElementTopology *parent_topo = ef_blk->parent_element_topology();
 
-  // If split by element block then parent_block will be non-NULL
+  // If split by element block then parent_block will be non-nullptr
   const ElementBlock *parent_block = ef_blk->parent_element_block();
 
   // The element block containing the face we are working on...
-  Ioss::ElementBlock *block = NULL;
+  Ioss::ElementBlock *block = nullptr;
 
   // Topology of face/edge in current element block
-  const ElementTopology *common_ftopo = NULL;
+  const ElementTopology *common_ftopo = nullptr;
 
   // Topology of elements in the element block containing this element
-  const ElementTopology *block_topo = NULL;
+  const ElementTopology *block_topo = nullptr;
 
   // Topology of the face we are currently working with...
-  const ElementTopology *topo = NULL;
+  const ElementTopology *topo = nullptr;
 
   // The element side that the current face is on the element...
   int64_t current_side = -1;
 
-  if (number_sides > 0 && (element == NULL || sides == NULL)) {
+  if (number_sides > 0 && (element == nullptr || sides == nullptr)) {
     std::ostringstream errmsg;
     errmsg << "INTERNAL ERROR: null element or sides pointer passed to "
 	   << "Ioss::Utils::calculate_sideblock_membership function.";
@@ -312,12 +312,12 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
     }
 
     // Get the element block containing this face...
-    if (block == NULL || !block->contains(elem_id)) {
+    if (block == nullptr || !block->contains(elem_id)) {
       block = region->get_element_block(elem_id);
       block_topo = block->topology();
-      // NULL if hetero face/edge on element
+      // nullptr if hetero face/edge on element
       common_ftopo = block->topology()->boundary_type(0);
-      if (common_ftopo != NULL)
+      if (common_ftopo != nullptr)
 	topo = common_ftopo;
       current_side = -1;
     }
@@ -325,7 +325,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
     // If the element topology of the element block containing this
     // face has heterogeneous topology (eg. wedge), then determine the
     // topology corresponding to the current side..
-    if (common_ftopo == NULL && side_id != current_side) {
+    if (common_ftopo == nullptr && side_id != current_side) {
       current_side = side_id;
       topo = block->topology()->boundary_type(side_id);
     }
@@ -333,7 +333,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
     // See if the face topology and the parent element topology for
     // the current face match the topology associated with this face block.
     if (topo == ftopo && block_topo == parent_topo &&
-	(parent_block == NULL || parent_block == block )
+	(parent_block == nullptr || parent_block == block )
 	&& !block_is_omitted(block)) {
       // This face/edge  belongs in the face/edge block
       face_is_member.push_back(1);
@@ -453,7 +453,7 @@ std::string Ioss::Utils::lowercase(const std::string &name)
 void Ioss::Utils::fixup_name(char *name)
 {
   // Convert 'name' to lowercase and convert spaces to '_'
-  assert(name != NULL);
+  assert(name != nullptr);
 
   size_t len = std::strlen(name);
   for (size_t i=0; i < len; i++) {

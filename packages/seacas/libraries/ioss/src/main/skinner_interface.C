@@ -33,7 +33,7 @@
  * 
  */
 #include "skinner_interface.h"
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include <cstdlib>                      // for exit, EXIT_SUCCESS, getenv
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for char_traits, string
@@ -61,11 +61,11 @@ void Skinner::Interface::enroll_options()
 		  "Print this summary and exit", 0);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+		  "Print version and exit", nullptr);
 
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
 		  "True if using 64-bit integers",
-		  NULL);
+		  nullptr);
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
 		  "Database type for input file: pamgen|generated|exodus. exodus is the default.",
 		  "exodus");
@@ -76,78 +76,78 @@ void Skinner::Interface::enroll_options()
 
   options_.enroll("ignore_face_ids", Ioss::GetLongOption::NoValue,
 		  "Ignore internal face ids and just use 1..num_face",
-		  NULL);
+		  nullptr);
 
   options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
 		  "Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format",
-		  NULL);
+		  nullptr);
   
   options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
 		  "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
-		  NULL);
+		  nullptr);
   
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
 		  "Specify the hdf5 compression level [0..9] to be used on the output file.",
-		  NULL);
+		  nullptr);
   
   options_.enroll("compose", Ioss::GetLongOption::MandatoryValue,
 		  "Specify the parallel-io method to be used to output a single file in a parallel run. "
 		  "Options are default, mpiio, mpiposix, pnetcdf",
-		  NULL);
+		  nullptr);
 
   options_.enroll("rcb", Ioss::GetLongOption::NoValue,
 		  "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
-		  NULL);
+		  nullptr);
   options_.enroll("rib", Ioss::GetLongOption::NoValue,
 		  "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("hsfc", Ioss::GetLongOption::NoValue,
 		  "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("metis_sfc", Ioss::GetLongOption::NoValue,
 		  "Use the metis space-filling-curve method to decompose the input mesh in a parallel run.",
-		  NULL);
+		  nullptr);
   
   options_.enroll("kway", Ioss::GetLongOption::NoValue,
 		  "Use the metis kway graph-based method to decompose the input mesh in a parallel run.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("kway_geom", Ioss::GetLongOption::NoValue,
 		  "Use the metis kway graph-based method with geometry speedup to decompose the input mesh in a parallel run.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("linear", Ioss::GetLongOption::NoValue,
 		  "Use the linear method to decompose the input mesh in a parallel run. "
 		  "elements in order first n/p to proc 0, next to proc 1.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("cyclic", Ioss::GetLongOption::NoValue,
 		  "Use the cyclic method to decompose the input mesh in a parallel run. "
 		  "elements handed out to id % proc_count",
-		  NULL);
+		  nullptr);
 
   options_.enroll("random", Ioss::GetLongOption::NoValue,
 		  "Use the random method to decompose the input mesh in a parallel run."
 		  "elements assigned randomly to processors in a way that preserves balance (do not use for a real run)",
-		  NULL);
+		  nullptr);
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
 		  "Files are decomposed externally into a file-per-processor in a parallel run.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("debug" , Ioss::GetLongOption::NoValue,
 		  "turn on debugging output",
-		  NULL);
+		  nullptr);
 
   options_.enroll("statistics" , Ioss::GetLongOption::NoValue,
 		  "output parallel io timing statistics",
-		  NULL);
+		  nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue,
 		  "Show copyright and license data.",
-		  NULL);
+		  nullptr);
 }
 
 bool Skinner::Interface::parse_options(int argc, char **argv)
@@ -158,7 +158,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("IO_SKINNER_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the IO_SKINNER_OPTIONS environment variable:\n"
 	      << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
@@ -198,8 +198,8 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("compress");
-    if (temp != NULL) {
-      compression_level = std::strtol(temp, NULL, 10);
+    if (temp != nullptr) {
+      compression_level = std::strtol(temp, nullptr, 10);
     }
   }
 
@@ -253,21 +253,21 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("in_type");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       inFiletype_ = temp;
     }
   }
 
   {
     const char *temp = options_.retrieve("out_type");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       outFiletype_ = temp;
     }
   }
 
   {
     const char *temp = options_.retrieve("compose");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       compose_output = Ioss::Utils::lowercase(temp);
     }
   }

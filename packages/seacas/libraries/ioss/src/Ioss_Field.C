@@ -82,7 +82,7 @@ namespace {
 
 Ioss::Field::Field() :
   name_(""), rawCount_(0), transCount_(0), size_(0), index_(0),
-  type_(INVALID), role_(INTERNAL), rawStorage_(NULL), transStorage_(NULL)
+  type_(INVALID), role_(INTERNAL), rawStorage_(nullptr), transStorage_(nullptr)
 { rawStorage_ = transStorage_ = Ioss::VariableType::factory("invalid"); }
 
 Ioss::Field::Field(const std::string &name,
@@ -91,7 +91,7 @@ Ioss::Field::Field(const std::string &name,
 		   const Ioss::Field::RoleType role,
 		   size_t value_count, size_t index) :
   name_(name), rawCount_(value_count), transCount_(value_count), size_(0), index_(index),
-  type_(type), role_(role), rawStorage_(NULL), transStorage_(NULL)
+  type_(type), role_(role), rawStorage_(nullptr), transStorage_(nullptr)
 {
   rawStorage_ = transStorage_ = Ioss::VariableType::factory(storage);
   size_ = internal_get_size(type_, rawCount_, rawStorage_);
@@ -104,7 +104,7 @@ Ioss::Field::Field(const std::string &name,
 		   const Ioss::Field::RoleType role,
 		   size_t value_count, size_t index) :
   name_(name), rawCount_(value_count), transCount_(value_count), size_(0), index_(index),
-  type_(type), role_(role), rawStorage_(NULL), transStorage_(NULL)
+  type_(type), role_(role), rawStorage_(nullptr), transStorage_(nullptr)
 {
   rawStorage_ = transStorage_ = Ioss::VariableType::factory(storage, copies);
   size_ = internal_get_size(type_, rawCount_, rawStorage_);
@@ -224,7 +224,7 @@ bool Ioss::Field::add_transform(Transform* my_transform)
   const Ioss::VariableType *new_storage = my_transform->output_storage(transStorage_);
   size_t new_count = my_transform->output_count(transCount_);
 
-  if (new_storage != NULL && new_count > 0) {
+  if (new_storage != nullptr && new_count > 0) {
     transStorage_ = new_storage;
     transCount_   = new_count;
   } else {

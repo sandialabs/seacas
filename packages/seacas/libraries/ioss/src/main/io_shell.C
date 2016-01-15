@@ -270,7 +270,7 @@ namespace {
       
       Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(interface.inFiletype, inpfile,
 						      Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
-      if (dbi == NULL || !dbi->ok(true)) {
+      if (dbi == nullptr || !dbi->ok(true)) {
 	std::exit(EXIT_FAILURE);
       }
 
@@ -301,7 +301,7 @@ namespace {
       //========================================================================
       Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(interface.outFiletype, interface.outputFile, 
 						      Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
-      if (dbo == NULL || !dbo->ok(true)) {
+      if (dbo == nullptr || !dbo->ok(true)) {
 	std::exit(EXIT_FAILURE);
       }
 
@@ -412,7 +412,7 @@ namespace {
 	  // Find matching output sideset
 	  Ioss::SideSet *ofs = output_region.get_sideset(name);
 
-	  if (ofs != NULL) {
+	  if (ofs != nullptr) {
 	    transfer_field_data(*I, ofs, Ioss::Field::MESH);
 	    transfer_field_data(*I, ofs, Ioss::Field::ATTRIBUTE);
 
@@ -425,7 +425,7 @@ namespace {
 	      if (interface.debug) OUTPUT << fbname << ", ";
 	      Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 
-	      if (ofb != NULL) {
+	      if (ofb != nullptr) {
 		transfer_field_data(*J, ofb, Ioss::Field::MESH);
 		transfer_field_data(*J, ofb, Ioss::Field::ATTRIBUTE);
 	      }
@@ -473,7 +473,7 @@ namespace {
 	    // Find matching output sideset
 	    Ioss::SideSet *ofs = output_region.get_sideset(name);
 
-	    if (ofs != NULL) {
+	    if (ofs != nullptr) {
 	      transfer_fields(*I, ofs, Ioss::Field::TRANSIENT);
 
 	      Ioss::SideBlockContainer fbs = (*I)->get_side_blocks();
@@ -485,7 +485,7 @@ namespace {
 		if (interface.debug) OUTPUT << fbname << ", ";
 		Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 
-		if (ofb != NULL) {
+		if (ofb != nullptr) {
 		  transfer_fields(*J, ofb, Ioss::Field::TRANSIENT);
 		}
 		++J;
@@ -542,7 +542,7 @@ namespace {
 	    // Find matching output sideset
 	    Ioss::SideSet *ofs = output_region.get_sideset(name);
 	  
-	    if (ofs != NULL) {
+	    if (ofs != nullptr) {
 	      transfer_field_data(*I, ofs, Ioss::Field::TRANSIENT);
 	    
 	      Ioss::SideBlockContainer fbs = (*I)->get_side_blocks();
@@ -554,7 +554,7 @@ namespace {
 		if (interface.debug) OUTPUT << fbname << ", ";
 		Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 	      
-		if (ofb != NULL) {
+		if (ofb != nullptr) {
 		  transfer_field_data(*J, ofb, Ioss::Field::TRANSIENT);
 		}
 		++J;
@@ -642,7 +642,7 @@ namespace {
       
       // Find the corresponding output node_block...
       Ioss::GroupingEntity *oeb = output_region.get_entity(name, (*i)->type());
-      if (oeb != NULL) {
+      if (oeb != nullptr) {
 	transfer_fields(*i, oeb, role);
 	if (interface.do_transform_fields)
 	  transform_fields(*i, oeb, role);
@@ -663,7 +663,7 @@ namespace {
 
       // Find the corresponding output block...
       Ioss::GroupingEntity *output = output_region.get_entity(name, entity->type());
-      if (output != NULL) {
+      if (output != nullptr) {
 	transfer_field_data(entity, output, role);
 	if (interface.do_transform_fields)
 	  transform_field_data(entity, output, role);
@@ -892,11 +892,11 @@ namespace {
 			     field.get_role(), field.raw_count());
 
 	Ioss::Transform* transform = Iotr::Factory::create("vector magnitude");
-	assert(transform != NULL);
+	assert(transform != nullptr);
 	tr_field.add_transform(transform);
 
 	Ioss::Transform* max_transform = Iotr::Factory::create("absolute_maximum");
-	assert(max_transform != NULL);
+	assert(max_transform != nullptr);
 	tr_field.add_transform(max_transform);
 
 	oge->field_add(tr_field);

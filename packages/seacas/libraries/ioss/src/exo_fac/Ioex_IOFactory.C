@@ -38,7 +38,7 @@
 #endif
 #include <tokenize.h>
 
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include <string>                       // for string
 
 #include "Ioss_CodeTypes.h"             // for MPI_Comm
@@ -89,7 +89,7 @@ namespace Ioex {
     // 3. The decomposition method is not "EXTERNAL"
 
     int proc_count = 1;
-    if (communicator != MPI_COMM_NULL) {
+    if (communicator != MPI_COMM_nullptr) {
       MPI_Comm_size(communicator, &proc_count);
     }
 
@@ -111,10 +111,10 @@ namespace Ioex {
     // Could call Iopx::DatabaseIO constructor directly, but that leads to some circular
     // dependencies and other yuks.
     if (decompose)
-      return new Iopx::DatabaseIO(NULL, filename, db_usage, communicator, properties);
+      return new Iopx::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
     else
 #endif
-      return new Iofx::DatabaseIO(NULL, filename, db_usage, communicator, properties);
+      return new Iofx::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
   }
 }
 
