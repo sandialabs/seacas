@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 #ifdef HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
-  time_t begin_time = time(NULL);
+  time_t begin_time = time(nullptr);
   std::string in_type = "exodusII";
 
   bool ok = false;
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   catch (std::exception &e) {
     std::cerr << "ERROR: (EXOMATLAB) Standard exception: " << e.what() << std::endl;
   }
-  time_t end_time = time(NULL);
+  time_t end_time = time(nullptr);
   add_to_log(codename.c_str(), (int)(end_time - begin_time));
 #ifdef HAVE_MPI
   MPI_Finalize();
@@ -140,7 +140,7 @@ namespace {
     //========================================================================
     Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART,
 						    (MPI_Comm)MPI_COMM_WORLD);
-    if (dbi == NULL || !dbi->ok(true)) {
+    if (dbi == nullptr || !dbi->ok(true)) {
       return false;
     }
 

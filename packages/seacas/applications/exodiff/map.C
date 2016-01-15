@@ -746,7 +746,7 @@ bool Check_Maps(const INT *node_map, const INT *elmt_map, const ExoII_Read<INT>&
     return false;
   }
   
-  if (node_map != NULL) {
+  if (node_map != nullptr) {
     for (size_t ijk = 0; ijk < file1.Num_Nodes(); ++ijk) {
       if ((INT)ijk != node_map[ijk]) {
 	return false;
@@ -754,7 +754,7 @@ bool Check_Maps(const INT *node_map, const INT *elmt_map, const ExoII_Read<INT>&
     }
   }
 
-  if (elmt_map != NULL) {
+  if (elmt_map != nullptr) {
     for (size_t ijk = 0; ijk < file1.Num_Elmts(); ++ijk) {
       if ((INT)ijk != elmt_map[ijk]) {
 	return false;
@@ -1094,7 +1094,7 @@ bool Compare_Maps(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, const INT *nod
   bool diff = false;
   size_t warn_count = 0;
   
-  if (node_map != NULL) {
+  if (node_map != nullptr) {
     // There is a map between file1 and file2, but all nodes are
     // used in both files.
     for (size_t i=0; i < num_nodes1; i++) {
@@ -1132,7 +1132,7 @@ bool Compare_Maps(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, const INT *nod
   }
 
   warn_count = 0;
-  if (elmt_map != NULL) {
+  if (elmt_map != nullptr) {
     // There is a map between file1 and file2, but all elements are
     // used in both files.
     for (size_t i=0; i < num_elmts1; i++) {

@@ -42,7 +42,7 @@
 #include "elb_graph.h"
 #include <assert.h>                     // for assert
 #include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for sprintf, printf, NULL
+#include <stdio.h>                      // for sprintf, printf, nullptr
 #include <stdlib.h>                     // for free, malloc
 #include <string.h>                     // for strcat, strcpy
 #include <sstream>                      // for operator<<, ostringstream, etc
@@ -180,8 +180,8 @@ namespace {
     size_t nhold = 0;
     int sid = 0;
     
-    INT *pt_list=NULL;
-    INT *hold_elem=NULL;
+    INT *pt_list=nullptr;
+    INT *hold_elem=nullptr;
     INT side_nodes[MAX_SIDE_NODES+2];
     INT mirror_nodes[MAX_SIDE_NODES+2];
 
@@ -250,8 +250,8 @@ namespace {
 
     
       /* Cycle through the elements */
-      E_Type etype_last = NULL_EL;
-      E_Type etype = NULL_EL;
+      E_Type etype_last = nullptr_EL;
+      E_Type etype = nullptr_EL;
 
       int element_3d = 0;
       int nnodes = mesh->num_dims; 

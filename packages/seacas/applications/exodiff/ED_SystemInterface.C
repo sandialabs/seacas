@@ -98,8 +98,8 @@ namespace {
       return;
     }
     const char *tokens = option.c_str();
-    if (tokens != NULL) {
-      if (strchr(tokens, ':') != NULL) {
+    if (tokens != nullptr) {
+      if (strchr(tokens, ':') != nullptr) {
 	// The string contains a separator
 
 	int vals[3];
@@ -119,7 +119,7 @@ namespace {
 
 	  tmp_str[k] = '\0';
 	  if (strlen(tmp_str) > 0)
-	    vals[i] = strtol(tmp_str, NULL, 0);
+	    vals[i] = strtol(tmp_str, nullptr, 0);
 
 	  if (tokens[j++] == '\0') {
 	    break; // Reached end of string
@@ -130,7 +130,7 @@ namespace {
 	increment = vals[2];
       } else {
 	// Does not contain a separator, min == max
-	start = stop = strtol(tokens, NULL, 0);
+	start = stop = strtol(tokens, nullptr, 0);
       }
     }
   }
@@ -427,7 +427,7 @@ void SystemInterface::enroll_options()
 		  "Don't compare sideset distribution factors.", 0);
   options_.enroll("64-bit", GetLongOption::NoValue,
 		  "True if forcing the use of 64-bit integers for the output file",
-		  NULL);
+		  nullptr);
   options_.enroll("nosymmetric_name_check", GetLongOption::NoValue,
 		  "No symmetric variable name checking.  By default, a warning will\n"
 		  "\t\tbe produced if a name that is not to be excluded is contained\n"
@@ -607,7 +607,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("EXODIFF_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the EXODIFF_OPTIONS environment variable:\n"
 	      << "\t\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
@@ -686,14 +686,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
 	  explicit_steps.first = -1;
 	} else {
 	  // Try to convert to integer...
-	  explicit_steps.first = strtol(tokens[0].c_str(), NULL, 0);
+	  explicit_steps.first = strtol(tokens[0].c_str(), nullptr, 0);
 	}
 
 	if (case_strcmp(tokens[1], "last") == 0) {
 	  explicit_steps.second = -1;
 	} else {
 	  // Try to convert to integer...
-	  explicit_steps.second = strtol(tokens[1].c_str(), NULL, 0);
+	  explicit_steps.second = strtol(tokens[1].c_str(), nullptr, 0);
 	}
       }
       else {

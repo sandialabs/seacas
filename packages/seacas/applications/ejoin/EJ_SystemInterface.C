@@ -5,7 +5,7 @@
 #include <limits.h>                     // for INT_MAX
 #include <stddef.h>                     // for size_t
 #include <algorithm>                    // for sort, find, transform
-#include <cstdlib>                      // for NULL, exit, strtod, strtoul, etc
+#include <cstdlib>                      // for nullptr, exit, strtod, strtoul, etc
 #include <cstring>                      // for strchr, strlen
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <utility>                      // for pair, make_pair
@@ -62,7 +62,7 @@ void SystemInterface::enroll_options()
 		  "Print this summary and exit", 0);
 
   options_.enroll("version", GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+		  "Print version and exit", nullptr);
 
   options_.enroll("output", GetLongOption::MandatoryValue,
 		  "Name of output file to create",
@@ -74,7 +74,7 @@ void SystemInterface::enroll_options()
 		  "\t\tOmit block id 1,3,4 from part 1; block 2 3 4 from part 2;\n"
 		  "\t\tand block 8 from part5, specify\n"
 		  "\t\t\t '-omit_blocks p1:1:3:4,p2:2:3:4,p5:8'",
-		  NULL);
+		  nullptr);
 
   options_.enroll("omit_nodesets", GetLongOption::OptionalValue,
 		  "If no value, then don't transfer any nodesets to output file.\n"
@@ -99,22 +99,22 @@ void SystemInterface::enroll_options()
 
   options_.enroll("match_node_ids", GetLongOption::NoValue,
 		  "Combine nodes if their global ids match.",
-		  NULL);
+		  nullptr);
 		  
   options_.enroll("match_node_coordinates", GetLongOption::NoValue,
 		  "Combine nodes if they are within tolerance distance of each other.",
-		  NULL);
+		  nullptr);
 		  
 #if 0
   options_.enroll("match_elem_ids", GetLongOption::NoValue,
 		  "Combine elements if their global ids match and they are compatible.\n"
 		  "\t\tCompatible = same element type, nodes of the two elements match",
-		  NULL);
+		  nullptr);
 		  
   options_.enroll("match_element_coordinates", GetLongOption::NoValue,
 		  "Combine elements if their centroids are within tolerance distance\n"
 		  "\t\tand they are compatible (same element type, nodes match).",
-		  NULL);
+		  nullptr);
 #endif
   
   options_.enroll("tolerance", GetLongOption::MandatoryValue,
@@ -166,16 +166,16 @@ void SystemInterface::enroll_options()
 
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file",
-                  NULL);
+                  nullptr);
 
   options_.enroll("disable_field_recognition", GetLongOption::NoValue,
 		  "Do not try to combine scalar fields into higher-order fields such as\n"
 		  "\t\tvectors or tensors based on the field suffix",
-		  NULL);
+		  nullptr);
   
   options_.enroll("copyright", GetLongOption::NoValue,
 		  "Show copyright and license data.",
-		  NULL);
+		  nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -256,7 +256,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   
   // Get options from environment variable also...
   char *options = getenv("EJOIN_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the EJOIN_OPTIONS environment variable:\n"
 	      << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
@@ -274,20 +274,20 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("tolerance");
-    if (temp != NULL) 
-      tolerance_ = strtod(temp, NULL);
+    if (temp != nullptr) 
+      tolerance_ = strtod(temp, nullptr);
   }
 
   {
     const char *temp = options_.retrieve("steps");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       parse_step_option(temp);
     }
   }
 
   {
     const char *temp = options_.retrieve("convert_nodal_to_nodesets");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       parse_integer_list(temp, &nodesetConvertParts_);
       std::sort(nodesetConvertParts_.begin(), nodesetConvertParts_.end());
     }
@@ -295,7 +295,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("info_records");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       parse_part_list(temp, &infoRecordParts_);
       std::sort(infoRecordParts_.begin(), infoRecordParts_.end());
     }
@@ -308,7 +308,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("omit_nodesets");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       if (case_strcmp("ALL", temp) == 0)
 	omitNodesets_ = true;
       else
@@ -320,7 +320,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   
   {
     const char *temp = options_.retrieve("omit_sidesets");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       if (case_strcmp("ALL", temp) == 0)
 	omitSidesets_ = true;
       else
@@ -428,8 +428,8 @@ void SystemInterface::parse_step_option(const char *tokens)
 
   // Default is given in constructor above...
 
-  if (tokens != NULL) {
-    if (strchr(tokens, ':') != NULL) {
+  if (tokens != nullptr) {
+    if (strchr(tokens, ':') != nullptr) {
       // The string contains a separator
 
       int vals[3];
@@ -449,7 +449,7 @@ void SystemInterface::parse_step_option(const char *tokens)
 
         tmp_str[k] = '\0';
         if (strlen(tmp_str) > 0)
-          vals[i] = strtoul(tmp_str, NULL, 0);
+          vals[i] = strtoul(tmp_str, nullptr, 0);
 
         if (tokens[j++] == '\0') {
           break; // Reached end of string
@@ -462,7 +462,7 @@ void SystemInterface::parse_step_option(const char *tokens)
       stepMin_ = stepMax_ = -1;
     } else {
       // Does not contain a separator, min == max
-      stepMin_ = stepMax_ = strtol(tokens, NULL, 0);
+      stepMin_ = stepMax_ = strtol(tokens, nullptr, 0);
     }
   }
 }
@@ -495,7 +495,7 @@ namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       std::string token_string(tokens);
       StringVector var_list;
       SLIB::tokenize(token_string, ",", var_list);
@@ -516,7 +516,7 @@ namespace {
 	} else {
 	  for (size_t i=1; i < name_id.size(); i++) {
 	    // Convert string to integer...
-	    int id = strtoul(name_id[i].c_str(), NULL, 0);
+	    int id = strtoul(name_id[i].c_str(), nullptr, 0);
 	    (*variable_list).push_back(std::make_pair(var_name,id));
 	  }
 	}
@@ -530,7 +530,7 @@ namespace {
   void parse_offset(const char *tokens, vector3d *offset)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       std::string token_string(tokens);
       StringVector var_list;
       SLIB::tokenize(token_string, ",", var_list);
@@ -546,9 +546,9 @@ namespace {
       std::string offx = var_list[0];
       std::string offy = var_list[1];
       std::string offz = var_list[2];
-      double x = strtod(offx.c_str(), NULL);
-      double y = strtod(offy.c_str(), NULL);
-      double z = strtod(offz.c_str(), NULL);
+      double x = strtod(offx.c_str(), nullptr);
+      double y = strtod(offy.c_str(), nullptr);
+      double z = strtod(offz.c_str(), nullptr);
       
       offset->x = x;
       offset->y = y;
@@ -559,7 +559,7 @@ namespace {
   void parse_integer_list(const char *tokens, std::vector<int> *list)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       if (LowerCase(tokens) == "all") {
 	(*list).push_back(0);
 	return;
@@ -571,7 +571,7 @@ namespace {
     
       std::vector<std::string>::iterator I = part_list.begin();
       while (I != part_list.end()) {
-	int id = strtol((*I).c_str(), NULL, 0);
+	int id = strtol((*I).c_str(), nullptr, 0);
 	(*list).push_back(id);
 	++I;
       }
@@ -582,7 +582,7 @@ namespace {
   {
     // Break into tokens separated by ","
     // Tokens will be of the form "p$" or "all"
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       if (LowerCase(tokens) == "all") {
 	(*list).push_back(0);
 	return;
@@ -597,7 +597,7 @@ namespace {
 	std::string part = *I;
 	if (part[0] == 'p' || part[0] == 'P') {
 	  std::string part_id(part,1);
-	  int part_num = strtoul(part_id.c_str(), NULL, 0);
+	  int part_num = strtoul(part_id.c_str(), nullptr, 0);
 	  list->push_back(part_num);
 	} else {
 	  std::cerr << "ERROR: Bad syntax (" << part << ") specifying part number. Use 'p'+ part_number\n"
@@ -625,7 +625,7 @@ namespace {
     // just specify a part number and all entities (typically nset or
     // sset) will be omitted on that part.
     
-    if (tokens == NULL)
+    if (tokens == nullptr)
       return;
     
     std::string token_string(tokens);
@@ -656,7 +656,7 @@ namespace {
       
       // Extract the part number...
       std::string part(part_block[0],1);
-      int part_num = strtoul(part.c_str(), NULL, 0) - 1;
+      int part_num = strtoul(part.c_str(), nullptr, 0) - 1;
 
       // If no blocks specified for a part, then omit all entities for
       // this part.  Since don't know how many entities there are,

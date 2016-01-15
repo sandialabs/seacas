@@ -2,7 +2,7 @@
 #include "CJ_SystemInterface.h"
 #include <ctype.h>                      // for tolower
 #include <stddef.h>                     // for size_t
-#include <stdlib.h>                     // for NULL, exit, strtol, etc
+#include <stdlib.h>                     // for nullptr, exit, strtol, etc
 #include <algorithm>                    // for sort, transform
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <utility>                      // for pair, make_pair
@@ -35,7 +35,7 @@ void Excn::SystemInterface::enroll_options()
 		  "Print this summary and exit", 0);
 
   options_.enroll("version", GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+		  "Print version and exit", nullptr);
 
   options_.enroll("output", GetLongOption::MandatoryValue,
 		  "Name of output file to create",
@@ -66,15 +66,15 @@ void Excn::SystemInterface::enroll_options()
   
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file",
-                  NULL);
+                  nullptr);
 
   options_.enroll("omit_nodesets", GetLongOption::NoValue,
 		  "Don't transfer nodesets to output file.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("omit_sidesets", GetLongOption::NoValue,
 		  "Don't transfer sidesets to output file.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("gvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of global variables to be joined or ALL or NONE.",
@@ -120,7 +120,7 @@ void Excn::SystemInterface::enroll_options()
   
   options_.enroll("copyright", GetLongOption::NoValue,
 		  "Show copyright and license data.",
-		  NULL);
+		  nullptr);
 }
 
 bool Excn::SystemInterface::parse_options(int argc, char **argv)
@@ -135,7 +135,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("CONJOIN_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the CONJOIN_OPTIONS environment variable:\n"
 	      << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
@@ -155,12 +155,12 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   
   {
     const char *temp = options_.retrieve("debug");
-    debugLevel_ = strtol(temp, NULL, 10);
+    debugLevel_ = strtol(temp, nullptr, 10);
   }
 
   {
     const char *temp = options_.retrieve("alive_value");
-    int value = strtol(temp, NULL, 10);
+    int value = strtol(temp, nullptr, 10);
     if (value == 1 || value == 0) {
       aliveValue_ = value;
     } else {
@@ -172,7 +172,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("interpart_minimum_time_delta");
-    interpartMinimumTimeDelta_ = strtod(temp, NULL);
+    interpartMinimumTimeDelta_ = strtod(temp, nullptr);
   }
 
   {
@@ -192,7 +192,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("width");
-    screenWidth_ = strtol(temp, NULL, 10);
+    screenWidth_ = strtol(temp, nullptr, 10);
   }
 
   {
@@ -321,7 +321,7 @@ namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list)
   {
     // Break into tokens separated by ","
-    if (tokens != NULL) {
+    if (tokens != nullptr) {
       std::string token_string(tokens);
       StringVector var_list;
       SLIB::tokenize(token_string, ",", var_list);
@@ -342,7 +342,7 @@ namespace {
 	} else {
 	  for (size_t i=1; i < name_id.size(); i++) {
 	    // Convert string to integer...
-	    int id = strtoul(name_id[i].c_str(), NULL, 0);
+	    int id = strtoul(name_id[i].c_str(), nullptr, 0);
 	    (*variable_list).push_back(std::make_pair(var_name,id));
 	  }
 	}

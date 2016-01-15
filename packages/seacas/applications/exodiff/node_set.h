@@ -69,7 +69,7 @@ private:
   const char* label() const {return "Nodeset";}
   const char* short_label() const {return "nodeset";}
 
-  void load_nodes(const INT *node_map = NULL) const;
+  void load_nodes(const INT *node_map = nullptr) const;
   
   size_t num_dist_factors;
   
