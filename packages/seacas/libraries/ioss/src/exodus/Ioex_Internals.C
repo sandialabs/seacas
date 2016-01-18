@@ -2071,13 +2071,13 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
       }
       if (put_id_array(exodusFilePtr, VAR_N_COMM_IDS, node_cmap_ids) != NC_NOERR) {
 	return(EX_FATAL);
-}
+      }
     }
     // Set the status of the elemental communication maps
     long long ecnt_cmap = 0;
     for (auto & elem : comm.elementMap) {
       ecnt_cmap += elem.entityCount;
-}
+    }
 
     if (!comm.elementMap.empty() && ecnt_cmap > 0) {
 
