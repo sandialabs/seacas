@@ -55,11 +55,11 @@ namespace SEAMS {
 
 #line 57 "apr_parser.cc" // lalr1.cc:404
 
-# ifndef YY_nullptrPTR
+# ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_nullptrPTR nullptr
+#   define YY_NULLPTR nullptr
 #  else
-#   define YY_nullptrPTR 0
+#   define YY_NULLPTR 0
 #  endif
 # endif
 
@@ -513,7 +513,7 @@ namespace SEAMS {
        location values to have been already stored, initialize these
        stacks with a primary value.  */
     yystack_.clear ();
-    yypush_ (YY_nullptrPTR, 0, yyla);
+    yypush_ (YY_NULLPTR, 0, yyla);
 
     // A new symbol was pushed on the stack.
   yynewstate:
@@ -1612,7 +1612,7 @@ namespace SEAMS {
       YY_STACK_PRINT ();
 
       // Shift the result of the reduction.
-      yypush_ (YY_nullptrPTR, yylhs);
+      yypush_ (YY_NULLPTR, yylhs);
     }
     goto yynewstate;
 
@@ -1732,11 +1732,11 @@ namespace SEAMS {
         // Do not try to display the values of the reclaimed symbols,
         // as their printer might throw an exception.
         if (!yyla.empty ())
-          yy_destroy_ (YY_nullptrPTR, yyla);
+          yy_destroy_ (YY_NULLPTR, yyla);
 
         while (1 < yystack_.size ())
           {
-            yy_destroy_ (YY_nullptrPTR, yystack_[0]);
+            yy_destroy_ (YY_NULLPTR, yystack_[0]);
             yypop_ ();
           }
         throw;
@@ -1815,7 +1815,7 @@ namespace SEAMS {
           }
       }
 
-    char const* yyformat = YY_nullptrPTR;
+    char const* yyformat = YY_NULLPTR;
     switch (yycount)
       {
 #define YYCASE_(N, S)                         \
@@ -2259,7 +2259,7 @@ namespace SEAMS {
   "EQUAL", "EQ_PLUS", "EQ_MINUS", "EQ_TIME", "EQ_DIV", "EQ_POW", "QUEST",
   "COLON", "LOR", "LAND", "LT", "GT", "LE", "GE", "EQ", "NE", "PLU", "SUB",
   "DIV", "TIM", "MOD", "UNARY", "NOT", "POW", "INC", "DEC", "CONCAT",
-  "'\\n'", "$accept", "input", "line", "bool", "aexp", "sexp", "exp", YY_nullptrPTR
+  "'\\n'", "$accept", "input", "line", "bool", "aexp", "sexp", "exp", YY_NULLPTR
   };
 
 #if YYDEBUG
