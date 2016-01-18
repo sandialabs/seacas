@@ -149,7 +149,7 @@ typedef unsigned int flex_uint32_t;
 /* %not-for-header */
 
 /* Returned upon end-of-file. */
-#define YY_nullptr 0
+#define YY_NULL 0
 /* %ok-for-header */
 
 /* %not-for-header */
@@ -1471,7 +1471,7 @@ static int yy_flex_strlen (yyconst char * );
 /* %endif */
 #endif
 
-/* Gets input and stuffs it into "buf".  number of characters read, or YY_nullptr,
+/* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
  * is returned in "result".
  */
 #ifndef YY_INPUT
@@ -1490,7 +1490,7 @@ static int yy_flex_strlen (yyconst char * );
  * some compilers to complain about unreachable statements.
  */
 #ifndef yyterminate
-#define yyterminate() return YY_nullptr
+#define yyterminate() return YY_NULL
 #endif
 
 /* Number of entries by which start-condition stack grows. */
@@ -2698,8 +2698,8 @@ case YY_STATE_EOF(END_CASE_SKIP):
 					 * yy_c_buf_p so that if some total
 					 * hoser (like flex itself) wants to
 					 * call the scanner after we return the
-					 * YY_nullptr, it'll still work - another
-					 * YY_nullptr will get returned.
+					 * YY_NULL, it'll still work - another
+					 * YY_NULL will get returned.
 					 */
 					(yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
 
