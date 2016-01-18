@@ -101,7 +101,7 @@ namespace Ioss {
 #ifdef HAVE_MPI
     int my_rank = 0;
     int my_size = 1;
-    if (communicator != MPI_COMM_nullptr) {
+    if (communicator != MPI_COMM_NULL) {
       MPI_Comm_rank(communicator, &my_rank);
       MPI_Comm_size(communicator, &my_size);
     }
