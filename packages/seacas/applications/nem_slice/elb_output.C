@@ -758,8 +758,8 @@ int write_vis(std::string &nemI_out_file,
 	proc_vals[ncnt] = lb->vertex2proc[ncnt];
 
       for(int pcnt=0; pcnt < machine->num_procs; pcnt++) {
-	for(size_t ncnt=0; ncnt < lb->bor_nodes[pcnt].size(); ncnt++)
-	  proc_vals[lb->bor_nodes[pcnt][ncnt]] = machine->num_procs + 1;
+	for(auto & elem : lb->bor_nodes[pcnt])
+	  proc_vals[elem] = machine->num_procs + 1;
       }
 
       /* Output the nodal variables */

@@ -110,8 +110,8 @@ namespace {
 			 double &xmax, double &ymax, double &zmax)
   {
     std::vector<int> elem_block_nodes(node_count);
-    for (size_t i=0; i < connectivity.size(); i++) {
-      elem_block_nodes[connectivity[i]-1] = 1;
+    for (auto &node : connectivity) {
+      elem_block_nodes[node-1] = 1;
     }
 
     xmin = DBL_MAX;
@@ -174,13 +174,13 @@ namespace Ioss {
       std::vector<std::string> prop_val;
       tokenize(env_props, ":", prop_val);
 
-      for (size_t i=0; i < prop_val.size(); i++) {
+      for (auto & elem : prop_val) {
         std::vector<std::string> property;
-        tokenize(prop_val[i], "=", property);
+        tokenize(elem, "=", property);
         if (property.size() != 2) {
           std::ostringstream errmsg;
           errmsg << "ERROR: Invalid property specification found in IOSS_PROPERTIES environment variable\n"
-              << "       Found '" << prop_val[i] << "' which is not of the correct PROPERTY=VALUE form";
+              << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
           IOSS_ERROR(errmsg);
         }
         std::string prop = Utils::uppercase(property[0]);
@@ -327,16 +327,16 @@ namespace Ioss {
     std::string prop = properties.get(property_name).get_string();
     std::vector<std::string> groups;
     tokenize(prop, ":", groups);
-    for (size_t i=0; i < groups.size(); i++) {
+    for (auto &group : groups) {
       std::vector<std::string> group_spec;
-      tokenize(groups[i], ",", group_spec);
+      tokenize(group, ",", group_spec);
 
       // group_spec should contain the name of the new group as
       // the first location and the members of the group as subsequent
       // locations.  OK to have a single member
       if (group_spec.size() < 2) {
 	std::ostringstream errmsg;
-	errmsg << "ERROR: Invalid " << type_name << " group specification '" << groups[i] << "'\n"
+	errmsg << "ERROR: Invalid " << type_name << " group specification '" << group << "'\n"
 	       << "       Correct syntax is 'new_group,member1,...,memberN' and their must "
 	       << "       be at least 1 member of the group";
 	IOSS_ERROR(errmsg);
@@ -375,10 +375,7 @@ namespace Ioss {
       SideSet* set = get_region()->get_sideset(group_spec[i]);
       if (set != nullptr) {
 	SideBlockContainer side_blocks = set->get_side_blocks();
-	SideBlockContainer::const_iterator J;
-
-	for (J=side_blocks.begin(); J != side_blocks.end(); ++J) {
-	  SideBlock *sbold = *J;
+	for (auto &sbold : side_blocks) {
 	  size_t side_count = sbold->get_property("entity_count").get_int();
 	  SideBlock *sbnew = new SideBlock(this, sbold->name(),
 					   sbold->topology()->name(),
@@ -493,10 +490,8 @@ namespace Ioss {
 
       ElementBlockContainer element_blocks =
 	get_region()->get_element_blocks();
-      ElementBlockContainer::const_iterator I;
 
-      for (I=element_blocks.begin(); I != element_blocks.end(); ++I) {
-	const ElementBlock *block = *I;
+      for (auto &block : element_blocks) {
 	const ElementTopology *elem_type = block->topology();
 	const ElementTopology *side_type = elem_type->boundary_type();
 	if (side_type == nullptr) {
@@ -549,9 +544,8 @@ namespace Ioss {
       std::vector<double> minmax;
       minmax.reserve(6*nblock);
       
-      for (size_t i=0; i < element_blocks.size(); i++) {
+      for (auto &block : element_blocks) {
 	double xmin, ymin, zmin, xmax, ymax, zmax;
-	Ioss::ElementBlock *block = element_blocks[i];
 	ssize_t nelem = block->get_property("entity_count").get_int();
 	if (block->get_database()->int_byte_size_api() == 8) {
 	  std::vector<int64_t> connectivity;
@@ -620,9 +614,9 @@ namespace {
       int64_t total = 0;
       // Now append each processors size onto the stream...
       std::vector<int64_t>::const_iterator pos = all_sizes.begin();
-      for (; pos != all_sizes.end(); ++pos) {
-	strm << std::setw(8) << *pos << ":";
-	total += *pos;
+      for (auto &p_size : all_sizes) {
+	strm << std::setw(8) << p_size << ":";
+	total += p_size;
       }
       if (util.parallel_size() > 1)
 	strm << std::setw(8) << total;

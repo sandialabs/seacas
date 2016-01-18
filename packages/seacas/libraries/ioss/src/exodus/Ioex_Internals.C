@@ -914,8 +914,8 @@ int Internals::put_metadata(const Mesh &mesh,
   }
 
   size_t elem_count = 0;
-  for (size_t i=0; i < mesh.elemblocks.size(); i++) {
-    elem_count += mesh.elemblocks[i].entityCount;
+  for (auto & elem : mesh.elemblocks) {
+    elem_count += elem.entityCount;
   }
 
   if (elem_count > 0) {
@@ -953,8 +953,8 @@ int Internals::put_metadata(const Mesh &mesh,
   }
 
   size_t face_count = 0;
-  for (size_t i=0; i < mesh.faceblocks.size(); i++) {
-    face_count += mesh.faceblocks[i].entityCount;
+  for (auto & elem : mesh.faceblocks) {
+    face_count += elem.entityCount;
   }
 
   if (face_count > 0) {
@@ -991,8 +991,8 @@ int Internals::put_metadata(const Mesh &mesh,
   }
 
   size_t edge_count = 0;
-  for (size_t i=0; i < mesh.edgeblocks.size(); i++) {
-    edge_count += mesh.edgeblocks[i].entityCount;
+  for (auto & elem : mesh.edgeblocks) {
+    edge_count += elem.entityCount;
   }
 
   if (edge_count > 0) {
@@ -1247,8 +1247,8 @@ int Internals::put_metadata(const Mesh &mesh,
     // Add the nodal communication map count
 
     size_t ncnt_cmap = 0;
-    for(size_t icm=0; icm < comm.nodeMap.size(); icm++) {
-      ncnt_cmap += comm.nodeMap[icm].entityCount;
+    for(auto & elem : comm.nodeMap) {
+      ncnt_cmap += elem.entityCount;
     }
 
     {
@@ -1274,8 +1274,8 @@ int Internals::put_metadata(const Mesh &mesh,
 
     // Add the nodal communication map count
     size_t ecnt_cmap = 0;
-    for (size_t icm=0; icm < comm.elementMap.size(); icm++)
-      ecnt_cmap += comm.elementMap[icm].entityCount;
+    for (auto & elem : comm.elementMap)
+      ecnt_cmap += elem.entityCount;
 
     {
       const char *vars[] = {VAR_E_COMM_IDS,
@@ -1939,8 +1939,8 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
     }
 
     size_t ncnt_cmap = 0;
-    for(size_t icm=0; icm < comm.nodeMap.size(); icm++) {
-      ncnt_cmap += comm.nodeMap[icm].entityCount;
+    for(auto & elem : comm.nodeMap) {
+      ncnt_cmap += elem.entityCount;
     }
 
     if (!comm.nodeMap.empty() && ncnt_cmap > 0) {
@@ -2004,8 +2004,8 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
     }
     // Set the status of the elemental communication maps
     long long ecnt_cmap = 0;
-    for (size_t icm=0; icm < comm.elementMap.size(); icm++)
-      ecnt_cmap += comm.elementMap[icm].entityCount;
+    for (auto & elem : comm.elementMap)
+      ecnt_cmap += elem.entityCount;
 
     if (!comm.elementMap.empty() && ecnt_cmap > 0) {
 

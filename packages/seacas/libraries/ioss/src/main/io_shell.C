@@ -1067,8 +1067,8 @@ namespace {
 
       // Set locally_owned_count property on all nodesets...
       Ioss::NodeSetContainer nss = region.get_nodesets();
-      for (size_t i=0; i < nss.size(); i++) {
-	Ioss::NodeSet *ns = nss[i];
+      for (auto ns : nss) {
+	
 	std::vector<INT> ids;
 	t1 = timer();
 	ns->get_field_data("ids_raw", ids);

@@ -466,9 +466,9 @@ namespace Iogn {
           << "\tTimestep Count        = " << std::setw(9) << timestep_count() << "\n\n";
       if (doRotation) {
         std::cerr << "\tRotation Matrix: \n\t" << std::scientific ;
-        for (int ii=0; ii < 3; ii++) {
+        for (auto & elem : rotmat) {
           for (int jj=0; jj < 3; jj++) {
-            std::cerr << std::setw(14) << rotmat[ii][jj] << "\t";
+            std::cerr << std::setw(14) << elem[jj] << "\t";
           }
           std::cerr << "\n\t";
         }
@@ -1228,11 +1228,11 @@ namespace Iogn {
               hex_vert[6] = xp1yp1 + base+numX+2;
               hex_vert[7] = xp1yp1 + base+numX+1;
 
-              for (size_t tet = 0; tet < 6; tet++) {
-                connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                connect[cnt++] = hex_vert[tet_vert[tet][2]];
-                connect[cnt++] = hex_vert[tet_vert[tet][3]];
+              for (auto & elem : tet_vert) {
+                connect[cnt++] = hex_vert[elem[0]];
+                connect[cnt++] = hex_vert[elem[1]];
+                connect[cnt++] = hex_vert[elem[2]];
+                connect[cnt++] = hex_vert[elem[3]];
               }
             }
           }
@@ -1280,10 +1280,10 @@ namespace Iogn {
               hex_vert[2] = base + xp1yp1 + (numX+1);
               hex_vert[3] = base + (numX+1);
 
-              for (size_t tet = 0; tet < 2; tet++) {
-                connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                connect[cnt++] = hex_vert[tet_vert[tet][2]];
+              for (auto & elem : tet_vert) {
+                connect[cnt++] = hex_vert[elem[0]];
+                connect[cnt++] = hex_vert[elem[1]];
+                connect[cnt++] = hex_vert[elem[2]];
               }
             }
           }
@@ -1298,10 +1298,10 @@ namespace Iogn {
               hex_vert[2] = base + xp1yp1 + (numX+1);
               hex_vert[3] = base + xp1yp1;
 
-              for (size_t tet = 0; tet < 2; tet++) {
-                connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                connect[cnt++] = hex_vert[tet_vert[tet][2]];
+              for (auto & elem : tet_vert) {
+                connect[cnt++] = hex_vert[elem[0]];
+                connect[cnt++] = hex_vert[elem[1]];
+                connect[cnt++] = hex_vert[elem[2]];
               }
             }
           }
@@ -1316,10 +1316,10 @@ namespace Iogn {
               hex_vert[2] = base + xp1yp1 + 1;
               hex_vert[3] = base + xp1yp1;
 
-              for (size_t tet = 0; tet < 2; tet++) {
-                connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                connect[cnt++] = hex_vert[tet_vert[tet][2]];
+              for (auto & elem : tet_vert) {
+                connect[cnt++] = hex_vert[elem[0]];
+                connect[cnt++] = hex_vert[elem[1]];
+                connect[cnt++] = hex_vert[elem[2]];
               }
             }
           }
@@ -1334,10 +1334,10 @@ namespace Iogn {
               hex_vert[2] = base + xp1yp1 + 1;
               hex_vert[3] = base + 1;
 
-              for (size_t tet = 0; tet < 2; tet++) {
-                connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                connect[cnt++] = hex_vert[tet_vert[tet][2]];
+              for (auto & elem : tet_vert) {
+                connect[cnt++] = hex_vert[elem[0]];
+                connect[cnt++] = hex_vert[elem[1]];
+                connect[cnt++] = hex_vert[elem[2]];
               }
             }
           }
@@ -1352,10 +1352,10 @@ namespace Iogn {
                 hex_vert[2] = base + numX + 2;
                 hex_vert[3] = base + 1;
   
-                for (size_t tet = 0; tet < 2; tet++) {
-                  connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                  connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                  connect[cnt++] = hex_vert[tet_vert[tet][2]];
+                for (auto & elem : tet_vert) {
+                  connect[cnt++] = hex_vert[elem[0]];
+                  connect[cnt++] = hex_vert[elem[1]];
+                  connect[cnt++] = hex_vert[elem[2]];
                 }
               }
             }
@@ -1371,10 +1371,10 @@ namespace Iogn {
                 hex_vert[2] = base + numX + 2;
                 hex_vert[3] = base + numX + 1;
   
-                for (size_t tet = 0; tet < 2; tet++) {
-                  connect[cnt++] = hex_vert[tet_vert[tet][0]];
-                  connect[cnt++] = hex_vert[tet_vert[tet][1]];
-                  connect[cnt++] = hex_vert[tet_vert[tet][2]];
+                for (auto & elem : tet_vert) {
+                  connect[cnt++] = hex_vert[elem[0]];
+                  connect[cnt++] = hex_vert[elem[1]];
+                  connect[cnt++] = hex_vert[elem[2]];
                 }
               }
             }

@@ -464,7 +464,7 @@ void del_arg(int *argc, char* argv[], int j)
     argv[jj-1]=argv[jj];
   }
   (*argc)--;
-  argv[*argc]=0;
+  argv[*argc]=nullptr;
 }
 
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name)

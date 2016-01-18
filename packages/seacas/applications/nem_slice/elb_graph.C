@@ -703,11 +703,11 @@ namespace {
     /* Adjust for a mesh with spheres */
     if(problem->type == ELEMENTAL && sphere->num) {
       /* Decrement adjacency entries */
-      for(size_t cnt1=0; cnt1 < graph->adj.size(); cnt1++) {
+      for(auto & elem : graph->adj) {
 	for(size_t ecnt=0; ecnt < mesh->num_el_blks; ecnt++) {
-	  if(graph->adj[cnt1] >= sphere->begin[ecnt] &&
-	     graph->adj[cnt1] < sphere->end[ecnt]) {
-	    graph->adj[cnt1] -= sphere->adjust[ecnt];
+	  if(elem >= sphere->begin[ecnt] &&
+	     elem < sphere->end[ecnt]) {
+	    elem -= sphere->adjust[ecnt];
 	    break;
 	  }
 	}

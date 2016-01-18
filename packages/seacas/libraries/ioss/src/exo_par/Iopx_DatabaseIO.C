@@ -1283,15 +1283,12 @@ namespace Iopx {
       // sidesets which were probably written by a previous run of the
       // IO system and are already split into homogenous pieces...
       {
-        Ioex::SideSetSet::iterator I = fs_set.begin();
-        while (I != fs_set.end()) {
-          const std::string fs_name = *I;
+	for (auto &fs_name : fs_set) {
           Ioss::SideSet *side_set = new Ioss::SideSet(this, fs_name);
           get_region()->add(side_set);
           int64_t id = Ioex::extract_id(fs_name);
           if (id > 0)
             side_set->property_add(Ioss::Property("id", id));
-          ++I;
         }
       }
 
@@ -1475,13 +1472,9 @@ namespace Iopx {
         Ioss::Int64Vector global_side_counts(topo_map.size());
         {
           int64_t i = 0;
-          {
-            Ioex::TopologyMap::const_iterator I = topo_map.begin();
-            while (I != topo_map.end()) {
-              global_side_counts[i++] = (*I).second;
-              ++I;
-            }
-          }
+	  for (auto &topo : topo_map) {
+	    global_side_counts[i++] = topo.second;
+	  }
 
           // If splitting by element block, also sync the side_map
           // information which specifies whether the sideset has
@@ -1491,13 +1484,9 @@ namespace Iopx {
           if (side_map.size() == topo_map.size()) {
             global_side_counts.resize(topo_map.size() + side_map.size());
 
-            {
-              Ioex::TopologyMap::const_iterator I = side_map.begin();
-              while (I != side_map.end()) {
-                global_side_counts[i++] = (*I).second;
-                ++I;
-              }
-            }
+	    for (auto &side : side_map) {
+	      global_side_counts[i++] = side.second;
+	    }
           }
 
           // See if any processor has non-zero count for the topo_map counts
@@ -1509,12 +1498,10 @@ namespace Iopx {
         // Create Side Blocks
 
         int64_t i = 0;
-        Ioex::TopologyMap::const_iterator I = topo_map.begin();
-        assert(I != topo_map.end());
-        while (I != topo_map.end()) {
+        for (auto &topo : topo_map) {
           if (global_side_counts[i++] > 0) {
-            const std::string topo_or_block_name   = (*I).first.first;
-            const Ioss::ElementTopology *side_topo = (*I).first.second;
+            const std::string topo_or_block_name   = topo.first.first;
+            const Ioss::ElementTopology *side_topo = topo.first.second;
             assert(side_topo != nullptr);
 #if 0
             if (side_topo->parametric_dimension() == topology_dimension-1 ||
@@ -1522,7 +1509,7 @@ namespace Iopx {
 #else
               if (true) {
 #endif
-                int64_t my_side_count = (*I).second;
+                int64_t my_side_count = topo.second;
 
                 std::string side_block_name = "surface_" + topo_or_block_name + "_" + side_topo->name();
                 if (side_set_name == "universal_sideset") {
@@ -1631,7 +1618,6 @@ namespace Iopx {
                 add_results_fields(EX_SIDE_SET, side_block, iss);
               }
             }
-            ++I;
           }
         }
       }
@@ -4343,18 +4329,16 @@ namespace Iopx {
       {
         Ioss::EdgeBlockContainer edge_blocks = region->get_edge_blocks();
         assert(Ioex::check_block_order(edge_blocks));
-        Ioss::EdgeBlockContainer::const_iterator I;
-        // Set ids of all entities that have "id" property...
-        for (I=edge_blocks.begin(); I != edge_blocks.end(); ++I) {
-          Ioex::set_id(*I, EX_EDGE_BLOCK, &ids_);
+	for (auto &edge_block : edge_blocks) {
+          Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
         }
 
         edgeCount = 0;
-        for (I=edge_blocks.begin(); I != edge_blocks.end(); ++I) {
-          edgeCount += (*I)->get_property("entity_count").get_int();
+	for (auto &edge_block : edge_blocks) {
+          edgeCount += edge_block->get_property("entity_count").get_int();
           // Set ids of all entities that do not have "id" property...
-          Ioex::get_id(*I, EX_EDGE_BLOCK, &ids_);
-          Ioex::EdgeBlock T(*(*I));
+          Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
+          Ioex::EdgeBlock T(*(edge_block));
           if (std::find(mesh.edgeblocks.begin(), mesh.edgeblocks.end(), T) == mesh.edgeblocks.end()) {
             mesh.edgeblocks.push_back(T);
           }
@@ -4366,18 +4350,17 @@ namespace Iopx {
       {
         Ioss::FaceBlockContainer face_blocks = region->get_face_blocks();
         assert(Ioex::check_block_order(face_blocks));
-        Ioss::FaceBlockContainer::const_iterator I;
         // Set ids of all entities that have "id" property...
-        for (I=face_blocks.begin(); I != face_blocks.end(); ++I) {
-          Ioex::set_id(*I, EX_FACE_BLOCK, &ids_);
+        for (auto &face_block : face_blocks) {
+          Ioex::set_id(face_block, EX_FACE_BLOCK, &ids_);
         }
 
         faceCount = 0;
-        for (I=face_blocks.begin(); I != face_blocks.end(); ++I) {
-          faceCount += (*I)->get_property("entity_count").get_int();
+        for (auto &face_block : face_blocks) {
+          faceCount += face_block->get_property("entity_count").get_int();
           // Set ids of all entities that do not have "id" property...
-          Ioex::get_id(*I, EX_FACE_BLOCK, &ids_);
-          Ioex::FaceBlock T(*(*I));
+          Ioex::get_id(face_block, EX_FACE_BLOCK, &ids_);
+          Ioex::FaceBlock T(*(face_block));
           if (std::find(mesh.faceblocks.begin(), mesh.faceblocks.end(), T) == mesh.faceblocks.end()) {
             mesh.faceblocks.push_back(T);
           }
@@ -4389,18 +4372,17 @@ namespace Iopx {
       {
         Ioss::ElementBlockContainer element_blocks = region->get_element_blocks();
         assert(Ioex::check_block_order(element_blocks));
-        Ioss::ElementBlockContainer::const_iterator I;
         // Set ids of all entities that have "id" property...
-        for (I=element_blocks.begin(); I != element_blocks.end(); ++I) {
-          Ioex::set_id(*I, EX_ELEM_BLOCK, &ids_);
+        for (auto &element_block : element_blocks) {
+          Ioex::set_id(element_block, EX_ELEM_BLOCK, &ids_);
         }
 
         elementCount = 0;
-        for (I=element_blocks.begin(); I != element_blocks.end(); ++I) {
-          elementCount += (*I)->get_property("entity_count").get_int();
+        for (auto &element_block : element_blocks) {
+          elementCount += element_block->get_property("entity_count").get_int();
           // Set ids of all entities that do not have "id" property...
-          Ioex::get_id(*I, EX_ELEM_BLOCK, &ids_);
-          Ioex::ElemBlock T(*(*I));
+          Ioex::get_id(element_block, EX_ELEM_BLOCK, &ids_);
+          Ioex::ElemBlock T(*(element_block));
           if (std::find(mesh.elemblocks.begin(), mesh.elemblocks.end(), T) == mesh.elemblocks.end()) {
             mesh.elemblocks.push_back(T);
           }
@@ -4411,14 +4393,13 @@ namespace Iopx {
       // Nodesets ...
       {
         Ioss::NodeSetContainer nodesets = region->get_nodesets();
-        Ioss::NodeSetContainer::const_iterator I;
-        for (I=nodesets.begin(); I != nodesets.end(); ++I) {
-          Ioex::set_id(*I, EX_NODE_SET, &ids_);
+        for (auto &set : nodesets) {
+          Ioex::set_id(set, EX_NODE_SET, &ids_);
         }
 
-        for (I=nodesets.begin(); I != nodesets.end(); ++I) {
-          Ioex::get_id(*I, EX_NODE_SET, &ids_);
-          const Ioex::NodeSet T(*(*I));
+        for (auto &set : nodesets) {
+          Ioex::get_id(set, EX_NODE_SET, &ids_);
+          const Ioex::NodeSet T(*(set));
           if (std::find(mesh.nodesets.begin(), mesh.nodesets.end(), T) == mesh.nodesets.end()) {
             mesh.nodesets.push_back(T);
           }
@@ -4429,14 +4410,13 @@ namespace Iopx {
       // Edgesets ...
       {
         Ioss::EdgeSetContainer edgesets = region->get_edgesets();
-        Ioss::EdgeSetContainer::const_iterator I;
-        for (I=edgesets.begin(); I != edgesets.end(); ++I) {
-          Ioex::set_id(*I, EX_EDGE_SET, &ids_);
+        for (auto &set : edgesets) {
+          Ioex::set_id(set, EX_EDGE_SET, &ids_);
         }
 
-        for (I=edgesets.begin(); I != edgesets.end(); ++I) {
-          Ioex::get_id(*I, EX_EDGE_SET, &ids_);
-          const Ioex::EdgeSet T(*(*I));
+        for (auto &set : edgesets) {
+          Ioex::get_id(set, EX_EDGE_SET, &ids_);
+          const Ioex::EdgeSet T(*(set));
           if (std::find(mesh.edgesets.begin(), mesh.edgesets.end(), T) == mesh.edgesets.end()) {
             mesh.edgesets.push_back(T);
           }
@@ -4447,14 +4427,13 @@ namespace Iopx {
       // Facesets ...
       {
         Ioss::FaceSetContainer facesets = region->get_facesets();
-        Ioss::FaceSetContainer::const_iterator I;
-        for (I=facesets.begin(); I != facesets.end(); ++I) {
-          Ioex::set_id(*I, EX_FACE_SET, &ids_);
+        for (auto &set : facesets) {
+          Ioex::set_id(set, EX_FACE_SET, &ids_);
         }
 
-        for (I=facesets.begin(); I != facesets.end(); ++I) {
-          Ioex::get_id(*I, EX_FACE_SET, &ids_);
-          const Ioex::FaceSet T(*(*I));
+        for (auto &set : facesets) {
+          Ioex::get_id(set, EX_FACE_SET, &ids_);
+          const Ioex::FaceSet T(*(set));
           if (std::find(mesh.facesets.begin(), mesh.facesets.end(), T) == mesh.facesets.end()) {
             mesh.facesets.push_back(T);
           }
@@ -4465,14 +4444,13 @@ namespace Iopx {
       // Elementsets ...
       {
         Ioss::ElementSetContainer elementsets = region->get_elementsets();
-        Ioss::ElementSetContainer::const_iterator I;
-        for (I=elementsets.begin(); I != elementsets.end(); ++I) {
-          Ioex::set_id(*I, EX_ELEM_SET, &ids_);
+        for (auto &set : elementsets) {
+          Ioex::set_id(set, EX_ELEM_SET, &ids_);
         }
 
-        for (I=elementsets.begin(); I != elementsets.end(); ++I) {
-          Ioex::get_id(*I, EX_ELEM_SET, &ids_);
-          const Ioex::ElemSet T(*(*I));
+        for (auto &set : elementsets) {
+          Ioex::get_id(set, EX_ELEM_SET, &ids_);
+          const Ioex::ElemSet T(*(set));
           if (std::find(mesh.elemsets.begin(), mesh.elemsets.end(), T) == mesh.elemsets.end()) {
             mesh.elemsets.push_back(T);
           }
@@ -4485,24 +4463,23 @@ namespace Iopx {
         Ioss::SideSetContainer ssets = region->get_sidesets();
         Ioss::SideSetContainer::const_iterator I;
 
-        for (I=ssets.begin(); I != ssets.end(); ++I) {
-          Ioex::set_id(*I, EX_SIDE_SET, &ids_);
+        for (auto &set : ssets) {
+          Ioex::set_id(set, EX_SIDE_SET, &ids_);
         }
 
         // Get entity counts for all face sets... Create SideSets.
-        for (I=ssets.begin(); I != ssets.end(); ++I) {
+        for (auto &set : ssets) {
 
-          Ioex::get_id(*I, EX_SIDE_SET, &ids_);
-          int64_t id = (*I)->get_property("id").get_int();
+          Ioex::get_id(set, EX_SIDE_SET, &ids_);
+          int64_t id = set->get_property("id").get_int();
           int64_t entity_count = 0;
           int64_t df_count = 0;
 
-          Ioss::SideBlockContainer side_blocks = (*I)->get_side_blocks();
-          Ioss::SideBlockContainer::const_iterator J;
-          for (J=side_blocks.begin(); J != side_blocks.end(); ++J) {
+          Ioss::SideBlockContainer side_blocks = set->get_side_blocks();
+	  for (auto &block : side_blocks) {
             // Add  "*_offset" properties to specify at what offset
             // the data for this block appears in the containing set.
-            Ioss::SideBlock *new_block = const_cast<Ioss::SideBlock*>(*J);
+            Ioss::SideBlock *new_block = const_cast<Ioss::SideBlock*>(block);
             new_block->property_add(Ioss::Property("set_offset", entity_count));
             new_block->property_add(Ioss::Property("set_df_offset", df_count));
 
@@ -4514,17 +4491,17 @@ namespace Iopx {
             }
             new_block->property_add(Ioss::Property("id", id));
 
-            entity_count += (*J)->get_property("entity_count").get_int();
-            df_count     += (*J)->get_property("distribution_factor_count").get_int();
+            entity_count += block->get_property("entity_count").get_int();
+            df_count     += block->get_property("distribution_factor_count").get_int();
           }
-          Ioss::SideSet *new_entity = const_cast<Ioss::SideSet*>(*I);
+          Ioss::SideSet *new_entity = const_cast<Ioss::SideSet*>(set);
           new_entity->property_add(Ioss::Property("entity_count", entity_count));
           new_entity->property_add(Ioss::Property("distribution_factor_count", df_count));
         }
 
-        for (I=ssets.begin(); I != ssets.end(); ++I) {
+        for (auto &set : ssets) {
           // Add a SideSet corresponding to this SideSet/SideBlock
-          Ioex::SideSet T(*(*I));
+          Ioex::SideSet T(*set);
           if (std::find(mesh.sidesets.begin(), mesh.sidesets.end(), T) == mesh.sidesets.end()) {
             mesh.sidesets.push_back(T);
           }
@@ -4602,10 +4579,9 @@ namespace Iopx {
 
         // Propogate down to owned sideblocks...
         Ioss::SideBlockContainer side_blocks = ssets[i]->get_side_blocks();
-        Ioss::SideBlockContainer::const_iterator J;
-        for (J=side_blocks.begin(); J != side_blocks.end(); ++J) {
-          (*J)->property_add(Ioss::Property("processor_offset", mesh.sidesets[i].procOffset));
-          (*J)->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
+        for (auto &block : side_blocks) {
+          block->property_add(Ioss::Property("processor_offset", mesh.sidesets[i].procOffset));
+          block->property_add(Ioss::Property("processor_df_offset", mesh.sidesets[i].dfProcOffset));
         }
       }
 

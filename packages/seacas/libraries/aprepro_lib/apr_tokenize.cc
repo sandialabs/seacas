@@ -38,8 +38,8 @@ void SEAMS::tokenize(const std::string& str, const std::string& separators,
               std::vector<std::string>& tokens)
 {
   std::string curr_token = "";
-  for (size_t i = 0; i < str.length(); ++i) {
-    char curr_char = str[i];
+  for (auto curr_char : str) {
+    
 
     // determine if current character is a separator
     bool is_separator = std::find(separators.begin(), separators.end(), curr_char) != separators.end();

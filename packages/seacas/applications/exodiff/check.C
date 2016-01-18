@@ -164,8 +164,8 @@ namespace {
     double max = 0.0, norm;
     for (size_t n = 0; n < file1.Num_Nodes() && (is_same || interface.show_all_diffs); ++n) {
       // Should this node be processed...
-      if (node_map == 0 || node_map[n]>=0){
-	INT n2 = node_map != 0 ? node_map[n] : n;
+      if (node_map == nullptr || node_map[n]>=0){
+	INT n2 = node_map != nullptr ? node_map[n] : n;
 	double dx = interface.coord_tol.Delta(x1[n], x2[n2]);
 	if (dx > interface.coord_tol.value) {
 	  sprintf(buf, "   x coord %s diff: %14.7e ~ %14.7e =%12.5e (node " ST_ZU ")",
