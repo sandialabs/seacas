@@ -1278,7 +1278,7 @@ namespace Iofx {
       size_t non_zero = util().parallel_size() - std::count(procs.begin(), procs.end(), 0);
 
       // Post all receives...
-      MPI_Request request_null = MPI_REQUEST_nullptr;
+      MPI_Request request_null = MPI_REQUEST_NULL;
       std::vector<MPI_Request> request(non_zero, request_null);
       std::vector<MPI_Status>  status(non_zero);
 

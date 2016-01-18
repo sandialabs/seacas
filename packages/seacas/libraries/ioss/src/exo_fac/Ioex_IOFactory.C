@@ -89,7 +89,7 @@ namespace Ioex {
     // 3. The decomposition method is not "EXTERNAL"
 
     int proc_count = 1;
-    if (communicator != MPI_COMM_nullptr) {
+    if (communicator != MPI_COMM_NULL) {
       MPI_Comm_size(communicator, &proc_count);
     }
 

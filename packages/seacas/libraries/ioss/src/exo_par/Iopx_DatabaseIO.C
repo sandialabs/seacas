@@ -278,7 +278,7 @@ namespace Iopx {
 
     int par_mode = get_parallel_io_mode(properties);
 
-    MPI_Info info = MPI_INFO_nullptr;
+    MPI_Info info = MPI_INFO_NULL;
     int exodus_file_ptr = ex_open_par(get_filename().c_str(), EX_READ|par_mode,
                                       &cpu_word_size, &io_word_size, &version, util().communicator(), info);
 
@@ -363,7 +363,7 @@ namespace Iopx {
 
       int par_mode = get_parallel_io_mode(properties);
 
-      MPI_Info info = MPI_INFO_nullptr;
+      MPI_Info info = MPI_INFO_NULL;
       if (is_input()) {
         exodusFilePtr = ex_open_par(get_filename().c_str(), EX_READ|mode|par_mode,
                                     &cpu_word_size, &io_word_size, &version, util().communicator(), info);
@@ -1029,7 +1029,7 @@ namespace Iopx {
       size_t non_zero = util().parallel_size() - std::count(procs.begin(), procs.end(), 0);
 
       // Post all receives...
-      MPI_Request request_null = MPI_REQUEST_nullptr;
+      MPI_Request request_null = MPI_REQUEST_NULL;
       std::vector<MPI_Request> request(non_zero, request_null);
       std::vector<MPI_Status>  status(non_zero);
 
