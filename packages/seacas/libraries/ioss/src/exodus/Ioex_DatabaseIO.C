@@ -1249,7 +1249,6 @@ namespace Ioex {
 	block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
 	block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
-	for (auto &field_name : results_fields) {
 	  Ioss::Field field = block->get_field(field_name);
 	  const Ioss::VariableType *var_type = field.transformed_storage();
 	  Ioss::Field::BasicType ioss_type = field.get_type();
@@ -1304,7 +1303,7 @@ namespace Ioex {
 	  variable_names[index-1] = Ioss::Utils::uppercase(variable_names[index-1]);
 	} else if (lowercase_names) {
 	  variable_names[index-1] = Ioss::Utils::lowercase(variable_names[index-1]);
-}
+	}
 	var_names[index-1] = (char*)variable_names[index-1].c_str();
       }
 
@@ -1323,13 +1322,13 @@ namespace Ioex {
     assert(overlayCount >= 0 && cycleCount >= 0);
     if (overlayCount == 0 && cycleCount == 0) {
       return global_step;
-}
+    }
 
     int local_step = global_step - 1;
     local_step /= (overlayCount + 1);
     if (cycleCount > 0) {
       local_step %= cycleCount;
-}
+    }
     return local_step + 1;
   }
 
