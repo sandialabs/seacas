@@ -133,7 +133,7 @@ void usage()
 void mPutStr (const char *name, const char *str)
 {
   assert(m_file!=0);
-  if (strchr(str,'\n')==0)
+  if (strchr(str,'\n')==nullptr)
     fprintf(m_file,"%s='%s';\n",name,str);
   else {
     fprintf(m_file,"%s=[",name);
@@ -290,7 +290,7 @@ int PutDbl (const char *name,int n1,int n2,double *pd)
 
 char ** get_exodus_names(size_t count, int size)
 {
-  char **names = new char* [count];
+  auto names = new char* [count];
   for (size_t i=0; i < count; i++) {
     names[i] = new char [size+1];
     std::memset(names[i], '\0', size+1);
@@ -365,7 +365,7 @@ void del_arg(int *argc, char* argv[], int j)
   for (int jj=j+1;jj<*argc;jj++)
     argv[jj-1]=argv[jj];
   (*argc)--;
-  argv[*argc]=0;
+  argv[*argc]=nullptr;
 }
 /**********************************************************************/
 int main (int argc, char *argv[])

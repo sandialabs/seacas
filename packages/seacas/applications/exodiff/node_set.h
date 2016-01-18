@@ -63,11 +63,11 @@ private:
   Node_Set(const Node_Set&);  // Not written.
   const Node_Set& operator=(const Node_Set&);  // Not written.
   
-  void entity_load_params();
+  void entity_load_params() override;
 
-  EXOTYPE exodus_type() const;
-  const char* label() const {return "Nodeset";}
-  const char* short_label() const {return "nodeset";}
+  EXOTYPE exodus_type() const override;
+  const char* label() const override {return "Nodeset";}
+  const char* short_label() const override {return "nodeset";}
 
   void load_nodes(const INT *node_map = nullptr) const;
   

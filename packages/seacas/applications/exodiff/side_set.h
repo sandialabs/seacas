@@ -69,11 +69,11 @@ class Side_Set: public Exo_Entity {
   
   void load_sides(const INT *elmt_map = nullptr) const;
   void load_df() const;
-  void entity_load_params();
+  void entity_load_params() override;
 
-  EXOTYPE exodus_type() const;
-  const char* label() const {return "Sideset";}
-  const char* short_label() const {return "sideset";}
+  EXOTYPE exodus_type() const override;
+  const char* label() const override {return "Sideset";}
+  const char* short_label() const override {return "sideset";}
 
   size_t num_dist_factors;
   

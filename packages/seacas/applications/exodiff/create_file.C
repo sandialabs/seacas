@@ -306,8 +306,8 @@ namespace {
   {
     if (!names.empty()) {
       std::cout << type << " variables to be differenced:" << std::endl;
-      for (unsigned v = 0; v < names.size(); ++v)
-	std::cout << "\t" << names[v] << std::endl;
+      for (auto & name : names)
+	std::cout << "\t" << name << std::endl;
     }
     else
       std::cout << "No " << type << " variables will be differenced." << std::endl;
@@ -319,8 +319,8 @@ namespace {
 			    bool *diff_found)
   {
     vector<string> x_list;  // exclusion list
-    for (unsigned m = 0; m < names.size(); ++m) {
-      string name = names[m];  chop_whitespace(name);
+    for (auto name : names) {
+        chop_whitespace(name);
       SMART_ASSERT(!name.empty());
       if (name[0] == '!')
 	x_list.push_back( extract_token(name, "!") ); // remove "!" & add

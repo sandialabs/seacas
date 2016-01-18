@@ -288,7 +288,7 @@ void Exo_Entity::Free_Results()
   currentStep = 0;
   for (int v = 0; v < numVars; ++v) {
     delete [] results_[v];
-    results_[v] = 0;
+    results_[v] = nullptr;
   }
 }
 
@@ -358,7 +358,7 @@ void Exo_Entity::Free_Attributes()
   
   for (int v = 0; v < numAttr; ++v) {
     delete [] attributes_[v];
-    attributes_[v] = 0;
+    attributes_[v] = nullptr;
   }
 }
 
@@ -402,7 +402,7 @@ void Exo_Entity::internal_load_params()
     results_ = new double*[numVars];
     SMART_ASSERT(results_ != 0);
     for (int i = 0; i < numVars; ++i)
-      results_[i] = 0;
+      results_[i] = nullptr;
   }
 
   numAttr = get_num_attributes(fileId, exodus_type(), id_, label());

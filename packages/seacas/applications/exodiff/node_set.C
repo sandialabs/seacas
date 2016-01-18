@@ -140,7 +140,7 @@ void Node_Set<INT>::load_nodes(const INT *node_map) const
   if (numEntity > 0) {
     nodes = new INT[numEntity];  SMART_ASSERT(nodes != 0);
     nodeIndex = new INT[numEntity];  SMART_ASSERT(nodeIndex != 0);
-    ex_get_set(fileId, EX_NODE_SET, id_, nodes, 0);
+    ex_get_set(fileId, EX_NODE_SET, id_, nodes, nullptr);
     
     if (node_map != nullptr) {
       for (size_t i=0; i < numEntity; i++) {

@@ -1279,9 +1279,9 @@ namespace Ioss {
 
   const CoordinateFrame& Region::get_coordinate_frame(int64_t id) const
   {
-    for (size_t i=0; i < coordinateFrames.size(); i++) {
-      if (coordinateFrames[i].id() == id) {
-	return coordinateFrames[i];
+    for (auto &coor_frame : coordinateFrames) {
+      if (coor_frame.id() == id) {
+	return coor_frame;
       }
     }
     std::ostringstream errmsg;
@@ -1589,9 +1589,7 @@ namespace Ioss {
 	    
 	    Ioss::NameList attr_fields;
 	    ge->field_describe(Ioss::Field::ATTRIBUTE, &attr_fields);
-	    Ioss::NameList::const_iterator IF;
-	    for (IF = attr_fields.begin(); IF != attr_fields.end(); ++IF) {
-	      std::string field_name = *IF;
+	    for (auto &field_name : attr_fields) {
 	      const Ioss::Field &field = ge->get_fieldref(field_name);
 	      if (this_ge->field_exists(field_name)) {
 		// If the field is already defined on the entity, make

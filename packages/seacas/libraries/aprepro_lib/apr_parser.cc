@@ -228,9 +228,9 @@ namespace SEAMS {
 
   template <typename Base>
   inline
-  Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const semantic_type& v)
+  Parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, semantic_type  v)
     : Base (t)
-    , value (v)
+    , value (std::move(v))
   {}
 
 
@@ -2286,11 +2286,8 @@ namespace SEAMS {
   Parser::yystack_print_ ()
   {
     *yycdebug_ << "Stack now";
-    for (stack_type::const_iterator
-           i = yystack_.begin (),
-           i_end = yystack_.end ();
-         i != i_end; ++i)
-      *yycdebug_ << ' ' << i->state;
+    for (const auto & elem : yystack_)
+      *yycdebug_ << ' ' << elem.state;
     *yycdebug_ << std::endl;
   }
 
