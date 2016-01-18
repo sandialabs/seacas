@@ -85,7 +85,7 @@ void Excn::SystemInterface::enroll_options()
   options_.usage("[options] basename");
 
   options_.enroll("help", GetLongOption::NoValue,
-		  "Print this summary and exit", 0);
+		  "Print this summary and exit", nullptr);
 
   options_.enroll("version", GetLongOption::NoValue,
 		  "Print version and exit", nullptr);
@@ -106,7 +106,7 @@ void Excn::SystemInterface::enroll_options()
 		  "Exodus database extension for the output file", nullptr);
 
   options_.enroll("offset", GetLongOption::MandatoryValue,
-		  "Raid Offset", 0);
+		  "Raid Offset", nullptr);
 
   options_.enroll("raid_count", GetLongOption::MandatoryValue,
 		  "Number of raids", "0");
@@ -118,7 +118,7 @@ void Excn::SystemInterface::enroll_options()
 		  "Current Directory", ".");
 
   options_.enroll("Root_directory", GetLongOption::MandatoryValue,
-		  "Root directory", 0);
+		  "Root directory", nullptr);
 
   options_.enroll("Subdirectory", GetLongOption::MandatoryValue,
 		  "subdirectory containing input exodusII files", nullptr);
@@ -147,7 +147,7 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("compress_data", GetLongOption::MandatoryValue,
 		  "The output database will be written using compression (netcdf-4 mode only).\n"
 		  "\t\tValue ranges from 0 (no compression) to 9 (max compression) inclusive.",
-		  0);
+		  nullptr);
 
   options_.enroll("steps", GetLongOption::MandatoryValue,
 		  "Specify subset of timesteps to transfer to output file.\n"
@@ -169,7 +169,7 @@ void Excn::SystemInterface::enroll_options()
 		  "\t\tThe subparts can then be joined by a subsequent run of epu.\n"
 		  "\t\tUseful if the maximum number of open files is less\n"
 		  "\t\tthan the processor count.",
-		  0, "0");
+		  nullptr, "0");
 
   options_.enroll("cycle", GetLongOption::MandatoryValue,
 		  "Cycle number. If subcycle # is specified, then only execute\n"
@@ -189,25 +189,25 @@ void Excn::SystemInterface::enroll_options()
   
   options_.enroll("gvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of global variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("evar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of element variables to be joined or ALL or NONE.\n"
 		  "\t\tVariables can be limited to certain blocks by appending a\n"
 		  "\t\tcolon followed by the block id.  E.g. -evar sigxx:10:20",
-		  0);
+		  nullptr);
 
   options_.enroll("nvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of nodal variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("nsetvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of nodeset variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("ssetvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of sideset variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("omit_nodesets", GetLongOption::NoValue,
 		  "Don't transfer nodesets to output file.",
@@ -560,7 +560,7 @@ void Excn::SystemInterface::parse_step_option(const char *tokens)
       vals[2] = stepInterval_;
 
       int j=0;
-      for (int i=0; i < 3; i++) {
+      for (auto & val : vals) {
 	// Parse 'i'th field
 	char tmp_str[128];;
 	int k=0;
@@ -571,7 +571,7 @@ void Excn::SystemInterface::parse_step_option(const char *tokens)
 
 	tmp_str[k] = '\0';
 	if (strlen(tmp_str) > 0)
-	  vals[i] = strtoul(tmp_str, nullptr, 0);
+	  val = strtoul(tmp_str, nullptr, 0);
 	
 	if (tokens[j++] == '\0') {
 	  break; // Reached end of string
@@ -687,7 +687,7 @@ namespace {
       // "sigxx" should be written only for blocks with id 1, 10, and
       // 100.  "sigxx" would indicate that the variable should be
       // written for all blocks.
-      std::vector<std::string>::iterator I = var_list.begin();
+      auto I = var_list.begin();
       while (I != var_list.end()) {
 	StringVector name_id;
 	SLIB::tokenize(*I, ":", name_id);

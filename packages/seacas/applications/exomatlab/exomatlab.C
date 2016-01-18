@@ -152,8 +152,8 @@ namespace {
 
     if (interface.list_vars()) {
       StringIdVector types_to_list = interface.vars_to_list();
-      for (size_t i=0; i < types_to_list.size(); i++) {
-	std::string type = types_to_list[i].first;
+      for (auto types : types_to_list) {
+	std::string type = types.first;
 
 	if (type == "all" || type == "global") {
 	  Ioss::NameList fields;
@@ -178,8 +178,8 @@ namespace {
       } else if (global_vars[0].first == "none") {
 	; // do nothing.  This will be used when nodal, element, ... supported
       } else {
-	for (size_t i=0; i < global_vars.size(); i++) {
-	  std::string field_name = global_vars[i].first;
+	for (auto & global_var : global_vars) {
+	  std::string field_name = global_var.first;
 	  if (region.field_exists(field_name)) {
 	    fields.push_back(field_name);
 	  } else {

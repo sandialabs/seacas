@@ -32,7 +32,7 @@ void Excn::SystemInterface::enroll_options()
   options_.usage("[options] list_of_files_to_join");
 
   options_.enroll("help", GetLongOption::NoValue,
-		  "Print this summary and exit", 0);
+		  "Print this summary and exit", nullptr);
 
   options_.enroll("version", GetLongOption::NoValue,
 		  "Print version and exit", nullptr);
@@ -78,25 +78,25 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("gvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of global variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("evar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of element variables to be joined or ALL or NONE.\n"
 		  "\t\tVariables can be limited to certain blocks by appending a\n"
 		  "\t\tcolon followed by the block id.  E.g. -evar sigxx:10:20",
-		  0);
+		  nullptr);
 
   options_.enroll("nvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of nodal variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("nsetvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of nodeset variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("ssetvar", GetLongOption::MandatoryValue,
 		  "Comma-separated list of sideset variables to be joined or ALL or NONE.",
-		  0);
+		  nullptr);
 
   options_.enroll("interpart_minimum_time_delta",  GetLongOption::MandatoryValue,
 		  "If the time delta between the maximum time on one\n\t\tdatabase and the minimum time on "
@@ -332,7 +332,7 @@ namespace {
       // "sigxx" should be written only for blocks with id 1, 10, and
       // 100.  "sigxx" would indicate that the variable should be
       // written for all blocks.
-      std::vector<std::string>::iterator I = var_list.begin();
+      auto I = var_list.begin();
       while (I != var_list.end()) {
 	StringVector name_id;
 	SLIB::tokenize(*I, ":", name_id);

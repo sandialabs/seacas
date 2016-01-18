@@ -776,7 +776,7 @@ const char *do_append(char *filename)
     aprepro->info("Output now redirected to original output stream.\n");
   }
   else {
-    std::ofstream* output = new std::ofstream(filename, std::ios_base::app); // Append
+    auto  output = new std::ofstream(filename, std::ios_base::app); // Append
     if (output != nullptr) {
       aprepro->outputStream.push(output);
 
@@ -1030,7 +1030,7 @@ const char *do_extract(char *string, char *begin, char *end)
     }
   }
 
-  char *tmpstr = new char[len+1];
+  auto tmpstr = new char[len+1];
   std::strncpy(tmpstr, start, len);
   tmpstr[len] = '\0';
   new_string(tmpstr, &tmp);
@@ -1092,7 +1092,7 @@ const char *do_delete(char *string)
 
 array *do_make_array(double rows, double cols)
 {
-  array *array_data = new array(rows, cols);
+  auto array_data = new array(rows, cols);
   return array_data;
 }
 
@@ -1100,7 +1100,7 @@ array *do_identity(double size)
 {
   int i;
   int isize = size;
-  array *array_data = new array(size,size);
+  auto array_data = new array(size,size);
 
   for (i=0; i < isize; i++) {
     array_data->data[i*isize+i] = 1.0;
@@ -1111,7 +1111,7 @@ array *do_identity(double size)
 array *do_transpose(const array *a)
 {
   int i,j;
-  array *array_data = new array(a->cols, a->rows);
+  auto array_data = new array(a->cols, a->rows);
 
   for (i=0; i < a->rows; i++) {
     for (j=0; j < a->cols; j++) {
@@ -1146,7 +1146,7 @@ array *do_csv_array(const char *filename, double skip)
     }
   }
 
-  array *array_data = new array(rows-rows_to_skip, cols);
+  auto array_data = new array(rows-rows_to_skip, cols);
 
   /* Read file again storing entries in array_data->data */
   file->clear();
@@ -1190,7 +1190,7 @@ array *do_csv_array2(const char *filename, const char *comment)
     }
   }
 
-  array *array_data = new array(rows, cols);
+  auto array_data = new array(rows, cols);
 
   /* Read file again storing entries in array_data->data */
   file->clear();

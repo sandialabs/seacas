@@ -618,6 +618,7 @@ namespace Ioex {
       std::vector<std::string> tokens;
       Ioss::tokenize(names[which_names[i]], suffix, tokens);
       size_t num_tokens = tokens.size();
+      
       // The last token is the suffix for this component...
       Ioss::Suffix tmp(tokens[num_tokens-1]);
       suffices.push_back(tmp);
@@ -744,8 +745,8 @@ namespace Ioex {
 	// Create a field of that variable type.
 	assert(type->component_count() == static_cast<int>(which_names.size()));
 	Ioss::Field field(base_name.substr(0,bn_len-1), Ioss::Field::REAL, type, fld_role, count);
-	for (size_t i=0; i < which_names.size(); i++) {
-	  names[which_names[i]][0] = '\0';
+	for (auto & which_name : which_names) {
+	  names[which_name][0] = '\0';
 	}
 	return field;
       } else {
@@ -1010,8 +1011,8 @@ namespace Ioex {
     // Get all element blocks in region...
     bool omitted = false;
     Ioss::ElementBlockContainer element_blocks = region->get_element_blocks();
-    for (size_t blk=0; blk < element_blocks.size(); blk++) {
-      Ioss::ElementBlock *block = element_blocks[blk];
+    for (auto block : element_blocks) {
+      
       if (Ioss::Utils::block_is_omitted(block)) {
 	ssize_t min_id = block->get_offset() + 1;
 	ssize_t max_id = min_id + block->get_property("entity_count").get_int() - 1;

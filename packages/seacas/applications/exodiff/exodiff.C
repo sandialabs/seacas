@@ -353,7 +353,7 @@ namespace {
   
     sigfillset(&(sigact.sa_mask));
     sigact.sa_handler = floating_point_exception_handler;
-    if (sigaction(SIGFPE, &sigact, 0) == -1) perror("sigaction failed");
+    if (sigaction(SIGFPE, &sigact, nullptr) == -1) perror("sigaction failed");
 #if defined(LINUX) && defined(GNU)
     // for GNU, this seems to be needed to turn on trapping
     feenableexcept(FE_DIVBYZERO | FE_OVERFLOW | FE_INVALID);
@@ -515,8 +515,8 @@ namespace {
 
     // When mapping is on ("-m"), node_map maps indexes from file1 to indexes
     // into file2.  Similarly with elmt_map.
-    INT *node_map = 0;
-    INT *elmt_map = 0;
+    INT *node_map = nullptr;
+    INT *elmt_map = nullptr;
     if (interface.map_flag != FILE_ORDER) {
       if(interface.map_flag == PARTIAL) {
 	Compute_Partial_Maps(node_map, elmt_map, file1, file2);
@@ -601,7 +601,7 @@ namespace {
 	std::cout << "#  NOTE: All node and element ids are reported as local ids.\n\n";
     }
   
-    double* var_vals = 0;
+    double* var_vals = nullptr;
     if (out_file_id >= 0) {
       size_t max_ent = interface.glob_var_names.size();
       if (file1.Num_Nodes() > max_ent)
@@ -613,8 +613,8 @@ namespace {
     }
  
     // When mapping is in effect, it is efficient to grab pointers to all blocks.
-    Exo_Block<INT>** blocks2 = 0;
-    if (elmt_map != 0) {
+    Exo_Block<INT>** blocks2 = nullptr;
+    if (elmt_map != nullptr) {
       blocks2 = new Exo_Block<INT>*[file2.Num_Elmt_Blocks()];
       for (int b = 0; b < file2.Num_Elmt_Blocks(); ++b)
 	blocks2[b] = file2.Get_Elmt_Block_by_Index(b);
@@ -1306,8 +1306,8 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	for (size_t n = 0; n < ncount; ++n) {
         
 	  // Should this node be processed...
-	  if (node_map == 0 || node_map[n]>=0){
-	    INT n2 = node_map != 0 ? node_map[n] : n;
+	  if (node_map == nullptr || node_map[n]>=0){
+	    INT n2 = node_map != nullptr ? node_map[n] : n;
 	    nvals[n] = FileDiff(vals1[n], vals2[n2], interface.output_type);
 	  } else {
 	    nvals[n] = 0.;
@@ -1389,8 +1389,8 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       for (size_t n = 0; n < ncount; ++n) {
 
 	// Should this node be processed...
-	if (node_map == 0 || node_map[n]>=0){
-	  INT n2 = node_map != 0 ? node_map[n] : n;
+	if (node_map == nullptr || node_map[n]>=0){
+	  INT n2 = node_map != nullptr ? node_map[n] : n;
 	  double d = interface.node_var[n_idx].Delta(vals1[n], vals2[n2]);
 	  if (interface.show_all_diffs) {
 	    if (d > interface.node_var[n_idx].value) {
@@ -1471,7 +1471,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
       
       Norm norm;
     
-      if (elmt_map != 0) { // Load variable for all blocks in file 2.
+      if (elmt_map != nullptr) { // Load variable for all blocks in file 2.
 	for (int b = 0; b < file2.Num_Elmt_Blocks(); ++b) {
 	  Exo_Block<INT> * block2 = file2.Get_Elmt_Block_by_Index(b);
 	  block2->Load_Results(t2.step1, t2.step2, t2.proportion, vidx2);
@@ -1493,7 +1493,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
         
 	Exo_Block<INT>* eblock2 = nullptr;
 	int b2 = b;
-	if (elmt_map == 0 && !interface.summary_flag) {
+	if (elmt_map == nullptr && !interface.summary_flag) {
 	  if (interface.by_name)
 	    eblock2 = file2.Get_Elmt_Block_by_Name(eblock1->Name());
 	  else
@@ -1525,7 +1525,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	double v2 = 0;
 	const double* vals2 = nullptr;
       
-	if (elmt_map == 0 && !interface.summary_flag) {
+	if (elmt_map == nullptr && !interface.summary_flag) {
 	  // Without mapping, get result for this block.
 	  size_t id = eblock1->Id();
 	  if (interface.by_name)
@@ -1556,12 +1556,12 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 	for (size_t e = 0; e < ecount; ++e) {
 	  if (out_file_id >= 0)evals[e] = 0.;
 	  INT el_flag = 1;
-	  if(elmt_map != 0)
+	  if(elmt_map != nullptr)
 	    el_flag = elmt_map[global_elmt_index];
 
 	  if(el_flag >= 0){
 	    if (!interface.summary_flag) {
-	      if (elmt_map == 0)
+	      if (elmt_map == nullptr)
 		v2 = vals2[e];
 	      else {
 		// With mapping, map global index from file 1 to global index
@@ -1612,7 +1612,7 @@ void do_diffs(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2, int time_step1, Ti
 		     eblock1->Id(), eblock1->Size(), evals);
         
 	eblock1->Free_Results();
-	if (!interface.summary_flag && elmt_map == 0) {
+	if (!interface.summary_flag && elmt_map == nullptr) {
 	  eblock2->Free_Results();
 	}
         
@@ -2453,8 +2453,8 @@ bool diff_element_attributes(ExoII_Read<INT>& file1, ExoII_Read<INT>& file2,
 
   int timeStepIsExcluded(int ts)
   {
-    for (size_t i = 0; i < interface.exclude_steps.size(); ++i)
-      if (ts == interface.exclude_steps[i])
+    for (auto & elem : interface.exclude_steps)
+      if (ts == elem)
 	return 1;
   
     return 0;

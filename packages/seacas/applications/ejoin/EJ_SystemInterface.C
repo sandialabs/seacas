@@ -438,7 +438,7 @@ void SystemInterface::parse_step_option(const char *tokens)
       vals[2] = stepInterval_;
 
       int j=0;
-      for (int i=0; i < 3; i++) {
+      for (auto & val : vals) {
         // Parse 'i'th field
         char tmp_str[128];;
         int k=0;
@@ -449,7 +449,7 @@ void SystemInterface::parse_step_option(const char *tokens)
 
         tmp_str[k] = '\0';
         if (strlen(tmp_str) > 0)
-          vals[i] = strtoul(tmp_str, nullptr, 0);
+          val = strtoul(tmp_str, nullptr, 0);
 
         if (tokens[j++] == '\0') {
           break; // Reached end of string

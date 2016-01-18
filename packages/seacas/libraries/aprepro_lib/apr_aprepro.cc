@@ -112,7 +112,7 @@ namespace SEAMS {
     std::istream *in_cpy = &in;
     ap_file_list.top().name = in_name;
 
-    Scanner *scanner = new Scanner(*this, in_cpy, &parsingResults);
+    auto scanner = new Scanner(*this, in_cpy, &parsingResults);
     this->lexer = scanner;
 
     if (!ap_options.include_file.empty()) {
@@ -142,8 +142,8 @@ namespace SEAMS {
   bool Aprepro::parse_strings(const std::vector<std::string> &input, const std::string& sname)
   {
     std::stringstream iss;
-    for (size_t i=0; i < input.size(); i++) {
-      iss << input[i] << '\n';
+    for (auto & elem : input) {
+      iss << elem << '\n';
     }
     return parse_stream(iss, sname);
   }
@@ -258,7 +258,7 @@ namespace SEAMS {
       smode = std::ios::out;
   
     /* See if file exists in current directory (or as specified) */
-    std::fstream *pointer = new std::fstream(file.c_str(), smode);
+    auto pointer = new std::fstream(file.c_str(), smode);
     if ((pointer == nullptr || pointer->bad() || !pointer->good()) && !ap_options.include_path.empty()) {
       /* If there is an include path specified, try opening file there */
       std::string file_path(ap_options.include_path);
@@ -282,7 +282,7 @@ namespace SEAMS {
     if (mode[0] == 'w')
       smode = std::ios::out;
 
-    std::fstream *pointer = new std::fstream(file.c_str(), smode);
+    auto pointer = new std::fstream(file.c_str(), smode);
 
     if ((pointer == nullptr || pointer->bad() || !pointer->good()) && !ap_options.include_path.empty()) {
       /* If there is an include path specified, try opening file there */
@@ -353,7 +353,7 @@ namespace SEAMS {
       }
     }
     
-    symrec *ptr = new symrec(sym_name, parser_type, is_internal);
+    auto ptr = new symrec(sym_name, parser_type, is_internal);
     if (ptr == nullptr)
       return nullptr;
   
