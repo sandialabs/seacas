@@ -36,7 +36,7 @@
 #include <sys/types.h>                  // for ssize_t
 #include <tokenize.h>                   // for tokenize
 #include <cmath>                        // for atan2, cos, sin
-#include <cstdlib>                      // for strtod, NULL, strtol, exit, etc
+#include <cstdlib>                      // for strtod, nullptr, strtol, exit, etc
 #include <cstring>                      // for memcpy
 #include <iomanip>                      // for operator<<, setw
 #include <iostream>                     // for operator<<, basic_ostream, etc
@@ -80,9 +80,9 @@ namespace Iogn {
     std::vector<std::string> tokens;
     Ioss::tokenize(groups[0], "x", tokens);
     assert(tokens.size() == 3);
-    numX = std::strtol(tokens[0].c_str(), NULL, 10);
-    numY = std::strtol(tokens[1].c_str(), NULL, 10);
-    numZ = std::strtol(tokens[2].c_str(), NULL, 10);
+    numX = std::strtol(tokens[0].c_str(), nullptr, 10);
+    numY = std::strtol(tokens[1].c_str(), nullptr, 10);
+    numZ = std::strtol(tokens[2].c_str(), nullptr, 10);
 
     if (numX <= 0 || numY <= 0 || numZ <= 0) {
       if (myProcessor == 0) {
@@ -332,9 +332,9 @@ namespace Iogn {
         std::vector<std::string> tokens;
         Ioss::tokenize(option[1], ",", tokens);
         assert(tokens.size() == 3);
-        sclX = std::strtod(tokens[0].c_str(), NULL);
-        sclY = std::strtod(tokens[1].c_str(), NULL);
-        sclZ = std::strtod(tokens[2].c_str(), NULL);
+        sclX = std::strtod(tokens[0].c_str(), nullptr);
+        sclY = std::strtod(tokens[1].c_str(), nullptr);
+        sclZ = std::strtod(tokens[2].c_str(), nullptr);
       }
 
       else if (option[0] == "offset") {
@@ -342,9 +342,9 @@ namespace Iogn {
         std::vector<std::string> tokens;
         Ioss::tokenize(option[1], ",", tokens);
         assert(tokens.size() == 3);
-        offX = std::strtod(tokens[0].c_str(), NULL);
-        offY = std::strtod(tokens[1].c_str(), NULL);
-        offZ = std::strtod(tokens[2].c_str(), NULL);
+        offX = std::strtod(tokens[0].c_str(), nullptr);
+        offY = std::strtod(tokens[1].c_str(), nullptr);
+        offZ = std::strtod(tokens[2].c_str(), nullptr);
       }
 
       else if (option[0] == "zdecomp") {
@@ -359,7 +359,7 @@ namespace Iogn {
         Int64Vector Zs;
         numZ = 0;
         for (size_t j = 0; j < processorCount; j++) {
-          Zs.push_back(std::strtol(tokens[j].c_str(), NULL, 10));
+          Zs.push_back(std::strtol(tokens[j].c_str(), nullptr, 10));
           numZ += Zs[j];
         }
         myNumZ = Zs[myProcessor];
@@ -374,12 +374,12 @@ namespace Iogn {
         std::vector<std::string> tokens;
         Ioss::tokenize(option[1], ",", tokens);
         assert(tokens.size() == 6);
-        double xmin = std::strtod(tokens[0].c_str(), NULL);
-        double ymin = std::strtod(tokens[1].c_str(), NULL);
-        double zmin = std::strtod(tokens[2].c_str(), NULL);
-        double xmax = std::strtod(tokens[3].c_str(), NULL);
-        double ymax = std::strtod(tokens[4].c_str(), NULL);
-        double zmax = std::strtod(tokens[5].c_str(), NULL);
+        double xmin = std::strtod(tokens[0].c_str(), nullptr);
+        double ymin = std::strtod(tokens[1].c_str(), nullptr);
+        double zmin = std::strtod(tokens[2].c_str(), nullptr);
+        double xmax = std::strtod(tokens[3].c_str(), nullptr);
+        double ymax = std::strtod(tokens[4].c_str(), nullptr);
+        double zmax = std::strtod(tokens[5].c_str(), nullptr);
 
         set_bbox(xmin, ymin, zmin,  xmax, ymax, zmax);
       }
@@ -391,13 +391,13 @@ namespace Iogn {
         assert(tokens.size() %2 == 0);
         for (size_t ir=0; ir < tokens.size();) {
           std::string axis = tokens[ir++];
-          double angle_degree = std::strtod(tokens[ir++].c_str(), NULL);
+          double angle_degree = std::strtod(tokens[ir++].c_str(), nullptr);
           set_rotation(axis, angle_degree);
         }
       }
 
       else if (option[0] == "times") {
-        timestepCount = std::strtol(option[1].c_str(), NULL, 10);
+        timestepCount = std::strtol(option[1].c_str(), nullptr, 10);
       }
 
       else if (option[0] == "tets") {
@@ -411,7 +411,7 @@ namespace Iogn {
         assert(tokens.size() %2 == 0);
         for (size_t ir=0; ir < tokens.size();) {
           std::string type = tokens[ir++];
-          int count = std::strtol(tokens[ir++].c_str(), NULL, 10);
+          int count = std::strtol(tokens[ir++].c_str(), nullptr, 10);
           set_variable_count(type, count);
         }
         if (timestepCount == 0)

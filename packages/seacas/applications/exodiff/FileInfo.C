@@ -249,7 +249,7 @@ const std::string FileInfo::basename() const
 
 const std::string FileInfo::realpath() const
 {
-  char *path = ::realpath(filename_.c_str(), NULL);
+  char *path = ::realpath(filename_.c_str(), nullptr);
   if (path) {
     std::string temp(path);
     free(path);

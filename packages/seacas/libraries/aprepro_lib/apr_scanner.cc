@@ -149,7 +149,7 @@ typedef unsigned int flex_uint32_t;
 /* %not-for-header */
 
 /* Returned upon end-of-file. */
-#define YY_NULL 0
+#define YY_nullptr 0
 /* %ok-for-header */
 
 /* %not-for-header */
@@ -323,14 +323,14 @@ struct yy_buffer_state
  * future we want to put the buffer states in a more general
  * "scanner state".
  *
- * Returns the top of the stack, or NULL.
+ * Returns the top of the stack, or nullptr.
  */
 #define YY_CURRENT_BUFFER ( (yy_buffer_stack) \
                           ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
-                          : NULL)
+                          : nullptr)
 
 /* Same as previous macro, but useful when we know that the buffer stack is not
- * NULL or when we need an lvalue. For internal use only.
+ * nullptr or when we need an lvalue. For internal use only.
  */
 #define YY_CURRENT_BUFFER_LVALUE (yy_buffer_stack)[(yy_buffer_stack_top)]
 
@@ -1471,7 +1471,7 @@ static int yy_flex_strlen (yyconst char * );
 /* %endif */
 #endif
 
-/* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
+/* Gets input and stuffs it into "buf".  number of characters read, or YY_nullptr,
  * is returned in "result".
  */
 #ifndef YY_INPUT
@@ -1490,7 +1490,7 @@ static int yy_flex_strlen (yyconst char * );
  * some compilers to complain about unreachable statements.
  */
 #ifndef yyterminate
-#define yyterminate() return YY_NULL
+#define yyterminate() return YY_nullptr
 #endif
 
 /* Number of entries by which start-condition stack grows. */
@@ -2264,11 +2264,11 @@ YY_RULE_SETUP
     char *pt = strchr(yytext, ')');
     *pt = '\0';
     /* Check to see if surrounded by double quote */ 
-    if ((pt = strchr(yytext, '"')) != NULL) {
+    if ((pt = strchr(yytext, '"')) != nullptr) {
       yytext++;
       quoted = true;
     }
-    if ((pt = strrchr(yytext, '"')) != NULL) {
+    if ((pt = strrchr(yytext, '"')) != nullptr) {
       *pt = '\0';
       quoted = true;
     }
@@ -2698,8 +2698,8 @@ case YY_STATE_EOF(END_CASE_SKIP):
 					 * yy_c_buf_p so that if some total
 					 * hoser (like flex itself) wants to
 					 * call the scanner after we return the
-					 * YY_NULL, it'll still work - another
-					 * YY_NULL will get returned.
+					 * YY_nullptr, it'll still work - another
+					 * YY_nullptr will get returned.
 					 */
 					(yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
 
@@ -2769,7 +2769,7 @@ yyFlexLexer::yyFlexLexer( std::istream* arg_yyin, std::ostream* arg_yyout )
 	yy_more_offset = yy_prev_more_offset = 0;
 
 	yy_start_stack_ptr = yy_start_stack_depth = 0;
-	yy_start_stack = NULL;
+	yy_start_stack = nullptr;
 
 	yy_buffer_stack = 0;
 	yy_buffer_stack_top = 0;
@@ -3383,7 +3383,7 @@ int yyFlexLexer::yy_get_next_buffer()
 void yyFlexLexer::yypush_buffer_state (YY_BUFFER_STATE new_buffer)
 /* %endif */
 {
-    	if (new_buffer == NULL)
+    	if (new_buffer == nullptr)
 		return;
 
 	yyensure_buffer_stack();
@@ -3423,7 +3423,7 @@ void yyFlexLexer::yypop_buffer_state (void)
 		return;
 
 	yy_delete_buffer(YY_CURRENT_BUFFER );
-	YY_CURRENT_BUFFER_LVALUE = NULL;
+	YY_CURRENT_BUFFER_LVALUE = nullptr;
 	if ((yy_buffer_stack_top) > 0)
 		--(yy_buffer_stack_top);
 
@@ -3675,7 +3675,7 @@ namespace SEAMS {
 
   void Scanner::add_include_file(const std::string &filename, bool must_exist)
   {
-    std::fstream *yytmp = NULL;
+    std::fstream *yytmp = nullptr;
     if (must_exist)
       yytmp = aprepro.open_file(filename.c_str(), "r");
     else
@@ -3726,7 +3726,7 @@ namespace SEAMS {
 
     if (aprepro.ap_options.interactive && yyin == &std::cin &&
 	isatty(0) != 0 && isatty(1) != 0) {
-      char *line = getline_int(NULL);
+      char *line = getline_int(nullptr);
 
       if (strlen(line) == 0)
 	return 0;
@@ -3787,7 +3787,7 @@ namespace SEAMS {
         if (--aprepro.ap_file_list.top().loop_count <= 0)  {
           // On Windows, you can't remove the temp file until all the references to the
           // file object have been released, so we will delete it here.
-          delete yyin; yyin = NULL;
+          delete yyin; yyin = nullptr;
 
           if (strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) != 0) {
             if (!aprepro.ap_options.debugging)
@@ -3802,7 +3802,7 @@ namespace SEAMS {
         }
         else {
           // Do not pop ap_file_list; we are rereading that file...
-          delete yyin; yyin = NULL;
+          delete yyin; yyin = nullptr;
           yyFlexLexer::yypop_buffer_state();
           yyin = aprepro.open_file(aprepro.ap_file_list.top().name, "r");
           yyFlexLexer::yypush_buffer_state (yyFlexLexer::yy_create_buffer(yyin, YY_BUF_SIZE));
@@ -3810,7 +3810,7 @@ namespace SEAMS {
         }
       }
       else {
-        delete yyin; yyin=NULL;
+        delete yyin; yyin=nullptr;
         aprepro.ap_file_list.pop();
         yyFlexLexer::yypop_buffer_state();
 
@@ -3833,7 +3833,7 @@ namespace SEAMS {
 
       // Reset the current character index.
       curr_index = 0;
-      if (yyin != NULL)
+      if (yyin != nullptr)
 	curr_index = yyin->tellg();
 
       return (0);
@@ -3879,7 +3879,7 @@ namespace SEAMS {
   
     std::istringstream *ins = new std::istringstream(new_string); // Declare an input string stream.
     yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
-    return (NULL);
+    return (nullptr);
   }
 
   /* Push the contents of 'string' onto the stack to be reread.
@@ -3910,7 +3910,7 @@ namespace SEAMS {
       std::istringstream *ins = new std::istringstream(new_string); // Declare an input string stream.
       yyFlexLexer::yypush_buffer_state(yyFlexLexer::yy_create_buffer(ins, new_string.size()));
     }
-    return (NULL);
+    return (nullptr);
   }
 
   char *Scanner::if_handler(double x)
@@ -3931,7 +3931,7 @@ namespace SEAMS {
       if (aprepro.ap_options.debugging) 
 	std::cerr << "DEBUG IF: If level " << if_lvl << " " << if_state[if_lvl] << "\n";
     }
-    return(NULL);
+    return(nullptr);
   }
 
   char *Scanner::elseif_handler(double x)
@@ -3945,7 +3945,7 @@ namespace SEAMS {
     }
     if (aprepro.ap_options.debugging) 
       std::cerr << "DEBUG IF: elseif at level " << if_lvl << " " << if_state[if_lvl] << "\n";
-    return(NULL);
+    return(nullptr);
   }
 
   char *Scanner::switch_handler(double x)
@@ -3966,7 +3966,7 @@ namespace SEAMS {
       std::cerr << "DEBUG SWITCH: 'switch' with condition = " << switch_condition
 		<< " at line " << aprepro.ap_file_list.top().lineno << "\n";
     }
-    return(NULL);
+    return(nullptr);
   }
 
   char *Scanner::case_handler(double x)
@@ -3997,7 +3997,7 @@ namespace SEAMS {
       // Need to skip all code until end of case
       switch_skip_to_endcase = true;
     }
-    return(NULL);
+    return(nullptr);
   }
 
   void Scanner::save_history_string()

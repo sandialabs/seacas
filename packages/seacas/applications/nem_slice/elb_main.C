@@ -40,14 +40,14 @@
  *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 #include <iostream>
 #include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for printf, NULL, fprintf, etc
+#include <stdio.h>                      // for printf, nullptr, fprintf, etc
 #include <stdlib.h>                     // for free, exit, malloc
 #include <string.h>                     // for strcmp
 
 #include "add_to_log.h"                 // for add_to_log
 #include "elb_allo.h"             // for array_alloc
 #include "elb.h"                  // for LB_Description<INT>, get_time, etc
-#include "elb_elem.h"             // for E_Type, ::NULL_EL
+#include "elb_elem.h"             // for E_Type, ::nullptr_EL
 #include "elb_err.h"              // for error_report, Gen_Error, etc
 #include "elb_exo.h"              // for init_weight_struct, etc
 #include "elb_graph.h"            // for generate_graph
@@ -354,7 +354,7 @@ int internal_main(int argc, char *argv[], INT /* dummy */)
     }
   }
   else
-    mesh.coords = NULL;
+    mesh.coords = nullptr;
 
   mesh.elem_type = (E_Type *)array_alloc(1, mesh.num_elems, sizeof(E_Type));
   mesh.connect   = (INT **)array_alloc(2, mesh.num_elems,
@@ -745,7 +745,7 @@ namespace {
       printf("\tSPHERES are being treated as concentrated mass - connectivity exists\n");
     if (prob->skip_checks == 1)
       printf("\tWARNING: side id error checks turned off\n");
-    if (prob->groups != NULL)
+    if (prob->groups != nullptr)
       {
 	printf("\telement block groups defined\n");
 	printf("\tgroup string: \"%s\"\n", prob->groups);

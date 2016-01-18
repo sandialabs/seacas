@@ -152,7 +152,7 @@ namespace Ioss {
 			 DatabaseUsage db_usage,
 			 MPI_Comm communicator,
 			 const PropertyManager &props)
-    : properties(props), commonSideTopology(NULL), DBFilename(filename), dbState(STATE_INVALID),
+    : properties(props), commonSideTopology(nullptr), DBFilename(filename), dbState(STATE_INVALID),
       isParallel(false), isSerialParallel(false), myProcessor(0), cycleCount(0), overlayCount(0),
       timeScaleFactor(1.0), splitType(SPLIT_BY_TOPOLOGIES),
       dbUsage(db_usage),dbIntSizeAPI(USE_INT32_API), lowerCaseVariableNames(true),
@@ -192,7 +192,7 @@ namespace Ioss {
           std::cerr << "IOSS: Adding property '" << prop << "' with value '" << value << "'\n";
 
         if (all_digit) {
-          int int_value = std::strtol(value.c_str(), NULL, 10);
+          int int_value = std::strtol(value.c_str(), nullptr, 10);
           properties.add(Property(prop, int_value));
         }
         else if (up_value == "TRUE" || up_value == "YES") {
@@ -310,11 +310,11 @@ namespace Ioss {
     //
     // Currently does not check for duplicate entity membership in a set -- union with duplicates
     //
-    create_groups("GROUP_SIDESET", SIDESET, "side", (SideSet*)NULL);
-    create_groups("GROUP_NODESET", NODESET, "node", (NodeSet*)NULL);
-    create_groups("GROUP_EDGESET", EDGESET, "edge", (EdgeSet*)NULL);
-    create_groups("GROUP_FACESET", FACESET, "face", (FaceSet*)NULL);
-    create_groups("GROUP_ELEMSET", ELEMENTSET, "elem", (ElementSet*)NULL);
+    create_groups("GROUP_SIDESET", SIDESET, "side", (SideSet*)nullptr);
+    create_groups("GROUP_NODESET", NODESET, "node", (NodeSet*)nullptr);
+    create_groups("GROUP_EDGESET", EDGESET, "edge", (EdgeSet*)nullptr);
+    create_groups("GROUP_FACESET", FACESET, "face", (FaceSet*)nullptr);
+    create_groups("GROUP_ELEMSET", ELEMENTSET, "elem", (ElementSet*)nullptr);
   }
 
   template <typename T>
@@ -373,7 +373,7 @@ namespace Ioss {
     // Find the member SideSets...
     for (size_t i=1; i < group_spec.size(); i++) {
       SideSet* set = get_region()->get_sideset(group_spec[i]);
-      if (set != NULL) {
+      if (set != nullptr) {
 	SideBlockContainer side_blocks = set->get_side_blocks();
 	SideBlockContainer::const_iterator J;
 
@@ -430,12 +430,12 @@ namespace Ioss {
 
       // Check face types.
       if (element_count > 0) {
-	if (commonSideTopology != NULL || I == element_blocks.begin()) {
+	if (commonSideTopology != nullptr || I == element_blocks.begin()) {
 	  ElementTopology* side_type = (*I)->topology()->boundary_type();
-	  if (commonSideTopology == NULL) // First block
+	  if (commonSideTopology == nullptr) // First block
 	    new_this->commonSideTopology = side_type;
 	  if (commonSideTopology != side_type) { // Face topologies differ in mesh
-	    new_this->commonSideTopology = NULL;
+	    new_this->commonSideTopology = nullptr;
 	    return;
 	  }
 	}
@@ -499,7 +499,7 @@ namespace Ioss {
 	const ElementBlock *block = *I;
 	const ElementTopology *elem_type = block->topology();
 	const ElementTopology *side_type = elem_type->boundary_type();
-	if (side_type == NULL) {
+	if (side_type == nullptr) {
 	  // heterogeneous sides.  Iterate through...
 	  int size = elem_type->number_boundaries();
 	  for (int i=1; i <= size; i++) {
@@ -598,7 +598,7 @@ namespace {
 		 const Ioss::ParallelUtils &util)
   {
     if (initial_time < 0.0) {
-      gettimeofday(&tp, NULL);
+      gettimeofday(&tp, nullptr);
       initial_time = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
     }
 
@@ -612,7 +612,7 @@ namespace {
     if (util.parallel_rank() == 0 || single_proc_only) {
       std::string name = entity->name();
       std::ostringstream strm;
-      gettimeofday(&tp, NULL);
+      gettimeofday(&tp, nullptr);
       double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
       strm << symbol << " [" << std::fixed << std::setprecision(3)
 	   << time_now-initial_time << "]\t";

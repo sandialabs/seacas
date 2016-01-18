@@ -210,7 +210,6 @@ namespace Ioss {
     MPI_Comm_size(comm, &processor_count);
     size_t max_comm = sendcnts[processor_count-1] + senddisp[processor_count-1];
     size_t one = 1;
-#if 0
     if (max_comm < one<<31) {
       // count and displacement data in range, need to copy to integer vector.
       std::vector<int> send_cnt(sendcnts.begin(), sendcnts.end());
@@ -221,14 +220,12 @@ namespace Ioss {
                            TOPTR(recvbuf), TOPTR(recv_cnt), TOPTR(recv_dis), mpi_type(T(0)), comm);
     }
     else {
-#endif
       // Same as if each processor sent a message to every other process with:
       //     MPI_Send(sendbuf+senddisp[i]*sizeof(sendtype),sendcnts[i], sendtype, i, tag, comm);
       // And received a message from each processor with a call to:
       //     MPI_Recv(recvbuf+recvdisp[i]*sizeof(recvtype),recvcnts[i], recvtype, i, tag, comm);
       return MY_Alltoallv64(sendbuf, sendcnts, senddisp, recvbuf, recvcnts, recvdisp, comm);
-
-
+    }
   }
 
   template <typename T>

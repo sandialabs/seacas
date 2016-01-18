@@ -1024,7 +1024,7 @@ namespace Iovs {
             {
             const Ioss::SideSet *ebowner = eb->owner();
             /*
-            if(ebowner == NULL)
+            if(ebowner == nullptr)
               {
               std::cerr << "eb->owner() returned null\n";
               }
@@ -1089,7 +1089,7 @@ namespace Iovs {
             {
             const Ioss::SideSet *ebowner = eb->owner();
             /*
-            if(ebowner == NULL)
+            if(ebowner == nullptr)
               {
               std::cerr << "eb->owner() returned null\n";
               }

@@ -41,7 +41,7 @@
 #include <stdio.h>                      // for remove
 #include <stdlib.h>                     // for atoi
 #include <algorithm>                    // for fill_n, find, fill
-#include <cstring>                      // for NULL, strncasecmp, strcpy, etc
+#include <cstring>                      // for nullptr, strncasecmp, strcpy, etc
 #include <iostream>                     // for cout
 #include <map>                          // for _Rb_tree_iterator, etc
 #include <string>                       // for char_traits, string, etc
@@ -142,9 +142,9 @@ namespace Ioxf {
     Ioss::DatabaseIO(region, filename, db_usage, communicator, properties_x),
     databaseTitle(""), spatialDimension(0), nodeCount(0), elementCount(0),
     nodeBlockCount(0), elementBlockCount(0), nodesetCount(0), sidesetCount(0),
-    nodeCmapIds(NULL), nodeCmapNodeCnts(NULL), elemCmapIds(NULL),
-    elemCmapElemCnts(NULL), commsetNodeCount(0), commsetElemCount(0),
-    elementTruthTable(NULL), nodesetTruthTable(NULL), sidesetTruthTable(NULL),
+    nodeCmapIds(nullptr), nodeCmapNodeCnts(nullptr), elemCmapIds(nullptr),
+    elemCmapElemCnts(nullptr), commsetNodeCount(0), commsetElemCount(0),
+    elementTruthTable(nullptr), nodesetTruthTable(nullptr), sidesetTruthTable(nullptr),
     nodeMap("node"), elemMap("elem"), fileExists(false)
   {
     // A history file is only written on processor 0...
@@ -213,7 +213,7 @@ namespace Ioxf {
       errmsg = "could not Create DataSet " + errmsg;
       xdmf_error(errmsg, lineno, myProcessor);
     }
-    if ( Hdf->Write( ScalarArray ) == NULL) {
+    if ( Hdf->Write( ScalarArray ) == nullptr) {
       std::string errmsg = FinalName;
       errmsg = "could not Write DataSet " + errmsg;
       xdmf_error(errmsg, lineno, myProcessor);
@@ -607,7 +607,7 @@ namespace Ioxf {
       Ioss::SerializeIO	serializeIO__(this);
 
       int num_to_get = field.verify(data_size);
-      std::ostringstream *XML=NULL;
+      std::ostringstream *XML=nullptr;
       std::string block_name = eb->name();
 
       if (num_to_get > 0) {
@@ -876,7 +876,7 @@ namespace Ioxf {
       elemMap.build_reverse_map(num_to_get, eb_offset, myProcessor);
 
       // Output this portion of the element number map
-      std::ostringstream *XML=NULL;
+      std::ostringstream *XML=nullptr;
       std::string block_name = eb->name();
 
       int ElementBlockIndex =  get_xml_stream(block_name);
@@ -958,7 +958,7 @@ namespace Ioxf {
       // Write the variable...
 
       // Write a NodeBlock for index 0 for every time step
-      std::ostringstream *XML=NULL;
+      std::ostringstream *XML=nullptr;
 
       if (step == 1) {
 	int num_elemets_blocks = BlockNodeVarXmls.size();
@@ -1041,12 +1041,12 @@ namespace Ioxf {
     int step = get_region()->get_property("current_state").get_int();
     step = get_database_step(step);
 
-    Ioss::Map *map = NULL;
+    Ioss::Map *map = nullptr;
     int eb_offset = 0;
 
     if (ge->type() == Ioss::ELEMENTBLOCK) {
       const Ioss::ElementBlock *elb = dynamic_cast<const Ioss::ElementBlock*>(ge);
-      assert(elb != NULL);
+      assert(elb != nullptr);
       eb_offset = elb->get_offset();
       map = &elemMap;
     } else {
@@ -1410,7 +1410,7 @@ namespace Ioxf {
 	  }
 #endif
 	  /*
-	    int ierr = ne_put_node_map(get_file_pointer(), &internal[0], &entities[0], NULL,
+	    int ierr = ne_put_node_map(get_file_pointer(), &internal[0], &entities[0], nullptr,
 	    myProcessor);
 	    if (ierr < 0)
 	    xdmf_error(get_file_pointer(), __LINE__, myProcessor);
@@ -2039,7 +2039,7 @@ namespace Ioxf {
     char element_Type[MAX_STR_LENGTH+1];
     int num_elemets_blocks = blocks.size();
 
-    std::ostringstream *XML = NULL;
+    std::ostringstream *XML = nullptr;
 
     for ( int i = 0 ; i < num_elemets_blocks ; i++ ){
       int block_id = blocks[i].id;
@@ -2176,7 +2176,7 @@ namespace Ioxf {
   {
 
     std::ofstream XMLFile(xmlname.filename().c_str());
-    std::ostringstream *XML = NULL;
+    std::ostringstream *XML = nullptr;
 
     //  MainXML = FixXML(MainXML);
 
@@ -2284,7 +2284,7 @@ namespace Ioxf {
   void DatabaseIO::MergeXmlFiles()
   {
     Ioss::FileInfo filename(get_filename()+".xmf");
-    // std::ostringstream *XML = NULL;
+    // std::ostringstream *XML = nullptr;
 
 #ifdef HAVE_MPI
     MPI_Barrier(util().communicator());
@@ -2292,30 +2292,30 @@ namespace Ioxf {
     if ((myProcessor == 0) && isParallel) {
 
       xmlDocPtr newdoc = xmlNewDoc((xmlChar*)"1.0");
-      xmlNodePtr newxdmfroot = newdoc->children = xmlNewDocNode(newdoc, NULL, (xmlChar*) "Xdmf", NULL);
-      xmlNodePtr newxdmfdomain = xmlNewChild(newxdmfroot, NULL, (xmlChar*)"Domain", NULL);
+      xmlNodePtr newxdmfroot = newdoc->children = xmlNewDocNode(newdoc, nullptr, (xmlChar*) "Xdmf", nullptr);
+      xmlNodePtr newxdmfdomain = xmlNewChild(newxdmfroot, nullptr, (xmlChar*)"Domain", nullptr);
 
       // xmlSetProp(newroot, (xmlChar*)"version", (xmlChar*)"1.0");
 
       for (int i = 0 ; i <  util().parallel_size() ; i++ ){
 	std::string docname = decode_proc_filename(std::string(filename.basename()),i) + ".xmf";
 	xmlDocPtr doc = xmlParseFile(docname.c_str());
-	if (doc == NULL)
+	if (doc == nullptr)
 	  xdmf_error(docname, __LINE__ , myProcessor);
 
 	xmlNodePtr cur = xmlDocGetRootElement(doc);
-	if (cur == NULL)
+	if (cur == nullptr)
 	  xdmf_error(docname + " bad xml file", __LINE__ , myProcessor);
 
 	if (xmlStrcmp(cur->name, (const xmlChar*) "Xdmf"))
 	  xdmf_error(docname + " missing Xdmf block", __LINE__ , myProcessor);
 
 	cur = cur->xmlChildrenNode;
-	while ((cur != NULL) &&  (xmlStrcmp(cur->name, (const xmlChar*) "Domain")) )
+	while ((cur != nullptr) &&  (xmlStrcmp(cur->name, (const xmlChar*) "Domain")) )
 	  cur = cur->next;
 
 	cur = cur->xmlChildrenNode;
-	while( cur != NULL) {
+	while( cur != nullptr) {
 	  if (!xmlStrcmp(cur->name, (const xmlChar*) "Grid")) {
 	    xmlNodePtr node_copy = xmlCopyNode(cur, 1);
 	    xmlAddChild(newxdmfdomain, node_copy); // append grid to new document
@@ -2326,7 +2326,7 @@ namespace Ioxf {
 
       }
       xmlIndentTreeOutput = 1;
-      int ret_val = xmlSaveFormatFileEnc(filename.filename().c_str(), newdoc, NULL, 1);
+      int ret_val = xmlSaveFormatFileEnc(filename.filename().c_str(), newdoc, nullptr, 1);
       if (ret_val == -1)
 	xdmf_error(" Unable to create " + std::string(filename.filename()), __LINE__ , myProcessor);
 
@@ -2644,7 +2644,7 @@ namespace Ioxf {
       std::string block_name = (*I)->name();
       int count = (*I)->get_property("entity_count").get_int();
 
-      std::ostringstream *XML=NULL;
+      std::ostringstream *XML=nullptr;
       int BlockIndex = get_xml_stream(block_name);
       XML = BlockElementVarXmls[BlockIndex];
 
