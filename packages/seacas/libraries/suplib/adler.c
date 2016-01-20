@@ -25,7 +25,7 @@
 //   jloup@gzip.org          madler@alumni.caltech.edu
 
 #include "adler.h"
-#include <stdlib.h>                     // for nullptr
+#include <stdlib.h>                     // for NULL
 
 #define DO1(buf,i)  {s1 += buf[i]; s2 += s1;}
 #define DO2(buf,i)  DO1(buf,i); DO1(buf,i+1);
@@ -46,7 +46,7 @@ size_t adler(size_t adler, const void* vbuf, size_t len)
   size_t s2 = (adler >> 16) & 0xffff;
   int k = 0;
 
-  if (buf == nullptr || len == 0) return 1L;
+  if (buf == NULL || len == 0) return 1L;
 
   while (len > 0) {
     k = len < NMAX ? len : NMAX;
