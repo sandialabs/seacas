@@ -129,8 +129,6 @@ namespace {
     }
     return id;
   }
-
-
 }
 void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates);
 
@@ -361,8 +359,8 @@ namespace {
           }
           if (header) {
             OUTPUT << "\n";
-        
-	  }}
+	  }
+	}
         info_aliases(region, nb, false, true);
         info_fields(nb, Ioss::Field::ATTRIBUTE, "\tAttributes: ");
         info_fields(nb, Ioss::Field::TRANSIENT, "\tTransient: ");
