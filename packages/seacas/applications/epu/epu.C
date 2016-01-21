@@ -1755,7 +1755,6 @@ namespace {
     // If the map is contiguous, then the global_id to global_position map is 1->1
   REMAP:
     if (is_contiguous && map_ids) {
-      typedef typename std::vector<INT>::iterator GMapIter;
       auto cur_pos = global_element_map.begin();
       size_t element_value;
       for (int p = 0; p < part_count; p++) {
@@ -1919,7 +1918,6 @@ namespace {
     // 'global id' and then 'global id' to global position. The
     // mapping is now a direct lookup instead of a lookup followed by
     // a reverse map.
-    typedef typename std::vector<INT>::iterator GMapIter;
     auto cur_pos = global_node_map.begin();
     INT nodal_value;
     for (int p = 0; p < part_count; p++) {

@@ -4461,8 +4461,6 @@ namespace Iopx {
       // SideSets ...
       {
         Ioss::SideSetContainer ssets = region->get_sidesets();
-        Ioss::SideSetContainer::const_iterator I;
-
         for (auto &set : ssets) {
           Ioex::set_id(set, EX_SIDE_SET, &ids_);
         }

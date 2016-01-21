@@ -613,7 +613,6 @@ namespace {
 
       int64_t total = 0;
       // Now append each processors size onto the stream...
-      std::vector<int64_t>::const_iterator pos = all_sizes.begin();
       for (auto &p_size : all_sizes) {
 	strm << std::setw(8) << p_size << ":";
 	total += p_size;
