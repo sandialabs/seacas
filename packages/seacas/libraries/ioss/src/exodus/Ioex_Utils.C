@@ -57,8 +57,6 @@ namespace {
     }
   }
 
-  const size_t max_line_length   = MAX_LINE_LENGTH;
-
   const std::string SCALAR()     {return std::string("scalar");}
 
   template <typename INT>
