@@ -96,8 +96,7 @@ namespace {
   {
     std::sort(vec.begin(), vec.end());
     vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
-    // shrink-to-fit...
-    std::vector<T>(vec).swap(vec);
+    vec.shrink_to_fit();
   }
 
   template <typename T>
