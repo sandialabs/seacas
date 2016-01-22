@@ -125,7 +125,6 @@ Ioss::SideSet::get_implicit_property(const std::string& my_name) const
 int Ioss::SideSet::max_parametric_dimension() const
 {
   int max_par_dim = 0;
-
   for (auto sideblock : sideBlocks) {
     int parametric_dim = sideblock->topology()->parametric_dimension();
     if (parametric_dim > max_par_dim)

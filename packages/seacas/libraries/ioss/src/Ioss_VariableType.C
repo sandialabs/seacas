@@ -194,12 +194,9 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
   if (size <= 1)
     return nullptr; // All storage types must have at least 2 components.
 
-  Ioss::VariableTypeMap::const_iterator I  = registry().begin();
-  Ioss::VariableTypeMap::const_iterator IE = registry().end();
-
   bool match = false;
-  while (I != IE) {
-    ivt = (*I++).second;
+  for (auto vtype : registry()) {
+    ivt = vtype.second;
     if ( ivt->suffix_count() == (int)size) {
       if (ivt->match(suffices)) {
 	match = true;
@@ -207,6 +204,7 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
       }
     }
   }
+
   if (match == false) {
     match = true;
     // Check if the suffices form a sequence (1,2,3,...,N)

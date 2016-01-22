@@ -77,9 +77,8 @@ int main()
       std::vector<std::string> tokens;
       Ioss::tokenize(input_line, ": \t\r\v\n", tokens);
       cout << "There were " << tokens.size() << " tokens in the line\n";
-      TokenList::const_iterator I = tokens.begin();
-      while (I != tokens.end()) {
-        cout << "'" << *I++ << "'\t";
+      for (auto token : tokens) {
+        cout << "'" << token << "'\t";
       }
       cout << '\n';
     } else {

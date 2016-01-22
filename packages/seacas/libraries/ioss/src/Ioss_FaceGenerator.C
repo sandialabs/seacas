@@ -299,22 +299,19 @@ namespace Ioss {
     faces_.reserve(3.3*numel);
 
     Ioss::ElementBlockContainer ebs = region_.get_element_blocks();
-    Ioss::ElementBlockContainer::const_iterator i = ebs.begin();
-    while (i != ebs.end()) {
-
-      const Ioss::ElementTopology *topo = (*i)->topology();
+    for (auto eb : ebs) {
+      const Ioss::ElementTopology *topo = eb->topology();
 
       // Only handle continuum elements at this time...
       if (topo->parametric_dimension() != 3) {
-	++i;
         continue;
       }
       
       std::vector<INT> connectivity;
-      (*i)->get_field_data("connectivity_raw", connectivity);
+      eb->get_field_data("connectivity_raw", connectivity);
 
       std::vector<INT> elem_ids;
-      (*i)->get_field_data("ids", elem_ids);
+      eb->get_field_data("ids", elem_ids);
       
       int num_face_per_elem = topo->number_faces();
       assert(num_face_per_elem <= 6);
@@ -326,13 +323,13 @@ namespace Ioss {
       }
       
       int num_node_per_elem = topo->number_nodes();
-      size_t num_elem = (*i)->get_property("entity_count").get_int();
+      size_t num_elem = eb->get_property("entity_count").get_int();
 
       for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
         for (int face = 0; face < num_face_per_elem; face++) {
           size_t id = 0;
           assert(face_count[face] <= 4);
-          std::array<size_t,4> conn = {0,0,0,0};
+          std::array<size_t,4> conn = {{0,0,0,0}};
           for (size_t j = 0; j < face_count[face]; j++) {
             size_t fnode = offset + face_conn[face][j];
             size_t gnode = connectivity[fnode];
@@ -342,7 +339,6 @@ namespace Ioss {
           create_face(faces_, id, conn, elem_ids[elem]);
         }
       }
-      ++i;
     }
     
     auto endf = std::chrono::steady_clock::now();
