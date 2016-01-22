@@ -73,7 +73,7 @@ Excn::SystemInterface::SystemInterface()
     debugLevel_(0), screenWidth_(0),
     stepMin_(1), stepMax_(INT_MAX), stepInterval_(1), subcycle_(-1), cycle_(-1), compressData_(0),
     sumSharedNodes_(false), addProcessorId_(false), mapIds_(true), omitNodesets_(false), omitSidesets_(false),
-    largeModel_(false), append_(false), intIs64Bit_(false), subcycleJoin_(false)
+    largeModel_(false), append_(false), intIs64Bit_(false), subcycleJoin_(false), outputSharedNodes_(false)
 {
   enroll_options();
 }
@@ -217,6 +217,10 @@ void Excn::SystemInterface::enroll_options()
 		  "Don't transfer sidesets to output file.",
 		  nullptr);
 
+  options_.enroll("output_shared_nodes",  GetLongOption::NoValue,
+		  "Output list of shared nodes and the processors they are shared with.",
+		  nullptr);
+  
   options_.enroll("debug", GetLongOption::MandatoryValue,
 		  "debug level (values are or'd)\n"
 		  "\t\t  1 = timing information.\n"
@@ -452,6 +456,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     omitSidesets_ = true;
   } else {
     omitSidesets_ = false;
+  }
+  
+  if (options_.retrieve("output_shared_nodes")) {
+    outputSharedNodes_ = true;
   }
   
   if (options_.retrieve("copyright")) {

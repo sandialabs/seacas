@@ -564,6 +564,38 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       std::cout << time_stamp(tsFormat);
     std::cout << "Finished reading/writing Global Info\n";
 
+    if (interface.output_shared_nodes()) {
+      // Get list of all shared nodes...
+      std::vector<std::vector<INT>> shared(part_count);
+      std::vector<int> num_shared(global_node_map.size());
+    
+      for (auto & part : shared) {
+	part.resize(global_node_map.size());
+      }
+
+      for (int p = 0; p < part_count; p++) {
+	size_t node_count = local_mesh[p].nodeCount;
+	for (size_t i = 0; i < node_count; i++) {
+	  INT gloc = local_node_to_global[p][i];
+	  shared[p][gloc] = i+1;
+	  num_shared[gloc]++;
+	}
+      }
+
+      std::cout << "Node Sharing information: (Part:Local Node Id)\n";
+      for (size_t i=0; i < global_node_map.size(); i++) {
+	if (num_shared[i] > 1) {
+	  std::cout << "Global Node " << i+1 << ": ";
+	  for (int p=0; p < part_count; p++) {
+	    if (shared[p][i] >= 1) {
+	      std::cout << "\t" << p << ":" << shared[p][i];
+	    }
+	  }
+	  std::cout << "\n";
+	}
+      }
+    }
+
     // ****************************************************************************
     // Get Block information including element attributes
     // must check for zero length blocks
@@ -1937,6 +1969,7 @@ namespace {
 	++cur_pos;
       }				
     }
+
   }
 
   void get_put_variable_names(int id, int out, Variables &vars,

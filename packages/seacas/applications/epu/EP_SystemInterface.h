@@ -92,7 +92,7 @@ namespace Excn {
       void set_int64() const {intIs64Bit_=true;}
       int  compress_data() const {return compressData_;}
       bool subcycle_join() const {return subcycleJoin_;}
-	  
+      bool output_shared_nodes() const {return outputSharedNodes_;}
       StringIdVector global_var_names() const {return globalVarNames_;}
       StringIdVector node_var_names() const {return nodeVarNames_;}
       StringIdVector elem_var_names() const {return elemVarNames_;}
@@ -151,6 +151,7 @@ namespace Excn {
       bool append_;
       mutable bool intIs64Bit_;
       bool subcycleJoin_;
+      bool outputSharedNodes_;
       
       StringIdVector globalVarNames_;
       StringIdVector nodeVarNames_;
