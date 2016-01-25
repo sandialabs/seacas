@@ -206,9 +206,7 @@ size_t Ioss::Field::get_size() const
 
     new_this->transCount_   = rawCount_;
     new_this->transStorage_ = rawStorage_;
-    std::vector<Transform*>::const_iterator I = transforms_.begin();
-    while (I != transforms_.end()) {
-      Transform* my_transform = *I++;
+    for (auto & my_transform : transforms_) {
       new_this->transCount_   = my_transform->output_count(transCount_);
       new_this->transStorage_ = my_transform->output_storage(transStorage_);
       size_t size = internal_get_size(type_, transCount_, transStorage_);
@@ -248,8 +246,7 @@ bool Ioss::Field::transform(void *data)
   transStorage_ = rawStorage_;
   transCount_   = rawCount_;
 
-  while (I != transforms_.end()) {
-    Transform* my_transform = *I++;
+  for (auto & my_transform : transforms_) {
     my_transform->execute(*this, data);
 
     transStorage_ = my_transform->output_storage(transStorage_);

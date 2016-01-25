@@ -180,75 +180,46 @@ namespace Ioss {
   {
     // Region owns all sub-grouping entities it contains...
     try {
-      {
-	NodeBlockContainer::const_iterator i = nodeBlocks.begin();
-	while (i != nodeBlocks.end()) {
-	  delete (*i++);
-	}
+      for (auto nb : nodeBlocks) {
+	delete (nb);
       }
 
-      {
-	EdgeBlockContainer::const_iterator i = edgeBlocks.begin();
-	while (i != edgeBlocks.end()) {
-	  delete (*i++);
-	}
+      for (auto eb : edgeBlocks) {
+	delete (eb);
       }
 
-      {
-	FaceBlockContainer::const_iterator i = faceBlocks.begin();
-	while (i != faceBlocks.end()) {
-	  delete (*i++);
-	}
+      for (auto fb : faceBlocks) {
+	delete (fb);
       }
 
-      {
-	ElementBlockContainer::const_iterator i = elementBlocks.begin();
-	while (i != elementBlocks.end()) {
-	  delete (*i++);
-	}
+      for (auto eb : elementBlocks) {
+	delete (eb);
       }
 
-      {
-	SideSetContainer::const_iterator i = sideSets.begin();
-	while (i != sideSets.end()) {
-	  delete (*i++);
-	}
+      for (auto ss : sideSets) {
+	delete (ss);
       }
 
-      {
-	NodeSetContainer::const_iterator i = nodeSets.begin();
-	while (i != nodeSets.end()) {
-	  delete (*i++);
-	}
+      for (auto ns : nodeSets) {
+	delete (ns);
       }
 
-      {
-	EdgeSetContainer::const_iterator i = edgeSets.begin();
-	while (i != edgeSets.end()) {
-	  delete (*i++);
-	}
+      for (auto es : edgeSets) {
+	delete (es);
       }
 
-      {
-	FaceSetContainer::const_iterator i = faceSets.begin();
-	while (i != faceSets.end()) {
-	  delete (*i++);
-	}
+      for (auto fs : faceSets) {
+	delete (fs);
       }
 
-      {
-	ElementSetContainer::const_iterator i = elementSets.begin();
-	while (i != elementSets.end()) {
-	  delete (*i++);
-	}
+      for (auto es : elementSets) {
+	delete (es);
       }
 
-      {
-	CommSetContainer::const_iterator i = commSets.begin();
-	while (i != commSets.end()) {
-	  delete (*i++);
-	}
+      for (auto cs : commSets) {
+	delete (cs);
       }
+
       // Region owns the database pointer even though other entities use it.
       GroupingEntity::really_delete_database();
     } catch (...) {
@@ -305,11 +276,9 @@ namespace Ioss {
 
       {
 	const Ioss::ElementBlockContainer &blocks = get_element_blocks();
-	Ioss::ElementBlockContainer::const_iterator i = blocks.begin();
 	Ioss::NameList names;
-	while (i != blocks.end()) {
-	  (*i)->field_describe(Ioss::Field::TRANSIENT, &names);
-	  i++;
+	for (auto block : blocks) {
+	  block->field_describe(Ioss::Field::TRANSIENT, &names);
 	}
 	uniqify(names);
 	strm << " Number of element variables      =" << std::setw(12)
@@ -318,11 +287,9 @@ namespace Ioss {
 
       {
 	const Ioss::NodeSetContainer &blocks = get_nodesets();
-	Ioss::NodeSetContainer::const_iterator i = blocks.begin();
 	Ioss::NameList names;
-	while (i != blocks.end()) {
-	  (*i)->field_describe(Ioss::Field::TRANSIENT, &names);
-	  i++;
+	for (auto block : blocks) {
+	  block->field_describe(Ioss::Field::TRANSIENT, &names);
 	}
 	uniqify(names);
 	strm << " Number of nodeset variables      =" << std::setw(12)
@@ -332,15 +299,11 @@ namespace Ioss {
       {
 	Ioss::NameList names;
 	const Ioss::SideSetContainer fss = get_sidesets();
-	Ioss::SideSetContainer::const_iterator i = fss.begin();
-	while (i != fss.end()) {
-	  const Ioss::SideBlockContainer fbs = (*i)->get_side_blocks();
-	  Ioss::SideBlockContainer::const_iterator j = fbs.begin();
-	  while (j != fbs.end()) {
-	    (*j)->field_describe(Ioss::Field::TRANSIENT, &names);
-	    ++j;
+	for (auto fs : fss) {
+	  const Ioss::SideBlockContainer fbs = fs->get_side_blocks();
+	  for (auto fb : fbs) {
+	    fb->field_describe(Ioss::Field::TRANSIENT, &names);
 	  }
-	  i++;
 	}
 
 	uniqify(names);
@@ -433,26 +396,23 @@ namespace Ioss {
 	// Now update the block offsets based on this new order...
 	{
 	  int64_t offset = 0;
-	  ElementBlockContainer::iterator i = elementBlocks.begin();
-	  while (i != elementBlocks.end()) {
-	    (*i)->set_offset(offset);
-	    offset += (*i++)->get_property("entity_count").get_int();
+	  for (auto eb : elementBlocks) {
+	    eb->set_offset(offset);
+	    offset += eb->get_property("entity_count").get_int();
 	  }
 	}
 	{
 	  int64_t offset = 0;
-	  FaceBlockContainer::iterator i = faceBlocks.begin();
-	  while (i != faceBlocks.end()) {
-	    (*i)->set_offset(offset);
-	    offset += (*i++)->get_property("entity_count").get_int();
+	  for (auto fb : faceBlocks) {
+	    fb->set_offset(offset);
+	    offset += fb->get_property("entity_count").get_int();
 	  }
 	}
 	{
 	  int64_t offset = 0;
-	  EdgeBlockContainer::iterator i = edgeBlocks.begin();
-	  while (i != edgeBlocks.end()) {
-	    (*i)->set_offset(offset);
-	    offset += (*i++)->get_property("entity_count").get_int();
+	  for (auto eb : edgeBlocks) {
+	    eb->set_offset(offset);
+	    offset += eb->get_property("entity_count").get_int();
 	  }
 	}
       }
@@ -1037,17 +997,13 @@ namespace Ioss {
 
   int Region::get_aliases(const std::string& my_name, std::vector<std::string> &aliases) const
   {
-    AliasMap::const_iterator I  = aliases_.begin();
-    AliasMap::const_iterator IE = aliases_.end();
-  
     size_t size = aliases.size();
-    while (I != IE) {
-      std::string alias = (*I).first;
-      std::string base  = (*I).second;
+    for (auto alias_pair : aliases_) {
+      std::string alias = alias_pair.first;
+      std::string base  = alias_pair.second;
       if (base == my_name) {
 	aliases.push_back(alias);
       }
-      ++I;
     }
     return static_cast<int>(aliases.size() - size);
   }
@@ -1118,13 +1074,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     NodeBlock *ge = nullptr;
-    NodeBlockContainer::const_iterator i = nodeBlocks.begin();
-    while (i != nodeBlocks.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto nb : nodeBlocks) {
+      if (nb->name() == db_name) {
+	ge = nb;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1133,13 +1087,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     EdgeBlock *ge = nullptr;
-    EdgeBlockContainer::const_iterator i = edgeBlocks.begin();
-    while (i != edgeBlocks.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto eb : edgeBlocks) {
+      if (eb->name() == db_name) {
+	ge = eb;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1148,13 +1100,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     FaceBlock *ge = nullptr;
-    FaceBlockContainer::const_iterator i = faceBlocks.begin();
-    while (i != faceBlocks.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto fb : faceBlocks) {
+      if (fb->name() == db_name) {
+	ge = fb;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1163,13 +1113,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     ElementBlock *ge = nullptr;
-    ElementBlockContainer::const_iterator i = elementBlocks.begin();
-    while (i != elementBlocks.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto eb : elementBlocks) {
+      if (eb->name() == db_name) {
+	ge = eb;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1178,13 +1126,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     SideSet *ge = nullptr;
-    SideSetContainer::const_iterator i = sideSets.begin();
-    while (i != sideSets.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto ss : sideSets) {
+      if (ss->name() == db_name) {
+	ge = ss;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1192,12 +1138,10 @@ namespace Ioss {
   SideBlock* Region::get_sideblock(const std::string& my_name) const
   {
     SideBlock *ge = nullptr;
-    SideSetContainer::const_iterator i = sideSets.begin();
-    while (i != sideSets.end()) {
-      ge = (*i)->get_side_block(my_name);
+    for (auto ss : sideSets) {
+      ge = ss->get_side_block(my_name);
       if (ge != nullptr)
 	break;
-      ++i;
     }
     return ge;
   }
@@ -1206,13 +1150,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     NodeSet *ge = nullptr;
-    NodeSetContainer::const_iterator i = nodeSets.begin();
-    while (i != nodeSets.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto ns : nodeSets) {
+      if (ns->name() == db_name) {
+	ge = ns;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1221,13 +1163,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     EdgeSet *ge = nullptr;
-    EdgeSetContainer::const_iterator i = edgeSets.begin();
-    while (i != edgeSets.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto es : edgeSets) {
+      if (es->name() == db_name) {
+	ge = es;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1236,13 +1176,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     FaceSet *ge = nullptr;
-    FaceSetContainer::const_iterator i = faceSets.begin();
-    while (i != faceSets.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto fs : faceSets) {
+      if (fs->name() == db_name) {
+	ge = fs;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1251,13 +1189,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     ElementSet *ge = nullptr;
-    ElementSetContainer::const_iterator i = elementSets.begin();
-    while (i != elementSets.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto es : elementSets) {
+      if (es->name() == db_name) {
+	ge = es;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1266,13 +1202,11 @@ namespace Ioss {
   {
     const std::string db_name = get_alias(my_name);
     CommSet *ge = nullptr;
-    CommSetContainer::const_iterator i = commSets.begin();
-    while (i != commSets.end()) {
-      if ((*i)->name() == db_name) {
-	ge = *i;
+    for (auto cs : commSets) {
+      if (cs->name() == db_name) {
+	ge = cs;
 	break;
       }
-      ++i;
     }
     return ge;
   }
@@ -1337,11 +1271,9 @@ namespace Ioss {
   // or greater than number of elements in database)
   ElementBlock* Region::get_element_block(size_t local_id) const
   {
-    ElementBlockContainer::const_iterator i = elementBlocks.begin();
-    while (i != elementBlocks.end()) {
-      if ((*i)->contains(local_id))
-	return *i;
-      ++i;
+    for (auto eb : elementBlocks) {
+      if (eb->contains(local_id))
+	return eb;
     }
     // Should not reach this point...
     std::ostringstream errmsg;
@@ -1395,36 +1327,32 @@ namespace Ioss {
 
     if (my_name == "element_count") {
       int64_t count = 0;
-      ElementBlockContainer::const_iterator i = elementBlocks.begin();
-      while (i != elementBlocks.end()) {
-	count += (*i++)->get_property("entity_count").get_int();
+      for (auto eb : elementBlocks) {
+	count += eb->get_property("entity_count").get_int();
       }
       return Property(my_name, count);
     }
 
     if (my_name == "face_count") {
       int64_t count = 0;
-      FaceBlockContainer::const_iterator i = faceBlocks.begin();
-      while (i != faceBlocks.end()) {
-	count += (*i++)->get_property("entity_count").get_int();
+      for (auto fb : faceBlocks) {
+	count += fb->get_property("entity_count").get_int();
       }
       return Property(my_name, count);
     }
 
     if (my_name == "edge_count") {
       int64_t count = 0;
-      EdgeBlockContainer::const_iterator i = edgeBlocks.begin();
-      while (i != edgeBlocks.end()) {
-	count += (*i++)->get_property("entity_count").get_int();
+      for (auto eb : edgeBlocks) {
+	count += eb->get_property("entity_count").get_int();
       }
       return Property(my_name, count);
     }
 
     if (my_name == "node_count") {
       int64_t count = 0;
-      NodeBlockContainer::const_iterator i = nodeBlocks.begin();
-      while (i != nodeBlocks.end()) {
-	count += (*i++)->get_property("entity_count").get_int();
+      for (auto nb : nodeBlocks) {
+	count += nb->get_property("entity_count").get_int();
       }
       return Property(my_name, count);
     }
@@ -1458,16 +1386,12 @@ namespace Ioss {
     // Iterate through list, [ returns <alias, base_entity_name> ], if
     // 'base_entity_name' is defined on the restart file, add 'alias' as
     // an alias for it...
-    AliasMap::const_iterator I  = aliases_.begin();
-    AliasMap::const_iterator IE = aliases_.end();
-
-    while (I != IE) {
-      std::string alias = (*I).first;
-      std::string base  = (*I).second;
+    for (auto alias_pair : aliases_) {
+      std::string alias = alias_pair.first;
+      std::string base  = alias_pair.second;
       if (alias != base && to->get_entity(base) != nullptr) {
 	to->add_alias(base, alias);
       }
-      ++I;
     }
   }
 
@@ -1505,14 +1429,9 @@ namespace Ioss {
     // 4. Also set the 'name' property to the base 'name' on the output file.
     // 5. Note that a property may already exist and must be removed
     //    before the 'correct' value is set.
-
-    AliasMap::const_iterator I  = aliases_.begin();
-    AliasMap::const_iterator IE = aliases_.end();
-
-    while (I != IE) {
-      std::string alias = (*I).first;
-      std::string base  = (*I).second;
-      ++I;
+    for (auto alias_pair : aliases_) {
+      std::string alias = alias_pair.first;
+      std::string base  = alias_pair.second;
 
       if (alias == base) {
 
@@ -1613,10 +1532,9 @@ namespace Ioss {
       }
     }
 
-    while (I != IE) {
-      std::string alias = (*I).first;
-      std::string base  = (*I).second;
-      ++I;
+    for (auto alias_pair : aliases_) {
+      std::string alias = alias_pair.first;
+      std::string base  = alias_pair.second;
 
       if (alias != base) {
 	GroupingEntity *ge = get_entity(base);
