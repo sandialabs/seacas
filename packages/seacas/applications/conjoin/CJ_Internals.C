@@ -107,10 +107,6 @@ Excn::Redefine::~Redefine()
 
 Excn::Internals::Internals(int exoid, int maximum_name_length)
   : exodusFilePtr(exoid),
-    nodeMapVarID(),
-    elementMapVarID(),
-    commIndexVar(0),
-    elemCommIndexVar(0),
     maximumNameLength(maximum_name_length)
 {}
 
