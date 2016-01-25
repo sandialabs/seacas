@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
       }
     }
     aprepro.ap_options.interactive = true;
-    bool result = aprepro.parse_stream(std::cin, "standard input");
+    aprepro.parse_stream(std::cin, "standard input");
   }
   else {
     std::fstream infile(input_files[0].c_str());

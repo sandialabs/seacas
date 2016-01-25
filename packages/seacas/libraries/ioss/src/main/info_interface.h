@@ -85,8 +85,6 @@ namespace Info {
       int summary_;
       int surfaceSplitScheme_;
       
-      double minimumTime_;
-      double maximumTime_;
       std::string filetype_;
       std::string filename_;
       std::string groupname_;
