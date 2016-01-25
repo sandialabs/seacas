@@ -545,7 +545,6 @@ integer {D}+({E})?
   {
     symrec *s;
     int quoted = false;
-    std::fstream *yytmp;
     char *pt = strchr(yytext, ')');
     *pt = '\0';
     /* Check to see if surrounded by double quote */ 

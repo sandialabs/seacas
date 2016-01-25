@@ -38,11 +38,11 @@ namespace {
 
 SystemInterface::SystemInterface()
   : outputName_(),
-    debugLevel_(0), screenWidth_(0),
+    debugLevel_(0), 
     stepMin_(1), stepMax_(INT_MAX), stepInterval_(1),
     omitNodesets_(false), omitSidesets_(false),
     matchNodeIds_(false), matchNodeXYZ_(false),
-    matchElemIds_(false), matchElemXYZ_(false),
+    matchElemIds_(false), 
     disableFieldRecognition_(false), ints64bit_(false),
     tolerance_(0.0)
 {
