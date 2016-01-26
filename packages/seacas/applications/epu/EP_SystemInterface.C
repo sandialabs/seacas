@@ -73,7 +73,7 @@ Excn::SystemInterface::SystemInterface()
     debugLevel_(0), screenWidth_(0),
     stepMin_(1), stepMax_(INT_MAX), stepInterval_(1), subcycle_(-1), cycle_(-1), compressData_(0),
     sumSharedNodes_(false), addProcessorId_(false), mapIds_(true), omitNodesets_(false), omitSidesets_(false),
-    largeModel_(false), append_(false), intIs64Bit_(false), subcycleJoin_(false), outputSharedNodes_(false)
+    useNetcdf4_(false), append_(false), intIs64Bit_(false), subcycleJoin_(false), outputSharedNodes_(false)
 {
   enroll_options();
 }
@@ -131,8 +131,12 @@ void Excn::SystemInterface::enroll_options()
 		  "Add 'processor_id' element variable to the output file",
 		  nullptr);
 
-  options_.enroll("large_model", GetLongOption::NoValue,
+  options_.enroll("netcdf4", GetLongOption::NoValue,
 		  "Create output database using the HDF5-based netcdf which allows for up to 2.1 GB nodes/elements",
+		  nullptr);
+
+  options_.enroll("large_model", GetLongOption::NoValue,
+		  "Create output database using the HDF5-based netcdf which allows for up to 2.1 GB nodes/elements (deprecated; use netcdf4 instead)",
 		  nullptr);
 
   options_.enroll("append", GetLongOption::NoValue,
@@ -394,7 +398,12 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("large_model")) {
-    largeModel_ = true;
+    useNetcdf4_ = true;
+    std::cerr << "\nWARNING: the -large_model option is deprecated; please use -netcdf4 instead.\n";
+  }
+
+  if (options_.retrieve("netcdf4")) {
+    useNetcdf4_ = true;
   }
 
   if (options_.retrieve("append")) {
