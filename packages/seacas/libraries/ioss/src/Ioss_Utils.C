@@ -655,4 +655,3 @@ void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
     region->end_mode(Ioss::STATE_MODEL);
   }
 }
-
