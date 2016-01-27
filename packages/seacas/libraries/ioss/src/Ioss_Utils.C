@@ -60,7 +60,7 @@ namespace {
 Ioss::Utils::Utils() {}
   
 void Ioss::Utils::time_and_date(char* time_string, char* date_string,
-				size_t length)
+                                size_t length)
 {
   time_t calendar_time = time(nullptr);
   struct tm *local_time = localtime(&calendar_time);
@@ -204,8 +204,8 @@ void Ioss::Utils::abort()
 }
 
 std::string Ioss::Utils::local_filename(const std::string& relative_filename,
-					const std::string& type,
-					const std::string& working_directory)
+                                        const std::string& type,
+                                        const std::string& working_directory)
 {
   if (relative_filename[0] == '/' || type == "generated" || working_directory.empty()) {
     return relative_filename;
@@ -217,11 +217,11 @@ std::string Ioss::Utils::local_filename(const std::string& relative_filename,
 }
 
 int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge,
-			       const Ioss::Field &field, const std::string& inout)
+                               const Ioss::Field &field, const std::string& inout)
 {
   IOSS_WARNING << ge->type_string() << " '" << ge->name()
-	       << "'. Unknown " << inout << " field '"
-	       << field.get_name() << "'\n";
+               << "'. Unknown " << inout << " field '"
+               << field.get_name() << "'\n";
   return -4;
 }
 
@@ -259,11 +259,11 @@ bool Ioss::Utils::block_is_omitted(Ioss::GroupingEntity *block)
 }
 
 void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
-						 const Ioss::SideBlock *ef_blk,
-						 size_t int_byte_size,
-						 const void *element, const void *sides,
-						 int64_t number_sides,
-						 const Ioss::Region *region)
+                                                 const Ioss::SideBlock *ef_blk,
+                                                 size_t int_byte_size,
+                                                 const void *element, const void *sides,
+                                                 int64_t number_sides,
+                                                 const Ioss::Region *region)
 {
   assert(ef_blk != nullptr);
   
@@ -296,7 +296,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
   if (number_sides > 0 && (element == nullptr || sides == nullptr)) {
     std::ostringstream errmsg;
     errmsg << "INTERNAL ERROR: null element or sides pointer passed to "
-	   << "Ioss::Utils::calculate_sideblock_membership function.";
+           << "Ioss::Utils::calculate_sideblock_membership function.";
     IOSS_ERROR(errmsg);
   }
 
@@ -318,7 +318,7 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
       // nullptr if hetero face/edge on element
       common_ftopo = block->topology()->boundary_type(0);
       if (common_ftopo != nullptr)
-	topo = common_ftopo;
+        topo = common_ftopo;
       current_side = -1;
     }
 
@@ -333,8 +333,8 @@ void Ioss::Utils::calculate_sideblock_membership(IntVector &face_is_member,
     // See if the face topology and the parent element topology for
     // the current face match the topology associated with this face block.
     if (topo == ftopo && block_topo == parent_topo &&
-	(parent_block == nullptr || parent_block == block )
-	&& !block_is_omitted(block)) {
+        (parent_block == nullptr || parent_block == block )
+        && !block_is_omitted(block)) {
       // This face/edge  belongs in the face/edge block
       face_is_member.push_back(1);
     } else {
@@ -391,8 +391,8 @@ unsigned int Ioss::Utils::hash (const std::string& name)
 }
 
 void Ioss::Utils::input_file(const std::string &file_name,
-			     std::vector<std::string> *lines,
-			     size_t max_line_length)
+                             std::vector<std::string> *lines,
+                             size_t max_line_length)
 {
   // Create an ifstream for the input file. This does almost the same
   // function as sierra::Env::input() except this is for a single
@@ -405,20 +405,20 @@ void Ioss::Utils::input_file(const std::string &file_name,
     lines->push_back(file_name.substr(0,max_line_length));
     while (!std::getline(infile, input_line).fail()) {
       if (max_line_length == 0 || input_line.length() <= max_line_length) {
-	lines->push_back(input_line);
+        lines->push_back(input_line);
       } else {
-	// Split the line into pieces of length "max_line_length-1"
-	// and append a "\" to all but the last. Don't worry about
-	// splitting at whitespace...
-	size_t ibeg = 0;
-	do {
-	  std::string sub = input_line.substr(ibeg, max_line_length-1);
-	  if (ibeg+max_line_length-1 < input_line.length()) {
-	    sub += "\\";
-	  }
-	  lines->push_back(sub);
-	  ibeg += max_line_length-1;
-	} while (ibeg < input_line.length());
+        // Split the line into pieces of length "max_line_length-1"
+        // and append a "\" to all but the last. Don't worry about
+        // splitting at whitespace...
+        size_t ibeg = 0;
+        do {
+          std::string sub = input_line.substr(ibeg, max_line_length-1);
+          if (ibeg+max_line_length-1 < input_line.length()) {
+            sub += "\\";
+          }
+          lines->push_back(sub);
+          ibeg += max_line_length-1;
+        } while (ibeg < input_line.length());
       }
     }
   }
@@ -488,8 +488,8 @@ namespace {
       hashval = (hashval << 4) + *symbol;
       g = hashval&0xf0000000;
       if (g != 0) {
-	hashval = hashval ^ (g >> 24);
-	hashval = hashval ^ g;
+        hashval = hashval ^ (g >> 24);
+        hashval = hashval ^ g;
       }
     }
 
@@ -503,8 +503,8 @@ namespace {
 }
 
 std::string Ioss::Utils::variable_name_kluge(const std::string &name,
-					     size_t component_count, size_t copies,
-					     size_t max_var_len)
+                                             size_t component_count, size_t copies,
+                                             size_t max_var_len)
 {
   // This routine tries to shorten long variable names to an acceptable
   // length ('max_var_len' characters max).  If the name is already less than this
@@ -551,8 +551,8 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name,
   else {
     std::ostringstream errmsg;
     errmsg << "Variable '" << name << "' has " << component_count
-	   << " components which is larger than the current maximum"
-	   << " of 100,000. Please contact developer.";
+           << " components which is larger than the current maximum"
+           << " of 100,000. Please contact developer.";
     IOSS_ERROR(errmsg);
   }
 
@@ -571,8 +571,8 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name,
   else {
     std::ostringstream errmsg;
     errmsg << "Variable '" << name << "' has " << copies
-	   << " copies which is larger than the current maximum"
-	   << " of 100,000. Please contact developer.";
+           << " copies which is larger than the current maximum"
+           << " of 100,000. Please contact developer.";
     IOSS_ERROR(errmsg);
   }
 
@@ -668,10 +668,10 @@ void Ioss::Utils::create_path(const std::string& path)
     struct stat st;
     if (stat(path_root.c_str(), &st) != 0) {
       if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
-  std::ostringstream errmsg;
-  errmsg << "Cannot create directory '" << path_root
-         << "' : " << strerror(errno) << std::endl;
-  IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "Cannot create directory '" << path_root
+               << "' : " << strerror(errno) << std::endl;
+        IOSS_ERROR(errmsg);
       }
     }
     else if (!S_ISDIR(st.st_mode)) {
