@@ -58,7 +58,7 @@ void Skinner::Interface::enroll_options()
   options_.usage("[options] input_file[s] output_file");
 
   options_.enroll("help", Ioss::GetLongOption::NoValue,
-		  "Print this summary and exit", 0);
+		  "Print this summary and exit", nullptr);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
 		  "Print version and exit", nullptr);
