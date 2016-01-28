@@ -840,6 +840,7 @@ namespace Iocgns {
     }
     return -1;
   }
+}
 
   int64_t DatabaseIO::get_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
