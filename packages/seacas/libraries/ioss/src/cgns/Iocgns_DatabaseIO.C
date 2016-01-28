@@ -68,6 +68,13 @@
 namespace {
   void cgns_error(int cgnsid, int lineno, int /* processor */)
   {
+    std::ostringstream errmsg;
+    errmsg << "CGNS error '" << cg_geterror() << "' at line " << lineno
+	   << " in file '" << Version()
+	   << "' Please report to gdsjaar@sandia.gov if you need help.";
+    if (cgnsid > 0)
+      cg_close(cgnsid);
+    IOSS_ERROR(errmsg);
   }
 
   std::string map_cgns_to_topology_type(CG_ElementType_t type)
@@ -114,6 +121,9 @@ namespace {
       case CG_HEXA_27:
 	topology = "hex27"; break;
       default:
+	std::cerr << "WARNING: Found topology of type "
+		  << cg_ElementTypeName(type)
+		  << " which is not currently supported.\n";
 	topology = "unknown";
       }
     return topology;
@@ -135,6 +145,12 @@ namespace Iocgns {
       errmsg << "ERROR: CGNS Currently only supports reading, not writing.\n";
       IOSS_ERROR(errmsg);
     }
+
+    if (CG_SIZEOF_SIZE == 64) {
+      std::cout << "CGNS DatabaseIO using 64-bit integers.\n";
+      set_int_byte_size_api(Ioss::USE_INT64_API);
+    }
+
     openDatabase();
   }
 
@@ -289,8 +305,10 @@ namespace Iocgns {
 	  if (parent_flag == 0 && total_elements > 0) {
 	    total_elements -= num_entity;
 	    std::string element_topo = map_cgns_to_topology_type(e_type);
-	    std::cerr << "Added block " << zone_name << " of topology " << element_topo
-		      << " with " << num_entity << " elements\n";
+	    std::cout << "Added block " << zone_name
+		      << ": CGNS topology = '" << cg_ElementTypeName(e_type)
+		      << "', IOSS topology = '" << element_topo
+		      << "' with " << num_entity << " elements\n";
 
 	    eblock = new Ioss::ElementBlock(this, zone_name, element_topo, num_entity);
 	    eblock->property_add(Ioss::Property("base", base));
@@ -459,12 +477,15 @@ namespace Iocgns {
 	  }
 	}
 	else {
-	  assert(field.get_type() == Ioss::Field::INT);
+	  assert(field.get_type() == Ioss::Field::INT32);
 	  int *idata = static_cast<int*>(data);
 	  for (size_t i=0; i < num_to_get; i++) {
 	    idata[i] = i+1;
 	  }
 	}
+      }
+      else {
+	num_to_get = Ioss::Utils::field_warning(nb, field, "input");
       }
       return num_to_get;
     }
@@ -480,10 +501,92 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock* /* eb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+  
+  int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock* eb,
+					 const Ioss::Field& field,
+					 void *data, size_t data_size) const
   {
-    return -1;
+    size_t num_to_get = field.verify(data_size);
+    if (num_to_get > 0) {
+
+      cgsize_t base = eb->get_property("base").get_int();
+      cgsize_t zone = eb->get_property("zone").get_int();
+      cgsize_t sect = eb->get_property("section").get_int();
+      size_t my_element_count = eb->get_property("entity_count").get_int();
+      Ioss::Field::RoleType role = field.get_role();
+
+      if (role == Ioss::Field::MESH) {
+	// Handle the MESH fields required for a CGNS file model.
+	// (The 'genesis' portion)
+
+	if (field.get_name() == "connectivity") {
+	  // TODO: Need to map local to global...
+	  int element_nodes = eb->get_property("topology_node_count").get_int();
+	  assert(field.raw_storage()->component_count() == element_nodes);
+
+	  if (my_element_count > 0) {
+	    int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
+					(cgsize_t*)data, nullptr);
+	    if (ierr < 0)
+	      cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+	}
+	else if (field.get_name() == "connectivity_raw") {
+	  // TODO: 64-bit vs 32-bit...
+	  int element_nodes = eb->get_property("topology_node_count").get_int();
+	  assert(field.raw_storage()->component_count() == element_nodes);
+
+	  if (my_element_count > 0) {
+	    int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
+					(cgsize_t*)data, nullptr);
+	    if (ierr < 0)
+	      cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+	}
+	else if (field.get_name() == "ids") {
+	  // TODO: This needs to change for parallel.
+	  // Map the local ids in this element block
+	  // (eb_offset+1...eb_offset+1+my_element_count) to global element ids.
+	  size_t eb_offset_plus_one = eb->get_offset() + 1;
+	  if (field.get_type() == Ioss::Field::INT64) {
+	    int64_t *idata = static_cast<int64_t*>(data);
+	    for (size_t i=0; i < my_element_count; i++) {
+	      idata[i] = eb_offset_plus_one + i;
+	    }
+	  } else {
+	    assert(field.get_type() == Ioss::Field::INT32);
+	    int *idata = static_cast<int*>(data);
+	    for (size_t i=0; i < my_element_count; i++) {
+	      idata[i] = eb_offset_plus_one + i;
+	    }
+	  }
+	}
+	else if (field.get_name() == "implicit_ids") {
+	  // TODO: This needs to change for parallel.
+	  // If not parallel, then this is just one..element_count
+	  size_t eb_offset_plus_one = eb->get_offset() + 1;
+	  if (field.get_type() == Ioss::Field::INT64) {
+	    int64_t *idata = static_cast<int64_t*>(data);
+	    for (size_t i=0; i < my_element_count; i++) {
+	      idata[i] = eb_offset_plus_one + i;
+	    }
+	  } else {
+	    assert(field.get_type() == Ioss::Field::INT32);
+	    int *idata = static_cast<int*>(data);
+	    for (size_t i=0; i < my_element_count; i++) {
+	      idata[i] = eb_offset_plus_one + i;
+	    }
+	  }
+	}
+	else {
+	  num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+	}
+      }
+      else {
+	num_to_get = Ioss::Utils::field_warning(eb, field, "unknown");
+      }
+    }
+    return num_to_get;
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
