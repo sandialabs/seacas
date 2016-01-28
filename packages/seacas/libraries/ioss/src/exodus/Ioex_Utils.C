@@ -258,8 +258,7 @@ namespace Ioex {
 
   void decode_surface_name(Ioex::SideSetMap &fs_map, Ioex::SideSetSet &fs_set, const std::string &name)
   {
-    std::vector<std::string> tokens;
-    Ioss::tokenize(name, "_", tokens);
+    std::vector<std::string> tokens = Ioss::tokenize(name, "_");
     if (tokens.size() >= 4) {
       // Name of form: "name_eltopo_sidetopo_id" or
       // "name_block_id_sidetopo_id" "name" is typically "surface".
@@ -322,8 +321,7 @@ namespace Ioex {
   // If not of this form, return 0;
   int64_t extract_id(const std::string &name_id)
   {
-    std::vector<std::string> tokens;
-    Ioss::tokenize(name_id,"_",tokens);
+    std::vector<std::string> tokens = Ioss::tokenize(name_id,"_");
 
     if (tokens.size() == 1)
       return 0;
@@ -547,8 +545,7 @@ namespace Ioex {
     suffix[0] = suffix_separator;
     suffix[1] = 0;
 
-    std::vector<std::string> tokens;
-    Ioss::tokenize(names[which_names[which_names.size()-1]] ,suffix, tokens);
+    std::vector<std::string> tokens = Ioss::tokenize(names[which_names[which_names.size()-1]] ,suffix);
 
     if (tokens.size() <= 2)
       return nullptr;
@@ -571,8 +568,7 @@ namespace Ioex {
     // Gather the first 'inner_ccomp' inner field suffices...
     std::vector<Ioss::Suffix> suffices;
     for (size_t i=0; i < inner_comp; i++) {
-      std::vector<std::string> ltokens;
-      Ioss::tokenize(names[which_names[i]], suffix, ltokens);
+      std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[i]], suffix);
       // The second-last token is the suffix for this component...
       Ioss::Suffix tmp(ltokens[inner_token]);
       suffices.push_back(tmp);
@@ -583,8 +579,7 @@ namespace Ioex {
     size_t j = inner_comp;
     for (size_t copy = 1; copy < N; copy++) {
       for (size_t i=0; i < inner_comp; i++) {
-	std::vector<std::string> ltokens;
-	Ioss::tokenize(names[which_names[j++]], suffix, ltokens);
+	std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[j++]], suffix);
 	// The second-last token is the suffix for this component...
 	if (suffices[i] != ltokens[inner_token]) {
 	  return nullptr;
@@ -613,8 +608,7 @@ namespace Ioex {
     suffix[1] = 0;
 
     for (size_t i=0; i < which_names.size(); i++) {
-      std::vector<std::string> tokens;
-      Ioss::tokenize(names[which_names[i]], suffix, tokens);
+      std::vector<std::string> tokens = Ioss::tokenize(names[which_names[i]], suffix);
       size_t num_tokens = tokens.size();
       
       // The last token is the suffix for this component...
