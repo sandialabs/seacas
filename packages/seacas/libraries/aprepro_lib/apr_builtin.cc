@@ -793,8 +793,7 @@ const char *do_append(char *filename)
 double do_word_count(char *string, char *delm)
 {
   std::string temp = string;
-  std::vector<std::string> tokens;
-  tokenize(temp, delm, tokens);
+  std::vector<std::string> tokens = tokenize(temp, delm);
   return (double)tokens.size();
 }
 
@@ -802,8 +801,7 @@ const char *do_get_word(double n, char *string, char *delm)
 {
   size_t in = (size_t)n;
   std::string temp = string;
-  std::vector<std::string> tokens;
-  tokenize(temp, delm, tokens);
+  std::vector<std::string> tokens = tokenize(temp, delm);
 
   if (tokens.size() >= in) {
     char *word = nullptr;
@@ -1140,8 +1138,7 @@ array *do_csv_array(const char *filename, double skip)
   while (std::getline(*file, line)) {
     rows++;
     if (rows > rows_to_skip) {
-      std::vector<std::string> tokens;
-      tokenize(line, delim, tokens);
+      std::vector<std::string> tokens = tokenize(line, delim);
       cols = tokens.size() > cols ? tokens.size() : cols;
     }
   }
@@ -1156,8 +1153,7 @@ array *do_csv_array(const char *filename, double skip)
   rows = 0;
   while (std::getline(*file, line)) {
     if (++rows > rows_to_skip) {
-      std::vector<std::string> tokens;
-      tokenize(line, delim, tokens);
+      std::vector<std::string> tokens = tokenize(line, delim);
       for (size_t i=0; i < (size_t)array_data->cols; i++) {
 	if (i < tokens.size()) {
 	  array_data->data[idx++] = atof(tokens[i].c_str());
@@ -1184,8 +1180,7 @@ array *do_csv_array2(const char *filename, const char *comment)
   while (std::getline(*file, line)) {
     if (line[0] != comment[0]) {
       rows++;
-      std::vector<std::string> tokens;
-      tokenize(line, delim, tokens);
+      std::vector<std::string> tokens = tokenize(line, delim);
       cols = tokens.size() > cols ? tokens.size() : cols;
     }
   }
@@ -1201,8 +1196,7 @@ array *do_csv_array2(const char *filename, const char *comment)
   while (std::getline(*file, line)) {
     if (line[0] != comment[0]) {
       rows++;
-      std::vector<std::string> tokens;
-      tokenize(line, delim, tokens);
+      std::vector<std::string> tokens = tokenize(line, delim);
       for (size_t i=0; i < (size_t)array_data->cols; i++) {
 	if (i < tokens.size()) {
 	  array_data->data[idx++] = atof(tokens[i].c_str());
