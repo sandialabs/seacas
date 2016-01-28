@@ -149,12 +149,10 @@ namespace {
     if (util.get_environment("IOSS_PROPERTIES", env_props, true)) {
       // env_props string should be of the form
       // "PROP1=VALUE1:PROP2=VALUE2:..."
-      std::vector<std::string> prop_val;
-      Ioss::tokenize(env_props, ":", prop_val);
+      std::vector<std::string> prop_val = Ioss::tokenize(env_props, ":");
 
       for (size_t i=0; i < prop_val.size(); i++) {
-        std::vector<std::string> property;
-        Ioss::tokenize(prop_val[i], "=", property);
+        std::vector<std::string> property = Ioss::tokenize(prop_val[i], "=");
         if (property.size() != 2) {
           std::ostringstream errmsg;
           errmsg << "ERROR: Invalid property specification found in IOSS_PROPERTIES environment variable\n"
@@ -217,12 +215,10 @@ namespace {
     if (util.get_environment("IOSS_PROPERTIES", env_props, true)) {
       // env_props string should be of the form
       // "PROP1=VALUE1:PROP2=VALUE2:..."
-      std::vector<std::string> prop_val;
-      Ioss::tokenize(env_props, ":", prop_val);
+      std::vector<std::string> prop_val = Ioss::tokenize(env_props, ":");
 
       for (size_t i=0; i < prop_val.size(); i++) {
-        std::vector<std::string> property;
-        Ioss::tokenize(prop_val[i], "=", property);
+        std::vector<std::string> property = Ioss::tokenize(prop_val[i], "=");
         std::string prop = Ioss::Utils::uppercase(property[0]);
         if (prop == compose_property) {
 	  if (property.size() != 2) {
