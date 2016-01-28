@@ -695,8 +695,7 @@ namespace {
 
     if (tokens != nullptr) {
       std::string token_string(tokens);
-      StringVector var_list;
-      SLIB::tokenize(token_string, ",", var_list);
+      StringVector var_list = SLIB::tokenize(token_string, ",");
     
       // At this point, var_list is either a single string, or a string
       // separated from 1 or more block ids with ":" delimiter.
@@ -706,8 +705,7 @@ namespace {
       // written for all blocks.
       auto I = var_list.begin();
       while (I != var_list.end()) {
-	StringVector name_id;
-	SLIB::tokenize(*I, ":", name_id);
+	StringVector name_id = SLIB::tokenize(*I, ":");
 	std::string var_name = LowerCase(name_id[0]);
 	if (name_id.size() == 1) {
 	  (*variable_list).push_back(std::make_pair(var_name,0));

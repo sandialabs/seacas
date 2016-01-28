@@ -679,8 +679,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (temp) {
       // temp should be of the form <ts1>:<ts2>  where ts# is either a timestep number
       // (1-based) or 'last'
-      std::vector<std::string> tokens;
-      SLIB::tokenize(temp, ":", tokens);
+      std::vector<std::string> tokens = SLIB::tokenize(temp, ":");
       if (tokens.size() == 2) {
 	if (case_strcmp(tokens[0], "last") == 0) {
 	  explicit_steps.first = -1;
