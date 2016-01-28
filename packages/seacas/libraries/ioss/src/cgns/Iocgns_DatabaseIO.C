@@ -66,6 +66,10 @@
 #include "Ioss_VariableType.h"
 
 namespace {
+  void cgns_error(int cgnsid, int lineno, int /* processor */)
+  {
+  }
+
   std::string map_cgns_to_topology_type(CG_ElementType_t type)
   {
     std::string topology = "unknown";
@@ -285,7 +289,7 @@ namespace Iocgns {
 	  if (parent_flag == 0 && total_elements > 0) {
 	    total_elements -= num_entity;
 	    std::string element_topo = map_cgns_to_topology_type(e_type);
-	    std::cerr << "Added block " << zone_name << " of topo " << element_topo
+	    std::cerr << "Added block " << zone_name << " of topology " << element_topo
 		      << " with " << num_entity << " elements\n";
 
 	    eblock = new Ioss::ElementBlock(this, zone_name, element_topo, num_entity);
@@ -368,71 +372,103 @@ namespace Iocgns {
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t base = nb->get_property("base").get_int();
     cgsize_t zone = nb->get_property("zone").get_int();
+    cgsize_t num_to_get = field.verify(data_size);
+    cgsize_t first = 1;
 
-#if 0
+    char basename[33];
+    cgsize_t cell_dimension = 0;
+    cgsize_t phys_dimension = 0;
+    cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
+
+
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "mesh_model_coordinates_x") {
 	double *rdata = static_cast<double*>(data);
 
-
-	int ierr = ex_get_coord(get_file_pointer(), rdata, nullptr, nullptr);
+	int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, &first, &num_to_get, rdata);
 	if (ierr < 0)
-	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
       }
       
       else if (field.get_name() == "mesh_model_coordinates_y") {
 	double *rdata = static_cast<double*>(data);
-	int ierr = ex_get_coord(get_file_pointer(), nullptr, rdata, nullptr);
+
+	int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, &first, &num_to_get, rdata);
 	if (ierr < 0)
-	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
       }
       
       else if (field.get_name() == "mesh_model_coordinates_z") {
 	double *rdata = static_cast<double*>(data);
-	int ierr = ex_get_coord(get_file_pointer(), nullptr, nullptr, rdata);
+
+	int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, &first, &num_to_get, rdata);
 	if (ierr < 0)
-	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
+	double *rdata = static_cast<double*>(data);
+
 	// Data required by upper classes store x0, y0, z0, ... xn,
 	// yn, zn. Data stored in exodusII file is x0, ..., xn, y0,
 	// ..., yn, z0, ..., zn so we have to allocate some scratch
 	// memory to read in the data and then map into supplied
 	// 'data'
-	std::vector<double> x(num_to_get);
-	std::vector<double> y;
-	if (spatialDimension > 1)
-	  y.resize(num_to_get);
-	std::vector<double> z;
-	if (spatialDimension == 3)
-	  z.resize(num_to_get);
-
-	// Cast 'data' to correct size -- double
-	double *rdata = static_cast<double*>(data);
-
-	int ierr = ex_get_coord(get_file_pointer(), TOPTR(x), TOPTR(y), TOPTR(z));
+	std::vector<double> scr(num_to_get);
+	int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, &first, &num_to_get, TOPTR(scr));
 	if (ierr < 0)
-	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
 
 	size_t index = 0;
 	for (size_t i=0; i < num_to_get; i++) {
-	  rdata[index++] = x[i];
-	  if (spatialDimension > 1)
-	    rdata[index++] = y[i];
-	  if (spatialDimension == 3)
-	    rdata[index++] = z[i];
+	  rdata[index] = scr[i];
+	  index += phys_dimension;
+	}
+
+	if (phys_dimension > 1) {
+	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, &first, &num_to_get, TOPTR(scr));
+	  if (ierr < 0)
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+
+	  index = 1;
+	  for (size_t i=0; i < num_to_get; i++) {
+	    rdata[index] = scr[i];
+	    index += phys_dimension;
+ }
+	}
+	  
+	if (phys_dimension > 2) {
+	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, &first, &num_to_get, TOPTR(scr));
+	  if (ierr < 0)
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+
+	  index = 2;
+	  for (size_t i=0; i < num_to_get; i++) {
+	    rdata[index] = scr[i];
+	    index += phys_dimension;
+	  }
 	}
       }
-
       else if (field.get_name() == "ids") {
 	// Map the local ids in this node block
 	// (1...node_count) to global node ids.
-	get_map(EX_NODE_BLOCK).map_implicit_data(data, field, num_to_get, 0);
+	if (field.get_type() == Ioss::Field::INT64) {
+	  int64_t *idata = static_cast<int64_t*>(data);
+	  for (size_t i=0; i < num_to_get; i++) {
+	    idata[i] = i+1;
+	  }
+	}
+	else {
+	  assert(field.get_type() == Ioss::Field::INT);
+	  int *idata = static_cast<int*>(data);
+	  for (size_t i=0; i < num_to_get; i++) {
+	    idata[i] = i+1;
+	  }
+	}
       }
-#endif
-      return -1;
+      return num_to_get;
     }
+  }
 
     int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
 					   void */* data */, size_t /* data_size */) const
