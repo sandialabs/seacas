@@ -178,9 +178,7 @@ namespace {
     *ierr = ZOLTAN_OK;
 
     if (lids) {
-      for (size_t i = 0; i < element_count; i++) {
-        lids[i] = i;
-      }
+      std::iota(lids, lids+element_count, 0);
     }
 
     if (wdim) {

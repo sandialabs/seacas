@@ -171,12 +171,10 @@ namespace Ioss {
     if (util_.get_environment("IOSS_PROPERTIES", env_props, isParallel)) {
       // env_props string should be of the form
       // "PROP1=VALUE1:PROP2=VALUE2:..."
-      std::vector<std::string> prop_val;
-      tokenize(env_props, ":", prop_val);
+      std::vector<std::string> prop_val = tokenize(env_props, ":");
 
       for (auto & elem : prop_val) {
-        std::vector<std::string> property;
-        tokenize(elem, "=", property);
+        std::vector<std::string> property = tokenize(elem, "=");
         if (property.size() != 2) {
           std::ostringstream errmsg;
           errmsg << "ERROR: Invalid property specification found in IOSS_PROPERTIES environment variable\n"
@@ -325,11 +323,9 @@ namespace Ioss {
       return;
 
     std::string prop = properties.get(property_name).get_string();
-    std::vector<std::string> groups;
-    tokenize(prop, ":", groups);
+    std::vector<std::string> groups = tokenize(prop, ":");
     for (auto &group : groups) {
-      std::vector<std::string> group_spec;
-      tokenize(group, ",", group_spec);
+      std::vector<std::string> group_spec = tokenize(group, ",");
 
       // group_spec should contain the name of the new group as
       // the first location and the members of the group as subsequent

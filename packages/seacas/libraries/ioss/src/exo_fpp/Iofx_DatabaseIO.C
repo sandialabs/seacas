@@ -1059,8 +1059,7 @@ namespace Iofx {
         // an empty type which is invalid and will throw an
         // exception in the XBlock constructor. Try to discern
         // the correct X type based on the block_name.
-        std::vector<std::string> tokens;
-        Ioss::tokenize(block_name, "_", tokens);
+        std::vector<std::string> tokens = Ioss::tokenize(block_name, "_");
         if (tokens.size() >= 2) {
           // Check whether last token names an X topology type...
           const Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(tokens[tokens.size()-1], true);
@@ -1663,8 +1662,7 @@ namespace Iofx {
             topo_map[std::make_pair(std::string("unknown"),mixed_topo)] = number_sides;
 
           } else if (in_fs_map) {
-            std::vector<std::string> tokens;
-            Ioss::tokenize(side_set_name, "_", tokens);
+            std::vector<std::string> tokens = Ioss::tokenize(side_set_name, "_");
             assert(tokens.size() >= 4);
             // The sideset should have only a single topology which is
             // given by the sideset name...

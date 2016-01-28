@@ -1378,8 +1378,7 @@ namespace Iopx {
             topo_map[std::make_pair(std::string("unknown"),mixed_topo)] = number_sides;
 
           } else if (in_fs_map) {
-            std::vector<std::string> tokens;
-            Ioss::tokenize(side_set_name, "_", tokens);
+            std::vector<std::string> tokens = Ioss::tokenize(side_set_name, "_");
             assert(tokens.size() >= 4);
             // The sideset should have only a single topology which is
             // given by the sideset name...
