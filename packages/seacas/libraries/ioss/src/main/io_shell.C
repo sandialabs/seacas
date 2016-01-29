@@ -962,6 +962,7 @@ namespace {
     if (field_name == "connectivity_raw") return;
     if (field_name == "element_side_raw") return;
     if (field_name == "ids_raw") return;
+    if (field_name == "implicit_ids") return;
     if (field_name == "node_connectivity_status") return;
     if (field_name == "owning_processor") return;
     if (field_name == "entity_processor_raw") return;
