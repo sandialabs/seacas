@@ -68,7 +68,7 @@ namespace {
  * TRI elements in a 2d mesh from TRI elements in a 3d mesh.
  *****************************************************************************/
 const char* elem_name_from_enum(const E_Type elem_type) {
-  static const char* elem_names[nullptr_EL] = {"SPHERE", "BAR2", "BAR3", "QUAD4", "QUAD8", "QUAD9",
+  static const char* elem_names[NULL_EL] = {"SPHERE", "BAR2", "BAR3", "QUAD4", "QUAD8", "QUAD9",
 					    "SHELL4", "SHELL8", "SHELL9", "TRI3", "TRI6", "TSHELL3", "TSHELL6", "HEX8",
 					    "HEX20", "HEX27", "HEXSHELL", "TET4", "TET10", "TET8", "WEDGE6", "WEDGE15",
 					    "WEDGE16", "PYRAMID5", "PYRAMID13", "SHELL2", "SHELL3"};
@@ -79,7 +79,7 @@ E_Type get_elem_type(const char *elem_name, const int num_nodes,
                      const int num_dim)
 {
 
-  E_Type answer = nullptr_EL;
+  E_Type answer = NULL_EL;
   switch (elem_name[0]) {
   case 'h':
   case 'H':
@@ -291,7 +291,7 @@ E_Type get_elem_type(const char *elem_name, const int num_nodes,
     break;
   }
   
-  if (answer == nullptr_EL) {
+  if (answer == NULL_EL) {
     char errstr[80];
     sprintf(errstr, "fatal: unknown element type '%s' read", elem_name);
     Gen_Error(0, errstr);
@@ -1870,7 +1870,7 @@ int ss_to_node_list(const E_Type  etype,		/* The element type */
     break;
 
   case SPHERE: /* SHPERE's have no side sets */
-  case nullptr_EL:
+  case NULL_EL:
     i = 0;
     break;
 
@@ -2148,7 +2148,7 @@ int get_ss_mirror(const E_Type etype,		/* The element type */
     break;
 
   case SPHERE: /* SHPERE's have no side sets */
-  case nullptr_EL:
+  case NULL_EL:
     i = 0;
     break;
 
