@@ -37,6 +37,7 @@
 #include <stddef.h>
 #include <sys/select.h>
 #include <time.h>
+#include <numeric>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -66,10 +67,12 @@
 #include "Ioss_VariableType.h"
 
 namespace {
+  const char *Version() {return "Iocgns_DatabaseIO.C 2016/01/28";}
+
   void cgns_error(int cgnsid, int lineno, int /* processor */)
   {
     std::ostringstream errmsg;
-    errmsg << "CGNS error '" << cg_geterror() << "' at line " << lineno
+    errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno
 	   << " in file '" << Version()
 	   << "' Please report to gdsjaar@sandia.gov if you need help.";
     if (cgnsid > 0)
@@ -472,16 +475,12 @@ namespace Iocgns {
 	// (1...node_count) to global node ids.
 	if (field.get_type() == Ioss::Field::INT64) {
 	  int64_t *idata = static_cast<int64_t*>(data);
-	  for (size_t i=0; i < num_to_get; i++) {
-	    idata[i] = i+1;
-	  }
+	  std::iota(idata, idata+num_to_get, 1);
 	}
 	else {
 	  assert(field.get_type() == Ioss::Field::INT32);
 	  int *idata = static_cast<int*>(data);
-	  for (size_t i=0; i < num_to_get; i++) {
-	    idata[i] = i+1;
-	  }
+	  std::iota(idata, idata+num_to_get, 1);
 	}
       }
       else {
@@ -532,7 +531,6 @@ namespace Iocgns {
 	  }
 	}
 	else if (field.get_name() == "connectivity_raw") {
-	  // TODO: 64-bit vs 32-bit...
 	  int element_nodes = eb->get_property("topology_node_count").get_int();
 	  assert(field.raw_storage()->component_count() == element_nodes);
 
@@ -550,32 +548,25 @@ namespace Iocgns {
 	  size_t eb_offset_plus_one = eb->get_offset() + 1;
 	  if (field.get_type() == Ioss::Field::INT64) {
 	    int64_t *idata = static_cast<int64_t*>(data);
-	    for (size_t i=0; i < my_element_count; i++) {
-	      idata[i] = eb_offset_plus_one + i;
-	    }
+	    std::iota(idata, idata+my_element_count, eb_offset_plus_one);
 	  } else {
 	    assert(field.get_type() == Ioss::Field::INT32);
 	    int *idata = static_cast<int*>(data);
-	    for (size_t i=0; i < my_element_count; i++) {
-	      idata[i] = eb_offset_plus_one + i;
-	    }
+	    std::iota(idata, idata+my_element_count, eb_offset_plus_one);
 	  }
 	}
 	else if (field.get_name() == "implicit_ids") {
 	  // TODO: This needs to change for parallel.
-	  // If not parallel, then this is just one..element_count
+	  // If not parallel, then this is just 
+	  // (eb_offset+1...eb_offset+1+my_element_count).
 	  size_t eb_offset_plus_one = eb->get_offset() + 1;
 	  if (field.get_type() == Ioss::Field::INT64) {
 	    int64_t *idata = static_cast<int64_t*>(data);
-	    for (size_t i=0; i < my_element_count; i++) {
-	      idata[i] = eb_offset_plus_one + i;
-	    }
+	    std::iota(idata, idata+my_element_count, eb_offset_plus_one);
 	  } else {
 	    assert(field.get_type() == Ioss::Field::INT32);
 	    int *idata = static_cast<int*>(data);
-	    for (size_t i=0; i < my_element_count; i++) {
-	      idata[i] = eb_offset_plus_one + i;
-	    }
+	    std::iota(idata, idata+my_element_count, eb_offset_plus_one);
 	  }
 	}
 	else {
