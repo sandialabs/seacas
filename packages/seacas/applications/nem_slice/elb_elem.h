@@ -40,7 +40,7 @@
 typedef enum {SPHERE, BAR2, BAR3, QUAD4, QUAD8, QUAD9,
               SHELL4, SHELL8, SHELL9, TRI3, TRI6, TSHELL3, TSHELL6, HEX8,
               HEX20, HEX27, HEXSHELL, TET4, TET10, TET8, WEDGE6, WEDGE15,
-              WEDGE16, PYRAMID5, PYRAMID13, SHELL2, SHELL3, nullptr_EL} E_Type;
+              WEDGE16, PYRAMID5, PYRAMID13, SHELL2, SHELL3, NULL_EL} E_Type;
 
 extern const char* elem_name_from_enum(const E_Type elem_type);
 

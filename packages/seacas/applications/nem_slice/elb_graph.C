@@ -250,8 +250,8 @@ namespace {
 
     
       /* Cycle through the elements */
-      E_Type etype_last = nullptr_EL;
-      E_Type etype = nullptr_EL;
+      E_Type etype_last = NULL_EL;
+      E_Type etype = NULL_EL;
 
       int element_3d = 0;
       int nnodes = mesh->num_dims; 
