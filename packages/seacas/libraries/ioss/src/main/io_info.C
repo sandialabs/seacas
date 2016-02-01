@@ -1,4 +1,3 @@
-
 // Copyright(C) 1999-2010
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
@@ -43,13 +42,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <chrono>
-#include <array>
-#include <algorithm>
-#include <functional>
-#include <unordered_set>
-#include <random>
-
 #if !defined(NO_EXODUS_SUPPORT)
 #include <exodusII.h>
 #endif
@@ -133,6 +125,8 @@ namespace {
     }
     return id;
   }
+
+
 }
 void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates);
 
@@ -277,7 +271,6 @@ namespace {
     info_faceblock(region,    summary);
     info_elementblock(region, interface, summary);
 
-    
     info_nodesets(region,     summary);
     info_edgesets(region,     summary);
     info_facesets(region,     summary);
