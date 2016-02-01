@@ -12,14 +12,6 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 
-SET(HEADERS
-  to_string.h
-  scopeguard.h
-  smart_assert.h
-  GetLongOpt.h
-  SL_tokenize.h
-)
-
 SET(SOURCES
   GetLongOpt.C
   smart_assert.C
@@ -30,7 +22,7 @@ SET(SOURCES
 
 TRIBITS_ADD_LIBRARY(
   suplib_cpp
-  HEADERS ${HEADERS}
+  NOINSTALLHEADERS
   SOURCES ${SOURCES}
   )
 
