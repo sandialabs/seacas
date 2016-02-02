@@ -700,6 +700,12 @@ namespace Iocgns {
 	  for (size_t i=0; i < element_nodes * num_to_get; i++) {
 	    idata[i] = block_map[idata[i]-1]+1;
 	  }
+
+	  // Now need to map block-local node connectivity to global nodes...
+	  const auto &block_map = m_blockLocalNodeMap[zone];
+	  for (size_t i=0; i < element_nodes * num_to_get; i++) {
+	    idata[i] = block_map[idata[i]-1]+1;
+	  }
 	}
 	else if (field.get_name() == "connectivity_raw") {
 	  assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
