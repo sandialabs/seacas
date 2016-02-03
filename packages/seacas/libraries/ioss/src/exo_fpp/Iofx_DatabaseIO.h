@@ -81,6 +81,8 @@ namespace Iofx {
       DatabaseIO(Ioss::Region *region, const std::string& filename,
                  Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                  const Ioss::PropertyManager &props);
+      DatabaseIO(const DatabaseIO& from) =delete;
+      DatabaseIO& operator=(const DatabaseIO& from) =delete;
       ~DatabaseIO() {};
 
       // Check to see if database state is ok...
@@ -145,10 +147,6 @@ namespace Iofx {
                                       const Ioss::Field& field, void *data, size_t data_size) const;
       int64_t get_Xset_field_internal(ex_entity_type type, const Ioss::EntitySet* ns,
                                       const Ioss::Field& field, void *data, size_t data_size) const;
-
-      // Private member functions
-      DatabaseIO(const DatabaseIO& from); // do not implement
-      DatabaseIO& operator=(const DatabaseIO& from); // do not implement
 
   public:
       // Temporarily made public for use during Salinas transition

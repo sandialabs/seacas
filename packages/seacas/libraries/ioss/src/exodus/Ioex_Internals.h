@@ -361,11 +361,11 @@ namespace Ioex {
   {
   public:
     explicit Redefine(int exoid);
+    Redefine(const Redefine& from) =delete;
+    Redefine& operator=(const Redefine& from) =delete;
     ~Redefine();
 
   private:
-    Redefine(const Redefine& from); // do not implement
-    Redefine& operator=(const Redefine& from); // do not implement
     int exodusFilePtr;
   };
 
@@ -402,6 +402,8 @@ namespace Ioex {
   {
   public:
     Internals(int exoid, int maximum_name_length, const Ioss::ParallelUtils &util);
+    Internals(const Internals& from) =delete;
+    Internals& operator=(const Internals& from) =delete;
 
     int write_meta_data(Mesh &mesh);
 
@@ -417,9 +419,6 @@ namespace Ioex {
      */
 
   private:
-    Internals(const Internals& from); // do not implement
-    Internals& operator=(const Internals& from); // do not implement
-
     void get_global_counts(Mesh &mesh);
 
     int put_metadata(const Mesh &mesh,
