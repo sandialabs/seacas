@@ -370,8 +370,8 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
     if (local_node_map[i] >= 0)
       glob[local_node_map[i]] = 1;
   }
-  for (size_t i=0; i<glob.size(); i++) {
-    SMART_ASSERT(glob[i] == 1);
+  for (int i : glob) {
+    SMART_ASSERT(i == 1);
   }
 #endif
 
@@ -382,7 +382,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
 
   // Define a node block...  
   std::string block_name = "nodeblock_1";
-  Ioss::NodeBlock *block = new Ioss::NodeBlock(output_region.get_database(), block_name,
+  auto block = new Ioss::NodeBlock(output_region.get_database(), block_name,
 					       node_count, spatial_dimension);
   block->property_add(Ioss::Property("id", 1));
   
@@ -411,8 +411,8 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region*> &part_mesh, INT
 	output_region.add_information_records(info);
       }
     } else {
-      for (size_t i = 0; i < info_parts.size(); i++) {
-	const std::vector<std::string> &info = part_mesh[info_parts[i]-1]->get_information_records();
+      for (int info_part : info_parts) {
+	const std::vector<std::string> &info = part_mesh[info_part-1]->get_information_records();
 	output_region.add_information_records(info);
       }
     }
@@ -559,7 +559,7 @@ namespace {
 	total_elements += num_elem;
 
 	if (num_elem > 0) {
-	  Ioss::ElementBlock *ebn = new Ioss::ElementBlock(output_region.get_database(), name, type,
+	  auto ebn = new Ioss::ElementBlock(output_region.get_database(), name, type,
 							   num_elem);
 	  ebn->property_add(Ioss::Property("original_block_order", used_blocks++));
 	  output_region.add(ebn);
@@ -595,7 +595,7 @@ namespace {
 	  }
 	}
 	if (debug) std::cerr << name << ", ";
-	Ioss::SideSet *surf = new Ioss::SideSet(output_region.get_database(), name);
+	auto surf = new Ioss::SideSet(output_region.get_database(), name);
 	set_id(fs, surf);
 
 	Ioss::SideBlockContainer fbs = fs->get_side_blocks();
@@ -607,7 +607,7 @@ namespace {
 	  size_t num_side  = fb->get_property("entity_count").get_int();
 	  total_sides += num_side;
 
-	  Ioss::SideBlock *block = new Ioss::SideBlock(output_region.get_database(), fbname, fbtype,
+	  auto block = new Ioss::SideBlock(output_region.get_database(), fbname, fbtype,
 						       partype, num_side);
 	  surf->add(block);
 	}
@@ -630,7 +630,7 @@ namespace {
     if (debug) std::cerr << name << ", ";
 
     size_t count = region.get_property("node_count").get_int();
-    Ioss::NodeSet *ns = new Ioss::NodeSet(output_region.get_database(), name, count);
+    auto ns = new Ioss::NodeSet(output_region.get_database(), name, count);
     output_region.add(ns);
   }
 
@@ -715,7 +715,7 @@ namespace {
 	}
 	if (debug) std::cerr << name << ", ";
 	size_t count     = ns->get_property("entity_count").get_int();
-	Ioss::NodeSet *node_set = new Ioss::NodeSet(output_region.get_database(), name, count);
+	auto node_set = new Ioss::NodeSet(output_region.get_database(), name, count);
 	output_region.add(node_set);
 	set_id(ns, node_set);
       }
