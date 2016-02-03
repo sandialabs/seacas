@@ -104,7 +104,7 @@ Ioss::Tet4::Tet4()
   Ioss::ElementTopology::alias("tetra4", "Solid_Tet_4_3D");
 }
 
-Ioss::Tet4::~Tet4() {}
+Ioss::Tet4::~Tet4() = default;
 
 int Ioss::Tet4::parametric_dimension()           const {return  3;}
 int Ioss::Tet4::spatial_dimension()           const {return  3;}

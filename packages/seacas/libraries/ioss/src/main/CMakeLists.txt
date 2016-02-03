@@ -47,14 +47,6 @@ TRIBITS_ADD_EXECUTABLE(
   NOEXESUFFIX
   SOURCES io_info.C volume.C info_interface.C Ioss_GetLongOpt.C
   )
-
-TRIBITS_ADD_EXECUTABLE(
-  skinner
-  NOEXEPREFIX
-  NOEXESUFFIX
-  SOURCES skinner.C skinner_interface.C Ioss_GetLongOpt.C
-  )
-
 TRIBITS_ADD_EXECUTABLE(
   sphgen
   NOEXEPREFIX

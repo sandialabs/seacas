@@ -83,7 +83,7 @@ Ioss::Sphere::Sphere()
   Ioss::ElementTopology::alias("sphere", "point1");
 }
 
-Ioss::Sphere::~Sphere() {}
+Ioss::Sphere::~Sphere() = default;
 
 int Ioss::Sphere::parametric_dimension()           const {return  0;}
 int Ioss::Sphere::spatial_dimension()           const {return  3;}

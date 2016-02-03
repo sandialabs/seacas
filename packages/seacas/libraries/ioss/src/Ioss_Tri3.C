@@ -85,7 +85,7 @@ Ioss::Tri3::Tri3()
   Ioss::ElementTopology::alias("tri3", "TRIANGLE_3_2D");
 }
 
-Ioss::Tri3::~Tri3() {}
+Ioss::Tri3::~Tri3() = default;
 
 int Ioss::Tri3::parametric_dimension()           const {return  2;}
 int Ioss::Tri3::spatial_dimension()           const {return  2;}

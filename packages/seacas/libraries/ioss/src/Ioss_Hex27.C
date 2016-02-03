@@ -109,7 +109,7 @@ Ioss::Hex27::Hex27()
   Ioss::ElementTopology::alias("hex27", "Solid_Hex_27_3D");
 }
 
-Ioss::Hex27::~Hex27() {}
+Ioss::Hex27::~Hex27() = default;
 
 int Ioss::Hex27::parametric_dimension()           const {return  3;}
 int Ioss::Hex27::spatial_dimension()           const {return  3;}

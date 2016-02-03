@@ -109,7 +109,7 @@ Ioss::Tet7::Tet7()
   Ioss::ElementTopology::alias("tetra7", "Solid_Tet_7_3D");
   }
 
-Ioss::Tet7::~Tet7() {}
+Ioss::Tet7::~Tet7() = default;
 
 int Ioss::Tet7::parametric_dimension()           const {return  3;}
 int Ioss::Tet7::spatial_dimension()           const {return  3;}

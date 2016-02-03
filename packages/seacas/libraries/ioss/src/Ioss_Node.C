@@ -76,7 +76,7 @@ Ioss::Node::Node()
   Ioss::ElementTopology::alias("node", "NODE");
 }
 
-Ioss::Node::~Node() {}
+Ioss::Node::~Node() = default;
 
 int Ioss::Node::parametric_dimension()           const {return  0;}
 int Ioss::Node::spatial_dimension()           const {return  3;}

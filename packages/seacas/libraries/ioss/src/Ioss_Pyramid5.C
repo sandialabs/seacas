@@ -112,7 +112,7 @@ Ioss::Pyramid5::Pyramid5()
   Ioss::ElementTopology::alias("pyramid5", "pyra5");
 }
 
-Ioss::Pyramid5::~Pyramid5() {}
+Ioss::Pyramid5::~Pyramid5() = default;
 
 int Ioss::Pyramid5::parametric_dimension()           const {return  3;}
 int Ioss::Pyramid5::spatial_dimension()           const {return  3;}

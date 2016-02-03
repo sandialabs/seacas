@@ -91,7 +91,7 @@ Ioss::Bar2::Bar2()
 }
 
 
-Ioss::Bar2::~Bar2() {}
+Ioss::Bar2::~Bar2() = default;
 
 int Ioss::Bar2::parametric_dimension() const {return  1;}
 int Ioss::Bar2::spatial_dimension()    const {return  3;}

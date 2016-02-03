@@ -83,7 +83,7 @@ Ioss::Quad8::Quad8()
   Ioss::ElementTopology::alias("quad8", "quadface8");
 }
 
-Ioss::Quad8::~Quad8() {}
+Ioss::Quad8::~Quad8() = default;
 
 int Ioss::Quad8::parametric_dimension()           const {return  2;}
 int Ioss::Quad8::spatial_dimension()           const {return  2;}
