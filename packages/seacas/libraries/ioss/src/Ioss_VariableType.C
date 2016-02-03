@@ -64,8 +64,9 @@ void Ioss::Registry::insert(const Ioss::VTM_ValuePair &value, bool delete_me)
 
 Ioss::Registry::~Registry()
 {
-  if (!m_deleteThese.empty()) 
+  if (!m_deleteThese.empty()) { 
     std::for_each(m_deleteThese.begin(), m_deleteThese.end(), Deleter());
+}
 }
 
 Ioss::VariableType::~VariableType() {}
@@ -115,26 +116,26 @@ bool Ioss::VariableType::add_field_type_mapping(const std::string &raw_field, co
   // See if storage type 'type' exists...
   std::string field = Ioss::Utils::lowercase(raw_field);
   std::string type  = Ioss::Utils::lowercase(raw_type);
-  if (registry().find(type) == registry().end())
+  if (registry().find(type) == registry().end()) {
     return false;
+  }
 
   // Add mapping.
-  if (registry().customFieldTypes.insert(std::make_pair(field, type)).second)
-    return true;
-  else
-    return false;
+  return registry().customFieldTypes.insert(std::make_pair(field, type)).second;
 }
 
 bool Ioss::VariableType::create_named_suffix_field_type(const std::string &type_name, std::vector<std::string> &suffices)
 {
   size_t count = suffices.size();
-  if (count < 1)
+  if (count < 1) {
     return false;
+}
 
   std::string low_name = Ioss::Utils::lowercase(type_name);
   // See if the variable already exists...
-  if (registry().find(low_name) != registry().end())
+  if (registry().find(low_name) != registry().end()) {
     return false;
+}
   
   // Create the variable.  Note that the 'true' argument means Ioss will delete the pointer.
   Ioss::NamedSuffixVariableType *var_type = new Ioss::NamedSuffixVariableType(low_name, count, true);
@@ -154,10 +155,10 @@ bool Ioss::VariableType::get_field_type_mapping(const std::string &field, std::s
   if (registry().customFieldTypes.find(low_field) == registry().customFieldTypes.end()) {
     return false;
   }
-  else {
+  
     *type = registry().customFieldTypes.find(low_field)->second;
     return true;
-  }
+  
 }
 
 const Ioss::VariableType* Ioss::VariableType::factory(const std::string& raw_name, int copies)
@@ -191,8 +192,9 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
 {
   size_t size = suffices.size();
   const Ioss::VariableType* ivt = nullptr;
-  if (size <= 1)
+  if (size <= 1) {
     return nullptr; // All storage types must have at least 2 components.
+  }
 
   bool match = false;
   for (auto vtype : registry()) {
@@ -205,7 +207,7 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
     }
   }
 
-  if (match == false) {
+  if (!match) {
     match = true;
     // Check if the suffices form a sequence (1,2,3,...,N)
     // This indicates a "component" variable type that is
@@ -220,16 +222,17 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
 
     // Create a format for our use...
     char format[5];
-    if (size < 10)
+    if (size < 10) {
       std::strcpy(format, "%01d");
-    else if (size < 100)
+    } else if (size < 100) {
       std::strcpy(format, "%02d");
-    else if (size < 1000)
+    } else if (size < 1000) {
       std::strcpy(format, "%03d");
-    else if (size < 10000)
+    } else if (size < 10000) {
       std::strcpy(format, "%04d");
-    else
+    } else {
       std::strcpy(format, "%05d");
+    }
 
     for (size_t i=0; i < size; i++) {
       std::sprintf(digits, format, i+1);
@@ -298,7 +301,9 @@ bool Ioss::VariableType::build_variable_type(const std::string& raw_type)
   char const *lbrace =  std::strchr(typestr, '[');
   char const *rbrace = std::strrchr(typestr, ']');
 
-  if (lbrace == nullptr || rbrace == nullptr) return false;
+  if (lbrace == nullptr || rbrace == nullptr) {
+    return false;
+  }
 
   // Step 1:
   // First, we split off the basename (REAL/INTEGER) from the component count ([2])
@@ -337,17 +342,17 @@ std::string Ioss::VariableType::numeric_label(int which, int ncomp, const std::s
   char digits[8];
   // Create a format for our use...
   char format[5];
-  if (ncomp <          10)
+  if (ncomp <          10) {
     std::strcpy(format, "%01d");
-  else if (ncomp <    100)
+  } else if (ncomp <    100) {
     std::strcpy(format, "%02d");
-  else if (ncomp <   1000)
+  } else if (ncomp <   1000) {
     std::strcpy(format, "%03d");
-  else if (ncomp <  10000)
+  } else if (ncomp <  10000) {
     std::strcpy(format, "%04d");
-  else if (ncomp < 100000)
+  } else if (ncomp < 100000) {
     std::strcpy(format, "%05d");
-  else {
+  } else {
     std::ostringstream errmsg;
     errmsg << "ERROR: Variable '" << name << "' has " << ncomp
 	   << " components which is larger than the current maximum"

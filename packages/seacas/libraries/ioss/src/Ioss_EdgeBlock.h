@@ -47,7 +47,7 @@ namespace Ioss {
   class EdgeBlock : public EntityBlock {
   public:
     EdgeBlock(DatabaseIO *io_database,
-	      const std::string& name, const std::string& edge_type,
+	      const std::string& my_name, const std::string& edge_type,
 	      int64_t number_edges);
 
     ~EdgeBlock();
@@ -59,7 +59,7 @@ namespace Ioss {
     /// Handle implicit properties -- These are calcuated from data stored
     /// in the grouping entity instead of having an explicit value assigned.
     /// An example would be 'edge_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
   protected:
     int64_t internal_get_field_data(const Field& field,

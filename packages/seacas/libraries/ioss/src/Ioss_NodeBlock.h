@@ -47,7 +47,7 @@ namespace Ioss {
   class NodeBlock : public EntityBlock {
   public:
     NodeBlock(DatabaseIO *io_database,
-	      const std::string& name,
+	      const std::string& my_name,
 	      int64_t node_count,
 	      int64_t degrees_of_freedom);
 
@@ -60,7 +60,7 @@ namespace Ioss {
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
   protected:
     int64_t internal_get_field_data(const Field& field,

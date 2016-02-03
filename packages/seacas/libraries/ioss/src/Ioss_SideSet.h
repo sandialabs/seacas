@@ -51,7 +51,7 @@ namespace Ioss {
 
   class SideSet : public GroupingEntity {
   public:
-    SideSet(DatabaseIO *io_database, const std::string& name);
+    SideSet(DatabaseIO *io_database, const std::string& my_name);
     ~SideSet();
 
     std::string type_string() const {return "SideSet";}
@@ -60,7 +60,7 @@ namespace Ioss {
 
     bool add(SideBlock    *side_block);
     const SideBlockContainer&    get_side_blocks() const;
-    SideBlock*    get_side_block(const std::string& name) const;
+    SideBlock*    get_side_block(const std::string& my_name) const;
     size_t side_block_count() const {return sideBlocks.size();}
     
     size_t block_count() const {return sideBlocks.size();}
@@ -71,7 +71,7 @@ namespace Ioss {
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
     int max_parametric_dimension() const;
 

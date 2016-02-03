@@ -127,8 +127,9 @@ Ioss::IntVector Ioss::ShellLine2D3::face_connectivity(int /* face_number */) con
 Ioss::IntVector Ioss::ShellLine2D3::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
   return connectivity;
 }
 

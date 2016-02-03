@@ -82,7 +82,7 @@ namespace Ioss {
     friend class Property;
 
     GroupingEntity();
-    GroupingEntity(DatabaseIO *io_database, const std::string& name,
+    GroupingEntity(DatabaseIO *io_database, const std::string& my_name,
 		   int64_t entity_count);
     
     virtual ~GroupingEntity();
@@ -106,7 +106,7 @@ namespace Ioss {
 
     
     //: Returns true if 'name' is an alias for this entity.
-    bool is_alias(const std::string &name) const;
+    bool is_alias(const std::string &my_name) const;
 
     //: Return list of blocks that the entities in this GroupingEntity "touch"
     //: For a SideSet, returns a list of the element blocks that the
@@ -172,11 +172,12 @@ namespace Ioss {
     int put_field_data(const std::string& field_name, std::vector<Complex> &data) const;
 
     Ioss::Field::BasicType field_int_type() const {
-      if (get_database() == nullptr || get_database()->int_byte_size_api() == 4)
-	return Ioss::Field::INTEGER;
-      else
+      if (get_database() == nullptr || get_database()->int_byte_size_api() == 4) {
+	return Ioss::Field::INT32;
+      } else {
 	return Ioss::Field::INT64;
-    }	
+      }
+    }
 	  
 
   protected:
@@ -200,7 +201,7 @@ namespace Ioss {
     // Derived classes should call 'GroupingEntity::get_implicit_property'
     // if the requested property is not specific to their type.
     virtual Property
-      get_implicit_property(const std::string& name) const = 0;
+      get_implicit_property(const std::string& my_name) const = 0;
 
     PropertyManager properties;
     FieldManager    fields;

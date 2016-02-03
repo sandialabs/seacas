@@ -46,7 +46,7 @@ namespace Ioss {
   class EntityBlock : public GroupingEntity {
   public:
     virtual Property
-      get_implicit_property(const std::string& name) const = 0;
+      get_implicit_property(const std::string& my_name) const = 0;
 
     // Describes the contained entities topology
     const ElementTopology *topology() const {return topology_;}
@@ -59,7 +59,7 @@ namespace Ioss {
 
   protected:
     EntityBlock(DatabaseIO *io_database,
-		const std::string& name,
+		const std::string& my_name,
 		const std::string& entity_type,
 		size_t entity_count);
 

@@ -44,7 +44,7 @@ namespace Ioss {
     static VariableType* composite_variable_type(const VariableType *inst, int copies);
 
     std::string label(int which, const char suffix_sep='_') const;
-    CompositeVariableType(const std::string& name, int number_components, bool delete_me);
+    CompositeVariableType(const std::string& my_name, int number_components, bool delete_me);
     CompositeVariableType(const VariableType *base_type, int copies, bool delete_me);
 
     const VariableType* GetBaseType()  const;

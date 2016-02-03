@@ -95,7 +95,7 @@ namespace Ioex {
     public:
       DatabaseIO(Ioss::Region *region, const std::string& filename,
                  Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-                 const Ioss::PropertyManager &properties);
+                 const Ioss::PropertyManager &props);
       virtual ~DatabaseIO();
 
       // Check to see if database state is ok...
@@ -246,7 +246,7 @@ namespace Ioex {
 
       void get_nodeblocks();
 
-      void add_attribute_fields(ex_entity_type ent_type, Ioss::GroupingEntity *block,
+      void add_attribute_fields(ex_entity_type entity_type, Ioss::GroupingEntity *block,
                                 int attribute_count,  const std::string& type);
 
       void output_other_meta_data();

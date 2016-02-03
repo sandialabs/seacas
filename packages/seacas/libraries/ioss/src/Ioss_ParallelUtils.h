@@ -49,7 +49,7 @@ namespace Ioss {
   class ParallelUtils {
   public:
 
-    explicit ParallelUtils(MPI_Comm communicator);
+    explicit ParallelUtils(MPI_Comm the_communicator);
     ~ParallelUtils() {}
 
     // Assignment operator
