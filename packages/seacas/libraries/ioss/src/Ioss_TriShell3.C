@@ -104,7 +104,7 @@ Ioss::TriShell3::TriShell3()
   Ioss::ElementTopology::alias("trishell3", "shell3");
 }
 
-Ioss::TriShell3::~TriShell3() {}
+Ioss::TriShell3::~TriShell3() = default;
 
 int Ioss::TriShell3::parametric_dimension()           const {return  2;}
 int Ioss::TriShell3::spatial_dimension()           const {return  3;}

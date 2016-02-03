@@ -81,7 +81,7 @@ Ioss::Bar3::Bar3()
   Ioss::ElementTopology::alias("bar3", "rod2d3");
 }
 
-Ioss::Bar3::~Bar3() {}
+Ioss::Bar3::~Bar3() = default;
 
 int Ioss::Bar3::parametric_dimension()           const {return  1;}
 int Ioss::Bar3::spatial_dimension()           const {return  3;}

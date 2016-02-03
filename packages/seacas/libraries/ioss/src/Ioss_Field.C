@@ -122,31 +122,13 @@ Ioss::Field::Field(std::string name,
 }
 
 Ioss::Field::Field(const Ioss::Field& from)
-  : name_(from.name_), rawCount_(from.rawCount_), transCount_(from.transCount_),
-    size_(from.size_), index_(from.index_),
-    type_(from.type_), role_(from.role_),
-    rawStorage_(from.rawStorage_), transStorage_(from.transStorage_), 
-    transforms_(from.transforms_)
-{}
+  = default;
 
 Ioss::Field& Ioss::Field::operator=(const Field& from)
-{
-  name_ = from.name_;
-  rawCount_ = from.rawCount_;
-  transCount_ = from.transCount_;
-  size_ = from.size_;
-  index_ = from.index_;
-  type_  = from.type_;
-  role_ = from.role_;
-  rawStorage_ = from.rawStorage_;
-  transStorage_ = from.transStorage_;
-  transforms_ = from.transforms_;
-  return *this;
-}
+= default;
 
 Ioss::Field::~Field()
-{
-}
+= default;
 
 // Verify that data_size is valid.
 // If return value >= 0, then it is the maximum number of

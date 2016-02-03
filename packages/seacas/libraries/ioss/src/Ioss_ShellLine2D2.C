@@ -76,7 +76,7 @@ Ioss::ShellLine2D2::ShellLine2D2()
   Ioss::ElementTopology::alias("shellline2d2", "SHELL_LINE_2");
 }
 
-Ioss::ShellLine2D2::~ShellLine2D2() {}
+Ioss::ShellLine2D2::~ShellLine2D2() = default;
 
 int Ioss::ShellLine2D2::parametric_dimension()           const {return  1;}
 int Ioss::ShellLine2D2::spatial_dimension()           const {return  2;}

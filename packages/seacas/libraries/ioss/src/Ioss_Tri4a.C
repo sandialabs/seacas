@@ -82,7 +82,7 @@ Ioss::Tri4a::Tri4a()
   : Ioss::ElementTopology("tri4a", "Triangle_4a")
 {}
 
-Ioss::Tri4a::~Tri4a() {}
+Ioss::Tri4a::~Tri4a() = default;
 
 int Ioss::Tri4a::parametric_dimension()           const {return  2;}
 int Ioss::Tri4a::spatial_dimension()           const {return  2;}

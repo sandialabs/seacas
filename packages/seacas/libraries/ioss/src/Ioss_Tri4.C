@@ -82,7 +82,7 @@ Ioss::Tri4::Tri4()
   Ioss::ElementTopology::alias("tri4", "TRIANGLE_4_2D");
 }
 
-Ioss::Tri4::~Tri4() {}
+Ioss::Tri4::~Tri4() = default;
 
 int Ioss::Tri4::parametric_dimension()           const {return  2;}
 int Ioss::Tri4::spatial_dimension()           const {return  2;}

@@ -84,7 +84,7 @@ Ioss::Quad4::Quad4()
   Ioss::ElementTopology::alias("quad4", "quadface4");
 }
 
-Ioss::Quad4::~Quad4() {}
+Ioss::Quad4::~Quad4() = default;
 
 int Ioss::Quad4::parametric_dimension()           const {return  2;}
 int Ioss::Quad4::spatial_dimension()           const {return  2;}

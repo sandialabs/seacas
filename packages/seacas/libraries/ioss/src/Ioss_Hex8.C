@@ -106,7 +106,7 @@ Ioss::Hex8::Hex8()
   Ioss::ElementTopology::alias("hex8", "Solid_Hex_8_3D");
 }
 
-Ioss::Hex8::~Hex8() {}
+Ioss::Hex8::~Hex8() = default;
 
 int Ioss::Hex8::parametric_dimension()           const {return  3;}
 int Ioss::Hex8::spatial_dimension()           const {return  3;}

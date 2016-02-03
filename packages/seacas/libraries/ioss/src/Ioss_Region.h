@@ -89,11 +89,11 @@ namespace Ioss {
 
     explicit Region(DatabaseIO *iodatabase = nullptr, const std::string& my_name="");
 
-    ~Region();
+    ~Region() override;
 
-    std::string type_string() const {return "Region";}
-    std::string short_type_string() const {return "region";}
-    EntityType type() const {return REGION;}
+    std::string type_string() const override {return "Region";}
+    std::string short_type_string() const override {return "region";}
+    EntityType type() const override {return REGION;}
 
     void output_summary(std::ostream &strm, bool do_transient=true);
     
@@ -215,7 +215,7 @@ namespace Ioss {
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string& my_name) const;
+    Property get_implicit_property(const std::string& my_name) const override;
 
     const std::vector<std::string> &get_information_records() const;
     void add_information_records(const std::vector<std::string> &info);
@@ -227,13 +227,13 @@ namespace Ioss {
 
   protected:
     int64_t internal_get_field_data(const Field& field,
-				void *data, size_t data_size) const;
+				void *data, size_t data_size) const override;
 
     int64_t internal_put_field_data(const Field& field,
-				void *data, size_t data_size) const;
+				void *data, size_t data_size) const override;
 
   private:
-    void delete_database();
+    void delete_database() override;
 
     AliasMap aliases_; ///< Stores alias mappings
 

@@ -109,7 +109,7 @@ Ioss::Hex20::Hex20()
   Ioss::ElementTopology::alias("hex20", "Solid_Hex_20_3D");
 }
 
-Ioss::Hex20::~Hex20() {}
+Ioss::Hex20::~Hex20() = default;
 
 int Ioss::Hex20::parametric_dimension()           const {return  3;}
 int Ioss::Hex20::spatial_dimension()           const {return  3;}

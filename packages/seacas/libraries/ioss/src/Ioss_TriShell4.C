@@ -102,7 +102,7 @@ Ioss::TriShell4::TriShell4()
   Ioss::ElementTopology::alias("trishell4", "SHELL_TRIANGLE_4");
 }
 
-Ioss::TriShell4::~TriShell4() {}
+Ioss::TriShell4::~TriShell4() = default;
 
 int Ioss::TriShell4::parametric_dimension()           const {return  2;}
 int Ioss::TriShell4::spatial_dimension()           const {return  3;}

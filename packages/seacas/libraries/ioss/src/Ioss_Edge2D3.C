@@ -76,7 +76,7 @@ Ioss::Edge2D3::Edge2D3()
   //  Ioss::ElementTopology::alias("edge2d3", "LINE_3");
 }
 
-Ioss::Edge2D3::~Edge2D3() {}
+Ioss::Edge2D3::~Edge2D3() = default;
 
 int Ioss::Edge2D3::parametric_dimension()           const {return  1;}
 int Ioss::Edge2D3::spatial_dimension()           const {return  2;}

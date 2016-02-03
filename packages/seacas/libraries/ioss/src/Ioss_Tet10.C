@@ -102,7 +102,7 @@ Ioss::Tet10::Tet10()
   Ioss::ElementTopology::alias("tetra10", "tet10");
   Ioss::ElementTopology::alias("tetra10", "Solid_Tet_10_3D");}
 
-Ioss::Tet10::~Tet10() {}
+Ioss::Tet10::~Tet10() = default;
 
 int Ioss::Tet10::parametric_dimension()           const {return  3;}
 int Ioss::Tet10::spatial_dimension()           const {return  3;}

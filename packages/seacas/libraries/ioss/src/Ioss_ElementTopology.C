@@ -96,7 +96,7 @@ Ioss::ETRegistry& Ioss::ElementTopology::registry()
 }
 
 Ioss::ElementTopology::~ElementTopology()
-{}
+= default;
 
 bool Ioss::ElementTopology::edges_similar() const {return true;}
 bool Ioss::ElementTopology::faces_similar() const {return true;}
@@ -106,7 +106,7 @@ Ioss::ElementTopology* Ioss::ElementTopology::factory(const std::string& type, b
   std::string ltype = Ioss::Utils::lowercase(type);
   
   Ioss::ElementTopology* inst = nullptr;
-  Ioss::ElementTopologyMap::iterator iter = registry().find(ltype);
+  auto iter = registry().find(ltype);
 
   if (iter == registry().end()) {
     std::string base1 = "super";
@@ -166,7 +166,7 @@ unsigned int Ioss::ElementTopology::get_unique_id(const std::string& type)
 }
   unsigned int hash_val = 0;
   std::string ltype = Ioss::Utils::lowercase(type);
-  Ioss::ElementTopologyMap::iterator iter = registry().find(ltype);
+  auto iter = registry().find(ltype);
   if (iter == registry().end()) {
     IOSS_WARNING << "WARNING: The topology type '" << type
 		 << "' is not supported.\n";
@@ -217,7 +217,7 @@ Ioss::IntVector Ioss::ElementTopology::element_edge_connectivity() const
 bool Ioss::ElementTopology::is_alias(const std::string &my_alias) const
 {
   std::string low_my_alias = Ioss::Utils::lowercase(my_alias);
-  Ioss::ElementTopologyMap::iterator iter = registry().find(low_my_alias);
+  auto iter = registry().find(low_my_alias);
   if (iter == registry().end()) {
     return false;
   } 

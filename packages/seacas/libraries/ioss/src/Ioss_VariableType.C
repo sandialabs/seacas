@@ -69,7 +69,7 @@ Ioss::Registry::~Registry()
 }
 }
 
-Ioss::VariableType::~VariableType() {}
+Ioss::VariableType::~VariableType() = default;
 
 Ioss::VariableType::VariableType(const std::string& type, int comp_count, bool delete_me)
   : name_(type), componentCount(comp_count)
@@ -138,7 +138,7 @@ bool Ioss::VariableType::create_named_suffix_field_type(const std::string &type_
 }
   
   // Create the variable.  Note that the 'true' argument means Ioss will delete the pointer.
-  Ioss::NamedSuffixVariableType *var_type = new Ioss::NamedSuffixVariableType(low_name, count, true);
+  auto var_type = new Ioss::NamedSuffixVariableType(low_name, count, true);
 
   for (size_t i=0; i < count; i++) {
     var_type->add_suffix(i+1, suffices[i]);
@@ -165,7 +165,7 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::string& raw_nam
 {
   Ioss::VariableType* inst = nullptr;
   std::string name = Ioss::Utils::lowercase(raw_name);
-  Ioss::VariableTypeMap::iterator iter = registry().find(name);
+  auto iter = registry().find(name);
   if (iter == registry().end()) {
     bool can_construct = build_variable_type(name);
     if (can_construct) {
@@ -310,12 +310,12 @@ bool Ioss::VariableType::build_variable_type(const std::string& raw_type)
   // and see if the basename is a valid variable type and the count is a
   // valid integer.
   size_t len = type.length() + 1;
-  char *typecopy = new char[len];
+  auto typecopy = new char[len];
   std::strcpy(typecopy, typestr);
 
   char *base = std::strtok(typecopy, "[]");
   assert (base != nullptr);
-  Ioss::VariableTypeMap::iterator iter = Ioss::VariableType::registry().find(base);
+  auto iter = Ioss::VariableType::registry().find(base);
   if (iter == registry().end()) {
     delete [] typecopy;
     return false;

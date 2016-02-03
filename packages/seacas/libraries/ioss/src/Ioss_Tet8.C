@@ -102,7 +102,7 @@ Ioss::Tet8::Tet8()
   Ioss::ElementTopology::alias("tetra8", "Solid_Tet_8_3D");
   }
 
-Ioss::Tet8::~Tet8() {}
+Ioss::Tet8::~Tet8() = default;
 
 int Ioss::Tet8::parametric_dimension()           const {return  3;}
 int Ioss::Tet8::spatial_dimension()           const {return  3;}

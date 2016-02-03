@@ -83,7 +83,7 @@ Ioss::Quad9::Quad9()
   Ioss::ElementTopology::alias("quad9", "quadface9");
 }
 
-Ioss::Quad9::~Quad9() {}
+Ioss::Quad9::~Quad9() = default;
 
 int Ioss::Quad9::parametric_dimension()           const {return  2;}
 int Ioss::Quad9::spatial_dimension()           const {return  2;}
