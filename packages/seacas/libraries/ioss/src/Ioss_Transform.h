@@ -76,7 +76,7 @@ namespace Iotr {
 
   class Factory {
   public:
-    virtual ~Factory() {};
+    virtual ~Factory() = default;
     static Ioss::Transform* create(const std::string& type);
 
     static int describe(NameList *names);

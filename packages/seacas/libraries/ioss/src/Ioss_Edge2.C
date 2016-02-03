@@ -77,7 +77,7 @@ Ioss::Edge2::Edge2()
   Ioss::ElementTopology::alias("edge2", "LINE_2_1D");
 }
 
-Ioss::Edge2::~Edge2() {}
+Ioss::Edge2::~Edge2() = default;
 
 int Ioss::Edge2::parametric_dimension()           const {return  1;}
 int Ioss::Edge2::spatial_dimension()           const {return  3;}

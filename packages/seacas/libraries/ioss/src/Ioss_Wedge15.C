@@ -107,7 +107,7 @@ Ioss::Wedge15::Wedge15()
   Ioss::ElementTopology::alias("wedge15", "Solid_Wedge_15_3D");
 }
 
-Ioss::Wedge15::~Wedge15() {}
+Ioss::Wedge15::~Wedge15() = default;
 
 int Ioss::Wedge15::parametric_dimension()           const {return  3;}
 int Ioss::Wedge15::spatial_dimension()           const {return  3;}

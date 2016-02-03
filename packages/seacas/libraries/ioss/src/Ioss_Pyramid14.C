@@ -112,7 +112,7 @@ Ioss::Pyramid14::Pyramid14()
   Ioss::ElementTopology::alias("pyramid14", "pyra14");
 }
 
-Ioss::Pyramid14::~Pyramid14() {}
+Ioss::Pyramid14::~Pyramid14() = default;
 
 int Ioss::Pyramid14::parametric_dimension()           const {return  3;}
 int Ioss::Pyramid14::spatial_dimension()           const {return  3;}

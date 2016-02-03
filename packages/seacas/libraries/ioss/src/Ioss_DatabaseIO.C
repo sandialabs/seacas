@@ -231,8 +231,7 @@ namespace Ioss {
   }
 
   DatabaseIO::~DatabaseIO()
-  {
-  }
+  = default;
 
   int DatabaseIO::int_byte_size_api() const
   {
@@ -366,7 +365,7 @@ namespace Ioss {
     int64_t df_count = 0;
 
     // Create the new set...
-    SideSet* new_set = new SideSet(this, group_spec[0]);
+    auto  new_set = new SideSet(this, group_spec[0]);
 	
     get_region()->add(new_set);
 	
@@ -377,7 +376,7 @@ namespace Ioss {
 	SideBlockContainer side_blocks = set->get_side_blocks();
 	for (auto &sbold : side_blocks) {
 	  size_t side_count = sbold->get_property("entity_count").get_int();
-	  SideBlock *sbnew = new SideBlock(this, sbold->name(),
+	  auto sbnew = new SideBlock(this, sbold->name(),
 					   sbold->topology()->name(),
 					   sbold->parent_element_topology()->name(),
 					   side_count);

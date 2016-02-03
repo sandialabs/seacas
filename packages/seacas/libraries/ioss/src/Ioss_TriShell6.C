@@ -97,7 +97,7 @@ Ioss::TriShell6::TriShell6()
   Ioss::ElementTopology::alias("trishell6", "SHELL6");
 }
 
-Ioss::TriShell6::~TriShell6() {}
+Ioss::TriShell6::~TriShell6() = default;
 
 int Ioss::TriShell6::parametric_dimension()           const {return  2;}
 int Ioss::TriShell6::spatial_dimension()           const {return  3;}

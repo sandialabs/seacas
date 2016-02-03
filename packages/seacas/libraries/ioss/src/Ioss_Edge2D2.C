@@ -77,7 +77,7 @@ Ioss::Edge2D2::Edge2D2()
 }
 
 
-Ioss::Edge2D2::~Edge2D2() {}
+Ioss::Edge2D2::~Edge2D2() = default;
 
 int Ioss::Edge2D2::parametric_dimension()           const {return  1;}
 int Ioss::Edge2D2::spatial_dimension()           const {return  2;}

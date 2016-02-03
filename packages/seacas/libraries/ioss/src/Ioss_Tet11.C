@@ -104,7 +104,7 @@ Ioss::Tet11::Tet11()
   Ioss::ElementTopology::alias("tetra11", "Solid_Tet_11_3D");
 }
 
-Ioss::Tet11::~Tet11() {}
+Ioss::Tet11::~Tet11() = default;
 
 int Ioss::Tet11::parametric_dimension()           const {return  3;}
 int Ioss::Tet11::spatial_dimension()           const {return  3;}

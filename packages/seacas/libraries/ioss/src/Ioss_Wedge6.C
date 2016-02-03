@@ -111,7 +111,7 @@ Ioss::Wedge6::Wedge6()
   Ioss::ElementTopology::alias("wedge6", "WEDGE_6");
 }
 
-Ioss::Wedge6::~Wedge6() {}
+Ioss::Wedge6::~Wedge6() = default;
 
 int Ioss::Wedge6::parametric_dimension() const {return  3;}
 int Ioss::Wedge6::spatial_dimension()   const {return  3;}

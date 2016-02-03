@@ -112,7 +112,7 @@ Ioss::Pyramid13::Pyramid13()
   Ioss::ElementTopology::alias("pyramid13", "pyra13");
 }
 
-Ioss::Pyramid13::~Pyramid13() {}
+Ioss::Pyramid13::~Pyramid13() = default;
 
 int Ioss::Pyramid13::parametric_dimension()           const {return  3;}
 int Ioss::Pyramid13::spatial_dimension()           const {return  3;}

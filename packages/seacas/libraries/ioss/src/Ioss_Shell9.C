@@ -102,7 +102,7 @@ Ioss::Shell9::Shell9()
   Ioss::ElementTopology::alias("shell9", "SHELL_QUADRILATERAL_9");
 }
 
-Ioss::Shell9::~Shell9() {}
+Ioss::Shell9::~Shell9() = default;
 
 int Ioss::Shell9::parametric_dimension()           const {return  2;}
 int Ioss::Shell9::spatial_dimension()           const {return  3;}

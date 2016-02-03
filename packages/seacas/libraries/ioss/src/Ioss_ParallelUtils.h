@@ -50,7 +50,7 @@ namespace Ioss {
   public:
 
     explicit ParallelUtils(MPI_Comm the_communicator);
-    ~ParallelUtils() {}
+    ~ParallelUtils() = default;
 
     // Assignment operator
     // Copy constructor

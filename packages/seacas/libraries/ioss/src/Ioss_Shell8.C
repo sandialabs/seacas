@@ -102,7 +102,7 @@ Ioss::Shell8::Shell8()
   Ioss::ElementTopology::alias("shell8", "SHELL_QUADRILATERAL_8");
 }
 
-Ioss::Shell8::~Shell8() {}
+Ioss::Shell8::~Shell8() = default;
 
 int Ioss::Shell8::parametric_dimension()           const {return  2;}
 int Ioss::Shell8::spatial_dimension()           const {return  3;}

@@ -83,7 +83,7 @@ Ioss::Tri6::Tri6()
   Ioss::ElementTopology::alias("tri6", "triface6");
 }
 
-Ioss::Tri6::~Tri6() {}
+Ioss::Tri6::~Tri6() = default;
 
 int Ioss::Tri6::parametric_dimension()           const {return  2;}
 int Ioss::Tri6::spatial_dimension()           const {return  2;}

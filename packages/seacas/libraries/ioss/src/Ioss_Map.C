@@ -83,7 +83,7 @@ namespace {
   class IdPairCompare
   {
   public:
-    IdPairCompare() {}
+    IdPairCompare() = default;
     bool operator()(const Ioss::IdPair& lhs, const Ioss::IdPair &rhs) const
     { return key_less(lhs.first, rhs.first); }
     bool operator()(const Ioss::IdPair& lhs, const Ioss::IdPair::first_type &k) const
@@ -100,7 +100,7 @@ namespace {
   class IdPairEqual
   {
   public:
-    IdPairEqual() {}
+    IdPairEqual() = default;
     bool operator()(const Ioss::IdPair& lhs, const Ioss::IdPair &rhs) const
     { return key_equal(lhs.first, rhs.first); }
     bool operator()(const Ioss::IdPair& lhs, const Ioss::IdPair::first_type &k) const
@@ -119,12 +119,12 @@ namespace {
   void verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map, int processor, const std::string &type)
   {
     // Check for duplicate ids...
-    std::vector<Ioss::IdPair>::iterator dup = std::adjacent_find(reverse_map.begin(),
+    auto dup = std::adjacent_find(reverse_map.begin(),
 							   reverse_map.end(),
 							   IdPairEqual());
 
     if (dup != reverse_map.end()) {
-      std::vector<Ioss::IdPair>::iterator other = dup+1;
+      auto other = dup+1;
       std::ostringstream errmsg;
       errmsg << "\nERROR: Duplicate " << type << " global id detected on processor "
 	     << processor << ".\n"
@@ -390,7 +390,7 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 {
   int64_t local = global;
   if (map[0] == 1) {
-    RMapI iter = std::lower_bound(reverse.begin(), reverse.end(), global, IdPairCompare());
+    auto iter = std::lower_bound(reverse.begin(), reverse.end(), global, IdPairCompare());
     if (iter != reverse.end() && iter->first == global) {
       local = iter->second;
     } else {

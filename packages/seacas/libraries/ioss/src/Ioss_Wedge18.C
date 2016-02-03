@@ -107,7 +107,7 @@ Ioss::Wedge18::Wedge18()
   Ioss::ElementTopology::alias("wedge18", "Solid_Wedge_18_3D");
 }
 
-Ioss::Wedge18::~Wedge18() {}
+Ioss::Wedge18::~Wedge18() = default;
 
 int Ioss::Wedge18::parametric_dimension()           const {return  3;}
 int Ioss::Wedge18::spatial_dimension()           const {return  3;}

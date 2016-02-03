@@ -990,7 +990,7 @@ namespace Ioss {
   std::string Region::get_alias(const std::string &alias) const
   {
     std::string ci_alias = uppercase(alias);
-    AliasMap::const_iterator I = aliases_.find(ci_alias);
+    auto I = aliases_.find(ci_alias);
     if (I == aliases_.end()) {
       return "";
     } 
