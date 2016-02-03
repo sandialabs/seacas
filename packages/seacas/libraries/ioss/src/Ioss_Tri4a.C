@@ -104,8 +104,9 @@ Ioss::IntVector Ioss::Tri4a::edge_connectivity(int edge_number) const
   assert(edge_number > 0 && edge_number <= number_edges());
   Ioss::IntVector connectivity(Constants::nodes_per_edge[edge_number]);
 
-  for (int i=0; i < Constants::nodes_per_edge[edge_number]; i++)
+  for (int i=0; i < Constants::nodes_per_edge[edge_number]; i++) {
     connectivity[i] = Constants::edge_node_order[edge_number-1][i];
+  }
 
   return connectivity;
 }
@@ -120,8 +121,9 @@ Ioss::IntVector Ioss::Tri4a::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
 
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+  }
 
   return connectivity;
 }
@@ -134,10 +136,13 @@ Ioss::ElementTopology* Ioss::Tri4a::face_type(int /* face_number */) const
 Ioss::ElementTopology* Ioss::Tri4a::edge_type(int edge_number) const
 {
   assert(edge_number >= 0 && edge_number <= number_edges());
-  if (edge_number == 0)
+  if (edge_number == 0) {
     return nullptr;
-  if (edge_number == 1)
+  }
+  else if (edge_number == 1) {
     return Ioss::ElementTopology::factory("edge3");
-  else
+  }
+  else {
     return Ioss::ElementTopology::factory("edge2");
+  }
 }

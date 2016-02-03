@@ -48,7 +48,7 @@ namespace Ioss {
   class FaceSet : public EntitySet {
   public:
     FaceSet(); // Used for template typing only
-    FaceSet(DatabaseIO *io_database, const std::string& name,
+    FaceSet(DatabaseIO *io_database, const std::string& my_name,
 	    int64_t number_faces);
 
     std::string type_string() const {return "FaceSet";}
@@ -58,7 +58,7 @@ namespace Ioss {
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
     virtual void block_membership(std::vector<std::string> &block_membership);
 

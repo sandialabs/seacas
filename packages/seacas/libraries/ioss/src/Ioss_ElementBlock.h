@@ -46,7 +46,7 @@ namespace Ioss {
   class ElementBlock : public EntityBlock {
   public:
     ElementBlock(DatabaseIO *io_database,
-		 const std::string& name, const std::string& element_type,
+		 const std::string& my_name, const std::string& element_type,
 		 int64_t number_elements);
 
     ~ElementBlock();
@@ -58,9 +58,9 @@ namespace Ioss {
     /// Handle implicit properties -- These are calcuated from data stored
     /// in the grouping entity instead of having an explicit value assigned.
     /// An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
-    void get_block_adjacencies(std::vector<std::string> &block_adjacency_list) const;
+    void get_block_adjacencies(std::vector<std::string> &block_adjacency) const;
     AxisAlignedBoundingBox get_bounding_box() const;
 
   protected:

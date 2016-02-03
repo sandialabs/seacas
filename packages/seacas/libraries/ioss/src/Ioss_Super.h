@@ -48,7 +48,7 @@ namespace Ioss {
   public:
     static void factory();
     ~Super();
-    Super(const std::string &name, int node_count);
+    Super(const std::string &my_name, int node_count);
 
     static void make_super(const std::string &type);
     

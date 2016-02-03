@@ -55,18 +55,21 @@ namespace {
     // 'sequential' is defined here to mean i==the_map[i] for all 0<i<the_map.size()
 
     // Check slot zero...
-    if (the_map[0] == -1)
+    if (the_map[0] == -1) {
       return true;
-    else if (the_map[0] ==  1)
+    }
+    else if (the_map[0] ==  1) {
       return false;
+    }
     else {
       Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer&>(the_map);
       size_t size = the_map.size();
-      for (size_t i=1; i < size; i++)
+      for (size_t i=1; i < size; i++) {
 	if (the_map[i] != (int64_t)i) {
 	  new_map[0] = 1;
 	  return false;
 	}
+      }
       new_map[0] = -1;
       return true;
     }
@@ -259,12 +262,14 @@ void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) con
   if (!is_sequential(map)) {
     if (field.get_type() == Ioss::Field::INTEGER) {
       int *datum = static_cast<int*>(data);
-      for (size_t i=0; i < count; i++)
+      for (size_t i=0; i < count; i++) {
 	datum[i] = map[datum[i]];
+      }
     } else {
       int64_t *datum = static_cast<int64_t*>(data);
-      for (size_t i=0; i < count; i++)
+      for (size_t i=0; i < count; i++) {
 	datum[i] = map[datum[i]];
+      }
     }
   }
 }
@@ -386,10 +391,11 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
   int64_t local = global;
   if (map[0] == 1) {
     RMapI iter = std::lower_bound(reverse.begin(), reverse.end(), global, IdPairCompare());
-    if (iter != reverse.end() && iter->first == global)
+    if (iter != reverse.end() && iter->first == global) {
       local = iter->second;
-    else
+    } else {
       local = 0;
+    }
   } else if (!must_exist && global > (int64_t)map.size()-1) {
     local = 0;
   }
@@ -399,6 +405,6 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 	   << " returns a local id of " << local
 	   << " which is invalid. This should not happen, please report.\n";
     IOSS_ERROR(errmsg);
-      }
+  }
   return local;
 }

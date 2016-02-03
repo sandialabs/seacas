@@ -111,8 +111,9 @@ Ioss::IntVector Ioss::Quad9::edge_connectivity(int edge_number) const
   Ioss::IntVector connectivity(Constants::nedgenode);
   assert(edge_number > 0 && edge_number <= Constants::nedge);
 
-  for (int i=0; i < Constants::nedgenode; i++)
+  for (int i=0; i < Constants::nedgenode; i++) {
     connectivity[i] = Constants::edge_node_order[edge_number-1][i];
+}
 
   return connectivity;
 }
@@ -126,8 +127,9 @@ Ioss::IntVector Ioss::Quad9::face_connectivity(int /* face_number */) const
 Ioss::IntVector Ioss::Quad9::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
   return connectivity;
 }
 

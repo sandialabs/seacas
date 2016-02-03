@@ -50,7 +50,7 @@ namespace Ioss {
   public:
     Map() : entityType("unknown"), defined(false)
       {} 
-    Map(const std::string &entity_type) : entityType(entity_type), defined(false)
+    Map(std::string entity_type) : entityType(std::move(entity_type)), defined(false)
       {}
     
     int64_t global_to_local(int64_t global, bool must_exist = true) const;
