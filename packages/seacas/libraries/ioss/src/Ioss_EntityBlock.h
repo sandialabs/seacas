@@ -63,9 +63,8 @@ namespace Ioss {
 		const std::string& entity_type,
 		size_t entity_count);
 
-  private:
-    EntityBlock(const EntityBlock&); // do not implement
-    EntityBlock& operator=(const EntityBlock&); // do not implement
+    EntityBlock(const EntityBlock&) =delete; 
+    EntityBlock& operator=(const EntityBlock&) =delete;
 
     ElementTopology *topology_;
   protected:

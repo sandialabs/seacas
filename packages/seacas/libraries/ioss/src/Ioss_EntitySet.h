@@ -51,11 +51,10 @@ namespace Ioss {
     EntitySet(DatabaseIO *io_database,
 	      const std::string& my_name,
 	      size_t entity_count);
-
-  private:
-    EntitySet(const EntitySet&); // do not implement
-    EntitySet& operator=(const EntitySet&); // do not implement
-
+    EntitySet(const EntitySet&) =delete;
+    EntitySet& operator=(const EntitySet&) =delete;
+    ~EntitySet() =default;
+    
   protected:
     void count_attributes() const;
   };

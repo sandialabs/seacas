@@ -96,6 +96,9 @@ namespace Ioex {
       DatabaseIO(Ioss::Region *region, const std::string& filename,
                  Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                  const Ioss::PropertyManager &props);
+      DatabaseIO(const DatabaseIO& from) =delete;
+      DatabaseIO& operator=(const DatabaseIO& from) =delete;
+
       virtual ~DatabaseIO();
 
       // Check to see if database state is ok...
@@ -204,11 +207,6 @@ namespace Ioex {
 
       virtual void write_meta_data() = 0;
       void write_results_metadata();
-
-
-      // Private member functions
-      DatabaseIO(const DatabaseIO& from); // do not implement
-      DatabaseIO& operator=(const DatabaseIO& from); // do not implement
 
       virtual void openDatabase() const {
         get_file_pointer();

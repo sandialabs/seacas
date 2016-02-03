@@ -85,6 +85,9 @@ namespace Ioss {
     GroupingEntity();
     GroupingEntity(DatabaseIO *io_database, const std::string& my_name,
 		   int64_t entity_count);
+    GroupingEntity(const GroupingEntity&) =delete;
+    GroupingEntity& operator=(const GroupingEntity&) =delete;
+
     
     virtual ~GroupingEntity();
 
@@ -238,9 +241,6 @@ namespace Ioss {
     int64_t entityCount;
 
   private:
-    GroupingEntity(const GroupingEntity&); // do not implement
-    GroupingEntity& operator=(const GroupingEntity&); // do not implement
-
     void verify_field_exists(const std::string &field_name, const std::string &inout) const;
     
     std::string entityName;

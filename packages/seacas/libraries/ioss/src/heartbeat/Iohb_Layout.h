@@ -43,6 +43,9 @@ namespace Iohb {
     {
     public:
       Layout(bool show_labels, int precision, std::string separator, int field_width);
+      Layout(const Layout&) =delete;
+      Layout& operator=(const Layout&) =delete;
+
       ~Layout();
 
       friend std::ostream& operator<<(std::ostream& /*o*/, Layout& /*lo*/);
@@ -60,9 +63,6 @@ namespace Iohb {
       void add(const std::string& name, std::vector<std::string> &value);
 
     private:
-      Layout(const Layout&); // do not implement
-      Layout& operator=(const Layout&); // do not implement
-
       std::ostringstream layout_;
       std::string separator_;
 
