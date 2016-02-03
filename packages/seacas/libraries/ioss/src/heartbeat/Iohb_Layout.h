@@ -42,10 +42,10 @@ namespace Iohb {
   class Layout
     {
     public:
-      Layout(bool show_labels, int precision, const std::string &field_separator, int field_width);
+      Layout(bool show_labels, int precision, std::string separator, int field_width);
       ~Layout();
 
-      friend std::ostream& operator<<(std::ostream&, Layout&);
+      friend std::ostream& operator<<(std::ostream& /*o*/, Layout& /*lo*/);
 
       void add_literal(const std::string& label);
       void add_legend(const std::string& label);

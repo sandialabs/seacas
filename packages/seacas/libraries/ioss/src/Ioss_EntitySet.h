@@ -45,11 +45,11 @@ namespace Ioss {
   class EntitySet : public GroupingEntity {
   public:
     virtual Property
-      get_implicit_property(const std::string& name) const = 0;
+      get_implicit_property(const std::string& my_name) const = 0;
 
   protected:
     EntitySet(DatabaseIO *io_database,
-	      const std::string& name,
+	      const std::string& my_name,
 	      size_t entity_count);
 
   private:

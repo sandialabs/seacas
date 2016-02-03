@@ -52,7 +52,7 @@ namespace Ioss {
   public:
     friend class SideSet;
 
-    SideBlock(DatabaseIO *io_database, const std::string& name,
+    SideBlock(DatabaseIO *io_database, const std::string& my_name,
 	      const std::string& side_type, const std::string& element_type,
 	      size_t side_count);
 
@@ -67,7 +67,7 @@ namespace Ioss {
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
     // For faceblock, edgeblock, if they are split by element block, then this
     // will be non-nullptr and is a pointer to the parent element block for this

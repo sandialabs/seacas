@@ -46,8 +46,8 @@ class Field;
     return internal_execute(field, data);
   }
 
-  void Transform::set_property(const std::string&, int) {}
-  void Transform::set_property(const std::string&, double) {}
-  void Transform::set_properties(const std::string&, const std::vector<int>&) {}
-  void Transform::set_properties(const std::string&, const std::vector<double>&) {}
+  void Transform::set_property(const std::string& /*unused*/, int /*unused*/) {}
+  void Transform::set_property(const std::string& /*unused*/, double /*unused*/) {}
+  void Transform::set_properties(const std::string& /*unused*/, const std::vector<int>& /*unused*/) {}
+  void Transform::set_properties(const std::string& /*unused*/, const std::vector<double>& /*unused*/) {}
 }

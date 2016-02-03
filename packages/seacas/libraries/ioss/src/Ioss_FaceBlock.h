@@ -47,7 +47,7 @@ namespace Ioss {
   class FaceBlock : public EntityBlock {
   public:
     FaceBlock(DatabaseIO *io_database,
-	      const std::string& name, const std::string& face_type,
+	      const std::string& my_name, const std::string& face_type,
 	      int64_t number_faces);
 
     ~FaceBlock();
@@ -59,7 +59,7 @@ namespace Ioss {
     /// Handle implicit properties -- These are calcuated from data stored
     /// in the grouping entity instead of having an explicit value assigned.
     /// An example would be 'face_block_count' for a region.
-    Property get_implicit_property(const std::string& name) const;
+    Property get_implicit_property(const std::string& my_name) const;
 
   protected:
     int64_t internal_get_field_data(const Field& field,
