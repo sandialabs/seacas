@@ -1,4 +1,10 @@
 #! /bin/sh
+
+if [ "X$ACCESS" == "X" ] ; then
+  echo "ERROR: Please set the ACCESS environment variable before executing this script."
+  exit
+fi
+
 rm -f config.cache
 CC=mpicc
 MPICC='$(CC)'; export MPICC
