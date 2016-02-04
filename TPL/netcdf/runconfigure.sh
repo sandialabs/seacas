@@ -1,18 +1,29 @@
 #! /bin/sh
+
+if [ "X$ACCESS" == "X" ] ; then
+  echo "ERROR: Please set the ACCESS environment variable before executing this script."
+  exit
+fi
+
+PARALLEL=1
+
 rm -f config.cache
-CC='gcc'; export CC
-CFLAGS="-I${ACCESS}/include"; export CFLAGS
-CPPFLAGS="-DNDEBUG"; export CPPFLAGS
+export CFLAGS="-I${ACCESS}/include"
+export CPPFLAGS="-DNDEBUG"
 
 # Find the hdf5 library
-LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
+export LDFLAGS="-L${ACCESS}/lib"
 
-PNETCDF=""
-PARALLEL_TESTS=""
-# Only if parallel...
-#PNETCDF="--enable-pnetcdf"
-#PARALLEL_TESTS="--enable-parallel-tests"
+if [ $PARALLEL == 0 ] ; then
+  export CC='gcc'
+  PNETCDF=""
+  PARALLEL_TESTS=""
+else
+  export CC='mpicc'
+  PNETCDF="--enable-pnetcdf"
+  PARALLEL_TESTS="--enable-parallel-tests"
+fi
 
-#SHARED="--enable-shared"
+SHARED="--enable-shared"
 
-./configure --enable-netcdf-4 ${PNETCDF} ${SHARED} ${PARALLEL_TESTS} --disable-fsync --prefix ${ACCESS} --disable-dap --disable-cdmremote $1
+./configure --enable-netcdf-4 ${PNETCDF} ${SHARED} ${PARALLEL_TESTS} --disable-v2 --disable-fsync --prefix ${ACCESS} --disable-dap $1
