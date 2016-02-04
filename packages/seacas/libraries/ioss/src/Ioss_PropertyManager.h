@@ -35,7 +35,6 @@
 
 #include <Ioss_Property.h>              // for Property
 #include <stddef.h>                     // for size_t
-#include <functional>                   // for less
 #include <map>                          // for map, map<>::value_compare
 #include <string>                       // for string, operator<
 #include <vector>                       // for vector
@@ -49,6 +48,7 @@ namespace Ioss {
   class PropertyManager {
   public:
     PropertyManager();
+    PropertyManager& operator=(const PropertyManager& from) =delete;
     ~PropertyManager();
 
     // Add the specified property to the list.
@@ -68,8 +68,6 @@ namespace Ioss {
     size_t count() const;
 
   private:
-    PropertyManager& operator=(const PropertyManager& from); // do not implement
-
     PropMapType properties;
   };
 }

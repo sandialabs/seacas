@@ -95,7 +95,10 @@ namespace Ioex {
     public:
       DatabaseIO(Ioss::Region *region, const std::string& filename,
                  Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
-                 const Ioss::PropertyManager &properties);
+                 const Ioss::PropertyManager &props);
+      DatabaseIO(const DatabaseIO& from) =delete;
+      DatabaseIO& operator=(const DatabaseIO& from) =delete;
+
       virtual ~DatabaseIO();
 
       // Check to see if database state is ok...
@@ -103,7 +106,7 @@ namespace Ioex {
       // If 'error_message' non-null, then put the warning message into the string and return it.
       // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
       //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-      virtual bool ok(bool write_message = false, std::string *error_message=NULL, int *bad_count=NULL) const = 0;
+      virtual bool ok(bool write_message = false, std::string *error_message=nullptr, int *bad_count=nullptr) const = 0;
 
       // Eliminate as much memory as possible, but still retain meta data information
       // Typically, eliminate the maps...
@@ -205,11 +208,6 @@ namespace Ioex {
       virtual void write_meta_data() = 0;
       void write_results_metadata();
 
-
-      // Private member functions
-      DatabaseIO(const DatabaseIO& from); // do not implement
-      DatabaseIO& operator=(const DatabaseIO& from); // do not implement
-
       virtual void openDatabase() const {
         get_file_pointer();
       }
@@ -246,7 +244,7 @@ namespace Ioex {
 
       void get_nodeblocks();
 
-      void add_attribute_fields(ex_entity_type ent_type, Ioss::GroupingEntity *block,
+      void add_attribute_fields(ex_entity_type entity_type, Ioss::GroupingEntity *block,
                                 int attribute_count,  const std::string& type);
 
       void output_other_meta_data();

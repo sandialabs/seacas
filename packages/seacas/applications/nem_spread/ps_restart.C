@@ -35,7 +35,7 @@
 #include <assert.h>                     // for assert
 #include <limits.h>                     // for INT_MAX
 #include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for fprintf, stderr, NULL, etc
+#include <stdio.h>                      // for fprintf, stderr, nullptr, etc
 #include <stdlib.h>                     // for exit, free, malloc
 #include <string.h>                     // for strrchr, memset, etc
 #include <unistd.h>                     // for sysconf, _SC_OPEN_MAX
@@ -51,7 +51,7 @@
 #include "rf_format.h"
 
 namespace {
-  int get_free_descriptor_count(void);
+  int get_free_descriptor_count();
 
   template <typename INT>
   size_t find_gnode_inter(INT *intersect, size_t num_g_nodes, INT *glob_vec,
@@ -62,7 +62,7 @@ namespace {
 #if __cplusplus > 199711L
 #define TOPTR(x) x.data()
 #else
-#define TOPTR(x) (x.empty() ? NULL : &x[0])
+#define TOPTR(x) (x.empty() ? nullptr : &x[0])
 #endif
 
 /*****************************************************************************/
@@ -174,8 +174,8 @@ void NemSpread<T,INT>::read_restart_data ()
   std::vector<INT> ns_ids_global(globals.Num_Node_Set);
   std::vector<INT> ns_cnts_global(globals.Num_Node_Set);
 
-  INT ***eb_map_ptr = NULL, **eb_cnts_local = NULL;
-  int    exoid=0, *par_exoid = NULL;
+  INT ***eb_map_ptr = nullptr, **eb_cnts_local = nullptr;
+  int    exoid=0, *par_exoid = nullptr;
 
   float  vers;
   std::string cTemp;
@@ -239,7 +239,7 @@ void NemSpread<T,INT>::read_restart_data ()
     for (int cnt = 0; cnt < globals.Num_Elem_Blk; cnt++) {
       char blk_name[MAX_STR_LENGTH];
       if (ex_get_block(exoid, EX_ELEM_BLOCK, eb_ids_global[cnt], blk_name,
-		       &(eb_cnts_global[cnt]), NULL, NULL, NULL, NULL) < 0) {
+		       &(eb_cnts_global[cnt]), nullptr, nullptr, nullptr, nullptr) < 0) {
 	fprintf(stderr, "%s: unable to get element count for block id " ST_ZU "",
 		yo, (size_t)eb_ids_global[cnt]);
 	exit(1);
@@ -286,7 +286,7 @@ void NemSpread<T,INT>::read_restart_data ()
           ifound = ilocal; /* don't search the same part of the list over */
         }
         else {
-          eb_map_ptr[iproc][cnt] = NULL;
+          eb_map_ptr[iproc][cnt] = nullptr;
           eb_cnts_local[iproc][cnt] = 0;
         }
       }
@@ -340,7 +340,7 @@ void NemSpread<T,INT>::read_restart_data ()
     for (int cnt = 0; cnt < globals.Num_Side_Set; cnt++) {
       if (ex_get_set_param(exoid, EX_SIDE_SET,
 			   ss_ids_global[cnt],
-			   &(ss_cnts_global[cnt]), NULL) < 0) {
+			   &(ss_cnts_global[cnt]), nullptr) < 0) {
 	fprintf(stderr, "%s: unable to get element count for sideset id " ST_ZU "",
 		yo, (size_t)ss_ids_global[cnt]);
 	exit(1);
@@ -382,7 +382,7 @@ void NemSpread<T,INT>::read_restart_data ()
     for (int cnt = 0; cnt < globals.Num_Node_Set; cnt++) {
       if (ex_get_set_param(exoid, EX_NODE_SET,
 			   ns_ids_global[cnt],
-			   &(ns_cnts_global[cnt]), NULL) < 0) {
+			   &(ns_cnts_global[cnt]), nullptr) < 0) {
 	fprintf(stderr, "%s: unable to get element count for nodeset id " ST_ZU "",
 		yo, (size_t)ns_ids_global[cnt]);
 	exit(1);
@@ -405,7 +405,7 @@ void NemSpread<T,INT>::read_restart_data ()
   }
 
   /* See if any '/' in the name.  IF present, isolate the basename of the file */
-  if (strrchr(Output_File_Base_Name, '/') != NULL) {
+  if (strrchr(Output_File_Base_Name, '/') != nullptr) {
     /* There is a path separator.  Get the portion after the
      * separator
      */
@@ -524,9 +524,9 @@ void NemSpread<T,INT>::read_restart_data ()
       }
     }
   }
-  if (par_exoid != NULL) {
+  if (par_exoid != nullptr) {
     free(par_exoid);
-    par_exoid = NULL;
+    par_exoid = nullptr;
   }
 }
 
@@ -1151,7 +1151,7 @@ namespace {
 #endif
 #include <limits.h>
 
-  int get_free_descriptor_count(void)
+  int get_free_descriptor_count()
   {
     /* Returns maximum number of files that one process can have open
      * at one time. (POSIX)

@@ -35,7 +35,7 @@
 #include <Ioss_Tri6.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
 #include <assert.h>                     // for assert
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -83,7 +83,7 @@ Ioss::Tri6::Tri6()
   Ioss::ElementTopology::alias("tri6", "triface6");
 }
 
-Ioss::Tri6::~Tri6() {}
+Ioss::Tri6::~Tri6() = default;
 
 int Ioss::Tri6::parametric_dimension()           const {return  2;}
 int Ioss::Tri6::spatial_dimension()           const {return  2;}
@@ -103,8 +103,9 @@ Ioss::IntVector Ioss::Tri6::edge_connectivity(int edge_number) const
   assert(edge_number > 0 && edge_number <= number_edges());
   Ioss::IntVector connectivity(Constants::nedgenode);
 
-  for (int i=0; i < Constants::nedgenode; i++)
+  for (int i=0; i < Constants::nedgenode; i++) {
     connectivity[i] = Constants::edge_node_order[edge_number-1][i];
+}
 
   return connectivity;
 }
@@ -119,15 +120,16 @@ Ioss::IntVector Ioss::Tri6::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
 
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
 
   return connectivity;
 }
 
 Ioss::ElementTopology* Ioss::Tri6::face_type(int /* face_number */) const
 {
-  return (Ioss::ElementTopology*)NULL;
+  return (Ioss::ElementTopology*)nullptr;
 }
 
 Ioss::ElementTopology* Ioss::Tri6::edge_type(int edge_number) const

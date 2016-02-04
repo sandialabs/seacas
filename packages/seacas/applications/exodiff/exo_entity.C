@@ -33,7 +33,7 @@
 
 #include "exo_entity.h"
 #include <sys/types.h>                  // for int64_t
-#include <cstdlib>                      // for exit, NULL
+#include <cstdlib>                      // for exit, nullptr
 #include <cstring>                      // for strlen
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for string, char_traits, etc
@@ -65,10 +65,10 @@ Exo_Entity::Exo_Entity()
     id_(EX_INVALID_ID),
     index_(0),
     numEntity(0),
-    truth_(NULL),
+    truth_(nullptr),
     currentStep(0),
     numVars(0),
-    results_(NULL),
+    results_(nullptr),
     numAttr(0)
 { }
 
@@ -77,10 +77,10 @@ Exo_Entity::Exo_Entity(int file_id, size_t id)
     id_(id),
     index_(0),
     numEntity(0),
-    truth_(NULL),
+    truth_(nullptr),
     currentStep(0),
     numVars(0),
-    results_(NULL),
+    results_(nullptr),
     numAttr(0)
 {
   SMART_ASSERT(file_id > 0);
@@ -92,10 +92,10 @@ Exo_Entity::Exo_Entity(int file_id, size_t id, size_t nnodes)
     id_(id),
     index_(0),
     numEntity(nnodes),
-    truth_(NULL),
+    truth_(nullptr),
     currentStep(0),
     numVars(0),
-    results_(NULL),
+    results_(nullptr),
     numAttr(0)
 {
   SMART_ASSERT(file_id > 0);
@@ -139,7 +139,7 @@ void Exo_Entity::initialize(int file_id, size_t id)
 bool Exo_Entity::is_valid_var(size_t var_index) const
 {
   SMART_ASSERT((int)var_index < numVars);
-  if (truth_ == NULL) {
+  if (truth_ == nullptr) {
     get_truth_table();
   }
 
@@ -164,14 +164,14 @@ string Exo_Entity::Load_Results(int time_step, int var_index)
     currentStep = time_step;
   }
   
-  if (truth_ == NULL) {
+  if (truth_ == nullptr) {
     get_truth_table();
   }
 
   if (truth_[var_index]) {
     if (!results_[var_index] && numEntity) {
       results_[var_index] = new double[numEntity];
-      SMART_ASSERT(results_[var_index] != 0);
+      SMART_ASSERT(results_[var_index] != nullptr);
     }
       if (numEntity) {
 	int err = 0;
@@ -217,14 +217,14 @@ string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_index
     currentStep = t1;
   }
   
-  if (truth_ == NULL) {
+  if (truth_ == nullptr) {
     get_truth_table();
   }
 
   if (truth_[var_index]) {
     if (!results_[var_index] && numEntity) {
       results_[var_index] = new double[numEntity];
-      SMART_ASSERT(results_[var_index] != 0);
+      SMART_ASSERT(results_[var_index] != nullptr);
     }
       if (numEntity) {
 	int err = ex_get_var(fileId, t1, exodus_type(), var_index+1,
@@ -272,12 +272,12 @@ string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_index
 const double* Exo_Entity::Get_Results(int var_index) const
 {
   SMART_ASSERT(Check_State());
-  if (currentStep == 0) return NULL;
+  if (currentStep == 0) return nullptr;
   SMART_ASSERT(var_index >= 0 && var_index < numVars);
   if (var_index >= 0 && var_index < numVars) {
     return results_[var_index];
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -288,14 +288,14 @@ void Exo_Entity::Free_Results()
   currentStep = 0;
   for (int v = 0; v < numVars; ++v) {
     delete [] results_[v];
-    results_[v] = 0;
+    results_[v] = nullptr;
   }
 }
 
 void Exo_Entity::get_truth_table() const
 {
-  if (numVars > 0 && truth_ == NULL) {
-    truth_ = new int[numVars]; SMART_ASSERT(truth_ != NULL);
+  if (numVars > 0 && truth_ == nullptr) {
+    truth_ = new int[numVars]; SMART_ASSERT(truth_ != nullptr);
     // initialize to true for the case of no objects in the block (some older
     // versions of ex_get_object_truth_vector do not set the values at all)
     for (int i = 0; i < numVars; ++i)
@@ -318,7 +318,7 @@ string Exo_Entity::Load_Attributes(int attr_index)
   
   if (!attributes_[attr_index] && numEntity) {
     attributes_[attr_index] = new double[numEntity];
-    SMART_ASSERT(attributes_[attr_index] != 0);
+    SMART_ASSERT(attributes_[attr_index] != nullptr);
   }
 
   if (numEntity) {
@@ -358,7 +358,7 @@ void Exo_Entity::Free_Attributes()
   
   for (int v = 0; v < numAttr; ++v) {
     delete [] attributes_[v];
-    attributes_[v] = 0;
+    attributes_[v] = nullptr;
   }
 }
 
@@ -400,9 +400,9 @@ void Exo_Entity::internal_load_params()
   numVars = get_num_variables(fileId, exodus_type(), label());
   if (numVars) {
     results_ = new double*[numVars];
-    SMART_ASSERT(results_ != 0);
+    SMART_ASSERT(results_ != nullptr);
     for (int i = 0; i < numVars; ++i)
-      results_[i] = 0;
+      results_[i] = nullptr;
   }
 
   numAttr = get_num_attributes(fileId, exodus_type(), id_, label());
@@ -418,7 +418,7 @@ void Exo_Entity::internal_load_params()
     }
 
     for (int vg = 0; vg < numAttr; ++vg) {
-      SMART_ASSERT(names[vg] != 0);
+      SMART_ASSERT(names[vg] != nullptr);
       if (std::strlen(names[vg]) == 0) {
 	std::string name = "attribute_" + to_string(vg+1);
 	attributeNames.push_back(name);

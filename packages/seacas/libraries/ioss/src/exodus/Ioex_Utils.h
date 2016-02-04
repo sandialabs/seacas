@@ -29,8 +29,8 @@ namespace Ioex {
       bool operator() (const std::pair<std::string, const Ioss::ElementTopology*> &lhs,
                        const std::pair<std::string, const Ioss::ElementTopology*> &rhs) const
       {
-        assert(lhs.second != NULL);
-        assert(rhs.second != NULL);
+        assert(lhs.second != nullptr);
+        assert(rhs.second != nullptr);
         return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second->name() < rhs.second->name());
       }
   };
@@ -73,8 +73,11 @@ namespace Ioex {
     int64_t eb_offset = -1;
     for (I=blocks.begin(); I != blocks.end(); ++I) {
       int64_t this_off = (*I)->get_offset();
-      if (this_off < eb_offset)
+      if (this_off < eb_offset) { { {
 	return false;
+}
+}
+}
       eb_offset = this_off;
     }
 #endif

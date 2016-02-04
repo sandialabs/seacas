@@ -33,7 +33,7 @@
 #include <Ioss_Tri4a.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
 #include <assert.h>                     // for assert
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -82,7 +82,7 @@ Ioss::Tri4a::Tri4a()
   : Ioss::ElementTopology("tri4a", "Triangle_4a")
 {}
 
-Ioss::Tri4a::~Tri4a() {}
+Ioss::Tri4a::~Tri4a() = default;
 
 int Ioss::Tri4a::parametric_dimension()           const {return  2;}
 int Ioss::Tri4a::spatial_dimension()           const {return  2;}
@@ -104,8 +104,9 @@ Ioss::IntVector Ioss::Tri4a::edge_connectivity(int edge_number) const
   assert(edge_number > 0 && edge_number <= number_edges());
   Ioss::IntVector connectivity(Constants::nodes_per_edge[edge_number]);
 
-  for (int i=0; i < Constants::nodes_per_edge[edge_number]; i++)
+  for (int i=0; i < Constants::nodes_per_edge[edge_number]; i++) {
     connectivity[i] = Constants::edge_node_order[edge_number-1][i];
+  }
 
   return connectivity;
 }
@@ -120,24 +121,28 @@ Ioss::IntVector Ioss::Tri4a::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
 
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+  }
 
   return connectivity;
 }
 
 Ioss::ElementTopology* Ioss::Tri4a::face_type(int /* face_number */) const
 {
-  return (Ioss::ElementTopology*)NULL;
+  return (Ioss::ElementTopology*)nullptr;
 }
 
 Ioss::ElementTopology* Ioss::Tri4a::edge_type(int edge_number) const
 {
   assert(edge_number >= 0 && edge_number <= number_edges());
-  if (edge_number == 0)
-    return NULL;
-  if (edge_number == 1)
+  if (edge_number == 0) {
+    return nullptr;
+  }
+  else if (edge_number == 1) {
     return Ioss::ElementTopology::factory("edge3");
-  else
+  }
+  else {
     return Ioss::ElementTopology::factory("edge2");
+  }
 }

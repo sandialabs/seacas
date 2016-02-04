@@ -40,7 +40,7 @@
 #include <exodusII.h>                   // for ex_entity_type, etc
 #include <stddef.h>                     // for size_t
 #include <stdint.h>                     // for int64_t
-#include <time.h>                       // for NULL, time_t
+#include <time.h>                       // for nullptr, time_t
 #include <functional>                   // for less
 #include <map>                          // for map, map<>::value_compare
 #include <set>                          // for set
@@ -80,6 +80,8 @@ namespace Iopx {
     DatabaseIO(Ioss::Region *region, const std::string& filename,
 	       Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
 	       const Ioss::PropertyManager &properties);
+    DatabaseIO(const DatabaseIO& from) =delete;
+    DatabaseIO& operator=(const DatabaseIO& from) =delete;
     ~DatabaseIO();
 
     bool needs_shared_node_information() const {return true;}
@@ -92,7 +94,7 @@ namespace Iopx {
     // If 'error_message' non-null, then put the warning message into the string and return it.
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
     //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-    bool ok(bool write_message = false, std::string *error_message=NULL, int *bad_count=NULL) const;
+    bool ok(bool write_message = false, std::string *error_message=nullptr, int *bad_count=nullptr) const;
 
     void get_step_times();
 
@@ -149,10 +151,6 @@ namespace Iopx {
 				const Ioss::Field& field, void *data, size_t data_size) const;
     int64_t get_Xset_field_internal(ex_entity_type type, const Ioss::EntitySet* ns,
 				const Ioss::Field& field, void *data, size_t data_size) const;
-
-    // Private member functions
-    DatabaseIO(const DatabaseIO& from); // do not implement
-    DatabaseIO& operator=(const DatabaseIO& from); // do not implement
 
     int get_file_pointer() const; // Open file and set exodusFilePtr.
 

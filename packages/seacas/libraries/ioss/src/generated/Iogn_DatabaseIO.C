@@ -129,7 +129,7 @@ namespace Iogn {
                                        Ioss::DatabaseUsage db_usage,
                                        MPI_Comm communicator,
                                        const Ioss::PropertyManager &props) const
-  { return new DatabaseIO(NULL, filename, db_usage, communicator, props); }
+  { return new DatabaseIO(nullptr, filename, db_usage, communicator, props); }
 
   // ========================================================================
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
@@ -137,7 +137,7 @@ namespace Iogn {
                          MPI_Comm communicator,
                          const Ioss::PropertyManager &props) :
         Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
-        m_generatedMesh(NULL),  spatialDimension(3), nodeCount(0),
+        m_generatedMesh(nullptr),  spatialDimension(3), nodeCount(0),
         elementCount(0), nodeBlockCount(0),
         elementBlockCount(0), nodesetCount(0), sidesetCount(0),
         nodeMap("node"), elemMap("elem"), m_useVariableDf(true)
@@ -167,7 +167,7 @@ namespace Iogn {
 
   void DatabaseIO::read_meta_data()
   {
-    if(m_generatedMesh == NULL) {
+    if(m_generatedMesh == nullptr) {
       if (get_filename() == "external") {
 	std::ostringstream errmsg;
 	errmsg << "ERROR: (generated mesh) 'external' specified for mesh, but "
@@ -178,7 +178,7 @@ namespace Iogn {
       }
     }
 
-    assert(m_generatedMesh != NULL);
+    assert(m_generatedMesh != nullptr);
     
     Ioss::Region *this_region = get_region();
     this_region->property_add(Ioss::Property("global_node_count",    m_generatedMesh->node_count()));
@@ -260,9 +260,9 @@ namespace Iogn {
         num_to_get = Ioss::Utils::field_warning(nb, field, "input");
       }
       return num_to_get;
-    } else {
+    } 
       fill_transient_data(nb, field, data);
-    }
+    
     return num_to_get;
   }
 
@@ -555,18 +555,18 @@ namespace Iogn {
   }
 
   // Input only database -- these will never be called...
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region*,      const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock*,const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock*,   const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock*,   const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock*,   const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::ElementSet*,  const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::FaceSet*,     const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeSet*,     const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::NodeSet*,     const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet*,     const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock*,   const Ioss::Field&, void*, size_t) const {return -1;}
-  int64_t DatabaseIO::put_field_internal(const Ioss::CommSet*,     const Ioss::Field&, void*, size_t) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::Region* /*reg*/,      const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock* /*eb*/,const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock* /*nb*/,   const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock* /*nb*/,   const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock* /*nb*/,   const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::ElementSet* /*ns*/,  const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::FaceSet* /*ns*/,     const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeSet* /*ns*/,     const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::NodeSet* /*ns*/,     const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet* /*fs*/,     const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock* /*fb*/,   const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
+  int64_t DatabaseIO::put_field_internal(const Ioss::CommSet* /*cs*/,     const Ioss::Field& /*field*/, void* /*data*/, size_t /*data_size*/) const {return -1;}
 
   const Ioss::Map& DatabaseIO::get_node_map() const
   {

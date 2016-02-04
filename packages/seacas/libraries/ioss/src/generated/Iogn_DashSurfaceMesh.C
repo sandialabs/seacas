@@ -95,7 +95,7 @@ int64_t DashSurfaceMesh::element_count_proc(int64_t block_number) const
     {
         return mDashSurfaceData.surfaceBConnectivity.size()/NUM_NODES_PER_QUAD_FACE;
     }
-    else if(block_number == 2)
+    if(block_number == 2)
     {
         return mDashSurfaceData.surfaceAConnectivity.size()/NUM_NODES_PER_QUAD_FACE;
     }
@@ -116,14 +116,14 @@ int64_t DashSurfaceMesh::sideset_side_count_proc(int64_t id) const
 
 int64_t DashSurfaceMesh::communication_node_count_proc() const
 {
-    if ( mDashSurfaceData.sharedNodes )
+    if ( mDashSurfaceData.sharedNodes != nullptr )
     {
         return mDashSurfaceData.sharedNodes->size();
     }
-    else
-    {
+    
+    
        return 0;
-    }
+    
 }
 
 void DashSurfaceMesh::coordinates(double *coord) const
@@ -200,7 +200,8 @@ void DashSurfaceMesh::nodeset_nodes(int64_t nset_id, Int64Vector &nodes) const
 
 void DashSurfaceMesh::node_communication_map(MapVector &map, std::vector<int> &proc)
 {
-    if ( mDashSurfaceData.sharedNodes == 0 ) return;
+    if ( mDashSurfaceData.sharedNodes == 0 ) { return;
+}
 
     for (unsigned int i=0;i<mDashSurfaceData.sharedNodes->size();i++)
     {
@@ -315,15 +316,15 @@ ExodusMesh::ExodusMesh(const ExodusData &exodusData) : mExodusData(exodusData)
     }
 
     mGlobalNumberOfElements = 0;
-    for(size_t i=0; i < mExodusData.globalNumberOfElementsInBlock.size(); i++)
+    for(auto & elem : mExodusData.globalNumberOfElementsInBlock)
     {
-        mGlobalNumberOfElements += mExodusData.globalNumberOfElementsInBlock[i];
+        mGlobalNumberOfElements += elem;
     }
 
     mLocalNumberOfElements = 0;
-    for(size_t i=0; i < mExodusData.localNumberOfElementsInBlock.size(); i++)
+    for(auto & elem : mExodusData.localNumberOfElementsInBlock)
     {
-        mLocalNumberOfElements += mExodusData.localNumberOfElementsInBlock[i];
+        mLocalNumberOfElements += elem;
     }
 }
 
@@ -384,14 +385,14 @@ int64_t ExodusMesh::sideset_side_count_proc(int64_t id) const
 
 int64_t ExodusMesh::communication_node_count_proc() const
 {
-    if ( mExodusData.sharedNodes )
+    if ( mExodusData.sharedNodes != nullptr )
     {
         return mExodusData.sharedNodes->size();
     }
-    else
-    {
+    
+    
        return 0;
-    }
+    
 }
 
 void ExodusMesh::coordinates(double *coord) const
@@ -447,7 +448,8 @@ void ExodusMesh::nodeset_nodes(int64_t nset_id, Int64Vector &nodes) const
 
 void ExodusMesh::node_communication_map(MapVector &map, std::vector<int> &proc)
 {
-    if ( mExodusData.sharedNodes == 0 ) return;
+    if ( mExodusData.sharedNodes == 0 ) { return;
+}
 
     for (unsigned int i=0;i<mExodusData.sharedNodes->size();i++)
     {

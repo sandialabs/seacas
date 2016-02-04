@@ -33,7 +33,7 @@
 #include <Ioss_Edge2D2.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
 #include <assert.h>                     // for assert
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -77,7 +77,7 @@ Ioss::Edge2D2::Edge2D2()
 }
 
 
-Ioss::Edge2D2::~Edge2D2() {}
+Ioss::Edge2D2::~Edge2D2() = default;
 
 int Ioss::Edge2D2::parametric_dimension()           const {return  1;}
 int Ioss::Edge2D2::spatial_dimension()           const {return  2;}
@@ -121,13 +121,14 @@ Ioss::IntVector Ioss::Edge2D2::face_connectivity(int /* face_number */) const
 Ioss::IntVector Ioss::Edge2D2::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
   return connectivity;
 }
 
 Ioss::ElementTopology* Ioss::Edge2D2::face_type(int /* face_number */) const
-{ return (Ioss::ElementTopology*)NULL; }
+{ return (Ioss::ElementTopology*)nullptr; }
 
 Ioss::ElementTopology* Ioss::Edge2D2::edge_type(int /* edge_number */) const
-{ return (Ioss::ElementTopology*)NULL; }
+{ return (Ioss::ElementTopology*)nullptr; }

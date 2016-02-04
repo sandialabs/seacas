@@ -33,7 +33,7 @@
 #include <Ioss_Bar3.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
 #include <assert.h>                     // for assert
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -81,7 +81,7 @@ Ioss::Bar3::Bar3()
   Ioss::ElementTopology::alias("bar3", "rod2d3");
 }
 
-Ioss::Bar3::~Bar3() {}
+Ioss::Bar3::~Bar3() = default;
 
 int Ioss::Bar3::parametric_dimension()           const {return  1;}
 int Ioss::Bar3::spatial_dimension()           const {return  3;}
@@ -126,13 +126,14 @@ Ioss::IntVector Ioss::Bar3::face_connectivity(int /* face_number */) const
 Ioss::IntVector Ioss::Bar3::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
   return connectivity;
 }
 
 Ioss::ElementTopology* Ioss::Bar3::face_type(int /* face_number */) const
-{ return (Ioss::ElementTopology*)NULL; }
+{ return (Ioss::ElementTopology*)nullptr; }
 
 Ioss::ElementTopology* Ioss::Bar3::edge_type(int /* edge_number */) const
 { return Ioss::ElementTopology::factory("edge3"); }

@@ -108,8 +108,9 @@ int ex_get_nodal_var (int   exoid,
   /* inquire previously defined variable */
 
   /* Need to see how this works in the parallel-aware exodus... */
-  if (num_nodes == 0)
+  if (num_nodes == 0) {
     return EX_NOERR;
+}
   
   if (ex_large_model(exoid) == 0) {
     /* read values of the nodal variable */

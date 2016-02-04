@@ -35,7 +35,7 @@
 #include <Ioss_Quad8.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
 #include <assert.h>                     // for assert
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -83,7 +83,7 @@ Ioss::Quad8::Quad8()
   Ioss::ElementTopology::alias("quad8", "quadface8");
 }
 
-Ioss::Quad8::~Quad8() {}
+Ioss::Quad8::~Quad8() = default;
 
 int Ioss::Quad8::parametric_dimension()           const {return  2;}
 int Ioss::Quad8::spatial_dimension()           const {return  2;}
@@ -111,8 +111,9 @@ Ioss::IntVector Ioss::Quad8::edge_connectivity(int edge_number) const
   Ioss::IntVector connectivity(Constants::nedgenode);
   assert(edge_number > 0 && edge_number <= Constants::nedge);
 
-  for (int i=0; i < Constants::nedgenode; i++)
+  for (int i=0; i < Constants::nedgenode; i++) {
     connectivity[i] = Constants::edge_node_order[edge_number-1][i];
+}
 
   return connectivity;
 }
@@ -126,14 +127,15 @@ Ioss::IntVector Ioss::Quad8::face_connectivity(int /* face_number */) const
 Ioss::IntVector Ioss::Quad8::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
   return connectivity;
 }
 
 Ioss::ElementTopology* Ioss::Quad8::face_type(int /* face_number */) const
 {
-  return (Ioss::ElementTopology*)NULL;
+  return (Ioss::ElementTopology*)nullptr;
 }
 
 Ioss::ElementTopology* Ioss::Quad8::edge_type(int edge_number) const

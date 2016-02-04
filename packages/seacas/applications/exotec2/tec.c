@@ -214,7 +214,7 @@ void tec(int exoid, const char *filename) {
       printf("\n");
     }
 
-    if (ic != NULL) free(ic);
+    free(ic);
      
   
   }  else
@@ -246,35 +246,35 @@ void tec(int exoid, const char *filename) {
    *  Free up allocated memory
    */
   for (i=0; i<ndim; i++) {
-    if (nameco[i] != NULL) free(nameco[i]);
-    if (x[i] != NULL) free(x[i]);
+    free(nameco[i]);
+    free(x[i]);
   }
-  if (elem_id != NULL) free(elem_id);
-  if (node_per_elem != NULL) free(node_per_elem);
-  if (elem_per_blk != NULL) free(elem_per_blk);
-  if (attr_per_blk != NULL) free(attr_per_blk);
+  free(elem_id);
+  free(node_per_elem);
+  free(elem_per_blk);
+  free(attr_per_blk);
   if (elem_type != NULL) {
     for (i=0; i<nblk; i++) {
-      if (elem_type[i] != NULL) free(elem_type[i]);
+      free(elem_type[i]);
     }
     free(elem_type);
   }
   if (icon != NULL) {
     for (i=0; i<nblk; i++) {
-      if (icon[i] != NULL) free(icon[i]);
+      free(icon[i]);
     }
     free(icon);
   }
   if (nvar > 0) {
     if (varnames != NULL) {
       for (i=0; i<nvar; i++) {
-	if (varnames[i] != NULL) free(varnames[i]);
+	free(varnames[i]);
       }
       free(varnames);
     }
     if (q != NULL) {
       for (i=0; i<nvar; i++) {
-	if (q[i] != NULL) free(q[i]);
+	free(q[i]);
       }
       free(q);
     }
@@ -498,19 +498,19 @@ void teczone(int nblk, int nnode,
   printf("...freeing allocated space\n");
 #endif
   if (nblk > 1) {
-    if (ic != NULL) free(ic);
-    if (isort != NULL) free(isort);
+    free(ic);
+    free(isort);
     for (i=0; i<ndim; i++)
-      if (xx[i] != NULL) free(xx[i]);
+      free(xx[i]);
     if (qq != NULL) {
       for (i=0; i<nvar; i++)
-	if (qq[i] != NULL) free(qq[i]);
+	free(qq[i]);
       if (nvar > 0)
 	free(qq);
     }
   } else {
     if (nvar > 0)
-      if (qq != NULL) free(qq);
+      free(qq);
   }
   
 }

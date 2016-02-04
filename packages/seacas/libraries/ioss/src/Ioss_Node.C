@@ -35,7 +35,7 @@
 #include <Ioss_Node.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
 #include <assert.h>                     // for assert
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -76,7 +76,7 @@ Ioss::Node::Node()
   Ioss::ElementTopology::alias("node", "NODE");
 }
 
-Ioss::Node::~Node() {}
+Ioss::Node::~Node() = default;
 
 int Ioss::Node::parametric_dimension()           const {return  0;}
 int Ioss::Node::spatial_dimension()           const {return  3;}
@@ -119,27 +119,28 @@ Ioss::IntVector Ioss::Node::face_connectivity(int face_number) const
 Ioss::IntVector Ioss::Node::element_connectivity() const
 {
   Ioss::IntVector connectivity(number_nodes());
-  for (int i=0; i < number_nodes(); i++)
+  for (int i=0; i < number_nodes(); i++) {
     connectivity[i] = i;
+}
   return connectivity;
 }
 
 Ioss::ElementTopology* Ioss::Node::face_type(int face_number) const
 {
   // face_number == 0 returns topology for all faces if
-  // all faces are the same topology; otherwise, returns NULL
+  // all faces are the same topology; otherwise, returns nullptr
   // face_number is 1-based.
 
   assert(face_number >= 0 && face_number <= number_faces());
-  return (Ioss::ElementTopology*)NULL;
+  return (Ioss::ElementTopology*)nullptr;
 }
 
 Ioss::ElementTopology* Ioss::Node::edge_type(int edge_number) const
 {
   // edge_number == 0 returns topology for all edges if
-  // all edges are the same topology; otherwise, returns NULL
+  // all edges are the same topology; otherwise, returns nullptr
   // edge_number is 1-based.
 
   assert(edge_number >= 0 && edge_number <= number_edges());
-  return NULL;
+  return nullptr;
 }

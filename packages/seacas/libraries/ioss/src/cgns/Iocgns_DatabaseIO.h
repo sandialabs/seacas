@@ -40,8 +40,10 @@
 #include <stdint.h>                     // for int64_t
 #include <iostream>                     // for ostream
 #include <string>                       // for string
-#include "Ioss_State.h"                 // for State
+#include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
+
+#include <cgnslib.h>
 
 namespace Ioss { class CommSet; }
 namespace Ioss { class EdgeBlock; }
@@ -105,7 +107,7 @@ namespace Iocgns {
 			       void *data, size_t data_size) const;
     int64_t get_field_internal(const Ioss::ElementBlock* eb, const Ioss::Field& field,
 			       void *data, size_t data_size) const;
-    int64_t get_field_internal(const Ioss::SideBlock* fb, const Ioss::Field& field,
+    int64_t get_field_internal(const Ioss::SideBlock* sb, const Ioss::Field& field,
 			       void *data, size_t data_size) const;
     int64_t get_field_internal(const Ioss::NodeSet* ns, const Ioss::Field& field,
 			       void *data, size_t data_size) const;
@@ -146,6 +148,10 @@ namespace Iocgns {
 			       void *data, size_t data_size) const;
 
     mutable int cgnsFilePtr;
+
+    std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
+    std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
+    std::map<std::string, int> m_zoneNameMap;
   };
 }
 #endif

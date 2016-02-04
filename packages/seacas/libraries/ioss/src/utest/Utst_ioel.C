@@ -73,10 +73,10 @@ int main(int argc, char *argv[])
   if (err_count == 0) {
     OUTPUT << "\nSIERRA execution successful." << std::endl;
     return EXIT_SUCCESS;
-  } else {
+  } 
     OUTPUT << "\nSIERRA execution failed." << std::endl;
     return EXIT_FAILURE;
-  }
+  
 }
 
 int test_all_elements()
@@ -90,9 +90,9 @@ int test_all_elements()
   for (int i=0; i < element_count; i++) {
     OUTPUT << "Testing element: " << std::setw(20) << elements[i];
     bool result = test_element(elements[i]);
-    if (result == true || elements[i] == "unknown" || elements[i] == "invalid_topology")
+    if (result || elements[i] == "unknown" || elements[i] == "invalid_topology") {
       OUTPUT << "OK" << '\n';
-    else {
+    } else {
       OUTPUT << "\n        element: " << std::setw(20) << elements[i]
 	   << "FAIL" << '\n';
       err_count++;
@@ -101,9 +101,9 @@ int test_all_elements()
 
   test_aliases(elements);
 
-  // Check that asking for invalid element returns NULL pointer.
+  // Check that asking for invalid element returns nullptr pointer.
   Ioss::ElementTopology *invalid = Ioss::ElementTopology::factory("Greg", true);
-  if (invalid == NULL) {
+  if (invalid == nullptr) {
     OUTPUT << "Testing request for invalid element: "
 	 << std::setw(40) << "OK" << '\n';
   } else {
@@ -121,9 +121,9 @@ bool test_element(const std::string& type)
 
   bool result = true;
   Ioss::ElementTopology *element = Ioss::ElementTopology::factory(type);
-  if (element == NULL) {
+  if (element == nullptr) {
     OUTPUT << "ERROR: Element type '" << type << "' could not be constructed.";
-    // Must return since we have a NULL pointer and can't do further tests...
+    // Must return since we have a nullptr pointer and can't do further tests...
     return false;
   }
 
@@ -194,7 +194,7 @@ bool test_element(const std::string& type)
 
   int nne = element->number_nodes_edge(0);
   if (nne == -1) {
-    if (homo_edges != false) {
+    if (homo_edges) {
       OUTPUT << "\n\tInconsistent edge homogeneity...\n";
       result = false;
     } else {
@@ -223,13 +223,13 @@ bool test_element(const std::string& type)
   if (nf > 0) {
     for (int i=0; i <= nf; i++) {
       Ioss::ElementTopology *face = element->face_type(i);
-      if (face == NULL && i > 0) {
+      if (face == nullptr && i > 0) {
 	OUTPUT << "\n\tBad face type for face " << i;
 	result = false;
-      } else if (face == NULL && i == 0 && homo_faces == true) {
+      } else if (face == nullptr && i == 0 && homo_faces) {
 	OUTPUT << "\n\tHomogenous faces, but null face_type";
 	result = false;
-      }	else if (face != NULL) {
+      }	else if (face != nullptr) {
 	unsigned int nnfi = element->number_nodes_face(i);
 	if (nnfi != (unsigned int) face->number_nodes()) {
 	  OUTPUT << "\n\tNode count mismatch on face " << i;
@@ -250,13 +250,13 @@ bool test_element(const std::string& type)
   if (ne > 0) {
     for (int i=0; i <= ne; i++) {
       Ioss::ElementTopology *edge = element->edge_type(i);
-      if (edge == NULL && i > 0) {
+      if (edge == nullptr && i > 0) {
 	OUTPUT << "\n\tBad edge type for edge " << i;
 	result = false;
-      } else if (edge == NULL && i == 0 && homo_edges == true) {
+      } else if (edge == nullptr && i == 0 && homo_edges) {
 	OUTPUT << "\n\tHomogenous edges, but null edge_type";
 	result = false;
-      }	else if (edge != NULL) {
+      }	else if (edge != nullptr) {
 	unsigned int nnei = element->number_nodes_edge(i);
 	if (nnei != (unsigned int) edge->number_nodes()) {
 	  OUTPUT << "\n\tNode count mismatch on edge " << i;
@@ -276,7 +276,7 @@ bool test_element(const std::string& type)
 
   // Variable types...
   const Ioss::VariableType *vt = Ioss::VariableType::factory(element->name());
-  if (vt == NULL) {
+  if (vt == nullptr) {
     OUTPUT << "\n\tVariable Type does not exist for this name";
     result = false;
   } else {

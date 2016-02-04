@@ -33,7 +33,7 @@
  * 
  */
 #include "info_interface.h"
-#include <stddef.h>                     // for NULL
+#include <stddef.h>                     // for nullptr
 #include <cstdlib>                      // for exit, EXIT_SUCCESS, getenv
 #include <iostream>                     // for operator<<, basic_ostream, etc
 #include <string>                       // for char_traits, string
@@ -46,8 +46,7 @@ Info::Interface::Interface()
   : checkNodeStatus_(false), computeVolume_(false), 
     adjacencies_(false), ints64Bit_(false), computeBBox_(false), listGroups_(false),
     useGenericNames_(false), fieldSuffixSeparator_('_'), summary_(0),
-    surfaceSplitScheme_(1), minimumTime_(0.0), maximumTime_(0.0),
-    filetype_("exodus")
+    surfaceSplitScheme_(1), filetype_("exodus")
 {
   enroll_options();
 }
@@ -59,30 +58,30 @@ void Info::Interface::enroll_options()
   options_.usage("[options] basename");
 
   options_.enroll("help", Ioss::GetLongOption::NoValue,
-		  "Print this summary and exit", 0);
+		  "Print this summary and exit", nullptr);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+		  "Print version and exit", nullptr);
 
   options_.enroll("check_node_status", Ioss::GetLongOption::NoValue,
 		  "Check whether there are any nodes not connected to any elements",
-		  NULL);
+		  nullptr);
   options_.enroll("adjacencies", Ioss::GetLongOption::NoValue,
 		  "Calculate which element blocks touch which surfaces and other element blocks",
-		  NULL);
+		  nullptr);
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
 		  "True if using 64-bit integers",
-		  NULL);
+		  nullptr);
   options_.enroll("compute_volume", Ioss::GetLongOption::NoValue,
 		  "Compute the volume of all hex elements in the mesh. Outputs min/max and count",
-		  NULL);
+		  nullptr);
   options_.enroll("compute_bbox", Ioss::GetLongOption::NoValue,
 		  "Compute the bounding box of all element blocks in the mesh.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("list_groups", Ioss::GetLongOption::NoValue,
 		  "Print a list of the names of all groups in this file and then exit.",
-		  NULL);
+		  nullptr);
 
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
 		  "Character used to separate a field suffix from the field basename\n"
@@ -93,15 +92,15 @@ void Info::Interface::enroll_options()
 
   options_.enroll("group_name", Ioss::GetLongOption::MandatoryValue,
                  "List information only for the specified group.",
-                 NULL);
+                 nullptr);
 
   options_.enroll("use_generic_names", Ioss::GetLongOption::NoValue,
 		  "True to use generic names (type_id) instead of names in database",
-		  NULL);
+		  nullptr);
 
   options_.enroll("summary", Ioss::GetLongOption::NoValue,
 		  "Only output counts of nodes, elements, and entities",
-		  NULL);
+		  nullptr);
   
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
 		  "Method used to split sidesets into homogenous blocks\n"
@@ -110,7 +109,7 @@ void Info::Interface::enroll_options()
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue,
 		  "Show copyright and license data.",
-		  NULL);
+		  nullptr);
 }
 
 bool Info::Interface::parse_options(int argc, char **argv)
@@ -121,82 +120,83 @@ bool Info::Interface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("IO_INFO_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the IO_INFO_OPTIONS environment variable:\n"
 	      << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);
-  if ( option_index < 1 )
+  if ( option_index < 1 ) {
     return false;
+}
 
-  if (options_.retrieve("help")) {
+  if (options_.retrieve("help") != nullptr) {
     options_.usage();
     std::cerr << "\n\tCan also set options via IO_INFO_OPTIONS environment variable.\n\n";
     std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for epu support.<-<-<-\n";
     exit(EXIT_SUCCESS);
   }
 
-  if (options_.retrieve("version")) {
+  if (options_.retrieve("version") != nullptr) {
     // Version is printed up front, just exit...
     exit(0);
   }
   
-  if (options_.retrieve("check_node_status")) {
+  if (options_.retrieve("check_node_status") != nullptr) {
     checkNodeStatus_ = true;
   }
 
-  if (options_.retrieve("adjacencies")) {
+  if (options_.retrieve("adjacencies") != nullptr) {
     adjacencies_ = true;
   }
 
-  if (options_.retrieve("64-bit")) {
+  if (options_.retrieve("64-bit") != nullptr) {
     ints64Bit_ = true;
   }
 
-  if (options_.retrieve("compute_volume")) {
+  if (options_.retrieve("compute_volume") != nullptr) {
     computeVolume_ = true;
   }
 
-  if (options_.retrieve("compute_bbox")) {
+  if (options_.retrieve("compute_bbox") != nullptr) {
     computeBBox_ = true;
   }
 
-  if (options_.retrieve("list_groups")) {
+  if (options_.retrieve("list_groups") != nullptr) {
     listGroups_ = true;
   }
 
-  if (options_.retrieve("use_generic_names")) {
+  if (options_.retrieve("use_generic_names") != nullptr) {
     useGenericNames_ = true;
   }
 
-  if (options_.retrieve("summary")) {
+  if (options_.retrieve("summary") != nullptr) {
     summary_ = 1;
   }
 
   {
     const char *temp = options_.retrieve("db_type");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       filetype_ = temp;
     }
   }
 
   {
     const char *temp = options_.retrieve("group_name");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       groupname_ = temp;
     }
   }
 
   {
     const char *temp = options_.retrieve("field_suffix_separator");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       fieldSuffixSeparator_ = temp[0];
     }
   }
 
-  if (options_.retrieve("copyright")) {
+  if (options_.retrieve("copyright") != nullptr) {
     std::cerr << "\n"
 	      << "Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract\n"
 	      << "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains\n"

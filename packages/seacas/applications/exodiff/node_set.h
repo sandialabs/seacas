@@ -47,7 +47,7 @@ public:
   Node_Set();
   Node_Set(int file_id, size_t exo_set_id);
   Node_Set(int file_id, size_t exo_set_id, size_t num_nodes, size_t num_dist_factors_x = 0);
- ~Node_Set();
+  ~Node_Set() override;
   
   void apply_map(const INT *node_map);
   const INT*    Nodes() const;
@@ -63,13 +63,13 @@ private:
   Node_Set(const Node_Set&);  // Not written.
   const Node_Set& operator=(const Node_Set&);  // Not written.
   
-  void entity_load_params();
+  void entity_load_params() override;
 
-  EXOTYPE exodus_type() const;
-  const char* label() const {return "Nodeset";}
-  const char* short_label() const {return "nodeset";}
+  EXOTYPE exodus_type() const override;
+  const char* label() const override {return "Nodeset";}
+  const char* short_label() const override {return "nodeset";}
 
-  void load_nodes(const INT *node_map = NULL) const;
+  void load_nodes(const INT *node_map = nullptr) const;
   
   size_t num_dist_factors;
   
