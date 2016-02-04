@@ -1,15 +1,26 @@
 #! /bin/sh
+EXTRA_ARGS=$@
 CC='gcc'; export CC
 CFLAGS="-I${ACCESS}/include"; export CFLAGS
 CPPFLAGS="-DNDEBUG"; export CPPFLAGS
+OS=`uname -s`
+
+if [ "X$ACCESS" == "X" ] ; then
+  echo "ERROR: Please set the ACCESS environment variable before executing this script."
+  exit
+fi
 
 rm -f CMakeCache.txt
 
-cmake  \
+if [ "$OS" == "Darwin" ] ; then
+
+cmake \
+-D CMAKE_MACOSX_RPATH:BOOL=ON \
+-D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D CGNS_BUILD_SHARED:BOOL=ON \
 -D CGNS_ENABLE_HDF5:BOOL=ON \
--D HDF5_LIBRARY:FILEPATH=${ACCESS}/lib/libhdf5.so \
--D HDF5_INCLUDE_PATH:PATH=${ACCESS}/include \
+-D HDF5_LIBRARIES:PATH=${ACCESS}/lib/libhdf5.dylib \
+-D HDF5_INCLUDE_DIRS:PATH=${ACCESS}/include \
 -D HDF5_NEED_ZLIB:BOOL=ON \
 -D CGNS_ENABLE_SCOPING:BOOL=ON \
 -D CGNS_ENABLE_FORTRAN:BOOL=OFF \
@@ -17,5 +28,18 @@ cmake  \
 $EXTRA_ARGS \
 ..
 
+else
 
+cmake \
+-D CGNS_BUILD_SHARED:BOOL=ON \
+-D CGNS_ENABLE_HDF5:BOOL=ON \
+-D HDF5_LIBRARY:PATH=${ACCESS}/lib \
+-D HDF5_INCLUDE_DIRS:PATH=${ACCESS}/include \
+-D HDF5_NEED_ZLIB:BOOL=ON \
+-D CGNS_ENABLE_SCOPING:BOOL=ON \
+-D CGNS_ENABLE_FORTRAN:BOOL=OFF \
+-D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
+$EXTRA_ARGS \
+..
 
+fi
