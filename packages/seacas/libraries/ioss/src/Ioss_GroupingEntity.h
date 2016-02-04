@@ -45,6 +45,8 @@
 #include <stdint.h>                     // for int64_t
 #include <string>                       // for string
 #include <vector>                       // for vector
+//#include <Kokkos_Core.hpp>              // for Kokkos::View
+#include "Ioss_Property.h"              // for Property
 
 namespace Ioss {
 
@@ -173,6 +175,29 @@ namespace Ioss {
     int put_field_data(const std::string& field_name, std::vector<int>     &data) const;
     int put_field_data(const std::string& field_name, std::vector<int64_t> &data) const;
     int put_field_data(const std::string& field_name, std::vector<Complex> &data) const;
+
+    /*
+    // Get and put this field's data into the specified Kokkos::View.
+    // Returns the number of entities for which the field was read.
+    // Resizes 'data' to size needed to hold all values;
+    // however, any Views that were previously created referencing the same
+    // underlying memory allocation as 'data' will remain the original size.
+    // TODO: Need 2-D View versions of these methods for GPU performance.
+    int get_field_data(const std::string & field_name, Kokkos::View<char*> & data) const;
+    int get_field_data(const std::string & field_name, Kokkos::View<double*> & data) const;
+    int get_field_data(const std::string & field_name, Kokkos::View<int*> & data) const;
+    // There are some restrictions on the type of data that a View can hold (See Kokkos programmer's guide Section 6.2.2)
+    // At a minimum, the assignment operator, constructors, and destructors must be marked with KOKKOS_[INLINE_]FUNCTION.
+    //int get_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
+    //int get_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
+
+    // TODO: Need 2-D View versions of these methods for GPU performance.
+    int put_field_data(const std::string & field_name, Kokkos::View<char*> & data) const;
+    int put_field_data(const std::string & field_name, Kokkos::View<double*> & data) const;
+    int put_field_data(const std::string & field_name, Kokkos::View<int*> & data) const;
+    //int put_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
+    //int put_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
+    */
 
     Ioss::Field::BasicType field_int_type() const {
       if (get_database() == nullptr || get_database()->int_byte_size_api() == 4) {
