@@ -41,8 +41,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-//#include <Kokkos_Core.hpp>              // for Kokkos::View
 
+#ifdef HAVE_KOKKOS
+#include <Kokkos_Core.hpp>              // for Kokkos::View
+#endif
 
 #include "Ioss_CodeTypes.h"
 #include "Ioss_EntityType.h"
@@ -315,6 +317,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   return retval;
 }
 
+#ifdef HAVE_KOKKOS
 /*
 // Will want to template on Memory space (with a default template value of the default memory space)
 // Will probably also want to template on the data type, and maybe other View template parameters, with defaults.
@@ -358,6 +361,7 @@ int Ioss::GroupingEntity::get_field_data(const std:string & field_name,
   return retval;
 }
 */
+#endif
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
 					 std::vector<double> &data) const
