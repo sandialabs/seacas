@@ -180,7 +180,6 @@ namespace Ioss {
     int put_field_data(const std::string& field_name, std::vector<Complex> &data) const;
 
 #ifdef HAVE_KOKKOS
-    /*
     // Get and put this field's data into the specified Kokkos::View.
     // Returns the number of entities for which the field was read.
     // Resizes 'data' to size needed to hold all values;
@@ -201,7 +200,6 @@ namespace Ioss {
     int put_field_data(const std::string & field_name, Kokkos::View<int*> & data) const;
     //int put_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
     //int put_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
-    */
 #endif
 
     Ioss::Field::BasicType field_int_type() const {
