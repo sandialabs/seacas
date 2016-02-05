@@ -662,6 +662,7 @@ namespace Iocgns {
       }
       return num_to_get;
     }
+    return -1;
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
