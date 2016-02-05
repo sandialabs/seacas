@@ -318,11 +318,10 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
 }
 
 #ifdef HAVE_KOKKOS
-/*
 // Will want to template on Memory space (with a default template value of the default memory space)
 // Will probably also want to template on the data type, and maybe other View template parameters, with defaults.
 // Will need 2-D View version of this function for GPU performance.
-int Ioss::GroupingEntity::get_field_data(const std:string & field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string & field_name,
                                          Kokkos::View<double*> & data) const
 {
   verify_field_exists(field_name, "input");
@@ -360,7 +359,6 @@ int Ioss::GroupingEntity::get_field_data(const std:string & field_name,
 
   return retval;
 }
-*/
 #endif
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
