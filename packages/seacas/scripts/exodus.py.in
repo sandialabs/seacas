@@ -4365,7 +4365,11 @@ def transfer_variables(exoFrom, exoTo, array_type = 'ctype',
     infoRecs = exoFrom.get_info_records()
     exoTo.put_info_records( infoRecs )
   if debugPrint: print "Transfer time values"
+
   nSteps = exoFrom.num_times()
+  if nSteps == 0:
+    return(exoTo)
+
   timeVals = exoFrom.get_times()
   for step in xrange(nSteps):
     exoTo.put_time( step+1, timeVals[step] )
