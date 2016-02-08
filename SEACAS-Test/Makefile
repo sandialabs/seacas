@@ -24,7 +24,7 @@ RM	=	rm -f
 	$(RM) $@
 	$(FASTQ) -aprepro -mesh=$*.g $*.fsq
 
-test:	baseline.g3 new_tape.g3 new_shell.g3 slice conv_text matlab
+test:	baseline.g3 new_tape.g3 new_shell.g3 slice conv_text matlab python
 
 base_o.g3: base_o.g base_o.g3i 
 	$(APREPRO) base_o.g3i |	$(GEN3D) base_o.g base_o.g3
@@ -95,6 +95,11 @@ matlab: baseline.g
 	$(MAT2EXO) baseline.mat
 	$(EXODIFF) -stat baseline.g baseline.exo
 
+python: baseline.g
+	PYTHONPATH=../lib python testExo.py
+	$(EXODIFF) -stat -pedantic baseline.g baseline_numpy_copy.e
+	$(EXODIFF) -stat -pedantic baseline.g baseline_ctype_copy.e
+
 ############################# Default Rules#####################
 # Dependencies:
 base_o.g: common.h
@@ -105,3 +110,4 @@ clean:
 	$(RM) -rf mesh/ tmp.g3d
 	$(RM) *.decomp.out *.nem *.pex
 	$(RM) *.mat *.exo
+	$(RM) baseline_*_copy.e
