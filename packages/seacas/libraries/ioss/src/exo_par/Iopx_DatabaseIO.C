@@ -290,6 +290,11 @@ namespace Iopx {
 
       exodus_file_ptr = ex_create_par(get_filename().c_str(), exodusMode|mode|par_mode,
                                       &cpu_word_size, &dbRealWordSize, util().communicator(), info);
+      if (exodus_file_ptr < 0) {
+	create_path(get_filename());
+	exodus_file_ptr = ex_create_par(get_filename().c_str(), exodusMode|mode|par_mode,
+					&cpu_word_size, &dbRealWordSize, util().communicator(), info);
+      }
     }
 
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
@@ -379,12 +384,17 @@ namespace Iopx {
           exodusFilePtr = ex_create_par(get_filename().c_str(), mode|par_mode,
                                         &cpu_word_size, &dbRealWordSize, util().communicator(), info);
           if (exodusFilePtr < 0) {
-            dbState = Ioss::STATE_INVALID;
-            // NOTE: Code will not continue past this call...
-            std::ostringstream errmsg;
-            errmsg << "ERROR: Cannot create specified file '" << get_filename() << "'";
-            IOSS_ERROR(errmsg);
-          }
+	    create_path(get_filename());
+	    exodusFilePtr = ex_create_par(get_filename().c_str(), mode|par_mode,
+					  &cpu_word_size, &dbRealWordSize, util().communicator(), info);
+	    if (exodusFilePtr < 0) {
+	      dbState = Ioss::STATE_INVALID;
+	      // NOTE: Code will not continue past this call...
+	      std::ostringstream errmsg;
+	      errmsg << "ERROR: Cannot create specified file '" << get_filename() << "'";
+	      IOSS_ERROR(errmsg);
+	    }
+	  }
         }
         ex_set_max_name_length(exodusFilePtr, maximumNameLength);
       }
@@ -2404,14 +2414,13 @@ namespace Iopx {
               for (ssize_t iel = 0; iel < 2*entity_count; iel+=2) {
                 int64_t new_id = (int64_t)10*els[iel] + els[iel+1];
                 if (new_id > int_max) {
-                  std::string decoded_filename = util().decode_filename(get_filename(), isParallel);
-                      std::ostringstream errmsg;
-                      errmsg << "ERROR: accessing the sideset field 'ids'\n"
-                             << "\t\thas exceeded the integer bounds for entity " << els[iel]
-                             << ", local side id " << els[iel+1] << ".\n\t\tTry using 64-bit mode to read the file '"
-                             << decoded_filename << "'.\n";
-                      IOSS_ERROR(errmsg);
-                    }
+		  std::ostringstream errmsg;
+		  errmsg << "ERROR: accessing the sideset field 'ids'\n"
+			 << "\t\thas exceeded the integer bounds for entity " << els[iel]
+			 << ", local side id " << els[iel+1] << ".\n\t\tTry using 64-bit mode to read the file '"
+			 << get_filename() << "'.\n";
+		  IOSS_ERROR(errmsg);
+		}
                 
                 ids[idx++] = (int)new_id;
               }
