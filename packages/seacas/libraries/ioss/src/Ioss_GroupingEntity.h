@@ -46,7 +46,7 @@
 #include <vector>                       // for vector
 #include "Ioss_Property.h"              // for Property
 
-#ifdef HAVE_KOKKOS
+#ifdef SEACAS_HAVE_KOKKOS
 #include <Kokkos_Core.hpp>              // for Kokkos::View
 #endif
 
@@ -178,7 +178,7 @@ namespace Ioss {
     int put_field_data(const std::string& field_name, std::vector<int64_t> &data) const;
     int put_field_data(const std::string& field_name, std::vector<Complex> &data) const;
 
-#ifdef HAVE_KOKKOS
+#ifdef SEACAS_HAVE_KOKKOS
     // Get and put this field's data into the specified Kokkos::View.
     // Returns the number of entities for which the field was read.
     // Resizes 'data' to size needed to hold all values;

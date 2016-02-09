@@ -75,3 +75,5 @@ typedef std::complex<float> Complex;
 typedef std::complex<double> Complex;
 #endif
 #endif 
+
+#include <SEACASIoss_KOKKOS_config.h>
