@@ -77,3 +77,5 @@ using Complex = std::complex<float>;
 using Complex = std::complex<double>;
 #endif
 #endif 
+
+#include <SEACASIoss_KOKKOS_config.h>
