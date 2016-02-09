@@ -38,6 +38,7 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Region.h>
 #include <Ioss_Utils.h>
+#include <Ioss_FileInfo.h>
 #include <assert.h>
 #include <stddef.h>
 #include <float.h>
@@ -50,6 +51,8 @@
 #include <utility>
 #include <vector>
 #include <tokenize.h>
+#include <sys/stat.h>
+#include <cstring>
 
 #include "Ioss_DBUsage.h"
 #include "Ioss_Field.h"
@@ -179,7 +182,7 @@ namespace Ioss {
         if (property.size() != 2) {
           std::ostringstream errmsg;
           errmsg << "ERROR: Invalid property specification found in IOSS_PROPERTIES environment variable\n"
-              << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
+		 << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
           IOSS_ERROR(errmsg);
         }
         std::string prop = Utils::uppercase(property[0]);
@@ -191,7 +194,7 @@ namespace Ioss {
           std::cerr << "IOSS: Adding property '" << prop << "' with value '" << value << "'\n";
 
         
-}if (all_digit) {
+	}if (all_digit) {
           int int_value = std::strtol(value.c_str(), nullptr, 10);
           properties.add(Property(prop, int_value));
         }
@@ -231,14 +234,14 @@ namespace Ioss {
   }
 
   DatabaseIO::~DatabaseIO()
-  = default;
+    = default;
 
   int DatabaseIO::int_byte_size_api() const
   {
     if (dbIntSizeAPI == USE_INT32_API) {
       return 4;
     } 
-      return 8;
+    return 8;
     
   }
 
@@ -275,6 +278,60 @@ namespace Ioss {
       exists = (IfDatabaseExistsBehavior)properties.get("APPEND_OUTPUT").get_int();
     }
     return exists;
+  }
+
+  void DatabaseIO::create_path(const std::string& filename) const
+  {
+    bool error_found = false;
+    std::ostringstream errmsg;
+
+    if (myProcessor == 0) {
+      Ioss::FileInfo file = Ioss::FileInfo(filename);
+      std::string path = file.pathname();
+
+      const int mode = 0777;  // Users umask will be applied to this.
+
+      auto iter = path.begin();
+      while (iter != path.end() && !error_found) {
+	iter = std::find(iter, path.end(), '/');
+	std::string path_root = std::string(path.begin(), iter);
+
+	if (iter != path.end()) {
+	  ++iter; // Skip past the '/'
+	}
+
+	if (path_root.empty()) { // Path started with '/'
+	  continue;
+	}
+
+	struct stat st;
+	if (stat(path_root.c_str(), &st) != 0) {
+	  if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
+	    errmsg << "ERROR: Cannot create directory '" << path_root
+		   << "' : " << std::strerror(errno) << "\n";
+	    error_found = true;
+	  }
+	}
+	else if (!S_ISDIR(st.st_mode)) {
+	  errno = ENOTDIR;
+	  errmsg << "ERROR: Path '" << path_root << "' is not a directory.\n";
+	  error_found = true;
+	}
+      }
+    } else {
+      // Give the other processors something to say in case there is an error.
+      errmsg << "ERROR: Could not create path. See processor 0 output for more details.\n";
+    }
+
+    // Sync all processors with error status...
+    // All processors but 0 will have error_found=false
+    // Processor 0 will have error_found = true or false depending on path result.
+    int is_error = error_found ? 1 : 0; 
+    error_found = (util().global_minmax(is_error, Ioss::ParallelUtils::DO_MAX) == 1);
+
+    if (error_found) {
+      IOSS_ERROR(errmsg);
+    }
   }
 
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field& field, int in_out) const
@@ -322,7 +379,7 @@ namespace Ioss {
   {
     if (!properties.exists(property_name)) {
       return;
-}
+    }
 
     std::string prop = properties.get(property_name).get_string();
     std::vector<std::string> groups = tokenize(prop, ":");
@@ -359,7 +416,7 @@ namespace Ioss {
     // Not generalized yet... This only works for T == SideSet
     if (type != SIDESET) {
       return;
-}
+    }
 	
     int64_t entity_count = 0;
     int64_t df_count = 0;
@@ -377,9 +434,9 @@ namespace Ioss {
 	for (auto &sbold : side_blocks) {
 	  size_t side_count = sbold->get_property("entity_count").get_int();
 	  auto sbnew = new SideBlock(this, sbold->name(),
-					   sbold->topology()->name(),
-					   sbold->parent_element_topology()->name(),
-					   side_count);
+				     sbold->topology()->name(),
+				     sbold->parent_element_topology()->name(),
+				     side_count);
 	  int64_t id = sbold->get_property("id").get_int();
 	  sbnew->property_add(Property("set_offset", entity_count));
 	  sbnew->property_add(Property("set_df_offset", df_count));
@@ -430,7 +487,7 @@ namespace Ioss {
 	  ElementTopology* side_type = (*I)->topology()->boundary_type();
 	  if (commonSideTopology == nullptr) { // First block
 	    new_this->commonSideTopology = side_type;
-}
+	  }
 	  if (commonSideTopology != side_type) { // Face topologies differ in mesh
 	    new_this->commonSideTopology = nullptr;
 	    return;
