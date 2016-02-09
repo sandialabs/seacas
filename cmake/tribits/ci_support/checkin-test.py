@@ -77,6 +77,7 @@ recommended that one uses this script to push since it will amend the last
 commit message with a (minimal) summary of the builds and tests run with
 results and/or send out a summary email about the builds/tests performed.
 
+
 QUICKSTART
 -----------
 
@@ -192,7 +193,11 @@ section below):
   NOTE: The commands 'cmake', 'ctest', and 'make' must be in your default path
   before running this script.
 
+  NOTE: Defaults like -j4 can be set using a local-checkin-test-defaults.py
+  file (see below).
+
 For more details on using this script, see the detailed documentation below.
+
 
 DETAILED DOCUMENTATION
 -----------------------
@@ -520,11 +525,11 @@ COMMON USE CASES (EXAMPLES):
   On your fast remote test machine, do a full test and push with:
   
     ../checkin-test.py \
-      --extra-pull-from=<remote-name>:master \
+      --extra-pull-from=<remote-repo>:master \
       --do-all --push
 
-  where <remote-name> is a git repo pointing to
-  mymachine:/some/dir/to/your/src:master (see 'git help remote').
+  where <remote-name> is a git remote repo name pointing to
+  mymachine:/some/dir/to/your/src (see 'git help remote').
   
   NOTE: You can of course adjust the packages and/or build/test cases that get
   enabled on the different machines.
@@ -548,6 +553,9 @@ COMMON USE CASES (EXAMPLES):
   NOTE: Git will resolve the duplicated commits when you pull the commits
   pushed from the remote machine.  Git knows that the commits are the same and
   will do the right thing when rebasing (or just merging).
+
+  NOTE: This would also work for multiple repos if the remote name
+  '<remote-repo>' pointed to the right remote repo in all the local repos.
   
 (*) Check push readiness status:
 
@@ -567,6 +575,29 @@ the command-line arguments below, and some experimentation will be enough to
 get you going using this script for all of your pre-push testing and pushes.
 If that is not sufficient, send email to your development support team to ask
 for help.
+
+
+LOCAL DEFAULT COMMAND LINE DEFAULTS
+-----------------------------------
+
+If the file local-checkin-test-defaults.py exists in the current directory,
+then it will be read in and will change the project defaults for the
+command-line arguments.  For example, a valid local-checkin-test-defaults.py
+file would look like:
+
+  defaults = [
+    "-j10",
+    "--no-rebase",
+    "--ctest-options=-E '(PackageA_Test1|PackageB_Test2)'"
+    ]
+
+Any of the project's checkin-test.py command-line argument defaults can be
+changed in this way.  The updated defaults can be observed by running:
+
+  ./checkin-test.py --show-defaults
+
+Any command-line arguments explicitly passed in will override these local
+defaults.
 
 
 HANDLING OF PT, ST, AND EX CODE IN BUILT-IN AND EXTRA BUILDS:
@@ -807,11 +838,11 @@ def runProjectTestsWithCommandLineArgs(commandLineArgs, configuration = {}):
     help="Do not enable forward packages.", default=True )
 
   clp.add_option(
-    "--continue-if-no-updates", dest="abortGracefullyIfNoUpdates", action="store_false",
+    "--continue-if-no-updates", dest="abortGracefullyIfNoChangesPulled", action="store_false",
     help="If set, then the script will continue if no updates are pulled from any repo. [default]",
     default=False )
   clp.add_option(
-    "--abort-gracefully-if-no-updates", dest="abortGracefullyIfNoUpdates", action="store_true",
+    "--abort-gracefully-if-no-changes-pulled", dest="abortGracefullyIfNoChangesPulled", action="store_true",
     help="If set, then the script will abort gracefully if no updates are pulled from any repo.",
     default=False )
 
@@ -845,10 +876,10 @@ def runProjectTestsWithCommandLineArgs(commandLineArgs, configuration = {}):
     default="BASIC",
     help="." \
     +" Change the test categories.  Can be 'BASIC', 'CONTINUOUS', " \
-      " 'NIGHTLY', or 'WEEKLY' (default 'BASIC')." )
+      " 'NIGHTLY', or 'HEAVY' (default set by project, see --show-defaults)." )
 
   clp.add_option(
-    "-j", dest="overallNumProcs", type="string", default="",
+    "-j", "--parallel", dest="overallNumProcs", type="string", default="",
     help="The options to pass to make and ctest (e.g. -j4)." )
 
   clp.add_option(
@@ -995,13 +1026,19 @@ def runProjectTestsWithCommandLineArgs(commandLineArgs, configuration = {}):
 
   clp.add_option(
     "--extra-pull-from", dest="extraPullFrom", type="string", default="",
-    help="Optional extra git pull '<repository>:<branch>' to merge in changes from after" \
-    +" pulling in changes from <remoterepo>.  This option uses a colon with no spaces in between" \
-    +" <repository>:<branch>' to avoid issues with passing arguments with spaces." \
-    +"  For example --extra-pull-from=some_other_repo:master." \
-    +"  This extra pull is only done if --pull is also specified.  NOTE: when using" \
-    +" --extra-repos=<repo0>,<repo1>,... the <repository> must be a named repository that is" \
-    +" present in all of the git repos or it will be an error." )
+    help="Optional extra git pull(s) to merge in changes from after" \
+    +" pulling in changes from the tracking branch.  The format of this argument is:" \
+    +" ...,<local-repoi>:<remote-repoi>:<remote-branchi>,... where each pull" \
+    +" specification gives the name (not the directory) of the local repo <local-repoi>" \
+    +", the remote repo name <remote-repoi>, and the branch in the remote repo to pull" \
+    +" <remote-branchi>.  If only two semicolons ':' are given then an pull field takes" \
+    +" the form ...,<remote-repo>:<remote-branch>,... where the remote <remote-name>" \
+    +" must be defined in all the repos and the branch <remote-branch> must exist" \
+    +" in all the remote repos.  If the <remote-repoi> is empty such as with" \
+    +" ...,:<remote-repoi>:<remote-branchi>,... then this matches the base git repo." \
+    +"  The extra pull(s) are only done if --pull is also specified.  NOTE: when using" \
+    +" --extra-repos=<repo0>,<repo1>,... the <local-repoi> must be a named repository" \
+    + " that is present in all of the git repos or it will be an error." )
 
   clp.add_option(
     "--allow-no-pull", dest="allowNoPull", action="store_true", default=False,
@@ -1091,8 +1128,8 @@ def runProjectTestsWithCommandLineArgs(commandLineArgs, configuration = {}):
     print "  --enable-fwd-packages \\"
   else:
     print "  --no-enable-fwd-packages \\"
-  if options.abortGracefullyIfNoUpdates:
-    print "  --abort-gracefully-if-no-updates \\"
+  if options.abortGracefullyIfNoChangesPulled:
+    print "  --abort-gracefully-if-no-changes-pulled \\"
   else:
     print "  --continue-if-no-updates \\"
   if options.abortGracefullyIfNoChangesToPush:
@@ -1189,7 +1226,9 @@ def runProjectTestsWithCommandLineArgs(commandLineArgs, configuration = {}):
     sys.exit(2)
 
   if options.extraPullFrom:
-    getRepoSpaceBranchFromOptionStr(options.extraPullFrom) # Will validate form
+    for extraPullFromArg in options.extraPullFrom.split(","):
+       # Will validate form of argument
+      getLocalRepoRemoteRepoAndBranchFromExtraPullArg(extraPullFromArg)
 
 
   #
@@ -1276,13 +1315,33 @@ def loadConfigurationFile(filepath):
     raise Exception('The file %s does not exist.' % filepath)
 
 
+def getLocalCmndLineArgs():
+  localDefaults = []
+  checkinTestDir = os.getcwd()
+  localProjectDefaultsBaseName = "local-checkin-test-defaults"
+  localProjectDefaultsFile = checkinTestDir+"/"+localProjectDefaultsBaseName+".py"
+  #print "localProjectDefaultsFile = '"+localProjectDefaultsFile+"'"
+  if os.path.exists(localProjectDefaultsFile):
+    sys_path_old = sys.path
+    try:
+      sys.path = [checkinTestDir] + sys_path_old
+      if debugDump:
+        print "\nLoading local default command-line args from "+localProjectDefaultsFile+"..."
+        print "\nsys.path =", sys.path
+      localDefaults = __import__(localProjectDefaultsBaseName).defaults
+    finally:
+      sys.path = sys_path_old
+      if debugDump:
+        print "\nsys.path =", sys.path
+  return localDefaults
+
+
 def locateAndLoadConfiguration(path_hints = []):
   """
-  Locate and load a module called
-  checkin_test_project_configuration.py. The path_hints argument can
-  be used to provide location hints at which to locate the
-  file. Returns a configuration dictionary. If the module is not
-  found, this dictionary will be empty.
+  Locate and load a module called checkin_test_project_configuration.py. The
+  path_hints argument can be used to provide location hints at which to locate
+  the file. Returns a configuration dictionary. If the module is not found,
+  this dictionary will be empty.
   """
   for path in path_hints:
     candidate = os.path.join(path, "project-checkin-test-config.py")
@@ -1329,8 +1388,16 @@ def main(cmndLineArgs):
           configuration = locateAndLoadConfiguration([arg.split('=')[1]])
       if not configuration:
         configuration = locateAndLoadConfiguration(getConfigurationSearchPaths())
+      localCmndLineArgs = getLocalCmndLineArgs()
+      if localCmndLineArgs:
+        if debugDump:
+          print "\ncmndLineArgs =", cmndLineArgs
+          print "\nlocalCmndLineArgs =", localCmndLineArgs
+        cmndLineArgs = localCmndLineArgs + cmndLineArgs
+        if debugDump:
+          print "\ncmndLineArgs =", cmndLineArgs
       if debugDump:
-        print "\nConfiguration loaded from configuration file =", configuration 
+        print "\nConfiguration loaded from configuration file =", configuration
       success = runProjectTestsWithCommandLineArgs(cmndLineArgs, configuration)
     except SystemExit, e:
       # In Python 2.6, SystemExit inherits Exception, but for proper exit

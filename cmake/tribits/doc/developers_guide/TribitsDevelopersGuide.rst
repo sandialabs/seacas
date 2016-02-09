@@ -4301,12 +4301,12 @@ scenario as described in the section `Nested Layers of TriBITS Project
 Testing`_.
 
 The currently allowed values for the *Test Test Category* are ``BASIC``,
-``CONTINUOUS``, ``NIGHTLY``, ``WEEKLY``, and ``PERFORMANCE``.  Tests are
+``CONTINUOUS``, ``NIGHTLY``, ``HEAVY``, and ``PERFORMANCE``.  Tests are
 enabled based on their assigned test test category matching the categories set
 in the CMake cache variable `${PROJECT_NAME}_TEST_CATEGORIES`_.  The test test
-categories ``BASIC``, ``CONTINUOUS``, ``NIGHTLY``, and ``WEEKLY`` are subsets
+categories ``BASIC``, ``CONTINUOUS``, ``NIGHTLY``, and ``HEAVY`` are subsets
 of each other.  That is, a ``BASIC`` test is automatically included in the set
-of ``CONTINUOUS``, ``NIGHTLY``, and ``WEEKLY`` tests (as set using
+of ``CONTINUOUS``, ``NIGHTLY``, and ``HEAVY`` tests (as set using
 ``${PROJECT_NAME}_TEST_CATEGORIES``).
 
 The different test test categories are described below in more detail:
@@ -4317,7 +4317,7 @@ The different test test categories are described below in more detail:
   every developer that works on the project and so must be protected at all
   times and are therefore included in `Pre-Push CI Testing`_.  Tests marked as
   ``BASIC`` are enabled for the values of ``${PROJECT_NAME}_TEST_CATEGORIES``
-  of ``BASIC``, ``CONTINUOUS``, ``NIGHT``, and ``WEEKLY``.  The category
+  of ``BASIC``, ``CONTINUOUS``, ``NIGHT``, and ``HEAVY``.  The category
   ``BASIC`` is the default test test category given to all test executables
   and tests that don't specify the ``CATEGORIES`` argument.
 
@@ -4328,7 +4328,7 @@ The different test test categories are described below in more detail:
   `Post-Push CI Testing`_, `Nightly Testing`_, and other types of testing.
   Tests marked as ``CONTINUOUS`` are enabled for the values of
   ``${PROJECT_NAME}_TEST_CATEGORIES`` equal to ``CONTINUOUS``, ``NIGHT``, and
-  ``WEEKLY``.  A test may be marked ``CONTINUOUS`` and not ``BASIC`` for a few
+  ``HEAVY``.  A test may be marked ``CONTINUOUS`` and not ``BASIC`` for a few
   different reasons.  For example, the code needed to run the test may take
   too long to build or the test itself may take too long to run in order to
   afford including it in `Pre-Push CI Testing`_.
@@ -4344,17 +4344,15 @@ The different test test categories are described below in more detail:
   represent "offline" so that they don't influence the daily development cycle
   for the project but instead are addressed in a "secondary feedback loop".
   Tests marked as ``NIGHTLY`` are enabled for the values of
-  ``${PROJECT_NAME}_TEST_CATEGORIES`` equal to ``NIGHT``, and ``WEEKLY``.
+  ``${PROJECT_NAME}_TEST_CATEGORIES`` equal to ``NIGHT``, and ``HEAVY``.
 
-.. _Test Test Category WEEKLY:
+.. _Test Test Category HEAVY:
 
-* Tests marked **WEEKLY** are usually reserved for very expensive tests that
-  are too expensive to run nightly.  ``WEEKLY`` tests may only be run once a
-  week (see `Weekly Testing`_) but may be run on shorter or longer time
-  intervals depending on circumstances (e.g. the availability of test machines
-  and free processes, just how expensive all of the tests actually are, etc.).
-  Tests marked as ``WEEKLY`` are enabled only for the value of
-  ``${PROJECT_NAME}_TEST_CATEGORIES`` equal to ``WEEKLY``.
+* Tests marked **HEAVY** are usually reserved for very expensive tests that
+  are too expensive to run nightly.  ``HEAVY`` tests require more testing
+  resources and therefore may only be run on a fully optimzied build and/or
+  run less frequently.  Tests marked as ``HEAVY`` are enabled only for the
+  value of ``${PROJECT_NAME}_TEST_CATEGORIES`` equal to ``HEAVY``.
 
 .. _Test Test Category PERFORMANCE:
 
@@ -4391,7 +4389,7 @@ The standard TriBITS-defined project testing processes are:
 * `Pre-Push CI Testing`_
 * `Post-Push CI Testing`_
 * `Nightly Testing`_
-* `Weekly Testing`_
+* `Heavy Testing`_
 * `Performance Testing`_
 
 .. ToDo: Discuss why we would want to create standardized test cases?  The
@@ -4508,16 +4506,16 @@ Test Test Category         ``NIGHTLY``         (`Test Test Category NIGHTLY`_)
 
 The nightly builds comprise the basic "heart beat" for the project.
 
-.. _Weekly Testing:
+.. _Heavy Testing:
 
-**Weekly Testing**
+**Heavy Testing**
 
-*Weekly Testing* builds are just an extension to the `Nightly Testing`_ builds
-that add on more expensive tests marked using the `Test Test Category
-WEEKLY`_.  For projects that define weekly tests and weekly builds, individual
-test cases can typically take 24 hours or longer to run so they can't even be
-run every day in nightly testing.  What standard weekly builds have in common
-is that they tend to select repositories, SE packages and code, and individual
+*Heavy Testing* builds are just an extension to the `Nightly Testing`_ builds
+that add on more expensive tests marked using the `Test Test Category HEAVY`_.
+For projects that define heavy tests and heavy builds, individual test cases
+may be alloed to take 24 hours or longer to run so they can't even be run
+every day in nightly testing.  What standard heavy builds have in common is
+that they tend to select repositories, SE packages and code, and individual
 tests using the following test-related classifications:
 
 =========================  ==================  ====================================
@@ -4525,14 +4523,14 @@ tests using the following test-related classifications:
 =========================  ==================  ====================================
 Repository Test Classif.   ``Nightly``         (`Repository Test Nightly`_)
 SE Package Test Group      ``PT`` & ``ST``     (`PT`_ and `ST`_)
-Test Test Category         ``WEEKLY``          (`Test Test Category WEEKLY`_)
+Test Test Category         ``HEAVY``           (`Test Test Category HEAVY`_)
 =========================  ==================  ====================================
 
 Project developer teams should strive to limit the number of test cases that
-are marked as ``WEEKLY`` since these tests will *not* get run nightly and
-developers will tend to never enable them when doing more extensive testing
-using ``--st-extra-builds`` with the `checkin-test.py`_ script in extended
-pre-push testing.
+are marked as ``HEAVY`` since these tests will typically *not* get run in very
+may builds or may not be run every day and developers will tend to never
+enable them when doing more extensive testing using ``--st-extra-builds`` with
+the `checkin-test.py`_ script in extended pre-push testing.
 
 .. _Performance Testing:
 
@@ -6385,11 +6383,11 @@ This gives three different git repos on three different machines:
 
 Because of the independent development processes of these three teams, unless
 these development teams maintain 100% backward compatibility w.r.t. the
-interfaces and behavior of the combined software, one cannot expect at any
-time to be able to pull the code from these three different git repos and be
-able to successfully build all of the code and have all of the tests pass.
-Therefore, how does the 4th integration team expect to be able to build, test,
-and possibly extend the combined software?  In this case, the integration team
+interfaces and behavior of the combined software, one cannot at any time pull
+the code from these three different git repos and expect to be able to
+successfully build all of the code and have all of the tests pass.  Therefore,
+how does the 4th integration team expect to be able to build, test, and
+possibly extend the combined software?  In this case, the integration team
 would set up their own clones of all three git/TriBITS repos on their own
 machine such as:
 
@@ -6402,13 +6400,14 @@ machine such as:
 Once an initial collaboration effort between the integration team and the
 three other development teams is able to get a version of all three
 git/TriBITS repos to work correctly in the combined meta-project, these
-versions (assume the master branches) would be pushed to the git repos on the
-git integration server ``url4.gov``.  The state where the TriBITS packages in
-the three different git/TriBITS repos in the master branch on ``url4.gov`` all
-work together correctly constitutes the initial condition for the ACI process
-described below.  From that initial condition, the ACI processes ensures that
-updates the master branches for the git/TriBITS repos on ``url4.gov`` do not
-break any builds or tests of the integrated software.
+versions (assume the ``master`` branches) would be pushed to the git repos on
+the git integration server ``url4.gov``.  The state where the TriBITS packages
+in the three different git/TriBITS repos in the ``master`` branch on
+``url4.gov`` all work together correctly constitutes the initial condition for
+the ACI process described below.  From that initial condition, the ACI
+processes ensures that updates the ``master`` branches for the git/TriBITS
+repos on ``url4.gov`` do not break any builds or tests of the integrated
+software.
 
 In order to describe how to set up an ACI process using the
 ``checkin-test.py`` script, the following subsections will focus on the update
@@ -6432,31 +6431,15 @@ integration server url4.gov as follows (all of which become 'origin')::
 where, ``SYNC_BASE_DIR=~/sync_base_dir`` for example, which must already be
 created.
 
-An ``.gitdist`` file can be created to aid in multi-repo git commands using the
-tool `gitdist`_.  This file is located in the ``BaseProj`` directory and can be
-created as::
+Next, one defines a remote to pull changes for the ``ExtraRepo1`` from the
+main develoment repo:
 
-  $ cd $SYNC_BASE_DIR/BaseProj
-  $ echo ExtraRepo1 > .gitdist
-  $ echo ExtraRepo2 >> .gitdist
-  $ cat .gitdist
-  ExtraRepo1
-  ExtraRepo2
+  $ cd $SYNC_BASE_DIR/BaseProj/ExtraRepo1
+  $ git remote add public url2.gov:/git/ExtraRepo1
 
-Next, the remotes that define the integration pattern are created as follows::
-
-  $ cd $SYNC_BASE_DIR/BaseProj
-  $ git remote add integrate-from url4.gov:/git/BaseProj
-  $ cd ExtraRepo1
-  $ git remote add integrate-from url2.gov:/git/ExtraRepo1
-  $ cd ..
-  $ cd ExtraRepo2
-  $ git remote add integrate-from url4.gov:/git/ExtraRepo2
-  $ cd ..
-
-.. ToDo: It would be great the create a remote for only ExtraRepo1 and pass in
-.. --extra-pull-from=ExtraRepo1:integrate-from:master.  This would avoid the
-.. other dummy ' integrate-from' remotes.
+Here, one should pick a name for the remote repo for ``ExtraRepo1`` that is
+most descriptive for that particular situation.  In this case, the name
+``public`` is chosen to signify the main public development repo.
 
 This gives the remotes::
 
@@ -6464,37 +6447,33 @@ This gives the remotes::
   $ gitdist remote -v | grep -v push | grep -v "^$"
   *** Base Git Repo: BaseProj
   origin	        url4.gov:/git/BaseProj (fetch)
-  integrate-from	url4.gov:/git/BaseProj (fetch)
   *** Git Repo: ExtraRepo1
   origin	        url4.gov:/git/ExtraRepo1 (fetch)
-  integrate-from	url2.gov:/git/ExtraRepo1 (fetch)
+  public		url2.gov:/git/ExtraRepo1 (fetch)
   *** Git Repo: ExtraRepo2
   origin	        url4.gov:/git/ExtraRepo2 (fetch)
-  integrate-from	url4.gov:/git/ExtraRepo2 (fetch)
 
-The remote ``integrate-from`` is used by the ``checkin-test.py`` wrapper
-script (see below) to pull and merge in additional changes that will be tested
-and pushed to the 'origin' repos on ``url4.gov``.  In this case, the
-``BaseProj`` and ``ExtraRepo2`` repos have the remote ``integrate-from`` that
-points to the same repos as 'origin' (and will therefore not result in any
-merging) but the ``ExtraRepo1`` remote ``integrate-from`` will result in
-updates being pulled from the main development repo on ``url2.gov``, thereby
-facilitating the update of ``ExtraRepo1`` in the integrated meta-project.
+The remote ``public`` is used by the ``checkin-test.py`` wrapper script (see
+below) to pull and merge in additional changes that will be tested and pushed
+to the 'origin' repos on ``url4.gov``.  In this case, the ``ExtraRepo1``
+remote ``public`` will result in updates being pulled from the main
+development repo on ``url2.gov``, thereby facilitating the update of
+``ExtraRepo1`` in the integrated meta-project.
 
 
 ACI Integration Build Directory Setup
 +++++++++++++++++++++++++++++++++++++
 
-After the git repos are cloned and the remotes are set up, a build base
-directory is set up as::
+After the git repos are cloned and the remotes are set up as described above,
+a build base directory is set up as::
 
   $ cd $SYNC_BASE_DIR
   $ mkdir BUILDS
   $ mkdir BUILDS/CHECKIN
 
-An ACI wrapper script for ``checkin-test.py`` is created to drive the clones.
-It is assumed that this script would be called only once a day and not
-continuously in a loop (but that is possible as well but is not documented
+An ACI wrapper script for ``checkin-test.py`` is created to drive the syncing
+process.  It is assumed that this script would be called only once a day and
+not continuously in a loop (but that is possible as well but is not documented
 here).
 
 NOTE: Other build directory structures are possible, it all depends how one
@@ -6522,7 +6501,7 @@ like::
   cd $SYNC_BASE_DIR/BUILDS/CHECKIN
 
   $CHECKIN_TEST_WRAPPER \
-    --extra-pull-from=integrate-from:master \
+    --extra-pull-from=ExtraRepo1:public:master \
     --abort-gracefully-if-no-changes-to-push \
     --send-email-to=base-proj-integrators@url4.gov \
     --send-email-to-on-push=base-proj-integrators@url4.gov \
@@ -6547,19 +6526,13 @@ A description of each option passed into this invocation of the
 `checkin-test.py`_ script is given below (see `checkin-test.py --help`_ for
 more details):
 
-  ``--extra-pull-from=integrate-from:master``
+  ``--extra-pull-from=ExtraRepo1:public:master``
   
     This option instructs the ``checkin-test.py`` script to pull and merge in
-    commits that define the integration.  This same remote name and remote
-    branch name has to be the same in all git repos (todo: remove this
-    requirement).  If it is not, then this option can't be used and instead
-    the wrapper script should do the pulls up front manually before calling
-    the ``checkin-test.py`` script.  The disadvantage of doing the pulls
-    manually is that if they fail for some reason, they will not be seen by
-    the ``checkin-test.py`` script and no notification email would go out.
-    However, integrating ``master`` branches in different git repos is a very
-    common use case when good Lean/Agile CI practices are used by all of the
-    projects.
+    commits that define the integration.  One could do the pull(s) manually of
+    doing so has the disadvantage that if they fail for some reason, they will
+    not be seen by the ``checkin-test.py`` script and no notification email
+    would go out.
   
   ``--abort-gracefully-if-no-changes-to-push``
   
@@ -6644,7 +6617,7 @@ correctly first, before setting it as a cron job as described next.
 
 Note, if using this in a continuous sync server that runs many times in a day
 in a loop, you also want to set the option
-``--abort-gracefully-if-no-updates`` in addition to the option
+``--abort-gracefully-if-no-changes-pulled`` in addition to the option
 ``--abort-gracefully-if-no-changes-to-push``.  That is because if the updated
 repos are in a broken state such that there are always local changes at every
 CI iteration (because they have not been pushed to origin), you don't want to
@@ -7728,7 +7701,7 @@ These options are described below.
   The justification for having the default `Test Test Category`_ be
   ``NIGHTLY`` instead of ``BASIC`` is that when someone is enabling a package
   to develop on it or install it, we want them by default to be seeing the
-  full version of the test suite (shy of the `Test Test Category WEEKLY`_
+  full version of the test suite (shy of the `Test Test Category HEAVY`_
   tests which can be very expensive) for the packages they are explicitly
   enabling.  Typically they will not be enabling forward/`downstream`_
   dependent packages so the cost of running the test suite should not be too
