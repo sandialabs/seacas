@@ -231,6 +231,11 @@ namespace Ioss {
       int consistent = properties.get("PARALLEL_CONSISTENCY").get_int();
       set_parallel_consistency(consistent == 1);
     }
+
+    if (!is_input()) {
+      // Create full path to the output file at this point if it doesn't exist...
+      create_path(DBFilename);
+    }
   }
 
   DatabaseIO::~DatabaseIO()

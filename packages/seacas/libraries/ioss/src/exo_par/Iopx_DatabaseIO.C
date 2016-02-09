@@ -290,11 +290,6 @@ namespace Iopx {
 
       exodus_file_ptr = ex_create_par(get_filename().c_str(), exodusMode|mode|par_mode,
                                       &cpu_word_size, &dbRealWordSize, util().communicator(), info);
-      if (exodus_file_ptr < 0) {
-	create_path(get_filename());
-	exodus_file_ptr = ex_create_par(get_filename().c_str(), exodusMode|mode|par_mode,
-					&cpu_word_size, &dbRealWordSize, util().communicator(), info);
-      }
     }
 
     // Check for valid exodus_file_ptr (valid >= 0; invalid < 0)
@@ -384,16 +379,11 @@ namespace Iopx {
           exodusFilePtr = ex_create_par(get_filename().c_str(), mode|par_mode,
                                         &cpu_word_size, &dbRealWordSize, util().communicator(), info);
           if (exodusFilePtr < 0) {
-	    create_path(get_filename());
-	    exodusFilePtr = ex_create_par(get_filename().c_str(), mode|par_mode,
-					  &cpu_word_size, &dbRealWordSize, util().communicator(), info);
-	    if (exodusFilePtr < 0) {
-	      dbState = Ioss::STATE_INVALID;
-	      // NOTE: Code will not continue past this call...
-	      std::ostringstream errmsg;
-	      errmsg << "ERROR: Cannot create specified file '" << get_filename() << "'";
-	      IOSS_ERROR(errmsg);
-	    }
+	    dbState = Ioss::STATE_INVALID;
+	    // NOTE: Code will not continue past this call...
+	    std::ostringstream errmsg;
+	    errmsg << "ERROR: Cannot create specified file '" << get_filename() << "'";
+	    IOSS_ERROR(errmsg);
 	  }
         }
         ex_set_max_name_length(exodusFilePtr, maximumNameLength);
