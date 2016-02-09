@@ -197,6 +197,12 @@ namespace Iofx {
 
       exodus_file_ptr = ex_create(decoded_filename.c_str(), exodusMode|mode,
                                   &cpu_word_size, &dbRealWordSize);
+
+      if (exodus_file_ptr < 0) {
+	create_path(decoded_filename);
+	exodus_file_ptr = ex_create(decoded_filename.c_str(), exodusMode|mode,
+                                  &cpu_word_size, &dbRealWordSize);
+      }
     }
 
     ex_opts(app_opt_val); // Reset back to what it was.
@@ -315,15 +321,7 @@ namespace Iofx {
           exodusFilePtr = ex_create(decoded_filename.c_str(), mode,
                                     &cpu_word_size, &dbRealWordSize);
           if (exodusFilePtr < 0) {
-            if (myProcessor == 0){
-              Ioss::FileInfo path = Ioss::FileInfo(decoded_filename);
-              Ioss::Utils::create_path(path.pathname());
-            }
-#ifdef HAVE_MPI
-            if (dbUsage != Ioss::WRITE_HISTORY) {
-              MPI_Barrier(util().communicator());
-            }
-#endif
+	    create_path(decoded_filename);
             exodusFilePtr = ex_create(decoded_filename.c_str(), mode, &cpu_word_size, &dbRealWordSize);
             if (exodusFilePtr < 0) {
               dbState = Ioss::STATE_INVALID;
