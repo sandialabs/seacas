@@ -197,12 +197,6 @@ namespace Iofx {
 
       exodus_file_ptr = ex_create(decoded_filename.c_str(), exodusMode|mode,
                                   &cpu_word_size, &dbRealWordSize);
-
-      if (exodus_file_ptr < 0) {
-	create_path(decoded_filename);
-	exodus_file_ptr = ex_create(decoded_filename.c_str(), exodusMode|mode,
-                                  &cpu_word_size, &dbRealWordSize);
-      }
     }
 
     ex_opts(app_opt_val); // Reset back to what it was.
@@ -321,16 +315,12 @@ namespace Iofx {
           exodusFilePtr = ex_create(decoded_filename.c_str(), mode,
                                     &cpu_word_size, &dbRealWordSize);
           if (exodusFilePtr < 0) {
-	    create_path(decoded_filename);
-            exodusFilePtr = ex_create(decoded_filename.c_str(), mode, &cpu_word_size, &dbRealWordSize);
-            if (exodusFilePtr < 0) {
-              dbState = Ioss::STATE_INVALID;
-              // NOTE: Code will not continue past this call...
-              std::ostringstream errmsg;
-              errmsg << "ERROR: Cannot create specified file '" << decoded_filename << "'";
-              IOSS_ERROR(errmsg);
-            }
-          }
+	    dbState = Ioss::STATE_INVALID;
+	    // NOTE: Code will not continue past this call...
+	    std::ostringstream errmsg;
+	    errmsg << "ERROR: Cannot create specified file '" << decoded_filename << "'";
+	    IOSS_ERROR(errmsg);
+	  }
         }
       }
 

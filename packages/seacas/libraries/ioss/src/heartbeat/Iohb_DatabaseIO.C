@@ -207,25 +207,8 @@ namespace Iohb {
         new_this->logStream = open_stream(get_filename(),
             &(new_this->streamNeedsDelete),
             append);
-      }
-      int success = new_this->logStream != nullptr ? 1 : 0;
-      bool ok = (util().global_minmax(success, Ioss::ParallelUtils::DO_MAX) == 1);
-
-      // If open failed, then maybe file specifies a path that needs to be created
-      // Try creating the path...
-      if (!ok) {
-	create_path(get_filename()); // All processors call...
-	if (util().parallel_rank() == 0) {
-	  // Try to open the file again...
-	  new_this->logStream = open_stream(get_filename(),
-              &(new_this->streamNeedsDelete),
-              append);
-        }
-	success = new_this->logStream != nullptr ? 1 : 0;
-	ok = (util().global_minmax(success, Ioss::ParallelUtils::DO_MAX) == 1);
-
-	// If file open still fails, signal an error and throw exception.
-	if (!ok) {
+	
+	if (new_this->logStream == nullptr) {
 	  std::ostringstream errmsg;
 	  errmsg << "ERROR: Could not create heartbeat file '" << get_filename() << "'\n";
 	  IOSS_ERROR(errmsg);
