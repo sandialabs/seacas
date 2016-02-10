@@ -48,19 +48,21 @@ namespace Skinner {
       ~Interface();
 
       bool parse_options(int argc, char **argv);
-  
+
       bool ints_64_bit() const {return ints64Bit_;}
+
+      bool no_output() const {return noOutput_;}
 
       std::string input_filename() const {return inputFile_;}
       std::string output_filename() const {return outputFile_;}
       std::string input_type() const {return inFiletype_;}
       std::string output_type() const {return outFiletype_;}
-  
+
     private:
       void enroll_options();
 
       Ioss::GetLongOption options_;
-      
+
       std::string inputFile_;
       std::string outputFile_;
       std::string inFiletype_;
@@ -76,6 +78,7 @@ namespace Skinner {
       bool ints64Bit_;
       bool netcdf4;
       bool ignoreFaceIds_;
+      bool noOutput_;
     };
 }
 #endif
