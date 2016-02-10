@@ -21,5 +21,21 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${SOURCES}
   )
 
+if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
+if (BUILD_SHARED_LIBS)
+TRIBITS_ADD_LIBRARY(
+	exodus_for_static
+	STATIC
+	NOINSTALLHEADERS
+	SOURCES ${SOURCES}
+)
+set_target_properties(exodus_for_static PROPERTIES OUTPUT_NAME exodus_for)
+endif()
+
+# For backwards compatability, the Fortran exodus library was called libexoIIv2for.a
+# Create a symbolic link from libexodus_for.a to libexoIIv2for.a -- do only for static lib
+InstallSymLink(libexodus_for.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2for.a)
+endif()
+
 TRIBITS_ADD_TEST_DIRECTORIES(test)
 
