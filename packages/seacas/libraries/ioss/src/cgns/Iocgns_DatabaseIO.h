@@ -82,7 +82,7 @@ namespace Iocgns {
     int64_t node_global_to_local(int64_t global, bool must_exist) const;
     int64_t element_global_to_local(int64_t global) const;
 
-    ~DatabaseIO();
+    ~DatabaseIO() = default;
 
     void openDatabase() const;
     void closeDatabase() const;
