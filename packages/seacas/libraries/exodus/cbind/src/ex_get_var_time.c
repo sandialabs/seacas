@@ -265,7 +265,7 @@ int ex_get_var_time( int   exoid,
 
   /* Check that times are in range */
   {
-    size_t num_time_steps = ex_inquire_int (exoid, EX_INQ_TIME);
+    int num_time_steps = ex_inquire_int (exoid, EX_INQ_TIME);
     if (beg_time_step <= 0 || beg_time_step > num_time_steps) {
       sprintf(errmsg,
               "ERROR: beginning time_step is out-of-range. Value = %d, valid range is 1 to %d in file id %d",
