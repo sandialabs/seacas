@@ -127,7 +127,7 @@ int ex_get_var( int   exoid,
 
   /* Verify that time_step is within bounds */
   {
-    size_t num_time_steps = ex_inquire_int (exoid, EX_INQ_TIME);
+    int num_time_steps = ex_inquire_int (exoid, EX_INQ_TIME);
     if (time_step <= 0 || time_step > num_time_steps) {
       sprintf(errmsg,
 	      "ERROR: time_step is out-of-range. Value = %d, valid range is 1 to %d in file id %d",
