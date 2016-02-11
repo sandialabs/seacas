@@ -119,16 +119,6 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
     # Large dimension and parallel check here
     if ( NetCDF_INCLUDE_DIR ) 
        
-        if (TPL_ENABLE_MPI)
-          find_path(par_include_path
-	            NAMES "netcdf_par.h"
-                    HINTS ${NetCDF_INCLUDE_DIR}
-                    NO_DEFAULT_PATH)
-          if(NOT par_include_path)
-             message(SEND_ERROR "Can not locate netcdf_par.h in ${NetCDF_INCLUDE_DIR}")
-          endif()
-	endif()
-
         set(netcdf_h "${NetCDF_INCLUDE_DIR}/netcdf.h" )
         message(STATUS "NetCDF include file ${netcdf_h} will be searched for define values")
 
@@ -155,6 +145,22 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             message(WARNING "WARNING: The NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
                              "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
             set(NetCDF_LARGE_DIMS FALSE)
+        endif()
+
+	set(NetCDF_PARALLEL False)
+        find_path(meta_path
+	          NAMES "netcdf_meta.h"
+                  HINTS ${NetCDF_INCLUDE_DIR}
+                  NO_DEFAULT_PATH)
+        if(meta_path)
+	   # Search meta for NC_HAS_PARALLEL setting...
+	   file(STRINGS "${meta_path}/netcdf_meta.h" netcdf_par_string REGEX "NC_HAS_PARALLEL")
+	   string(REGEX REPLACE "[^0-9]" "" netcdf_par_val "${netcdf_par_string}")
+	   # NOTE: The line for NC_HAS_PARALLEL has an hdf5 string in it which results
+           #       netcdf_par_val being set to 05 or 15 above...
+	   if (netcdf_par_val EQUAL 15)
+	      set(NetCDF_PARALLEL True)
+           endif()    
         endif()
 
     endif()    
@@ -328,10 +334,11 @@ if ( NOT NetCDF_FIND_QUIETLY )
   # Create a not found list
 
   message(STATUS "NetCDF Version: ${NetCDF_VERSION}")
-  message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
-  message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
   message(STATUS "\tNetCDF_NEEDS_HDF5        = ${NetCDF_NEEDS_HDF5}")
   message(STATUS "\tNetCDF_NEEDS_PNetCDF     = ${NetCDF_NEEDS_PNetCDF}")
+  message(STATUS "\tNetCDF_PARALLEL          = ${NetCDF_PARALLEL}")
+  message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
+  message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
 
 endif()
 # For compatability with TriBITS:
@@ -339,10 +346,10 @@ SET(DOCSTR "List of semi-colon separated paths to look for the TPL Netcdf")
 
 set(TPL_Netcdf_Enables_Netcdf4 ${NetCDF_NEEDS_HDF5} CACHE BOOL "True if netcdf enables netcdf-4")
 set(TPL_Netcdf_Enables_PNetcdf ${NetCDF_NEEDS_PNetCDF} CACHE BOOL "True if netcdf enables pnetcdf")
+set(TPL_Netcdf_PARALLEL ${NetCDF_PARALLEL} CACHE BOOL "True if netcdf compiled with parallel enabled")
 set(TPL_Netcdf_LIBRARY_DIRS ${_hdf5_LIBRARY_SEARCH_DIRS} CACHE PATH ${DOCSTR})
 set(TPL_Netcdf_LIBRARIES ${NetCDF_LIBRARIES} CACHE PATH ${DOCSTR})
 set(TPL_Netcdf_INCLUDE_DIRS ${NetCDF_INCLUDE_DIRS} CACHE PATH ${DOCSTR})
-
 mark_as_advanced(
   NetCDF_INCLUDE_DIR
   NetCDF_INCLUDE_DIRS
