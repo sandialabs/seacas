@@ -1953,26 +1953,26 @@ namespace Iofx {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
             }
 
-            for (int ins = 0; ins < count; ins++) {
-              int64_t id = set_params[ins].id;
-              int num_attr = 0;
-              int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
-              if (ierr < 0) {
-                Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-              }
-              attributes[ins] = num_attr;
+          for (int ins = 0; ins < count; ins++) {
+            int64_t id = set_params[ins].id;
+            int num_attr = 0;
+            int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
+            if (ierr < 0) {
+              Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+	    }
+            attributes[ins] = num_attr;
 
-              bool db_has_name = false;
-              std::string Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base+"list",
-                                                            maximumNameLength, db_has_name);
+            bool db_has_name = false;
+            std::string Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base+"list",
+							  maximumNameLength, db_has_name);
 
-              std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
+            std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
 
-              if (get_use_generic_canonical_name()) {
-                std::string temp = Xset_name;
-                Xset_name = alias;
-                alias = temp;
-              }
+            if (get_use_generic_canonical_name()) {
+              std::string temp = Xset_name;
+              Xset_name = alias;
+              alias = temp;
+            }
 
               bool filtered = false;
               int64_t original_set_size = set_params[ins].num_entry;
