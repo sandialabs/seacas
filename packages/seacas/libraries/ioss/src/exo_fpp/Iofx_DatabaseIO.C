@@ -193,7 +193,7 @@ namespace Iofx {
       int mode = 0;
       if (int_byte_size_api() == 8) {
         mode |= EX_ALL_INT64_DB;
-}
+      }
 
       exodus_file_ptr = ex_create(decoded_filename.c_str(), exodusMode|mode,
                                   &cpu_word_size, &dbRealWordSize);
@@ -220,19 +220,19 @@ namespace Iofx {
         std::string open_create = is_input() ? "open input" : "create output";
         std::ostringstream errmsg;
         if (isParallel) {
-	  errmsg << "ERROR: Unable to " << open_create << " exodus decomposed database files:\n";
+          errmsg << "ERROR: Unable to " << open_create << " exodus decomposed database files:\n";
           for (int i=0; i < util().parallel_size(); i++) {
             if (status[i] < 0) {
-	      std::string proc_filename = Ioss::Utils::decode_filename(get_filename(),
-								       i, util().parallel_size());
+              std::string proc_filename = Ioss::Utils::decode_filename(get_filename(),
+                                                                       i, util().parallel_size());
               errmsg << "\t" << proc_filename << "\n";
             }
           }
         }
-	else {
-	  errmsg << "ERROR: Unable to " << open_create
-		 << " database '" << get_filename() << "' of type 'exodusII'";
-	}
+        else {
+          errmsg << "ERROR: Unable to " << open_create
+                 << " database '" << get_filename() << "' of type 'exodusII'";
+        }
         if (error_msg != nullptr) {
           *error_msg = errmsg.str();
         }
@@ -298,7 +298,7 @@ namespace Iofx {
       int mode = exodusMode;
       if (int_byte_size_api() == 8) {
         mode |= EX_ALL_INT64_API;
-}
+      }
 
       if (is_input()) {
         exodusFilePtr = ex_open(decoded_filename.c_str(), EX_READ|mode,
@@ -311,16 +311,16 @@ namespace Iofx {
           // If the first write for this file, create it...
           if (int_byte_size_api() == 8) {
             mode |= EX_ALL_INT64_DB;
-}
+          }
           exodusFilePtr = ex_create(decoded_filename.c_str(), mode,
                                     &cpu_word_size, &dbRealWordSize);
           if (exodusFilePtr < 0) {
-	    dbState = Ioss::STATE_INVALID;
-	    // NOTE: Code will not continue past this call...
-	    std::ostringstream errmsg;
-	    errmsg << "ERROR: Cannot create specified file '" << decoded_filename << "'";
-	    IOSS_ERROR(errmsg);
-	  }
+            dbState = Ioss::STATE_INVALID;
+            // NOTE: Code will not continue past this call...
+            std::ostringstream errmsg;
+            errmsg << "ERROR: Cannot create specified file '" << decoded_filename << "'";
+            IOSS_ERROR(errmsg);
+          }
         }
       }
 
@@ -354,7 +354,7 @@ namespace Iofx {
       }
 
       if (!m_groupName.empty()) {
-       ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
+        ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
       }
     }
     assert(exodusFilePtr >= 0);
@@ -435,7 +435,7 @@ namespace Iofx {
     int error = ex_get_init_ext(get_file_pointer(), &info);
     if (error < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+    }
 
     spatialDimension = info.num_dim;
     nodeCount = info.num_nodes;
@@ -547,7 +547,7 @@ namespace Iofx {
         timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
         if (timestep_count <= 0) {
           return;
-}
+        }
         
         // For an exodusII file, timesteps are global and are stored in the region.
         // A history file only stores that last time / step
@@ -558,7 +558,7 @@ namespace Iofx {
         int error = ex_get_all_times(get_file_pointer(), TOPTR(tsteps));
         if (error < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
 
         Ioss::Region *this_region = get_region();
         for (int i=0; i < timestep_count; i++) {
@@ -571,7 +571,7 @@ namespace Iofx {
         timestep_count = ex_inquire_int(get_file_pointer(), EX_INQ_TIME);
         if (timestep_count <= 0) {
           return;
-}
+        }
         
         // For an exodusII file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
@@ -579,11 +579,11 @@ namespace Iofx {
         int error = ex_get_all_times(get_file_pointer(), TOPTR(tsteps));
         if (error < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
 
         // See if the "last_written_time" attribute exists and if it
         // does, check that it matches the largest time in 'tsteps'.
-	exists = Ioex::read_last_time_attribute(get_file_pointer(), &last_time);
+        exists = Ioex::read_last_time_attribute(get_file_pointer(), &last_time);
       }
       if (exists && isParallel) {
         // Assume that if it exists on 1 processor, it exists on
@@ -656,7 +656,7 @@ namespace Iofx {
     // (See Trac 10774)
     int old_val = ex_opts(EX_DEFAULT); 
     int error = ex_get_init_info(get_file_pointer(),
-        &num_proc, &num_proc_in_file, &file_type[0]);
+                                 &num_proc, &num_proc_in_file, &file_type[0]);
     ex_opts(old_val); // Reset back to what it was.
 
     if (error < 0) {
@@ -726,7 +726,7 @@ namespace Iofx {
       }
       if (error < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+      }
 
       // A nemesis file typically separates nodes into multiple
       // communication sets by processor.  (each set specifies
@@ -749,7 +749,7 @@ namespace Iofx {
       }
       if (error < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+      }
     }
 
     commsetNodeCount = num_node_cmaps;
@@ -843,7 +843,7 @@ namespace Iofx {
           int ierr = ex_get_names(get_file_pointer(), entity_type, names);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, -1);
-}
+          }
 
           if (map_count == 1 && Ioss::Utils::case_strcmp(names[0], "original_global_id_map") == 0) {
             int error = 0;
@@ -855,7 +855,7 @@ namespace Iofx {
               error = ex_get_num_map(get_file_pointer(), entity_type, 1, &tmp_map[1]);
               if (error >= 0) {
                 std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map.begin());
-}
+              }
             }
             if (error >= 0) {
               map_read = true;
@@ -866,7 +866,7 @@ namespace Iofx {
               map_read = false;
             }
           }
-	  Ioex::delete_exodus_names(names, map_count);
+          Ioex::delete_exodus_names(names, map_count);
         }
 
         if (!map_read) {
@@ -879,7 +879,7 @@ namespace Iofx {
             error = ex_get_id_map(get_file_pointer(), entity_type, &tmp_map[1]);
             if (error >= 0) {
               std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map.begin());
-}
+            }
           }
           if (error < 0) {
             // Clear out the vector...
@@ -949,7 +949,7 @@ namespace Iofx {
     // Get exodusII X block metadata
     if (m_groupCount[entity_type] == 0) {
       return;
-}
+    }
 
     Ioss::Int64Vector X_block_ids(m_groupCount[entity_type]);
 
@@ -963,7 +963,7 @@ namespace Iofx {
         Ioss::IntVector tmp_set_ids(X_block_ids.size());
         error = ex_get_ids(get_file_pointer(), entity_type, TOPTR(tmp_set_ids));
         if (error >= 0) { std::copy(tmp_set_ids.begin(), tmp_set_ids.end(), X_block_ids.begin());
-}
+        }
       }
       if (error < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
@@ -1045,7 +1045,7 @@ namespace Iofx {
       {
         Ioss::SerializeIO       serializeIO__(this);
         block_name = Ioex::get_entity_name(get_file_pointer(), entity_type, id, basename,
-					   maximumNameLength, db_has_name);
+                                           maximumNameLength, db_has_name);
 
       }
       if (get_use_generic_canonical_name()) {
@@ -1129,7 +1129,7 @@ namespace Iofx {
         }
         if (alias != block_name) {
           block->property_add(Ioss::Property("db_name", *db_name));
-}
+        }
       }
 
       // Maintain block order on output database...
@@ -1173,8 +1173,8 @@ namespace Iofx {
 
       if (entity_type == EX_ELEM_BLOCK) {
         Ioss::SerializeIO       serializeIO__(this);
-	Ioex::add_map_fields(get_file_pointer(), (Ioss::ElementBlock*)block,
-			     local_X_count[iblk], maximumNameLength);
+        Ioex::add_map_fields(get_file_pointer(), (Ioss::ElementBlock*)block,
+                             local_X_count[iblk], maximumNameLength);
       }
     }
     m_groupCount[entity_type] = used_blocks;
@@ -1458,7 +1458,7 @@ namespace Iofx {
 
     if (nodeConnectivityStatusCalculated) {
       return;
-}
+    }
 
     nodeConnectivityStatus.resize(nodeCount);
 
@@ -1531,7 +1531,7 @@ namespace Iofx {
           Ioss::IntVector tmp_set_ids(side_set_ids.size());
           error = ex_get_ids(get_file_pointer(), EX_SIDE_SET, TOPTR(tmp_set_ids));
           if (error >= 0) { std::copy(tmp_set_ids.begin(), tmp_set_ids.end(), side_set_ids.begin());
-}
+          }
         }
         if (error < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
@@ -1545,7 +1545,7 @@ namespace Iofx {
           }
           if (ss_name[0] != '\0') {
             Ioss::Utils::fixup_name(TOPTR(ss_name));
-	    Ioex::decode_surface_name(fs_map, fs_set, TOPTR(ss_name));
+            Ioex::decode_surface_name(fs_map, fs_set, TOPTR(ss_name));
           }
         }
       }
@@ -1554,21 +1554,21 @@ namespace Iofx {
       // sidesets which were probably written by a previous run of the
       // IO system and are already split into homogenous pieces...
       {
-	for (auto &fs_name : fs_set) {
+        for (auto &fs_name : fs_set) {
           Ioss::SideSet *side_set = new Ioss::SideSet(this, fs_name);
           get_region()->add(side_set);
           int64_t id = Ioex::extract_id(fs_name);
           if (id > 0) {
             side_set->property_add(Ioss::Property("id", id));
-}
+          }
         }
       }
 
       for (int iss = 0; iss < m_groupCount[EX_SIDE_SET]; iss++) {
         int64_t id = side_set_ids[iss];
         std::string sid = "";
-	Ioex::TopologyMap topo_map;
-	Ioex::TopologyMap side_map; // Used to determine side consistency
+        Ioex::TopologyMap topo_map;
+        Ioex::TopologyMap side_map; // Used to determine side consistency
 
         Ioss::SurfaceSplitType split_type = splitType;
         std::string side_set_name;
@@ -1579,7 +1579,7 @@ namespace Iofx {
 
           bool db_has_name = false;
           side_set_name = Ioex::get_entity_name(get_file_pointer(), EX_SIDE_SET, id, "surface",
-						maximumNameLength, db_has_name);
+                                                maximumNameLength, db_has_name);
 
           std::string alias = Ioss::Utils::encode_entity_name("surface", id);
           
@@ -1588,7 +1588,7 @@ namespace Iofx {
           }
 
           bool in_fs_map = false;
-	  Ioex::SideSetMap::iterator FSM = fs_map.find(side_set_name);
+          Ioex::SideSetMap::iterator FSM = fs_map.find(side_set_name);
           if (FSM != fs_map.end()) {
             in_fs_map = true;
             std::string efs_name = (*FSM).second;
@@ -1609,7 +1609,7 @@ namespace Iofx {
               }
               if (alias != side_set_name) {
                 side_set->property_add(Ioss::Property("db_name", *db_name));
-}
+              }
             }
 
             get_region()->add((Ioss::SideSet*)side_set);
@@ -1645,17 +1645,17 @@ namespace Iofx {
             Ioss::IntVector s32(number_sides);
             int ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(e32), TOPTR(s32));
             if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
             std::copy(e32.begin(), e32.end(), element.begin());
             std::copy(s32.begin(), s32.end(), sides.begin());
           } else {
             int ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(element), TOPTR(sides));
             if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
           }
 
           if (!blockOmissions.empty()) {
-	    Ioex::filter_element_list(get_region(), element, sides, true);
+            Ioex::filter_element_list(get_region(), element, sides, true);
             number_sides = element.size();
             assert(element.size() == sides.size());
           }
@@ -1706,7 +1706,7 @@ namespace Iofx {
               side_map[std::make_pair(elem.first->name(), elem.second)] = 0;
             }
 
-	    Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map, split_type);
+            Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map, split_type);
           }
           else if (split_type == Ioss::SPLIT_BY_ELEMENT_BLOCK) {
             // There are multiple side types in the model.  Iterate
@@ -1744,7 +1744,7 @@ namespace Iofx {
                 }
               }
             }
-	    Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map, split_type);
+            Ioex::separate_surface_element_sides(element, sides, get_region(), topo_map, side_map, split_type);
           }
         }
 
@@ -1753,10 +1753,10 @@ namespace Iofx {
         Ioss::Int64Vector global_side_counts(topo_map.size());
         {
           int64_t i = 0;
-	  for (auto &topo : topo_map) {
-	    global_side_counts[i++] = topo.second;
-	  }
-	  
+          for (auto &topo : topo_map) {
+            global_side_counts[i++] = topo.second;
+          }
+          
           // If splitting by element block, also sync the side_map
           // information which specifies whether the sideset has
           // consistent sides for all elements. Only really used for
@@ -1764,9 +1764,9 @@ namespace Iofx {
           // in the element block split case.
           if (side_map.size() == topo_map.size()) {
             global_side_counts.resize(topo_map.size() + side_map.size());
-	    for(auto &side : side_map) {
-	      global_side_counts[i++] = side.second;
-	    }
+            for(auto &side : side_map) {
+              global_side_counts[i++] = side.second;
+            }
           }
 
           // See if any processor has non-zero count for the topo_map counts
@@ -1778,7 +1778,7 @@ namespace Iofx {
         // Create Side Blocks
 
         int64_t i = 0;
-	for (auto &topo : topo_map) {
+        for (auto &topo : topo_map) {
           if (global_side_counts[i++] > 0) {
             const std::string topo_or_block_name   = topo.first.first;
             const Ioss::ElementTopology *side_topo = topo.first.second;
@@ -1864,7 +1864,7 @@ namespace Iofx {
                   // the loop.  We need previous value here...)
                   int side = global_side_counts[i-1+topo_map.size()];
                   if (side == 999) { side = 0;
-}
+                  }
                   assert(side <= elem_topo->number_boundaries());
                   side_block->set_consistent_side_number(side);
                 }
@@ -1894,7 +1894,7 @@ namespace Iofx {
                   int ierr = ex_get_attr_param(get_file_pointer(), EX_SIDE_SET, 1, &num_attr);
                   if (ierr < 0) {
                     Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                  }
                 }
                 // Add additional fields
                 add_attribute_fields(EX_SIDE_SET, side_block, num_attr, "");
@@ -1939,7 +1939,7 @@ namespace Iofx {
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               Ioss::ElementBlock *block = nullptr;
               for (auto elem_id : element) {
@@ -1959,7 +1959,7 @@ namespace Iofx {
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               Ioss::ElementBlock *block = nullptr;
               for (auto elem_id : element) {
@@ -2039,80 +2039,80 @@ namespace Iofx {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
             }
 
-          for (int ins = 0; ins < count; ins++) {
-            int64_t id = set_params[ins].id;
-            int num_attr = 0;
-            int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-	    }
-            attributes[ins] = num_attr;
-
-            bool db_has_name = false;
-            std::string Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base+"list",
-							  maximumNameLength, db_has_name);
-
-            std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
-
-            if (get_use_generic_canonical_name()) {
-              std::string temp = Xset_name;
-              Xset_name = alias;
-              alias = temp;
-            }
-
-            bool filtered = false;
-            int64_t original_set_size = set_params[ins].num_entry;
-            Ioss::Int64Vector active_node_index;
-            if (!blockOmissions.empty() && type == EX_NODE_SET) {
-              active_node_index.resize(set_params[ins].num_entry);
-              set_params[ins].entry_list = TOPTR(active_node_index);
-
-              int old_status = ex_int64_status(get_file_pointer());
-              ex_set_int64_status(get_file_pointer(), EX_BULK_INT64_API);             
-              int error = ex_get_sets(get_file_pointer(), 1, &set_params[ins]);
-	      if (error < 0) {Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);}
-              ex_set_int64_status(get_file_pointer(), old_status);            
-
-              compute_node_status();
-              filtered = Ioex::filter_node_list(active_node_index, nodeConnectivityStatus);
-              set_params[ins].num_entry = active_node_index.size();
-            }
-            T* Xset = new T(this, Xset_name, set_params[ins].num_entry);
-            Xsets[ins] = Xset;
-            Xset->property_add(Ioss::Property("id", id));
-            if (db_has_name) {
-              std::string *db_name = &Xset_name;
-              if (get_use_generic_canonical_name()) {
-                db_name = &alias;
+            for (int ins = 0; ins < count; ins++) {
+              int64_t id = set_params[ins].id;
+              int num_attr = 0;
+              int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
+              if (ierr < 0) {
+                Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
               }
-              if (alias != Xset_name) {
-                Xset->property_add(Ioss::Property("db_name", *db_name));
-}
+              attributes[ins] = num_attr;
+
+              bool db_has_name = false;
+              std::string Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base+"list",
+                                                            maximumNameLength, db_has_name);
+
+              std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
+
+              if (get_use_generic_canonical_name()) {
+                std::string temp = Xset_name;
+                Xset_name = alias;
+                alias = temp;
+              }
+
+              bool filtered = false;
+              int64_t original_set_size = set_params[ins].num_entry;
+              Ioss::Int64Vector active_node_index;
+              if (!blockOmissions.empty() && type == EX_NODE_SET) {
+                active_node_index.resize(set_params[ins].num_entry);
+                set_params[ins].entry_list = TOPTR(active_node_index);
+
+                int old_status = ex_int64_status(get_file_pointer());
+                ex_set_int64_status(get_file_pointer(), EX_BULK_INT64_API);             
+                int error = ex_get_sets(get_file_pointer(), 1, &set_params[ins]);
+                if (error < 0) {Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);}
+                ex_set_int64_status(get_file_pointer(), old_status);            
+
+                compute_node_status();
+                filtered = Ioex::filter_node_list(active_node_index, nodeConnectivityStatus);
+                set_params[ins].num_entry = active_node_index.size();
+              }
+              T* Xset = new T(this, Xset_name, set_params[ins].num_entry);
+              Xsets[ins] = Xset;
+              Xset->property_add(Ioss::Property("id", id));
+              if (db_has_name) {
+                std::string *db_name = &Xset_name;
+                if (get_use_generic_canonical_name()) {
+                  db_name = &alias;
+                }
+                if (alias != Xset_name) {
+                  Xset->property_add(Ioss::Property("db_name", *db_name));
+                }
+              }
+              if (filtered && type == EX_NODE_SET) {
+                Xset->property_add(Ioss::Property("filtered_db_set_size", original_set_size));
+                activeNodesetNodesIndex[Xset_name].swap(active_node_index);
+              }
+              get_region()->add(Xset);
+              get_region()->add_alias(Xset_name, alias);
+              get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base+"set",  id));
             }
-            if (filtered && type == EX_NODE_SET) {
-              Xset->property_add(Ioss::Property("filtered_db_set_size", original_set_size));
-              activeNodesetNodesIndex[Xset_name].swap(active_node_index);
-            }
-            get_region()->add(Xset);
-            get_region()->add_alias(Xset_name, alias);
-            get_region()->add_alias(Xset_name, Ioss::Utils::encode_entity_name(base+"set",  id));
+          }
+
+          // The attribute count will either be 0 if there are no
+          // entities in the grouping entity on this processor, or it will be
+          // the number of attributes (> 0). Therefore, if we take the 'max'
+          // over all processors, each processor will then have the correct
+          // attribute count...
+          // This is a collective call...
+          util().global_array_minmax(attributes, Ioss::ParallelUtils::DO_MAX);
+
+          for (int ins = 0; ins < count; ins++) {
+            add_attribute_fields(type, Xsets[ins], attributes[ins], "");
+            add_results_fields(type, Xsets[ins], ins);
           }
         }
-
-        // The attribute count will either be 0 if there are no
-        // entities in the grouping entity on this processor, or it will be
-        // the number of attributes (> 0). Therefore, if we take the 'max'
-        // over all processors, each processor will then have the correct
-        // attribute count...
-        // This is a collective call...
-        util().global_array_minmax(attributes, Ioss::ParallelUtils::DO_MAX);
-
-        for (int ins = 0; ins < count; ins++) {
-          add_attribute_fields(type, Xsets[ins], attributes[ins], "");
-          add_results_fields(type, Xsets[ins], ins);
-        }
       }
-    }
 
     void DatabaseIO::get_nodesets()
     {
@@ -2151,9 +2151,9 @@ namespace Iofx {
         Ioss::SerializeIO       serializeIO__(this);
         // This is a parallel run. There should be communications data
         // Get nemesis commset metadata
-	int64_t my_node_count = 0;
-	int64_t elem_count = 0;
-	
+        int64_t my_node_count = 0;
+        int64_t elem_count = 0;
+        
         // NOTE: It is possible for a parallel run to have no
         // communications maps if the decomposition occurs along contact
         // surfaces.  In this case, we create empty node and element
@@ -2170,10 +2170,10 @@ namespace Iofx {
 
           int error;
           if (int_byte_size_api() == 4) {
-	    Ioss::IntVector nci(nodeCmapIds.size());
-	    Ioss::IntVector ncnc(nodeCmapNodeCnts.size());
-	    Ioss::IntVector eci(elemCmapIds.size());
-	    Ioss::IntVector ecec(elemCmapElemCnts.size());
+            Ioss::IntVector nci(nodeCmapIds.size());
+            Ioss::IntVector ncnc(nodeCmapNodeCnts.size());
+            Ioss::IntVector eci(elemCmapIds.size());
+            Ioss::IntVector ecec(elemCmapElemCnts.size());
             error = ex_get_cmap_params(get_file_pointer(),
                                        TOPTR(nci), TOPTR(ncnc), TOPTR(eci), TOPTR(ecec),
                                        myProcessor);
@@ -2191,14 +2191,14 @@ namespace Iofx {
           }
           if (error < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+          }
 
           // Count nodes, elements, and convert counts to offsets.
-	  my_node_count += std::accumulate(nodeCmapNodeCnts.begin(),
-					   nodeCmapNodeCnts.end(), 0);
-	
-	  elem_count += std::accumulate(elemCmapElemCnts.begin(),
-					elemCmapElemCnts.end(), 0);
+          my_node_count += std::accumulate(nodeCmapNodeCnts.begin(),
+                                           nodeCmapNodeCnts.end(), 0);
+        
+          elem_count += std::accumulate(elemCmapElemCnts.begin(),
+                                        elemCmapElemCnts.end(), 0);
         }
         // Create a single node commset and a single element commset
         Ioss::CommSet *commset = new Ioss::CommSet(this, "commset_node", "node",
@@ -2235,7 +2235,7 @@ namespace Iofx {
               int ierr = ex_get_coord(get_file_pointer(), rdata, nullptr, nullptr);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
             else if (field.get_name() == "mesh_model_coordinates_y") {
@@ -2243,7 +2243,7 @@ namespace Iofx {
               int ierr = ex_get_coord(get_file_pointer(), nullptr, rdata, nullptr);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
             else if (field.get_name() == "mesh_model_coordinates_z") {
@@ -2251,7 +2251,7 @@ namespace Iofx {
               int ierr = ex_get_coord(get_file_pointer(), nullptr, nullptr, rdata);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
             else if (field.get_name() == "mesh_model_coordinates") {
@@ -2264,11 +2264,11 @@ namespace Iofx {
               std::vector<double> y;
               if (spatialDimension > 1) {
                 y.resize(num_to_get);
-}
+              }
               std::vector<double> z;
               if (spatialDimension == 3) {
                 z.resize(num_to_get);
-}
+              }
 
               // Cast 'data' to correct size -- double
               double *rdata = static_cast<double*>(data);
@@ -2276,17 +2276,17 @@ namespace Iofx {
               int ierr = ex_get_coord(get_file_pointer(), TOPTR(x), TOPTR(y), TOPTR(z));
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               size_t index = 0;
               for (size_t i=0; i < num_to_get; i++) {
                 rdata[index++] = x[i];
                 if (spatialDimension > 1) {
                   rdata[index++] = y[i];
-}
+                }
                 if (spatialDimension == 3) {
                   rdata[index++] = z[i];
-}
+                }
               }
             }
 
@@ -2307,7 +2307,7 @@ namespace Iofx {
                 int error = ex_get_id_map(get_file_pointer(), EX_NODE_MAP, data);
                 if (error < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               } else {
                 if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
                   int64_t *idata = static_cast<int64_t*>(data);
@@ -2481,7 +2481,7 @@ namespace Iofx {
                 int error = ex_get_partial_id_map(get_file_pointer(), EX_ELEM_MAP, eb_offset_plus_one, my_element_count, data);
                 if (error < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               } else {
                 if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
                   int64_t *idata = static_cast<int64_t*>(data);
@@ -2738,7 +2738,7 @@ namespace Iofx {
               }
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               if (field.get_name() == "ids") {
                 // Convert the local node ids to global ids
@@ -2753,7 +2753,7 @@ namespace Iofx {
               }
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
             } else if (field.get_name() == "distribution_factors") {
               ex_set set_param[1];
@@ -2765,19 +2765,19 @@ namespace Iofx {
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               if (set_param[0].num_distribution_factor == 0) {
                 double *rdata = static_cast<double*>(data);
                 for (size_t i=0; i < num_to_get; i++) {
                   rdata[i] = 1.0;
-}
+                }
               } else {
                 set_param[0].distribution_factor_list = static_cast<double*>(data);
                 ierr = ex_get_sets(get_file_pointer(), 1, set_param);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else {
               num_to_get = Ioss::Utils::field_warning(ns, field, "input");
@@ -2809,80 +2809,80 @@ namespace Iofx {
         return get_Xset_field_internal(EX_NODE_SET, ns, field, data, data_size);
       }
       
-        size_t db_size = ns->get_property("filtered_db_set_size").get_int();
+      size_t db_size = ns->get_property("filtered_db_set_size").get_int();
         
-        int ierr;
-        Ioss::SerializeIO       serializeIO__(this);
+      int ierr;
+      Ioss::SerializeIO       serializeIO__(this);
 
-        size_t num_to_get = field.verify(data_size);
-        if (num_to_get > 0) {
+      size_t num_to_get = field.verify(data_size);
+      if (num_to_get > 0) {
 
-          int64_t id = Ioex::get_id(ns, EX_NODE_SET, &ids_);
-          Ioss::Field::RoleType role = field.get_role();
-          if (role == Ioss::Field::MESH) {
+        int64_t id = Ioex::get_id(ns, EX_NODE_SET, &ids_);
+        Ioss::Field::RoleType role = field.get_role();
+        if (role == Ioss::Field::MESH) {
 
-            if (field.get_name() == "ids" ||
-                field.get_name() == "ids_raw") {
-              if (field.get_type() == Ioss::Field::INTEGER) {
-		Ioss::IntVector dbvals(db_size);
-                ierr = ex_get_set(get_file_pointer(), EX_NODE_SET, id, TOPTR(dbvals), nullptr);
-                if (ierr >= 0) {
-		  Ioex::filter_node_list(static_cast<int*>(data), dbvals, activeNodesetNodesIndex[ns->name()]);
-}
-              } else {
-		Ioss::Int64Vector dbvals(db_size);
-                ierr = ex_get_set(get_file_pointer(), EX_NODE_SET, id, TOPTR(dbvals), nullptr);
-                if (ierr >= 0) {
-		  Ioex::filter_node_list(static_cast<int64_t*>(data), dbvals, activeNodesetNodesIndex[ns->name()]);
-}
+          if (field.get_name() == "ids" ||
+              field.get_name() == "ids_raw") {
+            if (field.get_type() == Ioss::Field::INTEGER) {
+              Ioss::IntVector dbvals(db_size);
+              ierr = ex_get_set(get_file_pointer(), EX_NODE_SET, id, TOPTR(dbvals), nullptr);
+              if (ierr >= 0) {
+                Ioex::filter_node_list(static_cast<int*>(data), dbvals, activeNodesetNodesIndex[ns->name()]);
               }
-              if (ierr < 0) {
-                Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
-
-              if (field.get_name() == "ids") {
-                // Convert the local node ids to global ids
-                get_map(EX_NODE_SET).map_data(data, field, num_to_get);
+            } else {
+              Ioss::Int64Vector dbvals(db_size);
+              ierr = ex_get_set(get_file_pointer(), EX_NODE_SET, id, TOPTR(dbvals), nullptr);
+              if (ierr >= 0) {
+                Ioex::filter_node_list(static_cast<int64_t*>(data), dbvals, activeNodesetNodesIndex[ns->name()]);
               }
+            }
+            if (ierr < 0) {
+              Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+            }
 
-            } else if (field.get_name() == "distribution_factors") {
-              ex_set set_param[1];
-              set_param[0].id = id;
-              set_param[0].type = EX_NODE_SET;
-              set_param[0].entry_list = nullptr;
-              set_param[0].extra_list = nullptr;
-              set_param[0].distribution_factor_list = nullptr;
+            if (field.get_name() == "ids") {
+              // Convert the local node ids to global ids
+              get_map(EX_NODE_SET).map_data(data, field, num_to_get);
+            }
+
+          } else if (field.get_name() == "distribution_factors") {
+            ex_set set_param[1];
+            set_param[0].id = id;
+            set_param[0].type = EX_NODE_SET;
+            set_param[0].entry_list = nullptr;
+            set_param[0].extra_list = nullptr;
+            set_param[0].distribution_factor_list = nullptr;
+            ierr = ex_get_sets(get_file_pointer(), 1, set_param);
+            if (ierr < 0) {
+              Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+            }
+
+            if (set_param[0].num_distribution_factor == 0) {
+              double *rdata = static_cast<double*>(data);
+              for (size_t i=0; i < num_to_get; i++) {
+                rdata[i] = 1.0;
+              }
+            } else {
+              std::vector<double>dbvals(db_size);
+              set_param[0].distribution_factor_list = TOPTR(dbvals);
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
-
-              if (set_param[0].num_distribution_factor == 0) {
-                double *rdata = static_cast<double*>(data);
-                for (size_t i=0; i < num_to_get; i++) {
-                  rdata[i] = 1.0;
-}
-              } else {
-                std::vector<double>dbvals(db_size);
-                set_param[0].distribution_factor_list = TOPTR(dbvals);
-                ierr = ex_get_sets(get_file_pointer(), 1, set_param);
-                if (ierr < 0) {
-                  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
-		Ioex::filter_node_list(static_cast<double*>(data), dbvals, activeNodesetNodesIndex[ns->name()]);
               }
-            } else {
-              num_to_get = Ioss::Utils::field_warning(ns, field, "input");
+              Ioex::filter_node_list(static_cast<double*>(data), dbvals, activeNodesetNodesIndex[ns->name()]);
             }
-          } else if (role == Ioss::Field::ATTRIBUTE) {
-            num_to_get = Ioss::Utils::field_warning(ns, field, "input");
-
-          } else if (role == Ioss::Field::TRANSIENT) {
-            // Filtered not currently implemented for transient or attributes....
+          } else {
             num_to_get = Ioss::Utils::field_warning(ns, field, "input");
           }
+        } else if (role == Ioss::Field::ATTRIBUTE) {
+          num_to_get = Ioss::Utils::field_warning(ns, field, "input");
+
+        } else if (role == Ioss::Field::TRANSIENT) {
+          // Filtered not currently implemented for transient or attributes....
+          num_to_get = Ioss::Utils::field_warning(ns, field, "input");
         }
-        return num_to_get;
+      }
+      return num_to_get;
       
     }
 
@@ -2951,7 +2951,7 @@ namespace Iofx {
                                             myProcessor);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
                 cm_offset += (nodeCmapNodeCnts[i] * int_byte_size_api());
               }
               assert(cm_offset == entity_count * int_byte_size_api());
@@ -3008,7 +3008,7 @@ namespace Iofx {
                                             &procs[cm_offset], myProcessor);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
                 cm_offset += (elemCmapElemCnts[i] * int_byte_size_api());
               }
               assert(cm_offset == entity_count * int_byte_size_api());
@@ -3025,13 +3025,13 @@ namespace Iofx {
 
                   for (ssize_t i=0; i < entity_count; i++) {
                     entity_proc[j++] = map[ents[i]];
-		    entity_proc[j++] = sids[i];
+                    entity_proc[j++] = sids[i];
                     entity_proc[j++] = pros[i];
                   }
                 } else { // "entity_processor_raw"
                   for (ssize_t i=0; i < entity_count; i++) {
                     entity_proc[j++] = ents[i];
-		    entity_proc[j++] = sids[i];
+                    entity_proc[j++] = sids[i];
                     entity_proc[j++] = pros[i];
                   }
                 }
@@ -3099,7 +3099,7 @@ namespace Iofx {
         int ierr = ex_get_sets(get_file_pointer(), 1, set_param);
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
 
         int64_t number_sides = set_param[0].num_entry;
         int64_t number_distribution_factors = set_param[0].num_distribution_factor;
@@ -3131,23 +3131,23 @@ namespace Iofx {
               ierr = ex_get_sets(get_file_pointer(), 1, set_param);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
-	      if (field.get_type() == Ioss::Field::INTEGER) {
-		// Need to convert 'double' to 'int' for Sierra use...
-		int* ids = static_cast<int*>(data);
-		for (ssize_t i = 0; i < num_to_get; i++) {
-		  ids[i] = static_cast<int>(real_ids[i]);
-		}
-	      }
-	      else {
-		// Need to convert 'double' to 'int' for Sierra use...
-		int64_t* ids = static_cast<int64_t*>(data);
-		for (ssize_t i = 0; i < num_to_get; i++) {
-		  ids[i] = static_cast<int64_t>(real_ids[i]);
-		}
-	      }
-	    }
+              if (field.get_type() == Ioss::Field::INTEGER) {
+                // Need to convert 'double' to 'int' for Sierra use...
+                int* ids = static_cast<int*>(data);
+                for (ssize_t i = 0; i < num_to_get; i++) {
+                  ids[i] = static_cast<int>(real_ids[i]);
+                }
+              }
+              else {
+                // Need to convert 'double' to 'int' for Sierra use...
+                int64_t* ids = static_cast<int64_t*>(data);
+                for (ssize_t i = 0; i < num_to_get; i++) {
+                  ids[i] = static_cast<int64_t>(real_ids[i]);
+                }
+              }
+            }
           }
 
           else if (field.get_name() == "side_ids") {
@@ -3172,23 +3172,23 @@ namespace Iofx {
             // the global element ids and the sides...  Iterate
             // through to generate the ids...
             if (int_byte_size_api() == 4) {
-	      int64_t int_max = std::numeric_limits<int>::max();
+              int64_t int_max = std::numeric_limits<int>::max();
               int *ids = static_cast<int*>(data);
               int *els = (int*)TOPTR(element_side);
               size_t idx = 0;
               for (ssize_t iel = 0; iel < 2*entity_count; iel+=2) {
                 int64_t new_id = (int64_t)10*els[iel] + els[iel+1];
-		if (new_id > int_max) {
-		  std::string decoded_filename = util().decode_filename(get_filename(), isParallel);
-		      std::ostringstream errmsg;
-		      errmsg << "ERROR: Process " << Ioss::SerializeIO::getRank()
-			     << " accessing the sideset field 'ids'\n"
-			     << "\t\thas exceeded the integer bounds for entity " << els[iel]
-			     << ", local side id " << els[iel+1] << ".\n\t\tTry using 64-bit mode to read the file '"
-			     << decoded_filename << "'.\n";
-		      IOSS_ERROR(errmsg);
-		    }
-		
+                if (new_id > int_max) {
+                  std::string decoded_filename = util().decode_filename(get_filename(), isParallel);
+                  std::ostringstream errmsg;
+                  errmsg << "ERROR: Process " << Ioss::SerializeIO::getRank()
+                         << " accessing the sideset field 'ids'\n"
+                         << "\t\thas exceeded the integer bounds for entity " << els[iel]
+                         << ", local side id " << els[iel+1] << ".\n\t\tTry using 64-bit mode to read the file '"
+                         << decoded_filename << "'.\n";
+                  IOSS_ERROR(errmsg);
+                }
+                
                 ids[idx++] = (int)new_id;
               }
             } else {
@@ -3225,7 +3225,7 @@ namespace Iofx {
 
             ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(element), TOPTR(sides));
             if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
 
             if (number_sides == entity_count) {
               ssize_t index = 0;
@@ -3298,7 +3298,7 @@ namespace Iofx {
 
             ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(element), TOPTR(sides));
             if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
 
             if (number_sides == entity_count) {
               ssize_t index = 0;
@@ -3361,7 +3361,7 @@ namespace Iofx {
             ierr = get_side_connectivity(fb, id, entity_count, data, true);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
 
           } else if (field.get_name() == "connectivity_raw") {
             // The side  connectivity needs to be generated 'on-the-fly' from
@@ -3371,14 +3371,14 @@ namespace Iofx {
             ierr = get_side_connectivity(fb, id, entity_count, data, false);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
 
           } else if (field.get_name() == "distribution_factors") {
             ierr = get_side_distributions(fb, id, entity_count,
                                           static_cast<double*>(data), data_size/sizeof(double));
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
           } else {
             num_to_get = Ioss::Utils::field_warning(fb, field, "input");
           }
@@ -3403,7 +3403,7 @@ namespace Iofx {
               ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(element), TOPTR(sides));
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
               //----
               Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, int_byte_size_api(),
                                                           TOPTR(element), TOPTR(sides),
@@ -3436,7 +3436,7 @@ namespace Iofx {
         int ierr = ex_put_attr(get_file_pointer(), type, id, static_cast<double*>(data));
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
       }
       else {
         // Write a subset of the attributes.  If scalar, write one;
@@ -3446,7 +3446,7 @@ namespace Iofx {
                                      offset, static_cast<double*>(data));
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+          }
         } else {
           // Multi-component...  Need a local memory space to push
           // data into and then write that out to the file...
@@ -3464,7 +3464,7 @@ namespace Iofx {
                                        offset+i, TOPTR(local_data));
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
           }
         }
       }
@@ -3479,7 +3479,7 @@ namespace Iofx {
       int64_t num_entity = ge->get_property("entity_count").get_int();
       if (num_entity == 0) {
         return 0;
-}
+      }
 
       int attribute_count = ge->get_property("attribute_count").get_int();
       int64_t id = Ioex::get_id(ge, type, &ids_);
@@ -3492,7 +3492,7 @@ namespace Iofx {
         int ierr = ex_get_attr(get_file_pointer(), type, id, static_cast<double*>(data));
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
       }
       else {
         // Read a subset of the attributes.  If scalar, read one;
@@ -3503,7 +3503,7 @@ namespace Iofx {
                                      offset, static_cast<double*>(data));
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+          }
         } else {
           // Multi-component...
           // Need a local memory space to read data into and
@@ -3516,7 +3516,7 @@ namespace Iofx {
                                        offset+i, TOPTR(local_data));
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
 
             size_t k = i;
             for (ssize_t j=0; j < num_entity; j++) {
@@ -3562,7 +3562,7 @@ namespace Iofx {
                           var_index, id, num_entity, TOPTR(temp));
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
 
         // Transfer to 'data' array.
         size_t k = 0;
@@ -3621,7 +3621,7 @@ namespace Iofx {
                           var_index, id, my_side_count, TOPTR(temp));
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
 
         // Transfer to 'variables' array.
         size_t j = i;
@@ -3657,7 +3657,7 @@ namespace Iofx {
         }
         if (i+1 == comp_count) {
           num_valid_sides =  j / comp_count;
-}
+        }
       }
       return num_valid_sides;
     }
@@ -3678,7 +3678,7 @@ namespace Iofx {
         int ierr = ex_get_sets(get_file_pointer(), 1, set_param);
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
 
         int64_t number_sides = set_param[0].num_entry;
 
@@ -3693,7 +3693,7 @@ namespace Iofx {
         ierr = ex_get_sets(get_file_pointer(), 1, set_param);
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
         //----
 
         Ioss::IntVector is_valid_side;
@@ -3770,7 +3770,7 @@ namespace Iofx {
       if (int_byte_size_api() == 4) {
         return get_side_connectivity_internal(fb, id, my_side_count, (int*)fconnect, map_ids);
       } 
-        return get_side_connectivity_internal(fb, id, my_side_count, (int64_t*)fconnect, map_ids);
+      return get_side_connectivity_internal(fb, id, my_side_count, (int64_t*)fconnect, map_ids);
       
     }
 
@@ -3791,7 +3791,7 @@ namespace Iofx {
 
       int error = ex_get_sets(get_file_pointer(), 1, set_param);
       if (error < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+      }
       int64_t number_sides = set_param[0].num_entry;
       int64_t number_distribution_factors = set_param[0].num_distribution_factor;
 
@@ -3802,7 +3802,7 @@ namespace Iofx {
         // Fill in the array with '1.0'...
         for (int64_t i=0; i < nfnodes * my_side_count; i++) {
           dist_fact[i] = 1.0;
-}
+        }
         return 0;
       }
 
@@ -3818,7 +3818,7 @@ namespace Iofx {
       std::vector<double> dist(number_distribution_factors);
       int ierr = ex_get_set_dist_fact(get_file_pointer(), EX_SIDE_SET, id, TOPTR(dist));
       if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+      }
 
       // Another easy situation (and common for exodusII) is if the input
       // distribution factors are all the same value (typically 1).  In
@@ -3836,10 +3836,10 @@ namespace Iofx {
         if (constant) {
           if (value == 0.0) {
             value = 1.0;  // Take care of some buggy mesh generators
-}
+          }
           for (ssize_t j=0; j < my_side_count * nfnodes; j++) {
             dist_fact[j] = value;
-}
+          }
           return 0;
         }
       }
@@ -3858,7 +3858,7 @@ namespace Iofx {
       ierr = ex_get_set(get_file_pointer(), EX_SIDE_SET, id, TOPTR(element), TOPTR(side));
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+      }
       //----
 
       Ioss::IntVector is_valid_side;
@@ -3954,7 +3954,7 @@ namespace Iofx {
               int ierr = ex_put_coord(get_file_pointer(), rdata, nullptr, nullptr);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
             else if (field.get_name() == "mesh_model_coordinates_y") {
@@ -3962,7 +3962,7 @@ namespace Iofx {
               int ierr = ex_put_coord(get_file_pointer(), nullptr, rdata, nullptr);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
             else if (field.get_name() == "mesh_model_coordinates_z") {
@@ -3970,7 +3970,7 @@ namespace Iofx {
               int ierr = ex_put_coord(get_file_pointer(), nullptr, nullptr, rdata);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
             else if (field.get_name() == "mesh_model_coordinates") {
@@ -3982,11 +3982,11 @@ namespace Iofx {
               std::vector<double> y;
               if (spatialDimension > 1) {
                 y.reserve(num_to_get);
-}
+              }
               std::vector<double> z;
               if (spatialDimension == 3) {
                 z.reserve(num_to_get);
-}
+              }
 
               // Cast 'data' to correct size -- double
               double *rdata = static_cast<double*>(data);
@@ -3996,15 +3996,15 @@ namespace Iofx {
                 x.push_back(rdata[index++]);
                 if (spatialDimension > 1) {
                   y.push_back(rdata[index++]);
-}
+                }
                 if (spatialDimension == 3) {
                   z.push_back(rdata[index++]);
-}
+                }
               }
               int ierr = ex_put_coord(get_file_pointer(), TOPTR(x), TOPTR(y), TOPTR(z));
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
             } else if (field.get_name() == "ids") {
               // The ids coming in are the global ids; their position is the
@@ -4073,7 +4073,7 @@ namespace Iofx {
                 ierr = ex_put_conn(get_file_pointer(), EX_ELEM_BLOCK, id, data, nullptr, nullptr);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "connectivity_edge") {
               if (my_element_count > 0) {
@@ -4083,7 +4083,7 @@ namespace Iofx {
                 ierr = ex_put_conn(get_file_pointer(), EX_ELEM_BLOCK, id, nullptr, data, nullptr);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "connectivity_face") {
               if (my_element_count > 0) {
@@ -4093,7 +4093,7 @@ namespace Iofx {
                 ierr = ex_put_conn(get_file_pointer(), EX_ELEM_BLOCK, id, nullptr, nullptr, data);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "connectivity_raw") {
               if (my_element_count > 0) {
@@ -4101,7 +4101,7 @@ namespace Iofx {
                 ierr = ex_put_conn(get_file_pointer(), EX_ELEM_BLOCK, id, data, nullptr, nullptr);
                 if (ierr < 0) {
                   Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "ids") {
               handle_element_ids(eb, data, num_to_get);
@@ -4122,7 +4122,7 @@ namespace Iofx {
                 // This needs to be fixed... Currently hardwired....
                 ierr = ex_put_map_param(get_file_pointer(), 0, 2);
                 if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
 
               std::vector<char> element(my_element_count * int_byte_size_api());
@@ -4154,22 +4154,22 @@ namespace Iofx {
               ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 1, eb_offset+1, my_element_count,
                                             TOPTR(element));
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               ierr = ex_put_partial_num_map(get_file_pointer(), EX_ELEM_MAP, 2, eb_offset+1, my_element_count,
                                             TOPTR(side));
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
               if (map_count == 0) {
                 // NOTE: ex_put_*num_map must be called prior to defining the name...
                 ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 1, "skin:parent_element_id");
                 if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
 
                 ierr = ex_put_name(get_file_pointer(), EX_ELEM_MAP, 2, "skin:parent_element_side_number");
                 if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
 
             } else {
@@ -4226,7 +4226,7 @@ namespace Iofx {
                 nodeMap.reverse_map_data(data, field, num_to_get*face_nodes);
                 ierr = ex_put_conn(get_file_pointer(), EX_FACE_BLOCK, id, data, nullptr, nullptr);
                 if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "connectivity_edge") {
               if (my_face_count > 0) {
@@ -4235,7 +4235,7 @@ namespace Iofx {
                 edgeMap.reverse_map_data(data, field, num_to_get*face_edges);
                 ierr = ex_put_conn(get_file_pointer(), EX_FACE_BLOCK, id, nullptr, data, nullptr);
                 if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "connectivity_raw") {
               // Do nothing, input only field.
@@ -4295,7 +4295,7 @@ namespace Iofx {
                 nodeMap.reverse_map_data(data, field, num_to_get*edge_nodes);
                 ierr = ex_put_conn(get_file_pointer(), EX_EDGE_BLOCK, id, data, nullptr, nullptr);
                 if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+                }
               }
             } else if (field.get_name() == "connectivity_raw") {
               // Do nothing, input only field.
@@ -4395,7 +4395,7 @@ namespace Iofx {
         int ierr = ex_put_id_map(get_file_pointer(), EX_NODE_MAP, ids);
         if (ierr < 0) {
           Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        }
       }
 
       nodeMap.build_reorder_map(0, num_to_get);
@@ -4483,7 +4483,7 @@ namespace Iofx {
           int ierr = ex_put_partial_id_map(file_pointer, map_type, eb_offset+1, num_to_get, ids);
           if (ierr < 0) {
             Ioex::exodus_error(file_pointer, __LINE__, my_processor);
-}
+          }
         }
         // Build the reorderEntityMap which does a direct mapping from
         // the current topologies local order to the local order
@@ -4558,7 +4558,7 @@ namespace Iofx {
       int re_im = 1;
       if (ioss_type == Ioss::Field::COMPLEX) {
         re_im = 2;
-}
+      }
       for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
         std::string field_name = field.get_name();
         if (re_im == 2) {
@@ -4590,7 +4590,7 @@ namespace Iofx {
           } else if (ioss_type == Ioss::Field::INT64) {
             num_out = nodeMap.map_field_to_db_scalar_order(static_cast<int64_t*>(variables),
                                                            temp, begin_offset, count, stride, 0);
-}
+          }
 
           if (num_out != nodeCount) {
             std::ostringstream errmsg;
@@ -4661,7 +4661,7 @@ namespace Iofx {
       int re_im = 1;
       if (ioss_type == Ioss::Field::COMPLEX) {
         re_im = 2;
-}
+      }
       for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
         std::string field_name = field.get_name();
         if (re_im == 2) {
@@ -4691,7 +4691,7 @@ namespace Iofx {
           } else if (ioss_type == Ioss::Field::INT64) {
             map->map_field_to_db_scalar_order(static_cast<int64_t*>(variables),
                                               temp, begin_offset, count, stride, eb_offset);
-}
+          }
 
           // Write the variable...
           int64_t id = Ioex::get_id(ge, type, &ids_);
@@ -4705,7 +4705,7 @@ namespace Iofx {
 
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+          }
         }
       }
     }
@@ -4738,19 +4738,19 @@ namespace Iofx {
               }
               int ierr = ex_put_set(get_file_pointer(), type, id, data, nullptr);
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
             } else if (field.get_name() == "orientation") {
               int ierr = ex_put_set(get_file_pointer(), type, id, nullptr, data);
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
             } else if (field.get_name() == "distribution_factors") {
               int ierr = ex_put_set_dist_fact(get_file_pointer(), type, id, static_cast<double*>(data));
               if (ierr < 0) {
                 Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
 
             } else {
               num_to_get = Ioss::Utils::field_warning(ns, field, "output");
@@ -4815,7 +4815,7 @@ namespace Iofx {
       assert(num_to_get == entity_count);
       if (num_to_get == 0) {
         return 0;
-}
+      }
 
       // Return the <entity (node or side), processor> pair
       if (field.get_name() == "entity_processor") {
@@ -4857,7 +4857,7 @@ namespace Iofx {
                                         TOPTR(entities), TOPTR(procs), myProcessor);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
           }
 
           if (commsetNodeCount == 1) {
@@ -4884,10 +4884,10 @@ namespace Iofx {
             }
 
             int ierr = ex_put_processor_node_maps(get_file_pointer(), TOPTR(internal), TOPTR(entities), nullptr,
-                myProcessor);
+                                                  myProcessor);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
           }
 
         } else if (type == "side") {
@@ -4921,7 +4921,7 @@ namespace Iofx {
                                       TOPTR(entities), TOPTR(sides), TOPTR(procs), myProcessor);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+          }
 
           // Construct the element map (internal vs. border).
           // Border elements are those in the communication map (use entities array)
@@ -4939,7 +4939,7 @@ namespace Iofx {
                                             TOPTR(entities), myProcessor);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+          }
 
         } else {
           std::ostringstream errmsg;
@@ -4992,31 +4992,31 @@ namespace Iofx {
 
             // Need to convert 'ints' to 'double' for storage on mesh...
             // FIX 64
-	    if (field.get_type() == Ioss::Field::INTEGER) {
-	      int* ids = static_cast<int*>(data);
-	      std::vector<double> real_ids(num_to_get);
-	      for (size_t i = 0; i < num_to_get; i++) {
-		real_ids[i] = static_cast<double>(ids[i]);
-	      }
-	      int ierr = ex_put_partial_set_dist_fact(get_file_pointer(), EX_SIDE_SET, id,
-                                                    offset+1, entity_count, TOPTR(real_ids));
-	      if (ierr < 0) {
-		Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
-	    }
-	    else {
-	      int64_t* ids = static_cast<int64_t*>(data);
-	      std::vector<double> real_ids(num_to_get);
-	      for (size_t i = 0; i < num_to_get; i++) {
-		real_ids[i] = static_cast<double>(ids[i]);
-	      }
-	      int ierr = ex_put_partial_set_dist_fact(get_file_pointer(), EX_SIDE_SET, id,
-                                                    offset+1, entity_count, TOPTR(real_ids));
-	      if (ierr < 0) {
-		Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
-	    }
-	  }
+            if (field.get_type() == Ioss::Field::INTEGER) {
+              int* ids = static_cast<int*>(data);
+              std::vector<double> real_ids(num_to_get);
+              for (size_t i = 0; i < num_to_get; i++) {
+                real_ids[i] = static_cast<double>(ids[i]);
+              }
+              int ierr = ex_put_partial_set_dist_fact(get_file_pointer(), EX_SIDE_SET, id,
+                                                      offset+1, entity_count, TOPTR(real_ids));
+              if (ierr < 0) {
+                Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+              }
+            }
+            else {
+              int64_t* ids = static_cast<int64_t*>(data);
+              std::vector<double> real_ids(num_to_get);
+              for (size_t i = 0; i < num_to_get; i++) {
+                real_ids[i] = static_cast<double>(ids[i]);
+              }
+              int ierr = ex_put_partial_set_dist_fact(get_file_pointer(), EX_SIDE_SET, id,
+                                                      offset+1, entity_count, TOPTR(real_ids));
+              if (ierr < 0) {
+                Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+              }
+            }
+          }
 
           else if (field.get_name() == "side_ids") {
           }
@@ -5038,7 +5038,7 @@ namespace Iofx {
                                                 df_offset+1, df_count, static_cast<double*>(data));
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+            }
 
           } else if (field.get_name() == "element_side") {
             // In exodusII, the 'side block' is stored as a sideset.  A
@@ -5074,7 +5074,7 @@ namespace Iofx {
               int ierr = ex_put_partial_set(get_file_pointer(), EX_SIDE_SET, id,
                                             offset+1, entity_count, TOPTR(element), TOPTR(side));
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             } else {
               Ioss::Int64Vector element(num_to_get);
               Ioss::Int64Vector side(num_to_get);
@@ -5088,7 +5088,7 @@ namespace Iofx {
               int ierr = ex_put_partial_set(get_file_pointer(), EX_SIDE_SET, id,
                                             offset+1, entity_count, TOPTR(element), TOPTR(side));
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
           } else if (field.get_name() == "element_side_raw") {
@@ -5121,7 +5121,7 @@ namespace Iofx {
               int ierr = ex_put_partial_set(get_file_pointer(), EX_SIDE_SET, id,
                                             offset+1, entity_count, TOPTR(element), TOPTR(side));
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             } else {
               Ioss::Int64Vector element(num_to_get);
               Ioss::Int64Vector side(num_to_get);
@@ -5135,7 +5135,7 @@ namespace Iofx {
               int ierr = ex_put_partial_set(get_file_pointer(), EX_SIDE_SET, id,
                                             offset+1, entity_count, TOPTR(element), TOPTR(side));
               if (ierr < 0) { Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+              }
             }
 
           } else if (field.get_name() == "connectivity") {
@@ -5199,12 +5199,12 @@ namespace Iofx {
         Ioss::EdgeBlockContainer edge_blocks = region->get_edge_blocks();
         assert(Ioex::check_block_order(edge_blocks));
         // Set ids of all entities that have "id" property...
-	for (auto &edge_block : edge_blocks) {
+        for (auto &edge_block : edge_blocks) {
           Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
         }
 
         edgeCount = 0;
-	for (auto &edge_block : edge_blocks) {
+        for (auto &edge_block : edge_blocks) {
           edgeCount += edge_block->get_property("entity_count").get_int();
           // Set ids of all entities that do not have "id" property...
           Ioex::get_id(edge_block, EX_EDGE_BLOCK, &ids_);
@@ -5314,11 +5314,11 @@ namespace Iofx {
       // Elementsets ...
       {
         Ioss::ElementSetContainer elementsets = region->get_elementsets();
-	for (auto &elementset : elementsets) {
+        for (auto &elementset : elementsets) {
           Ioex::set_id(elementset, EX_ELEM_SET, &ids_);
         }
 
-	for (auto &elementset : elementsets) {
+        for (auto &elementset : elementsets) {
           Ioex::get_id(elementset, EX_ELEM_SET, &ids_);
           const Ioex::ElemSet T(*(elementset));
           if (std::find(mesh.elemsets.begin(), mesh.elemsets.end(), T) == mesh.elemsets.end()) {
@@ -5377,23 +5377,23 @@ namespace Iofx {
       gather_communication_metadata(&mesh.comm);
 
       {
-	Ioss::SerializeIO       serializeIO__(this);
-	if (!properties.exists("OMIT_QA_RECORDS")) {
-	  put_qa();
-	}
-	if (!properties.exists("OMIT_INFO_RECORDS")) {
-	  put_info();
-	}
+        Ioss::SerializeIO       serializeIO__(this);
+        if (!properties.exists("OMIT_QA_RECORDS")) {
+          put_qa();
+        }
+        if (!properties.exists("OMIT_INFO_RECORDS")) {
+          put_info();
+        }
 
-	// Write the metadata to the exodusII file...
-	Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
-	int ierr = data.write_meta_data(mesh);
+        // Write the metadata to the exodusII file...
+        Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
+        int ierr = data.write_meta_data(mesh);
       
-	if (ierr < 0) {
-	  Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+        if (ierr < 0) {
+          Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+        }
     
-	output_other_meta_data();
+        output_other_meta_data();
       }
     }
 
@@ -5483,7 +5483,7 @@ namespace Iofx {
         }
 
         Ioss::CommSetContainer comm_sets = get_region()->get_commsets();
-	for (auto &cs : comm_sets) {
+        for (auto &cs : comm_sets) {
           std::string type = cs->get_property("entity_type").get_string();
           size_t count = cs->get_property("entity_count").get_int();
           int64_t id = Ioex::get_id(cs, (ex_entity_type)0, &ids_);
