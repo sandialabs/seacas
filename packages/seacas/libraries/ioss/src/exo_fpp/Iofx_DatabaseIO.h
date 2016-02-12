@@ -95,6 +95,8 @@ namespace Iofx {
       void get_step_times();
 
     private:
+      int64_t get_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
+				 void *data, size_t data_size) const;
       int64_t get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
                                  void *data, size_t data_size) const;
       int64_t get_field_internal(const Ioss::EdgeBlock* eb, const Ioss::Field& field,
@@ -118,6 +120,8 @@ namespace Iofx {
       int64_t get_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
                                  void *data, size_t data_size) const;
 
+      int64_t put_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
+				 void *data, size_t data_size) const;
       int64_t put_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
                                  void *data, size_t data_size) const;
       int64_t put_field_internal(const Ioss::EdgeBlock* eb, const Ioss::Field& field,
