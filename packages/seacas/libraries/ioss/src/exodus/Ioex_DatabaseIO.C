@@ -483,9 +483,7 @@ namespace Ioex {
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
     assert(check_block_order(element_blocks));
-    for (int iblk = 0; iblk < m_groupCount[EX_ELEM_BLOCK]; iblk++) {
-
-      Ioss::ElementBlock *leb = element_blocks[iblk];
+    for (auto leb : element_blocks) {
       int lblk_position  = leb->get_property("original_block_order").get_int();
 
       if (blk_position != lblk_position &&
@@ -635,10 +633,7 @@ namespace Ioex {
 	block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
 	block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
-	Ioss::NameList::const_iterator IF;
-	for (IF = results_fields.begin(); IF != results_fields.end(); ++IF) {
-	  std::string field_name = *IF;
-
+	for (auto &field_name : results_fields) {
 	  Ioss::Field field = block->get_field(field_name);
 	  const Ioss::VariableType *var_type = field.transformed_storage();
 	  Ioss::Field::BasicType ioss_type = field.get_type();
@@ -656,7 +651,7 @@ namespace Ioex {
 	    for (int i=1; i <= var_type->component_count(); i++) {
 	      std::string var_string = var_type->label_name(field_name, i, field_suffix_separator);
 	      // Find position of 'var_string' in 'variables'
-	      VariableNameMap::iterator VN = variables.find(var_string);
+	      auto VN = variables.find(var_string);
 	      if (VN != variables.end()) {
 		// Index '(*VN).second' is 1-based...
 		truth_table[offset + (*VN).second-1] = 1;
@@ -1104,8 +1099,6 @@ namespace Ioex {
 						   std::vector<T*> entities,
 						   int &glob_index)
   {
-    typename std::vector<T*>::const_iterator I;
-
     int index = 0;
     for (auto &entity : entities) {
       glob_index = gather_names(type, m_variables[type], entity, glob_index, true);
@@ -1214,25 +1207,23 @@ namespace Ioex {
     // next block, ...
     size_t offset = 0;
 
-    Ioss::SideSetContainer sidesets = get_region()->get_sidesets();
-    Ioss::SideSetContainer::const_iterator I;
-
     char field_suffix_separator = get_field_separator();
-    for (auto &sideset : sidesets) {
-      Ioss::SideBlockContainer side_blocks = sideset->get_side_blocks();
 
+    Ioss::SideSetContainer sidesets = get_region()->get_sidesets();
+    for (auto &sideset : sidesets) {
+
+      Ioss::SideBlockContainer side_blocks = sideset->get_side_blocks();
       for (auto &block : side_blocks) {
 	// See if this sideblock has a corresponding entry in the sideset list.
 	if (block->property_exists("invalid")) {
 	  continue;
-}
+	}
 
 	// Get names of all transient and reduction fields...
 	Ioss::NameList results_fields;
 	block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
 	block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
-	Ioss::NameList::const_iterator IF;
 	for (auto &field_name : results_fields) {
 	  Ioss::Field field = block->get_field(field_name);
 	  const Ioss::VariableType *var_type = field.transformed_storage();
@@ -1251,7 +1242,7 @@ namespace Ioex {
 	    for (int i=1; i <= var_type->component_count(); i++) {
 	      std::string var_string = var_type->label_name(field_name, i, field_suffix_separator);
 	      // Find position of 'var_string' in 'm_variables[]'
-	      VariableNameMap::iterator VN = m_variables[EX_SIDE_SET].find(var_string);
+	      auto VN = m_variables[EX_SIDE_SET].find(var_string);
 	      if (VN != m_variables[EX_SIDE_SET].end()) {
 		// Index '(*VN).second' is 1-based...
 		m_truthTable[EX_SIDE_SET][offset + (*VN).second-1] = 1;
