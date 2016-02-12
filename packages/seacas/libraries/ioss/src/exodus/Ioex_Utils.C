@@ -333,19 +333,14 @@ namespace Ioex {
 
     // Check whether last token is an integer...
     std::string str_id = tokens[tokens.size()-1];
-    size_t len = str_id.length();
-    bool is_int = true;
-    for (size_t i=0; i < len; i++) {
-      if (str_id[i] < '0' || str_id[i] > '9') {
-	is_int = false;
-	break;
-      }
-    }      
-    if (is_int) {
+    std::size_t found = str_id.find_first_not_of("0123456789");
+    if (found == std::string::npos) {
+      // All digits...
       return std::atoi(str_id.c_str());
-}
-
-    return 0;
+    }
+    else {
+      return 0;
+    }
   }
 
   int64_t get_id(const Ioss::GroupingEntity *entity, ex_entity_type type, Ioex::EntityIdSet *idset)
@@ -384,18 +379,18 @@ namespace Ioex {
     if (entity->property_exists(id_prop)) {
       id = entity->get_property(id_prop).get_int();
       return id;
-
     } 
-      // Try to decode an id from the name.
-      std::string name_string = entity->get_property(prop_name).get_string();
-      std::string type_name = entity->short_type_string();
-      if (std::strncmp(type_name.c_str(), name_string.c_str(), type_name.size()) == 0) {
-	id = extract_id(name_string);
-	if (id <= 0) { id = 1;
-}
-      }
-    
 
+    // Try to decode an id from the name.
+    std::string name_string = entity->get_property(prop_name).get_string();
+    std::string type_name = entity->short_type_string();
+    if (std::strncmp(type_name.c_str(), name_string.c_str(), type_name.size()) == 0) {
+      id = extract_id(name_string);
+      if (id <= 0) {
+	id = 1;
+      }
+    }
+    
     // At this point, we either have an id equal to '1' or we have an id
     // extracted from the entities name. Increment it until it is
     // unique...
@@ -427,23 +422,19 @@ namespace Ioex {
 
     static char displace[] = "displacement";
 
-    Ioss::NameList::const_iterator IF;
-    Ioss::NameList::const_iterator IFend = fields.end();
     size_t max_span = 0;
-
-    for (IF = fields.begin(); IF != IFend; ++IF) {
-      const char *name = (*IF).c_str();
+    for (const auto &name : fields) {
       std::string lc_name(name);
 
       Ioss::Utils::fixup_name(lc_name);
       size_t span = match(lc_name.c_str(), displace);
       if (span > max_span) {
 	const Ioss::VariableType *var_type =
-	  block->get_field((*IF)).transformed_storage();
+	  block->get_field(name).transformed_storage();
 	int comp_count = var_type->component_count();
 	if (comp_count == ndim) {
 	  max_span  = span;
-	  *disp_name = *IF;
+	  *disp_name = name;
 	}
       }
     }
