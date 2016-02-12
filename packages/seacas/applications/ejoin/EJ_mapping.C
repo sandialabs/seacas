@@ -184,7 +184,6 @@ template void eliminate_omitted_nodes(RegionVector &part_mesh,
     // 'global id' and then 'global id' to global position. The
     // mapping is now a direct lookup instead of a lookup followed by
     // a reverse map.
-    typedef typename std::vector<INT>::iterator V_INT_iterator;
     auto cur_pos = global_node_map.begin();
     for (size_t p = 0; p < part_count; p++) {
       size_t noffset = part_mesh[p]->get_property("node_offset").get_int();
