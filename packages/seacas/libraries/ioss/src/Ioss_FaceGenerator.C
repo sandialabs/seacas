@@ -93,7 +93,6 @@ namespace {
                               INT /*dummy*/)
   {
 #ifdef HAVE_MPI
-    size_t my_rank = region.get_database()->parallel_rank();
     size_t proc_count = region.get_database()->util().parallel_size();
 
     if (proc_count > 1) {
@@ -128,7 +127,7 @@ namespace {
       std::vector<size_t> id_span(hash_ids.size()+1);
       for (size_t i = 0; i < proc_entity.size(); i++) {
         INT node = proc_entity[i].second;
-        assert(node >= 0 && node < id_span.size()-1);
+        assert(node >= 0 && node < (INT)id_span.size()-1);
         id_span[node]++;
       }
       generate_index(id_span);
@@ -159,9 +158,9 @@ namespace {
               }
             }
           }
-          for (auto &proc_count : shared_nodes) {
-            if (proc_count.second == face_node_count) {
-              potential_count[proc_count.first]++;
+          for (auto &node : shared_nodes) {
+            if (node.second == face_node_count) {
+              potential_count[node.first]++;
             }
           }
         }
@@ -191,9 +190,9 @@ namespace {
               }
             }
           }
-          for (auto &proc_count : shared_nodes) {
-            if (proc_count.second == face_node_count) {
-              size_t offset = potential_offset[proc_count.first];
+          for (auto &node : shared_nodes) {
+            if (node.second == face_node_count) {
+              size_t offset = potential_offset[node.first];
               potential_faces[6*offset+0] = face.id_;
               potential_faces[6*offset+1] = face.connectivity_[0];
               potential_faces[6*offset+2] = face.connectivity_[1];
@@ -201,7 +200,7 @@ namespace {
               potential_faces[6*offset+4] = face.connectivity_[3];
               potential_faces[6*offset+5] = face.element[0];
               assert(face.elementCount_ == 1);
-              potential_offset[proc_count.first]++;
+              potential_offset[node.first]++;
             }
           }
         }
@@ -255,8 +254,8 @@ namespace {
           (*face_iter).add_element(element);
 
           int proc = 0;
-          for (int j=0; j < check_count.size(); j++) {
-            if (check_count[j] > 0 && check_offset[j] == i) {
+          for (size_t j=0; j < check_count.size(); j++) {
+            if (check_count[j] > 0 && check_offset[j] == (INT)i) {
               break;
             }
             proc++;
@@ -331,7 +330,7 @@ namespace Ioss {
           size_t id = 0;
           assert(face_count[face] <= 4);
           std::array<size_t,4> conn = {{0,0,0,0}};
-          for (size_t j = 0; j < face_count[face]; j++) {
+          for (int j = 0; j < face_count[face]; j++) {
             size_t fnode = offset + face_conn[face][j];
             size_t gnode = connectivity[fnode];
             conn[j] = ids[gnode-1];
