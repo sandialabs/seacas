@@ -95,26 +95,25 @@ namespace {
     // The {topo}_map[] arrays map from CGNS face# to IOSS face#.
     // See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
     // NOTE: '0' for first entry is to account for 1-based face numbering.
-    int tet_map[] = {0, 4, 1, 2, 3};
-    int pyr_map[] = {0, 5, 1, 2, 3, 4};
-    int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
-    int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
 
     switch (parent_topo->shape())
       {
       case Ioss::ElementShape::HEX:
+	static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
 	for (size_t i=0; i < num_to_get; i++) {
 	  idata[2*i+1] = hex_map[idata[2*i+1]];
 	}
 	break;
 
       case Ioss::ElementShape::TET:
+	static int tet_map[] = {0, 4, 1, 2, 3};
 	for (size_t i=0; i < num_to_get; i++) {
 	  idata[2*i+1] = tet_map[idata[2*i+1]];
 	}
 	break;
 
       case Ioss::ElementShape::PYRAMID:
+	static int pyr_map[] = {0, 5, 1, 2, 3, 4};
 	for (size_t i=0; i < num_to_get; i++) {
 	  idata[2*i+1] = pyr_map[idata[2*i+1]];
 	}
@@ -122,6 +121,7 @@ namespace {
 
       case Ioss::ElementShape::WEDGE:
 #if 0
+	static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
 	// Not needed -- maps 1 to 1
 	for (size_t i=0; i < num_to_get; i++) {
 	  idata[2*i+1] = wed_map[idata[2*i+1]];
@@ -258,16 +258,10 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    // Get the cell/element and physical dimension...
-    cgsize_t base = 1;
-    char basename[33];
-    cgsize_t cell_dimension = 0;
-    cgsize_t phys_dimension = 0;
-    cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
-    
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
+    cgsize_t base = 1;
     cgsize_t num_families = 0;
     cg_nfamilies(cgnsFilePtr, base, &num_families);
     for (cgsize_t family=1; family <= num_families; family++) {
@@ -382,7 +376,7 @@ namespace Iocgns {
 	
 	auto &block_map = m_blockLocalNodeMap[zone];
 	size_t offset = num_node;
-	for (size_t i=0; i < total_block_nodes; i++) {
+	for (cgsize_t i=0; i < total_block_nodes; i++) {
 	  if (block_map[i] == -1) {
 	    block_map[i] = offset++;
 	  }
@@ -528,7 +522,7 @@ namespace Iocgns {
       if (field.get_name() == "mesh_model_coordinates_x") {
 	double *rdata = static_cast<double*>(data);
 
-	for (int zone=1; zone < m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -539,7 +533,7 @@ namespace Iocgns {
 }
 
 	  // Map to global coordinate position...
-	  for (size_t i=0; i < num_coord; i++) {
+	  for (cgsize_t i=0; i < num_coord; i++) {
 	    rdata[block_map[i]] = coord[i];
 	  }
 	}
@@ -548,7 +542,7 @@ namespace Iocgns {
       else if (field.get_name() == "mesh_model_coordinates_y") {
 	double *rdata = static_cast<double*>(data);
 
-	for (int zone=1; zone < m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -559,7 +553,7 @@ namespace Iocgns {
 }
 
 	  // Map to global coordinate position...
-	  for (size_t i=0; i < num_coord; i++) {
+	  for (cgsize_t i=0; i < num_coord; i++) {
 	    rdata[block_map[i]] = coord[i];
 	  }
 	}
@@ -568,7 +562,7 @@ namespace Iocgns {
       else if (field.get_name() == "mesh_model_coordinates_z") {
 	double *rdata = static_cast<double*>(data);
 
-	for (int zone=1; zone < m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -579,7 +573,7 @@ namespace Iocgns {
 }
 
 	  // Map to global coordinate position...
-	  for (size_t i=0; i < num_coord; i++) {
+	  for (cgsize_t i=0; i < num_coord; i++) {
 	    rdata[block_map[i]] = coord[i];
 	  }
 	}
@@ -597,7 +591,7 @@ namespace Iocgns {
 	// ..., yn, z0, ..., zn so we have to allocate some scratch
 	// memory to read in the data and then map into supplied
 	// 'data'
-	for (int zone=1; zone < m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -609,7 +603,7 @@ namespace Iocgns {
 }
 
 	  // Map to global coordinate position...
-	  for (size_t i=0; i < num_coord; i++) {
+	  for (cgsize_t i=0; i < num_coord; i++) {
 	    rdata[phys_dimension*block_map[i]+0] = coord[i];
 	  }
 
@@ -620,7 +614,7 @@ namespace Iocgns {
 }
 
 	  // Map to global coordinate position...
-	  for (size_t i=0; i < num_coord; i++) {
+	  for (cgsize_t i=0; i < num_coord; i++) {
 	    rdata[phys_dimension*block_map[i]+1] = coord[i];
 	  }
 
@@ -631,7 +625,7 @@ namespace Iocgns {
 }
 
 	  // Map to global coordinate position...
-	  for (size_t i=0; i < num_coord; i++) {
+	  for (cgsize_t i=0; i < num_coord; i++) {
 	    rdata[phys_dimension*block_map[i]+2] = coord[i];
 	  }
 	}
@@ -818,7 +812,7 @@ namespace Iocgns {
 	if (field.get_type() == Ioss::Field::INT32) {
 	  int *idata = (int*)data;
 	  size_t j = 0;
-	  for (size_t i=0; i < num_to_get; i++) {
+	  for (ssize_t i=0; i < num_to_get; i++) {
 	    idata[j++] = parent[num_to_get*0 + i]+offset;  // Element
 	    idata[j++] = parent[num_to_get*2 + i];
 	    assert(parent[num_to_get*1+i] == 0);
@@ -830,7 +824,7 @@ namespace Iocgns {
 	else {
 	  int64_t *idata = (int64_t*)data;
 	  size_t j = 0;
-	  for (size_t i=0; i < num_to_get; i++) {
+	  for (ssize_t i=0; i < num_to_get; i++) {
 	    idata[j++] = parent[num_to_get*0 + i]+offset; // Element
 	    idata[j++] = parent[num_to_get*2 + i];
 	    assert(parent[num_to_get*1+i] == 0);
