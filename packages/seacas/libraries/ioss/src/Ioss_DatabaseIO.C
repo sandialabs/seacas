@@ -478,18 +478,16 @@ namespace Ioss {
   {
     DatabaseIO *new_this = const_cast<DatabaseIO*>(this);
 
-    ElementBlockContainer element_blocks =
-      get_region()->get_element_blocks();
-    ElementBlockContainer::const_iterator I  = element_blocks.begin();
-    ElementBlockContainer::const_iterator IE = element_blocks.end();
-
-    while (I != IE) {
-      size_t element_count = (*I)->get_property("entity_count").get_int();
+    bool first = true;
+    ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    for (auto block : element_blocks) {
+      size_t element_count = block->get_property("entity_count").get_int();
 
       // Check face types.
       if (element_count > 0) {
-	if (commonSideTopology != nullptr || I == element_blocks.begin()) {
-	  ElementTopology* side_type = (*I)->topology()->boundary_type();
+	if (commonSideTopology != nullptr || first) {
+	  first = false;
+	  ElementTopology* side_type = block->topology()->boundary_type();
 	  if (commonSideTopology == nullptr) { // First block
 	    new_this->commonSideTopology = side_type;
 	  }
@@ -499,7 +497,6 @@ namespace Ioss {
 	  }
 	}
       }
-      ++I;
     }
   }
 
