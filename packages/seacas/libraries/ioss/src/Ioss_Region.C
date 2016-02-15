@@ -975,10 +975,10 @@ namespace Ioss {
     if (!canon.empty()) {
       std::string uname = uppercase(alias);
       if (uname != alias) {
-	aliases_.insert(IOAliasValuePair(uname, canon));
+	aliases_.insert(std::make_pair(uname, canon));
 }
 
-      std::pair<AliasMap::iterator, bool> result = aliases_.insert(IOAliasValuePair(alias, canon));
+      std::pair<AliasMap::iterator, bool> result = aliases_.insert(std::make_pair(alias, canon));
       return result.second;
     } 
 	std::ostringstream errmsg;

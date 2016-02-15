@@ -167,7 +167,7 @@ std::pair<std::string, int> DashSurfaceMesh::topology_type(int64_t block_number)
     return std::make_pair(std::string("shell4"), numNodesPerElement);
 }
 
-void DashSurfaceMesh::sideset_elem_sides(int64_t setId, Int64Vector &elem_sides) const
+void DashSurfaceMesh::sideset_elem_sides(int64_t setId, Ioss::Int64Vector &elem_sides) const
 {
     elem_sides.clear();
     size_t numElementsInSurface1 = element_count_proc(1);
@@ -193,7 +193,7 @@ void DashSurfaceMesh::sideset_elem_sides(int64_t setId, Int64Vector &elem_sides)
     }
 }
 
-void DashSurfaceMesh::nodeset_nodes(int64_t nset_id, Int64Vector &nodes) const
+void DashSurfaceMesh::nodeset_nodes(int64_t nset_id, Ioss::Int64Vector &nodes) const
 {
     return;
 }
@@ -211,7 +211,7 @@ void DashSurfaceMesh::node_communication_map(MapVector &map, std::vector<int> &p
     return;
 }
 
-void DashSurfaceMesh::node_map(IntVector &map) const
+void DashSurfaceMesh::node_map(Ioss::IntVector &map) const
 {
     int size = node_count_proc();
     map.resize(size);
@@ -233,7 +233,7 @@ void DashSurfaceMesh::node_map(MapVector &map) const
     }
 }
 
-void DashSurfaceMesh::element_map(int64_t block_number, IntVector &map) const
+void DashSurfaceMesh::element_map(int64_t block_number, Ioss::IntVector &map) const
 {
     size_t numElementsInSurface1 = element_count_proc(1);
     size_t numElementsInSurface2 = element_count_proc(2);
@@ -290,7 +290,7 @@ void DashSurfaceMesh::element_map(MapVector &map) const
     }
 }
 
-void DashSurfaceMesh::element_map(IntVector &map) const
+void DashSurfaceMesh::element_map(Ioss::IntVector &map) const
 {
     size_t count = element_count_proc();
     map.resize(count);
@@ -429,7 +429,7 @@ std::pair<std::string, int> ExodusMesh::topology_type(int64_t blockNumber) const
     return std::make_pair(getTopologyName(topology), (int)topology);
 }
 
-void ExodusMesh::sideset_elem_sides(int64_t setId, Int64Vector &elem_sides) const
+void ExodusMesh::sideset_elem_sides(int64_t setId, Ioss::Int64Vector &elem_sides) const
 {
     elem_sides.resize(mExodusData.sidesetConnectivity[setId-1].size());
     elem_sides.insert(elem_sides.begin(), mExodusData.sidesetConnectivity[setId-1].begin(), mExodusData.sidesetConnectivity[setId-1].end());
@@ -441,7 +441,7 @@ std::vector<std::string> ExodusMesh::sideset_touching_blocks(int64_t setId) cons
   return mExodusData.sidesetTouchingBlocks[setId-1];
 }
 
-void ExodusMesh::nodeset_nodes(int64_t nset_id, Int64Vector &nodes) const
+void ExodusMesh::nodeset_nodes(int64_t nset_id, Ioss::Int64Vector &nodes) const
 {
     return;
 }
@@ -458,7 +458,7 @@ void ExodusMesh::node_communication_map(MapVector &map, std::vector<int> &proc)
     }
 }
 
-void ExodusMesh::node_map(IntVector &map) const
+void ExodusMesh::node_map(Ioss::IntVector &map) const
 {
     int size = node_count_proc();
     map.resize(size);
@@ -480,7 +480,7 @@ void ExodusMesh::node_map(MapVector &map) const
     }
 }
 
-void ExodusMesh::element_map(int64_t blockNumber, IntVector &map) const
+void ExodusMesh::element_map(int64_t blockNumber, Ioss::IntVector &map) const
 {
     int64_t offset = mElementOffsetForBlock[blockNumber-1];
     for(int64_t i=0; i < mExodusData.localNumberOfElementsInBlock[blockNumber-1]; i++)
@@ -509,7 +509,7 @@ void ExodusMesh::element_map(MapVector &map) const
     }
 }
 
-void ExodusMesh::element_map(IntVector &map) const
+void ExodusMesh::element_map(Ioss::IntVector &map) const
 {
     int64_t count = element_count_proc();
     map.resize(count);
