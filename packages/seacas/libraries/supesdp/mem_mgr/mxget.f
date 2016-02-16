@@ -1,1 +1,0 @@
-../../supes/mem_mgr/mxget.f
