@@ -266,6 +266,12 @@ int ex_create_int (const char *path,
   mode |= NC_IGNORE_MAX_VARS;
 #endif
 
+#if NC_HAS_DISKLESS
+  if (my_mode & EX_DISKLESS) {
+    mode |= NC_DISKLESS;
+  }
+#endif
+
   if ((status = nc_create (path, mode, &exoid)) != NC_NOERR) {
     exerrval = status;
 #if !defined(NC_HAS_HDF5)	  

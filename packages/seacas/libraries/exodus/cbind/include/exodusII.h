@@ -112,6 +112,9 @@ extern "C" {
 #define EX_SHARE                0x0100 /**< Do open netcdf file in "share" mode */
 #define EX_NOCLASSIC            0x0200 /**< Do not force netcdf to classic mode in netcdf4 mode */
 
+#define EX_DISKLESS             0x1000 /**< Experimental */
+#define EX_MMAP                 0x2000 /**< Experimental */
+
   /* Need to distinguish between storage on database (DB in name) and
      passed through the API functions (API in name).
   */

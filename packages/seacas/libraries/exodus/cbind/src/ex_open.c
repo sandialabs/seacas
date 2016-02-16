@@ -130,6 +130,7 @@ int ex_open_int (const char  *path,
   int file_wordsize;
   int dim_str_name;
   int int64_status = 0;
+  int nc_mode = 0;
   
   char errmsg[MAX_ERR_LENGTH];
 
@@ -158,7 +159,15 @@ int ex_open_int (const char  *path,
 
   /* The EX_READ mode is the default if EX_WRITE is not specified... */
   if (!(mode & EX_WRITE)) { /* READ ONLY */
-      if ((status = nc_open (path, NC_NOWRITE|NC_SHARE, &exoid)) != NC_NOERR) {
+      nc_mode = NC_NOWRITE|NC_SHARE;
+
+#if NC_HAS_DISKLESS
+      if (mode & EX_DISKLESS) {
+	nc_mode |= NC_DISKLESS;
+      }
+#endif
+      
+      if ((status = nc_open (path, nc_mode, &exoid)) != NC_NOERR) {
 	/* NOTE: netCDF returns an id of -1 on an error - but no error code! */
 	/* It is possible that the user is trying to open a netcdf4
 	   file, but the netcdf4 capabilities aren't available in the
@@ -206,6 +215,12 @@ int ex_open_int (const char  *path,
       } 
   }
   else {/* (mode & EX_WRITE) READ/WRITE */
+    nc_mode = NC_WRITE|NC_SHARE;
+#if NC_HAS_DISKLESS
+    if (mode & EX_DISKLESS) {
+      nc_mode |= NC_DISKLESS;
+    }
+#endif
     if ((status = nc_open (path, NC_WRITE|NC_SHARE, &exoid)) != NC_NOERR) {
       /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
       exerrval = status;
