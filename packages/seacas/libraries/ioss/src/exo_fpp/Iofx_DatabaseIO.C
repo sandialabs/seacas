@@ -301,9 +301,21 @@ namespace Iofx {
       }
 
       if (is_input()) {
+#if defined EX_DISKLESS
+	// Experimental -- in memory read by netcdf library
+	if (properties.exists("MEMORY_READ")) {
+	  mode |= EX_DISKLESS;
+	}
+#endif
         exodusFilePtr = ex_open(decoded_filename.c_str(), EX_READ|mode,
                                 &cpu_word_size, &io_word_size, &version);
       } else {
+#if defined EX_DISKLESS
+	// Experimental -- in memory write by netcdf library
+	if (properties.exists("MEMORY_WRITE")) {
+	  mode |= EX_DISKLESS;
+	}
+#endif
         if (fileExists) {
           exodusFilePtr = ex_open(decoded_filename.c_str(), EX_WRITE|mode,
                                   &cpu_word_size, &io_word_size, &version);
