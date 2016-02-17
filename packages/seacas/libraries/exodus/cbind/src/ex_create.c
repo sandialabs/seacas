@@ -270,24 +270,26 @@ int ex_create_int (const char *path,
   if (my_mode & EX_DISKLESS) {
     mode |= NC_DISKLESS;
   }
+#else
+  
 #endif
 
   if ((status = nc_create (path, mode, &exoid)) != NC_NOERR) {
     exerrval = status;
-#if !defined(NC_HAS_HDF5)	  
+#if NC_HAS_HDF5
+    sprintf(errmsg,
+	    "Error: file create failed for %s, mode: %s",
+	    path, mode_name);
+#else
     if (my_mode & EX_NETCDF4) {
       sprintf(errmsg,
-	      "Error: file create failed for %s in NETCDF4 and %s mode.\n\tThis library probably does not support netcdf-4 files.",
+	      "Error: file create failed for %s in NETCDF4 and %s mode.\n\tThis library does not support netcdf-4 files.",
 	      path, mode_name);
     } else {
       sprintf(errmsg,
 	      "Error: file create failed for %s, mode: %s",
 	      path, mode_name);
     }
-#else
-    sprintf(errmsg,
-	    "Error: file create failed for %s, mode: %s",
-	    path, mode_name);
 #endif
     ex_err("ex_create",errmsg,exerrval);
     return (EX_FATAL);
