@@ -10,6 +10,20 @@
 
 #define DEBUG_OUTPUT 1
 namespace {
+  const char *Version() {return "Iocgns_DecompositionData.C 2016/02/17";}
+
+  void cgns_error(int cgnsid, int lineno, int /* processor */)
+  {
+    std::ostringstream errmsg;
+    errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno
+	   << " in file '" << Version()
+	   << "' Please report to gdsjaar@sandia.gov if you need help.";
+    if (cgnsid > 0) {
+      cg_close(cgnsid);
+    }
+    IOSS_ERROR(errmsg);
+  }
+
   template <typename T>
   void uniquify(std::vector<T> &vec)
   {
@@ -63,6 +77,81 @@ namespace {
     return std::distance(index.begin(), std::upper_bound(index.begin(), index.end(), node))-1;
 #endif
   }
+
+  // ZOLTAN Callback functions...
+
+#if !defined(NO_ZOLTAN_SUPPORT)
+  int zoltan_num_dim(void *data, int *ierr)
+  {
+    // Return dimensionality of coordinate data.
+    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+
+    *ierr = ZOLTAN_OK;
+    return zdata->spatialDimension;
+  }
+
+  int zoltan_num_obj(void *data, int *ierr)
+  {
+    // Return number of objects (element count) on this processor...
+    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+
+    *ierr = ZOLTAN_OK;
+    return zdata->elementCount;
+  }
+
+  void zoltan_obj_list(void *data, int ngid_ent, int nlid_ent,
+                       ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR lids,
+                       int wdim, float *wgts, int *ierr)
+  {
+    // Return list of object IDs, both local and global.
+    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+
+    // At the time this is called, we don't have much information
+    // These routines are the ones that are developing that
+    // information... 
+    size_t element_count  = zdata->elementCount;
+    size_t element_offset = zdata->elementOffset;
+
+    *ierr = ZOLTAN_OK;
+
+    if (lids) {
+      std::iota(lids, lids+element_count, 0);
+    }
+
+    if (wdim) {
+      for (size_t i = 0; i < element_count; i++) {
+        wgts[i] = 1.0;
+      }
+    }
+
+    if (ngid_ent == 1) {
+      for (size_t i = 0; i < element_count; i++) {
+        gids[i] = element_offset + i;
+      }
+    } else if (ngid_ent == 2){
+      int64_t* global_ids = (int64_t*)gids;
+      for (size_t i = 0; i < element_count; i++) {
+        global_ids[i] = element_offset + i;
+      }
+    } else {
+      *ierr = ZOLTAN_FATAL;
+    }
+    return;
+  }
+
+  void zoltan_geom(void *data, int ngid_ent, int nlid_ent, int nobj,
+                   ZOLTAN_ID_PTR gids, ZOLTAN_ID_PTR lids,
+                   int ndim, double *geom, int *ierr)
+  {
+    // Return coordinates for objects.
+    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+
+    std::copy(zdata->centroids_.begin(), zdata->centroids_.end(), &geom[0]);
+
+    *ierr = ZOLTAN_OK;
+    return;
+  }
+#endif
 
   template <typename INT> 
   void get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
@@ -158,6 +247,14 @@ namespace Iocgns {
     int num_zones = 0;
     int base = 1; // Only single base supported so far.
     
+    {
+      cgsize_t cell_dimension = 0;
+      cgsize_t phys_dimension = 0;
+      char base_name[33];
+      cg_base_read(cgnsFilePtr, base, base_name, &cell_dimension, &phys_dimension);
+      spatialDimension = phys_dimension;
+    }
+
     cg_nzones(cgnsFilePtr, base, &num_zones);
     
     for (int zone=1; zone <= num_zones; zone++) {
@@ -211,11 +308,23 @@ namespace Iocgns {
       method = Ioss::Utils::uppercase(method);
     }
 
-    if (method != "LINEAR") {
+    if (method != "LINEAR"
+#if !defined(NO_ZOLTAN_SUPPORT)
+        && method != "BLOCK"
+        && method != "CYCLIC"
+        && method != "RANDOM"
+        && method != "RCB"
+        && method != "RIB"
+        && method != "HSFC"
+#endif
+	) {
       if (myProcessor == 0) {
 	std::ostringstream errmsg;
 	errmsg << "ERROR: Invalid decomposition method specified: '" << method << "'\n"
 	       << "       Valid methods: LINEAR"
+#if !defined(NO_ZOLTAN_SUPPORT)
+                 << ", BLOCK, CYCLIC, RANDOM, RCB, RIB, HSFC"
+#endif
 	       << "\n";
 	std::cerr << errmsg.str();
       }
@@ -225,6 +334,26 @@ namespace Iocgns {
     if (myProcessor == 0)
       std::cerr << "\nUsing decomposition method '" << method << "' on "
 		<< processorCount << " processors.\n\n";
+
+    if (method == "RCB" ||
+        method == "RIB" ||
+        method == "HSFC" ||
+        method == "GEOM_KWAY" ||
+        method == "KWAY_GEOM" ||
+        method == "METIS_SFC") {
+      calculate_element_centroids(cgnsFilePtr, pointer, adjacency, node_dist);
+    }
+
+#if !defined(NO_ZOLTAN_SUPPORT)
+    if (method == "RCB" ||
+        method == "RIB" ||
+        method == "HSFC" ||
+        method == "BLOCK" ||
+        method == "CYCLIC" ||
+        method == "RANDOM") {
+      zoltan_decompose(method);
+    }
+#endif
 
     if (method == "LINEAR") {
       if (globalElementCount > 0) {
@@ -278,6 +407,157 @@ namespace Iocgns {
       importElementIndex.resize(processorCount+1);
     }
   }
+
+#if !defined(NO_ZOLTAN_SUPPORT)
+  template <typename INT>
+  void DecompositionData<INT>::zoltan_decompose(const std::string &method)
+  {
+    float version = 0.0;
+    Zoltan_Initialize(0, nullptr, &version);
+
+    Zoltan zz(comm_);
+
+    // Register Zoltan Callback functions...
+    zz.Set_Num_Obj_Fn(zoltan_num_obj, this);
+    zz.Set_Obj_List_Fn(zoltan_obj_list, this);
+    zz.Set_Num_Geom_Fn(zoltan_num_dim, this);
+    zz.Set_Geom_Multi_Fn(zoltan_geom, this);
+
+    // Set Zoltan parameters
+    std::string num_proc = Ioss::Utils::to_string(processorCount);
+    zz.Set_Param("DEBUG_LEVEL", "0");
+    zz.Set_Param("NUM_GLOBAL_PARTS", num_proc);
+
+    int num_global = sizeof(INT)/sizeof(int);
+    zz.Set_Param("NUM_GID_ENTRIES", Ioss::Utils::to_string(num_global));
+    zz.Set_Param("NUM_LID_ENTRIES", "0");
+    zz.Set_Param("LB_METHOD", method);
+    zz.Set_Param("REMAP", "0");
+    zz.Set_Param("RETURN_LISTS", "ALL");
+
+    int changes = 0;
+    int num_local  = 0;
+    int num_import = 1;
+    int  num_export = 1;
+    ZOLTAN_ID_PTR import_global_ids = nullptr;
+    ZOLTAN_ID_PTR import_local_ids  = nullptr;
+    ZOLTAN_ID_PTR export_global_ids = nullptr;
+    ZOLTAN_ID_PTR export_local_ids  = nullptr;
+    int *import_procs   = nullptr;
+    int *import_to_part = nullptr;
+    int *export_procs   = nullptr;
+    int *export_to_part = nullptr;
+
+    num_local  = 1;
+
+    // TODO: Check return value for error.
+    zz.LB_Partition(changes, num_global, num_local,
+                    num_import, import_global_ids, import_local_ids, import_procs, import_to_part,
+                    num_export, export_global_ids, export_local_ids, export_procs, export_to_part);
+
+#if DEBUG_OUTPUT
+    std::cerr << "Processor " << myProcessor << ":\t"
+              << elementCount-num_export << " local, "
+              << num_import                  << " imported and "
+              << num_export                  << " exported elements\n";
+#endif
+
+    // Don't need centroid data anymore... Free up space
+    std::vector<double>().swap(centroids_);
+
+    // Find all elements that remain locally owned...
+    get_local_element_list(export_global_ids, num_export);
+
+    // Build exportElementMap and importElementMap...
+    importElementMap.reserve(num_import);
+    importElementIndex.resize(processorCount+1);
+    importElementCount.resize(processorCount+1);
+
+    if (num_global == 1) {
+      std::vector<std::pair<int,int> > export_map;
+      export_map.reserve(num_export);
+      for (int i=0; i < num_export; i++) {
+        export_map.push_back(std::make_pair(export_procs[i],export_global_ids[i]));
+      }
+
+      std::sort(export_map.begin(), export_map.end());
+      exportElementMap.reserve(num_export);
+      exportElementIndex.resize(processorCount+1);
+      exportElementCount.resize(processorCount+1);
+      for (int i=0; i < num_export; i++) {
+        exportElementMap.push_back(export_map[i].second);
+        exportElementCount[export_map[i].first]++;
+      }
+
+      for (int i=0; i < num_import; i++) {
+        importElementMap.push_back(import_global_ids[i]);
+        importElementCount[import_procs[i]]++;
+      }
+    } else {
+      std::vector<std::pair<int,int64_t> > export_map;
+      export_map.reserve(num_export);
+      int64_t *export_glob = (int64_t*)export_global_ids;
+      for (int i=0; i < num_export; i++) {
+        export_map.push_back(std::make_pair(export_procs[i],export_glob[i]));
+      }
+
+      std::sort(export_map.begin(), export_map.end());
+      exportElementMap.reserve(num_export);
+      exportElementIndex.resize(processorCount+1);
+      exportElementCount.resize(processorCount+1);
+      for (int i=0; i < num_export; i++) {
+        exportElementMap.push_back(export_map[i].second);
+        exportElementCount[export_map[i].first]++;
+      }
+
+      int64_t *import_glob = (int64_t*)import_global_ids;
+      for (int i=0; i < num_import; i++) {
+        importElementMap.push_back(import_glob[i]);
+        importElementCount[import_procs[i]]++;
+      }
+    }
+
+    std::copy(exportElementCount.begin(), exportElementCount.end(), exportElementIndex.begin());
+    generate_index(exportElementIndex);
+
+    zz.LB_Free_Part(&import_global_ids, &import_local_ids, &import_procs, &import_to_part);
+    zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
+  }
+#endif
+
+#if !defined(NO_ZOLTAN_SUPPORT)
+  template <typename INT>
+  void DecompositionData<INT>::get_local_element_list(const ZOLTAN_ID_PTR &export_global_ids, size_t export_count)
+  {
+    std::vector<size_t> elements(elementCount);
+
+    size_t global_id_size = sizeof(INT)/sizeof(int);
+
+    if (global_id_size == 1) {
+      for (size_t i=0; i < export_count; i++) {
+        // flag all elements to be exported...
+        size_t elem = export_global_ids[i];
+        elements[elem-elementOffset] = 1;
+      }
+    } else {
+      assert(global_id_size == 2);
+      int64_t *export_glob = (int64_t*)export_global_ids;
+
+      for (size_t i=0; i < export_count; i++) {
+        // flag all elements to be exported...
+        size_t elem = export_glob[i];
+        elements[elem-elementOffset] = 1;
+      }
+    }
+
+    localElementMap.reserve(elementCount - export_count);
+    for (size_t i=0; i < elementCount; i++) {
+      if (elements[i] == 0) {
+        localElementMap.push_back(i);
+      }
+    }
+  }
+#endif
 
   template <typename INT>
   void DecompositionData<INT>::generate_adjacency_list(int cgnsFilePtr,
@@ -426,6 +706,216 @@ namespace Iocgns {
       }
     }
     pointer.push_back(adjacency.size());
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::calculate_element_centroids(int cgnsFilePtr,
+                                                           const std::vector<INT> &pointer,
+                                                           const std::vector<INT> &adjacency,
+                                                           const std::vector<INT> &node_dist)
+  {
+    // recv_count is the number of nodes that I need to recv from the other processors
+    // send_count is the number of nodes that I need to send to the other processors
+    std::vector<INT> recv_count(processorCount);
+    std::vector<INT> send_count(processorCount);
+
+    std::vector<int> owner; // Size is sum of element connectivity sizes (same as adjacency list)
+    owner.reserve(adjacency.size());
+
+    for (size_t i=0; i < adjacency.size(); i++) {
+      INT node = adjacency[i];
+      INT owning_processor = find_index_location(node, node_dist);
+      owner.push_back(owning_processor);
+      recv_count[owning_processor]++;
+    }
+
+    // Zero out myProcessor entry in recv_count and sum the
+    // remainder...
+    recv_count[myProcessor] = 0;
+
+    // Tell each processor how many nodes worth of data to send to
+    // every other processor...
+    MPI_Alltoall(TOPTR(recv_count), 1, Ioss::mpi_type((INT)0),
+                 TOPTR(send_count), 1, Ioss::mpi_type((INT)0), comm_);
+
+    send_count[myProcessor] = 0;
+
+    std::vector<INT> recv_disp(processorCount);
+    std::vector<INT> send_disp(processorCount);
+    size_t sums = 0;
+    size_t sumr = 0;
+    for (int p=0; p < processorCount; p++) {
+      recv_disp[p] = sumr;
+      sumr += recv_count[p];
+
+      send_disp[p] = sums;
+      sums += send_count[p];
+    }
+
+#if DEBUG_OUTPUT
+    std::cerr << "Processor " << myProcessor << " communicates "
+              << sumr << " nodes from and " << sums << " nodes to other processors\n";
+#endif
+    // Build the list telling the other processors which of their nodes I will need data from...
+    std::vector<INT> node_comm_recv(sumr);
+    std::vector<INT> node_comm_send(sums);
+    {
+      std::vector<INT> recv_tmp(processorCount);
+      for (size_t i=0; i < owner.size(); i++) {
+        int proc = owner[i];
+        if (proc != myProcessor) {
+          INT node = adjacency[i];
+          size_t position = recv_disp[proc] + recv_tmp[proc]++;
+          node_comm_recv[position] = node;
+        }
+      }
+    }
+
+    Ioss::MY_Alltoallv(node_comm_recv, recv_count, recv_disp, 
+		       node_comm_send, send_count, send_disp, comm_);
+
+    // At this point, 'node_comm_send' contains the list of nodes that I need to provide
+    // coordinate data for.
+
+    // DEBUG: == Check that all nodes in node_comm_send are in the range
+    //           nodeOffset..nodeOffset+nodeCount
+    for (size_t i=0; i < node_comm_send.size(); i++) {
+      assert((size_t)node_comm_send[i] >= nodeOffset &&
+             (size_t)node_comm_send[i] <  nodeOffset+nodeCount);
+    }
+
+    // Get my coordinate data using direct cgns calls
+    std::vector<double> x(nodeCount);;
+    std::vector<double> y;
+    std::vector<double> z;
+    if (spatialDimension > 1)
+      y.resize(nodeCount);
+    if (spatialDimension > 2)
+      z.resize(nodeCount);
+
+    // Need to determine what zone(s) my nodes are in...
+    // TODO: Maybe save this information instead of reading it; see how many times we do this.
+    int base = 1; // Only single base supported so far.
+    int num_zones = 0;
+    cg_nzones(cgnsFilePtr, base, &num_zones);
+    
+    cgsize_t beg = 0;
+    cgsize_t end = 0;
+    cgsize_t offset = 0;
+    cgsize_t node_count = nodeCount;
+    cgsize_t node_offset = nodeOffset;
+    
+    for (int zone=1; zone <= num_zones; zone++) {
+      cgsize_t size[3];
+      char zone_name[33];
+      cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+	
+      end += size[0];
+
+      if (end > node_offset && beg <= node_offset+node_count) {
+	cgsize_t start  = std::max(node_offset, beg);
+	cgsize_t finish = std::min(end, node_offset+node_count);
+	if (finish > start) {
+	  cgsize_t count = finish-start;
+
+	  // Now adjust start for 1-based node numbering and the start of this zone...
+	  start = start - beg + 1;
+	  std::cerr << myProcessor << ": reading " << count << " nodes from zone " << zone
+		    << " starting at " << start << " with an offset of " << offset << "\n";
+	  assert(offset+count <= (cgsize_t)x.size());
+	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble,
+				   &start, &count, &x[offset]);
+	  if (ierr < 0) {
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble,
+				   &start, &count, &y[offset]);
+	  if (ierr < 0) {
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble,
+				   &start, &count, &z[offset]);
+	  if (ierr < 0) {
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+	  offset += count;
+	}
+      }
+      beg = end;
+    }
+
+    // The total vector size I need to send data in is node_comm_send.size()*3
+    std::vector<double> coord_send;
+    coord_send.reserve(node_comm_send.size() * spatialDimension);
+    std::vector<double> coord_recv(node_comm_recv.size() * spatialDimension);
+    for (size_t i=0; i < node_comm_send.size(); i++) {
+      size_t node = node_comm_send[i] - nodeOffset;
+      coord_send.push_back(x[node]);
+      if (spatialDimension > 1)
+        coord_send.push_back(y[node]);
+      if (spatialDimension > 2) 
+        coord_send.push_back(z[node]);
+    }
+    assert(coord_send.size() == node_comm_send.size() * spatialDimension);
+    
+    // Send the coordinate data back to the processors that requested it...
+    for (int i=0; i < processorCount; i++) {
+      send_count[i] *= spatialDimension;
+      recv_count[i] *= spatialDimension;
+      send_disp[i]  *= spatialDimension;
+      recv_disp[i]  *= spatialDimension;
+    }
+
+    Ioss::MY_Alltoallv(coord_send, send_count, send_disp, 
+		       coord_recv, recv_count, recv_disp, comm_);
+
+    // Don't need coord_send data anymore ... clean out the vector.
+    std::vector<double>().swap(coord_send);
+
+    // Should have all needed coordinate data at this time.
+    // Some in x,y,z vectors and some in coord_recv vector.
+
+    // Note that in the current data structure, adjacency contains the
+    // connectivity for all elements on this processor. 'owner' is a
+    // parallel datastructure containing the owning processor for that
+    // node.  If it is off-processor, then its coordinates will be
+    // stored in coord_recv in processor order, but will be hit in the
+    // correct order... The 'pointer' array tells the number of nodes
+    // per element...
+
+    // Calculate the centroid into the DecompositionData structure 'centroids'
+    centroids_.reserve(elementCount*spatialDimension);
+    std::vector<INT> recv_tmp(processorCount);
+
+    for (size_t i=0; i < elementCount; i++) {
+      size_t nnpe = pointer[i+1] - pointer[i];
+      double cx = 0.0;
+      double cy = 0.0;
+      double cz = 0.0;
+      for (INT jj = pointer[i]; jj < pointer[i+1]; jj++) {
+        INT node = adjacency[jj];
+        INT proc = owner[jj];
+        if (proc == myProcessor) {
+          cx += x[node-nodeOffset];
+          if (spatialDimension > 1)
+            cy += y[node-nodeOffset];
+          if (spatialDimension > 2)
+            cz += z[node-nodeOffset];
+        } else {
+          INT coffset = recv_disp[proc] + recv_tmp[proc];  recv_tmp[proc] += spatialDimension;
+          cx += coord_recv[coffset+0];
+          if (spatialDimension > 1)
+            cy += coord_recv[coffset+1];
+          if (spatialDimension > 2)
+            cz += coord_recv[coffset+2];
+        }
+      }
+      centroids_.push_back(cx / nnpe);
+      if (spatialDimension > 1)
+        centroids_.push_back(cy / nnpe);
+      if (spatialDimension > 2)
+        centroids_.push_back(cz / nnpe);
+    }
   }
 
   template <typename INT>
@@ -726,10 +1216,6 @@ namespace Iocgns {
     std::vector<INT> send_comm_map(send_comm_map_disp[processorCount]);
     std::vector<INT> nc_offset(processorCount);
 
-#if DEBUG_OUTPUT
-    std::cerr << "Processor " << myProcessor << " has "
-	      << shared_nodes.size() << " shared nodes\n";
-#endif
     for (size_t i=0; i < shared_nodes.size(); i++) {
       size_t beg = i;
       size_t end = ++i;
@@ -766,6 +1252,11 @@ namespace Iocgns {
     for (size_t i=0; i < nodeCommMap.size(); i+=2) {
       nodeCommMap[i] = node_global_to_local(nodeCommMap[i]+1);
     }
+#if DEBUG_OUTPUT
+    std::cerr << "Processor " << myProcessor << " has "
+	      << nodeCommMap.size() << " shared nodes\n";
+#endif
+
   }
 
 }
