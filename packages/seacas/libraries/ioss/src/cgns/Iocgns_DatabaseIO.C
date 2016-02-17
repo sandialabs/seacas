@@ -85,7 +85,7 @@ namespace {
 	   << "' Please report to gdsjaar@sandia.gov if you need help.";
     if (cgnsid > 0) {
       cg_close(cgnsid);
-}
+    }
     IOSS_ERROR(errmsg);
   }
 
@@ -268,6 +268,9 @@ namespace Iocgns {
     assert(decomp != nullptr);
     decomp->decompose_model(cgnsFilePtr);
 
+    if (isParallel)
+      exit(0);
+    
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
@@ -540,7 +543,7 @@ namespace Iocgns {
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	  }
 
 	  // Map to global coordinate position...
 	  for (cgsize_t i=0; i < num_coord; i++) {

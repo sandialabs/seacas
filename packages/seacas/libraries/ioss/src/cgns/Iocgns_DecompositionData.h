@@ -53,11 +53,11 @@
 #if !defined(NO_PARMETIS_SUPPORT)
 #include <parmetis.h>
 #endif
+#endif
 
 #undef MPICPP
 #if !defined(NO_ZOLTAN_SUPPORT)
 #include <zoltan_cpp.h>
-#endif
 #endif
 namespace Ioss {
   class Field;
@@ -177,10 +177,14 @@ namespace Iocgns {
     ~DecompositionData() = default;
 
     void decompose_model(int cgnsFilePtr);
-    void simple_decompose(const std::string &method,
-			  const std::vector<INT> &element_dist);
 
   private:
+#if !defined(NO_ZOLTAN_SUPPORT)
+    void zoltan_decompose(const std::string &method);
+#endif
+    void simple_decompose(const std::string &method,
+			  const std::vector<INT> &element_dist);
+      
     bool i_own_node(size_t node) const; // T/F if node with global index node owned by this processors ioss-decomp.
     bool i_own_elem(size_t elem) const; // T/F if node with global index elem owned by this processors ioss-decomp.
     
@@ -190,16 +194,25 @@ namespace Iocgns {
     size_t node_global_to_local(size_t global_index) const;
     size_t elem_global_to_local(size_t global_index) const;
 
+    void build_global_to_local_elem_map();
+    void get_element_block_communication();
+
     void generate_adjacency_list(int fileId, std::vector<INT> &pointer,
 				 std::vector<INT> &adjacency);
+
+    void calculate_element_centroids(int cgnsFilePtr,
+				     const std::vector<INT> &pointer,
+				     const std::vector<INT> &adjacency,
+				     const std::vector<INT> &node_dist);
+#if !defined(NO_ZOLTAN_SUPPORT)
+    void get_local_element_list(const ZOLTAN_ID_PTR &export_global_ids, size_t export_count);
+#endif
+
+    void get_shared_node_list();
 
     void get_local_node_list(const std::vector<INT> &pointer,
 			     const std::vector<INT> &adjacency,
 			     const std::vector<INT> &node_dist);
-
-    void get_shared_node_list();
-
-    void get_element_block_communication();
 
     std::vector<INT> localElementMap;
 
