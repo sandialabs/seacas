@@ -43,6 +43,8 @@
 #include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
 
+#include <cgns/Iocgns_DecompositionData.h>
+
 #include <cgnslib.h>
 
 namespace Ioss { class CommSet; }
@@ -63,6 +65,8 @@ namespace Ioss { class SideSet; }
 namespace Ioss { class EntityBlock; }
 
 namespace Iocgns {
+  class DecompositionDataBase;
+  template <typename INT> class DecompositionData;
 
   class DatabaseIO : public Ioss::DatabaseIO
   {
@@ -148,6 +152,10 @@ namespace Iocgns {
 			       void *data, size_t data_size) const;
 
     mutable int cgnsFilePtr;
+
+    mutable DecompositionDataBase      *decomp;
+    mutable DecompositionData<int>     *decomp32;
+    mutable DecompositionData<int64_t> *decomp64;
 
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;

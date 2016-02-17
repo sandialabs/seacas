@@ -258,6 +258,16 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
+    if (int_byte_size_api() == 8) {
+      decomp64 = new DecompositionData<int64_t>(properties, util().communicator());
+      decomp = decomp64;
+    } else {
+      decomp32 = new DecompositionData<int>(properties, util().communicator());
+      decomp = decomp32;
+    }
+    assert(decomp != nullptr);
+    decomp->decompose_model(cgnsFilePtr);
+
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
@@ -282,7 +292,7 @@ namespace Iocgns {
 
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
-    cgsize_t num_zones = 0;
+    int num_zones = 0;
     cg_nzones(cgnsFilePtr, base, &num_zones);
     m_blockLocalNodeMap.resize(num_zones+1);  // Let's use 1-based zones...
     m_zoneOffset.resize(num_zones+1);  // Let's use 1-based zones...
