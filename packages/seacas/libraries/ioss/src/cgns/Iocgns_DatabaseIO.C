@@ -700,8 +700,7 @@ namespace Iocgns {
 	  }
 	}
 	else if (field.get_name() == "connectivity_raw") {
-	  int element_nodes = eb->topology()->number_nodes();
-	  assert(field.raw_storage()->component_count() == element_nodes);
+	  assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
 
 	  if (my_element_count > 0) {
 	    int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
