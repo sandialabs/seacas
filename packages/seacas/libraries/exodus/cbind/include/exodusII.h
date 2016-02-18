@@ -67,8 +67,8 @@
 #endif
 
 /* EXODUS II version number */
-#define EX_API_VERS 6.25f
-#define EX_API_VERS_NODOT 625
+#define EX_API_VERS 6.26f
+#define EX_API_VERS_NODOT 626
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION		EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT	EX_API_VERS_NODOT
@@ -112,8 +112,8 @@ extern "C" {
 #define EX_SHARE                0x0100 /**< Do open netcdf file in "share" mode */
 #define EX_NOCLASSIC            0x0200 /**< Do not force netcdf to classic mode in netcdf4 mode */
 
-#define EX_DISKLESS             0x1000 /**< Experimental */
-#define EX_MMAP                 0x2000 /**< Experimental */
+#define EX_DISKLESS             0x100000 /**< Experimental */
+#define EX_MMAP                 0x200000 /**< Experimental */
 
   /* Need to distinguish between storage on database (DB in name) and
      passed through the API functions (API in name).
