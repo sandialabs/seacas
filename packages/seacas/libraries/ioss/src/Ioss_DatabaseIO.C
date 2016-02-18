@@ -341,9 +341,12 @@ namespace Ioss {
 
   void DatabaseIO::verify_and_log(const GroupingEntity *ge, const Field& field, int in_out) const
   {
-    assert(!is_parallel_consistent() || internal_parallel_consistent(singleProcOnly, ge, field, in_out, util_));
+    if (ge != nullptr) {
+      assert(!is_parallel_consistent() ||
+	     internal_parallel_consistent(singleProcOnly, ge, field, in_out, util_));
+    }
     if (get_logging()) {
-      log_field(">", ge, field, singleProcOnly, util_);
+      log_field(in_out == 1? ">" : "<", ge, field, singleProcOnly, util_);
     }
   }
 
@@ -655,32 +658,45 @@ namespace {
       initial_time = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
     }
 
-    std::vector<int64_t> all_sizes;
-    if (single_proc_only) {
-      all_sizes.push_back(field.get_size());
-    } else {
-      util.gather((int64_t)field.get_size(), all_sizes);
-    }
-
-    if (util.parallel_rank() == 0 || single_proc_only) {
-      std::string name = entity->name();
-      std::ostringstream strm;
-      gettimeofday(&tp, nullptr);
-      double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
-      strm << symbol << " [" << std::fixed << std::setprecision(3)
-	   << time_now-initial_time << "]\t";
-
-      int64_t total = 0;
-      // Now append each processors size onto the stream...
-      for (auto &p_size : all_sizes) {
-	strm << std::setw(8) << p_size << ":";
-	total += p_size;
+    if (entity != nullptr) {
+      std::vector<int64_t> all_sizes;
+      if (single_proc_only) {
+	all_sizes.push_back(field.get_size());
+      } else {
+	util.gather((int64_t)field.get_size(), all_sizes);
       }
-      if (util.parallel_size() > 1) {
-	strm << std::setw(8) << total;
-}
-      strm << "\t" << name << "/" << field.get_name() << "\n";
-      std::cout << strm.str();
+
+      if (util.parallel_rank() == 0 || single_proc_only) {
+	std::string name = entity->name();
+	std::ostringstream strm;
+	gettimeofday(&tp, nullptr);
+	double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
+	strm << symbol << " [" << std::fixed << std::setprecision(3)
+	     << time_now-initial_time << "]\t";
+
+	int64_t total = 0;
+	// Now append each processors size onto the stream...
+	for (auto &p_size : all_sizes) {
+	  strm << std::setw(8) << p_size << ":";
+	  total += p_size;
+	}
+	if (util.parallel_size() > 1) {
+	  strm << std::setw(8) << total;
+	}
+	strm << "\t" << name << "/" << field.get_name() << "\n";
+	std::cout << strm.str();
+      }
+    } else {
+      if (util.parallel_rank() == 0 || single_proc_only) {
+	// Not truly accurate since proc 0 could finish before other procs,
+	// but don't want to add another MPI collective call...
+	std::ostringstream strm;
+	gettimeofday(&tp, nullptr);
+	double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
+	strm << symbol << " [" << std::fixed << std::setprecision(3)
+	     << time_now-initial_time << "]\n";
+	std::cout << strm.str();
+      }
     }
   }
 }
