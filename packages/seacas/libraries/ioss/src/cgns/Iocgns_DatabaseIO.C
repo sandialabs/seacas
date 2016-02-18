@@ -258,6 +258,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
+#ifdef HAVE_MPI
     if (int_byte_size_api() == 8) {
       decomp64 = new DecompositionData<int64_t>(properties, util().communicator());
       decomp = decomp64;
@@ -270,6 +271,7 @@ namespace Iocgns {
 
     if (isParallel)
       exit(0);
+#endif
     
     // ========================================================================
     // Get the number of families in the mesh...
