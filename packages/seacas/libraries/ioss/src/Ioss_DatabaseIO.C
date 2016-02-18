@@ -64,6 +64,10 @@
 #include "Ioss_State.h"
 #include "Ioss_SurfaceSplit.h"
 
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
+
 namespace {
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity,
 		 const Ioss::Field &field, bool single_proc_only,
@@ -687,9 +691,12 @@ namespace {
 	std::cout << strm.str();
       }
     } else {
+#ifdef HAVE_MPI
+      if (!single_proc_only) {
+	MPI_Barrier(util.communicator());
+      }
+#endif
       if (util.parallel_rank() == 0 || single_proc_only) {
-	// Not truly accurate since proc 0 could finish before other procs,
-	// but don't want to add another MPI collective call...
 	std::ostringstream strm;
 	gettimeofday(&tp, nullptr);
 	double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
