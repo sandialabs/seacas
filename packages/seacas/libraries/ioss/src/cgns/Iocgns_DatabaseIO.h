@@ -43,7 +43,9 @@
 #include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
 
+#ifdef HAVE_MPI
 #include <cgns/Iocgns_DecompositionData.h>
+#endif
 
 #include <cgnslib.h>
 
@@ -153,10 +155,12 @@ namespace Iocgns {
 
     mutable int cgnsFilePtr;
 
+#ifdef HAVE_MPI
     mutable DecompositionDataBase      *decomp;
     mutable DecompositionData<int>     *decomp32;
     mutable DecompositionData<int64_t> *decomp64;
-
+#endif
+    
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
     std::map<std::string, int> m_zoneNameMap;
