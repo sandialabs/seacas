@@ -302,19 +302,19 @@ namespace Iofx {
 
       if (is_input()) {
 #if defined EX_DISKLESS
-	// Experimental -- in memory read by netcdf library
-	if (properties.exists("MEMORY_READ")) {
-	  mode |= EX_DISKLESS;
-	}
+        // Experimental -- in memory read by netcdf library
+        if (properties.exists("MEMORY_READ")) {
+          mode |= EX_DISKLESS;
+        }
 #endif
         exodusFilePtr = ex_open(decoded_filename.c_str(), EX_READ|mode,
                                 &cpu_word_size, &io_word_size, &version);
       } else {
 #if defined EX_DISKLESS
-	// Experimental -- in memory write by netcdf library
-	if (properties.exists("MEMORY_WRITE")) {
-	  mode |= EX_DISKLESS;
-	}
+        // Experimental -- in memory write by netcdf library
+        if (properties.exists("MEMORY_WRITE")) {
+          mode |= EX_DISKLESS;
+        }
 #endif
         if (fileExists) {
           exodusFilePtr = ex_open(decoded_filename.c_str(), EX_WRITE|mode,
@@ -399,7 +399,8 @@ namespace Iofx {
     {
       Ioss::SerializeIO serializeIO__(this);
 
-      Ioex::check_processor_info(get_file_pointer(), util().parallel_size(), myProcessor);
+      Ioex::check_processor_info(get_file_pointer(), util().parallel_size(),
+				 myProcessor);
 
       read_region();
       read_communication_metadata();
@@ -1965,26 +1966,26 @@ namespace Iofx {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
             }
 
-          for (int ins = 0; ins < count; ins++) {
-            int64_t id = set_params[ins].id;
-            int num_attr = 0;
-            int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
-            if (ierr < 0) {
-              Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-	    }
-            attributes[ins] = num_attr;
+	    for (int ins = 0; ins < count; ins++) {
+	      int64_t id = set_params[ins].id;
+	      int num_attr = 0;
+	      int ierr = ex_get_attr_param(get_file_pointer(), type, id, &num_attr);
+	      if (ierr < 0) {
+		Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
+	      }
+	      attributes[ins] = num_attr;
 
-            bool db_has_name = false;
-            std::string Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base+"list",
-							  maximumNameLength, db_has_name);
+	      bool db_has_name = false;
+	      std::string Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base+"list",
+							    maximumNameLength, db_has_name);
 
-            std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
+	      std::string alias = Ioss::Utils::encode_entity_name(base+"list", id);
 
-            if (get_use_generic_canonical_name()) {
-              std::string temp = Xset_name;
-              Xset_name = alias;
-              alias = temp;
-            }
+	      if (get_use_generic_canonical_name()) {
+		std::string temp = Xset_name;
+		Xset_name = alias;
+		alias = temp;
+	      }
 
               bool filtered = false;
               int64_t original_set_size = set_params[ins].num_entry;
@@ -2140,7 +2141,7 @@ namespace Iofx {
     }
 
     int64_t DatabaseIO::get_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
-					   void *data, size_t data_size) const
+                                           void *data, size_t data_size) const
     {
       return Ioex::DatabaseIO::get_field_internal(reg, field, data, data_size);
     }
@@ -3869,7 +3870,7 @@ namespace Iofx {
     }
 
     int64_t DatabaseIO::put_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
-			       void *data, size_t data_size) const
+					   void *data, size_t data_size) const
     {
       return Ioex::DatabaseIO::put_field_internal(reg, field, data, data_size);
     }
