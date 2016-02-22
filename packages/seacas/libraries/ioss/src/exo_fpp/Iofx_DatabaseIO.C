@@ -912,7 +912,7 @@ namespace Iofx {
           }
         }
 
-        entity_map.build_reverse_map(myProcessor);
+        entity_map.build_reverse_map();
 
       } else {
         // Output database; entity_map.map not set yet... Build a default map.
@@ -4322,7 +4322,7 @@ namespace Iofx {
           }
         }
 
-        nodeMap.build_reverse_map(myProcessor);
+        nodeMap.build_reverse_map();
 
         // Only a single nodeblock and all set
         if (num_to_get == nodeCount) {
@@ -4416,7 +4416,7 @@ namespace Iofx {
 
         // Now, if the state is Ioss::STATE_MODEL, update the reverseEntityMap
         if (db_state == Ioss::STATE_MODEL) {
-          entity_map.build_reverse_map(num_to_get, eb_offset, my_processor);
+          entity_map.build_reverse_map(num_to_get, eb_offset);
 
           // Output this portion of the entity number map
           int ierr = ex_put_partial_id_map(file_pointer, map_type, eb_offset+1, num_to_get, ids);
