@@ -1,14 +1,24 @@
 #! /bin/sh
 EXTRA_ARGS=$@
-CC='gcc'; export CC
-CFLAGS="-I${ACCESS}/include"; export CFLAGS
-CPPFLAGS="-DNDEBUG"; export CPPFLAGS
-OS=`uname -s`
+
+MPI=ON
+#MPI=OFF
 
 if [ "X$ACCESS" == "X" ] ; then
   echo "ERROR: Please set the ACCESS environment variable before executing this script."
   exit
 fi
+
+if [ "$MPI" == "ON" ]
+then
+  export CC=mpicc
+else
+  export CC=gcc
+fi
+
+CFLAGS="-I${ACCESS}/include"; export CFLAGS
+CPPFLAGS="-DNDEBUG"; export CPPFLAGS
+OS=`uname -s`
 
 rm -f CMakeCache.txt
 
@@ -25,6 +35,7 @@ cmake \
 -D CGNS_ENABLE_SCOPING:BOOL=ON \
 -D CGNS_ENABLE_FORTRAN:BOOL=OFF \
 -D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
+-D HDF5_NEED_MPI:BOOL=${MPI} \
 $EXTRA_ARGS \
 ..
 
@@ -39,6 +50,7 @@ cmake \
 -D CGNS_ENABLE_SCOPING:BOOL=ON \
 -D CGNS_ENABLE_FORTRAN:BOOL=OFF \
 -D CMAKE_INSTALL_PREFIX:PATH=${ACCESS} \
+-D HDF5_NEED_MPI:BOOL=${MPI} \
 $EXTRA_ARGS \
 ..
 
