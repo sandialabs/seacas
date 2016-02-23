@@ -19,4 +19,4 @@ SHARED="--enable-shared"
 #PARALLEL_ON_OFF="--enable-parallel"
 PARALLEL_ON_OFF="--disable-parallel"
 
-./configure --prefix=${ACCESS} $(SHARED) ${PARALLEL_ON_OFF} --enable-production --enable-debug=no --enable-static-exec $1
+./configure --prefix=${ACCESS} ${SHARED} ${PARALLEL_ON_OFF} --enable-production --enable-debug=no --enable-static-exec $1
