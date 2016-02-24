@@ -5,7 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   exit
 fi
 
-PARALLEL=1
+PARALLEL=0
 
 rm -f config.cache
 export CFLAGS="-I${ACCESS}/include"
