@@ -44,7 +44,7 @@ Decomposition methods: [0..3] = speed ranking 0=fastest
 Other options:
 --help             Print this message (-h)
 --input            Optional nem_slice input file (-i)
---viz_mesh         Output mesh showing processor distribution of elements.
+--viz_mesh         Output mesh showing processor distribution of elements. (-V)
 --spheres_linear   Decompose sphere elements using linear method (matches old behavior) (-s)
 --processors #p    Specify number of processors (-p, -j)
 --root root_dir    Root directory to begin the path to on the separate disks (-R)
@@ -93,6 +93,8 @@ Other options:
 -p #p       Specify number of processors (or -j)
 -R root_dir Root directory to begin the path to on the separate disks 
 -S sub_dir  Continuation of the path on the separate disks to the files
+-V          Output mesh showing processor distribution of elements
+-6          Force creation of 64-bit integer decomposed files
 
    help-email: sierra-help@sandia.gov 
 
@@ -110,7 +112,7 @@ If possible, you should update your getopt to a newer version and make
 sure that the new getopt is in your path.
 
 Below are some options for getting the current getopt version:
-* If on a Mac: "sudo port install getopt"
+* If on a Mac: "sudo port install getopt" or "brew install gnu-getopt"
 * Search the internet for "getopt-1.1.5" or "getopt-1.1.4"; download and build
 
 Enter "-h" for the modified options that this version supports.
@@ -294,7 +296,7 @@ fi
 ########################################################################
 # decomp options:
 if [ $OLDGETOPT -eq 1 ] ; then
-   TEMP=`getopt Hhn:i:o:p:j:r:R:S:sl:vd: $*`
+   TEMP=`getopt Hh6n:i:o:p:j:r:R:S:sl:vVd: $*`
 else
    TEMP=`getopt -o Hh6n:i:o:p:j:r:R:S:sl:vVd: -a \
        --long input:,help,nem_slice_flag,64,processors:,rootdir:,subdir:,spheres_linear,viz_mesh,verbose,debug: \
