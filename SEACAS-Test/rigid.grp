@@ -1,4 +1,0 @@
-${include("common.h")}
-Shift X {FR6 - R6}
-
-Exit

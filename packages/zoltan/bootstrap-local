@@ -1,3 +1,0 @@
-#! /bin/csh
-setenv AUTOHEADER 'echo SkippingAutoHeader'
-autoreconf -i -f -v
