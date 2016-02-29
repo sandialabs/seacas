@@ -1,13 +1,22 @@
 EXTRA_ARGS=$@
 
-### Change this to point to the compilers you want to use
-CC=gcc
-
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ACCESS=$(cd ..; pwd)
 
 TPL=${ACCESS}
 MPI=OFF
+
+### Change this to point to the compilers you want to use
+CC=gcc
+
+### Change this to point to the compilers you want to use
+if [ "$MPI" == "ON" ]
+then
+  CC=mpicc
+else
+  CC=gcc
+# CC=clang
+fi
 
 rm -f CMakeCache.txt
 
