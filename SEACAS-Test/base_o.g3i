@@ -1,0 +1,5 @@
+Rotate 180 90 1 0
+list block
+NodeSet Front 	1
+NodeSet Back  100
+Exit

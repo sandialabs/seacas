@@ -1,0 +1,2 @@
+To determine the exact version number, type
+  grep ZOLTAN_VERSION_NUMBER src/include/zoltan.h

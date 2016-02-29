@@ -1,0 +1,160 @@
+{include("common.h")}
+Title
+ Outer edge for base
+$ {intv = 1}
+$ {gap = T8-T4}
+$ {ch = .015}
+Point	1	{FR1 - rad1}	0.0
+
+Point	10	{FR5}	{T8/2+gap/3}
+Point	17	{FR4+ch}	{T8/2+gap/3}
+Point	20	{FR4}	{T8/2+gap/3}
+Point	23	{FR4}	{T8/2+gap/3+ch}
+Point	30	{FR4}	{T8}
+Point	40	{FR3}	{T8}
+Point	50	{FR3}	{-T6+T5}
+Point	60	{FR2}	{-T6+T5}
+Point	70	{FR2}	{-T6}
+Point	80	{R3}	{-T6}
+Point	90	{R3}	{-T7}
+Point	95	{FR1+.05} {-T7}
+$Point	100	{FR1}	{-T7}
+Point	105	{FR1}	{-T7+.05}
+Point	110	{FR1}	{0.0}
+Point	120	{FR1-rad1}	{T8}
+Point	130	{FR1-rad1}	{T8+T8/2}
+Point	140	{FR5}	{T8+T8/2}
+
+Line	10	str	10	17	0	{[intv * 1]}
+Line	17	str	17	23	0	{[intv * 0]}
+Line	20	str	23	30	0	{[intv * 0]}
+Line	30	str	30	40	0	{[intv * 0]}
+Line	40	str	40	50	0	{[intv * 0]}
+Line	50	str	50	60	0	{[intv * 0]}
+Line	60	str	60	70	0	{[intv * 0]}
+Line	70	str	70	80	0	{[intv * 0]}
+Line	80	str	80	90	0	{[intv * 0]}
+Line	90	str	90	95	0	{[intv * 0]}
+Line	95	str	95	105	0	{[intv * 0]}
+Line	100	str	105	110	0	{[intv * 0]}
+Line	110	circ	110	120	1	{[intv * 0]}
+Line	120	str	120	130	0	{[intv * 0]}
+Line	130	str	130	140	0	{[intv * 0]}
+Line	140	str	140	10	0	{[intv * 4]}
+
+Region	10 {FireSet} -10 -17 -20 -30 -40 -50 -60 -70 -80 -90 -95 -100 -110 -120 -130 -140
+$ Tape Joint Tapes {TJw = .100}	{TJh = .200}
+Barset  11 {FireShell}	110 130
+
+Point	200	{FR2 + TJw}	{-T6}
+Point	203	{FR2 + TJw-ch}	{-T6}
+Point	207	{FR2+ch}	{-T6}
+Point	210	{FR2}	{-T6}
+Point	213	{FR2}	{-T6+ch}
+Point	217	{FR2}	{-T6 + TJh-ch}
+Point	220	{FR2}	{-T6 + TJh}
+Point	223	{FR2+ch}	{-T6 + TJh}
+Point	227	{FR2 + TJw-ch}	{-T6 + TJh}
+Point	230	{FR2 + TJw}	{-T6 + TJh}
+Point	233	{FR2 + TJw}	{-T6 + TJh-ch}
+Point	237	{FR2 + TJw}	{-T6+ch}
+
+Line	203	str	203	207	0	{[intv * 0]}
+Line	207	str	207	213	0	{[intv * 0]}
+Line	213	str	213	217	0	{[intv * 0]}
+Line	217	str	217	223	0	{[intv * 0]}
+Line	223	str	223	227	0	{[intv * 0]}
+Line	227	str	227	233	0	{[intv * 0]}
+Line	233	str	233	237	0	{[intv * 0]}
+Line	237	str	237	203	0	{[intv * 0]}
+
+Region	20	{TapeJoint}	-203 -207 -213 -217 -223 -227 -233 -237
+
+$ Case - Near Tape Joint
+Point	300	{R6}	{-T10}
+Point	305	{R6}	{-T1}
+Point	310	{R6}	{T8/2}
+Point	320	{R5}	{T8/2}
+Point	327	{R5}	{T8-ch}
+Point	330	{R5}	{T8}
+Point	333	{R5-ch}	{T8}
+Point	337	{FR3+ch}	{T8}
+Point	340	{FR3}	{T8}
+Point	343	{FR3}	{T8-ch}
+Point	347	{FR3}	{-T3+ch}
+Point	350	{FR3}	{-T3}
+Point	353	{FR3+ch}	{-T3}
+Point	360	{R4}	{-T3}
+Point	370	{R4}	{-(T2+T3)}
+Point	380	{R3}	{-(T2+T3)}
+Point	390	{R3}	{-T1}
+Point	394	{R3}	{-T9}
+Point	398	{R3}	{-T10}
+
+Line	300	str	300	305	0	{[intv * 0]}
+Line	305	str	305	310	0	{[intv * 0]}
+Line	310	str	310	320	0	{[intv * 0]}
+Line	320	str	320	327	0	{[intv * 0]}
+Line	327	str	327	333	0	{[intv * 0]}
+Line	333	str	333	337	0	{[intv * 0]}
+Line	337	str	337	343	0	{[intv * 0]}
+Line	340	str	343	347	0	{[intv * 0]}
+Line	347	str	347	353	0	{[intv * 0]}
+Line	350	str	353	360	0	{[intv * 0]}
+Line	360	str	360	370	0	{[intv * 0]}
+Line	370	str	370	380	0	{[intv * 0]}
+Line	380	str	380	390	0	{[intv * 0]}
+Line	390	str	390	400	0	{[intv * 0]}
+Line	394	str	450	394	0	{[intv * 0]}
+Line	396	str	394	398	0	{[intv * 0]}
+Line	398	str	398	300	0	{[intv * 0]}
+Line	392	str	390	305	0	{[intv * 0]}
+
+Region	30	{Case_}	-305 -310 -320 -327 -333 -337 -340 -347 -350 -360 -370 -380 -392
+Region	31	{Case_}	-300 -392 -390 -450 -394 -396 -398
+
+$ Locking Ring
+Point	400	{(R2+R3)/2}	{-.4180}
+Point	410	{R2}	{-T7}
+Point	420	{R2}	{-T6+TJh/2}
+Point	430	{R1}	{-T6+TJh/2}
+Point	440	{R1}	{-T9}
+Point	450	{(R2+R3)/2}	{-T9}
+
+Line	400	str	400	410	0	{[intv * 0]}
+Line	410	str	410	420	0	{[intv * 0]}
+Line	420	str	420	430	0	{[intv * 0]}
+Line	430	str	430	440	0	{[intv * 0]}
+Line	440	str	440	450	0	{[intv * 0]}
+Line	450	str	450	400	0	{[intv * 0]}
+
+Region	40	{Ring}	-400 -410 -420 -430 -440 -450
+
+$ {size = .0275}
+Size	{size}	10
+Size	{size}	20
+Size	{size}	30
+Size	{2*size}	31
+Size	{2*size}	40
+Size	{size}	50
+
+Scheme	10	x4s
+$ Scheme	20	x4s
+Scheme	30	x4s
+Scheme	31	x4s
+Scheme	40	x4s
+Scheme	50	x4s
+
+SideBC	10	10 17 20 30 40 50 60 70 80 90 95 100 110
+
+SideBC	20	203 207 213 217 223 227 233 237
+
+SideBC	30	305 310 320 327 333 337 340 347 350 360 370 380 390 400 410 420
+
+NodeBC	11	120
+NodeBC	1	520
+NodeBC	10	398	
+SideBC	100	300 305
+SideBC	102	140
+
+SideBC	200	530 540 130

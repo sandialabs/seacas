@@ -1,0 +1,18 @@
+Title
+ Rigid Surface ( Moving )
+$ {include("common.h")}
+
+Point	1	{R6+.0}	{-1.1 * T10}
+Point	2	{R6 + 1}	{-1.1 * T10}
+Point	3	{R6 + 1}	{4*T8}	$ Make sure its above FS base
+Point	4	{R6+.0}	{4*T8}
+
+Line	1	str	1	2	0	1
+Line	2	str	2	3	0	1
+Line	3	str	3	4	0	1
+Line	4	str	4	1	0	1
+
+Region {Rigid}	{Rigid}	-1 -2 -3 -4
+
+SideBC	101	4
+NodeBC	111	1 4

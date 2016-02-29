@@ -1,0 +1,22 @@
+base_sh.g3
+base_o.g3
+EQUIV 11 11 1.0e-4 closest
+equiv end
+nset
+delete 11
+up
+add
+rigid.g3
+equiv end
+add
+cap.g3
+equiv end
+nset
+combine 1111 1112
+up
+Title
+change
+ MAST Fireset Tape Joint - Proposed Design 3 - Shell
+up
+FINISH
+new_shell.g3

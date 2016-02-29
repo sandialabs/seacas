@@ -1,0 +1,24 @@
+baseline_o.g3
+base.g3
+Shift Y -0.090
+EQUIV 11 11 1.0e-4 closest
+equiv end
+nset
+delete 11
+up
+add
+rigid_0.g3
+equiv end
+add
+cap.g3
+Shift Y -0.090
+equiv end
+nset
+combine 1111 1112
+up
+Title
+change
+ SEACAS Test Suite Tape Joint
+up
+FINISH
+baseline.g3

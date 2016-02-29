@@ -1,0 +1,21 @@
+name block 1 'Outer_Case'
+name block 2 'Tape'
+name block 3 'Inner_Case'
+name block 4 'Cargo'
+name block  5 'Rigid_Wall'
+name block 6 'Cap'
+
+name nset 100 'No_X'
+name nset  10 'No_Y'
+name nset   1 'No_Z'
+name nset 111 'Fixed'
+name nset 1111 'Bottom_Cap'
+
+name sset  10 'Outer_Case_To_Tape'
+name sset  20 'TapeSurface'
+name sset  30 'Inner_Case_To_Tape'
+
+name sset 101 'RigidSurface'
+name sset 100 'To_Rigid'
+name sset 103 'CapSurface'
+

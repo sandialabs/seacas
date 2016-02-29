@@ -1,0 +1,166 @@
+Title 
+ Baseline TapeJoint Design
+
+{NOECHO}{Units("in-lbf-s")}
+{ECHO}
+$ {FireSet	= 1}
+$ {TapeJoint	= 2}
+$ {Case_	= 3}
+$ {Ring		= 4}
+$ {Rigid	= 5}
+$ {intv = 1}
+
+$ {FR1 = 11.765 / 2}
+$ {FR3 = 11.518 / 2}
+$ {FR2 = FR3 + 0.041}
+
+$ {R1 = 10.640 / 2}
+$ {R2 = 138.41~mm}
+$ {R3 = 143.00~mm}
+$ {R4 = 142.00~mm}
+$ {R5 = FR3 - .006}
+$ {R6 = R5 - .041}
+$ {R7 = 132.5~mm}
+
+$ {tapeH = 0.200}
+$ {tapeW = .08}
+$ {T1 = 0.178}
+$ {T2 = 0.391}
+$ {T3 = 0.673}
+$ {T4 = T2 - tapeH}
+$ {T5 = T4 + .213}
+$ {T7 = .03}
+$ {T8 = T7 + .3818}
+$ {T6 = T8 + .080}
+$ {T9 = .090}
+$ {T10= 0.800}
+
+$ {rad1 = 0.030}
+$ {rad2 = 0.090}
+
+Point	1	{FR3 - rad1}	{0.0 - rad1}
+Point	2	{R4 + rad2}	{-(T3+rad2)}
+
+Point	10	{FR1}	{-T3}
+Point	20	{FR1}	{T9}
+Point	30	{5.415} {T9}
+Point	40	{5.415}	0.0
+Point	50	{FR3 - rad1} {0.0}
+Point	60	{FR3}	{0.0 - rad1}
+Point	70	{FR3}	{-T1}
+Point	80	{FR2}	{-T1}
+Point	90	{FR2}	{-T2}
+Point	100	{FR3}	{-T2}
+Point	110	{FR3}	{-T3}
+
+Line	10	str	10	20	0	{[intv * 0]}
+Line	20	str	20	30	0	{[intv * 0]}
+Line	30	str	30	40	0	{[intv * 3]}
+Line	40	str	40	50	0	{[intv * 0]}
+Line	50	circ	50	60	-1	{[intv * 0]}
+Line	60	str	60	70	0	{[intv * 0]}
+Line	70	str	70	80	0	{[intv * 0]}
+Line	80	str	80	90	0	{[intv * 0]}
+Line	90	str	90	100	0	{[intv * 0]}
+Line	100	str	100	110	0	{[intv * 0]}
+Line	110	str	110	10	0	{[intv * 4]}
+
+Region	10 {FireSet} -10 -20 -30 -40 -50 -60 -70 -80 -90 -100 -110 
+
+Point	200	{FR2}	{-T2}
+Point	210	{FR2}	{-T4}
+Point	215	{FR2 - (1-.1) * tapeW}	{-T4}
+Point	220	{FR2 - tapeW}	{-T4}
+Point	225	{FR2 - tapeW}	{-T4-.1 * tapeW}
+Point	230	{FR2 - tapeW}	{-T2}
+
+Line	200	str	200	210	0	{[intv * 6]}
+Line	210	str	210	215	0	{[intv * 3]}
+Line	215	str	215	225	0	{[intv * 1]}
+Line	220	str	225	230	0	{[intv * 6]}
+Line	230	str	230	200	0	{[intv * 4]}
+
+Region	20	{TapeJoint}	-200 -210 -215 -220 -230
+
+Point	310	{R4}	{-T10}
+Point	320	{R4}	{-(T3 + rad2)}
+Point	330	{R4 + rad2}	{-T3}
+Point	340	{R5}	{-T3}
+Point	350	{R5}	{-T5}
+Point	360	{R6}	{-T5}
+Point	370	{R6}	{-T4}
+Point	375	{R5-.1*tapeW}	{-T4}
+Point	380	{R5}	{-T4}
+Point	385	{R5}	{-T4+.1*tapeW}
+Point	390	{R5}	{0.0 - rad1}
+Point	400	{R5 - rad1}	{0.0}
+Point	410	{R3}	{0.0}
+Point	420	{R3}	{-T7}
+Point	430	{R3}	{-T8}
+Point	440	{R3}	{-T6}
+Point	450	{R2}	{-T6}
+Point	460	{R2}	{-T10}
+
+Line	310	str	310	320	0	{[intv * 0]}
+Line	320	circ	320	330	-2	{[intv * 4]}
+Line	330	str	330	340	0	{[intv * 2]}
+Line	340	str	340	350	0	{[intv * 0]}
+Line	350	str	350	360	0	{[intv * 0]}
+Line	360	str	360	370	0	{[intv * 0]}
+Line	370	str	370	375	0	{[intv * 0]}
+Line	375	str	375	385	0	{[intv * 0]}
+Line	380	str	385	390	0	{[intv * 0]}
+Line	390	circ	390	400	1	{[intv * 0]}
+Line	400	str	400	410	0	{[intv * 0]}
+Line	410	str	410	420	0	{[intv * 0]}
+Line	420	str	420	430	0	{[intv * 0]}
+Line	430	str	430	440	0	{[intv * 4]}
+Line	440	str	440	450	0	{[intv * 5]}
+Line	450	str	450	460	0	{[intv * 7]}
+Line	460	str	460	310	0	{[intv * 4]}
+
+Region	30	{Case_}	-310 -320 -330 -340 -350 -360 -370 -375 -380 -390 -400 -410 -420 -430 -440 -450 -460
+
+Point	610	{R7}	{-T8}
+Point	620	{R7}	{-T7}
+Point	600	{R1}	{-T8}
+Point	650	{R1}	{-T10}
+
+Line	599	str	430	600	0	{[intv * 0]}
+Line	600	str	600	610	0	{[intv * 0]}
+Line	610	str	610	620	0	{[intv * 0]}
+Line	620	str	620	420	0	{[intv * 0]}
+Line	640	str	600	650	0	{[intv * 0]}
+Line	650	str	650	460	0	{[intv * 2]}
+
+Region	60	{Ring}	-599 -600 -610 -620 -420
+Region  61	{Ring}	-599 -640 -650 -450 -440 -430
+
+NodeBC	10	460 650
+NodeBC	 1	520
+NodeBC	11	30
+
+SideBC	10	40 50 60 70 80 90 100 110 
+
+SideBC	20	200 210 215 220 230
+
+SideBC	30	340 350 360 370 375 380 390 400 410 620 610
+
+$ SideBC	61	620	610
+
+SideBC	100	10 
+
+$ {size = .025}
+Size	{size}	10
+Size	{size}	20
+Size	{size}	30
+Size	{size}	50
+Size	{2*size}	60
+Size	{2*size}	61
+
+Scheme	10	x4s
+Scheme	20	m
+Scheme	30	x4s
+Scheme	50	x4s
+Scheme	60	x4s
+Scheme	61	x4s
