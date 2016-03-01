@@ -94,25 +94,32 @@ namespace {
   void check_for_duplicate_names(const Ioss::Region *region, const Ioss::GroupingEntity *entity)
   {
     std::string name = entity->name();
-    const Ioss::GroupingEntity *old_ge = region->get_entity(name);
 
-    if (old_ge != nullptr && !(old_ge->type() == Ioss::SIDEBLOCK || old_ge->type() == Ioss::SIDESET)) {
-      std::string filename = region->get_database()->get_filename();
-      std::ostringstream errmsg;
-      int64_t id1 = 0;
-      int64_t id2 = 0;
-      if (entity->property_exists("id")) {
-	id1 = entity->get_property("id").get_int();
+    // See if any alias with this name...
+    std::string alias = region->get_alias(name);
+
+    if (!alias.empty()) {
+      // There is an entity with this name...
+      const Ioss::GroupingEntity *old_ge = region->get_entity(name);
+
+      if (old_ge != nullptr && !(old_ge->type() == Ioss::SIDEBLOCK || old_ge->type() == Ioss::SIDESET)) {
+	std::string filename = region->get_database()->get_filename();
+	std::ostringstream errmsg;
+	int64_t id1 = 0;
+	int64_t id2 = 0;
+	if (entity->property_exists("id")) {
+	  id1 = entity->get_property("id").get_int();
+	}
+	if (old_ge->property_exists("id")) {
+	  id2 = old_ge->get_property("id").get_int();
+	}
+	errmsg << "ERROR: There are multiple blocks or sets with the same name "
+	       << "defined in the exodus file '" << filename << "'.\n"
+	       << "\tBoth " << entity->type_string() << " " << id1
+	       << " and " << old_ge->type_string() << " " << id2
+	       << " are named '" << name << "'.  All names must be unique.";
+	IOSS_ERROR(errmsg);
       }
-      if (old_ge->property_exists("id")) {
-	id2 = old_ge->get_property("id").get_int();
-      }
-      errmsg << "ERROR: There are multiple blocks or sets with the same name "
-	     << "defined in the exodus file '" << filename << "'.\n"
-	     << "\tBoth " << entity->type_string() << " " << id1
-	     << " and " << old_ge->type_string() << " " << id2
-	     << " are named '" << name << "'.  All names must be unique.";
-      IOSS_ERROR(errmsg);
     }
   }
 }
@@ -1078,9 +1085,11 @@ namespace Ioss {
   NodeBlock*    Region::get_node_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     NodeBlock *ge = nullptr;
     for (auto nb : nodeBlocks) {
-      if (nb->name() == db_name) {
+      if (db_hash == nb->hash() && nb->name() == db_name) {
 	ge = nb;
 	break;
       }
@@ -1091,9 +1100,11 @@ namespace Ioss {
   EdgeBlock*    Region::get_edge_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     EdgeBlock *ge = nullptr;
     for (auto eb : edgeBlocks) {
-      if (eb->name() == db_name) {
+      if (db_hash == eb->hash() && eb->name() == db_name) {
 	ge = eb;
 	break;
       }
@@ -1104,9 +1115,11 @@ namespace Ioss {
   FaceBlock*    Region::get_face_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     FaceBlock *ge = nullptr;
     for (auto fb : faceBlocks) {
-      if (fb->name() == db_name) {
+      if (db_hash == fb->hash() && fb->name() == db_name) {
 	ge = fb;
 	break;
       }
@@ -1132,9 +1145,11 @@ namespace Ioss {
   SideSet* Region::get_sideset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     SideSet *ge = nullptr;
     for (auto ss : sideSets) {
-      if (ss->name() == db_name) {
+      if (db_hash == ss->hash() && ss->name() == db_name) {
 	ge = ss;
 	break;
       }
@@ -1149,7 +1164,7 @@ namespace Ioss {
       ge = ss->get_side_block(my_name);
       if (ge != nullptr) {
 	break;
-}
+      }
     }
     return ge;
   }
@@ -1157,9 +1172,11 @@ namespace Ioss {
   NodeSet* Region::get_nodeset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     NodeSet *ge = nullptr;
     for (auto ns : nodeSets) {
-      if (ns->name() == db_name) {
+      if (db_hash == ns->hash() && ns->name() == db_name) {
 	ge = ns;
 	break;
       }
@@ -1170,9 +1187,11 @@ namespace Ioss {
   EdgeSet* Region::get_edgeset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     EdgeSet *ge = nullptr;
     for (auto es : edgeSets) {
-      if (es->name() == db_name) {
+      if (db_hash == es->hash() && es->name() == db_name) {
 	ge = es;
 	break;
       }
@@ -1183,9 +1202,11 @@ namespace Ioss {
   FaceSet* Region::get_faceset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     FaceSet *ge = nullptr;
     for (auto fs : faceSets) {
-      if (fs->name() == db_name) {
+      if (db_hash == fs->hash() && fs->name() == db_name) {
 	ge = fs;
 	break;
       }
@@ -1196,9 +1217,11 @@ namespace Ioss {
   ElementSet* Region::get_elementset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     ElementSet *ge = nullptr;
     for (auto es : elementSets) {
-      if (es->name() == db_name) {
+      if (db_hash == es->hash() && es->name() == db_name) {
 	ge = es;
 	break;
       }
@@ -1209,9 +1232,11 @@ namespace Ioss {
   CommSet* Region::get_commset(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+
     CommSet *ge = nullptr;
     for (auto cs : commSets) {
-      if (cs->name() == db_name) {
+      if (db_hash == cs->hash() && cs->name() == db_name) {
 	ge = cs;
 	break;
       }
