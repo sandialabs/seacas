@@ -1117,9 +1117,11 @@ namespace Ioss {
   ElementBlock* Region::get_element_block(const std::string& my_name) const
   {
     const std::string db_name = get_alias(my_name);
+    unsigned int db_hash = Ioss::Utils::hash(db_name);
+    
     ElementBlock *ge = nullptr;
     for (auto eb : elementBlocks) {
-      if (eb->name() == db_name) {
+      if (db_hash == eb->hash() && eb->name() == db_name) {
 	ge = eb;
 	break;
       }
