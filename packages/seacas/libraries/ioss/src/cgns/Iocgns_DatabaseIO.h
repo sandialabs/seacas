@@ -155,10 +155,12 @@ namespace Iocgns {
 
     mutable int cgnsFilePtr;
 
+#if defined(EXPERIMENTAL_CGNS)
 #ifdef HAVE_MPI
     mutable DecompositionDataBase      *decomp;
     mutable DecompositionData<int>     *decomp32;
     mutable DecompositionData<int64_t> *decomp64;
+#endif
 #endif
     
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.

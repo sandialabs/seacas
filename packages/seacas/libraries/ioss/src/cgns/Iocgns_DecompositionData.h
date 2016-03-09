@@ -138,7 +138,7 @@ namespace Iocgns {
       nodeCount(0), nodeOffset(0), importPreLocalNodeIndex(0)
       {}
 
-      virtual ~DecompositionDataBase() = default;
+      virtual ~DecompositionDataBase() {}
       virtual void decompose_model(int cgnsFilePtr) = 0;
 
       MPI_Comm comm_;
@@ -174,7 +174,7 @@ namespace Iocgns {
   public:
     DecompositionData(const Ioss::PropertyManager &props,
 		      MPI_Comm communicator);
-    ~DecompositionData() = default;
+    ~DecompositionData() {}
 
     void decompose_model(int cgnsFilePtr);
 
