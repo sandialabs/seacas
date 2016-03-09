@@ -1,3 +1,5 @@
+#if defined(EXPERIMENTAL_CGNS)
+
 #include <cgns/Iocgns_DecompositionData.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
@@ -1261,3 +1263,4 @@ namespace Iocgns {
 
 }
 
+#endif
