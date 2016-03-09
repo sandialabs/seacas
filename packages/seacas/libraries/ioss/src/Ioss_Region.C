@@ -933,28 +933,31 @@ namespace Ioss {
   {
     // See if an entity with this name already exists...
     std::string db_name = ge->name();
-    const GroupingEntity *old_ge = get_entity(db_name);
-    if (old_ge != nullptr && ge != old_ge) {
-      if (!((old_ge->type() == SIDEBLOCK &&     ge->type() == SIDESET) ||
-      (    ge->type() == SIDEBLOCK && old_ge->type() == SIDESET))) {
-	ssize_t old_id = -1;
-	ssize_t new_id = -1;
-	if (old_ge->property_exists(id_str())) {
-	  old_id = old_ge->get_property(id_str()).get_int();
-	}
-	if (ge->property_exists(id_str())) {
-	  new_id = ge->get_property(id_str()).get_int();
-	}
+    std::string alias = get_alias(db_name);
+
+    if (!alias.empty()) {
+      const GroupingEntity *old_ge = get_entity(db_name);
+      if (old_ge != nullptr && ge != old_ge) {
+	if (!((old_ge->type() == SIDEBLOCK &&     ge->type() == SIDESET) ||
+	      (    ge->type() == SIDEBLOCK && old_ge->type() == SIDESET))) {
+	  ssize_t old_id = -1;
+	  ssize_t new_id = -1;
+	  if (old_ge->property_exists(id_str())) {
+	    old_id = old_ge->get_property(id_str()).get_int();
+	  }
+	  if (ge->property_exists(id_str())) {
+	    new_id = ge->get_property(id_str()).get_int();
+	  }
       
-	std::ostringstream errmsg;
-	errmsg << "\n\nERROR: Duplicate names detected.\n       The name '" << db_name << "' was found for both "
-	       << old_ge->type_string() << " " << old_id << " and "
-	       << ge->type_string() << " " << new_id
-	       << ".\n       Names must be unique over all types in a finite element model.\n\n";
-	IOSS_ERROR(errmsg);
+	  std::ostringstream errmsg;
+	  errmsg << "\n\nERROR: Duplicate names detected.\n       The name '" << db_name << "' was found for both "
+		 << old_ge->type_string() << " " << old_id << " and "
+		 << ge->type_string() << " " << new_id
+		 << ".\n       Names must be unique over all types in a finite element model.\n\n";
+	  IOSS_ERROR(errmsg);
+	}
       }
     }
-
     bool success = add_alias(db_name, db_name);
 
     // "db_name" property is used with the canonical name setting.
@@ -977,22 +980,22 @@ namespace Ioss {
     std::string canon = db_name;
     if (db_name != alias) {
       canon = get_alias(db_name);
-}
+    }
       
     if (!canon.empty()) {
       std::string uname = uppercase(alias);
       if (uname != alias) {
 	aliases_.insert(std::make_pair(uname, canon));
-}
+      }
 
       std::pair<AliasMap::iterator, bool> result = aliases_.insert(std::make_pair(alias, canon));
       return result.second;
     } 
-	std::ostringstream errmsg;
-	errmsg << "\n\nERROR: The entity named '" << db_name << "' which is being aliased to '" << alias
-	       << "' does not exist in region '" << name() << "'.\n";
-	IOSS_ERROR(errmsg);
-	return false;
+    std::ostringstream errmsg;
+    errmsg << "\n\nERROR: The entity named '" << db_name << "' which is being aliased to '" << alias
+	   << "' does not exist in region '" << name() << "'.\n";
+    IOSS_ERROR(errmsg);
+    return false;
     
   }
 
