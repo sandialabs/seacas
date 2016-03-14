@@ -86,6 +86,7 @@ int ex_get_block_param( int exoid,
     exerrval = EX_BADFILEID;
     sprintf(errmsg,"Error: unknown file id %d in ex_get_block_param().",exoid);
     ex_err("ex_get_block_param",errmsg,exerrval);
+    return (EX_FATAL);
   }
   
   exerrval = 0;
@@ -107,7 +108,6 @@ int ex_get_block_param( int exoid,
 	      ex_name_of_object(block->type), block->id,exoid);
       ex_err("ex_get_block_param",errmsg,exerrval);
       return (EX_FATAL);
-    
   }
 
   switch (block->type) {
