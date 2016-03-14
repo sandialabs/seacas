@@ -47,7 +47,7 @@
 #include <stddef.h>                     /* for size_t */
 #include <stdio.h>                      /* for sprintf, NULL, fprintf, etc */
 #include <stdlib.h>                     /* for free, calloc, malloc, etc */
-#include <string.h>                     /* for strcpy, strlen */
+#include <string.h>                     /* for strlen */
 #include <sys/types.h>                  /* for int64_t */
 
 #include "exodusII.h"                   /* for exerrval, ex_err, etc */
