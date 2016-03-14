@@ -182,9 +182,9 @@ sudo apt-get update
 ```
 and then
 ```
-sudo apt-get install seacas
+sudo apt-get install seacas-bin
 ```
-to get SEACAS. This is provided by Nico Schlömer.
+to get the SEACAS binaries. You can also install 'libseacas-dev' or 'libseacas0'. This is provided by Nico Schlömer.
 
 ## Contact information
 
