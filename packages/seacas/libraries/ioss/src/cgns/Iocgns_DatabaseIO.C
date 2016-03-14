@@ -258,6 +258,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
+#if defined(EXPERIMENTAL_CGNS)
 #ifdef HAVE_MPI
     if (int_byte_size_api() == 8) {
       decomp64 = new DecompositionData<int64_t>(properties, util().communicator());
@@ -272,7 +273,7 @@ namespace Iocgns {
     if (isParallel)
       exit(0);
 #endif
-    
+#endif    
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
