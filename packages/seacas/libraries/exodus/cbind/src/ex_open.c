@@ -332,7 +332,7 @@ int ex_open_int (const char  *path,
   if (ex_find_file_item(exoid) != NULL) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg,"Error: There is an existing file already using the file id %d which was also assigned to file %s. Was nc_close() called instead of ex_close() on an open Exodus file?\n", exoid, path);
+    sprintf(errmsg,"ERROR: There is an existing file already using the file id %d which was also assigned to file %s.\n\tWas nc_close() called instead of ex_close() on an open Exodus file?\n", exoid, path);
     ex_err("ex_open",errmsg,exerrval);
     return (EX_FATAL);
   }
