@@ -270,8 +270,6 @@ namespace Iocgns {
     assert(decomp != nullptr);
     decomp->decompose_model(cgnsFilePtr);
 
-    if (isParallel)
-      exit(0);
 #endif
 #endif    
     // ========================================================================
@@ -327,65 +325,67 @@ namespace Iocgns {
 	m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
 	
 	// Determine number of "shared" nodes (shared with other zones)
-	int nconn = 0;
-	cg_nconns(cgnsFilePtr, base, zone, &nconn);
-	cgsize_t num_shared = 0;
-	for (int i=0; i < nconn; i++) {
-	  char connectname[33];
-	  CG_GridLocation_t location;
-	  CG_GridConnectivityType_t connect_type;
-	  CG_PointSetType_t ptset_type;
-	  cgsize_t npnts = 0;
-	  char donorname[33];
-	  CG_ZoneType_t donor_zonetype;
-	  CG_PointSetType_t donor_ptset_type;
-	  CG_DataType_t donor_datatype;
-	  cgsize_t ndata_donor;
+	if (zone > 1) {
+	  int nconn = 0;
+	  cg_nconns(cgnsFilePtr, base, zone, &nconn);
+	  cgsize_t num_shared = 0;
+	  for (int i=0; i < nconn; i++) {
+	    char connectname[33];
+	    CG_GridLocation_t location;
+	    CG_GridConnectivityType_t connect_type;
+	    CG_PointSetType_t ptset_type;
+	    cgsize_t npnts = 0;
+	    char donorname[33];
+	    CG_ZoneType_t donor_zonetype;
+	    CG_PointSetType_t donor_ptset_type;
+	    CG_DataType_t donor_datatype;
+	    cgsize_t ndata_donor;
 	  
-	  cg_conn_info(cgnsFilePtr, base, zone, i+1, connectname,
-		       &location, &connect_type,
-		       &ptset_type, &npnts, donorname,
-		       &donor_zonetype, &donor_ptset_type,
-		       &donor_datatype, &ndata_donor);
+	    cg_conn_info(cgnsFilePtr, base, zone, i+1, connectname,
+			 &location, &connect_type,
+			 &ptset_type, &npnts, donorname,
+			 &donor_zonetype, &donor_ptset_type,
+			 &donor_datatype, &ndata_donor);
 
-	  if (connect_type != CG_Abutting1to1 ||
-	      ptset_type != CG_PointList ||
-	      donor_ptset_type != CG_PointListDonor) {
-	    std::ostringstream errmsg;
-	    errmsg << "ERROR: CGNS: Zone " << zone
-		   << " adjacency data is not correct type. Require Abutting1to1 and PointList."
-		   << connect_type << "\t" << ptset_type << "\t" << donor_ptset_type;
-	    IOSS_ERROR(errmsg);
-	  }
+	    if (connect_type != CG_Abutting1to1 ||
+		ptset_type != CG_PointList ||
+		donor_ptset_type != CG_PointListDonor) {
+	      std::ostringstream errmsg;
+	      errmsg << "ERROR: CGNS: Zone " << zone
+		     << " adjacency data is not correct type. Require Abutting1to1 and PointList."
+		     << connect_type << "\t" << ptset_type << "\t" << donor_ptset_type;
+	      IOSS_ERROR(errmsg);
+	    }
 
-	  // Verify data consistency...
-	  if (npnts != ndata_donor) {
-	    std::ostringstream errmsg;
-	    errmsg << "ERROR: CGNS: Zone " << zone
-		   << " point count (" << npnts << ") does not match donor point count (" << ndata_donor << ").";
-	    IOSS_ERROR(errmsg);
-	  }
+	    // Verify data consistency...
+	    if (npnts != ndata_donor) {
+	      std::ostringstream errmsg;
+	      errmsg << "ERROR: CGNS: Zone " << zone
+		     << " point count (" << npnts << ") does not match donor point count (" << ndata_donor << ").";
+	      IOSS_ERROR(errmsg);
+	    }
 
-	  // Get number of nodes shared with other "previous" zones...
-	  // A "previous" zone will have a lower zone number this this zone...
-	  auto donor_iter = m_zoneNameMap.find(donorname);
-	  if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
-	    num_shared += npnts;
-	    std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname << "\n";
+	    // Get number of nodes shared with other "previous" zones...
+	    // A "previous" zone will have a lower zone number this this zone...
+	    auto donor_iter = m_zoneNameMap.find(donorname);
+	    if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
+	      num_shared += npnts;
+	      std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname << "\n";
 
-	    std::vector<cgsize_t> points(npnts);
-	    std::vector<cgsize_t> donors(npnts);
+	      std::vector<cgsize_t> points(npnts);
+	      std::vector<cgsize_t> donors(npnts);
 
-	    cg_conn_read(cgnsFilePtr, base, zone, i+1, TOPTR(points),
-			 donor_datatype, TOPTR(donors));
+	      cg_conn_read(cgnsFilePtr, base, zone, i+1, TOPTR(points),
+			   donor_datatype, TOPTR(donors));
 	    
-	    // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-	    auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-	    auto &block_map = m_blockLocalNodeMap[zone];
-	    for (int j = 0; j < npnts; j++) {
-	      cgsize_t point = points[j];
-	      cgsize_t donor = donors[j];
-	      block_map[point-1] = donor_map[donor-1];
+	      // Fill in entries in m_blockLocalNodeMap for the shared nodes...
+	      auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+	      auto &block_map = m_blockLocalNodeMap[zone];
+	      for (int j = 0; j < npnts; j++) {
+		cgsize_t point = points[j];
+		cgsize_t donor = donors[j];
+		block_map[point-1] = donor_map[donor-1];
+	      }
 	    }
 	  }
 	}
@@ -566,7 +566,7 @@ namespace Iocgns {
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	  }
 
 	  // Map to global coordinate position...
 	  for (cgsize_t i=0; i < num_coord; i++) {
@@ -586,7 +586,7 @@ namespace Iocgns {
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	  }
 
 	  // Map to global coordinate position...
 	  for (cgsize_t i=0; i < num_coord; i++) {
@@ -616,7 +616,7 @@ namespace Iocgns {
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	  }
 
 	  // Map to global coordinate position...
 	  for (cgsize_t i=0; i < num_coord; i++) {
@@ -627,7 +627,7 @@ namespace Iocgns {
 			       &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	  }
 
 	  // Map to global coordinate position...
 	  for (cgsize_t i=0; i < num_coord; i++) {
@@ -638,7 +638,7 @@ namespace Iocgns {
 			       &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	  }
 
 	  // Map to global coordinate position...
 	  for (cgsize_t i=0; i < num_coord; i++) {
@@ -706,7 +706,7 @@ namespace Iocgns {
 					idata, nullptr);
 	    if (ierr < 0) {
 	      cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	    }
 	  }
 
 	  // Now need to map block-local node connectivity to global nodes...
@@ -723,7 +723,7 @@ namespace Iocgns {
 					(cgsize_t*)data, nullptr);
 	    if (ierr < 0) {
 	      cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	    }
 	  }
 	}
 	else if (field.get_name() == "ids") {
@@ -821,7 +821,7 @@ namespace Iocgns {
 				    TOPTR(elements), TOPTR(parent));
 	if (ierr < 0) {
 	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-}
+	}
 
 	size_t offset = m_zoneOffset[zone];
 	if (field.get_type() == Ioss::Field::INT32) {
