@@ -14,4 +14,4 @@ CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
 SHARED="--enable-shared"
 
-./configure --with-hdf5=${ACCESS} --enable-mat73 ${SHARED} --prefix ${ACCESS} $1
+./configure --with-hdf5=${ACCESS} --enable-mat73 ${SHARED} --prefix=${ACCESS} $1
