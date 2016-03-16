@@ -277,7 +277,7 @@ if ( HDF5_NO_SYSTEM_PATHS )
 endif()
 
 # A list of valid components
-set(HDF5_VALID_COMPONENTS HL C CXX)
+set(HDF5_VALID_COMPONENTS HL C)
 
 # A list of requested components, invalid components are ignored.
 if ( NOT HDF5_FIND_COMPONENTS )
@@ -307,7 +307,6 @@ else()
   # --- Target names used in both the CMake configure files
   #     and here to create targets
   set( HDF5_C_TARGET hdf5 )
-  set( HDF5_CXX_TARGET hdf5_cpp )
   set( HDF5_HL_TARGET hdf5_hl )
 
   # ------------------------------------------------------ #
@@ -423,21 +422,6 @@ else()
 
     # --- Search for the other possible compnent libraries
 
-    # Search for the C++ (CXX) library
-    find_library(_HDF5_CXX_LIBRARY
-                 NAMES hdf5_cpp
-                 HINTS ${_hdf5_LIBRARY_SEARCH_DIRS}
-                 ${_hdf5_FIND_OPTIONS})
-
-    # CXX Library
-    if ( _HDF5_CXX_LIBRARY )
-      add_imported_library(${HDF5_CXX_TARGET}
-                   LOCATION ${_HDF5_CXX_LIBRARY}
-                   LINK_LANGUAGES "CXX"
-                   LINK_INTERFACE_LIBRARIES "${HDF5_C_TARGET}")
-      set(HDF5_CXX_LIBRARY ${HDF5_CXX_TARGET})
-    endif() 
-      
     # Search for the high-level (HL) library
     find_library(_HDF5_HL_LIBRARY
                  NAMES hdf5_hl
@@ -466,8 +450,7 @@ else()
     # Define the HDF5_LIBRARIES variable
     set(HDF5_LIBRARY_TARGETS
         ${HDF5_HL_LIBRARY}
-        ${HDF5_C_LIBRARY}
-	${HDF5_CXX_LIBRARY})
+        ${HDF5_C_LIBRARY})
 
     # Define the HDF5_C_LIBRARIES variable
     set(HDF5_C_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_C_LIBRARY})
