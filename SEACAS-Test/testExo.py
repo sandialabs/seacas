@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from optparse import OptionParser
 import sys
 import os
 module_dir = os.path.dirname(os.path.realpath(__file__))
