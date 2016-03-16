@@ -200,22 +200,63 @@ def ex_entity_type(varType):
   # none found, must be invalid`
   return -1 ##EX_INVALID
 
+# init params struct
+class ex_init_params(Structure):
+    """
+    Parameters defining the model dimension, note that many are optional.
+    
+    <int>     num_dim        number of model dimensions
+    <int>     num_nodes      number of model nodes
+    <int>     num_edge       number of model edges
+    <int>     num_edge_blk   number of model edge blocks
+    <int>     num_face       number of model faces
+    <int>     num_face_blk   number of model face blocks
+    <int>     num_elem       number of model elements
+    <int>     num_elem_blk   number of model element blocks
+    <int>     num_node_sets  number of model node sets
+    <int>     num_edge_sets  number of model edge sets
+    <int>     num_face_sets  number of model face sets
+    <int>     num_side_sets  number of model side sets
+    <int>     num_elem_sets  number of model elem sets
+    <int>     num_node_maps  number of model node maps
+    <int>     num_edge_maps  number of model edge maps
+    <int>     num_face_maps  number of model face maps
+    <int>     num_elem_maps  number of model elem maps
+    """
+    _fields_ = [("title", c_char*(MAX_LINE_LENGTH+1)),
+                ("num_dim", c_longlong),
+                ("num_nodes", c_longlong),
+                ("num_edge", c_longlong),
+                ("num_edge_blk", c_longlong),
+                ("num_face", c_longlong),
+                ("num_face_blk", c_longlong),
+                ("num_elem", c_longlong),
+                ("num_elem_blk", c_longlong),
+                ("num_node_sets", c_longlong),
+                ("num_edge_sets", c_longlong),
+                ("num_face_sets", c_longlong),
+                ("num_side_sets", c_longlong),
+                ("num_elem_sets", c_longlong),
+                ("num_node_maps", c_longlong),
+                ("num_edge_maps", c_longlong),
+                ("num_face_maps", c_longlong),
+                ("num_elem_maps", c_longlong)]
+
+
 #
 # ----------------------------------------------------------------------
 #
 
 class exodus:
   """
+  ex_pars = ex_init_params(num_dim=numDims,num_nodes=numNodes,
+                           num_elems=numElems, num_elem_blk=numElemBlocks)
+
   exo = exodus(file_name, \\
     mode=mode, \\
     title=title, \\
     array_type=array_type, \\
-    numDims=num_dims, \\
-    numNodes=num_nodes, \\
-    numElems=num_elems, \\
-    numBlocks=num_blocks, \\
-    numNodeSets=num_ns, \\
-    numSideSets=num_ss)
+    init_params=init_params)
 
     -> open exodus database for data insertion/extraction
 
@@ -227,12 +268,9 @@ class exodus:
       <string>  title       database title
       <string>  array_type  'ctype' for c-type arrays,
         'numpy' for numpy arrays
-      <int>     num_dims    number of model dimensions ('w' mode only)
-      <int>     num_nodes   number of model nodes ('w' mode only)
-      <int>     num_elems   number of model elements ('w' mode only)
-      <int>     num_blocks  number of model element blocks ('w' mode only)
-      <int>     num_ns      number of model node sets ('w' mode only)
-      <int>     num_ss      number of model side sets ('w' mode only)
+
+      <ex_init_params>
+                init_params see ex_init_params for more info.
 
     return value(s):
       <exodus>  exo  the open exodus database
@@ -244,8 +282,7 @@ class exodus:
   # --------------------------------------------------------------------
 
   def __init__(self, file, mode=None, array_type='ctype', title=None,
-               numDims=None, numNodes=None, numElems=None, numBlocks=None,
-               numNodeSets=None, numSideSets=None, io_size=0):
+               init_params=None, io_size=0):
     print EXODUS_PY_COPYRIGHT
     if mode == None:
       mode = 'r'
@@ -267,15 +304,36 @@ class exodus:
     self.modeChar = mode
     self.__open(io_size=io_size)
     if mode.lower() == 'w':
-      info = [title, numDims, numNodes, numElems, numBlocks,
-              numNodeSets, numSideSets]
-      assert None not in info
-      self.__ex_put_info(info)
+      assert(init_params is not None)
+      self.init_params = init_params
+      self.put_info_ext(init_params)
       self.numTimes = c_int(0)
     else:
       self.__ex_get_info()
       self.numTimes = c_int(self.__ex_inquire_int(ex_inquiry("EX_INQ_TIME")))
 
+
+  #
+  # build the info struct
+  #
+  # --------------------------------------------------------------------
+
+  def put_info_ext(self,p):
+    """
+      e.put_info_ext(self,info_struct)
+      -> put initialization information into exodus file
+    """
+    self.Title       = create_string_buffer(p.title,MAX_LINE_LENGTH+1)
+    self.numDim      = c_longlong(p.num_dim)
+    self.numNodes    = c_longlong(p.num_nodes)
+    self.numElem     = c_longlong(p.num_elem)
+    self.numElemBlk  = c_longlong(p.num_elem_blk)
+    self.numNodeSets = c_longlong(p.num_node_sets)
+    self.numSideSets = c_longlong(p.num_side_sets)
+
+    EXODUS_LIB.ex_put_init_ext(self.fileId, byref(p))
+    return True
+      
   #
   # copy to a new database
   #
@@ -3077,6 +3135,180 @@ class exodus:
 
   # --------------------------------------------------------------------
 
+  def put_polyhedra_elem_blk(self, blkID,
+                             num_elems_this_blk,
+                             num_faces,
+                             num_attr_per_elem):
+    """
+    status = exo.put_polyhedra_elem_blk(blkID, num_elems_this_blk,
+                                        num_faces, num_attr_per_elem)
+
+      -> put in an element block with polyhedral elements
+
+      input values:
+        <int>     blkID               id of the block to be added
+        <int>     num_elems_this_blk
+        <int>     num_faces  total number of faces in this block
+        <int>     num_attr_per_elem 
+        
+      return value(s):
+        <bool>  status  True = successful execution
+    """
+      
+    ebType = ex_entity_type("EX_ELEM_BLOCK")
+    
+    EXODUS_LIB.ex_put_block(self.fileId,ebType,c_int(blkID),
+                            create_string_buffer("NFACED"),
+                            c_longlong(num_elems_this_blk),
+                            c_longlong(0),
+                            c_longlong(0),
+                            c_longlong(num_faces),
+                            c_longlong(num_attr_per_elem))
+    return True
+
+  # --------------------------------------------------------------------
+  
+  def put_polyhedra_face_blk(self, blkID,
+                             num_faces_this_blk,
+                             num_nodes,
+                             num_attr_per_face):
+    """
+    status = exo.put_polyhedra_face_blk(blkID, num_faces_this_blk,
+                                        num_nodes, num_attr_per_face)
+
+      -> put in a block of faces
+
+      input values:
+        <int>     blkID               id of the block to be added
+        <int>     num_faces_this_blk
+        <int>     num_nodes           total number of nodes in this block
+        <int>     num_attr_per_face 
+        
+      return value(s):
+        <bool>  status  True = successful execution
+    """
+    fbType = ex_entity_type("EX_FACE_BLOCK")
+
+    
+    EXODUS_LIB.ex_put_block(self.fileId,fbType,c_int(blkID),
+                            create_string_buffer("NSIDED"),
+                            c_longlong(num_faces_this_blk),
+                            c_longlong(num_nodes),
+                            c_longlong(0),
+                            c_longlong(0),
+                            c_longlong(num_attr_per_face))
+    return True
+
+  # --------------------------------------------------------------------
+  
+  def put_face_count_per_polyhedra(self,blkID,entityCounts):
+    """
+    status = exo.put_face_count_per_polyhedra(blkID, entityCounts)
+
+      -> put in a count of faces in for each polyhedra in an elem block
+
+      input values:
+        <int>     blkID               id of the block to be added
+
+        if array_type == 'ctype':
+          <list<float>>  entityCounts
+
+        if array_type == 'numpy':
+          <np_array<double>>  entityCounts
+        
+      return value(s):
+        <bool>  status  True = successful execution
+    """
+    ebType = ex_entity_type("EX_ELEM_BLOCK")
+    entity_counts = (c_int * len(entityCounts))()
+    entity_counts[:] = entityCounts
+    EXODUS_LIB.ex_put_entity_count_per_polyhedra(self.fileId,ebType,
+                                                 c_int(blkID),entity_counts)
+    return True
+
+  # --------------------------------------------------------------------
+  
+  def put_node_count_per_face(self,blkID,entityCounts):
+    """
+    status = exo.put_node_count_per_face(blkID, entityCounts)
+
+      -> put in a count of nodes in for each face in a polygonal face block
+
+      input values:
+        <int>     blkID               id of the block to be added
+
+        if array_type == 'ctype':
+          <list<float>>  entityCounts
+
+        if array_type == 'numpy':
+          <np_array<double>>  entityCounts
+        
+      return value(s):
+        <bool>  status  True = successful execution
+    """
+    ebType = ex_entity_type("EX_FACE_BLOCK")
+    entity_counts = (c_int * len(entityCounts))()
+    entity_counts[:] = entityCounts
+    EXODUS_LIB.ex_put_entity_count_per_polyhedra(self.fileId,ebType,
+                                                 c_int(blkID),entity_counts)
+    return True
+  
+  # --------------------------------------------------------------------
+
+  def put_elem_face_conn(self,blkId,elemFaceConn):
+    """
+    status = exo.put_elem_face_conn(blkID, elemFaceConn)
+
+      -> put in connectivity information from elems to faces
+
+      input values:
+        <int>     blkID               id of the elem block to be added
+
+        if array_type == 'ctype':
+          <list<float>>  elemFaceConn  (raveled/flat list)
+
+        if array_type == 'numpy':
+          <np_array<double>>  elemFaceConn  (raveled/flat array)
+        
+      return value(s):
+        <bool>  status  True = successful execution
+    """
+    ebType = ex_entity_type("EX_ELEM_BLOCK")
+    elem_face_conn = (c_int * len(elemFaceConn))()
+    elem_face_conn[:] = elemFaceConn
+    EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_int(blkId),
+                           None, None, elem_face_conn)
+    return True
+
+  # --------------------------------------------------------------------
+  
+  def put_face_node_conn(self,blkId,faceNodeConn):
+    """
+    status = exo.put_face_node_conn(blkID, faceNodeConn)
+
+      -> put in connectivity information from faces to nodes
+
+      input values:
+        <int>     blkID               id of the face block to be added
+
+        if array_type == 'ctype':
+          <list<float>>  faceNodeConn  (raveled/flat list)
+
+        if array_type == 'numpy':
+          <np_array<double>>  faceNodeConn  (raveled/flat array)
+        
+      return value(s):
+        <bool>  status  True = successful execution
+    """
+    ebType = ex_entity_type("EX_FACE_BLOCK")
+    node_conn = (c_int * len(faceNodeConn))()
+    node_conn[:] = faceNodeConn
+    EXODUS_LIB.ex_put_conn(self.fileId, ebType, c_int(blkId),
+                           node_conn, None, None)
+    return True
+
+  # --------------------------------------------------------------------
+  
   def close(self):
     """
     exo.close()
@@ -4078,7 +4310,9 @@ class exodus:
     EXODUS_LIB.ex_update(self.fileId)
     return True
 
-# --------------------------------------------------------------------
+
+  
+  # --------------------------------------------------------------------
 # Utility Functions
 # --------------------------------------------------------------------
 
