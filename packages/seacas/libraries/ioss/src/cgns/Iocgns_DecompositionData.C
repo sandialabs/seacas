@@ -26,6 +26,14 @@ namespace {
     IOSS_ERROR(errmsg);
   }
 
+  void check_dynamic_cast(const void *ptr)
+  {
+    if (ptr == nullptr) {
+      std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
+      exit(EXIT_FAILURE);
+    }
+  }
+
   template <typename T>
   void uniquify(std::vector<T> &vec)
   {
@@ -156,9 +164,11 @@ namespace {
 #endif
 
   template <typename INT> 
-  void get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
-                       std::vector<INT> &dist, size_t *offset, size_t *count)
+  std::vector<INT> get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
+				   size_t *offset, size_t *count)
   {
+    std::vector<INT> dist(proc_count+1);
+    
     size_t per_proc = entity_count / proc_count;
     size_t extra    = entity_count % proc_count;
 
@@ -182,6 +192,7 @@ namespace {
       if (i < extra) sum++;
     }
     dist[proc_count] = sum;
+    return dist;
   }
 }
 
@@ -258,6 +269,7 @@ namespace Iocgns {
     }
 
     cg_nzones(cgnsFilePtr, base, &num_zones);
+    zones_.resize(num_zones+1); // Use 1-based zones.
     
     for (int zone=1; zone <= num_zones; zone++) {
       CG_ZoneType_t zone_type;
@@ -274,9 +286,15 @@ namespace Iocgns {
 	cgsize_t size[3];
 	char zone_name[33];
 	cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+
 	
 	INT total_block_nodes = size[0];
 	INT total_block_elem  = size[1];
+
+	zones_[zone].m_nodeCount = total_block_nodes;
+	zones_[zone].m_nodeOffset = globalNodeCount;
+	zones_[zone].m_name = zone_name;
+	
 	globalNodeCount += total_block_nodes;
 	globalElementCount += total_block_elem;
       }
@@ -284,13 +302,12 @@ namespace Iocgns {
 
     // Generate element_dist/node_dist --  size proc_count + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
-    std::vector<INT> element_dist(processorCount+1);
-    std::vector<INT> node_dist(processorCount+1);
+    std::vector<INT> element_dist = get_entity_dist<INT>(processorCount, myProcessor, globalElementCount,
+							 &elementOffset, &elementCount);
 
-    get_entity_dist(processorCount, myProcessor, globalElementCount,
-                    element_dist, &elementOffset, &elementCount);
-    get_entity_dist(processorCount, myProcessor, globalNodeCount,
-                    node_dist,    &nodeOffset,    &nodeCount);
+    // Does not yet take into account shared nodes at zone boundaries.
+    std::vector<INT> node_dist = get_entity_dist<INT>(processorCount, myProcessor, globalNodeCount,
+						      &nodeOffset,    &nodeCount);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " has "
@@ -303,6 +320,23 @@ namespace Iocgns {
     std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
     generate_adjacency_list(cgnsFilePtr, pointer, adjacency);
 
+    // Get min and max node used on this processor...
+    auto min_max = std::minmax_element(adjacency.begin(), adjacency.end());
+    INT min_node = *(min_max.first);
+    INT max_node = *(min_max.second);
+    generate_zone_shared_nodes(cgnsFilePtr, min_node, max_node);
+    
+    // Now iterate adjacency list and update any "zone_shared_node" nodes
+    // with their "sharee"
+    if (!zone_shared_map.empty()) {
+      for (auto &node : adjacency) {
+	auto alias = zone_shared_map.find(node);
+	if (alias != zone_shared_map.end()) {
+	  node = (*alias).second;
+	}
+      }
+    }
+
     std::string method = "LINEAR";
 
     if (m_properties.exists("DECOMPOSITION_METHOD")) {
@@ -312,12 +346,12 @@ namespace Iocgns {
 
     if (method != "LINEAR"
 #if !defined(NO_ZOLTAN_SUPPORT)
-        && method != "BLOCK"
-        && method != "CYCLIC"
-        && method != "RANDOM"
-        && method != "RCB"
-        && method != "RIB"
-        && method != "HSFC"
+	&& method != "BLOCK"
+	&& method != "CYCLIC"
+	&& method != "RANDOM"
+	&& method != "RCB"
+	&& method != "RIB"
+	&& method != "HSFC"
 #endif
 	) {
       if (myProcessor == 0) {
@@ -325,7 +359,7 @@ namespace Iocgns {
 	errmsg << "ERROR: Invalid decomposition method specified: '" << method << "'\n"
 	       << "       Valid methods: LINEAR"
 #if !defined(NO_ZOLTAN_SUPPORT)
-                 << ", BLOCK, CYCLIC, RANDOM, RCB, RIB, HSFC"
+	       << ", BLOCK, CYCLIC, RANDOM, RCB, RIB, HSFC"
 #endif
 	       << "\n";
 	std::cerr << errmsg.str();
@@ -338,21 +372,21 @@ namespace Iocgns {
 		<< processorCount << " processors.\n\n";
 
     if (method == "RCB" ||
-        method == "RIB" ||
-        method == "HSFC" ||
-        method == "GEOM_KWAY" ||
-        method == "KWAY_GEOM" ||
-        method == "METIS_SFC") {
+	method == "RIB" ||
+	method == "HSFC" ||
+	method == "GEOM_KWAY" ||
+	method == "KWAY_GEOM" ||
+	method == "METIS_SFC") {
       calculate_element_centroids(cgnsFilePtr, pointer, adjacency, node_dist);
     }
 
 #if !defined(NO_ZOLTAN_SUPPORT)
     if (method == "RCB" ||
-        method == "RIB" ||
-        method == "HSFC" ||
-        method == "BLOCK" ||
-        method == "CYCLIC" ||
-        method == "RANDOM") {
+	method == "RIB" ||
+	method == "HSFC" ||
+	method == "BLOCK" ||
+	method == "CYCLIC" ||
+	method == "RANDOM") {
       zoltan_decompose(method);
     }
 #endif
@@ -373,7 +407,7 @@ namespace Iocgns {
     importPreLocalElemIndex = 0;
     for (size_t i=0; i < importElementMap.size(); i++) {
       if ((size_t)importElementMap[i] >= elementOffset)
-        break;
+	break;
       importPreLocalElemIndex++;
     }
 
@@ -389,9 +423,105 @@ namespace Iocgns {
 
   }
 
+
+  template <typename INT>
+  void DecompositionData<INT>::generate_zone_shared_nodes(int cgnsFilePtr, INT min_node, INT max_node)
+  {
+    // Begin of Zone-Shared node information
+
+    // Modify adjacency list based on shared nodes between zones...
+    // Need the map from "global" to "global-shared"
+    // * This is not necessarily nodes only on my processor since connectivity can include
+    //   nodes other than those I own.
+    // * Potentially large number of shared nodes; practically small(?)
+    
+    // * Maintain hash map from old id to new (if any)
+    // * TODO: Determine whether the node is used on this processor...
+
+    int base = 1; // Only single base supported so far.
+
+    // Donor zone is always lower numbered, so zone 1 has no donor zone. Start at zone 2.
+    for (cgsize_t zone=2; zone < (cgsize_t)zones_.size(); zone++) {
+	
+      // Determine number of "shared" nodes (shared with other zones)
+      int nconn = 0;
+      cg_nconns(cgnsFilePtr, base, zone, &nconn);
+      for (int i=0; i < nconn; i++) {
+	char connectname[33];
+	CG_GridLocation_t location;
+	CG_GridConnectivityType_t connect_type;
+	CG_PointSetType_t ptset_type;
+	cgsize_t npnts = 0;
+	char donorname[33];
+	CG_ZoneType_t donor_zonetype;
+	CG_PointSetType_t donor_ptset_type;
+	CG_DataType_t donor_datatype;
+	cgsize_t ndata_donor;
+	  
+	cg_conn_info(cgnsFilePtr, base, zone, i+1, connectname,
+		     &location, &connect_type,
+		     &ptset_type, &npnts, donorname,
+		     &donor_zonetype, &donor_ptset_type,
+		     &donor_datatype, &ndata_donor);
+
+	if (connect_type != CG_Abutting1to1 ||
+	    ptset_type != CG_PointList ||
+	    donor_ptset_type != CG_PointListDonor) {
+	  std::ostringstream errmsg;
+	  errmsg << "ERROR: CGNS: Zone " << zone
+		 << " adjacency data is not correct type. Require Abutting1to1 and PointList."
+		 << connect_type << "\t" << ptset_type << "\t" << donor_ptset_type;
+	  IOSS_ERROR(errmsg);
+	}
+
+	// Verify data consistency...
+	if (npnts != ndata_donor) {
+	  std::ostringstream errmsg;
+	  errmsg << "ERROR: CGNS: Zone " << zone
+		 << " point count (" << npnts << ") does not match donor point count (" << ndata_donor << ").";
+	  IOSS_ERROR(errmsg);
+	}
+
+	// Get number of nodes shared with other "previous" zones...
+	// A "previous" zone will have a lower zone number this this zone...
+	std::string dz_name(donorname);
+	int dz = 1;
+	for ( ; dz < zone; dz++) {
+	  if (zones_[dz].m_name == dz_name) 
+	    break;
+	}
+
+	if (dz != zone) {
+	  std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname << "\n";
+	  
+	  std::vector<cgsize_t> points(npnts);
+	  std::vector<cgsize_t> donors(npnts);
+
+	  cg_conn_read(cgnsFilePtr, base, zone, i+1, TOPTR(points),
+		       donor_datatype, TOPTR(donors));
+	    
+	  for (int j = 0; j < npnts; j++) {
+	    cgsize_t point = points[j] - 1 + zones_[zone].m_nodeOffset;
+	    if (point >= min_node && point <= max_node) {
+	      cgsize_t donor = donors[j] - 1 + zones_[dz].m_nodeOffset;
+
+	      // See if 'donor' is mapped to a different node already
+	      auto donor_map = zone_shared_map.find(donor);
+	      if (donor_map != zone_shared_map.end()) {
+		donor = (*donor_map).second;
+	      }
+	      assert(zone_shared_map.find(point) == zone_shared_map.end());
+	      zone_shared_map.insert({point, donor});
+	    }
+	  }
+	}
+      }
+    }
+  }
+
   template <typename INT>
   void DecompositionData<INT>::simple_decompose(const std::string &method,
-                                                const std::vector<INT> &element_dist)
+						const std::vector<INT> &element_dist)
   {
     if (method == "LINEAR") {
       // The "ioss_decomposition" is the same as the "file_decomposition"
@@ -454,14 +584,14 @@ namespace Iocgns {
 
     // TODO: Check return value for error.
     zz.LB_Partition(changes, num_global, num_local,
-                    num_import, import_global_ids, import_local_ids, import_procs, import_to_part,
-                    num_export, export_global_ids, export_local_ids, export_procs, export_to_part);
+		    num_import, import_global_ids, import_local_ids, import_procs, import_to_part,
+		    num_export, export_global_ids, export_local_ids, export_procs, export_to_part);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << ":\t"
-              << elementCount-num_export << " local, "
-              << num_import                  << " imported and "
-              << num_export                  << " exported elements\n";
+	      << elementCount-num_export << " local, "
+	      << num_import                  << " imported and "
+	      << num_export                  << " exported elements\n";
 #endif
 
     // Don't need centroid data anymore... Free up space
@@ -479,7 +609,7 @@ namespace Iocgns {
       std::vector<std::pair<int,int> > export_map;
       export_map.reserve(num_export);
       for (int i=0; i < num_export; i++) {
-        export_map.push_back(std::make_pair(export_procs[i],export_global_ids[i]));
+	export_map.push_back(std::make_pair(export_procs[i],export_global_ids[i]));
       }
 
       std::sort(export_map.begin(), export_map.end());
@@ -487,20 +617,20 @@ namespace Iocgns {
       exportElementIndex.resize(processorCount+1);
       exportElementCount.resize(processorCount+1);
       for (int i=0; i < num_export; i++) {
-        exportElementMap.push_back(export_map[i].second);
-        exportElementCount[export_map[i].first]++;
+	exportElementMap.push_back(export_map[i].second);
+	exportElementCount[export_map[i].first]++;
       }
 
       for (int i=0; i < num_import; i++) {
-        importElementMap.push_back(import_global_ids[i]);
-        importElementCount[import_procs[i]]++;
+	importElementMap.push_back(import_global_ids[i]);
+	importElementCount[import_procs[i]]++;
       }
     } else {
       std::vector<std::pair<int,int64_t> > export_map;
       export_map.reserve(num_export);
       int64_t *export_glob = (int64_t*)export_global_ids;
       for (int i=0; i < num_export; i++) {
-        export_map.push_back(std::make_pair(export_procs[i],export_glob[i]));
+	export_map.push_back(std::make_pair(export_procs[i],export_glob[i]));
       }
 
       std::sort(export_map.begin(), export_map.end());
@@ -508,14 +638,14 @@ namespace Iocgns {
       exportElementIndex.resize(processorCount+1);
       exportElementCount.resize(processorCount+1);
       for (int i=0; i < num_export; i++) {
-        exportElementMap.push_back(export_map[i].second);
-        exportElementCount[export_map[i].first]++;
+	exportElementMap.push_back(export_map[i].second);
+	exportElementCount[export_map[i].first]++;
       }
 
       int64_t *import_glob = (int64_t*)import_global_ids;
       for (int i=0; i < num_import; i++) {
-        importElementMap.push_back(import_glob[i]);
-        importElementCount[import_procs[i]]++;
+	importElementMap.push_back(import_glob[i]);
+	importElementCount[import_procs[i]]++;
       }
     }
 
@@ -537,25 +667,25 @@ namespace Iocgns {
 
     if (global_id_size == 1) {
       for (size_t i=0; i < export_count; i++) {
-        // flag all elements to be exported...
-        size_t elem = export_global_ids[i];
-        elements[elem-elementOffset] = 1;
+	// flag all elements to be exported...
+	size_t elem = export_global_ids[i];
+	elements[elem-elementOffset] = 1;
       }
     } else {
       assert(global_id_size == 2);
       int64_t *export_glob = (int64_t*)export_global_ids;
 
       for (size_t i=0; i < export_count; i++) {
-        // flag all elements to be exported...
-        size_t elem = export_glob[i];
-        elements[elem-elementOffset] = 1;
+	// flag all elements to be exported...
+	size_t elem = export_glob[i];
+	elements[elem-elementOffset] = 1;
       }
     }
 
     localElementMap.reserve(elementCount - export_count);
     for (size_t i=0; i < elementCount; i++) {
       if (elements[i] == 0) {
-        localElementMap.push_back(i);
+	localElementMap.push_back(i);
       }
     }
   }
@@ -628,6 +758,7 @@ namespace Iocgns {
 	  BlockDecompositionData block;
 	  block.zone_ = zone;
 	  block.section_ = is;
+	  block.name_ = zone_name;
 	  block.topologyType = e_type;
 	  block.nodesPerEntity = element_nodes;
 	  block.fileCount = num_entity;
@@ -656,9 +787,9 @@ namespace Iocgns {
     if ((size_t)tmp_sum != sum) {
       std::ostringstream errmsg;
       errmsg << "ERROR: The decomposition of this mesh requires 64-bit integers, but is being\n"
-             << "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
-             << "       set to 8. The details of how to do this vary with the code that is being run.\n"
-             << "       Contact gdsjaar@sandia.gov for more details.\n";
+	     << "       run with 32-bit integer code. Please rerun with the property INTEGER_SIZE_API\n"
+	     << "       set to 8. The details of how to do this vary with the code that is being run.\n"
+	     << "       Contact gdsjaar@sandia.gov for more details.\n";
       std::cerr << errmsg.str();
       exit(EXIT_FAILURE);
     }
@@ -676,9 +807,9 @@ namespace Iocgns {
       size_t b_end   = b_start + el_blocks[block].file_count();
 
       if (b_start < p_end && p_start < b_end) {
-        // Some of this blocks elements are on this processor...
-        size_t overlap = std::min(b_end, p_end) - std::max(b_start, p_start);
-        size_t element_nodes = el_blocks[block].nodesPerEntity;
+	// Some of this blocks elements are on this processor...
+	size_t overlap = std::min(b_end, p_end) - std::max(b_start, p_start);
+	size_t element_nodes = el_blocks[block].nodesPerEntity;
 	int zone = el_blocks[block].zone_;
 	int section = el_blocks[block].section_;
 
@@ -691,6 +822,7 @@ namespace Iocgns {
 		  << overlap << " elements on element block " << block << "\t("
 		  << blk_start << " to " << blk_end << ")\n";
 #endif
+	el_blocks[block].fileSectionOffset = blk_start;
 	cg_elements_partial_read(cgnsFilePtr, base, zone, section,
 				 blk_start, blk_end,
 				 TOPTR(connectivity), nullptr);
@@ -712,9 +844,9 @@ namespace Iocgns {
 
   template <typename INT>
   void DecompositionData<INT>::calculate_element_centroids(int cgnsFilePtr,
-                                                           const std::vector<INT> &pointer,
-                                                           const std::vector<INT> &adjacency,
-                                                           const std::vector<INT> &node_dist)
+							   const std::vector<INT> &pointer,
+							   const std::vector<INT> &adjacency,
+							   const std::vector<INT> &node_dist)
   {
     // recv_count is the number of nodes that I need to recv from the other processors
     // send_count is the number of nodes that I need to send to the other processors
@@ -738,7 +870,7 @@ namespace Iocgns {
     // Tell each processor how many nodes worth of data to send to
     // every other processor...
     MPI_Alltoall(TOPTR(recv_count), 1, Ioss::mpi_type((INT)0),
-                 TOPTR(send_count), 1, Ioss::mpi_type((INT)0), comm_);
+		 TOPTR(send_count), 1, Ioss::mpi_type((INT)0), comm_);
 
     send_count[myProcessor] = 0;
 
@@ -756,7 +888,7 @@ namespace Iocgns {
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " communicates "
-              << sumr << " nodes from and " << sums << " nodes to other processors\n";
+	      << sumr << " nodes from and " << sums << " nodes to other processors\n";
 #endif
     // Build the list telling the other processors which of their nodes I will need data from...
     std::vector<INT> node_comm_recv(sumr);
@@ -764,12 +896,12 @@ namespace Iocgns {
     {
       std::vector<INT> recv_tmp(processorCount);
       for (size_t i=0; i < owner.size(); i++) {
-        int proc = owner[i];
-        if (proc != myProcessor) {
-          INT node = adjacency[i];
-          size_t position = recv_disp[proc] + recv_tmp[proc]++;
-          node_comm_recv[position] = node;
-        }
+	int proc = owner[i];
+	if (proc != myProcessor) {
+	  INT node = adjacency[i];
+	  size_t position = recv_disp[proc] + recv_tmp[proc]++;
+	  node_comm_recv[position] = node;
+	}
       }
     }
 
@@ -783,67 +915,22 @@ namespace Iocgns {
     //           nodeOffset..nodeOffset+nodeCount
     for (size_t i=0; i < node_comm_send.size(); i++) {
       assert((size_t)node_comm_send[i] >= nodeOffset &&
-             (size_t)node_comm_send[i] <  nodeOffset+nodeCount);
+	     (size_t)node_comm_send[i] <  nodeOffset+nodeCount);
     }
 
     // Get my coordinate data using direct cgns calls
     std::vector<double> x(nodeCount);;
     std::vector<double> y;
     std::vector<double> z;
-    if (spatialDimension > 1)
+
+    get_file_node_coordinates(cgnsFilePtr, 0, TOPTR(x));
+    if (spatialDimension > 1) {
       y.resize(nodeCount);
-    if (spatialDimension > 2)
+      get_file_node_coordinates(cgnsFilePtr, 1, TOPTR(y));
+    }
+    if (spatialDimension > 2) {
       z.resize(nodeCount);
-
-    // Need to determine what zone(s) my nodes are in...
-    // TODO: Maybe save this information instead of reading it; see how many times we do this.
-    int base = 1; // Only single base supported so far.
-    int num_zones = 0;
-    cg_nzones(cgnsFilePtr, base, &num_zones);
-    
-    cgsize_t beg = 0;
-    cgsize_t end = 0;
-    cgsize_t offset = 0;
-    cgsize_t node_count = nodeCount;
-    cgsize_t node_offset = nodeOffset;
-    
-    for (int zone=1; zone <= num_zones; zone++) {
-      cgsize_t size[3];
-      char zone_name[33];
-      cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
-	
-      end += size[0];
-
-      if (end > node_offset && beg <= node_offset+node_count) {
-	cgsize_t start  = std::max(node_offset, beg);
-	cgsize_t finish = std::min(end, node_offset+node_count);
-	if (finish > start) {
-	  cgsize_t count = finish-start;
-
-	  // Now adjust start for 1-based node numbering and the start of this zone...
-	  start = start - beg + 1;
-	  std::cerr << myProcessor << ": reading " << count << " nodes from zone " << zone
-		    << " starting at " << start << " with an offset of " << offset << "\n";
-	  assert(offset+count <= (cgsize_t)x.size());
-	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble,
-				   &start, &count, &x[offset]);
-	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-	  }
-	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble,
-				   &start, &count, &y[offset]);
-	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-	  }
-	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble,
-				   &start, &count, &z[offset]);
-	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-	  }
-	  offset += count;
-	}
-      }
-      beg = end;
+      get_file_node_coordinates(cgnsFilePtr, 2, TOPTR(z));
     }
 
     // The total vector size I need to send data in is node_comm_send.size()*3
@@ -854,9 +941,9 @@ namespace Iocgns {
       size_t node = node_comm_send[i] - nodeOffset;
       coord_send.push_back(x[node]);
       if (spatialDimension > 1)
-        coord_send.push_back(y[node]);
+	coord_send.push_back(y[node]);
       if (spatialDimension > 2) 
-        coord_send.push_back(z[node]);
+	coord_send.push_back(z[node]);
     }
     assert(coord_send.size() == node_comm_send.size() * spatialDimension);
     
@@ -895,28 +982,28 @@ namespace Iocgns {
       double cy = 0.0;
       double cz = 0.0;
       for (INT jj = pointer[i]; jj < pointer[i+1]; jj++) {
-        INT node = adjacency[jj];
-        INT proc = owner[jj];
-        if (proc == myProcessor) {
-          cx += x[node-nodeOffset];
-          if (spatialDimension > 1)
-            cy += y[node-nodeOffset];
-          if (spatialDimension > 2)
-            cz += z[node-nodeOffset];
-        } else {
-          INT coffset = recv_disp[proc] + recv_tmp[proc];  recv_tmp[proc] += spatialDimension;
-          cx += coord_recv[coffset+0];
-          if (spatialDimension > 1)
-            cy += coord_recv[coffset+1];
-          if (spatialDimension > 2)
-            cz += coord_recv[coffset+2];
-        }
+	INT node = adjacency[jj];
+	INT proc = owner[jj];
+	if (proc == myProcessor) {
+	  cx += x[node-nodeOffset];
+	  if (spatialDimension > 1)
+	    cy += y[node-nodeOffset];
+	  if (spatialDimension > 2)
+	    cz += z[node-nodeOffset];
+	} else {
+	  INT coffset = recv_disp[proc] + recv_tmp[proc];  recv_tmp[proc] += spatialDimension;
+	  cx += coord_recv[coffset+0];
+	  if (spatialDimension > 1)
+	    cy += coord_recv[coffset+1];
+	  if (spatialDimension > 2)
+	    cz += coord_recv[coffset+2];
+	}
       }
       centroids_.push_back(cx / nnpe);
       if (spatialDimension > 1)
-        centroids_.push_back(cy / nnpe);
+	centroids_.push_back(cy / nnpe);
       if (spatialDimension > 2)
-        centroids_.push_back(cz / nnpe);
+	centroids_.push_back(cz / nnpe);
     }
   }
 
@@ -950,16 +1037,16 @@ namespace Iocgns {
     for (size_t i=0; i < importElementMap.size(); i++) {
       size_t elem = importElementMap[i];
       while (i >= (size_t)importElementIndex[proc+1])
-        proc++;
+	proc++;
 
       b = find_index_location(elem-1, fileBlockIndex);
       size_t off = std::max(fileBlockIndex[b], elementOffset);
 
       if (!el_blocks[b].localMap.empty() && elem < el_blocks[b].localMap[0]+off) {
-        el_blocks[b].localIossOffset++;
-        el_blocks[b].importMap.push_back(imp_index[b]++);
+	el_blocks[b].localIossOffset++;
+	el_blocks[b].importMap.push_back(imp_index[b]++);
       } else {
-        el_blocks[b].importMap.push_back(el_blocks[b].localMap.size() + imp_index[b]++);
+	el_blocks[b].importMap.push_back(el_blocks[b].localMap.size() + imp_index[b]++);
       }
       el_blocks[b].importCount[proc]++;
     }
@@ -970,7 +1057,7 @@ namespace Iocgns {
     for (size_t i=0; i < exportElementMap.size(); i++) {
       size_t elem = exportElementMap[i];
       while (i >= (size_t)exportElementIndex[proc+1])
-        proc++;
+	proc++;
 
       b = find_index_location(elem-1, fileBlockIndex);
 
@@ -991,8 +1078,8 @@ namespace Iocgns {
 
   template <typename INT>
   void DecompositionData<INT>::get_local_node_list(const std::vector<INT> &pointer,
-                                                   const std::vector<INT> &adjacency,
-                                                   const std::vector<INT> &node_dist)
+						   const std::vector<INT> &adjacency,
+						   const std::vector<INT> &node_dist)
   {
     // Get the connectivity of all imported elements...
     // First, determine how many nodes the exporting processors are
@@ -1005,14 +1092,14 @@ namespace Iocgns {
       size_t el_begin = exportElementIndex[p];
       size_t el_end = exportElementIndex[p+1];
       for (size_t i=el_begin; i < el_end; i++) {
-        INT elem = exportElementMap[i] - elementOffset;
-        size_t nnpe = pointer[elem+1] - pointer[elem];
-        export_conn_size[p] += nnpe;
+	INT elem = exportElementMap[i] - elementOffset;
+	size_t nnpe = pointer[elem+1] - pointer[elem];
+	export_conn_size[p] += nnpe;
       }
     }
 
     MPI_Alltoall(TOPTR(export_conn_size), 1, Ioss::mpi_type((INT)0),
-                 TOPTR(import_conn_size), 1, Ioss::mpi_type((INT)0), comm_);
+		 TOPTR(import_conn_size), 1, Ioss::mpi_type((INT)0), comm_);
 
     // Now fill the vectors with the nodes ...
     size_t exp_size = std::accumulate(export_conn_size.begin(), export_conn_size.end(), 0);
@@ -1031,10 +1118,10 @@ namespace Iocgns {
       size_t el_begin = exportElementIndex[p];
       size_t el_end = exportElementIndex[p+1];
       for (size_t i=el_begin; i < el_end; i++) {
-        INT elem = exportElementMap[i] - elementOffset;
-        for (INT n = pointer[elem]; n < pointer[elem+1]; n++) {
-          export_conn.push_back(adjacency[n]);
-        }
+	INT elem = exportElementMap[i] - elementOffset;
+	for (INT n = pointer[elem]; n < pointer[elem+1]; n++) {
+	  export_conn.push_back(adjacency[n]);
+	}
       }
     }
 
@@ -1065,7 +1152,7 @@ namespace Iocgns {
       // Nodes on Imported elements...
       nodes.reserve(node_sum);
       for (size_t i=0; i < import_conn.size(); i++) {
-        nodes.push_back(import_conn[i]);
+	nodes.push_back(import_conn[i]);
       }
     }    
 
@@ -1073,7 +1160,7 @@ namespace Iocgns {
     for (size_t i=0; i < localElementMap.size(); i++) {
       INT elem = localElementMap[i];
       for (INT n = pointer[elem]; n < pointer[elem+1]; n++) {
-        nodes.push_back(adjacency[n]);
+	nodes.push_back(adjacency[n]);
       }
     }
 
@@ -1096,7 +1183,7 @@ namespace Iocgns {
     // them...
     importNodeCount[myProcessor] = 0;
     MPI_Alltoall(TOPTR(importNodeCount), 1, Ioss::mpi_type((INT)0),
-                 TOPTR(exportNodeCount), 1, Ioss::mpi_type((INT)0), comm_);
+		 TOPTR(exportNodeCount), 1, Ioss::mpi_type((INT)0), comm_);
 
     size_t import_sum = std::accumulate(importNodeCount.begin(), importNodeCount.end(), 0);
     size_t export_sum = std::accumulate(exportNodeCount.begin(), exportNodeCount.end(), 0);
@@ -1109,16 +1196,16 @@ namespace Iocgns {
       size_t end = nodeIndex[p+1];
 
       if (p == myProcessor) {
-        importPreLocalNodeIndex = beg;
-        localNodeMap.reserve(end-beg);
-        for (size_t n = beg; n < end; n++) {
-          localNodeMap.push_back(nodes[n]);
-        }
+	importPreLocalNodeIndex = beg;
+	localNodeMap.reserve(end-beg);
+	for (size_t n = beg; n < end; n++) {
+	  localNodeMap.push_back(nodes[n]);
+	}
       } else {
-        for (size_t n = beg; n < end; n++) {
-          import_nodes.push_back(nodes[n]);
-          importNodeMap.push_back(n);
-        }
+	for (size_t n = beg; n < end; n++) {
+	  import_nodes.push_back(nodes[n]);
+	  importNodeMap.push_back(n);
+	}
       }
     }
     assert(import_nodes.size() == import_sum);
@@ -1166,11 +1253,11 @@ namespace Iocgns {
 
     for (int p=0; p < processorCount; p++) {
       if (p == myProcessor)
-        continue;
+	continue;
       size_t beg = exportNodeIndex[p];
       size_t end = exportNodeIndex[p+1];
       for (size_t i=beg; i < end; i++) {
-        node_proc_list.push_back(std::make_pair(exportNodeMap[i], p));
+	node_proc_list.push_back(std::make_pair(exportNodeMap[i], p));
       }
     }
     std::sort(node_proc_list.begin(), node_proc_list.end());
@@ -1179,11 +1266,11 @@ namespace Iocgns {
     for (size_t i=0; i < node_proc_list.size(); i++) {
       INT node = node_proc_list[i].first;
       if (i+1 < node_proc_list.size() && node_proc_list[i+1].first == node) {
-        shared_nodes.push_back(node_proc_list[i]);
+	shared_nodes.push_back(node_proc_list[i]);
       }
 
       while (i+1 < node_proc_list.size() && node_proc_list[i+1].first == node) {
-        shared_nodes.push_back(node_proc_list[++i]);
+	shared_nodes.push_back(node_proc_list[++i]);
       }
     }
 
@@ -1196,16 +1283,16 @@ namespace Iocgns {
       size_t beg = i;
       size_t end = ++i;
       while (i+1 < shared_nodes.size() && shared_nodes[beg].first == shared_nodes[i+1].first) {
-        end = ++i;
+	end = ++i;
       }
       for (size_t p=beg; p <= end; p++) {
-        int proc = shared_nodes[p].second;
-        for (size_t j = beg; j <= end; j++) {
-          if (j == p)
-            continue;
-          assert(shared_nodes[p].first == shared_nodes[j].first);
-          send_comm_map_count[proc] += 2;
-        }
+	int proc = shared_nodes[p].second;
+	for (size_t j = beg; j <= end; j++) {
+	  if (j == p)
+	    continue;
+	  assert(shared_nodes[p].first == shared_nodes[j].first);
+	  send_comm_map_count[proc] += 2;
+	}
       }
     }
 
@@ -1222,26 +1309,26 @@ namespace Iocgns {
       size_t beg = i;
       size_t end = ++i;
       while (i+1 < shared_nodes.size() && shared_nodes[beg].first == shared_nodes[i+1].first) {
-        end = ++i;
+	end = ++i;
       }
       for (size_t p=beg; p <= end; p++) {
-        int proc = shared_nodes[p].second;
-        for (size_t j = beg; j <= end; j++) {
-          if (j == p)
-            continue;
-          assert(shared_nodes[p].first == shared_nodes[j].first);
-          size_t location = send_comm_map_disp[proc] + nc_offset[proc];
-          send_comm_map[location+0] = shared_nodes[j].first;
-          send_comm_map[location+1] = shared_nodes[j].second;
-          nc_offset[proc] += 2;
-        }
+	int proc = shared_nodes[p].second;
+	for (size_t j = beg; j <= end; j++) {
+	  if (j == p)
+	    continue;
+	  assert(shared_nodes[p].first == shared_nodes[j].first);
+	  size_t location = send_comm_map_disp[proc] + nc_offset[proc];
+	  send_comm_map[location+0] = shared_nodes[j].first;
+	  send_comm_map[location+1] = shared_nodes[j].second;
+	  nc_offset[proc] += 2;
+	}
       }
     }
 
     // Tell other processors how many nodes/procs I am sending them...
     std::vector<INT> recv_comm_map_count(processorCount);
     MPI_Alltoall(TOPTR(send_comm_map_count), 1, Ioss::mpi_type((INT)0),
-                 TOPTR(recv_comm_map_count), 1, Ioss::mpi_type((INT)0), comm_);
+		 TOPTR(recv_comm_map_count), 1, Ioss::mpi_type((INT)0), comm_);
 
 
     std::vector<INT> recv_comm_map_disp(recv_comm_map_count);
@@ -1259,6 +1346,428 @@ namespace Iocgns {
 	      << nodeCommMap.size() << " shared nodes\n";
 #endif
 
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::get_file_node_coordinates(int cgnsFilePtr, int direction, double *data) const
+  {
+    const std::string coord_name[] = {"CoordinateX", "CoordinateY", "CoordinateZ"};
+
+    int base = 1; // Only single base supported so far.
+    cgsize_t beg = 0;
+    cgsize_t end = 0;
+    cgsize_t offset = 0;
+    cgsize_t node_count = nodeCount;
+    cgsize_t node_offset = nodeOffset;
+    
+    int num_zones = (int)zones_.size()-1;
+    for (int zone=1; zone <= num_zones; zone++) {
+      end += zones_[zone].m_nodeCount;
+
+      if (end > node_offset && beg <= node_offset+node_count) {
+	cgsize_t start  = std::max(node_offset, beg);
+	cgsize_t finish = std::min(end, node_offset+node_count);
+	if (finish > start) {
+	  cgsize_t count = finish-start;
+
+	  
+	  // Now adjust start for 1-based node numbering and the start of this zone...
+	  start = start - beg + 1;
+	  std::cerr << myProcessor << ": reading " << count << " nodes from zone " << zone
+		    << " starting at " << start << " with an offset of " << offset << "\n";
+	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, coord_name[direction].c_str(), CG_RealDouble,
+				   &start, &count, &data[offset]);
+	  if (ierr < 0) {
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+	  offset += count;
+	}
+      }
+      beg = end;
+    }
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::get_node_coordinates(int cgnsFilePtr, double *ioss_data, const Ioss::Field &field) const
+  {
+    std::vector<double> tmp(nodeCount);
+    if (field.get_name() == "mesh_model_coordinates_x") {
+      get_file_node_coordinates(cgnsFilePtr, 0, TOPTR(tmp));
+      communicate_node_data(TOPTR(tmp), ioss_data, 1);
+    }
+
+    else if (field.get_name() == "mesh_model_coordinates_y") {
+      get_file_node_coordinates(cgnsFilePtr, 1, TOPTR(tmp));
+      communicate_node_data(TOPTR(tmp), ioss_data, 1);
+    }
+
+    else if (field.get_name() == "mesh_model_coordinates_z") {
+      get_file_node_coordinates(cgnsFilePtr, 2, TOPTR(tmp));
+      communicate_node_data(TOPTR(tmp), ioss_data, 1);
+    }
+
+    else if (field.get_name() == "mesh_model_coordinates") {
+      // Data required by upper classes store x0, y0, z0, ... xn,
+      // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
+      // ..., yn, z0, ..., zn so we have to allocate some scratch
+      // memory to read in the data and then map into supplied
+      // 'data'
+
+      std::vector<double> ioss_tmp(ioss_node_count());
+
+      // This implementation trades off extra communication for
+      // reduced memory overhead.
+      // * This method uses 'ioss_node_count' extra memory; 3
+      // reads; and 3 communicate_node_data calls.
+      //
+      // * Other method uses 6*ioss_node_count extra memory; 1 read;
+      // and 1 communicate_node_data call.
+      //
+      // * NOTE: The read difference is not real since the ex_get_partial_coord
+      // function does 3 reads internally.
+
+      for (size_t d = 0; d < spatialDimension; d++) {
+	get_file_node_coordinates(cgnsFilePtr, d, TOPTR(tmp));
+        communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
+
+        size_t index = d;
+        for (size_t i=0; i < ioss_node_count(); i++) {
+          ioss_data[index] = ioss_tmp[i];
+          index += spatialDimension;
+        }
+      }
+    }
+  }
+
+  // The following function is used if reading all element data on a processor instead of
+  // just an element blocks worth...
+  template void DecompositionData<int>::communicate_element_data(int *file_data, int *ioss_data, size_t comp_count) const;
+  template void DecompositionData<int64_t>::communicate_element_data(int64_t *file_data, int64_t *ioss_data, size_t comp_count) const;
+  template void DecompositionData<int>::communicate_element_data(double *file_data, double *ioss_data, size_t comp_count) const;
+  template void DecompositionData<int64_t>::communicate_element_data(double *file_data, double *ioss_data, size_t comp_count) const;
+
+  template <typename INT> template <typename T>
+  void DecompositionData<INT>::communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const
+  {
+    // Transfer the file-decomposition based data in 'file_data' to
+    // the ioss-decomposition based data in 'ioss_data'
+    std::vector<T> export_data(exportElementMap.size() * comp_count);
+    std::vector<T> import_data(importElementMap.size() * comp_count);
+
+    if (comp_count == 1) {
+      for (size_t i=0; i < exportElementMap.size(); i++) {
+        size_t index = exportElementMap[i] - elementOffset;
+        export_data[i] = file_data[index];
+      }
+
+      // Transfer all local data from file_data to ioss_data...
+      for (size_t i=0; i < localElementMap.size(); i++) {
+        size_t index = localElementMap[i];
+        ioss_data[importPreLocalElemIndex+i] = file_data[index];
+      }
+
+      // Get my imported data and send my exported data...
+      Ioss::MY_Alltoallv(export_data, exportElementCount, exportElementIndex, 
+			 import_data, importElementCount, importElementIndex, comm_);
+
+      // Copy the imported data into ioss_data...
+      // Some comes before the local data...
+      for (size_t i=0; i < importPreLocalElemIndex; i++) {
+        ioss_data[i] = import_data[i];
+      }
+
+      // Some comes after the local data...
+      size_t offset = importPreLocalElemIndex + localElementMap.size();
+      for (size_t i=0; i < importElementMap.size() - importPreLocalElemIndex; i++) {
+        ioss_data[offset+i] = import_data[importPreLocalElemIndex+i];
+      }
+    } else {
+      for (size_t i=0; i < exportElementMap.size(); i++) {
+        size_t index = exportElementMap[i] - elementOffset;
+        for (size_t j=0; j < comp_count; j++) {
+          export_data[comp_count*i+j] = file_data[comp_count*index+j];
+        }
+      }
+
+      // Transfer all local data from file_data to ioss_data...
+      for (size_t i=0; i < localElementMap.size(); i++) {
+        size_t index = localElementMap[i];
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[comp_count*(importPreLocalElemIndex+i)+j] = file_data[comp_count*index+j];
+        }
+      }
+
+      std::vector<INT> export_count(exportElementCount.begin(), exportElementCount.end());
+      std::vector<INT> export_disp(exportElementIndex.begin(), exportElementIndex.end());
+      std::vector<INT> import_count(importElementCount.begin(), importElementCount.end());
+      std::vector<INT> import_disp(importElementIndex.begin(), importElementIndex.end());
+
+      for (int i=0; i < processorCount; i++) {
+        export_count[i] *= comp_count;
+        export_disp[i]  *= comp_count;
+        import_count[i] *= comp_count;
+        import_disp[i]  *= comp_count;
+      }
+
+      // Get my imported data and send my exported data...
+      Ioss::MY_Alltoallv(export_data, export_count, export_disp, 
+			 import_data, import_count, import_disp, comm_);
+
+      // Copy the imported data into ioss_data...
+      // Some comes before the local data...
+      for (size_t i=0; i < importPreLocalElemIndex; i++) {
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[comp_count * i + j] = import_data[comp_count * i + j];
+        }
+      }
+
+      // Some comes after the local data...
+      size_t offset = importPreLocalElemIndex + localElementMap.size();
+      for (size_t i=0; i < importElementMap.size() - importPreLocalElemIndex; i++) {
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[comp_count*(offset+i) + j] = import_data[comp_count*(importPreLocalElemIndex+i)+j];
+        }
+      }
+    }
+  }
+
+  template void DecompositionData<int>::get_block_connectivity(int cgnsFilePtr, int *data, int blk_seq) const;
+  template void DecompositionData<int64_t>::get_block_connectivity(int cgnsFilePtr, int64_t *data, int blk_seq) const;
+
+  template <typename INT>
+  void DecompositionData<INT>::get_block_connectivity(int cgnsFilePtr, INT *data, int blk_seq) const
+  {
+    auto &blk = el_blocks[blk_seq];
+    std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
+    int base = 1;
+    cg_elements_partial_read(cgnsFilePtr, base, blk.zone(), blk.section(),
+			     blk.fileSectionOffset, blk.fileSectionOffset + blk.file_count() - 1,
+			     TOPTR(file_conn), nullptr);
+    // Map from zone-local node numbers to global implicit
+    for (auto &node : file_conn) {
+      node += blk.zoneNodeOffset;
+    }
+
+    if (!zone_shared_map.empty()) {
+      for (auto &node : file_conn) {
+	auto alias = zone_shared_map.find(node-1);
+	if (alias != zone_shared_map.end()) {
+	  node = (*alias).second+1;
+	}
+      }
+    }
+
+    communicate_block_data(TOPTR(file_conn), data, blk_seq, blk.nodesPerEntity);
+  }
+
+  template void DecompositionData<int64_t>::communicate_block_data(cgsize_t *file_data,   int64_t *ioss_data, size_t blk_seq, size_t comp_count) const;
+  template void DecompositionData<int>::communicate_block_data(cgsize_t *file_data,    int *ioss_data,  size_t blk_seq, size_t comp_count) const;
+  template <typename INT> template <typename T>
+  void DecompositionData<INT>::communicate_block_data(cgsize_t *file_data, T *ioss_data, size_t blk_seq, size_t comp_count) const
+  {
+    BlockDecompositionData blk = el_blocks[blk_seq];
+
+    std::vector<T> exports;
+    exports.reserve(comp_count * blk.exportMap.size());
+    std::vector<T> imports(comp_count * blk.importMap.size());
+
+    if (comp_count == 1) {
+      for (size_t i=0; i < blk.exportMap.size(); i++) {
+        exports.push_back(file_data[blk.exportMap[i]]);
+      }
+
+      std::vector<int> export_count(blk.exportCount.begin(), blk.exportCount.end());
+      std::vector<int> export_disp(blk.exportIndex.begin(), blk.exportIndex.end());
+      std::vector<int> import_count(blk.importCount.begin(), blk.importCount.end());
+      std::vector<int> import_disp(blk.importIndex.begin(), blk.importIndex.end());
+
+      for (int i=0; i < processorCount; i++) {
+        export_count[i] *= sizeof(T);
+        export_disp[i]  *= sizeof(T);
+        import_count[i] *= sizeof(T);
+        import_disp[i]  *= sizeof(T);
+      }
+
+      // Get my imported data and send my exported data...
+      Ioss::MY_Alltoallv(exports, blk.exportCount, blk.exportIndex, 
+			 imports, blk.importCount, blk.importIndex, comm_);
+
+      // Map local and imported data to ioss_data.
+      for (size_t i=0; i < blk.localMap.size(); i++) {
+        ioss_data[i+blk.localIossOffset] = file_data[blk.localMap[i]];
+      }
+
+      for (size_t i=0; i < blk.importMap.size(); i++) {
+        ioss_data[blk.importMap[i]] = imports[i];
+      }
+    } else {
+      for (size_t i=0; i < blk.exportMap.size(); i++) {
+        for (size_t j=0; j < comp_count; j++) {
+          exports.push_back(file_data[blk.exportMap[i]*comp_count + j]);
+        }
+      }
+
+      std::vector<int> export_count(blk.exportCount.begin(), blk.exportCount.end());
+      std::vector<int> export_disp(blk.exportIndex.begin(), blk.exportIndex.end());
+      std::vector<int> import_count(blk.importCount.begin(), blk.importCount.end());
+      std::vector<int> import_disp(blk.importIndex.begin(), blk.importIndex.end());
+
+      for (int i=0; i < processorCount; i++) {
+        export_count[i] *= comp_count;
+        export_disp[i]  *= comp_count;
+        import_count[i] *= comp_count;
+        import_disp[i]  *= comp_count;
+      }
+
+      // Get my imported data and send my exported data...
+      Ioss::MY_Alltoallv(exports, export_count, export_disp, 
+			 imports, import_count, import_disp, comm_);
+
+      // Map local and imported data to ioss_data.
+      for (size_t i=0; i < blk.localMap.size(); i++) {
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[(i+blk.localIossOffset)*comp_count+j] = file_data[blk.localMap[i]*comp_count+j];
+        }
+      }
+
+      for (size_t i=0; i < blk.importMap.size(); i++) {
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[blk.importMap[i]*comp_count+j] = imports[i*comp_count+j];
+        }
+      }
+    }
+  }
+
+  template void DecompositionData<int>::communicate_node_data(int *file_data, int *ioss_data, size_t comp_count) const;
+  template void DecompositionData<int>::communicate_node_data(double *file_data, double *ioss_data, size_t comp_count) const;
+  template void DecompositionData<int64_t>::communicate_node_data(int64_t *file_data, int64_t *ioss_data, size_t comp_count) const;
+  template void DecompositionData<int64_t>::communicate_node_data(double *file_data, double *ioss_data, size_t comp_count) const;
+
+  template <typename INT> template <typename T>
+  void DecompositionData<INT>::communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const
+  {
+    // Transfer the file-decomposition based data in 'file_data' to
+    // the ioss-decomposition based data in 'ioss_data'
+    std::vector<T> export_data(exportNodeMap.size() * comp_count);
+    std::vector<T> import_data(importNodeMap.size() * comp_count);
+
+    if (comp_count == 1) {
+      for (size_t i=0; i < exportNodeMap.size(); i++) {
+        size_t index = exportNodeMap[i] - nodeOffset;
+        assert(index < nodeCount);
+        export_data[i] = file_data[index];
+      }
+
+      // Transfer all local data from file_data to ioss_data...
+      for (size_t i=0; i < localNodeMap.size(); i++) {
+        size_t index = localNodeMap[i] - nodeOffset;
+        assert(index < nodeCount);
+        ioss_data[importPreLocalNodeIndex+i] = file_data[index];
+      }
+
+      // Get my imported data and send my exported data...
+      Ioss::MY_Alltoallv(export_data, exportNodeCount, exportNodeIndex,
+                         import_data, importNodeCount, importNodeIndex, comm_);
+
+      // Copy the imported data into ioss_data...
+      for (size_t i=0; i < importNodeMap.size(); i++) {
+        size_t index = importNodeMap[i];
+        assert(index < ioss_node_count());
+        ioss_data[index] = import_data[i];
+      }
+
+    } else { // Comp_count > 1
+      for (size_t i=0; i < exportNodeMap.size(); i++) {
+        size_t index = exportNodeMap[i] - nodeOffset;
+        assert(index < nodeCount);
+        for (size_t j=0; j < comp_count; j++) {
+          export_data[comp_count*i+j] = file_data[comp_count*index+j];
+        }
+      }
+
+      // Transfer all local data from file_data to ioss_data...
+      for (size_t i=0; i < localNodeMap.size(); i++) {
+        size_t index = localNodeMap[i] - nodeOffset;
+        assert(index < nodeCount);
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[comp_count*(importPreLocalNodeIndex+i)+j] = file_data[comp_count*index+j];
+        }
+      }
+
+      std::vector<INT> export_count(exportNodeCount.begin(), exportNodeCount.end());
+      std::vector<INT> export_disp(exportNodeIndex.begin(), exportNodeIndex.end());
+      std::vector<INT> import_count(importNodeCount.begin(), importNodeCount.end());
+      std::vector<INT> import_disp(importNodeIndex.begin(), importNodeIndex.end());
+
+      for (int i=0; i < processorCount; i++) {
+        export_count[i] *= comp_count;
+        export_disp[i]  *= comp_count;
+        import_count[i] *= comp_count;
+        import_disp[i]  *= comp_count;
+      }
+
+      // Get my imported data and send my exported data...
+      Ioss::MY_Alltoallv(export_data, export_count, export_disp, 
+                         import_data, import_count, import_disp, comm_);
+
+      // Copy the imported data into ioss_data...
+      for (size_t i=0; i < importNodeMap.size(); i++) {
+        size_t index = importNodeMap[i];
+        assert(index < ioss_node_count());
+        for (size_t j=0; j < comp_count; j++) {
+          ioss_data[comp_count*index+j] = import_data[comp_count*i+j];
+        }
+      }
+    }
+  }
+
+  template void DecompositionDataBase::communicate_node_data(int *file_data, int *ioss_data, size_t comp_count) const;
+  template void DecompositionDataBase::communicate_node_data(int64_t *file_data, int64_t *ioss_data, size_t comp_count) const;
+  template void DecompositionDataBase::communicate_node_data(double *file_data, double *ioss_data, size_t comp_count) const;
+
+  template <typename T>
+  void DecompositionDataBase::communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      check_dynamic_cast(this32);
+      this32->communicate_node_data(file_data, ioss_data, comp_count);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      check_dynamic_cast(this64);
+      this64->communicate_node_data(file_data, ioss_data, comp_count);
+    }
+  }
+
+  template void DecompositionDataBase::communicate_element_data(int *file_data, int *ioss_data, size_t comp_count) const;
+  template void DecompositionDataBase::communicate_element_data(int64_t *file_data, int64_t *ioss_data, size_t comp_count) const;
+  template void DecompositionDataBase::communicate_element_data(double *file_data, double *ioss_data, size_t comp_count) const;
+
+  template <typename T>
+  void DecompositionDataBase::communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      check_dynamic_cast(this32);
+      this32->communicate_element_data(file_data, ioss_data, comp_count);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      check_dynamic_cast(this64);
+      this64->communicate_element_data(file_data, ioss_data, comp_count);
+    }
+  }
+
+  void DecompositionDataBase::get_block_connectivity(int cgnsFilePtr, void *data, int blk_seq) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      check_dynamic_cast(this32);
+      this32->get_block_connectivity(cgnsFilePtr, (int*)data, blk_seq);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      check_dynamic_cast(this64);
+      this64->get_block_connectivity(cgnsFilePtr,  (int64_t*)data, blk_seq);
+    }
   }
 
 }
