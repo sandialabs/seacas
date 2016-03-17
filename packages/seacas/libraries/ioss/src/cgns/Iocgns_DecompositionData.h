@@ -41,10 +41,14 @@
 
 #include <vector>
 #include <string>
-#include <stddef.h>
-#include <stdint.h>
+#include <unordered_map>
+
+#include <cstddef>
+#include <cstdint>
+
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_Field.h>
 #include <Ioss_PropertyManager.h>
 
 #include <cgnslib.h>
@@ -64,30 +68,41 @@ namespace Ioss {
 }
 namespace Iocgns {
 
+  class ZoneData
+  {
+  public:
+    std::string m_name;
+    size_t m_nodeOffset;
+    size_t m_nodeCount;
+  };
+
   class BlockDecompositionData
   {
   public:
     BlockDecompositionData() :
-      zone_(0), section_(0), fileCount(0), iossCount(0), zoneNodeOffset(0),
-      nodesPerEntity(0), attributeCount(0), localIossOffset(0)
+      zone_(0), section_(0), fileSectionOffset(0),
+      fileCount(0), iossCount(0), zoneNodeOffset(0),
+      topologyType(CG_ElementTypeNull), nodesPerEntity(0), localIossOffset(0)
       {}
 
+      const std::string &name() const {return name_;}
       int zone() const {return zone_;}
       int section() const {return section_;}
       
       size_t file_count() const {return fileCount;}
       size_t ioss_count() const {return iossCount;}
 
+      std::string name_;
       int zone_;
       int section_;
       
+      size_t fileSectionOffset; // In partial read, where start
       size_t fileCount;
       size_t iossCount;
       size_t zoneNodeOffset;
 
-      std::string topologyType;
+      CG_ElementType_t topologyType;
       int nodesPerEntity;
-      int attributeCount;
 
       // maps from file-block data to ioss-block data
       // The local_map.size() elements starting at localIossOffset are local.
@@ -140,6 +155,19 @@ namespace Iocgns {
 
       virtual ~DecompositionDataBase() {}
       virtual void decompose_model(int cgnsFilePtr) = 0;
+      virtual size_t ioss_node_count() const = 0;
+      virtual size_t ioss_elem_count() const = 0;
+      virtual int int_size() const = 0;
+
+      virtual void get_node_coordinates(int cgnsFilePtr, double *ioss_data, const Ioss::Field &field) const = 0;
+      
+      void get_block_connectivity(int cgnsFilePtr, void *data, int blk_seq) const;
+
+      template <typename T>
+	void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
+
+      template <typename T>
+	void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
       MPI_Comm comm_;
       int myProcessor;
@@ -160,9 +188,14 @@ namespace Iocgns {
 
       std::vector<double> centroids_;
 
+      std::vector<ZoneData> zones_;
       std::vector<BlockDecompositionData> el_blocks;
       std::vector<SetDecompositionData> node_sets;
       std::vector<SetDecompositionData> side_sets;
+
+      // Maps nodes shared between zones.
+      // TODO: Currently each processor has same map; need to figure out how to reduce size
+      std::unordered_map<cgsize_t,cgsize_t> zone_shared_map;
   };
 
   template <typename INT>
@@ -178,7 +211,21 @@ namespace Iocgns {
 
     void decompose_model(int cgnsFilePtr);
 
+    size_t ioss_node_count() const {return nodeGTL.size();}
+    size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
+    int int_size() const {return sizeof(INT);}
+
+    template <typename T>
+      void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
+
+    template <typename T>
+      void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
+
+    void get_block_connectivity(int exodusId, INT *data, int blk_seq) const;
+
   private:
+    void generate_zone_shared_nodes(int cgnsFilePtr, INT min_node, INT max_node);
+    
 #if !defined(NO_ZOLTAN_SUPPORT)
     void zoltan_decompose(const std::string &method);
 #endif
@@ -197,6 +244,9 @@ namespace Iocgns {
     void build_global_to_local_elem_map();
     void get_element_block_communication();
 
+    template <typename T>
+      void communicate_block_data(cgsize_t *file_data, T *ioss_data, size_t blk_seq, size_t comp_count) const;
+
     void generate_adjacency_list(int fileId, std::vector<INT> &pointer,
 				 std::vector<INT> &adjacency);
 
@@ -213,6 +263,9 @@ namespace Iocgns {
     void get_local_node_list(const std::vector<INT> &pointer,
 			     const std::vector<INT> &adjacency,
 			     const std::vector<INT> &node_dist);
+
+    void get_file_node_coordinates(int cgnsFilePtr, int direction, double *ioss_data) const;
+    void get_node_coordinates(int cgnsFilePtr, double *ioss_data, const Ioss::Field &field) const;
 
     std::vector<INT> localElementMap;
 
