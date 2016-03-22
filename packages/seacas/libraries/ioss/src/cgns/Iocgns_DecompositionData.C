@@ -420,7 +420,6 @@ namespace Iocgns {
       get_local_node_list(pointer, adjacency, node_dist);
       get_shared_node_list();
     }
-
   }
 
 
@@ -809,6 +808,7 @@ namespace Iocgns {
       if (b_start < p_end && p_start < b_end) {
 	// Some of this blocks elements are on this processor...
 	size_t overlap = std::min(b_end, p_end) - std::max(b_start, p_start);
+	el_blocks[block].fileCount = overlap;
 	size_t element_nodes = el_blocks[block].nodesPerEntity;
 	int zone = el_blocks[block].zone_;
 	int section = el_blocks[block].section_;
@@ -837,6 +837,9 @@ namespace Iocgns {
 	  }
 	}
 	sum += overlap * element_nodes;
+      }
+      else {
+	el_blocks[block].fileCount = 0;
       }
     }
     pointer.push_back(adjacency.size());
@@ -919,7 +922,7 @@ namespace Iocgns {
     }
 
     // Get my coordinate data using direct cgns calls
-    std::vector<double> x(nodeCount);;
+    std::vector<double> x(nodeCount);
     std::vector<double> y;
     std::vector<double> z;
 
@@ -1039,7 +1042,7 @@ namespace Iocgns {
       while (i >= (size_t)importElementIndex[proc+1])
 	proc++;
 
-      b = find_index_location(elem-1, fileBlockIndex);
+      b = find_index_location(elem, fileBlockIndex);
       size_t off = std::max(fileBlockIndex[b], elementOffset);
 
       if (!el_blocks[b].localMap.empty() && elem < el_blocks[b].localMap[0]+off) {
@@ -1059,7 +1062,7 @@ namespace Iocgns {
       while (i >= (size_t)exportElementIndex[proc+1])
 	proc++;
 
-      b = find_index_location(elem-1, fileBlockIndex);
+      b = find_index_location(elem, fileBlockIndex);
 
       size_t off = std::max(fileBlockIndex[b], elementOffset);
       el_blocks[b].exportMap.push_back(elem-off);
@@ -1068,7 +1071,6 @@ namespace Iocgns {
 
     for (auto &block : el_blocks) {
       block.iossCount = block.localMap.size() + block.importMap.size();
-      block.fileCount = block.localMap.size() + block.exportMap.size();
       std::copy(block.exportCount.begin(), block.exportCount.end(), block.exportIndex.begin());
       std::copy(block.importCount.begin(), block.importCount.end(), block.importIndex.begin());
       generate_index(block.exportIndex);
@@ -1373,10 +1375,15 @@ namespace Iocgns {
 	  
 	  // Now adjust start for 1-based node numbering and the start of this zone...
 	  start = start - beg + 1;
+	  finish = finish - beg;
 	  std::cerr << myProcessor << ": reading " << count << " nodes from zone " << zone
-		    << " starting at " << start << " with an offset of " << offset << "\n";
-	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, coord_name[direction].c_str(), CG_RealDouble,
-				   &start, &count, &data[offset]);
+		    << " starting at " << start
+		    << " with an offset of " << offset
+		    << " ending at " << finish << "\n";
+
+	  int ierr = cg_coord_read(cgnsFilePtr, base, zone,
+				   coord_name[direction].c_str(), CG_RealDouble,
+				   &start, &finish, &data[offset]);
 	  if (ierr < 0) {
 	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
 	  }
@@ -1420,12 +1427,9 @@ namespace Iocgns {
       // * This method uses 'ioss_node_count' extra memory; 3
       // reads; and 3 communicate_node_data calls.
       //
-      // * Other method uses 6*ioss_node_count extra memory; 1 read;
+      // * Other method uses 6*ioss_node_count extra memory; 3 reads;
       // and 1 communicate_node_data call.
       //
-      // * NOTE: The read difference is not real since the ex_get_partial_coord
-      // function does 3 reads internally.
-
       for (size_t d = 0; d < spatialDimension; d++) {
 	get_file_node_coordinates(cgnsFilePtr, d, TOPTR(tmp));
         communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
@@ -1439,8 +1443,8 @@ namespace Iocgns {
     }
   }
 
-  // The following function is used if reading all element data on a processor instead of
-  // just an element blocks worth...
+  // The following function is used if reading all element data on a
+  // processor instead of just an element blocks worth...
   template void DecompositionData<int>::communicate_element_data(int *file_data, int *ioss_data, size_t comp_count) const;
   template void DecompositionData<int64_t>::communicate_element_data(int64_t *file_data, int64_t *ioss_data, size_t comp_count) const;
   template void DecompositionData<int>::communicate_element_data(double *file_data, double *ioss_data, size_t comp_count) const;
