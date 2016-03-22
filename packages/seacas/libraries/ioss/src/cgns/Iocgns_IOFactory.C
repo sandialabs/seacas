@@ -34,7 +34,7 @@
 #include <stddef.h>                     // for nullptr
 #include <cgns/Iocgns_DatabaseIO.h>     // for DatabaseIO -- serial
 #ifdef HAVE_MPI
-#include <cgns/Iopcgns_DatabaseIO.h>     // for DatabaseIO -- parallel
+#include <cgns/Iocgns_ParallelDatabaseIO.h>     // for DatabaseIO -- parallel
 #endif
 #include <string>                       // for string
 #include "Ioss_DBUsage.h"               // for DatabaseUsage
@@ -73,7 +73,7 @@ namespace Iocgns {
     }
     
     if (proc_count > 1) {
-      return new Iopcgns::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
+      return new Iocgns::ParallelDatabaseIO(nullptr, filename, db_usage, communicator, properties);
     }
     else
 #endif

@@ -41,7 +41,7 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <assert.h>
-#include <cgns/Iopcgns_DatabaseIO.h>
+#include <cgns/Iocgns_ParallelDatabaseIO.h>
 #include <stddef.h>
 #include <sys/select.h>
 #include <time.h>
@@ -75,7 +75,7 @@
 #include "Ioss_VariableType.h"
 
 namespace {
-  const char *Version() {return "Iopcgns_DatabaseIO.C 2016/01/28";}
+  const char *Version() {return "Iocgns_ParallelDatabaseIO.C 2016/01/28";}
 
   void cgns_error(int cgnsid, int lineno, int /* processor */)
   {
@@ -185,9 +185,9 @@ namespace {
     return topology;
   }
 }
-namespace Iopcgns {
+namespace Iocgns {
 
-  DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
+  ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string& filename,
 			 Ioss::DatabaseUsage db_usage,
 			 MPI_Comm communicator,
 			 const Ioss::PropertyManager &props) :
@@ -202,7 +202,7 @@ namespace Iopcgns {
       IOSS_ERROR(errmsg);
     }
 
-    std::cout << "CGNS DatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
+    std::cout << "CGNS ParallelDatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
     if (CG_SIZEOF_SIZE == 64) {
       set_int_byte_size_api(Ioss::USE_INT64_API);
     }
@@ -210,7 +210,7 @@ namespace Iopcgns {
     openDatabase();
   }
 
-  void DatabaseIO::openDatabase() const
+  void ParallelDatabaseIO::openDatabase() const
   {
     if (cgnsFilePtr < 0) {
       if (is_input()) {
@@ -226,7 +226,7 @@ namespace Iopcgns {
     assert(cgnsFilePtr >= 0);
   }
 
-  void DatabaseIO::closeDatabase() const
+  void ParallelDatabaseIO::closeDatabase() const
   {
     if (cgnsFilePtr != -1) {
       cg_close(cgnsFilePtr);
@@ -234,17 +234,17 @@ namespace Iopcgns {
     cgnsFilePtr = -1;
   }
 
-  int64_t DatabaseIO::node_global_to_local(int64_t global, bool must_exist) const
+  int64_t ParallelDatabaseIO::node_global_to_local(int64_t global, bool must_exist) const
   {
     return global;
   }
 
-  int64_t DatabaseIO::element_global_to_local(int64_t global) const
+  int64_t ParallelDatabaseIO::element_global_to_local(int64_t global) const
   {
     return global;
   }
 
-  void DatabaseIO::read_meta_data()
+  void ParallelDatabaseIO::read_meta_data()
   {
     openDatabase();
     
@@ -316,27 +316,27 @@ namespace Iopcgns {
     get_region()->add(nblock);
   }
 
-  bool DatabaseIO::begin(Ioss::State /* state */)
+  bool ParallelDatabaseIO::begin(Ioss::State /* state */)
   {
     return true;
   }
 
-  bool   DatabaseIO::end(Ioss::State /* state */)
+  bool   ParallelDatabaseIO::end(Ioss::State /* state */)
   {
     return true;
   }
 
-  bool DatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time )
+  bool ParallelDatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time )
   {
     return true;
   }
 
-  bool   DatabaseIO::end_state(Ioss::Region */* region */, int /* state */, double /* time */)
+  bool   ParallelDatabaseIO::end_state(Ioss::Region */* region */, int /* state */, double /* time */)
   {
     return true;
   }
 
-  const Ioss::Map& DatabaseIO::get_map(entity_type type) const
+  const Ioss::Map& ParallelDatabaseIO::get_map(entity_type type) const
   {
     switch (type) {
     case entity_type::NODE:
@@ -355,13 +355,13 @@ namespace Iopcgns {
     default:
       std::ostringstream errmsg;
       errmsg << "INTERNAL ERROR: Invalid map type. "
-             << "Something is wrong in the Iopcgns::DatabaseIO::get_map() function. "
+             << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
              << "Please report.\n";
       IOSS_ERROR(errmsg);
     }      
   }
 
-  const Ioss::Map& DatabaseIO::get_map(Ioss::Map &entity_map,
+  const Ioss::Map& ParallelDatabaseIO::get_map(Ioss::Map &entity_map,
                                        int64_t entityCount,
                                        int64_t file_offset, int64_t file_count,
                                        entity_type type) const
@@ -407,13 +407,13 @@ namespace Iopcgns {
     return entity_map;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::Region* /* reg */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Region* /* reg */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
 					 void *data, size_t data_size) const
   {
     size_t num_to_get = field.verify(data_size);
@@ -440,18 +440,18 @@ namespace Iopcgns {
     return -1;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock* /* nb */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock* /* nb */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   
-  int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock* eb,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock* eb,
 					 const Ioss::Field& field,
 					 void *data, size_t data_size) const
   {
@@ -490,27 +490,27 @@ namespace Iopcgns {
     return num_to_get;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeSet* /* ns */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeSet* /* ns */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::FaceSet* /* ns */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceSet* /* ns */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::ElementSet* /* ns */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementSet* /* ns */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock* sb, const Ioss::Field& field,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock* sb, const Ioss::Field& field,
 					 void *data , size_t data_size) const
   {
     cgsize_t base = sb->get_property("base").get_int();
@@ -580,81 +580,81 @@ namespace Iopcgns {
     return -1;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::CommSet* /* cs */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::CommSet* /* cs */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region* region, const Ioss::Field& field,
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region* region, const Ioss::Field& field,
 					 void *data, size_t data_size) const
   {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock* /* eb */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock* /* eb */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock* /* nb */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock* /* nb */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock* /* nb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-
-  int64_t DatabaseIO::put_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::FaceSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::ElementSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock* /* fb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
-  {
-    return -1;
-  }
-  int64_t DatabaseIO::put_field_internal(const Ioss::CommSet* /* cs */, const Ioss::Field& /* field */,
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeBlock* /* nb */, const Ioss::Field& /* field */,
 					 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
 
-  unsigned DatabaseIO::entity_field_support() const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeSet* /* ns */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceSet* /* ns */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementSet* /* ns */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock* /* fb */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet* /* cs */, const Ioss::Field& /* field */,
+					 void */* data */, size_t /* data_size */) const
+  {
+    return -1;
+  }
+
+  unsigned ParallelDatabaseIO::entity_field_support() const
   {
     return Ioss::REGION;
   }
