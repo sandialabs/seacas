@@ -32,7 +32,10 @@
 
 #include <cgns/Iocgns_IOFactory.h>
 #include <stddef.h>                     // for nullptr
-#include <cgns/Iocgns_DatabaseIO.h>     // for DatabaseIO
+#include <cgns/Iocgns_DatabaseIO.h>     // for DatabaseIO -- serial
+#ifdef HAVE_MPI
+#include <cgns/Iopcgns_DatabaseIO.h>     // for DatabaseIO -- parallel
+#endif
 #include <string>                       // for string
 #include "Ioss_DBUsage.h"               // for DatabaseUsage
 #include "Ioss_IOFactory.h"             // for IOFactory
@@ -49,12 +52,33 @@ namespace Iocgns {
   IOFactory::IOFactory()
     : Ioss::IOFactory("cgns")
   {
+#if defined(HAVE_MPI)
+    Ioss::IOFactory::alias("cgns", "dof_cgns");
+    Ioss::IOFactory::alias("cgns", "par_cgns");
+#endif
   }
 
   Ioss::DatabaseIO* IOFactory::make_IO(const std::string& filename,
 				       Ioss::DatabaseUsage db_usage,
 				       MPI_Comm communicator,
 				       const Ioss::PropertyManager &properties) const
-  { return new DatabaseIO(nullptr, filename, db_usage, communicator, properties); }
-
+  {
+    // The "cgns" and "parallel_cgns" databases can both be accessed
+    // from this factory.  The "parallel_cgns" is returned if being run
+    // on more than 1 processor.
+#if defined(HAVE_MPI)
+    int proc_count = 1;
+    if (communicator != MPI_COMM_NULL) {
+      MPI_Comm_size(communicator, &proc_count);
+    }
+    
+    if (proc_count > 1) {
+      return new Iopcgns::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
+    }
+    else
+#endif
+      {
+	return new Iocgns::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
+      }
+  }
 }
