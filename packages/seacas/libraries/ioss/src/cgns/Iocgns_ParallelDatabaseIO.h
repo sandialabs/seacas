@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IOSS_Iopcgns_DatabaseIO_h
-#define IOSS_Iopcgns_DatabaseIO_h
+#ifndef IOSS_Iocgns_ParallelDatabaseIO_h
+#define IOSS_Iocgns_ParallelDatabaseIO_h
 
 #include <Ioss_DBUsage.h>               // for DatabaseUsage
 #include <Ioss_DatabaseIO.h>            // for DatabaseIO
@@ -44,7 +44,7 @@
 #include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
 
-#include <cgns/Iopcgns_DecompositionData.h>
+#include <cgns/Iocgns_DecompositionData.h>
 
 #include <cgnslib.h>
 
@@ -65,20 +65,18 @@ namespace Ioss { class SideBlock; }
 namespace Ioss { class SideSet; }
 namespace Ioss { class EntityBlock; }
 
-namespace Iopcgns {
-  enum class entity_type {NODE, ELEM};
+namespace Iocgns {
   
-  class DecompositionDataBase;
-  template <typename INT> class DecompositionData;
-
-  class DatabaseIO : public Ioss::DatabaseIO
+  class ParallelDatabaseIO : public Ioss::DatabaseIO
   {
   public:
 
-    DatabaseIO(Ioss::Region *region, const std::string& filename,
-	       Ioss::DatabaseUsage db_usage,
-	       MPI_Comm communicator,
-	       const Ioss::PropertyManager &props);
+    enum class entity_type {NODE, ELEM};
+
+    ParallelDatabaseIO(Ioss::Region *region, const std::string& filename,
+		       Ioss::DatabaseUsage db_usage,
+		       MPI_Comm communicator,
+		       const Ioss::PropertyManager &props);
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -89,7 +87,7 @@ namespace Iopcgns {
     int64_t node_global_to_local(int64_t global, bool must_exist) const;
     int64_t element_global_to_local(int64_t global) const;
 
-    ~DatabaseIO() = default;
+    ~ParallelDatabaseIO() = default;
 
     void openDatabase() const;
     void closeDatabase() const;

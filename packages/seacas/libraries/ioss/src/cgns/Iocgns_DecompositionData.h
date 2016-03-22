@@ -32,8 +32,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-#ifndef IOPCGNS_DECOMPOSITONDATA_H
-#define IOPCGNS_DECOMPOSITONDATA_H
+#ifndef IOCGNS_DECOMPOSITONDATA_H
+#define IOCGNS_DECOMPOSITONDATA_H
 
 #include <mpi.h>
 
@@ -64,7 +64,7 @@
 namespace Ioss {
   class Field;
 }
-namespace Iopcgns {
+namespace Iocgns {
 
   class ZoneData
   {

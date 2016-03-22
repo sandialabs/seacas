@@ -21,8 +21,8 @@ APPEND_GLOB(HEADERS ${DIR}/*.h)
 APPEND_GLOB(SOURCES ${DIR}/*.C)
 
 IF (NOT TPL_ENABLE_MPI)
-  LIST(REMOVE_ITEM SOURCES "${DIR}/Iopcgns_*.C")
-  LIST(REMOVE_ITEM HEADERS "${DIR}/Iopcgns_*.h")
+  LIST(REMOVE_ITEM SOURCES "${DIR}/Iocgns_ParallelDatabaseIO.C ${DIR}/Iocgns_DecompositionData.C")
+  LIST(REMOVE_ITEM HEADERS "${DIR}/Iocgns_ParallelDatabaseIO.h ${DIR}/Iocgns_DecompositionData.h")
 ENDIF()
 
 INCLUDE_DIRECTORIES(

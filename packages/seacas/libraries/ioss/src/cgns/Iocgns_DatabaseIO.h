@@ -64,11 +64,12 @@ namespace Ioss { class SideSet; }
 namespace Ioss { class EntityBlock; }
 
 namespace Iocgns {
-  enum class entity_type {NODE, ELEM};
   
   class DatabaseIO : public Ioss::DatabaseIO
   {
   public:
+
+    enum class entity_type {NODE, ELEM};
 
     DatabaseIO(Ioss::Region *region, const std::string& filename,
 	       Ioss::DatabaseUsage db_usage,
