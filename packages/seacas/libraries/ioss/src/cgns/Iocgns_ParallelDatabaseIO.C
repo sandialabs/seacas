@@ -259,11 +259,9 @@ namespace Iocgns {
     }
 
     if (int_byte_size_api() == 8) {
-      decomp64 = new DecompositionData<int64_t>(properties, util().communicator());
-      decomp = decomp64;
+      decomp = std::unique_ptr<DecompositionDataBase>(new DecompositionData<int64_t>(properties, util().communicator()));
     } else {
-      decomp32 = new DecompositionData<int>(properties, util().communicator());
-      decomp = decomp32;
+      decomp = std::unique_ptr<DecompositionDataBase>(new DecompositionData<int>(properties, util().communicator()));
     }
     assert(decomp != nullptr);
     decomp->decompose_model(cgnsFilePtr);

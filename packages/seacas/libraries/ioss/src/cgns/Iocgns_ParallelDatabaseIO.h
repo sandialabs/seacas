@@ -41,6 +41,7 @@
 #include <stdint.h>                     // for int64_t
 #include <iostream>                     // for ostream
 #include <string>                       // for string
+#include <memory>
 #include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
 
@@ -176,9 +177,7 @@ namespace Iocgns {
     size_t nodeCount;
     size_t elementCount;
     
-    mutable DecompositionDataBase      *decomp;
-    mutable DecompositionData<int>     *decomp32;
-    mutable DecompositionData<int64_t> *decomp64;
+    mutable std::unique_ptr<DecompositionDataBase> decomp;
     
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
