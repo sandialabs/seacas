@@ -311,7 +311,7 @@ namespace Iocgns {
 	m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
 	
 	// Determine number of "shared" nodes (shared with other zones)
-	if (zone > 1) {
+	if (zone > 1) { // Donor zone is always lower numbered, so zone 1 has no donor zone.
 	  int nconn = 0;
 	  cg_nconns(cgnsFilePtr, base, zone, &nconn);
 	  cgsize_t num_shared = 0;
