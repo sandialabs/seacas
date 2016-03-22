@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef IOSS_Iocgns_DatabaseIO_h
-#define IOSS_Iocgns_DatabaseIO_h
+#ifndef IOSS_Iopcgns_DatabaseIO_h
+#define IOSS_Iopcgns_DatabaseIO_h
 
 #include <Ioss_DBUsage.h>               // for DatabaseUsage
 #include <Ioss_DatabaseIO.h>            // for DatabaseIO
@@ -43,6 +43,8 @@
 #include <string>                       // for string
 #include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
+
+#include <cgns/Iopcgns_DecompositionData.h>
 
 #include <cgnslib.h>
 
@@ -63,9 +65,12 @@ namespace Ioss { class SideBlock; }
 namespace Ioss { class SideSet; }
 namespace Ioss { class EntityBlock; }
 
-namespace Iocgns {
+namespace Iopcgns {
   enum class entity_type {NODE, ELEM};
   
+  class DecompositionDataBase;
+  template <typename INT> class DecompositionData;
+
   class DatabaseIO : public Ioss::DatabaseIO
   {
   public:
@@ -172,6 +177,10 @@ namespace Iocgns {
     mutable int cgnsFilePtr;
     size_t nodeCount;
     size_t elementCount;
+    
+    mutable DecompositionDataBase      *decomp;
+    mutable DecompositionData<int>     *decomp32;
+    mutable DecompositionData<int64_t> *decomp64;
     
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;

@@ -1,6 +1,6 @@
 #if defined(EXPERIMENTAL_CGNS)
 
-#include <cgns/Iocgns_DecompositionData.h>
+#include <cgns/Iopcgns_DecompositionData.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <Ioss_ParallelUtils.h>
@@ -12,7 +12,7 @@
 
 #define DEBUG_OUTPUT 1
 namespace {
-  const char *Version() {return "Iocgns_DecompositionData.C 2016/02/17";}
+  const char *Version() {return "Iopcgns_DecompositionData.C 2016/02/17";}
 
   void cgns_error(int cgnsid, int lineno, int /* processor */)
   {
@@ -94,7 +94,7 @@ namespace {
   int zoltan_num_dim(void *data, int *ierr)
   {
     // Return dimensionality of coordinate data.
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    Iopcgns::DecompositionDataBase *zdata = (Iopcgns::DecompositionDataBase *)(data);
 
     *ierr = ZOLTAN_OK;
     return zdata->spatialDimension;
@@ -103,7 +103,7 @@ namespace {
   int zoltan_num_obj(void *data, int *ierr)
   {
     // Return number of objects (element count) on this processor...
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    Iopcgns::DecompositionDataBase *zdata = (Iopcgns::DecompositionDataBase *)(data);
 
     *ierr = ZOLTAN_OK;
     return zdata->elementCount;
@@ -114,7 +114,7 @@ namespace {
                        int wdim, float *wgts, int *ierr)
   {
     // Return list of object IDs, both local and global.
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    Iopcgns::DecompositionDataBase *zdata = (Iopcgns::DecompositionDataBase *)(data);
 
     // At the time this is called, we don't have much information
     // These routines are the ones that are developing that
@@ -154,7 +154,7 @@ namespace {
                    int ndim, double *geom, int *ierr)
   {
     // Return coordinates for objects.
-    Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
+    Iopcgns::DecompositionDataBase *zdata = (Iopcgns::DecompositionDataBase *)(data);
 
     std::copy(zdata->centroids_.begin(), zdata->centroids_.end(), &geom[0]);
 
@@ -196,7 +196,7 @@ namespace {
   }
 }
 
-namespace Iocgns {
+namespace Iopcgns {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,
 						     MPI_Comm communicator);
   template DecompositionData<int64_t>::DecompositionData(const Ioss::PropertyManager &props,
