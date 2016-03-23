@@ -72,6 +72,7 @@ namespace Iocgns {
     std::string m_name;
     size_t m_nodeOffset;
     size_t m_nodeCount;
+    size_t m_elementOffset;
   };
 
   class BlockDecompositionData
@@ -126,20 +127,31 @@ namespace Iocgns {
   {
   public:
     SetDecompositionData()
-      : fileCount(0), id_(0), root_(0)
+      : zone_(0), section_(0), fileCount(0), root_(0),
+      parentBlockIndex(0)
       {}
 
-      int64_t id() const {return id_;}
+      const std::string &name() const {return name_;}
+      int zone() const {return zone_;}
+      int section() const {return section_;}
+      
       size_t file_count() const {return fileCount;}
       size_t ioss_count() const {return entitylist_map.size();}
+
+      std::string name_;
+      int zone_;
+      int section_;
+      
+      size_t fileCount;
+      int root_;  // Lowest number processor that has nodes for this nodest
+      size_t parentBlockIndex;
+
+      CG_ElementType_t topologyType;
 
       // contains global entity-list positions for all entities in this set on this processor. 
       std::vector<int> entitylist_map;
       std::vector<bool> hasEntities; // T/F if this set exists on processor p
 
-      size_t fileCount; // Number of nodes in nodelist for file decomposition
-      int64_t id_;
-      int root_;  // Lowest number processor that has nodes for this nodest
   };
 
   class DecompositionDataBase
@@ -166,6 +178,8 @@ namespace Iocgns {
 
       template <typename T>
 	void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
+
+      void get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset, void *data) const;
 
       MPI_Comm comm_;
       int myProcessor;
@@ -216,12 +230,18 @@ namespace Iocgns {
     template <typename T>
       void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
+    void communicate_set_data(INT *file_data, INT *ioss_data,
+			      const SetDecompositionData &set, size_t comp_count) const;
+      
     template <typename T>
       void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
-    void get_block_connectivity(int exodusId, INT *data, int blk_seq) const;
+    void get_block_connectivity(int cgnsFilePtr, INT *data, int blk_seq) const;
 
+    void get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset, INT *data) const;
+    
   private:
+    void get_sideset_data(int cgnsFilePtr);
     void generate_zone_shared_nodes(int cgnsFilePtr, INT min_node, INT max_node);
     
 #if !defined(NO_ZOLTAN_SUPPORT)

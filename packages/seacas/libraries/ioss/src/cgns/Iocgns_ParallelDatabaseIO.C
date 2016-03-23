@@ -319,6 +319,39 @@ namespace Iocgns {
       get_region()->add(eblock);
     }
 
+    // ========================================================================
+    // Have sidesets, now create sideblocks for each sideset...
+    int id = 0;
+    for (auto &sset : decomp->side_sets) {
+      // See if there is an Ioss::SideSet with a matching name...
+      Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
+      if (ioss_sset != NULL) {
+	auto zone = decomp->zones_[sset.zone()];
+	std::string block_name(zone.m_name);
+	block_name += "/";
+	block_name += sset.name();
+	std::string face_topo = map_cgns_to_topology_type(sset.topologyType);
+	std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name << " of topo " << face_topo
+		  << " with " << sset.ioss_count() << " faces\n";
+	      
+	const auto &block = decomp->el_blocks[sset.parentBlockIndex];
+
+	std::string parent_topo = map_cgns_to_topology_type(block.topologyType);
+	Ioss::SideBlock *sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
+						    sset.ioss_count());
+	sblk->property_add(Ioss::Property("id", id));
+	sblk->property_add(Ioss::Property("base", 1));
+	sblk->property_add(Ioss::Property("zone", sset.zone()));
+	sblk->property_add(Ioss::Property("section", sset.section()));
+	Ioss::ElementBlock *eblock = get_region()->get_element_block(block.name());
+	if (eblock != NULL) {
+	  sblk->set_parent_element_block(eblock);
+	}
+	ioss_sset->add(sblk);
+      }
+      id++; // Really just index into side_sets list. 
+    }
+
     Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", decomp->ioss_node_count(), 3);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
@@ -521,10 +554,9 @@ namespace Iocgns {
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock* sb, const Ioss::Field& field,
 					 void *data , size_t data_size) const
   {
-    cgsize_t base = sb->get_property("base").get_int();
-    cgsize_t zone = sb->get_property("zone").get_int();
-    cgsize_t sect = sb->get_property("section").get_int();
-    
+    int id = sb->get_property("id").get_int();
+    auto sset = decomp->side_sets[id];
+
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
       int64_t entity_count = sb->get_property("entity_count").get_int();
@@ -539,53 +571,21 @@ namespace Iocgns {
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "element_side_raw" || field.get_name() == "element_side") {
 
-	// TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
-	int nodes_per_face = sb->topology()->number_nodes();
-	std::vector<cgsize_t> elements(nodes_per_face*num_to_get); // Not needed, but can't skip
+	decomp->get_sideset_element_side(cgnsFilePtr, sset, data);
 
-	// We get:
-	// *  num_to_get parent elements,
-	// *  num_to_get zeros (other parent element for face, but on boundary so 0)
-	// *  num_to_get face_on_element
-	// *  num_to_get zeros (face on other parent element)
-	std::vector<cgsize_t> parent(4 * num_to_get);
-
-	int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
-				    TOPTR(elements), TOPTR(parent));
-	if (ierr < 0) {
-	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
-	}
-
-	size_t offset = m_zoneOffset[zone];
 	if (field.get_type() == Ioss::Field::INT32) {
 	  int *idata = (int*)data;
-	  size_t j = 0;
-	  for (ssize_t i=0; i < num_to_get; i++) {
-	    idata[j++] = parent[num_to_get*0 + i]+offset;  // Element
-	    idata[j++] = parent[num_to_get*2 + i];
-	    assert(parent[num_to_get*1+i] == 0);
-	    assert(parent[num_to_get*3+i] == 0);
-	  }
-	  // Adjust face numbers to IOSS convention instead of CGNS convention...
 	  map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
 	else {
 	  int64_t *idata = (int64_t*)data;
-	  size_t j = 0;
-	  for (ssize_t i=0; i < num_to_get; i++) {
-	    idata[j++] = parent[num_to_get*0 + i]+offset; // Element
-	    idata[j++] = parent[num_to_get*2 + i];
-	    assert(parent[num_to_get*1+i] == 0);
-	    assert(parent[num_to_get*3+i] == 0);
-	  }
-	  // Adjust face numbers to IOSS convention instead of CGNS convention...
 	  map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
-
-
+	return num_to_get;
       }
     }
-    return -1;
+    num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
