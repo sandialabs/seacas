@@ -412,7 +412,6 @@ namespace {
       transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH,      interface);
       transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE, interface);
 
-#if 0
       transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::MESH,      interface);
       transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::ATTRIBUTE, interface);
 
@@ -611,7 +610,6 @@ namespace {
 	OUTPUT << "END STATE_TRANSIENT... " << '\n';
       }
       output_region.end_mode(Ioss::STATE_TRANSIENT);
-#endif
     }
   }
   

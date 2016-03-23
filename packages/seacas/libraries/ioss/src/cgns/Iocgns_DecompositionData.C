@@ -199,7 +199,7 @@ namespace Iocgns {
 	zones_[zone].m_nodeCount = total_block_nodes;
 	zones_[zone].m_nodeOffset = globalNodeCount;
 	zones_[zone].m_name = zone_name;
-	
+	zones_[zone].m_elementOffset = globalElementCount;
 	globalNodeCount += total_block_nodes;
 	globalElementCount += total_block_elem;
       }
@@ -342,6 +342,18 @@ namespace Iocgns {
       get_local_node_list(pointer, adjacency, node_dist);
       get_shared_node_list();
     }
+
+    if (!side_sets.empty()) {
+      // Create elemGTL map which is used for sidesets (also element sets)
+      build_global_to_local_elem_map();
+    }
+
+    get_sideset_data(cgnsFilePtr);
+
+    // Have all the decomposition data needed (except for boundary
+    // conditions...)
+    // Can now populate the Ioss metadata...
+
   }
 
 
@@ -843,7 +855,8 @@ namespace Iocgns {
       int num_sections = 0;
       cg_nsections(cgnsFilePtr, base, zone, &num_sections);
 	
-      for (int is = 1; is <= num_sections && total_elements > 0; is++) {
+      size_t last_blk_location = 0;
+      for (int is = 1; is <= num_sections; is++) {
 	char section_name[33];
 	CG_ElementType_t e_type;
 	cgsize_t el_start = 0;
@@ -883,7 +896,21 @@ namespace Iocgns {
 	  block.fileCount = num_entity;
 	  block.zoneNodeOffset = zone_node_offset;
 
+	  last_blk_location = el_blocks.size();
 	  el_blocks.push_back(block);
+	}
+	else {
+	  // This is a boundary-condition -- sideset (?)
+	  std::string ss_name(section_name);
+
+	  SetDecompositionData sset;
+	  sset.zone_ = zone;
+	  sset.section_ = is;
+	  sset.name_ = ss_name;
+	  sset.fileCount = num_entity;
+	  sset.topologyType = e_type;
+	  sset.parentBlockIndex = last_blk_location;
+	  side_sets.push_back(sset);
 	}
       }
       zone_node_offset += size[0];
@@ -963,6 +990,121 @@ namespace Iocgns {
       }
     }
     pointer.push_back(adjacency.size());
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::get_sideset_data(int cgnsFilePtr)
+  {
+    int root = 0; // Root processor that reads all sideset bulk data (nodelists)
+    int base = 1; // Only single base supported so far.
+
+    // Get total length of sideset elemlists...
+    size_t elemlist_size = 0;
+    for (auto &sset : side_sets) {
+      elemlist_size += sset.file_count();
+    }
+
+    // Calculate the max "buffer" size usable for storing sideset
+    // elemlists. This is basically the space used to store the file
+    // decomposition nodal coordinates. The "nodeCount/2*2" is to
+    // equalize the nodeCount among processors since some procs have 1
+    // more node than others. For small models, assume we can handle
+    // at least 10000 nodes.
+    //    size_t max_size = std::max(10000, (nodeCount / 2) * 2 * 3 *sizeof(double) / sizeof(cgsize_t));
+
+    bool subsetting = false; // elemlist_size > max_size;
+
+    if (subsetting) {
+      assert(1==0);
+    } else {
+      // Can handle reading all sideset elem lists on a single
+      // processor simultaneously.
+      std::vector<cgsize_t> elemlist(elemlist_size);
+
+      // Read the elemlists on root processor.
+      if (myProcessor == root) {
+        size_t offset = 0;
+	for (auto &sset : side_sets) {
+
+	  // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
+	  int nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
+	  std::vector<cgsize_t> elements(nodes_per_face*sset.file_count()); // Not needed, but can't skip
+
+	  // We get:
+	  // *  num_to_get parent elements,
+	  // *  num_to_get zeros (other parent element for face, but on boundary so 0)
+	  // *  num_to_get face_on_element
+	  // *  num_to_get zeros (face on other parent element)
+	  std::vector<cgsize_t> parent(4 * sset.file_count());
+
+	  int ierr = cg_elements_read(cgnsFilePtr, base, sset.zone(), sset.section(),
+				      TOPTR(elements), TOPTR(parent));
+	  if (ierr < 0) {
+	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  }
+
+	  // Move from 'parent' to 'elementlist'
+	  size_t zone_element_id_offset = zones_[sset.zone()].m_elementOffset;
+	  for (size_t i=0; i < sset.file_count(); i++) {
+	    elemlist[offset++] = parent[i] + zone_element_id_offset;
+	  }
+        }
+        assert(offset == elemlist_size);
+      }
+
+      // Broadcast this data to all other processors...
+      MPI_Bcast(TOPTR(elemlist), sizeof(cgsize_t)*elemlist.size(), MPI_BYTE, root, comm_);
+
+      // Each processor now has a complete list of all elems in all
+      // sidesets.
+      // Determine which of these are owned by the current
+      // processor...
+      {
+        size_t offset = 0;
+	for (auto &sset : side_sets) {
+          size_t ss_beg = offset;
+          size_t ss_end = ss_beg + sset.file_count();
+
+          for (size_t n = ss_beg; n < ss_end; n++) {
+            cgsize_t elem = elemlist[n];
+            // See if elem owned by this processor...
+            if (i_own_elem(elem)) {
+              // Save elem in this processors elemlist for this set.
+              // The saved data is this elems location in the global
+              // elemlist for this set.
+              sset.entitylist_map.push_back(n-offset);
+            }
+          }
+          offset = ss_end;
+        }
+      }
+
+      // Each processor knows how many of the sideset elems it owns;
+      // broadcast that information (the count) to the other
+      // processors. The first processor with non-zero elem count is
+      // the "root" for this sideset.
+      {
+        std::vector<int> has_elems_local(side_sets.size());
+        for (size_t i=0; i < side_sets.size(); i++) {
+          has_elems_local[i] = side_sets[i].entitylist_map.empty() ? 0 : 1;
+        }
+
+        std::vector<int> has_elems(side_sets.size() * processorCount);
+        MPI_Allgather(TOPTR(has_elems_local), has_elems_local.size(), MPI_INT,
+                      TOPTR(has_elems),       has_elems_local.size(), MPI_INT, comm_);
+
+        for (size_t i=0; i < side_sets.size(); i++) {
+          side_sets[i].hasEntities.resize(processorCount);
+          side_sets[i].root_ = processorCount;
+          for (int p=0; p < processorCount; p++) {
+            if (p < side_sets[i].root_ && has_elems[p*side_sets.size()+ i] != 0) {
+              side_sets[i].root_ = p;
+            }
+            side_sets[i].hasEntities[p] = has_elems[p*side_sets.size() + i];
+          }
+        }
+      }
+    }
   }
 
   template <typename INT>
@@ -1195,6 +1337,29 @@ namespace Iocgns {
       std::copy(block.importCount.begin(), block.importCount.end(), block.importIndex.begin());
       Ioss::Utils::generate_index(block.exportIndex);
       Ioss::Utils::generate_index(block.importIndex);
+    }
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::build_global_to_local_elem_map()
+  {
+    // global_index is 1-based index into global list of elems [1..global_elem_count]
+    for (size_t i=0; i < localElementMap.size(); i++) {
+      size_t global_index = localElementMap[i] + elementOffset + 1;
+      size_t local_index = i + importPreLocalElemIndex + 1;
+      elemGTL[global_index] = local_index;
+    }
+
+    for (size_t i=0; i < importPreLocalElemIndex; i++) {
+      size_t global_index = importElementMap[i]+1;
+      size_t local_index = i+1;
+      elemGTL[global_index] = local_index;
+    }
+
+    for (size_t i=importPreLocalElemIndex; i < importElementMap.size(); i++) {
+      size_t global_index = importElementMap[i]+1;
+      size_t local_index = localElementMap.size() + i + 1;
+      elemGTL[global_index] = local_index;
     }
   }
 
@@ -1655,6 +1820,53 @@ namespace Iocgns {
     }
   }
 
+  template void DecompositionData<int>::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset,
+								 int *data) const;
+  template void DecompositionData<int64_t>::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset,
+								     int64_t *data) const;
+  template <typename INT>
+  void DecompositionData<INT>::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset,
+							INT *ioss_data) const
+  {
+    std::vector<INT> element_side;
+    if (myProcessor == sset.root_) {
+      int base = 1;
+
+      int nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
+      std::vector<cgsize_t> nodes(nodes_per_face*sset.file_count()); 
+
+      // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
+
+      // We get:
+      // *  num_to_get parent elements,
+      // *  num_to_get zeros (other parent element for face, but on boundary so 0)
+      // *  num_to_get face_on_element
+      // *  num_to_get zeros (face on other parent element)
+      std::vector<cgsize_t> parent(4 * sset.file_count());
+
+      int ierr = cg_elements_read(cgnsFilePtr, base, sset.zone(), sset.section(),
+				  TOPTR(nodes), TOPTR(parent));
+      // Get rid of 'nodes' list -- not used.
+      nodes.resize(0); nodes.shrink_to_fit();
+
+      
+      if (ierr < 0) {
+	cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+      }
+
+      // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
+      element_side.reserve(sset.file_count()*2);
+      size_t zone_element_id_offset = zones_[sset.zone()].m_elementOffset;
+      for (size_t i=0; i < sset.file_count(); i++) {
+	element_side.push_back(parent[0*sset.file_count()+i] + zone_element_id_offset);
+	element_side.push_back(parent[2*sset.file_count()+i]);
+      }
+    }
+    // The above was all on root processor for this side set, now need to send data to other
+    // processors that own any of the elements in the sideset.
+    communicate_set_data(TOPTR(element_side), ioss_data, sset, 2);
+  }
+
   template void DecompositionData<int>::get_block_connectivity(int cgnsFilePtr, int *data, int blk_seq) const;
   template void DecompositionData<int64_t>::get_block_connectivity(int cgnsFilePtr, int64_t *data, int blk_seq) const;
 
@@ -1682,6 +1894,79 @@ namespace Iocgns {
     }
 
     communicate_block_data(TOPTR(file_conn), data, blk_seq, blk.nodesPerEntity);
+  }
+
+  template void DecompositionData<int64_t>::communicate_set_data(int64_t *file_data,   int64_t *ioss_data,
+                                                                 const SetDecompositionData &set, size_t comp_count) const;
+  template void DecompositionData<int>::communicate_set_data(int *file_data,    int *ioss_data,
+                                                             const SetDecompositionData &set, size_t comp_count) const;
+
+  template <typename INT> 
+  void DecompositionData<INT>::communicate_set_data(INT *file_data, INT *ioss_data,
+                                                    const SetDecompositionData &set, size_t comp_count) const
+  {
+    MPI_Status  status;
+
+    std::vector<INT> recv_data;
+    int result = MPI_SUCCESS;
+
+    size_t size = sizeof(INT) * set.file_count() * comp_count;
+    // NOTE That a processor either sends or receives, but never both,
+    // so this will not cause a deadlock...
+    if (myProcessor != set.root_ && set.hasEntities[myProcessor]) {
+      recv_data.resize(size);
+      result = MPI_Recv(TOPTR(recv_data), size, MPI_BYTE,
+                        set.root_, 111, comm_, &status);
+
+      if (result != MPI_SUCCESS) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: MPI_Recv error on processor " << myProcessor
+               << " in Iopx::DecompositionData<INT>::communicate_set_data";
+        std::cerr << errmsg.str();
+      }
+    }
+
+    if (set.root_ == myProcessor) {
+      // Sending data to other processors...
+      for (int i=myProcessor+1; i < processorCount; i++) {
+        if (set.hasEntities[i]) {
+          // Send same data to all active processors...
+          MPI_Send(file_data, size, MPI_BYTE, i, 111, comm_);
+        }
+      }
+    }
+
+    if (comp_count == 1) {
+      if (set.root_ == myProcessor) {
+        for (size_t i=0; i < set.ioss_count(); i++) {
+          size_t index = set.entitylist_map[i];
+          ioss_data[i] = file_data[index];
+        }
+      } else {
+        // Receiving data from root...
+        for (size_t i=0; i < set.ioss_count(); i++) {
+          size_t index = set.entitylist_map[i];
+          ioss_data[i] = recv_data[index];
+        }
+      }
+    } else {
+      if (set.root_ == myProcessor) {
+        for (size_t i=0; i < set.ioss_count(); i++) {
+          size_t index = set.entitylist_map[i];
+          for (size_t j=0; j < comp_count; j++) {
+            ioss_data[comp_count * i + j] = file_data[comp_count * index + j];
+          }
+        }
+      } else {
+        // Receiving data from root...
+        for (size_t i=0; i < set.ioss_count(); i++) {
+          size_t index = set.entitylist_map[i];
+          for (size_t j=0; j < comp_count; j++) {
+            ioss_data[comp_count * i + j] = recv_data[comp_count * index + j];
+          }
+        }
+      }
+    }
   }
 
   template void DecompositionData<int64_t>::communicate_block_data(cgsize_t *file_data,   int64_t *ioss_data, size_t blk_seq, size_t comp_count) const;
@@ -1891,6 +2176,19 @@ namespace Iocgns {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
       Ioss::Utils::check_dynamic_cast(this64);
       this64->get_block_connectivity(cgnsFilePtr,  (int64_t*)data, blk_seq);
+    }
+  }
+
+  void DecompositionDataBase::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset, void *data) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      Ioss::Utils::check_dynamic_cast(this32);
+      this32->get_sideset_element_side(cgnsFilePtr, sset, (int*)data);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      Ioss::Utils::check_dynamic_cast(this64);
+      this64->get_sideset_element_side(cgnsFilePtr, sset, (int64_t*)data);
     }
   }
 
