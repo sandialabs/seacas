@@ -170,6 +170,11 @@ namespace Iopx {
 
       void get_block_connectivity(int exodusId, void *data, int64_t id, size_t blk_seq, size_t nnpe) const;
 
+      void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map, bool do_map) const;
+
+      int get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+			   const Ioss::Field& field, void *ioss_data) const; 
+
       int get_set_mesh_double(int exodusId, ex_entity_type type, ex_entity_id id,
                               const Ioss::Field& field, double *ioss_data) const ;
 

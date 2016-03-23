@@ -38,6 +38,7 @@
 #include <Ioss_Map.h>                   // for Map, MapContainer
 #include <Ioss_ParallelUtils.h>         // for ParallelUtils, etc
 #include <Ioss_Utils.h>                 // for TOPTR, Utils
+#include <exodus/Ioex_Utils.h>
 #include <Ioss_PropertyManager.h>       // for PropertyManager
 
 #include <assert.h>                     // for assert
@@ -62,85 +63,6 @@
 #endif
 
 namespace {
-  template <typename T>
-  bool is_sorted(const std::vector<T> &vec)
-  {
-    for (size_t i=1; i < vec.size(); i++) {
-      if (vec[i-1] > vec[i])
-        return false;
-    }
-    return true;
-  }
-
-  int exodus_byte_size_api(int exoid)
-  {
-    // Check byte-size of integers stored on the database...
-    int mode = ex_int64_status(exoid) & EX_ALL_INT64_API;
-    if (mode) {
-      return 8;
-    } else {
-      return 4;
-    }
-  }
-
-  void check_dynamic_cast(const void *ptr)
-  {
-    if (ptr == nullptr) {
-      std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
-      exit(EXIT_FAILURE);
-    }
-  }
-
-  template <typename T>
-  void uniquify(std::vector<T> &vec)
-  {
-    std::sort(vec.begin(), vec.end());
-    vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
-    vec.shrink_to_fit();
-  }
-
-  template <typename T>
-  void generate_index(std::vector<T> &index)
-  {
-    T sum = 0;
-    for (size_t i=0; i < index.size()-1; i++) {
-      T cnt = index[i];
-      index[i] = sum;
-      sum += cnt;
-    }
-    index[index.size()-1] = sum;
-  }
-
-
-  template <typename T>
-  T find_index_location(T node, const std::vector<T> &index)
-  {
-    // 0-based node numbering
-    // index[p] = first node (0-based) on processor p
-
-#if 1
-    // Assume data coherence.  I.e., a new search will be close to the
-    // previous search.
-    static size_t prev = 1;
-
-    size_t nproc = index.size();
-    if (prev < nproc && index[prev-1] <= node && index[prev] > node)
-      return prev-1;
-
-    for (size_t p = 1; p < nproc; p++) {
-      if (index[p] > node) {
-        prev = p;
-        return p-1;
-      }
-    }
-
-    assert(1==0); // Cannot happen...
-    return -1;
-#else
-    return std::distance(index.begin(), std::upper_bound(index.begin(), index.end(), node))-1;
-#endif
-  }
-
   // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -212,35 +134,6 @@ namespace {
   }
 #endif
 
-  template <typename INT>
-  void get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
-                       std::vector<INT> &dist, size_t *offset, size_t *count)
-  {
-    size_t per_proc = entity_count / proc_count;
-    size_t extra    = entity_count % proc_count;
-
-    *count = per_proc + (my_proc < extra ? 1 : 0);
-
-    if (my_proc < extra) {
-      *offset = (per_proc+1) * my_proc;
-    }
-    else {
-      *offset = (per_proc+1) * extra + per_proc * (my_proc - extra);
-    }
-
-    // This processors range of elements is
-    // [element_offset..element_offset+element_count)
-
-    // Fill in element_dist vector.  Range of elements on each processor...
-    size_t sum = 0;
-    for (size_t i=0; i < proc_count; i++) {
-      dist[i] = sum;
-      sum += per_proc;
-      if (i < extra) sum++;
-    }
-    dist[proc_count] = sum;
-  }
-
 #if !defined(NO_PARMETIS_SUPPORT)
   int get_common_node_count(const std::vector<Iopx::BlockDecompositionData> &el_blocks,
                             MPI_Comm comm)
@@ -306,7 +199,7 @@ namespace Iopx {
   template <typename INT>
   bool DecompositionData<INT>::i_own_elem(size_t global_index) const
   {
-    // global_index is 1-based index into global list of nodes [1..global_node_count]
+    // global_index is 1-based index into global list of elements [1..global_element_count]
     return elemGTL.count(global_index) != 0;
   }
 
@@ -349,13 +242,10 @@ namespace Iopx {
 
     // Generate element_dist/node_dist --  size proc_count + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
-    std::vector<INT> element_dist(processorCount+1);
-    std::vector<INT> node_dist(processorCount+1);
-
-    get_entity_dist(processorCount, myProcessor, info.num_elem,
-                    element_dist, &elementOffset, &elementCount);
-    get_entity_dist(processorCount, myProcessor, info.num_nodes,
-                    node_dist,    &nodeOffset,    &nodeCount);
+    std::vector<INT> element_dist = Ioss::get_entity_dist<INT>(processorCount, myProcessor, info.num_elem,
+							       &elementOffset, &elementCount);
+    std::vector<INT> node_dist = Ioss::get_entity_dist<INT>(processorCount, myProcessor, info.num_nodes,
+							    &nodeOffset,    &nodeCount);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " has "
@@ -447,7 +337,7 @@ namespace Iopx {
     std::sort(importElementMap.begin(), importElementMap.end());
 
     std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
-    generate_index(importElementIndex);
+    Ioss::Utils::generate_index(importElementIndex);
 
     // Find the number of imported elements that precede the elements
     // that remain locally owned...
@@ -615,7 +505,7 @@ namespace Iopx {
     exportElementMap.resize(exp_size);
     exportElementIndex.resize(processorCount+1);
     std::copy(exportElementCount.begin(), exportElementCount.end(), exportElementIndex.begin());
-    generate_index(exportElementIndex);
+    Ioss::Utils::generate_index(exportElementIndex);
 
     {
       std::vector<INT> tmp_disp(exportElementIndex);
@@ -631,7 +521,7 @@ namespace Iopx {
     importElementMap.resize(imp_size);
     importElementIndex.resize(processorCount+1);
     std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
-    generate_index(importElementIndex);
+    Ioss::Utils::generate_index(importElementIndex);
 
     Ioss::MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex, 
                        importElementMap, importElementCount, importElementIndex, comm_);
@@ -845,7 +735,7 @@ namespace Iopx {
     }
 
     std::copy(exportElementCount.begin(), exportElementCount.end(), exportElementIndex.begin());
-    generate_index(exportElementIndex);
+    Ioss::Utils::generate_index(exportElementIndex);
 
     zz.LB_Free_Part(&import_global_ids, &import_local_ids, &import_procs, &import_to_part);
     zz.LB_Free_Part(&export_global_ids, &export_local_ids, &export_procs, &export_to_part);
@@ -965,19 +855,19 @@ namespace Iopx {
     }
 
     // Now need to sort and uniquify 'nodes'
-    uniquify(nodes);
+    Ioss::Utils::uniquify(nodes);
 
     // Determine owning 'file' processor for each node...
     nodeIndex.resize(processorCount+1);
 
     for (size_t i=0; i < nodes.size(); i++) {
-      INT owning_processor = find_index_location(nodes[i], node_dist);
+      INT owning_processor = Ioss::Utils::find_index_location(nodes[i], node_dist);
       nodeIndex[owning_processor]++;
     }
     importNodeCount.resize(nodeIndex.size());
     std::copy(nodeIndex.begin(), nodeIndex.end(), importNodeCount.begin());
     exportNodeCount.resize(processorCount);
-    generate_index(nodeIndex);
+    Ioss::Utils::generate_index(nodeIndex);
 
     // Tell other processors how many nodes I will be importing from
     // them...
@@ -1012,13 +902,13 @@ namespace Iopx {
     exportNodeMap.resize(export_sum);
     exportNodeIndex.resize(processorCount+1);
     std::copy(exportNodeCount.begin(), exportNodeCount.end(), exportNodeIndex.begin());
-    generate_index(exportNodeIndex);
+    Ioss::Utils::generate_index(exportNodeIndex);
 
     // Now send the list of nodes that I need to import from each
     // processor...
     importNodeIndex.resize(importNodeCount.size());
     std::copy(importNodeCount.begin(), importNodeCount.end(), importNodeIndex.begin());
-    generate_index(importNodeIndex);
+    Ioss::Utils::generate_index(importNodeIndex);
 
     Ioss::MY_Alltoallv(import_nodes,  importNodeCount, importNodeIndex, 
                        exportNodeMap, exportNodeCount, exportNodeIndex, comm_);
@@ -1101,7 +991,7 @@ namespace Iopx {
     // see whether it simplifies/complicates coding)
     std::vector<INT> send_comm_map_disp(processorCount+1);
     std::copy(send_comm_map_count.begin(), send_comm_map_count.end(), send_comm_map_disp.begin());
-    generate_index(send_comm_map_disp);
+    Ioss::Utils::generate_index(send_comm_map_disp);
 
     std::vector<INT> send_comm_map(send_comm_map_disp[processorCount]);
     std::vector<INT> nc_offset(processorCount);
@@ -1133,7 +1023,7 @@ namespace Iopx {
 
 
     std::vector<INT> recv_comm_map_disp(recv_comm_map_count);
-    generate_index(recv_comm_map_disp);
+    Ioss::Utils::generate_index(recv_comm_map_disp);
     nodeCommMap.resize(recv_comm_map_disp[processorCount-1] + recv_comm_map_count[processorCount-1]);
     Ioss::MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, 
                        nodeCommMap, recv_comm_map_count, recv_comm_map_disp, comm_);
@@ -1190,7 +1080,7 @@ namespace Iopx {
 
     std::vector<ex_block> ebs(block_count);
     std::vector<INT> ids(block_count);
-    assert(sizeof(INT) == exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
     ex_get_ids(exodusId, EX_ELEM_BLOCK, TOPTR(ids));
 
     size_t sum = 0; // Size of adjacency vector.
@@ -1326,7 +1216,7 @@ namespace Iopx {
 
     node_sets.resize(set_count);
 
-    assert(sizeof(INT) == exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
 
     std::vector<std::vector<INT> > set_nodelists(set_count);
     std::vector<ex_set> sets(set_count);
@@ -1467,7 +1357,7 @@ namespace Iopx {
     // Issues:
     // 0. See 'get_nodeset_data' for most issues.
 
-    assert(sizeof(INT) == exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
 
     int root = 0; // Root processor that reads all sideset bulk data (nodelists)
 
@@ -1700,7 +1590,7 @@ namespace Iopx {
 
     for (size_t i=0; i < adjacency.size(); i++) {
       INT node = adjacency[i];
-      INT owning_processor = find_index_location(node, node_dist);
+      INT owning_processor = Ioss::Utils::find_index_location(node, node_dist);
       owner.push_back(owning_processor);
       recv_count[owning_processor]++;
     }
@@ -1861,7 +1751,7 @@ namespace Iopx {
     for (size_t i=0; i < localElementMap.size(); i++) {
       size_t elem = localElementMap[i] + elementOffset;
 
-      b = find_index_location(elem, fileBlockIndex);
+      b = Ioss::Utils::find_index_location(elem, fileBlockIndex);
 
       assert(elem >= fileBlockIndex[b] && elem < fileBlockIndex[b+1]);
       size_t off = std::max(fileBlockIndex[b], elementOffset);
@@ -1879,7 +1769,7 @@ namespace Iopx {
       while (i >= (size_t)importElementIndex[proc+1])
         proc++;
 
-      b = find_index_location(elem, fileBlockIndex);
+      b = Ioss::Utils::find_index_location(elem, fileBlockIndex);
       size_t off = std::max(fileBlockIndex[b], elementOffset);
 
       if (!el_blocks[b].localMap.empty() && elem < el_blocks[b].localMap[0]+off) {
@@ -1899,7 +1789,7 @@ namespace Iopx {
       while (i >= (size_t)exportElementIndex[proc+1])
         proc++;
 
-      b = find_index_location(elem, fileBlockIndex);
+      b = Ioss::Utils::find_index_location(elem, fileBlockIndex);
 
       size_t off = std::max(fileBlockIndex[b], elementOffset);
       el_blocks[b].exportMap.push_back(elem-off);
@@ -1911,8 +1801,8 @@ namespace Iopx {
       el_blocks[bb].fileCount = el_blocks[bb].localMap.size() + el_blocks[bb].exportMap.size();
       std::copy(el_blocks[bb].exportCount.begin(), el_blocks[bb].exportCount.end(), el_blocks[bb].exportIndex.begin());
       std::copy(el_blocks[bb].importCount.begin(), el_blocks[bb].importCount.end(), el_blocks[bb].importIndex.begin());
-      generate_index(el_blocks[bb].exportIndex);
-      generate_index(el_blocks[bb].importIndex);
+      Ioss::Utils::generate_index(el_blocks[bb].exportIndex);
+      Ioss::Utils::generate_index(el_blocks[bb].importIndex);
     }
 
   }
@@ -2199,7 +2089,7 @@ namespace Iopx {
     if (elementOffset > fileBlockIndex[blk_seq])
       offset = elementOffset - fileBlockIndex[blk_seq];
 
-    assert(sizeof(INT) == exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
     std::vector<INT> file_conn(count * nnpe);
     ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_conn), nullptr, nullptr);
     communicate_block_data(TOPTR(file_conn), data, blk_seq, nnpe);
@@ -2426,11 +2316,11 @@ namespace Iopx {
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
-      check_dynamic_cast(this32);
+      Ioss::Utils::check_dynamic_cast(this32);
       this32->communicate_node_data(file_data, ioss_data, comp_count);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
-      check_dynamic_cast(this64);
+      Ioss::Utils::check_dynamic_cast(this64);
       this64->communicate_node_data(file_data, ioss_data, comp_count);
     }
   }
@@ -2444,27 +2334,54 @@ namespace Iopx {
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
-      check_dynamic_cast(this32);
+      Ioss::Utils::check_dynamic_cast(this32);
       this32->communicate_element_data(file_data, ioss_data, comp_count);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
-      check_dynamic_cast(this64);
+      Ioss::Utils::check_dynamic_cast(this64);
       this64->communicate_element_data(file_data, ioss_data, comp_count);
     }
   }
 
+
+  void DecompositionDataBase::get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map, bool do_map) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      Ioss::Utils::check_dynamic_cast(this32);
+      this32->get_node_entity_proc_data((int*)entity_proc, node_map, do_map);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      Ioss::Utils::check_dynamic_cast(this64);
+      this64->get_node_entity_proc_data((int64_t*)entity_proc, node_map, do_map);
+    }
+  }
 
   int DecompositionDataBase::get_set_mesh_double(int exodusId, ex_entity_type type, ex_entity_id id,
                                                  const Ioss::Field& field, double *ioss_data) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
-      check_dynamic_cast(this32);
+      Ioss::Utils::check_dynamic_cast(this32);
       return this32->get_set_mesh_var(exodusId, type, id, field, ioss_data);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
-      check_dynamic_cast(this64);
+      Ioss::Utils::check_dynamic_cast(this64);
       return this64->get_set_mesh_var(exodusId, type, id, field, ioss_data);
+    }
+  }
+
+  int DecompositionDataBase::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+					      const Ioss::Field& field, void *ioss_data) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      Ioss::Utils::check_dynamic_cast(this32);
+      return this32->get_set_mesh_var(exodusId, type, id, field, (int*)ioss_data);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      Ioss::Utils::check_dynamic_cast(this64);
+      return this64->get_set_mesh_var(exodusId, type, id, field, (int64_t*)ioss_data);
     }
   }
 
@@ -2472,11 +2389,11 @@ namespace Iopx {
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
-      check_dynamic_cast(this32);
+      Ioss::Utils::check_dynamic_cast(this32);
       this32->get_block_connectivity(exodusId, (int*)data, id, blk_seq, nnpe);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
-      check_dynamic_cast(this64);
+      Ioss::Utils::check_dynamic_cast(this64);
       this64->get_block_connectivity(exodusId,  (int64_t*)data, id, blk_seq, nnpe);
     }
   }
@@ -2994,7 +2911,7 @@ namespace Iopx {
     // data in file_data and transfer the data it owns to ioss_data.
     if (set.hasEntities[myProcessor]) {
       // Convert nodes_per_face into an offset into the df array...
-      generate_index(nodes_per_face);
+      Ioss::Utils::generate_index(nodes_per_face);
 
       size_t k = 0;
       for (size_t i=0; i < set.ioss_count(); i++) {
@@ -3073,7 +2990,7 @@ namespace Iopx {
                  TOPTR(rcv_count), 1, MPI_LONG_LONG_INT, comm_);
 
     std::vector<int64_t> snd_offset(snd_count);
-    generate_index(snd_offset);
+    Ioss::Utils::generate_index(snd_offset);
     std::vector<int64_t> snd_list(*snd_offset.rbegin() + *snd_count.rbegin());
 
     {
@@ -3088,7 +3005,7 @@ namespace Iopx {
     }
 
     std::vector<int64_t> rcv_offset(rcv_count);
-    generate_index(rcv_offset);
+    Ioss::Utils::generate_index(rcv_offset);
     std::vector<int64_t> rcv_list(*rcv_offset.rbegin() + *rcv_count.rbegin());
 
     Ioss::MY_Alltoallv(snd_list, snd_count, snd_offset,

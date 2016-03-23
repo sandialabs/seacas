@@ -45,6 +45,7 @@
 #include <map>                          // for map, map<>::value_compare
 #include <set>                          // for set
 #include <string>                       // for string, operator<
+#include <memory>
 #include <utility>                      // for pair
 #include <vector>                       // for vector
 #include "Ioss_State.h"                 // for State
@@ -82,7 +83,7 @@ namespace Iopx {
 	       const Ioss::PropertyManager &properties);
     DatabaseIO(const DatabaseIO& from) =delete;
     DatabaseIO& operator=(const DatabaseIO& from) =delete;
-    ~DatabaseIO();
+    ~DatabaseIO() = default;
 
     void release_memory() override;
     bool needs_shared_node_information() const {return true;}
@@ -245,9 +246,7 @@ namespace Iopx {
 		       void *data, size_t data_size) const;
 
     // Private member data...
-    mutable Iopx::DecompositionDataBase      *decomp;
-    mutable Iopx::DecompositionData<int>     *decomp32;
-    mutable Iopx::DecompositionData<int64_t> *decomp64;
+    mutable std::unique_ptr<DecompositionDataBase> decomp;
 
     mutable Ioss::IntVector   nodeOwningProcessor;   // Processor that owns each node on this processor
     mutable Ioss::Int64Vector nodeGlobalImplicitMap; // Position of this node in the global-implicit ordering

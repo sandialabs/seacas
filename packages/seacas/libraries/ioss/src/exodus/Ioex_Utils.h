@@ -5,6 +5,7 @@
 #include <Ioss_ElementTopology.h>
 #include <Ioss_CoordinateFrame.h>
 
+#include <assert.h>
 #include <exodusII.h>
 #include <string>
 #include <vector>
@@ -60,6 +61,17 @@ namespace Ioex {
   void add_coordinate_frames(int exoid, Ioss::Region *region);
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
   
+  inline int exodus_byte_size_api(int exoid)
+  {
+    // Check byte-size of integers stored on the database...
+    int mode = ex_int64_status(exoid) & EX_ALL_INT64_API;
+    if (mode) {
+      return 8;
+    } else {
+      return 4;
+    }
+  }
+
   template <typename T>
   bool check_block_order(const std::vector<T*> &blocks)
   {

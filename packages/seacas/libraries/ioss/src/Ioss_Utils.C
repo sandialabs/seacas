@@ -56,8 +56,7 @@ namespace {
   inline int to_lower(int c) { return std::tolower(c); }
   inline int to_upper(int c) { return std::toupper(c); }
 }
-Ioss::Utils::Utils() = default;
-  
+
 void Ioss::Utils::time_and_date(char* time_string, char* date_string,
                                 size_t length)
 {

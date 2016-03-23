@@ -41,6 +41,8 @@
 #include <stdexcept>                    // for runtime_error
 #include <string>                       // for string
 #include <vector>                       // for vector
+#include <assert.h>
+#include <algorithm>                    // for sort, lower_bound, copy, etc
 namespace Ioss { class Field; }
 namespace Ioss { class GroupingEntity; }
 namespace Ioss { class Region; }
@@ -62,11 +64,69 @@ namespace Ioss {
   class Utils {
   public:
 
-    Utils();
+    Utils() = default;
     ~Utils() = default;
     
     // Assignment operator
     // Copy constructor
+
+    static void check_dynamic_cast(const void *ptr)
+    {
+      if (ptr == nullptr) {
+	std::cerr << "INTERNAL ERROR: Invalid dynamic cast returned nullptr\n";
+	exit(EXIT_FAILURE);
+      }
+    }
+
+    template <typename T>
+      static void uniquify(std::vector<T> &vec)
+      {
+	std::sort(vec.begin(), vec.end());
+	vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+	vec.shrink_to_fit();
+      }
+
+    template <typename T>
+      static void generate_index(std::vector<T> &index)
+      {
+	T sum = 0;
+	for (size_t i=0; i < index.size()-1; i++) {
+	  T cnt = index[i];
+	  index[i] = sum;
+	  sum += cnt;
+	}
+	index[index.size()-1] = sum;
+      }
+
+
+    template <typename T>
+      static T find_index_location(T node, const std::vector<T> &index)
+      {
+	// 0-based node numbering
+	// index[p] = first node (0-based) on processor p
+
+#if 1
+	// Assume data coherence.  I.e., a new search will be close to the
+	// previous search.
+	static size_t prev = 1;
+
+	size_t nproc = index.size();
+	if (prev < nproc && index[prev-1] <= node && index[prev] > node)
+	  return prev-1;
+
+	for (size_t p = 1; p < nproc; p++) {
+	  if (index[p] > node) {
+	    prev = p;
+	    return p-1;
+	  }
+	}
+	assert(1==0); // Cannot happen...
+	return -1;
+#else
+	return std::distance(index.begin(), std::upper_bound(index.begin(), index.end(), node))-1;
+#endif
+      }
+
 
     /*!
      * Fill time_string and date_string with current time and date

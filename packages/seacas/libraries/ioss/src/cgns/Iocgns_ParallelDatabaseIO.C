@@ -234,6 +234,16 @@ namespace Iocgns {
     cgnsFilePtr = -1;
   }
 
+  void ParallelDatabaseIO::release_memory()
+  {
+    nodeMap.release_memory();
+    elemMap.release_memory();
+    try {
+      decomp.release();
+    } catch (...) {
+    }
+  }
+
   int64_t ParallelDatabaseIO::node_global_to_local(int64_t global, bool must_exist) const
   {
     return global;

@@ -141,7 +141,7 @@ namespace {
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id, int position)
   {
     int ierr = 0;
-    if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+    if (Ioex::exodus_byte_size_api(exoid) == 8) {
       int64_t* conn[3];
       conn[0] = nullptr;
       conn[1] = nullptr;
@@ -241,8 +241,7 @@ namespace Iopx {
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props) :
     Ioex::DatabaseIO(region, filename, db_usage, communicator, props),
-    decomp(nullptr), decomp32(nullptr), decomp64(nullptr),
-    metaDataWritten(false)
+    decomp(nullptr), metaDataWritten(false)
   {
     if (!is_parallel_consistent()) {
       std::ostringstream errmsg;
@@ -253,14 +252,6 @@ namespace Iopx {
     }
   }
 
-  DatabaseIO::~DatabaseIO()
-  {
-    try {
-      delete decomp;
-    } catch (...) {
-    }
-  }
-
   void DatabaseIO::release_memory()
   {
     nodeMap.release_memory();
@@ -268,10 +259,7 @@ namespace Iopx {
     faceMap.release_memory();
     elemMap.release_memory();
     try {
-      delete decomp;
-      decomp=nullptr;
-      decomp32=nullptr;
-      decomp64=nullptr;
+      decomp.release();
     } catch (...) {
     }
   }
@@ -470,11 +458,9 @@ namespace Iopx {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
     if (int_byte_size_api() == 8) {
-      decomp64 = new DecompositionData<int64_t>(properties, util().communicator());
-      decomp = decomp64;
+      decomp = std::unique_ptr<DecompositionDataBase>(new DecompositionData<int64_t>(properties, util().communicator()));
     } else {
-      decomp32 = new DecompositionData<int>(properties, util().communicator());
-      decomp = decomp32;
+      decomp = std::unique_ptr<DecompositionDataBase>(new DecompositionData<int>(properties, util().communicator()));
     }
     assert(decomp != nullptr);
     decomp->decompose_model(exoid);
@@ -704,7 +690,7 @@ namespace Iopx {
             Ioex::exodus_error(get_file_pointer(), __LINE__, -1);
 
           if (map_count == 1 && Ioss::Utils::case_strcmp(names[0], "original_global_id_map") == 0) {
-            if (ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) {
+            if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
               error = ex_get_partial_num_map(get_file_pointer(), entity_type, 1,
                                              file_offset+1, file_count, TOPTR(file_data));
             } else {
@@ -722,7 +708,7 @@ namespace Iopx {
         }
 
         if (!map_read) {
-          if (ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) {
+          if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
             error = ex_get_partial_id_map(get_file_pointer(), entity_type,
                                           file_offset+1, file_count, TOPTR(file_data));
           } else {
@@ -986,16 +972,16 @@ namespace Iopx {
       int64_t my_element_count = eb->get_property("entity_count").get_int();
       int order = eb->get_property("original_block_order").get_int();
       if (my_element_count > 0) {
-        if (ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) {
+        if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
           std::vector<int64_t> conn(my_element_count * element_nodes);
-          decomp64->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
+          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
 
           for (auto node : conn) {
             node_used[node-1] = blk_position+1;
           }
         } else {
           std::vector<int> conn(my_element_count * element_nodes);
-          decomp32->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
+          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
 
           for (auto node : conn) {
             node_used[node-1] = blk_position+1;
@@ -1245,15 +1231,15 @@ namespace Iopx {
       int64_t my_element_count = block->get_property("entity_count").get_int();
       int order = block->get_property("original_block_order").get_int();
       if (my_element_count > 0) {
-        if (ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) {
+        if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
           std::vector<int64_t> conn(my_element_count * element_nodes);
-          decomp64->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
+          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
           for (auto node : conn) {
             nodeConnectivityStatus[node-1] |= status;
           }
         } else {
           std::vector<int> conn(my_element_count * element_nodes);
-          decomp32->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
+          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
           for (auto node : conn) {
             nodeConnectivityStatus[node-1] |= status;
           }
@@ -1389,15 +1375,15 @@ namespace Iopx {
             Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, number_sides);
 
             Ioss::IntVector e32(number_sides);
-            decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(e32));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(e32));
             std::copy(e32.begin(), e32.end(), sides.begin());
-            decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, TOPTR(e32));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, TOPTR(e32));
             std::copy(e32.begin(), e32.end(), element.begin());
           } else {
             Ioss::Field side_field("sides",   Ioss::Field::INT64, SCALAR(), Ioss::Field::MESH, number_sides);
             Ioss::Field elem_field("ids_raw", Ioss::Field::INT64, SCALAR(), Ioss::Field::MESH, number_sides);
-            decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(sides));
-            decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, TOPTR(element));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(sides));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, TOPTR(element));
           }
 
           if (!blockOmissions.empty()) {
@@ -1811,7 +1797,7 @@ namespace Iopx {
         else if (field.get_name() == "owning_processor") {
           // If parallel, then set the "locally_owned" property on the nodeblocks.
           Ioss::CommSet *css = get_region()->get_commset("commset_node");
-          if (ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) {
+          if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
             int64_t *idata = static_cast<int64_t*>(data);
             for (int64_t i=0; i < nodeCount; i++) {
               idata[i] = myProcessor;
@@ -2151,10 +2137,10 @@ namespace Iopx {
         if (field.get_name() == "ids" ||
             field.get_name() == "ids_raw") {
           if (field.get_type() == Ioss::Field::INTEGER) {
-            ierr = decomp32->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field,
+            ierr = decomp->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field,
                                               static_cast<int*>(data));
           } else {
-            ierr = decomp64->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field,
+            ierr = decomp->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field,
                                               static_cast<int64_t*>(data));
           }
           if (ierr < 0)
@@ -2166,9 +2152,9 @@ namespace Iopx {
           }
         } else if (field.get_name() == "orientation") {
           if (field.get_type() == Ioss::Field::INTEGER) {
-            ierr = decomp32->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field, static_cast<int*>(data));
+            ierr = decomp->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field, static_cast<int*>(data));
           } else {
-            ierr = decomp64->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field, static_cast<int64_t*>(data));
+            ierr = decomp->get_set_mesh_var(get_file_pointer(), EX_NODE_SET, id, field, static_cast<int64_t*>(data));
           }
           if (ierr < 0)
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
@@ -2254,9 +2240,9 @@ namespace Iopx {
           // Convert local node id to global node id and store in 'data'
           const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map;
           if (int_byte_size_api() == 4) {
-            decomp32->get_node_entity_proc_data(static_cast<int*>(data), map, do_map);
+            decomp->get_node_entity_proc_data(static_cast<int*>(data), map, do_map);
           } else {
-            decomp64->get_node_entity_proc_data(static_cast<int64_t*>(data), map, do_map);
+            decomp->get_node_entity_proc_data(static_cast<int64_t*>(data), map, do_map);
           }
         } else {
           std::ostringstream errmsg;
@@ -2409,13 +2395,13 @@ namespace Iopx {
 
             if (int_byte_size_api() == 4) {
               int     *element_side = static_cast<int*>(data);
-              decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, field, element_side);
+              decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, field, element_side);
               for (ssize_t iel = 1; iel < 2*entity_count; iel+=2) {
                 element_side[iel] = element_side[iel] - side_offset;
               }
             } else {
               int64_t *element_side = static_cast<int64_t*>(data);
-              decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, field, element_side);
+              decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, field, element_side);
               for (ssize_t iel = 1; iel < 2*entity_count; iel+=2) {
                 element_side[iel] = element_side[iel] - side_offset;
               }
@@ -2427,13 +2413,13 @@ namespace Iopx {
             if (int_byte_size_api() == 4) {
               Ioss::Field elem_field("ids",   Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
               Ioss::Field side_field("sides", Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
-              decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
-              decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(sides));
+              decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
+              decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(sides));
             } else {
               Ioss::Field elem_field("ids",   Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
               Ioss::Field side_field("sides", Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
-              decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
-              decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(sides));
+              decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
+              decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(sides));
             }
 
             Ioss::IntVector is_valid_side;
@@ -2526,13 +2512,13 @@ namespace Iopx {
           if (int_byte_size_api() == 4) {
             Ioss::Field elem_field("ids",   Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
             Ioss::Field side_field("sides", Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
-            decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
-            decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(sides));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(sides));
           } else {
             Ioss::Field elem_field("ids",   Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
             Ioss::Field side_field("sides", Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
-            decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
-            decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(sides));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
+            decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(sides));
           }
           Ioss::Utils::calculate_sideblock_membership(is_valid_side, fb, int_byte_size_api(),
                                                       TOPTR(element), TOPTR(sides),
@@ -2814,13 +2800,13 @@ namespace Iopx {
       if (int_byte_size_api() == 4) {
         Ioss::Field elem_field("ids",   Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
         Ioss::Field side_field("sides", Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
-        decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
-        decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(side));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(side));
       } else {
         Ioss::Field elem_field("ids",   Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
         Ioss::Field side_field("sides", Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
-        decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
-        decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(side));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(side));
       }
 
       Ioss::IntVector is_valid_side;
@@ -3008,13 +2994,13 @@ namespace Iopx {
       if (int_byte_size_api() == 4) {
         Ioss::Field elem_field("ids",   Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
         Ioss::Field side_field("sides", Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, number_sides);
-        decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
-        decomp32->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(sides));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int*)TOPTR(element));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int*)TOPTR(sides));
       } else {
         Ioss::Field elem_field("ids",   Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
         Ioss::Field side_field("sides", Ioss::Field::INT64, "scalar", Ioss::Field::MESH, number_sides);
-        decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
-        decomp64->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(sides));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field, (int64_t*)TOPTR(element));
+        decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, (int64_t*)TOPTR(sides));
       }
       //----
 
