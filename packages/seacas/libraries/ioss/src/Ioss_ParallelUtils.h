@@ -124,11 +124,37 @@ namespace Ioss {
     MPI_Comm communicator_;
   };
 
-#ifdef HAVE_MPI
-  inline MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
-  inline MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
-  inline MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
-  inline MPI_Datatype mpi_type(unsigned int /*dummy*/)     {return MPI_UNSIGNED;}
+  template <typename INT> 
+    inline std::vector<INT> get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
+				   size_t *offset, size_t *count)
+  {
+    std::vector<INT> dist(proc_count+1);
+    
+    size_t per_proc = entity_count / proc_count;
+    size_t extra    = entity_count % proc_count;
+
+    *count = per_proc + (my_proc < extra ? 1 : 0);
+
+    if (my_proc < extra) {
+      *offset = (per_proc+1) * my_proc;
+    }
+    else {
+      *offset = (per_proc+1) * extra + per_proc * (my_proc - extra);
+    }
+
+    // This processors range of elements is
+    // [element_offset..element_offset+element_count)
+
+    // Fill in element_dist vector.  Range of elements on each processor...
+    size_t sum = 0;
+    for (size_t i=0; i < proc_count; i++) {
+      dist[i] = sum;
+      sum += per_proc;
+      if (i < extra) sum++;
+    }
+    dist[proc_count] = sum;
+    return dist;
+  }
 
   inline int power_2(int count)
   {
@@ -144,6 +170,12 @@ namespace Ioss {
     }
     return pow2;
   }
+
+#ifdef HAVE_MPI
+  inline MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
+  inline MPI_Datatype mpi_type(int /*dummy*/)     {return MPI_INT;}
+  inline MPI_Datatype mpi_type(int64_t /*dummy*/) {return MPI_LONG_LONG_INT;}
+  inline MPI_Datatype mpi_type(unsigned int /*dummy*/)     {return MPI_UNSIGNED;}
 
   template <typename T>
   int MY_Alltoallv64(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts, const std::vector<int64_t> &senddisp,

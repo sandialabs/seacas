@@ -90,6 +90,8 @@ namespace Iocgns {
 
     ~ParallelDatabaseIO() = default;
 
+    void release_memory() override;
+
     void openDatabase() const;
     void closeDatabase() const;
 
