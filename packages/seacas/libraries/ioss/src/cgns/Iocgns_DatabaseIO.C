@@ -42,6 +42,7 @@
 #include <Ioss_Utils.h>
 #include <assert.h>
 #include <cgns/Iocgns_DatabaseIO.h>
+#include <cgns/Iocgns_Utils.h>
 #include <stddef.h>
 #include <sys/select.h>
 #include <time.h>
@@ -74,117 +75,6 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-namespace {
-  const char *Version() {return "Iocgns_DatabaseIO.C 2016/01/28";}
-
-  void cgns_error(int cgnsid, int lineno, int /* processor */)
-  {
-    std::ostringstream errmsg;
-    errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno
-	   << " in file '" << Version()
-	   << "' Please report to gdsjaar@sandia.gov if you need help.";
-    if (cgnsid > 0) {
-      cg_close(cgnsid);
-    }
-    IOSS_ERROR(errmsg);
-  }
-
-  template <typename INT>
-  void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get, INT *idata)
-  {
-    // The {topo}_map[] arrays map from CGNS face# to IOSS face#.
-    // See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
-    // NOTE: '0' for first entry is to account for 1-based face numbering.
-
-    switch (parent_topo->shape())
-      {
-      case Ioss::ElementShape::HEX:
-	static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = hex_map[idata[2*i+1]];
-	}
-	break;
-
-      case Ioss::ElementShape::TET:
-	static int tet_map[] = {0, 4, 1, 2, 3};
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = tet_map[idata[2*i+1]];
-	}
-	break;
-
-      case Ioss::ElementShape::PYRAMID:
-	static int pyr_map[] = {0, 5, 1, 2, 3, 4};
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = pyr_map[idata[2*i+1]];
-	}
-	break;
-
-      case Ioss::ElementShape::WEDGE:
-#if 0
-	static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
-	// Not needed -- maps 1 to 1
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = wed_map[idata[2*i+1]];
-	}
-#endif
-	break;
-      default:
-	;
-      }
-  }
-
-  std::string map_cgns_to_topology_type(CG_ElementType_t type)
-  {
-    std::string topology = "unknown";
-    switch (type)
-      {
-      case CG_NODE:
-	topology = "tetra4"; break;
-      case CG_BAR_2:
-	topology = "bar2"; break;
-      case CG_BAR_3:
-	topology = "bar3"; break;
-      case CG_TRI_3:
-	topology = "tri3"; break;
-      case CG_TRI_6:
-	topology = "tri6"; break;
-      case CG_QUAD_4:
-	topology = "quad4"; break;
-      case CG_QUAD_8:
-	topology = "quad8"; break;
-      case CG_QUAD_9:
-	topology = "quad9"; break;
-      case CG_TETRA_4:
-	topology = "tetra4"; break;
-      case CG_TETRA_10:
-	topology = "tetra10"; break;
-      case CG_PYRA_5:
-	topology = "pyramid5"; break;
-      case CG_PYRA_13:
-	topology = "pyramid13"; break;
-      case CG_PYRA_14:
-	topology = "pyramid14"; break;
-      case CG_PENTA_6:
-	topology = "wedge6"; break;
-      case CG_PENTA_15:
-	topology = "wedge15"; break;
-      case CG_PENTA_18:
-	topology = "wedge18"; break;
-      case CG_HEXA_8:
-	topology = "hex8"; break;
-      case CG_HEXA_20:
-	topology = "hex20"; break;
-      case CG_HEXA_27:
-	topology = "hex27"; break;
-      default:
-	std::cerr << "WARNING: Found topology of type "
-		  << cg_ElementTypeName(type)
-		  << " which is not currently supported.\n";
-	topology = "unknown";
-      }
-    return topology;
-  }
-}
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
@@ -419,7 +309,7 @@ namespace Iocgns {
 
 	  if (parent_flag == 0 && total_elements > 0) {
 	    total_elements -= num_entity;
-	    std::string element_topo = map_cgns_to_topology_type(e_type);
+	    std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
 	    std::cout << "Added block " << zone_name
 		      << ": CGNS topology = '" << cg_ElementTypeName(e_type)
 		      << "', IOSS topology = '" << element_topo
@@ -460,7 +350,7 @@ namespace Iocgns {
 	      std::string block_name(zone_name);
 	      block_name += "/";
 	      block_name += section_name;
-	      std::string face_topo = map_cgns_to_topology_type(e_type);
+	      std::string face_topo = Utils::map_cgns_to_topology_type(e_type);
 	      std::cout << "Added sideset " << block_name << " of topo " << face_topo
 			<< " with " << num_entity << " faces\n";
 	      
@@ -531,7 +421,7 @@ namespace Iocgns {
 	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble,
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	  }
 
 	  // Map to global coordinate position...
@@ -551,7 +441,7 @@ namespace Iocgns {
 	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble,
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	  }
 
 	  // Map to global coordinate position...
@@ -571,7 +461,7 @@ namespace Iocgns {
 	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble,
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	  }
 
 	  // Map to global coordinate position...
@@ -601,7 +491,7 @@ namespace Iocgns {
 	  int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble,
 				   &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	  }
 
 	  // Map to global coordinate position...
@@ -612,7 +502,7 @@ namespace Iocgns {
 	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble,
 			       &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	  }
 
 	  // Map to global coordinate position...
@@ -623,7 +513,7 @@ namespace Iocgns {
 	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble,
 			       &first, &num_coord, TOPTR(coord));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	  }
 
 	  // Map to global coordinate position...
@@ -691,7 +581,7 @@ namespace Iocgns {
 	    int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
 					idata, nullptr);
 	    if (ierr < 0) {
-	      cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	      Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	    }
 	  }
 
@@ -708,7 +598,7 @@ namespace Iocgns {
 	    int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
 					(cgsize_t*)data, nullptr);
 	    if (ierr < 0) {
-	      cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	      Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	    }
 	  }
 	}
@@ -806,7 +696,7 @@ namespace Iocgns {
 	int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
 				    TOPTR(elements), TOPTR(parent));
 	if (ierr < 0) {
-	  cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	  Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	}
 
 	size_t offset = m_zoneOffset[zone];
@@ -820,7 +710,7 @@ namespace Iocgns {
 	    assert(parent[num_to_get*3+i] == 0);
 	  }
 	  // Adjust face numbers to IOSS convention instead of CGNS convention...
-	  map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+	  Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
 	else {
 	  int64_t *idata = (int64_t*)data;
@@ -832,7 +722,7 @@ namespace Iocgns {
 	    assert(parent[num_to_get*3+i] == 0);
 	  }
 	  // Adjust face numbers to IOSS convention instead of CGNS convention...
-	  map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+	  Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
 
 
