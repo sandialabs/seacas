@@ -137,11 +137,13 @@ namespace Iocgns {
 
   int64_t ParallelDatabaseIO::node_global_to_local(int64_t global, bool must_exist) const
   {
+    // TODO: Fix
     return global;
   }
 
   int64_t ParallelDatabaseIO::element_global_to_local(int64_t global) const
   {
+    // TODO: Fix
     return global;
   }
 
@@ -181,9 +183,11 @@ namespace Iocgns {
       cgsize_t num_bc = 0;
       cgsize_t num_geo = 0;
       cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
+#if defined(DEBUG_OUTPUT)
       std::cout << "Family " << family << " named " << name
 		<< " has " << num_bc << " BC, and "
 		<< num_geo << " geometry references\n";
+#endif
       if (num_bc > 0) {
 	// Create a sideset...
 	std::string ss_name(name);
@@ -197,11 +201,12 @@ namespace Iocgns {
     int i = 0;
     for (auto &block : decomp->el_blocks) {
       std::string element_topo = Utils::map_cgns_to_topology_type(block.topologyType);
+#if defined(DEBUG_OUTPUT)
       std::cout << "Added block " << block.name()
 		<< ": CGNS topology = '" << cg_ElementTypeName(block.topologyType)
 		<< "', IOSS topology = '" << element_topo
 		<< "' with " << block.ioss_count() << " elements\n";
-
+#endif
       auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
@@ -222,9 +227,11 @@ namespace Iocgns {
 	block_name += "/";
 	block_name += sset.name();
 	std::string face_topo = Utils::map_cgns_to_topology_type(sset.topologyType);
-	std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name << " of topo " << face_topo
+#if defined(DEBUG_OUTPUT)
+	std::cout << "Processor " << myProcessor << ": Added sideblock "
+		  << block_name << " of topo " << face_topo
 		  << " with " << sset.ioss_count() << " faces\n";
-	      
+#endif	      
 	const auto &block = decomp->el_blocks[sset.parentBlockIndex];
 
 	std::string parent_topo = Utils::map_cgns_to_topology_type(block.topologyType);

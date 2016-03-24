@@ -159,9 +159,11 @@ namespace Iocgns {
       cgsize_t num_bc = 0;
       cgsize_t num_geo = 0;
       cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
+#if defined(DEBUG_OUTPUT)
       std::cout << "Family " << family << " named " << name
 		<< " has " << num_bc << " BC, and "
 		<< num_geo << " geometry references\n";
+#endif
       if (num_bc > 0) {
 	// Create a sideset...
 	std::string ss_name(name);
@@ -246,8 +248,9 @@ namespace Iocgns {
 	    auto donor_iter = m_zoneNameMap.find(donorname);
 	    if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
 	      num_shared += npnts;
+#if defined(DEBUG_OUTPUT)
 	      std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname << "\n";
-
+#endif
 	      std::vector<cgsize_t> points(npnts);
 	      std::vector<cgsize_t> donors(npnts);
 
@@ -310,11 +313,12 @@ namespace Iocgns {
 	  if (parent_flag == 0 && total_elements > 0) {
 	    total_elements -= num_entity;
 	    std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
+#if defined(DEBUG_OUTPUT)
 	    std::cout << "Added block " << zone_name
 		      << ": CGNS topology = '" << cg_ElementTypeName(e_type)
 		      << "', IOSS topology = '" << element_topo
 		      << "' with " << num_entity << " elements\n";
-
+#endif
 	    eblock = new Ioss::ElementBlock(this, zone_name, element_topo, num_entity);
 	    eblock->property_add(Ioss::Property("base", base));
 	    eblock->property_add(Ioss::Property("zone", zone));
@@ -340,7 +344,7 @@ namespace Iocgns {
 	      sset = new Ioss::SideSet(this, section_name);
 	      bool added = get_region()->add(sset);
 	      if(!added) {
-		std::cout << "ERROR: Could not add sideset " << section_name << "\n";
+		std::cerr << "ERROR: Could not add sideset " << section_name << "\n";
 		delete sset;
 		sset = nullptr;
 	      }
@@ -351,9 +355,10 @@ namespace Iocgns {
 	      block_name += "/";
 	      block_name += section_name;
 	      std::string face_topo = Utils::map_cgns_to_topology_type(e_type);
+#if defined(DEBUG_OUTPUT)
 	      std::cout << "Added sideset " << block_name << " of topo " << face_topo
 			<< " with " << num_entity << " faces\n";
-	      
+#endif	      
 	      std::string parent_topo = eblock == nullptr ? "unknown" : eblock->topology()->name();
 	      Ioss::SideBlock *sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
 							  num_entity);
