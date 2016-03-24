@@ -42,6 +42,7 @@
 #include <Ioss_Utils.h>
 #include <assert.h>
 #include <cgns/Iocgns_ParallelDatabaseIO.h>
+#include <cgns/Iocgns_Utils.h>
 #include <stddef.h>
 #include <sys/select.h>
 #include <time.h>
@@ -74,117 +75,6 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-namespace {
-  const char *Version() {return "Iocgns_ParallelDatabaseIO.C 2016/01/28";}
-
-  void cgns_error(int cgnsid, int lineno, int /* processor */)
-  {
-    std::ostringstream errmsg;
-    errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno
-	   << " in file '" << Version()
-	   << "' Please report to gdsjaar@sandia.gov if you need help.";
-    if (cgnsid > 0) {
-      cg_close(cgnsid);
-    }
-    IOSS_ERROR(errmsg);
-  }
-
-  template <typename INT>
-  void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get, INT *idata)
-  {
-    // The {topo}_map[] arrays map from CGNS face# to IOSS face#.
-    // See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
-    // NOTE: '0' for first entry is to account for 1-based face numbering.
-
-    switch (parent_topo->shape())
-      {
-      case Ioss::ElementShape::HEX:
-	static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = hex_map[idata[2*i+1]];
-	}
-	break;
-
-      case Ioss::ElementShape::TET:
-	static int tet_map[] = {0, 4, 1, 2, 3};
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = tet_map[idata[2*i+1]];
-	}
-	break;
-
-      case Ioss::ElementShape::PYRAMID:
-	static int pyr_map[] = {0, 5, 1, 2, 3, 4};
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = pyr_map[idata[2*i+1]];
-	}
-	break;
-
-      case Ioss::ElementShape::WEDGE:
-#if 0
-	static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
-	// Not needed -- maps 1 to 1
-	for (size_t i=0; i < num_to_get; i++) {
-	  idata[2*i+1] = wed_map[idata[2*i+1]];
-	}
-#endif
-	break;
-      default:
-	;
-      }
-  }
-
-  std::string map_cgns_to_topology_type(CG_ElementType_t type)
-  {
-    std::string topology = "unknown";
-    switch (type)
-      {
-      case CG_NODE:
-	topology = "tetra4"; break;
-      case CG_BAR_2:
-	topology = "bar2"; break;
-      case CG_BAR_3:
-	topology = "bar3"; break;
-      case CG_TRI_3:
-	topology = "tri3"; break;
-      case CG_TRI_6:
-	topology = "tri6"; break;
-      case CG_QUAD_4:
-	topology = "quad4"; break;
-      case CG_QUAD_8:
-	topology = "quad8"; break;
-      case CG_QUAD_9:
-	topology = "quad9"; break;
-      case CG_TETRA_4:
-	topology = "tetra4"; break;
-      case CG_TETRA_10:
-	topology = "tetra10"; break;
-      case CG_PYRA_5:
-	topology = "pyramid5"; break;
-      case CG_PYRA_13:
-	topology = "pyramid13"; break;
-      case CG_PYRA_14:
-	topology = "pyramid14"; break;
-      case CG_PENTA_6:
-	topology = "wedge6"; break;
-      case CG_PENTA_15:
-	topology = "wedge15"; break;
-      case CG_PENTA_18:
-	topology = "wedge18"; break;
-      case CG_HEXA_8:
-	topology = "hex8"; break;
-      case CG_HEXA_20:
-	topology = "hex20"; break;
-      case CG_HEXA_27:
-	topology = "hex27"; break;
-      default:
-	std::cerr << "WARNING: Found topology of type "
-		  << cg_ElementTypeName(type)
-		  << " which is not currently supported.\n";
-	topology = "unknown";
-      }
-    return topology;
-  }
-}
 namespace Iocgns {
 
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string& filename,
@@ -306,7 +196,7 @@ namespace Iocgns {
     // Get the number of zones (element blocks) in the mesh...
     int i = 0;
     for (auto &block : decomp->el_blocks) {
-      std::string element_topo = map_cgns_to_topology_type(block.topologyType);
+      std::string element_topo = Utils::map_cgns_to_topology_type(block.topologyType);
       std::cout << "Added block " << block.name()
 		<< ": CGNS topology = '" << cg_ElementTypeName(block.topologyType)
 		<< "', IOSS topology = '" << element_topo
@@ -331,13 +221,13 @@ namespace Iocgns {
 	std::string block_name(zone.m_name);
 	block_name += "/";
 	block_name += sset.name();
-	std::string face_topo = map_cgns_to_topology_type(sset.topologyType);
+	std::string face_topo = Utils::map_cgns_to_topology_type(sset.topologyType);
 	std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name << " of topo " << face_topo
 		  << " with " << sset.ioss_count() << " faces\n";
 	      
 	const auto &block = decomp->el_blocks[sset.parentBlockIndex];
 
-	std::string parent_topo = map_cgns_to_topology_type(block.topologyType);
+	std::string parent_topo = Utils::map_cgns_to_topology_type(block.topologyType);
 	Ioss::SideBlock *sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
 						    sset.ioss_count());
 	sblk->property_add(Ioss::Property("id", id));
@@ -576,11 +466,11 @@ namespace Iocgns {
 
 	if (field.get_type() == Ioss::Field::INT32) {
 	  int *idata = (int*)data;
-	  map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+	  Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
 	else {
 	  int64_t *idata = (int64_t*)data;
-	  map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
+	  Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
 	return num_to_get;
       }
