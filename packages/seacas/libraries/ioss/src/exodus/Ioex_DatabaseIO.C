@@ -212,7 +212,6 @@ namespace Ioex {
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
       if (isize == 8) {
-        exodusMode |= EX_ALL_INT64_API;
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
     }
@@ -225,16 +224,26 @@ namespace Ioex {
 
   void DatabaseIO::set_int_byte_size_api(Ioss::DataSize size) const
   {
-    int old_status = ex_int64_status(get_file_pointer());
-    if (size == 8) {
-      ex_set_int64_status(get_file_pointer(),  EX_ALL_INT64_API|old_status);
+    if (exodusFilePtr > 0) {
+      int old_status = ex_int64_status(get_file_pointer());
+      if (size == 8) {
+	ex_set_int64_status(get_file_pointer(),  EX_ALL_INT64_API|old_status);
+      }
+      else {
+	// Need to clear EX_ALL_INT64_API if set...
+	if (old_status & EX_ALL_INT64_API) {
+	  old_status &= ~EX_ALL_INT64_API;
+	  assert(!(old_status & EX_ALL_INT64_API));
+	  ex_set_int64_status(exodusFilePtr,  old_status);
+	}
+      }
     }
     else {
-      // Need to clear EX_ALL_INT64_API if set...
-      if (old_status & EX_ALL_INT64_API) {
-	old_status &= ~EX_ALL_INT64_API;
-	assert(!(old_status & EX_ALL_INT64_API));
-	ex_set_int64_status(exodusFilePtr,  old_status);
+      if (size == 8) {
+	exodusMode |= EX_ALL_INT64_API;
+      }
+      else {
+	exodusMode &= ~EX_ALL_INT64_API;
       }
     }
     dbIntSizeAPI = size; // mutable
