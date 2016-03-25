@@ -38,6 +38,7 @@
 #include <Ioss_Map.h>                   // for Map, MapContainer
 #include <Ioss_ParallelUtils.h>         // for ParallelUtils, etc
 #include <Ioss_Utils.h>                 // for TOPTR, Utils
+#include <Ioss_Sort.h>   
 #include <exodus/Ioex_Utils.h>
 #include <Ioss_PropertyManager.h>       // for PropertyManager
 
@@ -45,7 +46,7 @@
 #include <limits.h>                     // for INT_MAX
 #include <mpi.h>                        // for MPI_Alltoall, MPI_Bcast, etc
 #include <stdlib.h>                     // for exit, EXIT_FAILURE
-#include <algorithm>                    // for sort, lower_bound, copy, etc
+#include <algorithm>                    // for lower_bound, copy, etc
 #include <iostream>                     // for operator<<, ostringstream, etc
 #include <iterator>                     // for distance
 #include <map>                          // for map
@@ -334,7 +335,7 @@ namespace Iopx {
         simple_node_decompose(method, node_dist);
     }
 
-    std::sort(importElementMap.begin(), importElementMap.end());
+    Ioss::qsort(importElementMap.begin(), importElementMap.end());
 
     std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
     Ioss::Utils::generate_index(importElementIndex);
@@ -405,7 +406,7 @@ namespace Iopx {
       size_t local_elem = 0;
 
       // All values are 0
-      localElementMap.reserve(local_elem);
+      localElementMap.resize(local_elem);
       exportElementCount.resize(processorCount+1);
       exportElementIndex.resize(processorCount+1);
       importElementCount.resize(processorCount+1);
@@ -697,7 +698,7 @@ namespace Iopx {
         export_map.push_back(std::make_pair(export_procs[i],export_global_ids[i]));
       }
 
-      std::sort(export_map.begin(), export_map.end());
+      Ioss::qsort(export_map);
       exportElementMap.reserve(num_export);
       exportElementIndex.resize(processorCount+1);
       exportElementCount.resize(processorCount+1);
@@ -718,7 +719,7 @@ namespace Iopx {
         export_map.push_back(std::make_pair(export_procs[i],export_glob[i]));
       }
 
-      std::sort(export_map.begin(), export_map.end());
+      Ioss::qsort(export_map);
       exportElementMap.reserve(num_export);
       exportElementIndex.resize(processorCount+1);
       exportElementCount.resize(processorCount+1);
@@ -951,7 +952,7 @@ namespace Iopx {
         node_proc_list.push_back(std::make_pair(exportNodeMap[i], p));
       }
     }
-    std::sort(node_proc_list.begin(), node_proc_list.end());
+    Ioss::qsort(node_proc_list);
 
     std::vector<std::pair<INT,int> > shared_nodes;
     for (size_t i=0; i < node_proc_list.size(); i++) {
