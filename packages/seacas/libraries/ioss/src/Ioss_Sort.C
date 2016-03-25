@@ -132,6 +132,9 @@ namespace Ioss {
   //    Avoids having implementation in header file.
   template void qsort<>(std::vector<int> &v);
   template void qsort<>(std::vector<int64_t> &v);
+  template void qsort<>(std::vector<std::pair<int,int>> &v);
+  template void qsort<>(std::vector<std::pair<int,long>> &v);
+  template void qsort<>(std::vector<std::pair<long,int>> &v);
   template void qsort<>(std::vector<std::pair<int64_t,int64_t>> &v);
 
   template <typename INT>
