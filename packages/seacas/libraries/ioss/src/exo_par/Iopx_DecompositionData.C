@@ -335,7 +335,7 @@ namespace Iopx {
         simple_node_decompose(method, node_dist);
     }
 
-    Ioss::qsort(importElementMap.begin(), importElementMap.end());
+    Ioss::qsort(importElementMap);
 
     std::copy(importElementCount.begin(), importElementCount.end(), importElementIndex.begin());
     Ioss::Utils::generate_index(importElementIndex);
