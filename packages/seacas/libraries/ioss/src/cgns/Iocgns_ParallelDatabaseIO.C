@@ -210,6 +210,7 @@ namespace Iocgns {
     openDatabase();
   }
 
+  ParallelDatabaseIO::~ParallelDatabaseIO() = default;
   void ParallelDatabaseIO::openDatabase() const
   {
     if (cgnsFilePtr < 0) {

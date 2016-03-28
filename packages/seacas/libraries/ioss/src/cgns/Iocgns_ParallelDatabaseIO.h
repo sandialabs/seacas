@@ -79,6 +79,8 @@ namespace Iocgns {
 		       MPI_Comm communicator,
 		       const Ioss::PropertyManager &props);
 
+    ~ParallelDatabaseIO();
+    
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
@@ -87,8 +89,6 @@ namespace Iocgns {
 
     int64_t node_global_to_local(int64_t global, bool must_exist) const;
     int64_t element_global_to_local(int64_t global) const;
-
-    ~ParallelDatabaseIO() = default;
 
     void release_memory() override;
 
