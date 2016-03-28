@@ -164,14 +164,14 @@ namespace Iocgns {
       {}
 
       virtual ~DecompositionDataBase() {}
-      virtual void decompose_model(int cgnsFilePtr) = 0;
+      virtual void decompose_model(int filePtr) = 0;
       virtual size_t ioss_node_count() const = 0;
       virtual size_t ioss_elem_count() const = 0;
       virtual int int_size() const = 0;
 
-      virtual void get_node_coordinates(int cgnsFilePtr, double *ioss_data, const Ioss::Field &field) const = 0;
+      virtual void get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const = 0;
       
-      void get_block_connectivity(int cgnsFilePtr, void *data, int blk_seq) const;
+      void get_block_connectivity(int filePtr, void *data, int blk_seq) const;
 
       template <typename T>
 	void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
@@ -179,7 +179,7 @@ namespace Iocgns {
       template <typename T>
 	void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
-      void get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset, void *data) const;
+      void get_sideset_element_side(int filePtr, const SetDecompositionData &sset, void *data) const;
 
       MPI_Comm comm_;
       int myProcessor;
@@ -221,7 +221,7 @@ namespace Iocgns {
 		      MPI_Comm communicator);
     ~DecompositionData() {}
 
-    void decompose_model(int cgnsFilePtr);
+    void decompose_model(int filePtr);
 
     size_t ioss_node_count() const {return nodeGTL.size();}
     size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
@@ -236,13 +236,13 @@ namespace Iocgns {
     template <typename T>
       void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
-    void get_block_connectivity(int cgnsFilePtr, INT *data, int blk_seq) const;
+    void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
 
-    void get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset, INT *data) const;
+    void get_sideset_element_side(int filePtr, const SetDecompositionData &sset, INT *data) const;
     
   private:
-    void get_sideset_data(int cgnsFilePtr);
-    void generate_zone_shared_nodes(int cgnsFilePtr, INT min_node, INT max_node);
+    void get_sideset_data(int filePtr);
+    void generate_zone_shared_nodes(int filePtr, INT min_node, INT max_node);
     
 #if !defined(NO_ZOLTAN_SUPPORT)
     void zoltan_decompose(const std::string &method);
@@ -268,7 +268,7 @@ namespace Iocgns {
     void generate_adjacency_list(int fileId, std::vector<INT> &pointer,
 				 std::vector<INT> &adjacency);
 
-    void calculate_element_centroids(int cgnsFilePtr,
+    void calculate_element_centroids(int filePtr,
 				     const std::vector<INT> &pointer,
 				     const std::vector<INT> &adjacency,
 				     const std::vector<INT> &node_dist);
@@ -282,8 +282,8 @@ namespace Iocgns {
 			     const std::vector<INT> &adjacency,
 			     const std::vector<INT> &node_dist);
 
-    void get_file_node_coordinates(int cgnsFilePtr, int direction, double *ioss_data) const;
-    void get_node_coordinates(int cgnsFilePtr, double *ioss_data, const Ioss::Field &field) const;
+    void get_file_node_coordinates(int filePtr, int direction, double *ioss_data) const;
+    void get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
     std::vector<INT> localElementMap;
 
