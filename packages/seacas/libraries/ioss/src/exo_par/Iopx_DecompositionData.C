@@ -229,13 +229,13 @@ namespace Iopx {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::decompose_model(int exodusId)
+  void DecompositionData<INT>::decompose_model(int filePtr)
   {
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
 
     ex_init_params info;
-    ex_get_init_ext(exodusId, &info);
+    ex_get_init_ext(filePtr, &info);
 
     globalElementCount = info.num_elem;
     globalNodeCount    = info.num_nodes;
@@ -255,8 +255,8 @@ namespace Iopx {
               << nodeCount << " nodes; offset = " << nodeOffset << ".\n";
 #endif
     std::vector<INT> pointer; // Index into adjacency, processor list for each element...
-    std::vector<INT> adjacency; // Size is sum of element connectivity sizes
-    generate_adjacency_list(exodusId, pointer, adjacency, info.num_elem_blk);
+    std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
+    generate_adjacency_list(filePtr, pointer, adjacency, info.num_elem_blk);
 
     std::string method = "LINEAR";
 
@@ -307,7 +307,7 @@ namespace Iopx {
         method == "GEOM_KWAY" ||
         method == "KWAY_GEOM" ||
         method == "METIS_SFC") {
-      calculate_element_centroids(exodusId, pointer, adjacency, node_dist);
+      calculate_element_centroids(filePtr, pointer, adjacency, node_dist);
     }
 
 #if !defined(NO_PARMETIS_SUPPORT)
@@ -359,14 +359,14 @@ namespace Iopx {
       get_shared_node_list();
     }
 
-    get_nodeset_data(exodusId, info.num_node_sets);
+    get_nodeset_data(filePtr, info.num_node_sets);
 
     if (info.num_side_sets > 0) {
       // Create elemGTL map which is used for sidesets (also element sets)
       build_global_to_local_elem_map();
     }
 
-    get_sideset_data(exodusId, info.num_side_sets);
+    get_sideset_data(filePtr, info.num_side_sets);
 
     // Have all the decomposition data needed (except for boundary
     // conditions...)
@@ -1070,7 +1070,7 @@ namespace Iopx {
 #endif
 
   template <typename INT>
-  void DecompositionData<INT>::generate_adjacency_list(int exodusId,
+  void DecompositionData<INT>::generate_adjacency_list(int filePtr,
                                                        std::vector<INT> &pointer,
                                                        std::vector<INT> &adjacency,
                                                        size_t block_count)
@@ -1081,8 +1081,8 @@ namespace Iopx {
 
     std::vector<ex_block> ebs(block_count);
     std::vector<INT> ids(block_count);
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
-    ex_get_ids(exodusId, EX_ELEM_BLOCK, TOPTR(ids));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
+    ex_get_ids(filePtr, EX_ELEM_BLOCK, TOPTR(ids));
 
     size_t sum = 0; // Size of adjacency vector.
     size_t offset = 0;
@@ -1097,7 +1097,7 @@ namespace Iopx {
       el_blocks[b].id_ = ids[b];
       ebs[b].id = ids[b];
       ebs[b].type = EX_ELEM_BLOCK;
-      ex_get_block_param(exodusId, &ebs[b]);
+      ex_get_block_param(filePtr, &ebs[b]);
 
       // Range of elements in element block b [)
       size_t b_start = offset;  // offset is index of first element in this block...
@@ -1157,7 +1157,7 @@ namespace Iopx {
 #if DEBUG_OUTPUT
         std::cerr << "Processor " << myProcessor << " has " << overlap << " elements on element block " << id << "\n";
 #endif
-        ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity), nullptr, nullptr);
+        ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity), nullptr, nullptr);
         size_t el = 0;
         for (size_t elem = 0; elem < overlap; elem++) {
           pointer.push_back(adjacency.size());
@@ -1173,7 +1173,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::get_nodeset_data(int exodusId, size_t set_count)
+  void DecompositionData<INT>::get_nodeset_data(int filePtr, size_t set_count)
   {
     // Issues:
     // 1. Large node count in nodeset(s) that could overwhelm a single
@@ -1217,12 +1217,12 @@ namespace Iopx {
 
     node_sets.resize(set_count);
 
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
 
     std::vector<std::vector<INT> > set_nodelists(set_count);
     std::vector<ex_set> sets(set_count);
     std::vector<INT> ids(set_count);
-    ex_get_ids(exodusId, EX_NODE_SET, TOPTR(ids));
+    ex_get_ids(filePtr, EX_NODE_SET, TOPTR(ids));
 
     for (size_t i=0; i < set_count; i++) {
       node_sets[i].id_ = ids[i];
@@ -1233,7 +1233,7 @@ namespace Iopx {
       sets[i].distribution_factor_list = nullptr;
     }
 
-    ex_get_sets(exodusId, sets.size(), TOPTR(sets));
+    ex_get_sets(filePtr, sets.size(), TOPTR(sets));
 
     // Get total length of nset nodelists...
     size_t nodelist_size = 0;
@@ -1263,7 +1263,7 @@ namespace Iopx {
       if (myProcessor == root) {
         size_t offset = 0;
         for (size_t i=0; i < set_count; i++) {
-          ex_get_set(exodusId, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
+          ex_get_set(filePtr, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
           offset += sets[i].num_entry;
         }
         assert(offset == nodelist_size);
@@ -1330,7 +1330,7 @@ namespace Iopx {
           df_valcon[2*i+1] = 1;
           if (sets[i].num_distribution_factor > 0) {
             std::vector<double> df(sets[i].num_distribution_factor);
-            ex_get_set_dist_fact(exodusId, EX_NODE_SET, sets[i].id, TOPTR(df));
+            ex_get_set_dist_fact(filePtr, EX_NODE_SET, sets[i].id, TOPTR(df));
             double val = df[0];
             df_valcon[2*i] = val;
             for (int64_t j=1; j < sets[i].num_distribution_factor; j++) {
@@ -1353,12 +1353,12 @@ namespace Iopx {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::get_sideset_data(int exodusId, size_t set_count)
+  void DecompositionData<INT>::get_sideset_data(int filePtr, size_t set_count)
   {
     // Issues:
     // 0. See 'get_nodeset_data' for most issues.
 
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
 
     int root = 0; // Root processor that reads all sideset bulk data (nodelists)
 
@@ -1367,7 +1367,7 @@ namespace Iopx {
     std::vector<std::vector<INT> > set_elemlists(set_count);
     std::vector<ex_set> sets(set_count);
     std::vector<INT> ids(set_count);
-    ex_get_ids(exodusId, EX_SIDE_SET, TOPTR(ids));
+    ex_get_ids(filePtr, EX_SIDE_SET, TOPTR(ids));
 
     for (size_t i=0; i < set_count; i++) {
       side_sets[i].id_ = ids[i];
@@ -1378,7 +1378,7 @@ namespace Iopx {
       sets[i].distribution_factor_list = nullptr;
     }
 
-    ex_get_sets(exodusId, sets.size(), TOPTR(sets));
+    ex_get_sets(filePtr, sets.size(), TOPTR(sets));
 
     // Get total length of sideset elemlists...
     size_t elemlist_size = 0;
@@ -1408,7 +1408,7 @@ namespace Iopx {
       if (myProcessor == root) {
         size_t offset = 0;
         for (size_t i=0; i < set_count; i++) {
-          ex_get_set(exodusId, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
+          ex_get_set(filePtr, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
           offset += sets[i].num_entry;
         }
         assert(offset == elemlist_size);
@@ -1485,7 +1485,7 @@ namespace Iopx {
           df_valcon[3*i+2] = 0;
           if (sets[i].num_distribution_factor > 0) {
             std::vector<double> df(sets[i].num_distribution_factor);
-            ex_get_set_dist_fact(exodusId, EX_SIDE_SET, sets[i].id, TOPTR(df));
+            ex_get_set_dist_fact(filePtr, EX_SIDE_SET, sets[i].id, TOPTR(df));
             double val = df[0];
             df_valcon[3*i] = val;
             for (int64_t j=1; j < sets[i].num_distribution_factor; j++) {
@@ -1506,7 +1506,7 @@ namespace Iopx {
               // communicating the entire list for all sidesets.  If not
               // constant, then we will have to communicate.
               std::vector<int> nodes_per_face(side_sets[i].file_count());
-              ex_get_side_set_node_count(exodusId, sets[i].id, TOPTR(nodes_per_face));
+              ex_get_side_set_node_count(filePtr, sets[i].id, TOPTR(nodes_per_face));
               int nod_per_face = nodes_per_face[0];
               for (size_t j=1; j < nodes_per_face.size(); j++) {
                 if (nodes_per_face[j] != nod_per_face) {
@@ -1547,7 +1547,7 @@ namespace Iopx {
           size_t offset = 0;
           for (size_t i=0; i < set_count; i++) {
             if (side_sets[i].distributionFactorValsPerEntity < 0) {
-              ex_get_side_set_node_count(exodusId, sets[i].id, &nodes_per_face[offset]);
+              ex_get_side_set_node_count(filePtr, sets[i].id, &nodes_per_face[offset]);
               offset += side_sets[i].file_count();
             }
           }
@@ -1576,7 +1576,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::calculate_element_centroids(int exodusId,
+  void DecompositionData<INT>::calculate_element_centroids(int filePtr,
                                                            const std::vector<INT> &pointer,
                                                            const std::vector<INT> &adjacency,
                                                            const std::vector<INT> &node_dist)
@@ -1660,7 +1660,7 @@ namespace Iopx {
     if (spatialDimension > 2)
       z.resize(nodeCount);
 
-    ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount, TOPTR(x), TOPTR(y), TOPTR(z));
+    ex_get_partial_coord(filePtr, nodeOffset+1, nodeCount, TOPTR(x), TOPTR(y), TOPTR(z));
 
     // The total vector size I need to send data in is node_comm_send.size()*3
     std::vector<double> coord_send;
@@ -2005,27 +2005,27 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_node_coordinates(int exodusId, double *ioss_data, const Ioss::Field &field) const
+  int DecompositionData<INT>::get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const
   {
     std::vector<double> tmp(nodeCount);
 
     int ierr = 0;
     if (field.get_name() == "mesh_model_coordinates_x") {
-      ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
+      ierr = ex_get_partial_coord(filePtr, nodeOffset+1, nodeCount,
                                   TOPTR(tmp), nullptr, nullptr);
       if (ierr >= 0)
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
-      ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
+      ierr = ex_get_partial_coord(filePtr, nodeOffset+1, nodeCount,
                                   nullptr, TOPTR(tmp), nullptr);
       if (ierr >= 0)
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
-      ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
+      ierr = ex_get_partial_coord(filePtr, nodeOffset+1, nodeCount,
                                   nullptr, nullptr, TOPTR(tmp));
       if (ierr >= 0)
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
@@ -2055,7 +2055,7 @@ namespace Iopx {
         double* coord[3];
         coord[0] = coord[1] = coord[2] = nullptr;
         coord[d] = TOPTR(tmp);
-        ierr = ex_get_partial_coord(exodusId, nodeOffset+1, nodeCount,
+        ierr = ex_get_partial_coord(filePtr, nodeOffset+1, nodeCount,
                                     coord[0], coord[1], coord[2]);
         if (ierr < 0)
           return ierr;
@@ -2072,11 +2072,11 @@ namespace Iopx {
     return ierr;
   }
 
-  template void DecompositionData<int>::get_block_connectivity(int exodusId, int *data, int64_t id, size_t blk_seq, size_t nnpe) const;
-  template void DecompositionData<int64_t>::get_block_connectivity(int exodusId, int64_t *data, int64_t id, size_t blk_seq, size_t nnpe) const;
+  template void DecompositionData<int>::get_block_connectivity(int filePtr, int *data, int64_t id, size_t blk_seq, size_t nnpe) const;
+  template void DecompositionData<int64_t>::get_block_connectivity(int filePtr, int64_t *data, int64_t id, size_t blk_seq, size_t nnpe) const;
 
   template <typename INT>
-  void DecompositionData<INT>::get_block_connectivity(int exodusId, INT *data, int64_t id, size_t blk_seq, size_t nnpe) const
+  void DecompositionData<INT>::get_block_connectivity(int filePtr, INT *data, int64_t id, size_t blk_seq, size_t nnpe) const
   {
     BlockDecompositionData blk = el_blocks[blk_seq];
 
@@ -2090,9 +2090,9 @@ namespace Iopx {
     if (elementOffset > fileBlockIndex[blk_seq])
       offset = elementOffset - fileBlockIndex[blk_seq];
 
-    assert(sizeof(INT) == Ioex::exodus_byte_size_api(exodusId));
+    assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
     std::vector<INT> file_conn(count * nnpe);
-    ex_get_partial_conn(exodusId, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_conn), nullptr, nullptr);
+    ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_conn), nullptr, nullptr);
     communicate_block_data(TOPTR(file_conn), data, blk_seq, nnpe);
 
     for (size_t i=0; i < blk.iossCount * nnpe; i++) {
@@ -2259,15 +2259,15 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_var(int exodusId, int step, ex_entity_type type,
+  int DecompositionData<INT>::get_var(int filePtr, int step, ex_entity_type type,
                                       int var_index, ex_entity_id id, int64_t num_entity, std::vector<double> &data) const
   {
     if (type == EX_ELEM_BLOCK) {
-      return get_elem_var(exodusId, step, var_index, id, num_entity, data);
+      return get_elem_var(filePtr, step, var_index, id, num_entity, data);
     } else if (type == EX_NODAL) {
-      return get_node_var(exodusId, step, var_index, id, num_entity, data);
+      return get_node_var(filePtr, step, var_index, id, num_entity, data);
     } else if (type == EX_NODE_SET || type == EX_SIDE_SET) {
-      return get_set_var(exodusId, step, var_index, type, id, num_entity, data);
+      return get_set_var(filePtr, step, var_index, type, id, num_entity, data);
     } else {
       assert(1==0);
       return -1;
@@ -2275,18 +2275,18 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_attr(int exodusId, ex_entity_type obj_type, ex_entity_id id, size_t attr_count, double* attrib) const
+  int DecompositionData<INT>::get_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id, size_t attr_count, double* attrib) const
   {
     if (attr_count == 1) {
-      return get_one_attr(exodusId, obj_type, id, 1, attrib);
+      return get_one_attr(filePtr, obj_type, id, 1, attrib);
     }
 
     if (obj_type == EX_ELEM_BLOCK) {
-      return get_elem_attr(exodusId, id, attr_count, attrib);
+      return get_elem_attr(filePtr, id, attr_count, attrib);
     } else if (obj_type == EX_NODAL) {
-      return get_node_attr(exodusId, id, attr_count, attrib);
+      return get_node_attr(filePtr, id, attr_count, attrib);
     } else if (obj_type == EX_NODE_SET || obj_type == EX_SIDE_SET) {
-      return get_set_attr(exodusId, obj_type, id, attr_count, attrib);
+      return get_set_attr(filePtr, obj_type, id, attr_count, attrib);
     } else {
       assert(1==0);
       return -1;
@@ -2294,14 +2294,14 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_one_attr(int exodusId, ex_entity_type obj_type, ex_entity_id id, int attrib_index, double* attrib) const
+  int DecompositionData<INT>::get_one_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id, int attrib_index, double* attrib) const
   {
     if (obj_type == EX_ELEM_BLOCK) {
-      return get_one_elem_attr(exodusId, id, attrib_index, attrib);
+      return get_one_elem_attr(filePtr, id, attrib_index, attrib);
     } else if (obj_type == EX_NODAL) {
-      return get_one_node_attr(exodusId, id, attrib_index, attrib);
+      return get_one_node_attr(filePtr, id, attrib_index, attrib);
     } else if (obj_type == EX_NODE_SET || obj_type == EX_SIDE_SET) {
-      return get_one_set_attr(exodusId, obj_type, id, attrib_index, attrib);
+      return get_one_set_attr(filePtr, obj_type, id, attrib_index, attrib);
     } else {
       assert(1==0);
       return -1;
@@ -2358,44 +2358,44 @@ namespace Iopx {
     }
   }
 
-  int DecompositionDataBase::get_set_mesh_double(int exodusId, ex_entity_type type, ex_entity_id id,
+  int DecompositionDataBase::get_set_mesh_double(int filePtr, ex_entity_type type, ex_entity_id id,
                                                  const Ioss::Field& field, double *ioss_data) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      return this32->get_set_mesh_var(exodusId, type, id, field, ioss_data);
+      return this32->get_set_mesh_var(filePtr, type, id, field, ioss_data);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      return this64->get_set_mesh_var(exodusId, type, id, field, ioss_data);
+      return this64->get_set_mesh_var(filePtr, type, id, field, ioss_data);
     }
   }
 
-  int DecompositionDataBase::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
-                                              const Ioss::Field& field, void *ioss_data) const
+  int DecompositionDataBase::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
+					      const Ioss::Field& field, void *ioss_data) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      return this32->get_set_mesh_var(exodusId, type, id, field, (int*)ioss_data);
+      return this32->get_set_mesh_var(filePtr, type, id, field, (int*)ioss_data);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      return this64->get_set_mesh_var(exodusId, type, id, field, (int64_t*)ioss_data);
+      return this64->get_set_mesh_var(filePtr, type, id, field, (int64_t*)ioss_data);
     }
   }
 
-  void DecompositionDataBase::get_block_connectivity(int exodusId, void *data, int64_t id, size_t blk_seq, size_t nnpe) const
+  void DecompositionDataBase::get_block_connectivity(int filePtr, void *data, int64_t id, size_t blk_seq, size_t nnpe) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      this32->get_block_connectivity(exodusId, (int*)data, id, blk_seq, nnpe);
+      this32->get_block_connectivity(filePtr, (int*)data, id, blk_seq, nnpe);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      this64->get_block_connectivity(exodusId,  (int64_t*)data, id, blk_seq, nnpe);
+      this64->get_block_connectivity(filePtr,  (int64_t*)data, id, blk_seq, nnpe);
     }
   }
 
@@ -2462,7 +2462,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_set_var(int exodusId, int step, int var_index,
+  int DecompositionData<INT>::get_set_var(int filePtr, int step, int var_index,
                                           ex_entity_type type, ex_entity_id id,
                                           int64_t num_entity, std::vector<double> &ioss_data) const
   {
@@ -2474,7 +2474,7 @@ namespace Iopx {
     if (myProcessor == set.root_) {
       // Read the set data from the file..
       file_data.resize(set.file_count());
-      ierr = ex_get_var(exodusId, step, type, var_index, id, set.file_count(), TOPTR(file_data));
+      ierr = ex_get_var(filePtr, step, type, var_index, id, set.file_count(), TOPTR(file_data));
     }
 
     if (ierr >= 0)
@@ -2484,7 +2484,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_set_attr(int exodusId, ex_entity_type type, ex_entity_id id, size_t comp_count, double *ioss_data) const
+  int DecompositionData<INT>::get_set_attr(int filePtr, ex_entity_type type, ex_entity_id id, size_t comp_count, double *ioss_data) const
   {
     // Find set corresponding to the specified id...
     const SetDecompositionData &set = get_decomp_set(type, id);
@@ -2494,7 +2494,7 @@ namespace Iopx {
     if (myProcessor == set.root_) {
       // Read the set data from the file..
       file_data.resize(set.file_count()*comp_count);
-      ierr = ex_get_attr(exodusId, type, id, TOPTR(file_data));
+      ierr = ex_get_attr(filePtr, type, id, TOPTR(file_data));
     }
 
     if (ierr >= 0)
@@ -2504,7 +2504,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_one_set_attr(int exodusId, ex_entity_type type, ex_entity_id id, int attr_index, double *ioss_data) const
+  int DecompositionData<INT>::get_one_set_attr(int filePtr, ex_entity_type type, ex_entity_id id, int attr_index, double *ioss_data) const
   {
     // Find set corresponding to the specified id...
     const SetDecompositionData &set = get_decomp_set(type, id);
@@ -2514,7 +2514,7 @@ namespace Iopx {
     if (myProcessor == set.root_) {
       // Read the set data from the file..
       file_data.resize(set.file_count());
-      ierr = ex_get_one_attr(exodusId, type, id, attr_index, TOPTR(file_data));
+      ierr = ex_get_one_attr(filePtr, type, id, attr_index, TOPTR(file_data));
     }
 
     if (ierr >= 0)
@@ -2524,11 +2524,11 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_node_var(int exodusId, int step, int var_index, ex_entity_id id,
+  int DecompositionData<INT>::get_node_var(int filePtr, int step, int var_index, ex_entity_id id,
                                            int64_t num_entity, std::vector<double> &ioss_data) const
   {
     std::vector<double> file_data(nodeCount);
-    int ierr = ex_get_partial_var(exodusId, step, EX_NODAL, var_index, id, nodeOffset+1, nodeCount, TOPTR(file_data));
+    int ierr = ex_get_partial_var(filePtr, step, EX_NODAL, var_index, id, nodeOffset+1, nodeCount, TOPTR(file_data));
 
     if (ierr >= 0)
       communicate_node_data(TOPTR(file_data), TOPTR(ioss_data), 1);
@@ -2536,10 +2536,10 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_node_attr(int exodusId, ex_entity_id id, size_t comp_count, double *ioss_data) const
+  int DecompositionData<INT>::get_node_attr(int filePtr, ex_entity_id id, size_t comp_count, double *ioss_data) const
   {
     std::vector<double> file_data(nodeCount*comp_count);
-    int ierr = ex_get_partial_attr(exodusId, EX_NODAL, id, nodeOffset+1, nodeCount, TOPTR(file_data));
+    int ierr = ex_get_partial_attr(filePtr, EX_NODAL, id, nodeOffset+1, nodeCount, TOPTR(file_data));
 
     if (ierr >= 0)
       communicate_node_data(TOPTR(file_data), ioss_data, comp_count);
@@ -2547,10 +2547,10 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_one_node_attr(int exodusId, ex_entity_id id, int attr_index, double *ioss_data) const
+  int DecompositionData<INT>::get_one_node_attr(int filePtr, ex_entity_id id, int attr_index, double *ioss_data) const
   {
     std::vector<double> file_data(nodeCount);
-    int ierr = ex_get_partial_one_attr(exodusId, EX_NODAL, id, nodeOffset+1, nodeCount, attr_index, TOPTR(file_data));
+    int ierr = ex_get_partial_one_attr(filePtr, EX_NODAL, id, nodeOffset+1, nodeCount, attr_index, TOPTR(file_data));
 
     if (ierr >= 0)
       communicate_node_data(TOPTR(file_data), ioss_data, 1);
@@ -2558,7 +2558,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_elem_var(int exodusId, int step, int var_index, ex_entity_id id,
+  int DecompositionData<INT>::get_elem_var(int filePtr, int step, int var_index, ex_entity_id id,
                                            int64_t num_entity, std::vector<double> &ioss_data) const
   {
     // Find blk_seq corresponding to block the specified id...
@@ -2567,7 +2567,7 @@ namespace Iopx {
     size_t offset = get_block_element_offset(blk_seq);
 
     std::vector<double> file_data(count);
-    int ierr = ex_get_partial_var(exodusId, step, EX_ELEM_BLOCK, var_index, id, offset+1, count, TOPTR(file_data));
+    int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset+1, count, TOPTR(file_data));
 
     if (ierr >= 0)
       communicate_block_data(TOPTR(file_data), TOPTR(ioss_data), blk_seq, 1);
@@ -2576,7 +2576,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_elem_attr(int exodusId, ex_entity_id id, size_t comp_count, double *ioss_data) const
+  int DecompositionData<INT>::get_elem_attr(int filePtr, ex_entity_id id, size_t comp_count, double *ioss_data) const 
   {
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
@@ -2584,7 +2584,7 @@ namespace Iopx {
     size_t offset = get_block_element_offset(blk_seq);
 
     std::vector<double> file_data(count*comp_count);
-    int ierr = ex_get_partial_attr(exodusId, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_data));
+    int ierr = ex_get_partial_attr(filePtr, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_data)); 
 
     if (ierr >= 0)
       communicate_block_data(TOPTR(file_data), ioss_data, blk_seq, comp_count);
@@ -2593,7 +2593,7 @@ namespace Iopx {
   }
 
   template <typename INT>
-  int DecompositionData<INT>::get_one_elem_attr(int exodusId, ex_entity_id id, int attr_index, double *ioss_data) const
+  int DecompositionData<INT>::get_one_elem_attr(int filePtr, ex_entity_id id, int attr_index, double *ioss_data) const 
   {
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
@@ -2601,7 +2601,7 @@ namespace Iopx {
     size_t offset = get_block_element_offset(blk_seq);
 
     std::vector<double> file_data(count);
-    int ierr = ex_get_partial_one_attr(exodusId, EX_ELEM_BLOCK, id, offset+1, count, attr_index, TOPTR(file_data));
+    int ierr = ex_get_partial_one_attr(filePtr, EX_ELEM_BLOCK, id, offset+1, count, attr_index, TOPTR(file_data));
 
     if (ierr >= 0)
       communicate_block_data(TOPTR(file_data), ioss_data, blk_seq, 1);
@@ -2609,23 +2609,23 @@ namespace Iopx {
     return ierr;
   }
 
-  template int DecompositionData<int>::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+  template int DecompositionData<int>::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                                         const Ioss::Field& field, int* ioss_data) const;
-  template int DecompositionData<int64_t>::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+  template int DecompositionData<int64_t>::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                                             const Ioss::Field& field, int64_t* ioss_data) const;
-  template int DecompositionData<int>::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+  template int DecompositionData<int>::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                                         const Ioss::Field& field, double* ioss_data) const;
-  template int DecompositionData<int64_t>::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+  template int DecompositionData<int64_t>::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                                             const Ioss::Field& field, double* ioss_data) const;
 
   template <typename INT> template <typename T>
-  int DecompositionData<INT>::get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+  int DecompositionData<INT>::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                                const Ioss::Field& field, T* ioss_data) const
   {
     // Sideset Distribution Factor data can be very complicated.
     // For some sanity, handle all requests for those in a separate routine...
     if (type == EX_SIDE_SET && field.get_name() == "distribution_factors") {
-      return handle_sset_df(exodusId, id, field, ioss_data);
+      return handle_sset_df(filePtr, id, field, ioss_data);
     }
 
     const SetDecompositionData &set = get_decomp_set(type, id);
@@ -2641,12 +2641,12 @@ namespace Iopx {
         // Interleave the "ids" and "sides" fields...
         std::vector<T> tmp(set.ioss_count());
         Ioss::Field elem_field("ids",   Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, tmp.size());
-        get_set_mesh_var(exodusId, type, id, elem_field, TOPTR(tmp));
+        get_set_mesh_var(filePtr, type, id, elem_field, TOPTR(tmp));
         for (size_t i=0; i < tmp.size(); i++) {
           ioss_data[2*i] = tmp[i];
         }
         Ioss::Field side_field("sides", Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, tmp.size());
-        get_set_mesh_var(exodusId, type, id, side_field, TOPTR(tmp));
+        get_set_mesh_var(filePtr, type, id, side_field, TOPTR(tmp));
         for (size_t i=0; i < tmp.size(); i++) {
           ioss_data[2*i+1] = tmp[i];
         }
@@ -2660,12 +2660,12 @@ namespace Iopx {
         // Interleave the "ids" and "sides" fields...
         std::vector<T> tmp(set.ioss_count());
         Ioss::Field elem_field("ids_raw",   Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, tmp.size());
-        get_set_mesh_var(exodusId, type, id, elem_field, TOPTR(tmp));
+        get_set_mesh_var(filePtr, type, id, elem_field, TOPTR(tmp));
         for (size_t i=0; i < tmp.size(); i++) {
           ioss_data[2*i] = tmp[i];
         }
         Ioss::Field side_field("sides", Ioss::Field::INTEGER, "scalar", Ioss::Field::MESH, tmp.size());
-        get_set_mesh_var(exodusId, type, id, side_field, TOPTR(tmp));
+        get_set_mesh_var(filePtr, type, id, side_field, TOPTR(tmp));
         for (size_t i=0; i < tmp.size(); i++) {
           ioss_data[2*i+1] = tmp[i];
         }
@@ -2689,12 +2689,12 @@ namespace Iopx {
       // Read the nodeset data from the file..
       if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
         file_data.resize(set.file_count());
-        ierr = ex_get_set(exodusId, type, id, TOPTR(file_data), nullptr);
+        ierr = ex_get_set(filePtr, type, id, TOPTR(file_data), nullptr);
       } else if (field.get_name() == "sides") {
         // Sideset only...
         if (type == EX_SIDE_SET) {
           file_data.resize(set.file_count());
-          ierr = ex_get_set(exodusId, type, id, nullptr, TOPTR(file_data));
+          ierr = ex_get_set(filePtr, type, id, nullptr, TOPTR(file_data));
         } else {
           return -1;
         }
@@ -2705,7 +2705,7 @@ namespace Iopx {
         set_param[0].entry_list = nullptr;
         set_param[0].extra_list = nullptr;
         set_param[0].distribution_factor_list = nullptr;
-        ierr = ex_get_sets(exodusId, 1, set_param);
+        ierr = ex_get_sets(filePtr, 1, set_param);
 
         if (set_param[0].num_distribution_factor == 0) {
           // This should have been caught above.
@@ -2714,7 +2714,7 @@ namespace Iopx {
           if (type == EX_NODE_SET) {
             file_data.resize(set_param[0].num_distribution_factor);
             set_param[0].distribution_factor_list = TOPTR(file_data);
-            ierr = ex_get_sets(exodusId, 1, set_param);
+            ierr = ex_get_sets(filePtr, 1, set_param);
           } else {
             assert(1==0 && "Internal error -- should not be here -- sset df");
           }
@@ -2745,7 +2745,7 @@ namespace Iopx {
   }
 
   template <typename INT> template <typename T>
-  int DecompositionData<INT>::handle_sset_df(int exodusId, ex_entity_id id, const Ioss::Field& field, T* ioss_data) const
+  int DecompositionData<INT>::handle_sset_df(int filePtr, ex_entity_id id, const Ioss::Field& field, T* ioss_data) const 
   {
     int ierr = 0;
 
@@ -2776,14 +2776,14 @@ namespace Iopx {
         set_param[0].entry_list = nullptr;
         set_param[0].extra_list = nullptr;
         set_param[0].distribution_factor_list = nullptr;
-        ex_get_sets(exodusId, 1, set_param);
+        ex_get_sets(filePtr, 1, set_param);
         if (set_param[0].num_distribution_factor == 0) {
           // This should have been caught above.
           assert(1==0 && "Internal error in handle_sset_df");
         } else {
           // Read data directly into ioss_data.
           set_param[0].distribution_factor_list = ioss_data;
-          ex_get_sets(exodusId, 1, set_param);
+          ex_get_sets(filePtr, 1, set_param);
         }
       }
       return 0;
@@ -2810,7 +2810,7 @@ namespace Iopx {
         set_param[0].entry_list = nullptr;
         set_param[0].extra_list = nullptr;
         set_param[0].distribution_factor_list = TOPTR(file_data);
-        ierr = ex_get_sets(exodusId, 1, set_param);
+        ierr = ex_get_sets(filePtr, 1, set_param);
       }
       if (ierr >= 0)
         communicate_set_data(TOPTR(file_data), ioss_data, set, set.distributionFactorValsPerEntity);
@@ -2828,14 +2828,14 @@ namespace Iopx {
       set_param[0].entry_list = nullptr;
       set_param[0].extra_list = nullptr;
       set_param[0].distribution_factor_list = nullptr;
-      ex_get_sets(exodusId, 1, set_param);
+      ex_get_sets(filePtr, 1, set_param);
       df_count = set_param[0].num_distribution_factor;
     }
 
     // Get the node-count-per-face for all faces in this set...
     std::vector<int> nodes_per_face(set.file_count()+1);
     if (myProcessor == set.root_) {
-      ex_get_side_set_node_count(exodusId, set.id_, TOPTR(nodes_per_face));
+      ex_get_side_set_node_count(filePtr, set.id_, TOPTR(nodes_per_face));
       nodes_per_face[set.file_count()] = df_count;
     }
 
@@ -2879,7 +2879,7 @@ namespace Iopx {
       set_param[0].entry_list = nullptr;
       set_param[0].extra_list = nullptr;
       set_param[0].distribution_factor_list = TOPTR(file_data);
-      ex_get_sets(exodusId, 1, set_param);
+      ex_get_sets(filePtr, 1, set_param);
     }
 
     // Send this data to the other processors

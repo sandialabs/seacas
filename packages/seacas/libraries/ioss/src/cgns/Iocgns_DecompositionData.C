@@ -155,7 +155,7 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::decompose_model(int cgnsFilePtr)
+  void DecompositionData<INT>::decompose_model(int filePtr)
   {
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
@@ -169,16 +169,16 @@ namespace Iocgns {
       cgsize_t cell_dimension = 0;
       cgsize_t phys_dimension = 0;
       char base_name[33];
-      cg_base_read(cgnsFilePtr, base, base_name, &cell_dimension, &phys_dimension);
+      cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension);
       spatialDimension = phys_dimension;
     }
 
-    cg_nzones(cgnsFilePtr, base, &num_zones);
+    cg_nzones(filePtr, base, &num_zones);
     zones_.resize(num_zones+1); // Use 1-based zones.
     
     for (int zone=1; zone <= num_zones; zone++) {
       CG_ZoneType_t zone_type;
-      cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
+      cg_zone_type(filePtr, base, zone, &zone_type);
 
       // See if all zones are "Unstructured" which is all we currently support...
       if (zone_type != CG_Unstructured) {
@@ -190,7 +190,7 @@ namespace Iocgns {
       else {
 	cgsize_t size[3];
 	char zone_name[33];
-	cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+	cg_zone_read(filePtr, base, zone, zone_name, size);
 
 	
 	INT total_block_nodes = size[0];
@@ -223,13 +223,13 @@ namespace Iocgns {
 
     std::vector<INT> pointer; // Index into adjacency, processor list for each element...
     std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
-    generate_adjacency_list(cgnsFilePtr, pointer, adjacency);
+    generate_adjacency_list(filePtr, pointer, adjacency);
 
     // Get min and max node used on this processor...
     auto min_max = std::minmax_element(adjacency.begin(), adjacency.end());
     INT min_node = *(min_max.first);
     INT max_node = *(min_max.second);
-    generate_zone_shared_nodes(cgnsFilePtr, min_node, max_node);
+    generate_zone_shared_nodes(filePtr, min_node, max_node);
     
     // Now iterate adjacency list and update any "zone_shared_node" nodes
     // with their "sharee"
@@ -291,7 +291,7 @@ namespace Iocgns {
 	method == "GEOM_KWAY" ||
 	method == "KWAY_GEOM" ||
 	method == "METIS_SFC") {
-      calculate_element_centroids(cgnsFilePtr, pointer, adjacency, node_dist);
+      calculate_element_centroids(filePtr, pointer, adjacency, node_dist);
     }
 
 #if !defined(NO_PARMETIS_SUPPORT)
@@ -348,7 +348,7 @@ namespace Iocgns {
       build_global_to_local_elem_map();
     }
 
-    get_sideset_data(cgnsFilePtr);
+    get_sideset_data(filePtr);
 
     // Have all the decomposition data needed (except for boundary
     // conditions...)
@@ -358,7 +358,7 @@ namespace Iocgns {
 
 
   template <typename INT>
-  void DecompositionData<INT>::generate_zone_shared_nodes(int cgnsFilePtr, INT min_node, INT max_node)
+  void DecompositionData<INT>::generate_zone_shared_nodes(int filePtr, INT min_node, INT max_node)
   {
     // Begin of Zone-Shared node information
 
@@ -378,7 +378,7 @@ namespace Iocgns {
 	
       // Determine number of "shared" nodes (shared with other zones)
       int nconn = 0;
-      cg_nconns(cgnsFilePtr, base, zone, &nconn);
+      cg_nconns(filePtr, base, zone, &nconn);
       for (int i=0; i < nconn; i++) {
 	char connectname[33];
 	CG_GridLocation_t location;
@@ -391,7 +391,7 @@ namespace Iocgns {
 	CG_DataType_t donor_datatype;
 	cgsize_t ndata_donor;
 	  
-	cg_conn_info(cgnsFilePtr, base, zone, i+1, connectname,
+	cg_conn_info(filePtr, base, zone, i+1, connectname,
 		     &location, &connect_type,
 		     &ptset_type, &npnts, donorname,
 		     &donor_zonetype, &donor_ptset_type,
@@ -430,7 +430,7 @@ namespace Iocgns {
 	  std::vector<cgsize_t> points(npnts);
 	  std::vector<cgsize_t> donors(npnts);
 
-	  cg_conn_read(cgnsFilePtr, base, zone, i+1, TOPTR(points),
+	  cg_conn_read(filePtr, base, zone, i+1, TOPTR(points),
 		       donor_datatype, TOPTR(donors));
 	    
 	  for (int j = 0; j < npnts; j++) {
@@ -823,7 +823,7 @@ namespace Iocgns {
 #endif
 
   template <typename INT>
-  void DecompositionData<INT>::generate_adjacency_list(int cgnsFilePtr,
+  void DecompositionData<INT>::generate_adjacency_list(int filePtr,
 						       std::vector<INT> &pointer,
 						       std::vector<INT> &adjacency)
   {
@@ -840,11 +840,11 @@ namespace Iocgns {
     int num_zones = 0;
     INT zone_node_offset = 0;
     
-    cg_nzones(cgnsFilePtr, base, &num_zones);
+    cg_nzones(filePtr, base, &num_zones);
     for (int zone=1; zone <= num_zones; zone++) {
       cgsize_t size[3];
       char zone_name[33];
-      cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+      cg_zone_read(filePtr, base, zone, zone_name, size);
 
       INT total_elements = size[1];
       // NOTE: A Zone will have a single set of nodes, but can have
@@ -853,7 +853,7 @@ namespace Iocgns {
       //       have handled 'size[1]' number of elements; the remaining
       //       sections are then the boundary faces (?)
       int num_sections = 0;
-      cg_nsections(cgnsFilePtr, base, zone, &num_sections);
+      cg_nsections(filePtr, base, zone, &num_sections);
 	
       size_t last_blk_location = 0;
       for (int is = 1; is <= num_sections; is++) {
@@ -865,7 +865,7 @@ namespace Iocgns {
 	int parent_flag = 0;
 
 	// Get the type of elements in this section...
-	cg_section_read(cgnsFilePtr, base, zone, is,
+	cg_section_read(filePtr, base, zone, is,
 			section_name, &e_type, &el_start, &el_end, &num_bndry, &parent_flag);
 
 	INT num_entity = el_end - el_start + 1;
@@ -970,7 +970,7 @@ namespace Iocgns {
 		  << blk_start << " to " << blk_end << ")\n";
 #endif
 	el_blocks[block].fileSectionOffset = blk_start;
-	cg_elements_partial_read(cgnsFilePtr, base, zone, section,
+	cg_elements_partial_read(filePtr, base, zone, section,
 				 blk_start, blk_end,
 				 TOPTR(connectivity), nullptr);
 	size_t el = 0;
@@ -993,7 +993,7 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::get_sideset_data(int cgnsFilePtr)
+  void DecompositionData<INT>::get_sideset_data(int filePtr)
   {
     int root = 0; // Root processor that reads all sideset bulk data (nodelists)
     int base = 1; // Only single base supported so far.
@@ -1037,10 +1037,10 @@ namespace Iocgns {
 	  // *  num_to_get zeros (face on other parent element)
 	  std::vector<cgsize_t> parent(4 * sset.file_count());
 
-	  int ierr = cg_elements_read(cgnsFilePtr, base, sset.zone(), sset.section(),
+	  int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(),
 				      TOPTR(elements), TOPTR(parent));
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    cgns_error(filePtr, __LINE__, myProcessor);
 	  }
 
 	  // Move from 'parent' to 'elementlist'
@@ -1108,7 +1108,7 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::calculate_element_centroids(int cgnsFilePtr,
+  void DecompositionData<INT>::calculate_element_centroids(int filePtr,
 							   const std::vector<INT> &pointer,
 							   const std::vector<INT> &adjacency,
 							   const std::vector<INT> &node_dist)
@@ -1188,14 +1188,14 @@ namespace Iocgns {
     std::vector<double> y;
     std::vector<double> z;
 
-    get_file_node_coordinates(cgnsFilePtr, 0, TOPTR(x));
+    get_file_node_coordinates(filePtr, 0, TOPTR(x));
     if (spatialDimension > 1) {
       y.resize(nodeCount);
-      get_file_node_coordinates(cgnsFilePtr, 1, TOPTR(y));
+      get_file_node_coordinates(filePtr, 1, TOPTR(y));
     }
     if (spatialDimension > 2) {
       z.resize(nodeCount);
-      get_file_node_coordinates(cgnsFilePtr, 2, TOPTR(z));
+      get_file_node_coordinates(filePtr, 2, TOPTR(z));
     }
 
     // The total vector size I need to send data in is node_comm_send.size()*3
@@ -1636,7 +1636,7 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::get_file_node_coordinates(int cgnsFilePtr, int direction, double *data) const
+  void DecompositionData<INT>::get_file_node_coordinates(int filePtr, int direction, double *data) const
   {
     const std::string coord_name[] = {"CoordinateX", "CoordinateY", "CoordinateZ"};
 
@@ -1666,11 +1666,11 @@ namespace Iocgns {
 		    << " with an offset of " << offset
 		    << " ending at " << finish << "\n";
 
-	  int ierr = cg_coord_read(cgnsFilePtr, base, zone,
+	  int ierr = cg_coord_read(filePtr, base, zone,
 				   coord_name[direction].c_str(), CG_RealDouble,
 				   &start, &finish, &data[offset]);
 	  if (ierr < 0) {
-	    cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	    cgns_error(filePtr, __LINE__, myProcessor);
 	  }
 	  offset += count;
 	}
@@ -1680,21 +1680,21 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::get_node_coordinates(int cgnsFilePtr, double *ioss_data, const Ioss::Field &field) const
+  void DecompositionData<INT>::get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const
   {
     std::vector<double> tmp(nodeCount);
     if (field.get_name() == "mesh_model_coordinates_x") {
-      get_file_node_coordinates(cgnsFilePtr, 0, TOPTR(tmp));
+      get_file_node_coordinates(filePtr, 0, TOPTR(tmp));
       communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
-      get_file_node_coordinates(cgnsFilePtr, 1, TOPTR(tmp));
+      get_file_node_coordinates(filePtr, 1, TOPTR(tmp));
       communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
-      get_file_node_coordinates(cgnsFilePtr, 2, TOPTR(tmp));
+      get_file_node_coordinates(filePtr, 2, TOPTR(tmp));
       communicate_node_data(TOPTR(tmp), ioss_data, 1);
     }
 
@@ -1716,7 +1716,7 @@ namespace Iocgns {
       // and 1 communicate_node_data call.
       //
       for (size_t d = 0; d < spatialDimension; d++) {
-	get_file_node_coordinates(cgnsFilePtr, d, TOPTR(tmp));
+	get_file_node_coordinates(filePtr, d, TOPTR(tmp));
         communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
 
         size_t index = d;
@@ -1820,12 +1820,12 @@ namespace Iocgns {
     }
   }
 
-  template void DecompositionData<int>::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset,
+  template void DecompositionData<int>::get_sideset_element_side(int filePtr, const SetDecompositionData &sset,
 								 int *data) const;
-  template void DecompositionData<int64_t>::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset,
+  template void DecompositionData<int64_t>::get_sideset_element_side(int filePtr, const SetDecompositionData &sset,
 								     int64_t *data) const;
   template <typename INT>
-  void DecompositionData<INT>::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset,
+  void DecompositionData<INT>::get_sideset_element_side(int filePtr, const SetDecompositionData &sset,
 							INT *ioss_data) const
   {
     std::vector<INT> element_side;
@@ -1844,14 +1844,14 @@ namespace Iocgns {
       // *  num_to_get zeros (face on other parent element)
       std::vector<cgsize_t> parent(4 * sset.file_count());
 
-      int ierr = cg_elements_read(cgnsFilePtr, base, sset.zone(), sset.section(),
+      int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(),
 				  TOPTR(nodes), TOPTR(parent));
       // Get rid of 'nodes' list -- not used.
       nodes.resize(0); nodes.shrink_to_fit();
 
       
       if (ierr < 0) {
-	cgns_error(cgnsFilePtr, __LINE__, myProcessor);
+	cgns_error(filePtr, __LINE__, myProcessor);
       }
 
       // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
@@ -1867,16 +1867,16 @@ namespace Iocgns {
     communicate_set_data(TOPTR(element_side), ioss_data, sset, 2);
   }
 
-  template void DecompositionData<int>::get_block_connectivity(int cgnsFilePtr, int *data, int blk_seq) const;
-  template void DecompositionData<int64_t>::get_block_connectivity(int cgnsFilePtr, int64_t *data, int blk_seq) const;
+  template void DecompositionData<int>::get_block_connectivity(int filePtr, int *data, int blk_seq) const;
+  template void DecompositionData<int64_t>::get_block_connectivity(int filePtr, int64_t *data, int blk_seq) const;
 
   template <typename INT>
-  void DecompositionData<INT>::get_block_connectivity(int cgnsFilePtr, INT *data, int blk_seq) const
+  void DecompositionData<INT>::get_block_connectivity(int filePtr, INT *data, int blk_seq) const
   {
     auto &blk = el_blocks[blk_seq];
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int base = 1;
-    cg_elements_partial_read(cgnsFilePtr, base, blk.zone(), blk.section(),
+    cg_elements_partial_read(filePtr, base, blk.zone(), blk.section(),
 			     blk.fileSectionOffset, blk.fileSectionOffset + blk.file_count() - 1,
 			     TOPTR(file_conn), nullptr);
     // Map from zone-local node numbers to global implicit
@@ -2166,29 +2166,29 @@ namespace Iocgns {
     }
   }
 
-  void DecompositionDataBase::get_block_connectivity(int cgnsFilePtr, void *data, int blk_seq) const
+  void DecompositionDataBase::get_block_connectivity(int filePtr, void *data, int blk_seq) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      this32->get_block_connectivity(cgnsFilePtr, (int*)data, blk_seq);
+      this32->get_block_connectivity(filePtr, (int*)data, blk_seq);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      this64->get_block_connectivity(cgnsFilePtr,  (int64_t*)data, blk_seq);
+      this64->get_block_connectivity(filePtr,  (int64_t*)data, blk_seq);
     }
   }
 
-  void DecompositionDataBase::get_sideset_element_side(int cgnsFilePtr, const SetDecompositionData &sset, void *data) const
+  void DecompositionDataBase::get_sideset_element_side(int filePtr, const SetDecompositionData &sset, void *data) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      this32->get_sideset_element_side(cgnsFilePtr, sset, (int*)data);
+      this32->get_sideset_element_side(filePtr, sset, (int*)data);
     } else {
       const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      this64->get_sideset_element_side(cgnsFilePtr, sset, (int64_t*)data);
+      this64->get_sideset_element_side(filePtr, sset, (int64_t*)data);
     }
   }
 
