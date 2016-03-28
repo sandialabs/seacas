@@ -252,6 +252,8 @@ namespace Iopx {
     }
   }
 
+  DatabaseIO::~DatabaseIO() = default;
+  
   void DatabaseIO::release_memory()
   {
     nodeMap.release_memory();
