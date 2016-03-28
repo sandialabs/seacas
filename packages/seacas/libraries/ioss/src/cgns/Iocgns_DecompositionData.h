@@ -149,7 +149,7 @@ namespace Iocgns {
       CG_ElementType_t topologyType;
 
       // contains global entity-list positions for all entities in this set on this processor. 
-      std::vector<int> entitylist_map;
+      std::vector<size_t> entitylist_map;
       std::vector<bool> hasEntities; // T/F if this set exists on processor p
 
   };
@@ -211,21 +211,18 @@ namespace Iocgns {
   };
 
   template <typename INT>
-    class DecompositionData;
-
-  template <typename INT>
     class DecompositionData : public DecompositionDataBase
   {
   public:
-    DecompositionData(const Ioss::PropertyManager &props,
-		      MPI_Comm communicator);
+    DecompositionData(const Ioss::PropertyManager &props, MPI_Comm communicator);
     ~DecompositionData() {}
+
+    int int_size() const {return sizeof(INT);}
 
     void decompose_model(int filePtr);
 
     size_t ioss_node_count() const {return nodeGTL.size();}
     size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
-    int int_size() const {return sizeof(INT);}
 
     template <typename T>
       void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
@@ -235,6 +232,9 @@ namespace Iocgns {
       
     template <typename T>
       void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
+
+    template <typename T>
+      void communicate_block_data(cgsize_t *file_data, T *ioss_data, size_t blk_seq, size_t comp_count) const;
 
     void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
 
@@ -261,9 +261,6 @@ namespace Iocgns {
 
     void build_global_to_local_elem_map();
     void get_element_block_communication();
-
-    template <typename T>
-      void communicate_block_data(cgsize_t *file_data, T *ioss_data, size_t blk_seq, size_t comp_count) const;
 
     void generate_adjacency_list(int fileId, std::vector<INT> &pointer,
 				 std::vector<INT> &adjacency);
