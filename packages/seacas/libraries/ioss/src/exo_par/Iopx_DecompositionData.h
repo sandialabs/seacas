@@ -132,7 +132,7 @@ namespace Iopx {
 
       virtual ~DecompositionDataBase() {}
       virtual int int_size() const = 0;
-      virtual void decompose_model(int exodusId) = 0;
+      virtual void decompose_model(int filePtr) = 0;
       virtual size_t ioss_node_count() const = 0;
       virtual size_t ioss_elem_count() const = 0;
 
@@ -168,22 +168,22 @@ namespace Iopx {
       template <typename T>
       void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
-      void get_block_connectivity(int exodusId, void *data, int64_t id, size_t blk_seq, size_t nnpe) const;
+      void get_block_connectivity(int filePtr, void *data, int64_t id, size_t blk_seq, size_t nnpe) const;
 
       void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map, bool do_map) const;
 
-      int get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+      int get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
 			   const Ioss::Field& field, void *ioss_data) const; 
 
-      int get_set_mesh_double(int exodusId, ex_entity_type type, ex_entity_id id,
+      int get_set_mesh_double(int filePtr, ex_entity_type type, ex_entity_id id,
                               const Ioss::Field& field, double *ioss_data) const ;
 
       virtual size_t get_commset_node_size() const = 0;
 
-      virtual int get_node_coordinates(int exodusId, double *ioss_data, const Ioss::Field &field) const = 0;
+      virtual int get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const = 0;
       virtual int get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int attrib_index, double* attrib) const = 0;
       virtual int get_attr(int exoid, ex_entity_type obj_type, ex_entity_id   obj_id, size_t attr_count, double* attrib) const = 0;
-      virtual int get_var(int exodusId, int step, ex_entity_type type,
+      virtual int get_var(int filePtr, int step, ex_entity_type type,
                           int var_index, ex_entity_id id, int64_t num_entity, std::vector<double> &data) const = 0;
   };
 
@@ -199,7 +199,7 @@ namespace Iopx {
 
       int int_size() const {return sizeof(INT);}
 
-      void decompose_model(int exodusId);
+      void decompose_model(int filePtr);
 
       size_t ioss_node_count() const {return nodeGTL.size();}
       size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
@@ -277,7 +277,7 @@ namespace Iopx {
       std::vector<size_t> fileBlockIndex;
 
     public:
-      int get_node_coordinates(int exodusId, double *ioss_data, const Ioss::Field &field) const;
+      int get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
       template <typename T>
       void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
@@ -291,18 +291,18 @@ namespace Iopx {
       template <typename T>
       void communicate_block_data(T *file_data, T *ioss_data, size_t blk_seq, size_t comp_count) const;
 
-      void get_block_connectivity(int exodusId, INT *data, int64_t id, size_t blk_seq, size_t nnpe) const;
+      void get_block_connectivity(int filePtr, INT *data, int64_t id, size_t blk_seq, size_t nnpe) const;
       void get_node_entity_proc_data(INT *entity_proc, const Ioss::MapContainer &node_map, bool do_map) const;
       size_t get_commset_node_size() const {return nodeCommMap.size()/2;}
 
       int get_attr(int exoid, ex_entity_type obj_type, ex_entity_id   obj_id, size_t attr_count, double* attrib) const;
       int get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int attrib_index, double* attrib) const;
 
-      int get_var(int exodusId, int step, ex_entity_type type,
+      int get_var(int filePtr, int step, ex_entity_type type,
                   int var_index, ex_entity_id id, int64_t num_entity, std::vector<double> &data) const;
 
       template <typename T>
-      int get_set_mesh_var(int exodusId, ex_entity_type type, ex_entity_id id,
+      int get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                            const Ioss::Field& field, T *ioss_data) const ;
 
 
@@ -353,7 +353,7 @@ namespace Iopx {
 				 const std::vector<INT> &node_dist);
 
       template <typename T>
-      int handle_sset_df(int exodusId, ex_entity_id id, const Ioss::Field& field, T *ioss_data) const ;
+      int handle_sset_df(int filePtr, ex_entity_id id, const Ioss::Field& field, T *ioss_data) const ;
 
       int get_one_set_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int attrib_index, double* attrib) const;
       int get_one_node_attr(int exoid, ex_entity_id obj_id, int attrib_index, double* attrib) const;
@@ -363,13 +363,13 @@ namespace Iopx {
       int get_node_attr(int exoid, ex_entity_id obj_id, size_t attr_count, double* attrib) const;
       int get_elem_attr(int exoid, ex_entity_id obj_id, size_t attr_count, double* attrib) const;
 
-      int get_node_var(int exodusId, int step, int var_index, ex_entity_id id,
+      int get_node_var(int filePtr, int step, int var_index, ex_entity_id id,
                        int64_t num_entity, std::vector<double> &ioss_data) const;
 
-      int get_elem_var(int exodusId, int step, int var_index, ex_entity_id id,
+      int get_elem_var(int filePtr, int step, int var_index, ex_entity_id id,
                        int64_t num_entity, std::vector<double> &ioss_data) const;
 
-      int get_set_var(int exodusId, int step, int var_index,
+      int get_set_var(int filePtr, int step, int var_index,
                       ex_entity_type type, ex_entity_id id,
                       int64_t num_entity, std::vector<double> &ioss_data) const;
 
@@ -386,13 +386,13 @@ namespace Iopx {
       void build_global_to_local_elem_map();
       void get_element_block_communication(size_t num_elem_block);
 
-      void generate_adjacency_list(int exodusId, std::vector<INT> &pointer, std::vector<INT> &adjacency, size_t block_count);
+      void generate_adjacency_list(int filePtr, std::vector<INT> &pointer, std::vector<INT> &adjacency, size_t block_count);
 
-      void get_nodeset_data(int exodusId, size_t set_count);
+      void get_nodeset_data(int filePtr, size_t set_count);
 
-      void get_sideset_data(int exodusId, size_t set_count);
+      void get_sideset_data(int filePtr, size_t set_count);
 
-      void calculate_element_centroids(int exodusId,
+      void calculate_element_centroids(int filePtr,
                                        const std::vector<INT> &pointer,
                                        const std::vector<INT> &adjacency,
                                        const std::vector<INT> &node_dist);
