@@ -5,7 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   exit
 fi
 
-PARALLEL=1
+PARALLEL=0
 
 rm -f config.cache
 export CFLAGS="-I${ACCESS}/include"
@@ -26,4 +26,4 @@ fi
 
 SHARED="--enable-shared"
 
-./configure --enable-netcdf-4 ${PNETCDF} ${SHARED} ${PARALLEL_TESTS} --disable-v2 --disable-fsync --prefix ${ACCESS} --disable-dap $1
+./configure --enable-netcdf-4 ${PNETCDF} ${SHARED} ${PARALLEL_TESTS} --disable-v2 --disable-fsync --prefix=${ACCESS} --disable-dap $1

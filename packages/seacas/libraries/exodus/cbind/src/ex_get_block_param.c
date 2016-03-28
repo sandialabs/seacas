@@ -80,6 +80,15 @@ int ex_get_block_param( int exoid,
   const char* ablknam;
   const char* vblkcon;
 
+  struct ex_file_item* file = ex_find_file_item(exoid);
+  if (!file ) {
+    char errmsg[MAX_ERR_LENGTH];
+    exerrval = EX_BADFILEID;
+    sprintf(errmsg,"ERROR: unknown file id %d in ex_get_block_param().",exoid);
+    ex_err("ex_get_block_param",errmsg,exerrval);
+    return (EX_FATAL);
+  }
+  
   exerrval = 0;
 
   /* First, locate index of element block id in VAR_ID_EL_BLK array */
@@ -95,11 +104,10 @@ int ex_get_block_param( int exoid,
       return (EX_NOERR);
     } 
       sprintf(errmsg,
-	      "Error: failed to locate %s id  %"PRId64" in id array in file id %d",
+	      "ERROR: failed to locate %s id  %"PRId64" in id array in file id %d",
 	      ex_name_of_object(block->type), block->id,exoid);
       ex_err("ex_get_block_param",errmsg,exerrval);
       return (EX_FATAL);
-    
   }
 
   switch (block->type) {
@@ -141,7 +149,7 @@ int ex_get_block_param( int exoid,
   if ((status = nc_inq_dimid (exoid, dnument, &dimid)) != NC_NOERR) {
     exerrval = status;
     sprintf(errmsg,
-	    "Error: failed to locate number of entities in %s  %"PRId64" in file id %d",
+	    "ERROR: failed to locate number of entities in %s  %"PRId64" in file id %d",
 	    ex_name_of_object(block->type),block->id,exoid);
     ex_err("ex_get_block_param",errmsg, exerrval);
     return(EX_FATAL);
@@ -150,7 +158,7 @@ int ex_get_block_param( int exoid,
   if ((status = nc_inq_dimlen (exoid, dimid, &len)) != NC_NOERR) {
     exerrval = status;
     sprintf(errmsg,
-	    "Error: failed to get number of %ss in block  %"PRId64" in file id %d",
+	    "ERROR: failed to get number of %ss in block  %"PRId64" in file id %d",
 	    ex_name_of_object(block->type),block->id, exoid);
     ex_err("ex_get_block_param",errmsg, exerrval);
     return(EX_FATAL);
@@ -164,7 +172,7 @@ int ex_get_block_param( int exoid,
     if ((status = nc_inq_dimlen (exoid, dimid, &len)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to get number of nodes/entity in %s  %"PRId64" in file id %d",
+	      "ERROR: failed to get number of nodes/entity in %s  %"PRId64" in file id %d",
 	      ex_name_of_object(block->type),block->id, exoid);
       ex_err("ex_get_block_param",errmsg, exerrval);
       return(EX_FATAL);
@@ -172,7 +180,7 @@ int ex_get_block_param( int exoid,
   }
   block->num_nodes_per_entry = len;
 
-  if ( block->type != EX_ELEM_BLOCK ) {
+  if (!file->has_edges || block->type != EX_ELEM_BLOCK) {
     block->num_edges_per_entry = 0;
   } else {
     if ((status = nc_inq_dimid (exoid, dnumedg, &dimid)) != NC_NOERR) {
@@ -182,7 +190,7 @@ int ex_get_block_param( int exoid,
       if ((status = nc_inq_dimlen (exoid, dimid, &len)) != NC_NOERR) {
 	exerrval = status;
 	sprintf(errmsg,
-		"Error: failed to get number of edges/entry in %s  %"PRId64" in file id %d",
+		"ERROR: failed to get number of edges/entry in %s  %"PRId64" in file id %d",
 		ex_name_of_object(block->type),block->id, exoid);
 	ex_err("ex_get_block_param",errmsg, exerrval);
 	return(EX_FATAL);
@@ -191,7 +199,7 @@ int ex_get_block_param( int exoid,
     block->num_edges_per_entry = len;
   }
 
-  if ( block->type != EX_ELEM_BLOCK ) {
+  if (!file->has_faces || block->type != EX_ELEM_BLOCK ) {
     block->num_faces_per_entry = 0;
   } else {
     if ((status = nc_inq_dimid (exoid, dnumfac, &dimid)) != NC_NOERR) {
@@ -201,7 +209,7 @@ int ex_get_block_param( int exoid,
       if ((status = nc_inq_dimlen(exoid, dimid, &len)) != NC_NOERR) {
 	exerrval = status;
 	sprintf(errmsg,
-		"Error: failed to get number of faces/entity in %s  %"PRId64" in file id %d",
+		"ERROR: failed to get number of faces/entity in %s  %"PRId64" in file id %d",
 		ex_name_of_object(block->type),block->id, exoid);
 	ex_err("ex_get_block_param",errmsg, exerrval);
 	return(EX_FATAL);
@@ -217,7 +225,7 @@ int ex_get_block_param( int exoid,
     if ((status = nc_inq_dimlen(exoid, dimid, &len)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to get number of attributes in %s  %"PRId64" in file id %d",
+	      "ERROR: failed to get number of attributes in %s  %"PRId64" in file id %d",
 	      ex_name_of_object(block->type),block->id, exoid);
       ex_err("ex_get_block_param",errmsg, exerrval);
       return(EX_FATAL);
@@ -238,7 +246,7 @@ int ex_get_block_param( int exoid,
     if ((status = nc_inq_varid (exoid, vblkcon, &connid)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to locate connectivity array for %s  %"PRId64" in file id %d",
+	      "ERROR: failed to locate connectivity array for %s  %"PRId64" in file id %d",
 	      ex_name_of_object(block->type), block->id,exoid);
       ex_err("ex_get_block_param",errmsg, exerrval);
       return(EX_FATAL);
@@ -247,7 +255,7 @@ int ex_get_block_param( int exoid,
     if ((status = nc_inq_attlen (exoid, connid, ablknam, &len)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to get %s  %"PRId64" type in file id %d",
+	      "ERROR: failed to get %s  %"PRId64" type in file id %d",
 	      ex_name_of_object(block->type), block->id,exoid);
       ex_err("ex_get_block_param",errmsg, exerrval);
       return(EX_FATAL);
@@ -268,7 +276,7 @@ int ex_get_block_param( int exoid,
     
 }if ((status = nc_get_att_text (exoid, connid, ablknam, block->topology)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,"Error: failed to get %s  %"PRId64" type in file id %d",
+      sprintf(errmsg,"ERROR: failed to get %s  %"PRId64" type in file id %d",
 	      ex_name_of_object(block->type), block->id, exoid);
       ex_err("ex_get_block_param",errmsg, exerrval);
       return(EX_FATAL);

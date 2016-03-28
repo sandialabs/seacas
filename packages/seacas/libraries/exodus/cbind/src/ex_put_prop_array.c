@@ -35,7 +35,7 @@
 
 #include <stddef.h>                     // for size_t
 #include <stdio.h>                      // for sprintf
-#include <string.h>                     // for strcpy, memset, strlen, etc
+#include <string.h>                     // for memset, strlen, etc
 #include "exodusII.h"                   // for ex_err, exerrval, etc
 #include "exodusII_int.h"               // for EX_FATAL, ATT_PROP_NAME, etc
 #include "netcdf.h"                     // for NC_NOERR, nc_set_fill, etc
@@ -108,7 +108,7 @@ int ex_put_prop_array (int   exoid,
   int found = EX_FALSE;
   int int_type;
   size_t num_obj; 
-  char name[MAX_VAR_NAME_LENGTH+1];
+  char *name;
   char tmpstr[MAX_STR_LENGTH+1];
 
   char errmsg[MAX_ERR_LENGTH];
@@ -128,44 +128,44 @@ int ex_put_prop_array (int   exoid,
   for (i=1; i<=num_props; i++) {
     switch (obj_type){
     case EX_ELEM_BLOCK:
-      strcpy (name, VAR_EB_PROP(i));
+      name =  VAR_EB_PROP(i);
       break;
     case EX_FACE_BLOCK:
-      strcpy (name, VAR_FA_PROP(i));
+      name =  VAR_FA_PROP(i);
       break;
     case EX_EDGE_BLOCK:
-      strcpy (name, VAR_ED_PROP(i));
+      name =  VAR_ED_PROP(i);
       break;
     case EX_NODE_SET:
-      strcpy (name, VAR_NS_PROP(i));
+      name =  VAR_NS_PROP(i);
       break;
     case EX_EDGE_SET:
-      strcpy (name, VAR_ES_PROP(i));
+      name =  VAR_ES_PROP(i);
       break;
     case EX_FACE_SET:
-      strcpy (name, VAR_FS_PROP(i));
+      name =  VAR_FS_PROP(i);
       break;
     case EX_ELEM_SET:
-      strcpy (name, VAR_ELS_PROP(i));
+      name =  VAR_ELS_PROP(i);
       break;
     case EX_SIDE_SET:
-      strcpy (name, VAR_SS_PROP(i));
+      name =  VAR_SS_PROP(i);
       break;
     case EX_ELEM_MAP:
-      strcpy (name, VAR_EM_PROP(i));
+      name =  VAR_EM_PROP(i);
       break;
     case EX_FACE_MAP:
-      strcpy (name, VAR_FAM_PROP(i));
+      name =  VAR_FAM_PROP(i);
       break;
     case EX_EDGE_MAP:
-      strcpy (name, VAR_EDM_PROP(i));
+      name =  VAR_EDM_PROP(i);
       break;
     case EX_NODE_MAP:
-      strcpy (name, VAR_NM_PROP(i));
+      name =  VAR_NM_PROP(i);
       break;
     default:
       exerrval = EX_BADPARAM;
-      sprintf(errmsg, "Error: object type %d not supported; file id %d",
+      sprintf(errmsg, "ERROR: object type %d not supported; file id %d",
 	      obj_type, exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       return(EX_FATAL);
@@ -174,7 +174,7 @@ int ex_put_prop_array (int   exoid,
     if ((status = nc_inq_varid(exoid, name, &propid)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to get property array id in file id %d",
+	      "ERROR: failed to get property array id in file id %d",
 	      exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       return (EX_FATAL);
@@ -185,7 +185,7 @@ int ex_put_prop_array (int   exoid,
     if ((status = nc_get_att_text(exoid, propid, ATT_PROP_NAME, tmpstr)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-              "Error: failed to get property name in file id %d", exoid);
+              "ERROR: failed to get property name in file id %d", exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       return (EX_FATAL);
     }
@@ -202,7 +202,7 @@ int ex_put_prop_array (int   exoid,
     /* put netcdf file into define mode  */
     if ((status = nc_redef (exoid)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,"Error: failed to place file id %d into define mode",exoid);
+      sprintf(errmsg,"ERROR: failed to place file id %d into define mode",exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       return (EX_FATAL);
     }
@@ -211,44 +211,44 @@ int ex_put_prop_array (int   exoid,
     /*   of properties                                                       */
     switch (obj_type){
     case EX_ELEM_BLOCK:
-      strcpy (name, VAR_EB_PROP(num_props+1));
+      name =  VAR_EB_PROP(num_props+1);
       break;
     case EX_FACE_BLOCK:
-      strcpy (name, VAR_FA_PROP(num_props+1));
+      name =  VAR_FA_PROP(num_props+1);
       break;
     case EX_EDGE_BLOCK:
-      strcpy (name, VAR_ED_PROP(num_props+1));
+      name =  VAR_ED_PROP(num_props+1);
       break;
     case EX_NODE_SET:
-      strcpy (name, VAR_NS_PROP(num_props+1));
+      name =  VAR_NS_PROP(num_props+1);
       break;
     case EX_EDGE_SET:
-      strcpy (name, VAR_ES_PROP(num_props+1));
+      name =  VAR_ES_PROP(num_props+1);
       break;
     case EX_FACE_SET:
-      strcpy (name, VAR_FS_PROP(num_props+1));
+      name =  VAR_FS_PROP(num_props+1);
       break;
     case EX_ELEM_SET:
-      strcpy (name, VAR_ELS_PROP(num_props+1));
+      name =  VAR_ELS_PROP(num_props+1);
       break;
     case EX_SIDE_SET:
-      strcpy (name, VAR_SS_PROP(num_props+1));
+      name =  VAR_SS_PROP(num_props+1);
       break;
     case EX_ELEM_MAP:
-      strcpy (name, VAR_EM_PROP(num_props+1));
+      name =  VAR_EM_PROP(num_props+1);
       break;
     case EX_FACE_MAP:
-      strcpy (name, VAR_FAM_PROP(num_props+1));
+      name =  VAR_FAM_PROP(num_props+1);
       break;
     case EX_EDGE_MAP:
-      strcpy (name, VAR_EDM_PROP(num_props+1));
+      name =  VAR_EDM_PROP(num_props+1);
       break;
     case EX_NODE_MAP:
-      strcpy (name, VAR_NM_PROP(num_props+1));
+      name =  VAR_NM_PROP(num_props+1);
       break;
     default:
       exerrval = EX_BADPARAM;
-      sprintf(errmsg, "Error: object type %d not supported; file id %d",
+      sprintf(errmsg, "ERROR: object type %d not supported; file id %d",
 	      obj_type, exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       goto error_ret;        /* Exit define mode and return */
@@ -265,7 +265,7 @@ int ex_put_prop_array (int   exoid,
     if ((status = nc_def_var(exoid, name, int_type, 1, dims, &propid)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to create property array variable in file id %d",
+	      "ERROR: failed to create property array variable in file id %d",
 	      exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       goto error_ret;  /* Exit define mode and return */
@@ -278,7 +278,7 @@ int ex_put_prop_array (int   exoid,
 				  strlen(prop_name)+1, prop_name)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-              "Error: failed to store property name %s in file id %d",
+              "ERROR: failed to store property name %s in file id %d",
 	      prop_name,exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       goto error_ret;  /* Exit define mode and return */
@@ -289,7 +289,7 @@ int ex_put_prop_array (int   exoid,
     if ((status = nc_enddef (exoid)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to leave define mode in file id %d",
+	      "ERROR: failed to leave define mode in file id %d",
 	      exoid);
       ex_err("ex_put_prop_array",errmsg,exerrval);
       return (EX_FATAL);
@@ -306,7 +306,7 @@ int ex_put_prop_array (int   exoid,
   if (status != NC_NOERR) {
     exerrval = status;
     sprintf(errmsg,
-	    "Error: failed to store property values in file id %d",
+	    "ERROR: failed to store property values in file id %d",
 	    exoid);
     ex_err("ex_put_prop_array",errmsg,exerrval);
     return (EX_FATAL);
@@ -319,7 +319,7 @@ int ex_put_prop_array (int   exoid,
   nc_set_fill(exoid, oldfill, &temp); /* default: nofill */
   if (nc_enddef (exoid) != NC_NOERR) {    /* exit define mode */
     sprintf(errmsg,
-	    "Error: failed to complete definition for file id %d",
+	    "ERROR: failed to complete definition for file id %d",
 	    exoid);
     ex_err("ex_put_prop_array",errmsg,exerrval);
   }

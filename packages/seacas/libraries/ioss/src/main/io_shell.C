@@ -62,6 +62,10 @@
 #include <xdmf/Ioxf_Initializer.h>
 #endif
 
+#ifdef USE_CGNS
+#include <cgns/Iocgns_Initializer.h>
+#endif
+
 #define OUTPUT if (rank == 0) std::cerr
 
 // ========================================================================
@@ -185,6 +189,10 @@ int main(int argc, char *argv[])
   Ioxf::Initializer ioxf;
 #endif
 
+#ifdef USE_CGNS
+  Iocgns::Initializer iocgns;
+#endif
+
   std::string in_file   = interface.inputFile[0];
   std::string out_file  = interface.outputFile;
 
@@ -236,6 +244,14 @@ namespace {
       properties.add(Ioss::Property("REAL_SIZE_DB",  4));
     }
 
+    if (interface.in_memory_read) {
+      properties.add(Ioss::Property("MEMORY_READ", 1));
+    }
+
+    if (interface.in_memory_write) {
+      properties.add(Ioss::Property("MEMORY_WRITE", 1));
+    }
+
     if (interface.compression_level > 0 || interface.shuffle) {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
       properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level));
@@ -247,7 +263,7 @@ namespace {
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
       if (interface.compose_output != "default") {
 	properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
-}
+      }
     }
 
     if (interface.netcdf4) {
@@ -260,7 +276,7 @@ namespace {
 
     if (interface.debug) {
       properties.add(Ioss::Property("LOGGING", 1));
-}
+    }
 
     Ioss::PropertyManager properties_in;
     if (!interface.decomp_method.empty()) {
@@ -278,7 +294,7 @@ namespace {
       dbi->set_field_separator(interface.fieldSuffixSeparator);
       if (interface.ints_64_bit) {
 	dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-}
+      }
     
       if (!interface.groupName.empty()) {
 	bool success = dbi->open_group(interface.groupName);
@@ -325,9 +341,10 @@ namespace {
 	}
       }
     
-      if (interface.debug) { OUTPUT << "DEFINING MODEL ... \n";
-      
-}if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
+      if (interface.debug) {
+	OUTPUT << "DEFINING MODEL ... \n";
+      }
+      if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
 	OUTPUT << "ERROR: Could not put output region into define model state\n";
 	std::exit(EXIT_FAILURE);
       }
@@ -365,18 +382,22 @@ namespace {
 
       transfer_coordinate_frames(region, output_region, interface.debug);
 
-      if (interface.debug) { OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
-      
-}output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
+      if (interface.debug) {
+	OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
+      }
+
+      output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
       OUTPUT << "Maximum Field size = " << max_field_size << " bytes.\n";
       data.resize(max_field_size);
       OUTPUT << "Resize finished...\n";
     
-      if (interface.debug) { OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
+      if (interface.debug) {
+	OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
+      }
+
       // Model defined, now fill in the model data...
-      
-}output_region.begin_mode(Ioss::STATE_MODEL);
+      output_region.begin_mode(Ioss::STATE_MODEL);
 
       // Transfer MESH field_data from input to output...
       transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH,      interface);
@@ -412,11 +433,11 @@ namespace {
 	Ioss::SideSetContainer fss = region.get_sidesets();
 	for (auto ifs : fss) {
 	  std::string name     = ifs->name();
-	  if (interface.debug) { OUTPUT << name << ", ";
-
+	  if (interface.debug) {
+	    OUTPUT << name << ", ";
+	  }
 	  // Find matching output sideset
-	  
-}Ioss::SideSet *ofs = output_region.get_sideset(name);
+	  Ioss::SideSet *ofs = output_region.get_sideset(name);
 
 	  if (ofs != nullptr) {
 	    transfer_field_data(ifs, ofs, Ioss::Field::MESH);
@@ -427,9 +448,10 @@ namespace {
 
 	      // Find matching output sideblock
 	      std::string fbname = ifb->name();
-	      if (interface.debug) { OUTPUT << fbname << ", ";
-	      
-}Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
+	      if (interface.debug) {
+		OUTPUT << fbname << ", ";
+	      }
+	      Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 
 	      if (ofb != nullptr) {
 		transfer_field_data(ifb, ofb, Ioss::Field::MESH);
@@ -438,16 +460,20 @@ namespace {
 	    }
 	  }
 	}
-	if (interface.debug) { OUTPUT << '\n';
-      
-}}
-      if (interface.debug) { OUTPUT << "END STATE_MODEL... " << '\n';
-      
-}output_region.end_mode(Ioss::STATE_MODEL);
+	if (interface.debug) {
+	  OUTPUT << '\n';
+	}
+      }
+      if (interface.debug) {
+	OUTPUT << "END STATE_MODEL... " << '\n';
+      }
+      output_region.end_mode(Ioss::STATE_MODEL);
 
-      if (interface.debug) { OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
-      
-}if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
+      if (interface.debug) {
+	OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
+      }
+
+      if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
 	if (!interface.debug) {
 	  OUTPUT << "\n Number of time steps on database     =" << std::setw(12)
 		 << region.get_property("state_count").get_int() << "\n\n";
@@ -474,12 +500,12 @@ namespace {
 	  Ioss::SideSetContainer fss = region.get_sidesets();
 	  for (auto ifs : fss) {
 	    std::string name     = ifs->name();
-	    if (interface.debug) { OUTPUT << name << ", ";
+	    if (interface.debug) {
+	      OUTPUT << name << ", ";
+	    }
 
 	    // Find matching output sideset
-	    
-}Ioss::SideSet *ofs = output_region.get_sideset(name);
-
+	    Ioss::SideSet *ofs = output_region.get_sideset(name);
 	    if (ofs != nullptr) {
 	      transfer_fields(ifs, ofs, Ioss::Field::TRANSIENT);
 
@@ -488,27 +514,32 @@ namespace {
 
 		// Find matching output sideblock
 		std::string fbname = ifb->name();
-		if (interface.debug) { OUTPUT << fbname << ", ";
-		
-}Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
+		if (interface.debug) {
+		  OUTPUT << fbname << ", ";
+		}
 
+		Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 		if (ofb != nullptr) {
 		  transfer_fields(ifb, ofb, Ioss::Field::TRANSIENT);
 		}
 	      }
 	    }
 	  }
-	  if (interface.debug) { OUTPUT << '\n';
-	
-}}
-	if (interface.debug) { OUTPUT << "END STATE_DEFINE_TRANSIENT... " << '\n';
-	
-}output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
+	  if (interface.debug) {
+	    OUTPUT << '\n';
+	  }
+	}
+	if (interface.debug) {
+	  OUTPUT << "END STATE_DEFINE_TRANSIENT... " << '\n';
+	}
+	output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
       }
 
-      if (interface.debug) { OUTPUT << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
-      
-}output_region.begin_mode(Ioss::STATE_TRANSIENT);
+      if (interface.debug) {
+	OUTPUT << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
+      }
+
+      output_region.begin_mode(Ioss::STATE_TRANSIENT);
       // Get the timesteps from the input database.  Step through them
       // and transfer fields to output database...
 
@@ -518,10 +549,10 @@ namespace {
 	double time = region.get_state_time(istep);
 	if (time < interface.minimum_time) {
 	  continue;
-}
+	}
 	if (interface.maximum_time != 0.0 && time > interface.maximum_time) {
 	  break;
-}
+	}
       
 	int ostep = output_region.add_state(time);
 	show_step(istep, time);
@@ -546,12 +577,12 @@ namespace {
 	  Ioss::SideSetContainer fss = region.get_sidesets();
 	  for (auto ifs : fss) {
 	    std::string name     = ifs->name();
-	    if (interface.debug) { OUTPUT << name << ", ";
-	  
+	    if (interface.debug) {
+	      OUTPUT << name << ", ";
+	    }
+
 	    // Find matching output sideset
-	    
-}Ioss::SideSet *ofs = output_region.get_sideset(name);
-	  
+	    Ioss::SideSet *ofs = output_region.get_sideset(name);
 	    if (ofs != nullptr) {
 	      transfer_field_data(ifs, ofs, Ioss::Field::TRANSIENT);
 	    
@@ -560,10 +591,11 @@ namespace {
 	      
 		// Find matching output sideblock
 		std::string fbname = ifb->name();
-		if (interface.debug) { OUTPUT << fbname << ", ";
-		
-}Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
-	      
+		if (interface.debug) {
+		  OUTPUT << fbname << ", ";
+		  }
+
+		Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 		if (ofb != nullptr) {
 		  transfer_field_data(ifb, ofb, Ioss::Field::TRANSIENT);
 		}
@@ -574,9 +606,10 @@ namespace {
 	region.end_state(istep);
 	output_region.end_state(ostep);
       }
-      if (interface.debug) { OUTPUT << "END STATE_TRANSIENT... " << '\n';
-      
-}output_region.end_mode(Ioss::STATE_TRANSIENT);
+      if (interface.debug) {
+	OUTPUT << "END STATE_TRANSIENT... " << '\n';
+      }
+      output_region.end_mode(Ioss::STATE_TRANSIENT);
     }
   }
   
@@ -588,7 +621,7 @@ namespace {
       std::string name      = inb->name();
       if (debug) { OUTPUT << name << ", ";
       
-}size_t num_nodes = inb->get_property("entity_count").get_int();
+      }size_t num_nodes = inb->get_property("entity_count").get_int();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (!debug) {
 	OUTPUT << " Number of coordinates per node       =" << std::setw(12) << degree << "\n";
@@ -638,7 +671,7 @@ namespace {
     }
     if (debug) { OUTPUT << '\n';
   
-}}
+    }}
 
   template <typename T>
   void transfer_fields(const std::vector<T*>& entities,
@@ -648,21 +681,23 @@ namespace {
   {
     for (auto entity : entities) {
       std::string name      = entity->name();
-      if (interface.debug) { OUTPUT << name << ", ";
-      
+      if (interface.debug) {
+	OUTPUT << name << ", ";
+      }
+
       // Find the corresponding output node_block...
-      
-}Ioss::GroupingEntity *oeb = output_region.get_entity(name, entity->type());
+      Ioss::GroupingEntity *oeb = output_region.get_entity(name, entity->type());
       if (oeb != nullptr) {
 	transfer_fields(entity, oeb, role);
 	if (interface.do_transform_fields) {
 	  transform_fields(entity, oeb, role);
-}
+	}
       }
     }
-    if (interface.debug) { OUTPUT << '\n';
-  
-}}
+    if (interface.debug) {
+      OUTPUT << '\n';
+    }
+  }
 
   template <typename T>
   void transfer_field_data(const std::vector<T*>& entities,
@@ -679,7 +714,7 @@ namespace {
 	transfer_field_data(entity, output, role);
 	if (interface.do_transform_fields) {
 	  transform_field_data(entity, output, role);
-}
+	}
       }
     }
   }
@@ -693,7 +728,7 @@ namespace {
 	std::string name      = iblock->name();
 	if (debug) { OUTPUT << name << ", ";
 	
-}std::string type      = iblock->get_property("topology_type").get_string();
+	}std::string type      = iblock->get_property("topology_type").get_string();
 	size_t    count  = iblock->get_property("entity_count").get_int();
 	total_entities += count;
 	
@@ -737,16 +772,17 @@ namespace {
     size_t total_sides = 0;
     for (auto ss : fss) {
       std::string name      = ss->name();
-      if (debug) { OUTPUT << name << ", ";
-      
-}Ioss::SideSet *surf = new Ioss::SideSet(output_region.get_database(), name);
+      if (debug) {
+	OUTPUT << name << ", ";
+	}
 
+      Ioss::SideSet *surf = new Ioss::SideSet(output_region.get_database(), name);
       Ioss::SideBlockContainer fbs = ss->get_side_blocks();
       for (auto fb : fbs) {
 	std::string fbname    = fb->name();
 	if (debug) { OUTPUT << fbname << ", ";
 	
-}std::string fbtype    = fb->get_property("topology_type").get_string();
+	}std::string fbtype    = fb->get_property("topology_type").get_string();
 	std::string partype   = fb->get_property("parent_topology_type").get_string();
 	size_t    num_side  = fb->get_property("entity_count").get_int();
 	total_sides += num_side;
@@ -781,7 +817,7 @@ namespace {
 	std::string name      = set->name();
 	if (debug) { OUTPUT << name << ", ";
 	
-}size_t    count     = set->get_property("entity_count").get_int();
+	}size_t    count     = set->get_property("entity_count").get_int();
 	total_entities += count;
 	T* o_set = new T(output_region.get_database(), name, count);
 	output_region.add(o_set);
@@ -833,7 +869,7 @@ namespace {
       std::string name      = ics->name();
       if (debug) { OUTPUT << name << ", ";
       
-}std::string type      = ics->get_property("entity_type").get_string();
+      }std::string type      = ics->get_property("entity_type").get_string();
       size_t    count     = ics->get_property("entity_count").get_int();
       Ioss::CommSet *cs = new Ioss::CommSet(output_region.get_database(), name, type, count);
       output_region.add(cs);
@@ -844,7 +880,7 @@ namespace {
     }
     if (debug) { OUTPUT << '\n';
   
-}}
+    }}
 
   void transfer_coordinate_frames(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
@@ -854,7 +890,7 @@ namespace {
     }
     if (debug) { OUTPUT << '\n';
   
-}}
+    }}
 
   void transfer_fields(Ioss::GroupingEntity *ige,
 		       Ioss::GroupingEntity *oge,
@@ -969,7 +1005,7 @@ namespace {
       // generates overhead...
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
 	continue;
-}
+      }
 
 
       if (field_name != "ids" &&
@@ -992,27 +1028,27 @@ namespace {
     }
 
     if (field_name == "mesh_model_coordinates_x") { return;
-}
+    }
     if (field_name == "mesh_model_coordinates_y") { return;
-}
+    }
     if (field_name == "mesh_model_coordinates_z") { return;
-}
+    }
     if (field_name == "connectivity_raw") { return;
-}
+    }
     if (field_name == "element_side_raw") { return;
-}
+    }
     if (field_name == "ids_raw") { return;
-}
+    }
     if (field_name == "implicit_ids") { return;
-}
+    }
     if (field_name == "node_connectivity_status") { return;
-}
+    }
     if (field_name == "owning_processor") { return;
-}
+    }
     if (field_name == "entity_processor_raw") { return;
-}
+    }
     if (field_name == "ids" && ige->type() == Ioss::SIDEBLOCK) { return;
-}
+    }
 
     if (data.size() < isize) {
       std::cerr << "Field: " << field_name << "\tIsize = " << isize
@@ -1091,7 +1127,7 @@ namespace {
 	  INT id = ids[n];
 	  if (my_data[id-1] == my_processor) {
 	    owned++;
-}
+	  }
 	}
 	ns->property_add(Ioss::Property("locally_owned_count", owned));
       }

@@ -47,13 +47,6 @@
 #include <utility>
 #include <vector>
 
-namespace {
-  class Deleter {
-  public:
-    void operator()(Ioss::VariableType* t) {delete t;}
-  };
-}
-
 void Ioss::Registry::insert(const Ioss::VTM_ValuePair &value, bool delete_me)
 {
   m_registry.insert(value);
@@ -64,9 +57,9 @@ void Ioss::Registry::insert(const Ioss::VTM_ValuePair &value, bool delete_me)
 
 Ioss::Registry::~Registry()
 {
-  if (!m_deleteThese.empty()) { 
-    std::for_each(m_deleteThese.begin(), m_deleteThese.end(), Deleter());
-}
+  for (auto &entry : m_deleteThese) {
+    delete entry;
+  }
 }
 
 Ioss::VariableType::~VariableType() = default;
@@ -103,9 +96,8 @@ Ioss::Registry& Ioss::VariableType::registry()
 int Ioss::VariableType::describe(NameList *names)
 {
   int count = 0;
-  Ioss::VariableTypeMap::const_iterator I;
-  for (I = registry().begin(); I != registry().end(); ++I) {
-    names->push_back((*I).first);
+  for (auto &entry : registry()) {
+    names->push_back(entry.first);
     count++;
   }
   return count;

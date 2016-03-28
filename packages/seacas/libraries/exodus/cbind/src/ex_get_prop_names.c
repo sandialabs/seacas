@@ -35,7 +35,6 @@
 
 #include <stddef.h>                     // for size_t
 #include <stdio.h>                      // for sprintf
-#include <string.h>                     // for strcpy
 #include "exodusII.h"                   // for ex_err, exerrval, etc
 #include "exodusII_int.h"               // for EX_FATAL, ATT_PROP_NAME, etc
 #include "netcdf.h"                     // for NC_NOERR, nc_get_att_text, etc
@@ -107,7 +106,7 @@ int ex_get_prop_names (int    exoid,
 {
   int status;
   int i, num_props, propid;
-  char var_name[12];
+  char *var_name;
   size_t att_len;
   nc_type att_type;
   int api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
@@ -123,44 +122,44 @@ int ex_get_prop_names (int    exoid,
   for (i=0; i<num_props; i++) {
     switch (obj_type) {
     case EX_ELEM_BLOCK:
-      strcpy (var_name, VAR_EB_PROP(i+1));
+      var_name =  VAR_EB_PROP(i+1);
       break;
     case EX_FACE_BLOCK:
-      strcpy (var_name, VAR_FA_PROP(i+1));
+      var_name =  VAR_FA_PROP(i+1);
       break;
     case EX_EDGE_BLOCK:
-      strcpy (var_name, VAR_ED_PROP(i+1));
+      var_name =  VAR_ED_PROP(i+1);
       break;
     case EX_NODE_SET:
-      strcpy (var_name, VAR_NS_PROP(i+1));
+      var_name =  VAR_NS_PROP(i+1);
       break;
     case EX_SIDE_SET:
-      strcpy (var_name, VAR_SS_PROP(i+1));
+      var_name =  VAR_SS_PROP(i+1);
       break;
     case EX_EDGE_SET:
-      strcpy (var_name, VAR_ES_PROP(i+1));
+      var_name =  VAR_ES_PROP(i+1);
       break;
     case EX_FACE_SET:
-      strcpy (var_name, VAR_FS_PROP(i+1));
+      var_name =  VAR_FS_PROP(i+1);
       break;
     case EX_ELEM_SET:
-      strcpy (var_name, VAR_ELS_PROP(i+1));
+      var_name =  VAR_ELS_PROP(i+1);
       break;
     case EX_ELEM_MAP:
-      strcpy (var_name, VAR_EM_PROP(i+1));
+      var_name =  VAR_EM_PROP(i+1);
       break;
     case EX_FACE_MAP:
-      strcpy (var_name, VAR_FAM_PROP(i+1));
+      var_name =  VAR_FAM_PROP(i+1);
       break;
     case EX_EDGE_MAP:
-      strcpy (var_name, VAR_EDM_PROP(i+1));
+      var_name =  VAR_EDM_PROP(i+1);
       break;
     case EX_NODE_MAP:
-      strcpy (var_name, VAR_NM_PROP(i+1));
+      var_name =  VAR_NM_PROP(i+1);
       break;
     default:
       exerrval = EX_BADPARAM;
-      sprintf(errmsg, "Error: object type %d not supported; file id %d",
+      sprintf(errmsg, "ERROR: object type %d not supported; file id %d",
 	      obj_type, exoid);
       ex_err("ex_get_prop_names",errmsg,EX_BADPARAM);
       return(EX_FATAL);
@@ -169,7 +168,7 @@ int ex_get_prop_names (int    exoid,
     if ((status = nc_inq_varid(exoid, var_name, &propid)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to locate property array %s in file id %d",
+	      "ERROR: failed to locate property array %s in file id %d",
 	      var_name, exoid);
       ex_err("ex_get_prop_names",errmsg,exerrval);
       return (EX_FATAL);
@@ -179,7 +178,7 @@ int ex_get_prop_names (int    exoid,
     if ((status = nc_inq_att(exoid, propid, ATT_PROP_NAME, &att_type, &att_len)) != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to get property attributes (type, len) in file id %d", exoid);
+	      "ERROR: failed to get property attributes (type, len) in file id %d", exoid);
       ex_err("ex_get_prop_names",errmsg,exerrval);
       return (EX_FATAL);
     }
@@ -189,7 +188,7 @@ int ex_get_prop_names (int    exoid,
       if ((status = nc_get_att_text(exoid, propid, ATT_PROP_NAME, prop_names[i])) != NC_NOERR) {
 	exerrval = status;
 	sprintf(errmsg,
-		"Error: failed to get property name in file id %d", exoid);
+		"ERROR: failed to get property name in file id %d", exoid);
 	ex_err("ex_get_prop_names",errmsg,exerrval);
 	return (EX_FATAL);
       }
@@ -198,7 +197,7 @@ int ex_get_prop_names (int    exoid,
       /* FIXME */
       exerrval = NC_ESTS;
       sprintf(errmsg,
-	      "Error: property name length exceeds space available to store it in file id %d", exoid);
+	      "ERROR: property name length exceeds space available to store it in file id %d", exoid);
       ex_err("ex_get_prop_names",errmsg,exerrval);
       return (EX_FATAL);
     }

@@ -11,4 +11,4 @@ CFLAGS="-I${ACCESS}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
 
-./configure --prefix ${ACCESS} $1
+./configure --prefix=${ACCESS} $1

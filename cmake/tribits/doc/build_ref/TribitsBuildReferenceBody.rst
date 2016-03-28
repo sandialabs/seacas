@@ -1,8 +1,11 @@
 .. Common references to other documents
 
-.. _Package Dependencies and Enable/Disable Logic: ../developers_guide/TribitsDevelopersGuide.html#package-dependencies-and-enable-disable-logic
+.. _Package Dependencies and Enable/Disable Logic: https://tribits.org/doc/TribitsDevelopersGuide.html l#package-dependencies-and-enable-disable-logic
 
-.. _TriBITS Dependency Handling Behaviors: ../developers_guide/TribitsDevelopersGuide.html#tribits-dependency-handling-behaviors
+.. _TriBITS Dependency Handling Behaviors: https://tribits.org/doc/TribitsDevelopersGuide.html#tribits-dependency-handling-behaviors
+
+.. _TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES(): https://tribits.org/doc/TribitsDevelopersGuide.html#tribits-tpl-find-include-dirs-and-libraries
+
 
 
 Getting set up to use CMake
@@ -373,10 +376,85 @@ avoid compiler and TPL checks.
 Selecting compiler and linker options
 -------------------------------------
 
-The <Project> TriBITS CMake build system offers the ability to tweak the
-built-in CMake approach for setting compiler flags.  When CMake creates the
-object file build command for a given source file, it passes in flags to the
-compiler in the order::
+The compilers for C, C++, and Fortran will be found by default by CMake if
+they are not otherwise specified as described below (see standard CMake
+documentation for how default compilers are found).  The most direct way to
+set the compilers are to set the CMake cache variables::
+
+  -D CMAKE_<LANG>_COMPILER=<path-to-compiler>
+
+The path to the compiler can be just a name of the compiler
+(e.g. ``-DCMAKE_C_COMPILER=gcc``) or can be an absolute path
+(e.g. ``-DCMAKE_C_COMPILER=/usr/local/bin/cc``).  The safest and more direct
+approach to determine the compilers is to set the absolute paths using, for
+example, the cache variables::
+
+  -D CMAKE_C_COMPILER=/opt/my_install/bin/gcc \
+  -D CMAKE_CXX_COMPILER=/opt/my_install/bin/g++ \
+  -D CMAKE_Fortran_COMPILER=/opt/my_install/bin/gfortran
+
+or if ``TPL_ENABLE_MPI=ON`` (see `Configuring with MPI support`_) something
+like::
+
+  -D CMAKE_C_COMPILER=/opt/my_install/bin/mpicc \
+  -D CMAKE_CXX_COMPILER=/opt/my_install/bin/mpicxx \
+  -D CMAKE_Fortran_COMPILER=/opt/my_install/bin/mpif90
+
+If these the CMake cache variables are not set, then CMake will use the
+compilers specified in the environment variables ``CC``, ``CXX``, and ``FC``
+for C, C++ and Fortran, respectively.  If one needs to drill down through
+different layers of scripts, then it can be useful to set the compilers using
+these environment variables.  But in general is it recommended to be explicit
+and use the above CMake cache variables to set the absolute path to the
+compilers to remove all ambiguity.
+
+If absolute paths to the compilers are not specified using the CMake cache
+variables or the environment variables as described above, then in MPI mode
+(i.e. ``TPL_ENABLE_MPI=ON``) TriBITS performs its own search for the MPI
+compiler wrappers that will find the correct compilers for most MPI
+distributions (see `Configuring with MPI support`_).  However, if in serial
+mode (i.e. ``TPL_ENABLE_MPI=OFF``), then CMake will do its own default
+compiler search.  The algorithm by which raw CMake finds these compilers is
+not precisely documented (and seems to change based on the platform).
+However, on Linux systems, the observed algorithm appears to be:
+
+1. Search for the C compiler first by looking in ``PATH`` (or the equivalent
+   on Windows), starting with a compiler with the name ``cc`` and then moving
+   on to other names like ``gcc``, etc.  This first compiler found is set to
+   ``CMAKE_C_COMPILER``.
+
+2. Search for the C++ compiler with names like ``c++``, ``g++``, etc., but
+   restrict the search to the same directory specified by base path to the C
+   compiler given in the variable ``CMAKE_C_COMPILER``.  The first compiler
+   that is found is set to ``CMAKE_CXX_COMPILER``.
+
+3. Search for the Fortran compiler with names like ``f90``, ``gfortran``,
+   etc., but restrict the search to the same directory specified by base path
+   to the C compiler given in the variable ``CMAKE_C_COMPILER``.  The first
+   compiler that is found is set to ``CMAKE_CXX_COMPILER``.
+
+**WARNING:** While this build-in CMake compiler search algorithm may seems
+reasonable, it fails to find the correct compilers in many cases for a non-MPI
+serial build.  For example, if a newer version of GCC is installed and is put
+first in ``PATH``, then CMake will fail to find the updated ``gcc`` compiler
+and will instead find the default system ``cc`` compiler (usually under
+``/usr/bin/cc`` on Linux may systems) and will then only look for the C++ and
+Fortran compilers under that directory.  This will fail to find the correct
+updated compilers because GCC does not install a C compiler named ``cc``!
+Therefore, if you want to use the default CMake compiler search to find the
+updated GCC compilers, you can set the CMake cache variable::
+
+  -D CMAKE_C_COMPILER=gcc
+
+or can set the environment variable ``CC=gcc``.  Either one of these will
+result in CMake finding the updated GCC compilers found first in ``PATH``.
+
+Once one has specified the compilers, one can also set the compiler flags, but
+the way that CMake does this is a little surprising to many people.  But the
+<Project> TriBITS CMake build system offers the ability to tweak the built-in
+CMake approach for setting compiler flags.  First some background is in order.
+When CMake creates the object file build command for a given source file, it
+passes in flags to the compiler in the order::
 
   ${CMAKE_<LANG>_FLAGS}  ${CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>}
 
@@ -389,199 +467,251 @@ in ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``.  CMake automatically provides a
 default set of debug and release optimization flags for
 ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` (e.g. ``CMAKE_CXX_FLAGS_DEBUG`` is
 typically ``"-g -O0"`` while ``CMAKE_CXX_FLAGS_RELEASE`` is typically
-``"-O3"``).  TriBITS provides a means for project and package developers and
-users to set and override these compiler flag variables globally and on a
-package-by-package basis.  Below, the facilities for manipulating compiler
-flags is described.
+``"-O3"``).  This means that if you try to set the optimization level with
+``-DCMAKE_CXX_FLAGS="-04"``, then this level gets overridden by the flags
+specified in ``CMAKE_<LANG>_FLAGS_BUILD`` or ``CMAKE_<LANG>_FLAGS_RELEASE``.
+
+Note that TriBITS will set defaults for ``CMAKE_<LANG>_FLAGS`` and
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``, which may be different that what
+raw CMake would set.  TriBITS provides a means for project and package
+developers and users to set and override these compiler flag variables
+globally and on a package-by-package basis.  Below, the facilities for
+manipulating compiler flags is described.
+
+Also, to see that the full set of compiler flags one has to actually build a
+target with, for example ``make VERBOSE=1`` (see `Building with verbose output
+without reconfiguring`_).  One can not just look at the cache variables for
+``CMAKE_<LANG>_FLAGS`` and ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` in the
+file ``CMakeCache.txt``.  These get overwritten and redefined by TriBITS in
+development as described below (see `Overriding CMAKE_BUILD_TYPE debug/release
+compiler options`_).
 
 The <Project> TriBITS CMake build system will set up default compile flags for
 GCC ('GNU') in development mode
 (i.e. ``<Project>_ENABLE_DEVELOPMENT_MODE=ON``) on order to help produce
-portable code.  These flags set up strong warning options and enforce langauge
+portable code.  These flags set up strong warning options and enforce language
 standards.  In release mode (i.e. ``<Project>_ENABLE_DEVELOPMENT_MODE=ON``),
 these flags are not set.  These flags get set internally into the variables
-``CMAKE_<LANG>_FLAGS``.
+``CMAKE_<LANG>_FLAGS`` (when processing packages, not at the global cache
+variable level) but the user can append flags that override these as described
+below.
 
-a) Configuring to build with default debug or release compiler flags:
+.. _CMAKE_BUILD_TYPE:
 
-  To build a debug version, pass into 'cmake'::
+Configuring to build with default debug or release compiler flags
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    -D CMAKE_BUILD_TYPE=DEBUG
+To build a debug version, pass into 'cmake'::
 
-  This will result in debug flags getting passed to the compiler according to
-  what is set in ``CMAKE_<LANG>_FLAGS_DEBUG``.
+  -D CMAKE_BUILD_TYPE=DEBUG
 
-  To build a release (optimized) version, pass into 'cmake'::
+This will result in debug flags getting passed to the compiler according to
+what is set in ``CMAKE_<LANG>_FLAGS_DEBUG``.
 
-    -D CMAKE_BUILD_TYPE=RELEASE
+To build a release (optimized) version, pass into 'cmake'::
 
-  This will result in optimized flags getting passed to the compiler according
-  to what is in ``CMAKE_<LANG>_FLAGS_RELEASE``.
+  -D CMAKE_BUILD_TYPE=RELEASE
 
-b) Adding arbitrary compiler flags but keeping other default flags:
+This will result in optimized flags getting passed to the compiler according
+to what is in ``CMAKE_<LANG>_FLAGS_RELEASE``.
 
-  To append arbitrary compiler flags to ``CMAKE_<LANG>_FLAGS`` (which may be
-  set internally by TriBITS) that apply to all build types, configure with::
+The default build type is typically ``CMAKE_BUILD_TYPE=RELEASE`` unless ``-D
+USE_XSDK_DEFAULTS=TRUE`` is set in which case the default build type is
+``CMAKE_BUILD_TYPE=DEBUG`` as per the xSDK configure standard.
 
-    -D CMAKE_<LANG>_FLAGS="<EXTRA_COMPILER_OPTIONS>"
+Adding arbitrary compiler flags but keeping default build-type flags
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  where ``<EXTRA_COMPILER_OPTIONS>`` are your extra compiler options like
-  ``"-DSOME_MACRO_TO_DEFINE -funroll-loops"``.  These options will get
-  appended to (i.e. come after) other internally defined compiler option and
-  therefore override them.
+To append arbitrary compiler flags to ``CMAKE_<LANG>_FLAGS`` (which may be
+set internally by TriBITS) that apply to all build types, configure with::
 
-  Options can also be targeted to a specific TriBITS package using::
+  -D CMAKE_<LANG>_FLAGS="<EXTRA_COMPILER_OPTIONS>"
 
-    -D <TRIBITS_PACKAGE>_<LANG>_FLAGS="<EXTRA_COMPILER_OPTIONS>"
-  
-  The package-specific options get appened to those already in
-  ``CMAKE_<LANG>_FLAGS`` and therefore override (but not replace) those set
-  globally in ``CMAKE_<LANG>_FLAGS`` (either internally or by the user in the
-  cache).
+where ``<EXTRA_COMPILER_OPTIONS>`` are your extra compiler options like
+``"-DSOME_MACRO_TO_DEFINE -funroll-loops"``.  These options will get
+appended to (i.e. come after) other internally defined compiler option and
+therefore override them.  The options are then pass to the compiler in the
+order::
 
-  NOTES:
+  <DEFAULT_TRIBITS_LANG_FLAGS> <EXTRA_COMPILER_OPTIONS> \
+    ${CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>}
 
-  1) Setting ``CMAKE_<LANG>_FLAGS`` will override but will not replace any
-  other internally set flags in ``CMAKE_<LANG>_FLAGS`` defined by the
-  <Project> CMake system because these flags will come after those set
-  internally.  To get rid of these project/TriBITS default flags, see below.
+This that setting ``CMAKE_<LANG>_FLAGS`` can override the default flags that
+TriBITS will set for ``CMAKE_<LANG>_FLAGS`` but will **not** override flags
+specified in ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``.
 
-  2) Given that CMake passes in flags in
-  ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` after those in
-  ``CMAKE_<LANG>_FLAGS``, this means that users setting the
-  ``CMAKE_<LANG>_FLAGS`` and ``<TRIBITS_PACKAGE>_<LANG>_FLAGS`` will *not*
-  override the flags in ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` which come
-  after on the compile line.  Therefore, setting ``CMAKE_<LANG>_FLAGS`` and
-  ``<TRIBITS_PACKAGE>_<LANG>_FLAGS`` should only be used for options that will
-  not get overridden by the debug or release compiler flags in
-  ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``.  However, setting
-  ``CMAKE_<LANG>_FLAGS`` will work well for adding extra compiler defines
-  (e.g. -DSOMETHING) for example.
+Instead of directly setting the CMake cache variables ``CMAKE_<LANG>_FLAGS``
+one can instead set environment variables ``CFLAGS``, ``CXXFLAGS`` and
+``FFLAGS`` for ``CMAKE_C_FLAGS``, ``CMAKE_CXX_FLAGS`` and
+``CMAKE_Fortran_FLAGS``, respectively.
 
-  WARNING: Any options that you set through the cache variable
-  ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` will get overridden in the
-  <Project> CMake system for GNU compilers in development mode so don't try to
-  manually set CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>!  To override those
-  options, see ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>_OVERRIDE``.
+In addition, if ``-DUSE_XSDK_DEFAULTS=TRUE`` is set, then one can also pass
+in Fortran flags using the environment variable ``FCFLAGS`` (raw CMake does
+not recognize ``FCFLAGS``).  But if ``FFLAGS`` and ``FCFLAGS`` are both set,
+then they must be the same or a configure error will occur.
 
-c) Overriding CMAKE_BUILD_TYPE debug/release compiler options:
+Options can also be targeted to a specific TriBITS package using::
 
-  To override the default CMake-set options in
-  ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``, use::
+  -D <TRIBITS_PACKAGE>_<LANG>_FLAGS="<EXTRA_COMPILER_OPTIONS>"
 
-    -D CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>_OVERRIDE="<OPTIONS_TO_OVERRIDE>"
+The package-specific options get appended to those already in
+``CMAKE_<LANG>_FLAGS`` and therefore override (but not replace) those set
+globally in ``CMAKE_<LANG>_FLAGS`` (either internally or by the user in the
+cache).
 
-  For example, to default debug options use::
+NOTES:
 
-    -D CMAKE_C_FLAGS_DEBUG_OVERRIDE="-g -O1" \
-    -D CMAKE_CXX_FLAGS_DEBUG_OVERRIDE="-g -O1"
+1) Setting ``CMAKE_<LANG>_FLAGS`` will override but will not replace any
+other internally set flags in ``CMAKE_<LANG>_FLAGS`` defined by the
+<Project> CMake system because these flags will come after those set
+internally.  To get rid of these project/TriBITS default flags, see below.
 
-  and to override default release options use::
+2) Given that CMake passes in flags in
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` after those in
+``CMAKE_<LANG>_FLAGS`` means that users setting the ``CMAKE_<LANG>_FLAGS``
+and ``<TRIBITS_PACKAGE>_<LANG>_FLAGS`` will **not** override the flags in
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` which come after on the compile
+line.  Therefore, setting ``CMAKE_<LANG>_FLAGS`` and
+``<TRIBITS_PACKAGE>_<LANG>_FLAGS`` should only be used for options that will
+not get overridden by the debug or release compiler flags in
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``.  However, setting
+``CMAKE_<LANG>_FLAGS`` will work well for adding extra compiler defines
+(e.g. -DSOMETHING) for example.
 
-    -D CMAKE_C_FLAGS_RELEASE_OVERRIDE="-O3 -funroll-loops" \
-    -D CMAKE_CXX_FLAGS_RELEASE_OVERRIDE="-03 -fexceptions"
+WARNING: Any options that you set through the cache variable
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` will get overridden in the
+<Project> CMake system for GNU compilers in development mode so don't try to
+manually set ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` directly!  To
+override those options, see
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>_OVERRIDE`` below.
 
-  NOTES: The TriBITS CMake cache variable
-  ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>_OVERRIDE`` is used and not
-  ``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` because is given a default
-  internally by CMake and the new varaible is needed to make the override
-  explicit.
+Overriding CMAKE_BUILD_TYPE debug/release compiler options
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-d) Appending arbitrary libraries and link flags every executable:
+To override the default CMake-set options in
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>``, use::
 
-  In order to append any set of arbitrary libraries and link flags to your
-  executables use::
+  -D CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>_OVERRIDE="<OPTIONS_TO_OVERRIDE>"
 
-    -D<Project>_EXTRA_LINK_FLAGS="<EXTRA_LINK_LIBRARIES>" \
-    -DCMAKE_EXE_LINKER_FLAGS="<EXTRA_LINK_FLAGG>"
+For example, to default debug options use::
 
-  Above, you can pass any type of library and they will always be the last
-  libraries listed, even after all of the TPLs.
+  -D CMAKE_C_FLAGS_DEBUG_OVERRIDE="-g -O1" \
+  -D CMAKE_CXX_FLAGS_DEBUG_OVERRIDE="-g -O1"
+  -D CMAKE_Fortran_FLAGS_DEBUG_OVERRIDE="-g -O1"
 
-  NOTE: This is how you must set extra libraries like Fortran libraries and
-  MPI libraries (when using raw compilers).  Please only use this variable
-  as a last resort.
+and to override default release options use::
 
-  NOTE: You must only pass in libraries in ``<Project>_EXTRA_LINK_FLAGS`` and
-  *not* arbitrary linker flags.  To pass in extra linker flags that are not
-  libraries, use the built-in CMake variable ``CMAKE_EXE_LINKER_FLAGS``
-  instead.  The TriBITS variable ``<Project>_EXTRA_LINK_FLAGS`` is badly named
-  in this respect but the name remains due to backward compatibility
-  requirements.
+  -D CMAKE_C_FLAGS_RELEASE_OVERRIDE="-O3 -funroll-loops" \
+  -D CMAKE_CXX_FLAGS_RELEASE_OVERRIDE="-03 -funroll-loops"
+  -D CMAKE_Fortran_FLAGS_RELEASE_OVERRIDE="-03 -funroll-loops"
+
+NOTES: The TriBITS CMake cache variable
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>_OVERRIDE`` is used and not
+``CMAKE_<LANG>_FLAGS_<CMAKE_BUILD_TYPE>`` because is given a default
+internally by CMake and the new varaible is needed to make the override
+explicit.
+
+Appending arbitrary libraries and link flags every executable
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In order to append any set of arbitrary libraries and link flags to your
+executables use::
+
+  -D<Project>_EXTRA_LINK_FLAGS="<EXTRA_LINK_LIBRARIES>" \
+  -DCMAKE_EXE_LINKER_FLAGS="<EXTRA_LINK_FLAGG>"
+
+Above, you can pass any type of library and they will always be the last
+libraries listed, even after all of the TPLs.
+
+NOTE: This is how you must set extra libraries like Fortran libraries and
+MPI libraries (when using raw compilers).  Please only use this variable
+as a last resort.
+
+NOTE: You must only pass in libraries in ``<Project>_EXTRA_LINK_FLAGS`` and
+*not* arbitrary linker flags.  To pass in extra linker flags that are not
+libraries, use the built-in CMake variable ``CMAKE_EXE_LINKER_FLAGS``
+instead.  The TriBITS variable ``<Project>_EXTRA_LINK_FLAGS`` is badly named
+in this respect but the name remains due to backward compatibility
+requirements.
 
 .. _<TRIBITS_PACKAGE>_DISABLE_STRONG_WARNINGS:
 
-e) Turning off strong warnings for individual packages:
+Turning off strong warnings for individual packages
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  To turn off strong warnings (for all langauges) for a given TriBITS
-  package, set::
+To turn off strong warnings (for all langauges) for a given TriBITS
+package, set::
 
-    -D <TRIBITS_PACKAGE>_DISABLE_STRONG_WARNINGS=ON
+  -D <TRIBITS_PACKAGE>_DISABLE_STRONG_WARNINGS=ON
 
-  This will only affect the compilation of the sources for
-  ``<TRIBITS_PACKAGES>``, not warnings generated from the header files in
-  downstream packages or client code.
+This will only affect the compilation of the sources for
+``<TRIBITS_PACKAGES>``, not warnings generated from the header files in
+downstream packages or client code.
 
-  Note that strong warnings are only enabled by default in development mode
-  (``<Project>_ENABLE_DEVELOPMENT_MODE==ON``) but not release mode
-  (``<Project>_ENABLE_DEVELOPMENT_MODE==ON``).  A release of <Project> should
-  therefore not have strong warning options enabled.
+Note that strong warnings are only enabled by default in development mode
+(``<Project>_ENABLE_DEVELOPMENT_MODE==ON``) but not release mode
+(``<Project>_ENABLE_DEVELOPMENT_MODE==ON``).  A release of <Project> should
+therefore not have strong warning options enabled.
 
-f) Overriding all (strong warnings and debug/release) compiler options:
+Overriding all (strong warnings and debug/release) compiler options
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  To override all compiler options, including both strong warning options
-  and debug/release options, configure with::
+To override all compiler options, including both strong warning options
+and debug/release options, configure with::
 
-    -D CMAKE_C_FLAGS="-O3 -funroll-loops" \
-    -D CMAKE_CXX_FLAGS="-03 -fexceptions" \
-    -D CMAKE_BUILD_TYPE=NONE \
-    -D <Project>_ENABLE_STRONG_C_COMPILE_WARNINGS=OFF \
-    -D <Project>_ENABLE_STRONG_CXX_COMPILE_WARNINGS=OFF \
-    -D <Project>_ENABLE_SHADOW_WARNINGS=OFF \
-    -D <Project>_ENABLE_COVERAGE_TESTING=OFF \
-    -D <Project>_ENABLE_CHECKED_STL=OFF \
+  -D CMAKE_C_FLAGS="-O3 -funroll-loops" \
+  -D CMAKE_CXX_FLAGS="-03 -fexceptions" \
+  -D CMAKE_BUILD_TYPE=NONE \
+  -D <Project>_ENABLE_STRONG_C_COMPILE_WARNINGS=OFF \
+  -D <Project>_ENABLE_STRONG_CXX_COMPILE_WARNINGS=OFF \
+  -D <Project>_ENABLE_SHADOW_WARNINGS=OFF \
+  -D <Project>_ENABLE_COVERAGE_TESTING=OFF \
+  -D <Project>_ENABLE_CHECKED_STL=OFF \
 
-  NOTE: Options like ``<Project>_ENABLE_SHADOW_WARNINGS``,
-  ``<Project>_ENABLE_COVERAGE_TESTING``, and ``<Project>_ENABLE_CHECKED_STL``
-  do not need to be turned off by default but they are shown above to make it
-  clear what other CMake cache variables can add compiler and link arguments.
+NOTE: Options like ``<Project>_ENABLE_SHADOW_WARNINGS``,
+``<Project>_ENABLE_COVERAGE_TESTING``, and ``<Project>_ENABLE_CHECKED_STL``
+do not need to be turned off by default but they are shown above to make it
+clear what other CMake cache variables can add compiler and link arguments.
 
-  NOTE: By setting ``CMAKE_BUILD_TYPE=NONE``, then ``CMAKE_<LANG>_FLAGS_NONE``
-  will be empty and therefore the options set in ``CMAKE_<LANG>_FLAGS`` will
-  be all that is passed in.
+NOTE: By setting ``CMAKE_BUILD_TYPE=NONE``, then ``CMAKE_<LANG>_FLAGS_NONE``
+will be empty and therefore the options set in ``CMAKE_<LANG>_FLAGS`` will
+be all that is passed in.
 
-g) Enable and disable shadowing warnings for all <Project> packages:
+Enable and disable shadowing warnings for all <Project> packages
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  To enable shadowing warnings for all <Project> packages (that don't already
-  have them turned on) then use::
+To enable shadowing warnings for all <Project> packages (that don't already
+have them turned on) then use::
 
-    -D <Project>_ENABLE_SHADOW_WARNINGS=ON
+  -D <Project>_ENABLE_SHADOW_WARNINGS=ON
 
-  To disable shadowing warnings for all <Project> packages (even those that
-  have them turned on by default) then use::
+To disable shadowing warnings for all <Project> packages (even those that
+have them turned on by default) then use::
 
-    -D <Project>_ENABLE_SHADOW_WARNINGS=OFF
+  -D <Project>_ENABLE_SHADOW_WARNINGS=OFF
 
-  NOTE: The default value is empty '' which lets each <Project> package
-  decide for itself if shadowing warnings will be turned on or off for that
-  package.
+NOTE: The default value is empty '' which lets each <Project> package
+decide for itself if shadowing warnings will be turned on or off for that
+package.
 
-h) Removing warnings as errors for CLEANED packages:
+Removing warnings as errors for CLEANED packages
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-  To remove the ``-Werror`` flag (or some other flag that is set) from being
-  applied to compile CLEANED packages like Teuchos, set the following when
-  configuring::
+To remove the ``-Werror`` flag (or some other flag that is set) from being
+applied to compile CLEANED packages like Teuchos, set the following when
+configuring::
 
-    -D <Project>_WARNINGS_AS_ERRORS_FLAGS=""
+  -D <Project>_WARNINGS_AS_ERRORS_FLAGS=""
 
-i) Adding debug symbols to the build:
+Adding debug symbols to the build
++++++++++++++++++++++++++++++++++
 
-  To get the compiler to add debug symbols to the build, configure with::
+To get the compiler to add debug symbols to the build, configure with::
 
-    -D <Project>_ENABLE_DEBUG_SYMBOLS=ON
+  -D <Project>_ENABLE_DEBUG_SYMBOLS=ON
 
-  This will add ``-g`` on most compilers.  NOTE: One does **not** generally
-  need to create a fully debug build to get debug symbols on most compilers.
+This will add ``-g`` on most compilers.  NOTE: One does **not** generally
+need to create a fully debug build to get debug symbols on most compilers.
 
 
 Enabling support for C++11
@@ -710,29 +840,79 @@ which sets the paths where the MPI executables (e.g. mpiCC, mpicc, mpirun,
 mpiexec) can be found.  By default this is set to ``${MPI_BASE_DIR}/bin`` if
 ``MPI_BASE_DIR`` is set.
 
-The value of ``LD_LIBRARY_PATH`` will also automatically be set to
-``${MPI_BASE_DIR}/lib`` if it exists.  This is needed for the basic compiler
-tests for some MPI implementations that are installed in non-standard
-locations.
+**NOTE:** TriBITS uses the MPI compiler wrappers (e.g. mpiCC, mpicc, mpic++,
+mpif90, etc.) which is more standard with other builds systems for HPC
+computing using MPI (and the way that MPI implementations were meant to be
+used).  But directly using the MPI compiler wrappers as the direct compilers
+is inconsistent with the way that the standard CMake module ``FindMPI.cmake``
+which tries to "unwrap" the compiler wrappers and grab out the raw underlying
+compilers and the raw compiler and linker command-line arguments.  In this
+way, TriBITS is more consistent with standard usage in the HPC community but
+is less consistent with CMake (see "HISTORICAL NOTE" below).
 
 There are several different different variations for configuring with MPI
 support:
 
 a) **Configuring build using MPI compiler wrappers:**
 
-  The MPI compiler wrappers are turned on by default.  There is built-in
-  logic that will try to find the right compiler wrappers.  However, you can
-  specifically select them by setting, for example::
+  The MPI compiler wrappers are turned on by default.  There is built-in logic
+  in TriBITS that will try to find the right MPI compiler wrappers.  However,
+  you can specifically select them by setting, for example::
 
     -D MPI_C_COMPILER:FILEPATH=mpicc \
     -D MPI_CXX_COMPILER:FILEPATH=mpic++ \
     -D MPI_Fortan_COMPILER:FILEPATH=mpif77
 
   which gives the name of the MPI C/C++/Fortran compiler wrapper executable.
-  If this is just the name of the program it will be looked for in
-  ${MPI_BIN_DIR} and in other standard locations with that name.  If this is
-  an absolute path, then this will be used as CMAKE_[C,CXX,Fortran]_COMPILER
-  to compile and link code.
+  In this case, just the names of the programs are given and absolute path of
+  the executables will be searched for under ``${MPI_BIN_DIR}/`` if the cache
+  variable ``MPI_BIN_DIR`` is set, or in the default path otherwise.  The
+  found programs will then be used to set the cache variables
+  ``CMAKE_[C,CXX,Fortran]_COMPILER``.
+
+  One can avoid the search and just use the absolute paths with, for example::
+
+    -D MPI_C_COMPILER:FILEPATH=/opt/mpich/bin/mpicc \
+    -D MPI_CXX_COMPILER:FILEPATH=/opt/mpich/bin/mpic++ \
+    -D MPI_Fortan_COMPILER:FILEPATH=/opt/mpich/bin/mpif77
+
+  However, you can also directly set the variables
+  ``CMAKE_[C,CXX,Fortran]_COMPILER`` with, for example::
+
+    -D CMAKE_C_COMPILER:FILEPATH=/opt/mpich/bin/mpicc \
+    -D CMAKE_CXX_COMPILER:FILEPATH=/opt/mpich/bin/mpic++ \
+    -D CMAKE_Fortan_COMPILER:FILEPATH=/opt/mpich/bin/mpif77
+
+  **WARNING:** If you set just the compiler names and not the absolute paths
+  with ``CMAKE_<LANG>_COMPILER`` in MPI mode, then a search will not be done
+  and these will be expected to be in the path at build time. (Note that his
+  is inconsistent the behavior of raw CMake in non-MPI mode described in
+  `Selecting compiler and linker options`_).  If both
+  ``CMAKE_<LANG>_COMPILER`` and ``MPI_<LANG>_COMPILER`` are set, however, then
+  ``CMAKE_<LANG>_COMPILER`` will be used and ``MPI_<LANG>_COMPILER`` will be
+  ignored.
+
+  Note that when ``USE_XSDK_DEFAULTS=FALSE`` (see `xSDK Configuration
+  Options`_), then the environment variables ``CC``, ``CXX`` and ``FC`` are
+  ignored.  But when ``USE_XSDK_DEFAULTS=TRUE`` and the CMake cache variables
+  ``CMAKE_[C,CXX,Fortran]_COMPILER`` are not set, then the environment
+  variables ``CC``, ``CXX`` and ``FC`` will be used for
+  ``CMAKE_[C,CXX,Fortran]_COMPILER``, even if the CMake cache variables
+  ``MPI_[C,CXX,Fortran]_COMPILER`` are set!  So if one wants to make sure and
+  set the MPI compilers irrespective of the xSDK mode, then one should set
+  cmake cache variables ``CMAKE_[C,CXX,Fortran]_COMPILER`` to the absolute
+  path of the MPI compiler wrappers.
+
+  **HISTORICAL NOTE:** The TriBITS system has its own custom MPI integration
+  support and does not (currently) use the standard CMake module
+  ``FindMPI.cmake``.  This custom support for MPI was added to TriBITS in 2008
+  when it was found the built-in ``FindMPI.cmake`` module was not sufficient
+  for the needs of Trilinos and the approach taken by the module (still in use
+  as of CMake 3.4.x) which tries to unwrap the raw compilers and grab the list
+  of include directories, link libraries, etc, was not sufficiently portable
+  for the systems where Trilinos needed to be used.  But earlier versions of
+  TriBITS used the ``FindMPI.cmake`` module and that is why the CMake cache
+  variables ``MPI_[C,CXX,Fortran]_COMPILER`` are defined and still supported.
 
 b) **Configuring to build using raw compilers and flags/libraries:**
 
@@ -847,6 +1027,7 @@ To enable OpenMP support, one must set::
 Note that if you enable OpenMP directly through a compiler option (e.g.,
 ``-fopenmp``), you will NOT enable OpenMP inside <Project> source code.
 
+.. _BUILD_SHARED_LIBS:
 
 Building shared libraries
 -------------------------
@@ -858,6 +1039,10 @@ To configure to build shared libraries, set::
 The above option will result in all shared libraries to be build on all
 systems (i.e., ``.so`` on Unix/Linux systems, ``.dylib`` on Mac OS X, and
 ``.dll`` on Windows systems).
+
+NOTE: If the project has ``USE_XSDK_DEFAULTS=ON`` set, then this will set
+``BUILD_SHARED_LIBS=TRUE`` by default.  Otherwise, the default is
+``BUILD_SHARED_LIBS=FALSE``
 
 
 Building static libraries and executables
@@ -892,48 +1077,91 @@ To enable a given TPL, set::
 
   -D TPL_ENABLE_<TPLNAME>=ON
 
-where ``<TPLNAME>`` = ``Boost``, ``ParMETIS``, etc.
+where ``<TPLNAME>`` = ``BLAS``, ``LAPACK`` ``Boost``, ``Netcdf``, etc.
 
-The headers, libraries, and library directories can then be specified with
-the input cache variables:
+The full list of TPLs that is defined and can be enabled is shown by doing a
+configure with CMake and then grepping the configure output for ``Final set of
+.* TPLs``.  The set of TPL names listed in ``'Final set of enabled TPLs'`` and
+``'Final set of non-enabled TPLs'`` gives the full list of TPLs that can be
+enabled (or disabled).
 
-* ``<TPLNAME>_INCLUDE_DIRS:PATH``: List of paths to the header include
-  directories.  For example::
+Some TPLs require only libraries (e.g. Fortran libraries like BLAS or LAPACK),
+some TPL require only include directories, and some TPLs require both.
 
-    -D Boost_INCLUDE_DIRS=/usr/local/boost/include
+Each TPL specification is defined in a ``FindTPL<TPLNAME>.cmake`` module file.
+The job of each of these of these module files is to set the CMake cache
+variables:
+
+* ``TPL_<TPLNAME>_INCLUDE_DIRS:PATH``: List of paths to header files for the
+  TPL (if the TPL supplies header files).
+
+* ``TPL_<TPLNAME>_LIBRARIES:PATH``: List of (absolute) paths to libraries,
+  ordered as they will be on the link line (of the TPL supplies libraries).
+
+These variables are the only variables that are actually used in the CMake
+build system.  Therefore, one can set these two variables as CMake cache
+variables, for ``SomeTPL`` for example, with::
+
+  -D TPL_SomeTPL_INCLUDE_DIRS="${LIB_BASE}/include/a;${LIB_BASE}/include/b" \
+  -D TPL_SomeTPL_LIBRARIES="${LIB_BASE}/lib/liblib1.so;${LIB_BASE}/lib/liblib2.so" \
+
+Using this approach, one can be guaranteed that these libraries and these
+include directories and will used in the compile and link lines for the
+packages that depend on this TPL ``SomeTPL``.
+
+**WARNING:** When specifying ``TPL_<TPLNAME>_INCLUDE_DIRS`` and/or
+``TPL_<TPLNAME>_LIBRARIES``, the build system will use these without question.
+It will **not** check for the existence of these directories or files so make
+sure that these files and directories exist before these are used in the
+compiles and links.  (This can actually be a feature in rare cases the
+libraries and header files don't actually get created until after the
+configure step is complete but before the build step.)
+
+**WARNING:** Do **not** try to hack the system and set, for example::
+
+  TPL_BLAS_LIBRARIES="-L/some/dir -llib1 -llib2 ..."
+
+This is not compatible with proper CMake usage and it not guaranteed to be
+supported for all use cases or all platforms!  You should instead always use
+the full library paths when setting ``TPL_<TPLNAME>_LIBRARIES``.
+
+When the variables ``TPL_<TPLNAME>_INCLUDE_DIRS`` and
+``TPL_<TPLNAME>_LIBRARIES`` are not specified, then most
+``FindTPL<TPLNAME>.cmake`` modules use a default find operation.  Some will
+call ``FIND_PACKAGE(<TPLNAME>)`` internally by default and some may implement
+the default find in some other way.  To know for sure, see the documentation
+for the specific TPL (e.g. looking in the ``FindTPL<TPLNAME>.cmake`` file to
+be sure).
+
+Most TPLs, however, use a standard system for finding include directories
+and/or libraries based on the function
+`TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES()`_.  These simple standard
+``FindTPL<TPLNAME>.cmake`` modules specify a set of header files and/or
+libraries that must be found.  The directories where these header files and
+library files are looked for are specified using the CMake cache variables:
+
+* ``<TPLNAME>_INCLUDE_DIRS:PATH``: List of paths to search for header files
+  using ``FIND_FILE()`` for each header file, in order.
 
 * ``<TPLNAME>_LIBRARY_NAMES:STRING``: List of unadorned library names, in the
   order of the link line.  The platform-specific prefixes (e.g.. 'lib') and
   postfixes (e.g. '.a', '.lib', or '.dll') will be added automatically by
-  CMake.  For example::
-
-    -D BLAS_LIBRARY_NAMES="blas;gfortran"
+  CMake.  For example, the library ``libblas.so``, ``libblas.a``, ``blas.lib``
+  or ``blas.dll`` will all be found on the proper platform using the name
+  ``blas``.
 
 * ``<TPLNAME>_LIBRARY_DIRS:PATH``: The list of directories where the library
-  files can be found.  For example::
+  files will be searched for using ``FIND_LIBRARY()``, for each library, in
+  order.
 
-    -D BLAS_LIBRARY_DIRS=/usr/local/blas
-
-The variables ``TPL_<TPLNAME>_INCLUDE_DIRS`` and ``TPL_<TPLNAME>_LIBRARIES``
-are what are directly used by the TriBITS dependency infrastructure.  These
-variables are normally set by the variables ``<TPLNAME>_INCLUDE_DIRS``,
-``<TPLNAME>_LIBRARY_NAMES``, and ``<TPLNAME>_LIBRARY_DIRS`` using CMake
-``find`` commands but one can always override these by directly setting these
-cache variables ``TPL_<TPLNAME>_INCLUDE_DIRS`` and
-``TPL_<TPLNAME>_LIBRARIES``, for example, as::
-
-  -D TPL_Boost_INCLUDE_DIRS=/usr/local/boost/include \
-  -D TPL_Boost_LIBRARIES="/user/local/boost/lib/libprogram_options.a;..."
-
-This gives the user complete and direct control in specifying exactly what is
-used in the build process.  The other variables that start with ``<TPLNAME>_``
-are just a convenience to make it easier to specify the location of the
-libraries.
+Most ``FindTPL<TPLNAME>.cmake`` modules will define a default set of libraries
+to look for and therefore ``<TPLNAME>_LIBRARY_NAMES`` can typically be left
+off.
 
 In order to allow a TPL that normally requires one or more libraries to ignore
 the libraries, one can set ``<TPLNAME>_LIBRARY_NAMES`` to empty, for example::
 
-  -D BLAS_LIBRARY_NAMES=""
+  -D <TPLNAME>_LIBRARY_NAMES=""
 
 Optional package-specific support for a TPL can be turned off by setting::
 
@@ -951,18 +1179,123 @@ dependency on ``<TPLNAME>``.  That will result in setting
 ``TPL_ENABLE_<TPLNAME>=ON`` internally (but not set in the cache) if
 ``TPL_ENABLE_<TPLNAME>=OFF`` is not already set.
 
-WARNING: Do *not* try to hack the system and set::
+If all the parts of a TPL are not found on an initial configure the configure
+will error out with a helpful error message.  In that case, one can change the
+variables ``<TPLNAME>_INCLUDE_DIRS``, ``<TPLNAME>_LIBRARY_NAMES``, and/or
+``<TPLNAME>_LIBRARY_DIRS`` in order to help fund the parts of the TPL.  One
+can do this over and over until the TPL is found. By reconfiguring, one avoid
+a complete configure from scrath which saves time.  Or, one can avoid the find
+operations by directly setting ``TPL_<TPLNAME>_INCLUDE_DIRS`` and
+``TPL_<TPLNAME>_LIBRARIES``.
 
-  TPL_BLAS_LIBRARIES="-L/some/dir -llib1 -llib2 ..."
+**WARNING:** The cmake cache variable ``TPL_<TPLNAME>_LIBRARY_DIRS`` does
+**not** control where libraries are found.  Instead, this variable is set
+during the find processes and is not actually used in the CMake build system
+at all.
 
-This is not compatible with proper CMake usage and it not guaranteed
-to be supported.
+In summary, this gives the user complete and direct control in specifying
+exactly what is used in the build process.
 
-If all the parts of a TPL are not found on an initial configure, then one can
-change the variables ``<TPLNAME>_INCLUDE_DIRS``, ``<TPLNAME>_LIBRARY_NAMES``,
-and/or ``<TPLNAME>_LIBRARY_DIRS``.  One can do this over and over until the
-TPL is found. By reconfiguring, one avoid a complete configure from scrath
-which saves time.
+**TPL Example 1: Standard BLAS Library**
+
+Suppose one wants to find the standard BLAS library ``blas`` in the
+directory::
+
+  /usr/lib/
+    libblas.so
+    libblas.a
+    ...
+
+The ``FindTPLBLAS.cmake`` module should be set up to automatically find the
+BLAS TPL by simply enabling BLAS with::
+
+  -D TPL_ENABLE_BLAS=ON
+
+This will result in setting the CMake cache variable ``TPL_BLAS_LIBRARIES`` as
+shown in the CMake output::
+
+  -- TPL_BLAS_LIBRARIES='/user/lib/libblas.so'
+
+(NOTE: The CMake ``FIND_LIBRARY()`` command that is used internally will
+always select the shared library by default if both shared and static
+libraries are specified, unless told otherwise.  See `Building static
+libraries and executables`_ for more details about the handling of shared and
+static libraries.)
+
+However, suppose one wants to find the ``blas`` library in a non-default
+location, such as in::
+
+  /projects/something/tpls/lib/libblas.so
+
+In this case, one could simply configure with::
+
+  -D TPL_ENABLE_BLAS=ON \
+  -D BLAS_LIBRARY_DIRS=/projects/something/tpls/lib \
+
+That will result in finding the library shown in the CMake output::
+
+  -- TPL_BLAS_LIBRARIES='/projects/something/tpls/libblas.so'
+
+And if one wants to make sure that this BLAS library is used, then one can
+just directly set::
+
+  -D TPL_BLAS_LIBRARIES=/projects/something/tpls/libblas.so
+
+**TPL Example 2: Intel Math Kernel Library (MKL) for BLAS**
+  
+There are many cases where the list of libraries specified in the
+``FindTPL<TPLNAME>.cmake`` module is not correct for the TPL that one wants to
+use or is present on the system.  In this case, one will need to set the CMake
+cache variable ``<TPLNAME>_LIBRARY_NAMES`` to tell the
+`TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES()`_ function what libraries to
+search for, and in what order.
+
+For example, the Intel Math Kernel Library (MKL) implementation for the BLAS
+is usually given in several libraries.  The exact set of libraries needed
+depends on the version of MKL, whether 32bit or 64bit libraries are needed,
+etc.  Figuring out the correct set and ordering of these libraries for a given
+platform may not be trivial.  But once the set and the order of the libraries
+is known, then one can provide the correct list at configure time.
+
+For example, suppose one wants to use the threaded MKL libraries listed in the
+directories::
+
+  /usr/local/intel/Compiler/11.1/064/mkl/lib/em64t/
+  /usr/local/intel/Compiler/11.1/064/lib/intel64/
+
+and the list of libraries being searched for is ``mkl_intel_lp64``,
+``mkl_intel_thread``, ``mkl_core`` and ``iomp5``.
+
+In this case, one could specify this with the following do-configure script::
+
+  #!/bin/bash
+
+  INTEL_DIR=/usr/local/intel/Compiler/11.1/064
+
+  cmake \
+    -D TPL_ENABLE_BLAS=ON \
+    -D BLAS_LIBRARY_DIRS="${INTEL_DIR}/em64t;${INTEL_DIR}/intel64" \
+    -D BLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core;iomp5" \
+    ...
+    ${PROJECT_SOURCE_DIR}
+
+This would call ``FIND_LIBRARY()`` on each of the listed library names in
+these directories and would find them and list them in::
+
+  -- TPL_BLAS_LIBRARIES='/usr/local/intel/Compiler/11.1/064/em64t/libmkl_intel_lp64.so;...'
+
+(where ``...`` are the rest of the found libraries.)
+  
+NOTE: When shared libraries are used, one typically only needs to list the
+direct libraries, not the indirect libraries, as the shared libraries are
+linked to each other.
+
+In this example, one could also play it super safe and manually list out the
+libraries in the right order by configuring with::
+
+  -D TPL_BLAS_LIBRARIES="${INTEL_DIR}/em64t/libmkl_intel_lp64.so;..."
+
+(where ``...`` are the rest of the libraries found in order).
 
 
 Disabling support for a Third-Party Library (TPL)
@@ -1018,6 +1351,41 @@ instead of ``-I``.
 WARNING: On some systems this will result in build failures involving gfortran
 and module files.  Therefore, don't enable this if Fortran code in your
 project is pulling in module files from TPLs.
+
+
+xSDK Configuration Options
+--------------------------
+
+The configure of <Project> will adhere to the xSDK configuration standard
+(todo: put in reference to final document) simply by setting the CMake cache
+variable::
+
+  -D USE_XSDK_DEFAULTS=TRUE
+
+Setting this will have the following impact:
+
+* ``BUILD_SHARED_LIBS`` will be set to ``TRUE`` by default instead of
+  ``FALSE``, which is the default for raw CMake projects (see `Building shared
+  libraries`_).
+
+* ``CMAKE_BUILD_TYPE`` will be set to ``DEBUG`` by default instead of
+  ``RELEASE`` which is the standard TriBITS default (see `CMAKE_BUILD_TYPE`_).
+
+* The compilers in MPI mode ``TPL_ENABLE_MPI=ON`` or serial mode
+  ``TPL_ENABLE_MPI=OFF`` will be read from the environment variables ``CC``,
+  ``CXX`` and ``FC`` if they are set but the cmake cache variables
+  ``CMAKE_C_COMPILER``, ``CMAKE_C_COMPILER`` and ``CMAKE_C_COMPILER`` are not
+  set.  Otherwise, the TriBITS default behavior is to ignore these environment
+  variables in MPI mode.
+
+* The Fortran flags will be read from environment variable ``FCFLAGS`` if the
+  environment variable ``FFLAGS`` and the CMake cache variable
+  ``CMAKE_Fortran_FLAGS`` are empty.  Otherwise, raw CMake ignores ``FCFLAGS``
+  (see `Adding arbitrary compiler flags but keeping default build-type
+  flags`_).
+
+The rest of the required xSDK configure standard is automatically satisfied by
+every TriBITS CMake project, including the <Project> project.
 
 
 Generating verbose output
@@ -1173,13 +1541,13 @@ To turn on a set a given set of tests by test category, set::
 
   -D <Project>_TEST_CATEGORIES="<CATEGORY0>;<CATEGORY1>;..." 
 
-Valid categories include ``BASIC``, ``CONTINUOUS``, ``NIGHTLY``, ``WEEKLY``
-and ``PERFORMANCE``.  ``BASIC`` tests get built and run for pre-push testing,
-CI testing, and nightly testing.  ``CONTINUOUS`` tests are for post-push
-testing and nightly testing.  ``NIGHTLY`` tests are for nightly testing only.
-``WEEKLY`` tests are for more expensive tests that are run approximately
-weekly.  ``PERFORMANCE`` tests a special category used only for performance
-testing.
+Valid categories include ``BASIC``, ``CONTINUOUS``, ``NIGHTLY``, ``HEAVY`` and
+``PERFORMANCE``.  ``BASIC`` tests get built and run for pre-push testing, CI
+testing, and nightly testing.  ``CONTINUOUS`` tests are for post-push testing
+and nightly testing.  ``NIGHTLY`` tests are for nightly testing only.
+``HEAVY`` tests are for more expensive tests that require larger number of MPI
+processes and llonger run times.  ``PERFORMANCE`` tests a special category
+used only for performance testing.
 
 
 Disabling specific tests
@@ -1698,7 +2066,7 @@ file first to make sure that it gets rebuilt correctly.
 Building with verbose output without reconfiguring
 --------------------------------------------------
 
-One can get CMake to generate verbose make output at build type by just
+One can get CMake to generate verbose make output at build time by just
 setting the Makefile variable ``VERBOSE=1``, for example, as::
 
   $ make  VERBOSE=1 [<SOME_TARGET>]
@@ -1706,6 +2074,13 @@ setting the Makefile variable ``VERBOSE=1``, for example, as::
 Any number of compile or linking problem can be quickly debugged by seeing the
 raw compile and link lines.  See `Building a single object file`_ for more
 details.
+
+NOTE: The libraries listed on the link line are often in the form
+``-L<lib-dir> -l<lib1> -l<lib2>`` even if one passed in full library paths for
+TPLs through ``TPL_<TPLNAME>_LIBRARIES`` (see `Enabling support for an
+optional Third-Party Library (TPL)`_).  That is because CMake tries to keep
+the link lines as short as possible and therefore it often does this
+translation automatically (whether you want it to or not).
 
 
 Relink a target without considering dependencies
@@ -1947,7 +2322,7 @@ To install the software, type::
 
 Note that CMake actually puts in the build dependencies for installed targets
 so in some cases you can just type ``make -j<N> install`` and it will also
-build the software.  However, it is advanced to always build and test the
+build the software.  However, it is advised to always build and test the
 software first before installing with::
 
   $ make -j<N> && ctest -j<N> && make -j<N> install

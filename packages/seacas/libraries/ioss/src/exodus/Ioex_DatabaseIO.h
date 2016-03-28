@@ -74,11 +74,11 @@ namespace Ioex {
   struct CommunicationMetaData;
 
   // Used for variable name index mapping
-  typedef std::map<std::string, int, std::less<std::string> > VariableNameMap;
-  typedef VariableNameMap::value_type VNMValuePair;
+  using VariableNameMap = std::map<std::string, int, std::less<std::string>>;
+  using VNMValuePair = VariableNameMap::value_type;
 
   // Used to store reduction variables
-  typedef std::vector<double> ValueContainer;
+  using ValueContainer = std::vector<double>;
 
   // Used for persistent entity IDs
   // The set contains a pair of <ex_entity_type, int>.
@@ -88,7 +88,7 @@ namespace Ioex {
   //
   // The 'int' is the entity id.  The set is used for output databases
   // to ensure that there are no id collisions.
-  typedef std::set<std::pair<int64_t, int64_t> > EntityIdSet;
+  using EntityIdSet = std::set<std::pair<int64_t, int64_t>>;
 
   class DatabaseIO : public Ioss::DatabaseIO
   {
@@ -110,7 +110,7 @@ namespace Ioex {
 
       // Eliminate as much memory as possible, but still retain meta data information
       // Typically, eliminate the maps...
-      void release_memory();
+      virtual void release_memory();
 
       // Check capabilities of input/output database...  Returns an
       // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -150,13 +150,14 @@ namespace Ioex {
       void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                  std::vector<std::string> &block_adjacency) const;
 
-      virtual void compute_block_membership(int64_t id, std::vector<std::string> &block_membership) const = 0;
       void compute_block_membership(Ioss::SideBlock *efblock,
                                     std::vector<std::string> &block_membership) const;
 
+      void set_int_byte_size_api(Ioss::DataSize size) const override;
+      
   protected:
-      int64_t get_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
-                                 void *data, size_t data_size) const;
+      virtual int64_t get_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
+					 void *data, size_t data_size) const = 0;
       virtual int64_t get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
 					 void *data, size_t data_size) const = 0;
       virtual int64_t get_field_internal(const Ioss::EdgeBlock* nb, const Ioss::Field& field,
@@ -180,8 +181,8 @@ namespace Ioex {
       virtual int64_t get_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
 					 void *data, size_t data_size) const = 0;
 
-      int64_t put_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
-                                 void *data, size_t data_size) const;
+      virtual int64_t put_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
+					 void *data, size_t data_size) const = 0;
       virtual int64_t put_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
 					 void *data, size_t data_size) const = 0;
       virtual int64_t put_field_internal(const Ioss::EdgeBlock* nb, const Ioss::Field& field,

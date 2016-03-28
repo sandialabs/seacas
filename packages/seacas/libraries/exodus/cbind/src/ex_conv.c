@@ -130,7 +130,7 @@ int ex_conv_ini( int  exoid,
   if ((sizeof(float)  != 4 && sizeof(float)  != 8) ||
       (sizeof(double) != 4 && sizeof(double) != 8 ) )
     {
-      sprintf(errmsg,"Error: unsupported compute word size for file id: %d",
+      sprintf(errmsg,"ERROR: unsupported compute word size for file id: %d",
 	      exoid);
       ex_err("ex_conv_ini",errmsg,EX_FATAL);
       return(EX_FATAL);
@@ -142,11 +142,11 @@ int ex_conv_ini( int  exoid,
       *io_wordsize = NC_FLOAT_WORDSIZE;
     } else {
       *io_wordsize = file_wordsize;
-}
+    }
   }
 
   else if (*io_wordsize != 4 && *io_wordsize != 8 ) {
-    sprintf(errmsg,"Error: unsupported I/O word size for file id: %d",exoid);
+    sprintf(errmsg,"ERROR: unsupported I/O word size for file id: %d",exoid);
     ex_err("ex_conv_ini",errmsg,EX_FATAL);
     return(EX_FATAL);
   }
@@ -154,7 +154,7 @@ int ex_conv_ini( int  exoid,
   else if (file_wordsize && *io_wordsize != file_wordsize ) {
     *io_wordsize = file_wordsize;
     sprintf(errmsg,
-	    "Error: invalid I/O word size specified for existing file id: %d",
+	    "ERROR: invalid I/O word size specified for existing file id: %d",
             exoid);
     ex_err("ex_conv_ini",errmsg,EX_MSG);
     ex_err("ex_conv_ini",
@@ -165,7 +165,7 @@ int ex_conv_ini( int  exoid,
   if (!*comp_wordsize ) {
     *comp_wordsize = sizeof(float);
   } else if (*comp_wordsize != 4 && *comp_wordsize != 8 ) {
-    ex_err("ex_conv_ini","Error: invalid compute wordsize specified",EX_FATAL);
+    ex_err("ex_conv_ini","ERROR: invalid compute wordsize specified",EX_FATAL);
     return(EX_FATAL);
   }
 
@@ -193,7 +193,7 @@ int ex_conv_ini( int  exoid,
   if (!(new_file = malloc(sizeof(struct ex_file_item)))) {
     exerrval = EX_MEMFAIL;
     sprintf(errmsg,
-	    "Error: failed to allocate memory for internal file structure storage file id %d",
+	    "ERROR: failed to allocate memory for internal file structure storage file id %d",
 	    exoid);
     ex_err("ex_inquire",errmsg,exerrval);
     return (EX_FATAL);
@@ -209,6 +209,10 @@ int ex_conv_ini( int  exoid,
   new_file->is_parallel = is_parallel;
   new_file->is_mpiio    = is_mpiio;
   new_file->is_pnetcdf  = is_pnetcdf;
+  new_file->has_nodes = 1; /* default to yes in case not set */
+  new_file->has_edges = 1;
+  new_file->has_faces = 1;
+  new_file->has_elems = 1;
   
   new_file->next = file_list;
   file_list = new_file;
@@ -217,7 +221,7 @@ int ex_conv_ini( int  exoid,
     new_file->netcdf_type_code = NC_FLOAT;
   } else {
     new_file->netcdf_type_code = NC_DOUBLE;
-}
+  }
 
   return(EX_NOERR);
 }
@@ -244,8 +248,9 @@ void ex_conv_exit( int exoid )
 
   exerrval = 0; /* clear error code */
   while( file ) {
-    if (file->file_id == exoid ) { break;
-}
+    if (file->file_id == exoid ) {
+      break;
+    }
 
     prev = file;
     file = file->next;
@@ -262,7 +267,7 @@ void ex_conv_exit( int exoid )
     prev->next = file->next;
   } else {
     file_list = file->next;
-}
+  }
 
   free( file );
 }
@@ -285,7 +290,7 @@ nc_type nc_flt_code( int exoid )
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg,"Error: unknown file id %d for nc_flt_code().",exoid);
+    sprintf(errmsg,"ERROR: unknown file id %d for nc_flt_code().",exoid);
     ex_err("nc_flt_code",errmsg,exerrval);
     return (nc_type) -1;
   }
@@ -300,15 +305,15 @@ int ex_int64_status(int exoid)
      types are passed/returned as int64 types in the API
      
      Defines:
-        EX_MAPS_INT64_DB  All maps (id, order, ...) store int64_t values
-        EX_IDS_INT64_DB   All entity ids (sets, blocks, maps) are int64_t values
-        EX_BULK_INT64_DB    
-        EX_ALL_INT64_DB   (EX_MAPS_INT64_DB|EX_IDS_INT64_DB|EX_BULK_INT64_DB)
+     EX_MAPS_INT64_DB  All maps (id, order, ...) store int64_t values
+     EX_IDS_INT64_DB   All entity ids (sets, blocks, maps) are int64_t values
+     EX_BULK_INT64_DB    
+     EX_ALL_INT64_DB   (EX_MAPS_INT64_DB|EX_IDS_INT64_DB|EX_BULK_INT64_DB)
 
-        EX_MAPS_INT64_API  All maps (id, order, ...) passed as int64_t values
-        EX_IDS_INT64_API   All entity ids (sets, blocks, maps) are passed as int64_t values
-        EX_BULK_INT64_API    
-        EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
+     EX_MAPS_INT64_API  All maps (id, order, ...) passed as int64_t values
+     EX_IDS_INT64_API   All entity ids (sets, blocks, maps) are passed as int64_t values
+     EX_BULK_INT64_API    
+     EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
   */
   struct ex_file_item* file = ex_find_file_item(exoid);
 
@@ -317,7 +322,7 @@ int ex_int64_status(int exoid)
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg,"Error: unknown file id %d for ex_int64_status().",exoid);
+    sprintf(errmsg,"ERROR: unknown file id %d for ex_int64_status().",exoid);
     ex_err("ex_int64_status",errmsg,exerrval);
     return 0;
   }
@@ -330,11 +335,11 @@ int ex_set_int64_status(int exoid, int mode)
      which specify how integer types are passed/returned as int64 types in the API
      
      Mode can be one of:
-        0                  All are passed as int32_t values.
-        EX_MAPS_INT64_API  All maps (id, order, ...) passed as int64_t values
-        EX_IDS_INT64_API   All entity ids (sets, blocks, maps) are passed as int64_t values
-        EX_BULK_INT64_API    
-        EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
+     0                  All are passed as int32_t values.
+     EX_MAPS_INT64_API  All maps (id, order, ...) passed as int64_t values
+     EX_IDS_INT64_API   All entity ids (sets, blocks, maps) are passed as int64_t values
+     EX_BULK_INT64_API    
+     EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
   */
 
   int api_mode = 0;
@@ -347,7 +352,7 @@ int ex_set_int64_status(int exoid, int mode)
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg,"Error: unknown file id %d for ex_int64_status().",exoid);
+    sprintf(errmsg,"ERROR: unknown file id %d for ex_int64_status().",exoid);
     ex_err("ex_int64_status",errmsg,exerrval);
     return 0;
   }
@@ -366,7 +371,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg,"Error: unknown file id %d for ex_set_option().",exoid);
+    sprintf(errmsg,"ERROR: unknown file id %d for ex_set_option().",exoid);
     ex_err("ex_set_option",errmsg,exerrval);
     return EX_FATAL;
   }
@@ -383,10 +388,12 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     /* Check whether file type supports compression... */
     if (file->file_type == 2 || file->file_type == 3) {
       int value = option_value;
-      if (value > 9) { value = 9;
-}
-      if (value < 0) { value = 0;
-}
+      if (value > 9) {
+	value = 9;
+      }
+      if (value < 0) {
+	value = 0;
+      }
       file->compression_level = value;
     }
     else {
@@ -405,7 +412,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     {
       char errmsg[MAX_ERR_LENGTH];
       exerrval = EX_FATAL;
-      sprintf(errmsg,"Error: invalid option %d for ex_set_option().",(int)option);
+      sprintf(errmsg,"ERROR: invalid option %d for ex_set_option().",(int)option);
       ex_err("ex_set_option",errmsg,exerrval);
       return EX_FATAL;
     }
@@ -415,26 +422,26 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
 
 int ex_comp_ws( int exoid )
 {
-/*!
- * ex_comp_ws() returns 4 (i.e. sizeof(float)) or 8 (i.e. sizeof(double)),
- * depending on the value of floating point word size used to initialize
- * the conversion facility for this file id (exoid).
- * \param exoid  integer which uniquely identifies the file of interest.
-*/
+  /*!
+   * ex_comp_ws() returns 4 (i.e. sizeof(float)) or 8 (i.e. sizeof(double)),
+   * depending on the value of floating point word size used to initialize
+   * the conversion facility for this file id (exoid).
+   * \param exoid  integer which uniquely identifies the file of interest.
+   */
   struct ex_file_item* file = ex_find_file_item(exoid);
 
-    exerrval = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
-    if (!file ) {
-      char errmsg[MAX_ERR_LENGTH];
-      exerrval = EX_BADFILEID;
-      sprintf(errmsg,"Error: unknown file id %d",exoid);
-      ex_err("ex_comp_ws",errmsg,exerrval);
-      return(EX_FATAL);
-    }
-    /* Stored as 0 for 4-byte; 1 for 8-byte */
-    return (file->user_compute_wordsize+1)*4;
+  if (!file ) {
+    char errmsg[MAX_ERR_LENGTH];
+    exerrval = EX_BADFILEID;
+    sprintf(errmsg,"ERROR: unknown file id %d",exoid);
+    ex_err("ex_comp_ws",errmsg,exerrval);
+    return(EX_FATAL);
   }
+  /* Stored as 0 for 4-byte; 1 for 8-byte */
+  return (file->user_compute_wordsize+1)*4;
+}
 
 int ex_is_parallel(int exoid)
 {
@@ -450,7 +457,7 @@ int ex_is_parallel(int exoid)
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg,"Error: unknown file id %d",exoid);
+    sprintf(errmsg,"ERROR: unknown file id %d",exoid);
     ex_err("ex_is_parallel",errmsg,exerrval);
     return(EX_FATAL);
   }

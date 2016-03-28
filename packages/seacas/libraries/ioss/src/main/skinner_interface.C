@@ -46,7 +46,7 @@
 Skinner::Interface::Interface()
   :   compose_output("none"), compression_level(0),
       shuffle(false), debug(false), statistics(false), ints64Bit_(false),
-      netcdf4(false), ignoreFaceIds_(false)
+      netcdf4(false), ignoreFaceIds_(false), noOutput_(false)
 {
   enroll_options();
 }
@@ -73,6 +73,10 @@ void Skinner::Interface::enroll_options()
   options_.enroll("out_type", Ioss::GetLongOption::MandatoryValue,
 		  "Database type for output file: exodus. exodus is the default.",
 		  "exodus");
+
+  options_.enroll("no_output", Ioss::GetLongOption::NoValue,
+		  "Do not produce output file, just generate the faces",
+		  nullptr);
 
   options_.enroll("ignore_face_ids", Ioss::GetLongOption::NoValue,
 		  "Ignore internal face ids and just use 1..num_face",
@@ -190,6 +194,10 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("shuffle")) {
     shuffle = true;
+  }
+
+  if (options_.retrieve("no_output")) {
+    noOutput_ = true;
   }
 
   if (options_.retrieve("ignore_face_ids")) {

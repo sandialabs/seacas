@@ -201,22 +201,18 @@ namespace Iohb {
 
       bool append = open_create_behavior() == Ioss::DB_APPEND;
 
+      // Try to open file...
+      new_this->logStream = nullptr;
       if (util().parallel_rank() == 0) {
-
         new_this->logStream = open_stream(get_filename(),
             &(new_this->streamNeedsDelete),
             append);
-
-        if (new_this->logStream == nullptr) {
-	  Ioss::FileInfo path = Ioss::FileInfo(get_filename());
-	  Ioss::Utils::create_path(path.pathname());
-	  new_this->logStream = open_stream(get_filename(),
-              &(new_this->streamNeedsDelete),
-              append);
-        }
-      } else {
-	// All processors except processor 0
-	new_this->logStream = nullptr;
+	
+	if (new_this->logStream == nullptr) {
+	  std::ostringstream errmsg;
+	  errmsg << "ERROR: Could not create heartbeat file '" << get_filename() << "'\n";
+	  IOSS_ERROR(errmsg);
+	}
       }
 
       // Pull variables from the regions property data...
@@ -270,7 +266,11 @@ namespace Iohb {
 	}
 
 	if (addTimeField) {
-	  new_this->legend_->add_legend("Time");
+          if (fileFormat == SPYHIS) {
+            new_this->legend_->add_legend("TIME");
+          } else {
+            new_this->legend_->add_legend("Time");
+          }
 	}
       }
       new_this->initialized_ = true;
@@ -312,6 +312,7 @@ namespace Iohb {
       if (fileFormat == SPYHIS) {
 	time_t calendar_time = time(nullptr);
 	*logStream << "% Sierra SPYHIS Output " << ctime(&calendar_time);
+	*logStream << *legend_ << std::endl; // Legend output twice for SPYHIS 
       }
 
       *logStream << *legend_ << std::endl;

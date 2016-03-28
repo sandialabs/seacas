@@ -71,7 +71,7 @@ static int64_t ex_get_dim_value(int exoid, const char *name, const char *dimensi
     size_t tmp;
     if ((status = nc_inq_dimlen(exoid, dimension, &tmp)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "Error: failed to get number of %s in file id %d",
+      sprintf(errmsg, "ERROR: failed to get number of %s in file id %d",
 	      name, exoid);
       ex_err("ex_get_init",errmsg,exerrval);
       return (EX_FATAL);
@@ -136,7 +136,7 @@ int ex_get_init_ext (int   exoid,
   if (info->num_elem_blk == 0 && info->num_elem > 0) {
     exerrval = EX_BADPARAM;
     sprintf(errmsg,
-            "Error: failed to locate number of element blocks in file id %d",
+            "ERROR: failed to locate number of element blocks in file id %d",
             exoid);
     ex_err("ex_get_init_ext",errmsg,exerrval);
     return (EX_FATAL);
@@ -191,7 +191,7 @@ int ex_get_init_ext (int   exoid,
     if (status != NC_NOERR) {
       exerrval = status;
       sprintf(errmsg,
-	      "Error: failed to get title in file id %d", rootid);
+	      "ERROR: failed to get title in file id %d", rootid);
       ex_err("ex_get_init_ext",errmsg,exerrval);
       return (EX_FATAL);
     }
@@ -199,5 +199,15 @@ int ex_get_init_ext (int   exoid,
     info->title[0] = '\0';
   }
 
+  /* Update settings in ex_file_item struct */
+  {
+    struct ex_file_item *file = ex_find_file_item(exoid);
+    if (file ) {
+      file->has_nodes = info->num_nodes > 0;
+      file->has_edges = info->num_edge  > 0;
+      file->has_faces = info->num_face  > 0;
+      file->has_elems = info->num_elem  > 0;
+    }
+  }
   return (EX_NOERR);
 }

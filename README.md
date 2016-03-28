@@ -1,6 +1,7 @@
 # SEACAS  [[Documentation](http://gsjaardema.github.io/seacas/)]
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
+[![Documentation](https://codedocs.xyz/gsjaardema/seacas.svg)](https://codedocs.xyz/gsjaardema/seacas/)
 
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
@@ -74,7 +75,7 @@ The most recent released version is recommended. For use with Exodus, some local
  * `cd netcdf-4.3.3.1` and enter the command:
     ```
     ./configure --enable-netcdf-4  --enable-shared \
-      --disable-fsync --prefix ${ACCESS} \
+      --disable-fsync --prefix=${ACCESS} \
       --disable-dap --disable-cdmremote
     ```
 
@@ -114,7 +115,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
     cd TPL/parallel
     tar jxvf /path/to/parallel-latest.tar.bz2
     cd parallel-20150522
-    ./configure --prefix ${ACCESS}
+    ./configure --prefix=${ACCESS}
     ```
     
 #### CGNS
@@ -161,6 +162,10 @@ This will run through several of the SEACAS applications creating a mesh (exodus
 ## Exodus
 If you only want the exodus library, then follow most of the above instructions with the following exceptions:
 
+  * You can either clone entire source tree as above, or you can
+	download a zip file containing only the exodus source (and
+	build-related files).  The url for the zip file is
+	https://github.com/gsjaardema/seacas/archive/exodus.zip. 
   * You only need the netcdf and optionally hdf5 libraries
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
@@ -177,9 +182,9 @@ sudo apt-get update
 ```
 and then
 ```
-sudo apt-get install seacas
+sudo apt-get install seacas-bin
 ```
-to get SEACAS. This is provided by Nico Schlömer.
+to get the SEACAS binaries. You can also install 'libseacas-dev' or 'libseacas0'. This is provided by Nico Schlömer.
 
 ## Contact information
 

@@ -126,7 +126,8 @@ namespace Ioex {
     maximumNameLength(32), spatialDimension(0),
     nodeCount(0), edgeCount(0), faceCount(0), elementCount(0),
     commsetNodeCount(0), commsetElemCount(0),
-    nodeMap("node"), edgeMap("edge"), faceMap("face"), elemMap("element"),
+    nodeMap("node", filename, myProcessor), edgeMap("edge", filename, myProcessor),
+    faceMap("face", filename, myProcessor), elemMap("element", filename, myProcessor),
     timeLastFlush(0), fileExists(false),
     minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
     nodeConnectivityStatusCalculated(false)
@@ -211,7 +212,6 @@ namespace Ioex {
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
       if (isize == 8) {
-        exodusMode |= EX_ALL_INT64_API;
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
     }
@@ -220,6 +220,33 @@ namespace Ioex {
     // written to.  This is needed for proper support of the topology
     // files and auto restart so we don't overwrite a file with data we
     // need to save...
+  }
+
+  void DatabaseIO::set_int_byte_size_api(Ioss::DataSize size) const
+  {
+    if (exodusFilePtr > 0) {
+      int old_status = ex_int64_status(get_file_pointer());
+      if (size == 8) {
+	ex_set_int64_status(get_file_pointer(),  EX_ALL_INT64_API|old_status);
+      }
+      else {
+	// Need to clear EX_ALL_INT64_API if set...
+	if (old_status & EX_ALL_INT64_API) {
+	  old_status &= ~EX_ALL_INT64_API;
+	  assert(!(old_status & EX_ALL_INT64_API));
+	  ex_set_int64_status(exodusFilePtr,  old_status);
+	}
+      }
+    }
+    else {
+      if (size == 8) {
+	exodusMode |= EX_ALL_INT64_API;
+      }
+      else {
+	exodusMode &= ~EX_ALL_INT64_API;
+      }
+    }
+    dbIntSizeAPI = size; // mutable
   }
 
   // common
@@ -483,9 +510,7 @@ namespace Ioex {
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
     assert(check_block_order(element_blocks));
-    for (int iblk = 0; iblk < m_groupCount[EX_ELEM_BLOCK]; iblk++) {
-
-      Ioss::ElementBlock *leb = element_blocks[iblk];
+    for (auto leb : element_blocks) {
       int lblk_position  = leb->get_property("original_block_order").get_int();
 
       if (blk_position != lblk_position &&
@@ -635,10 +660,7 @@ namespace Ioex {
 	block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
 	block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
-	Ioss::NameList::const_iterator IF;
-	for (IF = results_fields.begin(); IF != results_fields.end(); ++IF) {
-	  std::string field_name = *IF;
-
+	for (auto &field_name : results_fields) {
 	  Ioss::Field field = block->get_field(field_name);
 	  const Ioss::VariableType *var_type = field.transformed_storage();
 	  Ioss::Field::BasicType ioss_type = field.get_type();
@@ -656,7 +678,7 @@ namespace Ioex {
 	    for (int i=1; i <= var_type->component_count(); i++) {
 	      std::string var_string = var_type->label_name(field_name, i, field_suffix_separator);
 	      // Find position of 'var_string' in 'variables'
-	      VariableNameMap::iterator VN = variables.find(var_string);
+	      auto VN = variables.find(var_string);
 	      if (VN != variables.end()) {
 		// Index '(*VN).second' is 1-based...
 		truth_table[offset + (*VN).second-1] = 1;
@@ -913,39 +935,37 @@ namespace Ioex {
       int ierr = ex_get_variable_param(get_file_pointer(), type, &nvar);
       if (ierr < 0) {
 	Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+      }
     }
 
     if (nvar > 0) {
       if (truth_table.empty()) {
 	truth_table.resize(block_count * nvar);
-      }
 
-      // Read and store the truth table (Should be there since we only
-      // get to this routine if there are variables...)
-      if (!truth_table.empty()) {
-	{
+	// Read and store the truth table (Should be there since we only
+	// get to this routine if there are variables...)
+
+	if (type == EX_NODE_BLOCK || type == EX_GLOBAL) {
+	  // These types don't have a truth table in the exodus api...
+	  // They do in Ioss just for some consistency...
+	  std::fill(truth_table.begin(), truth_table.end(), 1);
+	}
+	else {
 	  Ioss::SerializeIO   serializeIO__(this);
-
-	  if (type == EX_NODE_BLOCK || type == EX_GLOBAL) {
-	    // These types don't have a truth table in the exodus api...
-	    // They do in Ioss just for some consistency...
-	    std::fill(truth_table.begin(), truth_table.end(), 1);
-	  }
-	  else {
-	    int ierr = ex_get_truth_table(get_file_pointer(), type, block_count, nvar, &truth_table[0]);
-	    if (ierr < 0) {
-	      Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
-}
+	  int ierr = ex_get_truth_table(get_file_pointer(), type,
+					block_count, nvar,
+					TOPTR(truth_table));
+	  if (ierr < 0) {
+	    Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
 	  }
 	}
 
-	// If parallel, then synchronize the truth table among all processors...
-	// Need to know that block_X has variable_Y even if block_X is
-	// empty on a specific processor...  The truth table contains 0
-	// if the variable doesn't exist and 1 if it does, so we just
-	// take the maximum at each location...
-	// This is a collective call...
+	// If parallel, then synchronize the truth table among all
+	// processors...  Need to know that block_X has variable_Y
+	// even if block_X is empty on a specific processor...  The
+	// truth table contains 0 if the variable doesn't exist and 1
+	// if it does, so we just take the maximum at each location...
+	// This is a collective call... Make sure not in Serialize
 	if (isParallel) {
 	  util().global_array_minmax(truth_table, Ioss::ParallelUtils::DO_MAX);
 	}
@@ -1104,8 +1124,6 @@ namespace Ioex {
 						   std::vector<T*> entities,
 						   int &glob_index)
   {
-    typename std::vector<T*>::const_iterator I;
-
     int index = 0;
     for (auto &entity : entities) {
       glob_index = gather_names(type, m_variables[type], entity, glob_index, true);
@@ -1214,25 +1232,23 @@ namespace Ioex {
     // next block, ...
     size_t offset = 0;
 
-    Ioss::SideSetContainer sidesets = get_region()->get_sidesets();
-    Ioss::SideSetContainer::const_iterator I;
-
     char field_suffix_separator = get_field_separator();
-    for (auto &sideset : sidesets) {
-      Ioss::SideBlockContainer side_blocks = sideset->get_side_blocks();
 
+    Ioss::SideSetContainer sidesets = get_region()->get_sidesets();
+    for (auto &sideset : sidesets) {
+
+      Ioss::SideBlockContainer side_blocks = sideset->get_side_blocks();
       for (auto &block : side_blocks) {
 	// See if this sideblock has a corresponding entry in the sideset list.
 	if (block->property_exists("invalid")) {
 	  continue;
-}
+	}
 
 	// Get names of all transient and reduction fields...
 	Ioss::NameList results_fields;
 	block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
 	block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
-	Ioss::NameList::const_iterator IF;
 	for (auto &field_name : results_fields) {
 	  Ioss::Field field = block->get_field(field_name);
 	  const Ioss::VariableType *var_type = field.transformed_storage();
@@ -1251,7 +1267,7 @@ namespace Ioex {
 	    for (int i=1; i <= var_type->component_count(); i++) {
 	      std::string var_string = var_type->label_name(field_name, i, field_suffix_separator);
 	      // Find position of 'var_string' in 'm_variables[]'
-	      VariableNameMap::iterator VN = m_variables[EX_SIDE_SET].find(var_string);
+	      auto VN = m_variables[EX_SIDE_SET].find(var_string);
 	      if (VN != m_variables[EX_SIDE_SET].end()) {
 		// Index '(*VN).second' is 1-based...
 		m_truthTable[EX_SIDE_SET][offset + (*VN).second-1] = 1;

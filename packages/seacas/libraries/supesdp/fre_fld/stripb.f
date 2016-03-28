@@ -1,1 +1,0 @@
-../../supes/fre_fld/stripb.f
