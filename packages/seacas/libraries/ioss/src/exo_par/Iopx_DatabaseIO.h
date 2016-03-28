@@ -83,7 +83,7 @@ namespace Iopx {
 	       const Ioss::PropertyManager &properties);
     DatabaseIO(const DatabaseIO& from) =delete;
     DatabaseIO& operator=(const DatabaseIO& from) =delete;
-    ~DatabaseIO() = default;
+    ~DatabaseIO();
 
     void release_memory() override;
     bool needs_shared_node_information() const {return true;}
