@@ -108,7 +108,7 @@ namespace Iopx {
       size_t df_count() const {return distributionFactorCount;}
 
       // contains global entity-list positions for all entities in this set on this processor. 
-      std::vector<int> entitylist_map;
+      std::vector<size_t> entitylist_map;
       std::vector<bool> hasEntities; // T/F if this set exists on processor p
 
       size_t fileCount; // Number of nodes in nodelist for file decomposition
@@ -188,9 +188,6 @@ namespace Iopx {
   };
 
   template <typename INT>
-  class DecompositionData;
-
-  template <typename INT>
   class DecompositionData : public DecompositionDataBase
   {
     public:
@@ -204,86 +201,11 @@ namespace Iopx {
       size_t ioss_node_count() const {return nodeGTL.size();}
       size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
 
-      // This processor "manages" the elements on the exodus mesh file from
-      // element_offset to element_offset+count (0-based). This is
-      // 'file' data
-      //
-      // This processor also appears to the Ioss clients to own other
-      // element and node data based on the decomposition.  This is the
-      // 'ioss' data.
-      //
-      // The indices in 'local_element_map' are the elements that are
-      // common to both the 'file' data and the 'ioss' data.
-      // local_element_map[i] contains the location in 'file' data for
-      // the 'ioss' data at location 'i+import_pre_local_elem_index'
-      //
-      // local_element_map[i]+elementOffset is the 0-based global index
-      //
-      // The indices in 'import_element_map' map the data received via
-      // mpi communication from other processors into 'ioss' data.
-      // if 'ind=import_element_map[i]', then ioss[ind] = comm_recv[i]
-      // Note that this is the reverse direction of the
-      // local_element_map mapping.
-      //
-      // The indices in 'export_element_map' are used to pull from
-      // 'file' data into the comm_send vector.  if 'ind =
-      // export_element_map[i]', then 'comm_send[i] = file[ind]' for i =
-      // 0..#exported_elements
-      //
-      // local_element_map.size() + import_element_map.size() == #
-      // ioss elements on this processor.
-      //
-      // local_element_map.size() + export_element_map.size() == #
-      // file elements on this processor.
-      //
-      // export_element_map and import_element_map are sorted.
-      // The primary key is processor order followed by global id.
-      // The processor association is via 'export_proc_disp' and
-      // 'import_proc_disp' Both are of size '#processors+1' and
-      // the elements for processor p range from [X_proc_disp[p] to
-      // X_proc_disp[p+1])
-
-      std::vector<INT> localElementMap;
-
-      std::vector<INT> importElementMap;
-      std::vector<INT> importElementCount;
-      std::vector<INT> importElementIndex;
-
-      std::vector<INT> exportElementMap;
-      std::vector<INT> exportElementCount;
-      std::vector<INT> exportElementIndex;
-
-      std::vector<INT> nodeIndex;
-
-      // Note that nodeGTL is a sorted vector.
-      std::vector<INT> nodeGTL;  // Convert from global index to local index (1-based)
-      std::map<INT,INT> elemGTL;  // Convert from global index to local index (1-based)
-
-      std::vector<INT> exportNodeMap;
-      std::vector<INT> exportNodeCount;
-      std::vector<INT> exportNodeIndex;
-
-      std::vector<INT> importNodeMap; // Where to put each imported nodes data in the list of all data...
-      std::vector<INT> importNodeCount;
-      std::vector<INT> importNodeIndex;
-
-      std::vector<INT> localNodeMap;
-
-      std::vector<INT> nodeCommMap; // node/processor pair of the
-      // nodes I communicate with.  Stored node#,proc,node#,proc, ...
-
-      // The global element at index 'I' (0-based) is on block B in the file decompositoin.
-      // if fileBlockIndex[B] <= I && fileBlockIndex[B+1] < I
-      std::vector<size_t> fileBlockIndex;
-
-    public:
-      int get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
+      template <typename T>
+      void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
       template <typename T>
       void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
-
-      template <typename T>
-      void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
       template <typename T>
       void communicate_set_data(T *file_data, T *ioss_data, const SetDecompositionData &set, size_t comp_count) const;
@@ -315,20 +237,6 @@ namespace Iopx {
                                       Ioss::Map &node_map, int64_t *locally_owned_count,
                                       int64_t *processor_offset);
     private:
-
-      /*!
-       * The properties member data contains properties that can be used
-       * to set database-specific options.  By convention, the property
-       * name is all uppercase. Some existing properties recognized by
-       * the DecompositionData class are:
-       *
-       * | Property              | Value
-       * |-----------------------|-------------------
-       * | DECOMPOSITION_METHOD  | LINEAR, (internal)
-       * |                       | RCB, RIB, HSFC, BLOCK, CYCLIC, RANDOM, (zoltan)
-       * |                       | KWAY, GEOM_KWAY, METIS_SFC (metis)
-       */
-      Ioss::PropertyManager properties;
 
 #if !defined(NO_ZOLTAN_SUPPORT)
       void zoltan_decompose(const std::string &method);
@@ -402,9 +310,96 @@ namespace Iopx {
 
       void get_shared_node_list();
 
+      int get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
+
       void get_local_node_list(const std::vector<INT> &pointer, const std::vector<INT> &adjacency,
                                const std::vector<INT> &node_dist);
 
+      // This processor "manages" the elements on the exodus mesh file from
+      // element_offset to element_offset+count (0-based). This is
+      // 'file' data
+      //
+      // This processor also appears to the Ioss clients to own other
+      // element and node data based on the decomposition.  This is the
+      // 'ioss' data.
+      //
+      // The indices in 'local_element_map' are the elements that are
+      // common to both the 'file' data and the 'ioss' data.
+      // local_element_map[i] contains the location in 'file' data for
+      // the 'ioss' data at location 'i+import_pre_local_elem_index'
+      //
+      // local_element_map[i]+elementOffset is the 0-based global index
+      //
+      // The indices in 'import_element_map' map the data received via
+      // mpi communication from other processors into 'ioss' data.
+      // if 'ind=import_element_map[i]', then ioss[ind] = comm_recv[i]
+      // Note that this is the reverse direction of the
+      // local_element_map mapping.
+      //
+      // The indices in 'export_element_map' are used to pull from
+      // 'file' data into the comm_send vector.  if 'ind =
+      // export_element_map[i]', then 'comm_send[i] = file[ind]' for i =
+      // 0..#exported_elements
+      //
+      // local_element_map.size() + import_element_map.size() == #
+      // ioss elements on this processor.
+      //
+      // local_element_map.size() + export_element_map.size() == #
+      // file elements on this processor.
+      //
+      // export_element_map and import_element_map are sorted.
+      // The primary key is processor order followed by global id.
+      // The processor association is via 'export_proc_disp' and
+      // 'import_proc_disp' Both are of size '#processors+1' and
+      // the elements for processor p range from [X_proc_disp[p] to
+      // X_proc_disp[p+1])
+
+      std::vector<INT> localElementMap;
+
+      std::vector<INT> importElementMap;
+      std::vector<INT> importElementCount;  // #proc
+      std::vector<INT> importElementIndex;  // #proc+1
+
+      std::vector<INT> exportElementMap;
+      std::vector<INT> exportElementCount;  // #proc
+      std::vector<INT> exportElementIndex;  // #proc+1
+
+      std::vector<INT> nodeIndex; // #proc+1
+
+      // Note that nodeGTL is a sorted vector.
+      std::vector<INT> nodeGTL;  // Convert from global index to local index (1-based)
+      std::map<INT,INT> elemGTL;  // Convert from global index to local index (1-based)
+
+      std::vector<INT> exportNodeMap;
+      std::vector<INT> exportNodeCount; // #proc
+      std::vector<INT> exportNodeIndex; // #proc+1
+
+      std::vector<INT> importNodeMap; // Where to put each imported nodes data in the list of all data...
+      std::vector<INT> importNodeCount; // #proc
+      std::vector<INT> importNodeIndex; // #proc+1
+
+      std::vector<INT> localNodeMap;
+
+      std::vector<INT> nodeCommMap; // node/processor pair of the
+      // nodes I communicate with.  Stored node#,proc,node#,proc, ...
+
+      // The global element at index 'I' (0-based) is on block B in the file decomposition.
+      // if fileBlockIndex[B] <= I && fileBlockIndex[B+1] < I
+      std::vector<size_t> fileBlockIndex;
+
+      /*!
+       * The properties member data contains properties that can be used
+       * to set database-specific options.  By convention, the property
+       * name is all uppercase. Some existing properties recognized by
+       * the DecompositionData class are:
+       *
+       * | Property              | Value
+       * |-----------------------|-------------------
+       * | DECOMPOSITION_METHOD  | LINEAR, (internal)
+       * |                       | RCB, RIB, HSFC, BLOCK, CYCLIC, RANDOM, (zoltan)
+       * |                       | KWAY, GEOM_KWAY, METIS_SFC (metis)
+       */
+      Ioss::PropertyManager properties;
   };
 }
 #endif
