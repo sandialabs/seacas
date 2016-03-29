@@ -205,10 +205,6 @@ namespace Iopx {
     spatialDimension   = info.num_dim;
     el_blocks.resize(info.num_elem_blk);
 
-    std::vector<INT> pointer; // Index into adjacency, processor list for each element...
-    std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
-    generate_adjacency_list(filePtr, pointer, adjacency, m_decomposition);
-
     // Generate element_dist/node_dist --  size proc_count + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
     std::vector<INT> element_dist
@@ -221,6 +217,10 @@ namespace Iopx {
 				   globalNodeCount,
 				   &m_decomposition.nodeOffset,
 				   &m_decomposition.nodeCount);
+
+    std::vector<INT> pointer; // Index into adjacency, processor list for each element...
+    std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
+    generate_adjacency_list(filePtr, pointer, adjacency, m_decomposition);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " has "

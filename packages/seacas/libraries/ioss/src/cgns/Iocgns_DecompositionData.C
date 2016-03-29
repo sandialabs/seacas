@@ -169,6 +169,19 @@ namespace Iocgns {
       }
     }
 
+    // Generate element_dist/node_dist --  size proc_count + 1
+    // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
+    std::vector<INT> element_dist
+      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
+				   globalElementCount,
+				   &m_decomposition.elementOffset,
+				   &m_decomposition.elementCount);
+    std::vector<INT> node_dist
+      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
+				   globalNodeCount,
+				   &m_decomposition.nodeOffset,
+				   &m_decomposition.nodeCount);
+
     std::vector<INT> pointer; // Index into adjacency, processor list for each element...
     std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
     generate_adjacency_list(filePtr, pointer, adjacency, m_decomposition);
@@ -190,18 +203,6 @@ namespace Iocgns {
       }
     }
 
-    // Generate element_dist/node_dist --  size proc_count + 1
-    // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
-    std::vector<INT> element_dist
-      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
-				   globalElementCount,
-				   &m_decomposition.elementOffset,
-				   &m_decomposition.elementCount);
-    std::vector<INT> node_dist
-      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
-				   globalNodeCount,
-				   &m_decomposition.nodeOffset,
-				   &m_decomposition.nodeCount);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " has "
