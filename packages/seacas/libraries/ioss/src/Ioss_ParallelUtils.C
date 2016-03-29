@@ -280,7 +280,7 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
     static T inbuf[1], outbuf[1];
     inbuf[0] = local_minmax;
 
-    MPI_Op oper;
+    MPI_Op oper = MPI_MAX;
     if (which == DO_MAX)
       oper = MPI_MAX;
     else if (which == DO_MIN)
@@ -314,7 +314,7 @@ void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count, Ios
 
     std::vector<T> maxout(count);
 
-    MPI_Op oper;
+    MPI_Op oper = MPI_MAX;
     if (which == DO_MAX)
       oper = MPI_MAX;
     else if (which == DO_MIN)
