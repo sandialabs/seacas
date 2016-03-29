@@ -36,6 +36,7 @@
 #include <cgnslib.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_Utils.h>
 #include <string>
 #include <ostream>
 
