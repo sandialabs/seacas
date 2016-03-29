@@ -105,6 +105,8 @@ namespace Iocgns {
 
       void get_block_connectivity(int filePtr, void *data, int blk_seq) const;
 
+      void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map, bool do_map) const;
+
       template <typename T>
 	void communicate_element_data(T *file_data, T *ioss_data,
 				      size_t comp_count) const;
@@ -217,6 +219,7 @@ namespace Iocgns {
     void get_file_node_coordinates(int filePtr, int direction, double *ioss_data) const;
     void get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
+  public:
     Ioss::Decomposition<INT> m_decomposition;
   };
 }
