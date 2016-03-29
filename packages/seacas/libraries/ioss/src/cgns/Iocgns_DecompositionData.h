@@ -2,23 +2,23 @@
  * Copyright (c) 2015, 2016 Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
  * the U.S. Government retains certain rights in this software.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
- * 
+ *
  *     * Neither the name of Sandia Corporation nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,7 +30,7 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 #ifndef IOCGNS_DECOMPOSITONDATA_H
 #define IOCGNS_DECOMPOSITONDATA_H
@@ -102,7 +102,7 @@ namespace Iocgns {
 
       virtual void get_node_coordinates(int filePtr, double *ioss_data,
 					const Ioss::Field &field) const = 0;
-      
+
       void get_block_connectivity(int filePtr, void *data, int blk_seq) const;
 
       template <typename T>
@@ -164,7 +164,7 @@ namespace Iocgns {
     void communicate_set_data(INT *file_data, INT *ioss_data,
 			      const Ioss::SetDecompositionData &set, size_t comp_count) const
     {m_decomposition.communicate_set_data(file_data, ioss_data, set, comp_count);}
-      
+
     template <typename T>
       void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const
       {m_decomposition.communicate_node_data(file_data, ioss_data, comp_count);}
@@ -177,23 +177,23 @@ namespace Iocgns {
     void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
 
     void get_sideset_element_side(int filePtr, const Ioss::SetDecompositionData &sset, INT *data) const;
-    
+
   private:
     void get_sideset_data(int filePtr);
     void generate_zone_shared_nodes(int filePtr, INT min_node, INT max_node);
-    
+
     bool i_own_node(size_t node) const // T/F if node with global index node owned by this processors ioss-decomp.
     {return m_decomposition.i_own_node(node);}
-    
+
     bool i_own_elem(size_t elem) const // T/F if node with global index elem owned by this processors ioss-decomp.
     {return m_decomposition.i_own_elem(elem);}
-    
+
     // global_index is 1-based index into global list of nodes [1..global_node_count]
     // return value is 1-based index into local list of nodes on this
     // processor (ioss-decomposition)
     size_t node_global_to_local(size_t global_index) const
     {return m_decomposition.node_global_to_local(global_index);}
-    
+
     size_t elem_global_to_local(size_t global_index) const
     {return m_decomposition.elem_global_to_local(global_index);}
 
@@ -202,7 +202,7 @@ namespace Iocgns {
 
     void get_element_block_communication()
     {m_decomposition.get_element_block_communication(el_blocks);}
-    
+
     void generate_adjacency_list(int fileId, Ioss::Decomposition<INT> &decomposition);
 
     void calculate_element_centroids(int filePtr,
