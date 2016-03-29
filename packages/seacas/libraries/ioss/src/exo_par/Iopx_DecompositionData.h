@@ -183,9 +183,7 @@ namespace Iopx {
       
 #if !defined(NO_PARMETIS_SUPPORT)
     void metis_decompose(const std::string &method,
-			 const std::vector<INT> &element_dist,
-			 const std::vector<INT> &pointer,
-			 const std::vector<INT> &adjacency);
+			 const std::vector<INT> &element_dist);
 
     void internal_metis_decompose(const std::string &method,
 				  idx_t *element_dist,
@@ -245,8 +243,6 @@ namespace Iopx {
     {m_decomposition.get_element_block_communication(el_blocks);}
     
     void generate_adjacency_list(int filePtr,
-				 std::vector<INT> &pointer,
-				 std::vector<INT> &adjacency,
 				 Ioss::Decomposition<INT> &decomposition);
 
     void get_nodeset_data(int filePtr, size_t set_count);
@@ -254,8 +250,6 @@ namespace Iopx {
     void get_sideset_data(int filePtr, size_t set_count);
 
     void calculate_element_centroids(int filePtr,
-				     const std::vector<INT> &pointer,
-				     const std::vector<INT> &adjacency,
 				     const std::vector<INT> &node_dist);
 #if !defined(NO_ZOLTAN_SUPPORT)
     void get_local_element_list(const ZOLTAN_ID_PTR &export_global_ids, size_t export_count);
@@ -266,10 +260,8 @@ namespace Iopx {
 
     int get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
-    void get_local_node_list(const std::vector<INT> &pointer,
-			     const std::vector<INT> &adjacency,
-			     const std::vector<INT> &node_dist)
-    {m_decomposition.get_local_node_list(pointer, adjacency, node_dist);}
+    void get_local_node_list()
+    {m_decomposition.get_local_node_list();}
   public:
     Ioss::Decomposition<INT> m_decomposition;
   };

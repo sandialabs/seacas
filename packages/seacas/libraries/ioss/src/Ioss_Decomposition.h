@@ -151,6 +151,9 @@ namespace Ioss {
       size_t ioss_node_count() const {return nodeGTL.size();}
       size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
 
+      bool needs_centroids() const;
+      void generate_entity_distributions(size_t globalNodeCount, size_t globalElementCount);
+      
       // T/F if node with global index node owned by this processors ioss-decomp.
       bool i_own_node(size_t global_index) const
       {
@@ -193,20 +196,13 @@ namespace Ioss {
 #endif
 			   size_t global_element_count,
 			   size_t global_node_count,
-			   std::vector<BlockDecompositionData> &el_blocks,
-			   const std::vector<INT> &pointer,
-			   const std::vector<INT> &adjacency,
-			   const std::vector<INT> &node_dist,
-			   const std::vector<INT> &element_dist);
+			   std::vector<BlockDecompositionData> &el_blocks);
       
-      void simple_decompose(const std::vector<INT> &element_dist);
+      void simple_decompose();
 
-      void simple_node_decompose(const std::vector<INT> &node_dist);
+      void simple_node_decompose();
       
-      void calculate_element_centroids(const std::vector<INT> &pointer,
-				       const std::vector<INT> &adjacency,
-				       const std::vector<INT> &node_dist,
-				       int spatial_dimension,
+      void calculate_element_centroids(int spatial_dimension,
 				       const std::vector<double> &x,
 				       const std::vector<double> &y,
 				       const std::vector<double> &z);
@@ -218,10 +214,7 @@ namespace Ioss {
 #endif
       
 #if !defined(NO_PARMETIS_SUPPORT)
-      void metis_decompose(std::vector<BlockDecompositionData> &el_blocks,
-                           const std::vector<INT> &element_dist,
-                           const std::vector<INT> &pointer,
-                           const std::vector<INT> &adjacency);
+      void metis_decompose(std::vector<BlockDecompositionData> &el_blocks);
 
       void internal_metis_decompose(std::vector<BlockDecompositionData> &el_blocks,
                                     idx_t *element_dist,
@@ -236,16 +229,14 @@ namespace Ioss {
 
       void get_element_block_communication(std::vector<BlockDecompositionData> &el_blocks);
       void build_global_to_local_elem_map();
-      void get_local_node_list(const std::vector<INT> &pointer,
-			       const std::vector<INT> &adjacency,
-			       const std::vector<INT> &node_dist);
+      void get_local_node_list();
       void get_shared_node_list();
       template <typename T>
 	void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
       template <typename T>
-      void communicate_set_data(T *file_data, T *ioss_data,
-				const SetDecompositionData &set, size_t comp_count) const;
+	void communicate_set_data(T *file_data, T *ioss_data,
+				  const SetDecompositionData &set, size_t comp_count) const;
 
       template <typename T, typename U>
 	void communicate_block_data(T *file_data, U *ioss_data,
@@ -261,7 +252,6 @@ namespace Ioss {
       int m_processorCount;
       std::string m_method;
       
-    public:
       // Values for the file decomposition 
       size_t elementCount;
       size_t elementOffset;
@@ -272,6 +262,16 @@ namespace Ioss {
       size_t importPreLocalNodeIndex;
 
       std::vector<double> m_centroids;
+      std::vector<INT> m_pointer; // Index into adjacency, processor list for each element...
+      std::vector<INT> m_adjacency; // Size is sum of element connectivity sizes 
+
+      std::vector<INT> nodeCommMap; // node/processor pair of the
+      // nodes I communicate with.  Stored node#,proc,node#,proc, ...
+
+      // The global element at index 'I' (0-based) is on block B in the
+      // file decomposition.
+      // if fileBlockIndex[B] <= I && fileBlockIndex[B+1] < I
+      std::vector<size_t> fileBlockIndex;
 
     private:
       // This processor "manages" the elements on the exodus mesh file from
@@ -335,21 +335,12 @@ namespace Ioss {
 
       std::vector<INT> localNodeMap;
 
-    public:
-      std::vector<INT> nodeCommMap; // node/processor pair of the
-      // nodes I communicate with.  Stored node#,proc,node#,proc, ...
-
-      // The global element at index 'I' (0-based) is on block B in the
-      // file decomposition.
-      // if fileBlockIndex[B] <= I && fileBlockIndex[B+1] < I
-      std::vector<size_t> fileBlockIndex;
-
-    private:
+      std::vector<INT> m_elementDist;
+      std::vector<INT> m_nodeDist;
+      
       // Note that nodeGTL is a sorted vector.
       std::vector<INT> nodeGTL;  // Convert from global index to local index (1-based)
       std::map<INT,INT> elemGTL;  // Convert from global index to local index (1-based)
-
-
     };
 }
 #endif

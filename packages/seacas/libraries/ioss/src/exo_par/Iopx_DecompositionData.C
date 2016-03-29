@@ -207,20 +207,9 @@ namespace Iopx {
 
     // Generate element_dist/node_dist --  size proc_count + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
-    std::vector<INT> element_dist
-      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
-				   globalElementCount,
-				   &m_decomposition.elementOffset,
-				   &m_decomposition.elementCount);
-    std::vector<INT> node_dist
-      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
-				   globalNodeCount,
-				   &m_decomposition.nodeOffset,
-				   &m_decomposition.nodeCount);
-
-    std::vector<INT> pointer; // Index into adjacency, processor list for each element...
-    std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
-    generate_adjacency_list(filePtr, pointer, adjacency, m_decomposition);
+    m_decomposition.generate_entity_distributions(globalNodeCount, globalElementCount);
+    
+    generate_adjacency_list(filePtr, m_decomposition);
 
 #if DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " has "
@@ -229,14 +218,7 @@ namespace Iopx {
               << decomp_node_count() << " nodes; offset = " << decomp_node_offset() << ".\n";
 #endif
 
-    const std::string &method = m_decomposition.m_method;
-    if (method == "RCB" ||
-        method == "RIB" ||
-        method == "HSFC" ||
-        method == "GEOM_KWAY" ||
-        method == "KWAY_GEOM" ||
-        method == "METIS_SFC") {
-
+    if (m_decomposition.needs_centroids()) {
       // Get my coordinate data using direct exodus calls
       std::vector<double> x(decomp_node_count());;
       std::vector<double> y;
@@ -250,8 +232,7 @@ namespace Iopx {
 			   decomp_node_offset()+1, decomp_node_count(),
 			   TOPTR(x), TOPTR(y), TOPTR(z));
 
-      m_decomposition.calculate_element_centroids(pointer, adjacency, node_dist,
-						  spatialDimension, x, y, z);
+      m_decomposition.calculate_element_centroids(spatialDimension, x, y, z);
     }
 
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -272,9 +253,7 @@ namespace Iopx {
 				    zz,
 #endif
 				    globalElementCount, globalNodeCount,
-				    el_blocks,
-				    pointer, adjacency,
-				    node_dist, element_dist);
+				    el_blocks);
     
     get_nodeset_data(filePtr, info.num_node_sets);
 
@@ -292,8 +271,6 @@ namespace Iopx {
 
   template <typename INT>
   void DecompositionData<INT>::generate_adjacency_list(int filePtr,
-                                                       std::vector<INT> &pointer,
-                                                       std::vector<INT> &adjacency,
 						       Ioss::Decomposition<INT> &decomposition)
   {
     // Range of elements currently handled by this processor [)
@@ -354,8 +331,8 @@ namespace Iopx {
       exit(EXIT_FAILURE);
     }
 
-    pointer.reserve(decomp_elem_count()+1);
-    adjacency.reserve(sum);
+    decomposition.m_pointer.reserve(decomp_elem_count()+1);
+    decomposition.m_adjacency.reserve(sum);
 
     // Now, populate the vectors...
     offset = 0;
@@ -382,16 +359,16 @@ namespace Iopx {
         ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity), nullptr, nullptr);
         size_t el = 0;
         for (size_t elem = 0; elem < overlap; elem++) {
-          pointer.push_back(adjacency.size());
+          decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
           for (size_t k=0; k < element_nodes; k++) {
             INT node = connectivity[el++]-1; // 0-based node
-            adjacency.push_back(node);
+            decomposition.m_adjacency.push_back(node);
           }
         }
         sum += overlap * element_nodes;
       }
     }
-    pointer.push_back(adjacency.size());
+    decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
   }
 
   template <typename INT>
