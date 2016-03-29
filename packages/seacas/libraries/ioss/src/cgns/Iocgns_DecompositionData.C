@@ -837,6 +837,21 @@ namespace Iocgns {
     }
   }
 
+  void DecompositionDataBase::get_node_entity_proc_data(void *entity_proc,
+							const Ioss::MapContainer &node_map,
+							bool do_map) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int>*>(this);
+      Ioss::Utils::check_dynamic_cast(this32);
+      this32->m_decomposition.get_node_entity_proc_data((int*)entity_proc, node_map, do_map);
+    } else {
+      const DecompositionData<int64_t> *this64 = dynamic_cast<const DecompositionData<int64_t>*>(this);
+      Ioss::Utils::check_dynamic_cast(this64);
+      this64->m_decomposition.get_node_entity_proc_data((int64_t*)entity_proc, node_map, do_map);
+    }
+  }
+
   void DecompositionDataBase::get_block_connectivity(int filePtr, void *data, int blk_seq) const
   {
     if (int_size() == sizeof(int)) {
