@@ -182,14 +182,6 @@ namespace Iocgns {
     void get_sideset_data(int filePtr);
     void generate_zone_shared_nodes(int filePtr, INT min_node, INT max_node);
     
-#if !defined(NO_ZOLTAN_SUPPORT)
-    void zoltan_decompose(const std::string &method);
-#endif
-
-    void simple_decompose(const std::string &method,
-			  const std::vector<INT> &element_dist)
-    {m_decomposition.simple_decompose(method, element_dist);}
-      
     bool i_own_node(size_t node) const // T/F if node with global index node owned by this processors ioss-decomp.
     {return m_decomposition.i_own_node(node);}
     
@@ -211,23 +203,16 @@ namespace Iocgns {
     void get_element_block_communication()
     {m_decomposition.get_element_block_communication(el_blocks);}
     
-    void generate_adjacency_list(int fileId, std::vector<INT> &pointer,
-				 std::vector<INT> &adjacency,
-				 Ioss::Decomposition<INT> &decomposition);
+    void generate_adjacency_list(int fileId, Ioss::Decomposition<INT> &decomposition);
 
     void calculate_element_centroids(int filePtr,
-				     const std::vector<INT> &pointer,
-				     const std::vector<INT> &adjacency,
-				     const std::vector<INT> &node_dist,
 				     std::vector<double> &centroids);
 
     void get_shared_node_list()
     {m_decomposition.get_shared_node_list();}
 
-    void get_local_node_list(const std::vector<INT> &pointer,
-			     const std::vector<INT> &adjacency,
-			     const std::vector<INT> &node_dist)
-    {m_decomposition.get_local_node_list(pointer, adjacency, node_dist);}
+    void get_local_node_list()
+    {m_decomposition.get_local_node_list();}
 
     void get_file_node_coordinates(int filePtr, int direction, double *ioss_data) const;
     void get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;

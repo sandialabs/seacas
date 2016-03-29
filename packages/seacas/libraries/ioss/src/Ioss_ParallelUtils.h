@@ -124,52 +124,20 @@ namespace Ioss {
     MPI_Comm communicator_;
   };
 
-  template <typename INT> 
-    inline std::vector<INT> get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
-				   size_t *offset, size_t *count)
-  {
-    std::vector<INT> dist(proc_count+1);
-    
-    size_t per_proc = entity_count / proc_count;
-    size_t extra    = entity_count % proc_count;
-
-    *count = per_proc + (my_proc < extra ? 1 : 0);
-
-    if (my_proc < extra) {
-      *offset = (per_proc+1) * my_proc;
-    }
-    else {
-      *offset = (per_proc+1) * extra + per_proc * (my_proc - extra);
-    }
-
-    // This processors range of elements is
-    // [element_offset..element_offset+element_count)
-
-    // Fill in element_dist vector.  Range of elements on each processor...
-    size_t sum = 0;
-    for (size_t i=0; i < proc_count; i++) {
-      dist[i] = sum;
-      sum += per_proc;
-      if (i < extra) sum++;
-    }
-    dist[proc_count] = sum;
-    return dist;
-  }
-
   inline int power_2(int count)
-  {
-    // Return the power of two which is equal to or greater than 'count'
-    // count = 15 -> returns 16
-    // count = 16 -> returns 16
-    // count = 17 -> returns 32
+    {
+      // Return the power of two which is equal to or greater than 'count'
+      // count = 15 -> returns 16
+      // count = 16 -> returns 16
+      // count = 17 -> returns 32
 
-    // Use brute force...
-    int pow2 = 1;
-    while (pow2 < count) {
-      pow2 *= 2;
+      // Use brute force...
+      int pow2 = 1;
+      while (pow2 < count) {
+	pow2 *= 2;
+      }
+      return pow2;
     }
-    return pow2;
-  }
 
 #ifdef HAVE_MPI
   inline MPI_Datatype mpi_type(double /*dummy*/)  {return MPI_DOUBLE;}
