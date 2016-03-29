@@ -45,6 +45,38 @@
 #endif
 
 namespace {
+  template <typename INT> 
+  inline std::vector<INT> get_entity_dist(size_t proc_count, size_t my_proc, size_t entity_count,
+					  size_t *offset, size_t *count)
+  {
+    std::vector<INT> dist(proc_count+1);
+    
+    size_t per_proc = entity_count / proc_count;
+    size_t extra    = entity_count % proc_count;
+
+    *count = per_proc + (my_proc < extra ? 1 : 0);
+
+    if (my_proc < extra) {
+      *offset = (per_proc+1) * my_proc;
+    }
+    else {
+      *offset = (per_proc+1) * extra + per_proc * (my_proc - extra);
+    }
+
+    // This processors range of elements is
+    // [element_offset..element_offset+element_count)
+
+    // Fill in element_dist vector.  Range of elements on each processor...
+    size_t sum = 0;
+    for (size_t i=0; i < proc_count; i++) {
+      dist[i] = sum;
+      sum += per_proc;
+      if (i < extra) sum++;
+    }
+    dist[proc_count] = sum;
+    return dist;
+  }
+
   std::string get_decomposition_method(const Ioss::PropertyManager &properties,
 				       int my_processor, int processor_count)
   {
@@ -108,6 +140,40 @@ namespace Ioss {
     MPI_Comm_rank(m_comm, &m_processor);
     MPI_Comm_size(m_comm, &m_processorCount);
     m_method = get_decomposition_method(props, m_processor, m_processorCount);
+  }
+
+  template bool Decomposition<int64_t>::needs_centroids() const;
+  template bool Decomposition<int>::needs_centroids() const;
+  template <typename INT>
+  bool Decomposition<INT>::needs_centroids() const
+  {
+    return (m_method == "RCB" ||
+	    m_method == "RIB" ||
+	    m_method == "HSFC" ||
+	    m_method == "GEOM_KWAY" ||
+	    m_method == "KWAY_GEOM" ||
+	    m_method == "METIS_SFC");
+  }
+
+  template void Decomposition<int>::generate_entity_distributions(size_t globalNodeCount,
+								  size_t globalElementCount);
+  template void Decomposition<int64_t>::generate_entity_distributions(size_t globalNodeCount,
+								      size_t globalElementCount);
+
+  template <typename INT>
+  void Decomposition<INT>::generate_entity_distributions(size_t globalNodeCount,
+							 size_t globalElementCount)
+  {
+    m_elementDist = get_entity_dist<INT>(m_processorCount,
+					 m_processor,
+					 globalElementCount,
+					 &elementOffset,
+					 &elementCount);
+    m_nodeDist = get_entity_dist<INT>(m_processorCount,
+				      m_processor,
+				      globalNodeCount,
+				      &nodeOffset,
+				      &nodeCount);
   }
 
   template <typename INT>
@@ -184,23 +250,14 @@ namespace Ioss {
 #endif
 						    size_t global_element_count,
 						    size_t global_node_count,
-						    std::vector<BlockDecompositionData> &element_blocks,
-						    const std::vector<int> &pointer,
-						    const std::vector<int> &adjacency,
-						    const std::vector<int> &node_dist,
-						    const std::vector<int> &element_dist);
+						    std::vector<BlockDecompositionData> &element_blocks);
   template void Decomposition<int64_t>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
 							Zoltan &zz,
 #endif
 							size_t global_element_count,
 							size_t global_node_count,
-							std::vector<BlockDecompositionData> &element_blocks,
-							const std::vector<int64_t> &pointter,
-							const std::vector<int64_t> &adjacency,
-							const std::vector<int64_t> &node_dist,
-							const std::vector<int64_t> &element_dist);
-
+							std::vector<BlockDecompositionData> &element_blocks);
   template <typename INT>
   void Decomposition<INT>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -208,18 +265,14 @@ namespace Ioss {
 #endif
 					   size_t global_element_count,
 					   size_t global_node_count,
-					   std::vector<BlockDecompositionData> &element_blocks,
-					   const std::vector<INT> &pointer,
-					   const std::vector<INT> &adjacency,
-					   const std::vector<INT> &node_dist,
-					   const std::vector<INT> &element_dist)
+					   std::vector<BlockDecompositionData> &element_blocks)
   {
 #if !defined(NO_PARMETIS_SUPPORT)
     if (m_method == "KWAY" ||
         m_method == "GEOM_KWAY" ||
         m_method == "KWAY_GEOM" ||
         m_method == "METIS_SFC") {
-      metis_decompose(element_dist, pointer, adjacency);
+      metis_decompose(m_pointer, m_adjacency);
     }
 #endif
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -234,9 +287,9 @@ namespace Ioss {
 #endif
     if (m_method == "LINEAR") {
       if (global_element_count > 0)
-        simple_decompose(element_dist);
+        simple_decompose();
       else
-        simple_node_decompose(node_dist);
+        simple_node_decompose();
     }
 
     Ioss::qsort(importElementMap);
@@ -261,31 +314,28 @@ namespace Ioss {
     // Now need to determine the nodes that are on this processor,
     // both owned and shared...
     if (global_element_count > 0) {
-      get_local_node_list(pointer, adjacency, node_dist);
+      get_local_node_list();
       get_shared_node_list();
     }
+    
+    // Release some memory...
+    m_adjacency.resize(0); m_adjacency.shrink_to_fit();
+    m_pointer.resize(0); m_pointer.shrink_to_fit();
+    m_elementDist.resize(0); m_elementDist.shrink_to_fit();
+    m_nodeDist.resize(0); m_nodeDist.shrink_to_fit();
   }
 
-  template void Decomposition<int>::calculate_element_centroids(const std::vector<int> &pointer,
-								const std::vector<int> &adjacency,
-								const std::vector<int> &node_dist,
-								int spatial_dimension,
+  template void Decomposition<int>::calculate_element_centroids(int spatial_dimension,
 								const std::vector<double> &x,
 								const std::vector<double> &y,
 								const std::vector<double> &z);
-  template void Decomposition<int64_t>::calculate_element_centroids(const std::vector<int64_t> &pointer,
-								    const std::vector<int64_t> &adjacency,
-								    const std::vector<int64_t> &node_dist,
-								    int spatial_dimension,
+  template void Decomposition<int64_t>::calculate_element_centroids(int spatial_dimension,
 								    const std::vector<double> &x,
 								    const std::vector<double> &y,
 								    const std::vector<double> &z);
 
   template <typename INT>
-  void Decomposition<INT>::calculate_element_centroids(const std::vector<INT> &pointer,
-						       const std::vector<INT> &adjacency,
-						       const std::vector<INT> &node_dist,
-						       int spatial_dimension,
+  void Decomposition<INT>::calculate_element_centroids(int spatial_dimension,
 						       const std::vector<double> &x,
 						       const std::vector<double> &y,
 						       const std::vector<double> &z)
@@ -296,11 +346,11 @@ namespace Ioss {
     std::vector<INT> send_count(m_processorCount);
 
     std::vector<int> owner; // Size is sum of element connectivity sizes (same as adjacency list)
-    owner.reserve(adjacency.size());
+    owner.reserve(m_adjacency.size());
 
-    for (size_t i=0; i < adjacency.size(); i++) {
-      INT node = adjacency[i];
-      INT owning_processor = Ioss::Utils::find_index_location(node, node_dist);
+    for (size_t i=0; i < m_adjacency.size(); i++) {
+      INT node = m_adjacency[i];
+      INT owning_processor = Ioss::Utils::find_index_location(node, m_nodeDist);
       owner.push_back(owning_processor);
       recv_count[owning_processor]++;
     }
@@ -340,7 +390,7 @@ namespace Ioss {
       for (size_t i=0; i < owner.size(); i++) {
         int proc = owner[i];
         if (proc != m_processor) {
-          INT node = adjacency[i];
+          INT node = m_adjacency[i];
           size_t position = recv_disp[proc] + recv_tmp[proc]++;
           node_comm_recv[position] = node;
         }
@@ -404,12 +454,12 @@ namespace Ioss {
     std::vector<INT> recv_tmp(m_processorCount);
 
     for (size_t i=0; i < elementCount; i++) {
-      size_t nnpe = pointer[i+1] - pointer[i];
+      size_t nnpe = m_pointer[i+1] - m_pointer[i];
       double cx = 0.0;
       double cy = 0.0;
       double cz = 0.0;
-      for (INT jj = pointer[i]; jj < pointer[i+1]; jj++) {
-        INT node = adjacency[jj];
+      for (INT jj = m_pointer[i]; jj < m_pointer[i+1]; jj++) {
+        INT node = m_adjacency[jj];
         INT proc = owner[jj];
         if (proc == m_processor) {
           cx += x[node-nodeOffset];
@@ -435,13 +485,13 @@ namespace Ioss {
   }
 
   template <typename INT>
-  void Decomposition<INT>::simple_decompose(const std::vector<INT> &element_dist)
+  void Decomposition<INT>::simple_decompose()
   {
     if (m_method == "LINEAR") {
       // The "ioss_decomposition" is the same as the "file_decomposition"
       // Nothing is imported or exported, everything stays "local"
 
-      size_t local = element_dist[m_processor+1] - element_dist[m_processor];
+      size_t local = m_elementDist[m_processor+1] - m_elementDist[m_processor];
       assert(local == elementCount);
       localElementMap.resize(local);
       std::iota(localElementMap.begin(), localElementMap.end(), 0);
@@ -455,7 +505,7 @@ namespace Ioss {
   }
 
   template <typename INT>
-  void Decomposition<INT>::simple_node_decompose(const std::vector<INT> &node_dist)
+  void Decomposition<INT>::simple_node_decompose()
   {
     // Used if there are no elements on the model...
     if (m_method == "LINEAR") {
@@ -471,7 +521,7 @@ namespace Ioss {
       importElementCount.resize(m_processorCount+1);
       importElementIndex.resize(m_processorCount+1);
 
-      size_t local = node_dist[m_processor+1] - node_dist[m_processor];
+      size_t local = m_nodeDist[m_processor+1] - m_nodeDist[m_processor];
       assert(local == nodeCount);
 
       localNodeMap.resize(local);
@@ -489,10 +539,7 @@ namespace Ioss {
 
 #if !defined(NO_PARMETIS_SUPPORT)
   template <typename INT>
-  void Decomposition<INT>::metis_decompose(std::vector<BlockDecompositionData> &el_blocks,
-					   const std::vector<INT> &element_dist,
-					   const std::vector<INT> &pointer,
-					   const std::vector<INT> &adjacency)
+  void Decomposition<INT>::metis_decompose(std::vector<BlockDecompositionData> &el_blocks)
   {
     std::vector<idx_t> elem_partition(elementCount);
 
@@ -500,9 +547,9 @@ namespace Ioss {
     // If not, decide how to proceed...
     if (sizeof(INT) == sizeof(idx_t)) {
       internal_metis_decompose(el_blocks,
-			       (idx_t*)TOPTR(element_dist),
-			       (idx_t*)TOPTR(pointer),
-			       (idx_t*)TOPTR(adjacency),
+			       (idx_t*)TOPTR(m_elementDist),
+			       (idx_t*)TOPTR(m_pointer),
+			       (idx_t*)TOPTR(m_adjacency),
 			       TOPTR(elem_partition));
     } 
 
@@ -510,9 +557,9 @@ namespace Ioss {
     else if (sizeof(idx_t) > sizeof(INT)) {
       assert(sizeof(idx_t) == 8);
       // ... Widening; just create new wider arrays
-      std::vector<idx_t> dist_cv(element_dist.begin(), element_dist.end());
-      std::vector<idx_t> pointer_cv(pointer.begin(), pointer.end());
-      std::vector<idx_t> adjacency_cv(adjacency.begin(), adjacency.end());
+      std::vector<idx_t> dist_cv(m_elementDist.begin(), m_elementDist.end());
+      std::vector<idx_t> pointer_cv(m_pointer.begin(), m_pointer.end());
+      std::vector<idx_t> adjacency_cv(m_adjacency.begin(), m_adjacency.end());
       internal_metis_decompose(el_blocks,
 			       TOPTR(dist_cv), TOPTR(pointer_cv),
 			       TOPTR(adjacency_cv), TOPTR(elem_partition));
@@ -522,7 +569,7 @@ namespace Ioss {
       // ... Narrowing.  See if data range (#elements and/or #nodes) fits in 32-bit idx_t
       // Can determine this by checking the pointer[
       assert(sizeof(idx_t) == 4);
-      if (globalElementCount >= INT_MAX || globalNodeCount >= INT_MAX || pointer[elementCount] >= INT_MAX) {
+      if (globalElementCount >= INT_MAX || globalNodeCount >= INT_MAX || m_pointer[elementCount] >= INT_MAX) {
         // Can't narrow...
         std::ostringstream errmsg;
         errmsg << "ERROR: The metis/parmetis libraries being used with this application only support\n"
@@ -534,9 +581,9 @@ namespace Ioss {
         exit(EXIT_FAILURE);
       } else {
         // Should be able to narrow...
-        std::vector<idx_t> dist_cv(element_dist.begin(), element_dist.end());
-        std::vector<idx_t> pointer_cv(pointer.begin(), pointer.end());
-        std::vector<idx_t> adjacency_cv(adjacency.begin(), adjacency.end());
+        std::vector<idx_t> dist_cv(m_elementDist.begin(), m_elementDist.end());
+        std::vector<idx_t> pointer_cv(m_pointer.begin(), m_pointer.end());
+        std::vector<idx_t> adjacency_cv(m_adjacency.begin(), m_adjacency.end());
         internal_metis_decompose(el_blocks,
 				 TOPTR(dist_cv), TOPTR(pointer_cv),
 				 TOPTR(adjacency_cv), TOPTR(elem_partition));
@@ -860,9 +907,7 @@ namespace Ioss {
   }
 
   template <typename INT>
-  void Decomposition<INT>::get_local_node_list(const std::vector<INT> &pointer,
-						   const std::vector<INT> &adjacency,
-						   const std::vector<INT> &node_dist)
+  void Decomposition<INT>::get_local_node_list()
   {
     // Get the connectivity of all imported elements...
     // First, determine how many nodes the exporting processors are
@@ -876,7 +921,7 @@ namespace Ioss {
       size_t el_end = exportElementIndex[p+1];
       for (size_t i=el_begin; i < el_end; i++) {
 	INT elem = exportElementMap[i] - elementOffset;
-	size_t nnpe = pointer[elem+1] - pointer[elem];
+	size_t nnpe = m_pointer[elem+1] - m_pointer[elem];
 	export_conn_size[p] += nnpe;
       }
     }
@@ -902,8 +947,8 @@ namespace Ioss {
       size_t el_end = exportElementIndex[p+1];
       for (size_t i=el_begin; i < el_end; i++) {
 	INT elem = exportElementMap[i] - elementOffset;
-	for (INT n = pointer[elem]; n < pointer[elem+1]; n++) {
-	  export_conn.push_back(adjacency[n]);
+	for (INT n = m_pointer[elem]; n < m_pointer[elem+1]; n++) {
+	  export_conn.push_back(m_adjacency[n]);
 	}
       }
     }
@@ -911,7 +956,7 @@ namespace Ioss {
     // Count number of nodes on local elements...
     size_t node_sum = 0;
     for (auto elem : localElementMap) {
-      node_sum += pointer[elem+1] - pointer[elem];
+      node_sum += m_pointer[elem+1] - m_pointer[elem];
     }
     // Also holds imported nodes...
     node_sum += imp_size;
@@ -942,8 +987,8 @@ namespace Ioss {
     // Nodes on local elements...
     for (size_t i=0; i < localElementMap.size(); i++) {
       INT elem = localElementMap[i];
-      for (INT n = pointer[elem]; n < pointer[elem+1]; n++) {
-	nodes.push_back(adjacency[n]);
+      for (INT n = m_pointer[elem]; n < m_pointer[elem+1]; n++) {
+	nodes.push_back(m_adjacency[n]);
       }
     }
 
@@ -954,7 +999,7 @@ namespace Ioss {
     nodeIndex.resize(m_processorCount+1);
 
     for (size_t i=0; i < nodes.size(); i++) {
-      INT owning_processor = Ioss::Utils::find_index_location(nodes[i], node_dist);
+      INT owning_processor = Ioss::Utils::find_index_location(nodes[i], m_nodeDist);
       nodeIndex[owning_processor]++;
     }
     importNodeCount.resize(nodeIndex.size());
