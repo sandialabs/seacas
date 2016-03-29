@@ -2,23 +2,23 @@
  * Copyright (c) 2016, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
  * the U.S. Government retains certain rights in this software.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
- * 
+ *
  *     * Neither the name of Sandia Corporation nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,7 +30,7 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 #ifndef IOSS_DECOMPOSITON_H
 #define IOSS_DECOMPOSITON_H
@@ -74,7 +74,7 @@ namespace Ioss {
       std::string name_;
       int zone_;
       int section_;
-      
+
       size_t fileSectionOffset; // In partial read, where start
       int64_t id_;
       size_t fileCount;
@@ -105,7 +105,7 @@ namespace Ioss {
       std::vector<int> importIndex;
   };
 
-  class SetDecompositionData 
+  class SetDecompositionData
   {
   public:
     SetDecompositionData()
@@ -124,7 +124,7 @@ namespace Ioss {
       size_t ioss_count() const {return entitylist_map.size();}
       size_t df_count() const {return distributionFactorCount;}
 
-      // contains global entity-list positions for all entities in this set on this processor. 
+      // contains global entity-list positions for all entities in this set on this processor.
       std::vector<size_t> entitylist_map;
       std::vector<bool> hasEntities; // T/F if this set exists on processor p
 
@@ -153,66 +153,66 @@ namespace Ioss {
 
       bool needs_centroids() const;
       void generate_entity_distributions(size_t globalNodeCount, size_t globalElementCount);
-      
+
       // T/F if node with global index node owned by this processors ioss-decomp.
       bool i_own_node(size_t global_index) const
       {
-	// global_index is 1-based index into global list of nodes [1..global_node_count]
-	return std::binary_search(nodeGTL.begin(), nodeGTL.end(), global_index);
+        // global_index is 1-based index into global list of nodes [1..global_node_count]
+        return std::binary_search(nodeGTL.begin(), nodeGTL.end(), global_index);
       }
 
       // T/F if element with global index elem owned by this processors ioss-decomp.
       bool i_own_elem(size_t global_index) const
       {
-	// global_index is 1-based index into global list of elements [1..global_element_count]
-	return elemGTL.count(global_index) != 0;
+        // global_index is 1-based index into global list of elements [1..global_element_count]
+        return elemGTL.count(global_index) != 0;
       }
 
       size_t node_global_to_local(size_t global_index) const
       {
-	// global_index is 1-based index into global list of nodes [1..global_node_count]
-	// return value is 1-based index into local list of nodes on this
-	// processor (ioss-decomposition)
-	// Note that for 'int', equivalence and equality are the same, so
-	// lower_bound is OK here (EffectiveSTL, Item 19)
-	typename std::vector<INT>::const_iterator I = lower_bound(nodeGTL.begin(), nodeGTL.end(), global_index);
-	assert(I != nodeGTL.end());
-	return std::distance(nodeGTL.begin(), I)+1; // Convert to 1-based index.
+        // global_index is 1-based index into global list of nodes [1..global_node_count]
+        // return value is 1-based index into local list of nodes on this
+        // processor (ioss-decomposition)
+        // Note that for 'int', equivalence and equality are the same, so
+        // lower_bound is OK here (EffectiveSTL, Item 19)
+        typename std::vector<INT>::const_iterator I = lower_bound(nodeGTL.begin(), nodeGTL.end(), global_index);
+        assert(I != nodeGTL.end());
+        return std::distance(nodeGTL.begin(), I)+1; // Convert to 1-based index.
       }
 
       size_t elem_global_to_local(size_t global_index) const
       {
-	// global_index is 1-based index into global list of elements [1..global_node_count]
-	// return value is 1-based index into local list of elements on this
-	// processor (ioss-decomposition)
-	typename std::map<INT,INT>::const_iterator I = elemGTL.find(global_index);
-	assert(I != elemGTL.end());
-	return I->second;
+        // global_index is 1-based index into global list of elements [1..global_node_count]
+        // return value is 1-based index into local list of elements on this
+        // processor (ioss-decomposition)
+        typename std::map<INT,INT>::const_iterator I = elemGTL.find(global_index);
+        assert(I != elemGTL.end());
+        return I->second;
       }
 
       void decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
-			   Zoltan &zz,
+                           Zoltan &zz,
 #endif
-			   size_t global_element_count,
-			   size_t global_node_count,
-			   std::vector<BlockDecompositionData> &el_blocks);
-      
+                           size_t global_element_count,
+                           size_t global_node_count,
+                           std::vector<BlockDecompositionData> &el_blocks);
+
       void simple_decompose();
 
       void simple_node_decompose();
-      
+
       void calculate_element_centroids(int spatial_dimension,
-				       const std::vector<double> &x,
-				       const std::vector<double> &y,
-				       const std::vector<double> &z);
-      
+                                       const std::vector<double> &x,
+                                       const std::vector<double> &y,
+                                       const std::vector<double> &z);
+
 #if !defined(NO_ZOLTAN_SUPPORT)
       void zoltan_decompose(Zoltan &zz);
 
       void get_local_element_list(const ZOLTAN_ID_PTR &export_global_ids, size_t export_count);
 #endif
-      
+
 #if !defined(NO_PARMETIS_SUPPORT)
       void metis_decompose(std::vector<BlockDecompositionData> &el_blocks);
 
@@ -224,35 +224,35 @@ namespace Ioss {
 #endif
 
       void get_node_entity_proc_data(INT *entity_proc,
-				     const Ioss::MapContainer &node_map,
-				     bool do_map) const;
+                                     const Ioss::MapContainer &node_map,
+                                     bool do_map) const;
 
       void get_element_block_communication(std::vector<BlockDecompositionData> &el_blocks);
       void build_global_to_local_elem_map();
       void get_local_node_list();
       void get_shared_node_list();
       template <typename T>
-	void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
+        void communicate_element_data(T *file_data, T *ioss_data, size_t comp_count) const;
 
       template <typename T>
-	void communicate_set_data(T *file_data, T *ioss_data,
-				  const SetDecompositionData &set, size_t comp_count) const;
+        void communicate_set_data(T *file_data, T *ioss_data,
+                                  const SetDecompositionData &set, size_t comp_count) const;
 
       template <typename T, typename U>
-	void communicate_block_data(T *file_data, U *ioss_data,
-				    const BlockDecompositionData &block,
-				    size_t comp_count) const;
-      
+        void communicate_block_data(T *file_data, U *ioss_data,
+                                    const BlockDecompositionData &block,
+                                    size_t comp_count) const;
+
       template <typename T>
-	void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
-      
+        void communicate_node_data(T *file_data, T *ioss_data, size_t comp_count) const;
+
 
       MPI_Comm m_comm;
       int m_processor;
       int m_processorCount;
       std::string m_method;
-      
-      // Values for the file decomposition 
+
+      // Values for the file decomposition
       size_t elementCount;
       size_t elementOffset;
       size_t importPreLocalElemIndex;
@@ -263,7 +263,7 @@ namespace Ioss {
 
       std::vector<double> m_centroids;
       std::vector<INT> m_pointer; // Index into adjacency, processor list for each element...
-      std::vector<INT> m_adjacency; // Size is sum of element connectivity sizes 
+      std::vector<INT> m_adjacency; // Size is sum of element connectivity sizes
 
       std::vector<INT> nodeCommMap; // node/processor pair of the
       // nodes I communicate with.  Stored node#,proc,node#,proc, ...
@@ -337,7 +337,7 @@ namespace Ioss {
 
       std::vector<INT> m_elementDist;
       std::vector<INT> m_nodeDist;
-      
+
       // Note that nodeGTL is a sorted vector.
       std::vector<INT> nodeGTL;  // Convert from global index to local index (1-based)
       std::map<INT,INT> elemGTL;  // Convert from global index to local index (1-based)

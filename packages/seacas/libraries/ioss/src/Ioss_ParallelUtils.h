@@ -2,14 +2,14 @@
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
-//         
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright
 //       notice, this list of conditions and the following disclaimer.
-// 
+//
 //     * Redistributions in binary form must reproduce the above
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
@@ -17,7 +17,7 @@
 //     * Neither the name of Sandia Corporation nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -54,19 +54,19 @@ namespace Ioss {
 
     // Assignment operator
     // Copy constructor
-    
+
     enum MinMax {DO_MAX, DO_MIN, DO_SUM};
 
-    /*! 
+    /*!
      * Returns 'true' if 'name' is defined in the environment.
-     * The value of the environment variable is returned in 'value'. 
+     * The value of the environment variable is returned in 'value'.
      * getenv system call is only done on processor 0.
      * If '!sync_parallel', then don't push to other processors.
      */
     bool get_environment(const std::string &name, std::string &value,
 			 bool sync_parallel) const;
 
-    /*! 
+    /*!
      * Returns 'true' if 'name' is defined in the environment.
      * The value of the environment variable is converted to an
      * integer via the atoi library call and returned in 'value'.
@@ -77,7 +77,7 @@ namespace Ioss {
      */
     bool get_environment(const std::string &name, int &value, bool sync_parallel) const;
 
-    /*! 
+    /*!
      * Returns 'true' if 'name' is defined in the environment no
      * matter what the value. Returns false otherwise.
      * getenv system call is only done on processor 0.
@@ -147,7 +147,7 @@ namespace Ioss {
 
   template <typename T>
   int MY_Alltoallv64(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts, const std::vector<int64_t> &senddisp,
-                     std::vector<T> &recvbuf, const std::vector<int64_t> &recvcounts, const std::vector<int64_t> &recvdisp, MPI_Comm  comm)
+		     std::vector<T> &recvbuf, const std::vector<int64_t> &recvcounts, const std::vector<int64_t> &recvdisp, MPI_Comm  comm)
   {
     int processor_count = 0;
     int my_processor = 0;
@@ -159,12 +159,12 @@ namespace Ioss {
     for (int i=0; i < processor_count; i++) {
       int snd_cnt = (int)sendcounts[i];
       if ((int64_t)snd_cnt != sendcounts[i]) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
-               << "       processor " << my_processor << " to processor " << i << " is " << sendcounts[i]
-               << "\n       which exceeds the storage capacity of the integers used by MPI functions.\n";
-        std::cerr << errmsg.str();
-        exit(EXIT_FAILURE);
+	std::ostringstream errmsg;
+	errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
+	       << "       processor " << my_processor << " to processor " << i << " is " << sendcounts[i]
+	       << "\n       which exceeds the storage capacity of the integers used by MPI functions.\n";
+	std::cerr << errmsg.str();
+	exit(EXIT_FAILURE);
       }
     }
 
@@ -176,29 +176,29 @@ namespace Ioss {
       int tag = 24713;
       size_t exchange_proc = i ^ my_processor;
       if(exchange_proc < (size_t)processor_count){
-        int snd_cnt = (int)sendcounts[exchange_proc]; // Converts from int64_t to int as needed by mpi
-        int rcv_cnt = (int)recvcounts[exchange_proc];
-        if ((size_t)my_processor < exchange_proc) {
-          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
-          MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
-        }
-        else {
-          MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
-          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
-        }
+	int snd_cnt = (int)sendcounts[exchange_proc]; // Converts from int64_t to int as needed by mpi
+	int rcv_cnt = (int)recvcounts[exchange_proc];
+	if ((size_t)my_processor < exchange_proc) {
+	  MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
+	  MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
+	}
+	else {
+	  MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag, comm, &status);
+	  MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag, comm);
+	}
       }
     }
 
     // Take care of this processor's data movement...
     std::copy(&sendbuf[senddisp[my_processor]],
-              &sendbuf[senddisp[my_processor]+sendcounts[my_processor]],
-              &recvbuf[recvdisp[my_processor]]);
+	      &sendbuf[senddisp[my_processor]+sendcounts[my_processor]],
+	      &recvbuf[recvdisp[my_processor]]);
     return 0;
   }
 
   template <typename T>
-  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts, const std::vector<int64_t> &senddisp, 
-                   std::vector<T> &recvbuf, const std::vector<int64_t> &recvcnts, const std::vector<int64_t> &recvdisp, MPI_Comm comm)
+  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts, const std::vector<int64_t> &senddisp,
+		   std::vector<T> &recvbuf, const std::vector<int64_t> &recvcnts, const std::vector<int64_t> &recvdisp, MPI_Comm comm)
   {
     // Wrapper to handle case where send/recv counts and displacements are 64-bit integers.
     // Two cases:
@@ -217,7 +217,7 @@ namespace Ioss {
       std::vector<int> recv_cnt(recvcnts.begin(), recvcnts.end());
       std::vector<int> recv_dis(recvdisp.begin(), recvdisp.end());
       return MPI_Alltoallv(TOPTR(sendbuf), TOPTR(send_cnt), TOPTR(send_dis), mpi_type(T(0)),
-                           TOPTR(recvbuf), TOPTR(recv_cnt), TOPTR(recv_dis), mpi_type(T(0)), comm);
+			   TOPTR(recvbuf), TOPTR(recv_cnt), TOPTR(recv_dis), mpi_type(T(0)), comm);
     }
     else {
       // Same as if each processor sent a message to every other process with:
@@ -229,12 +229,12 @@ namespace Ioss {
   }
 
   template <typename T>
-  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int> &sendcnts, const std::vector<int> &senddisp, 
-                   std::vector<T> &recvbuf, const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
-                   MPI_Comm comm)
+  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int> &sendcnts, const std::vector<int> &senddisp,
+		   std::vector<T> &recvbuf, const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
+		   MPI_Comm comm)
   {
     return MPI_Alltoallv(TOPTR(sendbuf), (int*)TOPTR(sendcnts), (int*)TOPTR(senddisp), mpi_type(T(0)),
-                         TOPTR(recvbuf), (int*)TOPTR(recvcnts), (int*)TOPTR(recvdisp), mpi_type(T(0)), comm);
+			 TOPTR(recvbuf), (int*)TOPTR(recvcnts), (int*)TOPTR(recvdisp), mpi_type(T(0)), comm);
   }
 #endif
 }
