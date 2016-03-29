@@ -200,11 +200,10 @@ namespace Iocgns {
     // Get the number of zones (element blocks) in the mesh...
     int i = 0;
     for (auto &block : decomp->el_blocks) {
-      std::string element_topo = Utils::map_cgns_to_topology_type(block.topologyType);
+      std::string element_topo = block.topologyType;
 #if defined(DEBUG_OUTPUT)
       std::cout << "Added block " << block.name()
-		<< ": CGNS topology = '" << cg_ElementTypeName(block.topologyType)
-		<< "', IOSS topology = '" << element_topo
+		<< ":, IOSS topology = '" << element_topo
 		<< "' with " << block.ioss_count() << " elements\n";
 #endif
       auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
@@ -226,7 +225,7 @@ namespace Iocgns {
 	std::string block_name(zone.m_name);
 	block_name += "/";
 	block_name += sset.name();
-	std::string face_topo = Utils::map_cgns_to_topology_type(sset.topologyType);
+	std::string face_topo = sset.topologyType;
 #if defined(DEBUG_OUTPUT)
 	std::cout << "Processor " << myProcessor << ": Added sideblock "
 		  << block_name << " of topo " << face_topo
@@ -234,7 +233,7 @@ namespace Iocgns {
 #endif	      
 	const auto &block = decomp->el_blocks[sset.parentBlockIndex];
 
-	std::string parent_topo = Utils::map_cgns_to_topology_type(block.topologyType);
+	std::string parent_topo = block.topologyType;
 	Ioss::SideBlock *sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
 						    sset.ioss_count());
 	sblk->property_add(Ioss::Property("id", id));
@@ -280,14 +279,14 @@ namespace Iocgns {
     switch (type) {
     case entity_type::NODE:
       {
-        size_t offset = decomp->nodeOffset;
-        size_t count  = decomp->nodeCount;
+        size_t offset = decomp->decomp_node_offset();
+        size_t count  = decomp->decomp_node_count();
         return get_map(nodeMap, nodeCount, offset, count, entity_type::NODE);
       }
     case entity_type::ELEM:
       {
-        size_t offset = decomp->elementOffset;
-        size_t count  = decomp->elementCount;
+        size_t offset = decomp->decomp_elem_offset();
+        size_t count  = decomp->decomp_elem_count();
         return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
       }
 
