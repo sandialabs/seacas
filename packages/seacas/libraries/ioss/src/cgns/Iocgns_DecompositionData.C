@@ -171,23 +171,13 @@ namespace Iocgns {
 
     // Generate element_dist/node_dist --  size proc_count + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
-    std::vector<INT> element_dist
-      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
-				   globalElementCount,
-				   &m_decomposition.elementOffset,
-				   &m_decomposition.elementCount);
-    std::vector<INT> node_dist
-      = Ioss::get_entity_dist<INT>(processorCount, myProcessor,
-				   globalNodeCount,
-				   &m_decomposition.nodeOffset,
-				   &m_decomposition.nodeCount);
+    m_decomposition.generate_entity_distributions(globalNodeCount, globalElementCount);
 
-    std::vector<INT> pointer; // Index into adjacency, processor list for each element...
-    std::vector<INT> adjacency; // Size is sum of element connectivity sizes 
-    generate_adjacency_list(filePtr, pointer, adjacency, m_decomposition);
+    generate_adjacency_list(filePtr, m_decomposition);
 
     // Get min and max node used on this processor...
-    auto min_max = std::minmax_element(adjacency.begin(), adjacency.end());
+    auto min_max = std::minmax_element(m_decomposition.m_adjacency.begin(),
+				       m_decomposition.m_adjacency.end());
     INT min_node = *(min_max.first);
     INT max_node = *(min_max.second);
     generate_zone_shared_nodes(filePtr, min_node, max_node);
@@ -195,7 +185,7 @@ namespace Iocgns {
     // Now iterate adjacency list and update any "zone_shared_node" nodes
     // with their "sharee"
     if (!zone_shared_map.empty()) {
-      for (auto &node : adjacency) {
+      for (auto &node : m_decomposition.m_adjacency) {
 	auto alias = zone_shared_map.find(node);
 	if (alias != zone_shared_map.end()) {
 	  node = (*alias).second;
@@ -211,14 +201,7 @@ namespace Iocgns {
               << decomp_node_count() << " nodes; offset = " << decomp_node_offset() << ".\n";
 #endif
 
-    const std::string &method = m_decomposition.m_method;
-    if (method == "RCB" ||
-        method == "RIB" ||
-        method == "HSFC" ||
-        method == "GEOM_KWAY" ||
-        method == "KWAY_GEOM" ||
-        method == "METIS_SFC") {
-
+    if (m_decomposition.needs_centroids()) {
       // Get my coordinate data using direct cgns calls
       std::vector<double> x(decomp_node_count());
       std::vector<double> y;
@@ -234,8 +217,7 @@ namespace Iocgns {
 	get_file_node_coordinates(filePtr, 2, TOPTR(z));
       }
       
-      m_decomposition.calculate_element_centroids(pointer, adjacency, node_dist,
-						  spatialDimension, x, y, z);
+      m_decomposition.calculate_element_centroids(spatialDimension, x, y, z);
     }
     
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -256,8 +238,7 @@ namespace Iocgns {
 				    zz,
 #endif
 				    globalElementCount, globalNodeCount,
-				    el_blocks, pointer, adjacency,
-				    node_dist, element_dist);
+				    el_blocks);
     
     if (!side_sets.empty()) {
       // Create elemGTL map which is used for sidesets (also element sets)
@@ -271,25 +252,6 @@ namespace Iocgns {
     // Can now populate the Ioss metadata...
 
   }
-
-#if !defined(NO_ZOLTAN_SUPPORT)
-  template <typename INT>
-  void DecompositionData<INT>::zoltan_decompose(const std::string &method)
-  {
-      float version = 0.0;
-      Zoltan_Initialize(0, nullptr, &version);
-
-      Zoltan zz(comm_);
-
-      // Register Zoltan Callback functions...
-      zz.Set_Num_Obj_Fn(zoltan_num_obj, this);
-      zz.Set_Obj_List_Fn(zoltan_obj_list, this);
-      zz.Set_Num_Geom_Fn(zoltan_num_dim, this);
-      zz.Set_Geom_Multi_Fn(zoltan_geom, this);
-
-      m_decomposition.zoltan_decompose(zz, method);
-    }
-#endif
 
   template <typename INT>
   void DecompositionData<INT>::generate_zone_shared_nodes(int filePtr, INT min_node, INT max_node)
@@ -388,8 +350,6 @@ namespace Iocgns {
 
   template <typename INT>
   void DecompositionData<INT>::generate_adjacency_list(int filePtr,
-						       std::vector<INT> &pointer,
-						       std::vector<INT> &adjacency,
 						       Ioss::Decomposition<INT> &decomposition)
   {
     int base = 1; // Only single base supported so far.
@@ -506,8 +466,8 @@ namespace Iocgns {
     }
 
     // Now, populate the vectors...
-    pointer.reserve(decomp_elem_count()+1);
-    adjacency.reserve(sum);
+    decomposition.m_pointer.reserve(decomp_elem_count()+1);
+    decomposition.m_adjacency.reserve(sum);
     offset = 0;
     sum = 0; // Size of adjacency vector.
 
@@ -542,10 +502,10 @@ namespace Iocgns {
 	INT zone_offset = el_blocks[block].zoneNodeOffset;
 	
 	for (size_t elem = 0; elem < overlap; elem++) {
-	  pointer.push_back(adjacency.size());
+	  decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
 	  for (size_t k=0; k < element_nodes; k++) {
 	    INT node = connectivity[el++]-1 + zone_offset; // 0-based node
-	    adjacency.push_back(node);
+	    decomposition.m_adjacency.push_back(node);
 	  }
 	}
 	sum += overlap * element_nodes;
@@ -554,7 +514,7 @@ namespace Iocgns {
 	el_blocks[block].fileCount = 0;
       }
     }
-    pointer.push_back(adjacency.size());
+    decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
   }
 
   template <typename INT>
