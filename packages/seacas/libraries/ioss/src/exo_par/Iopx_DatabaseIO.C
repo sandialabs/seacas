@@ -632,16 +632,18 @@ namespace Iopx {
     case EX_NODE_BLOCK:
     case EX_NODE_SET:
       {
-        size_t offset = decomp ? decomp->nodeOffset : 0;
-        size_t count = decomp ? decomp->nodeCount : nodeCount;
+	assert(decomp != NULL);
+        size_t offset = decomp->decomp_node_offset();
+        size_t count =  decomp->decomp_node_count();
         return get_map(nodeMap, nodeCount,
                        offset, count, EX_NODE_MAP, EX_INQ_NODE_MAP);
       }
     case EX_ELEM_BLOCK:
     case EX_ELEM_SET:
       {
-        size_t offset = decomp ? decomp->elementOffset : 0;
-        size_t count = decomp ? decomp->elementCount : elementCount;
+	assert(decomp != NULL);
+        size_t offset = decomp->decomp_elem_offset();
+        size_t count =  decomp->decomp_elem_count();
         return get_map(elemMap, elementCount,
                        offset, count, EX_ELEM_MAP, EX_INQ_ELEM_MAP);
       }
@@ -1770,8 +1772,8 @@ namespace Iopx {
         // undecomposed mesh file.  This is ONLY provided for backward-
         // compatibility and should not be used unless absolutely required.
         else if (field.get_name() == "implicit_ids") {
-          size_t offset = decomp->nodeOffset;
-          size_t count = decomp->nodeCount;
+          size_t offset = decomp->decomp_node_offset();
+          size_t count = decomp->decomp_node_count();
           if (int_byte_size_api() == 4) {
             std::vector<int> file_ids(count);
             std::iota(file_ids.begin(), file_ids.end(), offset+1);
@@ -2274,7 +2276,7 @@ namespace Iopx {
         IOSS_ERROR(errmsg);
       }
 
-      const SetDecompositionData &set = decomp->get_decomp_set(EX_SIDE_SET, id);
+      auto &set = decomp->get_decomp_set(EX_SIDE_SET, id);
 
       int64_t number_sides = set.ioss_count();
       int64_t number_distribution_factors = set.df_count();
@@ -2924,7 +2926,7 @@ namespace Iopx {
       // Allocate space for elements and local side numbers
       // Get size of data stored on the file...
 
-      const SetDecompositionData &set = decomp->get_decomp_set(EX_SIDE_SET, id);
+      auto &set = decomp->get_decomp_set(EX_SIDE_SET, id);
       int64_t number_sides = set.ioss_count();
       int64_t number_distribution_factors = set.df_count();
 
