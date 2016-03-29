@@ -65,6 +65,7 @@
 #include "Ioss_ElementTopology.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_CommSet.h"
 
 #include "Ioss_Field.h"
 #include "Ioss_IOFactory.h"
@@ -78,9 +79,9 @@
 namespace Iocgns {
 
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string& filename,
-			 Ioss::DatabaseUsage db_usage,
-			 MPI_Comm communicator,
-			 const Ioss::PropertyManager &props) :
+					 Ioss::DatabaseUsage db_usage,
+					 MPI_Comm communicator,
+					 const Ioss::PropertyManager &props) :
     Ioss::DatabaseIO(region, filename, db_usage, communicator, props),
     cgnsFilePtr(-1), nodeCount(0), elementCount(0)
   {
@@ -300,9 +301,9 @@ namespace Iocgns {
   }
 
   const Ioss::Map& ParallelDatabaseIO::get_map(Ioss::Map &entity_map,
-                                       int64_t entityCount,
-                                       int64_t file_offset, int64_t file_count,
-                                       entity_type type) const
+					       int64_t entityCount,
+					       int64_t file_offset, int64_t file_count,
+					       entity_type type) const
                                        
   {
     // Allocate space for node number map and read it in...
@@ -346,13 +347,13 @@ namespace Iocgns {
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::Region* /* reg */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const
+						 void *data, size_t data_size) const
   {
     size_t num_to_get = field.verify(data_size);
 
@@ -370,6 +371,66 @@ namespace Iocgns {
 	// (1...node_count) to global node ids.
 	get_map(entity_type::NODE).map_implicit_data(data, field, num_to_get, 0);
       }
+      // The 1..global_node_count id.  In a parallel-decomposed run,
+      // it maps the node back to its implicit position in the serial
+      // undecomposed mesh file.  This is ONLY provided for backward-
+      // compatibility and should not be used unless absolutely required.
+      else if (field.get_name() == "implicit_ids") {
+	size_t offset = decomp->decomp_node_offset();
+	size_t count = decomp->decomp_node_count();
+	if (int_byte_size_api() == 4) {
+	  std::vector<int> file_ids(count);
+	  std::iota(file_ids.begin(), file_ids.end(), offset+1);
+	  decomp->communicate_node_data(TOPTR(file_ids), (int*)data, 1);
+	} else {
+	  std::vector<int64_t> file_ids(count);
+	  std::iota(file_ids.begin(), file_ids.end(), offset+1);
+	  decomp->communicate_node_data(TOPTR(file_ids), (int64_t*)data, 1);
+	}
+      }
+
+      else if (field.get_name() == "connectivity") {
+	// Do nothing, just handles an idiosyncracy of the GroupingEntity
+      }
+      else if (field.get_name() == "connectivity_raw") {
+	// Do nothing, just handles an idiosyncracy of the GroupingEntity
+      }
+      else if (field.get_name() == "owning_processor") {
+	// If parallel, then set the "locally_owned" property on the nodeblocks.
+	Ioss::CommSet *css = get_region()->get_commset("commset_node");
+	if (int_byte_size_api() == 8) {
+	  int64_t *idata = static_cast<int64_t*>(data);
+	  for (size_t i=0; i < nodeCount; i++) {
+	    idata[i] = myProcessor;
+	  }
+	  
+	  std::vector<int64_t> ent_proc;
+	  css->get_field_data("entity_processor_raw", ent_proc);
+	  for (size_t i=0; i < ent_proc.size(); i+=2) {
+	    int64_t node = ent_proc[i+0];
+	    int64_t proc = ent_proc[i+1];
+	    if (proc < idata[node-1]) {
+	      idata[node-1] = proc;
+	    }
+	  }
+	}
+	else {
+	  int *idata = static_cast<int*>(data);
+	  for (size_t i=0; i < nodeCount; i++) {
+	    idata[i] = myProcessor;
+	  }
+	  
+	  std::vector<int> ent_proc;
+	  css->get_field_data("entity_processor_raw", ent_proc);
+	  for (size_t i=0; i < ent_proc.size(); i+=2) {
+	    int node = ent_proc[i+0];
+	    int proc = ent_proc[i+1];
+	    if (proc < idata[node-1]) {
+	      idata[node-1] = proc;
+	    }
+	  }
+	}
+      }
       else {
 	num_to_get = Ioss::Utils::field_warning(nb, field, "input");
       }
@@ -379,19 +440,19 @@ namespace Iocgns {
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceBlock* /* nb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock* eb,
-					 const Ioss::Field& field,
-					 void *data, size_t data_size) const
+						 const Ioss::Field& field,
+						 void *data, size_t data_size) const
   {
     size_t num_to_get = field.verify(data_size);
     Ioss::Field::RoleType role = field.get_role();
@@ -429,27 +490,27 @@ namespace Iocgns {
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::FaceSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideBlock* sb, const Ioss::Field& field,
-					 void *data , size_t data_size) const
+						 void *data , size_t data_size) const
   {
     int id = sb->get_property("id").get_int();
     auto sset = decomp->side_sets[id];
@@ -486,75 +547,104 @@ namespace Iocgns {
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::CommSet* /* cs */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
+						 void *data, size_t data_size) const
   {
-    return -1;
+    size_t num_to_get = field.verify(data_size);
+
+    // Return the <entity (node or side), processor> pair
+    if (field.get_name() == "entity_processor" || field.get_name() == "entity_processor_raw") {
+
+      // Check type -- node or side
+      std::string type = cs->get_property("entity_type").get_string();
+
+      if (type == "node") {
+
+	bool do_map = field.get_name() == "entity_processor";
+	// Convert local node id to global node id and store in 'data'
+	const Ioss::MapContainer &map = get_map(entity_type::NODE).map;
+	if (int_byte_size_api() == 4) {
+	  decomp->get_node_entity_proc_data(static_cast<int*>(data), map, do_map);
+	} else {
+	  decomp->get_node_entity_proc_data(static_cast<int64_t*>(data), map, do_map);
+	}
+      } else {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: Invalid commset type " << type;
+	IOSS_ERROR(errmsg);
+      }
+
+    } else if (field.get_name() == "ids") {
+      // Do nothing, just handles an idiosyncracy of the GroupingEntity
+    } else {
+      num_to_get = Ioss::Utils::field_warning(cs, field, "input");
+    }
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region* region, const Ioss::Field& field,
-					 void *data, size_t data_size) const
+						 void *data, size_t data_size) const
   {
     return -1;
   }
 
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock* /* eb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock* /* nb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeBlock* /* nb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeBlock* /* nb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
 
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::NodeSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::EdgeSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementSet* /* ns */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock* /* fb */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideSet* /* fs */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet* /* cs */, const Ioss::Field& /* field */,
-					 void */* data */, size_t /* data_size */) const
+						 void */* data */, size_t /* data_size */) const
   {
     return -1;
   }
