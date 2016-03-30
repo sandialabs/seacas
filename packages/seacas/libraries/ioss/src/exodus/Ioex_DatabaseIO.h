@@ -106,27 +106,28 @@ namespace Ioex {
       // If 'error_message' non-null, then put the warning message into the string and return it.
       // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
       //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-      virtual bool ok(bool write_message = false, std::string *error_message=nullptr, int *bad_count=nullptr) const = 0;
+      virtual bool ok(bool write_message = false,
+		      std::string *error_message=nullptr, int *bad_count=nullptr) const override = 0;
 
       // Eliminate as much memory as possible, but still retain meta data information
       // Typically, eliminate the maps...
-      virtual void release_memory();
+      virtual void release_memory() override;
 
       // Check capabilities of input/output database...  Returns an
       // unsigned int with the supported Ioss::EntityTypes or'ed
       // together. If "return_value & Ioss::EntityType" is set, then the
       // database supports that type (e.g. return_value & Ioss::FACESET)
-      unsigned entity_field_support() const;
+      unsigned entity_field_support() const override;
 
-      bool open_group(const std::string &group_name);
-      bool create_subgroup(const std::string &group_name);
+      bool open_group(const std::string &group_name) override;
+      bool create_subgroup(const std::string &group_name) override;
 
-      bool begin(Ioss::State state);
-      bool   end(Ioss::State state);
+      bool begin(Ioss::State state) override;
+      bool   end(Ioss::State state) override;
 
-      bool begin_state(Ioss::Region *region, int state, double time);
-      bool   end_state(Ioss::Region *region, int state, double time);
-      virtual void get_step_times() = 0;
+      bool begin_state(Ioss::Region *region, int state, double time) override;
+      bool   end_state(Ioss::Region *region, int state, double time) override;
+      virtual void get_step_times() override = 0;
       
       int    spatial_dimension()   const     {return spatialDimension;}
       int64_t    node_count()          const     {return nodeCount;}
@@ -136,11 +137,11 @@ namespace Ioex {
       int    element_block_count() const     {return m_groupCount[EX_ELEM_BLOCK];}
       int    sideset_count()       const     {return m_groupCount[EX_SIDE_SET];}
       int    nodeset_count()       const     {return m_groupCount[EX_NODE_SET];}
-      int    maximum_symbol_length() const   {return maximumNameLength;}
+      int    maximum_symbol_length() const override  {return maximumNameLength;}
 
       // NOTE: If this is called after write_meta_data, it will have no affect.
       //       Also, it only affects output databases, not input.
-      void   set_maximum_symbol_length(int requested_symbol_size)
+      void   set_maximum_symbol_length(int requested_symbol_size) override
       {
 	if (!is_input()) {
 	  maximumNameLength = requested_symbol_size;
@@ -148,72 +149,72 @@ namespace Ioex {
       }
 
       void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                                 std::vector<std::string> &block_adjacency) const;
+                                 std::vector<std::string> &block_adjacency) const override;
 
       void compute_block_membership(Ioss::SideBlock *efblock,
-                                    std::vector<std::string> &block_membership) const;
+                                    std::vector<std::string> &block_membership) const override;
 
       void set_int_byte_size_api(Ioss::DataSize size) const override;
       
   protected:
       virtual int64_t get_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::EdgeBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::FaceBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::ElementBlock* eb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::SideBlock* fb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::NodeSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::EdgeSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::FaceSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::ElementSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::SideSet* fs, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t get_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
 
       virtual int64_t put_field_internal(const Ioss::Region* reg, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::NodeBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::EdgeBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::FaceBlock* nb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::ElementBlock* eb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::SideBlock* fb, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::NodeSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::EdgeSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::FaceSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::ElementSet* ns, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::SideSet* fs, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
       virtual int64_t put_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
-					 void *data, size_t data_size) const = 0;
+					 void *data, size_t data_size) const override = 0;
 
       virtual void write_meta_data() = 0;
       void write_results_metadata();
 
-      virtual void openDatabase() const {
+      virtual void openDatabase() const override {
         get_file_pointer();
       }
 
-      virtual void closeDatabase() const {
+      virtual void closeDatabase() const override {
         free_file_pointer();
       }
 
