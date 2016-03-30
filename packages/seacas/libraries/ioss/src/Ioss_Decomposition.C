@@ -138,8 +138,8 @@ namespace {
 
     int common_nodes = INT_MAX;
 
-    for (size_t i=0; i < el_blocks.size(); i++) {
-      std::string type = Ioss::Utils::lowercase(el_blocks[i].topologyType);
+    for (auto block : el_blocks) {
+      std::string type = Ioss::Utils::lowercase(block.topologyType);
       Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(type, false);
       if (topology != nullptr) {
 	Ioss::ElementTopology *boundary = topology->boundary_type(0);
@@ -388,8 +388,7 @@ namespace Ioss {
     std::vector<int> owner; // Size is sum of element connectivity sizes (same as adjacency list)
     owner.reserve(m_adjacency.size());
 
-    for (size_t i=0; i < m_adjacency.size(); i++) {
-      INT node = m_adjacency[i];
+    for (auto node : m_adjacency) {
       INT owning_processor = Ioss::Utils::find_index_location(node, m_nodeDist);
       owner.push_back(owning_processor);
       recv_count[owning_processor]++;
@@ -445,17 +444,18 @@ namespace Ioss {
 
     // DEBUG: == Check that all nodes in node_comm_send are in the range
     //           nodeOffset..nodeOffset+nodeCount
-    for (size_t i=0; i < node_comm_send.size(); i++) {
-      assert((size_t)node_comm_send[i] >= nodeOffset &&
-	     (size_t)node_comm_send[i] <  nodeOffset+nodeCount);
+#ifndef NDEBUG
+    for (auto node : node_comm_send) {
+      assert((size_t)node >= nodeOffset && (size_t)node < nodeOffset+nodeCount);
     }
-
+#endif
+    
     // The total vector size I need to send data in is node_comm_send.size()*3
     std::vector<double> coord_send;
     coord_send.reserve(node_comm_send.size() * spatial_dimension);
     std::vector<double> coord_recv(node_comm_recv.size() * spatial_dimension);
-    for (size_t i=0; i < node_comm_send.size(); i++) {
-      size_t node = node_comm_send[i] - nodeOffset;
+    for (auto node : node_comm_send) {
+      node -= nodeOffset;
       coord_send.push_back(x[node]);
       if (spatial_dimension > 1)
 	coord_send.push_back(y[node]);
@@ -635,8 +635,8 @@ namespace Ioss {
     // Determine how many elements I send to the other processors...
     // and how many remain local (on this processor)
     exportElementCount.resize(m_processorCount+1);
-    for (size_t i=0; i < elem_partition.size(); i++) {
-      exportElementCount[elem_partition[i]]++;
+    for (auto element : elem_partition) {
+      exportElementCount[element]++;
     }
 
     size_t local = exportElementCount[m_processor];
@@ -845,9 +845,9 @@ namespace Ioss {
       exportElementMap.reserve(num_export);
       exportElementIndex.resize(m_processorCount+1);
       exportElementCount.resize(m_processorCount+1);
-      for (int i=0; i < num_export; i++) {
-	exportElementMap.push_back(export_map[i].second);
-	exportElementCount[export_map[i].first]++;
+      for (auto elem_count : export_map) {
+	exportElementMap.push_back(elem_count.second);
+	exportElementCount[elem_count.first]++;
       }
 
       for (int i=0; i < num_import; i++) {
@@ -866,9 +866,9 @@ namespace Ioss {
       exportElementMap.reserve(num_export);
       exportElementIndex.resize(m_processorCount+1);
       exportElementCount.resize(m_processorCount+1);
-      for (int i=0; i < num_export; i++) {
-	exportElementMap.push_back(export_map[i].second);
-	exportElementCount[export_map[i].first]++;
+      for (auto elem_count : export_map) {
+	exportElementMap.push_back(elem_count.second);
+	exportElementCount[elem_count.first]++;
       }
 
       int64_t *import_glob = (int64_t*)import_global_ids;
@@ -1019,14 +1019,13 @@ namespace Ioss {
 
       // Nodes on Imported elements...
       nodes.reserve(node_sum);
-      for (size_t i=0; i < import_conn.size(); i++) {
-	nodes.push_back(import_conn[i]);
+      for (auto node : import_conn) {
+	nodes.push_back(node);
       }
     }
 
     // Nodes on local elements...
-    for (size_t i=0; i < localElementMap.size(); i++) {
-      INT elem = localElementMap[i];
+    for (auto elem : localElementMap) {
       for (INT n = m_pointer[elem]; n < m_pointer[elem+1]; n++) {
 	nodes.push_back(m_adjacency[n]);
       }
@@ -1038,8 +1037,8 @@ namespace Ioss {
     // Determine owning 'file' processor for each node...
     nodeIndex.resize(m_processorCount+1);
 
-    for (size_t i=0; i < nodes.size(); i++) {
-      INT owning_processor = Ioss::Utils::find_index_location(nodes[i], m_nodeDist);
+    for (auto node : nodes) {
+      INT owning_processor = Ioss::Utils::find_index_location(node, m_nodeDist);
       nodeIndex[owning_processor]++;
     }
     importNodeCount.resize(nodeIndex.size());

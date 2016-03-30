@@ -1,8 +1,6 @@
 // CGNS Assumptions:
 // * All boundary conditions are listed as Family nodes at the "top" level.
 // * Unstructured mesh only
-// * Single element block per zone.
-// * Serial for now.
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists
 
@@ -400,9 +398,7 @@ namespace Iocgns {
 	Ioss::CommSet *css = get_region()->get_commset("commset_node");
 	if (int_byte_size_api() == 8) {
 	  int64_t *idata = static_cast<int64_t*>(data);
-	  for (size_t i=0; i < nodeCount; i++) {
-	    idata[i] = myProcessor;
-	  }
+	  std::fill(idata, idata+nodeCount, myProcessor);
 	  
 	  std::vector<int64_t> ent_proc;
 	  css->get_field_data("entity_processor_raw", ent_proc);
@@ -416,10 +412,8 @@ namespace Iocgns {
 	}
 	else {
 	  int *idata = static_cast<int*>(data);
-	  for (size_t i=0; i < nodeCount; i++) {
-	    idata[i] = myProcessor;
-	  }
-	  
+	  std::fill(idata, idata+nodeCount, myProcessor);
+
 	  std::vector<int> ent_proc;
 	  css->get_field_data("entity_processor_raw", ent_proc);
 	  for (size_t i=0; i < ent_proc.size(); i+=2) {

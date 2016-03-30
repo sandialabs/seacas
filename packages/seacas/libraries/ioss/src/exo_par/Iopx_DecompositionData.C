@@ -105,13 +105,11 @@ namespace {
     }
 
     if (wdim) {
-      for (size_t i = 0; i < element_count; i++) {
-	wgts[i] = 1.0;
-      }
+      std::fill(wgts, wgts+element_count, 1.0);
     }
 
     if (ngid_ent == 1) {
-	std::iota(gids, gids+element_count, element_offset);
+      std::iota(gids, gids+element_count, element_offset);
     } else if (ngid_ent == 2){
       int64_t* global_ids = (int64_t*)gids;
       std::iota(global_ids, global_ids+element_count, element_offset);
@@ -295,17 +293,17 @@ namespace Iopx {
     offset = 0;
     sum = 0; // Size of adjacency vector.
 
-    for (size_t b=0; b < block_count; b++) {
+    for (auto &block : ebs) {
       // Range of elements in element block b [)
       size_t b_start = offset;  // offset is index of first element in this block...
-      offset += ebs[b].num_entry;
-      size_t b_end   = b_start + ebs[b].num_entry;
+      offset += block.num_entry;
+      size_t b_end   = b_start + block.num_entry;
 
       if (b_start < p_end && p_start < b_end) {
 	// Some of this blocks elements are on this processor...
 	size_t overlap = std::min(b_end, p_end) - std::max(b_start, p_start);
-	size_t element_nodes = ebs[b].num_nodes_per_entry;
-	int64_t id =        ebs[b].id;
+	size_t element_nodes = block.num_nodes_per_entry;
+	int64_t id = block.id;
 
 	// Get the connectivity (raw) for this portion of elements...
 	std::vector<INT> connectivity(overlap*element_nodes);
