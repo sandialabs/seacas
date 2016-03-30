@@ -40,21 +40,15 @@ and `REALTYPEWIDTH` to 64
   * `cd TPL/pnetcdf`
   * `tar zxvf parallel-netcdf-1.7.0.tar.gz`
   * Make the same modifications to the defines in `src/lib/pnetcdf.h` that are modified for NetCDF:
+  
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
-  * `cd` to the parallel-netcdf source directory and enter the command:
-	```
-	CC=mpicc
-	MPICC='$(CC)'; export MPICC
-	CFLAGS='-I${ACCESS}/include'; export CFLAGS
-	LDFLAGS='-L${ACCESS}/lib'; export LDFLAGS
-	./configure --disable-fortran --prefix=${ACCESS}
-	```
 
 #### HDF5
    * `cd` to the hdf5 source directory and enter the command:
+   
     ```
     export CC=mpicc
     ./configure --prefix=${ACCESS} --enable-shared --enable-production --enable-debug=no --enable-static-exec --enable-parallel
@@ -62,6 +56,7 @@ and `REALTYPEWIDTH` to 64
 
 #### NetCDF
  * `cd netcdf-4.3.3.1` and enter the command:
+ 
     ```
     export CC=mpicc
     ./configure --enable-netcdf-4  --enable-shared \
@@ -80,7 +75,7 @@ and `REALTYPEWIDTH` to 64
 
 ## Configure, Build, and Install SEACAS
 Build as described in README.md.  If you are using the `cmake-config`
-script, the change `MPI` to `ON` and then continue.
+script, change `MPI` to `ON` and then continue.
 
 If using your own cmake script or directly calling cmake, specify the
 correct mpi-aware compilers 
