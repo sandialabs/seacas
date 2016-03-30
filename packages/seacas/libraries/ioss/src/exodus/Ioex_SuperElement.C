@@ -2,14 +2,14 @@
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
-//         
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright
 //       notice, this list of conditions and the following disclaimer.
-// 
+//
 //     * Redistributions in binary form must reproduce the above
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
@@ -17,7 +17,7 @@
 //     * Neither the name of Sandia Corporation nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -66,7 +66,7 @@ namespace {
   }
 
   int nc_get_dimension(int ncid, const char* DIMENSION,
-		       const char *label, size_t *count)
+                       const char *label, size_t *count)
   {
     std::ostringstream errmsg;
 
@@ -76,21 +76,21 @@ namespace {
     int status = nc_inq_dimid(ncid, DIMENSION, &dimid);
     if (status != NC_NOERR) {
       if (status == NC_EBADDIM) {
-	// Value is zero if the dimension is not defined.
-	*count = 0;
-	return 0;
-      } 
-	errmsg << "ERROR: Failed to locate number of " << label
-	       << " in superelement file.";
-	IOSS_ERROR(errmsg);
-      
+        // Value is zero if the dimension is not defined.
+        *count = 0;
+        return 0;
+      }
+        errmsg << "ERROR: Failed to locate number of " << label
+               << " in superelement file.";
+        IOSS_ERROR(errmsg);
+
       return -1;
     }
 
     status = nc_inq_dimlen (ncid, dimid, count);
     if (status != NC_NOERR) {
       errmsg << "ERROR: failed to get number of " << label
-	     << " in superelement file.";
+             << " in superelement file.";
       IOSS_ERROR(errmsg);
       return -1;
     }
@@ -101,7 +101,7 @@ namespace {
 }
 
 Ioex::SuperElement::SuperElement(std::string filename,
-				 const std::string &my_name)
+                                 const std::string &my_name)
   : Ioss::GroupingEntity(nullptr, my_name, 1), fileName(std::move(filename)),
     numDOF(0), num_nodes(0), numEIG(0), num_dim(0), filePtr(-1)
 {
@@ -118,7 +118,7 @@ Ioex::SuperElement::SuperElement(std::string filename,
   if (status != NC_NOERR) {
     std::ostringstream errmsg;
     errmsg << "ERROR: Failed to open superelement file '"
-	   << local_filename << "'.";
+           << local_filename << "'.";
     IOSS_ERROR(errmsg);
   }
 
@@ -126,28 +126,28 @@ Ioex::SuperElement::SuperElement(std::string filename,
   // Read some dimensions to determine size of Mass and Stiffness
   // matrix.
   nc_get_dimension(filePtr, "NumDof",
-		   "number of degrees of freedom",
-		   &numDOF);
-  
+                   "number of degrees of freedom",
+                   &numDOF);
+
   nc_get_dimension(filePtr, "num_nodes",
-		   "number of nodes",
-		   &num_nodes);
+                   "number of nodes",
+                   &num_nodes);
 
 
   nc_get_dimension(filePtr, "NumEig",
-		   "number of eigenvalues",
-		   &numEIG);
+                   "number of eigenvalues",
+                   &numEIG);
 
   nc_get_dimension(filePtr, "num_dim",
-		   "number of dimensions",
-		   &num_dim);
+                   "number of dimensions",
+                   &num_dim);
 
   size_t num_constraints = 0;
   nc_get_dimension(filePtr, "NumConstraints",
-		   "number of interface dof",
-		   &num_constraints);
+                   "number of interface dof",
+                   &num_constraints);
   assert(num_constraints == numDOF - numEIG);
-    
+
   // Add the standard properties...
   properties.add(Ioss::Property(this, "numDOF",
                                 Ioss::Property::INTEGER));
@@ -175,7 +175,7 @@ Ioex::SuperElement::SuperElement(std::string filename,
      fields.add(Ioss::Field("node_num_map", Ioss::Field::REAL, SCALAR(),
                            Ioss::Field::MESH, num_nodes));
      fields.add(Ioss::Field("cbmap", Ioss::Field::REAL, SCALAR(),
-			    Ioss::Field::MESH, 2*num_nodes*num_dim));
+                            Ioss::Field::MESH, 2*num_nodes*num_dim));
   }
 
   fields.add(Ioss::Field("Kr", Ioss::Field::REAL, SCALAR(),
@@ -190,17 +190,17 @@ Ioex::SuperElement::SuperElement(std::string filename,
 }
 
 int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
-				      void *data, size_t data_size) const
+						    void *data, size_t data_size) const
 {
   size_t num_to_get = field.verify(data_size);
-  
+
   if(field.get_name() == "cbmap") {
     assert(num_to_get == 2*num_nodes*num_dim);
     int status = nc_get_array(filePtr, "cbmap", (double*)data);
     if(status != 0) {
-     std::ostringstream errmsg;
+      std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'cbmap' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
 
@@ -211,7 +211,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     if(status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'node_num_map' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   } else if (field.get_name() == "coordx") {
@@ -220,7 +220,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'coordx' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }
@@ -230,7 +230,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'coordy' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }
@@ -240,7 +240,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'coordz' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }
@@ -250,7 +250,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load stiffness matrix field 'Kr' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }
@@ -260,13 +260,13 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load mass matrix field 'Mr' from file '"
-	     << fileName << "'.";
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }
   else {
     std::cerr << "WARNING: " << type() << " '" << name()
-	      << "'. Unknown input field '" << field.get_name() << "'";
+              << "'. Unknown input field '" << field.get_name() << "'";
     return -4;
   }
   return num_to_get;
@@ -274,12 +274,13 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
 
 Ioex::SuperElement::~SuperElement()
 {
-  if (filePtr != 0) { nc_close(filePtr);
-}
+  if (filePtr != 0) {
+    nc_close(filePtr);
+  }
 }
 
 int64_t Ioex::SuperElement::internal_put_field_data(const Ioss::Field& /* field */,
-						void* /* data */, size_t /* data_size */) const
+                                                void* /* data */, size_t /* data_size */) const
 {
   return -1;
 }
