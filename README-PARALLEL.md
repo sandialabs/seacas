@@ -36,9 +36,22 @@ and `REALTYPEWIDTH` to 64
 and `REALTYPEWIDTH` to 64
   
 #### Parallel-NetCDF
-  * Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.6.1.tar.gz
+  * Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.7.0.tar.gz
   * `cd TPL/pnetcdf`
-  * `tar zxvf parallel-netcdf-1.6.1.tar.gz`
+  * `tar zxvf parallel-netcdf-1.7.0.tar.gz`
+  * Make the same modifications to the defines in `src/lib/pnetcdf.h` that are modified for NetCDF:
+    ```
+    #define NC_MAX_DIMS     65536    /* max dimensions per file */
+    #define NC_MAX_VARS     524288   /* max variables per file */
+    ```
+  * `cd` to the parallel-netcdf source directory and enter the command:
+	```
+	CC=mpicc
+	MPICC='$(CC)'; export MPICC
+	CFLAGS='-I${ACCESS}/include'; export CFLAGS
+	LDFLAGS='-L${ACCESS}/lib'; export LDFLAGS
+	./configure --disable-fortran --prefix=${ACCESS}
+	```
 
 #### HDF5
    * `cd` to the hdf5 source directory and enter the command:
