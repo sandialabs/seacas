@@ -10,12 +10,10 @@
 
 
 namespace {
-namespace {
   bool is_separator(const char separator, const char value)
   {
     return separator == value;
   }
-}
 
   // Split 'str' into 'tokens' based on the 'separator' character.
   // If 'str' starts with 1 or more 'separator', they are part of the
@@ -26,7 +24,7 @@ namespace {
   // __this___is_a_string__for_tokens will split to 6 tokens:
   // __this __is a string _for tokens
   void field_tokenize(const std::string& str, const char separator,
-		std::vector<std::string>& tokens)
+		      std::vector<std::string>& tokens)
   {
     std::string curr_token = "";
     // Skip leading separators...
@@ -80,7 +78,7 @@ namespace {
       int ierr = ex_put_coordinate_frames(exoid, nframes, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
       if (ierr < 0) {
 	Ioex::exodus_error(exoid, __LINE__, -1);
-}
+      }
     }
   }
 
@@ -92,7 +90,7 @@ namespace {
     int ierr = ex_get_coordinate_frames(exoid, &nframes, nullptr, nullptr, nullptr);
     if (ierr < 0) {
       Ioex::exodus_error(exoid, __LINE__, -1);
-}
+    }
 
     if (nframes > 0) {
       std::vector<char> tags(nframes);
@@ -101,7 +99,7 @@ namespace {
       ierr = ex_get_coordinate_frames(exoid, &nframes, TOPTR(ids), TOPTR(coord), TOPTR(tags));
       if (ierr < 0) {
 	Ioex::exodus_error(exoid, __LINE__, -1);
-}
+      }
 
       for (int i=0; i<nframes; i++) {
 	Ioss::CoordinateFrame cf(ids[i], tags[i], &coord[9*i]);
@@ -136,7 +134,6 @@ namespace {
     }
     return N;
   }
-
 }
 
 namespace Ioex {
@@ -146,20 +143,19 @@ namespace Ioex {
   {
     char errmsg[MAX_ERR_LENGTH];
     const char *routine = "Ioex::Utils::update_last_time_attribute()";
-    
+
     double tmp = 0.0;
     int rootid = (unsigned)exodusFilePtr & EX_FILE_ID_MASK;
     int status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
-    if (status == NC_NOERR && value > tmp) {
-      status=nc_put_att_double(rootid, NC_GLOBAL, "last_written_time",
-			       NC_DOUBLE, 1, &value);
-      if (status != NC_NOERR) {
-	ex_opts(EX_VERBOSE);
-	sprintf(errmsg,
-		"Error: failed to define 'last_written_time' attribute to file id %d",
-		exodusFilePtr);
-	ex_err(routine,errmsg,status);
-      }
+
+    status=nc_put_att_double(rootid, NC_GLOBAL, "last_written_time",
+			     NC_DOUBLE, 1, &value);
+    if (status != NC_NOERR) {
+      ex_opts(EX_VERBOSE);
+      sprintf(errmsg,
+	      "Error: failed to define 'last_written_time' attribute to file id %d",
+	      exodusFilePtr);
+      ex_err(routine,errmsg,status);
     }
   }
 
@@ -280,7 +276,7 @@ namespace Ioex {
 	  size_t last_token = tokens.size()-3;
 	  if (element_topo == nullptr) {
 	    last_token--;
-}
+	  }
 	  for (size_t tok=0; tok < last_token; tok++) {
 	    fs_name += tokens[tok];
 	  }
@@ -329,7 +325,7 @@ namespace Ioex {
 
     if (tokens.size() == 1) {
       return 0;
-}
+    }
 
     // Check whether last token is an integer...
     std::string str_id = tokens[tokens.size()-1];
@@ -379,7 +375,7 @@ namespace Ioex {
     if (entity->property_exists(id_prop)) {
       id = entity->get_property(id_prop).get_int();
       return id;
-    } 
+    }
 
     // Try to decode an id from the name.
     std::string name_string = entity->get_property(prop_name).get_string();
@@ -390,7 +386,7 @@ namespace Ioex {
 	id = 1;
       }
     }
-    
+
     // At this point, we either have an id equal to '1' or we have an id
     // extracted from the entities name. Increment it until it is
     // unique...
@@ -458,42 +454,42 @@ namespace Ioex {
   }
 
   std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-                              const std::string &basename, int length,
-                              bool &db_has_name)
+			      const std::string &basename, int length,
+			      bool &db_has_name)
   {
     std::vector<char> buffer(length+1);
     buffer[0] = '\0';
     int error = ex_get_name(exoid, type, id, TOPTR(buffer));
     if (error < 0) {
       exodus_error(exoid, __LINE__, -1);
-}
+    }
     if (buffer[0] != '\0') {
       Ioss::Utils::fixup_name(TOPTR(buffer));
       // Filter out names of the form "basename_id" if the name
       // id doesn't match the id in the name...
       size_t base_size = basename.size();
       if (std::strncmp(basename.c_str(), &buffer[0], base_size) == 0) {
-        int64_t name_id = extract_id(TOPTR(buffer));
-        if (name_id > 0 && name_id != id) {
-          // See if name is truly of form "basename_name_id"
-          std::string tmp_name =  Ioss::Utils::encode_entity_name(basename, name_id);
-          if (tmp_name == TOPTR(buffer)) {
-            std::string new_name =  Ioss::Utils::encode_entity_name(basename, id);
-            IOSS_WARNING << "WARNING: The entity named '" << TOPTR(buffer) << "' has the id " << id
+	int64_t name_id = extract_id(TOPTR(buffer));
+	if (name_id > 0 && name_id != id) {
+	  // See if name is truly of form "basename_name_id"
+	  std::string tmp_name =  Ioss::Utils::encode_entity_name(basename, name_id);
+	  if (tmp_name == TOPTR(buffer)) {
+	    std::string new_name =  Ioss::Utils::encode_entity_name(basename, id);
+	    IOSS_WARNING << "WARNING: The entity named '" << TOPTR(buffer) << "' has the id " << id
 			 << " which does not match the embedded id " << name_id
 			 << ".\n         This can cause issues later on; the entity will be renamed to '"
 			 << new_name << "' (IOSS)\n\n";
-            db_has_name = false;
-            return new_name;
-          }
-        }
+	    db_has_name = false;
+	    return new_name;
+	  }
+	}
       }
       db_has_name = true;
       return (std::string(TOPTR(buffer)));
-    } 
-      db_has_name = false;
-      return Ioss::Utils::encode_entity_name(basename, id);
-    
+    }
+    db_has_name = false;
+    return Ioss::Utils::encode_entity_name(basename, id);
+
   }
 
   char ** get_exodus_names(size_t count, int size)
@@ -523,7 +519,7 @@ namespace Ioex {
     ex_err(nullptr, nullptr, EX_PRTLASTMSG);
     if (exoid > 0) {
       ex_close(exoid);
-}
+    }
     IOSS_ERROR(errmsg);
   }
 
@@ -549,7 +545,7 @@ namespace Ioex {
 
     if (tokens.size() <= 2) {
       return nullptr;
-}
+    }
 
     assert(tokens.size() > 2);
 
@@ -558,7 +554,7 @@ namespace Ioex {
 
     if (N == 0) {
       return nullptr;
-}
+    }
 
     if (which_names.size() % N != 0) {
       return nullptr;
@@ -612,7 +608,7 @@ namespace Ioex {
     for (int which_name : which_names) {
       std::vector<std::string> tokens = Ioss::tokenize(names[which_name], suffix);
       size_t num_tokens = tokens.size();
-      
+
       // The last token is the suffix for this component...
       Ioss::Suffix tmp(tokens[num_tokens-1]);
       suffices.push_back(tmp);
@@ -680,7 +676,7 @@ namespace Ioex {
     int suffix_size = 1;
     if (num_tokens > 2) {
       suffix_size = 2;
-}
+    }
 
     // If num_tokens > 2, then we can potentially have a composite
     // variable type which would have a double suffix (_xx_01).
@@ -729,7 +725,7 @@ namespace Ioex {
       if (suffix_size == 2) {
 	if (which_names.size() > 1) {
 	  type = match_composite_field(names, which_names, suffix_separator);
-}
+	}
       } else {
 	assert(suffix_size == 1);
 	type = match_single_field(names, which_names, suffix_separator);
@@ -745,13 +741,13 @@ namespace Ioex {
 	  names[which_name][0] = '\0';
 	}
 	return field;
-      } 
-	if (suffix_size == 1) {
-	  Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
-	  names[index][0] = '\0';
-	  return field;
-	}
-      
+      }
+      if (suffix_size == 1) {
+	Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
+	names[index][0] = '\0';
+	return field;
+      }
+
       suffix_size--;
     }
     return Ioss::Field("", Ioss::Field::INVALID, SCALAR(), fld_role, 1);
@@ -779,8 +775,8 @@ namespace Ioex {
 	}
 	for (size_t j = 0; j < nmatch; j++) {
 	  names[j][0] = '\0';
-	
-}return true;
+
+	}return true;
       }
     }
 
@@ -833,13 +829,13 @@ namespace Ioex {
 	if (local_truth != nullptr) {
 	  while (ibeg < num_names && local_truth[ibeg] == 0) {
 	    ibeg++;
-}
+	  }
 	}
 	for (size_t i=ibeg+1; i < num_names; i++) {
 	  size_t mat = match(names[ibeg], names[i]);
 	  if (local_truth != nullptr && local_truth[i] == 0) {
 	    mat = 0;
-}
+	  }
 
 	  // For all fields, the total length of the name is the same
 	  // for all components of that field.  The 'basename' of the
@@ -917,7 +913,7 @@ namespace Ioex {
   }
 
   int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
-		      size_t name_length)
+		     size_t name_length)
   {
     // Check for optional element maps...
     int map_count = ex_inquire_int(exoid, EX_INQ_ELEM_MAP);
@@ -994,7 +990,7 @@ namespace Ioex {
     return (active != orig_size);
   }
 
-  void filter_element_list(Ioss::Region *region, 
+  void filter_element_list(Ioss::Region *region,
 			   Ioss::Int64Vector &elements,
 			   Ioss::Int64Vector &sides,
 			   bool remove_omitted_elements)
@@ -1014,7 +1010,7 @@ namespace Ioex {
     bool omitted = false;
     Ioss::ElementBlockContainer element_blocks = region->get_element_blocks();
     for (auto block : element_blocks) {
-      
+
       if (Ioss::Utils::block_is_omitted(block)) {
 	ssize_t min_id = block->get_offset() + 1;
 	ssize_t max_id = min_id + block->get_property("entity_count").get_int() - 1;
@@ -1058,7 +1054,7 @@ namespace Ioex {
 	  common_ftopo = block->topology()->boundary_type(0);
 	  if (common_ftopo != nullptr) {
 	    topo = common_ftopo;
-}
+	  }
 	  current_side = -1;
 	}
 
