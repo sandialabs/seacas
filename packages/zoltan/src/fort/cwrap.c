@@ -50,7 +50,7 @@
  * KDD:  gcc 4.5, where compiler optimizations removed assignment 
  * KDD:  statements in Zfw_Set_Fn (assignments to the Fortran callbacks), 
  * KDD:  causing segmentation faults when Zoltan attempted to call those
- * KDD:  callbakcs.  This problem was fixed by declaring all Zoltan_Structs
+ * KDD:  callbacks.  This problem was fixed by declaring all Zoltan_Structs
  * KDD:  using this aliasing to be "volatile".  A better fix would use the
  * KDD:  F90 "C_PTR" type in fwrap.f90.  We can do that fix as time permits.
  * KDD:  See Bugzilla bug 5077 for more info.
@@ -72,7 +72,7 @@ extern "C" {
    unsigned char *p; \
    int i; \
    p = (unsigned char *) &(lb); \
-   for (i=0; i<sizeof(struct Zoltan_Struct *); i++) \
+   for (i=0; i<(int)(sizeof(struct Zoltan_Struct *)); i++) \
      {*p = (unsigned char)(addr_lb)[i]; p++;} }
 
 /* construct the nbyte 1-byte integers from the lb pointer */
@@ -82,11 +82,11 @@ extern "C" {
    unsigned char *p; \
    int i; \
    p = (unsigned char *) &(lb); \
-   for (i = 0; i < sizeof(struct Zoltan_Struct *); i++) { \
+   for (i = 0; i < (int)(sizeof(struct Zoltan_Struct *)); i++) { \
      (addr_lb)[i] = (int) *p;  \
      p++; \
    } \
-   for (i = sizeof(struct Zoltan_Struct *); i < (nbytes); i++) \
+   for (i = (int)(sizeof(struct Zoltan_Struct *)); i < (nbytes); i++) \
      (addr_lb)[i] = 0; \
  }
 

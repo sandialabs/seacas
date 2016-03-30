@@ -48,7 +48,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DD.h"
+#include "zoltan_dd_const.h"
 #include "zoltan_align.h"
 #include "zz_hash.h"
 
@@ -143,6 +143,7 @@ int Zoltan_DD_Create (
 
    /* NULL heads of link list in hash table */
    for (i = 0; i < size; i++) (*dd)->table[i] = -1;  /* NULL values */
+   (*dd)->nodecnt = 0;
    (*dd)->nodelist = NULL;
    (*dd)->nodedata = NULL;
    (*dd)->nodelistlen = 0;
