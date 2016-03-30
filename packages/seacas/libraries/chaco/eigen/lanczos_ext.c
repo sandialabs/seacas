@@ -437,7 +437,7 @@ lanczos_ext (
 		    /* Show some info on the orthogonalization. */
 		    printf("  j %3d; goodlim lft %2d, rgt %2d; list ",
 			   j, left_goodlim, 0);
-		    solistout(solist, n, ngood, j);
+		    solistout(solist, ngood, j);
 
 
 	           /* Assemble current approx. eigenvector, check residual directly. */ 

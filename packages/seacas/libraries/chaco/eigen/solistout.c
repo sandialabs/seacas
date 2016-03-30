@@ -48,9 +48,6 @@ solistout (
     int       i;		/* index */
     extern int DEBUG_EVECS;	/* debugging output level for eigen computations */
 
-    /* to placate alint */
-    n = n;
-
     for (i = 1; i <= ngood; i++) {
 	if ((solist[i])->index <= (int) (j / 2)) {
 	    printf(".");
@@ -86,9 +83,6 @@ solistout_float (
 )
 {
     int       i;		/* index */
-
-    /* to placate alint */
-    n = n;
 
     for (i = 1; i <= ngood; i++) {
 	if ((solist[i])->index <= (int) (j / 2)) {
