@@ -140,6 +140,8 @@ namespace Iocgns {
     cg_nzones(filePtr, base, &num_zones);
     zones_.resize(num_zones+1); // Use 1-based zones.
 
+    size_t globalNodeCount = 0;
+    size_t globalElementCount = 0;
     for (int zone=1; zone <= num_zones; zone++) {
       CG_ZoneType_t zone_type;
       cg_zone_type(filePtr, base, zone, &zone_type);
@@ -237,7 +239,6 @@ namespace Iocgns {
 #if !defined(NO_ZOLTAN_SUPPORT)
                                     zz,
 #endif
-                                    globalElementCount, globalNodeCount,
                                     el_blocks);
 
     if (!side_sets.empty()) {

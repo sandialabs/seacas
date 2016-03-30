@@ -148,10 +148,18 @@ namespace Ioss {
     {
     public:
       Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm);
+
+      size_t global_node_count() const {return m_globalNodeCount;}
+      size_t global_elem_count() const {return m_globalElementCount;}
       size_t ioss_node_count() const {return nodeGTL.size();}
       size_t ioss_elem_count() const {return localElementMap.size() + importElementMap.size();}
+      size_t file_node_count() const {return nodeCount;}
+      size_t file_elem_count() const {return elementCount;}
+      size_t file_node_offset() const {return nodeOffset;}
+      size_t file_elem_offset() const {return elementOffset;}
 
       bool needs_centroids() const;
+
       void generate_entity_distributions(size_t globalNodeCount, size_t globalElementCount);
 
       // T/F if node with global index node owned by this processors ioss-decomp.
@@ -194,8 +202,6 @@ namespace Ioss {
 #if !defined(NO_ZOLTAN_SUPPORT)
                            Zoltan &zz,
 #endif
-                           size_t global_element_count,
-                           size_t global_node_count,
                            std::vector<BlockDecompositionData> &el_blocks);
 
       void simple_decompose();
@@ -253,10 +259,12 @@ namespace Ioss {
       std::string m_method;
 
       // Values for the file decomposition
+      size_t m_globalElementCount;
       size_t elementCount;
       size_t elementOffset;
       size_t importPreLocalElemIndex;
 
+      size_t m_globalNodeCount;
       size_t nodeCount;
       size_t nodeOffset;
       size_t importPreLocalNodeIndex;
