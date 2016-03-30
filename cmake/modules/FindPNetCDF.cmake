@@ -105,6 +105,39 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
         message(SEND_ERROR "Can not locate PNetCDF include directory")
     endif()
 
+    # Large dimension and parallel check here
+    if ( PNetCDF_INCLUDE_DIR ) 
+       
+        set(pnetcdf_h "${PNetCDF_INCLUDE_DIR}/pnetcdf.h" )
+        message(STATUS "PNetCDF include file ${pnetcdf_h} will be searched for define values")
+
+        file(STRINGS "${pnetcdf_h}" pnetcdf_max_dims_string REGEX "^#define NC_MAX_DIMS")
+        string(REGEX REPLACE "[^0-9]" "" pnetcdf_max_dims "${pnetcdf_max_dims_string}")
+
+        file(STRINGS "${pnetcdf_h}" pnetcdf_max_vars_string REGEX "^#define NC_MAX_VARS")
+        string(REGEX REPLACE "[^0-9]" "" pnetcdf_max_vars "${pnetcdf_max_vars_string}")
+
+        file(STRINGS "${pnetcdf_h}" pnetcdf_max_var_dims_string REGEX "^#define NC_MAX_VAR_DIMS")
+        string(REGEX REPLACE "[^0-9]" "" pnetcdf_max_var_dims "${pnetcdf_max_var_dims_string}")
+
+        #PRINT_VARIABLE(pnetcdf_max_dims_string)
+        #PRINT_VARIABLE(pnetcdf_max_dims)
+        #PRINT_VARIABLE(pnetcdf_max_vars)
+        #PRINT_VARIABLE(pnetcdf_max_var_dims)
+
+        if ( 
+             ( (pnetcdf_max_dims EQUAL 65536)  OR (pnetcdf_max_dims GREATER 65536) ) AND
+             ( (pnetcdf_max_vars EQUAL 524288) OR (pnetcdf_max_vars GREATER 524288) )
+            )
+            set(PNetCDF_LARGE_DIMS TRUE)
+        else()
+            message(WARNING "WARNING: The PNetCDF found in ${PNetCDF_DIR} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
+                             "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
+            set(PNetCDF_LARGE_DIMS FALSE)
+        endif()
+
+    endif()    
+
     # Search for libraries 
     # Search order preference:
     #  (1) PNetCDF_LIBRARY_DIR - check existence of path AND if the include files exist
