@@ -135,48 +135,6 @@ namespace {
     return;
   }
 #endif
-
-#if !defined(NO_PARMETIS_SUPPORT)
-  int get_common_node_count(const std::vector<Iopx::BlockDecompositionData> &el_blocks,
-			    MPI_Comm comm)
-  {
-    // Determine number of nodes that elements must share to be
-    // considered connected.  A 8-node hex-only mesh would have 4
-    // A 3D shell mesh should have 2.  Basically, use the minimum
-    // number of nodes per side for all element blocks...  Omit sphere
-    // elements; ignore bars(?)...
-
-    int common_nodes = INT_MAX;
-
-    for (size_t i=0; i < el_blocks.size(); i++) {
-      std::string type = Ioss::Utils::lowercase(el_blocks[i].topologyType);
-      Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(type, false);
-      if (topology != nullptr) {
-	Ioss::ElementTopology *boundary = topology->boundary_type(0);
-	if (boundary != nullptr) {
-	  common_nodes = std::min(common_nodes, boundary->number_boundaries());
-	} else {
-	  // Different topologies on some element faces...
-	  size_t nb = topology->number_boundaries();
-	  for (size_t b=1; b <= nb; b++) {
-	    boundary = topology->boundary_type(b);
-	    if (boundary != nullptr) {
-	      common_nodes = std::min(common_nodes, boundary->number_boundaries());
-	    }
-	  }
-	}
-      }
-    }
-    common_nodes = std::max(1, common_nodes);
-    Ioss::ParallelUtils par_util(comm);
-    common_nodes = par_util.global_minmax(common_nodes, Ioss::ParallelUtils::DO_MIN);
-
-#if DEBUG_OUTPUT
-    std::cerr << "Setting common_nodes to " << common_nodes << "\n";
-#endif
-    return common_nodes;
-  }
-#endif
 }
 
 namespace Iopx {
@@ -200,8 +158,8 @@ namespace Iopx {
     ex_init_params info;
     ex_get_init_ext(filePtr, &info);
 
-    globalElementCount = info.num_elem;
-    globalNodeCount    = info.num_nodes;
+    size_t globalElementCount = info.num_elem;
+    size_t globalNodeCount    = info.num_nodes;
     spatialDimension   = info.num_dim;
     el_blocks.resize(info.num_elem_blk);
 
@@ -252,7 +210,6 @@ namespace Iopx {
 #if !defined(NO_ZOLTAN_SUPPORT)
 				    zz,
 #endif
-				    globalElementCount, globalNodeCount,
 				    el_blocks);
 
     get_nodeset_data(filePtr, info.num_node_sets);
@@ -854,20 +811,13 @@ namespace Iopx {
     Ioss::BlockDecompositionData blk = el_blocks[blk_seq];
 
     // Determine number of file decomp elements are in this block and the offset into the block.
-    size_t bbeg = std::max(m_decomposition.fileBlockIndex[blk_seq],   decomp_elem_offset());
-    size_t bend = std::min(m_decomposition.fileBlockIndex[blk_seq+1],
-			   decomp_elem_offset() + decomp_elem_count());
-    size_t count = 0;
-    if (bend > bbeg)
-      count = bend - bbeg;
-    size_t offset = 0;
-    if (decomp_elem_offset() > m_decomposition.fileBlockIndex[blk_seq])
-      offset = decomp_elem_offset() - m_decomposition.fileBlockIndex[blk_seq];
+    size_t count = get_block_element_count(blk_seq);
+    size_t offset = get_block_element_offset(blk_seq);
 
     assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
     std::vector<INT> file_conn(count * nnpe);
     ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset+1, count, TOPTR(file_conn), nullptr, nullptr);
-    m_decomposition.communicate_block_data(TOPTR(file_conn), data, el_blocks[blk_seq], nnpe);
+    m_decomposition.communicate_block_data(TOPTR(file_conn), data, blk, nnpe);
 
     for (size_t i=0; i < blk.iossCount * nnpe; i++) {
       data[i] = node_global_to_local(data[i]);
@@ -1558,6 +1508,7 @@ namespace Iopx {
 							  Ioss::Map &node_map, int64_t *locally_owned_count,
 							  int64_t *processor_offset)
   {
+    // Used on composed output database...
     // If the node is locally owned, then its position is basically
     // determined by removing all shared nodes from the list and
     // then compressing the list. This location plus the proc_offset

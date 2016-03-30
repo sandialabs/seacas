@@ -125,7 +125,50 @@ namespace {
     }
     return method;
   }
+
+#if !defined(NO_PARMETIS_SUPPORT)
+  int get_common_node_count(const std::vector<Ioss::BlockDecompositionData> &el_blocks,
+			    MPI_Comm comm)
+  {
+    // Determine number of nodes that elements must share to be
+    // considered connected.  A 8-node hex-only mesh would have 4
+    // A 3D shell mesh should have 2.  Basically, use the minimum
+    // number of nodes per side for all element blocks...  Omit sphere
+    // elements; ignore bars(?)...
+
+    int common_nodes = INT_MAX;
+
+    for (size_t i=0; i < el_blocks.size(); i++) {
+      std::string type = Ioss::Utils::lowercase(el_blocks[i].topologyType);
+      Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(type, false);
+      if (topology != nullptr) {
+	Ioss::ElementTopology *boundary = topology->boundary_type(0);
+	if (boundary != nullptr) {
+	  common_nodes = std::min(common_nodes, boundary->number_boundaries());
+	} else {
+	  // Different topologies on some element faces...
+	  size_t nb = topology->number_boundaries();
+	  for (size_t b=1; b <= nb; b++) {
+	    boundary = topology->boundary_type(b);
+	    if (boundary != nullptr) {
+	      common_nodes = std::min(common_nodes, boundary->number_boundaries());
+	    }
+	  }
+	}
+      }
+    }
+    common_nodes = std::max(1, common_nodes);
+    Ioss::ParallelUtils par_util(comm);
+    common_nodes = par_util.global_minmax(common_nodes, Ioss::ParallelUtils::DO_MIN);
+
+#if DEBUG_OUTPUT
+    std::cerr << "Setting common_nodes to " << common_nodes << "\n";
+#endif
+    return common_nodes;
+  }
+#endif
 }
+
 namespace Ioss {
 
   template Decomposition<int>::Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm);
@@ -134,8 +177,8 @@ namespace Ioss {
   template<typename INT>
   Decomposition<INT>::Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm) :
     m_comm(comm),
-    elementCount(0), elementOffset(0), importPreLocalElemIndex(0),
-    nodeCount(0), nodeOffset(0), importPreLocalNodeIndex(0)
+    m_globalElementCount(0), elementCount(0), elementOffset(0), importPreLocalElemIndex(0),
+    m_globalNodeCount(0), nodeCount(0), nodeOffset(0), importPreLocalNodeIndex(0)
   {
     MPI_Comm_rank(m_comm, &m_processor);
     MPI_Comm_size(m_comm, &m_processorCount);
@@ -164,14 +207,17 @@ namespace Ioss {
   void Decomposition<INT>::generate_entity_distributions(size_t globalNodeCount,
 							 size_t globalElementCount)
   {
+    m_globalNodeCount = globalNodeCount;
+    m_globalElementCount = globalElementCount;
+    
     m_elementDist = get_entity_dist<INT>(m_processorCount,
 					 m_processor,
-					 globalElementCount,
+					 m_globalElementCount,
 					 &elementOffset,
 					 &elementCount);
     m_nodeDist = get_entity_dist<INT>(m_processorCount,
 				      m_processor,
-				      globalNodeCount,
+				      m_globalNodeCount,
 				      &nodeOffset,
 				      &nodeCount);
   }
@@ -248,23 +294,17 @@ namespace Ioss {
 #if !defined(NO_ZOLTAN_SUPPORT)
 						    Zoltan &zz,
 #endif
-						    size_t global_element_count,
-						    size_t global_node_count,
 						    std::vector<BlockDecompositionData> &element_blocks);
   template void Decomposition<int64_t>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
 							Zoltan &zz,
 #endif
-							size_t global_element_count,
-							size_t global_node_count,
 							std::vector<BlockDecompositionData> &element_blocks);
   template <typename INT>
   void Decomposition<INT>::decompose_model(
 #if !defined(NO_ZOLTAN_SUPPORT)
 					   Zoltan &zz,
 #endif
-					   size_t global_element_count,
-					   size_t global_node_count,
 					   std::vector<BlockDecompositionData> &element_blocks)
   {
 #if !defined(NO_PARMETIS_SUPPORT)
@@ -286,7 +326,7 @@ namespace Ioss {
     }
 #endif
     if (m_method == "LINEAR") {
-      if (global_element_count > 0)
+      if (m_globalElementCount > 0)
 	simple_decompose();
       else
 	simple_node_decompose();
@@ -313,7 +353,7 @@ namespace Ioss {
 
     // Now need to determine the nodes that are on this processor,
     // both owned and shared...
-    if (global_element_count > 0) {
+    if (m_globalElementCount > 0) {
       get_local_node_list();
       get_shared_node_list();
     }
@@ -569,7 +609,7 @@ namespace Ioss {
       // ... Narrowing.  See if data range (#elements and/or #nodes) fits in 32-bit idx_t
       // Can determine this by checking the pointer[
       assert(sizeof(idx_t) == 4);
-      if (globalElementCount >= INT_MAX || globalNodeCount >= INT_MAX || m_pointer[elementCount] >= INT_MAX) {
+      if (m_globalElementCount >= INT_MAX || m_globalNodeCount >= INT_MAX || m_pointer[elementCount] >= INT_MAX) {
 	// Can't narrow...
 	std::ostringstream errmsg;
 	errmsg << "ERROR: The metis/parmetis libraries being used with this application only support\n"
