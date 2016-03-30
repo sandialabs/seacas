@@ -1249,6 +1249,7 @@ namespace Ioex {
 	block->field_describe(Ioss::Field::TRANSIENT, &results_fields);
 	block->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
+	for (auto &field_name : results_fields) {
 	  Ioss::Field field = block->get_field(field_name);
 	  const Ioss::VariableType *var_type = field.transformed_storage();
 	  Ioss::Field::BasicType ioss_type = field.get_type();
@@ -1256,7 +1257,7 @@ namespace Ioex {
 	  int re_im = 1;
 	  if (ioss_type == Ioss::Field::COMPLEX) {
 	    re_im = 2;
-}
+	  }
 	  for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
 	    field_name = field.get_name();
 	    if (re_im == 2) {
