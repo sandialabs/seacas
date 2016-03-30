@@ -32,25 +32,26 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DatabaseIO.h>
+#include <Ioss_EntityBlock.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Region.h>
-#include <Ioss_Utils.h>
 #include <Ioss_FileInfo.h>
-#include <assert.h>
-#include <stddef.h>
+#include <Ioss_Utils.h>
+#include <cassert>
 #include <float.h>
+#include <stddef.h>
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <set>
 #include <string>
+#include <tokenize.h>
 #include <utility>
 #include <vector>
-#include <tokenize.h>
 #include <sys/stat.h>
 #include <cstring>
 
@@ -82,7 +83,7 @@ namespace {
 }
 
     std::string ge_name = ge->name();
-    std::string field_name = field.get_name();
+    const std::string& field_name = field.get_name();
     unsigned int hash_code = Ioss::Utils::hash(ge_name) + Ioss::Utils::hash(field_name);
     unsigned int max_hash  = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MAX);
     unsigned int min_hash  = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MIN);
@@ -112,7 +113,7 @@ namespace {
   }
 
   template <typename INT>
-  void calc_bounding_box(size_t ndim, size_t node_count, size_t elem_count,
+  void calc_bounding_box(size_t ndim, size_t node_count,
 			 std::vector<double> coordinates, std::vector<INT> connectivity,
 			 double &xmin, double &ymin, double &zmin,
 			 double &xmax, double &ymax, double &zmax)
@@ -153,7 +154,7 @@ namespace {
       ymin = ymax = 0.0;
     }
   }
-}
+} // namespace
 
 namespace Ioss {
   DatabaseIO::DatabaseIO(Region* region, std::string  filename,
@@ -284,7 +285,7 @@ namespace Ioss {
   {
     IfDatabaseExistsBehavior exists = DB_OVERWRITE;
     if (properties.exists("APPEND_OUTPUT")) {
-      exists = (IfDatabaseExistsBehavior)properties.get("APPEND_OUTPUT").get_int();
+      exists = static_cast<IfDatabaseExistsBehavior>(properties.get("APPEND_OUTPUT").get_int());
     }
     return exists;
   }
@@ -414,16 +415,16 @@ namespace Ioss {
   }
 
   template <typename T>
-  void DatabaseIO::create_group(EntityType type, const std::string &type_name,
-				const std::vector<std::string> &group_spec, const T* set_type)
+  void DatabaseIO::create_group(EntityType  /*type*/, const std::string &type_name,
+				const std::vector<std::string> &group_spec, const T*  /*set_type*/)
   {
     IOSS_WARNING << "WARNING: Grouping of " << type_name << " sets is not yet implemented.\n"
 		 << "         Skipping the creation of " << type_name << " set '" << group_spec[0] << "'\n\n";
   }
 
   template <>
-  void DatabaseIO::create_group(EntityType type, const std::string &type_name,
-				const std::vector<std::string> &group_spec, const SideSet* set_type)
+  void DatabaseIO::create_group(EntityType type, const std::string & /*type_name*/,
+				const std::vector<std::string> &group_spec, const SideSet*  /*set_type*/)
   {
     // Not generalized yet... This only works for T == SideSet
     if (type != SIDESET) {
@@ -616,12 +617,12 @@ namespace Ioss {
 	if (block->get_database()->int_byte_size_api() == 8) {
 	  std::vector<int64_t> connectivity;
 	  block->get_field_data("connectivity_raw", connectivity);
-	  calc_bounding_box(ndim, nnode, nelem, coordinates, connectivity,
+	  calc_bounding_box(ndim, nnode, coordinates, connectivity,
 			    xmin, ymin, zmin, xmax, ymax, zmax);
 	} else {
 	  std::vector<int> connectivity;
 	  block->get_field_data("connectivity_raw", connectivity);
-	  calc_bounding_box(ndim, nnode, nelem, coordinates, connectivity,
+	  calc_bounding_box(ndim, nnode, coordinates, connectivity,
 			    xmin, ymin, zmin, xmax, ymax, zmax);
 	}
 
@@ -659,7 +660,7 @@ namespace {
   {
     if (initial_time < 0.0) {
       gettimeofday(&tp, nullptr);
-      initial_time = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
+      initial_time = static_cast<double>(tp.tv_sec)+(1.e-6)*tp.tv_usec;
     }
 
     if (entity != nullptr) {
@@ -667,14 +668,14 @@ namespace {
       if (single_proc_only) {
 	all_sizes.push_back(field.get_size());
       } else {
-	util.gather((int64_t)field.get_size(), all_sizes);
+	util.gather(static_cast<int64_t>(field.get_size()), all_sizes);
       }
 
       if (util.parallel_rank() == 0 || single_proc_only) {
 	std::string name = entity->name();
 	std::ostringstream strm;
 	gettimeofday(&tp, nullptr);
-	double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
+	double time_now = static_cast<double>(tp.tv_sec)+(1.e-6)*tp.tv_usec;
 	strm << symbol << " [" << std::fixed << std::setprecision(3)
 	     << time_now-initial_time << "]\t";
 
@@ -699,11 +700,11 @@ namespace {
       if (util.parallel_rank() == 0 || single_proc_only) {
 	std::ostringstream strm;
 	gettimeofday(&tp, nullptr);
-	double time_now = (double)tp.tv_sec+(1.e-6)*tp.tv_usec;
+	double time_now = static_cast<double>(tp.tv_sec)+(1.e-6)*tp.tv_usec;
 	strm << symbol << " [" << std::fixed << std::setprecision(3)
 	     << time_now-initial_time << "]\n";
 	std::cout << strm.str();
       }
     }
   }
-}
+}  // namespace

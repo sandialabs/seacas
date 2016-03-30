@@ -33,7 +33,7 @@
 #ifndef IOSS_Ioss_NodeBlock_h
 #define IOSS_Ioss_NodeBlock_h
 
-#include <Ioss_EntityBlock.h>           // for EntityBlock
+#include <Ioss_EntityBlock.h>
 #include <stddef.h>                     // for size_t
 #include <stdint.h>                     // for int64_t
 #include <string>                       // for string
