@@ -66,7 +66,7 @@ typedef void ZOLTAN_VOID_FN(void);
 extern "C" {
 #endif
 
-#define ZOLTAN_VERSION_NUMBER   3.82
+#define ZOLTAN_VERSION_NUMBER   3.83
 
 /*****************************************************************************
  *  Data types and functions describing the interface between the
@@ -2342,6 +2342,27 @@ extern int Zoltan_Set_Fn(
   ZOLTAN_FN_TYPE fn_type,
   ZOLTAN_VOID_FN *fn_ptr,
   void *data_ptr
+);
+
+/*****************************************************************************/
+/*
+ *  General function to retrieve a pointer to a given Zoltan callback function.
+ *  Input:
+ *    zz                  --  Pointer to a Zoltan structure.
+ *    fn_type             --  Enum type indicating the function to be
+ *                            retrieved.
+ *  Output:
+ *    fn_ptr              --  Pointer to the function retrieved.
+ *    data_ptr            --  Pointer to data associated with the function.
+ *                            May be NULL.
+ *  Returned value:       --  Error code
+ */
+
+extern int Zoltan_Get_Fn(
+  struct Zoltan_Struct *zz,
+  ZOLTAN_FN_TYPE fn_type,
+  ZOLTAN_VOID_FN **fn_ptr,
+  void **data_ptr
 );
 
 /*

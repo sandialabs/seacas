@@ -505,7 +505,8 @@ static int rcb_fn(
   if ((wgtflag > 1) && (pivot_choice == PIVOT_CHOICE_RANDOM)){
     /* If RANDOM turns out to be wanted for wgtflag>1, we can implement it */
     ZOLTAN_PRINT_WARN(proc, yo, 
-      "random_pivots turned off because it is not implemented for multiple weights");
+      "random_pivots turned off because it is not implemented for "
+      "multiple weights");
     pivot_choice = PIVOT_CHOICE_BISECTION;
   }
 
@@ -525,7 +526,8 @@ static int rcb_fn(
                                     use_ids, gen_tree);
 
   if (ierr < 0) {
-    ZOLTAN_PRINT_ERROR(proc, yo, "Error returned from Zoltan_RCB_Build_Structure.");
+    ZOLTAN_PRINT_ERROR(proc, yo,
+      "Error returned from Zoltan_RCB_Build_Structure.");
     goto End;
   }
 
@@ -904,26 +906,30 @@ static int rcb_fn(
       if (wgtflag <= 1){
         if (pivot_choice == PIVOT_CHOICE_BISECTION){
           if (!Zoltan_RB_find_median(          
-               zz->Tflops_Special, pts, dotpt->Weight, dotpt->uniformWeight, dotmark, dotnum, proc, 
+               zz->Tflops_Special, pts, dotpt->Weight, dotpt->uniformWeight,
+               dotmark, dotnum, proc, 
                fraclo, local_comm, &valuehalf, first_guess,
                nprocs, old_nprocs, proclower, old_nparts, 
                wgtflag, rcbbox->lo[dim], rcbbox->hi[dim], 
                weight[0], weightlo, weighthi,
                dotlist, rectilinear_blocks, average_cuts)) {
-            ZOLTAN_PRINT_ERROR(proc, yo,"Error returned from Zoltan_RB_find_median.");
+            ZOLTAN_PRINT_ERROR(proc, yo,
+               "Error returned from Zoltan_RB_find_median.");
             ierr = ZOLTAN_FATAL;
             goto End;
           }
         }
         else{
           if (!Zoltan_RB_find_median_randomized(
-               zz->Tflops_Special, pts, dotpt->Weight, dotpt->uniformWeight, dotmark, dotnum, proc, 
+               zz->Tflops_Special, pts, dotpt->Weight, dotpt->uniformWeight,
+               dotmark, dotnum, proc, 
                fraclo, local_comm, &valuehalf, first_guess,
                nprocs, old_nprocs, proclower, old_nparts, 
                wgtflag, rcbbox->lo[dim], rcbbox->hi[dim], 
                weight[0], weightlo, weighthi,
                dotlist, rectilinear_blocks, average_cuts)) {
-            ZOLTAN_PRINT_ERROR(proc, yo,"Error returned from Zoltan_RB_find_median_randomized.");
+            ZOLTAN_PRINT_ERROR(proc, yo,
+               "Error returned from Zoltan_RB_find_median_randomized.");
             ierr = ZOLTAN_FATAL;
             goto End;
           }
@@ -931,7 +937,8 @@ static int rcb_fn(
       }
       else { 
         if (Zoltan_RB_find_bisector(
-               zz, zz->Tflops_Special, pts, dotpt->Weight, dotpt->uniformWeight, dotmark, dotnum, 
+               zz, zz->Tflops_Special, pts, dotpt->Weight, dotpt->uniformWeight,
+               dotmark, dotnum, 
                wgtflag, mcnorm, fraclo, local_comm, 
                &valuehalf, first_guess,
                old_nprocs, proclower, old_nparts, 
@@ -939,7 +946,8 @@ static int rcb_fn(
                weight, weightlo, weighthi, &norm_max,
                dotlist, rectilinear_blocks, average_cuts)
           != ZOLTAN_OK) {
-          ZOLTAN_PRINT_ERROR(proc, yo,"Error returned from Zoltan_RB_find_bisector.");
+          ZOLTAN_PRINT_ERROR(proc, yo,
+                             "Error returned from Zoltan_RB_find_bisector.");
           ierr = ZOLTAN_FATAL;
           goto End;
         }
@@ -947,7 +955,7 @@ static int rcb_fn(
         /* test for better balance */
         if ((!one_cut_dir) && 
             ((norm_best<0.) ||
-              (!tfs_disregard_results && (norm_max < norm_best)))) {
+             (!tfs_disregard_results && (norm_max < norm_best)))) {
           norm_best = norm_max; 
           dim_best = dim;
           for (j=0; j<wgtdim; j++){
@@ -959,11 +967,12 @@ static int rcb_fn(
           valuehalf_best = valuehalf;
         }
         if (zz->Debug_Level >= ZOLTAN_DEBUG_ALL){
-          printf("[%1d] Debug: cut dim=%1d, norm_max=%f, dim_best=%1d, norm_best=%f, cut value=%f\n", 
-            proc, dim, norm_max, dim_best, norm_best, valuehalf);
+          printf("[%1d] Debug: cut dim=%1d, norm_max=%f, dim_best=%1d, "
+                 "norm_best=%f, cut value=%f\n", 
+                 proc, dim, norm_max, dim_best, norm_best, valuehalf);
           if (wgtflag>1)
             printf("[%1d] Debug: weightlo=(%f,%f), weighthi=(%f,%f)\n",
-              proc, weightlo[0], weightlo[1],  weighthi[0], weighthi[1]);
+                   proc, weightlo[0], weightlo[1],  weighthi[0], weighthi[1]);
         }
       }
       if (breakflag) break; /* if one_cut_dir is true */
