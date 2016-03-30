@@ -2,14 +2,14 @@
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
-//         
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright
 //       notice, this list of conditions and the following disclaimer.
-// 
+//
 //     * Redistributions in binary form must reproduce the above
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
@@ -17,7 +17,7 @@
 //     * Neither the name of Sandia Corporation nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -80,10 +80,10 @@ namespace Ioss {
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
       //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
     virtual bool ok(bool write_message = false, std::string *error_message=nullptr,
-		    int *bad_count=nullptr) const
+                    int *bad_count=nullptr) const
     {
       if (bad_count != nullptr){
-	*bad_count = 0;
+        *bad_count = 0;
       }
       return dbState != Ioss::STATE_INVALID;
     }
@@ -130,12 +130,12 @@ namespace Ioss {
     virtual bool open_group(const std::string &group_name) {return false;}
 
     //! If a database type supports groups, create the specified
-    // group as a child of the current group. The name of the 
+    // group as a child of the current group. The name of the
     // group must not contain a '/' character. If the command
     // is successful, then the group will be the active group
     // for all subsequent writes to the database.
     virtual bool create_subgroup(const std::string &group_name) {return false;}
-			   
+
     virtual bool begin(Ioss::State state) = 0;
     virtual bool   end(Ioss::State state) = 0;
 
@@ -157,7 +157,7 @@ namespace Ioss {
     // QA Records:
     const std::vector<std::string> &get_qa_records() const { return qaRecords;}
     void add_qa_record(const std::string &code, const std::string &code_qa,
-		       const std::string &date, const std::string &time);
+                       const std::string &date, const std::string &time);
 
     bool get_logging() const {return doLogging && !singleProcOnly;}
     void set_logging(bool on_off) {doLogging = on_off;}
@@ -207,7 +207,7 @@ namespace Ioss {
     virtual void compute_block_membership(Ioss::SideBlock *efblock, std::vector<std::string> &block_membership) const {}
 
     AxisAlignedBoundingBox get_bounding_box(const Ioss::ElementBlock *eb) const;
-    
+
     int  int_byte_size_api() const; //! Returns 4 or 8
     virtual void set_int_byte_size_api(Ioss::DataSize size) const;
 
@@ -263,9 +263,9 @@ namespace Ioss {
     void set_overlay_count(int count) const {overlayCount = count;}
 
     void set_time_scale_factor(double factor) {timeScaleFactor = factor;}
-    
+
     const Ioss::ParallelUtils &util() const {return util_;}
-    
+
     int parallel_rank() const {return myProcessor;} /* Return processor that this mesh db is on */
 
     protected:
@@ -358,7 +358,7 @@ namespace Ioss {
       scaleFactor.  If the datbase times are 0.1, 0.2, 0.3 and the
       scaleFactor is 20, then the application will think that the
       times read are 20, 40, 60.
-      
+
       If specified for an output database, then the analysis time
       is divided by the scaleFactor time prior to output.
     */
@@ -437,7 +437,7 @@ namespace Ioss {
     DatabaseIO(const DatabaseIO&); // Do not implement
     DatabaseIO& operator=(const DatabaseIO&); // Do not implement
 
-    
+
     mutable std::map<std::string, AxisAlignedBoundingBox> elementBlockBoundingBoxes;
 
     Ioss::ParallelUtils util_; // Encapsulate parallel and other utility functions.
@@ -446,7 +446,7 @@ namespace Ioss {
     bool isParallelConsistent; // True if application will make field data get/put calls parallel consistently.
                                // True is default and required for parallel-io databases.
                                // Even if false, metadata operations must be called by all processors
-    
+
     bool singleProcOnly; // True if history or heartbeat which is only written from proc 0...
     bool doLogging; // True if logging field input/output
     bool useGenericCanonicalName; // True if "block_id" is used as canonical name instead of the name
