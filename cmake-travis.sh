@@ -1,7 +1,6 @@
 #! /usr/bin/env sh
 
 cmake \
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_CXX_FLAGS="-Wall -pedantic -pthread" \
   -DCMAKE_C_FLAGS="-Wall -pedantic" \
