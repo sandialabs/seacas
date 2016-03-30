@@ -3,14 +3,14 @@
  * Sandia Corporation. Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software.
- *         
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
@@ -18,7 +18,7 @@
  *     * Neither the name of Sandia Corporation nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -55,7 +55,7 @@ namespace Ioss { class SideSet; }
 typedef int64_t entity_id;
 
 namespace Ioss {
-  
+
 
 
 }
@@ -98,8 +98,8 @@ namespace Ioex {
     {}
 
     NodeBlock(const NodeBlock &other) : name(other.name), id(other.id),
-					entityCount(other.entityCount), localOwnedCount(other.localOwnedCount),
-					attributeCount(other.attributeCount), procOffset(other.procOffset)
+                                        entityCount(other.entityCount), localOwnedCount(other.localOwnedCount),
+                                        attributeCount(other.attributeCount), procOffset(other.procOffset)
     {}
 
     NodeBlock(const Ioss::NodeBlock &other);
@@ -128,8 +128,8 @@ namespace Ioex {
     }
 
     EdgeBlock(const EdgeBlock &other) : name(other.name), id(other.id), entityCount(other.entityCount),
-					nodesPerEntity(other.nodesPerEntity), attributeCount(other.attributeCount),
-					procOffset(other.procOffset)
+                                        nodesPerEntity(other.nodesPerEntity), attributeCount(other.attributeCount),
+                                        procOffset(other.procOffset)
     {
       std::strcpy(elType, other.elType);
     }
@@ -161,8 +161,8 @@ namespace Ioex {
     }
 
     FaceBlock(const FaceBlock &other) : name(other.name), id(other.id), entityCount(other.entityCount),
-					nodesPerEntity(other.nodesPerEntity), edgesPerEntity(other.edgesPerEntity),
-					attributeCount(other.attributeCount), procOffset(other.procOffset)
+                                        nodesPerEntity(other.nodesPerEntity), edgesPerEntity(other.edgesPerEntity),
+                                        attributeCount(other.attributeCount), procOffset(other.procOffset)
     {
       std::strcpy(elType, other.elType);
     }
@@ -190,19 +190,19 @@ namespace Ioex {
   struct ElemBlock
   {
     ElemBlock() : name(""), id(0), entityCount(0),
-		  nodesPerEntity(0), edgesPerEntity(0), facesPerEntity(0),
-		  attributeCount(0), offset_(-1), procOffset(0)
+                  nodesPerEntity(0), edgesPerEntity(0), facesPerEntity(0),
+                  attributeCount(0), offset_(-1), procOffset(0)
     {
       std::strcpy(elType, "");
     }
 
     ElemBlock(const ElemBlock &other) : name(other.name), id(other.id), entityCount(other.entityCount),
-					nodesPerEntity(other.nodesPerEntity),
-					edgesPerEntity(other.edgesPerEntity),
-					facesPerEntity(other.facesPerEntity),
-					attributeCount(other.attributeCount),
-					offset_(other.offset_),
-					procOffset(other.procOffset)
+                                        nodesPerEntity(other.nodesPerEntity),
+                                        edgesPerEntity(other.edgesPerEntity),
+                                        facesPerEntity(other.facesPerEntity),
+                                        attributeCount(other.attributeCount),
+                                        offset_(other.offset_),
+                                        procOffset(other.procOffset)
     {
       std::strcpy(elType, other.elType);
     }
@@ -232,9 +232,9 @@ namespace Ioex {
   {
     NodeSet() : name(""), id(0), entityCount(0), localOwnedCount(0), dfCount(0), procOffset(0) { }
     NodeSet(const NodeSet &other) : name(other.name), id(other.id),
-				    entityCount(other.entityCount), localOwnedCount(other.localOwnedCount),
-				    attributeCount(other.attributeCount), dfCount(other.dfCount),
-				    procOffset(other.procOffset) {}
+                                    entityCount(other.entityCount), localOwnedCount(other.localOwnedCount),
+                                    attributeCount(other.attributeCount), dfCount(other.dfCount),
+                                    procOffset(other.procOffset) {}
     NodeSet(const Ioss::NodeSet &other);
     bool operator==(const NodeSet& /*other*/) const;
     bool operator!=(const NodeSet& other) const {return !(*this == other);}
@@ -252,8 +252,8 @@ namespace Ioex {
   {
     EdgeSet() : name(""), id(0), entityCount(0), dfCount(0), procOffset(0) { }
     EdgeSet(const EdgeSet &other) : name(other.name), id(other.id), entityCount(other.entityCount),
-				    attributeCount(other.attributeCount), dfCount(other.dfCount),
-				    procOffset(other.procOffset) {}
+                                    attributeCount(other.attributeCount), dfCount(other.dfCount),
+                                    procOffset(other.procOffset) {}
     EdgeSet(const Ioss::EdgeSet &other);
     bool operator==(const EdgeSet& /*other*/) const;
     bool operator!=(const EdgeSet& other) const {return !(*this == other);}
@@ -270,8 +270,8 @@ namespace Ioex {
   {
     FaceSet() : name(""), id(0), entityCount(0), dfCount(0), procOffset(0) { }
     FaceSet(const FaceSet &other) : name(other.name), id(other.id), entityCount(other.entityCount),
-				    attributeCount(other.attributeCount), dfCount(other.dfCount),
-				    procOffset(other.procOffset) {}
+                                    attributeCount(other.attributeCount), dfCount(other.dfCount),
+                                    procOffset(other.procOffset) {}
     FaceSet(const Ioss::FaceSet &other);
     bool operator==(const FaceSet& /*other*/) const;
     bool operator!=(const FaceSet& other) const {return !(*this == other);}
@@ -288,8 +288,8 @@ namespace Ioex {
   {
     ElemSet() : name(""), id(0), entityCount(0), dfCount(0), procOffset(0) { }
     ElemSet(const ElemSet &other) : name(other.name), id(other.id), entityCount(other.entityCount),
-				    attributeCount(other.attributeCount), dfCount(other.dfCount),
-				    procOffset(other.procOffset) {}
+                                    attributeCount(other.attributeCount), dfCount(other.dfCount),
+                                    procOffset(other.procOffset) {}
     ElemSet(const Ioss::ElementSet &other);
     bool operator==(const ElemSet& /*other*/) const;
     bool operator!=(const ElemSet& other) const {return !(*this == other);}
@@ -333,10 +333,10 @@ namespace Ioex {
   struct CommunicationMetaData
   {
     CommunicationMetaData() : processorId(0), processorCount(0),
-			      globalNodes(0), globalElements(0),
-			      globalElementBlocks(0), globalNodeSets(0), globalSideSets(0),
-			      nodesInternal(0), nodesBorder(0), nodesExternal(0),
-			      elementsInternal(0), elementsBorder(0), outputNemesis(false) {}
+                              globalNodes(0), globalElements(0),
+                              globalElementBlocks(0), globalNodeSets(0), globalSideSets(0),
+                              nodesInternal(0), nodesBorder(0), nodesExternal(0),
+                              elementsInternal(0), elementsBorder(0), outputNemesis(false) {}
 
     std::vector<CommunicationMap> nodeMap;
     std::vector<CommunicationMap> elementMap;
@@ -376,26 +376,26 @@ namespace Ioex {
       {}
 
       Mesh(int dim, char* the_title, bool file_pp)
-	:  dimensionality(dim), file_per_processor(file_pp)
-	{
-	  std::strncpy(title, the_title, MAX_LINE_LENGTH+1);
-	  title[MAX_LINE_LENGTH] = '\0';
-	}
+        :  dimensionality(dim), file_per_processor(file_pp)
+        {
+          std::strncpy(title, the_title, MAX_LINE_LENGTH+1);
+          title[MAX_LINE_LENGTH] = '\0';
+        }
 
-	char title[MAX_LINE_LENGTH+1];
-	int dimensionality;
-	bool file_per_processor;
-	
-	std::vector<NodeBlock> nodeblocks;
-	std::vector<EdgeBlock> edgeblocks;
-	std::vector<FaceBlock> faceblocks;
-	std::vector<ElemBlock> elemblocks;
-	std::vector<NodeSet>   nodesets;
-	std::vector<EdgeSet>   edgesets;
-	std::vector<FaceSet>   facesets;
-	std::vector<ElemSet>   elemsets;
-	std::vector<SideSet>   sidesets;
-	CommunicationMetaData  comm;
+        char title[MAX_LINE_LENGTH+1];
+        int dimensionality;
+        bool file_per_processor;
+
+        std::vector<NodeBlock> nodeblocks;
+        std::vector<EdgeBlock> edgeblocks;
+        std::vector<FaceBlock> faceblocks;
+        std::vector<ElemBlock> elemblocks;
+        std::vector<NodeSet>   nodesets;
+        std::vector<EdgeSet>   edgesets;
+        std::vector<FaceSet>   facesets;
+        std::vector<ElemSet>   elemsets;
+        std::vector<SideSet>   sidesets;
+        CommunicationMetaData  comm;
   };
 
   class Internals
@@ -422,7 +422,7 @@ namespace Ioex {
     void get_global_counts(Mesh &mesh);
 
     int put_metadata(const Mesh &mesh,
-		     const CommunicationMetaData &comm);
+                     const CommunicationMetaData &comm);
     int put_metadata(const std::vector<NodeBlock> &nodeblocks);
     int put_metadata(const std::vector<EdgeBlock> &blocks);
     int put_metadata(const std::vector<FaceBlock> &blocks);
@@ -449,13 +449,13 @@ namespace Ioex {
     int put_non_define_data(const std::vector<SideSet> &sidesets);
 
     int max_name_length() const {return maximumNameLength;}
-    
+
     int exodusFilePtr;
     int nodeMapVarID[3];
     int elementMapVarID[2];
     int commIndexVar;
     int elemCommIndexVar;
-    int maximumNameLength; 
+    int maximumNameLength;
     Ioss::ParallelUtils parallelUtil;
   };
 }
