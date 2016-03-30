@@ -66,20 +66,14 @@ namespace {
     }
 
     if (wdim) {
-      for (size_t i = 0; i < element_count; i++) {
-        wgts[i] = 1.0;
-      }
+      std::fill(wgts, wgts+element_count, 1.0);
     }
 
     if (ngid_ent == 1) {
-      for (size_t i = 0; i < element_count; i++) {
-        gids[i] = element_offset + i;
-      }
+      std::iota(gids, gids+element_count, element_offset);
     } else if (ngid_ent == 2){
       int64_t* global_ids = (int64_t*)gids;
-      for (size_t i = 0; i < element_count; i++) {
-        global_ids[i] = element_offset + i;
-      }
+      std::iota(global_ids, global_ids+element_count, element_offset);
     } else {
       *ierr = ZOLTAN_FATAL;
     }
@@ -472,19 +466,19 @@ namespace Iocgns {
     offset = 0;
     sum = 0; // Size of adjacency vector.
 
-    for (int block=0; block < block_count; block++) {
+    for (auto &block : el_blocks) {
       // Range of elements in element block b [)
       size_t b_start = offset;  // offset is index of first element in this block...
-      offset += el_blocks[block].file_count();
-      size_t b_end   = b_start + el_blocks[block].file_count();
+      offset += block.file_count();
+      size_t b_end   = b_start + block.file_count();
 
       if (b_start < p_end && p_start < b_end) {
         // Some of this blocks elements are on this processor...
         size_t overlap = std::min(b_end, p_end) - std::max(b_start, p_start);
-        el_blocks[block].fileCount = overlap;
-        size_t element_nodes = el_blocks[block].nodesPerEntity;
-        int zone = el_blocks[block].zone_;
-        int section = el_blocks[block].section_;
+        block.fileCount = overlap;
+        size_t element_nodes = block.nodesPerEntity;
+        int zone = block.zone_;
+        int section = block.section_;
 
         // Get the connectivity (raw) for this portion of elements...
         std::vector<cgsize_t> connectivity(overlap*element_nodes);
@@ -492,15 +486,15 @@ namespace Iocgns {
         INT blk_end   = blk_start + overlap -1;
 #if DEBUG_OUTPUT
         std::cerr << "Processor " << myProcessor << " has "
-                  << overlap << " elements on element block " << block << "\t("
+                  << overlap << " elements on element block " << block.name() << "\t("
                   << blk_start << " to " << blk_end << ")\n";
 #endif
-        el_blocks[block].fileSectionOffset = blk_start;
+        block.fileSectionOffset = blk_start;
         cg_elements_partial_read(filePtr, base, zone, section,
                                  blk_start, blk_end,
                                  TOPTR(connectivity), nullptr);
         size_t el = 0;
-        INT zone_offset = el_blocks[block].zoneNodeOffset;
+        INT zone_offset = block.zoneNodeOffset;
 
         for (size_t elem = 0; elem < overlap; elem++) {
           decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
@@ -512,7 +506,7 @@ namespace Iocgns {
         sum += overlap * element_nodes;
       }
       else {
-        el_blocks[block].fileCount = 0;
+        block.fileCount = 0;
       }
     }
     decomposition.m_pointer.push_back(decomposition.m_adjacency.size());
