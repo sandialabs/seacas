@@ -194,7 +194,6 @@ namespace Iogn {
     int64_t nodeCount;
     int64_t elementCount;
 
-    int nodeBlockCount;
     int elementBlockCount;
     int nodesetCount;
     int sidesetCount;
