@@ -972,18 +972,17 @@ namespace Iopx {
       int64_t id =        eb->get_property("id").get_int();
       int element_nodes = eb->get_property("topology_node_count").get_int();
       int64_t my_element_count = eb->get_property("entity_count").get_int();
-      int order = eb->get_property("original_block_order").get_int();
       if (my_element_count > 0) {
         if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
           std::vector<int64_t> conn(my_element_count * element_nodes);
-          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
+          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, blk_position, element_nodes);
 
           for (auto node : conn) {
             node_used[node-1] = blk_position+1;
           }
         } else {
           std::vector<int> conn(my_element_count * element_nodes);
-          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
+          decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, blk_position, element_nodes);
 
           for (auto node : conn) {
             node_used[node-1] = blk_position+1;
