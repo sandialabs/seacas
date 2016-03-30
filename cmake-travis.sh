@@ -3,8 +3,8 @@
 cmake \
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
   -DBUILD_SHARED_LIBS:BOOL=ON \
-  -DCMAKE_CXX_FLAGS="-Wall -pedantic" \
-  -DCMAKE_CC_FLAGS="-Wall -pedantic" \
+  -DCMAKE_CXX_FLAGS="-Wall -pedantic -pthread" \
+  -DCMAKE_C_FLAGS="-Wall -pedantic" \
   -DHDF5_ROOT:PATH=/usr/ \
   -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
   -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
