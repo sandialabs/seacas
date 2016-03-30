@@ -654,7 +654,7 @@ lanczos_SO_float (
 		    time = lanc_seconds();
 		    printf("  j %3d; goodlim lft %2d, rgt %2d; list ",
 			   j, left_goodlim, right_goodlim);
-		    solistout_float(solist, n, ngood, j);
+		    solistout_float(solist, ngood, j);
 		    printf("---------------------end of iteration---------------------\n\n");
 		    debug_time += lanc_seconds() - time;
 		}
