@@ -38,10 +38,10 @@
 /* use by SALSA.                                                            */
 /*--------------------------------------------------------------------------*/
 
-#include <stdint.h>                     // for int64_t
-#include <stdio.h>                      // for printf, fprintf, stderr, etc
-#include <stdlib.h>                     // for exit
-#include <string.h>                     // for strcpy
+#include <cstdint>                     // for int64_t
+#include <cstdio>                      // for printf, fprintf, stderr, etc
+#include <cstdlib>                     // for exit
+#include <cstring>                     // for strcpy
 #include <unistd.h>                     // for getopt, optarg, optind
 #include "add_to_log.h"                 // for add_to_log
 #include "exodusII.h"                   // for ex_opts, ex_int64_status, etc

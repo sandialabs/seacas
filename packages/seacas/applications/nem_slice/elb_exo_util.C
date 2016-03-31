@@ -37,12 +37,12 @@
 
 #include <vector>
 #include <string>
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for printf, nullptr, sprintf
-#include <stdlib.h>                     // for malloc, free, calloc
-#include <string.h>                     // for strlen
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for printf, nullptr, sprintf
+#include <cstdlib>                     // for malloc, free, calloc
+#include <cstring>                     // for strlen
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 #include "elb_exo.h"
 #include "elb.h"                  // for Weight_Description<INT>, etc
