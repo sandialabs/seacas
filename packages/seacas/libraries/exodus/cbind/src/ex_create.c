@@ -397,7 +397,7 @@ int ex_create_int (const char *path,
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
     sprintf(errmsg,"ERROR: There is an existing file already using the file id %d which was also assigned to file %s.\n\tWas nc_close() called instead of ex_close() on an open Exodus file?\n", exoid, path);
-    ex_err("ex_create",errmsg,exerrval);
+    ex_err(routine,errmsg,exerrval);
     nc_close(exoid);
     return (EX_FATAL);
   }
@@ -510,7 +510,7 @@ int ex_create_int (const char *path,
       exerrval = status;
       sprintf(errmsg,
 	      "ERROR: failed to add int64_status attribute in file id %d",exoid);
-      ex_err("ex_put_init_ext",errmsg,exerrval);
+      ex_err(routine,errmsg,exerrval);
       return (EX_FATAL);
     }
   }

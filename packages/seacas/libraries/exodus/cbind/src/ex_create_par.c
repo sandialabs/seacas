@@ -550,7 +550,7 @@ int ex_create_par_int (const char *path,
       exerrval = status;
       sprintf(errmsg,
 	      "ERROR: failed to add int64_status attribute in file id %d",exoid);
-      ex_err("ex_put_init_ext",errmsg,exerrval);
+      ex_err(routine,errmsg,exerrval);
       return (EX_FATAL);
     }
   }

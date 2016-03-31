@@ -221,7 +221,7 @@ int ex_put_num_map ( int exoid,
     sprintf(errmsg,
 	    "Internal ERROR: unrecognized map type in switch: %d in file id %d",
 	    map_type,exoid);
-    ex_err("ex_putt_n_one_attr",errmsg,EX_MSG);
+    ex_err("ex_put_num_map",errmsg,EX_MSG);
     return (EX_FATAL);
   }
 
