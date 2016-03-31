@@ -2,14 +2,14 @@
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
-//         
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright
 //       notice, this list of conditions and the following disclaimer.
-// 
+//
 //     * Redistributions in binary form must reproduce the above
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
@@ -17,7 +17,7 @@
 //     * Neither the name of Sandia Corporation nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -55,8 +55,8 @@ Ioss::GroupingEntity::GroupingEntity()
 {}
 
 Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database,
-				     const std::string& my_name,
-				     int64_t entity_count)
+                                     const std::string& my_name,
+                                     int64_t entity_count)
   : entityCount(entity_count), entityName(my_name), database_(io_database),
     entityState(STATE_CLOSED), attributeCount(0), hash_(Ioss::Utils::hash(my_name))
 {
@@ -65,7 +65,7 @@ Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database,
   properties.add(Ioss::Property("entity_count", entity_count));
 
   properties.add(Ioss::Property(this, "attribute_count",
-				Ioss::Property::INTEGER));
+                                Ioss::Property::INTEGER));
 
   if (my_name != "null_entity") {
     Ioss::Field::BasicType int_type = Ioss::Field::INTEGER;
@@ -73,7 +73,7 @@ Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database,
       int_type = field_int_type();
     }
     fields.add(Ioss::Field("ids", int_type, "scalar",
-			   Ioss::Field::MESH, entity_count));
+                           Ioss::Field::MESH, entity_count));
   }
 }
 
@@ -100,7 +100,7 @@ std::string Ioss::GroupingEntity::generic_name() const
   if (property_exists("id")) {
     id = get_property("id").get_int();
   }
-  return Ioss::Utils::encode_entity_name(short_type_string(), id);  
+  return Ioss::Utils::encode_entity_name(short_type_string(), id);
 }
 
 bool Ioss::GroupingEntity::is_alias(const std::string &my_name) const
@@ -121,9 +121,9 @@ std::string Ioss::GroupingEntity::get_filename() const
   if (database_ == nullptr) {
     return std::string();
   }
-  
-    return database_->get_filename();
-  
+
+  return database_->get_filename();
+
 }
 
 void Ioss::GroupingEntity::set_database(Ioss::DatabaseIO *io_database)
@@ -176,18 +176,18 @@ void Ioss::GroupingEntity::field_add(const Ioss::Field& new_field)
     std::string filename = get_database()->get_filename();
     std::ostringstream errmsg;
     errmsg << "IO System error: The " << type_string() << " '"
-	   << name() << "' has a size of "
-	   << entity_size << ",\nbut the field '" << new_field.get_name()
-	   << "' which is being output on that entity has a size of " << field_size
-	   << "\non database '" << filename
-	   << "'.\nThe sizes must match.  This is an application error that should be reported.";
+           << name() << "' has a size of "
+           << entity_size << ",\nbut the field '" << new_field.get_name()
+           << "' which is being output on that entity has a size of " << field_size
+           << "\non database '" << filename
+           << "'.\nThe sizes must match.  This is an application error that should be reported.";
     IOSS_ERROR(errmsg);
   }
   fields.add(new_field);
 }
 
 int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
-					void *data, size_t data_size) const
+                                         void *data, size_t data_size) const
 {
   verify_field_exists(field_name, "input");
 
@@ -197,13 +197,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   // At this point, transform the field if specified...
   if (retval >= 0) {
     field.transform(data);
-}
+  }
 
   return retval;
 }
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
-					void *data, size_t data_size) const
+                                         void *data, size_t data_size) const
 {
   verify_field_exists(field_name, "input");
 
@@ -213,13 +213,13 @@ int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
 }
 
 int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
-					 std::vector<double>    &data) const
+                                         std::vector<double>    &data) const
 {
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::REAL);
-  
+
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(double);
   int retval = internal_get_field_data(field, TOPTR(data), data_size);
@@ -227,19 +227,19 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   // At this point, transform the field if specified...
   if (retval >= 0) {
     field.transform(TOPTR(data));
-}
+  }
 
   return retval;
 }
 
 int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
-					 std::vector<int>     &data) const
+                                         std::vector<int>     &data) const
 {
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::INTEGER);
-  
+
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(int);
   int retval = internal_get_field_data(field, TOPTR(data), data_size);
@@ -247,19 +247,19 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   // At this point, transform the field if specified...
   if (retval >= 0) {
     field.transform(TOPTR(data));
-}
+  }
 
   return retval;
 }
 
 int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
-					 std::vector<int64_t> &data) const
+                                         std::vector<int64_t> &data) const
 {
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::INT64);
-  
+
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(int64_t);
   int retval = internal_get_field_data(field, TOPTR(data), data_size);
@@ -267,19 +267,19 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   // At this point, transform the field if specified...
   if (retval >= 0) {
     field.transform(TOPTR(data));
-}
+  }
 
   return retval;
 }
 
 int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
-					 std::vector<char>     &data) const
+                                         std::vector<char>     &data) const
 {
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::CHARACTER);
-  
+
   data.resize(field.raw_count() * field.raw_storage()->component_count());
   size_t data_size = data.size() * sizeof(char);
   int retval = internal_get_field_data(field, TOPTR(data), data_size);
@@ -287,13 +287,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   // At this point, transform the field if specified...
   if (retval >= 0) {
     field.transform(TOPTR(data));
-}
+  }
 
   return retval;
 }
 
 int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
-					 std::vector<Complex> &data) const
+                                         std::vector<Complex> &data) const
 
 {
   verify_field_exists(field_name, "input");
@@ -308,13 +308,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string& field_name,
   // At this point, transform the field if specified...
   if (retval >= 0) {
     field.transform(TOPTR(data));
-}
+  }
 
   return retval;
 }
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
-					 std::vector<double> &data) const
+                                         std::vector<double> &data) const
 {
   verify_field_exists(field_name, "output");
 
@@ -326,7 +326,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
 }
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
-					 std::vector<int> &data) const
+                                         std::vector<int> &data) const
 {
   verify_field_exists(field_name, "output");
 
@@ -338,7 +338,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
 }
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
-					 std::vector<int64_t> &data) const
+                                         std::vector<int64_t> &data) const
 {
   verify_field_exists(field_name, "output");
 
@@ -350,7 +350,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
 }
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
-					 std::vector<char> &data) const
+                                         std::vector<char> &data) const
 {
   verify_field_exists(field_name, "output");
 
@@ -362,7 +362,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
 }
 
 int Ioss::GroupingEntity::put_field_data(const std::string& field_name,
-					 std::vector<Complex> &data) const
+                                         std::vector<Complex> &data) const
 {
   verify_field_exists(field_name, "output");
 
@@ -385,22 +385,21 @@ void Ioss::GroupingEntity::count_attributes() const
   if (attributeCount > 0) {
     return;
   }
-  
-    // If the set has a field named "attribute", then the number of
-    // attributes is equal to the component count of that field...
-    NameList results_fields;
-    field_describe(Ioss::Field::ATTRIBUTE, &results_fields);
 
-    Ioss::NameList::const_iterator IF;
-    for (IF = results_fields.begin(); IF != results_fields.end(); ++IF) {
-      std::string field_name = *IF;
-      if (field_name != "attribute" ||
-	  (field_name == "attribute" && results_fields.size() == 1)) {
-	Ioss::Field field = get_field(field_name);
-	attributeCount += field.raw_storage()->component_count();
-      }
+  // If the set has a field named "attribute", then the number of
+  // attributes is equal to the component count of that field...
+  NameList results_fields;
+  field_describe(Ioss::Field::ATTRIBUTE, &results_fields);
+
+  Ioss::NameList::const_iterator IF;
+  for (IF = results_fields.begin(); IF != results_fields.end(); ++IF) {
+    std::string field_name = *IF;
+    if (field_name != "attribute" ||
+        (field_name == "attribute" && results_fields.size() == 1)) {
+      Ioss::Field field = get_field(field_name);
+      attributeCount += field.raw_storage()->component_count();
     }
-  
+  }
 }
 
 void Ioss::GroupingEntity::verify_field_exists(const std::string &field_name, const std::string &inout) const
@@ -409,8 +408,8 @@ void Ioss::GroupingEntity::verify_field_exists(const std::string &field_name, co
     std::string filename = get_database()->get_filename();
     std::ostringstream errmsg;
     errmsg << "\nERROR: On database '" << filename << "', Field '" << field_name
-	   << "' does not exist for " << inout << " on "
-	      << type_string() << " " << name() << "\n\n";
+           << "' does not exist for " << inout << " on "
+           << type_string() << " " << name() << "\n\n";
     IOSS_ERROR(errmsg);
   }
 }
