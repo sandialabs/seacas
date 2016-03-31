@@ -1680,7 +1680,6 @@ namespace {
     // and its name should not be used even if it is the only
     // attribute field.
     for (auto &ge : entities) {
-      const std::string& ge_name = ge->name();
       int attribute_count = ge->get_property("attribute_count").get_int();
       if (attribute_count > 0) {
 
