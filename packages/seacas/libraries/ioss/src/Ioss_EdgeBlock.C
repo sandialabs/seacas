@@ -33,8 +33,9 @@
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_EdgeBlock.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_CodeTypes.h>             // for IntVector
 #include <Ioss_Property.h>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 
 #include "Ioss_EntityBlock.h"

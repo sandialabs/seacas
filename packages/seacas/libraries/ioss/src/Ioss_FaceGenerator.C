@@ -47,8 +47,8 @@
 #include <mpi.h>
 #endif
 
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 #include <functional>
 #include <random>
 #include <utility>
@@ -268,7 +268,7 @@ namespace {
     }
 #endif
   }
-}
+} // namespace
 
 namespace Ioss {
   FaceGenerator::FaceGenerator(Ioss::Region &region)
@@ -365,4 +365,4 @@ namespace Ioss {
 #endif
     std::cout << "Total time:          \t" << std::chrono::duration<double, std::milli> (endp-starth).count() << " ms\n\n";
   }
-}
+}  // namespace Ioss

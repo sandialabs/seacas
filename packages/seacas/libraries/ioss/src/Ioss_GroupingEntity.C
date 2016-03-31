@@ -36,9 +36,9 @@
 #include <Ioss_Region.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
 #include <iostream>
+#include <stddef.h>
 #include <string>
 #include <vector>
 
@@ -121,9 +121,9 @@ std::string Ioss::GroupingEntity::get_filename() const
   if (database_ == nullptr) {
     return std::string();
   }
-  else {
+  
     return database_->get_filename();
-  }
+  
 }
 
 void Ioss::GroupingEntity::set_database(Ioss::DatabaseIO *io_database)
@@ -385,7 +385,7 @@ void Ioss::GroupingEntity::count_attributes() const
   if (attributeCount > 0) {
     return;
   }
-  else {
+  
     // If the set has a field named "attribute", then the number of
     // attributes is equal to the component count of that field...
     NameList results_fields;
@@ -400,7 +400,7 @@ void Ioss::GroupingEntity::count_attributes() const
 	attributeCount += field.raw_storage()->component_count();
       }
     }
-  }
+  
 }
 
 void Ioss::GroupingEntity::verify_field_exists(const std::string &field_name, const std::string &inout) const

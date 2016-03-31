@@ -29,13 +29,13 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#include <Ioss_SerializeIO.h>
 #include <Ioss_DatabaseIO.h>            // for DatabaseIO
+#include <Ioss_SerializeIO.h>
+#include "Ioss_CodeTypes.h"             // for HAVE_MPI
 #include <Ioss_ParallelUtils.h>         // for ParallelUtils
 #include <Ioss_Utils.h>                 // for IOSS_ERROR, IOSS_WARNING
 #include <ostream>                      // for operator<<, etc
 #include <string>                       // for char_traits
-#include "Ioss_CodeTypes.h"             // for HAVE_MPI
 
 namespace Ioss {
 

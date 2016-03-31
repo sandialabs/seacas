@@ -34,8 +34,8 @@
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
+#include <cstddef>
 #include <string>
 
 #include "Ioss_FieldManager.h"

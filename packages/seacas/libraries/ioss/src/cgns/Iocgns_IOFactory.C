@@ -36,9 +36,9 @@
 #ifdef HAVE_MPI
 #include <cgns/Iocgns_ParallelDatabaseIO.h>     // for DatabaseIO -- parallel
 #endif
-#include <string>                       // for string
 #include "Ioss_DBUsage.h"               // for DatabaseUsage
 #include "Ioss_IOFactory.h"             // for IOFactory
+#include <string>                       // for string
 namespace Ioss { class PropertyManager; }
 
 namespace Iocgns {
@@ -81,4 +81,4 @@ namespace Iocgns {
 	return new Iocgns::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
       }
   }
-}
+}  // namespace Iocgns

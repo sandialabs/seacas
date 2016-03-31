@@ -34,8 +34,8 @@
 // Define a variable type for storage of this elements connectivity
 #include <Ioss_Pyramid14.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -50,7 +50,7 @@ namespace Ioss {
     St_Pyramid14()
       :  ElementVariableType("pyramid14", 14) {}
   };
-}
+} // namespace Ioss
 
 void Ioss::St_Pyramid14::factory()
 { static Ioss::St_Pyramid14 registerThis; }
@@ -97,7 +97,7 @@ namespace {
 
   int Constants::edges_per_face[nface+1] =
     { -1, 3, 3, 3, 3, 4 };
-}  
+}  // namespace  
 
 void Ioss::Pyramid14::factory()
 {
@@ -179,7 +179,7 @@ Ioss::ElementTopology* Ioss::Pyramid14::face_type(int face_number) const
   if (face_number == 0) {
     return (Ioss::ElementTopology*)nullptr;
   }
-  else if (face_number <= 4) {
+  if (face_number <= 4) {
 //    return Ioss::ElementTopology::factory("triface6");
     return Ioss::ElementTopology::factory("tri6");
   } else {

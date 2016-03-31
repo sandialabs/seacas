@@ -33,7 +33,7 @@
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementSet.h>
 #include <Ioss_Property.h>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -70,6 +70,6 @@ Ioss::Property Ioss::ElementSet::get_implicit_property(const std::string& my_nam
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-void Ioss::ElementSet::block_membership(std::vector<std::string> &block_members)
+void Ioss::ElementSet::block_membership(std::vector<std::string> & /*block_members*/)
 {
 }

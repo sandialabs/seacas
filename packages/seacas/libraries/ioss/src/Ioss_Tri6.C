@@ -34,8 +34,8 @@
 // Define a variable type for storage of this elements connectivity
 #include <Ioss_Tri6.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -49,7 +49,7 @@ namespace Ioss {
     St_Tri6()
       : ElementVariableType("tri6", 6) {}
   };
-}
+} // namespace Ioss
 //------------------------------------------------------------------------
 namespace {
   struct Constants {
@@ -65,7 +65,7 @@ namespace {
   // Edge numbers are zero-based [0..number_edges)
   int Constants::edge_node_order[nedge][nedgenode] = // [edge][edge_node]
     { {0,1,3}, {1,2,4}, {2,0,5} };
-}
+}  // namespace
 
 void Ioss::Tri6::factory()
 {

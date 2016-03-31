@@ -33,6 +33,7 @@
 #ifndef IOSS_Ioss_FieldManager_h
 #define IOSS_Ioss_FieldManager_h
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h>                 // for Field, Field::RoleType
 #include <Ioss_Utils.h>                 // for Utils
 #include <stddef.h>                     // for size_t

@@ -32,7 +32,7 @@
 
 #include <Ioss_Field.h>
 #include <Ioss_VariableType.h>
-#include <stddef.h>
+#include <cstddef>
 #include <transform/Iotr_Offset.h>
 #include <string>
 
@@ -98,4 +98,4 @@ namespace Iotr {
     }
     return true;
   }
-}
+}  // namespace Iotr

@@ -33,7 +33,7 @@
 #include <Ioss_CompositeVariableType.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <assert.h>
+#include <cassert>
 #include <cstdio>
 #include <map>
 #include <string>
@@ -106,4 +106,4 @@ int CompositeVariableType::GetNumCopies() const{
 }
 
 
-}
+}  // namespace Ioss

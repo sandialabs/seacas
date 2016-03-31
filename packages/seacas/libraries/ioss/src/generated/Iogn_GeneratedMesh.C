@@ -32,7 +32,8 @@
 
 #include <generated/Iogn_GeneratedMesh.h>
 #include <Ioss_EntityType.h>            // for EntityType, etc
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
+#include <string>
 #include <sys/types.h>                  // for ssize_t
 #include <tokenize.h>                   // for tokenize
 #include <cmath>                        // for atan2, cos, sin
@@ -40,10 +41,10 @@
 #include <cstring>                      // for memcpy
 #include <iomanip>                      // for operator<<, setw
 #include <iostream>                     // for operator<<, basic_ostream, etc
-#include <string>                       // for string, operator==, etc
-#include <vector>                       // for vector
 #include <algorithm>
 #include <numeric>
+#include <string>                       // for string, operator==, etc
+#include <vector>                       // for vector
 
 
 namespace Iogn {
@@ -105,7 +106,7 @@ namespace Iogn {
   }
 
 
-  GeneratedMesh::~GeneratedMesh() {}
+  GeneratedMesh::~GeneratedMesh() = default;
 
   void GeneratedMesh::initialize()
   {
@@ -684,13 +685,13 @@ namespace Iogn {
         return std::make_pair(std::string("tri3"), 3);
       
     }
-    else {
+    
       if (block_number == 1) {
         return std::make_pair(std::string("hex8"), 8);
       } 
         return std::make_pair(std::string("shell4"), 4);
       
-    }
+    
   }
 
   void GeneratedMesh::node_map(Ioss::Int64Vector &map) const
@@ -1555,7 +1556,7 @@ namespace Iogn {
     }
   }
 
-  std::vector<std::string> GeneratedMesh::sideset_touching_blocks(int64_t set_id) const
+  std::vector<std::string> GeneratedMesh::sideset_touching_blocks(int64_t  /*set_id*/) const
   {
     std::vector<std::string> result(1, "block_1");
     return result;
@@ -1640,5 +1641,5 @@ namespace Iogn {
     }
 #endif
   }
-}
+}  // namespace Iogn
 

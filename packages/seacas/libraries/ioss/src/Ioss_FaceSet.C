@@ -34,7 +34,7 @@
 #include <Ioss_FaceSet.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -73,6 +73,6 @@ Ioss::Property Ioss::FaceSet::get_implicit_property(const std::string& my_name) 
   return Ioss::GroupingEntity::get_implicit_property(my_name);
 }
 
-void Ioss::FaceSet::block_membership(std::vector<std::string> &block_members)
+void Ioss::FaceSet::block_membership(std::vector<std::string> & /*block_members*/)
 {
 }
