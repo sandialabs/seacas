@@ -613,7 +613,6 @@ namespace Ioss {
       
       for (auto &block : element_blocks) {
 	double xmin, ymin, zmin, xmax, ymax, zmax;
-	ssize_t nelem = block->get_property("entity_count").get_int();
 	if (block->get_database()->int_byte_size_api() == 8) {
 	  std::vector<int64_t> connectivity;
 	  block->get_field_data("connectivity_raw", connectivity);
