@@ -32,12 +32,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-#include <assert.h>                     // for assert
-#include <limits.h>                     // for INT_MAX
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for fprintf, stderr, nullptr, etc
-#include <stdlib.h>                     // for exit, free, malloc
-#include <string.h>                     // for strrchr, memset, etc
+#include <cassert>                     // for assert
+#include <climits>                     // for INT_MAX
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for fprintf, stderr, nullptr, etc
+#include <cstdlib>                     // for exit, free, malloc
+#include <cstring>                     // for strrchr, memset, etc
 #include <unistd.h>                     // for sysconf, _SC_OPEN_MAX
 #include <vector>                       // for vector
 #include <string>
@@ -1149,7 +1149,7 @@ namespace {
 #else
 #include <unistd.h>
 #endif
-#include <limits.h>
+#include <climits>
 
   int get_free_descriptor_count()
   {

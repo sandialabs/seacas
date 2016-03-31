@@ -33,9 +33,9 @@
  *
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
 
 #include "elb_allo.h"
 #include "elb_format.h"

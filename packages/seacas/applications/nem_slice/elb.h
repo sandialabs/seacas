@@ -38,7 +38,7 @@
 
 #include <string>
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
 #include <exodusII.h>
 #include "elb_elem.h"
 
@@ -75,7 +75,7 @@ void vec_free(std::vector<INT> &V)
 { std::vector<INT>().swap(V);}
 
 /* Prototype for timing function */
-extern double get_time(void);
+extern double get_time();
 
 /* Structure used for the description of the machine for which the
  * load balance is to be constructed. */

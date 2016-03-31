@@ -33,9 +33,9 @@
  * 
  */
 
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for printf, fprintf, nullptr, etc
-#include <stdlib.h>                     // for exit
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for printf, fprintf, nullptr, etc
+#include <cstdlib>                     // for exit
 #include "rf_allo.h"                    // for array_alloc
 
 /*************************************************************************/

@@ -32,12 +32,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for fprintf, printf, nullptr, etc
-#include <stdlib.h>                     // for exit, free, malloc
-#include <string.h>                     // for strcpy, strlen, memset, etc
-#include <time.h>                       // for asctime, localtime, time, etc
+#include <cassert>                     // for assert
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for fprintf, printf, nullptr, etc
+#include <cstdlib>                     // for exit, free, malloc
+#include <cstring>                     // for strcpy, strlen, memset, etc
+#include <ctime>                       // for asctime, localtime, time, etc
 #include <vector>                       // for vector
 #include "exodusII.h"                   // for ex_close, etc
 #include "nem_spread.h"                 // for NemSpread, second, etc
