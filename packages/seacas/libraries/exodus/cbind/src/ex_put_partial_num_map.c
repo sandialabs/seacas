@@ -109,7 +109,7 @@ int ex_put_partial_num_map (int exoid,
     sprintf( errmsg,
 	     "ERROR: Bad map type (%d) specified for file id %d",
 	     map_type, exoid );
-    ex_err( "ex_put_num_map", errmsg, exerrval );
+    ex_err( "ex_put_partial_num_map", errmsg, exerrval );
     return (EX_FATAL);
   }
 
@@ -160,7 +160,7 @@ int ex_put_partial_num_map (int exoid,
       sprintf(errmsg,
 	      "ERROR: exceeded number of %ss (%"ST_ZU") specified in file id %d",
 	      ex_name_of_object(map_type),num_maps,exoid);
-      ex_err("ex_put_num_map",errmsg,exerrval);
+      ex_err("ex_put_partial_num_map",errmsg,exerrval);
       return (EX_FATAL);
     }
     
@@ -227,7 +227,7 @@ int ex_put_partial_num_map (int exoid,
       sprintf(errmsg,
 	      "ERROR: failed to locate %s ids in file id %d",
 	      ex_name_of_object(map_type),exoid);
-      ex_err("ex_put_num_map",errmsg,exerrval);
+      ex_err("ex_put_partial_num_map",errmsg,exerrval);
       return (EX_FATAL);
     }
 
@@ -240,7 +240,7 @@ int ex_put_partial_num_map (int exoid,
 	sprintf(errmsg,
 		"ERROR: failed to store %s id %"PRId64" in file id %d",
 		ex_name_of_object(map_type),map_id,exoid);
-	ex_err("ex_put_num_map",errmsg,exerrval);
+	ex_err("ex_put_partial_num_map",errmsg,exerrval);
 	return (EX_FATAL);
       }
     }
@@ -264,7 +264,7 @@ int ex_put_partial_num_map (int exoid,
     sprintf(errmsg,
 	    "Internal ERROR: unrecognized map type in switch: %d in file id %d",
 	    map_type,exoid);
-    ex_err("ex_putt_partial_one_attr",errmsg,EX_MSG);
+    ex_err("ex_put_partial_num_map",errmsg,EX_MSG);
     return (EX_FATAL);
   }
 
