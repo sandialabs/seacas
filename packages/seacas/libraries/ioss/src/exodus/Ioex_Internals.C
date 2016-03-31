@@ -626,7 +626,7 @@ int Internals::write_meta_data(Mesh &mesh)
   return(EX_NOERR);
 }
 
-void Internals::get_global_counts(Mesh & /*mesh*/)
+void Internals::get_global_counts(Mesh &mesh)
 {
 #if defined(HAVE_MPI)
   std::vector<int64_t> counts;
