@@ -32,8 +32,8 @@
 
 #include <Ioss_Wedge6.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -50,7 +50,7 @@ namespace Ioss {
     St_Wedge6()
       : ElementVariableType("wedge6", 6) {}
   };
-}
+}  // namespace Ioss
 void Ioss::St_Wedge6::factory()
 { static Ioss::St_Wedge6 registerThis; }
 
@@ -70,7 +70,7 @@ namespace {
     static int nodes_per_edge[nedge+1];
     static int edges_per_face[nface+1];
   };
-}
+}  // namespace
 // Edge numbers are zero-based [0..number_edges)
 int Constants::edge_node_order[nedge][nedgenode] = // [edge][edge_node]
   /* (Reference: Fmwk_StdObjMeshTopologies.C) */
@@ -178,7 +178,7 @@ Ioss::ElementTopology* Ioss::Wedge6::face_type(int face_number) const
   if (face_number == 0) {
     return (Ioss::ElementTopology*)nullptr;
   }
-  else if (face_number <= 3) {
+  if (face_number <= 3) {
 //    return Ioss::ElementTopology::factory("quadface4");
     return Ioss::ElementTopology::factory("quad4");
   } else {

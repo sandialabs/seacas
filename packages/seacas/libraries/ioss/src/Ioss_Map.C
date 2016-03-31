@@ -34,13 +34,13 @@
 #include <Ioss_Field.h>                 // for Field, etc
 #include <Ioss_Utils.h>                 // for IOSS_ERROR
 #include <Ioss_Sort.h>
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for size_t
-#include <sys/types.h>                  // for ssize_t
+#include <cassert>                     // for assert
 #include <algorithm>                    // for adjacent_find, lower_bound, etc
 #include <iterator>                     // for insert_iterator, inserter
 #include <sstream>                      // for operator<<, basic_ostream, etc
+#include <stddef.h>                     // for size_t
 #include <string>                       // for char_traits, operator<<, etc
+#include <sys/types.h>                  // for ssize_t
 #include <utility>                      // for pair, make_pair
 #include <vector>                       // for vector, vector<>::iterator, etc
 
@@ -59,14 +59,14 @@ namespace {
     if (the_map[0] == -1) {
       return true;
     }
-    else if (the_map[0] ==  1) {
+    if (the_map[0] ==  1) {
       return false;
     }
     else {
       Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer&>(the_map);
       size_t size = the_map.size();
       for (size_t i=1; i < size; i++) {
-	if (the_map[i] != (int64_t)i) {
+	if (the_map[i] != static_cast<int64_t>(i)) {
 	  new_map[0] = 1;
 	  return false;
 	}
@@ -131,7 +131,7 @@ namespace {
     }
   }
 
-}
+}  // namespace
 
 void Ioss::Map::release_memory()
 {
@@ -401,10 +401,10 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
     } else {
       local = 0;
     }
-  } else if (!must_exist && global > (int64_t)map.size()-1) {
+  } else if (!must_exist && global > static_cast<int64_t>(map.size())-1) {
     local = 0;
   }
-  if (local > (int64_t)map.size()-1 || (local <= 0  && must_exist)) {
+  if (local > static_cast<int64_t>(map.size())-1 || (local <= 0  && must_exist)) {
     std::ostringstream errmsg;
     errmsg << "ERROR: Ioss Mapping routines detected " << entityType
 	   << " with global id equal to " << global

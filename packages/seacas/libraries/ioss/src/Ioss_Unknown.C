@@ -32,7 +32,7 @@
 
 #include <Ioss_Unknown.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -48,7 +48,7 @@ namespace Ioss {
     St_Unknown()
       : ElementVariableType("unknown", 0) {}
   };
-}
+}  // namespace Ioss
 void Ioss::St_Unknown::factory()
 { static Ioss::St_Unknown registerThis; }
 
@@ -61,7 +61,7 @@ namespace {
     static const int nface     = 0;
     static const int nfacenode = 0;
   };
-}
+} // namespace
 
 void Ioss::Unknown::factory()
 {

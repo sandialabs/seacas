@@ -32,11 +32,11 @@
 
 #include <Ioss_Super.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <stddef.h>                     // for size_t
-#include <cstdlib>                      // for atoi
-#include <string>                       // for string
+#include <cstddef>                     // for size_t
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
+#include <cstdlib>                      // for atoi
+#include <string>                       // for string
 
 
 //------------------------------------------------------------------------
@@ -48,7 +48,7 @@ namespace Ioss {
     St_Super(const std::string &my_name, int node_count)
       : ElementVariableType(my_name, node_count) {}
   };
-}
+} // namespace Ioss
 
 void Ioss::Super::factory() {}
 
@@ -90,16 +90,16 @@ int Ioss::Super::number_faces()        const {return 0;}
 
 int Ioss::Super::number_nodes_edge(int /* edge */) const {return  0;}
 
-int Ioss::Super::number_nodes_face(int face) const {return 0;}
-int Ioss::Super::number_edges_face(int face) const {return 0;}
+int Ioss::Super::number_nodes_face(int  /*face*/) const {return 0;}
+int Ioss::Super::number_edges_face(int  /*face*/) const {return 0;}
 
-Ioss::IntVector Ioss::Super::edge_connectivity(int edge_number) const
+Ioss::IntVector Ioss::Super::edge_connectivity(int  /*edge_number*/) const
 {
   Ioss::IntVector connectivity(0);
   return connectivity;
 }
 
-Ioss::IntVector Ioss::Super::face_connectivity(int face_number) const
+Ioss::IntVector Ioss::Super::face_connectivity(int  /*face_number*/) const
 {
   Ioss::IntVector connectivity(0);
   return connectivity;
@@ -114,17 +114,17 @@ Ioss::IntVector Ioss::Super::element_connectivity() const
   return connectivity;
 }
 
-Ioss::ElementTopology* Ioss::Super::face_type(int face_number) const
+Ioss::ElementTopology* Ioss::Super::face_type(int  /*face_number*/) const
 {
   return Ioss::ElementTopology::factory("unknown");
 }
 
-Ioss::ElementTopology* Ioss::Super::edge_type(int edge_number) const
+Ioss::ElementTopology* Ioss::Super::edge_type(int  /*edge_number*/) const
 {
   return Ioss::ElementTopology::factory("unknown");
 }
 
-Ioss::IntVector Ioss::Super::face_edge_connectivity(int face_number) const
+Ioss::IntVector Ioss::Super::face_edge_connectivity(int  /*face_number*/) const
 {
   Ioss::IntVector fcon(0);
   return fcon;

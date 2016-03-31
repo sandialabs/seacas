@@ -34,8 +34,8 @@
 // Define a variable type for storage of this elements connectivity
 #include <Ioss_Quad8.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -50,7 +50,7 @@ namespace Ioss {
     St_Quad8()
       : ElementVariableType("quad8", 8) {}
   };
-}
+} // namespace Ioss
 // ========================================================================
 Ioss::Quad8 Ioss::Quad8::instance_;
 
@@ -66,7 +66,7 @@ namespace {
   // Edge numbers are zero-based [0..number_edges)
   int Constants::edge_node_order[nedge][nedgenode] = // [edge][edge_node]
     { {0,1,4}, {1,2,5}, {2,3,6}, {3,0,7} };
-}
+}  // namespace
 
 void Ioss::Quad8::factory()
 {

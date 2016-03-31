@@ -30,14 +30,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <assert.h>
+#include <cassert>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h>
-#include <stddef.h>
 #include <algorithm>
 #include <cstdlib>
-#include <string>
 #include <cstring>
+#include <stddef.h>
+#include <string>
 #include <vector>
 
 #include <Ioss_CodeTypes.h>

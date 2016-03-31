@@ -32,8 +32,8 @@
 
 #include <Ioss_Sphere.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -50,7 +50,7 @@ namespace Ioss {
     St_Sphere()
       : ElementVariableType("sphere", 1) {}
   };
-}
+}  // namespace Ioss
 // ========================================================================
 namespace {
   struct Constants {
@@ -61,7 +61,7 @@ namespace {
     static const int nfacenode = 0;
     static const int nfaceedge = 0;
   };
-}
+} // namespace
 void Ioss::Sphere::factory()
 {
   static Ioss::Sphere registerThis;

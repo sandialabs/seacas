@@ -32,8 +32,8 @@
 
 #include <Ioss_Tet7.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -50,7 +50,7 @@ namespace Ioss {
     St_Tet7()
       : ElementVariableType("tetra7", 7) {}
   };
-}
+}  // namespace Ioss
 
 // ========================================================================
 namespace {
@@ -94,7 +94,7 @@ namespace {
   //        returns -1 if faces have differing topology
   int Constants::edges_per_face[nface+1] =
     {3,3,3,3,3};
-}
+}  // namespace
 
 void Ioss::Tet7::factory()
 {
@@ -188,7 +188,7 @@ Ioss::ElementTopology* Ioss::Tet7::face_type(int face_number) const
   if (face_number == 0) {
     return nullptr;
   }
-  else if (face_number == 4) {
+  if (face_number == 4) {
     return Ioss::ElementTopology::factory("tri6");
   } else { 
     return Ioss::ElementTopology::factory("tri4a");
@@ -205,7 +205,7 @@ Ioss::ElementTopology* Ioss::Tet7::edge_type(int edge_number) const
   if (edge_number == 0) {
     return nullptr;
   }
-  else if (edge_number <= 3) {
+  if (edge_number <= 3) {
     return Ioss::ElementTopology::factory("edge3");
   } else {
     return Ioss::ElementTopology::factory("edge2");

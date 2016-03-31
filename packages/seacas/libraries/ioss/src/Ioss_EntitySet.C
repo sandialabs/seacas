@@ -33,7 +33,7 @@
 #include <Ioss_EntitySet.h>
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 
 #include "Ioss_FieldManager.h"
