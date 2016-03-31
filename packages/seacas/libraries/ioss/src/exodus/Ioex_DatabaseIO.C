@@ -33,18 +33,18 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_CodeTypes.h>             // for Int64Vector, IntVector
+#include <Ioss_FileInfo.h>
 #include <Ioss_SerializeIO.h>
 #include <Ioss_SurfaceSplit.h>
-#include <Ioss_FileInfo.h>
 #include <Ioss_Utils.h>
-#include <assert.h>
+#include <cassert>
 #include <exodusII.h>
 #include <exodus/Ioex_DatabaseIO.h>
 #include <exodus/Ioex_Utils.h>
-#include <float.h>
-#include <stddef.h>
+#include <cfloat>
+#include <cstddef>
 #include <sys/select.h>
-#include <time.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -55,11 +55,12 @@
 #include <map>
 #include <set>
 #include <string>
+#include <time.h>
 #include <utility>
 #include <vector>
 
-#include "Ioss_CoordinateFrame.h"
 #include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -115,7 +116,7 @@ namespace {
                                   std::vector<T*> &blocks,
                                   char field_suffix_separator);
 
-}
+}  // namespace
 
 namespace Ioex {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
@@ -231,7 +232,7 @@ namespace Ioex {
       }
       else {
         // Need to clear EX_ALL_INT64_API if set...
-        if (old_status & EX_ALL_INT64_API) {
+        if ((old_status & EX_ALL_INT64_API) != 0) {
           old_status &= ~EX_ALL_INT64_API;
           assert(!(old_status & EX_ALL_INT64_API));
           ex_set_int64_status(exodusFilePtr,  old_status);
@@ -348,7 +349,7 @@ namespace Ioex {
 
     size_t num_qa_records = qaRecords.size()/4;
 
-    qa_element *qa = new qa_element[num_qa_records+1];
+    auto qa = new qa_element[num_qa_records+1];
     for (size_t i=0; i < num_qa_records+1; i++) {
       for (int j=0; j < 4; j++) {
         qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH+1];
@@ -472,7 +473,7 @@ namespace Ioex {
     // The default id assigned is '1' and the name is 'nodeblock_1'
 
     std::string block_name = "nodeblock_1";
-    Ioss::NodeBlock *block = new Ioss::NodeBlock(this, block_name,
+    auto block = new Ioss::NodeBlock(this, block_name,
                                                  nodeCount, spatialDimension);
     block->property_add(Ioss::Property("id", 1));
     // Check for results variables.
@@ -690,7 +691,7 @@ namespace Ioex {
       }
       assert(offset == var_count * block_count);
     }
-  }
+  } // namespace
   // common
   void DatabaseIO::store_reduction_field(ex_entity_type type,
                                          const Ioss::Field& field,
@@ -779,7 +780,7 @@ namespace Ioex {
 
     int comp_count = var_type->component_count();
     for (int i=0; i < comp_count; i++) {
-      std::string field_name = field.get_name();
+      const std::string& field_name = field.get_name();
       std::string var_name = var_type->label_name(field_name, i+1, field_suffix_separator);
 
       assert(m_variables[EX_GLOBAL].find(var_name) != m_variables[EX_GLOBAL].end());
@@ -1305,7 +1306,7 @@ namespace Ioex {
         } else if (lowercase_names) {
           variable_names[index-1] = Ioss::Utils::lowercase(variable_names[index-1]);
         }
-        var_names[index-1] = (char*)variable_names[index-1].c_str();
+        var_names[index-1] = const_cast<char*>(variable_names[index-1].c_str());
       }
 
       int ierr = ex_put_variable_names(get_file_pointer(), type, var_count, TOPTR(var_names));
@@ -1666,7 +1667,7 @@ namespace Ioex {
     // Write coordinate frame data...
     write_coordinate_frames(get_file_pointer(), get_region()->get_coordinate_frames());
   }
-} // End of namespace
+}  // namespace Ioex
 
 namespace {
   template <typename T>
@@ -1679,7 +1680,7 @@ namespace {
     // and its name should not be used even if it is the only
     // attribute field.
     for (auto &ge : entities) {
-      std::string ge_name = ge->name();
+      const std::string& ge_name = ge->name();
       int attribute_count = ge->get_property("attribute_count").get_int();
       if (attribute_count > 0) {
 
@@ -1706,7 +1707,7 @@ namespace {
           int field_offset = field.get_index();
           for (int i=0; i < comp_count; i++) {
             names_str[field_offset-1+i] = vtype->label_name(field_name, i+1, suffix_separator);
-            names[field_offset-1+i] = (char*)names_str[field_offset-1+i].c_str();
+            names[field_offset-1+i] = const_cast<char*>(names_str[field_offset-1+i].c_str());
           }
         }
         size_t ge_id = ge->get_property("id").get_int();
@@ -1955,4 +1956,4 @@ namespace {
     }
 #endif
   }
-}
+} // namespace

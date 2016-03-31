@@ -32,8 +32,8 @@
 
 #include <Ioss_Wedge18.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -50,7 +50,7 @@ namespace Ioss {
     St_Wedge18()
       : ElementVariableType("wedge18", 18) {}
   };
-}
+}  // namespace Ioss
 void Ioss::St_Wedge18::factory()
 { static Ioss::St_Wedge18 registerThis; }
 
@@ -69,7 +69,7 @@ namespace {
     static int nodes_per_face[nface+1];
     static int edges_per_face[nface+1];
   };
-}
+}  // namespace
   
 // Edge numbers are zero-based [0..number_edges)
 int Constants::edge_node_order[nedge][nedgenode] = // [edge][edge_node]
@@ -174,7 +174,7 @@ Ioss::ElementTopology* Ioss::Wedge18::face_type(int face_number) const
   if (face_number == 0) {
     return (Ioss::ElementTopology*)nullptr;
   }
-  else if (face_number <= 3) {
+  if (face_number <= 3) {
 //    return Ioss::ElementTopology::factory("quadface9");
     return Ioss::ElementTopology::factory("quad9");
   } else {

@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stddef.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
@@ -54,10 +54,10 @@
 #include "Ioss_NodeBlock.h"
 #include "Ioss_Property.h"
 #include "Ioss_Region.h"
-#include "Ioss_ParallelUtils.h"
 #include "Ioss_FaceGenerator.h"
+#include "Ioss_ParallelUtils.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "skinner_interface.h"
 
@@ -74,7 +74,7 @@ namespace {
   void skinner(Skinner::Interface& interface, INT /*dummy*/);
   std::string codename;
   std::string version = "0.6";
-}
+} // namespace
 
 int main(int argc, char *argv[])
 {
@@ -90,9 +90,10 @@ int main(int argc, char *argv[])
   std::string in_type = "exodusII";
 
   codename = argv[0];
-  size_t ind = codename.find_last_of("/", codename.size());
-  if (ind != std::string::npos)
+  size_t ind = codename.find_last_of('/', codename.size());
+  if (ind != std::string::npos) {
     codename = codename.substr(ind+1, codename.size());
+}
 
   Ioss::Init::Initializer io;
 
@@ -104,10 +105,10 @@ int main(int argc, char *argv[])
   }
 
   if (interface.ints_64_bit()) {
-    skinner(interface, (int64_t)0);
+    skinner(interface, static_cast<int64_t>(0));
   }
   else {
-    skinner(interface, (int)0);
+    skinner(interface, 0);
   }
 
 
@@ -133,8 +134,9 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
-    if (interface.debug)
+    if (interface.debug) {
       properties.add(Ioss::Property("LOGGING", 1));
+}
 
     if (!interface.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
@@ -149,8 +151,9 @@ namespace {
       std::exit(EXIT_FAILURE);
     }
 
-    if (interface.ints_64_bit())
+    if (interface.ints_64_bit()) {
       dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+}
     
     // NOTE: 'region' owns 'db' pointer at this time...
     Ioss::Region region(dbi, "region_1");
@@ -178,13 +181,15 @@ namespace {
     for (auto& face : faces) {
       if (face.elementCount_ == 2) {
 	interior++;
-	if (face.sharedWithProc_ != -1)
+	if (face.sharedWithProc_ != -1) {
 	  pboundary++;
+}
       }
-      else if (face.elementCount_ == 1)
+      else if (face.elementCount_ == 1) {
 	boundary++;
-      else
+      } else {
 	error++;
+}
     }
 
 #ifdef HAVE_MPI
@@ -212,7 +217,7 @@ namespace {
       OUTPUT << "Hash Statistics: Bucket Count = " << faces.bucket_count()
 	     << "\tLoad Factor = " << faces.load_factor() << "\n";
       size_t numel = region.get_property("element_count").get_int();
-      OUTPUT << "Faces/Element ratio = " << (double)faces.size() / numel << "\n";
+      OUTPUT << "Faces/Element ratio = " << static_cast<double>(faces.size()) / numel << "\n";
     }
 
     if (interface.no_output()) {
@@ -242,10 +247,11 @@ namespace {
 	  ref_nodes[node] = 1;
 	}
       }
-      if (face_node_count == 3)
+      if (face_node_count == 3) {
 	tri++;
-      else if (face_node_count == 4)
+      } else if (face_node_count == 4) {
 	quad++;
+}
     }
 
     size_t ref_count = std::accumulate(ref_nodes.begin(), ref_nodes.end(), 0);
@@ -282,8 +288,9 @@ namespace {
     if (interface.compose_output != "none") {
       properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
       properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-      if (interface.compose_output != "default")
+      if (interface.compose_output != "default") {
 	properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
+}
     }
 
     if (interface.netcdf4) {
@@ -339,7 +346,8 @@ namespace {
     for (auto& face : boundary_faces) {
       if (use_face_ids) {
 	fid = face.id_;
-	if (fid < 0) fid = -fid;
+	if (fid < 0) { fid = -fid;
+}
       } else {
 	fid++;
       }
@@ -369,4 +377,4 @@ namespace {
 
     output_region.end_mode(Ioss::STATE_MODEL);
   }
-}
+} // namespace

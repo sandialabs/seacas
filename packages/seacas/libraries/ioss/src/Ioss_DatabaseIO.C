@@ -41,18 +41,18 @@
 #include <Ioss_FileInfo.h>
 #include <Ioss_Utils.h>
 #include <cassert>
-#include <float.h>
-#include <stddef.h>
+#include <cfloat>
 #include <algorithm>
 #include <iomanip>
+#include <stddef.h>
 #include <iostream>
 #include <iterator>
 #include <set>
 #include <string>
 #include <tokenize.h>
+#include <sys/stat.h>
 #include <utility>
 #include <vector>
-#include <sys/stat.h>
 #include <cstring>
 
 #include "Ioss_DBUsage.h"

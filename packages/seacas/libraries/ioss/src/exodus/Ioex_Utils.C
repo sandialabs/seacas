@@ -1,12 +1,12 @@
 #include <exodus/Ioex_Utils.h>
 #include <exodusII_int.h>
-#include <Ioss_Utils.h>
 #include <Ioss_Region.h>
+#include <Ioss_Utils.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
-#include <cstring>
 #include <algorithm>
+#include <cstring>
 
 
 namespace {
@@ -26,7 +26,7 @@ namespace {
   void field_tokenize(const std::string& str, const char separator,
 		      std::vector<std::string>& tokens)
   {
-    std::string curr_token = "";
+    std::string curr_token;
     // Skip leading separators...
     size_t i = 0;
     while (i < str.length() && is_separator(separator, str[i])) {
@@ -61,7 +61,7 @@ namespace {
   void internal_write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames, INT /*dummy*/)
   {
     // Query number of coordinate frames...
-    int nframes = (int)frames.size();
+    int nframes = static_cast<int>(frames.size());
     if (nframes > 0) {
       std::vector<char> tags(nframes);
       std::vector<double> coordinates(nframes*9);
@@ -134,7 +134,7 @@ namespace {
     }
     return N;
   }
-}
+}  // namespace
 
 namespace Ioex {
   const char *Version() {return "Ioex_DatabaseIO.C 2015/04/13";}
@@ -145,7 +145,7 @@ namespace Ioex {
     const char *routine = "Ioex::Utils::update_last_time_attribute()";
 
     double tmp = 0.0;
-    int rootid = (unsigned)exodusFilePtr & EX_FILE_ID_MASK;
+    int rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
     int status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
 
     status=nc_put_att_double(rootid, NC_GLOBAL, "last_written_time",
@@ -166,7 +166,7 @@ namespace Ioex {
     // If not, don't change 'value' and return 'false'.
     bool found = false;
 
-    int rootid = (unsigned)exodusFilePtr & EX_FILE_ID_MASK;
+    int rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
     nc_type att_type = NC_NAT;
     size_t att_len = 0;
     int status = nc_inq_att(rootid, NC_GLOBAL, "last_written_time", &att_type, &att_len);
@@ -305,7 +305,7 @@ namespace Ioex {
       int64_t id = entity->get_property(id_prop).get_int();
 
       // See whether it already exists...
-      succeed = idset->insert(std::make_pair((int)type,id)).second;
+      succeed = idset->insert(std::make_pair(static_cast<int>(type),id)).second;
       if (!succeed) {
 	// Need to remove the property so it doesn't cause problems
 	// later...
@@ -334,9 +334,9 @@ namespace Ioex {
       // All digits...
       return std::atoi(str_id.c_str());
     }
-    else {
+    
       return 0;
-    }
+    
   }
 
   int64_t get_id(const Ioss::GroupingEntity *entity, ex_entity_type type, Ioex::EntityIdSet *idset)
@@ -395,7 +395,7 @@ namespace Ioex {
     }
 
     // 'id' is a unique id for this entity type...
-    idset->insert(std::make_pair((int)type,id));
+    idset->insert(std::make_pair(static_cast<int>(type),id));
     Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity*>(entity);
     new_entity->property_add(Ioss::Property(id_prop, id));
     return id;
@@ -494,7 +494,7 @@ namespace Ioex {
 
   char ** get_exodus_names(size_t count, int size)
   {
-    char **names = new char* [count];
+    auto names = new char* [count];
     for (size_t i=0; i < count; i++) {
       names[i] = new char [size+1];
       std::memset(names[i], '\0', size+1);
@@ -947,20 +947,20 @@ namespace Ioex {
 
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames) {
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
-      internal_write_coordinate_frames(exoid, frames, (int64_t)0);
+      internal_write_coordinate_frames(exoid, frames, static_cast<int64_t>(0));
     }
     else {
-      internal_write_coordinate_frames(exoid, frames, (int)0);
+      internal_write_coordinate_frames(exoid, frames, 0);
     }
   }
 
   void add_coordinate_frames(int exoid, Ioss::Region *region)
   {
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
-      internal_add_coordinate_frames(exoid, region, (int64_t)0);
+      internal_add_coordinate_frames(exoid, region, static_cast<int64_t>(0));
     }
     else {
-      internal_add_coordinate_frames(exoid, region, (int)0);
+      internal_add_coordinate_frames(exoid, region, 0);
     }
   }
 
@@ -1087,4 +1087,4 @@ namespace Ioex {
     }
   }
 
-}
+}  // namespace Ioex

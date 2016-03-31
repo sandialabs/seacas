@@ -52,4 +52,4 @@ namespace Ioss {
   const double *CoordinateFrame::origin() const           {return &pointList_[0];}
   const double *CoordinateFrame::axis_3_point() const     {return &pointList_[3];}
   const double *CoordinateFrame::plane_1_3_point() const  {return &pointList_[6];}
-}
+}  // namespace Ioss

@@ -32,13 +32,13 @@
 
 #include <transform/Iotr_MinMax.h>
 #include <Ioss_Field.h>                 // for Field, etc
+#include "Ioss_Transform.h"             // for Factory, Transform
 #include <Ioss_VariableType.h>          // for VariableType
+#include <algorithm>                    // for max_element, min_element
 #include <cmath>                        // for fabs
 #include <cstddef>                     // for size_t
 #include <cstdlib>                     // for abs
-#include <algorithm>                    // for max_element, min_element
 #include <string>                       // for operator==, string
-#include "Ioss_Transform.h"             // for Factory, Transform
 
 
 namespace {
@@ -46,7 +46,7 @@ namespace {
   {return std::abs(elem1) < std::abs(elem2);}
   bool doubleAbsLess(double elem1, double elem2)
   {return std::fabs(elem1) < std::fabs(elem2);}
-}
+} // namespace
 
 namespace Iotr {
 
@@ -148,4 +148,4 @@ namespace Iotr {
     }
     return true;
   }
-}
+}  // namespace Iotr

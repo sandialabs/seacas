@@ -32,7 +32,7 @@
 
 #include <Ioss_Shell9.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -48,7 +48,7 @@ namespace Ioss {
     St_Shell9()
       : ElementVariableType("shell9", 9) {}
   };
-}
+} // namespace Ioss
 // ========================================================================
 namespace {
   struct Constants {
@@ -87,7 +87,7 @@ namespace {
   //        returns -1 if faces have differing topology
   int Constants::edges_per_face[nface+1] =
     {4, 4, 4 };
-}
+}  // namespace
 
 void Ioss::Shell9::factory()
 {

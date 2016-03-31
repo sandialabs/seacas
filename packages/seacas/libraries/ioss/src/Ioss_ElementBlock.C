@@ -31,15 +31,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_ElementBlock.h>
+#include "Ioss_BoundingBox.h"           // for AxisAlignedBoundingBox
+#include "Ioss_EntityBlock.h"           // for EntityBlock
+#include "Ioss_FieldManager.h"          // for FieldManager
 #include <Ioss_DatabaseIO.h>            // for DatabaseIO
 #include <Ioss_Field.h>                 // for Field, etc
 #include <Ioss_Property.h>              // for Property
 #include <stddef.h>                     // for size_t
 #include <string>                       // for string
 #include <vector>                       // for vector
-#include "Ioss_BoundingBox.h"           // for AxisAlignedBoundingBox
-#include "Ioss_EntityBlock.h"           // for EntityBlock
-#include "Ioss_FieldManager.h"          // for FieldManager
 
 
 namespace Ioss {
@@ -88,4 +88,4 @@ namespace Ioss {
   {
     return get_database()->get_bounding_box(this);
   }
-}
+}  // namespace Ioss

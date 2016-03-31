@@ -33,7 +33,7 @@
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_NodeSet.h>
 #include <Ioss_Property.h>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 
 #include "Ioss_EntitySet.h"

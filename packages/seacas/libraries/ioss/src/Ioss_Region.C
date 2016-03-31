@@ -33,10 +33,10 @@
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_Region.h>
 #include <Ioss_Utils.h>
-#include <assert.h>
-#include <ctype.h>
-#include <limits.h>
-#include <stddef.h>
+#include <cassert>
+#include <cctype>
+#include <climits>
+#include <cstddef>
 #include <unistd.h>
 #include <algorithm>
 #include <iomanip>
@@ -122,7 +122,7 @@ namespace {
       }
     }
   }
-}
+} // namespace
 
 namespace Ioss {
   Region::Region(DatabaseIO *iodatabase, const std::string& my_name)
@@ -368,7 +368,7 @@ namespace Ioss {
     // Pass the 'begin state' message on to the database so it can do any
     // cleanup/data checking/manipulations it needs to do.
     if (success) {
-      DatabaseIO *db = (DatabaseIO*)get_database();
+      DatabaseIO *db = get_database();
 
       if (new_state == STATE_DEFINE_TRANSIENT && db->usage() == Ioss::WRITE_HISTORY &&
 	  !(db->is_input() || db->open_create_behavior() == Ioss::DB_APPEND)) {
@@ -434,7 +434,7 @@ namespace Ioss {
 
     // Pass the 'end state' message on to the database so it can do any
     // cleanup/data checking/manipulations it needs to do.
-    DatabaseIO *db = (DatabaseIO*)get_database();
+    DatabaseIO *db = get_database();
     bool success = db->end(current_state);
 
 
@@ -449,7 +449,7 @@ namespace Ioss {
 
     // NOTE:  For restart input databases, it is possible that the time
     //        is not monotonically increasing...
-    if (!get_database()->is_input() && stateTimes.size() >= 1 && time <= stateTimes[stateTimes.size()-1]) {
+    if (!get_database()->is_input() && !stateTimes.empty() && time <= stateTimes[stateTimes.size()-1]) {
       // Check that time is increasing...
       if (!warning_output) {
         std::ostringstream errmsg;
@@ -505,7 +505,7 @@ namespace Ioss {
 	  time = stateTimes[currentState-1];
 	}
       } else {
-	assert(stateTimes.size() >= 1);
+	assert(!stateTimes.empty());
 	time = stateTimes[0];
       }
     } else if (state <= 0 || state > stateCount) {
@@ -521,7 +521,7 @@ namespace Ioss {
 	assert((int)stateTimes.size() >= state);
 	time = stateTimes[state-1];
       } else {
-	assert(stateTimes.size() >= 1);
+	assert(!stateTimes.empty());
 	time = stateTimes[0];
       }
     }
@@ -540,12 +540,12 @@ namespace Ioss {
     // This is rare, but is a supported use case.
     stateCount = 0;
     std::vector<double>().swap(stateTimes);
-    DatabaseIO *db = (DatabaseIO*)get_database();
+    DatabaseIO *db = get_database();
     db->get_step_times();
 
     int step = -1;
     double max_time = -1.0;
-    for (int i=0; i < (int)stateTimes.size(); i++) {
+    for (int i=0; i < static_cast<int>(stateTimes.size()); i++) {
       if (stateTimes[i] > max_time) {
 	step = i;
 	max_time = stateTimes[i];
@@ -567,12 +567,12 @@ namespace Ioss {
     // This is rare, but is a supported use case.
     stateCount = 0;
     std::vector<double>().swap(stateTimes);
-    DatabaseIO *db = (DatabaseIO*)get_database();
+    DatabaseIO *db = get_database();
     db->get_step_times();
 
     int step = 0;
     double min_time = stateTimes[0];
-    for (int i=1; i < (int)stateTimes.size(); i++) {
+    for (int i=1; i < static_cast<int>(stateTimes.size()); i++) {
       if (stateTimes[i] < min_time) {
 	step = i;
 	min_time = stateTimes[i];
@@ -611,11 +611,11 @@ namespace Ioss {
 	assert((int)stateTimes.size() >= state);
 	time = stateTimes[state-1];
       } else {
-	assert(stateTimes.size() >= 1);
+	assert(!stateTimes.empty());
 	time = stateTimes[0];
       }
       currentState = state;
-      DatabaseIO *db = (DatabaseIO*)get_database();
+      DatabaseIO *db = get_database();
       db->begin_state(this, state, time);
     }
     return time;
@@ -630,7 +630,7 @@ namespace Ioss {
 	     << "       [" << get_database()->get_filename() << "]\n";
       IOSS_ERROR(errmsg);
     }
-    DatabaseIO *db = (DatabaseIO*)get_database();
+    DatabaseIO *db = get_database();
     double time = 0.0;
     if (get_database()->is_input() ||
 	get_database()->usage() == WRITE_RESULTS ||
@@ -638,7 +638,7 @@ namespace Ioss {
       assert((int)stateTimes.size() >= state);
       time = stateTimes[state-1];
     } else {
-      assert(stateTimes.size() >= 1);
+      assert(!stateTimes.empty());
       time = stateTimes[0];
     }
     db->end_state(this, state, time);
@@ -1034,7 +1034,7 @@ namespace Ioss {
       return get_node_block(my_name);
     } if (io_type == ELEMENTBLOCK) {
       return get_element_block(my_name);
-    } else if (io_type == FACEBLOCK) {
+    } if (io_type == FACEBLOCK) {
       return get_face_block(my_name);
     } else if (io_type == EDGEBLOCK) {
       return get_edge_block(my_name);
@@ -1276,7 +1276,7 @@ namespace Ioss {
 	*my_type = "EDGE_BLOCK";
       }
       return true;
-    } else if (((io_type & FACEBLOCK) != 0u) && get_face_block(my_name) != nullptr) {
+    } if (((io_type & FACEBLOCK) != 0u) && get_face_block(my_name) != nullptr) {
       if (my_type != nullptr) {
 	*my_type = "FACE_BLOCK";
       }
@@ -1347,53 +1347,53 @@ namespace Ioss {
       if (!nodeBlocks.empty()) {
 	return nodeBlocks[0]->get_property("component_degree");
       }
-      else {
+      
 	return Property(my_name, 0);
-      }
+      
     }
 
     if (my_name == "node_block_count") {
-      return Property(my_name, (int)nodeBlocks.size());
+      return Property(my_name, static_cast<int>(nodeBlocks.size()));
     }
 
     if (my_name == "edge_block_count") {
-      return Property(my_name, (int)edgeBlocks.size());
+      return Property(my_name, static_cast<int>(edgeBlocks.size()));
     }
 
     if (my_name == "face_block_count") {
-      return Property(my_name, (int)faceBlocks.size());
+      return Property(my_name, static_cast<int>(faceBlocks.size()));
     }
 
     if (my_name == "element_block_count") {
-      return Property(my_name, (int)elementBlocks.size());
+      return Property(my_name, static_cast<int>(elementBlocks.size()));
     }
 
     if (my_name == "side_set_count") {
-      return Property(my_name, (int)sideSets.size());
+      return Property(my_name, static_cast<int>(sideSets.size()));
     }
 
     if (my_name == "node_set_count") {
-      return Property(my_name, (int)nodeSets.size());
+      return Property(my_name, static_cast<int>(nodeSets.size()));
     }
 
     if (my_name == "edge_set_count") {
-      return Property(my_name, (int)edgeSets.size());
+      return Property(my_name, static_cast<int>(edgeSets.size()));
     }
 
     if (my_name == "face_set_count") {
-      return Property(my_name, (int)faceSets.size());
+      return Property(my_name, static_cast<int>(faceSets.size()));
     }
 
     if (my_name == "element_set_count") {
-      return Property(my_name, (int)elementSets.size());
+      return Property(my_name, static_cast<int>(elementSets.size()));
     }
 
     if (my_name == "comm_set_count") {
-      return Property(my_name, (int)commSets.size());
+      return Property(my_name, static_cast<int>(commSets.size()));
     }
 
     if (my_name == "coordinate_frame_count") {
-      return Property(my_name, (int)coordinateFrames.size());
+      return Property(my_name, static_cast<int>(coordinateFrames.size()));
     }
 
     if (my_name == "state_count") {
@@ -1624,7 +1624,7 @@ namespace Ioss {
       }
     }
   }
-}
+} // namespace Ioss
 
   namespace {
     std::string uppercase(const std::string &my_name)
@@ -1633,4 +1633,4 @@ namespace Ioss {
       std::transform(s.begin(), s.end(), s.begin(), toupper);
       return s;
     }
-  }
+  } // namespace

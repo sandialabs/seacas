@@ -33,24 +33,24 @@
 
 // This must appear before exodusII_int.h include.
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 #ifndef PRId64
 #error "PRId64 not defined"
 #endif
 
 #include <Ioss_Utils.h>                 // for IOSS_WARNING
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
 #include <exodus/Ioex_Internals.h>    // for Internals, ElemBlock, etc
 extern "C" {
 #include <exodusII_int.h>               // for EX_FATAL, EX_NOERR, etc
 }
 #include <netcdf.h>                     // for NC_NOERR, nc_def_var, etc
+#include <ostream>                      // for operator<<, etc
 #include <stddef.h>                     // for size_t
 #include <stdio.h>                      // for sprintf, nullptr
 #include <stdlib.h>                     // for exit, EXIT_FAILURE
-#include <string.h>                     // for strlen, strncpy, strcpy, etc
-#include <ostream>                      // for operator<<, etc
 #include <string>                       // for string, operator==, etc
+#include <string.h>                     // for strlen, strncpy, strcpy, etc
 #include <vector>                       // for vector
 
 #include "Ioss_EdgeBlock.h"
@@ -76,9 +76,9 @@ namespace {
     if ((ex_int64_status(exoid) & type) != 0u) {
       return NC_INT64;
     }
-    else {
+    
       return NC_INT;
-    }
+    
   }
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
                          const char *stat_var, const char *id_var, const char *name_var);
@@ -93,7 +93,7 @@ namespace {
                              int dimension, int dim_dim, int str_dim);
   template <typename T>
   int output_names(const std::vector<T> &entities, int exoid, ex_entity_type ent_type);
-}
+}  // namespace
 
 Redefine::Redefine(int exoid)
   : exodusFilePtr(exoid)
@@ -443,7 +443,7 @@ SideSet::SideSet(const Ioss::SideBlock &other)
   id = other.get_property("id").get_int();
   entityCount = other.get_property("entity_count").get_int();
   dfCount = other.get_property("distribution_factor_count").get_int();
-  std::string io_name = other.name();
+  const std::string& io_name = other.name();
 
   // KLUGE: universal_sideset has side dfCount...
   if (io_name == "universal_sideset") {
@@ -464,7 +464,7 @@ SideSet::SideSet(const Ioss::SideSet &other)
   id = other.get_property("id").get_int();
   entityCount = other.get_property("entity_count").get_int();
   dfCount = other.get_property("distribution_factor_count").get_int();
-  std::string io_name = other.name();
+  const std::string& io_name = other.name();
 
   // KLUGE: universal_sideset has side dfCount...
   if (io_name == "universal_sideset") {
@@ -505,7 +505,7 @@ int Internals::write_meta_data(Mesh &mesh)
 {
   int ierr;
   {
-    // TODO: (Only needed for par_exo...)
+    // TODO(gdsjaar): (Only needed for par_exo...)
     // Determine global counts...
     if (!mesh.file_per_processor) {
       get_global_counts(mesh);
@@ -626,7 +626,7 @@ int Internals::write_meta_data(Mesh &mesh)
   return(EX_NOERR);
 }
 
-void Internals::get_global_counts(Mesh &mesh)
+void Internals::get_global_counts(Mesh & /*mesh*/)
 {
 #if defined(HAVE_MPI)
   std::vector<int64_t> counts;
@@ -756,7 +756,7 @@ int Internals::put_metadata(const Mesh &mesh,
   char errmsg[MAX_ERR_LENGTH];
   const char *routine = "Internals::put_metadata()";
 
-  int rootid = (unsigned)exodusFilePtr & EX_FILE_ID_MASK;
+  int rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
 
   if (rootid == exodusFilePtr && nc_inq_dimid (exodusFilePtr, DIM_NUM_DIM, &numdimdim) == NC_NOERR) {
     exerrval = EX_MSG;
@@ -770,7 +770,7 @@ int Internals::put_metadata(const Mesh &mesh,
     // We are creating a grouped file, the title and other attributes haveee
     // already been defined when the root group was created; don't redo now.
     int status = nc_put_att_text(rootid, NC_GLOBAL, ATT_TITLE,
-                                 (int)std::strlen(mesh.title)+1, mesh.title);
+                                 static_cast<int>(std::strlen(mesh.title))+1, mesh.title);
 
     // define some attributes...
     if (status != NC_NOERR) {
@@ -922,7 +922,7 @@ int Internals::put_metadata(const Mesh &mesh,
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
               "Error: failed to define number of attributes in node block %" PRId64 " in file id %d",
-              (entity_id)mesh.nodeblocks[0].id,exodusFilePtr);
+              static_cast<entity_id>(mesh.nodeblocks[0].id),exodusFilePtr);
       ex_err(routine, errmsg, status);
       return (EX_FATAL);
     }
@@ -1217,7 +1217,7 @@ int Internals::put_metadata(const Mesh &mesh,
                             nullptr};
       const nc_type types[] = {ids_type, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)comm.globalElementBlocks, DIM_NUM_ELBLK_GLOBAL, vars, types);
+      status = define_variables(exodusFilePtr, static_cast<int>(comm.globalElementBlocks), DIM_NUM_ELBLK_GLOBAL, vars, types);
       if (status != EX_NOERR) { return EX_FATAL;
       }
     }
@@ -1232,7 +1232,7 @@ int Internals::put_metadata(const Mesh &mesh,
                             nullptr};
       const nc_type types[] = {ids_type, bulk_type, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)comm.globalNodeSets, DIM_NUM_NS_GLOBAL, vars, types);
+      status = define_variables(exodusFilePtr, static_cast<int>(comm.globalNodeSets), DIM_NUM_NS_GLOBAL, vars, types);
       if (status != EX_NOERR) { return EX_FATAL;
       }
     }
@@ -1247,7 +1247,7 @@ int Internals::put_metadata(const Mesh &mesh,
                             nullptr};
       const nc_type types[] = {ids_type, bulk_type, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)comm.globalSideSets, DIM_NUM_SS_GLOBAL, vars, types);
+      status = define_variables(exodusFilePtr, static_cast<int>(comm.globalSideSets), DIM_NUM_SS_GLOBAL, vars, types);
       if (status != EX_NOERR) { return EX_FATAL;
       }
     }
@@ -1317,7 +1317,7 @@ int Internals::put_metadata(const Mesh &mesh,
                             nullptr};
       const nc_type types[] = {ids_type, NC_INT, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)comm.nodeMap.size(), DIM_NUM_N_CMAPS, vars, types);
+      status = define_variables(exodusFilePtr, static_cast<int>(comm.nodeMap.size()), DIM_NUM_N_CMAPS, vars, types);
       if (status != EX_NOERR) { return EX_FATAL;
       }
     }
@@ -1346,7 +1346,7 @@ int Internals::put_metadata(const Mesh &mesh,
                             nullptr};
       const nc_type types[] = {ids_type, NC_INT, bulk_type};
 
-      status = define_variables(exodusFilePtr, (int)comm.elementMap.size(), DIM_NUM_E_CMAPS, vars, types);
+      status = define_variables(exodusFilePtr, static_cast<int>(comm.elementMap.size()), DIM_NUM_E_CMAPS, vars, types);
       if (status != EX_NOERR) { return EX_FATAL;
       }
     }
@@ -1473,7 +1473,7 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
 
       // store element type as attribute of connectivity variable
       status=nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                             (int)std::strlen(blocks[iblk].elType)+1, blocks[iblk].elType);
+                             static_cast<int>(std::strlen(blocks[iblk].elType))+1, blocks[iblk].elType);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
         sprintf(errmsg,
@@ -1741,7 +1741,7 @@ int Internals::put_metadata(const std::vector<FaceBlock> &blocks)
 
     // store element type as attribute of connectivity variable
     status=nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                           (int)std::strlen(blocks[iblk].elType)+1, blocks[iblk].elType);
+                           static_cast<int>(std::strlen(blocks[iblk].elType))+1, blocks[iblk].elType);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
@@ -1905,7 +1905,7 @@ int Internals::put_metadata(const std::vector<EdgeBlock> &blocks)
     }
     // store element type as attribute of connectivity variable
     status=nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                           (int)std::strlen(blocks[iblk].elType)+1, blocks[iblk].elType);
+                           static_cast<int>(std::strlen(blocks[iblk].elType))+1, blocks[iblk].elType);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
@@ -1940,7 +1940,7 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
     }
 
     int lftype = 0; // Parallel file...
-    status=nc_put_var1_int(exodusFilePtr, varid, 0, &lftype);
+    status=nc_put_var1_int(exodusFilePtr, varid, nullptr, &lftype);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
@@ -2147,7 +2147,7 @@ int Internals::put_non_define_data(const CommunicationMetaData &comm)
 
 int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 {
-  int num_elem_blk = (int)blocks.size();  // Verified via assert earlier...
+  int num_elem_blk = static_cast<int>(blocks.size());  // Verified via assert earlier...
 
   if (num_elem_blk > 0) {
     // first get id of element block ids array variable
@@ -2172,7 +2172,7 @@ int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 
     size_t  start[2];
     size_t  count[2];
-    std::string text("");
+    std::string text;
     count[0] = 1;
     start[1] = 0;
     count[1] = text.size()+1;
@@ -2203,7 +2203,7 @@ int Internals::put_non_define_data(const std::vector<ElemBlock> &blocks)
 
 int Internals::put_non_define_data(const std::vector<FaceBlock> &blocks)
 {
-  int num_face_blk = (int)blocks.size();  // Verified via assert earlier...
+  int num_face_blk = static_cast<int>(blocks.size());  // Verified via assert earlier...
 
   if (num_face_blk > 0) {
     // first get id of face block ids array variable
@@ -2228,7 +2228,7 @@ int Internals::put_non_define_data(const std::vector<FaceBlock> &blocks)
 
     size_t  start[2];
     size_t  count[2];
-    std::string text("");
+    std::string text;
     count[0] = 1;
     start[1] = 0;
     count[1] = text.size()+1;
@@ -2259,7 +2259,7 @@ int Internals::put_non_define_data(const std::vector<FaceBlock> &blocks)
 
 int Internals::put_non_define_data(const std::vector<EdgeBlock> &blocks)
 {
-  int num_edge_blk = (int)blocks.size();  // Verified via assert earlier...
+  int num_edge_blk = static_cast<int>(blocks.size());  // Verified via assert earlier...
 
   if (num_edge_blk > 0) {
     // first get id of edge block ids array variable
@@ -2284,7 +2284,7 @@ int Internals::put_non_define_data(const std::vector<EdgeBlock> &blocks)
 
     size_t  start[2];
     size_t  count[2];
-    std::string text("");
+    std::string text;
     count[0] = 1;
     start[1] = 0;
     count[1] = text.size()+1;
@@ -2365,7 +2365,7 @@ int Internals::put_metadata(const std::vector<NodeSet> &nodesets)
 
     //  NOTE: ex_inc_file_item is used to find the number of node sets
     // for a specific file and returns that value incremented.
-    int cur_num_node_sets=(int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_NODE_SET));
+    int cur_num_node_sets=ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_NODE_SET));
 
     if (nodesets[i].entityCount == 0) {
       continue;
@@ -2544,7 +2544,7 @@ int Internals::put_metadata(const std::vector<EdgeSet> &edgesets)
 
     //  NOTE: ex_inc_file_item is used to find the number of edge sets
     // for a specific file and returns that value incremented.
-    int cur_num_edge_sets=(int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_EDGE_SET));
+    int cur_num_edge_sets=ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_EDGE_SET));
 
     if (edgesets[i].entityCount == 0) {
       continue;
@@ -2741,7 +2741,7 @@ int Internals::put_metadata(const std::vector<FaceSet> &facesets)
 
     //  NOTE: ex_inc_file_item is used to find the number of face sets
     // for a specific file and returns that value incremented.
-    int cur_num_face_sets=(int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_FACE_SET));
+    int cur_num_face_sets=ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_FACE_SET));
 
     if (facesets[i].entityCount == 0) {
       continue;
@@ -2935,7 +2935,7 @@ int Internals::put_metadata(const std::vector<ElemSet> &elemsets)
 
     //  NOTE: ex_inc_file_item is used to find the number of elem sets
     // for a specific file and returns that value incremented.
-    int cur_num_elem_sets=(int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_ELEM_SET));
+    int cur_num_elem_sets=ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_ELEM_SET));
 
     if (elemsets[i].entityCount == 0) {
       continue;
@@ -3223,7 +3223,7 @@ int Internals::put_metadata(const std::vector<SideSet> &sidesets)
 
     //  NOTE: ex_inc_file_item is used to find the number of side sets
     // for a specific file and returns that value incremented.
-    int cur_num_side_sets = (int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_SIDE_SET));
+    int cur_num_side_sets = ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_SIDE_SET));
 
     if (sidesets[i].entityCount == 0) {
       continue;
@@ -3341,7 +3341,7 @@ int Internals::put_non_define_data(const std::vector<SideSet> &sidesets)
   }
 
   // Output sideset ids...
-  int num_sidesets = (int)sidesets.size();
+  int num_sidesets = static_cast<int>(sidesets.size());
   std::vector<entity_id> sideset_id(num_sidesets);
   for (int i = 0; i < num_sidesets; i++) {
     sideset_id[i] = sidesets[i].id;
@@ -3520,7 +3520,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status=nc_put_var_longlong(exoid, var_id, (long long int*)&ids[0]);
+      status=nc_put_var_longlong(exoid, var_id, const_cast<long long int*>(&ids[0]));
     } else {
       // Have entity_id (long long), need ints...
       std::vector<int> int_ids(ids.size());
@@ -3690,4 +3690,4 @@ namespace {
     }
     return EX_NOERR;
   }
-}
+} // namespace

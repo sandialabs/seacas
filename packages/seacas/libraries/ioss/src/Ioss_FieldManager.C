@@ -32,9 +32,9 @@
 
 #include <Ioss_Field.h>
 #include <Ioss_FieldManager.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
 #include <map>
+#include <stddef.h>
 #include <string>
 #include <utility>
 

@@ -32,8 +32,8 @@
 #include <Ioss_GroupingEntity.h>
 #include <Ioss_Property.h>
 #include <Ioss_Utils.h>
-#include <stddef.h>
 #include <ostream>
+#include <stddef.h>
 #include <string>
 
 namespace {
@@ -64,7 +64,7 @@ namespace {
 	   << "'. Types must match\n";
     IOSS_ERROR(errmsg);
   }
-}
+} // namespace
 
 Ioss::Property::Property() :
   name_(""), type_(INVALID), storage_(UNKNOWN_VAR_TYPE), isImplicit_(false)
