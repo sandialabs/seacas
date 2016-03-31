@@ -33,11 +33,11 @@
  * 
  */
 #include <iostream>
-#include <assert.h>                     // for assert
-#include <limits.h>                     // for INT_MAX
-#include <stdio.h>                      // for printf, fprintf, nullptr, etc
-#include <stdlib.h>                     // for exit, free
-#include <string.h>                     // for strcpy, strrchr, strlen
+#include <cassert>                     // for assert
+#include <climits>                     // for INT_MAX
+#include <cstdio>                      // for printf, fprintf, nullptr, etc
+#include <cstdlib>                     // for exit, free
+#include <cstring>                     // for strcpy, strrchr, strlen
 #include <sys/types.h>                  // for int64_t
 #include <cstddef>                      // for size_t
 #include <vector>                       // for vector

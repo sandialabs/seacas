@@ -37,9 +37,9 @@
 /*          ExodusII command file.                                          */
 /*--------------------------------------------------------------------------*/
 
-#include <stdio.h>                      // for fprintf, nullptr, stderr, etc
-#include <stdlib.h>                     // for exit, realloc
-#include <string.h>                     // for strtok, strchr, strstr, etc
+#include <cstdio>                      // for fprintf, nullptr, stderr, etc
+#include <cstdlib>                     // for exit, realloc
+#include <cstring>                     // for strtok, strchr, strstr, etc
 #include "pe_str_util_const.h"          // for strip_string, token_compare, etc
 #include "ps_pario_const.h"             // for PIO_Info, Parallel_IO, etc
 #include "rf_allo.h"                    // for array_alloc

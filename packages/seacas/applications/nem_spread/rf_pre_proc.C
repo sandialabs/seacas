@@ -34,9 +34,9 @@
  */
 
 #include <nem_spread.h>                 // for NemSpread
-#include <stddef.h>                     // for size_t
+#include <cstddef>                     // for size_t
 #include "rf_allo.h"                    // for array_alloc
-#include "stdint.h"
+#include <cstdint>
 
 template void NemSpread<double,int>::create_elem_types(void);
 template void NemSpread<float,int>::create_elem_types(void);

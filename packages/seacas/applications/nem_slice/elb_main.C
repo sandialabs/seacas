@@ -39,10 +39,10 @@
  *	print_input()
  *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 #include <iostream>
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for printf, nullptr, fprintf, etc
-#include <stdlib.h>                     // for free, exit, malloc
-#include <string.h>                     // for strcmp
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for printf, nullptr, fprintf, etc
+#include <cstdlib>                     // for free, exit, malloc
+#include <cstring>                     // for strcmp
 
 #include "add_to_log.h"                 // for add_to_log
 #include "elb_allo.h"             // for array_alloc
