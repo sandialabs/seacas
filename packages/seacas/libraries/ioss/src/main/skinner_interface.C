@@ -2,23 +2,23 @@
  * Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
- * 
+ *
  *     * Neither the name of Sandia Corporation nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,7 +30,7 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 #include "skinner_interface.h"
 #include <cstddef>                     // for nullptr
@@ -58,100 +58,100 @@ void Skinner::Interface::enroll_options()
   options_.usage("[options] input_file[s] output_file");
 
   options_.enroll("help", Ioss::GetLongOption::NoValue,
-		  "Print this summary and exit", nullptr);
+                  "Print this summary and exit", nullptr);
 
   options_.enroll("version", Ioss::GetLongOption::NoValue,
-		  "Print version and exit", nullptr);
+                  "Print version and exit", nullptr);
 
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue,
-		  "True if using 64-bit integers",
-		  nullptr);
+                  "True if using 64-bit integers",
+                  nullptr);
   options_.enroll("in_type", Ioss::GetLongOption::MandatoryValue,
-		  "Database type for input file: pamgen|generated|exodus. exodus is the default.",
-		  "exodus");
+                  "Database type for input file: pamgen|generated|exodus. exodus is the default.",
+                  "exodus");
 
   options_.enroll("out_type", Ioss::GetLongOption::MandatoryValue,
-		  "Database type for output file: exodus. exodus is the default.",
-		  "exodus");
+                  "Database type for output file: exodus. exodus is the default.",
+                  "exodus");
 
   options_.enroll("no_output", Ioss::GetLongOption::NoValue,
-		  "Do not produce output file, just generate the faces",
-		  nullptr);
+                  "Do not produce output file, just generate the faces",
+                  nullptr);
 
   options_.enroll("ignore_face_ids", Ioss::GetLongOption::NoValue,
-		  "Ignore internal face ids and just use 1..num_face",
-		  nullptr);
+                  "Ignore internal face ids and just use 1..num_face",
+                  nullptr);
 
   options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
-		  "Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format",
-		  nullptr);
-  
+                  "Output database will be a netcdf4 hdf5-based file instead of the classical netcdf file format",
+                  nullptr);
+
   options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
-		  "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
-		  nullptr);
-  
+                  "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
+                  nullptr);
+
   options_.enroll("compress", Ioss::GetLongOption::MandatoryValue,
-		  "Specify the hdf5 compression level [0..9] to be used on the output file.",
-		  nullptr);
-  
+                  "Specify the hdf5 compression level [0..9] to be used on the output file.",
+                  nullptr);
+
   options_.enroll("compose", Ioss::GetLongOption::MandatoryValue,
-		  "Specify the parallel-io method to be used to output a single file in a parallel run. "
-		  "Options are default, mpiio, mpiposix, pnetcdf",
-		  nullptr);
+                  "Specify the parallel-io method to be used to output a single file in a parallel run. "
+                  "Options are default, mpiio, mpiposix, pnetcdf",
+                  nullptr);
 
   options_.enroll("rcb", Ioss::GetLongOption::NoValue,
-		  "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
-		  nullptr);
+                  "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
+                  nullptr);
   options_.enroll("rib", Ioss::GetLongOption::NoValue,
-		  "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
-		  nullptr);
+                  "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
+                  nullptr);
 
   options_.enroll("hsfc", Ioss::GetLongOption::NoValue,
-		  "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
-		  nullptr);
+                  "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
+                  nullptr);
 
   options_.enroll("metis_sfc", Ioss::GetLongOption::NoValue,
-		  "Use the metis space-filling-curve method to decompose the input mesh in a parallel run.",
-		  nullptr);
-  
+                  "Use the metis space-filling-curve method to decompose the input mesh in a parallel run.",
+                  nullptr);
+
   options_.enroll("kway", Ioss::GetLongOption::NoValue,
-		  "Use the metis kway graph-based method to decompose the input mesh in a parallel run.",
-		  nullptr);
+                  "Use the metis kway graph-based method to decompose the input mesh in a parallel run.",
+                  nullptr);
 
   options_.enroll("kway_geom", Ioss::GetLongOption::NoValue,
-		  "Use the metis kway graph-based method with geometry speedup to decompose the input mesh in a parallel run.",
-		  nullptr);
+                  "Use the metis kway graph-based method with geometry speedup to decompose the input mesh in a parallel run.",
+                  nullptr);
 
   options_.enroll("linear", Ioss::GetLongOption::NoValue,
-		  "Use the linear method to decompose the input mesh in a parallel run. "
-		  "elements in order first n/p to proc 0, next to proc 1.",
-		  nullptr);
+                  "Use the linear method to decompose the input mesh in a parallel run. "
+                  "elements in order first n/p to proc 0, next to proc 1.",
+                  nullptr);
 
   options_.enroll("cyclic", Ioss::GetLongOption::NoValue,
-		  "Use the cyclic method to decompose the input mesh in a parallel run. "
-		  "elements handed out to id % proc_count",
-		  nullptr);
+                  "Use the cyclic method to decompose the input mesh in a parallel run. "
+                  "elements handed out to id % proc_count",
+                  nullptr);
 
   options_.enroll("random", Ioss::GetLongOption::NoValue,
-		  "Use the random method to decompose the input mesh in a parallel run."
-		  "elements assigned randomly to processors in a way that preserves balance (do not use for a real run)",
-		  nullptr);
+                  "Use the random method to decompose the input mesh in a parallel run."
+                  "elements assigned randomly to processors in a way that preserves balance (do not use for a real run)",
+                  nullptr);
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
-		  "Files are decomposed externally into a file-per-processor in a parallel run.",
-		  nullptr);
+                  "Files are decomposed externally into a file-per-processor in a parallel run.",
+                  nullptr);
 
   options_.enroll("debug" , Ioss::GetLongOption::NoValue,
-		  "turn on debugging output",
-		  nullptr);
+                  "turn on debugging output",
+                  nullptr);
 
   options_.enroll("statistics" , Ioss::GetLongOption::NoValue,
-		  "output parallel io timing statistics",
-		  nullptr);
+                  "output parallel io timing statistics",
+                  nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue,
-		  "Show copyright and license data.",
-		  nullptr);
+                  "Show copyright and license data.",
+                  nullptr);
 }
 
 bool Skinner::Interface::parse_options(int argc, char **argv)
@@ -164,14 +164,14 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   char *options = getenv("IO_SKINNER_OPTIONS");
   if (options != nullptr) {
     std::cerr << "\nThe following options were specified via the IO_SKINNER_OPTIONS environment variable:\n"
-	      << "\t" << options << "\n\n";
+              << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
   }
 
   int option_index = options_.parse(argc, argv);
   if ( option_index < 1 ) {
     return false;
-}
+  }
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
@@ -184,7 +184,7 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
     // Version is printed up front, just exit...
     exit(0);
   }
-  
+
   if (options_.retrieve("64-bit") != nullptr) {
     ints64Bit_ = true;
   }
@@ -283,40 +283,40 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("copyright") != nullptr) {
     std::cerr << "\n"
-	      << "Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract\n"
-	      << "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains\n"
-	      << "certain rights in this software\n"
-	      << "\n"
-	      << "Redistribution and use in source and binary forms, with or without\n"
-	      << "modification, are permitted provided that the following conditions are\n"
-	      << "met:\n"
-	      << "\n"
-	      << "    * Redistributions of source code must retain the above copyright\n"
-	      << "      notice, this list of conditions and the following disclaimer.\n"
-	      << "\n"
-	      << "    * Redistributions in binary form must reproduce the above\n"
-	      << "      copyright notice, this list of conditions and the following\n"
-	      << "      disclaimer in the documentation and/or other materials provided\n"
-	      << "      with the distribution.\n"
-	      << "\n"
-	      << "    * Neither the name of Sandia Corporation nor the names of its\n"
-	      << "      contributors may be used to endorse or promote products derived\n"
-	      << "      from this software without specific prior written permission.\n"
-	      << "\n"
-	      << "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
-	      << "'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
-	      << "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n"
-	      << "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
-	      << "OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n"
-	      << "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n"
-	      << "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"
-	      << "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"
-	      << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
-	      << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
-	      << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
+              << "Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract\n"
+              << "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains\n"
+              << "certain rights in this software\n"
+              << "\n"
+              << "Redistribution and use in source and binary forms, with or without\n"
+              << "modification, are permitted provided that the following conditions are\n"
+              << "met:\n"
+              << "\n"
+              << "    * Redistributions of source code must retain the above copyright\n"
+              << "      notice, this list of conditions and the following disclaimer.\n"
+              << "\n"
+              << "    * Redistributions in binary form must reproduce the above\n"
+              << "      copyright notice, this list of conditions and the following\n"
+              << "      disclaimer in the documentation and/or other materials provided\n"
+              << "      with the distribution.\n"
+              << "\n"
+              << "    * Neither the name of Sandia Corporation nor the names of its\n"
+              << "      contributors may be used to endorse or promote products derived\n"
+              << "      from this software without specific prior written permission.\n"
+              << "\n"
+              << "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
+              << "'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
+              << "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n"
+              << "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
+              << "OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n"
+              << "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n"
+              << "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"
+              << "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"
+              << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
+              << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
+              << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
     exit(EXIT_SUCCESS);
-  }  
-  
+  }
+
   // Parse remaining options as directory paths.
   if (option_index < argc-1) {
     inputFile_  = argv[option_index++];
@@ -327,4 +327,3 @@ bool Skinner::Interface::parse_options(int argc, char **argv)
   }
   return true;
 }
-
