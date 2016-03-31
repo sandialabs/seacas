@@ -32,22 +32,22 @@
 
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
+#include <Ioss_CodeTypes.h>
+#include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SerializeIO.h>
 #include <Ioss_SurfaceSplit.h>
-#include <Ioss_FileInfo.h>
 #include <Ioss_Utils.h>
-#include <assert.h>
-#include <exodusII.h>
+#include <cassert>
 #include <exodus/Ioex_Utils.h>
+#include <exodusII.h>
 #include <exodus/Ioex_Internals.h>
-#include <float.h>
-#include <stddef.h>
+#include <cfloat>
+#include <cstddef>
 #include <sys/select.h>
-#include <time.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 #include <tokenize.h>
 #include <algorithm>
@@ -57,16 +57,16 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <map>
+#include <numeric>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-#include <limits>
-#include <numeric>
 
-#include "Ioss_CoordinateFrame.h"
 #include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
 #include "Ioss_DBUsage.h"
 #include "Ioss_DatabaseIO.h"
 #include "Ioss_EdgeBlock.h"
@@ -153,7 +153,7 @@ namespace {
       }
     }
   }
-}
+} // namespace
 
 namespace Iofx {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string& filename,
@@ -311,7 +311,7 @@ namespace Iofx {
     if (is_ok) {
       assert(exodusFilePtr >= 0);
       // Check byte-size of integers stored on the database...
-      if (ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) {
+      if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
 	ex_set_int64_status(exodusFilePtr,  EX_ALL_INT64_API);
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
@@ -590,7 +590,7 @@ namespace Iofx {
         char *qa_record[1][4];
       };
     
-      qa_element *qa = new qa_element[num_qa];
+      auto qa = new qa_element[num_qa];
       for (int i=0; i < num_qa; i++) {
         for (int j=0; j < 4; j++) {
           qa[i].qa_record[0][j] = new char[MAX_STR_LENGTH+1];
@@ -1176,15 +1176,15 @@ namespace Iofx {
 
       Ioss::EntityBlock *block = nullptr;
       if (entity_type == EX_ELEM_BLOCK) {
-        Ioss::ElementBlock *eblock = new Ioss::ElementBlock(this, block_name, type, local_X_count[iblk]);
+        auto eblock = new Ioss::ElementBlock(this, block_name, type, local_X_count[iblk]);
         block = eblock;
         get_region()->add(eblock);
       } else if (entity_type == EX_FACE_BLOCK) {
-        Ioss::FaceBlock *fblock = new Ioss::FaceBlock(this, block_name, type, local_X_count[iblk]);
+        auto fblock = new Ioss::FaceBlock(this, block_name, type, local_X_count[iblk]);
         block = fblock;
         get_region()->add(fblock);
       } else if (entity_type == EX_EDGE_BLOCK) {
-        Ioss::EdgeBlock *eblock = new Ioss::EdgeBlock(this, block_name, type, local_X_count[iblk]);
+        auto eblock = new Ioss::EdgeBlock(this, block_name, type, local_X_count[iblk]);
         block = eblock;
         get_region()->add(eblock);
       } else {
@@ -1265,7 +1265,7 @@ namespace Iofx {
       if (entity_type == EX_ELEM_BLOCK) {
         Ioss::SerializeIO       serializeIO__(this);
 	if (nmap > 0) {
-	  nmap = Ioex::add_map_fields(get_file_pointer(), (Ioss::ElementBlock*)block,
+	  nmap = Ioex::add_map_fields(get_file_pointer(), dynamic_cast<Ioss::ElementBlock*>(block),
 				      local_X_count[iblk], maximumNameLength);
 	}
       }
@@ -1648,7 +1648,7 @@ namespace Iofx {
       // IO system and are already split into homogenous pieces...
       {
         for (auto &fs_name : fs_set) {
-          Ioss::SideSet *side_set = new Ioss::SideSet(this, fs_name);
+          auto side_set = new Ioss::SideSet(this, fs_name);
           get_region()->add(side_set);
           int64_t id = Ioex::extract_id(fs_name);
           if (id > 0) {
@@ -1659,7 +1659,7 @@ namespace Iofx {
 
       for (int iss = 0; iss < m_groupCount[EX_SIDE_SET]; iss++) {
         int64_t id = side_set_ids[iss];
-        std::string sid = "";
+        std::string sid;
         Ioex::TopologyMap topo_map;
         Ioex::TopologyMap side_map; // Used to determine side consistency
 
@@ -1681,7 +1681,7 @@ namespace Iofx {
           }
 
           bool in_fs_map = false;
-          Ioex::SideSetMap::iterator FSM = fs_map.find(side_set_name);
+          auto FSM = fs_map.find(side_set_name);
           if (FSM != fs_map.end()) {
             in_fs_map = true;
             std::string efs_name = (*FSM).second;
@@ -1705,7 +1705,7 @@ namespace Iofx {
               }
             }
 
-            get_region()->add((Ioss::SideSet*)side_set);
+            get_region()->add(side_set);
 
             get_region()->add_alias(side_set_name, alias);
             get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id));
@@ -1920,7 +1920,7 @@ namespace Iofx {
                 }
                 assert(elem_topo != nullptr);
 
-                Ioss::SideBlock *side_block = new Ioss::SideBlock(this, side_block_name,
+                auto side_block = new Ioss::SideBlock(this, side_block_name,
                                                                   side_topo->name(),
                                                                   elem_topo->name(),
                                                                   my_side_count);
@@ -2084,7 +2084,7 @@ namespace Iofx {
                 filtered = Ioex::filter_node_list(active_node_index, nodeConnectivityStatus);
                 set_params[ins].num_entry = active_node_index.size();
               }
-              T* Xset = new T(this, Xset_name, set_params[ins].num_entry);
+              auto  Xset = new T(this, Xset_name, set_params[ins].num_entry);
               Xsets[ins] = Xset;
               Xset->property_add(Ioss::Property("id", id));
               if (db_has_name) {
@@ -2519,7 +2519,7 @@ namespace Iofx {
               if (field.is_type(Ioss::Field::INTEGER)) {
                 Ioss::IntVector element(my_element_count);
                 Ioss::IntVector side(my_element_count);
-                int *el_side = (int *)data;
+                int *el_side = reinterpret_cast<int *>(data);
 
                 // FIX: Hardwired map ids....
                 size_t eb_offset = eb->get_offset();
@@ -2536,7 +2536,7 @@ namespace Iofx {
               } else {
                 Ioss::Int64Vector element(my_element_count);
                 Ioss::Int64Vector side(my_element_count);
-                int64_t *el_side = (int64_t *)data;
+                int64_t *el_side = reinterpret_cast<int64_t *>(data);
 
                 // FIX: Hardwired map ids....
                 size_t eb_offset = eb->get_offset();
@@ -3187,10 +3187,10 @@ namespace Iofx {
             if (int_byte_size_api() == 4) {
               int64_t int_max = std::numeric_limits<int>::max();
               int *ids = static_cast<int*>(data);
-              int *els = (int*)TOPTR(element_side);
+              int *els = reinterpret_cast<int*>(TOPTR(element_side));
               size_t idx = 0;
               for (ssize_t iel = 0; iel < 2*entity_count; iel+=2) {
-                int64_t new_id = (int64_t)10*els[iel] + els[iel+1];
+                int64_t new_id = static_cast<int64_t>(10)*els[iel] + els[iel+1];
                 if (new_id > int_max) {
                   std::string decoded_filename = util().decode_filename(get_filename(), isParallel);
                   std::ostringstream errmsg;
@@ -3202,11 +3202,11 @@ namespace Iofx {
                   IOSS_ERROR(errmsg);
                 }
                 
-                ids[idx++] = (int)new_id;
+                ids[idx++] = static_cast<int>(new_id);
               }
             } else {
               int64_t *ids = static_cast<int64_t*>(data);
-              int64_t *els = (int64_t*)TOPTR(element_side);
+              int64_t *els = reinterpret_cast<int64_t*>(TOPTR(element_side));
               size_t idx = 0;
               for (ssize_t iel = 0; iel < 2*entity_count; iel+=2) {
                 int64_t new_id = 10*els[iel] + els[iel+1];
@@ -3244,16 +3244,16 @@ namespace Iofx {
               ssize_t index = 0;
               if (int_byte_size_api() == 4) {
                 int     *element_side = static_cast<int*>(data);
-                int     *element32 = (int*)TOPTR(element);
-                int     *sides32 = (int*)TOPTR(sides);
+                int     *element32 = reinterpret_cast<int*>(TOPTR(element));
+                int     *sides32 = reinterpret_cast<int*>(TOPTR(sides));
                 for (ssize_t iel = 0; iel < entity_count; iel++) {
                   element_side[index++] = map[element32[iel]];
                   element_side[index++] = sides32[iel] - side_offset;
                 }
               } else {
                 int64_t *element_side = static_cast<int64_t*>(data);
-                int64_t *element64 = (int64_t*)TOPTR(element);
-                int64_t *sides64 = (int64_t*)TOPTR(sides);
+                int64_t *element64 = reinterpret_cast<int64_t*>(TOPTR(element));
+                int64_t *sides64 = reinterpret_cast<int64_t*>(TOPTR(sides));
                 for (ssize_t iel = 0; iel < entity_count; iel++) {
                   element_side[index++] = map[element64[iel]];
                   element_side[index++] = sides64[iel] - side_offset;
@@ -3269,8 +3269,8 @@ namespace Iofx {
               ssize_t index = 0;
               if (int_byte_size_api() == 4) {
                 int     *element_side = static_cast<int*>(data);
-                int     *element32 = (int*)TOPTR(element);
-                int     *sides32 = (int*)TOPTR(sides);
+                int     *element32 = reinterpret_cast<int*>(TOPTR(element));
+                int     *sides32 = reinterpret_cast<int*>(TOPTR(sides));
                 for (int64_t iel = 0; iel < number_sides; iel++) {
                   if (is_valid_side[iel] == 1) {
                     // This side  belongs in the side block
@@ -3280,8 +3280,8 @@ namespace Iofx {
                 }
               } else {
                 int64_t *element_side = static_cast<int64_t*>(data);
-                int64_t *element64 = (int64_t*)TOPTR(element);
-                int64_t *sides64 = (int64_t*)TOPTR(sides);
+                int64_t *element64 = reinterpret_cast<int64_t*>(TOPTR(element));
+                int64_t *sides64 = reinterpret_cast<int64_t*>(TOPTR(sides));
                 for (int64_t iel = 0; iel < number_sides; iel++) {
                   if (is_valid_side[iel] == 1) {
                     // This side  belongs in the side block
@@ -3317,16 +3317,16 @@ namespace Iofx {
               ssize_t index = 0;
               if (int_byte_size_api() == 4) {
                 int     *element_side = static_cast<int*>(data);
-                int     *element32 = (int*)TOPTR(element);
-                int     *sides32 = (int*)TOPTR(sides);
+                int     *element32 = reinterpret_cast<int*>(TOPTR(element));
+                int     *sides32 = reinterpret_cast<int*>(TOPTR(sides));
                 for (ssize_t iel = 0; iel < entity_count; iel++) {
                   element_side[index++] = element32[iel];
                   element_side[index++] = sides32[iel] - side_offset;
                 }
               } else {
                 int64_t *element_side = static_cast<int64_t*>(data);
-                int64_t *element64 = (int64_t*)TOPTR(element);
-                int64_t *sides64 = (int64_t*)TOPTR(sides);
+                int64_t *element64 = reinterpret_cast<int64_t*>(TOPTR(element));
+                int64_t *sides64 = reinterpret_cast<int64_t*>(TOPTR(sides));
                 for (ssize_t iel = 0; iel < entity_count; iel++) {
                   element_side[index++] = element64[iel];
                   element_side[index++] = sides64[iel] - side_offset;
@@ -3342,8 +3342,8 @@ namespace Iofx {
               ssize_t index = 0;
               if (int_byte_size_api() == 4) {
                 int     *element_side = static_cast<int*>(data);
-                int     *element32 = (int*)TOPTR(element);
-                int     *sides32 = (int*)TOPTR(sides);
+                int     *element32 = reinterpret_cast<int*>(TOPTR(element));
+                int     *sides32 = reinterpret_cast<int*>(TOPTR(sides));
                 for (int64_t iel = 0; iel < number_sides; iel++) {
                   if (is_valid_side[iel] == 1) {
                     // This side  belongs in the side block
@@ -3353,8 +3353,8 @@ namespace Iofx {
                 }
               } else {
                 int64_t *element_side = static_cast<int64_t*>(data);
-                int64_t *element64 = (int64_t*)TOPTR(element);
-                int64_t *sides64 = (int64_t*)TOPTR(sides);
+                int64_t *element64 = reinterpret_cast<int64_t*>(TOPTR(element));
+                int64_t *sides64 = reinterpret_cast<int64_t*>(TOPTR(sides));
                 for (int64_t iel = 0; iel < number_sides; iel++) {
                   if (is_valid_side[iel] == 1) {
                     // This side  belongs in the side block
@@ -3781,9 +3781,9 @@ namespace Iofx {
                                               bool map_ids) const
     {
       if (int_byte_size_api() == 4) {
-        return get_side_connectivity_internal(fb, id, my_side_count, (int*)fconnect, map_ids);
+        return get_side_connectivity_internal(fb, id, my_side_count, reinterpret_cast<int*>(fconnect), map_ids);
       } 
-      return get_side_connectivity_internal(fb, id, my_side_count, (int64_t*)fconnect, map_ids);
+      return get_side_connectivity_internal(fb, id, my_side_count, reinterpret_cast<int64_t*>(fconnect), map_ids);
       
     }
 
@@ -3903,11 +3903,11 @@ namespace Iofx {
       int64_t *side64 = nullptr;
 
       if (int_byte_size_api() == 4) {
-        element32 = (int*)TOPTR(element);
-        side32 = (int*)TOPTR(side);
+        element32 = reinterpret_cast<int*>(TOPTR(element));
+        side32 = reinterpret_cast<int*>(TOPTR(side));
       } else {
-        element64 = (int64_t*)TOPTR(element);
-        side64 = (int64_t*)TOPTR(side);
+        element64 = reinterpret_cast<int64_t*>(TOPTR(element));
+        side64 = reinterpret_cast<int64_t*>(TOPTR(side));
       }
 
       for (int64_t iel = 0; iel < number_sides; iel++) {
@@ -4162,9 +4162,9 @@ namespace Iofx {
               std::vector<char> side(my_element_count * int_byte_size_api());
 
               if (int_byte_size_api() == 4) {
-                int *el_side = (int *)data;
-                int *element32 = (int*)TOPTR(element);
-                int *side32 = (int*)TOPTR(side);
+                int *el_side = reinterpret_cast<int *>(data);
+                int *element32 = reinterpret_cast<int*>(TOPTR(element));
+                int *side32 = reinterpret_cast<int*>(TOPTR(side));
 
                 int index = 0;
                 for (size_t i=0; i < my_element_count; i++) {
@@ -4172,9 +4172,9 @@ namespace Iofx {
                   side32[i]    = el_side[index++];
                 }
               } else {
-                int64_t *el_side = (int64_t *)data;
-                int64_t *element64 = (int64_t*)TOPTR(element);
-                int64_t *side64 = (int64_t*)TOPTR(side);
+                int64_t *el_side = reinterpret_cast<int64_t *>(data);
+                int64_t *element64 = reinterpret_cast<int64_t*>(TOPTR(element));
+                int64_t *side64 = reinterpret_cast<int64_t*>(TOPTR(side));
 
                 int64_t index = 0;
                 for (size_t i=0; i < my_element_count; i++) {
@@ -4525,7 +4525,7 @@ namespace Iofx {
         entity_map.build_reorder_map(eb_offset, num_to_get);
         return num_to_get;
       }
-    }
+    }  // namespace
 
     int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void* ids, size_t num_to_get) const
     {
@@ -4865,8 +4865,8 @@ namespace Iofx {
           // Convert global node id to local node id and store in 'entities'
           if (int_byte_size_api() == 4) {
             int* entity_proc = static_cast<int*>(data);
-            int* ent = (int*)&entities[0];
-            int* pro = (int*)&procs[0];
+            int* ent = reinterpret_cast<int*>(&entities[0]);
+            int* pro = reinterpret_cast<int*>(&procs[0]);
             int j=0;
             for (size_t i=0; i < entity_count; i++) {
               int global_id = entity_proc[j++];
@@ -4875,8 +4875,8 @@ namespace Iofx {
             }
           } else {
             int64_t* entity_proc = static_cast<int64_t*>(data);
-            int64_t* ent = (int64_t*)&entities[0];
-            int64_t* pro = (int64_t*)&procs[0];
+            int64_t* ent = reinterpret_cast<int64_t*>(&entities[0]);
+            int64_t* pro = reinterpret_cast<int64_t*>(&procs[0]);
             int64_t j=0;
             for (size_t i=0; i < entity_count; i++) {
               int64_t global_id = entity_proc[j++];
@@ -4886,7 +4886,7 @@ namespace Iofx {
           }
 
           if (commsetNodeCount > 0) {
-            int ierr = ex_put_node_cmap(get_file_pointer(), Ioex::get_id(cs, (ex_entity_type)0, &ids_),
+            int ierr = ex_put_node_cmap(get_file_pointer(), Ioex::get_id(cs, static_cast<ex_entity_type>(0), &ids_),
                                         TOPTR(entities), TOPTR(procs), myProcessor);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
@@ -4911,9 +4911,9 @@ namespace Iofx {
 
             std::vector<char> internal(nodeCount * int_byte_size_api());
             if (int_byte_size_api() == 4) {
-              compute_internal_border_maps((int*)&entities[0], (int*)&internal[0], nodeCount, entity_count);
+              compute_internal_border_maps(reinterpret_cast<int*>(&entities[0]), reinterpret_cast<int*>(&internal[0]), nodeCount, entity_count);
             } else {
-              compute_internal_border_maps((int64_t*)&entities[0], (int64_t*)&internal[0], nodeCount, entity_count);
+              compute_internal_border_maps(reinterpret_cast<int64_t*>(&entities[0]), reinterpret_cast<int64_t*>(&internal[0]), nodeCount, entity_count);
             }
 
             int ierr = ex_put_processor_node_maps(get_file_pointer(), TOPTR(internal), TOPTR(entities), nullptr,
@@ -4928,9 +4928,9 @@ namespace Iofx {
           std::vector<char> sides(entity_count * int_byte_size_api());
           if (int_byte_size_api() == 4) {
             int* entity_proc = static_cast<int*>(data);
-            int* ent = (int*)&entities[0];
-            int* sid = (int*)&sides[0];
-            int* pro = (int*)&procs[0];
+            int* ent = reinterpret_cast<int*>(&entities[0]);
+            int* sid = reinterpret_cast<int*>(&sides[0]);
+            int* pro = reinterpret_cast<int*>(&procs[0]);
             int j=0;
             for (size_t i=0; i < entity_count; i++) {
               ent[i] = elemMap.global_to_local(entity_proc[j++]);
@@ -4939,9 +4939,9 @@ namespace Iofx {
             }
           } else {
             int64_t* entity_proc = static_cast<int64_t*>(data);
-            int64_t* ent = (int64_t*)&entities[0];
-            int64_t* sid = (int64_t*)&sides[0];
-            int64_t* pro = (int64_t*)&procs[0];
+            int64_t* ent = reinterpret_cast<int64_t*>(&entities[0]);
+            int64_t* sid = reinterpret_cast<int64_t*>(&sides[0]);
+            int64_t* pro = reinterpret_cast<int64_t*>(&procs[0]);
             int64_t j=0;
             for (size_t i=0; i < entity_count; i++) {
               ent[i] = elemMap.global_to_local(entity_proc[j++]);
@@ -4950,7 +4950,7 @@ namespace Iofx {
             }
           }
 
-          int ierr = ex_put_elem_cmap(get_file_pointer(), Ioex::get_id(cs, (ex_entity_type)0, &ids_),
+          int ierr = ex_put_elem_cmap(get_file_pointer(), Ioex::get_id(cs, static_cast<ex_entity_type>(0), &ids_),
                                       TOPTR(entities), TOPTR(sides), TOPTR(procs), myProcessor);
           if (ierr < 0) {
             Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
@@ -4963,9 +4963,9 @@ namespace Iofx {
           // Iterate through array again and consolidate all '1's
           std::vector<char> internal(elementCount * int_byte_size_api());
           if (int_byte_size_api() == 4) {
-            compute_internal_border_maps((int*)&entities[0], (int*)&internal[0], elementCount, entity_count);
+            compute_internal_border_maps(reinterpret_cast<int*>(&entities[0]), reinterpret_cast<int*>(&internal[0]), elementCount, entity_count);
           } else {
-            compute_internal_border_maps((int64_t*)&entities[0], (int64_t*)&internal[0], elementCount, entity_count);
+            compute_internal_border_maps(reinterpret_cast<int64_t*>(&entities[0]), reinterpret_cast<int64_t*>(&internal[0]), elementCount, entity_count);
           }
 
           ierr = ex_put_processor_elem_maps(get_file_pointer(), TOPTR(internal),
@@ -5097,7 +5097,7 @@ namespace Iofx {
             if (field.get_type() == Ioss::Field::INTEGER) {
               Ioss::IntVector element(num_to_get);
               Ioss::IntVector side(num_to_get);
-              int *el_side = (int *)data;
+              int *el_side = reinterpret_cast<int *>(data);
 
               for (size_t i=0; i < num_to_get; i++) {
                 element[i] = elemMap.global_to_local(el_side[index++]);
@@ -5111,7 +5111,7 @@ namespace Iofx {
             } else {
               Ioss::Int64Vector element(num_to_get);
               Ioss::Int64Vector side(num_to_get);
-              int64_t *el_side = (int64_t *)data;
+              int64_t *el_side = reinterpret_cast<int64_t *>(data);
 
               for (size_t i=0; i < num_to_get; i++) {
                 element[i] = elemMap.global_to_local(el_side[index++]);
@@ -5144,7 +5144,7 @@ namespace Iofx {
             if (field.get_type() == Ioss::Field::INTEGER) {
               Ioss::IntVector element(num_to_get);
               Ioss::IntVector side(num_to_get);
-              int *el_side = (int *)data;
+              int *el_side = reinterpret_cast<int *>(data);
 
               for (size_t i=0; i < num_to_get; i++) {
                 element[i] = el_side[index++];
@@ -5158,7 +5158,7 @@ namespace Iofx {
             } else {
               Ioss::Int64Vector element(num_to_get);
               Ioss::Int64Vector side(num_to_get);
-              int64_t *el_side = (int64_t *)data;
+              int64_t *el_side = reinterpret_cast<int64_t *>(data);
 
               for (size_t i=0; i < num_to_get; i++) {
                 element[i] = el_side[index++];
@@ -5503,7 +5503,7 @@ namespace Iofx {
         for (auto &cs : comm_sets) {
           std::string type = cs->get_property("entity_type").get_string();
           size_t count = cs->get_property("entity_count").get_int();
-          int64_t id = Ioex::get_id(cs, (ex_entity_type)0, &ids_);
+          int64_t id = Ioex::get_id(cs, static_cast<ex_entity_type>(0), &ids_);
 
           if (type == "node") {
             meta->nodeMap.push_back(Ioex::CommunicationMap(id, count, 'n'));
@@ -5519,5 +5519,5 @@ namespace Iofx {
       commsetNodeCount = meta->nodeMap.size();
       commsetElemCount = meta->elementMap.size();
     }
-  } // End of namespace
+  }  // namespace Iofx
 

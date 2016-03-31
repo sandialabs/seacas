@@ -32,12 +32,12 @@
 
 #include <Ioss_IOFactory.h>
 #include <Ioss_Utils.h>                 // for IOSS_ERROR
-#include <stddef.h>                     // for nullptr
+#include "Ioss_DBUsage.h"               // for DatabaseUsage
 #include <map>                          // for _Rb_tree_iterator, etc
 #include <ostream>                      // for operator<<, basic_ostream, etc
+#include <stddef.h>                     // for nullptr
 #include <string>                       // for char_traits, string, etc
 #include <utility>                      // for pair
-#include "Ioss_DBUsage.h"               // for DatabaseUsage
 namespace Ioss { class DatabaseIO; }
 namespace Ioss { class PropertyManager; }
 

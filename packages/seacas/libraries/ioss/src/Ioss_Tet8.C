@@ -32,7 +32,7 @@
 
 #include <Ioss_Tet8.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -49,7 +49,7 @@ namespace Ioss {
     St_Tet8()
       : ElementVariableType("tetra8", 8) {}
   };
-}
+}  // namespace Ioss
 
 // ========================================================================
 namespace {
@@ -87,7 +87,7 @@ namespace {
   //        returns -1 if faces have differing topology
   int Constants::edges_per_face[nface+1] =
     {3,3,3,3,3};
-}
+}  // namespace
 
 void Ioss::Tet8::factory()
 {

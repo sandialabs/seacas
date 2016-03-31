@@ -37,8 +37,8 @@
 #include <Ioss_Field.h>
 #include <Ioss_Property.h>
 #include <Ioss_SideBlock.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -100,7 +100,7 @@ Ioss::SideBlock::get_implicit_property(const std::string& my_name) const
       return Ioss::Property(my_name, 0);
     
   }
-  else if (my_name == "parent_topology_type") {
+  if (my_name == "parent_topology_type") {
     return Ioss::Property(my_name, parent_element_topology()->name());
   } else {
     return Ioss::EntityBlock::get_implicit_property(my_name);
@@ -138,7 +138,7 @@ namespace {
     }
     return side;
   }
-}
+}  // namespace
 
 int  Ioss::SideBlock::get_consistent_side_number() const
 {

@@ -35,14 +35,14 @@
 #include <Ioss_NamedSuffixVariableType.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <map>
 #include <sstream>
+#include <stddef.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -79,11 +79,11 @@ Ioss::VariableType::VariableType(const std::string& type, int comp_count, bool d
 void Ioss::VariableType::alias(const std::string& base, const std::string& syn)
 {
   registry().insert(Ioss::VTM_ValuePair(Ioss::Utils::lowercase(syn),
-					(Ioss::VariableType*)factory(base)), false);
+					const_cast<Ioss::VariableType*>(factory(base))), false);
   // Register uppercase version also
   std::string up_type = Ioss::Utils::uppercase(syn);
   registry().insert(Ioss::VTM_ValuePair(up_type,
-					(Ioss::VariableType*)factory(base)), false);
+					const_cast<Ioss::VariableType*>(factory(base))), false);
 
 }
 
@@ -191,7 +191,7 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
   bool match = false;
   for (auto vtype : registry()) {
     ivt = vtype.second;
-    if ( ivt->suffix_count() == (int)size) {
+    if ( ivt->suffix_count() == static_cast<int>(size)) {
       if (ivt->match(suffices)) {
 	match = true;
 	break;
@@ -250,7 +250,7 @@ const Ioss::VariableType* Ioss::VariableType::factory(const std::vector<Ioss::Su
 bool Ioss::VariableType::match(const std::vector<Ioss::Suffix> &suffices) const
 {
   bool result = true;
-  if ((int)suffices.size() == suffix_count()) {
+  if (static_cast<int>(suffices.size()) == suffix_count()) {
     for (int i=0; i < suffix_count(); i++) {
       if (suffices[i] != label(i+1)) {
 	result = false;

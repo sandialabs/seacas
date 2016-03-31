@@ -37,6 +37,7 @@
 #include <Ioss_DatabaseIO.h>            // for DatabaseIO
 #include <Ioss_IOFactory.h>             // for IOFactory
 #include <Ioss_Map.h>                   // for Map
+#include <stddef.h>                     // for nullptr
 #include <stddef.h>                     // for size_t
 #include <stdint.h>                     // for int64_t
 #include <iostream>                     // for ostream

@@ -40,18 +40,18 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
-#include <assert.h>
+#include <cassert>
 #include <cgns/Iocgns_DatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
-#include <stddef.h>
+#include <cstddef>
 #include <sys/select.h>
-#include <time.h>
 #include <numeric>
-#include <iostream>
+#include <time.h>
 #include <fstream>
+#include <iostream>
+#include <cgnslib.h>
 #include <string>
 #include <vector>
-#include <cgnslib.h>
 
 #if !defined(CGNSLIB_H)
 #error "Could not include cgnslib.h"
@@ -124,7 +124,7 @@ namespace Iocgns {
     cgnsFilePtr = -1;
   }
 
-  int64_t DatabaseIO::node_global_to_local(int64_t global, bool must_exist) const
+  int64_t DatabaseIO::node_global_to_local(int64_t global, bool  /*must_exist*/) const
   {
     return global;
   }
@@ -167,7 +167,7 @@ namespace Iocgns {
       if (num_bc > 0) {
 	// Create a sideset...
 	std::string ss_name(name);
-	Ioss::SideSet *ss = new Ioss::SideSet(this, ss_name);
+	auto ss = new Ioss::SideSet(this, ss_name);
 	get_region()->add(ss);
       }
     }
@@ -360,7 +360,7 @@ namespace Iocgns {
 			<< " with " << num_entity << " faces\n";
 #endif	      
 	      std::string parent_topo = eblock == nullptr ? "unknown" : eblock->topology()->name();
-	      Ioss::SideBlock *sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
+	      auto sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo,
 							  num_entity);
 	      sblk->property_add(Ioss::Property("base", base));
 	      sblk->property_add(Ioss::Property("zone", zone));
@@ -389,7 +389,7 @@ namespace Iocgns {
     return true;
   }
 
-  bool DatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time )
+  bool DatabaseIO::begin_state(Ioss::Region * /*region*/, int /* state */, double  /*time*/ )
   {
     return true;
   }
@@ -419,7 +419,7 @@ namespace Iocgns {
       if (field.get_name() == "mesh_model_coordinates_x") {
 	double *rdata = static_cast<double*>(data);
 
-	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -439,7 +439,7 @@ namespace Iocgns {
       else if (field.get_name() == "mesh_model_coordinates_y") {
 	double *rdata = static_cast<double*>(data);
 
-	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -459,7 +459,7 @@ namespace Iocgns {
       else if (field.get_name() == "mesh_model_coordinates_z") {
 	double *rdata = static_cast<double*>(data);
 
-	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -488,7 +488,7 @@ namespace Iocgns {
 	// ..., yn, z0, ..., zn so we have to allocate some scratch
 	// memory to read in the data and then map into supplied
 	// 'data'
-	for (int zone=1; zone < (int)m_blockLocalNodeMap.size(); zone++) {
+	for (int zone=1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
 	  auto &block_map = m_blockLocalNodeMap[zone];     
 	  cgsize_t num_coord = block_map.size();
 	  std::vector<double> coord(num_coord);
@@ -577,8 +577,8 @@ namespace Iocgns {
 	// (The 'genesis' portion)
 
 	if (field.get_name() == "connectivity") {
-	  // TODO: Need to map local to global...
-	  cgsize_t *idata = (cgsize_t*)data;
+	  // TODO(gdsjaar): Need to map local to global...
+	  cgsize_t *idata = reinterpret_cast<cgsize_t*>(data);
 	  int element_nodes = eb->topology()->number_nodes();
 	  assert(field.raw_storage()->component_count() == element_nodes);
 
@@ -601,14 +601,14 @@ namespace Iocgns {
 
 	  if (my_element_count > 0) {
 	    int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
-					(cgsize_t*)data, nullptr);
+					reinterpret_cast<cgsize_t*>(data), nullptr);
 	    if (ierr < 0) {
 	      Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
 	    }
 	  }
 	}
 	else if (field.get_name() == "ids") {
-	  // TODO: This needs to change for parallel.
+	  // TODO(gdsjaar): This needs to change for parallel.
 	  // Map the local ids in this element block
 	  // (eb_offset+1...eb_offset+1+my_element_count) to global element ids.
 	  size_t eb_offset_plus_one = eb->get_offset() + 1;
@@ -622,7 +622,7 @@ namespace Iocgns {
 	  }
 	}
 	else if (field.get_name() == "implicit_ids") {
-	  // TODO: This needs to change for parallel.
+	  // TODO(gdsjaar): This needs to change for parallel.
 	  // If not parallel, then this is just 
 	  // (eb_offset+1...eb_offset+1+my_element_count).
 	  size_t eb_offset_plus_one = eb->get_offset() + 1;
@@ -687,7 +687,7 @@ namespace Iocgns {
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "element_side_raw" || field.get_name() == "element_side") {
 
-	// TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
+	// TODO(gdsjaar): ? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
 	int nodes_per_face = sb->topology()->number_nodes();
 	std::vector<cgsize_t> elements(nodes_per_face*num_to_get); // Not needed, but can't skip
 
@@ -706,7 +706,7 @@ namespace Iocgns {
 
 	size_t offset = m_zoneOffset[zone];
 	if (field.get_type() == Ioss::Field::INT32) {
-	  int *idata = (int*)data;
+	  int *idata = reinterpret_cast<int*>(data);
 	  size_t j = 0;
 	  for (ssize_t i=0; i < num_to_get; i++) {
 	    idata[j++] = parent[num_to_get*0 + i]+offset;  // Element
@@ -718,7 +718,7 @@ namespace Iocgns {
 	  Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
 	}
 	else {
-	  int64_t *idata = (int64_t*)data;
+	  int64_t *idata = reinterpret_cast<int64_t*>(data);
 	  size_t j = 0;
 	  for (ssize_t i=0; i < num_to_get; i++) {
 	    idata[j++] = parent[num_to_get*0 + i]+offset; // Element
@@ -747,8 +747,8 @@ namespace Iocgns {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region* region, const Ioss::Field& field,
-					 void *data, size_t data_size) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::Region*  /*region*/, const Ioss::Field&  /*field*/,
+					 void * /*data*/, size_t  /*data_size*/) const
   {
     return -1;
   }
@@ -814,5 +814,5 @@ namespace Iocgns {
   {
     return Ioss::REGION;
   }
-}
+}  // namespace Iocgns
 

@@ -36,10 +36,10 @@
 #include <Ioss_Property.h>              // for Property, etc
 #include <Ioss_Utils.h>                 // for IOSS_ERROR, Utils
 
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
 #include <netcdf.h>                     // for NC_NOERR, nc_close, etc
-#include <stddef.h>                     // for size_t, nullptr
 #include <iostream>                     // for operator<<, basic_ostream, etc
+#include <stddef.h>                     // for size_t, nullptr
 #include <string>                       // for char_traits, operator<<, etc
 
 #include <Ioss_FieldManager.h>          // for FieldManager
@@ -98,7 +98,7 @@ namespace {
   }
 
   const std::string SCALAR() { return std::string("scalar");}
-}
+} // namespace
 
 Ioex::SuperElement::SuperElement(std::string filename,
                                  const std::string &my_name)
@@ -196,7 +196,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
 
   if(field.get_name() == "cbmap") {
     assert(num_to_get == 2*num_nodes*num_dim);
-    int status = nc_get_array(filePtr, "cbmap", (double*)data);
+    int status = nc_get_array(filePtr, "cbmap", reinterpret_cast<double*>(data));
     if(status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'cbmap' from file '"
@@ -206,7 +206,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
 
   } else if(field.get_name() == "node_num_map") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "node_num_map", (double*)data);
+    int status = nc_get_array(filePtr, "node_num_map", reinterpret_cast<double*>(data));
 
     if(status != 0) {
       std::ostringstream errmsg;
@@ -216,7 +216,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
     }
   } else if (field.get_name() == "coordx") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "coordx", (double*)data);
+    int status = nc_get_array(filePtr, "coordx", reinterpret_cast<double*>(data));
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'coordx' from file '"
@@ -226,7 +226,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
   }
   else if (field.get_name() == "coordy") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "coordy", (double*)data);
+    int status = nc_get_array(filePtr, "coordy", reinterpret_cast<double*>(data));
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'coordy' from file '"
@@ -236,7 +236,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
   }
   else if (field.get_name() == "coordz") {
     assert(num_to_get == num_nodes);
-    int status = nc_get_array(filePtr, "coordz", (double*)data);
+    int status = nc_get_array(filePtr, "coordz", reinterpret_cast<double*>(data));
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load coodintate data field 'coordz' from file '"
@@ -246,7 +246,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
   }
   else if (field.get_name() == "Kr") {
     assert(num_to_get == numDOF*numDOF);
-    int status = nc_get_array(filePtr, "Kr", (double*)data);
+    int status = nc_get_array(filePtr, "Kr", reinterpret_cast<double*>(data));
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load stiffness matrix field 'Kr' from file '"
@@ -256,7 +256,7 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field& field,
   }
   else if (field.get_name() == "Mr") {
     assert(num_to_get == numDOF*numDOF);
-    int status = nc_get_array(filePtr, "Mr", (double*)data);
+    int status = nc_get_array(filePtr, "Mr", reinterpret_cast<double*>(data));
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load mass matrix field 'Mr' from file '"
@@ -288,19 +288,19 @@ int64_t Ioex::SuperElement::internal_put_field_data(const Ioss::Field& /* field 
 Ioss::Property Ioex::SuperElement::get_implicit_property(const std::string& the_name) const
 {
   if (Ioss::Utils::case_strcmp(the_name, "numDOF") == 0) {
-    return Ioss::Property(the_name, (int)numDOF);
+    return Ioss::Property(the_name, static_cast<int>(numDOF));
   }
   if (Ioss::Utils::case_strcmp(the_name, "num_nodes") == 0) {
-    return Ioss::Property(the_name, (int)num_nodes);
+    return Ioss::Property(the_name, static_cast<int>(num_nodes));
   }
-  else if (Ioss::Utils::case_strcmp(the_name, "numEIG") == 0) {
-    return Ioss::Property(the_name, (int)numEIG);
+  if (Ioss::Utils::case_strcmp(the_name, "numEIG") == 0) {
+    return Ioss::Property(the_name, static_cast<int>(numEIG));
   }
   else if (Ioss::Utils::case_strcmp(the_name, "num_dim") == 0) {
-    return Ioss::Property(the_name, (int)num_dim);
+    return Ioss::Property(the_name, static_cast<int>(num_dim));
   }
   else if (Ioss::Utils::case_strcmp(the_name, "numConstraints") == 0) {
-    return Ioss::Property(the_name, (int)numDOF-(int)numEIG);
+    return Ioss::Property(the_name, static_cast<int>(numDOF)-static_cast<int>(numEIG));
   }
   else {
     return Ioss::GroupingEntity::get_implicit_property(the_name);

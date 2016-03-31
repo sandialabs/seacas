@@ -32,11 +32,11 @@
 
 #include <Ioss_ElementTopology.h>
 #include <Ioss_Super.h>                 // for Super
-#include <Ioss_Utils.h>                 // for Utils, IOSS_ERROR, etc
+#include <Ioss_Utils.h> 
 #include <Ioss_CodeTypes.h>             // for IntVector
 
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for size_t
+#include <cassert>                     // for assert
+#include <cstddef>                     // for size_t
 
 #include <ostream>                      // for operator<<, basic_ostream, etc
 #include <string>                       // for string, char_traits, etc
@@ -272,7 +272,7 @@ Ioss::IntVector Ioss::ElementTopology::boundary_connectivity(int edge_number) co
       } 
 	return face_connectivity(edge_number);
       
-    } else if (parametric_dimension() == 1) {
+    } if (parametric_dimension() == 1) {
       return edge_connectivity(edge_number);
     }
   } else {
@@ -306,7 +306,7 @@ Ioss::ElementTopology* Ioss::ElementTopology::boundary_type(int face_number) con
       } 
 	return face_type(face_number);
       
-    } else if (parametric_dimension() == 1) {
+    } if (parametric_dimension() == 1) {
       return edge_type(face_number);
     }
   } else {

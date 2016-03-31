@@ -33,7 +33,7 @@
 #include <Ioss_ConstructedVariableType.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
-#include <assert.h>
+#include <cassert>
 #include <string>
 
 Ioss::ConstructedVariableType::ConstructedVariableType(const std::string& my_name,

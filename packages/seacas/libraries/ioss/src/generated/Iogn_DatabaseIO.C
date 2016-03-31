@@ -34,14 +34,14 @@
 #include <Ioss_CodeTypes.h>             // for Int64Vector, IntVector
 #include <Ioss_SideBlock.h>             // for SideBlock
 #include <Ioss_Utils.h>                 // for Utils, IOSS_ERROR
-#include <assert.h>                     // for assert
+#include <cassert>                     // for assert
 #include <generated/Iogn_GeneratedMesh.h>  // for GeneratedMesh
-#include <cmath>                        // for sqrt
+#include "Ioss_CommSet.h"               // for CommSet
 #include <algorithm>                    // for copy
+#include <cmath>                        // for sqrt
 #include <iostream>                     // for ostringstream, operator<<, etc
 #include <string>                       // for string, operator==, etc
 #include <utility>                      // for pair
-#include "Ioss_CommSet.h"               // for CommSet
 #include "Ioss_DBUsage.h"               // for DatabaseUsage
 #include "Ioss_DatabaseIO.h"            // for DatabaseIO
 #include "Ioss_ElementBlock.h"          // for ElementBlock
@@ -97,21 +97,21 @@ namespace {
   void fill_transient_data(const Ioss::GroupingEntity *entity, const Ioss::Field &field, void *data) {
     const Ioss::Field &ids = entity->get_fieldref("ids");
     if (ids.is_type(Ioss::Field::INTEGER)) {
-      fill_transient_data(entity, field.raw_storage()->component_count(), (double*)data, (int)0);
+      fill_transient_data(entity, field.raw_storage()->component_count(), reinterpret_cast<double*>(data), 0);
     } else {
-      fill_transient_data(entity, field.raw_storage()->component_count(), (double*)data, (int64_t)0);
+      fill_transient_data(entity, field.raw_storage()->component_count(), reinterpret_cast<double*>(data), static_cast<int64_t>(0));
     }
   }
 
   void fill_constant_data(const Ioss::Field &field, void *data, double value) {
-    double *rdata = (double*)data;
+    double *rdata = reinterpret_cast<double*>(data);
     size_t count = field.raw_count();
     size_t component_count = field.raw_storage()->component_count();
     for (size_t i=0; i < count*component_count; i++) {
       rdata[i] = value;
     }
   }
-}
+} // namespace
 namespace Iogn {
 
   // ========================================================================
@@ -213,7 +213,7 @@ namespace Iogn {
     return true;
   }
 
-  bool DatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time )
+  bool DatabaseIO::begin_state(Ioss::Region * /*region*/, int /* state */, double  /*time*/ )
   {
     return true;
   }
@@ -265,14 +265,14 @@ namespace Iogn {
     return num_to_get;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::Region* region,
+  int64_t DatabaseIO::get_field_internal(const Ioss::Region*  /*region*/,
 					 const Ioss::Field& field,
-					 void *data, size_t data_size) const
+					 void *data, size_t  /*data_size*/) const
   {
     Ioss::Field::RoleType role = field.get_role();
     if (role == Ioss::Field::TRANSIENT) {
       // Fill the field with arbitrary data...
-      ((double*)data)[0] = (double)rand();
+      (reinterpret_cast<double*>(data))[0] = static_cast<double>(rand());
     }
     return 1;
   }
@@ -627,7 +627,7 @@ namespace Iogn {
   void DatabaseIO::get_nodeblocks()
   {
     std::string block_name = "nodeblock_1";
-    Ioss::NodeBlock *block = new Ioss::NodeBlock(this, block_name,
+    auto block = new Ioss::NodeBlock(this, block_name,
                                                  m_generatedMesh->node_count_proc(), 3);
     block->property_add(Ioss::Property("id", 1));
     get_region()->add(block);
@@ -659,18 +659,18 @@ namespace Iogn {
       std::string name = Ioss::Utils::encode_entity_name("block", i+1);
       std::string type = m_generatedMesh->topology_type(i+1).first;
       size_t element_count =  m_generatedMesh->element_count_proc(i+1);
-      Ioss::ElementBlock *block = new Ioss::ElementBlock(this, name, type, element_count);
+      auto block = new Ioss::ElementBlock(this, name, type, element_count);
 
       block->property_add(Ioss::Property("id", i+1));
 
       // Maintain block order on output database...
       block->property_add(Ioss::Property("original_block_order", i));
-      block->property_add(Ioss::Property("global_entity_count", (int64_t)m_generatedMesh->element_count(i+1)));
+      block->property_add(Ioss::Property("global_entity_count", m_generatedMesh->element_count(i+1)));
 
       if(type == "shell4" || type == "tri3")
       {
         block->field_add(Ioss::Field("thickness", Ioss::Field::REAL, "scalar", Ioss::Field::ATTRIBUTE,
-                                     (int64_t)m_generatedMesh->element_count_proc(i+1)));
+                                     m_generatedMesh->element_count_proc(i+1)));
       }
 
       get_region()->add(block);
@@ -697,7 +697,7 @@ namespace Iogn {
       int64_t number_nodes = m_generatedMesh->nodeset_node_count_proc(ins+1);
 
       std::string name = Ioss::Utils::encode_entity_name("nodelist", ins+1);
-      Ioss::NodeSet *nodeset = new Ioss::NodeSet(this, name, number_nodes);
+      auto nodeset = new Ioss::NodeSet(this, name, number_nodes);
       nodeset->property_add(Ioss::Property("id", ins+1));
       get_region()->add(nodeset);
       add_transient_fields(nodeset);
@@ -710,7 +710,7 @@ namespace Iogn {
     for (int ifs = 0; ifs < sidesetCount; ifs++) {
       std::string name = Ioss::Utils::encode_entity_name("surface", ifs+1);
       m_sideset_names.push_back(name);
-      Ioss::SideSet *sideset = new Ioss::SideSet(this, name);
+      auto sideset = new Ioss::SideSet(this, name);
       sideset->property_add(Ioss::Property("id", ifs+1));
       get_region()->add(sideset);
 
@@ -722,7 +722,7 @@ namespace Iogn {
         std::string elem_topo_name = "unknown";
         int64_t number_faces = m_generatedMesh->sideset_side_count_proc(ifs+1);
 
-        Ioss::SideBlock *ef_block = new Ioss::SideBlock(this, ef_block_name,
+        auto ef_block = new Ioss::SideBlock(this, ef_block_name,
                                                         side_topo_name,
                                                         elem_topo_name,
                                                         number_faces);
@@ -748,7 +748,7 @@ namespace Iogn {
           std::string elem_topo_name = "unknown";
           int64_t number_faces = m_generatedMesh->sideset_side_count_proc(ifs+1);
 
-          Ioss::SideBlock *ef_block = new Ioss::SideBlock(this, ef_block_name,
+          auto ef_block = new Ioss::SideBlock(this, ef_block_name,
                                                           side_topo_name,
                                                           elem_topo_name,
                                                           number_faces);
@@ -798,4 +798,4 @@ namespace Iogn {
       entity->field_add(Ioss::Field(var_name, Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT, entity_count));
     }
   }
-}
+} // namespace Iogn

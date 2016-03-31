@@ -32,8 +32,8 @@
 
 #include <Ioss_Field.h>
 #include <Ioss_VariableType.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
+#include <cstddef>
 #include <transform/Iotr_Offset3D.h>
 #include <string>
 #include <vector>
@@ -116,4 +116,4 @@ namespace Iotr {
     }
     return true;
   }
-}
+} // namespace Iotr

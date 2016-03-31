@@ -32,8 +32,8 @@
 
 #include <Ioss_Tri4a.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -49,7 +49,7 @@ namespace Ioss {
     St_Tri4a()
       : ElementVariableType("tri4a", 4) {}
   };
-}
+} // namespace Ioss
 //------------------------------------------------------------------------
 namespace {
   struct Constants {
@@ -70,7 +70,7 @@ namespace {
   //        returns -1 if edges have differing topology
   int Constants::nodes_per_edge[nedge+1] =
     {-1,3,2,2};
-}
+}  // namespace
 
 void Ioss::Tri4a::factory()
 {
@@ -139,7 +139,7 @@ Ioss::ElementTopology* Ioss::Tri4a::edge_type(int edge_number) const
   if (edge_number == 0) {
     return nullptr;
   }
-  else if (edge_number == 1) {
+  if (edge_number == 1) {
     return Ioss::ElementTopology::factory("edge3");
   }
   else {

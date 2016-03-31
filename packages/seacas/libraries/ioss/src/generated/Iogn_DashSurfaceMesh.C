@@ -31,9 +31,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <generated/Iogn_DashSurfaceMesh.h>
+#include "generated/Iogn_GeneratedMesh.h"  // for MapVector, IntVector, etc
 #include <algorithm>                    // for copy
 #include <vector>                       // for vector
-#include "generated/Iogn_GeneratedMesh.h"  // for MapVector, IntVector, etc
 
 
 namespace Iogn
@@ -104,7 +104,7 @@ int64_t DashSurfaceMesh::element_count_proc(int64_t block_number) const
     return INVALID;
 }
 
-int64_t DashSurfaceMesh::nodeset_node_count_proc(int64_t id) const
+int64_t DashSurfaceMesh::nodeset_node_count_proc(int64_t  /*id*/) const
 {
     return 0;
 }
@@ -131,17 +131,17 @@ void DashSurfaceMesh::coordinates(double *coord) const
     std::copy(mDashSurfaceData.coordinates.begin(),mDashSurfaceData.coordinates.end(), coord);
 }
 
-void DashSurfaceMesh::coordinates(std::vector<double> &coord) const
+void DashSurfaceMesh::coordinates(std::vector<double> & /*coord*/) const
 {
     throw std::exception();
 }
 
-void DashSurfaceMesh::coordinates(int component, std::vector<double> &xyz) const
+void DashSurfaceMesh::coordinates(int  /*component*/, std::vector<double> & /*xyz*/) const
 {
     throw std::exception();
 }
 
-void DashSurfaceMesh::coordinates(std::vector<double> &x, std::vector<double> &y, std::vector<double> &z) const
+void DashSurfaceMesh::coordinates(std::vector<double> & /*x*/, std::vector<double> & /*y*/, std::vector<double> & /*z*/) const
 {
     throw std::exception();
 }
@@ -161,7 +161,7 @@ void DashSurfaceMesh::connectivity(int64_t block_number, int* connect) const
     }
 }
 
-std::pair<std::string, int> DashSurfaceMesh::topology_type(int64_t block_number) const
+std::pair<std::string, int> DashSurfaceMesh::topology_type(int64_t  /*block_number*/) const
 {
     const int numNodesPerElement = 4;
     return std::make_pair(std::string("shell4"), numNodesPerElement);
@@ -193,14 +193,13 @@ void DashSurfaceMesh::sideset_elem_sides(int64_t setId, Ioss::Int64Vector &elem_
     }
 }
 
-void DashSurfaceMesh::nodeset_nodes(int64_t nset_id, Ioss::Int64Vector &nodes) const
+void DashSurfaceMesh::nodeset_nodes(int64_t  /*nset_id*/, Ioss::Int64Vector & /*nodes*/) const
 {
-    return;
-}
+    }
 
 void DashSurfaceMesh::node_communication_map(MapVector &map, std::vector<int> &proc)
 {
-    if ( mDashSurfaceData.sharedNodes == 0 ) { return;
+    if ( mDashSurfaceData.sharedNodes == nullptr ) { return;
 }
 
     for (unsigned int i=0;i<mDashSurfaceData.sharedNodes->size();i++)
@@ -373,12 +372,12 @@ int64_t ExodusMesh::element_count_proc(int64_t blockNumber) const
     return mExodusData.localNumberOfElementsInBlock[blockNumber-1];
 }
 
-int64_t ExodusMesh::nodeset_node_count_proc(int64_t id) const
+int64_t ExodusMesh::nodeset_node_count_proc(int64_t  /*id*/) const
 {
     return 0;
 }
 
-int64_t ExodusMesh::sideset_side_count_proc(int64_t id) const
+int64_t ExodusMesh::sideset_side_count_proc(int64_t  /*id*/) const
 {
     return 0;
 }
@@ -400,17 +399,17 @@ void ExodusMesh::coordinates(double *coord) const
     std::copy(mExodusData.coordinates.begin(), mExodusData.coordinates.end(), coord);
 }
 
-void ExodusMesh::coordinates(std::vector<double> &coord) const
+void ExodusMesh::coordinates(std::vector<double> & /*coord*/) const
 {
     throw std::exception();
 }
 
-void ExodusMesh::coordinates(int component, std::vector<double> &xyz) const
+void ExodusMesh::coordinates(int  /*component*/, std::vector<double> & /*xyz*/) const
 {
     throw std::exception();
 }
 
-void ExodusMesh::coordinates(std::vector<double> &x, std::vector<double> &y, std::vector<double> &z) const
+void ExodusMesh::coordinates(std::vector<double> & /*x*/, std::vector<double> & /*y*/, std::vector<double> & /*z*/) const
 {
     throw std::exception();
 }
@@ -426,7 +425,7 @@ void ExodusMesh::connectivity(int64_t blockNumber, int* connectivityForBlock) co
 std::pair<std::string, int> ExodusMesh::topology_type(int64_t blockNumber) const
 {
     Topology topology = mExodusData.blockTopologicalData[blockNumber-1];
-    return std::make_pair(getTopologyName(topology), (int)topology);
+    return std::make_pair(getTopologyName(topology), static_cast<int>(topology));
 }
 
 void ExodusMesh::sideset_elem_sides(int64_t setId, Ioss::Int64Vector &elem_sides) const
@@ -441,14 +440,13 @@ std::vector<std::string> ExodusMesh::sideset_touching_blocks(int64_t setId) cons
   return mExodusData.sidesetTouchingBlocks[setId-1];
 }
 
-void ExodusMesh::nodeset_nodes(int64_t nset_id, Ioss::Int64Vector &nodes) const
+void ExodusMesh::nodeset_nodes(int64_t  /*nset_id*/, Ioss::Int64Vector & /*nodes*/) const
 {
-    return;
-}
+    }
 
 void ExodusMesh::node_communication_map(MapVector &map, std::vector<int> &proc)
 {
-    if ( mExodusData.sharedNodes == 0 ) { return;
+    if ( mExodusData.sharedNodes == nullptr ) { return;
 }
 
     for (unsigned int i=0;i<mExodusData.sharedNodes->size();i++)
@@ -520,4 +518,4 @@ void ExodusMesh::element_map(Ioss::IntVector &map) const
     }
 }
 
-}
+} // namespace Iogn

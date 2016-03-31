@@ -32,8 +32,8 @@
 
 #include <Ioss_Tri4.h>
 #include <Ioss_ElementVariableType.h>   // for ElementVariableType
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for nullptr
+#include <cassert>                     // for assert
+#include <cstddef>                     // for nullptr
 #include "Ioss_CodeTypes.h"             // for IntVector
 #include "Ioss_ElementTopology.h"       // for ElementTopology
 
@@ -49,7 +49,7 @@ namespace Ioss {
     St_Tri4()
       : ElementVariableType("tri4", 4) {}
   };
-}
+} // namespace Ioss
 //------------------------------------------------------------------------
 namespace {
   struct Constants {
@@ -64,7 +64,7 @@ namespace {
   // Edge numbers are zero-based [0..number_edges)
   int Constants::edge_node_order[nedge][nedgenode] = // [edge][edge_node]
     { {0,1}, {1,2}, {2,0} };
-}
+}  // namespace
 
 void Ioss::Tri4::factory()
 {

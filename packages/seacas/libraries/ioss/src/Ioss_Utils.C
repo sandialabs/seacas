@@ -31,18 +31,18 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_Utils.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
+#include <cstddef>
 #include <sys/select.h>
-#include <time.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
-#include <string>
-#include <vector>
 #include <stdint.h>
+#include <string>
+#include <time.h>
+#include <vector>
 
 #ifndef _WIN32
 #include <sys/utsname.h>
@@ -55,7 +55,7 @@
 namespace {
   inline int to_lower(int c) { return std::tolower(c); }
   inline int to_upper(int c) { return std::toupper(c); }
-}
+} // namespace
 
 void Ioss::Utils::time_and_date(char* time_string, char* date_string,
                                 size_t length)
@@ -507,7 +507,7 @@ namespace {
     word[2] = '\0';
     return (std::string(word));
   }
-}
+}  // namespace
 
 std::string Ioss::Utils::variable_name_kluge(const std::string &name,
                                              size_t component_count, size_t copies,
@@ -608,7 +608,7 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name,
     // same level but in different scope that have the same name which
     // would cause a clash, so we *hope* that the hash will make those
     // scope names unique...
-    std::string s = std::string(name.c_str()).substr(len-maxlen,len);
+    std::string s = std::string(name).substr(len-maxlen,len);
     assert(s.length() <= maxlen);
     new_str = s;
   
