@@ -33,9 +33,9 @@
  * 
  */
 
-#include <stdio.h>                      // for sprintf, fprintf, printf, etc
-#include <stdlib.h>                     // for exit
-#include <string.h>                     // for strcat, strcpy, strlen, etc
+#include <cstdio>                      // for sprintf, fprintf, printf, etc
+#include <cstdlib>                     // for exit
+#include <cstring>                     // for strcat, strcpy, strlen, etc
 #include <sstream>
 #include <string>
 #include "ps_pario_const.h"             // for Parallel_IO, PIO_Info

@@ -32,10 +32,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-#include <stdarg.h>                     // for va_arg, va_end, va_list, etc
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for fprintf, nullptr, stderr
-#include <stdlib.h>                     // for exit, free, malloc
+#include <cstdarg>                     // for va_arg, va_end, va_list, etc
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for fprintf, nullptr, stderr
+#include <cstdlib>                     // for exit, free, malloc
 #include "rf_format.h"
 
 /*#include "rf_allo.h"*/
