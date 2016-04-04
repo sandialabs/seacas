@@ -55,14 +55,14 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_def_var, etc
 #include <assert.h>       // for assert
-#include <stdio.h>        
-#include <string.h>       // for strchr
+#include <stdio.h>
+#include <string.h> // for strchr
 
 /* -------------------- local defines --------------------------- */
 #define PROCNAME "ex_put_coordinate_frames"
 /* -------------------- end of local defines -------------------- */
-int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids,
-                             void *pt_coordinates, const char *tags)
+int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, void *pt_coordinates,
+                             const char *tags)
 {
   int  status;
   int  dim, dim9;              /* dimension id for nframes, nframes*9 */
@@ -93,19 +93,16 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids,
   /* go into define mode. define num_frames, num_frames9 */
   if ((status = nc_redef(exoid)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode",
-            exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
     return (EX_FATAL);
   }
 
-  if ((status = nc_def_dim(exoid, DIM_NUM_CFRAMES, nframes, &dim)) !=
-          NC_NOERR ||
+  if ((status = nc_def_dim(exoid, DIM_NUM_CFRAMES, nframes, &dim)) != NC_NOERR ||
       (nc_def_dim(exoid, DIM_NUM_CFRAME9, nframes * 9, &dim9) != NC_NOERR)) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to define number of coordinate frames in file id %d",
-            exoid);
+             "ERROR: failed to define number of coordinate frames in file id %d", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
     goto error_ret;
   }
@@ -116,15 +113,12 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids,
   }
 
   /* define the variables. coordinates, tags and ids */
-  if (nc_def_var(exoid, VAR_FRAME_COORDS, nc_flt_code(exoid), 1, &dim9,
-                 &varcoords) != NC_NOERR ||
-      (nc_def_var(exoid, VAR_FRAME_IDS, int_type, 1, &dim, &varids) !=
-       NC_NOERR) ||
-      (nc_def_var(exoid, VAR_FRAME_TAGS, NC_CHAR, 1, &dim, &vartags) !=
-       NC_NOERR)) {
+  if (nc_def_var(exoid, VAR_FRAME_COORDS, nc_flt_code(exoid), 1, &dim9, &varcoords) != NC_NOERR ||
+      (nc_def_var(exoid, VAR_FRAME_IDS, int_type, 1, &dim, &varids) != NC_NOERR) ||
+      (nc_def_var(exoid, VAR_FRAME_TAGS, NC_CHAR, 1, &dim, &vartags) != NC_NOERR)) {
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR:  failed to define coordinate frames in file id %d",
-            exoid);
+             exoid);
     ex_err(PROCNAME, errmsg, exerrval);
     goto error_ret; /* exit define mode and return */
   }
@@ -132,10 +126,8 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids,
   /* leave define mode */
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
     exerrval = status;
-    snprintf(
-        errmsg, MAX_ERR_LENGTH,
-        "ERROR: failed to complete coordinate frame definition in file id %d",
-        exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to complete coordinate frame definition in file id %d", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -145,7 +137,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids,
   for (i = 0; i < nframes; i++) {
     if (strchr("RrCcSs", tags[i]) == 0) {
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: Unrecognized coordinate frame tag: '%c'.",
-              tags[i]);
+               tags[i]);
       exerrval = 2;
       ex_err(PROCNAME, errmsg, exerrval);
     }
@@ -192,7 +184,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids,
 error_ret:
   if (nc_enddef(exoid) != NC_NOERR) { /* exit define mode */
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete frame definition for file id %d",
-            exoid);
+             exoid);
     ex_err(PROCNAME, errmsg, exerrval);
   }
   return (EX_FATAL);

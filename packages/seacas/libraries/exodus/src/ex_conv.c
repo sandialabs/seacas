@@ -48,8 +48,8 @@
 #include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for ex_file_item, EX_FATAL, etc
 #include "netcdf.h"       // for nc_inq_format, nc_type, etc
-#include <stdio.h>        
-#include <stdlib.h>       // for NULL, free, malloc
+#include <stdio.h>
+#include <stdlib.h> // for NULL, free, malloc
 
 /*! \file
  * this file contains code needed to support the various floating point word
@@ -82,9 +82,8 @@ struct ex_file_item *ex_find_file_item(int exoid)
   return ptr;
 }
 
-int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
-                int file_wordsize, int int64_status, int is_parallel,
-                int is_mpiio, int is_pnetcdf)
+int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
+                int int64_status, int is_parallel, int is_mpiio, int is_pnetcdf)
 {
   char                 errmsg[MAX_ERR_LENGTH];
   struct ex_file_item *new_file;
@@ -130,10 +129,8 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
    */
 
   /* check to make sure machine word sizes aren't weird */
-  if ((sizeof(float) != 4 && sizeof(float) != 8) ||
-      (sizeof(double) != 4 && sizeof(double) != 8)) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d",
-            exoid);
+  if ((sizeof(float) != 4 && sizeof(float) != 8) || (sizeof(double) != 4 && sizeof(double) != 8)) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d", exoid);
     ex_err("ex_conv_ini", errmsg, EX_FATAL);
     return (EX_FATAL);
   }
@@ -157,8 +154,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
   else if (file_wordsize && *io_wordsize != file_wordsize) {
     *io_wordsize = file_wordsize;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: invalid I/O word size specified for existing file id: %d",
-            exoid);
+             "ERROR: invalid I/O word size specified for existing file id: %d", exoid);
     ex_err("ex_conv_ini", errmsg, EX_MSG);
     ex_err("ex_conv_ini", "       Requested I/O word size overridden.", EX_MSG);
   }
@@ -167,8 +163,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
     *comp_wordsize = sizeof(float);
   }
   else if (*comp_wordsize != 4 && *comp_wordsize != 8) {
-    ex_err("ex_conv_ini", "ERROR: invalid compute wordsize specified",
-           EX_FATAL);
+    ex_err("ex_conv_ini", "ERROR: invalid compute wordsize specified", EX_FATAL);
     return (EX_FATAL);
   }
 
@@ -177,8 +172,8 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
     int valid_int64 = EX_ALL_INT64_API | EX_ALL_INT64_DB;
     if ((int64_status & valid_int64) != int64_status) {
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid int64_status flag (%d) specified for "
-                      "existing file id: %d. Ignoring invalids",
-              int64_status, exoid);
+                                       "existing file id: %d. Ignoring invalids",
+               int64_status, exoid);
       ex_err("ex_conv_ini", errmsg, EX_MSG);
     }
     int64_status &= valid_int64;
@@ -196,8 +191,8 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
   if (!(new_file = malloc(sizeof(struct ex_file_item)))) {
     exerrval = EX_MEMFAIL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for internal file "
-                    "structure storage file id %d",
-            exoid);
+                                     "structure storage file id %d",
+             exoid);
     ex_err("ex_inquire", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -261,8 +256,7 @@ void ex_conv_exit(int exoid)
   }
 
   if (!file) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failure to clear file id %d - not in list.",
-            exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failure to clear file id %d - not in list.", exoid);
     ex_err("ex_conv_exit", errmsg, EX_MSG);
     exerrval = EX_BADFILEID;
     return;
@@ -388,11 +382,8 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   exerrval = 0; /* clear error code */
 
   switch (option) {
-  case EX_OPT_MAX_NAME_LENGTH:
-    file->maximum_name_length = option_value;
-    break;
-  case EX_OPT_COMPRESSION_TYPE: /* Currently not used. GZip by default */
-    break;
+  case EX_OPT_MAX_NAME_LENGTH: file->maximum_name_length = option_value; break;
+  case EX_OPT_COMPRESSION_TYPE: /* Currently not used. GZip by default */ break;
   case EX_OPT_COMPRESSION_LEVEL: /* 0 (disabled/fastest) ... 9 (best/slowest) */
     /* Check whether file type supports compression... */
     if (file->file_type == 2 || file->file_type == 3) {
@@ -415,13 +406,11 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   case EX_OPT_INTEGER_SIZE_API: /* See *_INT64_* values above */
     ex_set_int64_status(exoid, option_value);
     break;
-  case EX_OPT_INTEGER_SIZE_DB: /* (query only) */
-    break;
+  case EX_OPT_INTEGER_SIZE_DB: /* (query only) */ break;
   default: {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_FATAL;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().",
-            (int)option);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().", (int)option);
     ex_err("ex_set_option", errmsg, exerrval);
     return EX_FATAL;
   }
