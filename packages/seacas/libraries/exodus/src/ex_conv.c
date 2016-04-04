@@ -48,7 +48,7 @@
 #include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for ex_file_item, EX_FATAL, etc
 #include "netcdf.h"       // for nc_inq_format, nc_type, etc
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <stdlib.h>       // for NULL, free, malloc
 
 /*! \file
@@ -132,7 +132,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
   /* check to make sure machine word sizes aren't weird */
   if ((sizeof(float) != 4 && sizeof(float) != 8) ||
       (sizeof(double) != 4 && sizeof(double) != 8)) {
-    sprintf(errmsg, "ERROR: unsupported compute word size for file id: %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d",
             exoid);
     ex_err("ex_conv_ini", errmsg, EX_FATAL);
     return (EX_FATAL);
@@ -149,14 +149,14 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
   }
 
   else if (*io_wordsize != 4 && *io_wordsize != 8) {
-    sprintf(errmsg, "ERROR: unsupported I/O word size for file id: %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported I/O word size for file id: %d", exoid);
     ex_err("ex_conv_ini", errmsg, EX_FATAL);
     return (EX_FATAL);
   }
 
   else if (file_wordsize && *io_wordsize != file_wordsize) {
     *io_wordsize = file_wordsize;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: invalid I/O word size specified for existing file id: %d",
             exoid);
     ex_err("ex_conv_ini", errmsg, EX_MSG);
@@ -176,7 +176,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
   {
     int valid_int64 = EX_ALL_INT64_API | EX_ALL_INT64_DB;
     if ((int64_status & valid_int64) != int64_status) {
-      sprintf(errmsg, "Warning: invalid int64_status flag (%d) specified for "
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid int64_status flag (%d) specified for "
                       "existing file id: %d. Ignoring invalids",
               int64_status, exoid);
       ex_err("ex_conv_ini", errmsg, EX_MSG);
@@ -195,7 +195,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize,
 
   if (!(new_file = malloc(sizeof(struct ex_file_item)))) {
     exerrval = EX_MEMFAIL;
-    sprintf(errmsg, "ERROR: failed to allocate memory for internal file "
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for internal file "
                     "structure storage file id %d",
             exoid);
     ex_err("ex_inquire", errmsg, exerrval);
@@ -261,7 +261,7 @@ void ex_conv_exit(int exoid)
   }
 
   if (!file) {
-    sprintf(errmsg, "Warning: failure to clear file id %d - not in list.",
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failure to clear file id %d - not in list.",
             exoid);
     ex_err("ex_conv_exit", errmsg, EX_MSG);
     exerrval = EX_BADFILEID;
@@ -296,7 +296,7 @@ nc_type nc_flt_code(int exoid)
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg, "ERROR: unknown file id %d for nc_flt_code().", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for nc_flt_code().", exoid);
     ex_err("nc_flt_code", errmsg, exerrval);
     return (nc_type)-1;
   }
@@ -329,7 +329,7 @@ int ex_int64_status(int exoid)
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg, "ERROR: unknown file id %d for ex_int64_status().", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_int64_status().", exoid);
     ex_err("ex_int64_status", errmsg, exerrval);
     return 0;
   }
@@ -361,7 +361,7 @@ int ex_set_int64_status(int exoid, int mode)
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg, "ERROR: unknown file id %d for ex_int64_status().", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_int64_status().", exoid);
     ex_err("ex_int64_status", errmsg, exerrval);
     return 0;
   }
@@ -380,7 +380,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg, "ERROR: unknown file id %d for ex_set_option().", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_set_option().", exoid);
     ex_err("ex_set_option", errmsg, exerrval);
     return EX_FATAL;
   }
@@ -420,7 +420,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   default: {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_FATAL;
-    sprintf(errmsg, "ERROR: invalid option %d for ex_set_option().",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().",
             (int)option);
     ex_err("ex_set_option", errmsg, exerrval);
     return EX_FATAL;
@@ -444,7 +444,7 @@ int ex_comp_ws(int exoid)
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg, "ERROR: unknown file id %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
     ex_err("ex_comp_ws", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -466,7 +466,7 @@ int ex_is_parallel(int exoid)
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
-    sprintf(errmsg, "ERROR: unknown file id %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
     ex_err("ex_is_parallel", errmsg, exerrval);
     return (EX_FATAL);
   }

@@ -54,7 +54,7 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_var_double, etc
 #include <inttypes.h>     // for PRId64
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /*!
  * \undoc reads the attributes for an edge, face, or element block
@@ -80,13 +80,13 @@ int ex_get_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
 
     if (exerrval != 0) {
       if (exerrval == EX_NULLENTITY) {
-        sprintf(errmsg, "Warning: no attributes found for NULL %s %" PRId64
+        snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no attributes found for NULL %s %" PRId64
                         " in file id %d",
                 ex_name_of_object(obj_type), obj_id, exoid);
         ex_err("ex_get_attr", errmsg, EX_NULLENTITY);
         return (EX_WARN); /* no attributes for this object */
       }
-      sprintf(errmsg, "Warning: failed to locate %s id %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failed to locate %s id %" PRId64
                       " in id array in file id %d",
               ex_name_of_object(obj_type), obj_id, exoid);
       ex_err("ex_get_attr", errmsg, exerrval);
@@ -124,8 +124,8 @@ int ex_get_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
     break;
   default:
     exerrval = 1005;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "Internal ERROR: unrecognized object type in switch: %d in file id %d",
         obj_type, exoid);
     ex_err("ex_get_attr", errmsg, EX_MSG);
@@ -135,7 +135,7 @@ int ex_get_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   /* inquire id's of previously defined dimensions  */
   if ((status = nc_inq_varid(exoid, vattrbname, &attrid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to locate attributes for %s %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate attributes for %s %" PRId64
                     " in file id %d",
             ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_attr", errmsg, exerrval);
@@ -152,7 +152,7 @@ int ex_get_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get attributes for %s %" PRId64 " in file id %d",
             ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_attr", errmsg, exerrval);

@@ -37,7 +37,7 @@
 #include "exodusII_int.h" // for EX_NOERR, EX_WARN, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <sys/types.h>    // for int64_t
 
 /*!
@@ -120,7 +120,7 @@ int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index,
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (time_step <= 0 || time_step > num_time_steps) {
-      sprintf(errmsg, "ERROR: time_step is out-of-range. Value = %d, valid "
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: time_step is out-of-range. Value = %d, valid "
                       "range is 1 to %d in file id %d",
               time_step, num_time_steps, exoid);
       ex_err("ex_get_nodal_var", errmsg, EX_BADPARAM);
@@ -132,7 +132,7 @@ int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index,
     /* read values of the nodal variable */
     if ((status = nc_inq_varid(exoid, VAR_NOD_VAR, &varid)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "Warning: could not find nodal variables in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variables in file id %d",
               exoid);
       ex_err("ex_get_nodal_var", errmsg, exerrval);
       return (EX_WARN);
@@ -152,7 +152,7 @@ int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index,
     if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index),
                                &varid)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "Warning: could not find nodal variable %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
               nodal_var_index, exoid);
       ex_err("ex_get_nodal_var", errmsg, exerrval);
       return (EX_WARN);
@@ -174,7 +174,7 @@ int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to get nodal variables in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get nodal variables in file id %d",
             exoid);
     ex_err("ex_get_nodal_var", errmsg, exerrval);
     return (EX_FATAL);

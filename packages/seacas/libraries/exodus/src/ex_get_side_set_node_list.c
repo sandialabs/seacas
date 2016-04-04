@@ -56,7 +56,7 @@
 #include <ctype.h>        // for toupper
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <stdlib.h>       // for malloc, NULL, free
 #include <string.h>       // for strncmp, strlen
 #include <sys/types.h>    // for int64_t
@@ -83,7 +83,7 @@ static int check_valid_side(size_t side_num, size_t max_sides, char *topology,
   exerrval = 0;
   if (side_num + 1 < 1 || side_num + 1 > max_sides) {
     exerrval = EX_BADPARAM;
-    sprintf(errmsg, "ERROR: Invalid %s edge number %" ST_ZU " in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid %s edge number %" ST_ZU " in file id %d",
             topology, side_num + 1, exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
     err_stat = EX_FATAL;
@@ -229,14 +229,14 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
 
   num_side_sets = ex_inquire_int(exoid, EX_INQ_SIDE_SETS);
   if (num_side_sets < 0) {
-    sprintf(errmsg, "ERROR: failed to get number of side sets in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of side sets in file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
     return (EX_FATAL);
   }
 
   if (num_side_sets == 0) {
-    sprintf(errmsg, "Warning: no side sets defined in file id %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no side sets defined in file id %d", exoid);
     ex_err("ex_get_side_set_node_list", errmsg, EX_WARN);
     return (EX_WARN);
   }
@@ -245,13 +245,13 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   ex_id_lkup(exoid, EX_SIDE_SET, side_set_id);
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(errmsg, "Warning: side set %" PRId64 " is NULL in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: side set %" PRId64 " is NULL in file id %d",
               side_set_id, exoid);
       ex_err("ex_get_side_set_node_list", errmsg, EX_NULLENTITY);
       return (EX_WARN);
     }
 
-    sprintf(errmsg, "ERROR: failed to locate side set %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate side set %" PRId64
                     " in VAR_SS_IDS array in file id %d",
             side_set_id, exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -260,7 +260,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
 
   num_elem_blks = ex_inquire_int(exoid, EX_INQ_ELEM_BLK);
   if (num_elem_blks < 0) {
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get number of element blocks in file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -269,7 +269,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
 
   tot_num_elem = ex_inquire_int(exoid, EX_INQ_ELEM);
   if (tot_num_elem < 0) {
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get total number of elements in file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -280,7 +280,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
      distinguish between 2d TRIs and 3d TRIs */
   ndim = ex_inquire_int(exoid, EX_INQ_DIM);
   if (ndim < 0) {
-    sprintf(errmsg, "ERROR: failed to get dimensionality in file id %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get dimensionality in file id %d", exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -308,7 +308,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   }
 
   if (status != EX_NOERR) {
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get number of elements in side set %" PRId64
             " in file id %d",
             side_set_id, exoid);
@@ -319,7 +319,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   /* Allocate space for the side set element list */
   if (!(side_set_elem_list = malloc(tot_num_ss_elem * int_size))) {
     exerrval = EX_MEMFAIL;
-    sprintf(errmsg, "ERROR: failed to allocate space for side set element list "
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set element list "
                     "for file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -329,8 +329,8 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   /* Allocate space for the side set side list */
   if (!(side_set_side_list = malloc(tot_num_ss_elem * int_size))) {
     exerrval = EX_MEMFAIL;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "ERROR: failed to allocate space for side set side list for file id %d",
         exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -340,7 +340,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
 
   if (ex_get_set(exoid, EX_SIDE_SET, side_set_id, side_set_elem_list,
                  side_set_side_list) == -1) {
-    sprintf(errmsg, "ERROR: failed to get side set %" PRId64 " in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get side set %" PRId64 " in file id %d",
             side_set_id, exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
     err_stat = EX_FATAL;
@@ -350,7 +350,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   /* Allocate space for the ss element index array */
   if (!(ss_elem_ndx = malloc(tot_num_ss_elem * int_size))) {
     exerrval = EX_MEMFAIL;
-    sprintf(errmsg, "ERROR: failed to allocate space for side set elem sort "
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem sort "
                     "array for file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -379,8 +379,8 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   /* Allocate space for the element block ids */
   if (!(elem_blk_ids = malloc(num_elem_blks * ids_size))) {
     exerrval = EX_MEMFAIL;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "ERROR: failed to allocate space for element block ids for file id %d",
         exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -389,7 +389,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   }
 
   if (ex_get_elem_blk_ids(exoid, elem_blk_ids) == -1) {
-    sprintf(errmsg, "ERROR: failed to get element block ids in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get element block ids in file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, EX_MSG);
     err_stat = EX_FATAL;
@@ -400,7 +400,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   if (!(elem_blk_parms =
             malloc(num_elem_blks * sizeof(struct elem_blk_parm)))) {
     exerrval = EX_MEMFAIL;
-    sprintf(errmsg, "ERROR: failed to allocate space for element block params "
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for element block params "
                     "for file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -430,7 +430,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   /* Allocate space for the ss element to element block parameter index array */
   if (!(ss_parm_ndx = malloc(tot_num_ss_elem * int_size))) {
     exerrval = EX_MEMFAIL;
-    sprintf(errmsg, "ERROR: failed to allocate space for side set elem parms "
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem parms "
                     "index for file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -441,7 +441,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
   /* Allocate space for the ss element to node list index array */
   if (!(ss_elem_node_ndx = malloc(tot_num_ss_elem * int_size))) {
     exerrval = EX_MEMFAIL;
-    sprintf(errmsg, "ERROR: failed to allocate space for side set elem to node "
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem to node "
                     "index for file id %d",
             exoid);
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -474,7 +474,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
 
     if (j >= num_elem_blks) {
       exerrval = EX_BADPARAM;
-      sprintf(errmsg, "ERROR: Invalid element number %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid element number %" PRId64
                       " found in side set %" PRId64 " in file %d",
               elem, side_set_id, exoid);
       ex_err("ex_get_side_set_node_list", errmsg, EX_MSG);
@@ -526,7 +526,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
                              elem_blk_parms[parm_ndx].num_nodes_per_elem *
                              int_size))) {
         exerrval = EX_MEMFAIL;
-        sprintf(errmsg, "ERROR: failed to allocate space for connectivity "
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for connectivity "
                         "array for file id %d",
                 exoid);
         ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -537,7 +537,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
       /* get connectivity array */
       if (ex_get_elem_conn(exoid, elem_blk_parms[parm_ndx].elem_blk_id,
                            connect) == -1) {
-        sprintf(errmsg, "ERROR: failed to allocate space for connectivity "
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for connectivity "
                         "array for file id %d",
                 exoid);
         ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -548,7 +548,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
     }
 
     if (connect == NULL) {
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: internal error -- connect pointer is NULL for file id %d",
               exoid);
       ex_err("ex_get_side_set_node_list", errmsg, exerrval);
@@ -904,7 +904,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id,
     }
     default: {
       exerrval = EX_BADPARAM;
-      sprintf(errmsg, "ERROR: %s is an unsupported element type",
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s is an unsupported element type",
               elem_blk_parms[parm_ndx].elem_type);
       ex_err("ex_get_side_set_node_list", errmsg, exerrval);
       err_stat = EX_FATAL;

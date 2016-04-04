@@ -57,7 +57,7 @@
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf, NULL
+#include <stdio.h>        
 #include <sys/types.h>    // for int64_t
 
 int ex_get_concat_sets(int exoid, ex_entity_type set_type,
@@ -99,7 +99,7 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type,
   }
   else {
     exerrval = EX_FATAL;
-    sprintf(errmsg, "ERROR: invalid set type (%d)", set_type);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid set type (%d)", set_type);
     ex_err("ex_get_concat_sets", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -110,12 +110,12 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type,
       NC_NOERR) {
     exerrval = status;
     if (status == NC_EBADDIM) {
-      sprintf(errmsg, "Warning: no %ss defined for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss defined for file id %d",
               ex_name_of_object(set_type), exoid);
       ex_err("ex_get_concat_sets", errmsg, exerrval);
       return (EX_WARN);
     }
-    sprintf(errmsg, "ERROR: failed to locate %ss defined in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %ss defined in file id %d",
             ex_name_of_object(set_type), exoid);
     ex_err("ex_get_concat_sets", errmsg, exerrval);
     return (EX_FATAL);
@@ -125,7 +125,7 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type,
 
   num_sets = ex_inquire_int(exoid, ex_inq_val);
   if (num_sets < 0) {
-    sprintf(errmsg, "ERROR: failed to get number of %ss defined for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss defined for file id %d",
             ex_name_of_object(set_type), exoid);
     /* use error val from inquire */
     ex_err("ex_get_concat_sets", errmsg, exerrval);
@@ -133,7 +133,7 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type,
   }
 
   if (ex_get_ids(exoid, set_type, set_specs->sets_ids) != NC_NOERR) {
-    sprintf(errmsg, "ERROR: failed to get %s ids for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s ids for file id %d",
             ex_name_of_object(set_type), exoid);
     /* use error val from inquire */
     ex_err("ex_get_concat_sets", errmsg, exerrval);

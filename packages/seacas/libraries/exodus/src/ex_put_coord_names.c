@@ -37,7 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /*!
 
@@ -86,7 +86,7 @@ int ex_put_coord_names(int exoid, char *coord_names[])
 
   if ((status = nc_inq_dimid(exoid, DIM_NUM_DIM, &ndimdim)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to locate number of dimensions in file id %d",
             exoid);
     ex_err("ex_put_coord_names", errmsg, exerrval);
@@ -95,7 +95,7 @@ int ex_put_coord_names(int exoid, char *coord_names[])
 
   if ((status = nc_inq_dimlen(exoid, ndimdim, &num_dim)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: inquire failed to get number of dimensions in file id %d",
             exoid);
     ex_err("ex_put_coord_names", errmsg, exerrval);
@@ -104,7 +104,7 @@ int ex_put_coord_names(int exoid, char *coord_names[])
 
   if ((status = nc_inq_varid(exoid, VAR_NAME_COOR, &varid)) == -1) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to locate coordinate names in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate coordinate names in file id %d",
             exoid);
     ex_err("ex_put_coord_names", errmsg, exerrval);
     return (EX_FATAL);

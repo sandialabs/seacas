@@ -42,7 +42,7 @@
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /*!
  * writes out the number of entities (nodes/faces) per polyhedra
@@ -65,8 +65,8 @@ int ex_put_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type,
   blk_id_ndx = ex_id_lkup(exoid, blk_type, blk_id);
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(
-          errmsg,
+      snprintf(
+          errmsg, MAX_ERR_LENGTH,
           "Warning: entity_counts array not allowed for NULL %s block %" PRId64
           " in file id %d",
           ex_name_of_object(blk_type), blk_id, exoid);
@@ -74,7 +74,7 @@ int ex_put_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type,
       return (EX_WARN);
     }
 
-    sprintf(errmsg, "ERROR: failed to locate %s block id %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s block id %" PRId64
                     " in id array in file id %d",
             ex_name_of_object(blk_type), blk_id, exoid);
     ex_err("ex_put_entity_count_per_polyhedra", errmsg, exerrval);
@@ -91,8 +91,8 @@ int ex_put_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type,
     break;
   default:
     exerrval = 1005;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "Internal ERROR: unrecognized block type in switch: %d in file id %d",
         blk_type, exoid);
     ex_err("ex_put_entity_count_per_polyhedra", errmsg, EX_MSG);
@@ -100,7 +100,7 @@ int ex_put_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type,
   }
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to locate entity_counts array for %s block %" PRId64
             " in file id %d",
             ex_name_of_object(blk_type), blk_id, exoid);
@@ -111,7 +111,7 @@ int ex_put_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type,
   status = nc_put_var_int(exoid, npeid, entity_counts);
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to write node counts array for %s block %" PRId64
             " in file id %d",
             ex_name_of_object(blk_type), blk_id, exoid);

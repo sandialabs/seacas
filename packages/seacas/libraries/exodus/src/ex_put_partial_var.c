@@ -38,7 +38,7 @@
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <stdlib.h>       // for free, malloc
 #include <sys/types.h>    // for int64_t
 
@@ -76,14 +76,14 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
   obj_id_ndx = ex_id_lkup(exoid, var_type, obj_id);                            \
   if (exerrval != 0) {                                                         \
     if (exerrval == EX_NULLENTITY) {                                           \
-      sprintf(errmsg, "Warning: no variables allowed for NULL block %" PRId64  \
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no variables allowed for NULL block %" PRId64  \
                       " in file id %d",                                        \
               obj_id, exoid);                                                  \
       ex_err("ex_put_partial_var", errmsg, EX_NULLENTITY);                     \
       return (EX_WARN);                                                        \
     }                                                                          \
     else {                                                                     \
-      sprintf(errmsg, "ERROR: failed to locate %s id %" PRId64                 \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s id %" PRId64                 \
                       " in %s array in file id %d",                            \
               ex_name_of_object(var_type), obj_id, VOBJID, exoid);             \
       ex_err("ex_put_partial_var", errmsg, exerrval);                          \
@@ -112,7 +112,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
         if (!(obj_var_truth_tab =                                              \
                   malloc(num_obj * num_obj_var * sizeof(int)))) {              \
           exerrval = EX_MEMFAIL;                                               \
-          sprintf(errmsg, "ERROR: failed to allocate memory for %s variable "  \
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for %s variable "  \
                           "truth table in file id %d",                         \
                   ex_name_of_object(var_type), exoid);                         \
           ex_err("ex_put_partial_var", errmsg, exerrval);                      \
@@ -123,7 +123,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
         if ((status = nc_get_var_int(exoid, varid, obj_var_truth_tab)) !=      \
             NC_NOERR) {                                                        \
           exerrval = status;                                                   \
-          sprintf(errmsg, "ERROR: failed to get truth table from file id %d",  \
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get truth table from file id %d",  \
                   exoid);                                                      \
           ex_err("ex_put_partial_var", errmsg, exerrval);                      \
           return (EX_FATAL);                                                   \
@@ -133,7 +133,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
                               1] == 0L) {                                      \
           free(obj_var_truth_tab);                                             \
           exerrval = EX_BADPARAM;                                              \
-          sprintf(errmsg, "ERROR: Invalid %s variable %d, %s %" PRId64         \
+          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid %s variable %d, %s %" PRId64         \
                           " in file id %d",                                    \
                   ex_name_of_object(var_type), var_index,                      \
                   ex_name_of_object(var_type), obj_id, exoid);                 \
@@ -145,7 +145,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
                                                                                \
       if ((status = nc_inq_dimid(exoid, DIM_TIME, &time_dim)) != NC_NOERR) {   \
         exerrval = status;                                                     \
-        sprintf(errmsg,                                                        \
+        snprintf(errmsg, MAX_ERR_LENGTH,                                                        \
                 "ERROR: failed to locate time dimension in file id %d",        \
                 exoid);                                                        \
         ex_err("ex_put_partial_var", errmsg, exerrval);                        \
@@ -160,7 +160,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
       /*    variable doesn't exist so put file into define mode  */            \
       if ((status = nc_redef(exoid)) != NC_NOERR) {                            \
         exerrval = status;                                                     \
-        sprintf(errmsg, "ERROR: failed to put file id %d into define mode",    \
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode",    \
                 exoid);                                                        \
         ex_err("ex_put_partial_var", errmsg, exerrval);                        \
         return (EX_FATAL);                                                     \
@@ -173,7 +173,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
                                nc_flt_code(exoid), 2, dims, &varid)) !=        \
           NC_NOERR) {                                                          \
         exerrval = status;                                                     \
-        sprintf(errmsg,                                                        \
+        snprintf(errmsg, MAX_ERR_LENGTH,                                                        \
                 "ERROR: failed to define %s variable %d in file id %d",        \
                 ex_name_of_object(var_type), var_index, exoid);                \
         ex_err("ex_put_partial_var", errmsg, exerrval);                        \
@@ -185,7 +185,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
                                                                                \
       if ((status = nc_enddef(exoid)) != NC_NOERR) {                           \
         exerrval = status;                                                     \
-        sprintf(errmsg, "ERROR: failed to complete %s variable %s definition " \
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete %s variable %s definition " \
                         "to file id %d",                                       \
                 ex_name_of_object(var_type), VVAR(var_index, obj_id_ndx),      \
                 exoid);                                                        \
@@ -195,7 +195,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
     }                                                                          \
     else {                                                                     \
       exerrval = status;                                                       \
-      sprintf(errmsg, "ERROR: failed to locate %s variable %s in file id %d",  \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s variable %s in file id %d",  \
               ex_name_of_object(var_type), VVAR(var_index, obj_id_ndx),        \
               exoid);                                                          \
       ex_err("ex_put_partial_var", errmsg, exerrval);                          \
@@ -207,7 +207,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
   case EX_GLOBAL:
     if (num_entities <= 0) {
       exerrval = EX_MSG;
-      sprintf(errmsg, "Warning: no global variables specified for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no global variables specified for file id %d",
               exoid);
       ex_err("ex_put_partial_var", errmsg, exerrval);
 
@@ -218,14 +218,14 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
     if ((status = nc_inq_varid(exoid, VAR_GLO_VAR, &varid)) != NC_NOERR) {
       if (status == NC_ENOTVAR) {
         exerrval = status;
-        sprintf(errmsg, "ERROR: no global variables defined in file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no global variables defined in file id %d",
                 exoid);
         ex_err("ex_put_partial_var", errmsg, exerrval);
       }
       else {
         exerrval = status;
-        sprintf(
-            errmsg,
+        snprintf(
+            errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get global variables parameters in file id %d",
             exoid);
         ex_err("ex_put_partial_var", errmsg, exerrval);
@@ -271,7 +271,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
     break;
   default:
     exerrval = EX_MSG;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: invalid variable type (%d) specified for file id %d",
             var_type, exoid);
     ex_err("ex_put_partial_var", errmsg, exerrval);
@@ -307,7 +307,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to store %s %" PRId64 " variable %d in file id %d",
             ex_name_of_object(var_type), obj_id, var_index, exoid);
     ex_err("ex_put_partial_var", errmsg, exerrval);
@@ -320,7 +320,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type,
 error_ret:
   if (nc_enddef(exoid) != NC_NOERR) /* exit define mode */
   {
-    sprintf(errmsg, "ERROR: failed to complete definition for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
             exoid);
     ex_err("ex_put_partial_var", errmsg, exerrval);
   }
