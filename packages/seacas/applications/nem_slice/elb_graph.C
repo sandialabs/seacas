@@ -40,11 +40,11 @@
  *	find_adjacency()
  *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 #include "elb_graph.h"
-#include <assert.h>                     // for assert
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for sprintf, printf, nullptr
-#include <stdlib.h>                     // for free, malloc
-#include <string.h>                     // for strcat, strcpy
+#include <cassert>                     // for assert
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for sprintf, printf, nullptr
+#include <cstdlib>                     // for free, malloc
+#include <cstring>                     // for strcat, strcpy
 #include <sstream>                      // for operator<<, ostringstream, etc
 #include "elb.h"                        // for Problem_Description, etc
 #include "elb_elem.h"                   // for get_elem_info, E_Type, etc

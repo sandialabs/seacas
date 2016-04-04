@@ -33,9 +33,9 @@
  * 
  */
 
-#include <stdio.h>                      // for printf, fprintf, stderr
-#include <stdlib.h>                     // for exit
-#include <string.h>                     // for memset
+#include <cstdio>                      // for printf, fprintf, stderr
+#include <cstdlib>                     // for exit
+#include <cstring>                     // for memset
 #include "exodusII.h"                   // for MAX_LINE_LENGTH, ex_close, etc
 #include "nem_spread.h"                 // for NemSpread, etc
 #include "rf_io_const.h"                // for Debug_Flag, ExoFile
@@ -107,7 +107,8 @@ void NemSpread<T,INT>::read_mesh_param ()
   error = ex_get_init_ext(exoid, &info);
   check_exodus_error (error, "ex_get_init");
   
-  strcpy(GeomTitle, info.title);
+  strncpy(GeomTitle, info.title, MAX_LINE_LENGTH);
+  GeomTitle[MAX_LINE_LENGTH] = '\0';
   globals.Num_Dim = info.num_dim;
   globals.Num_Node = info.num_nodes;
   globals.Num_Elem = info.num_elem;

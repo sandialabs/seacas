@@ -75,7 +75,7 @@ The most recent released version is recommended. For use with Exodus, some local
  * `cd netcdf-4.3.3.1` and enter the command:
     ```
     ./configure --enable-netcdf-4  --enable-shared \
-      --disable-fsync --prefix ${ACCESS} \
+      --disable-fsync --prefix=${ACCESS} \
       --disable-dap --disable-cdmremote
     ```
 
@@ -115,7 +115,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
     cd TPL/parallel
     tar jxvf /path/to/parallel-latest.tar.bz2
     cd parallel-20150522
-    ./configure --prefix ${ACCESS}
+    ./configure --prefix=${ACCESS}
     ```
     
 #### CGNS
@@ -182,9 +182,9 @@ sudo apt-get update
 ```
 and then
 ```
-sudo apt-get install seacas
+sudo apt-get install seacas-bin
 ```
-to get SEACAS. This is provided by Nico Schlömer.
+to get the SEACAS binaries. You can also install 'libseacas-dev' or 'libseacas0'. This is provided by Nico Schlömer.
 
 ## Contact information
 

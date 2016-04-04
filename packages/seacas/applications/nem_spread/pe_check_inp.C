@@ -33,8 +33,8 @@
  * 
  */
 #include <exodusII.h>                   // for ex_close, ex_open, EX_READ
-#include <stdio.h>                      // for fprintf, stderr
-#include <string.h>                     // for strlen, strcpy
+#include <cstdio>                      // for fprintf, stderr
+#include <cstring>                     // for strlen, strcpy
 #include "nem_spread.h"                 // for NemSpread
 #include "ps_pario_const.h"             // for PIO_Info, Parallel_IO
 #include "rf_io_const.h"                // for ExoFile, Exo_LB_File, etc

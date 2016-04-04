@@ -14,4 +14,4 @@ AR_FLAGS='cru'; export AR_FLAGS
 
 LDFLAGS='-L${ACCESS}/lib'; export LDFLAGS
 
-./configure --disable-fortran --prefix ${ACCESS}
+./configure --disable-fortran --prefix=${ACCESS}

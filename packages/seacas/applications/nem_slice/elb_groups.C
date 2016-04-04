@@ -39,9 +39,9 @@
  *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 #include "elb_groups.h"
-#include <stdio.h>                      // for printf, sscanf, nullptr
-#include <stdlib.h>                     // for free, malloc
-#include <string.h>                     // for strchr, strlen
+#include <cstdio>                      // for printf, sscanf, nullptr
+#include <cstdlib>                     // for free, malloc
+#include <cstring>                     // for strchr, strlen
 #include <sys/types.h>                  // for ssize_t
 #include <vector>                       // for vector
 #include "elb.h"                        // for Problem_Description, etc

@@ -36,16 +36,14 @@
 #include <Ioss_DBUsage.h>               // for DatabaseUsage
 #include <Ioss_DatabaseIO.h>            // for DatabaseIO
 #include <Ioss_IOFactory.h>             // for IOFactory
+#include <Ioss_Map.h>                   // for Map
+#include <stddef.h>                     // for nullptr
 #include <stddef.h>                     // for size_t
 #include <stdint.h>                     // for int64_t
 #include <iostream>                     // for ostream
 #include <string>                       // for string
 #include <Ioss_State.h>                 // for State
 #include <Ioss_CodeTypes.h>
-
-#ifdef HAVE_MPI
-#include <cgns/Iocgns_DecompositionData.h>
-#endif
 
 #include <cgnslib.h>
 
@@ -67,12 +65,12 @@ namespace Ioss { class SideSet; }
 namespace Ioss { class EntityBlock; }
 
 namespace Iocgns {
-  class DecompositionDataBase;
-  template <typename INT> class DecompositionData;
-
+  
   class DatabaseIO : public Ioss::DatabaseIO
   {
   public:
+
+    enum class entity_type {NODE, ELEM};
 
     DatabaseIO(Ioss::Region *region, const std::string& filename,
 	       Ioss::DatabaseUsage db_usage,
@@ -153,15 +151,29 @@ namespace Iocgns {
     int64_t put_field_internal(const Ioss::CommSet* cs, const Ioss::Field& field,
 			       void *data, size_t data_size) const;
 
-    mutable int cgnsFilePtr;
+    // ID Mapping functions.
+    const Ioss::Map& get_map(entity_type type) const;
+    const Ioss::Map& get_map(Ioss::Map &entity_map,
+			     int64_t entityCount,
+			     int64_t file_offset, int64_t file_count,
+			     entity_type type) const;
 
-#if defined(EXPERIMENTAL_CGNS)
-#ifdef HAVE_MPI
-    mutable DecompositionDataBase      *decomp;
-    mutable DecompositionData<int>     *decomp32;
-    mutable DecompositionData<int64_t> *decomp64;
-#endif
-#endif
+    // Bulk Data
+
+    // MAPS -- Used to convert from local exodusII ids/names to Sierra
+    // database global ids/names
+
+    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
+    //               sierra side.   global = nodeMap[local]
+    // nodeMap[0] contains: -1 if sequential, 0 if ordering unknown, 1
+    // if nonsequential
+
+    mutable Ioss::Map nodeMap;
+    mutable Ioss::Map elemMap;
+
+    mutable int cgnsFilePtr;
+    size_t nodeCount;
+    size_t elementCount;
     
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;

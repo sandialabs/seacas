@@ -32,10 +32,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-#include <assert.h>
-#include <stddef.h>                     // for size_t
-#include <stdio.h>                      // for printf, fprintf, stderr, etc
-#include <stdlib.h>                     // for exit, malloc
+#include <cassert>
+#include <cstddef>                     // for size_t
+#include <cstdio>                      // for printf, fprintf, stderr, etc
+#include <cstdlib>                     // for exit, malloc
 
 #include "exodusII.h"                   // for ex_inquire, ex_opts, etc
 #include "globals.h"                    // for ELEM_COMM_MAP, etc
