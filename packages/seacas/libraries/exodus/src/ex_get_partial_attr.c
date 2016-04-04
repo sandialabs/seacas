@@ -59,7 +59,7 @@
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <sys/types.h>    // for int64_t
 
 /*!
@@ -99,13 +99,13 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
     if (exerrval != 0) {
       if (exerrval == EX_NULLENTITY) {
-        sprintf(errmsg, "Warning: no attributes found for NULL %s %" PRId64
+        snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no attributes found for NULL %s %" PRId64
                         " in file id %d",
                 ex_name_of_object(obj_type), obj_id, exoid);
         ex_err("ex_get_partial_attr", errmsg, EX_NULLENTITY);
         return (EX_WARN); /* no attributes for this object */
       }
-      sprintf(errmsg, "Warning: failed to locate %s id%" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failed to locate %s id%" PRId64
                       " in id array in file id %d",
               ex_name_of_object(obj_type), obj_id, exoid);
       ex_err("ex_get_partial_attr", errmsg, exerrval);
@@ -161,8 +161,8 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
     break;
   default:
     exerrval = 1005;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "Internal ERROR: unrecognized object type in switch: %d in file id %d",
         obj_type, exoid);
     ex_err("ex_get_partial_attr", errmsg, EX_MSG);
@@ -177,7 +177,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
 
   if (start_num + num_ent - 1 > num_entries_this_obj) {
     exerrval = EX_BADPARAM;
-    sprintf(errmsg, "ERROR: start index (%" PRId64 ") + count (%" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: start index (%" PRId64 ") + count (%" PRId64
                     ") is larger than total number of entities (%" ST_ZU
                     ") in file id %d",
             start_num, num_ent, num_entries_this_obj, exoid);
@@ -192,7 +192,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
 
   if ((status = nc_inq_varid(exoid, vattrbname, &attrid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to locate attributes for %s %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate attributes for %s %" PRId64
                     " in file id %d",
             ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_partial_attr", errmsg, exerrval);
@@ -215,7 +215,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get attributes for %s %" PRId64 " in file id %d",
             ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_partial_attr", errmsg, exerrval);

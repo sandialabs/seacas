@@ -52,7 +52,7 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_att_text, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <stdlib.h>       // for free, malloc
 #include <string.h>       // for strncpy
 #include <sys/types.h>    // for int64_t
@@ -73,7 +73,7 @@ static int64_t ex_get_dim_value(int exoid, const char *name,
     size_t tmp;
     if ((status = nc_inq_dimlen(exoid, dimension, &tmp)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to get number of %s in file id %d", name,
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", name,
               exoid);
       ex_err("ex_get_init_ext", errmsg, exerrval);
       return (EX_FATAL);
@@ -148,7 +148,7 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   }
   if (info->num_elem_blk == 0 && info->num_elem > 0) {
     exerrval = EX_BADPARAM;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to locate number of element blocks in file id %d",
             exoid);
     ex_err("ex_get_init_ext", errmsg, exerrval);
@@ -206,7 +206,7 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type,
                            &title_len)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "Warning: no title in file id %d", rootid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no title in file id %d", rootid);
     ex_err("ex_get_init_ext", errmsg, exerrval);
   }
 
@@ -228,7 +228,7 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
     }
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to get title in file id %d", rootid);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get title in file id %d", rootid);
       ex_err("ex_get_init_ext", errmsg, exerrval);
       return (EX_FATAL);
     }

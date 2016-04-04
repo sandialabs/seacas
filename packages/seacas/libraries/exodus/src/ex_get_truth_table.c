@@ -52,7 +52,7 @@
 #include "exodusII_int.h" // for ex_get_dimension, EX_FATAL, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <stdlib.h>       // for NULL
 
 /*!
@@ -137,7 +137,7 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk,
     break;
   default:
     exerrval = EX_BADPARAM;
-    sprintf(errmsg, "ERROR: Invalid variable type %d specified in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
             obj_type, exoid);
     ex_err(routine, errmsg, exerrval);
     return (EX_WARN);
@@ -158,7 +158,7 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk,
 
   if (num_entity != (size_t)num_blk) {
     exerrval = EX_FATAL;
-    sprintf(errmsg, "ERROR: # of %s doesn't match those defined in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: # of %s doesn't match those defined in file id %d",
             ex_name_of_object(obj_type), exoid);
     ex_err(routine, errmsg, exerrval);
     return (EX_FATAL);
@@ -166,8 +166,8 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk,
 
   if (num_var_db != (size_t)num_var) {
     exerrval = EX_FATAL;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "ERROR: # of %s variables doesn't match those defined in file id %d",
         ex_name_of_object(obj_type), exoid);
     ex_err(routine, errmsg, exerrval);
@@ -198,7 +198,7 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk,
 
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to get %s truth table from file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s truth table from file id %d",
               ex_name_of_object(obj_type), exoid);
       ex_err(routine, errmsg, exerrval);
       return (EX_FATAL);

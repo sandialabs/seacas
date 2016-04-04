@@ -38,7 +38,7 @@
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /*! write out the connectivity array */
 #define EX_WRITE_CONN(TNAME, VARCONN, VARCONNVAL)                              \
@@ -50,7 +50,7 @@
   }                                                                            \
   if (status != NC_NOERR) {                                                    \
     exerrval = status;                                                         \
-    sprintf(errmsg,                                                            \
+    snprintf(errmsg, MAX_ERR_LENGTH,                                                            \
             "ERROR: failed to write connectivity array for %s block %" PRId64  \
             " in file id %d",                                                  \
             TNAME, blk_id, exoid);                                             \
@@ -80,7 +80,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   blk_id_ndx = ex_id_lkup(exoid, blk_type, blk_id);
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "Warning: connectivity array not allowed for NULL %s %" PRId64
               " in file id %d",
               ex_name_of_object(blk_type), blk_id, exoid);
@@ -88,7 +88,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
       return (EX_WARN);
     }
 
-    sprintf(errmsg, "ERROR: failed to locate %s id %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s id %" PRId64
                     " in id array in file id %d",
             ex_name_of_object(blk_type), blk_id, exoid);
     ex_err("ex_put_conn", errmsg, exerrval);
@@ -109,8 +109,8 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
       break;
     default:
       exerrval = 1005;
-      sprintf(
-          errmsg,
+      snprintf(
+          errmsg, MAX_ERR_LENGTH,
           "Internal ERROR: unrecognized block type in switch: %d in file id %d",
           blk_type, exoid);
       ex_err("ex_putt_conn", errmsg, EX_MSG);
@@ -118,7 +118,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     }
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to locate connectivity array for %s %" PRId64
               " in file id %d",
               ex_name_of_object(blk_type), blk_id, exoid);
@@ -142,7 +142,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
           nc_inq_dimid(exoid, DIM_NUM_EDG_PER_EL(blk_id_ndx), &nedpereldim);
       if (status != NC_NOERR) {
         exerrval = status;
-        sprintf(errmsg, "ERROR: edge connectivity specified but failed to "
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: edge connectivity specified but failed to "
                         "locate number of edges/element in block %" PRId64
                         " in file id %d",
                 blk_id, exoid);
@@ -156,7 +156,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
           nc_inq_dimid(exoid, DIM_NUM_FAC_PER_EL(blk_id_ndx), &nfapereldim);
       if (status != NC_NOERR) {
         exerrval = status;
-        sprintf(errmsg, "ERROR: face connectivity specified but failed to "
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: face connectivity specified but failed to "
                         "locate number of faces/element in block %" PRId64
                         " in file id %d",
                 blk_id, exoid);
@@ -170,7 +170,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
         (status =
              nc_inq_dimlen(exoid, nedpereldim, &num_ed_per_elem) != NC_NOERR)) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to get number of edges/elem in block %" PRId64
               " in file id %d",
               blk_id, exoid);
@@ -183,7 +183,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
         (status =
              nc_inq_dimlen(exoid, nfapereldim, &num_fa_per_elem) != NC_NOERR)) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to get number of faces/elem in block %" PRId64
               " in file id %d",
               blk_id, exoid);
@@ -194,7 +194,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     if ((num_ed_per_elem == 0 && elem_edge_conn != 0) ||
         (num_ed_per_elem != 0 && elem_edge_conn == 0)) {
       exerrval = (EX_FATAL);
-      sprintf(errmsg, "ERROR: number of edges per element (%ld) doesn't "
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number of edges per element (%ld) doesn't "
                       "agree with elem_edge_conn (0x%p)",
               (long)num_ed_per_elem, (void *)elem_edge_conn);
       ex_err("ex_put_conn", errmsg, exerrval);
@@ -204,7 +204,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     if ((num_fa_per_elem == 0 && elem_face_conn != 0) ||
         (num_fa_per_elem != 0 && elem_face_conn == 0)) {
       exerrval = (EX_FATAL);
-      sprintf(errmsg, "ERROR: number of faces per element (%ld) doesn't "
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number of faces per element (%ld) doesn't "
                       "agree with elem_face_conn (0x%p)",
               (long)num_fa_per_elem, (void *)elem_face_conn);
       ex_err("ex_put_conn", errmsg, exerrval);
@@ -215,7 +215,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
       status = nc_inq_varid(exoid, VAR_ECONN(blk_id_ndx), &connid);
       if (status != NC_NOERR) {
         exerrval = status;
-        sprintf(errmsg, "ERROR: failed to locate connectivity array for "
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate connectivity array for "
                         "element edge block %" PRId64 " in file id %d",
                 blk_id, exoid);
         ex_err("ex_put_conn", errmsg, exerrval);
@@ -228,7 +228,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
       status = nc_inq_varid(exoid, VAR_FCONN(blk_id_ndx), &connid);
       if (status != NC_NOERR) {
         exerrval = status;
-        sprintf(errmsg, "ERROR: failed to locate connectivity array for "
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate connectivity array for "
                         "element face block %" PRId64 " in file id %d",
                 blk_id, exoid);
         ex_err("ex_put_conn", errmsg, exerrval);
