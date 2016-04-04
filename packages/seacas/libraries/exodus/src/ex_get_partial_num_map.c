@@ -56,16 +56,15 @@
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        
-#include <sys/types.h>    // for int64_t
+#include <stdio.h>
+#include <sys/types.h> // for int64_t
 
 /*
  * reads the element map with specified ID
  */
 
-int ex_get_partial_num_map(int exoid, ex_entity_type map_type,
-                           ex_entity_id map_id, int64_t ent_start,
-                           int64_t ent_count, void_int *map)
+int ex_get_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id,
+                           int64_t ent_start, int64_t ent_count, void_int *map)
 {
   int         dimid, var_id, id_ndx, status;
   size_t      num_mobj, start[1], count[1];
@@ -107,7 +106,7 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type,
   if ((status = nc_inq_dimlen(exoid, dimid, &num_mobj)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of mesh objects in file id %d",
-            exoid);
+             exoid);
     ex_err("ex_get_partial_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -130,8 +129,7 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type,
   if (ent_start + ent_count - 1 > num_mobj) {
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: start+count-1 is larger than element count in file id %d",
-            exoid);
+             "ERROR: start+count-1 is larger than element count in file id %d", exoid);
     ex_err("ex_get_partial_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -140,7 +138,7 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type,
   if ((status = nc_inq_dimid(exoid, dim_num_maps, &dimid)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss defined in file id %d",
-            ex_name_of_object(map_type), exoid);
+             ex_name_of_object(map_type), exoid);
     ex_err("ex_get_partial_num_map", errmsg, exerrval);
     return (EX_WARN);
   }
@@ -148,19 +146,18 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type,
   /* Lookup index of element map id property array */
   id_ndx = ex_id_lkup(exoid, map_type, map_id);
   if (exerrval != 0) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s id %" PRId64
-                    " in id variable in file id %d",
-            ex_name_of_object(map_type), map_id, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
+             ex_name_of_object(map_type), map_id, exoid);
     ex_err("ex_get_partial_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
 
   /* inquire id's of previously defined dimensions and variables */
-  if ((status = nc_inq_varid(exoid, ex_name_of_map(map_type, id_ndx),
-                             &var_id)) != NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, ex_name_of_map(map_type, id_ndx), &var_id)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s %" PRId64 " in file id %d",
-            ex_name_of_object(map_type), map_id, exoid);
+             ex_name_of_object(map_type), map_id, exoid);
     ex_err("ex_get_partial_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -179,7 +176,7 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type,
   if (status == -1) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s in file id %d",
-            ex_name_of_object(map_type), exoid);
+             ex_name_of_object(map_type), exoid);
     ex_err("ex_get_partial_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }

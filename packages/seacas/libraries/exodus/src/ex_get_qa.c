@@ -37,7 +37,7 @@
 #include "exodusII_int.h" // for EX_FATAL, ex_trim_internal, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_vara_text, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        
+#include <stdio.h>
 
 /*!
 The function ex_get_qa() reads the QA records from the database. Each
@@ -105,7 +105,7 @@ int ex_get_qa(int exoid, char *qa_record[][4])
   if ((status = nc_inq_dimlen(rootid, dimid, &num_qa_records)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of qa records in file id %d",
-            rootid);
+             rootid);
     ex_err("ex_get_qa", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -115,7 +115,7 @@ int ex_get_qa(int exoid, char *qa_record[][4])
     if ((status = nc_inq_varid(rootid, VAR_QA_TITLE, &varid)) != NC_NOERR) {
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate qa record data in file id %d",
-              rootid);
+               rootid);
       ex_err("ex_get_qa", errmsg, exerrval);
       return (EX_FATAL);
     }
@@ -129,11 +129,10 @@ int ex_get_qa(int exoid, char *qa_record[][4])
         count[1] = 1;
         start[2] = 0;
         count[2] = MAX_STR_LENGTH + 1;
-        if ((status = nc_get_vara_text(rootid, varid, start, count,
-                                       qa_record[i][j])) != NC_NOERR) {
+        if ((status = nc_get_vara_text(rootid, varid, start, count, qa_record[i][j])) != NC_NOERR) {
           exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get qa record data in file id %d",
-                  rootid);
+                   rootid);
           ex_err("ex_get_qa", errmsg, exerrval);
           return (EX_FATAL);
         }

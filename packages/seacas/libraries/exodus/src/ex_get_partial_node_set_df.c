@@ -57,16 +57,15 @@
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        
-#include <sys/types.h>    // for int64_t
+#include <stdio.h>
+#include <sys/types.h> // for int64_t
 
 /*
  * reads the distribution factors for a single node set
  */
 
-int ex_get_partial_node_set_df(int exoid, ex_entity_id node_set_id,
-                               int64_t start_num, int64_t num_df_to_get,
-                               void *node_set_dist_fact)
+int ex_get_partial_node_set_df(int exoid, ex_entity_id node_set_id, int64_t start_num,
+                               int64_t num_df_to_get, void *node_set_dist_fact)
 {
   int    status;
   int    dimid, dist_id, node_set_id_ndx;
@@ -88,35 +87,33 @@ int ex_get_partial_node_set_df(int exoid, ex_entity_id node_set_id,
   if ((node_set_id_ndx = ex_id_lkup(exoid, EX_NODE_SET, node_set_id)) < 0) {
     if (exerrval == EX_NULLENTITY) {
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: node set %" PRId64 " is NULL in file id %d",
-              node_set_id, exoid);
+               node_set_id, exoid);
       ex_err("ex_get_partial_node_set_df", errmsg, EX_NULLENTITY);
       return (EX_WARN);
     }
 
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to locate node set %" PRId64 " in %s in file id %d",
-            node_set_id, VAR_NS_IDS, exoid);
+             "ERROR: failed to locate node set %" PRId64 " in %s in file id %d", node_set_id,
+             VAR_NS_IDS, exoid);
     ex_err("ex_get_partial_node_set_df", errmsg, exerrval);
     return (EX_FATAL);
   }
 
   /* inquire id's of previously defined dimensions and variables */
-  if ((status = nc_inq_dimid(exoid, DIM_NUM_NOD_NS(node_set_id_ndx), &dimid)) !=
-      NC_NOERR) {
+  if ((status = nc_inq_dimid(exoid, DIM_NUM_NOD_NS(node_set_id_ndx), &dimid)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to locate number of nodes in node set %" PRId64
-            " in file id %d",
-            node_set_id, exoid);
+             "ERROR: failed to locate number of nodes in node set %" PRId64 " in file id %d",
+             node_set_id, exoid);
     ex_err("ex_get_partial_node_set_df", errmsg, exerrval);
     return (EX_FATAL);
   }
 
   if ((status = nc_inq_dimlen(exoid, dimid, &num_nodes_in_set)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of nodes in node set %" PRId64
-                    " in file id %d",
-            node_set_id, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to get number of nodes in node set %" PRId64 " in file id %d",
+             node_set_id, exoid);
     ex_err("ex_get_partial_node_set_df", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -144,12 +141,11 @@ int ex_get_partial_node_set_df(int exoid, ex_entity_id node_set_id,
     return (EX_FATAL);
   }
 
-  if ((status = nc_inq_varid(exoid, VAR_FACT_NS(node_set_id_ndx), &dist_id)) !=
-      NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, VAR_FACT_NS(node_set_id_ndx), &dist_id)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: dist factors not stored for node set %" PRId64
-                    " in file id %d",
-            node_set_id, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "Warning: dist factors not stored for node set %" PRId64 " in file id %d", node_set_id,
+             exoid);
     ex_err("ex_get_partial_node_set_df", errmsg, exerrval);
     return (EX_WARN); /* complain - but not too loud */
   }
@@ -159,18 +155,16 @@ int ex_get_partial_node_set_df(int exoid, ex_entity_id node_set_id,
   count[0] = num_df_to_get;
 
   if (ex_comp_ws(exoid) == 4) {
-    status =
-        nc_get_vara_float(exoid, dist_id, start, count, node_set_dist_fact);
+    status = nc_get_vara_float(exoid, dist_id, start, count, node_set_dist_fact);
   }
   else {
-    status =
-        nc_get_vara_double(exoid, dist_id, start, count, node_set_dist_fact);
+    status = nc_get_vara_double(exoid, dist_id, start, count, node_set_dist_fact);
   }
 
   if (status != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get distribution factors in file id %d",
-            exoid);
+             exoid);
     ex_err("ex_get_partial_node_set_df", errmsg, exerrval);
     return (EX_FATAL);
   }
