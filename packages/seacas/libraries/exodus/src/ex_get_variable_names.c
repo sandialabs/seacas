@@ -36,7 +36,7 @@
 #include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for EX_WARN, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /*!
 The function ex_get_variable_names() reads the names of the results
@@ -133,7 +133,7 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
     break;
   default:
     exerrval = EX_BADPARAM;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "Warning: invalid variable type %d requested from file id %d",
             obj_type, exoid);
     ex_err("ex_get_variable_names", errmsg, exerrval);
@@ -143,7 +143,7 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
   /* inquire previously defined variables  */
   if ((status = nc_inq_varid(exoid, vvarname, &varid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "Warning: no %s variables names stored in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variables names stored in file id %d",
             ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_variable_names", errmsg, exerrval);
     return (EX_WARN);

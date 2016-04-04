@@ -54,7 +54,7 @@
 #include <exodusII_int.h> // for EX_FATAL, DIM_NUM_PROCS, etc
 #include <netcdf.h>       // for NC_NOERR, nc_inq_dimid, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
 {
@@ -71,7 +71,7 @@ int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
   /* Get the file type */
   if (ex_get_file_type(exoid, ftype) != EX_NOERR) {
     exerrval = EX_MSG;
-    sprintf(errmsg, "ERROR: failed to get file type for file ID %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file type for file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
@@ -79,7 +79,7 @@ int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
 
   if ((status = nc_inq_dimid(exoid, DIM_NUM_PROCS, &dimid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to find dimension ID for \"%s\" in file ID %d",
             DIM_NUM_PROCS, exoid);
     ex_err(func_name, errmsg, exerrval);
@@ -90,7 +90,7 @@ int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
   /* Get the value of the number of processors */
   if ((status = nc_inq_dimlen(exoid, dimid, &ltempsv)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to find length of dimension \"%s\" in file ID %d",
             DIM_NUM_PROCS, exoid);
     ex_err(func_name, errmsg, exerrval);
@@ -102,7 +102,7 @@ int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
   /* Get the dimension ID of processors that have info in this file */
   if ((status = nc_inq_dimid(exoid, DIM_NUM_PROCS_F, &dimid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to find dimension ID for \"%s\" in file ID %d",
             DIM_NUM_PROCS_F, exoid);
     ex_err(func_name, errmsg, exerrval);
@@ -113,7 +113,7 @@ int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
   /* Get the value of the number of processors that have info in this file */
   if ((status = nc_inq_dimlen(exoid, dimid, &ltempsv)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to find length of dimension \"%s\" in file ID %d",
             DIM_NUM_PROCS_F, exoid);
     ex_err(func_name, errmsg, exerrval);

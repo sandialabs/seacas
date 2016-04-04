@@ -38,7 +38,7 @@
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf, NULL
+#include <stdio.h>        
 #include <sys/types.h>    // for int64_t
 
 /*!
@@ -62,7 +62,7 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type,
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) !=
       NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "Warning: no %s sets stored in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s sets stored in file id %d",
             ex_name_of_object(set_type), exoid);
     ex_err("ex_get_partial_set_dist_fact", errmsg, exerrval);
     return (EX_WARN);
@@ -72,12 +72,12 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type,
   set_id_ndx = ex_id_lkup(exoid, set_type, set_id);
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(errmsg, "Warning: %s set %" PRId64 " is NULL in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: %s set %" PRId64 " is NULL in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_partial_set_dist_fact", errmsg, EX_NULLENTITY);
       return (EX_WARN);
     }
-    sprintf(errmsg, "ERROR: failed to locate %s set %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s set %" PRId64
                     " in VAR_*S_IDS array in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_partial_set_dist_fact", errmsg, exerrval);
@@ -107,7 +107,7 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type,
     /* not an error for node sets because this is how we check that df's exist
      */
     if (set_type == EX_NODE_SET) {
-      sprintf(errmsg, "Warning: dist factors not stored for %s set %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: dist factors not stored for %s set %" PRId64
                       " in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_partial_set_dist_fact", errmsg, exerrval);
@@ -115,7 +115,7 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type,
     }
     /* is an error for other sets */
 
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to locate dist factors list for %s set %" PRId64
             " in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
@@ -135,7 +135,7 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to get dist factors list for %s set %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get dist factors list for %s set %" PRId64
                     " in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_partial_set_dist_fact", errmsg, exerrval);

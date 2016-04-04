@@ -55,7 +55,7 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_var_int, etc
 #include <inttypes.h>     // for PRId64
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <stdlib.h>       // for NULL
 
 /*!
@@ -80,7 +80,7 @@ int ex_get_set(
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) !=
       NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "Warning: no %ss stored in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss stored in file id %d",
             ex_name_of_object(set_type), exoid);
     ex_err("ex_get_set", errmsg, exerrval);
     return (EX_WARN);
@@ -90,13 +90,13 @@ int ex_get_set(
   set_id_ndx = ex_id_lkup(exoid, set_type, set_id);
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(errmsg, "Warning: %s %" PRId64 " is NULL in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: %s %" PRId64 " is NULL in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, EX_NULLENTITY);
       return (EX_WARN);
     }
 
-    sprintf(errmsg, "ERROR: failed to locate %s id %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s id %" PRId64
                     " in VAR_*S_IDS array in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set", errmsg, exerrval);
@@ -128,7 +128,7 @@ int ex_get_set(
   /* inquire id's of previously defined dimensions and variables */
   if ((status = nc_inq_varid(exoid, entryptr, &entry_list_id)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to locate entry list for %s %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate entry list for %s %" PRId64
                     " in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set", errmsg, exerrval);
@@ -142,7 +142,7 @@ int ex_get_set(
   if (set_extra_list) {
     if ((status = nc_inq_varid(exoid, extraptr, &extra_list_id)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to locate extra list for %s %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate extra list for %s %" PRId64
                       " in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, exerrval);
@@ -161,7 +161,7 @@ int ex_get_set(
 
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to get entry list for %s %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get entry list for %s %" PRId64
                       " in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, exerrval);
@@ -180,7 +180,7 @@ int ex_get_set(
 
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to get extra list for %s %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get extra list for %s %" PRId64
                       " in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, exerrval);

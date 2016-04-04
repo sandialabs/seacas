@@ -54,7 +54,7 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <inttypes.h>     // for PRId64
-#include <stdio.h>        // for sprintf, NULL
+#include <stdio.h>        
 
 /*!
  * writes the distribution factors for a single set
@@ -79,7 +79,7 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type,
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) !=
       NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: no %ss specified in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %ss specified in file id %d",
             ex_name_of_object(set_type), exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
     return (EX_FATAL);
@@ -89,13 +89,13 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type,
   set_id_ndx = ex_id_lkup(exoid, set_type, set_id);
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "Warning: no data allowed for NULL %s %" PRId64 " in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_put_set_fact", errmsg, EX_NULLENTITY);
       return (EX_WARN);
     }
-    sprintf(errmsg, "ERROR: failed to locate %s id %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s id %" PRId64
                     " in VAR_*S_IDS array in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
@@ -128,14 +128,14 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type,
        DIM_NUM_NOD_NS instead of  DIM_NUM_DF_NS*/
     if (status == NC_ENOTVAR) {
       exerrval = EX_BADPARAM;
-      sprintf(errmsg, "Warning: no dist factors defined for %s %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no dist factors defined for %s %" PRId64
                       " in file id %d",
               ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_put_set_dist_fact", errmsg, exerrval);
       return (EX_WARN);
     }
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to locate dist factors list for %s %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate dist factors list for %s %" PRId64
                     " in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
@@ -152,7 +152,7 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to store dist factors for %s %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store dist factors for %s %" PRId64
                     " in file id %d",
             ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);

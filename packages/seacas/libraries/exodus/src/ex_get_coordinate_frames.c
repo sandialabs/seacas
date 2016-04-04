@@ -74,7 +74,7 @@
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
 #include <assert.h>       // for assert
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /* -------------------- local defines --------------------------- */
 #define PROCNAME "ex_get_coordinate_frames"
@@ -157,7 +157,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids,
   if (cf_ids) {
     if ((status = nc_inq_varid(exoid, VAR_FRAME_IDS, &varids)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to read number coordinate ids from file id %d",
               exoid);
       ex_err(PROCNAME, errmsg, exerrval);
@@ -173,7 +173,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids,
 
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to read coordinate frame ids from file id %d",
               exoid);
       ex_err(PROCNAME, errmsg, exerrval);
@@ -185,7 +185,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids,
     if ((status = nc_inq_varid(exoid, VAR_FRAME_TAGS, &varids)) != NC_NOERR ||
         (nc_get_vara_text(exoid, varids, &start, &count, tags) != NC_NOERR)) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to read number coordinate tags from file id %d",
               exoid);
       ex_err(PROCNAME, errmsg, exerrval);
@@ -196,7 +196,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids,
   if (pt_coordinates) {
     if ((status = nc_inq_varid(exoid, VAR_FRAME_COORDS, &varids)) != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to read number coordinate tags from file id %d",
               exoid);
       ex_err(PROCNAME, errmsg, exerrval);
@@ -212,7 +212,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids,
 
     if (status != NC_NOERR) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: failed to read number coordinate tags from file id %d",
               exoid);
       ex_err(PROCNAME, errmsg, exerrval);
