@@ -53,7 +53,7 @@
 #include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid
-#include <stdio.h>        // for sprintf, NULL
+#include <stdio.h>        
 
 /*!
  * reads the name of a particular results variable from the database
@@ -104,7 +104,7 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num,
     break;
   default:
     exerrval = EX_BADPARAM;
-    sprintf(errmsg, "ERROR: Invalid variable type (%d) given for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type (%d) given for file id %d",
             obj_type, exoid);
     ex_err("ex_get_variable_name", errmsg, exerrval);
     return (EX_FATAL);
@@ -112,7 +112,7 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num,
 
   if ((status = nc_inq_varid(exoid, vname, &varid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "Warning: no %s variable names stored in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variable names stored in file id %d",
             ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_variable_name", errmsg, exerrval);
     return (EX_WARN);

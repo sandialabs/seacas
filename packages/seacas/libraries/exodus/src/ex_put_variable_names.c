@@ -53,18 +53,18 @@
 #include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 #define EX_PUT_NAMES(TNAME, DNUMVAR, VNAMES)                                   \
   if ((status = nc_inq_dimid(exoid, DNUMVAR, &dimid)) != NC_NOERR) {           \
     exerrval = status;                                                         \
     if (status == NC_EBADDIM) {                                                \
-      sprintf(errmsg, "ERROR: no " TNAME " variables defined in file id %d",   \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no " TNAME " variables defined in file id %d",   \
               exoid);                                                          \
       ex_err("ex_put_variable_names", errmsg, exerrval);                       \
     }                                                                          \
     else {                                                                     \
-      sprintf(errmsg, "ERROR: failed to locate number of " TNAME               \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of " TNAME               \
                       " variables in file id %d",                              \
               exoid);                                                          \
       ex_err("ex_put_variable_names", errmsg, exerrval);                       \
@@ -75,13 +75,13 @@
   if ((status = nc_inq_varid(exoid, VNAMES, &varid)) != NC_NOERR) {            \
     exerrval = status;                                                         \
     if (status == NC_ENOTVAR) {                                                \
-      sprintf(errmsg,                                                          \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                          \
               "ERROR: no " TNAME " variable names defined in file id %d",      \
               exoid);                                                          \
       ex_err("ex_put_variable_names", errmsg, exerrval);                       \
     }                                                                          \
     else {                                                                     \
-      sprintf(errmsg,                                                          \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                          \
               "ERROR: " TNAME " name variable names not found in file id %d",  \
               exoid);                                                          \
       ex_err("ex_put_variable_names", errmsg, exerrval);                       \
@@ -188,7 +188,7 @@ int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars,
     break;
   default:
     exerrval = EX_BADPARAM;
-    sprintf(errmsg, "ERROR: Invalid variable type %d specified in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
             obj_type, exoid);
     ex_err("ex_put_variable_names", errmsg, exerrval);
     return (EX_FATAL);

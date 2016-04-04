@@ -53,7 +53,7 @@
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 
 /*!
 
@@ -143,7 +143,7 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
     break;
   default:
     exerrval = EX_BADPARAM;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "Warning: invalid variable type %d requested from file id %d",
             obj_type, exoid);
     ex_err("ex_get_variable_param", errmsg, exerrval);
@@ -157,7 +157,7 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
     }
     else {
       exerrval = status;
-      sprintf(errmsg, "ERROR: failed to locate %s variable names in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s variable names in file id %d",
               ex_name_of_object(obj_type), exoid);
       ex_err("ex_get_variable_param", errmsg, exerrval);
       return (EX_FATAL);
@@ -166,7 +166,7 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
 
   if ((status = nc_inq_dimlen(exoid, dimid, &dimlen)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to get number of %s variables in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s variables in file id %d",
             ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_variable_param", errmsg, exerrval);
     return (EX_FATAL);

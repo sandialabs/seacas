@@ -90,7 +90,7 @@ IO_word_size = 0;
 if (exoid = ex_open ("test.exo", EX_READ, &CPU_word_size,
                      &IO_word_size, &version)) {
    errval = 999;
-   sprintf(errmsg,"ERROR: cannot open file test.exo");
+   snprintf(errmsg, MAX_ERR_LENGTH,"ERROR: cannot open file test.exo");
    ex_err("prog_name", errmsg, errval);
 }
 \endcode

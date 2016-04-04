@@ -58,7 +58,7 @@
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <inttypes.h>     // for PRId64
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <sys/types.h>    // for int64_t
 
 /*
@@ -79,13 +79,13 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
   /* Determine index of elem_blk_id in VAR_ID_EL_BLK array */
   if ((elem_blk_id_ndx = ex_id_lkup(exoid, EX_ELEM_BLOCK, elem_blk_id)) < 0) {
     if (exerrval == EX_NULLENTITY) {
-      sprintf(errmsg, "Warning: no attributes allowed for NULL block %" PRId64
+      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no attributes allowed for NULL block %" PRId64
                       " in file id %d",
               elem_blk_id, exoid);
       ex_err("ex_put_partial_elem_attr", errmsg, EX_NULLENTITY);
       return (EX_WARN); /* no attributes for this element block */
     }
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: no element block id %" PRId64 " in %s array in file id %d",
             elem_blk_id, VAR_ID_EL_BLK, exoid);
     ex_err("ex_put_partial_elem_attr", errmsg, exerrval);
@@ -97,14 +97,14 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
                              &numelbdim)) != NC_NOERR) {
     if (status == NC_EBADDIM) {
       exerrval = status;
-      sprintf(errmsg,
+      snprintf(errmsg, MAX_ERR_LENGTH,
               "ERROR: no element block with id %" PRId64 " in file id %d",
               elem_blk_id, exoid);
       ex_err("ex_put_partial_elem_attr", errmsg, exerrval);
       return (EX_FATAL);
     }
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to locate number of elements for block %" PRId64
             " in file id %d",
             elem_blk_id, exoid);
@@ -115,7 +115,7 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
   if ((status = nc_inq_dimlen(exoid, numelbdim, &num_elem_this_blk)) !=
       NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to get number of elements for block %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of elements for block %" PRId64
                     " in file id %d",
             elem_blk_id, exoid);
     ex_err("ex_put_partial_elem_attr", errmsg, exerrval);
@@ -125,7 +125,7 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
   if ((status = nc_inq_dimid(exoid, DIM_NUM_ATT_IN_BLK(elem_blk_id_ndx),
                              &numattrdim)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: number of attributes not defined for block %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number of attributes not defined for block %" PRId64
                     " in file id %d",
             elem_blk_id, exoid);
     ex_err("ex_put_partial_elem_attr", errmsg, EX_MSG);
@@ -134,7 +134,7 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
 
   if ((status = nc_inq_dimlen(exoid, numattrdim, &num_attr)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get number of attributes for block %" PRId64
             " in file id %d",
             elem_blk_id, exoid);
@@ -145,7 +145,7 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
   if ((status = nc_inq_varid(exoid, VAR_ATTRIB(elem_blk_id_ndx), &attrid)) !=
       NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg,
+    snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to locate attribute variable for block %" PRId64
             " in file id %d",
             elem_blk_id, exoid);
@@ -156,8 +156,8 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
   /* do some error checking */
   if (num_elem_this_blk < (start_elem_num + num_elems - 1)) {
     exerrval = status;
-    sprintf(
-        errmsg,
+    snprintf(
+        errmsg, MAX_ERR_LENGTH,
         "ERROR: requested attributes from too many elements in block %" PRId64,
         elem_blk_id);
     ex_err("ex_put_partial_elem_attr", errmsg, exerrval);
@@ -184,7 +184,7 @@ int ex_put_partial_elem_attr(int exoid, ex_entity_id elem_blk_id,
 
   if (status != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to put attributes for block %" PRId64
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put attributes for block %" PRId64
                     " in file id %d",
             elem_blk_id, exoid);
     ex_err("ex_put_partial_elem_attr", errmsg, exerrval);

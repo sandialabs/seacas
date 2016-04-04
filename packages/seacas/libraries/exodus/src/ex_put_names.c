@@ -55,7 +55,7 @@
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR
 #include <stddef.h>       // for size_t
-#include <stdio.h>        // for sprintf
+#include <stdio.h>        
 #include <string.h>       // for NULL
 
 /*!
@@ -124,7 +124,7 @@ int ex_put_names(int exoid, ex_entity_type obj_type, char *names[])
   /*  ======== ERROR (Invalid type) ========= */
   default:
     exerrval = EX_BADPARAM;
-    sprintf(errmsg, "ERROR: Invalid type specified in file id %d", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -134,7 +134,7 @@ int ex_put_names(int exoid, ex_entity_type obj_type, char *names[])
 
   if ((status = nc_inq_varid(exoid, vname, &varid)) != NC_NOERR) {
     exerrval = status;
-    sprintf(errmsg, "ERROR: failed to locate %s names in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s names in file id %d",
             ex_name_of_object(obj_type), exoid);
     ex_err(routine, errmsg, exerrval);
     return (EX_FATAL);
