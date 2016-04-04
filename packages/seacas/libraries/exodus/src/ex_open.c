@@ -55,7 +55,7 @@
 #include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        
+#include <stdio.h>
 /*!
 
 The function ex_open() opens an existing exodus file and returns
@@ -124,8 +124,8 @@ exoid = ex_open ("test.exo",     \co{filename path}
 
 static int warning_output = 0;
 
-int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
-                float *version, int run_version)
+int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *version,
+                int run_version)
 {
   int     exoid;
   int     status, stat_att, stat_dim;
@@ -153,8 +153,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
                     "version %d.%02d,\n          but was linked with exodus "
                     "library version %d.%02d\n          This is probably an "
                     "error in the build process of this code.\n",
-            run_version_major, run_version_minor, lib_version_major,
-            lib_version_minor);
+            run_version_major, run_version_minor, lib_version_major, lib_version_minor);
     warning_output = 1;
   }
 
@@ -222,8 +221,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
 #endif
         exerrval = status;
       }
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s read only",
-               path);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s read only", path);
       ex_err("ex_open", errmsg, exerrval);
       return (EX_FATAL);
     }
@@ -238,8 +236,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
     if ((status = nc_open(path, NC_WRITE | NC_SHARE, &exoid)) != NC_NOERR) {
       /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
       exerrval = status;
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only",
-               path);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only", path);
       ex_err("ex_open", errmsg, exerrval);
       return (EX_FATAL);
     }
@@ -252,43 +249,38 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
       return (EX_FATAL);
     }
 
-    stat_att =
-        nc_inq_att(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
+    stat_att = nc_inq_att(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
     stat_dim = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
     if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
       if ((status = nc_redef(exoid)) != NC_NOERR) {
         exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode",
-                exoid);
+                 exoid);
         ex_err("ex_open", errmsg, exerrval);
         return (EX_FATAL);
       }
 
       if (stat_att != NC_NOERR) {
         int max_so_far = 32;
-        nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1,
-                       &max_so_far);
+        nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far);
       }
 
       /* If the DIM_STR_NAME variable does not exist on the database, we need to
        * add it now. */
       if (stat_dim != NC_NOERR) {
         /* Not found; set to default value of 32+1. */
-        int max_name =
-            ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
-        if ((status = nc_def_dim(exoid, DIM_STR_NAME, max_name + 1,
-                                 &dim_str_name)) != NC_NOERR) {
+        int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
+        if ((status = nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name)) != NC_NOERR) {
           exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH,
-                  "ERROR: failed to define string name dimension in file id %d",
-                  exoid);
+                   "ERROR: failed to define string name dimension in file id %d", exoid);
           ex_err("ex_open", errmsg, exerrval);
           return (EX_FATAL);
         }
       }
       if ((exerrval = nc_enddef(exoid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
-                exoid);
+                 exoid);
         ex_err("ex_open", errmsg, exerrval);
         return (EX_FATAL);
       }
@@ -299,11 +291,10 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
    * floating point and integer values stored in the file
    */
 
-  if ((status = nc_get_att_float(exoid, NC_GLOBAL, ATT_VERSION, version)) !=
-      NC_NOERR) {
+  if ((status = nc_get_att_float(exoid, NC_GLOBAL, ATT_VERSION, version)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database version for file id: %d",
-            exoid);
+             exoid);
     ex_err("ex_open", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -312,19 +303,17 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
   if (*version < 2.0) {
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
-            *version, exoid);
+             *version, exoid);
     ex_err("ex_open", errmsg, exerrval);
     return (EX_FATAL);
   }
 
-  if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE, &file_wordsize) !=
-      NC_NOERR) {
+  if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE, &file_wordsize) != NC_NOERR) {
     /* try old (prior to db version 2.02) attribute name */
-    if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE_BLANK,
-                       &file_wordsize) != NC_NOERR) {
+    if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE_BLANK, &file_wordsize) != NC_NOERR) {
       exerrval = EX_FATAL;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file wordsize from file id: %d",
-              exoid);
+               exoid);
       ex_err("ex_open", errmsg, exerrval);
       return (exerrval);
     }
@@ -335,10 +324,8 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
    * Older files don't have the attribute, so it is not an error if it is
    * missing
    */
-  if (nc_get_att_int(exoid, NC_GLOBAL, ATT_INT64_STATUS, &int64_status) !=
-      NC_NOERR) {
-    int64_status =
-        0; /* Just in case it gets munged by a failed get_att_int call */
+  if (nc_get_att_int(exoid, NC_GLOBAL, ATT_INT64_STATUS, &int64_status) != NC_NOERR) {
+    int64_status = 0; /* Just in case it gets munged by a failed get_att_int call */
   }
 
   /* Merge in API int64 status flags as specified by caller of function... */
@@ -356,22 +343,20 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws,
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: There is an existing file already using the file "
-                    "id %d which was also assigned to file %s.\n\tWas "
-                    "nc_close() called instead of ex_close() on an open Exodus "
-                    "file?\n",
-            exoid, path);
+                                     "id %d which was also assigned to file %s.\n\tWas "
+                                     "nc_close() called instead of ex_close() on an open Exodus "
+                                     "file?\n",
+             exoid, path);
     ex_err("ex_open", errmsg, exerrval);
     nc_close(exoid);
     return (EX_FATAL);
   }
 
   /* initialize floating point and integer size conversion. */
-  if (ex_conv_ini(exoid, comp_ws, io_ws, file_wordsize, int64_status, 0, 0,
-                  0) != EX_NOERR) {
+  if (ex_conv_ini(exoid, comp_ws, io_ws, file_wordsize, int64_status, 0, 0, 0) != EX_NOERR) {
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to initialize conversion routines in file id %d",
-            exoid);
+             "ERROR: failed to initialize conversion routines in file id %d", exoid);
     ex_err("ex_open", errmsg, exerrval);
     return (EX_FATAL);
   }

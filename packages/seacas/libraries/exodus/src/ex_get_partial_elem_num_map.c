@@ -55,16 +55,15 @@
 #include "exodusII_int.h" // for EX_FATAL, DIM_NUM_ELEM, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_vara_int, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        
-#include <sys/types.h>    // for int64_t
+#include <stdio.h>
+#include <sys/types.h> // for int64_t
 
 /*
  *  reads the element numbering map from the database; allows element numbers
  *  to be noncontiguous
  */
 
-int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents,
-                                void_int *elem_map)
+int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents, void_int *elem_map)
 {
   int    numelemdim, mapid, status;
   size_t i;
@@ -77,7 +76,7 @@ int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents,
   if ((status = nc_inq_dimid(exoid, DIM_NUM_ELEM, &numelemdim)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of elements in file id %d",
-            exoid);
+             exoid);
     ex_err("ex_get_partial_elem_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -85,7 +84,7 @@ int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents,
   if ((status = nc_inq_dimlen(exoid, numelemdim, &num_elem)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of elements in file id %d",
-            exoid);
+             exoid);
     ex_err("ex_get_partial_elem_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -94,7 +93,7 @@ int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents,
   if (start_ent < 0 || start_ent > num_elem) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: Invalid input to function ex_get_partial_elem_num_map!\n");
+             "ERROR: Invalid input to function ex_get_partial_elem_num_map!\n");
     ex_err("ex_get_partial_elem_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -117,8 +116,8 @@ int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents,
   if ((status = nc_inq_varid(exoid, VAR_ELEM_NUM_MAP, &mapid)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: elem numbering map not stored in file id %d; "
-                    "returning default map",
-            exoid);
+                                     "returning default map",
+             exoid);
     ex_err("ex_get_partial_elem_num_map", errmsg, exerrval);
 
     /* generate default map of 1..n, where n is num_elem */
@@ -151,7 +150,7 @@ int ex_get_partial_elem_num_map(int exoid, int64_t start_ent, int64_t num_ents,
   if (status != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get element number map in file id %d",
-            exoid);
+             exoid);
     ex_err("ex_get_partial_elem_num_map", errmsg, exerrval);
     return (EX_FATAL);
   }

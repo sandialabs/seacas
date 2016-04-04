@@ -37,7 +37,7 @@
 #include "exodusII_int.h" // for ex_comp_ws, EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <stddef.h>       // for size_t
-#include <stdio.h>        
+#include <stdio.h>
 
 /*!
  The function ex_get_glob_var_time() reads the values of a
@@ -101,8 +101,8 @@ error = ex_get_glob_var_time(exoid, var_index, beg_time,
 
 */
 
-int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
-                         int end_time_step, void *glob_var_vals)
+int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step, int end_time_step,
+                         void *glob_var_vals)
 {
   int    status;
   int    varid;
@@ -116,8 +116,8 @@ int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (beg_time_step <= 0 || beg_time_step > num_time_steps) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: beginning time_step is out-of-range. Value = %d, "
-                      "valid range is 1 to %d in file id %d",
-              beg_time_step, num_time_steps, exoid);
+                                       "valid range is 1 to %d in file id %d",
+               beg_time_step, num_time_steps, exoid);
       ex_err("ex_get_glob_var_time", errmsg, EX_BADPARAM);
       return (EX_FATAL);
     }
@@ -131,8 +131,8 @@ int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
     }
     else if (end_time_step < beg_time_step || end_time_step > num_time_steps) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: end time_step is out-of-range. Value = %d, valid "
-                      "range is %d to %d in file id %d",
-              beg_time_step, end_time_step, num_time_steps, exoid);
+                                       "range is %d to %d in file id %d",
+               beg_time_step, end_time_step, num_time_steps, exoid);
       ex_err("ex_get_glob_var_time", errmsg, EX_BADPARAM);
       return (EX_FATAL);
     }
@@ -150,7 +150,7 @@ int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
   if ((status = nc_inq_varid(exoid, VAR_GLO_VAR, &varid)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate global variables in file id %d",
-            exoid);
+             exoid);
     ex_err("ex_get_glob_var_time", errmsg, exerrval);
     return (EX_WARN);
   }
@@ -165,8 +165,8 @@ int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
   if (status != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to get global variable %d values from file id %d",
-            glob_var_index, exoid);
+             "ERROR: failed to get global variable %d values from file id %d", glob_var_index,
+             exoid);
     ex_err("ex_get_glob_var_time", errmsg, exerrval);
     return (EX_FATAL);
   }
