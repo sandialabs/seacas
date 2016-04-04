@@ -51,7 +51,7 @@
 #include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_enddef, etc
-#include <stdio.h>        
+#include <stdio.h>
 
 /*!
 \deprecated Use ex_put_num_map() instead.
@@ -119,8 +119,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
     map_int_type = NC_INT64;
   }
 
-  if ((status = nc_def_var(exoid, VAR_MAP, map_int_type, 1, dims, &mapid)) !=
-      NC_NOERR) {
+  if ((status = nc_def_var(exoid, VAR_MAP, map_int_type, 1, dims, &mapid)) != NC_NOERR) {
     if (status == NC_ENAMEINUSE) {
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: element map already exists in file id %d", exoid);
@@ -129,7 +128,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
     else {
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to create element map array in file id %d",
-              exoid);
+               exoid);
       ex_err("ex_put_map", errmsg, exerrval);
     }
     goto error_ret; /* exit define mode and return */
@@ -139,8 +138,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
   /* leave define mode  */
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
-            exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
     ex_err("ex_put_map", errmsg, exerrval);
     return (EX_FATAL);
   }
@@ -166,8 +164,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
 error_ret:
   if (nc_enddef(exoid) != NC_NOERR) /* exit define mode */
   {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d",
-            exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_map", errmsg, exerrval);
   }
   return (EX_FATAL);

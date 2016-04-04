@@ -58,8 +58,7 @@
 #include <exodusII.h>
 #include <exodusII_int.h>
 
-int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts,
-                           void_int *df_cnts)
+int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts, void_int *df_cnts)
 {
   const char *func_name = "ex_put_ns_param_global";
   int         varid, status;
@@ -72,9 +71,8 @@ int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts,
   /* Get the variable ID for the vector of global node set IDs */
   if ((status = nc_inq_varid(exoid, VAR_NS_IDS_GLOBAL, &varid)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to find variable ID for \"%s\" in file ID %d",
-            VAR_NS_IDS_GLOBAL, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
+             VAR_NS_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
@@ -90,19 +88,17 @@ int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts,
   if (status != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable \"%s\" to file ID %d",
-            VAR_NS_IDS_GLOBAL, exoid);
+             VAR_NS_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
   }
 
   /* Get the variable ID for the vector of global node-set node counts */
-  if ((status = nc_inq_varid(exoid, VAR_NS_NODE_CNT_GLOBAL, &varid)) !=
-      NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, VAR_NS_NODE_CNT_GLOBAL, &varid)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to find variable ID for \"%s\" in file ID %d",
-            VAR_NS_NODE_CNT_GLOBAL, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
+             VAR_NS_NODE_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
@@ -118,19 +114,17 @@ int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts,
   if (status != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put variable \"%s\" in file ID %d",
-            VAR_NS_NODE_CNT_GLOBAL, exoid);
+             VAR_NS_NODE_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
   }
 
   /* Get the variable ID for the number of dist. factors in each node set */
-  if ((status = nc_inq_varid(exoid, VAR_NS_DF_CNT_GLOBAL, &varid)) !=
-      NC_NOERR) {
+  if ((status = nc_inq_varid(exoid, VAR_NS_DF_CNT_GLOBAL, &varid)) != NC_NOERR) {
     exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-            "ERROR: failed to find variable ID for \"%s\" in file ID %d",
-            VAR_NS_DF_CNT_GLOBAL, exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
+             VAR_NS_DF_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
@@ -146,7 +140,7 @@ int ex_put_ns_param_global(int exoid, void_int *global_ids, void_int *node_cnts,
   if (status != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable \"%s\" in file ID %d",
-            VAR_NS_DF_CNT_GLOBAL, exoid);
+             VAR_NS_DF_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
     return (EX_FATAL);
