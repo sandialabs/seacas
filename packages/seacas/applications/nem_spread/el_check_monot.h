@@ -36,6 +36,8 @@
  *
  */
 
+#include <cstdlib>
+
 /******************************************************************************/
 template <typename INT> int check_monot(INT *vector, size_t length)
 {
