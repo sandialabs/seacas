@@ -1,5 +1,5 @@
-#ifndef EL_GEOM_CONST_H
-#define EL_GEOM_CONST_H
+#ifndef GLOBALS_H
+#define GLOBALS_H
 /*
  * Copyright (C) 2009 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
@@ -35,6 +35,7 @@
  *
  */
 
+#include <cstdlib>
 #include <rf_allo.h>
 
 /*---------------------------------------------------------------------------*/
