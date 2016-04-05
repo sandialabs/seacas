@@ -185,6 +185,8 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
 extern int interface(int    nvtxs,                 /* number of vertices in full graph */
                      int *  start,                 /* start of edge list for each vertex */
                      int *  adjacency,             /* edge list data */
