@@ -59,7 +59,7 @@ namespace Iopx {
   {
   public:
     DecompositionDataBase(MPI_Comm comm)
-        : comm_(comm), myProcessor(0), processorCount(0), spatialDimension(0)
+        : comm_(comm), myProcessor(0), processorCount(0)
     {
     }
 
@@ -69,6 +69,7 @@ namespace Iopx {
     virtual size_t ioss_node_count() const    = 0;
     virtual size_t ioss_elem_count() const    = 0;
 
+    virtual int spatial_dimension() const    = 0;
     virtual size_t global_node_count() const = 0;
     virtual size_t global_elem_count() const = 0;
 
@@ -83,8 +84,6 @@ namespace Iopx {
 
     int myProcessor;
     int processorCount;
-
-    size_t spatialDimension;
 
     std::vector<Ioss::BlockDecompositionData> el_blocks;
     std::vector<Ioss::SetDecompositionData>   node_sets;
@@ -131,6 +130,8 @@ namespace Iopx {
     int int_size() const { return sizeof(INT); }
 
     void decompose_model(int filePtr);
+
+    int spatial_dimension() const {return m_decomposition.m_spatialDimension;}
 
     size_t global_node_count() const { return m_decomposition.global_node_count(); }
     size_t global_elem_count() const { return m_decomposition.global_elem_count(); }

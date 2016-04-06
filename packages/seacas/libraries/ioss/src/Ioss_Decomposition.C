@@ -35,6 +35,7 @@
 
 #include <Ioss_Decomposition.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_ElementTopology.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -298,7 +299,7 @@ namespace Ioss {
 #if !defined(NO_PARMETIS_SUPPORT)
     if (m_method == "KWAY" || m_method == "GEOM_KWAY" || m_method == "KWAY_GEOM" ||
         m_method == "METIS_SFC") {
-      metis_decompose(m_pointer, m_adjacency);
+      metis_decompose((idx_t*)TOPTR(m_pointer), (idx_t*)TOPTR(m_adjacency), element_blocks);
     }
 #endif
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -349,18 +350,15 @@ namespace Ioss {
     m_nodeDist.shrink_to_fit();
   }
 
-  template void Decomposition<int>::calculate_element_centroids(int spatial_dimension,
-                                                                const std::vector<double> &x,
+  template void Decomposition<int>::calculate_element_centroids(const std::vector<double> &x,
                                                                 const std::vector<double> &y,
                                                                 const std::vector<double> &z);
-  template void Decomposition<int64_t>::calculate_element_centroids(int spatial_dimension,
-                                                                    const std::vector<double> &x,
+  template void Decomposition<int64_t>::calculate_element_centroids(const std::vector<double> &x,
                                                                     const std::vector<double> &y,
                                                                     const std::vector<double> &z);
 
   template <typename INT>
-  void Decomposition<INT>::calculate_element_centroids(int                        spatial_dimension,
-                                                       const std::vector<double> &x,
+  void Decomposition<INT>::calculate_element_centroids(const std::vector<double> &x,
                                                        const std::vector<double> &y,
                                                        const std::vector<double> &z)
   {
@@ -441,24 +439,24 @@ namespace Ioss {
 
     // The total vector size I need to send data in is node_comm_send.size()*3
     std::vector<double> coord_send;
-    coord_send.reserve(node_comm_send.size() * spatial_dimension);
-    std::vector<double> coord_recv(node_comm_recv.size() * spatial_dimension);
+    coord_send.reserve(node_comm_send.size() * m_spatialDimension);
+    std::vector<double> coord_recv(node_comm_recv.size() * m_spatialDimension);
     for (auto node : node_comm_send) {
       node -= nodeOffset;
       coord_send.push_back(x[node]);
-      if (spatial_dimension > 1)
+      if (m_spatialDimension > 1)
         coord_send.push_back(y[node]);
-      if (spatial_dimension > 2)
+      if (m_spatialDimension > 2)
         coord_send.push_back(z[node]);
     }
-    assert(coord_send.size() == node_comm_send.size() * spatial_dimension);
+    assert(coord_send.size() == node_comm_send.size() * m_spatialDimension);
 
     // Send the coordinate data back to the processors that requested it...
     for (int i = 0; i < m_processorCount; i++) {
-      send_count[i] *= spatial_dimension;
-      recv_count[i] *= spatial_dimension;
-      send_disp[i] *= spatial_dimension;
-      recv_disp[i] *= spatial_dimension;
+      send_count[i] *= m_spatialDimension;
+      recv_count[i] *= m_spatialDimension;
+      send_disp[i] *= m_spatialDimension;
+      recv_disp[i] *= m_spatialDimension;
     }
 
     Ioss::MY_Alltoallv(coord_send, send_count, send_disp, coord_recv, recv_count, recv_disp,
@@ -479,7 +477,7 @@ namespace Ioss {
     // per element...
 
     // Calculate the centroid into the DecompositionData structure 'centroids'
-    m_centroids.reserve(elementCount * spatial_dimension);
+    m_centroids.reserve(elementCount * m_spatialDimension);
     std::vector<INT> recv_tmp(m_processorCount);
 
     for (size_t i = 0; i < elementCount; i++) {
@@ -492,25 +490,25 @@ namespace Ioss {
         INT proc = owner[jj];
         if (proc == m_processor) {
           cx += x[node - nodeOffset];
-          if (spatial_dimension > 1)
+          if (m_spatialDimension > 1)
             cy += y[node - nodeOffset];
-          if (spatial_dimension > 2)
+          if (m_spatialDimension > 2)
             cz += z[node - nodeOffset];
         }
         else {
           INT coffset = recv_disp[proc] + recv_tmp[proc];
-          recv_tmp[proc] += spatial_dimension;
+          recv_tmp[proc] += m_spatialDimension;
           cx += coord_recv[coffset + 0];
-          if (spatial_dimension > 1)
+          if (m_spatialDimension > 1)
             cy += coord_recv[coffset + 1];
-          if (spatial_dimension > 2)
+          if (m_spatialDimension > 2)
             cz += coord_recv[coffset + 2];
         }
       }
       m_centroids.push_back(cx / nnpe);
-      if (spatial_dimension > 1)
+      if (m_spatialDimension > 1)
         m_centroids.push_back(cy / nnpe);
-      if (spatial_dimension > 2)
+      if (m_spatialDimension > 2)
         m_centroids.push_back(cz / nnpe);
     }
   }
@@ -568,15 +566,16 @@ namespace Ioss {
 
 #if !defined(NO_PARMETIS_SUPPORT)
   template <typename INT>
-  void Decomposition<INT>::metis_decompose(std::vector<BlockDecompositionData> &el_blocks)
+  void Decomposition<INT>::metis_decompose(idx_t *pointer, idx_t *adjacency,
+					   std::vector<BlockDecompositionData> &el_blocks)
   {
     std::vector<idx_t> elem_partition(elementCount);
 
     // Determine whether sizeof(INT) matches sizeof(idx_t).
     // If not, decide how to proceed...
     if (sizeof(INT) == sizeof(idx_t)) {
-      internal_metis_decompose(el_blocks, (idx_t *)TOPTR(m_elementDist), (idx_t *)TOPTR(m_pointer),
-                               (idx_t *)TOPTR(m_adjacency), TOPTR(elem_partition));
+      internal_metis_decompose(el_blocks, (idx_t *)TOPTR(m_elementDist), pointer,
+                               adjacency, TOPTR(elem_partition));
     }
 
     // Now know that they don't match... Are we widening or narrowing...
@@ -690,7 +689,7 @@ namespace Ioss {
     idx_t  common_nodes = get_common_node_count(el_blocks, m_comm);
 
     idx_t               nparts = m_processorCount;
-    idx_t               ndims  = spatialDimension;
+    idx_t               ndims  = m_spatialDimension;
     std::vector<real_t> tp_wgts(ncon * nparts, 1.0 / nparts);
 
     std::vector<real_t> ub_vec(ncon, 1.01);
@@ -737,7 +736,7 @@ namespace Ioss {
                     "Parmetis real_t size must match double size");
 
       rc = ParMETIS_V3_PartGeomKway(element_dist, dual_xadj, dual_adjacency, elm_wgt, elm_wgt,
-                                    &wgt_flag, &num_flag, &ndims, (real_t *)TOPTR(centroids_),
+                                    &wgt_flag, &num_flag, &ndims, (real_t *)TOPTR(m_centroids),
                                     &ncon, &nparts, TOPTR(tp_wgts), TOPTR(ub_vec), TOPTR(options),
                                     &edge_cuts, elem_partition, &m_comm);
 
@@ -759,7 +758,7 @@ namespace Ioss {
       static_assert(sizeof(double) == sizeof(real_t),
                     "Parmetis real_t size must match double size");
 
-      int rc = ParMETIS_V3_PartGeom(element_dist, &ndims, (real_t *)TOPTR(centroids_),
+      int rc = ParMETIS_V3_PartGeom(element_dist, &ndims, (real_t *)TOPTR(m_centroids),
                                     elem_partition, &m_comm);
 
       if (rc != METIS_OK) {

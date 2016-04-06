@@ -525,7 +525,7 @@ namespace Iopx {
     if (error < 0)
       Ioex::exodus_error(get_file_pointer(), __LINE__, myProcessor);
 
-    spatialDimension = decomp->spatialDimension;
+    spatialDimension = decomp->spatial_dimension();
     nodeCount        = decomp->ioss_node_count();
     edgeCount        = 0;
     faceCount        = 0;

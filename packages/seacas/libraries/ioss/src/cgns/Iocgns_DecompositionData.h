@@ -83,7 +83,7 @@ namespace Iocgns {
   {
   public:
     DecompositionDataBase(MPI_Comm comm) : comm_(comm),
-      myProcessor(0), processorCount(0), spatialDimension(0)
+      myProcessor(0), processorCount(0)
       {}
 
       virtual ~DecompositionDataBase() {}
@@ -92,6 +92,7 @@ namespace Iocgns {
       virtual size_t ioss_elem_count() const = 0;
       virtual int int_size() const = 0;
 
+      virtual int spatial_dimension() const = 0;
       virtual size_t decomp_node_offset() const = 0;
       virtual size_t decomp_node_count() const = 0;
       virtual size_t decomp_elem_offset() const = 0;
@@ -122,8 +123,6 @@ namespace Iocgns {
       int myProcessor;
       int processorCount;
 
-      size_t spatialDimension;
-
       std::vector<ZoneData> zones_;
       std::vector<Ioss::BlockDecompositionData> el_blocks;
       std::vector<Ioss::SetDecompositionData> node_sets;
@@ -149,6 +148,7 @@ namespace Iocgns {
     size_t ioss_node_count() const {return m_decomposition.ioss_node_count();}
     size_t ioss_elem_count() const {return m_decomposition.ioss_elem_count();}
 
+    int spatial_dimension() const {return m_decomposition.m_spatialDimension;}
     size_t decomp_node_offset() const {return m_decomposition.file_node_offset();}
     size_t decomp_node_count() const {return m_decomposition.file_node_count();}
     size_t decomp_elem_offset() const {return m_decomposition.file_elem_offset();}
