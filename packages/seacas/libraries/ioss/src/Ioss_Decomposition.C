@@ -1336,15 +1336,15 @@ namespace Ioss {
   {
     MPI_Status status;
 
-    std::vector<INT> recv_data;
-    int              result = MPI_SUCCESS;
+    std::vector<T> recv_data;
+    int            result = MPI_SUCCESS;
 
-    size_t size = sizeof(INT) * set.file_count() * comp_count;
+    size_t size = set.file_count() * comp_count;
     // NOTE That a processor either sends or receives, but never both,
     // so this will not cause a deadlock...
     if (m_processor != set.root_ && set.hasEntities[m_processor]) {
       recv_data.resize(size);
-      result = MPI_Recv(TOPTR(recv_data), size, MPI_BYTE, set.root_, 111, m_comm, &status);
+      result = MPI_Recv(TOPTR(recv_data), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
@@ -1359,7 +1359,7 @@ namespace Ioss {
       for (int i = m_processor + 1; i < m_processorCount; i++) {
         if (set.hasEntities[i]) {
           // Send same data to all active processors...
-          MPI_Send(file_data, size, MPI_BYTE, i, 111, m_comm);
+          MPI_Send(file_data, size, Ioss::mpi_type(T(0)), i, 111, m_comm);
         }
       }
     }
@@ -1441,18 +1441,6 @@ namespace Ioss {
     if (comp_count == 1) {
       for (size_t i = 0; i < block.exportMap.size(); i++) {
         exports.push_back(file_data[block.exportMap[i]]);
-      }
-
-      std::vector<int> export_count(block.exportCount.begin(), block.exportCount.end());
-      std::vector<int> export_disp(block.exportIndex.begin(), block.exportIndex.end());
-      std::vector<int> import_count(block.importCount.begin(), block.importCount.end());
-      std::vector<int> import_disp(block.importIndex.begin(), block.importIndex.end());
-
-      for (int i = 0; i < m_processorCount; i++) {
-        export_count[i] *= sizeof(T);
-        export_disp[i] *= sizeof(T);
-        import_count[i] *= sizeof(T);
-        import_disp[i] *= sizeof(T);
       }
 
       // Get my imported data and send my exported data...
