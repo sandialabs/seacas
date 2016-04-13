@@ -50,4 +50,4 @@ class Field;
   void Transform::set_property(const std::string& /*unused*/, double /*unused*/) {}
   void Transform::set_properties(const std::string& /*unused*/, const std::vector<int>& /*unused*/) {}
   void Transform::set_properties(const std::string& /*unused*/, const std::vector<double>& /*unused*/) {}
-}
+}  // namespace Ioss

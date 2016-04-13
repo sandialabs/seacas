@@ -36,8 +36,8 @@
 #include <Ioss_Region.h>
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
-#include <stddef.h>
 #include <algorithm>
+#include <stddef.h>
 #include <string>
 #include <vector>
 
@@ -77,9 +77,9 @@ Ioss::SideBlock* Ioss::SideSet::get_block(size_t which) const
   if (which < sideBlocks.size()) {
     return sideBlocks[which];
   }
-  else {
+  
     return nullptr;
-  }
+  
 }
 
 Ioss::SideBlock* Ioss::SideSet::get_side_block(const std::string& my_name) const
@@ -117,10 +117,10 @@ Ioss::Property
 Ioss::SideSet::get_implicit_property(const std::string& my_name) const
 {
   if (my_name == "side_block_count") {
-    return Ioss::Property(my_name, (int)sideBlocks.size());
+    return Ioss::Property(my_name, static_cast<int>(sideBlocks.size()));
   }
-  else if (my_name == "block_count") {
-    return Ioss::Property(my_name, (int)sideBlocks.size());
+  if (my_name == "block_count") {
+    return Ioss::Property(my_name, static_cast<int>(sideBlocks.size()));
   } else {
     return Ioss::GroupingEntity::get_implicit_property(my_name);
   }

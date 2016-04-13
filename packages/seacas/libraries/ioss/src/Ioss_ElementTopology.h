@@ -33,8 +33,7 @@
 #ifndef IOSS_Ioss_Element_Topology_h
 #define IOSS_Ioss_Element_Topology_h
 
-#include <Ioss_CodeTypes.h>             // for IntVector
-#include <functional>                   // for less
+#include <Ioss_CodeTypes.h>
 #include <map>                          // for map, map<>::value_compare
 #include <string>                       // for string, operator<
 #include <vector>                       // for vector

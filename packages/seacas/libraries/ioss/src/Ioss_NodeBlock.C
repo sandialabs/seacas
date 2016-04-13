@@ -34,8 +34,8 @@
 #include <Ioss_Field.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
-#include <assert.h>
-#include <stddef.h>
+#include <cassert>
+#include <cstddef>
 #include <string>
 
 #include "Ioss_EntityBlock.h"
@@ -46,7 +46,7 @@ namespace {
   const std::string SCALAR()    { return std::string("scalar");}
   const std::string VECTOR_2D() { return std::string("vector_2d");}
   const std::string VECTOR_3D() { return std::string("vector_3d");}
-}
+} // namespace
 
 Ioss::NodeBlock::NodeBlock(Ioss::DatabaseIO *io_database,
 			   const std::string &my_name,
