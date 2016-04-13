@@ -47,8 +47,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-The ExodusII library source code is available on Sourceforge at
-http://sourceforge.net/projects/exodusii
+The ExodusII library source code is available on Github at
+https://github.com/gsjaardema/seacas
 
 For bug reports, documentation errors, and enhancement suggestions, contact:
 - Gregory D. Sjaardema
@@ -255,8 +255,7 @@ database.  Valid values for 'option' are:
 | EX_OPT_COMPRESSION_LEVEL | In the range [0..9]. A value of 0 indicates no compression
 | EX_OPT_COMPRESSION_SHUFFLE | 1 if enabled, 0 if disabled
 | EX_OPT_INTEGER_SIZE_API | 4 or 8 indicating byte size of integers used in api functions.
-| EX_OPT_INTEGER_SIZE_DB  | Query only, returns 4 or 8 indicating byte size of integers stored on
-database.
+| EX_OPT_INTEGER_SIZE_DB  | Query only, returns 4 or 8 indicating byte size of integers stored on the database.
 
 The compression-related options are only available on netcdf-4 files
 since the underlying hdf5 compression functionality is used for the
