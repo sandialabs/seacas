@@ -24,20 +24,20 @@ If using your own cmake script or directly calling cmake, be sure to do the foll
 
 * Enable the Kokkos package.
 
-* If using OpenMP as a Kokkos backend, enable OpenMP.
-If using CUDA as a backend, OpenMP can still be enabled.
+* If using OpenMP as the Kokkos backend, enable OpenMP.
+If using CUDA as the backend, OpenMP can still be enabled.
 
 ```
 -D SEACASProj_ENABLE_OpenMP:Bool=ON
 ```
 
-* If using CUDA as a Kokkos backend:
-  - Enable CUDA and set the CUDA root directory.
+* If using CUDA as the Kokkos backend, enable CUDA and set the CUDA root directory.
 ```
 -D TPL_ENABLE_CUDA:Bool=ON
 -D CUDA_TOOLKIT_ROOT_DIR:Path=${CUDA_PATH}
 ```
-  - Some envionment variables need to be set. These can be set in your configure script, but then be sure to source the script rather than just running it so that your environment is correct when running `make`.
+
+* If using CUDA as the Kokkos backend, some envionment variables need to be set. These can be set in your configure script, but then be sure to source the script rather than just running it so that your environment is correct when running `make`.
 ```
 export OMPI_CXX=<SEACAS-source-directory>/packages/kokkos/config/nvcc_wrapper
 export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
