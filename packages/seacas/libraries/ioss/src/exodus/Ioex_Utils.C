@@ -146,12 +146,14 @@ namespace Ioex {
     int    rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
     int    status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
 
-    status = nc_put_att_double(rootid, NC_GLOBAL, "last_written_time", NC_DOUBLE, 1, &value);
-    if (status != NC_NOERR) {
-      ex_opts(EX_VERBOSE);
-      sprintf(errmsg, "Error: failed to define 'last_written_time' attribute to file id %d",
-              exodusFilePtr);
-      ex_err(routine, errmsg, status);
+    if (status == NC_NOERR && value > tmp) {
+      status = nc_put_att_double(rootid, NC_GLOBAL, "last_written_time", NC_DOUBLE, 1, &value);
+      if (status != NC_NOERR) {
+        ex_opts(EX_VERBOSE);
+        sprintf(errmsg, "Error: failed to define 'last_written_time' attribute to file id %d",
+                exodusFilePtr);
+        ex_err(routine, errmsg, status);
+      }
     }
   }
 

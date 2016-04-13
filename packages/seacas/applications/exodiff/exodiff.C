@@ -77,7 +77,8 @@ using namespace std;
 
 SystemInterface interface;
 
-struct TimeInterp {
+struct TimeInterp
+{
   TimeInterp() : step1(-1), step2(-1), time(0.0), proportion(0.0) {}
 
   int step1; // step at beginning of interval. -1 if time prior to time at step1
