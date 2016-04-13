@@ -53,6 +53,10 @@
 #include <random>
 #include <utility>
 
+// Options for generating hash function key...
+#define USE_MURMUR
+//#define USE_RANDOM
+
 namespace {
   template <typename T> void generate_index(std::vector<T> &index)
   {
@@ -64,20 +68,25 @@ namespace {
     }
   }
 
-  size_t id_rand(size_t id)
+#if defined(USE_MURMUR)
+  uint64_t MurmurHash64A(const void *key, int len, uint64_t seed);
+#endif
+
+  size_t id_hash(size_t id)
   {
-#if 0
-    //std::ranlux48 rng;
+#if defined(USE_RANDOM)
     std::mt19937_64 rng;
     rng.seed(id);
     return rng();
+#elif defined(USE_MURMUR)
+    return MurmurHash64A(&id, sizeof(size_t), 24713);
 #else
     return id;
 #endif
   }
 
-  void create_face(std::unordered_set<Ioss::Face, Ioss::FaceHash, Ioss::FaceEqual> &faces,
-                   size_t id, std::array<size_t, 4> &conn, size_t element)
+  void create_face(Ioss::FaceUnorderedSet &faces, size_t id, std::array<size_t, 4> &conn,
+                   size_t element)
   {
     Ioss::Face face(id, conn);
     auto       face_iter = faces.insert(face);
@@ -86,10 +95,8 @@ namespace {
   }
 
   template <typename INT>
-  void
-  resolve_parallel_faces(Ioss::Region &region,
-                         std::unordered_set<Ioss::Face, Ioss::FaceHash, Ioss::FaceEqual> &faces,
-                         const std::vector<size_t> &hash_ids, INT /*dummy*/)
+  void resolve_parallel_faces(Ioss::Region &region, Ioss::FaceUnorderedSet &faces,
+                              const std::vector<size_t> &hash_ids, INT /*dummy*/)
   {
 #ifdef HAVE_MPI
     size_t proc_count = region.get_database()->util().parallel_size();
@@ -287,7 +294,7 @@ namespace Ioss {
     std::vector<size_t> hash_ids;
     hash_ids.reserve(ids.size());
     for (auto id : ids) {
-      hash_ids.push_back(id_rand(id));
+      hash_ids.push_back(id_hash(id));
     }
     auto endh = std::chrono::steady_clock::now();
 
@@ -368,3 +375,70 @@ namespace Ioss {
               << std::chrono::duration<double, std::milli>(endp - starth).count() << " ms\n\n";
   }
 } // namespace Ioss
+
+namespace {
+#if defined(USE_MURMUR)
+//-----------------------------------------------------------------------------
+// MurmurHash2 was written by Austin Appleby, and is placed in the public
+// domain. The author hereby disclaims copyright to this source code.
+
+// Note - This code makes a few assumptions about how your machine behaves -
+
+// 1. We can read a 4-byte value from any address without crashing
+// 2. sizeof(int) == 4
+
+// And it has a few limitations -
+
+// 1. It will not work incrementally.
+// 2. It will not produce the same results on little-endian and big-endian
+//    machines.
+
+//-----------------------------------------------------------------------------
+// MurmurHash2, 64-bit versions, by Austin Appleby
+
+// The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
+// and endian-ness issues if used across multiple platforms.
+
+// 64-bit hash for 64-bit platforms
+#define BIG_CONSTANT(x) (x##LLU)
+  uint64_t MurmurHash64A(const void *key, int len, uint64_t seed)
+  {
+    const uint64_t m = BIG_CONSTANT(0xc6a4a7935bd1e995);
+    const int      r = 47;
+
+    uint64_t h = seed ^ (len * m);
+
+    const uint64_t *data = (const uint64_t *)key;
+    const uint64_t *end  = data + (len / 8);
+
+    while (data != end) {
+      uint64_t k = *data++;
+
+      k *= m;
+      k ^= k >> r;
+      k *= m;
+
+      h ^= k;
+      h *= m;
+    }
+
+    const unsigned char *data2 = (const unsigned char *)data;
+
+    switch (len & 7) {
+    case 7: h ^= uint64_t(data2[6]) << 48;
+    case 6: h ^= uint64_t(data2[5]) << 40;
+    case 5: h ^= uint64_t(data2[4]) << 32;
+    case 4: h ^= uint64_t(data2[3]) << 24;
+    case 3: h ^= uint64_t(data2[2]) << 16;
+    case 2: h ^= uint64_t(data2[1]) << 8;
+    case 1: h ^= uint64_t(data2[0]); h *= m;
+    };
+
+    h ^= h >> r;
+    h *= m;
+    h ^= h >> r;
+
+    return h;
+  }
+#endif
+} // namespace

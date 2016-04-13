@@ -90,7 +90,7 @@ namespace Ioss {
     }
   };
 
-  typedef std::unordered_set<Face, FaceHash, FaceEqual> FaceUnorderedSet;
+  using FaceUnorderedSet = std::unordered_set<Face, FaceHash, FaceEqual>;
   class FaceGenerator
   {
   public:
