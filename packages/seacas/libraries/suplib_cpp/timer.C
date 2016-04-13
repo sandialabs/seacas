@@ -29,29 +29,12 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#if defined(__LIBCATAMOUNT__)
-extern "C" {
-#include <catamount/dclock.h>
-}
-#else
-#include <sys/times.h>
-#include <unistd.h>
-#endif
 
+#include <chrono>
 double seacas_timer()
 {
-#if !defined(__LIBCATAMOUNT__)
-  static double ticks_per_second = 0.0;
-  struct tms    time_buf;
-
-  if (ticks_per_second == 0.0) {
-    ticks_per_second = double(sysconf(_SC_CLK_TCK));
-  }
-
-  clock_t ctime = times(&time_buf);
-  double  time  = double(ctime) / ticks_per_second;
-  return time;
-#else
-  return dclock();
-#endif
+  static auto start = std::chrono::steady_clock::now();
+  auto now = std::chrono::steady_clock::now();
+  std::chrono::duration<double> diff = now-start;
+  return diff.count();
 }
