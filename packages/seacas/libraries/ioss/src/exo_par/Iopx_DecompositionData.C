@@ -156,8 +156,8 @@ namespace Iopx {
     ex_init_params info;
     ex_get_init_ext(filePtr, &info);
 
-    size_t globalElementCount = info.num_elem;
-    size_t globalNodeCount    = info.num_nodes;
+    size_t globalElementCount          = info.num_elem;
+    size_t globalNodeCount             = info.num_nodes;
     m_decomposition.m_spatialDimension = info.num_dim;
     el_blocks.resize(info.num_elem_blk);
 
@@ -786,7 +786,7 @@ namespace Iopx {
       // * NOTE: The read difference is not real since the ex_get_partial_coord
       // function does 3 reads internally.
 
-      for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
+      for (size_t d = 0; d < m_decomposition.m_spatialDimension; d++) {
         double *coord[3];
         coord[0] = coord[1] = coord[2] = nullptr;
         coord[d]                       = TOPTR(tmp);
