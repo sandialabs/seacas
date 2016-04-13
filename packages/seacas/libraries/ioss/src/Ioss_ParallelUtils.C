@@ -56,7 +56,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
 {
 #ifdef HAVE_MPI
   char *result_string    = nullptr;
-  char *broadcast_string = nullptr;
+  std::vector<char> broadcast_string;;
   int   string_length    = 0;
 
   int rank = parallel_rank();
@@ -69,14 +69,12 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
     MPI_Bcast(&string_length, 1, MPI_INT, 0, communicator_);
 
     if (string_length > 0) {
-      broadcast_string = new char[string_length + 1];
+      broadcast_string.resize(string_length + 1);
       if (rank == 0) {
-        std::strncpy(broadcast_string, result_string, (size_t)string_length + 1);
+        std::strncpy(TOPTR(broadcast_string), result_string, (size_t)string_length + 1);
       }
-      MPI_Bcast(broadcast_string, string_length + 1, MPI_CHAR, 0, communicator_);
-      result_string = broadcast_string;
-      value         = std::string(result_string);
-      delete[] broadcast_string;
+      MPI_Bcast(TOPTR(broadcast_string), string_length + 1, MPI_CHAR, 0, communicator_);
+      value         = std::string(TOPTR(broadcast_string));
     }
     else {
       value = std::string("");
@@ -182,21 +180,16 @@ void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) c
   if (1 < parallel_size()) {
     assert(sizeof(char) == 1);
 
-    char *const recv_buf = new char[length];
-
-    std::memset(recv_buf, 0, length);
-
-    const int success = MPI_Allreduce(buffer, recv_buf, length, MPI_BYTE, MPI_BOR, communicator_);
-
+    std::vector<char> recv_buf(length);
+    const int success = MPI_Allreduce(buffer, TOPTR(recv_buf), length,
+				      MPI_BYTE, MPI_BOR, communicator_);
     if (MPI_SUCCESS != success) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::attribute_reduction - MPI_Allreduce failed";
       IOSS_ERROR(errmsg);
     }
 
-    std::memcpy(buffer, recv_buf, length);
-
-    delete[] recv_buf;
+    std::memcpy(buffer, TOPTR(recv_buf), length);
   }
 #endif
 }
