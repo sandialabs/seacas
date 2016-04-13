@@ -1,12 +1,12 @@
 #include <exodus/Ioex_Utils.h>
 #include <exodusII_int.h>
-#include <Ioss_Utils.h>
 #include <Ioss_Region.h>
+#include <Ioss_Utils.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_VariableType.h>
 #include <tokenize.h>
-#include <cstring>
 #include <algorithm>
+#include <cstring>
 
 
 namespace {
@@ -24,9 +24,9 @@ namespace {
   // __this___is_a_string__for_tokens will split to 6 tokens:
   // __this __is a string _for tokens
   void field_tokenize(const std::string& str, const char separator,
-		      std::vector<std::string>& tokens)
+                      std::vector<std::string>& tokens)
   {
-    std::string curr_token = "";
+    std::string curr_token;
     // Skip leading separators...
     size_t i = 0;
     while (i < str.length() && is_separator(separator, str[i])) {
@@ -38,16 +38,16 @@ namespace {
       // determine if current character is a separator
       bool is_sep = is_separator(separator, curr_char);
       if (is_sep && curr_token != "") {
-	// we just completed a token
-	tokens.push_back(curr_token);
-	curr_token.clear();
-	while (i++ < str.length() && is_separator(separator, str[i])) {
-	  curr_token += str[i];
-	}
-	i--;
+        // we just completed a token
+        tokens.push_back(curr_token);
+        curr_token.clear();
+        while (i++ < str.length() && is_separator(separator, str[i])) {
+          curr_token += str[i];
+        }
+        i--;
       }
       else if (!is_sep) {
-	curr_token += curr_char;
+        curr_token += curr_char;
       }
     }
     if (curr_token != "") {
@@ -61,23 +61,23 @@ namespace {
   void internal_write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames, INT /*dummy*/)
   {
     // Query number of coordinate frames...
-    int nframes = (int)frames.size();
+    int nframes = static_cast<int>(frames.size());
     if (nframes > 0) {
       std::vector<char> tags(nframes);
       std::vector<double> coordinates(nframes*9);
       std::vector<INT>  ids(nframes);
 
       for (size_t i=0; i < frames.size(); i++) {
-	ids[i]  = frames[i].id();
-	tags[i] = frames[i].tag();
-	const double *coord = frames[i].coordinates();
-	for (size_t j=0; j < 9; j++) {
-	  coordinates[9*i+j] = coord[j];
-	}
+        ids[i]  = frames[i].id();
+        tags[i] = frames[i].tag();
+        const double *coord = frames[i].coordinates();
+        for (size_t j=0; j < 9; j++) {
+          coordinates[9*i+j] = coord[j];
+        }
       }
       int ierr = ex_put_coordinate_frames(exoid, nframes, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
       if (ierr < 0) {
-	Ioex::exodus_error(exoid, __LINE__, -1);
+        Ioex::exodus_error(exoid, __LINE__, -1);
       }
     }
   }
@@ -98,12 +98,12 @@ namespace {
       std::vector<INT>  ids(nframes);
       ierr = ex_get_coordinate_frames(exoid, &nframes, TOPTR(ids), TOPTR(coord), TOPTR(tags));
       if (ierr < 0) {
-	Ioex::exodus_error(exoid, __LINE__, -1);
+        Ioex::exodus_error(exoid, __LINE__, -1);
       }
 
       for (int i=0; i<nframes; i++) {
-	Ioss::CoordinateFrame cf(ids[i], tags[i], &coord[9*i]);
-	region->add(cf);
+        Ioss::CoordinateFrame cf(ids[i], tags[i], &coord[9*i]);
+        region->add(cf);
       }
     }
   }
@@ -115,11 +115,11 @@ namespace {
     size_t len = l1 < l2 ? l1 : l2;
     for (size_t i=0; i < len; i++) {
       if (name1[i] != name2[i]) {
-	while (i > 0 && (isdigit(name1[i-1]) != 0) && (isdigit(name2[i-1]) != 0)) {
-	  i--;
-	  // Back up to first non-digit so to handle "evar0000, evar0001, ..., evar 1123"
-	}
-	return i;
+        while (i > 0 && (isdigit(name1[i-1]) != 0) && (isdigit(name2[i-1]) != 0)) {
+          i--;
+          // Back up to first non-digit so to handle "evar0000, evar0001, ..., evar 1123"
+        }
+        return i;
       }
     }
     return len;
@@ -134,7 +134,7 @@ namespace {
     }
     return N;
   }
-}
+}  // namespace
 
 namespace Ioex {
   const char *Version() {return "Ioex_DatabaseIO.C 2015/04/13";}
@@ -145,16 +145,16 @@ namespace Ioex {
     const char *routine = "Ioex::Utils::update_last_time_attribute()";
 
     double tmp = 0.0;
-    int rootid = (unsigned)exodusFilePtr & EX_FILE_ID_MASK;
+    int rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
     int status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
 
     status=nc_put_att_double(rootid, NC_GLOBAL, "last_written_time",
-			     NC_DOUBLE, 1, &value);
+                             NC_DOUBLE, 1, &value);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg,
-	      "Error: failed to define 'last_written_time' attribute to file id %d",
-	      exodusFilePtr);
+              "Error: failed to define 'last_written_time' attribute to file id %d",
+              exodusFilePtr);
       ex_err(routine,errmsg,status);
     }
   }
@@ -166,7 +166,7 @@ namespace Ioex {
     // If not, don't change 'value' and return 'false'.
     bool found = false;
 
-    int rootid = (unsigned)exodusFilePtr & EX_FILE_ID_MASK;
+    int rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
     nc_type att_type = NC_NAT;
     size_t att_len = 0;
     int status = nc_inq_att(rootid, NC_GLOBAL, "last_written_time", &att_type, &att_len);
@@ -175,16 +175,16 @@ namespace Ioex {
       double tmp = 0.0;
       status = nc_get_att_double(rootid, NC_GLOBAL, "last_written_time", &tmp);
       if (status == NC_NOERR) {
-	*value = tmp;
-	found = true;
+        *value = tmp;
+        found = true;
       } else {
-	char errmsg[MAX_ERR_LENGTH];
-	const char *routine = "Ioex::Utils::read_last_time_attribute()";
-	ex_opts(EX_VERBOSE);
-	sprintf(errmsg,
-		"Error: failed to read last_written_time attribute from file id %d", exodusFilePtr);
-	ex_err(routine,errmsg,status);
-	found = false;
+        char errmsg[MAX_ERR_LENGTH];
+        const char *routine = "Ioex::Utils::read_last_time_attribute()";
+        ex_opts(EX_VERBOSE);
+        sprintf(errmsg,
+                "Error: failed to read last_written_time attribute from file id %d", exodusFilePtr);
+        ex_err(routine,errmsg,status);
+        found = false;
       }
     }
     return found;
@@ -212,26 +212,26 @@ namespace Ioex {
       int proc_info[2];
       status = nc_get_att_int(exodusFilePtr, NC_GLOBAL, "processor_info", proc_info);
       if (status == NC_NOERR) {
-	if (proc_info[0] != processor_count && proc_info[0] > 1) {
-	  IOSS_WARNING << "Processor decomposition count in file (" << proc_info[0]
-		       << ") does not match current processor count (" << processor_count
-		       << ").\n";
-	  matches = false;
-	}
-	if (proc_info[1] != processor_id) {
-	  IOSS_WARNING << "This file was originally written on processor " << proc_info[1]
-		       << ", but is now being read on processor " << processor_id
-		       << ". This may cause problems if there is any processor-dependent data on the file.\n";
-	  matches = false;
-	}
+        if (proc_info[0] != processor_count && proc_info[0] > 1) {
+          IOSS_WARNING << "Processor decomposition count in file (" << proc_info[0]
+                       << ") does not match current processor count (" << processor_count
+                       << ").\n";
+          matches = false;
+        }
+        if (proc_info[1] != processor_id) {
+          IOSS_WARNING << "This file was originally written on processor " << proc_info[1]
+                       << ", but is now being read on processor " << processor_id
+                       << ". This may cause problems if there is any processor-dependent data on the file.\n";
+          matches = false;
+        }
       } else {
-	char errmsg[MAX_ERR_LENGTH];
-	const char *routine = "Internals::check_processor_info()";
-	ex_opts(EX_VERBOSE);
-	sprintf(errmsg,
-		"Error: failed to read processor info attribute from file id %d", exodusFilePtr);
-	ex_err(routine,errmsg,status);
-	return(EX_FATAL) != 0;
+        char errmsg[MAX_ERR_LENGTH];
+        const char *routine = "Internals::check_processor_info()";
+        ex_opts(EX_VERBOSE);
+        sprintf(errmsg,
+                "Error: failed to read processor info attribute from file id %d", exodusFilePtr);
+        ex_err(routine,errmsg,status);
+        return(EX_FATAL) != 0;
       }
     }
     return matches;
@@ -249,7 +249,7 @@ namespace Ioex {
     assert(s != nullptr && t != nullptr);
     while (*s != '\0' && *t != '\0') {
       if (*s++ != tolower(*t++)) {
-	return false;
+        return false;
       }
     }
     return true;
@@ -267,25 +267,25 @@ namespace Ioex {
       // the third-last token is an element topology.
       const Ioss::ElementTopology *side_topo = Ioss::ElementTopology::factory(tokens[tokens.size()-2], true);
       if (side_topo != nullptr) {
-	const Ioss::ElementTopology *element_topo = Ioss::ElementTopology::factory(tokens[tokens.size()-3], true);
-	if (element_topo != nullptr || tokens[tokens.size()-4] == "block") {
-	  // The remainder of the tokens will be used to create
-	  // a side set name and then this sideset will be
-	  // a side block in that set.
-	  std::string fs_name;
-	  size_t last_token = tokens.size()-3;
-	  if (element_topo == nullptr) {
-	    last_token--;
-	  }
-	  for (size_t tok=0; tok < last_token; tok++) {
-	    fs_name += tokens[tok];
-	  }
-	  fs_name += "_";
-	  fs_name += tokens[tokens.size()-1]; // Add on the id.
+        const Ioss::ElementTopology *element_topo = Ioss::ElementTopology::factory(tokens[tokens.size()-3], true);
+        if (element_topo != nullptr || tokens[tokens.size()-4] == "block") {
+          // The remainder of the tokens will be used to create
+          // a side set name and then this sideset will be
+          // a side block in that set.
+          std::string fs_name;
+          size_t last_token = tokens.size()-3;
+          if (element_topo == nullptr) {
+            last_token--;
+          }
+          for (size_t tok=0; tok < last_token; tok++) {
+            fs_name += tokens[tok];
+          }
+          fs_name += "_";
+          fs_name += tokens[tokens.size()-1]; // Add on the id.
 
-	  fs_set.insert(fs_name);
-	  fs_map.insert(Ioex::SideSetMap::value_type(name,fs_name));
-	}
+          fs_set.insert(fs_name);
+          fs_map.insert(Ioex::SideSetMap::value_type(name,fs_name));
+        }
       }
     }
   }
@@ -305,13 +305,13 @@ namespace Ioex {
       int64_t id = entity->get_property(id_prop).get_int();
 
       // See whether it already exists...
-      succeed = idset->insert(std::make_pair((int)type,id)).second;
+      succeed = idset->insert(std::make_pair(static_cast<int>(type),id)).second;
       if (!succeed) {
-	// Need to remove the property so it doesn't cause problems
-	// later...
-	Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity*>(entity);
-	new_entity->property_erase(id_prop);
-	assert(!entity->property_exists(id_prop));
+        // Need to remove the property so it doesn't cause problems
+        // later...
+        Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity*>(entity);
+        new_entity->property_erase(id_prop);
+        assert(!entity->property_exists(id_prop));
       }
     }
     return succeed;
@@ -334,9 +334,9 @@ namespace Ioex {
       // All digits...
       return std::atoi(str_id.c_str());
     }
-    else {
+
       return 0;
-    }
+
   }
 
   int64_t get_id(const Ioss::GroupingEntity *entity, ex_entity_type type, Ioex::EntityIdSet *idset)
@@ -383,7 +383,7 @@ namespace Ioex {
     if (std::strncmp(type_name.c_str(), name_string.c_str(), type_name.size()) == 0) {
       id = extract_id(name_string);
       if (id <= 0) {
-	id = 1;
+        id = 1;
       }
     }
 
@@ -395,16 +395,16 @@ namespace Ioex {
     }
 
     // 'id' is a unique id for this entity type...
-    idset->insert(std::make_pair((int)type,id));
+    idset->insert(std::make_pair(static_cast<int>(type),id));
     Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity*>(entity);
     new_entity->property_add(Ioss::Property(id_prop, id));
     return id;
   }
 
   bool find_displacement_field(Ioss::NameList &fields,
-			       const Ioss::GroupingEntity *block,
-			       int ndim,
-			       std::string *disp_name)
+                               const Ioss::GroupingEntity *block,
+                               int ndim,
+                               std::string *disp_name)
   {
     // This is a kluge to work with many of the SEACAS codes.  The
     // convention used (in Blot and others) is that the first 'ndim'
@@ -425,13 +425,13 @@ namespace Ioex {
       Ioss::Utils::fixup_name(lc_name);
       size_t span = match(lc_name.c_str(), displace);
       if (span > max_span) {
-	const Ioss::VariableType *var_type =
-	  block->get_field(name).transformed_storage();
-	int comp_count = var_type->component_count();
-	if (comp_count == ndim) {
-	  max_span  = span;
-	  *disp_name = name;
-	}
+        const Ioss::VariableType *var_type =
+          block->get_field(name).transformed_storage();
+        int comp_count = var_type->component_count();
+        if (comp_count == ndim) {
+          max_span  = span;
+          *disp_name = name;
+        }
       }
     }
     return max_span > 0;
@@ -444,18 +444,18 @@ namespace Ioex {
     size_t len = std::strlen(name);
     for (size_t i=0; i < len; i++) {
       if (name[i] < 32 || name[i] > 126) {
-	// Zero out entire name if a bad character found anywhere in the name.
-	for (size_t j=0; j < len; j++) {
-	  name[j] = '\0';
-	}
-	return;
+        // Zero out entire name if a bad character found anywhere in the name.
+        for (size_t j=0; j < len; j++) {
+          name[j] = '\0';
+        }
+        return;
       }
     }
   }
 
   std::string get_entity_name(int exoid, ex_entity_type type, int64_t id,
-			      const std::string &basename, int length,
-			      bool &db_has_name)
+                              const std::string &basename, int length,
+                              bool &db_has_name)
   {
     std::vector<char> buffer(length+1);
     buffer[0] = '\0';
@@ -469,20 +469,20 @@ namespace Ioex {
       // id doesn't match the id in the name...
       size_t base_size = basename.size();
       if (std::strncmp(basename.c_str(), &buffer[0], base_size) == 0) {
-	int64_t name_id = extract_id(TOPTR(buffer));
-	if (name_id > 0 && name_id != id) {
-	  // See if name is truly of form "basename_name_id"
-	  std::string tmp_name =  Ioss::Utils::encode_entity_name(basename, name_id);
-	  if (tmp_name == TOPTR(buffer)) {
-	    std::string new_name =  Ioss::Utils::encode_entity_name(basename, id);
-	    IOSS_WARNING << "WARNING: The entity named '" << TOPTR(buffer) << "' has the id " << id
-			 << " which does not match the embedded id " << name_id
-			 << ".\n         This can cause issues later on; the entity will be renamed to '"
-			 << new_name << "' (IOSS)\n\n";
-	    db_has_name = false;
-	    return new_name;
-	  }
-	}
+        int64_t name_id = extract_id(TOPTR(buffer));
+        if (name_id > 0 && name_id != id) {
+          // See if name is truly of form "basename_name_id"
+          std::string tmp_name =  Ioss::Utils::encode_entity_name(basename, name_id);
+          if (tmp_name == TOPTR(buffer)) {
+            std::string new_name =  Ioss::Utils::encode_entity_name(basename, id);
+            IOSS_WARNING << "WARNING: The entity named '" << TOPTR(buffer) << "' has the id " << id
+                         << " which does not match the embedded id " << name_id
+                         << ".\n         This can cause issues later on; the entity will be renamed to '"
+                         << new_name << "' (IOSS)\n\n";
+            db_has_name = false;
+            return new_name;
+          }
+        }
       }
       db_has_name = true;
       return (std::string(TOPTR(buffer)));
@@ -494,7 +494,7 @@ namespace Ioex {
 
   char ** get_exodus_names(size_t count, int size)
   {
-    char **names = new char* [count];
+    auto names = new char* [count];
     for (size_t i=0; i < count; i++) {
       names[i] = new char [size+1];
       std::memset(names[i], '\0', size+1);
@@ -513,8 +513,8 @@ namespace Ioex {
     // Create errmsg here so that the exerrval doesn't get cleared by
     // the ex_close call.
     errmsg << "Exodus error (" << exerrval << ")" << nc_strerror(exerrval) << " at line " << lineno
-	   << " in file '" << Version()
-	   << "' Please report to gdsjaar@sandia.gov if you need help.";
+           << " in file '" << Version()
+           << "' Please report to gdsjaar@sandia.gov if you need help.";
 
     ex_err(nullptr, nullptr, EX_PRTLASTMSG);
     if (exoid > 0) {
@@ -525,7 +525,7 @@ namespace Ioex {
 
   // common
   const Ioss::VariableType *match_composite_field(char** names, Ioss::IntVector &which_names,
-						  const char suffix_separator)
+                                                  const char suffix_separator)
   {
     // ASSUME: Fields are in order...
     // The field we are trying to match will be a composite field of
@@ -577,11 +577,11 @@ namespace Ioex {
     size_t j = inner_comp;
     for (size_t copy = 1; copy < N; copy++) {
       for (size_t i=0; i < inner_comp; i++) {
-	std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[j++]], suffix);
-	// The second-last token is the suffix for this component...
-	if (suffices[i] != ltokens[inner_token]) {
-	  return nullptr;
-	}
+        std::vector<std::string> ltokens = Ioss::tokenize(names[which_names[j++]], suffix);
+        // The second-last token is the suffix for this component...
+        if (suffices[i] != ltokens[inner_token]) {
+          return nullptr;
+        }
       }
     }
 
@@ -595,7 +595,7 @@ namespace Ioex {
   }
 
   const Ioss::VariableType *match_single_field(char** names, Ioss::IntVector &which_names,
-					       const char suffix_separator)
+                                               const char suffix_separator)
   {
     // Strip off the suffix from each name indexed in 'which_names'
     // and see if it defines a valid type...
@@ -618,8 +618,8 @@ namespace Ioex {
   }
 
   Ioss::Field get_next_field(char** names, int num_names, size_t count,
-			     Ioss::Field::RoleType fld_role,
-			     const char suffix_separator, int *truth_table)
+                             Ioss::Field::RoleType fld_role,
+                             const char suffix_separator, int *truth_table)
   {
     // NOTE: 'names' are all lowercase at this point.
 
@@ -633,8 +633,8 @@ namespace Ioex {
     for (index = 0; index < num_names; index++) {
       assert(truth_table == nullptr || truth_table[index] == 1 || truth_table[index] == 0);
       if ((truth_table == nullptr || truth_table[index] == 1) && names[index][0] != '\0') {
-	found_valid = true;
-	break;
+        found_valid = true;
+        break;
       }
     }
 
@@ -691,8 +691,8 @@ namespace Ioex {
 
       std::string base_name = tokens[0];
       for (size_t i=1; i < num_tokens-suffix_size; i++) {
-	base_name += suffix_separator;
-	base_name += tokens[i];
+        base_name += suffix_separator;
+        base_name += tokens[i];
       }
       base_name += suffix_separator;
       size_t bn_len = base_name.length(); // Length of basename portion only
@@ -710,42 +710,42 @@ namespace Ioex {
       // suffices have a basename that match other names with only a
       // single suffix lc_cam_x, lc_cam_y, lc_sfarea.
       for (int i = index+1; i < num_names; i++) {
-	char *tst_name = names[i];
-	std::vector<std::string> subtokens;
-	field_tokenize(tst_name,suffix_separator,subtokens);
-	if ((truth_table == nullptr || truth_table[i] == 1) &&  // Defined on this entity
-	    std::strlen(tst_name) == length &&              // names must be same length
-	    std::strncmp(name, tst_name, bn_len) == 0 &&   // base portion must match
-	    subtokens.size() == num_tokens) {
-	  which_names.push_back(i);
-	}
+        char *tst_name = names[i];
+        std::vector<std::string> subtokens;
+        field_tokenize(tst_name,suffix_separator,subtokens);
+        if ((truth_table == nullptr || truth_table[i] == 1) &&  // Defined on this entity
+            std::strlen(tst_name) == length &&              // names must be same length
+            std::strncmp(name, tst_name, bn_len) == 0 &&   // base portion must match
+            subtokens.size() == num_tokens) {
+          which_names.push_back(i);
+        }
       }
 
       const Ioss::VariableType *type = nullptr;
       if (suffix_size == 2) {
-	if (which_names.size() > 1) {
-	  type = match_composite_field(names, which_names, suffix_separator);
-	}
+        if (which_names.size() > 1) {
+          type = match_composite_field(names, which_names, suffix_separator);
+        }
       } else {
-	assert(suffix_size == 1);
-	type = match_single_field(names, which_names, suffix_separator);
+        assert(suffix_size == 1);
+        type = match_single_field(names, which_names, suffix_separator);
       }
 
       if (type != nullptr) {
-	// A valid variable type was recognized.
-	// Mark the names which were used so they aren't used for another field on this entity.
-	// Create a field of that variable type.
-	assert(type->component_count() == static_cast<int>(which_names.size()));
-	Ioss::Field field(base_name.substr(0,bn_len-1), Ioss::Field::REAL, type, fld_role, count);
-	for (auto & which_name : which_names) {
-	  names[which_name][0] = '\0';
-	}
-	return field;
+        // A valid variable type was recognized.
+        // Mark the names which were used so they aren't used for another field on this entity.
+        // Create a field of that variable type.
+        assert(type->component_count() == static_cast<int>(which_names.size()));
+        Ioss::Field field(base_name.substr(0,bn_len-1), Ioss::Field::REAL, type, fld_role, count);
+        for (auto & which_name : which_names) {
+          names[which_name][0] = '\0';
+        }
+        return field;
       }
       if (suffix_size == 1) {
-	Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
-	names[index][0] = '\0';
-	return field;
+        Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
+        names[index][0] = '\0';
+        return field;
       }
 
       suffix_size--;
@@ -755,9 +755,9 @@ namespace Ioex {
 
   // common
   bool define_field(size_t nmatch, size_t match_length,
-		    char **names, std::vector<Ioss::Suffix> &suffices,
-		    size_t entity_count, Ioss::Field::RoleType fld_role,
-		    std::vector<Ioss::Field> &fields)
+                    char **names, std::vector<Ioss::Suffix> &suffices,
+                    size_t entity_count, Ioss::Field::RoleType fld_role,
+                    std::vector<Ioss::Field> &fields)
   {
     // Try to define a field of size 'nmatch' with the suffices in 'suffices'.
     // If this doesn't define a known field, then assume it is a scalar instead
@@ -765,18 +765,18 @@ namespace Ioex {
     if (nmatch > 1) {
       const Ioss::VariableType *type = Ioss::VariableType::factory(suffices);
       if (type == nullptr) {
-	nmatch = 1;
+        nmatch = 1;
       } else {
-	char *name = names[0];
-	name[match_length] = '\0';
-	Ioss::Field field(name, Ioss::Field::REAL, type, fld_role, entity_count);
-	if (field.is_valid()) {
-	  fields.push_back(field);
-	}
-	for (size_t j = 0; j < nmatch; j++) {
-	  names[j][0] = '\0';
+        char *name = names[0];
+        name[match_length] = '\0';
+        Ioss::Field field(name, Ioss::Field::REAL, type, fld_role, entity_count);
+        if (field.is_valid()) {
+          fields.push_back(field);
+        }
+        for (size_t j = 0; j < nmatch; j++) {
+          names[j][0] = '\0';
 
-	}return true;
+        }return true;
       }
     }
 
@@ -785,7 +785,7 @@ namespace Ioex {
     if (nmatch == 1) {
       Ioss::Field field(names[0], Ioss::Field::REAL, SCALAR(), fld_role, entity_count);
       if (field.is_valid()) {
-	fields.push_back(field);
+        fields.push_back(field);
       }
       names[0][0] = '\0';
       return false;
@@ -799,24 +799,24 @@ namespace Ioex {
   // fieldx, fieldy, fieldz instead of field_x field_y field_z
 
   void get_fields(int64_t entity_count, // The number of objects in this entity.
-		  char** names,     // Raw list of field names from exodus
-		  size_t num_names, // Number of names in list
-		  Ioss::Field::RoleType fld_role, // Role of field
-		  const char suffix_separator,
-		  int *local_truth, // Truth table for this entity;
-		  // null if not applicable.
-		  std::vector<Ioss::Field> &fields) // The fields that were found.
+                  char** names,     // Raw list of field names from exodus
+                  size_t num_names, // Number of names in list
+                  Ioss::Field::RoleType fld_role, // Role of field
+                  const char suffix_separator,
+                  int *local_truth, // Truth table for this entity;
+                  // null if not applicable.
+                  std::vector<Ioss::Field> &fields) // The fields that were found.
   {
     if (suffix_separator != 0) {
       while (true) {
-	// NOTE: 'get_next_field' determines storage type (vector, tensor,...)
-	Ioss::Field field = get_next_field(names, num_names, entity_count, fld_role,
-					   suffix_separator, local_truth);
-	if (field.is_valid()) {
-	  fields.push_back(field);
-	} else {
-	  break;
-	}
+        // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
+        Ioss::Field field = get_next_field(names, num_names, entity_count, fld_role,
+                                           suffix_separator, local_truth);
+        if (field.is_valid()) {
+          fields.push_back(field);
+        } else {
+          break;
+        }
       }
     } else {
       size_t nmatch = 1;
@@ -826,78 +826,78 @@ namespace Ioex {
     top:
 
       while (ibeg+nmatch < num_names) {
-	if (local_truth != nullptr) {
-	  while (ibeg < num_names && local_truth[ibeg] == 0) {
-	    ibeg++;
-	  }
-	}
-	for (size_t i=ibeg+1; i < num_names; i++) {
-	  size_t mat = match(names[ibeg], names[i]);
-	  if (local_truth != nullptr && local_truth[i] == 0) {
-	    mat = 0;
-	  }
+        if (local_truth != nullptr) {
+          while (ibeg < num_names && local_truth[ibeg] == 0) {
+            ibeg++;
+          }
+        }
+        for (size_t i=ibeg+1; i < num_names; i++) {
+          size_t mat = match(names[ibeg], names[i]);
+          if (local_truth != nullptr && local_truth[i] == 0) {
+            mat = 0;
+          }
 
-	  // For all fields, the total length of the name is the same
-	  // for all components of that field.  The 'basename' of the
-	  // field will also be the same for all cases.
-	  //
-	  // It is possible that the length of the match won't be the
-	  // same for all components of a field since the match may
-	  // include a portion of the suffix; (sigxx, sigxy, sigyy
-	  // should match only 3 characters of the basename (sig), but
-	  // sigxx and sigxy will match 4 characters) so consider a
-	  // valid match if the match length is >= previous match length.
-	  if ((std::strlen(names[ibeg]) == std::strlen(names[i])) &&
-	      mat > 0 && (pmat == 0 || mat >= pmat)) {
-	    nmatch++;
-	    if (nmatch == 2) {
-	      // Get suffix for first field in the match
-	      pmat = mat;
-	      Ioss::Suffix tmp(&names[ibeg][pmat]);
-	      suffices.push_back(tmp);
-	    }
-	    // Get suffix for next fields in the match
-	    Ioss::Suffix tmp(&names[i][pmat]);
-	    suffices.push_back(tmp);
-	  } else {
+          // For all fields, the total length of the name is the same
+          // for all components of that field.  The 'basename' of the
+          // field will also be the same for all cases.
+          //
+          // It is possible that the length of the match won't be the
+          // same for all components of a field since the match may
+          // include a portion of the suffix; (sigxx, sigxy, sigyy
+          // should match only 3 characters of the basename (sig), but
+          // sigxx and sigxy will match 4 characters) so consider a
+          // valid match if the match length is >= previous match length.
+          if ((std::strlen(names[ibeg]) == std::strlen(names[i])) &&
+              mat > 0 && (pmat == 0 || mat >= pmat)) {
+            nmatch++;
+            if (nmatch == 2) {
+              // Get suffix for first field in the match
+              pmat = mat;
+              Ioss::Suffix tmp(&names[ibeg][pmat]);
+              suffices.push_back(tmp);
+            }
+            // Get suffix for next fields in the match
+            Ioss::Suffix tmp(&names[i][pmat]);
+            suffices.push_back(tmp);
+          } else {
 
-	    bool multi_component = define_field(nmatch, pmat, &names[ibeg], suffices,
-						entity_count, fld_role, fields);
-	    if (!multi_component) {
-	      // Although we matched multiple suffices, it wasn't a
-	      // higher-order field, so we only used 1 name instead of
-	      // the 'nmatch' we thought we might use.
-	      i = ibeg + 1;
-	    }
+            bool multi_component = define_field(nmatch, pmat, &names[ibeg], suffices,
+                                                entity_count, fld_role, fields);
+            if (!multi_component) {
+              // Although we matched multiple suffices, it wasn't a
+              // higher-order field, so we only used 1 name instead of
+              // the 'nmatch' we thought we might use.
+              i = ibeg + 1;
+            }
 
-	    // Cleanout the suffices vector.
-	    std::vector<Ioss::Suffix>().swap(suffices);
+            // Cleanout the suffices vector.
+            std::vector<Ioss::Suffix>().swap(suffices);
 
-	    // Reset for the next time through the while loop...
-	    nmatch=1;
-	    pmat = 0;
-	    ibeg=i;
-	    break;
-	  }
-	}
+            // Reset for the next time through the while loop...
+            nmatch=1;
+            pmat = 0;
+            ibeg=i;
+            break;
+          }
+        }
       }
       // We've gone through the entire list of names; see if what we
       // have forms a multi-component field; if not, then define a
       // scalar field and jump up to the loop again to handle the others
       // that had been gathered.
       if (ibeg < num_names) {
-	if (local_truth == nullptr || local_truth[ibeg] == 1) {
-	  bool multi_component = define_field(nmatch, pmat, &names[ibeg], suffices,
-					      entity_count, fld_role, fields);
-	  std::vector<Ioss::Suffix>().swap(suffices);
-	  if (nmatch > 1 && !multi_component) {
-	    ibeg++;
-	    goto top;
-	  }
-	} else {
-	  ibeg++;
-	  goto top;
-	}
+        if (local_truth == nullptr || local_truth[ibeg] == 1) {
+          bool multi_component = define_field(nmatch, pmat, &names[ibeg], suffices,
+                                              entity_count, fld_role, fields);
+          std::vector<Ioss::Suffix>().swap(suffices);
+          if (nmatch > 1 && !multi_component) {
+            ibeg++;
+            goto top;
+          }
+        } else {
+          ibeg++;
+          goto top;
+        }
       }
     }
   }
@@ -907,13 +907,13 @@ namespace Ioex {
     if (ptr == nullptr) {
       std::ostringstream errmsg;
       errmsg << "INTERNAL ERROR: Could not find " << type << " '" << name << "'."
-	     << " Something is wrong in the Ioex::DatabaseIO class. Please report.\n";
+             << " Something is wrong in the Ioex::DatabaseIO class. Please report.\n";
       IOSS_ERROR(errmsg);
     }
   }
 
   int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
-		     size_t name_length)
+                     size_t name_length)
   {
     // Check for optional element maps...
     int map_count = ex_inquire_int(exoid, EX_INQ_ELEM_MAP);
@@ -939,7 +939,7 @@ namespace Ioex {
       // pairs.  The parent_element is an element in the original mesh,
       // not this mesh.
       block->field_add(Ioss::Field("skin", block->field_int_type(), "Real[2]",
-				   Ioss::Field::MESH, my_element_count));
+                                   Ioss::Field::MESH, my_element_count));
     }
     Ioex::delete_exodus_names(names, map_count);
     return map_count;
@@ -947,25 +947,25 @@ namespace Ioex {
 
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames) {
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
-      internal_write_coordinate_frames(exoid, frames, (int64_t)0);
+      internal_write_coordinate_frames(exoid, frames, static_cast<int64_t>(0));
     }
     else {
-      internal_write_coordinate_frames(exoid, frames, (int)0);
+      internal_write_coordinate_frames(exoid, frames, 0);
     }
   }
 
   void add_coordinate_frames(int exoid, Ioss::Region *region)
   {
     if ((ex_int64_status(exoid) & EX_BULK_INT64_API) != 0) {
-      internal_add_coordinate_frames(exoid, region, (int64_t)0);
+      internal_add_coordinate_frames(exoid, region, static_cast<int64_t>(0));
     }
     else {
-      internal_add_coordinate_frames(exoid, region, (int)0);
+      internal_add_coordinate_frames(exoid, region, 0);
     }
   }
 
   bool filter_node_list(Ioss::Int64Vector &nodes,
-			const std::vector<unsigned char> &node_connectivity_status)
+                        const std::vector<unsigned char> &node_connectivity_status)
   {
     // Iterate through 'nodes' and determine which of the nodes are
     // not connected to any non-omitted blocks. The index of these
@@ -981,8 +981,8 @@ namespace Ioex {
     size_t active = 0;
     for (size_t i=0; i < orig_size; i++) {
       if (node_connectivity_status[nodes[i]-1] >= 2) {
-	// Node is connected to at least 1 active element...
-	nodes[active++] = i;
+        // Node is connected to at least 1 active element...
+        nodes[active++] = i;
       }
     }
     nodes.resize(active);
@@ -991,9 +991,9 @@ namespace Ioex {
   }
 
   void filter_element_list(Ioss::Region *region,
-			   Ioss::Int64Vector &elements,
-			   Ioss::Int64Vector &sides,
-			   bool remove_omitted_elements)
+                           Ioss::Int64Vector &elements,
+                           Ioss::Int64Vector &sides,
+                           bool remove_omitted_elements)
   {
     // Iterate through 'elements' and remove the elements which are in an omitted block.
     // Precondition is that there is at least one omitted element block.
@@ -1012,15 +1012,15 @@ namespace Ioex {
     for (auto block : element_blocks) {
 
       if (Ioss::Utils::block_is_omitted(block)) {
-	ssize_t min_id = block->get_offset() + 1;
-	ssize_t max_id = min_id + block->get_property("entity_count").get_int() - 1;
-	for (size_t i=0; i < elements.size(); i++) {
-	  if (min_id <= elements[i] && elements[i] <= max_id) {
-	    omitted = true;
-	    elements[i] = 0;
-	    sides[i]    = 0;
-	  }
-	}
+        ssize_t min_id = block->get_offset() + 1;
+        ssize_t max_id = min_id + block->get_property("entity_count").get_int() - 1;
+        for (size_t i=0; i < elements.size(); i++) {
+          if (min_id <= elements[i] && elements[i] <= max_id) {
+            omitted = true;
+            elements[i] = 0;
+            sides[i]    = 0;
+          }
+        }
       }
     }
     if (remove_omitted_elements && omitted) {
@@ -1030,11 +1030,11 @@ namespace Ioex {
   }
 
   void separate_surface_element_sides(Ioss::Int64Vector &element,
-				      Ioss::Int64Vector &sides,
-				      Ioss::Region *region,
-				      Ioex::TopologyMap &topo_map,
-				      Ioex::TopologyMap &side_map,
-				      Ioss::SurfaceSplitType split_type)
+                                      Ioss::Int64Vector &sides,
+                                      Ioss::Region *region,
+                                      Ioex::TopologyMap &topo_map,
+                                      Ioex::TopologyMap &side_map,
+                                      Ioss::SurfaceSplitType split_type)
   {
     if (!element.empty()) {
       Ioss::ElementBlock *block = nullptr;
@@ -1044,47 +1044,47 @@ namespace Ioex {
       int64_t current_side = -1;
 
       for (size_t iel = 0; iel < element.size(); iel++) {
-	int64_t elem_id = element[iel];
-	if (block == nullptr || !block->contains(elem_id)) {
-	  block = region->get_element_block(elem_id);
-	  assert(block != nullptr);
-	  assert(!Ioss::Utils::block_is_omitted(block)); // Filtered out above.
+        int64_t elem_id = element[iel];
+        if (block == nullptr || !block->contains(elem_id)) {
+          block = region->get_element_block(elem_id);
+          assert(block != nullptr);
+          assert(!Ioss::Utils::block_is_omitted(block)); // Filtered out above.
 
-	  // nullptr if hetero sides on element
-	  common_ftopo = block->topology()->boundary_type(0);
-	  if (common_ftopo != nullptr) {
-	    topo = common_ftopo;
-	  }
-	  current_side = -1;
-	}
+          // nullptr if hetero sides on element
+          common_ftopo = block->topology()->boundary_type(0);
+          if (common_ftopo != nullptr) {
+            topo = common_ftopo;
+          }
+          current_side = -1;
+        }
 
-	if (common_ftopo == nullptr && sides[iel] != current_side) {
-	  current_side = sides[iel];
-	  assert(current_side > 0 && current_side <= block->topology()->number_boundaries());
-	  topo = block->topology()->boundary_type(sides[iel]);
-	  assert(topo != nullptr);
-	}
-	std::pair<std::string, const Ioss::ElementTopology*> name_topo;
-	if (split_type == Ioss::SPLIT_BY_TOPOLOGIES) {
-	  name_topo = std::make_pair(block->topology()->name(), topo);
-	} else if (split_type == Ioss::SPLIT_BY_ELEMENT_BLOCK) {
-	  name_topo = std::make_pair(block->name(), topo);
-	}
-	topo_map[name_topo]++;
-	if (side_map[name_topo] == 0) {
-	  side_map[name_topo] = sides[iel];
-	} else if (side_map[name_topo] != sides[iel]) {
-	  // Not a consistent side for all sides in this
-	  // sideset. Set to large number. Note that maximum
-	  // sides/element is 6, so don't have to worry about
-	  // a valid element having 999 sides (unless go to
-	  // arbitrary polyhedra some time...) Using a large
-	  // number instead of -1 makes it easier to check the
-	  // parallel consistency...
-	  side_map[name_topo] = 999;
-	}
+        if (common_ftopo == nullptr && sides[iel] != current_side) {
+          current_side = sides[iel];
+          assert(current_side > 0 && current_side <= block->topology()->number_boundaries());
+          topo = block->topology()->boundary_type(sides[iel]);
+          assert(topo != nullptr);
+        }
+        std::pair<std::string, const Ioss::ElementTopology*> name_topo;
+        if (split_type == Ioss::SPLIT_BY_TOPOLOGIES) {
+          name_topo = std::make_pair(block->topology()->name(), topo);
+        } else if (split_type == Ioss::SPLIT_BY_ELEMENT_BLOCK) {
+          name_topo = std::make_pair(block->name(), topo);
+        }
+        topo_map[name_topo]++;
+        if (side_map[name_topo] == 0) {
+          side_map[name_topo] = sides[iel];
+        } else if (side_map[name_topo] != sides[iel]) {
+          // Not a consistent side for all sides in this
+          // sideset. Set to large number. Note that maximum
+          // sides/element is 6, so don't have to worry about
+          // a valid element having 999 sides (unless go to
+          // arbitrary polyhedra some time...) Using a large
+          // number instead of -1 makes it easier to check the
+          // parallel consistency...
+          side_map[name_topo] = 999;
+        }
       }
     }
   }
 
-}
+}  // namespace Ioex

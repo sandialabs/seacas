@@ -33,7 +33,7 @@
 #ifndef IOSS_Ioss_FaceBlock_h
 #define IOSS_Ioss_FaceBlock_h
 
-#include <Ioss_EntityBlock.h>           // for EntityBlock
+#include <Ioss_EntityBlock.h>
 #include <Ioss_Property.h>              // for Property
 #include <stddef.h>                     // for size_t
 #include <stdint.h>                     // for int64_t

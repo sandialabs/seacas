@@ -34,9 +34,9 @@
 #include <Ioss_Transform.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
+#include <iostream>
 #include <stddef.h>
 #include <stdint.h>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -78,7 +78,7 @@ namespace {
 	   << "'. Types must match\n";
     IOSS_ERROR(errmsg);
   }
-}
+} // namespace
 
 Ioss::Field::Field() :
   name_(""), rawCount_(0), transCount_(0), size_(0), index_(0),
@@ -274,4 +274,4 @@ namespace {
 
     return basic_size * storage_size * count;
   }
-}
+} // namespace

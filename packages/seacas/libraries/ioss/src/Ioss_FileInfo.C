@@ -2,14 +2,14 @@
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
-//         
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright
 //       notice, this list of conditions and the following disclaimer.
-// 
+//
 //     * Redistributions in binary form must reproduce the above
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
@@ -17,7 +17,7 @@
 //     * Neither the name of Sandia Corporation nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_FileInfo.h>
-#include <stddef.h>
+#include <cstddef>
 #include <sys/select.h>
 #include <sys/unistd.h>
 #include <string>
@@ -48,13 +48,13 @@
 namespace {
   bool internal_access(const std::string &name, int mode);
   bool do_stat(const std::string &filename, struct stat *s);
-}
+} // namespace
 
 namespace Ioss {
 
   FileInfo::FileInfo()
     : filename_(""), exists_(false), readable_(false) {}
-  
+
   FileInfo::FileInfo(std::string my_filename)
     : filename_(std::move(my_filename)), exists_(false), readable_(false)
   {
@@ -80,8 +80,8 @@ namespace Ioss {
     if (!dirpath.empty()) {
       filename_ = dirpath;
       if (filename_.at(filename_.size()-1) != '/') {
-	filename_ += SLASH;
-}
+        filename_ += SLASH;
+      }
     }
     filename_ += my_filename;
     readable_ = internal_access(filename_, R_OK);
@@ -120,11 +120,11 @@ namespace Ioss {
       bool first = true;
       std::ostringstream errmsg;
       for (int i=0; i < my_size; i++) {
-	if (result[i] == 0) {
-	  if (!first) errmsg << ", ";
-	  errmsg << i;
-	  first = false;
-	}
+        if (result[i] == 0) {
+          if (!first) errmsg << ", ";
+          errmsg << i;
+          first = false;
+        }
       }
       where = errmsg.str();
     }
@@ -155,12 +155,12 @@ namespace Ioss {
   bool FileInfo::is_file()     const
   {
     struct stat s;
-    if (do_stat(filename_.c_str(), &s)) {
+    if (do_stat(filename_, &s)) {
       return S_ISREG(s.st_mode);
     }
-    else {
-      return false;
-    }
+
+    return false;
+
   }
 
   //: Returns TRUE if we are pointing to a directory or a symbolic link to
@@ -168,12 +168,12 @@ namespace Ioss {
   bool FileInfo::is_dir()      const
   {
     struct stat s;
-    if (do_stat(filename_.c_str(), &s)) {
+    if (do_stat(filename_, &s)) {
       return S_ISDIR(s.st_mode);
     }
-    else {
-      return false;
-    }
+
+    return false;
+
   }
 
   //: Returns TRUE if we are pointing to a symbolic link
@@ -183,57 +183,57 @@ namespace Ioss {
     if (lstat(filename_.c_str(), &s) == 0) {
       return S_ISLNK(s.st_mode);
     }
-    else {
-      return false;
-    }
+
+    return false;
+
   }
 
   //: Time of last data modification. See 'man stat(2)'
   time_t FileInfo::modified() const
   {
     struct stat s;
-    if (do_stat(filename_.c_str(), &s)) {
+    if (do_stat(filename_, &s)) {
       return s.st_mtime;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
+
   }
 
   //: Time of last access
   time_t FileInfo::accessed() const
   {
     struct stat s;
-    if (do_stat(filename_.c_str(), &s)) {
+    if (do_stat(filename_, &s)) {
       return s.st_atime;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
+
   }
 
   //: Time of last status change. (creation, chmod, ...)
   time_t FileInfo::created() const
   {
     struct stat s;
-    if (do_stat(filename_.c_str(), &s)) {
+    if (do_stat(filename_, &s)) {
       return s.st_ctime;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
+
   }
 
   //: File size in bytes. Only if is_file() == true
   off_t  FileInfo::size() const
   {
     struct stat s;
-    if (do_stat(filename_.c_str(), &s)) {
+    if (do_stat(filename_, &s)) {
       return s.st_size;
     }
-    else {
-      return 0;
-    }
+
+    return 0;
+
   }
 
   //: Returns the filename
@@ -263,38 +263,38 @@ namespace Ioss {
   //: last period.
   const std::string FileInfo::extension() const
   {
-    size_t ind  = filename_.find_last_of(".", std::string::npos);
-    size_t inds = filename_.find_last_of("/", std::string::npos);
+    size_t ind  = filename_.find_last_of('.', std::string::npos);
+    size_t inds = filename_.find_last_of('/', std::string::npos);
 
     // Protect against './filename' returning /filename as extension
     if (ind != std::string::npos && (inds == std::string::npos || inds < ind)) {
       return filename_.substr(ind+1, filename_.size());
     }
-    else {
-      return std::string();
-    }
+
+    return std::string();
+
   }
 
   const std::string FileInfo::pathname() const
   {
-    size_t ind = filename_.find_last_of("/", filename_.size());
+    size_t ind = filename_.find_last_of('/', filename_.size());
     if (ind != std::string::npos) {
       return filename_.substr(0,ind);
     }
-    else {
-      return std::string();
-    }
+
+    return std::string();
+
   }
 
   const std::string FileInfo::tailname() const
   {
-    size_t ind = filename_.find_last_of("/", filename_.size());
+    size_t ind = filename_.find_last_of('/', filename_.size());
     if (ind != std::string::npos) {
       return filename_.substr(ind+1, filename_.size());
     }
-    else {
-      return filename_; // No path, just return the filename
-    }
+
+    return filename_; // No path, just return the filename
+
   }
 
   const std::string FileInfo::basename() const
@@ -306,9 +306,9 @@ namespace Ioss {
     if (ind != std::string::npos) {
       return tail.substr(0,ind);
     }
-    else {
-      return tail;
-    }
+
+    return tail;
+
   }
 
   bool FileInfo::remove_file()
@@ -316,7 +316,7 @@ namespace Ioss {
     int success = std::remove(filename_.c_str());
     return success == 0;
   }
-}
+}  // namespace Ioss
 
 namespace {
   bool internal_access(const std::string& name, int mode)
@@ -340,4 +340,4 @@ namespace {
     return (stat(filename.c_str(), s) == 0);
 #endif
   }
-}
+}  // namespace

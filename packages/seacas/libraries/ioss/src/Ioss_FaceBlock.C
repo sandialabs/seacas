@@ -30,11 +30,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_FaceBlock.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementTopology.h>
-#include <Ioss_FaceBlock.h>
 #include <Ioss_Property.h>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 
 #include "Ioss_EntityBlock.h"

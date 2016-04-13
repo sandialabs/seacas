@@ -33,8 +33,8 @@
 #include <Ioss_ConcreteVariableType.h>
 #include <Ioss_VariableType.h>
 
-#include <string>
 #include <assert.h>
+#include <string>
 
 namespace {
   const std::string X() { return std::string("x");}
@@ -75,7 +75,7 @@ namespace {
   const std::string asym_tensor_01() { return std::string("asym_tensor_01");}
   const std::string matrix_22()      { return std::string("matrix_22");}
   const std::string matrix_33()      { return std::string("matrix_33");}
-}
+} // namespace
 
 Ioss::StorageInitializer::StorageInitializer()
 {
