@@ -343,7 +343,8 @@ namespace Ioex {
   // common
   void DatabaseIO::put_qa()
   {
-    struct qa_element {
+    struct qa_element
+    {
       char *qa_record[1][4];
     };
 

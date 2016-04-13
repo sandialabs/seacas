@@ -34,8 +34,8 @@
  */
 
 #include <Ioss_Decomposition.h>
-#include <Ioss_ParallelUtils.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_ParallelUtils.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -299,7 +299,7 @@ namespace Ioss {
 #if !defined(NO_PARMETIS_SUPPORT)
     if (m_method == "KWAY" || m_method == "GEOM_KWAY" || m_method == "KWAY_GEOM" ||
         m_method == "METIS_SFC") {
-      metis_decompose((idx_t*)TOPTR(m_pointer), (idx_t*)TOPTR(m_adjacency), element_blocks);
+      metis_decompose((idx_t *)TOPTR(m_pointer), (idx_t *)TOPTR(m_adjacency), element_blocks);
     }
 #endif
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -567,15 +567,15 @@ namespace Ioss {
 #if !defined(NO_PARMETIS_SUPPORT)
   template <typename INT>
   void Decomposition<INT>::metis_decompose(idx_t *pointer, idx_t *adjacency,
-					   std::vector<BlockDecompositionData> &el_blocks)
+                                           std::vector<BlockDecompositionData> &el_blocks)
   {
     std::vector<idx_t> elem_partition(elementCount);
 
     // Determine whether sizeof(INT) matches sizeof(idx_t).
     // If not, decide how to proceed...
     if (sizeof(INT) == sizeof(idx_t)) {
-      internal_metis_decompose(el_blocks, (idx_t *)TOPTR(m_elementDist), pointer,
-                               adjacency, TOPTR(elem_partition));
+      internal_metis_decompose(el_blocks, (idx_t *)TOPTR(m_elementDist), pointer, adjacency,
+                               TOPTR(elem_partition));
     }
 
     // Now know that they don't match... Are we widening or narrowing...
@@ -1082,8 +1082,8 @@ namespace Ioss {
     Ioss::MY_Alltoallv(import_nodes, importNodeCount, importNodeIndex, exportNodeMap,
                        exportNodeCount, exportNodeIndex, m_comm);
 
-    // Map that converts nodes from the global index (1-based) to a
-    // local-per-processor index (1-based)
+// Map that converts nodes from the global index (1-based) to a
+// local-per-processor index (1-based)
 #if DEBUG_OUTPUT
     std::cerr << m_processor << ":\tNode Count = " << nodes.size() << "\n";
 #endif
@@ -1344,7 +1344,8 @@ namespace Ioss {
     // so this will not cause a deadlock...
     if (m_processor != set.root_ && set.hasEntities[m_processor]) {
       recv_data.resize(size);
-      result = MPI_Recv(TOPTR(recv_data), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
+      result =
+          MPI_Recv(TOPTR(recv_data), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
