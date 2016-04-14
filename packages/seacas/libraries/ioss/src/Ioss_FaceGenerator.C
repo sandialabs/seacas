@@ -290,13 +290,13 @@ namespace Ioss {
     nb->get_field_data("ids", ids);
 
     // Convert ids into hashed-ids
-    auto                starth = std::chrono::steady_clock::now();
+    auto                starth = std::chrono::high_resolution_clock::now();
     std::vector<size_t> hash_ids;
     hash_ids.reserve(ids.size());
     for (auto id : ids) {
       hash_ids.push_back(id_hash(id));
     }
-    auto endh = std::chrono::steady_clock::now();
+    auto endh = std::chrono::high_resolution_clock::now();
 
     size_t numel = region_.get_property("element_count").get_int();
 
@@ -345,10 +345,9 @@ namespace Ioss {
       }
     }
 
-    auto endf = std::chrono::steady_clock::now();
-
+    auto endf = std::chrono::high_resolution_clock::now();
     resolve_parallel_faces(region_, faces_, hash_ids, (INT)0);
-    auto endp = std::chrono::steady_clock::now();
+    auto endp = std::chrono::high_resolution_clock::now();
 
     auto diffh = endh - starth;
     auto difff = endf - endh;
