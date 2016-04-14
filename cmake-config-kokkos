@@ -1,0 +1,91 @@
+#!/bin/sh
+EXTRA_ARGS=$@
+
+### The following assumes you are building in a subdirectory of ACCESS Root
+ACCESS=$(cd ..; pwd)
+
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${ACCESS}
+
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+NETCDF_PATH=${ACCESS}
+MATIO_PATH=${ACCESS}
+HDF5_PATH=${ACCESS}
+CGNS_PATH=${ACCESS}
+CUDA_PATH=${CUDA_ROOT} # Set this to the appropriate path.
+
+### Set to ON for parallel compile; otherwise OFF for serial (default)
+MPI="ON"
+### Set to ON for CUDA compile; otherwise OFF (default)
+CUDA="OFF"
+
+### Change this to point to the compilers you want to use
+if [ "$MPI" == "ON" ]
+then
+  CXX=mpicxx
+  CC=mpicc
+  FC=mpif77
+else
+  CXX=clang++
+  CC=clang
+  FC=gfortran
+fi
+if [ "$CUDA" == "ON" ]
+then
+  export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
+  export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
+  CUDA_SYMBOLS="-D TPL_ENABLE_CUDA:Bool=ON -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH}"
+else
+  export OMPI_CXX=`which gcc`
+  unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
+  CUDA_SYMBOLS=""
+fi
+
+
+### Switch for Debug or Release build:
+BUILD_TYPE=Release
+#BUILD_TYPE=Debug
+
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then you will need
+### to add the line below.  It will disable blot and fastq
+#-D TPL_ENABLE_X11=OFF \
+
+rm -f CMakeCache.txt
+
+###------------------------------------------------------------------------
+cmake  \
+-D CMAKE_MACOSX_RPATH:BOOL=ON \
+-D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
+-D BUILD_SHARED_LIBS:BOOL=ON \
+-D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+-D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
+-D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
+-D SEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
+-D SEACASProj_ENABLE_TESTS=ON \
+-D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
+-D CMAKE_C_COMPILER:FILEPATH=${CC} \
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
+-D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+\
+-D TPL_ENABLE_Netcdf:BOOL=ON \
+-D TPL_ENABLE_Matio:BOOL=ON \
+-D TPL_ENABLE_MPI=${MPI} \
+-D TPL_ENABLE_Pamgen=OFF \
+-D TPL_ENABLE_CGNS:BOOL=OFF \
+\
+-D SEACASProj_ENABLE_OpenMP:Bool=ON \
+${CUDA_SYMBOLS} \
+\
+-D NetCDF_DIR:PATH=${NETCDF_PATH} \
+-D HDF5_ROOT:PATH=${HDF5_PATH} \
+-D HDF5_NO_SYSTEM_PATHS=ON \
+-D CGNS_ROOT:PATH=${CGNS_PATH} \
+-D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
+-D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
+\
+$EXTRA_ARGS \
+..
