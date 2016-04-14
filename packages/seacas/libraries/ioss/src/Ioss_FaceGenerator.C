@@ -61,9 +61,9 @@ namespace {
   template <typename T> void generate_index(std::vector<T> &index)
   {
     T sum = 0;
-    for (size_t i = 0; i < index.size(); i++) {
-      T cnt    = index[i];
-      index[i] = sum;
+    for (auto &idx : index) {
+      T cnt    = idx;
+      idx = sum;
       sum += cnt;
     }
   }
@@ -131,8 +131,8 @@ namespace {
       // the location in 'proc_entity' of the sharing information
       // for node 'local_node_id'
       std::vector<size_t> id_span(hash_ids.size() + 1);
-      for (size_t i = 0; i < proc_entity.size(); i++) {
-        INT node = proc_entity[i].second;
+      for (const auto &pe : proc_entity) {
+	INT node = pe.second;
         assert(node >= 0 && node < (INT)id_span.size() - 1);
         id_span[node]++;
       }
@@ -225,7 +225,7 @@ namespace {
       MPI_Alltoall(TOPTR(potential_count), 1, Ioss::mpi_type((INT)0), TOPTR(check_count), 1,
                    Ioss::mpi_type((INT)0), region.get_database()->util().communicator());
 
-      const int            values_per_face = 6;
+      const int            values_per_face = 6; // id, 4-node-conn, element
       auto                 sum = std::accumulate(check_count.begin(), check_count.end(), 0);
       std::vector<int64_t> check_faces(values_per_face * sum);
 
