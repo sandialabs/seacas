@@ -113,7 +113,7 @@ void Print_Banner(const char *prefix)
             << prefix << "                       Greg Sjaardema, gdsjaar@sandia.gov          \n"
             << prefix << "             Run on    " << Date() << "\n"
             << prefix << "  *****************************************************************\n"
-            << std::endl;
+            << '\n';
 }
 
 // TODO:  - copy node & side sets
@@ -223,7 +223,7 @@ void floating_point_exception_handler(int signo)
 {
   if (!checking_invalid) {
     std::cout << "exodiff: caught floating point exception (" << signo << ")"
-              << " bad data?" << std::endl;
+              << " bad data?" << '\n';
     exit(1);
   }
   else
@@ -296,12 +296,12 @@ namespace {
   template <typename INT> void output_init(ExoII_Read<INT> &file, int count, const char *prefix)
   {
     FileInfo fi(file.File_Name());
-    std::cout << prefix << "  FILE " << count << ": " << fi.realpath() << std::endl
-              << prefix << "   Title: " << file.Title() << std::endl
+    std::cout << prefix << "  FILE " << count << ": " << fi.realpath() << '\n'
+              << prefix << "   Title: " << file.Title() << '\n'
               << prefix << "          Dim = " << file.Dimension()
               << ", Blocks = " << file.Num_Elmt_Blocks() << ", Nodes = " << file.Num_Nodes()
               << ", Elements = " << file.Num_Elmts() << ", Nodesets = " << file.Num_Node_Sets()
-              << ", Sidesets = " << file.Num_Side_Sets() << std::endl
+              << ", Sidesets = " << file.Num_Side_Sets() << '\n'
               << prefix << "          Vars: Global = " << file.Num_Global_Vars()
               << ", Nodal = " << file.Num_Nodal_Vars() << ", Element = " << file.Num_Elmt_Vars()
               << ", Nodeset = " << file.Num_NS_Vars() << ", Sideset = " << file.Num_SS_Vars()
@@ -340,7 +340,7 @@ int main(int argc, char *argv[])
   if (interface.summary_flag && file1_name == "") {
     std::cout << "exodiff: ERROR: Summary option engaged but an exodus "
                  "file was not specified"
-              << std::endl;
+              << '\n';
     exit(1);
   }
 
@@ -405,18 +405,18 @@ namespace {
   template <typename INT> bool exodiff(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2)
   {
     if (!interface.quiet_flag && !interface.summary_flag)
-      std::cout << "Reading first file ... " << std::endl;
+      std::cout << "Reading first file ... " << '\n';
     std::string serr = file1.Open_File();
     if (!serr.empty()) {
-      std::cout << "exodiff: " << serr << std::endl;
+      std::cout << "exodiff: " << serr << '\n';
       exit(1);
     }
     if (!interface.summary_flag) {
       if (!interface.quiet_flag)
-        std::cout << "Reading second file ... " << std::endl;
+        std::cout << "Reading second file ... " << '\n';
       serr = file2.Open_File();
       if (serr != "") {
-        std::cout << "exodiff: " << serr << std::endl;
+        std::cout << "exodiff: " << serr << '\n';
         exit(1);
       }
     }
@@ -442,7 +442,7 @@ namespace {
                 << ".  To increase, use \"-maxnames <int>\" on the command "
                    "line or \"MAX NAMES <int>\" in the command file.  "
                    "Aborting..."
-                << std::endl;
+                << '\n';
       exit(1);
     }
 
@@ -468,7 +468,7 @@ namespace {
                   << ".  To increase, use \"-maxnames <int>\" on the command "
                      "line or \"MAX NAMES <int>\" in the command file.  "
                      "Aborting..."
-                  << std::endl;
+                  << '\n';
         exit(1);
       }
     }
@@ -492,7 +492,7 @@ namespace {
       if (!is_same) {
         file1.Close_File();
         file2.Close_File();
-        std::cout << "\nexodiff: Files are different" << std::endl;
+        std::cout << "\nexodiff: Files are different" << '\n';
         if (interface.exit_status_switch)
           return 2;
         else
@@ -515,7 +515,7 @@ namespace {
         Compute_Maps(node_map, elmt_map, file1, file2);
       }
       else {
-        std::cout << "INTERNAL ERROR: Invalid map option." << std::endl;
+        std::cout << "INTERNAL ERROR: Invalid map option." << '\n';
       }
 
       if (interface.dump_mapping) {
@@ -699,14 +699,14 @@ namespace {
       if (!interface.quiet_flag) {
         if (out_file_id >= 0) {
           std::cout << "Processing explicit time steps. File 1 step = " << ts1
-                    << "  File 2 step = " << ts2 << std::endl;
+                    << "  File 2 step = " << ts2 << '\n';
         }
         else {
           sprintf(
               buf,
               "  --------- Explicit Time step File 1: %d, %13.7e ~ File 2: %d, %13.7e ---------",
               ts1, file1.Time(ts1), ts2, t2.time);
-          std::cout << buf << std::endl;
+          std::cout << buf << '\n';
         }
       }
 
@@ -722,7 +722,7 @@ namespace {
         interface.time_step_offset = file1.Num_Times() - file2.Num_Times();
         if (interface.time_step_offset < 0) {
           std::cout << "ERROR: Second database must have less timesteps than "
-                    << "first database." << std::endl;
+                    << "first database." << '\n';
           exit(1);
         }
       }
@@ -733,7 +733,7 @@ namespace {
       if (interface.time_step_offset == -2) {
         if (file1.Num_Times() < file2.Num_Times()) {
           std::cout << "ERROR: Second database must have less timesteps than "
-                    << "first database." << std::endl;
+                    << "first database." << '\n';
           exit(1);
         }
 
@@ -814,7 +814,7 @@ namespace {
         }
         else if (out_file_id >= 0 && !interface.quiet_flag) {
           std::cout << "Processing time step " << time_step1 << "  (Difference in time values = "
-                    << (file1.Time(time_step1) - file2.Time(time_step2)) << ")" << std::endl;
+                    << (file1.Time(time_step1) - file2.Time(time_step2)) << ")" << '\n';
         }
         else if (out_file_id < 0) {
           if (!interface.quiet_flag) {
@@ -859,10 +859,10 @@ namespace {
             if (interface.quiet_flag)
               Die_TS(time_step1);
             else
-              std::cout << " (FAILED) " << std::endl;
+              std::cout << " (FAILED) " << '\n';
           }
           else if (!interface.quiet_flag)
-            std::cout << " ---------" << std::endl;
+            std::cout << " ---------" << '\n';
 
           if (interface.interpolating && time_step == min_num_times) {
             // last time.  Check if final database times match within specified tolerance...
@@ -912,24 +912,24 @@ namespace {
       ex_close(out_file_id);
     }
     else if (diff_flag) {
-      std::cout << "\nexodiff: Files are different" << std::endl;
+      std::cout << "\nexodiff: Files are different" << '\n';
     }
     else if (file1.Num_Times() != file2.Num_Times()) {
       if ((file1.Num_Times() - interface.time_step_offset == file2.Num_Times()) ||
           (interface.time_step_stop > 0) ||
           (interface.explicit_steps.first != 0 && interface.explicit_steps.second != 0) ||
           (interface.interpolating)) {
-        std::cout << "\nexodiff: Files are the same" << std::endl;
+        std::cout << "\nexodiff: Files are the same" << '\n';
         std::cout << "         The number of timesteps are different but "
-                  << "the timesteps that were compared are the same." << std::endl;
+                  << "the timesteps that were compared are the same." << '\n';
       }
       else {
-        std::cout << "\nexodiff: Files are different (# time steps differ)" << std::endl;
+        std::cout << "\nexodiff: Files are different (# time steps differ)" << '\n';
         diff_flag = true;
       }
     }
     else {
-      std::cout << "\nexodiff: Files are the same" << std::endl;
+      std::cout << "\nexodiff: Files are the same" << '\n';
     }
 
     if (!interface.ignore_maps) {
@@ -1001,7 +1001,7 @@ double FileDiff(double v1, double v2, TOLERANCE_TYPE_enum type)
 
 void Die_TS(double ts)
 {
-  std::cout << "exodiff: Files are different (time step " << ts << ")" << std::endl;
+  std::cout << "exodiff: Files are different (time step " << ts << ")" << '\n';
   if (interface.exit_status_switch)
     exit(2);
   else
@@ -1015,13 +1015,13 @@ template <typename INT> size_t global_elmt_num(ExoII_Read<INT> &file, size_t b_i
   size_t g = 0;
   for (size_t b = 0; b < file.Num_Elmt_Blocks(); ++b)
     if (b_idx == b) {
-      // std::cout << "returning " << g << " + " << e_idx << " + 1" << std::endl;
+      // std::cout << "returning " << g << " + " << e_idx << " + 1" << '\n';
       return g + e_idx + 1;
     }
     else {
       SMART_ASSERT(file.Get_Elmt_Block_by_Index(b) != 0);
       // std::cout << "num elmts for block " << file.Get_Elmt_Block_by_Index(b)->Id()
-      //     << " = " << file.Get_Elmt_Block_by_Index(b)->Size() << std::endl;
+      //     << " = " << file.Get_Elmt_Block_by_Index(b)->Size() << '\n';
       g += file.Get_Elmt_Block_by_Index(b)->Size();
     }
   SMART_ASSERT(0);
@@ -1216,7 +1216,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
   // Determine if any diffs and output to terminal
   int name_length = max_string_length(file1.Global_Var_Names()) + 1;
   if (!interface.quiet_flag && !interface.glob_var_names.empty())
-    std::cout << "Global variables:" << std::endl;
+    std::cout << "Global variables:" << '\n';
 
   for (unsigned out_idx = 0; out_idx < interface.glob_var_names.size(); ++out_idx) {
     const std::string &name = (interface.glob_var_names)[out_idx];
@@ -1244,7 +1244,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
         sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (FAILED)", name_length, name.c_str(),
                 interface.glob_var[out_idx].abrstr(), vals1[idx1], vals2[idx2],
                 interface.glob_var[out_idx].Delta(vals1[idx1], vals2[idx2]));
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       else
         Die_TS(step1);
@@ -1336,7 +1336,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
   // ----------------------------------------------------------------------
   // Determine if any diffs and output to terminal
   if (!interface.quiet_flag && !interface.node_var_names.empty())
-    std::cout << "Nodal variables:" << std::endl;
+    std::cout << "Nodal variables:" << '\n';
   int name_length = max_string_length(file1.Nodal_Var_Names()) + 1;
 
   for (unsigned n_idx = 0; n_idx < interface.node_var_names.size(); ++n_idx) {
@@ -1379,7 +1379,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
             sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (node " ST_ZU ")", name_length,
                     name.c_str(), interface.node_var[n_idx].abrstr(), vals1[n], vals2[n2], d,
                     (size_t)id_map[n]);
-            std::cout << buf << std::endl;
+            std::cout << buf << '\n';
           }
         }
         else {
@@ -1392,12 +1392,12 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
     if (interface.doL1Norm && norm.diff(1) > 0.0) {
       sprintf(buf, "   %-*s L1 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
               name.c_str(), norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
     if (interface.doL2Norm && norm.diff(2) > 0.0) {
       sprintf(buf, "   %-*s L2 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
               name.c_str(), norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
 
     if (max_diff.diff > interface.node_var[n_idx].value) {
@@ -1406,7 +1406,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
         sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (node " ST_ZU ")", name_length,
                 name.c_str(), interface.node_var[n_idx].abrstr(), max_diff.val1, max_diff.val2,
                 max_diff.diff, (size_t)id_map[max_diff.id]);
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       else {
         Die_TS(step1);
@@ -1431,7 +1431,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
 
   if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag &&
       !interface.elmt_var_names.empty())
-    std::cout << "Element variables:" << std::endl;
+    std::cout << "Element variables:" << '\n';
 
   int name_length = max_string_length(interface.elmt_var_names) + 1;
 
@@ -1567,7 +1567,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
                       "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block " ST_ZU ", elmt " ST_ZU ")",
                       name_length, name.c_str(), interface.elmt_var[e_idx].abrstr(), vals1[e], v2,
                       d, block_id, (size_t)id_map[global_elmt_index]);
-              std::cout << buf << std::endl;
+              std::cout << buf << '\n';
             }
           }
           else {
@@ -1593,12 +1593,12 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     if (interface.doL1Norm && norm.diff(1) > 0.0) {
       sprintf(buf, "   %-*s L1 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
               name.c_str(), norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
     if (interface.doL2Norm && norm.diff(2) > 0.0) {
       sprintf(buf, "   %-*s L2 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
               name.c_str(), norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
 
     if (!interface.summary_flag && max_diff.diff > interface.elmt_var[e_idx].value) {
@@ -1608,7 +1608,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
         sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block " ST_ZU ", elmt " ST_ZU ")",
                 name_length, name.c_str(), interface.elmt_var[e_idx].abrstr(), max_diff.val1,
                 max_diff.val2, max_diff.diff, max_diff.blk, (size_t)id_map[max_diff.id]);
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       else
         Die_TS(step1);
@@ -1633,7 +1633,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
 
   if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag &&
       !interface.ns_var_names.empty())
-    std::cout << "Nodeset variables:" << std::endl;
+    std::cout << "Nodeset variables:" << '\n';
 
   for (unsigned e_idx = 0; e_idx < interface.ns_var_names.size(); ++e_idx) {
     const std::string &name  = (interface.ns_var_names)[e_idx];
@@ -1734,7 +1734,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
                       "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (set " ST_ZU ", node " ST_ZU ")",
                       name_length, name.c_str(), interface.ns_var[e_idx].abrstr(), vals1[idx1], v2,
                       d, nset1->Id(), e);
-              std::cout << buf << std::endl;
+              std::cout << buf << '\n';
             }
           }
           else {
@@ -1751,7 +1751,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       else {
         sprintf(buf, "   %-*s     diff: nodeset node counts differ for nodeset " ST_ZU, name_length,
                 name.c_str(), (size_t)nset1->Id());
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
         diff_flag = true;
       }
 
@@ -1765,12 +1765,12 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     if (interface.doL1Norm && norm.diff(1) > 0.0) {
       sprintf(buf, "   %-*s L1 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
               name.c_str(), norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
     if (interface.doL2Norm && norm.diff(2) > 0.0) {
       sprintf(buf, "   %-*s L2 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
               name.c_str(), norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
 
     if (!interface.summary_flag && max_diff.diff > interface.ns_var[e_idx].value) {
@@ -1782,7 +1782,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
                 name_length, name.c_str(), interface.ns_var[e_idx].abrstr(), max_diff.val1,
                 max_diff.val2, max_diff.diff, max_diff.blk,
                 (size_t)id_map[nset->Node_Id(max_diff.id) - 1]);
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       else
         Die_TS(step1);
@@ -1806,7 +1806,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
 
   if (out_file_id < 0 && !interface.quiet_flag && !interface.summary_flag &&
       !interface.ss_var_names.empty())
-    std::cout << "Sideset variables:" << std::endl;
+    std::cout << "Sideset variables:" << '\n';
 
   Norm norm;
 
@@ -1905,7 +1905,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
                       name_length, name.c_str(), interface.ss_var[e_idx].abrstr(), vals1[ind1], v2,
                       d, (size_t)sset1->Id(), (size_t)id_map[sset1->Side_Id(e).first - 1],
                       (int)sset1->Side_Id(e).second);
-              std::cout << buf << std::endl;
+              std::cout << buf << '\n';
             }
           }
           else {
@@ -1921,7 +1921,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       else {
         sprintf(buf, "   %-*s     diff: sideset side counts differ for sideset " ST_ZU, name_length,
                 name.c_str(), (size_t)sset1->Id());
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
         diff_flag = true;
       }
 
@@ -1937,12 +1937,12 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       if (interface.doL1Norm && norm.diff(1) > 0.0) {
         sprintf(buf, "   %-*s L1 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
                 name.c_str(), norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       if (interface.doL2Norm && norm.diff(2) > 0.0) {
         sprintf(buf, "   %-*s L2 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
                 name.c_str(), norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
 
       if (!interface.quiet_flag) {
@@ -1952,7 +1952,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
                 max_diff.val2, max_diff.diff, max_diff.blk,
                 (size_t)id_map[sset->Side_Id(max_diff.id).first - 1],
                 (int)sset->Side_Id(max_diff.id).second);
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       else
         Die_TS(step1);
@@ -1972,7 +1972,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
   int         name_length = name.length();
 
   if (!interface.quiet_flag)
-    std::cout << "Sideset Distribution Factors:" << std::endl;
+    std::cout << "Sideset Distribution Factors:" << '\n';
 
   DiffData max_diff;
   for (int b = 0; b < file1.Num_Side_Sets(); ++b) {
@@ -2064,7 +2064,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
                       name_length, name.c_str(), interface.ss_df_tol.abrstr(), v1, v2, d,
                       (size_t)sset1->Id(), (size_t)id_map[sset1->Side_Id(e).first - 1],
                       (int)sset1->Side_Id(e).second, (int)i + 1);
-              std::cout << buf << std::endl;
+              std::cout << buf << '\n';
             }
           }
           else {
@@ -2077,7 +2077,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
     else {
       sprintf(buf, "   %-*s     diff: sideset side counts differ for sideset " ST_ZU, name_length,
               name.c_str(), (size_t)sset1->Id());
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
       diff_flag = true;
     }
 
@@ -2094,7 +2094,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
               name_length, name.c_str(), interface.ss_df_tol.abrstr(), max_diff.val1, max_diff.val2,
               max_diff.diff, max_diff.blk, (size_t)id_map[sset->Side_Id(max_diff.id).first - 1],
               (int)sset->Side_Id(max_diff.id).second);
-      std::cout << buf << std::endl;
+      std::cout << buf << '\n';
     }
     else
       Die_TS(-1);
@@ -2127,7 +2127,7 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
 
     if (!diff_was_output && (eblock1->attr_count() > 0 || eblock2->attr_count() > 0)) {
       diff_was_output = true;
-      std::cout << "Element attributes:" << std::endl;
+      std::cout << "Element attributes:" << '\n';
     }
 
     int name_length = max_string_length(eblock1->Attribute_Names()) + 1;
@@ -2201,7 +2201,7 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
                     "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block " ST_ZU ", elmt " ST_ZU ")",
                     name_length, name.c_str(), interface.elmt_att[tol_idx].abrstr(), vals1[e],
                     vals2[e], d, block_id, (size_t)id_map[global_elmt_index]);
-            std::cout << buf << std::endl;
+            std::cout << buf << '\n';
           }
         }
         else {
@@ -2215,12 +2215,12 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
       if (interface.doL1Norm && norm.diff(1) > 0.0) {
         sprintf(buf, "   %-*s L1 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
                 name.c_str(), norm.diff(1), norm.left(1), norm.right(1), norm.relative(1));
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
       if (interface.doL2Norm && norm.diff(2) > 0.0) {
         sprintf(buf, "   %-*s L2 norm of diff=%14.7e (%11.5e ~ %11.5e) rel=%14.7e", name_length,
                 name.c_str(), norm.diff(2), norm.left(2), norm.right(2), norm.relative(2));
-        std::cout << buf << std::endl;
+        std::cout << buf << '\n';
       }
 
       if (!interface.summary_flag && max_diff.diff > interface.elmt_att[tol_idx].value) {
@@ -2230,7 +2230,7 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
           sprintf(buf, "   %-*s %s diff: %14.7e ~ %14.7e =%12.5e (block " ST_ZU ", elmt " ST_ZU ")",
                   name_length, name.c_str(), interface.elmt_att[tol_idx].abrstr(), max_diff.val1,
                   max_diff.val2, max_diff.diff, max_diff.blk, (size_t)id_map[max_diff.id]);
-          std::cout << buf << std::endl;
+          std::cout << buf << '\n';
         }
         else
           Die_TS(-1);
@@ -2257,7 +2257,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
             << "in absolute value.\n"
             << "#         - Time values (t) are 1-offset time step numbers.\n"
             << "#         - Element block numbers are the block ids.\n"
-            << "#         - Node(n) and element(e) numbers are 1-offset." << std::endl;
+            << "#         - Node(n) and element(e) numbers are 1-offset." << '\n';
 
   if (interface.coord_sep) {
     double min_separation = Find_Min_Coord_Sep(file1);
@@ -2272,7 +2272,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
     std::cout << "\nTIME STEPS relative 1.e-6 floor 0.0     # min: ";
     sprintf(buf, "%15.8g @ t%d max: %15.8g @ t%d\n", mm_time.min_val, mm_time.min_step,
             mm_time.max_val, mm_time.max_step);
-    std::cout << buf << std::endl;
+    std::cout << buf << '\n';
   }
   else {
     std::cout << "\n# No TIME STEPS\n";
@@ -2295,7 +2295,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
 
   n = interface.node_var_names.size();
   if (n > 0) {
-    std::cout << std::endl << "NODAL VARIABLES relative 1.e-6 floor 0.0\n";
+    std::cout << '\n' << "NODAL VARIABLES relative 1.e-6 floor 0.0\n";
     name_length = max_string_length(interface.node_var_names);
     for (i = 0; i < n; ++i) {
       sprintf(buf, "\t%-*s  # min: %15.8g @ t%d,n" ST_ZU "\tmax: %15.8g @ t%d,n" ST_ZU "\n",
@@ -2311,7 +2311,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
 
   n = interface.elmt_var_names.size();
   if (n > 0) {
-    std::cout << std::endl << "ELEMENT VARIABLES relative 1.e-6 floor 0.0\n";
+    std::cout << '\n' << "ELEMENT VARIABLES relative 1.e-6 floor 0.0\n";
     name_length = max_string_length(interface.elmt_var_names);
     for (i = 0; i < n; ++i) {
       sprintf(buf, "\t%-*s  # min: %15.8g @ t%d,b" ST_ZU ",e" ST_ZU "\tmax: %15.8g @ t%d,b" ST_ZU
@@ -2329,7 +2329,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
 
   n = interface.ns_var_names.size();
   if (n > 0) {
-    std::cout << std::endl << "NODESET VARIABLES relative 1.e-6 floor 0.0\n";
+    std::cout << '\n' << "NODESET VARIABLES relative 1.e-6 floor 0.0\n";
     name_length = max_string_length(interface.ns_var_names);
     for (i = 0; i < n; ++i) {
       Node_Set<INT> *nsmin = file1.Get_Node_Set_by_Id(mm_ns[i].min_blk);
@@ -2350,7 +2350,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
 
   n = interface.ss_var_names.size();
   if (n > 0) {
-    std::cout << std::endl << "SIDESET VARIABLES relative 1.e-6 floor 0.0\n";
+    std::cout << '\n' << "SIDESET VARIABLES relative 1.e-6 floor 0.0\n";
     name_length = max_string_length(interface.ss_var_names);
     for (i = 0; i < n; ++i) {
       Side_Set<INT> *ssmin = file1.Get_Side_Set_by_Id(mm_ss[i].min_blk);
@@ -2369,7 +2369,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
   else {
     std::cout << "\n# No SIDESET VARIABLES\n";
   }
-  std::cout << std::endl;
+  std::cout << '\n';
 }
 
 int timeStepIsExcluded(int ts)
