@@ -71,12 +71,11 @@ int main(int argc, char *argv[])
 #endif
   OUTPUT << "\n" << argv[0];;
   if (err_count == 0) {
-    OUTPUT << "\nSIERRA execution successful." << std::endl;
+    OUTPUT << "\nSIERRA execution successful." << '\n';
     return EXIT_SUCCESS;
-  } 
-    OUTPUT << "\nSIERRA execution failed." << std::endl;
-    return EXIT_FAILURE;
-  
+  }
+  OUTPUT << "\nSIERRA execution failed." << '\n';
+  return EXIT_FAILURE;
 }
 
 int test_all_elements()
