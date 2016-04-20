@@ -1,5 +1,5 @@
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
-#include <main/Ioss_GetLongOpt.h>
+#include <Ioss_GetLongOpt.h>
 #include <string.h>
 
 namespace Ioss {
