@@ -27,6 +27,7 @@ TRIBITS_ADD_LIBRARY(
   io_info_lib
   HEADERS io_info.h info_interface.h Ioss_GetLongOpt.h
   SOURCES io_info.C volume.C info_interface.C Ioss_GetLongOpt.C
+  DEPLIBS Ioss
   )
 
 TRIBITS_ADD_EXECUTABLE(
