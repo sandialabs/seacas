@@ -62,8 +62,8 @@ namespace {
   {
     T sum = 0;
     for (auto &idx : index) {
-      T cnt    = idx;
-      idx = sum;
+      T cnt = idx;
+      idx   = sum;
       sum += cnt;
     }
   }
@@ -132,7 +132,7 @@ namespace {
       // for node 'local_node_id'
       std::vector<size_t> id_span(hash_ids.size() + 1);
       for (const auto &pe : proc_entity) {
-	INT node = pe.second;
+        INT node = pe.second;
         assert(node >= 0 && node < (INT)id_span.size() - 1);
         id_span[node]++;
       }

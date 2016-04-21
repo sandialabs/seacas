@@ -55,9 +55,10 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
                                           bool sync_parallel) const
 {
 #ifdef HAVE_MPI
-  char *result_string    = nullptr;
-  std::vector<char> broadcast_string;;
-  int   string_length    = 0;
+  char *            result_string = nullptr;
+  std::vector<char> broadcast_string;
+  ;
+  int string_length = 0;
 
   int rank = parallel_rank();
   if (rank == 0) {
@@ -74,7 +75,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &
         std::strncpy(TOPTR(broadcast_string), result_string, (size_t)string_length + 1);
       }
       MPI_Bcast(TOPTR(broadcast_string), string_length + 1, MPI_CHAR, 0, communicator_);
-      value         = std::string(TOPTR(broadcast_string));
+      value = std::string(TOPTR(broadcast_string));
     }
     else {
       value = std::string("");
@@ -181,8 +182,8 @@ void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) c
     assert(sizeof(char) == 1);
 
     std::vector<char> recv_buf(length);
-    const int success = MPI_Allreduce(buffer, TOPTR(recv_buf), length,
-				      MPI_BYTE, MPI_BOR, communicator_);
+    const int         success =
+        MPI_Allreduce(buffer, TOPTR(recv_buf), length, MPI_BYTE, MPI_BOR, communicator_);
     if (MPI_SUCCESS != success) {
       std::ostringstream errmsg;
       errmsg << "Ioss::ParallelUtils::attribute_reduction - MPI_Allreduce failed";
