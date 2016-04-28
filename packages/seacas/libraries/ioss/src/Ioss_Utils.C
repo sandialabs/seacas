@@ -525,20 +525,23 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
                                              size_t copies, size_t max_var_len)
 {
   // This routine tries to shorten long variable names to an acceptable
-  // length ('max_var_len' characters max).  If the name is already less than this
+  // length ('max_var_len' characters max).  If the name is already less than
+  // this
   // length, it is returned unchanged except for the appending of the hash...
   //
   // Since there is a (good) chance that two shortened names will match,
   // a 2-letter 'hash' code is appended to the end of the variable
   // name. This can be treated as a 2-digit base 26 number
   //
-  // So, we shorten the name to a maximum of 'max_var_len-3' characters and append a
+  // So, we shorten the name to a maximum of 'max_var_len-3' characters and
+  // append a
   // dot ('.') and 2 character hash.
   //
   // But, we also have to deal with the suffices that Ioex_DatabaseIO
   // appends on non-scalar values.  For the 'standard' types, the
   // maximum suffix is 4 characters (underscore + 1, 2, or 3 characters).
-  // So...shorten name to maximum of 'max_var_len-3-{3|4|n}' characters depending on the
+  // So...shorten name to maximum of 'max_var_len-3-{3|4|n}' characters
+  // depending on the
   // number of components.
   //
   // This function alo converts name to lowercase and converts spaces
@@ -645,7 +648,8 @@ std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t com
 void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
 {
   // The model for a history file is a single sphere element (1 node, 1 element)
-  // This is needed for some applications that read this file that require a "mesh"
+  // This is needed for some applications that read this file that require a
+  // "mesh"
   // even though a history file is just a collection of global variables with no
   // real mesh.
 

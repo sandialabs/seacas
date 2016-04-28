@@ -43,6 +43,7 @@ namespace Ioss {
   {
   public:
     static void factory() { static St_TriShell4 registerThis; }
+
   protected:
     St_TriShell4() : ElementVariableType("trishell4", 4) {}
   };

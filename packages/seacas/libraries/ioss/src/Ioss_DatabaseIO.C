@@ -177,8 +177,8 @@ namespace Ioss {
         std::vector<std::string> property = tokenize(elem, "=");
         if (property.size() != 2) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: Invalid property specification found in IOSS_PROPERTIES environment "
-                    "variable\n"
+          errmsg << "ERROR: Invalid property specification found in "
+                    "IOSS_PROPERTIES environment variable\n"
                  << "       Found '" << elem << "' which is not of the correct PROPERTY=VALUE form";
           IOSS_ERROR(errmsg);
         }
@@ -229,7 +229,8 @@ namespace Ioss {
     }
 
     if (!is_input()) {
-      // Create full path to the output file at this point if it doesn't exist...
+      // Create full path to the output file at this point if it doesn't
+      // exist...
       create_path(DBFilename);
     }
   }
@@ -320,12 +321,14 @@ namespace Ioss {
     }
     else {
       // Give the other processors something to say in case there is an error.
-      errmsg << "ERROR: Could not create path. See processor 0 output for more details.\n";
+      errmsg << "ERROR: Could not create path. See processor 0 output for more "
+                "details.\n";
     }
 
     // Sync all processors with error status...
     // All processors but 0 will have error_found=false
-    // Processor 0 will have error_found = true or false depending on path result.
+    // Processor 0 will have error_found = true or false depending on path
+    // result.
     int is_error = error_found ? 1 : 0;
     error_found  = (util().global_minmax(is_error, Ioss::ParallelUtils::DO_MAX) == 1);
 
@@ -361,13 +364,17 @@ namespace Ioss {
     // Set Grouping requests are specified as properties...
     // See if the property exists and decode...
     // There is a property for each "type":
-    // GROUP_SIDESET, GROUP_NODESET, GROUP_EDGESET, GROUP_FACESET, GROUP_ELEMSET.
-    // Within the property, the "value" consists of multiple groups separated by ":"
+    // GROUP_SIDESET, GROUP_NODESET, GROUP_EDGESET, GROUP_FACESET,
+    // GROUP_ELEMSET.
+    // Within the property, the "value" consists of multiple groups separated by
+    // ":"
     // Within the group, the names are "," separated:
     //
     // new_surf1,member1,member2,member3:new_surf2,mem1,mem2,mem3,mem4:new_surf3,....
     //
-    // Currently does not check for duplicate entity membership in a set -- union with duplicates
+    // Currently does not check for duplicate entity membership in a set --
+    // union
+    // with duplicates
     //
     create_groups("GROUP_SIDESET", SIDESET, "side", (SideSet *)nullptr);
     create_groups("GROUP_NODESET", NODESET, "node", (NodeSet *)nullptr);
@@ -395,7 +402,8 @@ namespace Ioss {
       if (group_spec.size() < 2) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Invalid " << type_name << " group specification '" << group << "'\n"
-               << "       Correct syntax is 'new_group,member1,...,memberN' and their must "
+               << "       Correct syntax is 'new_group,member1,...,memberN' and "
+                  "their must "
                << "       be at least 1 member of the group";
         IOSS_ERROR(errmsg);
       }
@@ -565,8 +573,8 @@ namespace Ioss {
         }
       }
       if (all_sphere) {
-        // If we end up here, the model either contains all spheres, or there are no
-        // element blocks in the model...
+        // If we end up here, the model either contains all spheres,
+        // or there are no element blocks in the model...
         const ElementTopology *ftopo = ElementTopology::factory("unknown");
         if (element_blocks.empty()) {
           side_topo.insert(std::make_pair(ftopo, ftopo));

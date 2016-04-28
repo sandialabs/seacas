@@ -34,13 +34,14 @@
  */
 
 #include <Ioss_Decomposition.h>
+#include <Ioss_ElementTopology.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
 #include <assert.h>
 
-#if defined(USE_CGNS)
+#if !defined(NO_CGNS_SUPPORT)
 #include <cgns/Iocgns_IOFactory.h>
 #endif
 
@@ -114,10 +115,6 @@ namespace {
       exit(EXIT_FAILURE);
     }
 
-    if (my_processor == 0) {
-      std::cout << "\nUsing decomposition method '" << method << "' on " << processor_count
-                << " processors.\n\n";
-    }
     return method;
   }
 
@@ -133,7 +130,10 @@ namespace {
 
     int common_nodes = INT_MAX;
 
-    for (auto block : el_blocks) {
+    for (const auto block : el_blocks) {
+      if (block.global_count() == 0) {
+        continue;
+      }
       std::string            type     = Ioss::Utils::lowercase(block.topologyType);
       Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(type, false);
       if (topology != nullptr) {
@@ -231,7 +231,8 @@ namespace Ioss {
     }
 
     // Now iterate the imported element list...
-    // Find number of imported elements that are less than the current local_map[0]
+    // Find number of imported elements that are less than the current
+    // local_map[0]
     b                        = 0;
     size_t              proc = 0;
     std::vector<size_t> imp_index(el_blocks.size());
@@ -294,10 +295,14 @@ namespace Ioss {
 #endif
       std::vector<BlockDecompositionData> &element_blocks)
   {
+    if (m_processor == 0) {
+      std::cout << "\nUsing decomposition method '" << m_method << "' on "
+		<< m_processorCount << " processors.\n\n";
+    }
 #if !defined(NO_PARMETIS_SUPPORT)
     if (m_method == "KWAY" || m_method == "GEOM_KWAY" || m_method == "KWAY_GEOM" ||
         m_method == "METIS_SFC") {
-      metis_decompose(m_pointer, m_adjacency);
+      metis_decompose((idx_t *)TOPTR(m_pointer), (idx_t *)TOPTR(m_adjacency), element_blocks);
     }
 #endif
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -348,27 +353,27 @@ namespace Ioss {
     m_nodeDist.shrink_to_fit();
   }
 
-  template void Decomposition<int>::calculate_element_centroids(int spatial_dimension,
-                                                                const std::vector<double> &x,
+  template void Decomposition<int>::calculate_element_centroids(const std::vector<double> &x,
                                                                 const std::vector<double> &y,
                                                                 const std::vector<double> &z);
-  template void Decomposition<int64_t>::calculate_element_centroids(int spatial_dimension,
-                                                                    const std::vector<double> &x,
+  template void Decomposition<int64_t>::calculate_element_centroids(const std::vector<double> &x,
                                                                     const std::vector<double> &y,
                                                                     const std::vector<double> &z);
 
   template <typename INT>
-  void Decomposition<INT>::calculate_element_centroids(int                        spatial_dimension,
-                                                       const std::vector<double> &x,
+  void Decomposition<INT>::calculate_element_centroids(const std::vector<double> &x,
                                                        const std::vector<double> &y,
                                                        const std::vector<double> &z)
   {
-    // recv_count is the number of nodes that I need to recv from the other processors
-    // send_count is the number of nodes that I need to send to the other processors
+    // recv_count is the number of nodes that I need to recv from the other
+    // processors
+    // send_count is the number of nodes that I need to send to the other
+    // processors
     std::vector<INT> recv_count(m_processorCount);
     std::vector<INT> send_count(m_processorCount);
 
-    std::vector<int> owner; // Size is sum of element connectivity sizes (same as adjacency list)
+    std::vector<int> owner; // Size is sum of element connectivity sizes (same as
+                            // adjacency list)
     owner.reserve(m_adjacency.size());
 
     for (auto node : m_adjacency) {
@@ -404,7 +409,8 @@ namespace Ioss {
     std::cerr << "Processor " << m_processor << " communicates " << sumr << " nodes from and "
               << sums << " nodes to other processors\n";
 #endif
-    // Build the list telling the other processors which of their nodes I will need data from...
+    // Build the list telling the other processors which of their nodes I will
+    // need data from...
     std::vector<INT> node_comm_recv(sumr);
     std::vector<INT> node_comm_send(sums);
     {
@@ -422,8 +428,8 @@ namespace Ioss {
     Ioss::MY_Alltoallv(node_comm_recv, recv_count, recv_disp, node_comm_send, send_count, send_disp,
                        m_comm);
 
-// At this point, 'node_comm_send' contains the list of nodes that I need to provide
-// coordinate data for.
+// At this point, 'node_comm_send' contains the list of nodes that I
+// need to provide coordinate data for.
 
 // DEBUG: == Check that all nodes in node_comm_send are in the range
 //           nodeOffset..nodeOffset+nodeCount
@@ -435,24 +441,24 @@ namespace Ioss {
 
     // The total vector size I need to send data in is node_comm_send.size()*3
     std::vector<double> coord_send;
-    coord_send.reserve(node_comm_send.size() * spatial_dimension);
-    std::vector<double> coord_recv(node_comm_recv.size() * spatial_dimension);
+    coord_send.reserve(node_comm_send.size() * m_spatialDimension);
+    std::vector<double> coord_recv(node_comm_recv.size() * m_spatialDimension);
     for (auto node : node_comm_send) {
       node -= nodeOffset;
       coord_send.push_back(x[node]);
-      if (spatial_dimension > 1)
+      if (m_spatialDimension > 1)
         coord_send.push_back(y[node]);
-      if (spatial_dimension > 2)
+      if (m_spatialDimension > 2)
         coord_send.push_back(z[node]);
     }
-    assert(coord_send.size() == node_comm_send.size() * spatial_dimension);
+    assert(coord_send.size() == node_comm_send.size() * m_spatialDimension);
 
     // Send the coordinate data back to the processors that requested it...
     for (int i = 0; i < m_processorCount; i++) {
-      send_count[i] *= spatial_dimension;
-      recv_count[i] *= spatial_dimension;
-      send_disp[i] *= spatial_dimension;
-      recv_disp[i] *= spatial_dimension;
+      send_count[i] *= m_spatialDimension;
+      recv_count[i] *= m_spatialDimension;
+      send_disp[i] *= m_spatialDimension;
+      recv_disp[i] *= m_spatialDimension;
     }
 
     Ioss::MY_Alltoallv(coord_send, send_count, send_disp, coord_recv, recv_count, recv_disp,
@@ -473,7 +479,7 @@ namespace Ioss {
     // per element...
 
     // Calculate the centroid into the DecompositionData structure 'centroids'
-    m_centroids.reserve(elementCount * spatial_dimension);
+    m_centroids.reserve(elementCount * m_spatialDimension);
     std::vector<INT> recv_tmp(m_processorCount);
 
     for (size_t i = 0; i < elementCount; i++) {
@@ -486,25 +492,25 @@ namespace Ioss {
         INT proc = owner[jj];
         if (proc == m_processor) {
           cx += x[node - nodeOffset];
-          if (spatial_dimension > 1)
+          if (m_spatialDimension > 1)
             cy += y[node - nodeOffset];
-          if (spatial_dimension > 2)
+          if (m_spatialDimension > 2)
             cz += z[node - nodeOffset];
         }
         else {
           INT coffset = recv_disp[proc] + recv_tmp[proc];
-          recv_tmp[proc] += spatial_dimension;
+          recv_tmp[proc] += m_spatialDimension;
           cx += coord_recv[coffset + 0];
-          if (spatial_dimension > 1)
+          if (m_spatialDimension > 1)
             cy += coord_recv[coffset + 1];
-          if (spatial_dimension > 2)
+          if (m_spatialDimension > 2)
             cz += coord_recv[coffset + 2];
         }
       }
       m_centroids.push_back(cx / nnpe);
-      if (spatial_dimension > 1)
+      if (m_spatialDimension > 1)
         m_centroids.push_back(cy / nnpe);
-      if (spatial_dimension > 2)
+      if (m_spatialDimension > 2)
         m_centroids.push_back(cz / nnpe);
     }
   }
@@ -562,15 +568,16 @@ namespace Ioss {
 
 #if !defined(NO_PARMETIS_SUPPORT)
   template <typename INT>
-  void Decomposition<INT>::metis_decompose(std::vector<BlockDecompositionData> &el_blocks)
+  void Decomposition<INT>::metis_decompose(idx_t *pointer, idx_t *adjacency,
+                                           std::vector<BlockDecompositionData> &el_blocks)
   {
     std::vector<idx_t> elem_partition(elementCount);
 
     // Determine whether sizeof(INT) matches sizeof(idx_t).
     // If not, decide how to proceed...
     if (sizeof(INT) == sizeof(idx_t)) {
-      internal_metis_decompose(el_blocks, (idx_t *)TOPTR(m_elementDist), (idx_t *)TOPTR(m_pointer),
-                               (idx_t *)TOPTR(m_adjacency), TOPTR(elem_partition));
+      internal_metis_decompose(el_blocks, (idx_t *)TOPTR(m_elementDist), pointer, adjacency,
+                               TOPTR(elem_partition));
     }
 
     // Now know that they don't match... Are we widening or narrowing...
@@ -585,19 +592,23 @@ namespace Ioss {
     }
 
     else if (sizeof(idx_t) < sizeof(INT)) {
-      // ... Narrowing.  See if data range (#elements and/or #nodes) fits in 32-bit idx_t
+      // ... Narrowing.  See if data range (#elements and/or #nodes) fits in
+      // 32-bit idx_t
       // Can determine this by checking the pointer[
       assert(sizeof(idx_t) == 4);
       if (m_globalElementCount >= INT_MAX || m_globalNodeCount >= INT_MAX ||
           m_pointer[elementCount] >= INT_MAX) {
         // Can't narrow...
         std::ostringstream errmsg;
-        errmsg
-            << "ERROR: The metis/parmetis libraries being used with this application only support\n"
-            << "       32-bit integers, but the mesh being decomposed requires 64-bit integers.\n"
-            << "       You must either choose a different, non-metis decomposition method, or\n"
-            << "       rebuild your metis/parmetis libraries with 64-bit integer support.\n"
-            << "       Contact gdsjaar@sandia.gov for more details.\n";
+        errmsg << "ERROR: The metis/parmetis libraries being used with this "
+                  "application only support\n"
+               << "       32-bit integers, but the mesh being decomposed "
+                  "requires 64-bit integers.\n"
+               << "       You must either choose a different, non-metis "
+                  "decomposition method, or\n"
+               << "       rebuild your metis/parmetis libraries with 64-bit "
+                  "integer support.\n"
+               << "       Contact gdsjaar@sandia.gov for more details.\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }
@@ -680,7 +691,7 @@ namespace Ioss {
     idx_t  common_nodes = get_common_node_count(el_blocks, m_comm);
 
     idx_t               nparts = m_processorCount;
-    idx_t               ndims  = spatialDimension;
+    idx_t               ndims  = m_spatialDimension;
     std::vector<real_t> tp_wgts(ncon * nparts, 1.0 / nparts);
 
     std::vector<real_t> ub_vec(ncon, 1.01);
@@ -702,7 +713,8 @@ namespace Ioss {
 #endif
       if (rc != METIS_OK) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem during call to ParMETIS_V3_PartMeshKWay decomposition\n";
+        errmsg << "ERROR: Problem during call to ParMETIS_V3_PartMeshKWay "
+                  "decomposition\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }
@@ -716,7 +728,8 @@ namespace Ioss {
 
       if (rc != METIS_OK) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem during call to ParMETIS_V3_Mesh2Dual graph conversion\n";
+        errmsg << "ERROR: Problem during call to ParMETIS_V3_Mesh2Dual graph "
+                  "conversion\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }
@@ -725,7 +738,7 @@ namespace Ioss {
                     "Parmetis real_t size must match double size");
 
       rc = ParMETIS_V3_PartGeomKway(element_dist, dual_xadj, dual_adjacency, elm_wgt, elm_wgt,
-                                    &wgt_flag, &num_flag, &ndims, (real_t *)TOPTR(centroids_),
+                                    &wgt_flag, &num_flag, &ndims, (real_t *)TOPTR(m_centroids),
                                     &ncon, &nparts, TOPTR(tp_wgts), TOPTR(ub_vec), TOPTR(options),
                                     &edge_cuts, elem_partition, &m_comm);
 
@@ -737,7 +750,8 @@ namespace Ioss {
 
       if (rc != METIS_OK) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem during call to ParMETIS_V3_PartGeomKWay decomposition\n";
+        errmsg << "ERROR: Problem during call to ParMETIS_V3_PartGeomKWay "
+                  "decomposition\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }
@@ -746,12 +760,13 @@ namespace Ioss {
       static_assert(sizeof(double) == sizeof(real_t),
                     "Parmetis real_t size must match double size");
 
-      int rc = ParMETIS_V3_PartGeom(element_dist, &ndims, (real_t *)TOPTR(centroids_),
+      int rc = ParMETIS_V3_PartGeom(element_dist, &ndims, (real_t *)TOPTR(m_centroids),
                                     elem_partition, &m_comm);
 
       if (rc != METIS_OK) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem during call to ParMETIS_V3_PartGeom decomposition\n";
+        errmsg << "ERROR: Problem during call to ParMETIS_V3_PartGeom "
+                  "decomposition\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }
@@ -904,7 +919,8 @@ namespace Ioss {
 
   template <typename INT> void Decomposition<INT>::build_global_to_local_elem_map()
   {
-    // global_index is 1-based index into global list of elems [1..global_elem_count]
+    // global_index is 1-based index into global list of elems
+    // [1..global_elem_count]
     for (size_t i = 0; i < localElementMap.size(); i++) {
       size_t global_index   = localElementMap[i] + elementOffset + 1;
       size_t local_index    = i + importPreLocalElemIndex + 1;
@@ -1068,9 +1084,11 @@ namespace Ioss {
     Ioss::MY_Alltoallv(import_nodes, importNodeCount, importNodeIndex, exportNodeMap,
                        exportNodeCount, exportNodeIndex, m_comm);
 
-    // Map that converts nodes from the global index (1-based) to a local-per-processor index
-    // (1-based)
+// Map that converts nodes from the global index (1-based) to a
+// local-per-processor index (1-based)
+#if DEBUG_OUTPUT
     std::cerr << m_processor << ":\tNode Count = " << nodes.size() << "\n";
+#endif
     nodeGTL.swap(nodes);
     for (size_t i = 0; i < nodeGTL.size(); i++) {
       nodeGTL[i]++; // convert from 0-based index to 1-based index
@@ -1083,7 +1101,8 @@ namespace Ioss {
     // processor) and the list of processors that they are on for the
     // ioss decomposition.
     //
-    // * iterate all local nodes (those that are in both file and ioss decomposition)
+    // * iterate all local nodes (those that are in both file and ioss
+    // decomposition)
     //   on this procesor and all exported nodes,
     // * put in a vector and sort on (id,proc).
     // * iterate and create a vector of all shared nodes and the
@@ -1319,15 +1338,16 @@ namespace Ioss {
   {
     MPI_Status status;
 
-    std::vector<INT> recv_data;
-    int              result = MPI_SUCCESS;
+    std::vector<T> recv_data;
+    int            result = MPI_SUCCESS;
 
-    size_t size = sizeof(INT) * set.file_count() * comp_count;
+    size_t size = set.file_count() * comp_count;
     // NOTE That a processor either sends or receives, but never both,
     // so this will not cause a deadlock...
     if (m_processor != set.root_ && set.hasEntities[m_processor]) {
       recv_data.resize(size);
-      result = MPI_Recv(TOPTR(recv_data), size, MPI_BYTE, set.root_, 111, m_comm, &status);
+      result =
+          MPI_Recv(TOPTR(recv_data), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
@@ -1342,7 +1362,7 @@ namespace Ioss {
       for (int i = m_processor + 1; i < m_processorCount; i++) {
         if (set.hasEntities[i]) {
           // Send same data to all active processors...
-          MPI_Send(file_data, size, MPI_BYTE, i, 111, m_comm);
+          MPI_Send(file_data, size, Ioss::mpi_type(T(0)), i, 111, m_comm);
         }
       }
     }
@@ -1383,15 +1403,6 @@ namespace Ioss {
     }
   }
 
-#if defined(USE_CGNS)
-  template void Decomposition<int64_t>::communicate_block_data(cgsize_t *file_data,
-                                                               int64_t * ioss_data,
-                                                               const BlockDecompositionData &block,
-                                                               size_t comp_count) const;
-  template void Decomposition<int>::communicate_block_data(cgsize_t *file_data, int *ioss_data,
-                                                           const BlockDecompositionData &block,
-                                                           size_t comp_count) const;
-#endif
   template void Decomposition<int64_t>::communicate_block_data(int *file_data, int64_t *ioss_data,
                                                                const BlockDecompositionData &block,
                                                                size_t comp_count) const;
@@ -1424,18 +1435,6 @@ namespace Ioss {
     if (comp_count == 1) {
       for (size_t i = 0; i < block.exportMap.size(); i++) {
         exports.push_back(file_data[block.exportMap[i]]);
-      }
-
-      std::vector<int> export_count(block.exportCount.begin(), block.exportCount.end());
-      std::vector<int> export_disp(block.exportIndex.begin(), block.exportIndex.end());
-      std::vector<int> import_count(block.importCount.begin(), block.importCount.end());
-      std::vector<int> import_disp(block.importIndex.begin(), block.importIndex.end());
-
-      for (int i = 0; i < m_processorCount; i++) {
-        export_count[i] *= sizeof(T);
-        export_disp[i] *= sizeof(T);
-        import_count[i] *= sizeof(T);
-        import_disp[i] *= sizeof(T);
       }
 
       // Get my imported data and send my exported data...

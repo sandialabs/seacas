@@ -43,6 +43,7 @@ namespace Ioss {
   {
   public:
     static void factory() { static St_Shell4 registerThis; }
+
   protected:
     St_Shell4() : ElementVariableType("shell4", 4) {}
   };

@@ -44,6 +44,7 @@ namespace Ioss {
   {
   public:
     static void factory() { static St_Tri4 registerThis; }
+
   protected:
     St_Tri4() : ElementVariableType("tri4", 4) {}
   };

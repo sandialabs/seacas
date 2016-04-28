@@ -72,7 +72,7 @@ namespace {
     Iopx::DecompositionDataBase *zdata = (Iopx::DecompositionDataBase *)(data);
 
     *ierr = ZOLTAN_OK;
-    return zdata->spatialDimension;
+    return zdata->spatial_dimension();
   }
 
   int zoltan_num_obj(void *data, int *ierr)
@@ -156,9 +156,9 @@ namespace Iopx {
     ex_init_params info;
     ex_get_init_ext(filePtr, &info);
 
-    size_t globalElementCount = info.num_elem;
-    size_t globalNodeCount    = info.num_nodes;
-    spatialDimension          = info.num_dim;
+    size_t globalElementCount          = info.num_elem;
+    size_t globalNodeCount             = info.num_nodes;
+    m_decomposition.m_spatialDimension = info.num_dim;
     el_blocks.resize(info.num_elem_blk);
 
     // Generate element_dist/node_dist --  size proc_count + 1
@@ -180,15 +180,15 @@ namespace Iopx {
       ;
       std::vector<double> y;
       std::vector<double> z;
-      if (spatialDimension > 1)
+      if (m_decomposition.m_spatialDimension > 1)
         y.resize(decomp_node_count());
-      if (spatialDimension > 2)
+      if (m_decomposition.m_spatialDimension > 2)
         z.resize(decomp_node_count());
 
       ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), TOPTR(x),
                            TOPTR(y), TOPTR(z));
 
-      m_decomposition.calculate_element_centroids(spatialDimension, x, y, z);
+      m_decomposition.calculate_element_centroids(x, y, z);
     }
 
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -270,6 +270,7 @@ namespace Iopx {
       if (ebs[b].num_entry == 0 && (std::strcmp(ebs[b].topology, "nullptr") == 0))
         el_blocks[b].topologyType = "sphere";
 
+      el_blocks[b].globalCount    = ebs[b].num_entry;
       el_blocks[b].nodesPerEntity = ebs[b].num_nodes_per_entry;
       el_blocks[b].attributeCount = ebs[b].num_attribute;
     }
@@ -786,7 +787,7 @@ namespace Iopx {
       // * NOTE: The read difference is not real since the ex_get_partial_coord
       // function does 3 reads internally.
 
-      for (size_t d = 0; d < spatialDimension; d++) {
+      for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
         double *coord[3];
         coord[0] = coord[1] = coord[2] = nullptr;
         coord[d]                       = TOPTR(tmp);
@@ -800,7 +801,7 @@ namespace Iopx {
         size_t index = d;
         for (size_t i = 0; i < ioss_node_count(); i++) {
           ioss_data[index] = ioss_tmp[i];
-          index += spatialDimension;
+          index += m_decomposition.m_spatialDimension;
         }
       }
     }

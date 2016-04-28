@@ -130,7 +130,8 @@ bool Ioss::VariableType::create_named_suffix_field_type(const std::string &     
     return false;
   }
 
-  // Create the variable.  Note that the 'true' argument means Ioss will delete the pointer.
+  // Create the variable.  Note that the 'true' argument means Ioss will delete
+  // the pointer.
   auto var_type = new Ioss::NamedSuffixVariableType(low_name, count, true);
 
   for (size_t i = 0; i < count; i++) {
@@ -306,7 +307,8 @@ bool Ioss::VariableType::build_variable_type(const std::string &raw_type)
   }
 
   // Step 1:
-  // First, we split off the basename (REAL/INTEGER) from the component count ([2])
+  // First, we split off the basename (REAL/INTEGER) from the component count
+  // ([2])
   // and see if the basename is a valid variable type and the count is a
   // valid integer.
   size_t len      = type.length() + 1;

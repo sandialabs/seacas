@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
  *
@@ -32,24 +32,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/* cgisx11.c - linker specifiable driver routine for driver
- *   X.11 (x11)
- * Sandia National Laboratories, Div 2634
- * Sun Nov 19 12:02:52 MST 1989 - last date modified
- */
 
-#include "ifdefx.h"
-#include "mdcgi.h"
+#include "io_info.h"
 
-void cgix11_(); /* tell linker to load driver */
+// ========================================================================
 
-void cgisx11(void) /* make name external so linker will load file*/ {}
+namespace {
+  std::string codename;
+  std::string version = "1.0";
+} // namespace
 
-void cgi_def_ini(void)
+int main(int argc, char *argv[])
 {
-  anything *devid;
+#ifdef HAVE_MPI
+  MPI_Init(&argc, &argv);
+#endif
 
-  xcact_(cgix11_, &devid);
-  xcoon_(&devid);
+  Info::Interface interface;
+  interface.parse_options(argc, argv);
 
-} /* end cgi_def_ini */
+  std::string in_type = "exodusII";
+
+  codename   = argv[0];
+  size_t ind = codename.find_last_of('/', codename.size());
+  if (ind != std::string::npos) {
+    codename = codename.substr(ind + 1, codename.size());
+  }
+
+  Ioss::Init::Initializer io;
+#ifndef NO_XDMF_SUPPORT
+  Ioxf::Initializer ioxf;
+#endif
+
+  OUTPUT << "Input:    '" << interface.filename() << "', Type: " << interface.type() << '\n';
+  OUTPUT << '\n';
+
+  if (interface.list_groups()) {
+    Ioss::io_info_group_info(interface);
+  }
+  else {
+    Ioss::io_info_file_info(interface);
+  }
+
+  OUTPUT << "\n" << codename << " execution successful.\n";
+#ifdef HAVE_MPI
+  MPI_Finalize();
+#endif
+  return EXIT_SUCCESS;
+}
