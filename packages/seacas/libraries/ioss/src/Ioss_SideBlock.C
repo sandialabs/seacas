@@ -101,7 +101,8 @@ Ioss::Property Ioss::SideBlock::get_implicit_property(const std::string &my_name
 
 void Ioss::SideBlock::block_membership(std::vector<std::string> &block_members)
 {
-  // Simplest case.  If the surfaces are split by element block, then this will return non-null
+  // Simplest case.  If the surfaces are split by element block, then this will
+  // return non-null
   // and we are done.
   const Ioss::ElementBlock *eb = parent_element_block();
   if (eb != nullptr) {

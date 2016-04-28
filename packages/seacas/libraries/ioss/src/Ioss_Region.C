@@ -368,7 +368,8 @@ namespace Ioss {
     }
 
     if (current_state == STATE_DEFINE_MODEL) {
-      // Sort the element blocks based on the idOffset field, followed by name...
+      // Sort the element blocks based on the idOffset field, followed by
+      // name...
       if (!get_database()->is_input()) {
         std::sort(elementBlocks.begin(), elementBlocks.end(), lessOffset);
         std::sort(faceBlocks.begin(), faceBlocks.end(), lessOffset);
@@ -427,8 +428,8 @@ namespace Ioss {
         errmsg << "IOSS WARNING: Current time, " << time << ", is not greater than previous time, "
                << stateTimes[stateTimes.size() - 1] << " in\n"
                << get_database()->get_filename()
-               << ". This may cause problems in applications that assume monotonically increasing "
-                  "time values.\n";
+               << ". This may cause problems in applications that assume "
+                  "monotonically increasing time values.\n";
         IOSS_WARNING << errmsg.str();
         warning_output = true;
       }
@@ -441,10 +442,12 @@ namespace Ioss {
     }
     else {
 
-      // Keep only the last time in the vector... This is to avoid memory growth for output
-      // databases that write lots of steps (heartbeat, history).  There is no need to keep
-      // a list of times that have been written since they are just streamed out and never read
-      // We do sometimes need the list of times written to restart or results files though...
+      // Keep only the last time in the vector... This is to avoid
+      // memory growth for output databases that write lots of steps
+      // (heartbeat, history).  There is no need to keep a list of
+      // times that have been written since they are just streamed out
+      // and never read We do sometimes need the list of times written
+      // to restart or results files though...
       if (stateTimes.empty()) {
         stateTimes.push_back(time);
       }
@@ -906,7 +909,8 @@ namespace Ioss {
           errmsg << "\n\nERROR: Duplicate names detected.\n       The name '" << db_name
                  << "' was found for both " << old_ge->type_string() << " " << old_id << " and "
                  << ge->type_string() << " " << new_id
-                 << ".\n       Names must be unique over all types in a finite element model.\n\n";
+                 << ".\n       Names must be unique over all types in a finite "
+                    "element model.\n\n";
           IOSS_ERROR(errmsg);
         }
       }
@@ -929,7 +933,8 @@ namespace Ioss {
     // For use with the USTRING type in Sierra, create an uppercase
     // version of all aliases...
 
-    // Possible that 'db_name' is itself an alias, resolve down to "canonical" name...
+    // Possible that 'db_name' is itself an alias, resolve down to "canonical"
+    // name...
     std::string canon = db_name;
     if (db_name != alias) {
       canon = get_alias(db_name);
@@ -1551,14 +1556,16 @@ namespace Ioss {
           if (ge->property_exists(orig_topo_str())) {
             std::string oes = ge->get_property(orig_topo_str()).get_string();
 
-            // Set the new property (erase if already exists; original file trumps...)
+            // Set the new property (erase if already exists; original file
+            // trumps...)
             if (this_ge->property_exists(orig_topo_str())) {
               this_ge->property_erase(orig_topo_str());
             }
             this_ge->property_add(Property(orig_topo_str(), oes));
           }
 
-          // Specific to entity blocks. Transfer the "original_block_order" property.
+          // Specific to entity blocks. Transfer the "original_block_order"
+          // property.
           if (ge->property_exists(orig_block_order())) {
             int64_t offset = ge->get_property(orig_block_order()).get_int();
             if (this_ge->property_exists(orig_block_order())) {
@@ -1586,7 +1593,8 @@ namespace Ioss {
                 this_field.set_index(index);
               }
               else {
-                // If the field does not already exist, add it to the output node block
+                // If the field does not already exist, add it to the
+                // output node block
                 if (field.raw_count() != entity_count) {
                   Ioss::Field new_field(field);
                   new_field.reset_count(entity_count);

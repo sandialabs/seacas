@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
  *
@@ -32,24 +32,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/* cgisx11.c - linker specifiable driver routine for driver
- *   X.11 (x11)
- * Sandia National Laboratories, Div 2634
- * Sun Nov 19 12:02:52 MST 1989 - last date modified
- */
+#ifndef Ioss_io_info_h
+#define Ioss_io_info_h
 
-#include "ifdefx.h"
-#include "mdcgi.h"
+#include "info_interface.h"
 
-void cgix11_(); /* tell linker to load driver */
+#include <Ionit_Initializer.h>
+#include <Ioss_CodeTypes.h>
+#include <Ioss_SurfaceSplit.h>
+#include <Ioss_Utils.h>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string>
+#include <utility>
+#include <vector>
+#if !defined(NO_EXODUS_SUPPORT)
+#include <exodusII.h>
+#endif
 
-void cgisx11(void) /* make name external so linker will load file*/ {}
+#include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_VariableType.h"
 
-void cgi_def_ini(void)
-{
-  anything *devid;
+#include <cassert>
 
-  xcact_(cgix11_, &devid);
-  xcoon_(&devid);
+#include "info_interface.h"
 
-} /* end cgi_def_ini */
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
+
+#ifndef NO_XDMF_SUPPORT
+#include <xdmf/Ioxf_Initializer.h>
+#endif
+
+#define OUTPUT std::cout
+
+namespace Ioss {
+
+  // internal to io_info
+  void io_info_file_info(const Info::Interface &interface);
+  void io_info_group_info(Info::Interface &interface);
+
+  // for external calls
+  void io_info_set_db_properties(const Info::Interface &interface, Ioss::DatabaseIO *dbi);
+  void io_info_file_info(const Info::Interface &interface, Ioss::Region &region);
+}
+
+#endif

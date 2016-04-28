@@ -33,7 +33,7 @@ namespace {
     Iocgns::DecompositionDataBase *zdata = (Iocgns::DecompositionDataBase *)(data);
 
     *ierr = ZOLTAN_OK;
-    return zdata->spatialDimension;
+    return zdata->spatial_dimension();
   }
 
   int zoltan_num_obj(void *data, int *ierr)
@@ -124,7 +124,7 @@ namespace Iocgns {
       cgsize_t phys_dimension = 0;
       char     base_name[33];
       cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension);
-      spatialDimension = phys_dimension;
+      m_decomposition.m_spatialDimension = phys_dimension;
     }
 
     cg_nzones(filePtr, base, &num_zones);
@@ -198,16 +198,16 @@ namespace Iocgns {
       std::vector<double> z;
 
       get_file_node_coordinates(filePtr, 0, TOPTR(x));
-      if (spatialDimension > 1) {
+      if (m_decomposition.m_spatialDimension > 1) {
         y.resize(decomp_node_count());
         get_file_node_coordinates(filePtr, 1, TOPTR(y));
       }
-      if (spatialDimension > 2) {
+      if (m_decomposition.m_spatialDimension > 2) {
         z.resize(decomp_node_count());
         get_file_node_coordinates(filePtr, 2, TOPTR(z));
       }
 
-      m_decomposition.calculate_element_centroids(spatialDimension, x, y, z);
+      m_decomposition.calculate_element_centroids(x, y, z);
     }
 
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -699,14 +699,14 @@ namespace Iocgns {
       // * Other method uses 6*ioss_node_count extra memory; 3 reads;
       // and 1 communicate_node_data call.
       //
-      for (size_t d = 0; d < spatialDimension; d++) {
+      for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
         get_file_node_coordinates(filePtr, d, TOPTR(tmp));
         communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
 
         size_t index = d;
         for (size_t i = 0; i < ioss_node_count(); i++) {
           ioss_data[index] = ioss_tmp[i];
-          index += spatialDimension;
+          index += m_decomposition.m_spatialDimension;
         }
       }
     }

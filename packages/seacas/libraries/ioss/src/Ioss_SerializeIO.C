@@ -140,8 +140,8 @@ namespace Ioss {
   void SerializeIO::setGroupFactor(int factor)
   {
     if (s_rank != -1) {
-      IOSS_WARNING
-          << "Mesh I/O serialization group factor cannot be changed once serialized I/O has begun";
+      IOSS_WARNING << "Mesh I/O serialization group factor cannot be changed "
+                      "once serialized I/O has begun";
     }
     else {
       s_groupFactor = factor;

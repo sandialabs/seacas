@@ -176,7 +176,8 @@ void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
            << entity_size << ",\nbut the field '" << new_field.get_name()
            << "' which is being output on that entity has a size of " << field_size
            << "\non database '" << filename
-           << "'.\nThe sizes must match.  This is an application error that should be reported.";
+           << "'.\nThe sizes must match.  This is an application error that "
+              "should be reported.";
     IOSS_ERROR(errmsg);
   }
   fields.add(new_field);

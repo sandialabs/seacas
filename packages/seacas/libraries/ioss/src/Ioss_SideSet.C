@@ -133,7 +133,8 @@ int Ioss::SideSet::max_parametric_dimension() const
     }
   }
   if (max_par_dim == 0) {
-    // If the sideset is empty, return the maximum that the parametric dimension could be...
+    // If the sideset is empty, return the maximum that the parametric dimension
+    // could be...
     // Faces for 3D model; Edges for 2D model
     const Ioss::Region *reg = get_database()->get_region();
     max_par_dim             = reg->get_property("spatial_dimension").get_int() - 1;

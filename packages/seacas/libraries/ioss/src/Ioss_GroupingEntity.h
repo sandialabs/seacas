@@ -33,7 +33,6 @@
 #ifndef IOSS_Ioss_GroupingEntity_h
 #define IOSS_Ioss_GroupingEntity_h
 
-#include "Ioss_Property.h"        // for Property
 #include <Ioss_CodeTypes.h>       // for Complex
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
 #include <Ioss_EntityType.h>      // for EntityType

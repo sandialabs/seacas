@@ -53,7 +53,8 @@ namespace {
     // yet been determined...
     // Once the the_map has been determined to be sequential/not-sequential,
     // slot zero is set appropriately.
-    // 'sequential' is defined here to mean i==the_map[i] for all 0<i<the_map.size()
+    // 'sequential' is defined here to mean i==the_map[i] for all
+    // 0<i<the_map.size()
 
     // Check slot zero...
     if (the_map[0] == -1) {
@@ -135,7 +136,8 @@ namespace {
   void map_implicit_data_internal(INT *ids, size_t count, const Ioss::MapContainer &map,
                                   size_t offset)
   {
-    // Map the "local" ids (offset+1..offset+count) to the global ids. The local ids are implicit
+    // Map the "local" ids (offset+1..offset+count) to the global ids. The local
+    // ids are implicit
     if (is_sequential(map)) {
       for (size_t i = 0; i < count; i++) {
         ids[i] = offset + 1 + i;
