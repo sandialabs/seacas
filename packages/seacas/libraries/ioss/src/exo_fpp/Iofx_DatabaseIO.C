@@ -589,7 +589,8 @@ namespace Iofx {
     // Get QA records from database and add to qaRecords...
     int num_qa = ex_inquire_int(get_file_pointer(), EX_INQ_QA);
     if (num_qa > 0) {
-      struct qa_element {
+      struct qa_element
+      {
         char *qa_record[1][4];
       };
 

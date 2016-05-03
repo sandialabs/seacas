@@ -673,7 +673,7 @@ namespace Ioex {
             re_im = 2;
           }
           for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-	    std::string field_name = field.get_name();
+            std::string field_name = field.get_name();
             if (re_im == 2) {
               field_name += complex_suffix[complex_comp];
             }
@@ -1261,7 +1261,7 @@ namespace Ioex {
             re_im = 2;
           }
           for (int complex_comp = 0; complex_comp < re_im; complex_comp++) {
-	    std::string field_name = field.get_name();
+            std::string field_name = field.get_name();
             if (re_im == 2) {
               field_name += complex_suffix[complex_comp];
             }

@@ -270,6 +270,7 @@ namespace Iopx {
       if (ebs[b].num_entry == 0 && (std::strcmp(ebs[b].topology, "nullptr") == 0))
         el_blocks[b].topologyType = "sphere";
 
+      el_blocks[b].globalCount    = ebs[b].num_entry;
       el_blocks[b].nodesPerEntity = ebs[b].num_nodes_per_entry;
       el_blocks[b].attributeCount = ebs[b].num_attribute;
     }
@@ -786,7 +787,7 @@ namespace Iopx {
       // * NOTE: The read difference is not real since the ex_get_partial_coord
       // function does 3 reads internally.
 
-      for (size_t d = 0; d < m_decomposition.m_spatialDimension; d++) {
+      for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
         double *coord[3];
         coord[0] = coord[1] = coord[2] = nullptr;
         coord[d]                       = TOPTR(tmp);

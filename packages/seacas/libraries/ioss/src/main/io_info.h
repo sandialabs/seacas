@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
  *
@@ -32,52 +32,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef skinner_SystemInterface_h
-#define skinner_SystemInterface_h
+#ifndef Ioss_io_info_h
+#define Ioss_io_info_h
 
-#include "Ioss_GetLongOpt.h" // for GetLongOption
-#include <iosfwd>            // for ostream
-#include <string>            // for string
+#include "info_interface.h"
 
-namespace Skinner {
-  class Interface
-  {
-  public:
-    Interface();
-    ~Interface();
+#include <Ionit_Initializer.h>
+#include <Ioss_CodeTypes.h>
+#include <Ioss_SurfaceSplit.h>
+#include <Ioss_Utils.h>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string>
+#include <utility>
+#include <vector>
+#if !defined(NO_EXODUS_SUPPORT)
+#include <exodusII.h>
+#endif
 
-    bool parse_options(int argc, char **argv);
+#include "Ioss_CommSet.h"
+#include "Ioss_CoordinateFrame.h"
+#include "Ioss_DBUsage.h"
+#include "Ioss_DatabaseIO.h"
+#include "Ioss_EdgeBlock.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_ElementBlock.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_ElementTopology.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_Field.h"
+#include "Ioss_GroupingEntity.h"
+#include "Ioss_IOFactory.h"
+#include "Ioss_NodeBlock.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_Property.h"
+#include "Ioss_Region.h"
+#include "Ioss_SideBlock.h"
+#include "Ioss_SideSet.h"
+#include "Ioss_VariableType.h"
 
-    bool ints_64_bit() const { return ints64Bit_; }
+#include <cassert>
 
-    bool no_output() const { return noOutput_; }
+#include "info_interface.h"
 
-    std::string input_filename() const { return inputFile_; }
-    std::string output_filename() const { return outputFile_; }
-    std::string input_type() const { return inFiletype_; }
-    std::string output_type() const { return outFiletype_; }
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
 
-  private:
-    void enroll_options();
+#ifndef NO_XDMF_SUPPORT
+#include <xdmf/Ioxf_Initializer.h>
+#endif
 
-    Ioss::GetLongOption options_;
+#define OUTPUT std::cout
 
-    std::string inputFile_;
-    std::string outputFile_;
-    std::string inFiletype_;
-    std::string outFiletype_;
+namespace Ioss {
 
-  public:
-    std::string decomp_method;
-    std::string compose_output;
-    int         compression_level;
-    bool        shuffle;
-    bool        debug;
-    bool        statistics;
-    bool        ints64Bit_;
-    bool        netcdf4;
-    bool        ignoreFaceIds_;
-    bool        noOutput_;
-  };
+  // internal to io_info
+  void io_info_file_info(const Info::Interface &interface);
+  void io_info_group_info(Info::Interface &interface);
+
+  // for external calls
+  void io_info_set_db_properties(const Info::Interface &interface, Ioss::DatabaseIO *dbi);
+  void io_info_file_info(const Info::Interface &interface, Ioss::Region &region);
 }
+
 #endif
