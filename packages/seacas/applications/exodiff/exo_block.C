@@ -38,8 +38,6 @@
 #include <iostream>       // for operator<<, endl, ostream, etc
 #include <string>         // for string, char_traits
 
-using namespace std;
-
 template <typename INT>
 Exo_Block<INT>::Exo_Block() : Exo_Entity(), num_nodes_per_elmt(-1), conn(nullptr)
 {
@@ -82,7 +80,7 @@ template <typename INT> void Exo_Block<INT>::entity_load_params()
 
   if (err < 0) {
     std::cout << "Exo_Block<INT>::Load_Block_Params(): ERROR: Failed to get element"
-              << " block parameters!  Aborting..." << std::endl;
+              << " block parameters!  Aborting..." << '\n';
     exit(1);
   }
 
@@ -93,16 +91,16 @@ template <typename INT> void Exo_Block<INT>::entity_load_params()
 
   if (num_nodes_per_elmt < 0 || num_attr < 0) {
     std::cout << "Exo_Block<INT>::Load_Block_Params(): ERROR: Data appears corrupt for"
-              << " block " << id_ << "(id=" << id_ << ")!" << std::endl
-              << "\tnum elmts = " << numEntity << std::endl
-              << "\tnum nodes per elmt = " << num_nodes_per_elmt << std::endl
-              << "\tnum attributes = " << num_attr << std::endl
-              << " ... Aborting..." << std::endl;
+              << " block " << id_ << "(id=" << id_ << ")!" << '\n'
+              << "\tnum elmts = " << numEntity << '\n'
+              << "\tnum nodes per elmt = " << num_nodes_per_elmt << '\n'
+              << "\tnum attributes = " << num_attr << '\n'
+              << " ... Aborting..." << '\n';
     exit(1);
   }
 }
 
-template <typename INT> string Exo_Block<INT>::Load_Connectivity()
+template <typename INT> std::string Exo_Block<INT>::Load_Connectivity()
 {
   SMART_ASSERT(Check_State());
 
@@ -122,12 +120,12 @@ template <typename INT> string Exo_Block<INT>::Load_Connectivity()
     int err = ex_get_conn(fileId, EX_ELEM_BLOCK, id_, conn, nullptr, nullptr);
     if (err < 0) {
       std::cout << "Exo_Block<INT>::Load_Connectivity()  ERROR: Call to ex_get_conn"
-                << " returned error value!  Block id = " << id_ << std::endl;
-      std::cout << "Aborting..." << std::endl;
+                << " returned error value!  Block id = " << id_ << '\n';
+      std::cout << "Aborting..." << '\n';
       exit(1);
     }
     else if (err > 0) {
-      ostringstream oss;
+      std::ostringstream oss;
       oss << "WARNING:  Number " << err << " returned from call to ex_get_conn()";
       return oss.str();
     }
@@ -136,7 +134,7 @@ template <typename INT> string Exo_Block<INT>::Load_Connectivity()
   return "";
 }
 
-template <typename INT> string Exo_Block<INT>::Free_Connectivity()
+template <typename INT> std::string Exo_Block<INT>::Free_Connectivity()
 {
   SMART_ASSERT(Check_State());
   if (conn)
@@ -156,7 +154,7 @@ template <typename INT> const INT *Exo_Block<INT>::Connectivity(size_t elmt_inde
 }
 
 template <typename INT>
-string Exo_Block<INT>::Give_Connectivity(size_t &num_e, size_t &npe, INT *&recv_conn)
+std::string Exo_Block<INT>::Give_Connectivity(size_t &num_e, size_t &npe, INT *&recv_conn)
 {
   if (num_nodes_per_elmt < 0)
     return "ERROR:  Connectivity parameters have not been determined!";
@@ -184,24 +182,24 @@ template <typename INT> int Exo_Block<INT>::Check_State() const
 
 template <typename INT> void Exo_Block<INT>::Display_Stats(std::ostream &s) const
 {
-  s << "Exo_Block<INT>::Display()  block id = " << id_ << std::endl
-    << "                  element type = " << elmt_type << std::endl
-    << "               number of elmts = " << numEntity << std::endl
-    << "      number of nodes per elmt = " << num_nodes_per_elmt << std::endl
-    << "          number of attributes = " << attr_count() << std::endl
-    << "           number of variables = " << var_count() << std::endl;
+  s << "Exo_Block<INT>::Display()  block id = " << id_ << '\n'
+    << "                  element type = " << elmt_type << '\n'
+    << "               number of elmts = " << numEntity << '\n'
+    << "      number of nodes per elmt = " << num_nodes_per_elmt << '\n'
+    << "          number of attributes = " << attr_count() << '\n'
+    << "           number of variables = " << var_count() << '\n';
 }
 
 template <typename INT> void Exo_Block<INT>::Display(std::ostream &s) const
 {
   SMART_ASSERT(Check_State());
 
-  s << "Exo_Block<INT>::Display()  block id = " << id_ << std::endl
-    << "                  element type = " << elmt_type << std::endl
-    << "               number of elmts = " << numEntity << std::endl
-    << "      number of nodes per elmt = " << num_nodes_per_elmt << std::endl
-    << "          number of attributes = " << attr_count() << std::endl
-    << "           number of variables = " << var_count() << std::endl;
+  s << "Exo_Block<INT>::Display()  block id = " << id_ << '\n'
+    << "                  element type = " << elmt_type << '\n'
+    << "               number of elmts = " << numEntity << '\n'
+    << "      number of nodes per elmt = " << num_nodes_per_elmt << '\n'
+    << "          number of attributes = " << attr_count() << '\n'
+    << "           number of variables = " << var_count() << '\n';
 
   if (conn) {
     size_t index = 0;
@@ -212,7 +210,7 @@ template <typename INT> void Exo_Block<INT>::Display(std::ostream &s) const
       s << "(" << (e + 1) << ") ";
       for (int n = 0; n < num_nodes_per_elmt; ++n)
         s << conn[index++] << " ";
-      s << std::endl;
+      s << '\n';
     }
   }
 }
