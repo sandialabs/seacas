@@ -32,13 +32,15 @@
 #ifndef IOSS_Ioex_SuperElement_h
 #define IOSS_Ioex_SuperElement_h
 
-#include <Ioss_GroupingEntity.h>        // for GroupingEntity
-#include <stddef.h>                     // for size_t
-#include <stdint.h>                     // for int64_t
-#include <string>                       // for string
-#include "Ioss_EntityType.h"            // for EntityType, etc
-#include "Ioss_Property.h"              // for Property
-namespace Ioss { class Field; }
+#include "Ioss_EntityType.h"     // for EntityType, etc
+#include "Ioss_Property.h"       // for Property
+#include <Ioss_GroupingEntity.h> // for GroupingEntity
+#include <stddef.h>              // for size_t
+#include <stdint.h>              // for int64_t
+#include <string>                // for string
+namespace Ioss {
+  class Field;
+}
 
 namespace Ioss {
   class Property;
@@ -48,32 +50,30 @@ namespace Ioex {
   class SuperElement : public Ioss::GroupingEntity
   {
   public:
-    SuperElement(std::string filename, const std::string& my_name);
+    SuperElement(std::string filename, const std::string &my_name);
     ~SuperElement();
 
-    std::string type_string() const {return "SuperElement";}
-    std::string short_type_string() const {return "superelement";}
-    Ioss::EntityType type() const {return Ioss::SUPERELEMENT;}
+    std::string      type_string() const { return "SuperElement"; }
+    std::string      short_type_string() const { return "superelement"; }
+    Ioss::EntityType type() const { return Ioss::SUPERELEMENT; }
 
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
-    Ioss::Property get_implicit_property(const std::string& the_name) const;
+    Ioss::Property get_implicit_property(const std::string &the_name) const;
 
   protected:
-    int64_t internal_get_field_data(const Ioss::Field& field,
-                                void *data, size_t data_size) const;
+    int64_t internal_get_field_data(const Ioss::Field &field, void *data, size_t data_size) const;
 
-    int64_t internal_put_field_data(const Ioss::Field& field,
-                                void *data, size_t data_size) const;
+    int64_t internal_put_field_data(const Ioss::Field &field, void *data, size_t data_size) const;
 
   private:
     std::string fileName;
-    size_t numDOF;
-    size_t num_nodes;
-    size_t numEIG;
-    size_t num_dim;
-    int filePtr;
+    size_t      numDOF;
+    size_t      num_nodes;
+    size_t      numEIG;
+    size_t      num_dim;
+    int         filePtr;
   };
 }
 #endif
