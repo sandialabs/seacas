@@ -1,5 +1,19 @@
 #! /usr/bin/env sh
 
+CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
+
+### Set to ON for CUDA compile; otherwise OFF (default)
+CUDA="OFF"
+
+if [ "$CUDA" == "ON" ]
+then
+  export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
+  CUDA_SYMBOLS="-DTPL_ENABLE_CUDA:Bool=ON -DCUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH}"
+else
+  unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
+  CUDA_SYMBOLS=""
+fi
+
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_CXX_FLAGS="-Wall -pedantic -pthread" \
@@ -9,6 +23,8 @@ cmake \
   -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
   -DSEACASProj_ENABLE_TESTS:BOOL=ON \
   -DSEACASProj_USE_GNUINSTALLDIRS:BOOL=ON \
+  -DSEACASProj_ENABLE_OpenMP:Bool=ON \
+  ${CUDA_SYMBOLS} \
   -DKokkos_ENABLE_Pthread:BOOL=ON \
   -DTPL_ENABLE_CGNS:BOOL=ON \
   -DTPL_ENABLE_Matio:BOOL=ON \
