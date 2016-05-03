@@ -34,6 +34,8 @@
 #define IOSS_Ionit_Initializer_h
 
 namespace Ioss {
+  /** \brief A special namespace for a class used to initialize Ioss.
+   */
   namespace Init {
     class Initializer
     {

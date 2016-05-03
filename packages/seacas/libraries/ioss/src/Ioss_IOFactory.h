@@ -42,6 +42,8 @@
 #include <map>
 #include <vector>
 
+/** \brief The main namespace for the Ioss library.
+ */
 namespace Ioss {
 
   class IOFactory;
