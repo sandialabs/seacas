@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2015 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
  * certain rights in this software
  *
@@ -32,52 +32,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef skinner_SystemInterface_h
-#define skinner_SystemInterface_h
 
-#include "Ioss_GetLongOpt.h" // for GetLongOption
-#include <iosfwd>            // for ostream
-#include <string>            // for string
+#include "io_info.h"
 
-namespace Skinner {
-  class Interface
-  {
-  public:
-    Interface();
-    ~Interface();
+// ========================================================================
 
-    bool parse_options(int argc, char **argv);
+namespace {
+  std::string codename;
+  std::string version = "1.0";
+} // namespace
 
-    bool ints_64_bit() const { return ints64Bit_; }
-
-    bool no_output() const { return noOutput_; }
-
-    std::string input_filename() const { return inputFile_; }
-    std::string output_filename() const { return outputFile_; }
-    std::string input_type() const { return inFiletype_; }
-    std::string output_type() const { return outFiletype_; }
-
-  private:
-    void enroll_options();
-
-    Ioss::GetLongOption options_;
-
-    std::string inputFile_;
-    std::string outputFile_;
-    std::string inFiletype_;
-    std::string outFiletype_;
-
-  public:
-    std::string decomp_method;
-    std::string compose_output;
-    int         compression_level;
-    bool        shuffle;
-    bool        debug;
-    bool        statistics;
-    bool        ints64Bit_;
-    bool        netcdf4;
-    bool        ignoreFaceIds_;
-    bool        noOutput_;
-  };
-}
+int main(int argc, char *argv[])
+{
+#ifdef HAVE_MPI
+  MPI_Init(&argc, &argv);
 #endif
+
+  Info::Interface interface;
+  interface.parse_options(argc, argv);
+
+  std::string in_type = "exodusII";
+
+  codename   = argv[0];
+  size_t ind = codename.find_last_of('/', codename.size());
+  if (ind != std::string::npos) {
+    codename = codename.substr(ind + 1, codename.size());
+  }
+
+  Ioss::Init::Initializer io;
+#ifndef NO_XDMF_SUPPORT
+  Ioxf::Initializer ioxf;
+#endif
+
+  OUTPUT << "Input:    '" << interface.filename() << "', Type: " << interface.type() << '\n';
+  OUTPUT << '\n';
+
+  if (interface.list_groups()) {
+    Ioss::io_info_group_info(interface);
+  }
+  else {
+    Ioss::io_info_file_info(interface);
+  }
+
+  OUTPUT << "\n" << codename << " execution successful.\n";
+#ifdef HAVE_MPI
+  MPI_Finalize();
+#endif
+  return EXIT_SUCCESS;
+}

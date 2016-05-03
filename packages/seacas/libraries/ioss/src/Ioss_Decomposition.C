@@ -41,7 +41,7 @@
 #include <algorithm>
 #include <assert.h>
 
-#if defined(USE_CGNS)
+#if !defined(NO_CGNS_SUPPORT)
 #include <cgns/Iocgns_IOFactory.h>
 #endif
 
@@ -115,10 +115,6 @@ namespace {
       exit(EXIT_FAILURE);
     }
 
-    if (my_processor == 0) {
-      std::cout << "\nUsing decomposition method '" << method << "' on " << processor_count
-                << " processors.\n\n";
-    }
     return method;
   }
 
@@ -134,7 +130,10 @@ namespace {
 
     int common_nodes = INT_MAX;
 
-    for (auto block : el_blocks) {
+    for (const auto block : el_blocks) {
+      if (block.global_count() == 0) {
+        continue;
+      }
       std::string            type     = Ioss::Utils::lowercase(block.topologyType);
       Ioss::ElementTopology *topology = Ioss::ElementTopology::factory(type, false);
       if (topology != nullptr) {
@@ -296,6 +295,10 @@ namespace Ioss {
 #endif
       std::vector<BlockDecompositionData> &element_blocks)
   {
+    if (m_processor == 0) {
+      std::cout << "\nUsing decomposition method '" << m_method << "' on "
+		<< m_processorCount << " processors.\n\n";
+    }
 #if !defined(NO_PARMETIS_SUPPORT)
     if (m_method == "KWAY" || m_method == "GEOM_KWAY" || m_method == "KWAY_GEOM" ||
         m_method == "METIS_SFC") {
@@ -1401,15 +1404,6 @@ namespace Ioss {
     }
   }
 
-#if defined(USE_CGNS)
-  template void Decomposition<int64_t>::communicate_block_data(cgsize_t *file_data,
-                                                               int64_t * ioss_data,
-                                                               const BlockDecompositionData &block,
-                                                               size_t comp_count) const;
-  template void Decomposition<int>::communicate_block_data(cgsize_t *file_data, int *ioss_data,
-                                                           const BlockDecompositionData &block,
-                                                           size_t comp_count) const;
-#endif
   template void Decomposition<int64_t>::communicate_block_data(int *file_data, int64_t *ioss_data,
                                                                const BlockDecompositionData &block,
                                                                size_t comp_count) const;
