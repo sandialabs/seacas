@@ -96,7 +96,7 @@ matlab: baseline.g
 	$(EXODIFF) -stat baseline.g baseline.exo
 
 python: baseline.g
-	PYTHONPATH=../lib python testExo.py
+	PYTHONPATH=../lib:$$PYTHONPATH python testExo.py
 	$(EXODIFF) -stat -pedantic baseline.g baseline_numpy_copy.e
 	$(EXODIFF) -stat -pedantic baseline.g baseline_ctype_copy.e
 
