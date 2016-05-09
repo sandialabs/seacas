@@ -127,6 +127,19 @@ namespace {
 } // namespace
 
 namespace Ioss {
+
+  /** \brief Constructor reads in all metadata from disk.
+   *
+   *  This constructor connects this region to the database, opens the
+   *  underlying file, reads all the metadata in the file into Region
+   *  and its subentities, and closes the underlying file. Region properties,
+   *  such as spatial_dimension, element_block_count, element_count, etc, are
+   *  also added to the Region's property manager.
+   *
+   *  \param[in] iodatabase The name of the database associated with the Region.
+   *  \param[in] myname The name of the Region.
+   *
+   */
   Region::Region(DatabaseIO *iodatabase, const std::string &my_name)
       : GroupingEntity(iodatabase, my_name, 1), currentState(-1), stateCount(0),
         modelDefined(false), transientDefined(false)

@@ -48,35 +48,44 @@
 
 namespace Ioss {
 
-  // Base class for all 'grouping' entities. The following derived classes
-  // are typical:
-  // -- NodeList  -- grouping of nodes (0d topology)
-  // -- EdgeList  -- grouping of edges (1d topology)
-  // -- FaceList  -- grouping of faces (2d topology) [Surface]
-  //
-  // Similarly, there is:
-  // -- NodeBlock -- grouping of 'similar' nodes (same degree of freedom, ...)
-  // -- ElementBlock -- grouping of 'similar' elements (same element topology,
-  //                    attributes, ...)
-  //    0d, 1d, 2d, 3d topology possible -- e.g., sphere, bar, quad, hex
-  //
-  // A Region is also a grouping entity, except that its list of subentites
-  // are other GroupingEntities. That is, it maintains a list of NodeBlocks,
-  // ElementBlocks, NodeLists, CommLists and Surfaces. [Similar to the
-  // "Composite Patter" in Design Patterns]  All interface to GroupingEntities
-  // is through the Region class; clients of the IO subsystem have no direct
-  // access to the underlying GroupingEntities (other than the Region).
-  //
-  // Each GroupingEntity contains:
-  // -- name
-  // -- MeshEntities of the specified topological dimension
-  // -- Optional attributes, either global (applied to the groupingentity), or
-  //    unique value(s) to be applied to each subentity.
-  // -- Data items
-  //
-  //========================================================================
   class EntityBlock;
 
+  /** \brief Base class for all 'grouping' entities.
+   * The following derived classes are typical:
+   *
+   * -- NodeSet  -- grouping of nodes (0d topology)
+   *
+   * -- EdgeSet  -- grouping of edges (1d topology)
+   *
+   * -- FaceSet  -- grouping of faces (2d topology) [Surface]
+   *
+   * Similarly, there is:
+   *
+   * -- NodeBlock -- grouping of 'similar' nodes (same degree of freedom, ...)
+   *
+   * -- ElementBlock -- grouping of 'similar' elements (same element topology,
+   *                    attributes, ...)
+   *    0d, 1d, 2d, 3d topology possible -- e.g., sphere, bar, quad, hex
+   *
+   * A Region is also a grouping entity, except that its list of subentites
+   * are other GroupingEntities. That is, it maintains a list of NodeBlocks,
+   * ElementBlocks, NodeLists, CommLists and Surfaces. [Similar to the
+   * "Composite Patter" in Design Patterns]  All interface to GroupingEntities
+   * is through the Region class; clients of the IO subsystem have no direct
+   * access to the underlying GroupingEntities (other than the Region).
+   *
+   * Each GroupingEntity contains:
+   *
+   * -- name
+   *
+   * -- MeshEntities of the specified topological dimension
+   *
+   * -- Optional attributes, either global (applied to the groupingentity), or
+   *    unique value(s) to be applied to each subentity.
+   *
+   * -- Data items
+   *
+   */
   class GroupingEntity
   {
   public:
@@ -95,18 +104,27 @@ namespace Ioss {
     void set_database(DatabaseIO *io_database);
     virtual void delete_database();
 
-    //: Return name of entity.  This short-circuits the process of
-    //  getting the name via the property.  Returns the same information
-    //  as: entity->get_property("name").get_string()
+    /** \brief Get name of entity.
+     *
+     *  This short-circuits the process of getting the name via the property.
+     *  \returns The same information as: entity->get_property("name").get_string()
+     */
     const std::string &name() const { return entityName; }
     void set_name(const std::string &new_name) { entityName = new_name; }
 
-    //: Return a generated name based on the type of the entity and the id
-    //  For example, element block 10 would return "block_10"
-    //  This is the default name if no name is assigned in the mesh database.
+    /** \brief Get a generated name based on the type of the entity and the id.
+     *
+     *  For example, element block 10 would return "block_10"
+     *  This is the default name if no name is assigned in the mesh database.
+     *  \returns The generic name.
+     */
     std::string generic_name() const;
 
-    //: Returns true if 'name' is an alias for this entity.
+    /** Determine whether a name is an alias for this entity.
+     *
+     * \param[in] my_name Determine whether this name is an alias for this entity.
+     * \returns True if input name is an alias for this entity.
+     */
     bool is_alias(const std::string &my_name) const;
 
     //: Return list of blocks that the entities in this GroupingEntity "touch"
@@ -118,7 +136,17 @@ namespace Ioss {
     virtual void block_membership(std::vector<std::string> &block_members) {}
 
     std::string         get_filename() const;
+
+    /** \brief Get the name of the particular type of entity.
+     *
+     *  \returns The name of the particular type of entity.
+     */
     virtual std::string type_string() const       = 0;
+
+    /** \brief Get a short name of the particular type of entity.
+     *
+     *  \returns The short name of the particular type of entity.
+     */
     virtual std::string short_type_string() const = 0;
     virtual EntityType  type() const              = 0;
 

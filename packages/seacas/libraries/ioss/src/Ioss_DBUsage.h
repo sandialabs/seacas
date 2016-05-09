@@ -35,6 +35,8 @@
 
 namespace Ioss {
 
+  /** \brief Specifies how an Ioss::DatabaseIO object will be used.
+   */
   enum DatabaseUsage {
     WRITE_RESTART   = 1,
     READ_RESTART    = 2,
