@@ -37,6 +37,13 @@ namespace Ioss {
   /** \brief A special namespace for a class used to initialize Ioss.
    */
   namespace Init {
+    /** \brief Initialization of the Ioss library.
+     *
+     *  An object of this type must be created before using any other
+     *  functions or methods in the Ioss library. If any input or output
+     *  database type is xdmf, then a separate xdmf initializer object
+     *  must additionally be created.
+     */
     class Initializer
     {
     public:

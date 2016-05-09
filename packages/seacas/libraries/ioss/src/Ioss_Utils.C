@@ -453,6 +453,11 @@ int Ioss::Utils::case_strcmp(const std::string &s1, const std::string &s2)
   }
 }
 
+/** \brief Convert a string to upper case.
+ *
+ *  \param[in] name The string to convert.
+ *  \returns The converted string.
+ */
 std::string Ioss::Utils::uppercase(const std::string &name)
 {
   std::string s(name);
@@ -460,6 +465,11 @@ std::string Ioss::Utils::uppercase(const std::string &name)
   return s;
 }
 
+/** \brief Convert a string to lower case.
+ *
+ *  \param[in] name The string to convert.
+ *  \returns The converted string.
+ */
 std::string Ioss::Utils::lowercase(const std::string &name)
 {
   std::string s(name);
@@ -467,9 +477,15 @@ std::string Ioss::Utils::lowercase(const std::string &name)
   return s;
 }
 
+/** \brief Convert a string to lower case, and convert spaces to '_'.
+ *
+ *  The conversion is performed in place.
+ *
+ *  \param[in,out] On input, the string to convert. On output, the converted string.
+ *
+ */
 void Ioss::Utils::fixup_name(char *name)
 {
-  // Convert 'name' to lowercase and convert spaces to '_'
   assert(name != nullptr);
 
   size_t len = std::strlen(name);
@@ -481,9 +497,15 @@ void Ioss::Utils::fixup_name(char *name)
   }
 }
 
+/** \brief Convert a string to lower case, and convert spaces to '_'.
+ *
+ *  The conversion is performed in place.
+ *
+ *  \param[in,out] On input, the string to convert. On output, the converted string.
+ *
+ */
 void Ioss::Utils::fixup_name(std::string &name)
 {
-  // Convert 'name' to lowercase and convert spaces to '_'
   name = Ioss::Utils::lowercase(name);
 
   size_t len = name.length();
@@ -521,31 +543,32 @@ namespace {
   }
 } // namespace
 
+
+/** \brief Tries to shorted long variable names to an acceptable length, and converts to lowercase and spaces to '_'
+ *
+ *   This routine tries to shorten long variable names to an acceptable
+ *   length ('max_var_len' characters max).  If the name is already less than
+ *   this length, it is returned unchanged except for the appending of the hash...
+ *
+ *   Since there is a (good) chance that two shortened names will match,
+ *   a 2-letter 'hash' code is appended to the end of the variable
+ *   name. This can be treated as a 2-digit base 26 number
+ *
+ *   So, we shorten the name to a maximum of 'max_var_len-3' characters and
+ *   append a dot ('.') and 2 character hash.
+ *
+ *   But, we also have to deal with the suffices that Ioex_DatabaseIO
+ *   appends on non-scalar values.  For the 'standard' types, the
+ *   maximum suffix is 4 characters (underscore + 1, 2, or 3 characters).
+ *   So...shorten name to maximum of 'max_var_len-3-{3|4|n}' characters
+ *   depending on the number of components.
+ *
+ *   This function also converts name to lowercase and converts spaces
+ *   to '_'.
+ */
 std::string Ioss::Utils::variable_name_kluge(const std::string &name, size_t component_count,
                                              size_t copies, size_t max_var_len)
 {
-  // This routine tries to shorten long variable names to an acceptable
-  // length ('max_var_len' characters max).  If the name is already less than
-  // this
-  // length, it is returned unchanged except for the appending of the hash...
-  //
-  // Since there is a (good) chance that two shortened names will match,
-  // a 2-letter 'hash' code is appended to the end of the variable
-  // name. This can be treated as a 2-digit base 26 number
-  //
-  // So, we shorten the name to a maximum of 'max_var_len-3' characters and
-  // append a
-  // dot ('.') and 2 character hash.
-  //
-  // But, we also have to deal with the suffices that Ioex_DatabaseIO
-  // appends on non-scalar values.  For the 'standard' types, the
-  // maximum suffix is 4 characters (underscore + 1, 2, or 3 characters).
-  // So...shorten name to maximum of 'max_var_len-3-{3|4|n}' characters
-  // depending on the
-  // number of components.
-  //
-  // This function alo converts name to lowercase and converts spaces
-  // to '_'
 
   // Width = 'max_var_len'.
   // Reserve space for suffix '_00...'
