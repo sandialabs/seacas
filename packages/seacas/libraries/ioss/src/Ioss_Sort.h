@@ -65,22 +65,22 @@ namespace {
   template <typename INT> size_t median3(INT v[], size_t left, size_t right)
   {
     size_t center = (left + right) / 2;
-    size_t pl = left;
-    size_t pm = center;
-    size_t pr = right;
-    
-    if (right-left > 40) {
-      size_t s = (right-left)/8;
-      order3(v, left,      left+s,  left+2*s);
-      order3(v, center-s,  center,  center+s);
-      order3(v, right-2*s, right-s, right);
+    size_t pl     = left;
+    size_t pm     = center;
+    size_t pr     = right;
+
+    if (right - left > 40) {
+      size_t s = (right - left) / 8;
+      order3(v, left, left + s, left + 2 * s);
+      order3(v, center - s, center, center + s);
+      order3(v, right - 2 * s, right - s, right);
 
       // Now set up to get median of the 3 medians...
-      pl = left+s;
+      pl = left + s;
       pm = center;
-      pr = right-s;
+      pr = right - s;
     }
-    order3(v, pl, pm, pr); 
+    order3(v, pl, pm, pr);
 
     SWAP(v, center, right - 1);
     return right - 1;
