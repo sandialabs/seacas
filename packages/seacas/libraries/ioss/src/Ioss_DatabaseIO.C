@@ -245,6 +245,10 @@ namespace Ioss {
     return 8;
   }
 
+  /** \brief Set the number of bytes used to represent an integer.
+   *
+   *  \param[in] The number of bytes. This is 4 for INT32 or 8 for INT64.
+   */
   void DatabaseIO::set_int_byte_size_api(DataSize size) const
   {
     dbIntSizeAPI = size; // mutable
@@ -260,6 +264,11 @@ namespace Ioss {
     return suffix;
   }
 
+  /** \brief Set the character used to separate a field suffix from the field basename
+   *         when recognizing vector, tensor fields.
+   *
+   *  \param[in] separator The separator character.
+   */
   void DatabaseIO::set_field_separator(const char separator)
   {
     if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {

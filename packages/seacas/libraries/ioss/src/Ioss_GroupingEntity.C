@@ -55,6 +55,13 @@ Ioss::GroupingEntity::GroupingEntity()
 {
 }
 
+/** \brief Base class constructor adds "name" and "entity_count" properties to the entity.
+ *
+ *  \param[in] io_database The database associated with the entity.
+ *  \param[in] my_name The entity name.
+ *  \param[in] entity_count The number of subentities in the entity.
+ *
+ */
 Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database, const std::string &my_name,
                                      int64_t entity_count)
     : entityCount(entity_count), entityName(my_name), database_(io_database),
@@ -113,6 +120,10 @@ Ioss::DatabaseIO *Ioss::GroupingEntity::get_database() const
   return database_;
 }
 
+/** \brief Get the file name associated with the database containing this entity.
+ *
+ *  \returns The file name.
+ */
 std::string Ioss::GroupingEntity::get_filename() const
 {
   // Ok for database_ to be nullptr at this point.

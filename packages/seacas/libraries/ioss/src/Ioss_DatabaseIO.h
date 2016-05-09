@@ -100,14 +100,22 @@ namespace Ioss {
   // Contains (parent_element, side) topology pairs
   typedef std::vector<std::pair<const ElementTopology *, const ElementTopology *>> TopoContainer;
 
+
+  /** \brief An input or output Database.
+   *
+   */
   class DatabaseIO
   {
   public:
-    // Check to see if database state is ok...
-    // If 'write_message' true, then output a warning message indicating the problem.
-    // If 'error_message' non-null, then put the warning message into the string and return it.
-    // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
-    //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
+    /** \brief Check to see if database state is OK.
+     *
+     *  \param[in] write_message If true, then output a warning message indicating the problem.
+     *  \param[in,out] error_message If non-null on input, then a warning message on output.
+     *  \param[in,out] bad_count If non-null on input, then count of the number of processors
+     *                 where the file does not exist on output. If ok returns false, but *bad_count==0,
+     *                 then the routine does not support this argument.
+     *  \returns True if database state is OK. False if not.
+     */
     virtual bool ok(bool write_message = false, std::string *error_message = nullptr,
                     int *bad_count = nullptr) const
     {
@@ -132,8 +140,22 @@ namespace Ioss {
     // Typically, eliminate the maps...
     virtual void release_memory() {}
 
+    /** \brief Get the file name associated with the database.
+     *
+     *  \returns The database file name.
+     */
     std::string         get_filename() const { return DBFilename; }
+
+    /** \brief Determine whether the database is an input database.
+     *
+     *  \returns True if the database is an input database. False otherwise.
+     */
     bool                is_input() const { return isInput; }
+
+    /** \brief Get the Ioss::DatabaseUsage type of the database.
+     *
+     *  \returns The Ioss::DatabaseUsage type of the database.
+     */
     Ioss::DatabaseUsage usage() const { return dbUsage; }
 
     virtual bool needs_shared_node_information() const { return false; }
@@ -150,19 +172,29 @@ namespace Ioss {
     virtual void openDatabase() const {}
     virtual void closeDatabase() const {}
 
-    //! If a database type supports groups and if the database
-    // contains groups, open the specified group.  If the group_name
-    // begins with '/', it specifies the absolute path name from the root with '/'
-    // separating groups.  Otherwise, the group_name
-    // specifies a child group of the currently active group.  If
-    // group_name == "/" then the root group is opened.
+    /** \brief If a database type supports groups and if the database
+     *         contains groups, open the specified group.
+     *
+     * If the group_name begins with '/', it specifies the absolute path
+     * name from the root with '/' separating groups.  Otherwise, the
+     * group_name specifies a child group of the currently active group.
+     * If group_name == "/" then the root group is opened.
+     *
+     * \param[in] group_name The name of the group to open.
+     * \returns True if successful.
+     */
     virtual bool open_group(const std::string &group_name) { return false; }
 
-    //! If a database type supports groups, create the specified
-    // group as a child of the current group. The name of the
-    // group must not contain a '/' character. If the command
-    // is successful, then the group will be the active group
-    // for all subsequent writes to the database.
+    /** \brief If a database type supports groups, create the specified
+     *        group as a child of the current group.
+     *
+     * The name of the group must not contain a '/' character.
+     * If the command is successful, then the group will be the
+     * active group for all subsequent writes to the database.
+     *
+     * \param[in] group_name The name of the subgroup to create.
+     * \returns True if successful.
+     */
     virtual bool create_subgroup(const std::string &group_name) { return false; }
 
     virtual bool begin(Ioss::State state) = 0;
@@ -215,12 +247,24 @@ namespace Ioss {
       return retval;
     }
 
+    /** Determine whether application will make field data get/put calls parallel consistently.
+     *
+     *  True is default and required for parallel-io databases.
+     *  Even if false, metadata operations must be called by all processors.
+     *
+     *  \returns True if application will make field data get/put calls parallel consistently.
+     *
+     */
     bool is_parallel_consistent() const { return isParallelConsistent; }
     void set_parallel_consistency(bool on_off) { isParallelConsistent = on_off; }
 
     bool get_use_generic_canonical_name() const { return useGenericCanonicalName; }
     void set_use_generic_canonical_name(bool yes_no) { useGenericCanonicalName = yes_no; }
 
+    /** \brief Get the length of the longest name in the database file.
+     *
+     *  \returns The length, or 0 for unlimited.
+     */
     virtual int maximum_symbol_length() const { return 0; } // Default is unlimited...
     virtual void
     set_maximum_symbol_length(int /* requested_symbol_size */){}; // Default does nothing...
@@ -231,6 +275,12 @@ namespace Ioss {
     {
       lowerCaseVariableNames = true_false;
     }
+
+    /* \brief Set the method used to split sidesets into homogenous blocks.
+     *
+     *  \param[in] split_type The desired method.
+     *
+     */
     void set_surface_split_type(Ioss::SurfaceSplitType split_type) { splitType = split_type; }
     Ioss::SurfaceSplitType get_surface_split_type() const { return splitType; }
 
@@ -305,7 +355,11 @@ namespace Ioss {
 
     const Ioss::ParallelUtils &util() const { return util_; }
 
-    int parallel_rank() const { return myProcessor; } /* Return processor that this mesh db is on */
+    /** \brief Get the processor that this mesh database is on.
+     *
+     *  \returns The processor that this mesh database is on.
+     */
+    int parallel_rank() const { return myProcessor; }
 
   protected:
     DatabaseIO(Region *region, std::string filename, Ioss::DatabaseUsage db_usage,
