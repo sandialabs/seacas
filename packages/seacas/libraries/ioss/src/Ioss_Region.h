@@ -107,6 +107,13 @@ namespace Ioss {
 
   using AliasMap = std::map<std::string, std::string, std::less<std::string>>;
 
+  /** \brief A grouping entity that contains other grouping entities.
+   *
+   * Maintains a list of NodeBlocks, ElementBlocks, NodeLists, CommLists and Surfaces.
+   * [Similar to the "Composite Pattern" in Design Patterns]  All interface to
+   * GroupingEntities is through the Region class; clients of the IO subsystem have no direct
+   * access to the underlying GroupingEntities (other than the Region).
+   */
   class Region : public GroupingEntity
   {
   public:
