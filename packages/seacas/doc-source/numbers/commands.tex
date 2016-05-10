@@ -117,12 +117,15 @@ Section~\ref{sec:slocate}.
 }
 }
 
-\cmddef{\cmdverb{CAVITY  } 
+\cmddef{\cmdverb{CAVITY} 
    \param{sset$_{1}$}, \param{sset$_{2}$}, \ldots, \param{sset$_n$},
    \optparam{\cmd{CENTER}},
    \optparam{xcen}, 
    \optparam{ycen}, 
    \optparam{zcen}
+\cmdnext \cmdverb{CAVITY} 
+   \param{sset$_{1}$}, \param{sset$_{2}$}, \ldots, \param{sset$_n$},
+   \optparam{\cmd{CENTROID}}
 } {
 \cmd{CAVITY} calculates the volume of a cavity defined by the element
 sidesets \param{sset$_{1}$} to \param{sset$_n$}.  If the literal string
@@ -131,6 +134,11 @@ center point in determining the cavity volume. The cavity volume
 algorithm, the effect of the center point, the resulting output, and the
 rules for defining a valid cavity are described in
 Section~\ref{sec:cavity}. 
+
+If the literal string \cmd{CENTROID} is entered, the code will
+calculate the centroid of the cavity and use that as the center point
+for determining the cavity volume. Note that this should only be used
+for a fully enclosed cavity.
 
 If the \cmd{EXODUS} switch is \cmd{ON}\footnote{See command
 \cmd{EXODUS}}, the cavity volume, the total change in volume, the volume
