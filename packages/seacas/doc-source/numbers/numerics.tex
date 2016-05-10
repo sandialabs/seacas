@@ -294,7 +294,7 @@ points defining the triangle and point {\sf0} is the apex or center
 point. A similar process is used for three-dimensional cavities except
 that pentahedral volumes are calculated instead of triangular areas. The
 volume $V$ of a pentahedron with the apex at the point $(x_c,y_c,z_c)$
-and the base formed by a boundary segment is~\cite{dpfeigen}: 
+and the base formed by a boundary segment is~\cite{flanagan}: 
 \begin{eqnarray}
 V = &\frac{1}{12}&\{
  ((2y_c - y_3) z_{42} + y_2 (z_{c3} + z_{c4}) - y_4 (z_{c3} + z_{c2})) x_1 \nonumber \\
@@ -459,7 +459,7 @@ surface and the number of nodes on the surface are output.
 
 The volume $V_P^i$ of the three-dimensional pentahedron formed by 
 slave node $s$ and the element face $i$ is equal
-to~\cite{dpfeigen}:
+to~\cite{flanagan}:
 \begin{eqnarray}
 12V_P^i &=& \phantom{{}+{}}x_A[(2y_S - y_C)  z_{DB} + y_B  (z_{SC} + z_{SD}) -
      y_D  (z_{SC} + z_{SB})] \nonumber \\
@@ -535,7 +535,7 @@ viscosity term is an estimate of $\epsilon$~\cite{PRONTO2D}. The default
 value of $\epsilon$ is 0.06 which is the default value of the linear
 bulk viscosity used in \code{PRONTO2D} and \code{PRONTO3D}. 
 
-Flanagan and Belytschko~\cite{dpfeigen} have derived simple
+Flanagan and Belytschko~\cite{flanagan} have derived simple
 formulas for bounding the maximum eigenvalues for the uniform strain
 eight-node hexahedron and four-node quadrilateral which can be used to
 provide conservative estimates of the maximum frequency.  The maximum
