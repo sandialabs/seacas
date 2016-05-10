@@ -9,9 +9,9 @@ examples.  The outline of the model is shown in Figure~\ref{exmodel}.
 \caption{Finite Element Model for \numbers\ Examples}\label{exmodel}
 \end{figure}
 The model is composed of nine materials.  Material~1 is the outer shell
-which is a $\sfrac3/8$-inch thick stainless steel wall with four
+which is a $\sfrac{3}{8}$-inch thick stainless steel wall with four
 elements through the thickness.  Material~2 is the inner shell which is
-a $\sfrac1/4$-inch thick stainless steel wall with three elements
+a $\sfrac{1}{4}$-inch thick stainless steel wall with three elements
 through the thickness.  The energy-absorbing foam between the inner and
 outer shells is Material~3.  Above the inner shell is another layer of
 energy-absorbing foam which is Material~7;  on top of the foam is a thin
@@ -94,7 +94,7 @@ volumes for each material block.
 The mass properties utility was also used during the documentation of
 this analysis to estimate the weight savings due to using a thinner
 wall.  A separate analysis of this body was performed with a
-\sfrac3/8-inch thick inner wall and a \sfrac1/2-inch thick outer wall.
+\sfrac{3}{8}-inch thick inner wall and a \sfrac{1}{2}-inch thick outer wall.
 \numbers\ was then run to determine the mass of the inner and outer
 shells for both models so that the weight differences could be
 calculated.
@@ -154,12 +154,12 @@ a function of the element number.  Although it is possible to determine
 the element numbers of the elements in the outer shell by looking at
 plots of the model, an easier and more efficient method is to use the
 \cmd{locate} command.  The outer shell has a inner radius of
-95.75~inches and a thickness of \sfrac3/8~inch.  Since there are four
-elements through the thickness, each element is \sfrac3/{32}~inch thick.
+95.75~inches and a thickness of \sfrac{3}{8}~inch.  Since there are four
+elements through the thickness, each element is \sfrac{3}{32}~inch thick.
 Using the \cmd{locate point} command with the center point at the center
-of curvature (0.0, 24.2) and a distance of 95.75 + \sfrac3/{64}\ will
+of curvature (0.0, 24.2) and a distance of 95.75 + \sfrac{3}{64}\ will
 locate all elements in the innermost element row; a distance of 95.75 +
-\sfrac21/{64} will locate all elements in the outermost element row.
+\sfrac{21}{64} will locate all elements in the outermost element row.
 The input used to locate all elements in the outermost element row is:
 
 \begin{verbatim}

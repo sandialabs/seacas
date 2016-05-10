@@ -3,7 +3,7 @@
 %
 %%% set up so item does not have so much space between items and top
 \setlength{\parindent}{0pt}
-\setlength{\topsep}{0pt} \setlength{\parsep}{0pt}
+\setlength{\topsep}{0pt} \setlength{\parsep}{10pt}
 %%% \setlength{\itemsep}{\smallskipamount} \begin{itemize} ...
 %
 %%% \myindent is a nice amount to indent
@@ -74,8 +74,8 @@
 %
 %%% \cmddef produces the command descriptions 
 \newcommand{\cmddef}[2]{
-   \par\vspace{.2in} \hangindent=\myhalfind \hangafter=1 {#1} 
-   \par\vspace{.2in} \topicbegin {#2} \topicend
+   \par \hangindent=\myhalfind \hangafter=1 {#1} 
+   \par \topicbegin {#2} \topicend
    }
 %
 %%% \cmdnext precedes a second command definition line
@@ -88,7 +88,7 @@
 %
 %%% \cmdoption produces a heading and an indented block of text
 \newcommand{\cmdoption}[2]{
-   \par\vspace{.15in} \hangindent=\myhalfind \hangafter=1 {#1} 
+   \par \hangindent=\myhalfind \hangafter=1 {#1} 
    \topicbegin {#2} \topicend
    }
 %
