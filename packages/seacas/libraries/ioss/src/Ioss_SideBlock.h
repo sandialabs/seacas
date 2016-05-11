@@ -58,7 +58,9 @@ namespace Ioss {
 
 namespace Ioss {
 
-  class SideBlock : public EntityBlock
+/** \brief A collection of element sides having the same topology.
+ */
+class SideBlock : public EntityBlock
   {
   public:
     friend class SideSet;
