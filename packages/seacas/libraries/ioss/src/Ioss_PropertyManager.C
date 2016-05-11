@@ -93,6 +93,8 @@ Ioss::Property Ioss::PropertyManager::get(const std::string &property_name) cons
 
 /** \brief Remove a property from the property manager.
  *
+ *  Assumes that the property with the given name already exists in the property manager.
+ *
  *  \param[in] property_name The name of the property to remove.
  *
  */
