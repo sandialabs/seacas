@@ -398,6 +398,14 @@ int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
 // Will probably also want to template on the data type, and maybe other View template parameters,
 // with defaults.
 // Will need 2-D View version of this function for GPU performance.
+
+/** \brief Read type double field data from the database file into memory using a Kokkos:::View.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
                                          Kokkos::View<double *> &data) const
 {
