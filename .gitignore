@@ -241,3 +241,6 @@ SNTools.project
 *.cproject
 *.project
 *.settings
+*ioss.doxygen.warn
+*ioss.tags
+*html
