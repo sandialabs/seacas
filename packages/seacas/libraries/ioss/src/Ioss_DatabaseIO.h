@@ -131,6 +131,13 @@ namespace Ioss {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     virtual unsigned entity_field_support() const = 0;
 
+    /** \brief Get the local (process-specific) node number corresponding to a global node number.
+     *
+     *  \param[in] global The global node number
+     *  \param[in] must_exist If true, error will occur if the global node number is not
+     *             mapped to any local node number on the current process.
+     *  \returns The local node number
+     */
     virtual int64_t node_global_to_local(int64_t global, bool must_exist) const = 0;
     virtual int64_t element_global_to_local(int64_t global) const = 0;
 
@@ -158,6 +165,10 @@ namespace Ioss {
      */
     Ioss::DatabaseUsage usage() const { return dbUsage; }
 
+    /** \brief Determine whether the database needs information about proces ownership of nodes.
+     *
+     *  \returns True if database needs information about process ownership of nodes.
+     */
     virtual bool needs_shared_node_information() const { return false; }
 
     Ioss::IfDatabaseExistsBehavior open_create_behavior() const;
@@ -175,29 +186,54 @@ namespace Ioss {
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
      *
-     * If the group_name begins with '/', it specifies the absolute path
-     * name from the root with '/' separating groups.  Otherwise, the
-     * group_name specifies a child group of the currently active group.
-     * If group_name == "/" then the root group is opened.
+     *  If the group_name begins with '/', it specifies the absolute path
+     *  name from the root with '/' separating groups.  Otherwise, the
+     *  group_name specifies a child group of the currently active group.
+     *  If group_name == "/" then the root group is opened.
      *
-     * \param[in] group_name The name of the group to open.
-     * \returns True if successful.
+     *  \param[in] group_name The name of the group to open.
+     *  \returns True if successful.
      */
     virtual bool open_group(const std::string &group_name) { return false; }
 
     /** \brief If a database type supports groups, create the specified
      *        group as a child of the current group.
      *
-     * The name of the group must not contain a '/' character.
-     * If the command is successful, then the group will be the
-     * active group for all subsequent writes to the database.
+     *  The name of the group must not contain a '/' character.
+     *  If the command is successful, then the group will be the
+     *  active group for all subsequent writes to the database.
      *
-     * \param[in] group_name The name of the subgroup to create.
-     * \returns True if successful.
+     *  \param[in] group_name The name of the subgroup to create.
+     *  \returns True if successful.
      */
     virtual bool create_subgroup(const std::string &group_name) { return false; }
 
+    /** \brief Set the database to the given State.
+     *
+     *  All transitions must begin from the 'STATE_CLOSED' state or be to
+     *  the 'STATE_CLOSED' state (There are no nested begin/end pairs at
+     *  this time.)
+     *
+     *  The database state is automatically set when Region::begin_mode is called
+     *  for its associated region, so it may not be necessary to call this method
+     *  directly.
+     *
+     *  \param[in] state The new State to which the database should be set.
+     *  \returns True if successful.
+     *
+     */
     virtual bool begin(Ioss::State state) = 0;
+
+    /** \brief Return the database to STATE_CLOSED.
+     *
+     *  The database is automatically set to STATE_CLOSED when Region::end_mode
+     *  is called for its associated region, so it may not be necessary to call this
+     *  method directly.
+     *
+     *  \param[in] state The State to end, i.e. the current state.
+     *  \returns True if successful.
+     *
+     */
     virtual bool end(Ioss::State state)   = 0;
 
     virtual bool begin_state(Region *region, int state, double time);
@@ -211,11 +247,32 @@ namespace Ioss {
     virtual bool internal_faces_available() const { return false; }
 
     // Information Records:
+
+    /** \brief Get all information records (informative strings) for the database.
+     *
+     *  \returns The informative strings.
+     */
     const std::vector<std::string> &get_information_records() const { return informationRecords; }
     void add_information_records(const std::vector<std::string> &info);
     void add_information_record(const std::string &info);
 
     // QA Records:
+
+    /** \brief Get all QA records, each of which consists of 4 strings, from the database
+     *
+     *  The 4 strings that make up a databse QA record are:
+     *
+     *  1. A descriptive code name, such as the application that modified the database.
+     *
+     *  2. A descriptive string, such as the version of the application that modified the database.
+     *
+     *  3. A relevant date, such as the date the database was modified.
+     *
+     *  4. A relevant time, such as the time the database was modified.
+     *
+     *  \returns All QA records in a single vector. Every 4 consecutive elements of the
+     *           vector make up a single QA record.
+     */
     const std::vector<std::string> &get_qa_records() const { return qaRecords; }
     void add_qa_record(const std::string &code, const std::string &code_qa, const std::string &date,
                        const std::string &time);

@@ -514,17 +514,34 @@ namespace Ioss {
     }
   }
 
+  /** \brief Add multiple information records (informative strings) to the database.
+   *
+   *  \param[in] info The strings to add.
+   */
   void DatabaseIO::add_information_records(const std::vector<std::string> &info)
   {
     informationRecords.reserve(informationRecords.size() + info.size());
     informationRecords.insert(informationRecords.end(), info.begin(), info.end());
   }
 
+  /** \brief Add an information record (an informative string) to the database.
+   *
+   *  \param[in] info The string to add.
+   */
   void DatabaseIO::add_information_record(const std::string &info)
   {
     informationRecords.push_back(info);
   }
 
+  /** \brief Add a QA record, which consists of 4 strings, to the database
+   *
+   *  The 4 function parameters correspond to the 4 QA record strings.
+   *
+   *  \param[in] code A descriptive code name, such as the application that modified the database.
+   *  \param[in] code_qa A descriptive string, such as the version of the application that modified the database.
+   *  \param[in] date A relevant date, such as the date the database was modified.
+   *  \param[in] time A relevant time, such as the time the database was modified.
+   */
   void DatabaseIO::add_qa_record(const std::string &code, const std::string &code_qa,
                                  const std::string &date, const std::string &time)
   {
