@@ -238,9 +238,9 @@ src/libraries/ioss/src/SEACASIoss_config.h
 src/libraries/nemesis/unshared/
 autom4te.cache
 SNTools.project
-packages/seacas/libraries/ioss/html/
-packages/seacas/libraries/ioss/ioss.doxygen.warn
-packages/seacas/libraries/ioss/ioss.tags
-packages/seacas/libraries/ioss/src/.cproject
-packages/seacas/libraries/ioss/src/.project
+*html
+*ioss.doxygen.warn
+*ioss.tags
+*.cproject
+*.project
 

@@ -153,8 +153,22 @@ void Ioss::GroupingEntity::set_database(Ioss::DatabaseIO *io_database)
 //    delete(in string propertyname)
 //    describe(out vector<Ioss::Properties>)
 //
+
+/** \brief Get the current Ioss::State of the entity.
+ *
+ *  \returns The current state.
+ */
 Ioss::State Ioss::GroupingEntity::get_state() const { return entityState; }
 
+/** \brief Calculate and get an implicit property.
+ *
+ *  These are calcuated from data stored in the EntityBlock instead of having
+ *  an explicit value assigned. An example would be 'element_block_count' for a region.
+ *  Note that even though this is a pure virtual function, an implementation
+ *  is provided to return properties that are common to all 'block'-type grouping entities.
+ *  Derived classes should call 'GroupingEntity::get_implicit_property'
+ *  if the requested property is not specific to their type.
+ */
 Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my_name) const
 {
   // Handle properties generic to all GroupingEntities.
@@ -172,6 +186,13 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
   return Ioss::Property();
 }
 
+/** \brief Add a field to the entity's field manager.
+ *
+ *  Assumes that a field with the same name does not already exist.
+ *
+ *  \param[in] new_field The field to add
+ *
+ */
 void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
 {
   size_t entity_size = get_property("entity_count").get_int();
@@ -190,6 +211,14 @@ void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
   fields.add(new_field);
 }
 
+/** \brief Read field data from the database file into memory using a pointer.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \param[in] data_size The number of bytes of data to be read.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &field_name, void *data,
                                          size_t data_size) const
 {
@@ -206,6 +235,14 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name, void *da
   return retval;
 }
 
+/** \brief Write field data from memory into the database file using a pointer.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \param[in] data_size The number of bytes of data to be written.
+ *  \returns The number of values written.
+ *
+ */
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name, void *data,
                                          size_t data_size) const
 {
@@ -216,6 +253,13 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name, void *da
   return internal_put_field_data(field, data, data_size);
 }
 
+/** \brief Read type double field data from the database file into memory using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &  field_name,
                                          std::vector<double> &data) const
 {
@@ -236,6 +280,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string &  field_name,
   return retval;
 }
 
+/** \brief Read type int field data from the database file into memory using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          std::vector<int> & data) const
 {
@@ -256,6 +307,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
   return retval;
 }
 
+/** \brief Read type int64_t field data from the database file into memory using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
                                          std::vector<int64_t> &data) const
 {
@@ -276,6 +334,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
   return retval;
 }
 
+/** \brief Read type char field data from the database file into memory using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          std::vector<char> &data) const
 {
@@ -296,6 +361,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
   return retval;
 }
 
+/** \brief Read type complex field data from the database file into memory using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
 int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
                                          std::vector<Complex> &data) const
 
@@ -317,6 +389,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
   return retval;
 }
 
+/** \brief Write type double field data from memory into the database file using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
 int Ioss::GroupingEntity::put_field_data(const std::string &  field_name,
                                          std::vector<double> &data) const
 {
@@ -329,6 +408,13 @@ int Ioss::GroupingEntity::put_field_data(const std::string &  field_name,
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
 
+/** \brief Write type int field data from memory into the database file using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          std::vector<int> & data) const
 {
@@ -341,6 +427,13 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
 
+/** \brief Write type int64_t field data from memory into the database file using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
 int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
                                          std::vector<int64_t> &data) const
 {
@@ -353,6 +446,13 @@ int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
 
+/** \brief Write type char field data from memory into the database file using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          std::vector<char> &data) const
 {
@@ -365,6 +465,13 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
 
+/** \brief Write type complex field data from memory into the database file using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
 int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
                                          std::vector<Complex> &data) const
 {
@@ -377,6 +484,11 @@ int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
 
+/** \brief Get the number of fields with the given role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.)
+ *         in the entity's field manager.
+ *
+ *  \returns The number of fields with the given role.
+ */
 size_t Ioss::GroupingEntity::field_count(Ioss::Field::RoleType role) const
 {
   Ioss::NameList names;
