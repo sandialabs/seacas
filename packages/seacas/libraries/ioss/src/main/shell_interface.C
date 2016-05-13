@@ -32,12 +32,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include "Ioss_CodeTypes.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"      // for Utils
 #include "shell_interface.h"
 #include <cstddef>  // for nullptr
 #include <cstdlib>  // for exit, strtod, EXIT_SUCCESS, etc
 #include <cstring>  // for strcmp
+#include <cctype>   // for tolower
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for string, char_traits
 #include <vector>   // for vector
@@ -168,6 +170,19 @@ void IOShell::Interface::enroll_options()
                   "Method used to split sidesets into homogenous blocks\n"
                   "\t\tOptions are: TOPOLOGY, BLOCK, NOSPLIT",
                   "TOPOLOGY");
+
+#ifdef SEACAS_HAVE_KOKKOS
+  options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
+		          "Data type used internally to store field data\n"
+		          "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D",
+				  "POINTER");
+#else
+  options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
+		          "Data type used internally to store field data\n"
+		          "\t\tOptions are: POINTER, STD_VECTOR",
+				  "POINTER");
+#endif
+
 
   options_.enroll(
       "memory_read", Ioss::GetLongOption::NoValue,
@@ -336,6 +351,42 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
       }
       else if (std::strcmp(temp, "NO_SPLIT") == 0) {
         surface_split_type = 3;
+      }
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("data_storage");
+    if (temp != nullptr) {
+      data_storage_type = 0;
+      if (std::strcmp(temp, "POINTER") == 0) {
+        data_storage_type = 1;
+      }
+      else if (std::strcmp(temp, "STD_VECTOR") == 0) {
+        data_storage_type = 2;
+      }
+#ifdef SEACAS_HAVE_KOKKOS
+      else if (std::strcmp(temp, "KOKKOS_VIEW_1D") == 0) {
+        data_storage_type = 3;
+      }
+      else if (std::strcmp(temp, "KOKKOS_VIEW_2D") == 0) {
+        data_storage_type = 4;
+      }
+#endif
+
+      if (data_storage_type == 0) {
+        std::cerr << "ERROR: Option data_storage must be one of" << std::endl;
+#ifdef SEACAS_HAVE_KOKKOS
+        std::cerr << "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, or KOKKOS_VIEW_2D" << std::endl;
+#else
+        std::cerr << "       POINTER, or STD_VECTOR" << std::endl;
+#endif
+        return false;
+      }
+
+      if (data_storage_type == 4) {
+        std::cerr << "ERROR: Option data_storage KOKKOS_VIEW_2D not yet implemented." << std::endl;
+        return false;
       }
     }
   }
