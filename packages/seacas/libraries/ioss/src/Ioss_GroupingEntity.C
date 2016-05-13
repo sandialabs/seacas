@@ -406,6 +406,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
  *  \returns The number of values read.
  *
  */
+/*
 int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
                                          Kokkos::View<double *> &data) const
 {
@@ -435,7 +436,6 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
   int retval = internal_get_field_data(field, host_data_ptr, data_size);
 
   // At this point, transform the field if specified...
-  // TODO: Need to learn about transforms. What does this do?
   if (retval >= 0)
     field.transform(host_data_ptr);
 
@@ -444,6 +444,8 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
 
   return retval;
 }
+*/
+
 #endif
 
 /** \brief Write type double field data from memory into the database file using a std::vector.
@@ -540,6 +542,54 @@ int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
   field.transform(TOPTR(data));
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
+
+#ifdef SEACAS_HAVE_KOKKOS
+
+// Will want to template on Memory space (with a default template value of the default memory space)
+// Will probably also want to template on the data type, and maybe other View template parameters,
+// with defaults.
+// Will need 2-D View version of this function for GPU performance.
+
+/** \brief Write type double field data from memory into the database file using a Kokkos::View.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
+/*
+int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+                                         Kokkos::View<double *> &data) const
+{
+  verify_field_exists(field_name, "output");
+
+  Ioss::Field field = get_field(field_name);
+  field.check_type(Ioss::Field::REAL);
+  size_t data_size = field.raw_count() * field.raw_storage()->component_count() * sizeof(double);
+
+  // Create a host mirror view. (No memory allocation if data is in HostSpace.)
+  // Need to check whether Kokkos pads memory (for cache purposes) for 1-D Views.
+  // Apparently for 2-D Views, a host Mirror view has a layout that is bad for the host.
+  // For 2-D View version, will need to manually copy data from array to View,
+  // and be careful of padding issues during the deep copy.
+  Kokkos::View<double *>::HostMirror host_data = Kokkos::create_mirror_view(data);
+
+  // Copy the data to the host. (No op if data is in HostSpace.)
+  Kokkos::deep_copy(host_data, data);
+
+  // Extract a pointer to the underlying allocated memory of the host view.
+  // Kokkos::View::ptr_on_device() will soon be changed to Kokkos::View::data(),
+  // in which case, TOPTR(data) will work.
+  double *host_data_ptr = host_data.ptr_on_device();
+
+  // Transform the field
+  field.transform(host_data_ptr);
+
+  // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
+  return internal_put_field_data(field, host_data_ptr, data_size);
+}
+*/
+#endif
 
 /** \brief Get the number of fields with the given role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.)
  *         in the entity's field manager.
