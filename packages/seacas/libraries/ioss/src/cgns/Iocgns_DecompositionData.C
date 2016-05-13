@@ -699,7 +699,7 @@ namespace Iocgns {
       // * Other method uses 6*ioss_node_count extra memory; 3 reads;
       // and 1 communicate_node_data call.
       //
-      for (size_t d = 0; d < m_decomposition.m_spatialDimension; d++) {
+      for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
         get_file_node_coordinates(filePtr, d, TOPTR(tmp));
         communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
 
@@ -768,7 +768,7 @@ namespace Iocgns {
   template <typename INT>
   void DecompositionData<INT>::get_block_connectivity(int filePtr, INT *data, int blk_seq) const
   {
-    auto &                blk = el_blocks[blk_seq];
+    auto                  blk = el_blocks[blk_seq];
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int                   base = 1;
     cg_elements_partial_read(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
@@ -781,7 +781,7 @@ namespace Iocgns {
 
     if (!zone_shared_map.empty()) {
       for (auto &node : file_conn) {
-        auto alias = zone_shared_map.find(node - 1);
+        std::unordered_map<cgsize_t, cgsize_t>::const_iterator alias = zone_shared_map.find(node - 1);
         if (alias != zone_shared_map.end()) {
           node = (*alias).second + 1;
         }

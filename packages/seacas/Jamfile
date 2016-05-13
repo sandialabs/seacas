@@ -100,6 +100,7 @@ alias install-targets
     Utst_ioel
     Utst_superelement
     Utst_database_io
+    Utst_sort
     $(seacas-root)/scripts/decomp
     /tpl/netcdf//ncdump
     /tpl/netcdf//ncgen
@@ -158,6 +159,7 @@ alias install-targets
     Utst_ioel
     Utst_superelement
     Utst_database_io
+    Utst_sort
     $(seacas-root)/scripts/blot
     $(seacas-root)/scripts/decomp
     $(seacas-root)/scripts/fastq
@@ -263,6 +265,7 @@ install install-user-lib
     ioex_fac
     iopx
     iofx
+    io_info_lib
     iocgns
     iopg
     iohb
@@ -291,6 +294,7 @@ install install-user-lib
     ioex_fac
     iopx
     iofx
+    io_info_lib
     iocgns
     iopg
     iohb
@@ -492,6 +496,31 @@ lib iofx
     ]
   ;
 
+lib io_info_lib
+  :
+    [ ifdevbuild
+    # Any parameters within this 'ifdevbuild' block apply to development
+    # builds only and will not be present for user builds.
+        $(seacas-root)/libraries/ioss/src/main/io_info.C
+        $(seacas-root)/libraries/ioss/src/main/volume.C
+        $(seacas-root)/libraries/ioss/src/main/info_interface.C
+    ]
+    ioinit
+    ioss
+    iotr
+    ioxf
+    iocgns
+    /mpi//mpi
+  : <define>USE_CGNS
+    [ ifuserbuild
+    # Any parameters within this 'ifuserbuild' block apply to user
+    # builds only and will not be present for developer builds.
+        <file>$(seacas-root)/lib/libio_info_lib.a
+    ]
+  :
+  : <define>USE_CGNS
+  ;
+
 lib iopg
   :
     [ ifdevbuild
@@ -569,6 +598,7 @@ lib ioinit
         [ glob $(seacas-root)/libraries/ioss/src/init/*.C ]
     ]
     ioex_fac
+    iocgns
     ioex
     iopx
     iofx
@@ -1754,14 +1784,13 @@ fexe txtexo
 
 exe io_shell
   :
+
     $(seacas-root)/libraries/ioss/src/main/io_shell.C
     $(seacas-root)/libraries/ioss/src/main/shell_interface.C
-    $(seacas-root)/libraries/ioss/src/main/Ioss_GetLongOpt.C
     ioinit
     ioss
     iotr
     ioxf
-    iocgns
     /mpi//mpi
   : <define>USE_CGNS
     <tag>@sierra-exec-tag
@@ -1769,15 +1798,12 @@ exe io_shell
 
 exe io_info
   :
-    $(seacas-root)/libraries/ioss/src/main/io_info.C
-    $(seacas-root)/libraries/ioss/src/main/volume.C
-    $(seacas-root)/libraries/ioss/src/main/info_interface.C
-    $(seacas-root)/libraries/ioss/src/main/Ioss_GetLongOpt.C
+    $(seacas-root)/libraries/ioss/src/main/io_info_main.C
+    io_info_lib
     ioinit
     ioss
     iotr
     ioxf
-    iocgns
     /mpi//mpi
   : <define>USE_CGNS
     <tag>@sierra-exec-tag
@@ -1815,6 +1841,14 @@ exe Utst_ioel
   : <tag>@sierra-exec-tag
   ;
 
+exe Utst_sort
+  :
+    $(seacas-root)/libraries/ioss/src/utest/Utst_sort.C
+    ioss
+    /mpi//mpi
+  : <tag>@sierra-exec-tag
+  ;
+
 exe Utst_superelement
   :
     $(seacas-root)/libraries/ioss/src/utest/Utst_superelement.C
@@ -1837,6 +1871,14 @@ exe Utst_database_io
   : <tag>@utility-exec-tag
   ;
 
+rule xcb-for_cray-rule ( properties * )
+{
+  if $(cray-system) = "yes"
+  {
+     return <linkflags>"-lxcb -lxcb-xlib -lXau" ;
+  }
+}
+
 fexe blot_x11
   :
     blot_main
@@ -1844,7 +1886,7 @@ fexe blot_x11
     blotlib
   : <include>$(seacas-root)/applications/blot
     <tag>@utility-exec-tag
-    <architecture>cray:<linkflags>"-lxcb -lxcb-xlib -lXau"
+    <conditional>@xcb-for_cray-rule
   ;
 
 
@@ -1857,7 +1899,7 @@ fexe blot_xcps
     blotlib
   : <include>$(seacas-root)/applications/blot
     <tag>@utility-exec-tag
-    <architecture>cray:<linkflags>"-lxcb -lxcb-xlib -lXau"
+    <conditional>@xcb-for_cray-rule
   ;
 
 
@@ -1908,7 +1950,7 @@ fexe fastq_x11
     fastqlib
   : <include>$(seacas-root)/applications/fastq
     <tag>@utility-exec-tag
-    <architecture>cray:<linkflags>"-lxcb -lxcb-xlib -lXau"
+    <conditional>@xcb-for_cray-rule
   ;
 
 
@@ -1921,7 +1963,7 @@ fexe fastq_xcps
     fastqlib
   : <include>$(seacas-root)/applications/fastq
     <tag>@utility-exec-tag
-    <architecture>cray:<linkflags>"-lxcb -lxcb-xlib -lXau"
+    <conditional>@xcb-for_cray-rule
   ;
 
 
