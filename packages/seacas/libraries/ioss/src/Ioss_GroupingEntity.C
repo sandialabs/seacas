@@ -49,10 +49,6 @@
 #include "Ioss_PropertyManager.h"
 #include "Ioss_State.h"
 
-#ifdef SEACAS_HAVE_KOKKOS
-#include <Kokkos_Core.hpp> // for Kokkos::View
-#endif
-
 Ioss::GroupingEntity::GroupingEntity()
     : entityCount(0), entityName("invalid"), database_(nullptr), entityState(STATE_CLOSED),
       attributeCount(0), hash_(0)
@@ -392,59 +388,6 @@ int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
 
   return retval;
 }
-
-#ifdef SEACAS_HAVE_KOKKOS
-// Will want to template on Memory space (with a default template value of the default memory space)
-// Will probably also want to template on the data type, and maybe other View template parameters,
-// with defaults.
-// Will need 2-D View version of this function for GPU performance.
-
-/** \brief Read type double field data from the database file into memory using a Kokkos:::View.
- *
- *  \param[in] field_name The name of the field to read.
- *  \param[out] data The data.
- *  \returns The number of values read.
- *
- */
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
-                                         Kokkos::View<double *> &data) const
-{
-  verify_field_exists(field_name, "input");
-
-  Ioss::Field field = get_field(field_name);
-  field.check_type(Ioss::Field::REAL);
-
-  // Resize the view
-  int new_view_size = field.raw_count() * field.raw_storage()->component_count();
-  Kokkos::resize(data, new_view_size);
-  size_t data_size = new_view_size * sizeof(double);
-
-  // Create a host mirror view. (No memory allocation if data is in HostSpace.)
-  // Need to check whether Kokkos pads memory (for cache purposes) for 1-D Views.
-  // Apparently for 2-D Views, a host Mirror view has a layout that is bad for the host.
-  // For 2-D View version, will need to manually copy data from array to View,
-  // and be careful of padding issues during the deep copy.
-  Kokkos::View<double *>::HostMirror host_data = Kokkos::create_mirror_view(data);
-
-  // Extract a pointer to the underlying allocated memory of the host view.
-  // Kokkos::View::ptr_on_device() will soon be changed to Kokkos::View::data(),
-  // in which case, TOPTR(data) will work.
-  double *host_data_ptr = host_data.ptr_on_device();
-
-  // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
-  int retval = internal_get_field_data(field, host_data_ptr, data_size);
-
-  // At this point, transform the field if specified...
-  // TODO: Need to learn about transforms. What does this do?
-  if (retval >= 0)
-    field.transform(host_data_ptr);
-
-  // Copy the data to the device. (No op if data is in HostSpace.)
-  Kokkos::deep_copy(data, host_data);
-
-  return retval;
-}
-#endif
 
 /** \brief Write type double field data from memory into the database file using a std::vector.
  *

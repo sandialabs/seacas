@@ -66,6 +66,12 @@ using MPI_Comm = int;
 #endif
 #endif
 
+#include <SEACASIoss_KOKKOS_config.h>
+
+#ifdef SEACAS_HAVE_KOKKOS
+#include <Kokkos_Core.hpp> // for Kokkos::complex
+#endif
+
 #include <complex>
 #if defined(FOUR_BYTE_REAL)
 //'FOUR_BYTE_REAL' is a sierra macro which may or may not be defined
@@ -73,9 +79,14 @@ using MPI_Comm = int;
 // If FOUR_BYTE_REAL is defined then we know we need float, otherwise
 // stick with double.
 using Complex = std::complex<float>;
+#ifdef SEACAS_HAVE_KOKKOS
+using Kokkos_Complex = Kokkos::complex<float>;
+#endif
 #else
 using Complex  = std::complex<double>;
+#ifdef SEACAS_HAVE_KOKKOS
+using Kokkos_Complex = Kokkos::complex<double>;
+#endif
 #endif
 #endif
 
-#include <SEACASIoss_KOKKOS_config.h>
