@@ -1,3 +1,5 @@
+## [Supported Elements](exodus-element-types.md)
+   
 ## Formats
 
  * Normal, or Classic
