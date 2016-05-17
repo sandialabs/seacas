@@ -106,12 +106,14 @@ T atomic_exchange( volatile T * const dest ,
 {
   T return_val;
   // This is a way to (hopefully) avoid dead lock in a warp
-  bool done = false;
-  while (! done ) {
+  int done = 1;
+  while ( done > 0 ) {
+    done++;
     if( Impl::lock_address_cuda_space( (void*) dest ) ) {
       return_val = *dest;
       *dest = val;
       Impl::unlock_address_cuda_space( (void*) dest );
+      done = 0;
     }
   }
   return return_val;
@@ -298,7 +300,12 @@ void atomic_assign( volatile T * const dest ,
                  , const T >::type& val )
 {
   while( !Impl::lock_address_host_space( (void*) dest ) );
-  *dest = val;
+  // This is likely an aggregate type with a defined
+  // 'volatile T & operator = ( const T & ) volatile'
+  // member.  The volatile return value implicitly defines a
+  // dereference that some compilers (gcc 4.7.2) warn is being ignored.
+  // Suppress warning by casting return to void.
+  (void)( *dest = val );
   Impl::unlock_address_host_space( (void*) dest );
 }
 //----------------------------------------------------------------------------

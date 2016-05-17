@@ -339,6 +339,10 @@ TEST_F( serial , atomics )
   ASSERT_TRUE( ( TestAtomic::Loop<Kokkos::complex<double> ,Kokkos::Serial>(100,1) ) );
   ASSERT_TRUE( ( TestAtomic::Loop<Kokkos::complex<double> ,Kokkos::Serial>(100,2) ) );
   ASSERT_TRUE( ( TestAtomic::Loop<Kokkos::complex<double> ,Kokkos::Serial>(100,3) ) );
+
+  ASSERT_TRUE( ( TestAtomic::Loop<TestAtomic::SuperScalar<4> ,Kokkos::Serial>(100,1) ) );
+  ASSERT_TRUE( ( TestAtomic::Loop<TestAtomic::SuperScalar<4> ,Kokkos::Serial>(100,2) ) );
+  ASSERT_TRUE( ( TestAtomic::Loop<TestAtomic::SuperScalar<4> ,Kokkos::Serial>(100,3) ) );
 }
 
 //----------------------------------------------------------------------------
@@ -384,8 +388,10 @@ TEST_F( serial , memory_space )
 
 TEST_F( serial , memory_pool )
 {
-  bool val = TestMemoryPool::test_mempool< Kokkos::Serial >( 32, 8000000 );
+  bool val = TestMemoryPool::test_mempool< Kokkos::Serial >( 128, 128000000 );
   ASSERT_TRUE( val );
+
+  TestMemoryPool::test_mempool2< Kokkos::Serial >( 128, 128000000 );
 }
 
 //----------------------------------------------------------------------------

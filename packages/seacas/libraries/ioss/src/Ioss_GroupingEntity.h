@@ -36,6 +36,7 @@
 #include <Ioss_CodeTypes.h>       // for Complex
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
 #include <Ioss_EntityType.h>      // for EntityType
+#include <Ioss_VariableType.h>    // for component_count()
 #include <Ioss_Field.h>           // for Field, Field::RoleType, etc
 #include <Ioss_FieldManager.h>    // for FieldManager, NameList
 #include <Ioss_Property.h>        // for Property
@@ -221,23 +222,12 @@ namespace Ioss {
     // Resizes 'data' to size needed to hold all values;
     // however, any Views that were previously created referencing the same
     // underlying memory allocation as 'data' will remain the original size.
-    // TODO: Need 2-D View versions of these methods for GPU performance.
-    int get_field_data(const std::string &field_name, Kokkos::View<char *> &data) const;
-    int get_field_data(const std::string &field_name, Kokkos::View<double *> &data) const;
-    int get_field_data(const std::string &field_name, Kokkos::View<int *> &data) const;
-    // There are some restrictions on the type of data that a View can hold (See Kokkos programmer's
-    // guide Section 6.2.2)
-    // At a minimum, the assignment operator, constructors, and destructors must be marked with
-    // KOKKOS_[INLINE_]FUNCTION.
-    // int get_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
-    // int get_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
+    // TODO: Need 2-D View versions for GPU performance.
+    template <typename T>
+    int get_field_data(const std::string &field_name, Kokkos::View<T *> &data) const;
 
-    // TODO: Need 2-D View versions of these methods for GPU performance.
-    int put_field_data(const std::string &field_name, Kokkos::View<char *> &data) const;
-    int put_field_data(const std::string &field_name, Kokkos::View<double *> &data) const;
-    int put_field_data(const std::string &field_name, Kokkos::View<int *> &data) const;
-// int put_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
-// int put_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
+    template <typename T>
+    int put_field_data(const std::string &field_name, Kokkos::View<T *> &data) const;
 #endif
 
     /** Get the number of bytes used to store the INT data type
@@ -433,5 +423,105 @@ inline int Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role, Name
  *  \returns The number of fields in the entity's field manager.
  */
 inline size_t Ioss::GroupingEntity::field_count() const { return fields.count(); }
+
+#ifdef SEACAS_HAVE_KOKKOS
+
+// Will want to template on Memory space (with a default template value of the default memory space)
+// Will also want to template on static vs. dynamic data, and other View template parameters,
+// with defaults.
+// Will need 2-D View version of this function for GPU performance.
+
+
+/** \brief Read field data from the database file into memory using a Kokkos:::View.
+ *
+ *  \tparam T The data type
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
+template <typename T>
+int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+                                         Kokkos::View<T *> &data) const
+{
+  verify_field_exists(field_name, "input");
+
+  Ioss::Field field = get_field(field_name);
+
+  // Resize the view
+  int new_view_size = field.raw_count() * field.raw_storage()->component_count();
+  Kokkos::resize(data, new_view_size);
+  size_t data_size = new_view_size * sizeof(T);
+
+  // Create a host mirror view. (No memory allocation if data is in HostSpace.)
+  // Need to check whether Kokkos pads memory (for cache purposes) for 1-D Views.
+  // Apparently for 2-D Views, a host Mirror view has a layout that is bad for the host.
+  // For 2-D View version, will need to manually copy data from array to View,
+  // and be careful of padding issues during the deep copy.
+  typename Kokkos::View<T *>::HostMirror host_data = Kokkos::create_mirror_view(data);
+
+  // Extract a pointer to the underlying allocated memory of the host view.
+  // Kokkos::View::ptr_on_device() will soon be changed to Kokkos::View::data(),
+  // in which case, TOPTR(data) will work.
+  T *host_data_ptr = host_data.ptr_on_device();
+
+  // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
+  int retval = internal_get_field_data(field, host_data_ptr, data_size);
+
+  // At this point, transform the field if specified...
+  if (retval >= 0)
+    field.transform(host_data_ptr);
+
+  // Copy the data to the device. (No op if data is in HostSpace.)
+  Kokkos::deep_copy(data, host_data);
+
+  return retval;
+}
+
+// Will want to template on Memory space (with a default template value of the default memory space)
+// Will also want to template on static vs. dynamic data, and other View template parameters,
+// with defaults.
+// Will need 2-D View version of this function for GPU performance.
+
+/** \brief Write field data from memory into the database file using a Kokkos::View.
+ *
+ *  \tparam T The data type
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
+template <typename T>
+int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+                                         Kokkos::View<T *> &data) const
+{
+  verify_field_exists(field_name, "output");
+
+  Ioss::Field field = get_field(field_name);
+  size_t data_size = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
+
+  // Create a host mirror view. (No memory allocation if data is in HostSpace.)
+  // Need to check whether Kokkos pads memory (for cache purposes) for 1-D Views.
+  // Apparently for 2-D Views, a host Mirror view has a layout that is bad for the host.
+  // For 2-D View version, will need to manually copy data from array to View,
+  // and be careful of padding issues during the deep copy.
+  typename Kokkos::View<T *>::HostMirror host_data = Kokkos::create_mirror_view(data);
+
+  // Copy the data to the host. (No op if data is in HostSpace.)
+  Kokkos::deep_copy(host_data, data);
+
+  // Extract a pointer to the underlying allocated memory of the host view.
+  // Kokkos::View::ptr_on_device() will soon be changed to Kokkos::View::data(),
+  // in which case, TOPTR(data) will work.
+  T *host_data_ptr = host_data.ptr_on_device();
+
+  // Transform the field
+  field.transform(host_data_ptr);
+
+  // Extract the data from disk to the underlying memory pointed to by host_data_ptr.
+  return internal_put_field_data(field, host_data_ptr, data_size);
+}
+#endif
+
 
 #endif
