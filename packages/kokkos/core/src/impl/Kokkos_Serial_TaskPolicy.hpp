@@ -487,6 +487,10 @@ private:
 
 public:
 
+  // Stubbed out for now.
+  KOKKOS_INLINE_FUNCTION
+  int allocated_task_count() const { return 0 ; }
+
   TaskPolicy
     ( const unsigned /* arg_task_max_count */
     , const unsigned /* arg_task_max_size */
@@ -496,18 +500,19 @@ public:
     : m_default_dependence_capacity( arg_task_default_dependence_capacity )
     {}
 
-  TaskPolicy() = default ;
-  TaskPolicy( TaskPolicy && rhs ) = default ;
-  TaskPolicy( const TaskPolicy & rhs ) = default ;
-  TaskPolicy & operator = ( TaskPolicy && rhs ) = default ;
-  TaskPolicy & operator = ( const TaskPolicy & rhs ) = default ;
+  KOKKOS_FUNCTION TaskPolicy() = default ;
+  KOKKOS_FUNCTION TaskPolicy( TaskPolicy && rhs ) = default ;
+  KOKKOS_FUNCTION TaskPolicy( const TaskPolicy & rhs ) = default ;
+  KOKKOS_FUNCTION TaskPolicy & operator = ( TaskPolicy && rhs ) = default ;
+  KOKKOS_FUNCTION TaskPolicy & operator = ( const TaskPolicy & rhs ) = default ;
 
   //----------------------------------------
 
   template< class ValueType >
   KOKKOS_INLINE_FUNCTION
   const Future< ValueType , execution_space > &
-    spawn( const Future< ValueType , execution_space > & f ) const
+    spawn( const Future< ValueType , execution_space > & f 
+         , const bool priority = false ) const
       {
 #if defined( KOKKOS_ACTIVE_EXECUTION_MEMORY_SPACE_HOST )
         f.m_task->schedule();
@@ -515,13 +520,14 @@ public:
         return f ;
       }
 
+  //----------------------------------------
   // Create single-thread task
 
   template< class FunctorType >
   KOKKOS_INLINE_FUNCTION
   Future< typename FunctorType::value_type , execution_space >
-  create( const FunctorType & functor
-        , const unsigned dependence_capacity = ~0u ) const
+  task_create( const FunctorType & functor
+             , const unsigned dependence_capacity = ~0u ) const
     {
       typedef typename FunctorType::value_type value_type ;
       typedef Impl::TaskMember< execution_space , value_type , FunctorType >  task_type ;
@@ -536,8 +542,15 @@ public:
   template< class FunctorType >
   KOKKOS_INLINE_FUNCTION
   Future< typename FunctorType::value_type , execution_space >
-  create_team( const FunctorType & functor
+  proc_create( const FunctorType & functor
              , const unsigned dependence_capacity = ~0u ) const
+    { return task_create( functor , dependence_capacity ); }
+
+  template< class FunctorType >
+  KOKKOS_INLINE_FUNCTION
+  Future< typename FunctorType::value_type , execution_space >
+  task_create_team( const FunctorType & functor
+                  , const unsigned dependence_capacity = ~0u ) const
     {
       typedef typename FunctorType::value_type value_type ;
       typedef Impl::TaskMember< execution_space , value_type , FunctorType >  task_type ;
@@ -549,6 +562,14 @@ public:
         );
     }
 
+  template< class FunctorType >
+  KOKKOS_INLINE_FUNCTION
+  Future< typename FunctorType::value_type , execution_space >
+  proc_create_team( const FunctorType & functor
+                  , const unsigned dependence_capacity = ~0u ) const
+    { return task_create_team( functor , dependence_capacity ); }
+
+  //----------------------------------------
   // Add dependence
   template< class A1 , class A2 , class A3 , class A4 >
   KOKKOS_INLINE_FUNCTION
@@ -616,12 +637,22 @@ public:
 
   template< class FunctorType >
   KOKKOS_INLINE_FUNCTION
-  void respawn( FunctorType * task_functor ) const
+  void respawn( FunctorType * task_functor 
+              , const bool priority = false ) const
+    {
 #if defined( KOKKOS_ACTIVE_EXECUTION_MEMORY_SPACE_HOST )
-    { get_task_root(task_functor)->schedule(); }
-#else
-    {}
+      get_task_root(task_functor)->schedule();
 #endif
+    }
+
+  template< class FunctorType >
+  KOKKOS_INLINE_FUNCTION
+  void respawn_needing_memory( FunctorType * task_functor ) const
+    {
+#if defined( KOKKOS_ACTIVE_EXECUTION_MEMORY_SPACE_HOST )
+      get_task_root(task_functor)->schedule();
+#endif
+    }
 
   //----------------------------------------
 

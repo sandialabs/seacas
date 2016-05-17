@@ -49,6 +49,7 @@
 
 //----------------------------------------------------------------------------
 
+#include <Cuda/Kokkos_Cuda_TaskPolicy.hpp>
 #include <impl/Kokkos_ViewTileLeft.hpp>
 #include <TestTile.hpp>
 
@@ -77,6 +78,7 @@
 #include <TestTemplateMetaFunctions.hpp>
 #include <TestCXX11Deduction.hpp>
 
+#include <TestTaskPolicy.hpp>
 #include <TestPolicyConstruction.hpp>
 
 //----------------------------------------------------------------------------
@@ -125,12 +127,6 @@ TEST_F( cuda , memory_space )
   TestMemorySpace< Kokkos::Cuda >();
 }
 
-TEST_F( cuda , memory_pool )
-{
-  bool val = TestMemoryPool::test_mempool< Kokkos::Cuda >( 32, 8000000 );
-  ASSERT_TRUE( val );
-}
-
 TEST_F( cuda, uvm )
 {
   if ( Kokkos::CudaUVMSpace::available() ) {
@@ -166,14 +162,18 @@ TEST_F( cuda, policy_construction) {
 TEST_F( cuda , impl_view_mapping )
 {
   test_view_mapping< Kokkos::Cuda >();
+  test_view_mapping< Kokkos::CudaUVMSpace >();
   test_view_mapping_subview< Kokkos::Cuda >();
+  test_view_mapping_subview< Kokkos::CudaUVMSpace >();
   test_view_mapping_operator< Kokkos::Cuda >();
+  test_view_mapping_operator< Kokkos::CudaUVMSpace >();
   TestViewMappingAtomic< Kokkos::Cuda >::run();
 }
 
 TEST_F( cuda , view_of_class )
 {
-  TestViewMappingClassValue< Kokkos::Cuda >::run();
+  TestViewMappingClassValue< Kokkos::CudaSpace >::run();
+  TestViewMappingClassValue< Kokkos::CudaUVMSpace >::run();
 }
 
 template< class MemSpace >
@@ -276,7 +276,7 @@ TEST_F( cuda , impl_view_accessible )
   TestViewCudaAccessible< Kokkos::CudaHostPinnedSpace , Kokkos::Cuda >::run();
   TestViewCudaAccessible< Kokkos::CudaHostPinnedSpace , Kokkos::HostSpace::execution_space >::run();
 }
-
+/*
 //----------------------------------------------------------------------------
 
 TEST_F( cuda, view_impl )
@@ -292,6 +292,7 @@ TEST_F( cuda, view_api )
   typedef Kokkos::View< const int * , Kokkos::Cuda , Kokkos::MemoryTraits< Kokkos::RandomAccess | Kokkos::Unmanaged > > view_texture_unmanaged ;
 
   TestViewAPI< double , Kokkos::Cuda >();
+  TestViewAPI< double , Kokkos::CudaUVMSpace >();
 
 #if 0
   Kokkos::View<double, Kokkos::Cuda > x("x");
@@ -353,7 +354,17 @@ TEST_F( cuda, view_subview_right_3 ) {
   TestViewSubview::test_right_3< Kokkos::CudaUVMSpace >();
 }
 
+TEST_F( cuda, view_subview_1d_assign ) {
+  TestViewSubview::test_1d_assign< Kokkos::CudaUVMSpace >();
+}
 
+TEST_F( cuda, view_subview_2d_from_3d ) {
+  TestViewSubview::test_2d_subview_3d< Kokkos::CudaUVMSpace >();
+}
+
+TEST_F( cuda, view_subview_2d_from_5d ) {
+  TestViewSubview::test_2d_subview_5d< Kokkos::CudaUVMSpace >();
+}
 
 
 TEST_F( cuda, range_tag )
@@ -457,6 +468,15 @@ TEST_F( cuda, atomic )
   ASSERT_TRUE( ( TestAtomic::Loop<float,Kokkos::Cuda>(100,1) ) );
   ASSERT_TRUE( ( TestAtomic::Loop<float,Kokkos::Cuda>(100,2) ) );
   ASSERT_TRUE( ( TestAtomic::Loop<float,Kokkos::Cuda>(100,3) ) );
+
+  ASSERT_TRUE( ( TestAtomic::Loop<Kokkos::complex<double> ,Kokkos::Cuda>(100,1) ) );
+  ASSERT_TRUE( ( TestAtomic::Loop<Kokkos::complex<double> ,Kokkos::Cuda>(100,2) ) );
+  ASSERT_TRUE( ( TestAtomic::Loop<Kokkos::complex<double> ,Kokkos::Cuda>(100,3) ) );
+
+  ASSERT_TRUE( ( TestAtomic::Loop<TestAtomic::SuperScalar<4> ,Kokkos::Cuda>(100,1) ) );
+  ASSERT_TRUE( ( TestAtomic::Loop<TestAtomic::SuperScalar<4> ,Kokkos::Cuda>(100,2) ) );
+  ASSERT_TRUE( ( TestAtomic::Loop<TestAtomic::SuperScalar<4> ,Kokkos::Cuda>(100,3) ) );
+
 }
 
 //----------------------------------------------------------------------------
@@ -513,6 +533,18 @@ TEST_F( cuda , team_scan )
   TestScanTeam< Kokkos::Cuda , Kokkos::Schedule<Kokkos::Dynamic> >( 10000 );
 }
 
+TEST_F( cuda , memory_pool )
+{
+  bool val_uvm = TestMemoryPool::test_mempool< Kokkos::Cuda, Kokkos::CudaUVMSpace >( 128, 128000 );
+  ASSERT_TRUE( val_uvm );
+
+  Kokkos::Cuda::fence();
+
+  TestMemoryPool::test_mempool2< Kokkos::Cuda, Kokkos::CudaUVMSpace >( 128, 2560000 );
+
+  Kokkos::Cuda::fence();
+}
+
 }
 
 //----------------------------------------------------------------------------
@@ -545,4 +577,37 @@ TEST_F( cuda , team_vector )
   ASSERT_TRUE( ( TestTeamVector::Test< Kokkos::Cuda >(9) ) );
   ASSERT_TRUE( ( TestTeamVector::Test< Kokkos::Cuda >(10) ) );
 }
+*/
 }
+
+//----------------------------------------------------------------------------
+/*
+#if defined( KOKKOS_ENABLE_CUDA_TASK_POLICY )
+
+TEST_F( cuda , task_policy )
+{
+  TestTaskPolicy::test_task_dep< Kokkos::Cuda >( 10 );
+
+  for ( long i = 0 ; i < 15 ; ++i ) {
+      // printf("TestTaskPolicy::test_fib< Kokkos::Cuda >(%d);\n",i);
+    TestTaskPolicy::test_fib< Kokkos::Cuda >(i,4096);
+  }
+  for ( long i = 0 ; i < 35 ; ++i ) {
+      // printf("TestTaskPolicy::test_fib2< Kokkos::Cuda >(%d);\n",i);
+    TestTaskPolicy::test_fib2< Kokkos::Cuda >(i,4096);
+  }
+}
+
+TEST_F( cuda , task_team )
+{
+  TestTaskPolicy::test_task_team< Kokkos::Cuda >(1000);
+}
+
+TEST_F( cuda , task_latch )
+{
+  TestTaskPolicy::test_latch< Kokkos::Cuda >(10);
+  TestTaskPolicy::test_latch< Kokkos::Cuda >(1000);
+}
+
+#endif /* #if defined( KOKKOS_ENABLE_CUDA_TASK_POLICY ) */
+
