@@ -12,54 +12,55 @@
 * [Hexahedral Element Types](#hexahedral-element-types)
 
 # Element Types
-The following table shows the element types supported in the Exodus library, the IOSS library, nem_slice, and nem_spread.  
+The following table shows the element types supported in the Exodus
+library, the IOSS library, nem_slice, and nem_spread.
 
  Element |Exodus | IOSS | nem_slice | nem_spread |
-         |-------|------|-----------|------------|
-  circle |  X   |    X  |    X      |  X |
-  sphere |  X   |    X  |    X      |  X |
-         |      |       |           |    |
-  beam2  | X    |    X  |    X      |  X |
-  beam3  | X    |    X  |    X      |  X |   
-         |      |       |           |    |
-  quad4  |  X   |    X  |    X      |  X |
-  quad5  |  X   |       |           |    |
-  quad9  |  X   |    X  |    X      |  X |
-         |      |       |           |    |
-  tri3   |  X   |    X  |    X      |  X |
-  tri4   |  X   |    X  |           |    |
-  tri7   |  X   |    X  |           |    |
-         |      |       |           |    |
-  shell2 |  X   |    X  |    X      |  X |
-  shell3 |      |       |    X      |  X |
-  shell4 |  X   |    X  |    X      |  X |
-  shell8 |  X   |    X  |    X      |  X |
-  shell9 |  X   |    X  |    X      |  X |
-         |      |       |           |    |
-  tet4   |  X   |    X  |    X      |  X |
-  tet5   |  X   |       |           |    |
-  tet7   |      |    X  |           |    |
-  tet8   |  X   |    X  |    X      |  X |
-  tet10  |  X   |    X  |    X      |  X |
-  tet11  |  X   |    X  |           |    |
-  tet14  |  X   |    X  |    X      |  X |
-  tet15  |  X   |    X  |    X      |  X |
-         |      |       |           |    |
-  pyramid5 | X  |    X  |    X      |  X |
-  pyramid13| X  |    X  |    X      |  X |
-  pyramid14| X  |    X  |           |    |
-           |    |       |           |    |
-  wedge6 |  X   |    X  |    X      |  X |
-  wedge15|  X   |    X  |    X      |  X |
-  wedge16|  X   |    X  |    X      |  X |
-  wedge18|  X   |    X  |           |    |
-  wedge20|  X   |    X  |    X      |  X |
-  wedge21|  X   |    X  |    X      |  X |
-         |      |       |           |    |
-  hex8   |  X   |    X  |    X      |  X |
-  hex9   |  X   |       |           |    |
-  hex20  |  X   |    X  |    X      |  X |
-  hex27  |  X   |    X  |    X      |  X |
+ --------|-------|------|-----------|------------|
+ circle |  X   |    X  |    X      |  X |
+ sphere |  X   |    X  |    X      |  X |
+        |      |       |           |    |
+ beam2  | X    |    X  |    X      |  X |
+ beam3  | X    |    X  |    X      |  X |
+        |      |       |           |    |
+ quad4  |  X   |    X  |    X      |  X |
+ quad5  |  X   |       |           |    |
+ quad9  |  X   |    X  |    X      |  X |
+        |      |       |           |    |
+ tri3   |  X   |    X  |    X      |  X |
+ tri4   |  X   |    X  |           |    |
+ tri7   |  X   |    X  |           |    |
+        |      |       |           |    |
+ shell2 |  X   |    X  |    X      |  X |
+ shell3 |      |       |    X      |  X |
+ shell4 |  X   |    X  |    X      |  X |
+ shell8 |  X   |    X  |    X      |  X |
+ shell9 |  X   |    X  |    X      |  X |
+        |      |       |           |    |
+ tet4   |  X   |    X  |    X      |  X |
+ tet5   |  X   |       |           |    |
+ tet7   |      |    X  |           |    |
+ tet8   |  X   |    X  |    X      |  X |
+ tet10  |  X   |    X  |    X      |  X |
+ tet11  |  X   |    X  |           |    |
+ tet14  |  X   |    X  |    X      |  X |
+ tet15  |  X   |    X  |    X      |  X |
+        |      |       |           |    |
+ pyramid5 | X  |    X  |    X      |  X |
+ pyramid13| X  |    X  |    X      |  X |
+ pyramid14| X  |    X  |           |    |
+          |    |       |           |    |
+ wedge6 |  X   |    X  |    X      |  X |
+ wedge15|  X   |    X  |    X      |  X |
+ wedge16|  X   |    X  |    X      |  X |
+ wedge18|  X   |    X  |           |    |
+ wedge20|  X   |    X  |    X      |  X |
+ wedge21|  X   |    X  |    X      |  X |
+        |      |       |           |    |
+ hex8   |  X   |    X  |    X      |  X |
+ hex9   |  X   |       |           |    |
+ hex20  |  X   |    X  |    X      |  X |
+ hex27  |  X   |    X  |    X      |  X |
 
 The IOSS library, nem_slice, and nem_spread cannot correctly handle a mesh unless it contains elements of a known type.  However, the exodus library can store elements of an unknown type with a few limitations. 
 
