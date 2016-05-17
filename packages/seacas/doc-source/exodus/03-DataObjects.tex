@@ -303,15 +303,15 @@ The following parameters are defined for each element block:
  \item element type Element type -- a character string of length
  \param{MAX_STR_LENGTH} to distinguish element types. All elements
  within the element block are of this type. Refer to
- Table{\nobreakspace}1, ``Element Types and Attributes,'' on
- page{\nobreakspace}9 for a list of names that are currently
- accepted. It should be noted that the \exo{} library routines do not
- verify element type names against a standard list; the interpretation
- of the element type is left to the application codes which read or
- write the data. In general, the first three characters uniquely
- identify the element type. Application codes can append characters to
- the element type string (up to the maximum length allowed) to further
- classify the element for specific purposes.
+ Table~\ref{t:element_types} on page~\pageref{t:element_types} for a
+ list of names that are currently accepted. It should be noted that
+ the \exo{} library routines do not verify element type names against
+ a standard list; the interpretation of the element type is left to
+ the application codes which read or write the data. In general, the
+ first three characters uniquely identify the element
+ type. Application codes can append characters to the element type
+ string (up to the maximum length allowed) to further classify the
+ element for specific purposes.
 
  \item {Number of elements -- the number of elements in the 
 element block.}
@@ -338,19 +338,148 @@ define each element in the element block. The length of this list is
 the product of the number of elements and the number of nodes per
 element as specified in the element block parameters. The node index
 cycles faster than the element index. Node ordering follows the
-conventions illustrated in Figure~\ref{f:NodeOrdering}, which includes ordering for
-higher order elements. For lower order elements, simply omit the
-unused nodes. These node ordering conventions follow the element
-topology used in \code{PATRAN} [5]. Thus, for higher order elements than
-those illustrated, use the ordering prescribed in the \code{PATRAN} User
-Manual. For elements of type CIRCLE or SPHERE, the topology is one
-node at the center of the circle or sphere element.
-\begin{figure}[htbp]
+conventions illustrated in Figures~\ref{topology:1d}
+through~\ref{topology:hex27}. The node ordering conventions follow the element topology
+used in \code{PATRAN}~\cite{PATRAN}. Thus, for higher-order elements
+than those illustrated, use the ordering prescribed in the
+\code{PATRAN} User
+Manual~\url{http://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finite%2520Element%2520Modeling/elem_lib_topics.16.1.html#ww33606}. For
+elements of type CIRCLE or SPHERE, the topology is one node at the
+center of the circle or sphere element.
+
+\begin{figure}
+\centering
+\subcaptionbox{Circle\label{topology:circle}}
+{\includegraphics{topology/circle.png}}
+\subcaptionbox{Sphere\label{topology:sphere}}
+{\includegraphics{topology/sphere.png}}
+\caption{Node Ordering for Circle and Sphere Elements}\label{topology:1d}
+\end{figure}
+
+
+\begin{figure}
 \begin{center}
-\includegraphics[width=6.250in, height=8.000in]{figures/NodeOrdering.png}
-\caption{Node Ordering for Standard Element Types.}\label{f:NodeOrdering}
+\subcaptionbox{Bar2\label{topology:bar2}}
+{\includegraphics[width=2.000in, height=2.000in]{topology/bar2.png}}
+\subcaptionbox{Bar3\label{topology:bar3}}
+{\includegraphics[width=2.000in, height=2.000in]{topology/bar3.png}}
+\caption{Node Ordering for Bar/Truss/Beam Elements}
 \end{center}
 \end{figure}
+
+
+\begin{figure}
+\begin{center}
+\subcaptionbox{Tri3\label{topology:tri3}}
+{\includegraphics[width=2.000in, height=2.000in]{topology/tri3.png}}
+\subcaptionbox{Tri4\label{topology:tri4}}
+{\includegraphics[width=2.000in, height=2.000in]{topology/tri4.png}}
+\subcaptionbox{Tri6\label{topology:tri6}}
+{\includegraphics[width=2.000in, height=2.000in]{topology/tri6.png}}
+\subcaptionbox{Tri7\label{topology:tri7}}
+{\includegraphics[width=2.000in, height=2.000in]{topology/tri7.png}}
+\caption{Node Ordering for Triangular Elements.}
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\subcaptionbox{Quad4\label{topology:quad4}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/quad4.png}}
+\subcaptionbox{Quad5\label{topology:quad5}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/quad5.png}}
+\subcaptionbox{Quad8\label{topology:quad8}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/quad8.png}}
+\subcaptionbox{Quad9\label{topology:quad9}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/quad9.png}}
+\caption{Node Ordering for Quadrilateral Elements.}\label{topology:quad}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\subcaptionbox{Tet4\label{topology:tet04}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/tet04.png}}
+\subcaptionbox{Tet5\label{topology:tet05}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/tet05.png}}
+\subcaptionbox{Tet10\label{topology:tet10}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/tet10.png}}
+\subcaptionbox{Tet11\label{topology:tet11}}
+{\includegraphics[width=2.9in, height=2.9in]{topology/tet11.png}}
+\caption{Node Ordering for Tetrahedral Elements.}\label{topology:tet}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.000in, height=5.000in]{topology/tet14.png}
+\caption{Node Ordering for Tetrahedral Tet14 Element.}\label{topology:tet14}
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.000in, height=5.000in]{topology/tet15.png}
+\caption{Node Ordering for Tetrahedral Tet15 Element.}\label{topology:tet15}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.000in, height=2.1in]{topology/pyramid.png}
+\caption{Node Ordering for Pyramid Elements (pyramid5, pyramid13, pyramid14).}\label{topology:pyramid}
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\subcaptionbox{Wedge6\label{topology:wedge06}}
+{\includegraphics[width=1.9in, height=1.9in]{topology/wedge06.png}}
+\subcaptionbox{Wedge15\label{topology:wedge15}}
+{\includegraphics[width=1.9in, height=1.9in]{topology/wedge15.png}}
+\subcaptionbox{Wedge16\label{topology:wedge16}}
+{\includegraphics[width=1.9in, height=1.9in]{topology/wedge16.png}}
+\caption{Node Ordering for Wedge Elements.}\label{topology:wedge}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.000in, height=6.000in]{topology/wedge20.png}
+\caption{Node Ordering for Wedge Elements (Wedge20).}\label{topology:wedge20}
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.000in, height=6.000in]{topology/wedge21.png}
+\caption{Node Ordering for Wedge Elements (Wedge21).}\label{topology:wedge21}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\subcaptionbox{Hex8\label{topology:hex8}}
+{\includegraphics[width=1.9in, height=1.9in]{topology/hex08.png}}
+\subcaptionbox{Hex9\label{topology:hex9}}
+{\includegraphics[width=1.9in, height=1.9in]{topology/hex09.png}}
+\subcaptionbox{Hex20\label{topology:hex20}}
+{\includegraphics[width=1.9in, height=1.9in]{topology/hex20.png}}
+\caption{Node Ordering for Hexahedral Elements.}\label{topology:hex}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.000in, height=6.000in]{topology/hex27.png}
+\caption{Node Ordering for Hexahedral Elements (Hex27).}\label{topology:hex27}
+\end{center}
+\end{figure}
+
 
 \subsection{Element Attributes}
 
@@ -364,9 +493,8 @@ the same number of attributes (as specified in the element block
 parameters) but the attributes may vary among elements within the
 block. The length of the attributes array is thus the product of the
 number of attributes per element and the number of elements in the
-element block.  Table{\nobreakspace}1, ``Element Types and
-Attributes,'' lists the standard attributes for the given element
-types. }
+element block.  Table~\ref{t:element_types} lists the standard
+attributes for the given element types. }
 
 \begin{table}[htbp]
 \begin{center}
@@ -385,6 +513,7 @@ PYRAMID  & \\ \hline
 WEDGE    & \\ \hline
 HEX      & \\ \hline
 \end{tabular}
+\caption{Standard Element Types and Attributes}\label{t:element_types}
 \end{center}
 \end{table}
 
@@ -623,12 +752,17 @@ edge of a 2-d element proceeds such that if the right hand is placed
 in the plane of the element palm down, thumb extended with the index
 (and other fingers) pointing from one node to the next in the list,
 the thumb points to the inside of the element. This node ordering is
-detailed in Table{\nobreakspace}2, ``Side Set Node Ordering,'' on
-page{\nobreakspace}16.}
+detailed in Table~\ref{t:sset_node_ordering} on
+page~\pageref{t:sset_node_ordering}}
 
 \item {The nodes required for a first-order element are output 
-first, followed by the nodes of a higher ordered element. Again, this
-is illustrated in Table{\nobreakspace}2, ``Side Set Node Ordering,'' }
+first, followed by the nodes of a higher ordered
+element. Table~\ref{t:sset_node_ordering} lists the nodes for
+first-order elements.  Refer to the node orderings shown in
+Figures~\ref{topology:1d} to ~\ref{topology:hex27} for the additional
+nodes on higher-order elements. If a face has a mid-face node, it is
+listed last following all mid-edge nodes.  For example, the node
+ordering for side~1 of the \code{hex27} element is {1,2,6,5,9,14,17,13,26}}
 \end{enumerate}
 
 \begin{table}
@@ -675,6 +809,7 @@ PYRAMID&1 & 1, 2, 5, & 6, 11, 10 \\
        & 4 & 4, 1, 5, & 9, 10, 13 \\ 
        & 5 & 1, 4, 3, 2, & 9, 8, 7, 6
 \end{tabular}
+\caption{Sideset Node Ordering}\label{t:sset_node_ordering}
 \end{center}
 \end{table}
 
@@ -784,20 +919,27 @@ blocks 1 and 3 and side sets 1 and 2 could be put in a group
 named ``TOP.''
 \end{enumerate}
 
-This functionality is illustrated in Table{\nobreakspace}3, ``Sample
-Property Table,'' which contains the property values of a sample
+This functionality is illustrated in Table~\ref{t:property} which
+contains the property values of a sample
 \exo{} file with three element blocks, one node set, and two 
 side sets. Note that an application code can define properties 
 to be valid for only specified object types. In this example, 
 ``STEEL'' and ``COPPER'' are valid for all element blocks but are 
 not defined for node sets and side sets. 
 
-\begin{figure}[htbp]
+\begin{table}
 \begin{center}
-%\includegraphics[width=6.250in, height=2.722in]{exodusIIFig8.wmf}
-\caption{exodusIIFig8.wmf about here.}
+\begin{tabular}{l|cccccc} \hline
+Name   & EB 1 & EB 2 & EB 3 & NS 1 & SS 1 & SS 2 \\ \hline
+ID     & 1   & 0   & 1   & 0  & 1  & 1 \\
+TOP    & 1   & 1   & 0   & 1  & 1  & 0 \\
+LEFT   & 0   & 0   & 1   & NULL  & NULL  & NULL \\
+STEEL  & 0   & 1   & 1   & NULL  & NULL  & NULL \\
+COPPER & 1   & 1   & 0   & NULL  & NULL  & NULL \\
+\end{tabular}
+\caption{Example Property Table.}\label{t:property}
 \end{center}
-\end{figure}
+\end{table}
 
 
 {Interpretation of the integer values of the properties is left to the
@@ -937,22 +1079,25 @@ element block. For example, hydrostatic stress may be an output result
 for the elements in element block 3, but not those in element block 6.
 
 
-It is helpful to describe the element variable truth 
-table as a two-dimensional array, as shown in  Table{\nobreakspace}4, 
-``Element Variable Truth Table,'' Each row of the array is associated 
-with an element variable; each column of the array is associated 
-with an element block. If a datum in the truth table is zero 
-$(\textrm{table}(i,j)=0)$, then no results are output for the {i}\th{} 
-element variable for the {j}\th{} element block. A nonzero 
-entry indicates that the appropriate result will be output. In 
-this example, element variable 1 will be stored for all element 
-blocks; element variable 2 will be stored for element blocks 
-1 and 4; and element variable 3 will be stored for element blocks 
-3 and 4. The table is stored such that the variable index cycles 
-faster than the block index.
-\begin{figure}[htbp]
+It is helpful to describe the element variable truth table as a
+two-dimensional array, as shown in Table~\ref{t:truth}, each row of
+the array is associated with an element variable; each column of the
+array is associated with an element block. If a datum in the truth
+table is zero $(\textrm{table}(i,j)=0)$, then no results are output
+for the {i}\th{} element variable for the {j}\th{} element block. A
+nonzero entry indicates that the appropriate result will be output. In
+this example, element variable 1 will be stored for all element
+blocks; element variable 2 will be stored for element blocks 1 and 4;
+and element variable 3 will be stored for element blocks 3 and 4. The
+table is stored such that the variable index cycles faster than the
+block index.
+\begin{table}
 \begin{center}
-%\includegraphics[width=6.250in, height=1.708in]{exodusIIFig9.wmf}
-\caption{exodusIIFig9.wmf about here.}
+\begin{tabular}{|l|c|c|c|c|}\hline
+            & Elem Block 1 & Elem Block 2 & Elem Block 3 & Elem Block 4\\ \hline\hline
+Elem Var 1 & 1 & 1 & 1 & 1 \\ \hline
+Elem Var 2 & 1 & 0 & 0 & 1 \\ \hline
+\end{tabular}
+\caption{Element Variable Truth Table}\label{t:truth}
 \end{center}
-\end{figure}
+\end{table}

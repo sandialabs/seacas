@@ -1,0 +1,216 @@
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/bar2.png}
+\caption{Node Ordering for Element.}\label{topology:bar2}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/bar3.png}
+\caption{Node Ordering for Element.}\label{topology:bar3}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/circle.png}
+\caption{Node Ordering for Element.}\label{topology:circle}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/hex08.png}
+\caption{Node Ordering for Element.}\label{topology:hex08}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/hex09.png}
+\caption{Node Ordering for Element.}\label{topology:hex09}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/hex20.png}
+\caption{Node Ordering for Element.}\label{topology:hex20}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/hex27.png}
+\caption{Node Ordering for Element.}\label{topology:hex27}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/quad4.png}
+\caption{Node Ordering for Element.}\label{topology:quad4}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/quad5.png}
+\caption{Node Ordering for Element.}\label{topology:quad5}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/quad8.png}
+\caption{Node Ordering for Element.}\label{topology:quad8}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/quad9.png}
+\caption{Node Ordering for Element.}\label{topology:quad9}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/sphere.png}
+\caption{Node Ordering for Element.}\label{topology:sphere}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tet04.png}
+\caption{Node Ordering for Element.}\label{topology:tet04}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tet05.png}
+\caption{Node Ordering for Element.}\label{topology:tet05}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tet10.png}
+\caption{Node Ordering for Element.}\label{topology:tet10}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tet11.png}
+\caption{Node Ordering for Element.}\label{topology:tet11}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tet14.png}
+\caption{Node Ordering for Element.}\label{topology:tet14}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tet15.png}
+\caption{Node Ordering for Element.}\label{topology:tet15}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tri3.png}
+\caption{Node Ordering for Element.}\label{topology:tre}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tri4.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tri6.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/tri7.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/wedge06.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/wedge15.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/wedge16.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/wedge20.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=6.250in, height=8.000in]{element_topology/wedge21.png}
+\caption{Node Ordering for Element.}\label{topology:}
+\end{center}
+\end{figure}
+
+
