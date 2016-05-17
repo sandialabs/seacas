@@ -32,27 +32,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-/*****************************************************************************
-*
-* testrd - read exodus file test.exo created by testwt
-*
-* author - Sandia National Laboratories
-*          Larry A. Schoof - Original
-*
-*          
-* environment - UNIX
-*
-* entry conditions - 
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions - 
-*
-* revision history - 
-*
-*
-*****************************************************************************/
 
+#include "exodusII.h"
 #include <mpi.h>
 #include <stdlib.h>
 #include <stdio.h>
