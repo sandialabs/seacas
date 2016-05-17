@@ -109,7 +109,11 @@ namespace {
   std::vector<double>  data_double;
   std::vector<Complex> data_complex;
 #ifdef SEACAS_HAVE_KOKKOS
+  Kokkos::View<char *> data_view_char;
+  Kokkos::View<int *> data_view_int;
+  Kokkos::View<int64_t *> data_view_int64;
   Kokkos::View<double *> data_view_double;
+  Kokkos::View<Kokkos_Complex *> data_view_complex;
 #endif
   size_t               max_field_size = 0;
   int                  rank           = 0;
@@ -120,8 +124,7 @@ namespace {
 
   void show_step(int istep, double time);
 
-  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region,
-		                  const IOShell::Interface &interface, bool debug);
+  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_edgeblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_faceblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -163,8 +166,7 @@ namespace {
   void file_copy(IOShell::Interface &interface);
 
   template <typename INT>
-  void set_owned_node_count(Ioss::Region &region, const IOShell::Interface &interface,
-		                    int my_processor, INT dummy);
+  void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
 } // namespace
 // ========================================================================
 
@@ -184,7 +186,11 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_KOKKOS
   Kokkos::initialize(argc, argv);
 
+  data_view_char = Kokkos::View<char *>("view_char", 0);
+  data_view_int = Kokkos::View<int *>("view_int", 0);
+  data_view_int64 = Kokkos::View<int64_t *>("view_int64", 0);
   data_view_double = Kokkos::View<double *>("view_double", 0);
+  data_view_complex = Kokkos::View<Kokkos_Complex *>("view_complex", 0);
 #endif
 
   IOShell::Interface interface;
@@ -370,7 +376,7 @@ namespace {
       transfer_properties(&region, &output_region);
       transfer_qa_info(region, output_region);
 
-      transfer_nodeblock(region, output_region, interface, interface.debug);
+      transfer_nodeblock(region, output_region, interface.debug);
 
 #ifdef HAVE_MPI
       // This also assumes that the node order and count is the same for input
@@ -379,9 +385,9 @@ namespace {
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
         if (interface.ints_64_bit)
-          set_owned_node_count(region, interface, rank, (int64_t)0);
+          set_owned_node_count(region, rank, (int64_t)0);
         else
-          set_owned_node_count(region, interface, rank, (int)0);
+          set_owned_node_count(region, rank, (int)0);
       }
 #endif
 
@@ -646,8 +652,7 @@ namespace {
     }
   }
 
-  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region,
-		                  const IOShell::Interface &interface, bool debug)
+  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
     Ioss::NodeBlockContainer nbs = region.get_node_blocks();
     size_t                   id  = 1;
@@ -692,6 +697,7 @@ namespace {
           inb->get_field_data("owning_processor", &data[0], isize);
           t2 = timer();
           nb->put_field_data("owning_processor", &data[0], isize);
+
           time_write += timer() - t2;
           time_read += t2 - t1;
           data_read += isize;
@@ -994,6 +1000,8 @@ namespace {
 
       assert(oge->field_exists(out_field_name));
 
+      int basic_type = ige->get_field(field_name).get_type();
+
       size_t isize = ige->get_field(field_name).get_size();
       size_t osize = oge->get_field(out_field_name).get_size();
       assert(isize == osize);
@@ -1002,9 +1010,119 @@ namespace {
       data_read += isize;
       data_write += isize;
       double t1 = timer();
-      ige->get_field_data(field_name, &data[0], isize);
+
+      switch(interface.data_storage_type)
+      {
+      case 1:
+        ige->get_field_data(field_name, &data[0], isize);
+        break;
+      case 2:
+    	if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+    	  ige->get_field_data(field_name, data);
+    	}
+    	else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+    	  ige->get_field_data(field_name, data_int);
+    	}
+        else if (basic_type == Ioss::Field::INT64) {
+    	  ige->get_field_data(field_name, data_int64);
+    	}
+    	else if (basic_type == Ioss::Field::REAL) {
+    	  ige->get_field_data(field_name, data_double);
+    	}
+    	else if (basic_type == Ioss::Field::COMPLEX) {
+    	  ige->get_field_data(field_name, data_complex);
+    	}
+    	else {}
+    	break;
+#ifdef SEACAS_HAVE_KOKKOS
+      case 3:
+        if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+          ige->get_field_data<char>(field_name, data_view_char);
+        }
+        else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+          ige->get_field_data<int>(field_name, data_view_int);
+        }
+        else if (basic_type == Ioss::Field::INT64) {
+          ige->get_field_data<int64_t>(field_name, data_view_int64);
+        }
+        else if (basic_type == Ioss::Field::REAL) {
+          ige->get_field_data<double>(field_name, data_view_double);
+        }
+        else if (basic_type == Ioss::Field::COMPLEX) {
+          ige->get_field_data<Kokkos_Complex>(field_name, data_view_complex);
+        }
+        else {}
+        break;
+      case 4:
+    	if (field_name == "mesh_model_coordinates") {
+    	   std::cerr << "data_storage option KOKKOS_VIEW_2D not yet implemented.";
+    	}
+    	return;
+#endif
+      default:
+    	if (field_name == "mesh_model_coordinates") {
+    	   std::cerr << "data_storage option not recognized.";
+    	}
+    	return;
+      }
+
       double t2 = timer();
-      oge->put_field_data(out_field_name, &data[0], osize);
+
+      switch(interface.data_storage_type)
+      {
+      case 1:
+        oge->put_field_data(out_field_name, &data[0], osize);
+        break;
+      case 2:
+    	if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+    	  oge->put_field_data(field_name, data);
+    	}
+    	else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+    	  oge->put_field_data(field_name, data_int);
+    	}
+        else if (basic_type == Ioss::Field::INT64) {
+    	  oge->put_field_data(field_name, data_int64);
+    	}
+    	else if (basic_type == Ioss::Field::REAL) {
+    	  oge->put_field_data(field_name, data_double);
+    	}
+    	else if (basic_type == Ioss::Field::COMPLEX) {
+    	  oge->put_field_data(field_name, data_complex);
+    	}
+    	else {}
+    	break;
+#ifdef SEACAS_HAVE_KOKKOS
+      case 3:
+        if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+          oge->put_field_data<char>(field_name, data_view_char);
+        }
+        else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+          oge->put_field_data<int>(field_name, data_view_int);
+        }
+        else if (basic_type == Ioss::Field::INT64) {
+          oge->put_field_data<int64_t>(field_name, data_view_int64);
+        }
+        else if (basic_type == Ioss::Field::REAL) {
+          oge->put_field_data<double>(field_name, data_view_double);
+        }
+        else if (basic_type == Ioss::Field::COMPLEX) {
+          oge->put_field_data<Kokkos_Complex>(field_name, data_view_complex);
+        }
+        else {}
+        break;
+      case 4:
+    	if (field_name == "mesh_model_coordinates") {
+    	   std::cerr << "data_storage option KOKKOS_VIEW_2D not yet implemented.";
+    	}
+    	return;
+#endif
+      default:
+    	if (field_name == "mesh_model_coordinates") {
+    	   std::cerr << "data_storage option not recognized.";
+    	}
+    	return;
+      }
+
       time_write += timer() - t2;
       time_read += t2 - t1;
     }
@@ -1095,16 +1213,21 @@ namespace {
       return;
     }
 
-    if (data.size() < isize) {
-      std::cerr << "Field: " << field_name << "\tIsize = " << isize
-                << "\tdata size = " << data.size() << "\n";
-      data.resize(isize);
+    if (interface.data_storage_type >=1 || interface.data_storage_type <=2)
+    {
+      if (data.size() < isize) {
+        std::cerr << "Field: " << field_name << "\tIsize = " << isize
+                  << "\tdata size = " << data.size() << "\n";
+        data.resize(isize);
+      }
     }
+    else {}
 
     assert(data.size() >= isize);
     data_read += isize;
     data_write += isize;
     double t1 = timer();
+
     switch(interface.data_storage_type)
     {
     case 1:
@@ -1130,19 +1253,28 @@ namespace {
       break;
 #ifdef SEACAS_HAVE_KOKKOS
     case 3:
-      if (basic_type == Ioss::Field::REAL) {
-        ige->get_field_data<double>(field_name, data_view_double);
+      if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+        ige->get_field_data<char>(field_name, data_view_char);
       }
-      else {
-        ige->get_field_data(field_name, &data[0], isize);
+      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+        ige->get_field_data<int>(field_name, data_view_int);
       }
+      else if (basic_type == Ioss::Field::INT64) {
+      	ige->get_field_data<int64_t>(field_name, data_view_int64);
+      }
+      else if (basic_type == Ioss::Field::REAL) {
+      	ige->get_field_data<double>(field_name, data_view_double);
+      }
+      else if (basic_type == Ioss::Field::COMPLEX) {
+      	ige->get_field_data<Kokkos_Complex>(field_name, data_view_complex);
+      }
+      else {}
       break;
     case 4:
-    	if (field_name == "mesh_model_coordinates") {
-          std::cerr << "data_storage option KOKKOS_VIEW_2D not yet implemented.";
-    	}
-        return;
-      break;
+      if (field_name == "mesh_model_coordinates") {
+        std::cerr << "data_storage option KOKKOS_VIEW_2D not yet implemented.";
+      }
+      return;
 #endif
     default:
       if (field_name == "mesh_model_coordinates") {
@@ -1150,7 +1282,9 @@ namespace {
       }
       return;
     }
+
     double t2 = timer();
+
     switch(interface.data_storage_type)
     {
     case 1:
@@ -1176,12 +1310,22 @@ namespace {
       break;
 #ifdef SEACAS_HAVE_KOKKOS
     case 3:
-      if (basic_type == Ioss::Field::REAL) {
+      if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+        oge->put_field_data<char>(field_name, data_view_char);
+      }
+      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+    	oge->put_field_data<int>(field_name, data_view_int);
+      }
+      else if (basic_type == Ioss::Field::INT64) {
+        oge->put_field_data<int64_t>(field_name, data_view_int64);
+      }
+      else if (basic_type == Ioss::Field::REAL) {
         oge->put_field_data<double>(field_name, data_view_double);
       }
-      else {
-        oge->put_field_data(field_name, &data[0], isize);
+      else if (basic_type == Ioss::Field::COMPLEX) {
+    	oge->put_field_data<Kokkos_Complex>(field_name, data_view_complex);
       }
+      else {}
       break;
     case 4:
         return;
@@ -1227,8 +1371,7 @@ namespace {
   }
 
   template <typename INT>
-  void set_owned_node_count(Ioss::Region &region, const IOShell::Interface &interface,
-		                    int my_processor, INT /*dummy*/)
+  void set_owned_node_count(Ioss::Region &region, int my_processor, INT /*dummy*/)
   {
     Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
     if (nb->field_exists("owning_processor")) {

@@ -222,27 +222,12 @@ namespace Ioss {
     // Resizes 'data' to size needed to hold all values;
     // however, any Views that were previously created referencing the same
     // underlying memory allocation as 'data' will remain the original size.
-    // TODO: Need 2-D View versions of these methods for GPU performance.
-    //int get_field_data(const std::string &field_name, Kokkos::View<char *> &data) const;
-    //int get_field_data(const std::string &field_name, Kokkos::View<double *> &data) const;
-    //int get_field_data(const std::string &field_name, Kokkos::View<int *> &data) const;
+    // TODO: Need 2-D View versions for GPU performance.
     template <typename T>
     int get_field_data(const std::string &field_name, Kokkos::View<T *> &data) const;
-    // There are some restrictions on the type of data that a View can hold (See Kokkos programmer's
-    // guide Section 6.2.2)
-    // At a minimum, the assignment operator, constructors, and destructors must be marked with
-    // KOKKOS_[INLINE_]FUNCTION.
-    // int get_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
-    // int get_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
 
-    // TODO: Need 2-D View versions of these methods for GPU performance.
-    //int put_field_data(const std::string &field_name, Kokkos::View<char *> &data) const;
-    //int put_field_data(const std::string &field_name, Kokkos::View<double *> &data) const;
-    //int put_field_data(const std::string &field_name, Kokkos::View<int *> &data) const;
     template <typename T>
     int put_field_data(const std::string &field_name, Kokkos::View<T *> &data) const;
-// int put_field_data(const std::string & field_name, Kokkos::View<int64_t*> & data) const;
-// int put_field_data(const std::string & field_name, Kokkos::View<Complex*> & data) const;
 #endif
 
     /** Get the number of bytes used to store the INT data type
@@ -442,12 +427,12 @@ inline size_t Ioss::GroupingEntity::field_count() const { return fields.count();
 #ifdef SEACAS_HAVE_KOKKOS
 
 // Will want to template on Memory space (with a default template value of the default memory space)
-// Will probably also want to template on the data type, and maybe other View template parameters,
+// Will also want to template on static vs. dynamic data, and other View template parameters,
 // with defaults.
 // Will need 2-D View version of this function for GPU performance.
 
 
-/** \brief Read type double field data from the database file into memory using a Kokkos:::View.
+/** \brief Read field data from the database file into memory using a Kokkos:::View.
  *
  *  \tparam T The data type
  *  \param[in] field_name The name of the field to read.
@@ -462,7 +447,6 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);
-  field.check_type(Ioss::Field::REAL);
 
   // Resize the view
   int new_view_size = field.raw_count() * field.raw_storage()->component_count();
@@ -495,11 +479,11 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
 }
 
 // Will want to template on Memory space (with a default template value of the default memory space)
-// Will probably also want to template on the data type, and maybe other View template parameters,
+// Will also want to template on static vs. dynamic data, and other View template parameters,
 // with defaults.
 // Will need 2-D View version of this function for GPU performance.
 
-/** \brief Write type double field data from memory into the database file using a Kokkos::View.
+/** \brief Write field data from memory into the database file using a Kokkos::View.
  *
  *  \tparam T The data type
  *  \param[in] field_name The name of the field to write.
@@ -514,7 +498,6 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
-  field.check_type(Ioss::Field::REAL);
   size_t data_size = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
 
   // Create a host mirror view. (No memory allocation if data is in HostSpace.)
