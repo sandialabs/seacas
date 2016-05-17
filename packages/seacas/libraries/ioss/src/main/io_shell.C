@@ -113,7 +113,9 @@ namespace {
   Kokkos::View<int *> data_view_int;
   Kokkos::View<int64_t *> data_view_int64;
   Kokkos::View<double *> data_view_double;
-  Kokkos::View<Kokkos_Complex *> data_view_complex;
+  // Kokkos::View<Kokkos_Complex *> data_view_complex cannot be a global variable,
+  // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
+  // have type std::complex entities.
 #endif
   size_t               max_field_size = 0;
   int                  rank           = 0;
@@ -190,7 +192,6 @@ int main(int argc, char *argv[])
   data_view_int = Kokkos::View<int *>("view_int", 0);
   data_view_int64 = Kokkos::View<int64_t *>("view_int64", 0);
   data_view_double = Kokkos::View<double *>("view_double", 0);
-  data_view_complex = Kokkos::View<Kokkos_Complex *>("view_complex", 0);
 #endif
 
   IOShell::Interface interface;
@@ -1049,7 +1050,8 @@ namespace {
           ige->get_field_data<double>(field_name, data_view_double);
         }
         else if (basic_type == Ioss::Field::COMPLEX) {
-          ige->get_field_data<Kokkos_Complex>(field_name, data_view_complex);
+          // Since data_view_complex cannot be a global variable.
+          ige->get_field_data(field_name, &data[0], isize);
         }
         else {}
         break;
@@ -1106,7 +1108,8 @@ namespace {
           oge->put_field_data<double>(field_name, data_view_double);
         }
         else if (basic_type == Ioss::Field::COMPLEX) {
-          oge->put_field_data<Kokkos_Complex>(field_name, data_view_complex);
+          // Since data_view_complex cannot be a global variable.
+          oge->put_field_data(out_field_name, &data[0], osize);
         }
         else {}
         break;
@@ -1247,7 +1250,7 @@ namespace {
     	ige->get_field_data(field_name, data_double);
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
-    	ige->get_field_data(field_name, data_complex);
+      	ige->get_field_data(field_name, data_complex);
       }
       else {}
       break;
@@ -1266,7 +1269,8 @@ namespace {
       	ige->get_field_data<double>(field_name, data_view_double);
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
-      	ige->get_field_data<Kokkos_Complex>(field_name, data_view_complex);
+    	// Since data_view_complex cannot be a global variable.
+    	ige->get_field_data(field_name, &data[0], isize);
       }
       else {}
       break;
@@ -1323,7 +1327,8 @@ namespace {
         oge->put_field_data<double>(field_name, data_view_double);
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
-    	oge->put_field_data<Kokkos_Complex>(field_name, data_view_complex);
+    	// Since data_view_complex cannot be a global variable.
+    	oge->put_field_data(field_name, &data[0], isize);
       }
       else {}
       break;
