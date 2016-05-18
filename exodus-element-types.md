@@ -62,22 +62,29 @@ library, the IOSS library, nem_slice, and nem_spread.
  hex20  |  X   |    X  |    X      |  X |
  hex27  |  X   |    X  |    X      |  X |
 
-The IOSS library, nem_slice, and nem_spread cannot correctly handle a mesh unless it contains elements of a known type.  However, the exodus library can store elements of an unknown type with a few limitations. 
+The IOSS library, nem_slice, and nem_spread cannot correctly handle a
+mesh unless it contains elements of a known type.
 
-For an unsupported element type, the exodus library will not:
+However, the exodus library can store elements of an unknown type with
+a few limitations. For an unsupported element type, the exodus library
+will not:
 
  * return the side set node list.
  * return the side set node list node count.
  * convert side set nodes to sides or vice versa.
 
-
-
-  
+If none of the above functions are required, then an element unknown
+to the exodus library can can be written and read to/from an exodus
+file with no loss of information.
 
     
 ## Exodus Node Ordering Convention
 
-Node ordering follows the conventions illustrated in the figures below. The node ordering conventions follow the element topology used in PATRAN. Thus, for higher-order elements than those illustrated, use the ordering prescribed in the PATRAN Element Library Manual Manual https://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finite%2520Element%2520Modeling/elem_lib_topics.16.1.html#ww33606. 
+Node ordering follows the conventions illustrated in the figures
+below. The node ordering conventions follow the element topology used
+in PATRAN. Thus, for higher-order elements than those illustrated, use
+the ordering prescribed in the PATRAN Element Library Manual Manual
+https://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finite%2520Element%2520Modeling/elem_lib_topics.16.1.html#ww33606.
 
 
 ### Circle and Sphere Element Types
