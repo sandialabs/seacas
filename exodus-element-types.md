@@ -200,15 +200,21 @@ PYRAMID|1 | 1, 2, 5 |
 ![Wedge20](packages/seacas/doc-source/exodus/topology/wedge20.png)
 ![Wedge21](packages/seacas/doc-source/exodus/topology/wedge21.png)
 
-The side numbering for a wedge element type are shown below.
+The side numbering for a wedge element type are shown below. Note that
+the face mapping for this element does not match the MSC/Patran face
+mapping. In exodus, sides 1,2,3 are quadrilateral and sides 4,5 are
+triangular; in MSC/Patran, sides 1,2 are triangular and sides 4,5,6
+are quadrilateral. It is unclear when and why this digression
+occurred.
 
- Element Type |Side \#|Node Order  |
---------------|-------|------------|
-WEDGE  | 1 | 1, 2, 5, 4 |
-       | 2 | 2, 3, 6, 5 |
-       | 3 | 1, 4, 6, 3 |
-       | 4 | 1, 3, 2 |
-       | 5 | 4, 5, 6 |
+
+ Element Type |Side \#|Node Order  | Patran Side |
+--------------|-------|------------|-------------|
+WEDGE         | 1     | 1, 2, 5, 4 | 3           |
+              | 2     | 2, 3, 6, 5 | 5           |
+              | 3     | 1, 4, 6, 3 | 4           |
+              | 4     | 1, 3, 2    | 1           |
+              | 5     | 4, 5, 6    | 2           |
 
 ![Wedge-Number](packages/seacas/doc-source/exodus/topology/wedge-face-numbering.png)
 
