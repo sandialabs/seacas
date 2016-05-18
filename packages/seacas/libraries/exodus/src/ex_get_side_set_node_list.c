@@ -53,14 +53,14 @@
 
 #include "exodusII.h"     // for ex_err, exerrval, ex_block, etc
 #include "exodusII_int.h" // for elem_blk_parm, EX_FATAL, etc
-#include <ctype.h>        // for toupper
-#include <inttypes.h>     // for PRId64
-#include <stddef.h>       // for size_t
+#include <assert.h>
+#include <ctype.h>    // for toupper
+#include <inttypes.h> // for PRId64
+#include <stddef.h>   // for size_t
 #include <stdio.h>
 #include <stdlib.h>    // for malloc, NULL, free
 #include <string.h>    // for strncmp, strlen
 #include <sys/types.h> // for int64_t
-#include <assert.h>
 
 /*!
  * This routine is designed to read the Exodus II V 2.0 side set side
@@ -179,40 +179,40 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   /* wedge */
   /* wedge 6 or 7 */
   static int wedge6_table[5][4] = {
-    {1, 2, 5, 4}, /* Side 1 nodes -- quad     */
-    {2, 3, 6, 5}, /* Side 2 nodes -- quad     */
-    {1, 4, 6, 3}, /* Side 3 nodes -- quad     */
-    {1, 3, 2, 0}, /* Side 4 nodes -- triangle */
-    {4, 5, 6, 0}  /* Side 5 nodes -- triangle */
+      {1, 2, 5, 4}, /* Side 1 nodes -- quad     */
+      {2, 3, 6, 5}, /* Side 2 nodes -- quad     */
+      {1, 4, 6, 3}, /* Side 3 nodes -- quad     */
+      {1, 3, 2, 0}, /* Side 4 nodes -- triangle */
+      {4, 5, 6, 0}  /* Side 5 nodes -- triangle */
   };
 
   /* wedge 15 or 16 */
   static int wedge15_table[5][8] = {
-      {1, 2, 5,  4,  7, 11, 13, 10}, /* Side 1 nodes -- quad     */
-      {2, 3, 6,  5,  8, 12, 14, 11}, /* Side 2 nodes -- quad     */
-      {1, 4, 6,  3, 10, 15, 12,  9}, /* Side 3 nodes -- quad     */
-      {1, 3, 2,  9,  8,  7,  0,  0}, /* Side 4 nodes -- triangle */
-      {4, 5, 6, 13, 14, 15,  0,  0}  /* Side 5 nodes -- triangle */
+      {1, 2, 5, 4, 7, 11, 13, 10}, /* Side 1 nodes -- quad     */
+      {2, 3, 6, 5, 8, 12, 14, 11}, /* Side 2 nodes -- quad     */
+      {1, 4, 6, 3, 10, 15, 12, 9}, /* Side 3 nodes -- quad     */
+      {1, 3, 2, 9, 8, 7, 0, 0},    /* Side 4 nodes -- triangle */
+      {4, 5, 6, 13, 14, 15, 0, 0}  /* Side 5 nodes -- triangle */
   };
 
   /* wedge 20 */
   static int wedge20_table[5][9] = {
-      {1, 2, 5,  4,  7, 11, 13, 10, 20}, /* Side 1 nodes -- quad     */
-      {2, 3, 6,  5,  8, 12, 14, 11, 18}, /* Side 2 nodes -- quad     */
-      {1, 4, 6,  3, 10, 15, 12,  9, 19}, /* Side 3 nodes -- quad     */
-      {1, 3, 2,  9,  8,  7, 16,  0,  0}, /* Side 4 nodes -- triangle */
-      {4, 5, 6, 13, 14, 15, 17,  0,  0}  /* Side 5 nodes -- triangle */
+      {1, 2, 5, 4, 7, 11, 13, 10, 20}, /* Side 1 nodes -- quad     */
+      {2, 3, 6, 5, 8, 12, 14, 11, 18}, /* Side 2 nodes -- quad     */
+      {1, 4, 6, 3, 10, 15, 12, 9, 19}, /* Side 3 nodes -- quad     */
+      {1, 3, 2, 9, 8, 7, 16, 0, 0},    /* Side 4 nodes -- triangle */
+      {4, 5, 6, 13, 14, 15, 17, 0, 0}  /* Side 5 nodes -- triangle */
   };
 
   /* wedge 21 */
   static int wedge21_table[5][9] = {
-      {1, 2, 5,  4,  7, 11, 13, 10, 21}, /* Side 1 nodes -- quad     */
-      {2, 3, 6,  5,  8, 12, 14, 11, 19}, /* Side 2 nodes -- quad     */
-      {1, 4, 6,  3, 10, 15, 12,  9, 20}, /* Side 3 nodes -- quad     */
-      {1, 3, 2,  9,  8,  7, 17,  0,  0}, /* Side 4 nodes -- triangle */
-      {4, 5, 6, 13, 14, 15, 18,  0,  0}  /* Side 5 nodes -- triangle */
+      {1, 2, 5, 4, 7, 11, 13, 10, 21}, /* Side 1 nodes -- quad     */
+      {2, 3, 6, 5, 8, 12, 14, 11, 19}, /* Side 2 nodes -- quad     */
+      {1, 4, 6, 3, 10, 15, 12, 9, 20}, /* Side 3 nodes -- quad     */
+      {1, 3, 2, 9, 8, 7, 17, 0, 0},    /* Side 4 nodes -- triangle */
+      {4, 5, 6, 13, 14, 15, 18, 0, 0}  /* Side 5 nodes -- triangle */
   };
-  
+
   /* wedge 18 */
   static int wedge18_table[5][9] = {
       {1, 2, 5, 4, 7, 11, 13, 10, 16}, /* Side 1 nodes -- quad     */
@@ -805,111 +805,111 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       }
 
       if (num_nodes_per_elem == 6 || num_nodes_per_elem == 7) {
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge6_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge6_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge6_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge6_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge6_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge6_table[side_num][node_off++] - 1);
 
-	if (side_num == 3 || side_num == 4) {
-	  /* This is one of the triangular faces */
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 3); /* 3 node side */
-	  assert(node_off == 3);
-	}
-	else {
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge6_table[side_num][node_off++] - 1);
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 4); /* 4 node side */
-	  assert(node_off == 4);
-	}
+        if (side_num == 3 || side_num == 4) {
+          /* This is one of the triangular faces */
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 3); /* 3 node side */
+          assert(node_off == 3);
+        }
+        else {
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge6_table[side_num][node_off++] - 1);
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 4); /* 4 node side */
+          assert(node_off == 4);
+        }
       }
-      
-      else if (num_nodes_per_elem == 15 || num_nodes_per_elem == 16) {
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge15_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge15_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge15_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge15_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge15_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge15_table[side_num][node_off++] - 1);
 
-	if (side_num == 3 || side_num == 4) {
-	  /* This is one of the triangular faces */
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 6); /* 6 node side */
-	  assert(node_off == 6);
-	}
-	else {
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge15_table[side_num][node_off++] - 1);
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge15_table[side_num][node_off++] - 1);
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 8); /* 8 node side */
-	  assert(node_off == 8);
-	}
+      else if (num_nodes_per_elem == 15 || num_nodes_per_elem == 16) {
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge15_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge15_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge15_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge15_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge15_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge15_table[side_num][node_off++] - 1);
+
+        if (side_num == 3 || side_num == 4) {
+          /* This is one of the triangular faces */
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 6); /* 6 node side */
+          assert(node_off == 6);
+        }
+        else {
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge15_table[side_num][node_off++] - 1);
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge15_table[side_num][node_off++] - 1);
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 8); /* 8 node side */
+          assert(node_off == 8);
+        }
       }
       else if (num_nodes_per_elem == 20) {
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge20_table[side_num][node_off++] - 1);
 
-	if (side_num == 3 || side_num == 4) {
-	  /* This is one of the triangular faces */
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 7); /* 7 node side */
-	  assert(node_off == 7);
-	}
-	else {
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge20_table[side_num][node_off++] - 1);
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge20_table[side_num][node_off++] - 1);
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 9); /* 9 node side */
-	  assert(node_off == 9);
-	}
+        if (side_num == 3 || side_num == 4) {
+          /* This is one of the triangular faces */
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 7); /* 7 node side */
+          assert(node_off == 7);
+        }
+        else {
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge20_table[side_num][node_off++] - 1);
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge20_table[side_num][node_off++] - 1);
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 9); /* 9 node side */
+          assert(node_off == 9);
+        }
       }
       else if (num_nodes_per_elem == 21) {
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
-	get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
+        get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                  connect_offset + wedge21_table[side_num][node_off++] - 1);
 
-	if (side_num == 3 || side_num == 4) {
-	  /* This is one of the triangular faces */
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 7); /* 7 node side */
-	}
-	else {
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge21_table[side_num][node_off++] - 1);
-	  get_nodes(exoid, side_set_node_list, node_pos++, connect,
-		    connect_offset + wedge21_table[side_num][node_off++] - 1);
-	  set_count(exoid, side_set_node_cnt_list, elem_ndx, 9); /* 9 node side */
-	}
+        if (side_num == 3 || side_num == 4) {
+          /* This is one of the triangular faces */
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 7); /* 7 node side */
+        }
+        else {
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge21_table[side_num][node_off++] - 1);
+          get_nodes(exoid, side_set_node_list, node_pos++, connect,
+                    connect_offset + wedge21_table[side_num][node_off++] - 1);
+          set_count(exoid, side_set_node_cnt_list, elem_ndx, 9); /* 9 node side */
+        }
       }
       else if (num_nodes_per_elem == 18) {
         /* Wedge 18 - 9-node quad faces (0,1,2) and 6-node tri faces (3,4) */
@@ -930,9 +930,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
         if (side_num == 3 || side_num == 4) {
           set_count(exoid, side_set_node_cnt_list, elem_ndx, 6); /* 6 node side */
-	  assert(node_off == 6);
-	}
-	else {
+          assert(node_off == 6);
+        }
+        else {
           get_nodes(exoid, side_set_node_list, node_pos++, connect,
                     connect_offset + wedge18_table[side_num][node_off++] - 1);
           get_nodes(exoid, side_set_node_list, node_pos++, connect,
@@ -940,7 +940,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
           get_nodes(exoid, side_set_node_list, node_pos++, connect,
                     connect_offset + wedge18_table[side_num][node_off++] - 1);
           set_count(exoid, side_set_node_cnt_list, elem_ndx, 9); /* 9 node side */
-	  assert(node_off == 9);
+          assert(node_off == 9);
         }
       }
       break;
