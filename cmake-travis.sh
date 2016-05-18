@@ -1,4 +1,5 @@
 #! /usr/bin/env sh
+MPI=$@
 
 ### Change this to point to the compilers you want to use
 if [ "$MPI" == "ON" ]
