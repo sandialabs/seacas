@@ -114,7 +114,7 @@ These are usable in 2D or 3D meshes.  In a 3D mesh, they would represent triangu
 ![Tri6](packages/seacas/doc-source/exodus/topology/tri6.png)
 ![Tri7](packages/seacas/doc-source/exodus/topology/tri7.png)
 
-The side numberings for a tri element are shown below.  For a triangular shell, there are five sides. Side 1 is the "top" of the triangle given by nodes 1-2-3 and side 2 is the "bottom" of the triangle given by nodes 3-2-1.  Sides 3,4,5 correspond to sides 1,2,3 of the 2D triangle.
+The side numbering for a tri element is shown below.  For a triangular shell, there are five sides. Side 1 is the "top" of the triangle given by nodes 1-2-3 and side 2 is the "bottom" of the triangle given by nodes 3-2-1.  Sides 3,4,5 correspond to sides 1,2,3 of the 2D triangle.
 
  Element Type |Side \#|Node Order  |
  -------------|-------|------------|
@@ -140,7 +140,7 @@ These are usable in 2D or 3D meshes.  In a 3D mesh, they represent a quadrilater
 ![Quad8](packages/seacas/doc-source/exodus/topology/quad8.png)
 ![Quad9](packages/seacas/doc-source/exodus/topology/quad9.png)
 
-The side numberings for a 2D quadrialateral element and a 3D quadrilateral shell element are shown below.
+The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell element are shown below.
 
  Element Type |Side \#|Node Order  |
  -------------|-------|------------|
@@ -172,7 +172,7 @@ The side numberings for a 2D quadrialateral element and a 3D quadrilateral shell
 ![Tet14](packages/seacas/doc-source/exodus/topology/tet14.png)
 ![Tet15](packages/seacas/doc-source/exodus/topology/tet15.png)
 
-The side numberings for a tetrahedral element type are shown below.
+The side numbering for a tetrahedral element type is shown below.
 
  Element Type |Side \#|Node Order  |
 --------------|-------|------------|
@@ -186,7 +186,7 @@ TETRA         | 1     | 1, 2, 4    |
 ### Pyramidal Element Types
 ![Pyramid](packages/seacas/doc-source/exodus/topology/pyramid.png)
 
-The side numbering for a pyramidal element type are shown below.
+The side numbering for a pyramidal element type is shown below.
 
  Element Type |Side \#|Node Order  |
 --------------|-------|------------|
@@ -206,7 +206,7 @@ PYRAMID|1 | 1, 2, 5 |
 ![Wedge20](packages/seacas/doc-source/exodus/topology/wedge20.png)
 ![Wedge21](packages/seacas/doc-source/exodus/topology/wedge21.png)
 
-The side numbering for a wedge element type are shown below. Note that
+The side numbering for a wedge element type is shown below. Note that
 the face mapping for this element does not match the MSC/Patran face
 mapping. In exodus, sides 1,2,3 are quadrilateral and sides 4,5 are
 triangular; in MSC/Patran, sides 1,2 are triangular and sides 4,5,6
@@ -230,7 +230,7 @@ WEDGE         | 1     | 1, 2, 5, 4 | 3           |
 ![Hex20](packages/seacas/doc-source/exodus/topology/hex20.png)
 ![Hex27](packages/seacas/doc-source/exodus/topology/hex27.png)
 
-The side numbering for a hexahedral element type are shown below.
+The side numbering for a hexahedral element type is shown below.
 
  Element Type |Side \#|Node Order  |
 --------------|-------|------------|
