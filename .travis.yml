@@ -8,8 +8,12 @@ compiler:
   - clang
 
 env:
-  - MPI="ON" MPI="OFF"
-  - MPI="OFF" MPI="ON"
+  global:
+  - TESTING=ON
+  - IS_BAD=greg
+  matrix:
+   - MPI=ON GDS=OFF
+   - MPI=OFF GDS=ON
 
 before_install:
   - sudo apt-get update -qq
