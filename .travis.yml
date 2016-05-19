@@ -21,16 +21,16 @@ before_install:
   - sudo apt-get -y install libcgns-dev
   - sudo apt-get -y install libmatio-dev
   - sudo apt-get -y install libz-dev
-  - if [ -z $MPI ]; then sudo apt-get -y install libnetcdf-dev; fi
-  - if [ -n $MPI ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
-  - if [ -n $MPI ]; then sudo apt-get -y install libmpich-dev; fi
-  - if [ -n $MPI ]; then sudo apt-get -y install mpich2; fi
+  - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install libmpich-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install mpich2; fi
 
 before_script:
 
 install:
   - mkdir build && cd build
-  - if [ -n $MPI ]; then ../cmake-travis-mpi.sh; else ../cmake-travis.sh; fi
+  - if [ -n "$MPI" ]; then ../cmake-travis-mpi.sh; else ../cmake-travis.sh; fi
   - make
   - cd ..
 
