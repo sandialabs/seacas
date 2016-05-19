@@ -22,7 +22,7 @@ before_install:
   - sudo apt-get -y install libmatio-dev
   - sudo apt-get -y install libz-dev
   - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
-  - if [ -n "$MPI" ]; then sudo apt-get -y install mpich2; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
 
 before_script:
