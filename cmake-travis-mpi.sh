@@ -24,7 +24,7 @@ mpiexec --help
 MPI_EXEC=`which mpiexec`
 MPI_BIN=`dirname "${MPI_EXEC}"`
 
-mkdir $BUILDDIR && cd BUILDDIR
+mkdir $BUILDDIR && cd $BUILDDIR
 
 cmake \
   -DTPL_ENABLE_MPI=ON \
