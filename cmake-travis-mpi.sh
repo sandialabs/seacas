@@ -12,6 +12,9 @@ CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fs
 cd $ACCESS
 pwd
 
+MPI_EXEC=`which mpiexec`
+MPI_BIN=`dirname "${MPI_EXEC}"`
+
 mkdir build && cd build
 
 cmake \
@@ -37,6 +40,7 @@ cmake \
   -DTPL_ENABLE_X11:BOOL=ON \
   -DTPL_ENABLE_Zlib:BOOL=ON \
   -DZoltan_ENABLE_TESTS:BOOL=OFF \
+  -DMPI_BIN_DIR:PATH=${MPI_BIN} \
   ../
 
 make
