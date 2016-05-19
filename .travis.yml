@@ -6,14 +6,20 @@ language: c++
 compiler:
   - gcc
   - clang
-
 env:
-  global:
-  - TESTING=ON
-  - IS_BAD=greg
-  matrix:
-   - MPI=ON GDS=OFF
-   - MPI=OFF GDS=ON
+  - MPI=ON
+  - MPI=OFF
+
+matrix:
+  include:
+    - compiler: gcc
+      env: MPI=OFF
+    - compiler: gcc
+      env: MPI=ON
+    - compiler: clang
+      env: MPI=OFF
+    - compiler: clang
+      env: MPI=ON
 
 before_install:
   - sudo apt-get update -qq
