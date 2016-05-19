@@ -1,6 +1,11 @@
 #! /usr/bin/env sh
+if [ "$1" != "" ]; then
+   BUILDDIR=$1
+else
+   BUILDDIR=build
+fi
 
-mkdir build && cd build
+mkdir $BUILDDIR && cd BUILDDIR
 
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
@@ -22,6 +27,6 @@ cmake \
   -DTPL_ENABLE_Zlib:BOOL=ON \
   ../
 
-make
+make -j2
 
 cd ..
