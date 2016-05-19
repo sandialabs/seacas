@@ -29,7 +29,7 @@ before_script:
 
 install:
   - mkdir build && cd build
-  - ../cmake-travis.sh ${MPI}
+  - sh -x ../cmake-travis.sh ${MPI}
   - make
   - cd ..
 
