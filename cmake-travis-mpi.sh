@@ -1,14 +1,17 @@
 #! /usr/bin/env sh
 
 # Install parallel version of netcdf library...
+ACCESS=`pwd`
 pwd
+cd TPL/netcdf
 wget https://github.com/Unidata/netcdf-c/archive/v4.4.0.tar.gz; fi
 tar -xzvf v4.4.0.tar.gz; fi
 cd netcdf-c-4.4.0
-CC=mpicc ./configure --prefix=/usr --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
+CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
 cd -
-
 pwd
+
+mkdir build && cd build
 
 cmake \
   -DTPL_ENABLE_MPI=ON \
@@ -18,6 +21,7 @@ cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_CXX_FLAGS="-Wall -pedantic" \
   -DCMAKE_C_FLAGS="-Wall -pedantic" \
+  -DNetCDF_DIR:PATH=${ACCESS} \
   -DHDF5_ROOT:PATH=/usr/ \
   -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
   -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \

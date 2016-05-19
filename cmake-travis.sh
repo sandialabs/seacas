@@ -1,5 +1,7 @@
 #! /usr/bin/env sh
 
+mkdir build && cd build
+
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_CXX_FLAGS="-Wall -pedantic" \
