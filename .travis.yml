@@ -7,22 +7,28 @@ compiler:
   - gcc
   - clang
 
+matrix:
+  include:
+    - compiler: gcc
+      env: MPI=ON
+    - compiler: clang
+      env: MPI=ON
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get -y install cmake
   - sudo apt-get -y install gfortran
   - sudo apt-get -y install libcgns-dev
   - sudo apt-get -y install libmatio-dev
-  - sudo apt-get -y install libnetcdf-dev
   - sudo apt-get -y install libz-dev
+  - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install mpich2; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
 
 before_script:
 
 install:
-  - mkdir build && cd build
-  - ../cmake-travis.sh
-  - make
-  - cd ..
+  - if [ -n "$MPI" ]; then ./cmake-travis-mpi.sh; else ./cmake-travis.sh; fi
 
 script:
   - cd build

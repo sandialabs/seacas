@@ -27,10 +27,15 @@ library, the IOSS library, nem_slice, and nem_spread.
  quad5  |  X   |       |           |    |
  quad9  |  X   |    X  |    X      |  X |
         |      |       |           |    |
- tri3   |  X   |    X  |    X      |  X |
- tri4   |  X   |    X  |    X      |  X |
- tri6   |  X   |    X  |    X      |  X |
- tri7   |  X   |    X  |    X      |  X |
+ tri3 (2D)|  X   |    X  |    X      |  X |
+ tri4 (2D)|  X   |    X  |    X      |  X |
+ tri6 (2D)|  X   |    X  |    X      |  X |
+ tri7 (2D)|  X   |    X  |    X      |  X |
+        |      |       |           |    |
+ tri3 (3D)|  X   |    X  |    X      |  X |
+ tri4 (3D)|  X   |    X  |    X      |  X |
+ tri6 (3D)|  X   |    X  |    X      |  X |
+ tri7 (3D)|  X   |    X  |    X      |  X |
         |      |       |           |    |
  shell2 |  X   |    X  |    X      |  X |
  shell3 |      |       |    X      |  X |
