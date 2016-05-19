@@ -32,9 +32,9 @@ install:
   - set curdir=`pwd`
   - if [ $MPI == ON ]; then wget https://github.com/Unidata/netcdf-c/archive/v4.4.0.tar.gz; fi
   - if [ $MPI == ON ]; then tar -xzvf v4.4.0.tar.gz; fi
-  - if [ $MPI == ON ]; then cd netcdf-c-4.4.0 && CC=mpich ./configure --prefix=/usr --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install; fi
+  - if [ $MPI == ON ]; then cd netcdf-c-4.4.0 && CC=mpicc ./configure --prefix=/usr --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install; fi
   - cd $curdir
-  - mkdir build && cd build
+  - mkdir -f build && cd build
   - if [ $MPI == ON ]; then ../cmake-travis-mpi.sh; else ../cmake-travis.sh; fi
   - make
   - cd ..
