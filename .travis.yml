@@ -22,8 +22,10 @@ before_install:
   - sudo apt-get -y install libmatio-dev
   - sudo apt-get -y install libnetcdf-dev
   - sudo apt-get -y install libz-dev
-  - sudo apt-get -y install libmpich-dev
-  - sudo apt-get -y install mpich2
+  - if [ $MPI == ON ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
+  - if [ $MPI == ON ]; then sudo apt-get -y install libpnetcdf-dev; fi
+  - if [ $MPI == ON ]; then sudo apt-get -y install libmpich-dev; fi
+  - if [ $MPI == ON ]; then sudo apt-get -y install mpich2; fi
 
 before_script:
 
