@@ -20,16 +20,20 @@ before_install:
   - sudo apt-get -y install gfortran
   - sudo apt-get -y install libcgns-dev
   - sudo apt-get -y install libmatio-dev
-  - sudo apt-get -y install libnetcdf-dev
   - sudo apt-get -y install libz-dev
+  - if [ $MPI != ON ]; then sudo apt-get -y install libnetcdf-dev; fi
   - if [ $MPI == ON ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
-  - if [ $MPI == ON ]; then sudo apt-get -y install libpnetcdf-dev; fi
   - if [ $MPI == ON ]; then sudo apt-get -y install libmpich-dev; fi
   - if [ $MPI == ON ]; then sudo apt-get -y install mpich2; fi
 
 before_script:
 
 install:
+  - set curdir=`pwd`
+  - if [ $MPI == ON ]; then wget https://github.com/Unidata/netcdf-c/archive/v4.4.0.tar.gz; fi
+  - if [ $MPI == ON ]; then tar -xzvf v4.4.0.tar.gz; fi
+  - if [ $MPI == ON ]; then cd netcdf-c-4.4.0 && CC=mpich ./configure --prefix=/usr --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install; fi
+  - cd $curdir
   - mkdir build && cd build
   - if [ $MPI == ON ]; then ../cmake-travis-mpi.sh; else ../cmake-travis.sh; fi
   - make
