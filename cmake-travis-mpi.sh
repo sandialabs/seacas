@@ -12,6 +12,9 @@ CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fs
 cd $ACCESS
 pwd
 
+mpiexec --version
+mpiexec --help
+
 MPI_EXEC=`which mpiexec`
 MPI_BIN=`dirname "${MPI_EXEC}"`
 
