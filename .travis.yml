@@ -6,18 +6,11 @@ language: c++
 compiler:
   - gcc
   - clang
-env:
-  - MPI=ON
-  - MPI=OFF
 
 matrix:
   include:
     - compiler: gcc
-      env: MPI=OFF
-    - compiler: gcc
       env: MPI=ON
-    - compiler: clang
-      env: MPI=OFF
     - compiler: clang
       env: MPI=ON
 
