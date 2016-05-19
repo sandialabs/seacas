@@ -9,6 +9,7 @@ compiler:
 
 env:
   - MPI="ON" MPI="OFF"
+  - MPI="OFF" MPI="ON"
 
 before_install:
   - sudo apt-get update -qq
