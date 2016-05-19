@@ -8,7 +8,8 @@ wget https://github.com/Unidata/netcdf-c/archive/v4.4.0.tar.gz; fi
 tar -xzvf v4.4.0.tar.gz; fi
 cd netcdf-c-4.4.0
 CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
-cd -
+
+cd $ACCESS
 pwd
 
 mkdir build && cd build
