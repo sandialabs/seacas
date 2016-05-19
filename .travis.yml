@@ -8,8 +8,9 @@ compiler:
   - clang
 
 env:
-  - MPI="ON"
-  - MPI="OFF"
+  matrix:
+    - MPI="ON"
+    - MPI="OFF"
 
 before_install:
   - sudo apt-get update -qq
