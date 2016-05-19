@@ -21,3 +21,7 @@ cmake \
   -DTPL_ENABLE_X11:BOOL=ON \
   -DTPL_ENABLE_Zlib:BOOL=ON \
   ../
+
+make
+
+cd ..
