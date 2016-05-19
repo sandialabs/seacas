@@ -29,7 +29,7 @@ before_script:
 
 install:
   - mkdir build && cd build
-  - sh -x ../cmake-travis.sh ${MPI}
+  - if [ $MPI == ON ]; then ../cmake-travis-mpi.sh; else ../cmake-travis.sh; fi
   - make
   - cd ..
 

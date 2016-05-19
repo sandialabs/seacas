@@ -1,6 +1,10 @@
 #! /usr/bin/env sh
 
 cmake \
+  -DTPL_ENABLE_MPI=ON \
+  -DCMAKE_CXX_COMPILER:FILEPATH=mpicxx \
+  -DCMAKE_C_COMPILER:FILEPATH=mpicc \
+  -DCMAKE_Fortran_COMPILER:FILEPATH=mpif77" \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_CXX_FLAGS="-Wall -pedantic" \
   -DCMAKE_C_FLAGS="-Wall -pedantic" \
