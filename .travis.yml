@@ -47,8 +47,8 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email: gsjaardema@gmail.com
 
-    build_command_prepend: "mkdir coverity && cd coverity && ../cmake-travis.sh && cd .."
+    build_command_prepend: 
 
-    build_command: "cd coverity && make -j 4"
+    build_command: "./cmake-travis.sh coverity"
 
     branch_pattern: coverity_scan
