@@ -36,6 +36,7 @@ cmake \
   -DTPL_ENABLE_Pamgen:BOOL=OFF \
   -DTPL_ENABLE_X11:BOOL=ON \
   -DTPL_ENABLE_Zlib:BOOL=ON \
+  -DZoltan_ENABLE_TESTS:BOOL=OFF \
   ../
 
 make
