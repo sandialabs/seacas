@@ -5,7 +5,6 @@ MPI=$@
 if [ "$MPI" == "ON" ]
 then
   COMPILER = "-DCMAKE_CXX_COMPILER:FILEPATH=mpicxx -DCMAKE_C_COMPILER:FILEPATH=mpicc -DCMAKE_Fortran_COMPILER:FILEPATH=mpif77"
-else
 fi
 
 cmake \
