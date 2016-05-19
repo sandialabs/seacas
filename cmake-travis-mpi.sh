@@ -1,5 +1,11 @@
 #! /usr/bin/env sh
 
+if [ "$1" != "" ]; then
+   BUILDDIR=$1
+else
+   BUILDDIR=build
+fi
+
 # Install parallel version of netcdf library...
 ACCESS=`pwd`
 pwd
@@ -18,7 +24,7 @@ mpiexec --help
 MPI_EXEC=`which mpiexec`
 MPI_BIN=`dirname "${MPI_EXEC}"`
 
-mkdir build && cd build
+mkdir $BUILDDIR && cd BUILDDIR
 
 cmake \
   -DTPL_ENABLE_MPI=ON \
@@ -46,6 +52,6 @@ cmake \
   -DMPI_BIN_DIR:PATH=${MPI_BIN} \
   ../
 
-make
+make -j2
 
 cd $ACCESS
