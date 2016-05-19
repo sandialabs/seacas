@@ -1,5 +1,15 @@
 #! /usr/bin/env sh
 
+# Install parallel version of netcdf library...
+pwd
+wget https://github.com/Unidata/netcdf-c/archive/v4.4.0.tar.gz; fi
+tar -xzvf v4.4.0.tar.gz; fi
+cd netcdf-c-4.4.0
+CC=mpicc ./configure --prefix=/usr --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
+cd -
+
+pwd
+
 cmake \
   -DTPL_ENABLE_MPI=ON \
   -DCMAKE_CXX_COMPILER:FILEPATH=mpicxx \
