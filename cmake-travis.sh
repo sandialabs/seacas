@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
 
+if [ "$1" != "" ]; then
+   BUILDDIR=$1
+else
+   BUILDDIR=build
+fi
+
+mkdir $BUILDDIR && cd BUILDDIR
+
 cmake \
   -DBUILD_SHARED_LIBS:BOOL=ON \
   -DCMAKE_CXX_FLAGS="-Wall -pedantic" \
@@ -19,3 +27,7 @@ cmake \
   -DTPL_ENABLE_X11:BOOL=ON \
   -DTPL_ENABLE_Zlib:BOOL=ON \
   ../
+
+make -j2
+
+cd ..
