@@ -38,7 +38,7 @@ library, the IOSS library, nem_slice, and nem_spread.
  tri7 (3D)|  X   |    X  |    X      |  X |
         |      |       |           |    |
  shell2 |  X   |    X  |    X      |  X |
- shell3 |      |       |    X      |  X |
+ shell3 |      |    X  |    X      |  X |
  shell4 |  X   |    X  |    X      |  X |
  shell8 |  X   |    X  |    X      |  X |
  shell9 |  X   |    X  |    X      |  X |
