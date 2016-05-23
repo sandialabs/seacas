@@ -4,6 +4,7 @@
 \usepackage[nohyphen]{underscore}
 \usepackage[hyper]{listings}
 \usepackage{setspace}
+\usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{alltt}
 \usepackage{calc}
@@ -27,12 +28,11 @@
 \newcommand{\rd}[0]{\superscript{rd}}
 % Carl took 1\st place. Elly, Tom and Ann came in 2\nd, 3\rd and 4\th.
 
-% Turn of making it permissible to break a word at an underscore.
+% Turn off making it permissible to break a word at an underscore.
 % This is so the funcdef and funcdefv format correctly...
 \makeatletter
 \renewcommand{\BreakableUnderscore}{\leavevmode\nobreak
- \ifx\f@family\ttdefault \string_\else \textunderscore\fi
- \nobreak}
+ \string_\nobreak}
 \makeatother
 
 \newcommand{\texifylineno}[1]{{\footnotesize\hspace{-4em}\makebox[4em][r]{#1\hspace{1.5ex}}}}
@@ -141,6 +141,7 @@ Intentionally Left Blank
 \end{center}
 \pagestyle{headings}
 \include{01-Introduction}
+\include{02-Changes}
 \include{02-Development}
 \include{03-DataObjects}
 \include{04-API}
