@@ -383,11 +383,6 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 #endif
         return false;
       }
-
-      if (data_storage_type == 4) {
-        std::cerr << "ERROR: Option data_storage KOKKOS_VIEW_2D not yet implemented." << std::endl;
-        return false;
-      }
     }
   }
 
