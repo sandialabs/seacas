@@ -80,6 +80,7 @@ ENDIF()
 
 ADD_SUBDIRECTORY(src)
 
+IF (Zoltan_ENABLE_TESTS) 
 TRIBITS_ADD_TEST_DIRECTORIES(src/driver)
 
 IF(ZOLTAN_BUILD_ZFDRIVE)
@@ -125,6 +126,7 @@ TRIBITS_EXCLUDE_FILES(
   src/fdriver_old
   )
 
+ENDIF()
 #
 # D) Do standard postprocessing
 #
