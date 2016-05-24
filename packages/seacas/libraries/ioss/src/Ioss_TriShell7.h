@@ -1,7 +1,8 @@
 /*
- * Copyright (C) 2009 Sandia Corporation.  Under the terms of Contract
+ * Copyright(C) 1999-2010
+ * Sandia Corporation. Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- * certain rights in this software
+ * certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -14,7 +15,6 @@
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
- *
  *     * Neither the name of Sandia Corporation nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
@@ -30,66 +30,52 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
+#ifndef IOSS_Ioss_TriShell7_h
+#define IOSS_Ioss_TriShell7_h
 
-/*
- * Define element types.
- */
+#include <Ioss_CodeTypes.h>       // for IntVector
+#include <Ioss_ElementTopology.h> // for ElementTopology
 
-/* 1-d elements */
+// STL Includes
 
-#define BAR2 0
-#define BAR3 1
-#define SHELL2 2
-#define SHELL3 3
+namespace Ioss {
+  class TriShell7 : public Ioss::ElementTopology
+  {
 
-/* 2-d elements */
+  public:
+    static void factory();
+    ~TriShell7() override;
 
-#define QUAD4 14
-#define QUAD8 18
-#define QUAD9 19
-#define TRI3 23
-#define TRI4 24
-#define TRI6 26
-#define TRI7 27
+    ElementShape shape() const override { return ElementShape::TRI; }
+    int          spatial_dimension() const override;
+    int          parametric_dimension() const override;
+    bool         is_element() const override { return true; }
+    int          order() const override;
 
-/* 3-d elements */
+    int number_corner_nodes() const override;
+    int number_nodes() const override;
+    int number_edges() const override;
+    int number_faces() const override;
 
-#define HEX8 108
-#define HEX20 120
-#define HEX27 127
-#define TET4 204
-#define TET10 210
-#define TET8 208
-#define TET14 214
-#define TET15 215
-#define SHELL4 304
-#define SHELL8 308
-#define SHELL9 309
-#define SPHERE 401
-#define WEDGE6 506
-#define WEDGE15 515
-#define WEDGE16 516
-#define WEDGE20 520
-#define WEDGE21 521
-#define HEXSHELL 608
-#define TSHELL3 703
-#define TSHELL4 704
-#define TSHELL6 706
-#define TSHELL7 707
-#define PYRAMID5 805
-#define PYRAMID13 813
+    int number_nodes_edge(int edge = 0) const override;
+    int number_nodes_face(int face = 0) const override;
+    int number_edges_face(int face = 0) const override;
 
-/* define element data "request for information" types */
+    Ioss::IntVector edge_connectivity(int edge_number) const override;
+    Ioss::IntVector face_connectivity(int face_number) const override;
+    Ioss::IntVector element_connectivity() const override;
 
-#define NNODES 1
-#define NDIM 3
-#define NINTERP 5
-#define NN_SIDE 6
+    Ioss::ElementTopology *face_type(int face_number = 0) const override;
+    Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
 
-/******************************* PROTOTYPES FOR el_elm_info.c ****************/
+  protected:
+    TriShell7();
 
-extern int elem_info(int info, int ielem_type, int supp);
+  private:
+    static TriShell7 instance_;
 
-extern int get_type(char string[], int nodes, int num_dim);
+    TriShell7(const TriShell7 &); // Do not implement
+  };
+}
+#endif // IOSS_Ioss_TriShell7_h
