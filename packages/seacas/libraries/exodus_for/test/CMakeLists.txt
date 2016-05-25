@@ -64,7 +64,8 @@ IF ( NETCDF_NCDUMP_BINARY )
 	  PASS_ANY
    TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_unit_tests.gold 
 		         ${CMAKE_CURRENT_BINARY_DIR}/exodus_unit_tests.out
-   COMM serial		      
+   COMM mpi serial
+   OVERALL_NUM_MPI_PROCS 1
    FINAL_PASS_REGULAR_EXPRESSION 
   )
 ELSE()
