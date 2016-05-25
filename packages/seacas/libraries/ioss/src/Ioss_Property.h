@@ -91,7 +91,8 @@ namespace Ioss {
      */
     bool is_valid() const { return type_ != INVALID; }
 
-    /** Tells whether the property has an invalid type (currently not one of REAL, INTEGER, POINTER, or STRING)
+    /** Tells whether the property has an invalid type (currently not one of REAL, INTEGER, POINTER,
+     * or STRING)
      *
      *  \returns True if the property type is invalid.
      */
@@ -107,7 +108,7 @@ namespace Ioss {
      *
      *  \returns The property type.
      */
-    BasicType   get_type() const { return type_; }
+    BasicType get_type() const { return type_; }
 
   private:
     Property &   operator=(const Property &); // Do not implement

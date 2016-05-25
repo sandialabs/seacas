@@ -70,7 +70,6 @@ namespace {
   }
 } // namespace
 
-
 /** \brief Create an empty field.
  */
 Ioss::Field::Field()
@@ -84,8 +83,10 @@ Ioss::Field::Field()
  *
  *  \param[in] name The name of the field
  *  \param[in] type The basic data type of data held in the field.
- *  \param[in] storage The storage class of the data (ConstructedVariableType, CompositeVariableType, etc)
- *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc)
+ *  \param[in] storage The storage class of the data (ConstructedVariableType,
+ * CompositeVariableType, etc)
+ *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT,
+ * REDUCTION, etc)
  *  \param[in] value_count The number of items in the field.
  *  \param[in] index
  *
@@ -103,9 +104,11 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type, const st
  *
  *  \param[in] name The name of the field
  *  \param[in] type The basic data type of data held in the field.
- *  \param[in] storage The storage class of the data (ConstructedVariableType, CompositeVariableType, etc)
+ *  \param[in] storage The storage class of the data (ConstructedVariableType,
+ * CompositeVariableType, etc)
  *  \param[in] copies The number of variables to be combined in a CompositeVariableType field.
- *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc)
+ *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT,
+ * REDUCTION, etc)
  *  \param[in] value_count The number of items in the field.
  *  \param[in] index
  *
@@ -123,8 +126,10 @@ Ioss::Field::Field(std::string name, const Ioss::Field::BasicType type, const st
  *
  *  \param[in] name The name of the field
  *  \param[in] type The basic data type of data held in the field.
- *  \param[in] storage The storage class of the data (ConstructedVariableType, CompositeVariableType, etc)
- *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc)
+ *  \param[in] storage The storage class of the data (ConstructedVariableType,
+ * CompositeVariableType, etc)
+ *  \param[in] role The category of information held in the field (MESH, ATTRIBUTE, TRANSIENT,
+ * REDUCTION, etc)
  *  \param[in] value_count The number of items in the field.
  *  \param[in] index
  *

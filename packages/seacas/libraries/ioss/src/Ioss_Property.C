@@ -59,7 +59,8 @@ namespace {
   }
 } // namespace
 
-/** \brief Create an explicit, empty property having no name, INVALID type, and UNKNOWN_VAR_TYPE storage.
+/** \brief Create an explicit, empty property having no name, INVALID type, and UNKNOWN_VAR_TYPE
+ * storage.
  */
 Ioss::Property::Property()
     : name_(""), type_(INVALID), storage_(UNKNOWN_VAR_TYPE), isImplicit_(false)
