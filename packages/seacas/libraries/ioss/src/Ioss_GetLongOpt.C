@@ -33,7 +33,7 @@ namespace Ioss {
    *
    *  Finds the last instance of the '/' character and
    *  extracts the part of the string that follows.
-   *  
+   *
    *  \param[in] pathname The full path.
    *  \return The base file name.
    */
