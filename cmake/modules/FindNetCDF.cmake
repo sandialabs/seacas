@@ -384,7 +384,7 @@ foreach( tool ${_netcdf_TOOLS})
   set(_netcdf_VAR_NAME NETCDF_${tool_uc}_BINARY)
   find_program(${_netcdf_VAR_NAME}
                ${tool}
-               HINTS ${NetCDF_BINARY_DIR}
+               HINTS ${NetCDF_BINARY_DIR})
   if (${_netcdf_VAR_NAME})
     list(APPEND NETCDF_TOOLS_FOUND ${tool})
   endif()
