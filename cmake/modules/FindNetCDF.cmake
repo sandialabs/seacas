@@ -373,7 +373,7 @@ else()
 
 
     if ( NOT NetCDF_BINARY_DIR )
-        message(SEND_ERROR "Can not locate NetCDF bin directory")
+        message(STATUS "Can not locate NetCDF bin directory")
     endif()
 endif()
 
@@ -385,7 +385,6 @@ foreach( tool ${_netcdf_TOOLS})
   find_program(${_netcdf_VAR_NAME}
                ${tool}
                HINTS ${NetCDF_BINARY_DIR}
-               ${_netcdf_FIND_OPTIONS})
   if (${_netcdf_VAR_NAME})
     list(APPEND NETCDF_TOOLS_FOUND ${tool})
   endif()
