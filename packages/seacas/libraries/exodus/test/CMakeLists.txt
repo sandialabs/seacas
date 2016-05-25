@@ -25,15 +25,21 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES ${ExoIICTests}
 )
 
-find_program (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP
+if ( NETCDF_NCDUMP_BINARY )
+   # Do nothing. Set earlier in config process...
+else()
+   find_program (NETCDF_NCDUMP_BINARY
 	     NAME ncdump
 	     PATHS 
-                ${Netcdf_LIBRARY_DIRS}/../bin
-	        $ENV{ACCESS}/bin
-	        $ENV{NETCDF_DIR}/bin
-	        $ENV{NETCDF_DIR}/ncdump
-		ENV PATH
+	       ${NetCDF_BINARY_DIR}
+               ${Netcdf_LIBRARY_DIRS}/../bin
+               $ENV{ACCESS}/bin
+               $ENV{NETCDF_DIR}/bin
+               $ENV{NETCDF_DIR}/ncdump
+               ENV PATH
+	        ${NetCDF_DIR}/bin
 	     )
+endif()
 	     
 TRIBITS_ADD_TEST(
 	ExoIICTests
@@ -60,8 +66,8 @@ ENDIF()
 
 # ===============================================
 
-IF (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP)
-  SET(NETCDF_NCDUMP ${${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP})
+IF (${NETCDF_NCDUMP_BINARY})
+  SET(NETCDF_NCDUMP ${NETCDF_NCDUMP_BINARY})
   SET( cbind_OLDTESTS
     testwt
     testwtd
@@ -121,7 +127,7 @@ IF (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP)
 	  PASS_ANY
    TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_unit_tests.gold 
 		         ${CMAKE_CURRENT_BINARY_DIR}/exodus_unit_tests.out
-   COMM serial		      
+   COMM mpi serial
    FINAL_PASS_REGULAR_EXPRESSION 
   )
 ELSE()

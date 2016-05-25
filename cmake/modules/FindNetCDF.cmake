@@ -56,7 +56,6 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
         set(NetCDF_LIBRARY_DIR "${NetCDF_LIBRARY_DIR}" CACHE PATH "Path to search for NetCDF library files")
     endif()
 
-    
     # Search for include files
     # Search order preference:
     #  (1) NetCDF_INCLUDE_DIR - check existence of path AND if the include files exist
@@ -316,6 +315,82 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
 endif(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )    
 
+# --- Search for NetCDF tools
+if ( NetCDF_BINARY_DIR )
+    # Do nothing. Variables are set. No need to search again
+else()
+    if(NetCDF_BINARY_DIR)
+        set(NetCDF_BINARY_DIR "${NetCDF_BINARY_DIR}" CACHE PATH "Path to search for NetCDF tools")
+    endif()
+
+    set(netcdf_bin_names "ncdump")
+    if (NetCDF_BINARY_DIR)
+
+        if (EXISTS "${NetCDF_BINARY_DIR}")
+
+            find_path(cdf_test_bin_path
+                      NAMES ${netcdf_bin_names}
+                      HINTS ${NetCDF_BINARY_DIR}
+                      NO_DEFAULT_PATH)
+            if(NOT cdf_test_bin_path)
+                message(SEND_ERROR "Can not locate ${netcdf_bin_names} in ${NetCDF_BINARY_DIR}")
+            endif()
+            set(NetCDF_BINARY_DIR "${cdf_test_bin_path}")
+
+        else()
+            message(SEND_ERROR "NetCDF_BINARY_DIR=${NetCDF_BINARY_DIR} does not exist")
+            set(NetCDF_INCLUDE_DIR "NetCDF_BINARY_DIR-NOTFOUND")
+        endif()
+
+    else() 
+
+        set(netcdf_bin_suffixes "bin")
+        if(NetCDF_DIR)
+
+            if (EXISTS "${NetCDF_DIR}" )
+
+                find_path(NetCDF_BINARY_DIR
+                          NAMES ${netcdf_bin_names}
+                          HINTS ${NetCDF_DIR}/bin
+                          PATH_SUFFIXES ${netcdf_bin_suffixes}
+                          NO_DEFAULT_PATH)
+
+            else()
+                 message(SEND_ERROR "NetCDF_DIR=${NetCDF_DIR} does not exist")
+                 set(NetCDF_BINARY_DIR "NetCDF_BINAR_DIR-NOTFOUND")
+            endif()    
+
+
+        else()
+
+            find_path(NetCDF_BINARY_DIR
+                      NAMES ${netcdf_bin_names}
+                      PATH_SUFFIXES ${netcdf_bin_suffixes})
+
+        endif()
+
+    endif()
+
+
+    if ( NOT NetCDF_BINARY_DIR )
+        message(SEND_ERROR "Can not locate NetCDF bin directory")
+    endif()
+endif()
+
+set(_netcdf_TOOLS ncdump ncgen nccopy)
+set(NETCDF_TOOLS_FOUND)
+foreach( tool ${_netcdf_TOOLS})
+  string(TOUPPER "${tool}" tool_uc)
+  set(_netcdf_VAR_NAME NETCDF_${tool_uc}_BINARY)
+  find_program(${_netcdf_VAR_NAME}
+               ${tool}
+               HINTS ${NetCDF_BINARY_DIR}
+               ${_netcdf_FIND_OPTIONS})
+  if (${_netcdf_VAR_NAME})
+    list(APPEND NETCDF_TOOLS_FOUND ${tool})
+  endif()
+endforeach()
+
 # Send useful message if everything is found
 find_package_handle_standard_args(NetCDF DEFAULT_MSG
                                            NetCDF_LIBRARIES
@@ -339,6 +414,7 @@ if ( NOT NetCDF_FIND_QUIETLY )
   message(STATUS "\tNetCDF_PARALLEL          = ${NetCDF_PARALLEL}")
   message(STATUS "\tNetCDF_INCLUDE_DIRS      = ${NetCDF_INCLUDE_DIRS}")
   message(STATUS "\tNetCDF_LIBRARIES         = ${NetCDF_LIBRARIES}")
+  message(STATUS "\tNetCDF_BINARIES          = ${NETCDF_TOOLS_FOUND}")
 
 endif()
 # For compatability with TriBITS:
