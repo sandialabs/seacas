@@ -5,11 +5,6 @@ else
    BUILDDIR=build
 fi
 
-which ncdump
-
-ls /usr/local/bin
-ls /usr/bin
-
 mkdir $BUILDDIR && cd $BUILDDIR
 
 cmake \
