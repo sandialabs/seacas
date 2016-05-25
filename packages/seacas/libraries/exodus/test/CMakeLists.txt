@@ -66,7 +66,7 @@ ENDIF()
 
 # ===============================================
 
-IF (${NETCDF_NCDUMP_BINARY})
+IF ( NETCDF_NCDUMP_BINARY )
   SET(NETCDF_NCDUMP ${NETCDF_NCDUMP_BINARY})
   SET( cbind_OLDTESTS
     testwt
