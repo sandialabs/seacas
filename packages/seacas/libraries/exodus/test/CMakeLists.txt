@@ -111,6 +111,14 @@ IF ( NETCDF_NCDUMP_BINARY )
     @ONLY
   )
 
+  if ( TPL_Netcdf_Enables_Netcdf4 )
+  CONFIGURE_FILE(
+    ${CMAKE_CURRENT_SOURCE_DIR}/testnc4.in
+    ${CMAKE_CURRENT_BINARY_DIR}/testnc4
+    @ONLY
+  )
+  endif()
+
   # NOTE: The "LINKER_LANGUAGE CXX" is used to workaround an issue with
   #       the trilinos cmake adding the pamgen and pamgen_extras libraries as
   #       a dependency.  These are C++ libraries and result in unresolved depedencies
@@ -131,6 +139,31 @@ IF ( NETCDF_NCDUMP_BINARY )
    OVERALL_NUM_MPI_PROCS 1
    FINAL_PASS_REGULAR_EXPRESSION 
   )
+
+  if ( TPL_Netcdf_Enables_Netcdf4 )
+    TRIBITS_ADD_ADVANCED_TEST(
+     exodus_unit_tests_nc4_env
+     TEST_0 CMND /bin/sh ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall netcdf4
+	    OUTPUT_FILE exodus_unit_tests.out
+	    PASS_ANY
+     TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_unit_tests.gold 
+                           ${CMAKE_CURRENT_BINARY_DIR}/exodus_unit_tests.out
+     COMM mpi serial
+     FINAL_PASS_REGULAR_EXPRESSION 
+    )
+
+    TRIBITS_ADD_ADVANCED_TEST(
+     exodus_nc4_unit_tests
+     TEST_0 CMND /bin/sh ARGS ${CMAKE_CURRENT_BINARY_DIR}/testnc4
+	    OUTPUT_FILE exodus_nc4_unit_tests.out
+	    PASS_ANY
+     TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_nc4_unit_tests.gold 
+		           ${CMAKE_CURRENT_BINARY_DIR}/exodus_nc4_unit_tests.out
+     COMM mpi serial
+     OVERALL_NUM_MPI_PROCS 1
+     FINAL_PASS_REGULAR_EXPRESSION 
+    )
+  endif()
 ELSE()
   MESSAGE(STATUS
       "WARNING: ${PACKAGE_NAME}: Exodus unit tests will not be run due to failure finding ncdump executable.")
