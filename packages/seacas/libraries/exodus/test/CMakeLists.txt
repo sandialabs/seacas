@@ -130,7 +130,7 @@ IF ( NETCDF_NCDUMP_BINARY )
 
   TRIBITS_ADD_ADVANCED_TEST(
    exodus_unit_tests
-   TEST_0 CMND /bin/sh ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall
+   TEST_0 CMND /bin/bash ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall
 	  OUTPUT_FILE exodus_unit_tests.out
 	  PASS_ANY
    TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_unit_tests.gold 
@@ -143,7 +143,7 @@ IF ( NETCDF_NCDUMP_BINARY )
   if ( TPL_Netcdf_Enables_Netcdf4 )
     TRIBITS_ADD_ADVANCED_TEST(
      exodus_unit_tests_nc4_env
-     TEST_0 CMND /bin/sh ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall netcdf4
+     TEST_0 CMND /bin/bash ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall netcdf4
 	    OUTPUT_FILE exodus_unit_tests.out
 	    PASS_ANY
      TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_unit_tests.gold 
@@ -154,7 +154,7 @@ IF ( NETCDF_NCDUMP_BINARY )
 
     TRIBITS_ADD_ADVANCED_TEST(
      exodus_nc4_unit_tests
-     TEST_0 CMND /bin/sh ARGS ${CMAKE_CURRENT_BINARY_DIR}/testnc4
+     TEST_0 CMND /bin/bash ARGS ${CMAKE_CURRENT_BINARY_DIR}/testnc4
 	    OUTPUT_FILE exodus_nc4_unit_tests.out
 	    PASS_ANY
      TEST_1 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/exodus_nc4_unit_tests.gold 
