@@ -38,7 +38,7 @@
 # following line. Can also define other prefixes if wanted.
 
 if [ "$1" == "netcdf4" ]; then
-   export EXODUS_NETCDF4=1
+   export EXODUS_NETCDF4=quiet
 fi
 
 #set PREFIX = "valgrind --tool=memcheck"
@@ -218,9 +218,10 @@ echo "end testrd-nfaced" >> test.output
 
 echo "testwt-long-name - write file with long (64-character) names..."
 echo "begin testwt-long-name" >> test.output
+# Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
 ${PREFIX} ${BINDIR}/testwt-long-name${SUFFIX} >> test.output
 echo "end testwt-long-name" >> test.output
-${NCDUMP} -d5,5 test.exo | grep -v version | ${DIFF} - ${SRCDIR}/testwt-long-name.dmp | tee testwt-long-name.res
+${NCDUMP} -d5,5 test.exo | grep -v version |grep -v "maximum_name_length" | ${DIFF} - ${SRCDIR}/testwt-long-name.dmp | tee testwt-long-name.res
 
 echo "testrd - read long name file truncating to 32 characters on read..."
 echo "begin testrd (truncate)" >> test.output
