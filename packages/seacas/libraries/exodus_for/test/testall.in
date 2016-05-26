@@ -108,7 +108,7 @@ ${PREFIX} ${BINDIR}/f_testrdd${SUFFIX} | grep -v version | ${DIFF} - ${SRCDIR}/t
 # testwt2 - single precision write 2 files (simultaneously open) test
 echo "testwt2 ..."
 echo "begin testwt2" >> test.output
-${PREFIX} ${BINDIR}/f_testwt2${SUFFIX} >> test.output |&grep -v "property name string" 
+${PREFIX} ${BINDIR}/f_testwt2${SUFFIX} >> test.output | grep -v "property name string" 
 echo "end testwt2" >> test.output
 ${NCDUMP} -d5,5 test.exo | grep -v version | ${DIFF} - ${SRCDIR}/test2-1.dmp | tee testwt2-1.res
 ${NCDUMP} -d5,5 test2.exo | grep -v version | ${DIFF} - ${SRCDIR}/test2-2.dmp | tee testwt2-2.res
