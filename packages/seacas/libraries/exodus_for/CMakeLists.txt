@@ -9,8 +9,11 @@ INCLUDE_DIRECTORIES(
    "${CMAKE_CURRENT_SOURCE_DIR}/test"
    )
 
+SET(SOURCES "")
 SET_AND_INC_DIRS(DIR ${CMAKE_CURRENT_SOURCE_DIR})
-SET(SOURCES ${DIR}/src/exo_jack.c ${DIR}/src/addrwrap.F)
+
+APPEND_GLOB(SOURCES ${DIR}/src/*.c ${DIR}/src/*.F)
+LIST(REMOVE_ITEM SOURCES "${DIR}/src/exo_jack-windows.c")
 
 SET(HEADERS include/exodusII.inc )
 
@@ -34,24 +37,6 @@ if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
   # For backwards compatability, the Fortran exodus library was called libexoIIv2for.a
   # Create a symbolic link from libexodus_for.a to libexoIIv2for.a -- do only for static lib
   InstallSymLink(libexodus_for.a ${CMAKE_INSTALL_PREFIX}/lib/libexoIIv2for.a)
-endif()
-
-if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
-  TRIBITS_ADD_LIBRARY(
-    exoIIv2for32
-    HEADERS ${HEADERS}
-    SOURCES ${DIR}/src/exo_jack32.c
-    )
-
-  if (BUILD_SHARED_LIBS)
-    ADD_LIBRARY(
-      exoIIv2for32_static
-      STATIC
-      ${DIR}/src/exo_jack32.c
-    )
-    set_target_properties(exoIIv2for32_static PROPERTIES OUTPUT_NAME exoIIv2for32)
-    INSTALL(TARGETS exoIIv2for32_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-  endif()
 endif()
 
 TRIBITS_ADD_TEST_DIRECTORIES(test)
