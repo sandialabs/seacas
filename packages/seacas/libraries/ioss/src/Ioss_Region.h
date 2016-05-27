@@ -49,39 +49,18 @@
 #include <vector>                 // for vector
 namespace Ioss {
   class CommSet;
-}
-namespace Ioss {
   class EdgeBlock;
-}
-namespace Ioss {
   class EdgeSet;
-}
-namespace Ioss {
   class ElementBlock;
-}
-namespace Ioss {
   class ElementSet;
-}
-namespace Ioss {
   class FaceBlock;
-}
-namespace Ioss {
   class FaceSet;
-}
-namespace Ioss {
   class Field;
-}
-namespace Ioss {
   class NodeBlock;
-}
-namespace Ioss {
   class NodeSet;
-}
-namespace Ioss {
   class SideBlock;
-}
-namespace Ioss {
   class SideSet;
+  class StructuredBlock;
 }
 // Needed for node_global_to_local inline function.
 
@@ -100,6 +79,7 @@ namespace Ioss {
   using ElementSetContainer = std::vector<ElementSet *>;
 
   using SideSetContainer   = std::vector<SideSet *>;
+  using StructuredBlockContainer = std::vector<StructuredBlock *>;
   using CommSetContainer   = std::vector<CommSet *>;
   using StateTimeContainer = std::vector<double>;
 
@@ -182,6 +162,7 @@ namespace Ioss {
     bool add(FaceSet *faceset);
     bool add(ElementSet *elementset);
     bool add(CommSet *commset);
+    bool add(StructuredBlock *sblock);
     bool add(const CoordinateFrame &frame);
 
     const NodeBlockContainer &      get_node_blocks() const;
@@ -194,6 +175,7 @@ namespace Ioss {
     const FaceSetContainer &        get_facesets() const;
     const ElementSetContainer &     get_elementsets() const;
     const CommSetContainer &        get_commsets() const;
+    const StructuredBlockContainer & get_structured_blocks() const;
     const CoordinateFrameContainer &get_coordinate_frames() const;
 
     // Retrieve the Grouping Entity with the specified name.
@@ -211,6 +193,7 @@ namespace Ioss {
     FaceSet *get_faceset(const std::string &my_name) const;
     ElementSet *get_elementset(const std::string &my_name) const;
     CommSet *get_commset(const std::string &my_name) const;
+    StructuredBlock *get_structured_block(const std::string &my_name) const;
 
     const CoordinateFrame &get_coordinate_frame(int64_t id) const;
 
@@ -288,7 +271,7 @@ namespace Ioss {
     SideSetContainer         sideSets;
     CommSetContainer         commSets;
     CoordinateFrameContainer coordinateFrames;
-
+    StructuredBlockContainer structuredBlocks;
     mutable StateTimeContainer stateTimes;
 
     int         currentState;
