@@ -148,13 +148,13 @@ namespace Ioss {
      */
     virtual void block_membership(std::vector<std::string> &block_members) {}
 
-    std::string         get_filename() const;
+    std::string get_filename() const;
 
     /** \brief Get the name of the particular type of entity.
      *
      *  \returns The name of the particular type of entity.
      */
-    virtual std::string type_string() const       = 0;
+    virtual std::string type_string() const = 0;
 
     /** \brief Get a short name of the particular type of entity.
      *
@@ -166,7 +166,7 @@ namespace Ioss {
      *
      *  \returns The particular EntityType of this GroupingEntity.
      */
-    virtual EntityType  type() const              = 0;
+    virtual EntityType type() const = 0;
 
     // ========================================================================
     //                                PROPERTIES

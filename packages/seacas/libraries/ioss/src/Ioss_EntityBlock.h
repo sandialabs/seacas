@@ -110,7 +110,7 @@ namespace Ioss {
      *
      *  offset < file_descriptor <= offset+number_elements_per_block
      */
-    size_t                 get_offset() const { return idOffset; }
+    size_t get_offset() const { return idOffset; }
 
   protected:
     EntityBlock(DatabaseIO *io_database, const std::string &my_name, const std::string &entity_type,
@@ -122,7 +122,6 @@ namespace Ioss {
     ElementTopology *topology_;
 
   protected:
-
     size_t idOffset;
   };
 }

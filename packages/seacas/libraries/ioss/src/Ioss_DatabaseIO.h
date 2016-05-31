@@ -100,7 +100,6 @@ namespace Ioss {
   // Contains (parent_element, side) topology pairs
   typedef std::vector<std::pair<const ElementTopology *, const ElementTopology *>> TopoContainer;
 
-
   /** \brief An input or output Database.
    *
    */
@@ -112,7 +111,8 @@ namespace Ioss {
      *  \param[in] write_message If true, then output a warning message indicating the problem.
      *  \param[in,out] error_message If non-null on input, then a warning message on output.
      *  \param[in,out] bad_count If non-null on input, then count of the number of processors
-     *                 where the file does not exist on output. If ok returns false, but *bad_count==0,
+     *                 where the file does not exist on output. If ok returns false, but
+     * *bad_count==0,
      *                 then the routine does not support this argument.
      *  \returns True if database state is OK. False if not.
      */
@@ -151,13 +151,13 @@ namespace Ioss {
      *
      *  \returns The database file name.
      */
-    std::string         get_filename() const { return DBFilename; }
+    std::string get_filename() const { return DBFilename; }
 
     /** \brief Determine whether the database is an input database.
      *
      *  \returns True if the database is an input database. False otherwise.
      */
-    bool                is_input() const { return isInput; }
+    bool is_input() const { return isInput; }
 
     /** \brief Get the Ioss::DatabaseUsage type of the database.
      *
@@ -234,7 +234,7 @@ namespace Ioss {
      *  \returns True if successful.
      *
      */
-    virtual bool end(Ioss::State state)   = 0;
+    virtual bool end(Ioss::State state) = 0;
 
     virtual bool begin_state(Region *region, int state, double time);
     virtual bool end_state(Region *region, int state, double time);

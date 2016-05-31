@@ -484,7 +484,8 @@ int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
   return internal_put_field_data(field, TOPTR(data), data_size);
 }
 
-/** \brief Get the number of fields with the given role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION, etc.)
+/** \brief Get the number of fields with the given role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION,
+ * etc.)
  *         in the entity's field manager.
  *
  *  \returns The number of fields with the given role.
