@@ -2,23 +2,23 @@
  * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.  
- * 
+ *       with the distribution.
+ *
  *     * Neither the name of Sandia Corporation nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,7 +30,7 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 /*****************************************************************************
 *
@@ -39,28 +39,27 @@
 *
 * author - Sandia National Laboratories
 *          Larry A. Schoof - Original
-*          
+*
 * environment - UNIX
 *
-* entry conditions - 
+* entry conditions -
 *
-* exit conditions - 
+* exit conditions -
 *
-* revision history - 
+* revision history -
 *
-*  This is a test program for the C binding of the EXODUS II 
+*  This is a test program for the C binding of the EXODUS II
 *  database read and write routines. It tests reading from an open EXODUSII
 *  file and writing to another concurrently opened EXODUSII file.
 *
 *
 *****************************************************************************/
 
-
-#include <stdlib.h>
-#include <stdio.h>
 #include "exodusII.h"
 #include "netcdf.h"
-int main (int argc, char **argv)
+#include <stdio.h>
+#include <stdlib.h>
+int main(int argc, char **argv)
 {
   int  exoid, exoid2, num_dim, num_nodes, num_elem, num_elem_blk;
   int  num_elem_in_block, num_node_sets, num_nodes_per_elem, num_attr;
@@ -232,175 +231,193 @@ int main (int argc, char **argv)
         error = ex_put_prop(exoid2, EX_ELEM_BLOCK, ids[j], prop_names[i], prop_value);
         printf("after ex_put_prop, error = %d\n", error);
       }
- 
-      free (node_list);
-      free (dist_fact);
-   }
-   free(ids);
+    }
+  }
 
-   /* read node set properties */
-   error = ex_inquire (exoid, EX_INQ_NS_PROP, &num_props, &fdum, cdum);
-   printf ("\nafter ex_inquire, error = %d\n", error);
- 
-   for (i=0; i<num_props; i++)
-   {
-      prop_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
-   }
-   prop_values = (int *) calloc (num_node_sets, sizeof(int));
- 
-   error = ex_get_prop_names(exoid,EX_NODE_SET,prop_names);
-   printf ("after ex_get_prop_names, error = %d\n", error);
+  for (i = 0; i < num_props; i++)
+    free(prop_names[i]);
 
-   error = ex_put_prop_names(exoid2,EX_NODE_SET,num_props,prop_names);
-   printf ("after ex_put_prop_names, error = %d\n", error);
- 
-   for (i=0; i<num_props; i++)
-   {
-     error = ex_get_prop_array(exoid, EX_NODE_SET, prop_names[i],
-                         prop_values);
-     printf ("after ex_get_prop_array, error = %d\n", error);
+  free(ids);
 
-     error = ex_put_prop_array(exoid2, EX_NODE_SET, prop_names[i], prop_values);
-     printf ("after ex_put_prop_array, error = %d\n", error);
+  /* read and write individual node sets */
 
-   }
-   for (i=0; i<num_props; i++)
-     free(prop_names[i]);
-   free(prop_values);
+  ids = (int *)calloc(num_node_sets, sizeof(int));
 
-/* read and write individual side sets */
+  error = ex_get_node_set_ids(exoid, ids);
+  printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
-   ids = (int *) calloc(num_side_sets, sizeof(int));
- 
-   error = ex_get_side_set_ids (exoid, ids);
-   printf ("\nafter ex_get_side_set_ids, error = %3d\n", error);
- 
-   for (i=0; i<num_side_sets; i++)
-   {
-      error = ex_get_side_set_param (exoid, ids[i], &num_sides_in_set,
-                                     &num_df_in_set);
-      printf ("\nafter ex_get_side_set_param, error = %3d\n", error);
- 
-      error = ex_put_side_set_param (exoid2, ids[i], num_sides_in_set, 
-                                     num_df_in_set);
-      printf ("after ex_put_side_set_param, error = %d\n", error);
+  for (i = 0; i < num_node_sets; i++) {
+    error = ex_get_node_set_param(exoid, ids[i], &num_nodes_in_set, &num_df_in_set);
+    printf("\nafter ex_get_node_set_param, error = %3d\n", error);
 
-      /* Note: The # of elements is same as # of sides!  */
-      num_elem_in_set = num_sides_in_set;
-      elem_list = (int *) calloc(num_elem_in_set, sizeof(int));
-      side_list = (int *) calloc(num_sides_in_set, sizeof(int));
-      node_ctr_list = (int *) calloc(num_elem_in_set, sizeof(int));
-      node_list = (int *) calloc(num_elem_in_set*21, sizeof(int));
-      dist_fact = (float *) calloc(num_df_in_set, sizeof(float));
- 
-      error = ex_get_side_set (exoid, ids[i], elem_list, side_list);
-      printf ("\nafter ex_get_side_set, error = %3d\n", error);
- 
-      error = ex_put_side_set (exoid2, ids[i], elem_list, side_list);
-      printf ("after ex_put_side_set, error = %d\n", error);
+    error = ex_put_node_set_param(exoid2, ids[i], num_nodes_in_set, num_df_in_set);
+    printf("after ex_put_node_set_param, error = %d\n", error);
 
-      error = ex_get_side_set_node_list (exoid, ids[i], node_ctr_list,
-                                         node_list);
-      printf ("\nafter ex_get_side_set_node_list, error = %3d\n", error);
- 
-      if (num_df_in_set > 0)
-      {
-        error = ex_get_side_set_dist_fact (exoid, ids[i], dist_fact);
-        printf ("\nafter ex_get_side_set_dist_fact, error = %3d\n", error);
+    node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
+    dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
 
-        error = ex_put_side_set_dist_fact (exoid2, ids[i], dist_fact);
-        printf ("after ex_put_side_set_dist_fact, error = %d\n", error);
+    error = ex_get_node_set(exoid, ids[i], node_list);
+    printf("\nafter ex_get_node_set, error = %3d\n", error);
 
+    error = ex_put_node_set(exoid2, ids[i], node_list);
+    printf("after ex_put_node_set, error = %d\n", error);
+
+    if (num_df_in_set > 0) {
+      error = ex_get_node_set_dist_fact(exoid, ids[i], dist_fact);
+      printf("\nafter ex_get_node_set_dist_fact, error = %3d\n", error);
+
+      error = ex_put_node_set_dist_fact(exoid2, ids[i], dist_fact);
+      printf("after ex_put_node_set, error = %d\n", error);
+    }
+
+    free(node_list);
+    free(dist_fact);
+  }
+  free(ids);
+
+  /* read node set properties */
+  error = ex_inquire(exoid, EX_INQ_NS_PROP, &num_props, &fdum, cdum);
+  printf("\nafter ex_inquire, error = %d\n", error);
+
+  for (i = 0; i < num_props; i++) {
+    prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
+  }
+  prop_values = (int *)calloc(num_node_sets, sizeof(int));
+
+  error = ex_get_prop_names(exoid, EX_NODE_SET, prop_names);
+  printf("after ex_get_prop_names, error = %d\n", error);
+
+  error = ex_put_prop_names(exoid2, EX_NODE_SET, num_props, prop_names);
+  printf("after ex_put_prop_names, error = %d\n", error);
+
+  for (i = 0; i < num_props; i++) {
+    error = ex_get_prop_array(exoid, EX_NODE_SET, prop_names[i], prop_values);
+    printf("after ex_get_prop_array, error = %d\n", error);
+
+    error = ex_put_prop_array(exoid2, EX_NODE_SET, prop_names[i], prop_values);
+    printf("after ex_put_prop_array, error = %d\n", error);
+  }
+  for (i = 0; i < num_props; i++)
+    free(prop_names[i]);
+  free(prop_values);
+
+  /* read and write individual side sets */
+
+  ids = (int *)calloc(num_side_sets, sizeof(int));
+
+  error = ex_get_side_set_ids(exoid, ids);
+  printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
+
+  for (i = 0; i < num_side_sets; i++) {
+    error = ex_get_side_set_param(exoid, ids[i], &num_sides_in_set, &num_df_in_set);
+    printf("\nafter ex_get_side_set_param, error = %3d\n", error);
+
+    error = ex_put_side_set_param(exoid2, ids[i], num_sides_in_set, num_df_in_set);
+    printf("after ex_put_side_set_param, error = %d\n", error);
+
+    /* Note: The # of elements is same as # of sides!  */
+    num_elem_in_set = num_sides_in_set;
+    elem_list       = (int *)calloc(num_elem_in_set, sizeof(int));
+    side_list       = (int *)calloc(num_sides_in_set, sizeof(int));
+    node_ctr_list   = (int *)calloc(num_elem_in_set, sizeof(int));
+    node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
+    dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
+
+    error = ex_get_side_set(exoid, ids[i], elem_list, side_list);
+    printf("\nafter ex_get_side_set, error = %3d\n", error);
+
+    error = ex_put_side_set(exoid2, ids[i], elem_list, side_list);
+    printf("after ex_put_side_set, error = %d\n", error);
+
+    error = ex_get_side_set_node_list(exoid, ids[i], node_ctr_list, node_list);
+    printf("\nafter ex_get_side_set_node_list, error = %3d\n", error);
+
+    if (num_df_in_set > 0) {
+      error = ex_get_side_set_dist_fact(exoid, ids[i], dist_fact);
+      printf("\nafter ex_get_side_set_dist_fact, error = %3d\n", error);
+
+      error = ex_put_side_set_dist_fact(exoid2, ids[i], dist_fact);
+      printf("after ex_put_side_set_dist_fact, error = %d\n", error);
+    }
+
+    free(elem_list);
+    free(side_list);
+    free(node_ctr_list);
+    free(node_list);
+    free(dist_fact);
+  }
+
+  /* read side set properties */
+  error = ex_inquire(exoid, EX_INQ_SS_PROP, &num_props, &fdum, cdum);
+  printf("\nafter ex_inquire, error = %d\n", error);
+
+  for (i = 0; i < num_props; i++) {
+    prop_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
+  }
+
+  error = ex_get_prop_names(exoid, EX_SIDE_SET, prop_names);
+  printf("after ex_get_prop_names, error = %d\n", error);
+
+  for (i = 0; i < num_props; i++) {
+    for (j = 0; j < num_side_sets; j++) {
+      error = ex_get_prop(exoid, EX_SIDE_SET, ids[j], prop_names[i], &prop_value);
+      printf("after ex_get_prop, error = %d\n", error);
+
+      if (i > 0) { /* first property is ID so it is already stored */
+        error = ex_put_prop(exoid2, EX_SIDE_SET, ids[j], prop_names[i], prop_value);
+        printf("after ex_put_prop, error = %d\n", error);
       }
- 
-      free (elem_list);
-      free (side_list);
-      free (node_ctr_list);
-      free (node_list);
-      free (dist_fact);
- 
-   }
+    }
+  }
+  for (i = 0; i < num_props; i++)
+    free(prop_names[i]);
+  free(ids);
 
+  /* read and write QA records */
 
-   /* read side set properties */
-   error = ex_inquire (exoid, EX_INQ_SS_PROP, &num_props, &fdum, cdum);
-   printf ("\nafter ex_inquire, error = %d\n", error);
- 
-   for (i=0; i<num_props; i++)
-   {
-      prop_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
-   }
- 
-   error = ex_get_prop_names(exoid,EX_SIDE_SET,prop_names);
-   printf ("after ex_get_prop_names, error = %d\n", error);
- 
- 
-   for (i=0; i<num_props; i++)
-   {
-     for (j=0; j<num_side_sets; j++)
-     {
-       error = ex_get_prop(exoid, EX_SIDE_SET, ids[j], prop_names[i],
-                           &prop_value);
-       printf ("after ex_get_prop, error = %d\n", error);
+  ex_inquire(exoid, EX_INQ_QA, &num_qa_rec, &fdum, cdum);
 
-       if (i>0) {  /* first property is ID so it is already stored */
-         error = ex_put_prop(exoid2, EX_SIDE_SET, ids[j], prop_names[i], 
-                             prop_value);
-         printf ("after ex_put_prop, error = %d\n", error);
-       }
-     }
-   }
-   for (i=0; i<num_props; i++)
-     free(prop_names[i]);
-   free (ids);
+  for (i = 0; i < num_qa_rec; i++) {
+    for (j = 0; j < 4; j++) {
+      qa_record[i][j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
+    }
+  }
 
-/* read and write QA records */
+  error = ex_get_qa(exoid, qa_record);
+  printf("\nafter ex_get_qa, error = %3d\n", error);
 
-   ex_inquire (exoid, EX_INQ_QA, &num_qa_rec, &fdum, cdum);
+  error = ex_put_qa(exoid2, num_qa_rec, qa_record);
+  printf("after ex_put_qa, error = %d\n", error);
 
-   for (i=0; i<num_qa_rec; i++) {
-      for (j=0; j<4; j++) {
-	qa_record[i][j] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
-      }
-   }
+  for (i = 0; i < num_qa_rec; i++) {
+    for (j = 0; j < 4; j++) {
+      free(qa_record[i][j]);
+    }
+  }
+  /* read and write information records */
 
-   error = ex_get_qa (exoid, qa_record);
-   printf ("\nafter ex_get_qa, error = %3d\n", error);
+  error = ex_inquire(exoid, EX_INQ_INFO, &num_info, &fdum, cdum);
+  printf("\nafter ex_inquire, error = %3d\n", error);
 
-   error = ex_put_qa (exoid2, num_qa_rec, qa_record);
-   printf ("after ex_put_qa, error = %d\n", error);
+  for (i = 0; i < num_info; i++) {
+    info[i] = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
+  }
 
-   for (i=0; i<num_qa_rec; i++) {
-      for (j=0; j<4; j++) {
-	free(qa_record[i][j]);
-      }
-   }
-/* read and write information records */
+  error = ex_get_info(exoid, info);
+  printf("\nafter ex_get_info, error = %3d\n", error);
 
-   error = ex_inquire (exoid, EX_INQ_INFO, &num_info, &fdum, cdum);
-   printf ("\nafter ex_inquire, error = %3d\n", error);
+  error = ex_put_info(exoid2, num_info, info);
+  printf("after ex_put_info, error = %d\n", error);
 
-   for (i=0; i<num_info; i++)
-   {
-      info[i] = (char *) calloc ((MAX_LINE_LENGTH+1), sizeof(char));
-   }
+  for (i = 0; i < num_info; i++) {
+    free(info[i]);
+  }
 
-   error = ex_get_info (exoid, info);
-   printf ("\nafter ex_get_info, error = %3d\n", error);
+  /* close the EXODUS files */
 
-   error = ex_put_info (exoid2, num_info, info);
-   printf ("after ex_put_info, error = %d\n", error);
-
-   for (i=0; i<num_info; i++)
-   {
-     free(info[i]);
-   }
-
-/* close the EXODUS files */
-
-   error = ex_close (exoid);
-   printf ("after ex_close, error = %d\n", error);
-   error = ex_close (exoid2);
-   printf ("after ex_close (2), error = %d\n", error);
-   return 0;
+  error = ex_close(exoid);
+  printf("after ex_close, error = %d\n", error);
+  error = ex_close(exoid2);
+  printf("after ex_close (2), error = %d\n", error);
+  return 0;
 }
