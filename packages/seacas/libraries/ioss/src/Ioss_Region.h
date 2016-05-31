@@ -335,7 +335,8 @@ inline void Ioss::Region::add_information_records(const std::vector<std::string>
 /** \brief Add an information record (an informative string) to the region's database.
  *
  *  \param[in] info The string to add.
- */inline void Ioss::Region::add_information_record(const std::string &info)
+ */ inline void
+Ioss::Region::add_information_record(const std::string &info)
 {
   return get_database()->add_information_record(info);
 }
@@ -345,7 +346,8 @@ inline void Ioss::Region::add_information_records(const std::vector<std::string>
  *  The 4 function parameters correspond to the 4 QA record strings.
  *
  *  \param[in] code A descriptive code name, such as the application that modified the database.
- *  \param[in] code_qa A descriptive string, such as the version of the application that modified the database.
+ *  \param[in] code_qa A descriptive string, such as the version of the application that modified
+ * the database.
  *  \param[in] date A relevant date, such as the date the database was modified.
  *  \param[in] time A relevant time, such as the time the database was modified.
  */

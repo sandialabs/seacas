@@ -455,7 +455,8 @@ unsigned int Ioss::Utils::hash(const std::string &name)
   return hashval;
 }
 
-/** \brief Convert an input file to a vector of strings containing one string for each line of the file.
+/** \brief Convert an input file to a vector of strings containing one string for each line of the
+ * file.
  *
  *  Should only be called by a single processor or each processor will be accessing the file
  *  at the same time...
@@ -609,7 +610,6 @@ namespace {
     return (std::string(word));
   }
 } // namespace
-
 
 /** \brief Tries to shorten long variable names to an acceptable length, and converts to
  *         lowercase and spaces to '_'

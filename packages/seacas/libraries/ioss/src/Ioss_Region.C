@@ -1005,10 +1005,10 @@ namespace Ioss {
    */
   const ElementBlockContainer &Region::get_element_blocks() const { return elementBlocks; }
 
-   /** \brief Get all the region's SideSet objects.
-    *
-    *  \returns A vector of all the region's SideSet objects.
-    */
+  /** \brief Get all the region's SideSet objects.
+   *
+   *  \returns A vector of all the region's SideSet objects.
+   */
   const SideSetContainer &Region::get_sidesets() const { return sideSets; }
 
   /** \brief Get all the region's NodeSet objects.
@@ -1738,9 +1738,9 @@ namespace Ioss {
    */
   void Region::transfer_mesh_aliases(Region *to) const
   {
-	// Iterate through list, [ returns <alias, base_entity_name> ], if
-	// 'base_entity_name' is defined on the restart file, add 'alias' as
-	// an alias for it...
+    // Iterate through list, [ returns <alias, base_entity_name> ], if
+    // 'base_entity_name' is defined on the restart file, add 'alias' as
+    // an alias for it...
     for (auto alias_pair : aliases_) {
       std::string alias = alias_pair.first;
       std::string base  = alias_pair.second;
