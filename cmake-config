@@ -18,8 +18,8 @@ CGNS_PATH=${ACCESS}
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 MPI=ON
 
-#COMPILER = "gnu"
-COMPILER = "clang"
+#COMPILER="gnu"
+COMPILER="clang"
 
 ### Change this to point to the compilers you want to use
 if [ "$MPI" == "ON" ]
