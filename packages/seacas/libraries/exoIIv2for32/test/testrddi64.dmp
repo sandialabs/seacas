@@ -755,18 +755,18 @@ nodal variable  1 values at time step  3
 1.750
 1.780
 
-after exgnvt, error =  -1
+after exgnvt, error =   0
 nodal variable  1 values for node  1 through time:
+1.010
+1.020
 1.030
+1.040
+1.050
 1.060
+1.070
+1.080
 1.090
-1.120
-1.150
-1.180
-1.210
-1.240
-1.270
-1.300
+1.100
 
 after exgebi, error =   0
 
