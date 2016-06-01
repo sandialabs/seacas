@@ -36,6 +36,7 @@
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_EntityBlock.h>
+#include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
 #include <assert.h>
 #include <string>
@@ -74,6 +75,8 @@ namespace Ioss {
     int m_ni;
     int m_nj;
     int m_nk;
+
+    Ioss::NodeBlock m_nodeBlock;
   };
 }
 #endif
