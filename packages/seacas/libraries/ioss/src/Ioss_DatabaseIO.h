@@ -531,7 +531,7 @@ namespace Ioss {
     virtual int64_t get_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
     virtual int64_t get_field_internal(const StructuredBlock *sb, const Field &field, void *data,
-                                       size_t data_size) const = 0;
+                                       size_t data_size) const {return 0;}
 
     virtual int64_t put_field_internal(const Region *reg, const Field &field, void *data,
                                        size_t data_size) const = 0;
@@ -558,11 +558,11 @@ namespace Ioss {
     virtual int64_t put_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
     virtual int64_t put_field_internal(const StructuredBlock *sb, const Field &field, void *data,
-                                       size_t data_size) const = 0;
+                                       size_t data_size) const {return 0;}
 
-    DatabaseIO();                              // Do not implement
-    DatabaseIO(const DatabaseIO &);            // Do not implement
-    DatabaseIO &operator=(const DatabaseIO &); // Do not implement
+    DatabaseIO() = delete;
+    DatabaseIO(const DatabaseIO &) = delete;
+    DatabaseIO &operator=(const DatabaseIO &) = delete;
 
     mutable std::map<std::string, AxisAlignedBoundingBox> elementBlockBoundingBoxes;
 
