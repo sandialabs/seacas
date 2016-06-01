@@ -53,7 +53,7 @@ namespace Ioex {
                            const std::string &name);
   void fix_bad_name(char *name);
 
-  void exodus_error(int exoid, int lineno, int /* processor */);
+  void exodus_error(int exoid, int lineno, const char *function, const char *filename);
 
   void check_non_null(void *ptr, const char *type, const std::string &name);
 
@@ -131,6 +131,7 @@ namespace Ioex {
   void separate_surface_element_sides(Ioss::Int64Vector &element, Ioss::Int64Vector &sides,
                                       Ioss::Region *region, Ioex::TopologyMap &topo_map,
                                       Ioex::TopologyMap &    side_map,
-                                      Ioss::SurfaceSplitType split_type);
+                                      Ioss::SurfaceSplitType split_type,
+                                      const std::string &    surface_name);
 }
 #endif

@@ -136,6 +136,16 @@ function(_HDF5_EXTRA_LIBRARY_DIRS _file _var)
 
 endfunction(_HDF5_EXTRA_LIBRARY_DIRS _file _var)
 
+function(_HDF5_LIBRARY_PATH _file _var)
+
+  # Settings file has several locations to list LDFLAGS
+  # We'll pick them all and sort out later.
+  set(_search_key "Installation point")
+  _HDF5_PARSE_SETTINGS_FILE(${_file} ${_search_key} _tmp)
+
+  set(${_var} ${_tmp} PARENT_SCOPE)
+endfunction(_HDF5_LIBRARY_PATH _file _var)
+
 
 
 function(_HDF5_EXTRA_LIBRARIES _file _var)
@@ -252,14 +262,12 @@ endif()
 # Add the usual paths for searching using the HDF5_ROOT variable
 if (HDF5_ROOT)
   list(APPEND _hdf5_INCLUDE_SEARCH_DIRS
-    ${HDF5_ROOT}/include/hdf5/serial
     ${HDF5_ROOT}/include
+    ${HDF5_ROOT}/include/hdf5/serial
     ${HDF5_ROOT}
     )
 
   list(APPEND _hdf5_LIBRARY_SEARCH_DIRS
-    ${HDF5_ROOT}/x86_64-linux-gnu/hdf5/serial
-    ${HDF5_ROOT}/x86_64-linux-gnu
     ${HDF5_ROOT}/lib
     ${HDF5_ROOT}
     )
@@ -394,12 +402,17 @@ else()
 
   # Search for the libraries
 
+  if (HDF5_SETTINGS_FILE)
+      _HDF5_LIBRARY_PATH(${HDF5_SETTINGS_FILE} _hdf5_path)
+      set(_hdf5_LIBRARY_SEARCH_DIRS ${_hdf5_path}/lib)
+  endif()
+
   if ( NOT HDF5_LIBRARIES )
 
     # --- Search for the C library 
     find_library(_HDF5_C_LIBRARY
                  NAMES hdf5 hdf5_serial
-                 PATHS ${_hdf5_LIBRARY_SEARCH_DIRS}
+                 HINTS ${_hdf5_LIBRARY_SEARCH_DIRS}
                  ${_hdf5_FIND_OPTIONS}
                  )
 

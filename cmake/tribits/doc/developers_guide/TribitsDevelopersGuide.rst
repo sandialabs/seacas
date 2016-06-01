@@ -1570,6 +1570,10 @@ which contains:
 .. include:: ../../examples/TribitsHelloWorld/hello_world/cmake/Dependencies.cmake
    :literal:
 
+Other TriBITS macros/functions that can be called in this file include
+`TRIBITS_TPL_TENTATIVELY_ENABLE()`_ and
+`TRIBITS_ALLOW_MISSING_EXTERNAL_PACKAGES()`_.
+
 .. _<packageDir>/cmake/<packageName>_config.h.in:
 
 **<packageDir>/cmake/<packageName>_config.h.in**: [Optional] The package's
@@ -5437,6 +5441,7 @@ specialized ``FindTPL<tplName>.cmake`` file and can't use the
 find modules cannot completely adhere to the standard behavior described in
 `Enabling support for an optional Third-Party Library (TPL)`_.
 
+
 How to add a new TriBITS Repository
 -----------------------------------
 
@@ -5603,6 +5608,26 @@ the libraries for the upstream TPL to the link lines to the downstream package
 library and executable links.  See documentation in the functions
 `TRIBITS_ADD_LIBRARY()`_ and `TRIBITS_ADD_EXECUTABLE()`_, and the ``DEPLIBS``
 argument to these functions, for more details.
+
+How to tentatively enable a TPL
+-------------------------------
+
+A TriBITS package can request the tentative enable of any of its optional TPLs
+(see `How to add a new TriBITS TPL dependency`_).  This is done by calling
+`TRIBITS_TPL_TENTATIVELY_ENABLE()`_ in the SE package's
+`<packageDir>/cmake/Dependencies.cmake`_ file.  For example::
+
+  TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
+    ...
+    LIB_OPTIONAL_TPLS  SomeTpl
+    ...
+    )
+
+  TRIBITS_TPL_TENTATIVELY_ENABLE(SomeTpl)
+
+This will result is an attempt to find the components for the TPL ``SomeTpl``.
+But if that attempt fails, then the TPL will be disabled and
+``${PACKAGE_NAME}_ENABLE_SomeTpl`` will be set to ``OFF``.
 
 
 How to insert a package into an upstream repo
