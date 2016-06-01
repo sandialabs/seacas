@@ -44,14 +44,14 @@ c
       integer*4 cpu_ws,io_ws, mod_sz
       integer*4 exoid
       integer*4 iout, ierr
-      integer*4 node_num, time_step, var_index, beg_time, end_time
+      integer*4 time_step, var_index, beg_time, end_time
       integer*4 num_glo_vars, num_nod_vars, num_ele_vars
       integer*4 truth_tab(3,5)
       integer*4 num_props
       integer*8 df_ind(10),node_ind(10),elem_ind(10)
       integer*8 df_list_len, list_len, elem_list_len, node_list_len
       integer*8 elem_list(100), side_list(100), ids(10) 
-      integer*8 elem_num
+      integer*8 elem_num, node_num
       integer*8 i, j, k, elem_map(5), connect(10), node_list(100) 
       integer*8 mxalnmlen, mxusnmlen
       integer*8 num_attr(10), node_ctr_list(10), node_ctr
