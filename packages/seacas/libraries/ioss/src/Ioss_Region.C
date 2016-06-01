@@ -67,6 +67,7 @@
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_State.h"
+#include "Ioss_StructuredBlock.h"
 
 namespace {
   const std::string id_str() { return std::string("id"); }
@@ -684,6 +685,26 @@ namespace Ioss {
     db->end_state(this, state, time);
     currentState = -1;
     return time;
+  }
+
+  /** \brief Add a node block to the region.
+   *
+   *  \param[in] node_block The node block to add
+   *  \returns True if successful.
+   */
+  bool Region::add(StructuredBlock *structured_block)
+  {
+    check_for_duplicate_names(this, structured_block);
+
+    // Check that region is in correct state for adding entities
+    if (get_state() == STATE_DEFINE_MODEL) {
+      structuredBlocks.push_back(structured_block);
+      // Add name as alias to itself to simplify later uses...
+      add_alias(structured_block);
+
+      return true;
+    }
+    return false;
   }
 
   /** \brief Add a node block to the region.

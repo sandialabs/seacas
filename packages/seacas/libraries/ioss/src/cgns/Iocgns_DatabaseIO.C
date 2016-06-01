@@ -65,6 +65,7 @@
 #include "Ioss_NodeBlock.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_StructuredBlock.h"
 
 #include "Ioss_Field.h"
 #include "Ioss_IOFactory.h"
@@ -177,18 +178,46 @@ namespace Iocgns {
     // ========================================================================
     cgsize_t num_node = 0;
     cgsize_t num_elem = 0;
+    CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
+    
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
       CG_ZoneType_t zone_type;
       cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
 
-      // See if all zones are "Unstructured" which is all we currently support...
-      if (zone_type != CG_Unstructured) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone
-               << " is not of type Unstructured which is the only type currently supported";
-        IOSS_ERROR(errmsg);
+      if (common_zone_type == CG_ZoneTypeNull) {
+	common_zone_type = zone_type;
       }
-      else {
+
+      if (common_zone_type != zone_type) {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
+	       << " This is currently not allowed or supported (hybrid mesh).";
+	IOSS_ERROR(errmsg);
+      }
+
+      if (zone_type == CG_Structured) {
+        cgsize_t size[9];
+        char     zone_name[33];
+        cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+        m_zoneNameMap[zone_name] = zone;
+
+	assert(size[0]-1 == size[3]);
+	assert(size[1]-1 == size[4]);
+	assert(size[2]-1 == size[5]);
+	
+	assert(size[6] == 0);
+	assert(size[7] == 0);
+	assert(size[8] == 0);
+
+	// An Ioss::StructuredBlock corresponds to a CG_Structured zone...
+	Ioss::StructuredBlock *sblock = new Ioss::StructuredBlock(this, zone_name,
+								  size[3], size[4], size[5]);
+	get_region()->add(sblock);
+	num_node += sblock->get_property("node_count").get_int();
+
+      }
+
+      else if (zone_type == CG_Unstructured) {
         cgsize_t size[3];
         char     zone_name[33];
         cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
@@ -362,6 +391,12 @@ namespace Iocgns {
             }
           }
         }
+      }
+      else {
+	std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone
+               << " is not of type Unstructured or Structured which are the only types currently supported";
+        IOSS_ERROR(errmsg);
       }
     }
     Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", num_node, 3);

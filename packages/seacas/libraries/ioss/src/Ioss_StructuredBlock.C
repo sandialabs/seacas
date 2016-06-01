@@ -54,14 +54,21 @@ namespace Ioss {
 				   int ni, int nj, int nk)
       : GroupingEntity(io_database, my_name, 
 		       ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-	m_ni(ni), m_nj(nj), m_nk(nk)
+	m_ni(ni), m_nj(nj), m_nk(nk),
+	m_nodeBlock(io_database, my_name+"_nodes", (m_ni+1)*(m_nj+1)*(m_nk+1),
+		    ni == 0 ? 0 : (nj == 0 ? 1 : (nk == 0 ? 2 : 3)))
   {
+    properties.add(Property(this, "node_count", Property::INTEGER));
   }
 
   StructuredBlock::~StructuredBlock() = default;
 
   Property StructuredBlock::get_implicit_property(const std::string &my_name) const
   {
+    if (my_name == "node_count") {
+      return Property(my_name, static_cast<int>(m_ni*m_nj*m_nk));
+    }
+
     return GroupingEntity::get_implicit_property(my_name);
   }
 
