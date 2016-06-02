@@ -30,58 +30,100 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Ioss_BoundingBox.h"  // for AxisAlignedBoundingBox
 #include "Ioss_FieldManager.h" // for FieldManager
 #include <Ioss_DatabaseIO.h>   // for DatabaseIO
+#include <Ioss_Field.h>        // for Field, etc
+#include <Ioss_Property.h>     // for Property
 #include <Ioss_StructuredBlock.h>
-#include <Ioss_Field.h>    // for Field, etc
-#include <Ioss_Property.h> // for Property
-#include <stddef.h>        // for size_t
-#include <string>          // for string
-#include <vector>          // for vector
+#include <stddef.h> // for size_t
+#include <string>   // for string
+#include <vector>   // for vector
+
+namespace {
+  const std::string SCALAR() { return std::string("scalar"); }
+  const std::string VECTOR_2D() { return std::string("vector_2d"); }
+  const std::string VECTOR_3D() { return std::string("vector_3d"); }
+} // namespace
 
 namespace Ioss {
   class Field;
 
   /** \brief Create a structured block.
    *
-   *  \param[in] io_database The database associated with the region containing the structured block.
+   *  \param[in] io_database The database associated with the region containing the structured
+   * block.
    *  \param[in] my_name The structured block's name.
    *  \param[in] ni The number of intervals in the (i) direction.
    *  \param[in] nj The number of intervals in the (j) direction. Zero if 1D
    *  \param[in] nk The number of intervals in the (k) direction. Zero if 2D
    */
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-				   int ni, int nj, int nk)
-      : GroupingEntity(io_database, my_name, 
-		       ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-	m_ni(ni), m_nj(nj), m_nk(nk),
-	m_nodeBlock(io_database, my_name+"_nodes", (m_ni+1)*(m_nj+1)*(m_nk+1),
-		    ni == 0 ? 0 : (nj == 0 ? 1 : (nk == 0 ? 2 : 3)))
+                                   int index_dim, int ni, int nj, int nk)
+      : GroupingEntity(io_database, my_name, ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)), m_ni(ni),
+        m_nj(nj), m_nk(nk), m_nodeBlock(io_database, my_name + "_nodes",
+                                        (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
   {
-    properties.add(Property(this, "node_count", Property::INTEGER));
+    assert(index_dim == 1 || index_dim == 2 || index_dim == 3);
+
+    int64_t cell_count = (m_ni == 0 ? 1 : m_ni) * (m_nj == 0 ? 1 : m_nj) * (m_nk == 0 ? 1 : m_nk);
+    int64_t node_count = (m_ni + 1) * (m_nj + 1) * (m_nk + 1);
+
+    properties.add(Property("component_degree", index_dim));
+    properties.add(Property("node_count", node_count));
+    properties.add(Property("cell_count", cell_count));
+    properties.add(Property("ni", m_ni));
+    properties.add(Property("nj", m_nj));
+    properties.add(Property("nk", m_nk));
+
+    std::string vector_name;
+    if (index_dim == 1) {
+      vector_name = SCALAR();
+    }
+    else if (index_dim == 2) {
+      vector_name = VECTOR_2D();
+    }
+    else if (index_dim == 3) {
+      vector_name = VECTOR_3D();
+    }
+    fields.add(Ioss::Field("mesh_model_coordinates", Ioss::Field::REAL, vector_name,
+                           Ioss::Field::MESH, node_count));
+
+    // Permit access 1-coordinate at a time
+    fields.add(Ioss::Field("mesh_model_coordinates_x", Ioss::Field::REAL, SCALAR(),
+                           Ioss::Field::MESH, node_count));
+    if (index_dim > 1) {
+      fields.add(Ioss::Field("mesh_model_coordinates_y", Ioss::Field::REAL, SCALAR(),
+                             Ioss::Field::MESH, node_count));
+    }
+
+    if (index_dim > 2) {
+      fields.add(Ioss::Field("mesh_model_coordinates_z", Ioss::Field::REAL, SCALAR(),
+                             Ioss::Field::MESH, node_count));
+    }
   }
 
   StructuredBlock::~StructuredBlock() = default;
 
   Property StructuredBlock::get_implicit_property(const std::string &my_name) const
   {
-    if (my_name == "node_count") {
-      return Property(my_name, static_cast<int>(m_ni*m_nj*m_nk));
-    }
-
     return GroupingEntity::get_implicit_property(my_name);
   }
 
   int64_t StructuredBlock::internal_get_field_data(const Field &field, void *data,
-                                                size_t data_size) const
+                                                   size_t data_size) const
   {
     return get_database()->get_field(this, field, data, data_size);
   }
 
   int64_t StructuredBlock::internal_put_field_data(const Field &field, void *data,
-                                                size_t data_size) const
+                                                   size_t data_size) const
   {
     return get_database()->put_field(this, field, data, data_size);
   }
 
+  AxisAlignedBoundingBox StructuredBlock::get_bounding_box() const
+  {
+    return get_database()->get_bounding_box(this);
+  }
 } // namespace Ioss

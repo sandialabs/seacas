@@ -12,19 +12,6 @@
 
 #define DEBUG_OUTPUT 1
 namespace {
-  const char *Version() { return "Iocgns_DecompositionData.C 2016/02/17"; }
-
-  void cgns_error(int cgnsid, int lineno, int /* processor */)
-  {
-    std::ostringstream errmsg;
-    errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno << " in file '"
-           << Version() << "' Please report to gdsjaar@sandia.gov if you need help.";
-    if (cgnsid > 0) {
-      cg_close(cgnsid);
-    }
-    IOSS_ERROR(errmsg);
-  }
-
 // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
@@ -554,7 +541,7 @@ namespace Iocgns {
           int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(elements),
                                       TOPTR(parent));
           if (ierr < 0) {
-            cgns_error(filePtr, __LINE__, myProcessor);
+            cgns_error(filePtr, __FILE_, __func__, __LINE__, myProcessor);
           }
 
           // Move from 'parent' to 'elementlist'
@@ -654,7 +641,7 @@ namespace Iocgns {
           int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
                                    CG_RealDouble, &start, &finish, &data[offset]);
           if (ierr < 0) {
-            cgns_error(filePtr, __LINE__, myProcessor);
+            cgns_error(filePtr, __FILE_, __func__, __LINE__, myProcessor);
           }
           offset += count;
         }
@@ -745,7 +732,7 @@ namespace Iocgns {
       nodes.shrink_to_fit();
 
       if (ierr < 0) {
-        cgns_error(filePtr, __LINE__, myProcessor);
+        cgns_error(filePtr, __FILE_, __func__, __LINE__, myProcessor);
       }
 
       // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...

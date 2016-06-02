@@ -78,10 +78,10 @@ namespace Ioss {
   using FaceSetContainer    = std::vector<FaceSet *>;
   using ElementSetContainer = std::vector<ElementSet *>;
 
-  using SideSetContainer   = std::vector<SideSet *>;
+  using SideSetContainer         = std::vector<SideSet *>;
   using StructuredBlockContainer = std::vector<StructuredBlock *>;
-  using CommSetContainer   = std::vector<CommSet *>;
-  using StateTimeContainer = std::vector<double>;
+  using CommSetContainer         = std::vector<CommSet *>;
+  using StateTimeContainer       = std::vector<double>;
 
   using CoordinateFrameContainer = std::vector<CoordinateFrame>;
 
@@ -175,7 +175,7 @@ namespace Ioss {
     const FaceSetContainer &        get_facesets() const;
     const ElementSetContainer &     get_elementsets() const;
     const CommSetContainer &        get_commsets() const;
-    const StructuredBlockContainer & get_structured_blocks() const;
+    const StructuredBlockContainer &get_structured_blocks() const;
     const CoordinateFrameContainer &get_coordinate_frames() const;
 
     // Retrieve the Grouping Entity with the specified name.
@@ -268,10 +268,10 @@ namespace Ioss {
     FaceSetContainer    faceSets;
     ElementSetContainer elementSets;
 
-    SideSetContainer         sideSets;
-    CommSetContainer         commSets;
-    CoordinateFrameContainer coordinateFrames;
-    StructuredBlockContainer structuredBlocks;
+    SideSetContainer           sideSets;
+    CommSetContainer           commSets;
+    CoordinateFrameContainer   coordinateFrames;
+    StructuredBlockContainer   structuredBlocks;
     mutable StateTimeContainer stateTimes;
 
     int         currentState;
