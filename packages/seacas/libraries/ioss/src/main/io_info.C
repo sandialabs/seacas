@@ -43,6 +43,7 @@ namespace {
   void info_edgeblock(Ioss::Region &region, bool summary);
   void info_faceblock(Ioss::Region &region, bool summary);
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface, bool summary);
+  void info_structuredblock(Ioss::Region &region, const Info::Interface &interface, bool summary);
 
   void info_nodesets(Ioss::Region &region, bool summary);
   void info_edgesets(Ioss::Region &region, bool summary);
@@ -200,6 +201,66 @@ namespace {
     }
   }
 
+  void info_structuredblock(Ioss::Region &region, const Info::Interface &interface, bool summary)
+  {
+    Ioss::StructuredBlockContainer sbs         = region.get_structured_blocks();
+    int64_t                        total_cells = 0;
+    int64_t                        total_nodes = 0;
+    for (auto sb : sbs) {
+      int64_t num_cell = sb->get_property("cell_count").get_int();
+      int64_t num_node = sb->get_property("node_count").get_int();
+      int64_t num_dim  = sb->get_property("component_degree").get_int();
+
+      total_cells += num_cell;
+      total_nodes += num_node;
+
+      if (!summary) {
+        OUTPUT << '\n' << name(sb) << " " << sb->get_property("ni").get_int();
+        if (num_dim > 1) {
+          OUTPUT << "x" << sb->get_property("nj").get_int();
+        }
+        if (num_dim > 2) {
+          OUTPUT << "x" << sb->get_property("nk").get_int();
+        }
+
+        OUTPUT << std::setw(12) << num_cell << " cells, " << std::setw(12) << num_node << " nodes ";
+
+        info_aliases(region, sb, true, false);
+
+        info_fields(sb, Ioss::Field::TRANSIENT, "\n\tTransient:  ");
+        OUTPUT << "\n";
+
+        if (!sb->m_zoneConnectivity.empty()) {
+          OUTPUT << "\tConnectivity with other blocks:\n";
+          for (const auto &zgc : sb->m_zoneConnectivity) {
+            OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
+                   << "'.\n\t\t\t\tTransform: " << std::setw(3) << zgc.m_transform[0] << ","
+                   << std::setw(3) << zgc.m_transform[1] << "," << std::setw(3)
+                   << zgc.m_transform[2] << "\tRange: [" << zgc.m_range[0] << ".." << zgc.m_range[3]
+                   << ", " << zgc.m_range[1] << ".." << zgc.m_range[4] << ", " << zgc.m_range[2]
+                   << ".." << zgc.m_range[5] << "]\tDonor Range: [" << zgc.m_donorRange[0] << ".."
+                   << zgc.m_donorRange[3] << ", " << zgc.m_donorRange[1] << ".."
+                   << zgc.m_donorRange[4] << ", " << zgc.m_donorRange[2] << ".."
+                   << zgc.m_donorRange[5] << "]\n";
+          }
+        }
+        if (interface.compute_bbox()) {
+          Ioss::AxisAlignedBoundingBox bbox = sb->get_bounding_box();
+          OUTPUT << "\tBounding Box: Minimum X,Y,Z = " << std::setprecision(4) << std::scientific
+                 << std::setw(12) << bbox.xmin << "\t" << std::setw(12) << bbox.ymin << "\t"
+                 << std::setw(12) << bbox.zmin << "\n"
+                 << "\t              Maximum X,Y,Z = " << std::setprecision(4) << std::scientific
+                 << std::setw(12) << bbox.xmax << "\t" << std::setw(12) << bbox.ymax << "\t"
+                 << std::setw(12) << bbox.zmax << "\n";
+        }
+      }
+    }
+    if (summary) {
+      OUTPUT << " Number of structured blocks  =" << std::setw(12) << sbs.size() << "\t";
+      OUTPUT << " Number of cells            =" << std::setw(12) << total_cells << "\n";
+    }
+  }
+
   void info_elementblock(Ioss::Region &region, const Info::Interface &interface, bool summary)
   {
     Ioss::ElementBlockContainer ebs            = region.get_element_blocks();
@@ -232,10 +293,12 @@ namespace {
 
         if (interface.compute_bbox()) {
           Ioss::AxisAlignedBoundingBox bbox = eb->get_bounding_box();
-          OUTPUT << "\tBounding Box: Minimum X,Y,Z = " << std::setw(12) << std::setprecision(4)
-                 << std::scientific << bbox.xmin << "\t" << bbox.ymin << "\t" << bbox.zmin << "\n"
-                 << "\t              Maximum X,Y,Z = " << std::setw(12) << std::setprecision(4)
-                 << std::scientific << bbox.xmax << "\t" << bbox.ymax << "\t" << bbox.zmax << "\n";
+          OUTPUT << "\tBounding Box: Minimum X,Y,Z = " << std::setprecision(4) << std::scientific
+                 << std::setw(12) << bbox.xmin << "\t" << std::setw(12) << bbox.ymin << "\t"
+                 << std::setw(12) << bbox.zmin << "\n"
+                 << "\t              Maximum X,Y,Z = " << std::setprecision(4) << std::scientific
+                 << std::setw(12) << bbox.xmax << "\t" << std::setw(12) << bbox.ymax << "\t"
+                 << std::setw(12) << bbox.zmax << "\n";
         }
       }
     }
@@ -605,6 +668,7 @@ namespace Ioss {
     info_edgeblock(region, summary);
     info_faceblock(region, summary);
     info_elementblock(region, interface, summary);
+    info_structuredblock(region, interface, summary);
 
     info_nodesets(region, summary);
     info_edgesets(region, summary);
@@ -632,6 +696,7 @@ namespace Ioss {
       info_edgeblock(region, summary);
       info_faceblock(region, summary);
       info_elementblock(region, interface, summary);
+      info_structuredblock(region, interface, summary);
 
       info_nodesets(region, summary);
       info_edgesets(region, summary);
