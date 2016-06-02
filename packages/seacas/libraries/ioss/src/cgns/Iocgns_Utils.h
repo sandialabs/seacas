@@ -47,11 +47,12 @@ namespace Iocgns {
     Utils()  = default;
     ~Utils() = default;
 
-    static void cgns_error(int cgnsid, const char *file, int lineno, int processor)
+    static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
+                           int processor)
     {
       std::ostringstream errmsg;
       errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno << " in file '" << file
-             << "' on processor " << processor
+             << "' in function '" << function << "' on processor " << processor
              << ". Please report to gdsjaar@sandia.gov if you need help.";
       if (cgnsid > 0) {
         cg_close(cgnsid);

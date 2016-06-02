@@ -38,10 +38,29 @@
 #include <Ioss_EntityBlock.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
+#include <array>
 #include <assert.h>
 #include <string>
 
 namespace Ioss {
+  struct ZoneConnectivity
+  {
+    ZoneConnectivity(const std::string name, const std::string donor_name,
+                     const std::array<int, 3> transform, const std::array<int, 6> range,
+                     const std::array<int, 6> donor_range)
+        : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
+          m_transform(std::move(transform)), m_range(std::move(range)),
+          m_donorRange(std::move(donor_range))
+    {
+    }
+
+    std::string m_connectionName;
+    std::string m_donorName;
+    std::array<int, 3> m_transform;
+    std::array<int, 6> m_range;
+    std::array<int, 6> m_donorRange;
+  };
+
   class DatabaseIO;
 
   /** \brief A collection of structureds having the same topology.
@@ -49,9 +68,8 @@ namespace Ioss {
   class StructuredBlock : public GroupingEntity
   {
   public:
-    StructuredBlock(DatabaseIO *io_database,
-		    const std::string &my_name,
-		    int ni, int nj=0, int nk=0);
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
+                    int nj = 0, int nk = 0);
 
     ~StructuredBlock() override;
 
@@ -59,10 +77,14 @@ namespace Ioss {
     std::string short_type_string() const override { return "structuredblock"; }
     EntityType  type() const override { return STRUCTUREDBLOCK; }
 
+    const Ioss::NodeBlock &get_node_block() const { return m_nodeBlock; }
+
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
     Property get_implicit_property(const std::string &my_name) const override;
+
+    AxisAlignedBoundingBox get_bounding_box() const;
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
@@ -77,6 +99,9 @@ namespace Ioss {
     int m_nk;
 
     Ioss::NodeBlock m_nodeBlock;
+
+  public:
+    std::vector<ZoneConnectivity> m_zoneConnectivity;
   };
 }
 #endif

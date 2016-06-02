@@ -176,23 +176,23 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1);        // Let's use 1-based zones...
 
     // ========================================================================
-    cgsize_t num_node = 0;
-    cgsize_t num_elem = 0;
+    cgsize_t      num_node         = 0;
+    cgsize_t      num_elem         = 0;
     CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
-    
+
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
       CG_ZoneType_t zone_type;
       cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
 
       if (common_zone_type == CG_ZoneTypeNull) {
-	common_zone_type = zone_type;
+        common_zone_type = zone_type;
       }
 
       if (common_zone_type != zone_type) {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
-	       << " This is currently not allowed or supported (hybrid mesh).";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
+               << " This is currently not allowed or supported (hybrid mesh).";
+        IOSS_ERROR(errmsg);
       }
 
       if (zone_type == CG_Structured) {
@@ -201,20 +201,42 @@ namespace Iocgns {
         cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
         m_zoneNameMap[zone_name] = zone;
 
-	assert(size[0]-1 == size[3]);
-	assert(size[1]-1 == size[4]);
-	assert(size[2]-1 == size[5]);
-	
-	assert(size[6] == 0);
-	assert(size[7] == 0);
-	assert(size[8] == 0);
+        assert(size[0] - 1 == size[3]);
+        assert(size[1] - 1 == size[4]);
+        assert(size[2] - 1 == size[5]);
 
-	// An Ioss::StructuredBlock corresponds to a CG_Structured zone...
-	Ioss::StructuredBlock *sblock = new Ioss::StructuredBlock(this, zone_name,
-								  size[3], size[4], size[5]);
-	get_region()->add(sblock);
-	num_node += sblock->get_property("node_count").get_int();
+        assert(size[6] == 0);
+        assert(size[7] == 0);
+        assert(size[8] == 0);
 
+        cgsize_t index_dim = 0;
+        cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
+        // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
+        Ioss::StructuredBlock *block =
+            new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
+
+        block->property_add(Ioss::Property("base", base));
+        block->property_add(Ioss::Property("zone", zone));
+
+        get_region()->add(block);
+        num_node += block->get_property("node_count").get_int();
+
+        // Handle zone-grid-connectivity...
+        int nconn = 0;
+        cg_n1to1(cgnsFilePtr, base, zone, &nconn);
+        for (int i = 0; i < nconn; i++) {
+          char connectname[33];
+          char donorname[33];
+          std::array<cgsize_t, 6> range;
+          std::array<cgsize_t, 6> donor_range;
+          std::array<int, 3>      transform;
+
+          cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                       donor_range.data(), transform.data());
+
+          block->m_zoneConnectivity.emplace_back(connectname, donorname, transform, range,
+                                                 donor_range);
+        }
       }
 
       else if (zone_type == CG_Unstructured) {
@@ -393,13 +415,20 @@ namespace Iocgns {
         }
       }
       else {
-	std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone
-               << " is not of type Unstructured or Structured which are the only types currently supported";
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
+                                                  "which are the only types currently supported";
         IOSS_ERROR(errmsg);
       }
     }
-    Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", num_node, 3);
+
+    char     basename[33];
+    cgsize_t cell_dimension = 0;
+    cgsize_t phys_dimension = 0;
+    cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
+    std::cerr << "Physical dimension = " << phys_dimension << "\n";
+
+    Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", num_node, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
   }
@@ -446,7 +475,7 @@ namespace Iocgns {
           int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, &first,
                                    &num_coord, TOPTR(coord));
           if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
 
           // Map to global coordinate position...
@@ -466,7 +495,7 @@ namespace Iocgns {
           int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, &first,
                                    &num_coord, TOPTR(coord));
           if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
 
           // Map to global coordinate position...
@@ -486,7 +515,7 @@ namespace Iocgns {
           int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, &first,
                                    &num_coord, TOPTR(coord));
           if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
 
           // Map to global coordinate position...
@@ -516,7 +545,7 @@ namespace Iocgns {
           int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, &first,
                                    &num_coord, TOPTR(coord));
           if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
 
           // Map to global coordinate position...
@@ -527,7 +556,7 @@ namespace Iocgns {
           ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, &first,
                                &num_coord, TOPTR(coord));
           if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
 
           // Map to global coordinate position...
@@ -538,7 +567,7 @@ namespace Iocgns {
           ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, &first,
                                &num_coord, TOPTR(coord));
           if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
 
           // Map to global coordinate position...
@@ -606,7 +635,7 @@ namespace Iocgns {
           if (my_element_count > 0) {
             int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect, idata, nullptr);
             if (ierr < 0) {
-              Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+              Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
             }
           }
 
@@ -623,7 +652,7 @@ namespace Iocgns {
             int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
                                         reinterpret_cast<cgsize_t *>(data), nullptr);
             if (ierr < 0) {
-              Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+              Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
             }
           }
         }
@@ -666,6 +695,121 @@ namespace Iocgns {
       }
     }
     return num_to_get;
+  }
+
+  int64_t DatabaseIO::get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
+  {
+    Ioss::Field::RoleType role = field.get_role();
+    cgsize_t              base = sb->get_property("base").get_int();
+    cgsize_t              zone = sb->get_property("zone").get_int();
+
+    size_t num_to_get = field.verify(data_size);
+
+    cgsize_t rmin[3] = {1, 1, 1};
+    cgsize_t rmax[3];
+
+    rmax[0] = sb->get_property("ni").get_int() + 1;
+    rmax[1] = sb->get_property("nj").get_int() + 1;
+    rmax[2] = sb->get_property("nk").get_int() + 1;
+    assert(num_to_get == rmax[0] * rmax[1] * rmax[2]);
+
+    if (role == Ioss::Field::MESH) {
+      double *rdata = static_cast<double *>(data);
+      if (field.get_name() == "mesh_model_coordinates_x") {
+        int ierr =
+            cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax, rdata);
+        if (ierr < 0) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates_y") {
+        int ierr =
+            cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, rmin, rmax, rdata);
+        if (ierr < 0) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates_z") {
+        int ierr =
+            cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, rmin, rmax, rdata);
+        if (ierr < 0) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates") {
+        char     basename[33];
+        cgsize_t cell_dimension = 0;
+        cgsize_t phys_dimension = 0;
+        cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
+
+        double *rdata = static_cast<double *>(data);
+
+        // Data required by upper classes store x0, y0, z0, ... xn,
+        // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
+        // ..., yn, z0, ..., zn so we have to allocate some scratch
+        // memory to read in the data and then map into supplied
+        // 'data'
+        std::vector<double> coord(num_to_get);
+        int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax,
+                                 TOPTR(coord));
+        if (ierr < 0) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+
+        // Map to global coordinate position...
+        for (cgsize_t i = 0; i < num_to_get; i++) {
+          rdata[phys_dimension * i + 0] = coord[i];
+        }
+
+        if (phys_dimension >= 2) {
+          ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, rmin, rmax,
+                               TOPTR(coord));
+          if (ierr < 0) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+
+          // Map to global coordinate position...
+          for (cgsize_t i = 0; i < num_to_get; i++) {
+            rdata[phys_dimension * i + 1] = coord[i];
+          }
+        }
+
+        if (phys_dimension == 3) {
+          ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, rmin, rmax,
+                               TOPTR(coord));
+          if (ierr < 0) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+
+          // Map to global coordinate position...
+          for (cgsize_t i = 0; i < num_to_get; i++) {
+            rdata[phys_dimension * i + 2] = coord[i];
+          }
+        }
+      }
+      else if (field.get_name() == "ids") {
+        // Map the local ids in this node block
+        // (1...node_count) to global node ids.
+        if (field.get_type() == Ioss::Field::INT64) {
+          int64_t *idata = static_cast<int64_t *>(data);
+          std::iota(idata, idata + num_to_get, 1);
+        }
+        else {
+          assert(field.get_type() == Ioss::Field::INT32);
+          int *idata = static_cast<int *>(data);
+          std::iota(idata, idata + num_to_get, 1);
+        }
+      }
+      else {
+        num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+      }
+      return num_to_get;
+    }
+    return -1;
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet * /* ns */,
@@ -727,7 +871,7 @@ namespace Iocgns {
 
         int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect, TOPTR(elements), TOPTR(parent));
         if (ierr < 0) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __LINE__, myProcessor);
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
 
         size_t offset = m_zoneOffset[zone];
