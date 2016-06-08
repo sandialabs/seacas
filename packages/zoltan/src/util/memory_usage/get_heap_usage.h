@@ -44,34 +44,39 @@
  * @HEADER
  */
 
-#ifndef __TIMER_H
-#define __TIMER_H
+//////////////////////////////////////////////////////////////////////
+// Subroutine to measure heap usage on several different platforms. //
+//////////////////////////////////////////////////////////////////////
 
-#include "zoltan_timer.h"
-#include <time.h> /* ANSI C; defines clock_t and clock() */
-
-#ifndef CLOCKS_PER_SEC /* Should have been defined in time.h */
-#define CLOCKS_PER_SEC 1000000 /* To prevent compile errors, not always the correct value. */
+#include <iostream>
+#if defined(__APPLE__)
+#include <malloc/malloc.h>
+#else
+#include <malloc.h>
 #endif
 
-/*
- * POSIX compliant systems should use times() for user timing. 
- * This is the default in Zoltan. Make Zoltan with -DNO_TIMES if
- * your system does not have sys/times.h and times().
- * Note: BSD-like systems may use getrusage() instead for user timing,
- * but that has not been implemented here. 
- */
+static size_t get_heap_usage()
+{
+  size_t heap_size = 0;
 
-#if defined(__PUMAGON__) || defined(__LIBCATAMOUNT__) || defined(_WIN32)
-/* Tflops with Cougar & Red Storm w/Catamount does not have sysconf() or times() */
-/* Microsoft Visual Studio does not have times either */
-#define NO_TIMES
-#endif /* __PUMAGON__ */
+#if defined(__GNUC__) && defined(__linux__)
+  static struct mallinfo minfo;
+  minfo = mallinfo();
+  heap_size = minfo.uordblks + minfo.hblkhd;
 
-#ifndef NO_TIMES
-/* #include <sys/types.h> -- Included by sys/times.h on most systems. */
-#include <sys/times.h>
-#include <unistd.h> /* Needed for sysconf() and _SC_CLK_TCK */
+#elif defined(__APPLE__)
+  malloc_statistics_t t = {0,0,0,0};
+  malloc_zone_statistics(NULL, &t);
+  heap_size = t.size_in_use;  
+
+#elif defined(__sun)
+  pstatus_t proc_status;
+
+  std::ifstream proc("/proc/self/status", std::ios_base::in|std::ios_base::binary);
+  if (proc) {
+    proc.read((char *)&proc_status, sizeof(proc_status));
+    heap_size = proc_status.pr_brksize;
+  }
 #endif
-
-#endif
+  return heap_size;
+}
