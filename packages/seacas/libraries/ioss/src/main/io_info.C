@@ -251,7 +251,9 @@ namespace {
 	    transform += "] ";
 	    
             OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-                   << "'.\n\t\t\t\tTransform: " << transform
+		   << "' shares " << zgc.get_shared_node_count()
+                   << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
+		   << "\n\t\t\t\tTransform: " << transform
                    << "\tRange: [" << zgc.m_range[0] << ".." << zgc.m_range[3]
                    << ", " << zgc.m_range[1] << ".." << zgc.m_range[4] << ", " << zgc.m_range[2]
                    << ".." << zgc.m_range[5] << "]\tDonor Range: [" << zgc.m_donorRange[0] << ".."
