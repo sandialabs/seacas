@@ -45,13 +45,30 @@
 namespace Ioss {
   struct ZoneConnectivity
   {
-    ZoneConnectivity(const std::string name, const std::string donor_name,
+    ZoneConnectivity(const std::string name, int owner_zone,
+		     const std::string donor_name, int donor_zone,
                      const std::array<int, 3> transform, const std::array<int, 6> range,
                      const std::array<int, 6> donor_range)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(transform)), m_range(std::move(range)),
-          m_donorRange(std::move(donor_range))
+          m_donorRange(std::move(donor_range)),
+	  m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
+    }
+
+    // Return number of nodes in the connection shared with the donor zone.
+    size_t get_shared_node_count() const
+    {
+      size_t snc = 1;
+      for (int i=0; i < 3; i++) {
+	snc *= (std::abs(m_range[i+3] - m_range[i]) + 1);
+      }
+      return snc;
+    }
+
+    bool owns_shared_nodes() const
+    {
+      return m_ownerZone < m_donorZone;
     }
 
     std::string m_connectionName;
@@ -59,6 +76,10 @@ namespace Ioss {
     std::array<int, 3> m_transform;
     std::array<int, 6> m_range;
     std::array<int, 6> m_donorRange;
+    
+    // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
+    int m_ownerZone; // "id" of zone that owns this connection
+    int m_donorZone; // "id" of zone that is donor of this connection
   };
 
   class DatabaseIO;
@@ -86,6 +107,45 @@ namespace Ioss {
 
     AxisAlignedBoundingBox get_bounding_box() const;
 
+    /** \brief Set the 'offset' for the block.
+     *
+     *  The 'offset' is used to map a cell or node location within a
+     *  structured block to the model implicit cell or node location.
+     *  For example, the file descriptor of the 37th cell in the 4th
+     *  block is calculated by:
+     *
+     *  file_descriptor = offset of block 4 + 37
+     *
+     *  This can also be used to determine which structured block
+     *  a cell with a file_descriptor maps into. An particular
+     *  structured block contains all cells in the range:
+     *
+     *  offset < file_descriptor <= offset+number_cells_per_block
+     *
+     *  Note that for nodes, the nodeOffset does not take into account
+     *  the nodes that are shared between blocks.  
+     */
+    void set_node_offset(size_t offset) { nodeOffset = offset; }
+    void set_cell_offset(size_t offset) { cellOffset = offset; }
+
+    /** \brief Get the 'offset' for the block.
+     *
+     *  The 'offset' is used to map an element location within an
+     *  element block to the element 'file descriptor'.
+     *  For example, the file descriptor of the 37th element in the 4th
+     *  block is calculated by:
+     *
+     *  file_descriptor = offset of block 4 + 37
+     *
+     *  This can also be used to determine which element block
+     *  an element with a file_descriptor maps into. An particular
+     *  element block contains all elements in the range:
+     *
+     *  offset < file_descriptor <= offset+number_elements_per_block
+     */
+    size_t get_node_offset() const { return nodeOffset; }
+    size_t get_cell_offset() const { return cellOffset; }
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size) const override;
@@ -98,6 +158,9 @@ namespace Ioss {
     int m_nj;
     int m_nk;
 
+    size_t nodeOffset;
+    size_t cellOffset;
+    
     Ioss::NodeBlock m_nodeBlock;
 
   public:
