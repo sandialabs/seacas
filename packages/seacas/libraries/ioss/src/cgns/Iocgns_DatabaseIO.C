@@ -178,6 +178,7 @@ namespace Iocgns {
     // ========================================================================
     cgsize_t      num_node         = 0;
     cgsize_t      num_elem         = 0;
+    cgsize_t      num_cell         = 0;
     CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
 
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
@@ -195,11 +196,12 @@ namespace Iocgns {
         IOSS_ERROR(errmsg);
       }
 
+      cgsize_t size[9];
+      char     zone_name[33];
+      cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+      m_zoneNameMap[zone_name] = zone;
+
       if (zone_type == CG_Structured) {
-        cgsize_t size[9];
-        char     zone_name[33];
-        cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
-        m_zoneNameMap[zone_name] = zone;
 
         assert(size[0] - 1 == size[3]);
         assert(size[1] - 1 == size[4]);
@@ -217,9 +219,12 @@ namespace Iocgns {
 
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone));
-
         get_region()->add(block);
+
+	block->set_node_offset(num_node);
+	block->set_cell_offset(num_cell);
         num_node += block->get_property("node_count").get_int();
+        num_cell += block->get_property("cell_count").get_int();
 
         // Handle zone-grid-connectivity...
         int nconn = 0;
@@ -234,17 +239,19 @@ namespace Iocgns {
           cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                        donor_range.data(), transform.data());
 
-          block->m_zoneConnectivity.emplace_back(connectname, donorname, transform, range,
-                                                 donor_range);
+	  // Get number of nodes shared with other "previous" zones...
+	  // A "previous" zone will have a lower zone number this this zone...
+	  int donor_zone = -1;
+	  auto donor_iter = m_zoneNameMap.find(donorname);
+	  if (donor_iter != m_zoneNameMap.end()) {
+	    donor_zone = (*donor_iter).second;
+	  }
+          block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
+						 transform, range, donor_range);
         }
       }
 
       else if (zone_type == CG_Unstructured) {
-        cgsize_t size[3];
-        char     zone_name[33];
-        cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
-        m_zoneNameMap[zone_name] = zone;
-
         cgsize_t total_block_nodes = size[0];
         m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
 
@@ -419,6 +426,20 @@ namespace Iocgns {
         errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
                                                   "which are the only types currently supported";
         IOSS_ERROR(errmsg);
+      }
+    }
+
+    // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
+    // and update the donor_zone id for zones that had not yet been processed at the time of
+    // definition...
+    const auto &blocks = get_region()->get_structured_blocks();
+    for (auto &block : blocks) {
+      for (auto &conn : block->m_zoneConnectivity) {
+	if (conn.m_donorZone < 0) {
+	  auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
+	  assert(donor_iter != m_zoneNameMap.end());
+	  conn.m_donorZone = (*donor_iter).second;
+	}
       }
     }
 
