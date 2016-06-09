@@ -60,8 +60,9 @@ namespace Ioss {
    */
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
                                    int index_dim, int ni, int nj, int nk)
-      : GroupingEntity(io_database, my_name, ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)), m_ni(ni),
-        m_nj(nj), m_nk(nk), m_nodeBlock(io_database, my_name + "_nodes",
+      : GroupingEntity(io_database, my_name, ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
+	m_ni(ni), m_nj(nj), m_nk(nk), nodeOffset(0), cellOffset(0), 
+	m_nodeBlock(io_database, my_name + "_nodes",
                                         (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
   {
     assert(index_dim == 1 || index_dim == 2 || index_dim == 3);
