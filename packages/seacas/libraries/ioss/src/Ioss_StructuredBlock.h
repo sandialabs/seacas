@@ -43,6 +43,8 @@
 #include <string>
 
 namespace Ioss {
+  class Region;
+  
   struct ZoneConnectivity
   {
     ZoneConnectivity(const std::string name, int owner_zone,
@@ -71,6 +73,14 @@ namespace Ioss {
       return m_ownerZone < m_donorZone;
     }
 
+    std::array<int,9> transform_matrix() const;
+    std::array<int,3> transform(const std::array<int,9> &t_matrix,
+				const std::array<int,3> &index_1) const;
+    std::array<int,3> inverse_transform(const std::array<int,9> &t_matrix,
+					const std::array<int,3> &index_1) const;
+
+    std::vector<int> get_range(int ordinal) const;
+    
     std::string m_connectionName;
     std::string m_donorName;
     std::array<int, 3> m_transform;
@@ -125,9 +135,31 @@ namespace Ioss {
      *  Note that for nodes, the nodeOffset does not take into account
      *  the nodes that are shared between blocks.  
      */
-    void set_node_offset(size_t offset) { nodeOffset = offset; }
-    void set_cell_offset(size_t offset) { cellOffset = offset; }
+    void set_node_offset(size_t offset) { m_nodeOffset = offset; }
+    void set_cell_offset(size_t offset) { m_cellOffset = offset; }
 
+    // Get the local (relative to this block) node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
+    size_t get_local_node_id(size_t i, size_t j, size_t k) const
+    {
+      return (k-1) * (m_ni+1) * (m_nj+1) + (j-1) * (m_ni+1) + i;
+    }
+
+    // Get the global node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
+    // Does not currently account for shared nodes...
+    size_t get_global_node_id(size_t i, size_t j, size_t k) const
+    {
+      return get_local_node_id(i,j,k) + m_nodeOffset;
+    }
+
+    // Return a vector of size num-nodes-this-block
+    // which has the "global ids" of the nodes in this block.
+    // Accounts for the shared nodes at block-block interfaces.
+    // Id will be id in the block ownind the shared node 
+    // (currently owner is the node with the lowest zone)
+    std::vector<size_t> global_node_id_list(const Ioss::Region &region) const;
+    
     /** \brief Get the 'offset' for the block.
      *
      *  The 'offset' is used to map an element location within an
@@ -143,8 +175,8 @@ namespace Ioss {
      *
      *  offset < file_descriptor <= offset+number_elements_per_block
      */
-    size_t get_node_offset() const { return nodeOffset; }
-    size_t get_cell_offset() const { return cellOffset; }
+    size_t get_node_offset() const { return m_nodeOffset; }
+    size_t get_cell_offset() const { return m_cellOffset; }
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
@@ -158,8 +190,8 @@ namespace Ioss {
     int m_nj;
     int m_nk;
 
-    size_t nodeOffset;
-    size_t cellOffset;
+    size_t m_nodeOffset;
+    size_t m_cellOffset;
     
     Ioss::NodeBlock m_nodeBlock;
 
