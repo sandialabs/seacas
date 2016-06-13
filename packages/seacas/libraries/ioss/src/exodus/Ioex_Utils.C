@@ -512,7 +512,7 @@ namespace Ioex {
     std::ostringstream errmsg;
     // Create errmsg here so that the exerrval doesn't get cleared by
     // the ex_close call.
-    errmsg << "Exodus error (" << exerrval << ") " << nc_strerror(exerrval) << " at line " << lineno
+    errmsg << "Exodus error (" << exerrval << ") " << ex_strerror(exerrval) << " at line " << lineno
            << " of file '" << filename << "' in function '" << function
            << "' Please report to gdsjaar@sandia.gov if you need help.";
 
@@ -1040,7 +1040,8 @@ namespace Ioex {
   void separate_surface_element_sides(Ioss::Int64Vector &element, Ioss::Int64Vector &sides,
                                       Ioss::Region *region, Ioex::TopologyMap &topo_map,
                                       Ioex::TopologyMap &    side_map,
-                                      Ioss::SurfaceSplitType split_type)
+                                      Ioss::SurfaceSplitType split_type,
+                                      const std::string &    surface_name)
   {
     if (!element.empty()) {
       Ioss::ElementBlock *block = nullptr;
@@ -1051,6 +1052,13 @@ namespace Ioex {
 
       for (size_t iel = 0; iel < element.size(); iel++) {
         int64_t elem_id = element[iel];
+        if (elem_id <= 0) {
+          std::ostringstream errmsg;
+          errmsg << "ERROR: In sideset/surface '" << surface_name << "' an element with id "
+                 << elem_id << " is specified.  Element ids must be greater than zero. ("
+                 << __func__ << ")";
+          IOSS_ERROR(errmsg);
+        }
         if (block == nullptr || !block->contains(elem_id)) {
           block = region->get_element_block(elem_id);
           assert(block != nullptr);
