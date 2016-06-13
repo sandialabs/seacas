@@ -29,6 +29,12 @@ TRIBITS_ADD_LIBRARY(
   )
 
 TRIBITS_ADD_EXECUTABLE(
+  struc-to-unstruc
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES struc-to-unstruc.C
+  )
+TRIBITS_ADD_EXECUTABLE(
   cth_pressure_map
   NOEXEPREFIX
   NOEXESUFFIX
