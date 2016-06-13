@@ -37,6 +37,10 @@
 # To run the tests with valgrind checking, uncomment the next line and comment the
 # following line. Can also define other prefixes if wanted.
 
+if [ "$1" == "netcdf4" ]; then
+   export EXODUS_NETCDF4=quiet
+fi
+
 #PREFIX = "valgrind --tool=memcheck"
 PREFIX=""
 SUFFIX=""
