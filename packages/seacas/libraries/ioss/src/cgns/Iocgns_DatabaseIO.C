@@ -185,15 +185,15 @@ namespace Iocgns {
       block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
 					     transform, range, donor_range);
     }
-    block->generate_shared_nodes(*get_region());
   }
 
   size_t DatabaseIO::finalize_structured_blocks()
   {
+    const auto &blocks = get_region()->get_structured_blocks();
+
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
     // definition...
-    const auto &blocks = get_region()->get_structured_blocks();
     for (auto &block : blocks) {
       for (auto &conn : block->m_zoneConnectivity) {
         if (conn.m_donorZone < 0) {
@@ -202,6 +202,10 @@ namespace Iocgns {
           conn.m_donorZone = (*donor_iter).second;
         }
       }
+    }
+
+    for (auto &block : blocks) {
+      block->generate_shared_nodes(*get_region());
     }
 
     // Iterate all structured blocks and fill in the global ids:
