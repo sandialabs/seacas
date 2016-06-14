@@ -70,7 +70,7 @@ namespace Ioss {
 
     bool owns_shared_nodes() const
     {
-      return m_ownerZone < m_donorZone;
+      return m_donorZone == -1 || m_ownerZone < m_donorZone;
     }
 
     std::array<int,9> transform_matrix() const;
@@ -145,20 +145,31 @@ namespace Ioss {
       return (k-1) * (m_ni+1) * (m_nj+1) + (j-1) * (m_ni+1) + i;
     }
 
-    // Get the global node id at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    // Does not currently account for shared nodes...
-    size_t get_global_node_id(size_t i, size_t j, size_t k) const
+    // Get the local (relative to this block) node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
+    size_t get_local_node_offset(size_t i, size_t j, size_t k) const
+    {
+      return (k-1) * (m_ni+1) * (m_nj+1) + (j-1) * (m_ni+1) + i - 1;
+    }
+
+    // Get the global cell-node offset at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
+    size_t get_global_node_offset(size_t i, size_t j, size_t k) const
     {
       return get_local_node_id(i,j,k) + m_nodeOffset;
     }
 
-    // Return a vector of size num-nodes-this-block
-    // which has the "global ids" of the nodes in this block.
-    // Accounts for the shared nodes at block-block interfaces.
-    // Id will be id in the block ownind the shared node 
-    // (currently owner is the node with the lowest zone)
-    std::vector<size_t> global_node_id_list(const Ioss::Region &region) const;
+    // Get the global node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
+    // This is the position in the global node block of the node at i,j,k.
+    size_t get_global_node_id(size_t i, size_t j, size_t k) const
+    {
+      assert(!m_globalNodeIdList.empty());
+      size_t offset = get_local_node_offset(i, j, k);
+      return m_globalNodeIdList[offset];
+    }
+
+    void generate_shared_nodes(const Ioss::Region &region);
     
     /** \brief Get the 'offset' for the block.
      *
@@ -178,6 +189,11 @@ namespace Ioss {
     size_t get_node_offset() const { return m_nodeOffset; }
     size_t get_cell_offset() const { return m_cellOffset; }
 
+    bool contains(size_t global_offset) const
+    {
+      return (global_offset >= m_nodeOffset && global_offset < m_nodeOffset+get_property("node_count").get_int());
+    }
+    
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size) const override;
@@ -197,6 +213,7 @@ namespace Ioss {
 
   public:
     std::vector<ZoneConnectivity> m_zoneConnectivity;
+    mutable std::vector<ssize_t> m_globalNodeIdList;
   };
 }
 #endif

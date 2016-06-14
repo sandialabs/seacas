@@ -232,6 +232,13 @@ namespace Ioss {
     // or greater than number of elements in database)
     ElementBlock *get_element_block(size_t local_id) const;
 
+    // Retrieve the structured block that contains the specified node
+    // The 'global_offset' is the global offset (0-based)
+    // returns nullptr if no structured block contains this node (local_id <= 0
+    // or greater than number of cell-nodes in database)
+    StructuredBlock *get_structured_block(size_t global_offset) const;
+
+    
     // Handle implicit properties -- These are calcuated from data stored
     // in the grouping entity instead of having an explicit value assigned.
     // An example would be 'element_block_count' for a region.
