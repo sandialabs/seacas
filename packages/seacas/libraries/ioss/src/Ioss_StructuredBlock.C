@@ -65,6 +65,7 @@ namespace Ioss {
    *  \param[in] io_database The database associated with the region containing the structured
    * block.
    *  \param[in] my_name The structured block's name.
+   *  \param[in] index_dim The dimensionality of the block -- 1D, 2D, 3D
    *  \param[in] ni The number of intervals in the (i) direction.
    *  \param[in] nj The number of intervals in the (j) direction. Zero if 1D
    *  \param[in] nk The number of intervals in the (k) direction. Zero if 2D
@@ -139,53 +140,77 @@ namespace Ioss {
     return get_database()->get_bounding_box(this);
   }
 
-  // Return a vector of size num-nodes-this-block
-  // which has the "global ids" of the nodes in this block.
-  // Accounts for the shared nodes at block-block interfaces.
-  // Id will be id in the block ownind the shared node 
-  // (currently owner is the node with the lowest zone)
-
-  std::vector<size_t> StructuredBlock::global_node_id_list(const Ioss::Region &region) const
+  void StructuredBlock::generate_shared_nodes(const Ioss::Region &region)
   {
-    size_t node_count = get_property("node_count").get_int();
-    std::vector<size_t> ids(node_count);
-
-    // If no shared nodes, then id list is just range m_nodeOffset+1..m_nodeOffset+node_count
-    std::iota(ids.begin(), ids.end(), m_nodeOffset+1);
+    // First step in generating the map from "cell-node" to global node position
+    // in the model with all duplicate nodes equived out.
+    assert(m_globalNodeIdList.empty());
     
-    // Now iterate through all zoneConnectivity instances and adjust ids for non-owned shared nodes.
+    size_t node_count = get_property("node_count").get_int();
+    ssize_t ss_max = std::numeric_limits<ssize_t>::max();
+    m_globalNodeIdList.resize(node_count, ss_max);
+      
+    // Iterate through all zoneConnectivity instances.  For each one
+    // containing non-owned nodes, set the value of m_globalNodeIdList
+    // to point to the owning nodes global_node_offset.
+    // If a node in this block already has a value, then that node
+    // is shared multiple times (at a corner of three blocks) and need
+    // to resolve which of the nodes it points to is the owner...
     for (const auto &zgc : m_zoneConnectivity) {
       if (!zgc.owns_shared_nodes()) {
-	// Need to adjust the ids for the shared nodes at this interface.
-	// TODO: Note that nodes at multiple-shared interfaces are not handled correctly yet...
 	// Iterate over the range of nodes on the interface...
 	std::vector<int> i_range = zgc.get_range(1);
 	std::vector<int> j_range = zgc.get_range(2);
 	std::vector<int> k_range = zgc.get_range(3);
 	
-	auto donor_block = region.get_structured_block(zgc.m_donorName);
-	assert(donor_block != nullptr);
-	
+	auto owner_block = region.get_structured_block(zgc.m_donorName);
+	assert(owner_block != nullptr);
+	assert(!owner_block->m_globalNodeIdList.empty());
+
 	const std::array<int,9> t_matrix = zgc.transform_matrix();
 	for (auto &k : k_range) {
 	  for (auto &j : j_range) {
 	    for (auto &i : i_range) {
 	      std::array<int,3> index {{i, j, k}};
-	      std::array<int,3> donor = zgc.transform(t_matrix, index);
-	      std::cerr << index[0] << " " << index[1] << " " << index[2] << "|"
-			<< donor[0] << " " << donor[1] << " " << donor[2] << "\n";
+	      std::array<int,3> owner = zgc.transform(t_matrix, index);
+	      
+	      if (zgc.m_ownerZone != zgc.m_donorZone) {
+		// Convert main and owner i,j,k triplets into model-local m_globalNodeIdList
+		size_t local_offset = get_local_node_offset(index[0], index[1], index[2]);
+		size_t global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
 
-	      // Convert main and donor i,j,k triplets into model-local ids
-	      size_t local_node = get_local_node_id(index[0], index[1], index[2]);
-	      size_t donor_node = donor_block->get_global_node_id(donor[0], donor[1], donor[2]);
-	      ids[local_node-1] = donor_node;
-	      std::cerr << "Local node " << local_node << " maps to donor node " << donor_node << "\n";
+		if (m_globalNodeIdList[local_offset] != ss_max) {
+		  // This node maps to two different nodes -- probably at a 3-way corner
+		  // Need to adjust the node in 'owner_block' with id 'global_offset'
+		  // to instead point to 'm_globalNodeIdList[local_offset]'
+		  size_t owner_offset = owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+		  owner_block->m_globalNodeIdList[owner_offset] = m_globalNodeIdList[local_offset];
+		}
+		else {
+		  m_globalNodeIdList[local_offset] = global_offset;
+		}
+	      }
+	      else {
+		// When mapping WITHIN a zone, need to avoid circular A->B and B->A. 
+		// The GridConnectivity object will appear twice; once with each surface
+		// being the "owner"...
+		// Want to map only if local < owner_local
+		// Convert main and owner i,j,k triplets into zone-local offsets
+		size_t local_node  = get_local_node_offset(index[0], index[1], index[2]);
+		size_t owner_node = get_local_node_offset(owner[0], owner[1], owner[2]);
+		if (owner_node < local_node) {
+		  size_t global_offset = get_global_node_offset(owner[0], owner[1], owner[2]);
+		  m_globalNodeIdList[local_node] = global_offset;
+		}
+	      }
 	    }
 	  }
 	}
       }
     }
-    return ids;
+    // At this point, the vector contains either "owned nodes" which have an entry
+    // of 'ss_max', or shared nodes that it doesn't own which point to the global cell-node
+    // offset of the owning node.
   }
 
   std::vector<int> ZoneConnectivity::get_range(int ordinal) const
@@ -208,9 +233,7 @@ namespace Ioss {
     for (int i=0; i < 3; i++) {
       for (int j=0; j < 3; j++) {
 	t_matrix[3*i+j] = sign(m_transform[j]) * del(m_transform[j], i+1);
-	std::cerr << t_matrix[3*i+j] << " ";
       }
-      std::cerr << "\n";
     }
     return t_matrix;
   }
