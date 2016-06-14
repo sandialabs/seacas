@@ -192,23 +192,39 @@ namespace {
     size_t glob_node_count = region.get_node_blocks()[0]->get_property("entity_count").get_int();
 
     auto nb = output_region.get_node_blocks()[0];
-    {
+    
+    {      
       // TODO: This needs to change once we handle the shared nodes at block connections.
       std::vector<int> ids(glob_node_count);
       std::iota(ids.begin(), ids.end(), 1);
       nb->put_field_data("ids", ids);
     }
 
-    std::vector<double> coordinate_x(glob_node_count);
-    std::vector<double> coordinate_y(glob_node_count);
-    std::vector<double> coordinate_z(glob_node_count);
+    std::vector<double> coordinate_x(glob_node_count, -100000);
+    std::vector<double> coordinate_y(glob_node_count, -100000);
+    std::vector<double> coordinate_z(glob_node_count, -100000);
 
     auto &blocks = region.get_structured_blocks();
     for (auto &block : blocks) {
-      size_t offset = block->get_node_offset();
-      block->get_field_data("mesh_model_coordinates_x", &coordinate_x[offset], -1);
-      block->get_field_data("mesh_model_coordinates_y", &coordinate_y[offset], -1);
-      block->get_field_data("mesh_model_coordinates_z", &coordinate_z[offset], -1);
+      std::vector<double> coord_tmp;
+      block->get_field_data("mesh_model_coordinates_x", coord_tmp);
+      for (size_t i=0; i < block->m_globalNodeIdList.size(); i++) {
+	auto node = block->m_globalNodeIdList[i];
+	assert(node >= 0 && node < glob_node_count);
+	coordinate_x[node] = coord_tmp[i];
+      }
+      block->get_field_data("mesh_model_coordinates_y", coord_tmp);
+      for (size_t i=0; i < block->m_globalNodeIdList.size(); i++) {
+	auto node = block->m_globalNodeIdList[i];
+	assert(node >= 0 && node < glob_node_count);
+	coordinate_y[node] = coord_tmp[i];
+      }
+      block->get_field_data("mesh_model_coordinates_z", coord_tmp);
+      for (size_t i=0; i < block->m_globalNodeIdList.size(); i++) {
+	auto node = block->m_globalNodeIdList[i];
+	assert(node >= 0 && node < glob_node_count);
+	coordinate_z[node] = coord_tmp[i];
+      }
     }
     nb->put_field_data("mesh_model_coordinates_x", coordinate_x);
     nb->put_field_data("mesh_model_coordinates_y", coordinate_y);
@@ -221,7 +237,8 @@ namespace {
     for (auto &block : blocks) {
       // We have a structured block of size ni x nj x nk.
       // Need to convert that to element connectivity
-      // Node numbers need to be offset by the block's "node_offset"
+      // Node numbers are zero-based offset into this structured block
+      // After generated, then map zero-based block-local into one-based global.
 
       size_t ni = block->get_property("ni").get_int();
       size_t nj = block->get_property("nj").get_int();
@@ -250,11 +267,10 @@ namespace {
       // 'connect' contains 0-based block-local node ids at this point
       // Now, map them to processor-global values...
 
-      // 'gnil' contains mapping from 0-based block-local to processor-global
-      std::vector<size_t> gnil = block->global_node_id_list(region);
+      const auto &gnil = block->m_globalNodeIdList;
       
       for (size_t i=0; i < connect.size(); i++) {
-	connect[i] = gnil[connect[i]];
+	connect[i] = gnil[connect[i]]+1;
       }
 	
       // Find matching element block in output region...

@@ -1687,6 +1687,27 @@ namespace Ioss {
     return nullptr;
   }
 
+  /** \brief Get the structured block containing a specified global-offset-node.
+   *
+   *  \param[in] global_offset The offset of cell-nodes for all blocks; 0-based.
+   *  \returns The structured block, or nullptr if no structured block contains this
+   *           node (local_id <= 0 or greater than number of cell-nodes in database)
+   */
+  StructuredBlock *Region::get_structured_block(size_t global_offset) const
+  {
+    for (auto sb : structuredBlocks) {
+      if (sb->contains(global_offset)) {
+        return sb;
+      }
+    }
+    // Should not reach this point...
+    std::ostringstream errmsg;
+    errmsg << "ERROR: In Ioss::Region::get_structured_block, an invalid global_offset of " << global_offset
+           << " is specified.";
+    IOSS_ERROR(errmsg);
+    return nullptr;
+  }
+
   /** \brief Get an implicit property -- These are calcuated from data stored
    *         in the grouping entity instead of having an explicit value assigned.
    *
