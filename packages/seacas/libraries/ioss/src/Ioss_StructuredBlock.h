@@ -156,7 +156,7 @@ namespace Ioss {
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_global_node_offset(size_t i, size_t j, size_t k) const
     {
-      return get_local_node_id(i,j,k) + m_nodeOffset;
+      return get_local_node_offset(i,j,k) + m_nodeOffset;
     }
 
     // Get the global node id at the specified
