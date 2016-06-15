@@ -115,6 +115,8 @@ namespace Iocgns {
       m_decomposition.m_spatialDimension = phys_dimension;
     }
 
+    CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
+
     cg_nzones(filePtr, base, &num_zones);
     m_zones.resize(num_zones + 1); // Use 1-based zones.
 
@@ -124,14 +126,20 @@ namespace Iocgns {
       CG_ZoneType_t zone_type;
       cg_zone_type(filePtr, base, zone, &zone_type);
 
-      // See if all zones are "Unstructured" which is all we currently support...
-      if (zone_type != CG_Unstructured) {
+      if (common_zone_type == CG_ZoneTypeNull) {
+        common_zone_type = zone_type;
+      }
+
+      if (common_zone_type != zone_type) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone
-               << " is not of type Unstructured which is the only type currently supported";
+        errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
+               << " This is currently not allowed or supported (hybrid mesh).";
         IOSS_ERROR(errmsg);
       }
-      else {
+
+      // See if all zones are "Unstructured" which is all we currently support...
+      if (zone_type == CG_Structured) {
+	cgsize_t size[9];
         cgsize_t size[3];
         char     zone_name[33];
         cg_zone_read(filePtr, base, zone, zone_name, size);
@@ -139,12 +147,33 @@ namespace Iocgns {
         INT total_block_nodes = size[0];
         INT total_block_elem  = size[1];
 
-        zones_[zone].m_nodeCount     = total_block_nodes;
-        zones_[zone].m_nodeOffset    = globalNodeCount;
-        zones_[zone].m_name          = zone_name;
-        zones_[zone].m_elementOffset = globalElementCount;
-        globalNodeCount += total_block_nodes;
-        globalElementCount += total_block_elem;
+        m_zones[zone].m_nodeCount     = total_block_nodes;
+        m_zones[zone].m_nodeOffset    = global_node_count;
+        m_zones[zone].m_name          = zone_name;
+        m_zones[zone].m_elementOffset = global_element_count;
+        global_node_count += total_block_nodes;
+        global_element_count += total_block_elem;
+      }
+      else if (zone_type == CG_Unstructured) {
+        cgsize_t size[3];
+        char     zone_name[33];
+        cg_zone_read(filePtr, base, zone, zone_name, size);
+
+        INT total_block_nodes = size[0];
+        INT total_block_elem  = size[1];
+
+        m_zones[zone].m_nodeCount     = total_block_nodes;
+        m_zones[zone].m_nodeOffset    = global_node_count;
+        m_zones[zone].m_name          = zone_name;
+        m_zones[zone].m_elementOffset = global_element_count;
+        global_node_count += total_block_nodes;
+        global_element_count += total_block_elem;
+      }
+      else {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
+	  "which are the only types currently supported";
+        IOSS_ERROR(errmsg);
       }
     }
 
