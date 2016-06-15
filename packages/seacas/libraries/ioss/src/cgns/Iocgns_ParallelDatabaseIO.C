@@ -205,7 +205,7 @@ namespace Iocgns {
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int i = 0;
-    for (auto &block : decomp->el_blocks) {
+    for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
 #if defined(DEBUG_OUTPUT)
       std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
@@ -222,11 +222,11 @@ namespace Iocgns {
     // ========================================================================
     // Have sidesets, now create sideblocks for each sideset...
     int id = 0;
-    for (auto &sset : decomp->side_sets) {
+    for (auto &sset : decomp->m_sideSets) {
       // See if there is an Ioss::SideSet with a matching name...
       Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
       if (ioss_sset != NULL) {
-        auto        zone = decomp->zones_[sset.zone()];
+        auto        zone = decomp->m_zones[sset.zone()];
         std::string block_name(zone.m_name);
         block_name += "/";
         block_name += sset.name();
@@ -235,7 +235,7 @@ namespace Iocgns {
         std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name
                   << " of topo " << face_topo << " with " << sset.ioss_count() << " faces\n";
 #endif
-        const auto &block = decomp->el_blocks[sset.parentBlockIndex];
+        const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
 
         std::string      parent_topo = block.topologyType;
         Ioss::SideBlock *sblk =
@@ -250,7 +250,7 @@ namespace Iocgns {
         }
         ioss_sset->add(sblk);
       }
-      id++; // Really just index into side_sets list.
+      id++; // Really just index into m_sideSets list.
     }
 
     Ioss::NodeBlock *nblock =
@@ -521,7 +521,7 @@ namespace Iocgns {
                                                  size_t data_size) const
   {
     int  id   = sb->get_property("id").get_int();
-    auto sset = decomp->side_sets[id];
+    auto sset = decomp->m_sideSets[id];
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
