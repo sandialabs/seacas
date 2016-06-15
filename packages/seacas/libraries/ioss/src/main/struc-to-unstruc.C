@@ -190,13 +190,22 @@ namespace {
   void transfer_coordinates(Ioss::Region &region, Ioss::Region &output_region)
   {
     size_t glob_node_count = region.get_node_blocks()[0]->get_property("entity_count").get_int();
-
     auto nb = output_region.get_node_blocks()[0];
     
     {      
-      // TODO: This needs to change once we handle the shared nodes at block connections.
-      std::vector<int> ids(glob_node_count);
-      std::iota(ids.begin(), ids.end(), 1);
+      std::vector<int> ids(glob_node_count); // To hold the global node id map.
+      auto &blocks = region.get_structured_blocks();
+      for (auto &block : blocks) {
+	std::vector<int> cell_id;
+	block->get_field_data("cell_node_ids", cell_id);
+	for (size_t i=0; i < block->m_globalNodeIdList.size(); i++) {
+	  auto node = block->m_globalNodeIdList[i];
+	  assert(node >= 0 && node < glob_node_count);
+	  if (ids[node] == 0) {
+	    ids[node] = cell_id[i];
+	  }
+	}
+      }
       nb->put_field_data("ids", ids);
     }
 
@@ -277,7 +286,7 @@ namespace {
       const auto &name = block->name();
       auto *output = output_region.get_element_block(name);
       assert(output != nullptr);
-      output->put_field_data("connectivity", connect);
+      output->put_field_data("connectivity_raw", connect);
     }
     return;
   }
