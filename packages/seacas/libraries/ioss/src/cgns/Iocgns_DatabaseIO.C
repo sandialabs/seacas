@@ -868,9 +868,9 @@ namespace Iocgns {
           }
         }
       }
-      else if (field.get_name() == "ids") {
+      else if (field.get_name() == "cell_node_ids") {
         // Map the local ids in this node block
-        // (1...node_count) to global node ids.
+        // (1...node_count) to global 1-based cell-node ids.
 	size_t node_offset = sb->get_node_offset();
 	size_t node_count = sb->get_property("node_count").get_int();
 
