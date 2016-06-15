@@ -99,6 +99,9 @@ namespace Ioss {
     else if (index_dim == 3) {
       vector_name = VECTOR_3D();
     }
+    fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, SCALAR(),
+                           Ioss::Field::MESH, node_count));
+
     fields.add(Ioss::Field("mesh_model_coordinates", Ioss::Field::REAL, vector_name,
                            Ioss::Field::MESH, node_count));
 
