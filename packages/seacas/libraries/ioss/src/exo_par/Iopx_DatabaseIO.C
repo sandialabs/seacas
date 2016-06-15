@@ -378,6 +378,22 @@ namespace Iopx {
       mode |= EX_DISKLESS;
     }
 #endif
+
+#if defined(OMPI_MAJOR_VERSION)
+#if OMPI_MAJOR_VERSION == 1 && OMPI_MINOR_VERSION <= 8
+    // See bug description in thread at
+    // https://www.open-mpi.org/community/lists/users/2015/01/26167.php and
+    // https://prod.sandia.gov/sierra-trac/ticket/14679
+    if (myProcessor == 0) {
+      if (get_filename().length() >= 255) {
+	IOSS_WARNING << "Potential corruption due to long length of filename\n\t'"
+		     << get_filename()
+		     << "'\n. There is a bug in certain openmpi versions (<1.8.5) which limit filename length to 255 characters.\n";
+      }
+    }
+#endif
+#endif
+
     int par_mode = get_parallel_io_mode(properties);
 
     MPI_Info info        = MPI_INFO_NULL;
@@ -455,6 +471,20 @@ namespace Iopx {
     if (properties.exists("MEMORY_WRITE")) {
       mode |= EX_DISKLESS;
     }
+#endif
+#if defined(OMPI_MAJOR_VERSION)
+#if OMPI_MAJOR_VERSION == 1 && OMPI_MINOR_VERSION <= 8
+    // See bug description in thread at
+    // https://www.open-mpi.org/community/lists/users/2015/01/26167.php and
+    // https://prod.sandia.gov/sierra-trac/ticket/14679
+    if (myProcessor == 0) {
+      if (get_filename().length() >= 255) {
+	IOSS_WARNING << "Potential corruption due to long length of filename\n\t'"
+		     << get_filename()
+		     << "'\n. There is a bug in certain openmpi versions (<1.8.5) which limit filename length to 255 characters.\n";
+      }
+    }
+#endif
 #endif
 
     int par_mode = get_parallel_io_mode(properties);
