@@ -80,7 +80,7 @@ namespace Iocgns {
   class DecompositionDataBase
   {
   public:
-    DecompositionDataBase(MPI_Comm comm) : comm_(comm), myProcessor(0), processorCount(0) {}
+    DecompositionDataBase(MPI_Comm comm) : m_comm(comm), m_myProcessor(0), m_processorCount(0) {}
 
     virtual ~DecompositionDataBase() {}
     virtual void decompose_model(int filePtr) = 0;
@@ -118,18 +118,17 @@ namespace Iocgns {
     void get_sideset_element_side(int filePtr, const Ioss::SetDecompositionData &sset,
                                   void *data) const;
 
-    MPI_Comm comm_;
-    int      myProcessor;
-    int      processorCount;
+    MPI_Comm m_comm;
+    int      m_myProcessor;
+    int      m_processorCount;
 
-    std::vector<ZoneData>                     zones_;
-    std::vector<Ioss::BlockDecompositionData> el_blocks;
-    std::vector<Ioss::SetDecompositionData>   node_sets;
-    std::vector<Ioss::SetDecompositionData>   side_sets;
+    std::vector<ZoneData>                     m_zones;
+    std::vector<Ioss::BlockDecompositionData> m_elementBlocks;
+    std::vector<Ioss::SetDecompositionData>   m_sideSets;
 
     // Maps nodes shared between zones.
     // TODO: Currently each processor has same map; need to figure out how to reduce size
-    std::unordered_map<cgsize_t, cgsize_t> zone_shared_map;
+    std::unordered_map<cgsize_t, cgsize_t> m_zoneSharedMap;
   };
 
   template <typename INT> class DecompositionData : public DecompositionDataBase
