@@ -224,7 +224,7 @@ namespace Iocgns {
 
     void get_element_block_communication()
     {
-      m_decomposition.get_element_block_communication(el_blocks);
+      m_decomposition.get_element_block_communication(m_elementBlocks);
     }
 
     void generate_adjacency_list(int fileId, Ioss::Decomposition<INT> &decomposition);
