@@ -37,6 +37,8 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
+#include <Iocgns_StructuredZoneData.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -83,6 +85,7 @@ namespace {
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void file_copy(const std::string &input, const std::string &output);
+  void decompose(const std::string &input);
 
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
@@ -92,6 +95,22 @@ namespace {
 namespace {
   std::string codename;
   std::string version = "4.7";
+
+  size_t proc_with_minimum_work(const std::vector<size_t> &work)
+  {
+    size_t min_work = work[0];
+    size_t min_proc = 0;
+    for (size_t i=1; i < work.size(); i++) {
+      if (work[i] < min_work) {
+	min_work = work[i];
+	min_proc = i;
+	if (min_work == 0) {
+	  break;
+	}
+      }
+    }
+    return min_proc;
+  }
 } // namespace
 
 int main(int argc, char *argv[])
@@ -103,14 +122,21 @@ int main(int argc, char *argv[])
 
   Ioss::Init::Initializer io;
   std::string in_file  = argv[1];
-  std::string out_file = argv[2];
-
+  std::string out_file;
+  if (argc > 2) {
+    out_file = argv[2];
+  }
   OUTPUT << "Structured Input:    '" << in_file << "'\n";
   OUTPUT << "Unstructured Output: '" << out_file << "'\n";
   OUTPUT << '\n';
 
   double begin = timer();
-  file_copy(in_file, out_file);
+  if (argc > 2) {
+    file_copy(in_file, out_file);
+  }
+  else {
+    decompose(in_file);
+  }
   double end = timer();
 
   OUTPUT << "\n\tElapsed time = " << end - begin << " seconds.\n";
@@ -123,69 +149,217 @@ int main(int argc, char *argv[])
 }
 
 namespace {
+  void decompose(const std::string &inpfile)
+  {
+    Ioss::PropertyManager properties;
+    Ioss::DatabaseIO *dbi = Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL,
+						    (MPI_Comm)MPI_COMM_WORLD, properties);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    // NOTE: 'region' owns 'db' pointer at this time...
+    Ioss::Region region(dbi, "region_1");
+
+    auto &blocks = region.get_structured_blocks();
+    if (blocks.empty()) {
+      return;
+    }
+
+    size_t work = 0;
+    std::vector<Iocgns::StructuredZoneData*> zones;
+    for (const auto &iblock : blocks) {
+      std::string name = iblock->name();
+      OUTPUT << name << "\n";
+
+      Iocgns::StructuredZoneData *z = new Iocgns::StructuredZoneData(iblock->get_property("zone").get_int(),
+								     iblock->get_property("ni").get_int(),
+								     iblock->get_property("nj").get_int(),
+								     iblock->get_property("nk").get_int());
+      zones.push_back(z);
+      z->m_adam = z;
+      assert(z->is_active());
+      work += z->work();
+    }      
+
+      
+    size_t new_zone_id = zones.size() + 1;
+    double load_balance_threshold = 1.4;
+    size_t proc_count = 15;
+    size_t px = 0;
+    bool split = false;
+
+    // Get average work / processor...
+    double avg_work = (double)work / proc_count;
+
+    auto active = zones.size();
+    OUTPUT << "Number of active zones = " << active
+	   << ", work = " << work << " average work = " << avg_work << "\n";
+    OUTPUT << "========================================================================\n";
+
+    OUTPUT << "Pre-Splitting:\n";
+    // Split all blocks where block->work() > avg_work * load_balance_threshold
+    do {
+      auto zone_new(zones);
+      split = false;
+      for (auto zone : zones) {
+	if (zone->is_active() && zone->work() > avg_work * load_balance_threshold) {
+	  auto children = zone->split(new_zone_id);
+	  if (children.first != nullptr && children.second != nullptr) {
+	    zone_new.push_back(children.first);
+	    zone_new.push_back(children.second);
+	    split = true;
+	    new_zone_id += 2;
+	  }
+	}
+      }
+      std::swap(zone_new, zones);
+    } while(split);
+    OUTPUT << "========================================================================\n";
+
+    do {
+      // Sort zones based on work.  Most work first..
+      // TODO: Possibly filter 'zones' down to only active zones to reduce sort and iteration time.
+      std::sort(zones.begin(), zones.end(), [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+		  return a->work() > b->work();   
+		});
+
+      if (avg_work < 1.0) {
+	OUTPUT << "ERROR: Model size too small to distribute over " << proc_count << " processors.\n";
+	std::exit(EXIT_FAILURE);
+      }
+      std::cerr << "Average workload is " << avg_work << ", Threshold is " << load_balance_threshold << "\n";
+
+      std::vector<size_t> work(proc_count);
+
+      auto zone_new(zones);
+      for (auto &zone : zones) {
+	if (zone->is_active()) {
+	  // Assign zone to processor with minimum work...
+	  size_t proc = proc_with_minimum_work(work);
+	  zone->m_proc = proc;
+	  work[proc] += zone->work();
+	  std::cerr << "Assigning zone " << zone->m_zone << " with work " << zone->work() << " to processor " << proc << "\n";
+	}
+      }
+
+      // Calculate workload ratio for each processor...
+      px = 0; // Number of processors where workload ratio exceeds threshold.
+      std::vector<bool> exceeds(proc_count);
+      for (size_t i=0; i < work.size(); i++) {
+	double workload_ratio = double(work[i]) / double(avg_work);
+	std::cerr << "Processor " << i << " workload ratio " << workload_ratio << "\n";
+	if (workload_ratio > load_balance_threshold) {
+	  exceeds[i] = true;
+	  px++;
+	}
+      }
+      std::cerr << "Workload threshold exceeded on " << px << " processors.\n";
+      if (px > 0) {
+	size_t num_split = 0;
+	split = false;
+	for (auto zone : zones) {
+	  if (zone->is_active() && exceeds[zone->m_proc]) {
+	    // Since 'zones' is sorted from most work to least,
+	    // we just iterate zones and check whether the zone
+	    // is on a proc where the threshold was exceeded.
+	    // if so, split the block and set exceeds[proc] to false;
+	    // Exit the loop when num_split >= px.
+	    auto children = zone->split(new_zone_id);
+	    if (children.first != nullptr && children.second != nullptr) {
+	      zone_new.push_back(children.first);
+	      zone_new.push_back(children.second);
+	      split = true;
+	      
+	      new_zone_id += 2;
+	      exceeds[zone->m_proc] = false;
+	      num_split++;
+	      if (num_split >= px) {
+		break;
+	      }
+	    }
+	  }
+	}
+      }
+      std::swap(zone_new, zones);
+      auto active = std::count_if(zones.begin(), zones.end(), [](Iocgns::StructuredZoneData *a) {return a->is_active();});
+      OUTPUT << "Number of active zones = " << active
+	     << ", average work = " << avg_work << "\n";
+      OUTPUT << "========================================================================\n";
+    } while(px > 0 && split);
+    
+    // Output the processor assignments...
+    for (auto zone : zones) {
+      if (zone->is_active()) {
+	OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc << "\n";
+      }
+    }
+
+  }
+  
   void file_copy(const std::string &inpfile, const std::string &outfile)
-{
-  Ioss::PropertyManager properties;
-  Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-						  "cgns", inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
-  if (dbi == nullptr || !dbi->ok(true)) {
-    std::exit(EXIT_FAILURE);
-  }
+  {
+    Ioss::PropertyManager properties;
+    Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
+						    "cgns", inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
 
-  // NOTE: 'region' owns 'db' pointer at this time...
-  Ioss::Region region(dbi, "region_1");
+    // NOTE: 'region' owns 'db' pointer at this time...
+    Ioss::Region region(dbi, "region_1");
 
-  //========================================================================
-  // OUTPUT ...
-  //========================================================================
-  Ioss::DatabaseIO *dbo =
-    Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
-			    (MPI_Comm)MPI_COMM_WORLD, properties);
-  if (dbo == nullptr || !dbo->ok(true)) {
-    std::exit(EXIT_FAILURE);
-  }
+    //========================================================================
+    // OUTPUT ...
+    //========================================================================
+    Ioss::DatabaseIO *dbo =
+      Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
+			      (MPI_Comm)MPI_COMM_WORLD, properties);
+    if (dbo == nullptr || !dbo->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
 
-  // NOTE: 'output_region' owns 'dbo' pointer at this time
-  Ioss::Region output_region(dbo, "region_2");
-  // Set the qa information...
-  output_region.property_add(Ioss::Property(std::string("code_name"), codename));
-  output_region.property_add(Ioss::Property(std::string("code_version"), version));
+    // NOTE: 'output_region' owns 'dbo' pointer at this time
+    Ioss::Region output_region(dbo, "region_2");
+    // Set the qa information...
+    output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+    output_region.property_add(Ioss::Property(std::string("code_version"), version));
 
-  OUTPUT << "DEFINING MODEL ... \n";
-  if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
-    OUTPUT << "ERROR: Could not put output region into define model state\n";
-    std::exit(EXIT_FAILURE);
-  }
+    OUTPUT << "DEFINING MODEL ... \n";
+    if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
+      OUTPUT << "ERROR: Could not put output region into define model state\n";
+      std::exit(EXIT_FAILURE);
+    }
 
-  transfer_nodeblock(region, output_region, true);
+    transfer_nodeblock(region, output_region, true);
 
 #ifdef HAVE_MPI
-  // This also assumes that the node order and count is the same for input
-  // and output regions... (This is checked during nodeset output)
-  if (output_region.get_database()->needs_shared_node_information()) {
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    // This also assumes that the node order and count is the same for input
+    // and output regions... (This is checked during nodeset output)
+    if (output_region.get_database()->needs_shared_node_information()) {
+      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    set_owned_node_count(region, rank, (int)0);
-  }
+      set_owned_node_count(region, rank, (int)0);
+    }
 #endif
 
-  transfer_elementblocks(region, output_region, true);
+    transfer_elementblocks(region, output_region, true);
 
-  OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
+    OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
 
-  output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
+    output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
-  OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
+    OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
 
-  // Model defined, now fill in the model data...
-  output_region.begin_mode(Ioss::STATE_MODEL);
+    // Model defined, now fill in the model data...
+    output_region.begin_mode(Ioss::STATE_MODEL);
 
-  transfer_coordinates(region, output_region);
-  transfer_connectivity(region, output_region);
+    transfer_coordinates(region, output_region);
+    transfer_connectivity(region, output_region);
 
-  OUTPUT << "END STATE_MODEL... " << '\n';
-  output_region.end_mode(Ioss::STATE_MODEL);
-}
+    OUTPUT << "END STATE_MODEL... " << '\n';
+    output_region.end_mode(Ioss::STATE_MODEL);
+  }
 
   void transfer_coordinates(Ioss::Region &region, Ioss::Region &output_region)
   {
