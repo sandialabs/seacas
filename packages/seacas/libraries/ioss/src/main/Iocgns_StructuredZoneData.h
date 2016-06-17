@@ -47,12 +47,13 @@ namespace Iocgns {
   {
   public:
     StructuredZoneData()
-      : m_zone(0), m_adam(nullptr), m_parent(nullptr), m_proc(-1), m_splitOrdinal(0),
+      : m_ordinal{{0, 0, 0}}, m_offset{{0, 0, 0}}, 
+        m_zone(0), m_adam(nullptr), m_parent(nullptr), m_proc(-1), m_splitOrdinal(0),
       m_child1(nullptr), m_child2(nullptr), m_sibling(nullptr)
     {}
 
     StructuredZoneData(int zone, int ni, int nj, int nk)
-      : m_ordinal{{ni, nj, nk}}, m_zone(zone), m_adam(nullptr),
+      : m_ordinal{{ni, nj, nk}}, m_offset{{0, 0, 0}}, m_zone(zone), m_adam(nullptr),
         m_parent(nullptr), m_proc(-1), m_splitOrdinal(0),
         m_child1(nullptr), m_child2(nullptr), m_sibling(nullptr)
     {}
