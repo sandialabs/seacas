@@ -70,10 +70,12 @@ namespace Ioss {
    *  \param[in] nj The number of intervals in the (j) direction. Zero if 1D
    *  \param[in] nk The number of intervals in the (k) direction. Zero if 2D
    */
-  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim, int ni, int nj, int nk)
+  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
+				   int ni, int nj, int nk, int off_i, int off_j, int off_k)
     : GroupingEntity(io_database, my_name, ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-      m_ni(ni), m_nj(nj), m_nk(nk), m_nodeOffset(0), m_cellOffset(0), 
+      m_ni(ni), m_nj(nj), m_nk(nk),
+      m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
+      m_nodeOffset(0), m_cellOffset(0), 
       m_nodeBlock(io_database, my_name + "_nodes",
 		  (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
   {
@@ -88,6 +90,9 @@ namespace Ioss {
     properties.add(Property("ni", m_ni));
     properties.add(Property("nj", m_nj));
     properties.add(Property("nk", m_nk));
+    properties.add(Property("offset_i", m_offsetI));
+    properties.add(Property("offset_j", m_offsetJ));
+    properties.add(Property("offset_k", m_offsetK));
 
     std::string vector_name;
     if (index_dim == 1) {
