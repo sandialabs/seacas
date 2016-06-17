@@ -1702,8 +1702,8 @@ namespace Ioss {
     }
     // Should not reach this point...
     std::ostringstream errmsg;
-    errmsg << "ERROR: In Ioss::Region::get_structured_block, an invalid global_offset of " << global_offset
-           << " is specified.";
+    errmsg << "ERROR: In Ioss::Region::get_structured_block, an invalid global_offset of "
+           << global_offset << " is specified.";
     IOSS_ERROR(errmsg);
     return nullptr;
   }

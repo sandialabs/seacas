@@ -139,7 +139,7 @@ namespace Iocgns {
 
       // See if all zones are "Unstructured" which is all we currently support...
       if (zone_type == CG_Structured) {
-	cgsize_t size[9];
+        cgsize_t size[9];
         cgsize_t size[3];
         char     zone_name[33];
         cg_zone_read(filePtr, base, zone, zone_name, size);
@@ -172,7 +172,7 @@ namespace Iocgns {
       else {
         std::ostringstream errmsg;
         errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
-	  "which are the only types currently supported";
+                                                  "which are the only types currently supported";
         IOSS_ERROR(errmsg);
       }
     }

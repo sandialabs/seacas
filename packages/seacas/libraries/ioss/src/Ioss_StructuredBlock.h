@@ -44,18 +44,17 @@
 
 namespace Ioss {
   class Region;
-  
+
   struct ZoneConnectivity
   {
-    ZoneConnectivity(const std::string name, int owner_zone,
-		     const std::string donor_name, int donor_zone,
-                     const std::array<int, 3> transform, const std::array<int, 6> range,
-                     const std::array<int, 6> donor_range)
+    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
+                     int donor_zone, const std::array<int, 3> transform,
+                     const std::array<int, 6> range, const std::array<int, 6> donor_range)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(transform)), m_range(std::move(range)),
-          m_donorRange(std::move(donor_range)),
-	  m_ownerZone(owner_zone), m_donorZone(donor_zone)
-    {}
+          m_donorRange(std::move(donor_range)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+    {
+    }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
 
@@ -63,31 +62,28 @@ namespace Ioss {
     size_t get_shared_node_count() const
     {
       size_t snc = 1;
-      for (int i=0; i < 3; i++) {
-	snc *= (std::abs(m_range[i+3] - m_range[i]) + 1);
+      for (int i = 0; i < 3; i++) {
+        snc *= (std::abs(m_range[i + 3] - m_range[i]) + 1);
       }
       return snc;
     }
 
-    bool owns_shared_nodes() const
-    {
-      return m_donorZone == -1 || m_ownerZone < m_donorZone;
-    }
+    bool owns_shared_nodes() const { return m_donorZone == -1 || m_ownerZone < m_donorZone; }
 
-    std::array<int,9> transform_matrix() const;
-    std::array<int,3> transform(const std::array<int,9> &t_matrix,
-				const std::array<int,3> &index_1) const;
-    std::array<int,3> inverse_transform(const std::array<int,9> &t_matrix,
-					const std::array<int,3> &index_1) const;
+    std::array<int, 9> transform_matrix() const;
+    std::array<int, 3> transform(const std::array<int, 9> &t_matrix,
+                                 const std::array<int, 3> &index_1) const;
+    std::array<int, 3> inverse_transform(const std::array<int, 9> &t_matrix,
+                                         const std::array<int, 3> &index_1) const;
 
     std::vector<int> get_range(int ordinal) const;
-    
+
     std::string m_connectionName;
     std::string m_donorName;
     std::array<int, 3> m_transform;
     std::array<int, 6> m_range;
     std::array<int, 6> m_donorRange;
-    
+
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int m_ownerZone; // "id" of zone that owns this connection
     int m_donorZone; // "id" of zone that is donor of this connection
@@ -134,7 +130,7 @@ namespace Ioss {
      *  offset < file_descriptor <= offset+number_cells_per_block
      *
      *  Note that for nodes, the nodeOffset does not take into account
-     *  the nodes that are shared between blocks.  
+     *  the nodes that are shared between blocks.
      */
     void set_node_offset(size_t offset) { m_nodeOffset = offset; }
     void set_cell_offset(size_t offset) { m_cellOffset = offset; }
@@ -143,21 +139,21 @@ namespace Ioss {
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
     size_t get_local_node_id(size_t i, size_t j, size_t k) const
     {
-      return (k-1) * (m_ni+1) * (m_nj+1) + (j-1) * (m_ni+1) + i;
+      return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
     }
 
     // Get the local (relative to this block) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_local_node_offset(size_t i, size_t j, size_t k) const
     {
-      return (k-1) * (m_ni+1) * (m_nj+1) + (j-1) * (m_ni+1) + i - 1;
+      return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i - 1;
     }
 
     // Get the global cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_global_node_offset(size_t i, size_t j, size_t k) const
     {
-      return get_local_node_offset(i,j,k) + m_nodeOffset;
+      return get_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
     // Get the global node id at the specified
@@ -171,7 +167,7 @@ namespace Ioss {
     }
 
     void generate_shared_nodes(const Ioss::Region &region);
-    
+
     /** \brief Get the 'offset' for the block.
      *
      *  The 'offset' is used to map an element location within an
@@ -192,9 +188,10 @@ namespace Ioss {
 
     bool contains(size_t global_offset) const
     {
-      return (global_offset >= m_nodeOffset && global_offset < m_nodeOffset+get_property("node_count").get_int());
+      return (global_offset >= m_nodeOffset &&
+              global_offset < m_nodeOffset + get_property("node_count").get_int());
     }
-    
+
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
                                     size_t data_size) const override;
@@ -210,15 +207,15 @@ namespace Ioss {
     int m_offsetI; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
     int m_offsetJ;
     int m_offsetK;
-    
+
     size_t m_nodeOffset;
     size_t m_cellOffset;
-    
+
     Ioss::NodeBlock m_nodeBlock;
 
   public:
     std::vector<ZoneConnectivity> m_zoneConnectivity;
-    mutable std::vector<ssize_t> m_globalNodeIdList;
+    mutable std::vector<ssize_t>  m_globalNodeIdList;
   };
 }
 #endif
