@@ -55,8 +55,9 @@ namespace Ioss {
           m_transform(std::move(transform)), m_range(std::move(range)),
           m_donorRange(std::move(donor_range)),
 	  m_ownerZone(owner_zone), m_donorZone(donor_zone)
-    {
-    }
+    {}
+
+    ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
 
     // Return number of nodes in the connection shared with the donor zone.
     size_t get_shared_node_count() const
@@ -100,7 +101,7 @@ namespace Ioss {
   {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
-                    int nj = 0, int nk = 0);
+                    int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
 
     ~StructuredBlock() override;
 
@@ -206,6 +207,10 @@ namespace Ioss {
     int m_nj;
     int m_nk;
 
+    int m_offsetI; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
+    int m_offsetJ;
+    int m_offsetK;
+    
     size_t m_nodeOffset;
     size_t m_cellOffset;
     
