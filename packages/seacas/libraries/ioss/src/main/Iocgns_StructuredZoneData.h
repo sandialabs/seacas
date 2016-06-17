@@ -36,10 +36,10 @@
 #define IOCGNS_STRUCTUREDZONEDATA_H
 
 #include <array>
-#include <iostream>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 
 namespace Iocgns {
 
@@ -47,22 +47,23 @@ namespace Iocgns {
   {
   public:
     StructuredZoneData()
-      : m_ordinal{{0, 0, 0}}, m_offset{{0, 0, 0}}, 
-        m_zone(0), m_adam(nullptr), m_parent(nullptr), m_proc(-1), m_splitOrdinal(0),
-      m_child1(nullptr), m_child2(nullptr), m_sibling(nullptr)
-    {}
+        : m_ordinal{{0, 0, 0}}, m_offset{{0, 0, 0}}, m_zone(0), m_adam(nullptr), m_parent(nullptr),
+          m_proc(-1), m_splitOrdinal(0), m_child1(nullptr), m_child2(nullptr), m_sibling(nullptr)
+    {
+    }
 
     StructuredZoneData(int zone, int ni, int nj, int nk)
-      : m_ordinal{{ni, nj, nk}}, m_offset{{0, 0, 0}}, m_zone(zone), m_adam(nullptr),
-        m_parent(nullptr), m_proc(-1), m_splitOrdinal(0),
-        m_child1(nullptr), m_child2(nullptr), m_sibling(nullptr)
-    {}
-						  
-    std::array<int,3>  m_ordinal;
+        : m_ordinal{{ni, nj, nk}}, m_offset{{0, 0, 0}}, m_zone(zone), m_adam(nullptr),
+          m_parent(nullptr), m_proc(-1), m_splitOrdinal(0), m_child1(nullptr), m_child2(nullptr),
+          m_sibling(nullptr)
+    {
+    }
+
+    std::array<int, 3> m_ordinal;
 
     // Offset of this block relative to its
     // adam block. ijk_adam = ijk_me + m_offset[ijk];
-    std::array<int,3>  m_offset;
+    std::array<int, 3> m_offset;
 
     int m_zone;
 
@@ -79,14 +80,14 @@ namespace Iocgns {
     int m_proc; // The processor this block might be run on...
 
     // Which ordinal of the parent was split to generate this zone and its sibling.
-    int m_splitOrdinal; 
+    int m_splitOrdinal;
 
     // The two zones that were split off from this zone.
     // Might be reasonable to do a 3-way or n-way split, but for now
     // just do a 2-way.
     StructuredZoneData *m_child1;
     StructuredZoneData *m_child2;
-    
+
     StructuredZoneData *m_sibling;
 
     bool is_active() const
@@ -94,7 +95,7 @@ namespace Iocgns {
       // Zone is active if it hasn't been split.
       return m_child1 == nullptr && m_child2 == nullptr;
     }
-    
+
     // Assume the "work" or computational effort required for a
     // block is proportional to the number of nodes.
     size_t work() const
@@ -105,63 +106,65 @@ namespace Iocgns {
 
     // Split this StructuredZone along the largest ordinal
     // into two children and return the created zones.
-    std::pair<StructuredZoneData*,StructuredZoneData*> split(int zone_id)
+    std::pair<StructuredZoneData *, StructuredZoneData *> split(int zone_id)
     {
       assert(is_active());
-      
+
       // Find ordinal with largest value... Split along that ordinal
       int ordinal = 0;
       if (m_ordinal[1] > m_ordinal[ordinal]) {
-	ordinal = 1;
+        ordinal = 1;
       }
       if (m_ordinal[2] > m_ordinal[ordinal]) {
-	ordinal = 2;
+        ordinal = 2;
       }
-      
+
       if (m_ordinal[ordinal] <= 1) {
-	return std::make_pair(nullptr, nullptr);
+        return std::make_pair(nullptr, nullptr);
       }
-      
+
       StructuredZoneData *child1 = new StructuredZoneData;
       StructuredZoneData *child2 = new StructuredZoneData;
-      
-      child1->m_ordinal = m_ordinal;
-      child1->m_ordinal[ordinal] = child1->m_ordinal[ordinal]/2;
-      child1->m_offset = m_offset; // Child1 offsets the same as parent;
-      
-      child1->m_zone = zone_id++;
-      child1->m_adam = m_adam;
-      child1->m_parent = this;
+
+      child1->m_ordinal          = m_ordinal;
+      child1->m_ordinal[ordinal] = child1->m_ordinal[ordinal] / 2;
+      child1->m_offset           = m_offset; // Child1 offsets the same as parent;
+
+      child1->m_zone         = zone_id++;
+      child1->m_adam         = m_adam;
+      child1->m_parent       = this;
       child1->m_splitOrdinal = ordinal;
-      child1->m_sibling = child2;
-      
-      child2->m_ordinal = m_ordinal;
+      child1->m_sibling      = child2;
+
+      child2->m_ordinal          = m_ordinal;
       child2->m_ordinal[ordinal] = m_ordinal[ordinal] - child1->m_ordinal[ordinal];
-      child2->m_offset = m_offset;
+      child2->m_offset           = m_offset;
       child2->m_offset[ordinal] += child1->m_ordinal[ordinal];
-      
-      child2->m_zone = zone_id++;
-      child2->m_adam = m_adam;
-      child2->m_parent = this;
+
+      child2->m_zone         = zone_id++;
+      child2->m_adam         = m_adam;
+      child2->m_parent       = this;
       child2->m_splitOrdinal = ordinal;
-      child2->m_sibling = child1;
-      
+      child2->m_sibling      = child1;
+
       m_child1 = child1;
       m_child2 = child2;
 
-      std::cerr << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals "
-		<< m_ordinal[0] << " " << m_ordinal[1] << " " << m_ordinal[2]
-		<< " work = " << work() << " with offset " 
-		<< m_offset[0] << " " << m_offset[1] << " " << m_offset[2] << " split along ordinal " << ordinal << "\n"
-		<< "\tChild 1: Zone " << child1->m_zone << "(" << child1->m_adam->m_zone << ") with intervals "
-		<< child1->m_ordinal[0] << " " << child1->m_ordinal[1] << " " << child1->m_ordinal[2]
-		<< " work = " << child1->work() << " with offset " 
-		<< child1->m_offset[0] << " " << child1->m_offset[1] << " " << child1->m_offset[2] << "\n"
-		<< "\tChild 2: Zone " << child2->m_zone << "(" << child1->m_adam->m_zone << ") with intervals "
-		<< child2->m_ordinal[0] << " " << child2->m_ordinal[1] << " " << child2->m_ordinal[2]
-		<< " work = " << child2->work() << " with offset " 
-		<< child2->m_offset[0] << " " << child2->m_offset[1] << " " << child2->m_offset[2] << "\n";
-      
+      std::cerr << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
+                << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work()
+                << " with offset " << m_offset[0] << " " << m_offset[1] << " " << m_offset[2]
+                << " split along ordinal " << ordinal << "\n"
+                << "\tChild 1: Zone " << child1->m_zone << "(" << child1->m_adam->m_zone
+                << ") with intervals " << child1->m_ordinal[0] << " " << child1->m_ordinal[1] << " "
+                << child1->m_ordinal[2] << " work = " << child1->work() << " with offset "
+                << child1->m_offset[0] << " " << child1->m_offset[1] << " " << child1->m_offset[2]
+                << "\n"
+                << "\tChild 2: Zone " << child2->m_zone << "(" << child1->m_adam->m_zone
+                << ") with intervals " << child2->m_ordinal[0] << " " << child2->m_ordinal[1] << " "
+                << child2->m_ordinal[2] << " work = " << child2->work() << " with offset "
+                << child2->m_offset[0] << " " << child2->m_offset[1] << " " << child2->m_offset[2]
+                << "\n";
+
       return std::make_pair(child1, child2);
     }
   };

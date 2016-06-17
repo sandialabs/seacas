@@ -233,33 +233,32 @@ namespace {
         if (!sb->m_zoneConnectivity.empty()) {
           OUTPUT << "\tConnectivity with other blocks:\n";
           for (const auto &zgc : sb->m_zoneConnectivity) {
-	    std::array<std::string, 7> tf = {{"-k", "-j", "-i", " ", "i", "j", "k"}};
-	    
-	    //0 -3 -k
-	    //1 -2 -j
-	    //2 -1 -i
-	    //3
-	    //4  1  i
-	    //5  2  j
-	    //6  3  k
-	    std::string transform = "[i..";
-	    transform += tf[zgc.m_transform[0]+3];
-	    transform += " j..";
-	    transform += tf[zgc.m_transform[1]+3];
-	    transform += " k..";
-	    transform += tf[zgc.m_transform[2]+3];
-	    transform += "] ";
-	    
+            std::array<std::string, 7> tf = {{"-k", "-j", "-i", " ", "i", "j", "k"}};
+
+            // 0 -3 -k
+            // 1 -2 -j
+            // 2 -1 -i
+            // 3
+            // 4  1  i
+            // 5  2  j
+            // 6  3  k
+            std::string transform = "[i..";
+            transform += tf[zgc.m_transform[0] + 3];
+            transform += " j..";
+            transform += tf[zgc.m_transform[1] + 3];
+            transform += " k..";
+            transform += tf[zgc.m_transform[2] + 3];
+            transform += "] ";
+
             OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-		   << "' shares " << zgc.get_shared_node_count()
+                   << "' shares " << zgc.get_shared_node_count()
                    << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
-		   << "\n\t\t\t\tTransform: " << transform
-                   << "\tRange: [" << zgc.m_range[0] << ".." << zgc.m_range[3]
-                   << ", " << zgc.m_range[1] << ".." << zgc.m_range[4] << ", " << zgc.m_range[2]
-                   << ".." << zgc.m_range[5] << "]\tDonor Range: [" << zgc.m_donorRange[0] << ".."
-                   << zgc.m_donorRange[3] << ", " << zgc.m_donorRange[1] << ".."
-                   << zgc.m_donorRange[4] << ", " << zgc.m_donorRange[2] << ".."
-                   << zgc.m_donorRange[5] << "]\n";
+                   << "\n\t\t\t\tTransform: " << transform << "\tRange: [" << zgc.m_range[0] << ".."
+                   << zgc.m_range[3] << ", " << zgc.m_range[1] << ".." << zgc.m_range[4] << ", "
+                   << zgc.m_range[2] << ".." << zgc.m_range[5] << "]\tDonor Range: ["
+                   << zgc.m_donorRange[0] << ".." << zgc.m_donorRange[3] << ", "
+                   << zgc.m_donorRange[1] << ".." << zgc.m_donorRange[4] << ", "
+                   << zgc.m_donorRange[2] << ".." << zgc.m_donorRange[5] << "]\n";
           }
         }
         if (interface.compute_bbox()) {
