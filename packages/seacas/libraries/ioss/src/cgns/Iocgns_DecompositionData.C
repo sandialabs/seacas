@@ -139,8 +139,7 @@ namespace Iocgns {
 
       // See if all zones are "Unstructured" which is all we currently support...
       if (zone_type == CG_Structured) {
-        cgsize_t size[9];
-        cgsize_t size[3];
+	cgsize_t size[9];
         char     zone_name[33];
         cg_zone_read(filePtr, base, zone, zone_name, size);
 
@@ -570,7 +569,7 @@ namespace Iocgns {
           int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(elements),
                                       TOPTR(parent));
           if (ierr < 0) {
-            cgns_error(filePtr, __FILE_, __func__, __LINE__, m_myProcessor);
+            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_myProcessor);
           }
 
           // Move from 'parent' to 'elementlist'
@@ -670,7 +669,7 @@ namespace Iocgns {
           int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
                                    CG_RealDouble, &start, &finish, &data[offset]);
           if (ierr < 0) {
-            cgns_error(filePtr, __FILE_, __func__, __LINE__, m_myProcessor);
+            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_myProcessor);
           }
           offset += count;
         }
@@ -761,7 +760,7 @@ namespace Iocgns {
       nodes.shrink_to_fit();
 
       if (ierr < 0) {
-        cgns_error(filePtr, __FILE_, __func__, __LINE__, m_myProcessor);
+        Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_myProcessor);
       }
 
       // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
