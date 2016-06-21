@@ -71,7 +71,7 @@ namespace SEAMS {
     return (Numnums > 1) ? StdDev/(Numnums-1) : 0.0;
   }
 
-  double Stats::deviation (void) const
+  double Stats::deviation () const
   {
     return std::sqrt(variance());
   }
