@@ -59,8 +59,9 @@ void print_line(const char *charstr, int ntimes)
 
 {
   int i;
-  for (i = 0; i < ntimes; i++)
+  for (i = 0; i < ntimes; i++) {
     printf("%c", *charstr);
+  }
   printf("\n");
 }
 
@@ -122,14 +123,17 @@ int break_message_up(size_t unit_size, size_t num_units, size_t max_bytes, int *
   }
 
   num_units_per_message = max_bytes / unit_size;
-  if (num_units < num_units_per_message)
+  if (num_units < num_units_per_message) {
     num_units_per_message = num_units;
-  num_mesg                = num_units / num_units_per_message;
-  remainder               = num_units % num_units_per_message;
-  if (remainder != 0)
+  }
+  num_mesg  = num_units / num_units_per_message;
+  remainder = num_units % num_units_per_message;
+  if (remainder != 0) {
     num_mesg++;
+  }
 
-  *start_pos = (int *)array_alloc(__FILE__, __LINE__, 1, (num_mesg + 1), sizeof(int));
+  *start_pos =
+      reinterpret_cast<int *>(array_alloc(__FILE__, __LINE__, 1, (num_mesg + 1), sizeof(int)));
 
   for (i = 0; i < num_mesg; i++) {
     (*start_pos)[i] = i * num_units_per_message;
