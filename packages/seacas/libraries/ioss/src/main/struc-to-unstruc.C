@@ -147,7 +147,6 @@ namespace {
 
   Range subset_range(const Range &a, const Range &b)
   {
-    std::cerr << a.m_beg << ".." << a.m_end << "\t" << b.m_beg << ".." << b.m_end << "\n";
     Range ret(std::max(a.m_beg, b.m_beg), std::min(a.m_end, b.m_end));
     ret.m_reversed = a.m_reversed || b.m_reversed;
     return ret;
@@ -266,12 +265,9 @@ namespace {
                       << zgc.m_donorRange[5] << "]\n";
           }
           else {
-	    Ioss::trmclr::Style red(Ioss::trmclr::Foreground::RED);
-	    Ioss::trmclr::Style normal(Ioss::trmclr::Attribute::DEFAULT);
-            std::cerr << red
+            std::cerr << Ioss::trmclr::red
 		      << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-                      << " does not overlap.\n"
-		      << normal;
+                      << " does not overlap." << Ioss::trmclr::normal << "\n";
           }
         }
       }
