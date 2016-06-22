@@ -140,7 +140,7 @@ namespace Ioss {
     Style blue(Ioss::trmclr::Foreground::BLUE);
     Style magenta(Ioss::trmclr::Foreground::MAGENTA);
     Style cyan(Ioss::trmclr::Foreground::CYAN);
-    Style basic(Ioss::trmclr::Attribute::DEFAULT);
+    Style normal(Ioss::trmclr::Attribute::DEFAULT);
     
     std::ostream &operator<<(std::ostream &os, const Style &style)
     {
