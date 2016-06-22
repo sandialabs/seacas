@@ -37,6 +37,7 @@
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
+#include <Ioss_TerminalColor.h>
 #include <Ioss_Utils.h>
 
 #include <algorithm>
@@ -116,10 +117,11 @@ namespace {
 
   struct Range
   {
-    Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a) {}
+    Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b<a) {}
 
     int m_beg;
     int m_end;
+    bool m_reversed;
   };
 
   bool overlaps(const Range &a, const Range &b)
@@ -141,6 +143,54 @@ namespace {
     Range gc_k(zgc.m_range[2], zgc.m_range[5]);
 
     return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
+  }
+
+  Range subset_range(const Range &a, const Range &b)
+  {
+    std::cerr << a.m_beg << ".." << a.m_end << "\t" << b.m_beg << ".." << b.m_end << "\n";
+    Range ret(std::max(a.m_beg, b.m_beg), std::min(a.m_end, b.m_end));
+    ret.m_reversed = a.m_reversed || b.m_reversed;
+    return ret;
+  }
+
+  void zgc_subset_ranges(const Iocgns::StructuredZoneData *zone, Ioss::ZoneConnectivity &zgc)
+  {
+    // NOTE: Updates the range and donor_range in zgc
+
+    // Note that zone range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+    Range z_i(1 + zone->m_offset[0], zone->m_ordinal[0] + zone->m_offset[0] + 1);
+    Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
+    Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
+
+    Range gc_i(zgc.m_range[0], zgc.m_range[3]);
+    Range gc_j(zgc.m_range[1], zgc.m_range[4]);
+    Range gc_k(zgc.m_range[2], zgc.m_range[5]);
+
+    Range gc_ii = subset_range(z_i, gc_i);
+    Range gc_jj = subset_range(z_j, gc_j);
+    Range gc_kk = subset_range(z_k, gc_k);
+
+    zgc.m_range[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+    zgc.m_range[3] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+    zgc.m_range[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+    zgc.m_range[4] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+    zgc.m_range[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+    zgc.m_range[5] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+
+    auto t_matrix = zgc.transform_matrix();
+
+    std::array<int, 3> range_beg{{zgc.m_range[0], zgc.m_range[1], zgc.m_range[2]}};
+    std::array<int, 3> range_end{{zgc.m_range[3], zgc.m_range[4], zgc.m_range[5]}};
+    std::array<int, 3> donor_beg = zgc.transform(t_matrix, range_beg);
+    std::array<int, 3> donor_end = zgc.transform(t_matrix, range_end);
+
+    zgc.m_donorRange[0] = donor_beg[0];
+    zgc.m_donorRange[1] = donor_beg[1];
+    zgc.m_donorRange[2] = donor_beg[2];
+
+    zgc.m_donorRange[3] = donor_end[0];
+    zgc.m_donorRange[4] = donor_end[1];
+    zgc.m_donorRange[5] = donor_end[2];
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *zone, Ioss::Region &region,
@@ -198,9 +248,13 @@ namespace {
                   << zone->m_offset[2] << ")\n";
 
         // Add zone connectivities...
-        for (const auto &zgc : zone_connectivity) {
+        for (auto &zgc : zone_connectivity) {
           if (zgc_overlaps(zone, zgc)) {
+	    // Modify source and donor range to subset it to new block ranges.
+	    zgc_subset_ranges(zone, zgc);
             block->m_zoneConnectivity.push_back(zgc);
+	    Ioss::trmclr::Style green(Ioss::trmclr::Foreground::GREEN);
+	    Ioss::trmclr::Style basic(Ioss::trmclr::Attribute::DEFAULT);
             std::cerr << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
                       << "' shares " << zgc.get_shared_node_count()
                       << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
@@ -212,8 +266,12 @@ namespace {
                       << zgc.m_donorRange[5] << "]\n";
           }
           else {
-            std::cerr << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-                      << " does not overlap.\n";
+	    Ioss::trmclr::Style red(Ioss::trmclr::Foreground::RED);
+	    Ioss::trmclr::Style normal(Ioss::trmclr::Attribute::DEFAULT);
+            std::cerr << red
+		      << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
+                      << " does not overlap.\n"
+		      << normal;
           }
         }
       }
