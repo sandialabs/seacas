@@ -253,12 +253,13 @@ namespace {
             OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
                    << "' shares " << zgc.get_shared_node_count()
                    << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
-                   << "\n\t\t\t\tTransform: " << transform << "\tRange: [" << zgc.m_range[0] << ".."
-                   << zgc.m_range[3] << ", " << zgc.m_range[1] << ".." << zgc.m_range[4] << ", "
-                   << zgc.m_range[2] << ".." << zgc.m_range[5] << "]\tDonor Range: ["
-                   << zgc.m_donorRange[0] << ".." << zgc.m_donorRange[3] << ", "
-                   << zgc.m_donorRange[1] << ".." << zgc.m_donorRange[4] << ", "
-                   << zgc.m_donorRange[2] << ".." << zgc.m_donorRange[5] << "]\n";
+                   << "\n\t\t\t\tTransform: " << transform << "\tRange: ["
+		   << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
+		   << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", "
+                   << zgc.m_rangeBeg[2] << ".." << zgc.m_rangeEnd[2] << "]\tDonor Range: ["
+                   << zgc.m_donorRangeBeg[0] << ".." << zgc.m_donorRangeEnd[0] << ", "
+                   << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1] << ", "
+                   << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]\n";
           }
         }
         if (interface.compute_bbox()) {

@@ -49,10 +49,11 @@ namespace Ioss {
   {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
                      int donor_zone, const std::array<int, 3> transform,
-                     const std::array<int, 6> range, const std::array<int, 6> donor_range)
+                     const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
+		     const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end) 
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(transform)), m_range(std::move(range)),
-          m_donorRange(std::move(donor_range)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+          m_transform(std::move(transform)), m_rangeBeg(std::move(range_beg)),m_rangeEnd(std::move(range_end)),
+          m_donorRangeBeg(std::move(donor_beg)), m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
     }
 
@@ -63,7 +64,7 @@ namespace Ioss {
     {
       size_t snc = 1;
       for (int i = 0; i < 3; i++) {
-        snc *= (std::abs(m_range[i + 3] - m_range[i]) + 1);
+        snc *= (std::abs(m_rangeEnd[i] - m_rangeBeg[i]) + 1);
       }
       return snc;
     }
@@ -81,8 +82,10 @@ namespace Ioss {
     std::string m_connectionName;
     std::string m_donorName;
     std::array<int, 3> m_transform;
-    std::array<int, 6> m_range;
-    std::array<int, 6> m_donorRange;
+    std::array<int, 3> m_rangeBeg;
+    std::array<int, 3> m_rangeEnd;
+    std::array<int, 3> m_donorRangeBeg;
+    std::array<int, 3> m_donorRangeEnd;
 
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int m_ownerZone; // "id" of zone that owns this connection
