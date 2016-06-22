@@ -87,6 +87,8 @@ namespace Ioss {
     std::array<int, 3> m_donorRangeBeg;
     std::array<int, 3> m_donorRangeEnd;
 
+    friend std::ostream& operator<<(std::ostream& os, const ZoneConnectivity& zgc);
+
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int m_ownerZone; // "id" of zone that owns this connection
     int m_donorZone; // "id" of zone that is donor of this connection

@@ -243,19 +243,7 @@ namespace {
 	    // Modify source and donor range to subset it to new block ranges.
 	    zgc_subset_ranges(zone, zgc);
             block->m_zoneConnectivity.push_back(zgc);
-	    Ioss::trmclr::Style green(Ioss::trmclr::Foreground::GREEN);
-	    Ioss::trmclr::Style basic(Ioss::trmclr::Attribute::DEFAULT);
-            std::cerr << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-                      << "' shares " << zgc.get_shared_node_count()
-                      << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
-                      << "\n\t\t\t\tRange: ["
-		      << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
-                      << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", "
-		      << zgc.m_rangeBeg[2] << ".." << zgc.m_rangeEnd[2]
-		      << "]\tDonor Range: ["
-		      << zgc.m_donorRangeBeg[0] << ".." << zgc.m_donorRangeEnd[0] << ", "
-		      << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1] << ", "
-		      << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]\n";
+            std::cerr << zgc << "\n";
           }
           else {
 	    Ioss::trmclr::Style red(Ioss::trmclr::Foreground::RED);

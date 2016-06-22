@@ -218,6 +218,39 @@ namespace Ioss {
     // offset of the owning node.
   }
 
+  std::ostream& operator<<(std::ostream& os, const ZoneConnectivity& zgc)
+  {
+    std::array<std::string, 7> tf = {{"-k", "-j", "-i", " ", "i", "j", "k"}};
+
+    // 0 -3 -k
+    // 1 -2 -j
+    // 2 -1 -i
+    // 3
+    // 4  1  i
+    // 5  2  j
+    // 6  3  k
+    std::string transform = "[i..";
+    transform += tf[zgc.m_transform[0] + 3];
+    transform += " j..";
+    transform += tf[zgc.m_transform[1] + 3];
+    transform += " k..";
+    transform += tf[zgc.m_transform[2] + 3];
+    transform += "] ";
+    
+    os << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
+       << "' shares " << zgc.get_shared_node_count()
+       << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
+       << "\n\t\t\t\tRange: ["
+       << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
+       << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", "
+       << zgc.m_rangeBeg[2] << ".." << zgc.m_rangeEnd[2]
+       << "]\tDonor Range: ["
+       << zgc.m_donorRangeBeg[0] << ".." << zgc.m_donorRangeEnd[0] << ", "
+       << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1] << ", "
+       << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]";
+    return os;
+  }
+
   std::vector<int> ZoneConnectivity::get_range(int ordinal) const
   {
     // Return the integer values for the specified range for the specified ordinal (1,2,3) ->
