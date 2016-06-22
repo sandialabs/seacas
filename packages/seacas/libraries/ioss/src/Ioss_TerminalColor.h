@@ -64,15 +64,6 @@ namespace Ioss {
       uint32_t _value;
     };
 
-    Style black(Ioss::trmclr::Foreground::BLACK);
-    Style red(Ioss::trmclr::Foreground::RED);
-    Style green(Ioss::trmclr::Foreground::GREEN);
-    Style yellow(Ioss::trmclr::Foreground::YELLOW);
-    Style blue(Ioss::trmclr::Foreground::BLUE);
-    Style magenta(Ioss::trmclr::Foreground::MAGENTA);
-    Style cyan(Ioss::trmclr::Foreground::CYAN);
-    Style basic(Ioss::trmclr::Attribute::DEFAULT);
-    
     enum StyleTypes { FOREGROUND, ATTRIBUTE, BACKGROUND, N_STYLE_TYPES };
 
     static const uint32_t STYLE_SHIFT = std::numeric_limits<uint32_t>::digits / N_STYLE_TYPES;
@@ -142,6 +133,15 @@ namespace Ioss {
       };
     };
 
+    Style black(Ioss::trmclr::Foreground::BLACK);
+    Style red(Ioss::trmclr::Foreground::RED);
+    Style green(Ioss::trmclr::Foreground::GREEN);
+    Style yellow(Ioss::trmclr::Foreground::YELLOW);
+    Style blue(Ioss::trmclr::Foreground::BLUE);
+    Style magenta(Ioss::trmclr::Foreground::MAGENTA);
+    Style cyan(Ioss::trmclr::Foreground::CYAN);
+    Style basic(Ioss::trmclr::Attribute::DEFAULT);
+    
     std::ostream &operator<<(std::ostream &os, const Style &style)
     {
       const uint32_t base    = 1 << STYLE_SHIFT;
