@@ -392,7 +392,9 @@ namespace {
                << " processors.\n";
         std::exit(EXIT_FAILURE);
       }
-      std::cerr << "Average workload is " << avg_work << ", Threshold is " << load_balance_threshold
+      std::cerr << "Decomposing structured mesh for " << proc_count
+		<< " processors. Average workload is " << avg_work
+		<< ", Threshold is " << load_balance_threshold
                 << "\n";
 
       std::vector<size_t> work(proc_count);
@@ -455,7 +457,8 @@ namespace {
     // Output the processor assignments...
     for (auto zone : zones) {
       if (zone->is_active()) {
-        OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc << "\n";
+        OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
+	       << ", Adam zone = " << zone->m_adam->m_zone << "\n";
       }
     }
 
