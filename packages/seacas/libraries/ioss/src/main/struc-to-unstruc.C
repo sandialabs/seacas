@@ -138,9 +138,9 @@ namespace {
     Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
     Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
 
-    Range gc_i(zgc.m_range[0], zgc.m_range[3]);
-    Range gc_j(zgc.m_range[1], zgc.m_range[4]);
-    Range gc_k(zgc.m_range[2], zgc.m_range[5]);
+    Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
+    Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
+    Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
 
     return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
   }
@@ -162,35 +162,25 @@ namespace {
     Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
     Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
 
-    Range gc_i(zgc.m_range[0], zgc.m_range[3]);
-    Range gc_j(zgc.m_range[1], zgc.m_range[4]);
-    Range gc_k(zgc.m_range[2], zgc.m_range[5]);
+    Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
+    Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
+    Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
 
     Range gc_ii = subset_range(z_i, gc_i);
     Range gc_jj = subset_range(z_j, gc_j);
     Range gc_kk = subset_range(z_k, gc_k);
 
-    zgc.m_range[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    zgc.m_range[3] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    zgc.m_range[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    zgc.m_range[4] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    zgc.m_range[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    zgc.m_range[5] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    zgc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+    zgc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+    zgc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+    zgc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+    zgc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+    zgc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
 
     auto t_matrix = zgc.transform_matrix();
 
-    std::array<int, 3> range_beg{{zgc.m_range[0], zgc.m_range[1], zgc.m_range[2]}};
-    std::array<int, 3> range_end{{zgc.m_range[3], zgc.m_range[4], zgc.m_range[5]}};
-    std::array<int, 3> donor_beg = zgc.transform(t_matrix, range_beg);
-    std::array<int, 3> donor_end = zgc.transform(t_matrix, range_end);
-
-    zgc.m_donorRange[0] = donor_beg[0];
-    zgc.m_donorRange[1] = donor_beg[1];
-    zgc.m_donorRange[2] = donor_beg[2];
-
-    zgc.m_donorRange[3] = donor_end[0];
-    zgc.m_donorRange[4] = donor_end[1];
-    zgc.m_donorRange[5] = donor_end[2];
+    zgc.m_donorRangeBeg = zgc.transform(t_matrix, zgc.m_rangeBeg);
+    zgc.m_donorRangeEnd = zgc.transform(t_matrix, zgc.m_rangeEnd);
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *zone, Ioss::Region &region,
@@ -206,16 +196,16 @@ namespace {
       // Note that range is specified in terms of 'adam' block i,j,k
       // space which is converted to local block i,j,k space
       // via the m_offset[] field on the local block.
-      std::array<int, 6> range{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2],
-                                c1->m_ordinal[0] + c1->m_offset[0] + 1,
-                                c1->m_ordinal[1] + c1->m_offset[1] + 1,
-                                c1->m_ordinal[2] + c1->m_offset[2] + 1}};
+      std::array<int, 3> range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
+      std::array<int, 3> range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
+	    c1->m_ordinal[1] + c1->m_offset[1] + 1,
+	    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
 
-      std::array<int, 6> donor_range(range);
+      std::array<int, 3> donor_range_beg(range_beg);
+      std::array<int, 3> donor_range_end(range_end);
 
       int ordinal              = c1->m_splitOrdinal; // Axis of the split.
-      range[ordinal]           = range[ordinal + 3];
-      donor_range[ordinal + 3] = donor_range[ordinal] = range[ordinal];
+      donor_range_end[ordinal] = donor_range_beg[ordinal] = range_beg[ordinal] = range_end[ordinal];
 
       auto c1_base =
           Ioss::Utils::to_string(c1->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c1->m_zone);
@@ -224,13 +214,13 @@ namespace {
 
       std::cerr << "Adding c1 " << c1_base << "--" << c2_base << "\n";
       zone_connectivity.emplace_back("decomp" + c1_base, c1->m_zone, "decomp" + c2_base, c2->m_zone,
-                                     transform, range, donor_range);
+                                     transform, range_beg, range_end, donor_range_beg, donor_range_end);
       propogate_zgc(c1, region, zone_connectivity);
 
       zone_connectivity.pop_back();
       std::cerr << "Adding c2 " << c2_base << "--" << c1_base << "\n";
       zone_connectivity.emplace_back("decomp" + c2_base, c2->m_zone, "decomp" + c1_base, c1->m_zone,
-                                     transform, donor_range, range);
+                                     transform, donor_range_beg, donor_range_end, range_beg, range_end);
       propogate_zgc(c2, region, zone_connectivity);
     }
     else {
@@ -258,12 +248,14 @@ namespace {
             std::cerr << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
                       << "' shares " << zgc.get_shared_node_count()
                       << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
-                      << "\n\t\t\t\tRange: [" << zgc.m_range[0] << ".." << zgc.m_range[3] << ", "
-                      << zgc.m_range[1] << ".." << zgc.m_range[4] << ", " << zgc.m_range[2] << ".."
-                      << zgc.m_range[5] << "]\tDonor Range: [" << zgc.m_donorRange[0] << ".."
-                      << zgc.m_donorRange[3] << ", " << zgc.m_donorRange[1] << ".."
-                      << zgc.m_donorRange[4] << ", " << zgc.m_donorRange[2] << ".."
-                      << zgc.m_donorRange[5] << "]\n";
+                      << "\n\t\t\t\tRange: ["
+		      << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
+                      << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", "
+		      << zgc.m_rangeBeg[2] << ".." << zgc.m_rangeEnd[2]
+		      << "]\tDonor Range: ["
+		      << zgc.m_donorRangeBeg[0] << ".." << zgc.m_donorRangeEnd[0] << ", "
+		      << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1] << ", "
+		      << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]\n";
           }
           else {
 	    Ioss::trmclr::Style red(Ioss::trmclr::Foreground::RED);

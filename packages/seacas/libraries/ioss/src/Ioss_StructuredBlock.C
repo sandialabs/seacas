@@ -222,13 +222,14 @@ namespace Ioss {
   {
     // Return the integer values for the specified range for the specified ordinal (1,2,3) ->
     // (i,j,k)
-    int size  = std::abs(m_range[(ordinal - 1)] - m_range[(ordinal - 1) + 3]) + 1;
-    int delta = sign(m_range[(ordinal - 1) + 3] - m_range[(ordinal - 1)]);
+    ordinal--;
+    int size  = std::abs(m_rangeBeg[ordinal] - m_rangeEnd[ordinal]) + 1;
+    int delta = sign(m_rangeEnd[ordinal] - m_rangeBeg[ordinal]);
     assert(delta == 1 || delta == -1);
 
     std::vector<int> range(size);
     for (int i = 0; i < size; i++) {
-      range[i] = m_range[(ordinal - 1)] + i * delta;
+      range[i] = m_rangeBeg[ordinal] + i * delta;
     }
     return range;
   }
@@ -250,20 +251,20 @@ namespace Ioss {
     std::array<int, 3> diff;
     std::array<int, 3> donor;
 
-    diff[0] = index_1[0] - m_range[0];
-    diff[1] = index_1[1] - m_range[1];
-    diff[2] = index_1[2] - m_range[2];
+    diff[0] = index_1[0] - m_rangeBeg[0];
+    diff[1] = index_1[1] - m_rangeBeg[1];
+    diff[2] = index_1[2] - m_rangeBeg[2];
 
     donor[0] =
-        t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRange[0];
+        t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRangeBeg[0];
     donor[1] =
-        t_matrix[3] * diff[0] + t_matrix[4] * diff[1] + t_matrix[5] * diff[2] + m_donorRange[1];
+        t_matrix[3] * diff[0] + t_matrix[4] * diff[1] + t_matrix[5] * diff[2] + m_donorRangeBeg[1];
     donor[2] =
-        t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRange[2];
+        t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRangeBeg[2];
 
-    assert(std::fabs(donor[0] - m_donorRange[0]) <= std::fabs(m_donorRange[0] - m_donorRange[3]));
-    assert(std::fabs(donor[1] - m_donorRange[1]) <= std::fabs(m_donorRange[1] - m_donorRange[4]));
-    assert(std::fabs(donor[2] - m_donorRange[2]) <= std::fabs(m_donorRange[2] - m_donorRange[5]));
+    assert(std::fabs(donor[0] - m_donorRangeBeg[0]) <= std::fabs(m_donorRangeBeg[0] - m_donorRangeEnd[0]));
+    assert(std::fabs(donor[1] - m_donorRangeBeg[1]) <= std::fabs(m_donorRangeBeg[1] - m_donorRangeEnd[1]));
+    assert(std::fabs(donor[2] - m_donorRangeBeg[2]) <= std::fabs(m_donorRangeBeg[2] - m_donorRangeEnd[2]));
     return donor;
   }
 
@@ -275,13 +276,13 @@ namespace Ioss {
     std::array<int, 3> diff;
     std::array<int, 3> index;
 
-    diff[0] = index_1[0] - m_donorRange[0];
-    diff[1] = index_1[1] - m_donorRange[1];
-    diff[2] = index_1[2] - m_donorRange[2];
+    diff[0] = index_1[0] - m_donorRangeBeg[0];
+    diff[1] = index_1[1] - m_donorRangeBeg[1];
+    diff[2] = index_1[2] - m_donorRangeBeg[2];
 
-    index[0] = t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_range[0];
-    index[1] = t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_range[1];
-    index[2] = t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_range[2];
+    index[0] = t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
+    index[1] = t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
+    index[2] = t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
 
     return index;
   }
