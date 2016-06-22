@@ -129,6 +129,7 @@ Experimental support for CGNS in the IOSS library is being added.  To use this c
     ```
    * Build using CMake.
      * Modify `TPL/cgns/runconfigure.sh` to meet your environment
+     * `cd CGNS`
      * `mkdir build`
      * `cd build`
      * `../../runconfigure.sh`
