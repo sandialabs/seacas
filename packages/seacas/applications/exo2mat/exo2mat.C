@@ -81,7 +81,7 @@ int textfile = 0;
 
 FILE * m_file   = nullptr; /* file for m file output */
 mat_t *mat_file = nullptr; /* file for binary .mat output */
-int    debug    = 0;
+bool   debug    = false;
 
 static const char *qainfo[] = {
     "exo2mat", "2015/10/28", "3.02",
@@ -123,6 +123,7 @@ void usage()
             << "   Options:\n"
             << "   -t    write a text (.m) file rather than a binary .mat\n"
             << "   -o    output file name (rather than auto generate)\n"
+            << "   -c    use cell arrays for transient variables.\n"
             << "   -v5   output version 5 mat file\n"
             << "   -v73  output version 7.3 mat file (hdf5-based) [default]\n"
             << "   -v7.3 output version 7.3 mat file (hdf5-based)\n"
@@ -331,8 +332,27 @@ void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *
   delete_exodus_names(names, num_vars);
 }
 
+std::vector<std::string> get_names(int exo_file, ex_entity_type type, int num_vars)
+{
+  int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+  max_name_length     = max_name_length < 32 ? 32 : max_name_length;
+  char **names        = get_exodus_names(num_vars, max_name_length + 1);
+
+  if (debug)
+    logger("\tReading variable names");
+  ex_get_variable_names(exo_file, type, num_vars, names);
+
+  std::vector<std::string> mat(num_vars);
+  for (int i = 0; i < num_vars; i++) {
+    mat[i] = names[i];
+  }
+  delete_exodus_names(names, num_vars);
+  return mat;
+}
+
 void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_vars,
-                  int num_time_steps, const std::vector<int> &num_per_block, const char *mname)
+                  int num_time_steps, const std::vector<int> &num_per_block,
+		  const std::string &prefix, bool use_cell_arrays)
 
 {
   /* truth table */
@@ -341,30 +361,86 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
   std::vector<int> truth_table(num_vars * num_blocks);
   ex_get_truth_table(exo_file, type, num_blocks, num_vars, TOPTR(truth_table));
 
-  size_t              num_entity = std::accumulate(num_per_block.begin(), num_per_block.end(), 0);
-  std::vector<double> scr(num_entity * num_time_steps);
-
   std::vector<int> ids(num_blocks);
   ex_get_ids(exo_file, type, TOPTR(ids));
 
-  char str[32];
-  for (int i = 0; i < num_vars; i++) {
-    if (debug)
-      logger("\tReading");
-    std::fill(scr.begin(), scr.end(), 0.0);
-    size_t n = 0;
-    sprintf(str, mname, i + 1);
-    for (int j = 0; j < num_time_steps; j++) {
-      for (int k = 0; k < num_blocks; k++) {
-        if (truth_table[num_vars * k + i] == 1) {
-          ex_get_var(exo_file, j + 1, type, i + 1, ids[k], num_per_block[k], &scr[n]);
-        }
-        n = n + num_per_block[k];
+  size_t num_entity = std::accumulate(num_per_block.begin(), num_per_block.end(), 0);
+
+  if (use_cell_arrays) {
+    std::string var_name = prefix + "var";
+    
+    size_t    dims[2];
+    dims[0] = 2;
+    dims[1] = num_vars;
+    matvar_t *cell_array = Mat_VarCreate(var_name.c_str(),MAT_C_CELL,MAT_T_CELL,2,dims,NULL,0);
+    assert(cell_array);
+
+    std::vector<double> scr(num_vars * num_time_steps * num_entity);
+    dims[0] = num_entity;
+    dims[1] = num_time_steps;
+    size_t offset = 0;
+
+    // Get vector of variable names...
+    auto names = get_names(exo_file, type, num_vars);
+
+    std::vector<matvar_t*> cell_element(num_vars*2);
+
+    int j = 0;
+    for (int i = 0; i < num_vars; i++) {
+      size_t    sdims[2];
+      sdims[0] = 1;
+      sdims[1] = names[i].length();
+      cell_element[j] = Mat_VarCreate(NULL, MAT_C_CHAR, MAT_T_UINT8,
+				      2, sdims, (void*)names[i].c_str(),
+				      MAT_F_DONT_COPY_DATA);
+      Mat_VarSetCell(cell_array,j,cell_element[j]);
+      j++;
+
+      cell_element[j] = Mat_VarCreate(NULL,MAT_C_DOUBLE,MAT_T_DOUBLE,2,dims,
+				      &scr[offset],MAT_F_DONT_COPY_DATA);
+      assert(cell_element[j]);
+      Mat_VarSetCell(cell_array,j,cell_element[j]);
+      size_t n = 0;
+      for (int jj = 0; jj < num_time_steps; jj++) {
+	for (int k = 0; k < num_blocks; k++) {
+	  if (truth_table[num_vars * k + i] == 1) {
+	    ex_get_var(exo_file, jj + 1, type, i + 1, ids[k], num_per_block[k], &scr[n+offset]);
+	  }
+	  n += num_per_block[k];
+	}
       }
+      offset += num_time_steps * num_entity;
+      j++;
     }
-    if (debug)
-      logger("\tWriting");
-    PutDbl(str, num_entity, num_time_steps, TOPTR(scr));
+    Mat_VarWrite(mat_file,cell_array,MAT_COMPRESSION_NONE);
+    Mat_VarFree(cell_array);
+  }
+  else {
+    std::string var_name = prefix + "names";
+    get_put_names(exo_file, type, num_vars, var_name.c_str());
+
+    std::vector<double> scr(num_entity * num_time_steps);
+
+    std::string format = prefix + "var%02d";
+    char str[32];
+    for (int i = 0; i < num_vars; i++) {
+      if (debug)
+	logger("\tReading");
+      std::fill(scr.begin(), scr.end(), 0.0);
+      size_t n = 0;
+      sprintf(str, format.c_str(), i + 1);
+      for (int j = 0; j < num_time_steps; j++) {
+	for (int k = 0; k < num_blocks; k++) {
+	  if (truth_table[num_vars * k + i] == 1) {
+	    ex_get_var(exo_file, j + 1, type, i + 1, ids[k], num_per_block[k], &scr[n]);
+	  }
+	  n = n + num_per_block[k];
+	}
+      }
+      if (debug)
+	logger("\tWriting");
+      PutDbl(str, num_entity, num_time_steps, TOPTR(scr));
+    }
   }
 }
 
@@ -386,14 +462,15 @@ int main(int argc, char *argv[])
   const char *ext = EXT;
 
   int n, n1, n2, err, num_axes, num_blocks, num_side_sets, num_node_sets, num_time_steps,
-      num_info_lines, num_global_vars, num_nodal_vars, num_element_vars, num_nodeset_vars,
-      num_sideset_vars;
+    num_info_lines, num_global_vars, num_nodal_vars, num_element_vars, num_nodeset_vars,
+    num_sideset_vars;
 
   size_t num_nodes    = 0;
   size_t num_elements = 0;
 
   int mat_version = 73;
-
+  bool use_cell_arrays = false;
+  
   /* process arguments */
   for (int j = 1; j < argc; j++) {
     if (strcmp(argv[j], "-t") == 0) { /* write text file (*.m) */
@@ -410,7 +487,13 @@ int main(int argc, char *argv[])
     if (strcmp(argv[j], "-d") == 0) { /* write help info */
       del_arg(&argc, argv, j);
       j--;
-      debug = 1;
+      debug = true;
+      continue;
+    }
+    if (strcmp(argv[j], "-c") == 0) { /* use cell arrays */
+      del_arg(&argc, argv, j);
+      j--;
+      use_cell_arrays = true;
       continue;
     }
     if (strcmp(argv[j], "-v73") == 0) { /* Version 7.3 */
@@ -747,13 +830,51 @@ int main(int argc, char *argv[])
     if (debug) {
       logger("Global Variables");
     }
-    get_put_names(exo_file, EX_GLOBAL, num_global_vars, "gnames");
 
-    std::vector<double> scr(num_time_steps);
-    for (int i = 0; i < num_global_vars; i++) {
-      sprintf(str, "gvar%02d", i + 1);
-      ex_get_glob_var_time(exo_file, i + 1, 1, num_time_steps, TOPTR(scr));
-      PutDbl(str, num_time_steps, 1, TOPTR(scr));
+    if (use_cell_arrays) {
+      size_t    dims[2];
+      dims[0] = 2;
+      dims[1] = num_global_vars;
+      matvar_t *cell_array = Mat_VarCreate("gvar",MAT_C_CELL,MAT_T_CELL,2,dims,NULL,0);
+      assert(cell_array);
+      std::vector<double> scr(num_time_steps*num_global_vars);
+      dims[0] = num_time_steps;
+      dims[1] = 1;
+      size_t offset = 0;
+      // Get vector of variable names...
+      auto gnames = get_names(exo_file, EX_GLOBAL, num_global_vars);
+      
+      std::vector<matvar_t*> cell_element(num_global_vars*2);
+      int j = 0;
+      for (int i = 0; i < num_global_vars; i++) {
+	size_t    sdims[2];
+	sdims[0] = 1;
+	sdims[1] = gnames[i].length();
+	cell_element[j] = Mat_VarCreate(NULL, MAT_C_CHAR, MAT_T_UINT8,
+					2, sdims, (void*)gnames[i].c_str(),
+					MAT_F_DONT_COPY_DATA);
+	Mat_VarSetCell(cell_array,j,cell_element[j]);
+	j++;
+
+	ex_get_glob_var_time(exo_file, i + 1, 1, num_time_steps, &scr[offset]);
+	cell_element[j] = Mat_VarCreate(NULL,MAT_C_DOUBLE,MAT_T_DOUBLE,2,dims,
+					&scr[offset],MAT_F_DONT_COPY_DATA);
+	assert(cell_element[j]);
+	Mat_VarSetCell(cell_array,j,cell_element[j]);
+	offset += num_time_steps;
+	j++;
+      }
+      Mat_VarWrite(mat_file,cell_array,MAT_COMPRESSION_NONE);
+      Mat_VarFree(cell_array);
+    }
+    else {
+      get_put_names(exo_file, EX_GLOBAL, num_global_vars, "gnames");
+      std::vector<double> scr(num_time_steps);
+      for (int i = 0; i < num_global_vars; i++) {
+	sprintf(str, "gvar%02d", i + 1);
+	ex_get_glob_var_time(exo_file, i + 1, 1, num_time_steps, TOPTR(scr));
+	PutDbl(str, num_time_steps, 1, TOPTR(scr));
+      }
     }
   }
 
@@ -765,21 +886,61 @@ int main(int argc, char *argv[])
     if (debug) {
       logger("\tNames");
     }
-    get_put_names(exo_file, EX_NODAL, num_nodal_vars, "nnames");
+    if (use_cell_arrays) {
+      size_t    dims[2];
+      dims[0] = 2;
+      dims[1] = num_nodal_vars;
+      matvar_t *cell_array = Mat_VarCreate("nvar",MAT_C_CELL,MAT_T_CELL,2,dims,NULL,0);
+      assert(cell_array);
+      std::vector<double> scr(num_nodal_vars * num_time_steps * num_nodes);
+      dims[0] = num_nodes;
+      dims[1] = num_time_steps;
+      size_t offset = 0;
+      // Get vector of variable names...
+      auto nnames = get_names(exo_file, EX_NODAL, num_nodal_vars);
 
-    std::vector<double> scr(num_nodes * num_time_steps);
-    for (int i = 0; i < num_nodal_vars; i++) {
-      sprintf(str, "nvar%02d", i + 1);
-      if (debug) {
-        logger("\tReading");
+      std::vector<matvar_t*> cell_element(num_nodal_vars*2);
+      int j = 0;
+      for (int i = 0; i < num_nodal_vars; i++) {
+	size_t    sdims[2];
+	sdims[0] = 1;
+	sdims[1] = nnames[i].length();
+	cell_element[j] = Mat_VarCreate(NULL, MAT_C_CHAR, MAT_T_UINT8,
+					2, sdims, (void*)nnames[i].c_str(),
+					MAT_F_DONT_COPY_DATA);
+	Mat_VarSetCell(cell_array,j,cell_element[j]);
+	j++;
+
+	cell_element[j] = Mat_VarCreate(NULL,MAT_C_DOUBLE,MAT_T_DOUBLE,2,dims,
+					&scr[offset],MAT_F_DONT_COPY_DATA);
+	assert(cell_element[j]);
+	Mat_VarSetCell(cell_array,j,cell_element[j]);
+	for (int k = 0; k < num_time_steps; k++) {
+	  ex_get_nodal_var(exo_file, k + 1, i + 1, num_nodes, &scr[num_nodes * k + offset]);
+	}
+	offset += num_time_steps * num_nodes;
+	j++;
       }
-      for (int j = 0; j < num_time_steps; j++) {
-        ex_get_nodal_var(exo_file, j + 1, i + 1, num_nodes, &scr[num_nodes * j]);
+      Mat_VarWrite(mat_file,cell_array,MAT_COMPRESSION_NONE);
+      Mat_VarFree(cell_array);
+    }
+    else {
+      get_put_names(exo_file, EX_NODAL, num_nodal_vars, "nnames");
+
+      std::vector<double> scr(num_nodes * num_time_steps);
+      for (int i = 0; i < num_nodal_vars; i++) {
+	sprintf(str, "nvar%02d", i + 1);
+	if (debug) {
+	  logger("\tReading");
+	}
+	for (int j = 0; j < num_time_steps; j++) {
+	  ex_get_nodal_var(exo_file, j + 1, i + 1, num_nodes, &scr[num_nodes * j]);
+	}
+	if (debug) {
+	  logger("\tWriting");
+	}
+	PutDbl(str, num_nodes, num_time_steps, TOPTR(scr));
       }
-      if (debug) {
-        logger("\tWriting");
-      }
-      PutDbl(str, num_nodes, num_time_steps, TOPTR(scr));
     }
   }
 
@@ -788,10 +949,8 @@ int main(int argc, char *argv[])
     if (debug) {
       logger("Element Variables");
     }
-    get_put_names(exo_file, EX_ELEM_BLOCK, num_element_vars, "enames");
-
     get_put_vars(exo_file, EX_ELEM_BLOCK, num_blocks, num_element_vars, num_time_steps,
-                 num_elem_in_block, "evar%02d");
+                 num_elem_in_block, "e", use_cell_arrays);
   }
 
   /* nodeset variables */
@@ -799,10 +958,8 @@ int main(int argc, char *argv[])
     if (debug) {
       logger("Nodeset Variables");
     }
-    get_put_names(exo_file, EX_NODE_SET, num_nodeset_vars, "nsnames");
-
     get_put_vars(exo_file, EX_NODE_SET, num_node_sets, num_nodeset_vars, num_time_steps,
-                 num_nodeset_nodes, "nsvar%02d");
+                 num_nodeset_nodes, "ns", use_cell_arrays);
   }
 
   /* sideset variables */
@@ -810,10 +967,8 @@ int main(int argc, char *argv[])
     if (debug) {
       logger("Sideset Variables");
     }
-    get_put_names(exo_file, EX_SIDE_SET, num_sideset_vars, "ssnames");
-
     get_put_vars(exo_file, EX_SIDE_SET, num_side_sets, num_sideset_vars, num_time_steps,
-                 num_sideset_sides, "ssvar%02d");
+                 num_sideset_sides, "ss", use_cell_arrays);
   }
 
   /* node and element number maps */
@@ -840,15 +995,15 @@ int main(int argc, char *argv[])
 
   if (textfile)
     fclose(m_file);
-  else
+  else {
     Mat_Close(mat_file);
-
-  std::cout << "done...\n";
-
+  }
   free(filename);
   free(line);
 
   delete_exodus_names(str2, nstr2);
+
+  std::cout << "done...\n";
 
   /* exit status */
   add_to_log("exo2mat", 0);
