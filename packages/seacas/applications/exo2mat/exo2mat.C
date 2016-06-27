@@ -674,6 +674,7 @@ int main(int argc, char *argv[])
 
   /* side sets */
   std::vector<int> num_sideset_sides(num_side_sets);
+  std::vector<int> num_sideset_dfac(num_side_sets);
   std::vector<int> ids;
   if (num_side_sets > 0) {
     if (debug) {
@@ -682,62 +683,52 @@ int main(int argc, char *argv[])
     ids.resize(num_side_sets);
     ex_get_ids(exo_file, EX_SIDE_SET, TOPTR(ids));
     PutInt("ssids", num_side_sets, 1, TOPTR(ids));
-    std::vector<int>    nssdfac(num_side_sets);
-    std::vector<int>    iscr;
-    std::vector<int>    jscr;
-    std::vector<double> scr;
+
     std::vector<int>    elem_list;
     std::vector<int>    side_list;
-    std::vector<int>    junk;
+    std::vector<int>    num_nodes_per_side;
+    std::vector<int>    side_nodes;
+    std::vector<double> ssdfac;
     for (int i = 0; i < num_side_sets; i++) {
       ex_get_set_param(exo_file, EX_SIDE_SET, ids[i], &n1, &n2);
       num_sideset_sides[i] = n1;
-      nssdfac[i]           = n2;
-      /*
-       * the following provision is from Version 1.6 when there are no
-       * distribution factors in exodus file
-       */
+      num_sideset_dfac[i]           = n2;
       bool has_ss_dfac = (n2 != 0);
       if (n2 == 0 || n1 == n2) {
 
-        std::cerr << "WARNING: Exodus II file does not contain distribution factors.\n";
+        std::cerr << "WARNING: Exodus file does not contain distribution factors.\n";
 
         /* n1=number of faces, n2=number of df */
-        /* using distribution factors to determine number of nodes in the sideset
-           causes a lot grief since some codes do not output distribution factors
-           if they are all equal to 1. mkbhard: I am using the function call below
-           to figure out the total number of nodes in this sideset. Some redundancy
-           exists, but it works for now */
-
-        junk.resize(n1);
+	std::vector<int>    junk(n1);
         ex_get_side_set_node_count(exo_file, ids[i], TOPTR(junk));
         n2 = 0; /* n2 will be equal to the total number of nodes in the sideset */
         for (int j = 0; j < n1; j++)
           n2 += junk[j];
       }
 
-      iscr.resize(n1);
-      jscr.resize(n2);
-      ex_get_side_set_node_list(exo_file, ids[i], TOPTR(iscr), TOPTR(jscr));
+      num_nodes_per_side.resize(n1);
+      side_nodes.resize(n2);
+      ex_get_side_set_node_list(exo_file, ids[i], TOPTR(num_nodes_per_side), TOPTR(side_nodes));
+
       /* number-of-nodes-per-side list */
       sprintf(str, "ssnum%02d", i + 1);
-      PutInt(str, n1, 1, TOPTR(iscr));
+      PutInt(str, n1, 1, TOPTR(num_nodes_per_side));
       /* nodes list */
       sprintf(str, "ssnod%02d", i + 1);
-      PutInt(str, n2, 1, TOPTR(jscr));
+      PutInt(str, n2, 1, TOPTR(side_nodes));
 
       /* distribution-factors list */
-      scr.resize(n2);
+      ssdfac.resize(n2);
       if (has_ss_dfac) {
-        ex_get_side_set_dist_fact(exo_file, ids[i], TOPTR(scr));
+	ex_get_side_set_dist_fact(exo_file, ids[i], TOPTR(ssdfac));
       }
       else {
-        for (int j = 0; j < n2; j++) {
-          scr[j] = 1.0;
-        }
+	for (int j = 0; j < n2; j++) {
+	  ssdfac[j] = 1.0;
+	}
       }
       sprintf(str, "ssfac%02d", i + 1);
-      PutDbl(str, n2, 1, TOPTR(scr));
+      PutDbl(str, n2, 1, TOPTR(ssdfac));
 
       /* element and side list for side sets (dgriffi) */
       elem_list.resize(n1);
@@ -750,7 +741,7 @@ int main(int argc, char *argv[])
     }
     /* Store # sides and # dis. factors per side set (dgriffi) */
     PutInt("nsssides", num_side_sets, 1, TOPTR(num_sideset_sides));
-    PutInt("nssdfac", num_side_sets, 1, TOPTR(nssdfac));
+    PutInt("nssdfac", num_side_sets, 1, TOPTR(num_sideset_dfac));
   }
 
   /* node sets (section by dgriffi) */
