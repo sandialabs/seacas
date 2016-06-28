@@ -166,6 +166,7 @@ namespace Ioss {
     properties.add(Property(this, "edge_block_count", Property::INTEGER));
     properties.add(Property(this, "face_block_count", Property::INTEGER));
     properties.add(Property(this, "element_block_count", Property::INTEGER));
+    properties.add(Property(this, "structured_block_count", Property::INTEGER));
     properties.add(Property(this, "side_set_count", Property::INTEGER));
     properties.add(Property(this, "node_set_count", Property::INTEGER));
     properties.add(Property(this, "edge_set_count", Property::INTEGER));
@@ -262,7 +263,7 @@ namespace Ioss {
          << get_property("face_block_count").get_int() << "\n";
     strm << " Number of element blocks         =" << std::setw(12)
          << get_property("element_block_count").get_int() << "\n";
-    strm << " Number of structured blocks         =" << std::setw(12)
+    strm << " Number of structured blocks      =" << std::setw(12)
          << get_property("structured_block_count").get_int() << "\n";
     strm << " Number of node sets              =" << std::setw(12)
          << get_property("node_set_count").get_int() << "\n";
@@ -300,7 +301,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         uniqify(names);
-        strm << " Number of structured block variables      =" << std::setw(12) << names.size()
+        strm << " Number of structured block vars  =" << std::setw(12) << names.size()
              << "\n";
       }
 
