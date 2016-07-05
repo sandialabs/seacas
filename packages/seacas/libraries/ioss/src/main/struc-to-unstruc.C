@@ -632,6 +632,11 @@ namespace {
       auto *      output = output_region.get_element_block(name);
       assert(output != nullptr);
       output->put_field_data("connectivity_raw", connect);
+
+      size_t cell_count = block->get_property("cell_count").get_int();
+      std::vector<int> ids(cell_count);
+      std::iota(ids.begin(), ids.end(), block->get_cell_offset()+1);
+      output->put_field_data("ids", ids);
     }
     return;
   }
