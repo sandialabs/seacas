@@ -1021,8 +1021,6 @@ namespace {
 
     size_t isize = ige->get_field(field_name).get_size();
     if (isize != oge->get_field(field_name).get_size()) {
-      std::cerr << "Field: " << field_name << "\tIsize = " << isize
-                << "\tOsize = " << oge->get_field(field_name).get_size() << "\n";
       assert(isize == oge->get_field(field_name).get_size());
     }
 
@@ -1061,8 +1059,6 @@ namespace {
     }
 
     if (data.size() < isize) {
-      std::cerr << "Field: " << field_name << "\tIsize = " << isize
-                << "\tdata size = " << data.size() << "\n";
       data.resize(isize);
     }
 
