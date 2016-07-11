@@ -86,7 +86,7 @@ namespace {
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void file_copy(const std::string &input, const std::string &output);
-  void decompose(const std::string &input);
+  void decompose(Ioss::Region &region, int proc_count, double lb_threshold=1.4);
 
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
@@ -117,10 +117,10 @@ namespace {
 
   struct Range
   {
-    Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b<a) {}
+    Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b < a) {}
 
-    int m_beg;
-    int m_end;
+    int  m_beg;
+    int  m_end;
     bool m_reversed;
   };
 
@@ -197,8 +197,8 @@ namespace {
       // via the m_offset[] field on the local block.
       std::array<int, 3> range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
       std::array<int, 3> range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
-	    c1->m_ordinal[1] + c1->m_offset[1] + 1,
-	    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
+                                    c1->m_ordinal[1] + c1->m_offset[1] + 1,
+                                    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
 
       std::array<int, 3> donor_range_beg(range_beg);
       std::array<int, 3> donor_range_end(range_end);
@@ -213,13 +213,15 @@ namespace {
 
       std::cerr << "Adding c1 " << c1_base << "--" << c2_base << "\n";
       zone_connectivity.emplace_back("decomp" + c1_base, c1->m_zone, "decomp" + c2_base, c2->m_zone,
-                                     transform, range_beg, range_end, donor_range_beg, donor_range_end);
+                                     transform, range_beg, range_end, donor_range_beg,
+                                     donor_range_end);
       propogate_zgc(c1, region, zone_connectivity);
 
       zone_connectivity.pop_back();
       std::cerr << "Adding c2 " << c2_base << "--" << c1_base << "\n";
       zone_connectivity.emplace_back("decomp" + c2_base, c2->m_zone, "decomp" + c1_base, c1->m_zone,
-                                     transform, donor_range_beg, donor_range_end, range_beg, range_end);
+                                     transform, donor_range_beg, donor_range_end, range_beg,
+                                     range_end);
       propogate_zgc(c2, region, zone_connectivity);
     }
     else {
@@ -239,15 +241,15 @@ namespace {
         // Add zone connectivities...
         for (auto &zgc : zone_connectivity) {
           if (zgc_overlaps(zone, zgc)) {
-	    // Modify source and donor range to subset it to new block ranges.
-	    zgc_subset_ranges(zone, zgc);
+            // Modify source and donor range to subset it to new block ranges.
+            zgc_subset_ranges(zone, zgc);
             block->m_zoneConnectivity.push_back(zgc);
             std::cerr << zgc << "\n";
           }
           else {
-            std::cerr << Ioss::trmclr::red
-		      << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-                      << " does not overlap." << Ioss::trmclr::normal << "\n";
+            std::cerr << Ioss::trmclr::red << "\t\t" << zgc.m_donorName << ":\tName '"
+                      << zgc.m_connectionName << " does not overlap." << Ioss::trmclr::normal
+                      << "\n";
           }
         }
       }
@@ -277,7 +279,18 @@ int main(int argc, char *argv[])
     file_copy(in_file, out_file);
   }
   else {
-    decompose(in_file);
+    Ioss::PropertyManager properties;
+    Ioss::DatabaseIO *    dbi = Ioss::IOFactory::create("cgns", in_file, Ioss::READ_MODEL,
+							(MPI_Comm)MPI_COMM_WORLD, properties);
+    if (dbi == nullptr || !dbi->ok(true)) {
+      std::exit(EXIT_FAILURE);
+    }
+
+    int proc_count = 4;
+    
+    // NOTE: 'region' owns 'db' pointer at this time...
+    Ioss::Region region(dbi, "region_1");
+    decompose(region, proc_count);
   }
   double end = timer();
 
@@ -291,18 +304,8 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-  void decompose(const std::string &inpfile)
+  void decompose(Ioss::Region &region, int proc_count, double load_balance_threshold)
   {
-    Ioss::PropertyManager properties;
-    Ioss::DatabaseIO *    dbi = Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
-    if (dbi == nullptr || !dbi->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
-
-    // NOTE: 'region' owns 'db' pointer at this time...
-    Ioss::Region region(dbi, "region_1");
-
     auto &blocks = region.get_structured_blocks();
     if (blocks.empty()) {
       return;
@@ -314,7 +317,7 @@ namespace {
       std::string name = iblock->name();
       OUTPUT << name << "\n";
 
-      Iocgns::StructuredZoneData *z = new Iocgns::StructuredZoneData(
+      auto *z = new Iocgns::StructuredZoneData(
           iblock->get_property("zone").get_int(), iblock->get_property("ni").get_int(),
           iblock->get_property("nj").get_int(), iblock->get_property("nk").get_int());
       zones.push_back(z);
@@ -326,8 +329,6 @@ namespace {
     }
 
     size_t new_zone_id            = zones.size() + 1;
-    double load_balance_threshold = 1.4;
-    size_t proc_count             = 4;
     size_t px                     = 0;
     size_t num_split              = 0;
     bool   split                  = false;
@@ -373,9 +374,8 @@ namespace {
         std::exit(EXIT_FAILURE);
       }
       std::cerr << "Decomposing structured mesh for " << proc_count
-		<< " processors. Average workload is " << avg_work
-		<< ", Threshold is " << load_balance_threshold
-                << "\n";
+                << " processors. Average workload is " << avg_work << ", Threshold is "
+                << load_balance_threshold << "\n";
 
       std::vector<size_t> work(proc_count);
 
@@ -438,7 +438,7 @@ namespace {
     for (auto zone : zones) {
       if (zone->is_active()) {
         OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
-	       << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+               << ", Adam zone = " << zone->m_adam->m_zone << "\n";
       }
     }
 
@@ -600,43 +600,48 @@ namespace {
 
       size_t xp1yp1 = (ni + 1) * (nj + 1);
 
-      std::vector<int> connect;
-      for (size_t m = 0; m < nk; m++) {
-        for (size_t i = 0, k = 0; i < nj; i++) {
-          for (size_t j = 0; j < ni; j++, k++) {
-            size_t base = (m * xp1yp1) + k + i;
-
-            connect.push_back(base);
-            connect.push_back(base + 1);
-            connect.push_back(base + ni + 2);
-            connect.push_back(base + ni + 1);
-
-            connect.push_back(xp1yp1 + base);
-            connect.push_back(xp1yp1 + base + 1);
-            connect.push_back(xp1yp1 + base + ni + 2);
-            connect.push_back(xp1yp1 + base + ni + 1);
-          }
-        }
-      }
-      // 'connect' contains 0-based block-local node ids at this point
-      // Now, map them to processor-global values...
-
-      const auto &gnil = block->m_globalNodeIdList;
-
-      for (size_t i = 0; i < connect.size(); i++) {
-        connect[i] = gnil[connect[i]] + 1;
-      }
-
       // Find matching element block in output region...
       const auto &name   = block->name();
       auto *      output = output_region.get_element_block(name);
       assert(output != nullptr);
-      output->put_field_data("connectivity_raw", connect);
 
-      size_t cell_count = block->get_property("cell_count").get_int();
-      std::vector<int> ids(cell_count);
-      std::iota(ids.begin(), ids.end(), block->get_cell_offset()+1);
-      output->put_field_data("ids", ids);
+      {
+        std::vector<int> connect;
+        for (size_t m = 0; m < nk; m++) {
+          for (size_t i = 0, k = 0; i < nj; i++) {
+            for (size_t j = 0; j < ni; j++, k++) {
+              size_t base = (m * xp1yp1) + k + i;
+
+              connect.push_back(base);
+              connect.push_back(base + 1);
+              connect.push_back(base + ni + 2);
+              connect.push_back(base + ni + 1);
+
+              connect.push_back(xp1yp1 + base);
+              connect.push_back(xp1yp1 + base + 1);
+              connect.push_back(xp1yp1 + base + ni + 2);
+              connect.push_back(xp1yp1 + base + ni + 1);
+            }
+          }
+        }
+        // 'connect' contains 0-based block-local node ids at this point
+        // Now, map them to processor-global values...
+
+        const auto &gnil = block->m_globalNodeIdList;
+
+        for (size_t i = 0; i < connect.size(); i++) {
+          connect[i] = gnil[connect[i]] + 1;
+        }
+
+        output->put_field_data("connectivity_raw", connect);
+      }
+
+      {
+        size_t           cell_count = block->get_property("cell_count").get_int();
+        std::vector<int> ids(cell_count);
+        std::iota(ids.begin(), ids.end(), block->get_cell_offset() + 1);
+        output->put_field_data("ids", ids);
+      }
     }
     return;
   }
