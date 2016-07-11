@@ -731,34 +731,32 @@ int ne_check_file_version(int neid	/* NetCDF/Exodus file ID */
 
 char *ex_catstrn12(char *name, int num1, int num2);
 
-int ne_id_lkup(int            exoid,		/* NetCDF/Exodus file ID */
-	       const char    *ne_var_name,	/* Nemesis variable name */
-	       int64_t       *idx,		/* index variable for variable, length 2 */
-	       ex_entity_id   ne_var_id	/* NetCDF variable ID */
-	       );
+int ne_id_lkup(int          exoid,       /* NetCDF/Exodus file ID */
+               const char * ne_var_name, /* Nemesis variable name */
+               int64_t *    idx,         /* index variable for variable, length 2 */
+               ex_entity_id ne_var_id    /* NetCDF variable ID */
+               );
 
-  /**
-   * For output databases, the maximum length of any entity, variable,
-   * property, attribute, or coordinate name to be written (not
-   * including the NULL terminator). If a name is longer than this
-   * value, a warning message will be output to stderr and the name
-   * will be truncated.  Must be set (via call to
-   * 'ex_set_max_name_length(exoid, int len)' prior to calling ex_create.
-   *
-   * For input databases, the size of the name arrays that the client
-   * code will be passing to API routines that retrieve names (not
-   * including the NULL terminator). This defaults to 32 for
-   * compatibility with older clients. The value used at the time of
-   * creation of the database can be queried by ex_inquire with the
-   * EX_INQ_DB_MAX_NAME_LENGTH argument. The current value for this
-   * variable can be queried with EX_INQ_CUR_MAX_NAME_LENGTH argument.
-   *
-   * Note that this is a global setting for all databases. If you are
-   * accessing multiple databases, they will all use the same value.
-   */
-  extern int ex_default_max_name_length; 
-				    
-  void *ex_safe_free(void *array);
+/**
+ * For output databases, the maximum length of any entity, variable,
+ * property, attribute, or coordinate name to be written (not
+ * including the NULL terminator). If a name is longer than this
+ * value, a warning message will be output to stderr and the name
+ * will be truncated.  Must be set (via call to
+ * 'ex_set_max_name_length(exoid, int len)' prior to calling ex_create.
+ *
+ * For input databases, the size of the name arrays that the client
+ * code will be passing to API routines that retrieve names (not
+ * including the NULL terminator). This defaults to 32 for
+ * compatibility with older clients. The value used at the time of
+ * creation of the database can be queried by ex_inquire with the
+ * EX_INQ_DB_MAX_NAME_LENGTH argument. The current value for this
+ * variable can be queried with EX_INQ_CUR_MAX_NAME_LENGTH argument.
+ *
+ * Note that this is a global setting for all databases. If you are
+ * accessing multiple databases, they will all use the same value.
+ */
+extern int ex_default_max_name_length;
 #ifdef __cplusplus
 }
 #endif
