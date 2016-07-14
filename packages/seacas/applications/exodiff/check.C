@@ -80,29 +80,29 @@ template <typename INT> bool Check_Global(ExoII_Read<INT> &file1, ExoII_Read<INT
 {
   bool is_same = true;
   if (file1.Dimension() != file2.Dimension()) {
-    std::cout << "exodiff: ERROR .. Dimension doesn't agree." << '\n';
+    std::cerr << "exodiff: ERROR .. Dimension doesn't agree." << '\n';
     is_same = false;
   }
   if (file1.Num_Nodes() != file2.Num_Nodes()) {
     if (interface.map_flag != PARTIAL) {
-      std::cout << "exodiff: ERROR .. Number of nodes doesn't agree." << '\n';
+      std::cerr << "exodiff: ERROR .. Number of nodes doesn't agree." << '\n';
       is_same = false;
     }
   }
   if (file1.Num_Elmts() != file2.Num_Elmts()) {
     if (interface.map_flag != PARTIAL) {
-      std::cout << "exodiff: ERROR .. Number of elements doesn't agree." << '\n';
+      std::cerr << "exodiff: ERROR .. Number of elements doesn't agree." << '\n';
       is_same = false;
     }
   }
   if (file1.Num_Elmt_Blocks() != file2.Num_Elmt_Blocks()) {
     if (interface.map_flag != PARTIAL) {
-      std::cout << "exodiff: ERROR .. Number of element blocks doesn't agree." << '\n';
+      std::cerr << "exodiff: ERROR .. Number of element blocks doesn't agree." << '\n';
       is_same = false;
     }
   }
   if (file1.Num_Times() != file2.Num_Times() && !interface.quiet_flag) {
-    std::cout << "exodiff: WARNING .. First file has " << file1.Num_Times()
+    std::cerr << "exodiff: WARNING .. First file has " << file1.Num_Times()
               << " result times while the second file has " << file2.Num_Times() << ".\n";
   }
   return is_same;
@@ -127,7 +127,7 @@ void Check_Compatible_Meshes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, boo
     is_diff = true;
 
   if (is_diff) {
-    std::cout << "exodiff: ERROR .. Differences found in mesh metadata.  Aborting...\n";
+    std::cerr << "exodiff: ERROR .. Differences found in mesh metadata.  Aborting...\n";
     exit(1);
   }
 }
@@ -226,7 +226,7 @@ namespace {
               block2 = file2.Get_Elmt_Block_by_Id(block1->Id());
 
             if (block2 == nullptr) {
-              std::cout << "exodiff: ERROR .. Block id " << block1->Id() << " exists in first "
+              std::cerr << "exodiff: ERROR .. Block id " << block1->Id() << " exists in first "
                         << "file but not the second." << '\n';
               is_same = false;
             }
@@ -271,7 +271,7 @@ namespace {
       if (conn1[e] != conn2[e]) {
         size_t elem = e / block2->Num_Nodes_per_Elmt();
         size_t node = e % block2->Num_Nodes_per_Elmt();
-        std::cout << "exodiff: ERROR .. Connectivities in block id " << block1->Id()
+        std::cerr << "exodiff: ERROR .. Connectivities in block id " << block1->Id()
                   << " are not the same.\n"
                   << "                  First difference is node " << node + 1
                   << " of local element " << elem + 1 << '\n';
@@ -291,38 +291,38 @@ namespace {
     SMART_ASSERT(block1 && block2);
 
     if (!interface.by_name && block1->Id() != block2->Id()) {
-      std::cout << "exodiff: ERROR .. Block ids don't agree (" << block1->Id()
+      std::cerr << "exodiff: ERROR .. Block ids don't agree (" << block1->Id()
                 << " != " << block2->Id() << ")." << '\n';
       is_same = false;
     }
     if (interface.by_name && block1->Name() != block2->Name()) {
-      std::cout << "exodiff: ERROR .. Block names don't agree (" << block1->Name()
+      std::cerr << "exodiff: ERROR .. Block names don't agree (" << block1->Name()
                 << " != " << block2->Name() << ")." << '\n';
       is_same = false;
     }
     if (!(no_case_equals(block1->Elmt_Type(), block2->Elmt_Type()))) {
       if (!interface.short_block_check ||
           !close_compare(block1->Elmt_Type(), block2->Elmt_Type())) {
-        std::cout << "exodiff: ERROR .. Block " << block1->Id() << ": element types don't agree ("
+        std::cerr << "exodiff: ERROR .. Block " << block1->Id() << ": element types don't agree ("
                   << block1->Elmt_Type() << " != " << block2->Elmt_Type() << ")." << '\n';
         is_same = false;
       }
     }
     if (block1->Size() != block2->Size()) {
-      std::cout << "exodiff: ERROR .. Block " << block1->Id()
+      std::cerr << "exodiff: ERROR .. Block " << block1->Id()
                 << ": number of elements doesn't agree (" << block1->Size()
                 << " != " << block2->Size() << ")." << '\n';
       is_same = false;
     }
     if (block1->Num_Nodes_per_Elmt() != block2->Num_Nodes_per_Elmt()) {
-      std::cout << "exodiff: ERROR .. Block " << block1->Id()
+      std::cerr << "exodiff: ERROR .. Block " << block1->Id()
                 << ": number of nodes per element doesn't agree (" << block1->Num_Nodes_per_Elmt()
                 << " != " << block2->Num_Nodes_per_Elmt() << ")." << '\n';
       is_same = false;
     }
 #if 0
     if (block1->Num_Attributes() != block2->Num_Attributes()) {
-      std::cout << "exodiff: ERROR .. Block " << block1->Id() << ": number of attributes doesn't agree ("
+      std::cerr << "exodiff: ERROR .. Block " << block1->Id() << ": number of attributes doesn't agree ("
 		<< block1->Num_Attributes()
 		<< " != " << block2->Num_Attributes() << ")."
 		<< '\n';
@@ -342,7 +342,7 @@ namespace {
     bool is_same = true;
     if (file1.Num_Node_Sets() != file2.Num_Node_Sets()) {
       if (interface.map_flag != PARTIAL) {
-        std::cout << "exodiff: ERROR .. Number of nodesets doesn't agree...\n";
+        std::cerr << "exodiff: ERROR .. Number of nodesets doesn't agree...\n";
         if (interface.pedantic)
           is_same = false;
       }
@@ -357,14 +357,14 @@ namespace {
         set2 = file2.Get_Node_Set_by_Id(set1->Id());
 
       if (set2 == nullptr) {
-        std::cout << "exodiff: ERROR .. Nodeset id " << set1->Id()
+        std::cerr << "exodiff: ERROR .. Nodeset id " << set1->Id()
                   << " exists in first file but not the second.\n";
         if (interface.pedantic)
           is_same = false;
       }
       else {
         if (set1->Size() != set2->Size()) {
-          std::cout << "exodiff: ERROR .. The node count for nodeset id " << set1->Id()
+          std::cerr << "exodiff: ERROR .. The node count for nodeset id " << set1->Id()
                     << " is not the same in the two files (" << set1->Size()
                     << " != " << set2->Size() << ")\n";
           if (interface.pedantic)
@@ -378,7 +378,7 @@ namespace {
     for (int b = 0; b < file2.Num_Node_Sets(); ++b) {
       Node_Set<INT> *set2 = file2.Get_Node_Set_by_Index(b);
       if (set2 == nullptr) {
-        std::cout << "exodiff: ERROR .. Could not access the Nodeset with index " << b
+        std::cerr << "exodiff: ERROR .. Could not access the Nodeset with index " << b
                   << " in the second file.\n";
         if (interface.pedantic)
           is_same = false;
@@ -413,7 +413,7 @@ namespace {
             }
           }
           if (diff >= 0) {
-            std::cout << "exodiff: ERROR .. The nodelists for nodeset id " << set1->Id()
+            std::cerr << "exodiff: ERROR .. The nodelists for nodeset id " << set1->Id()
                       << " are not the same in the two files.\n"
                       << "\t\tThe first difference is at position " << set1->Node_Index(diff) + 1
                       << ": Node " << set1->Node_Id(diff) << " vs. Node " << set2->Node_Id(diff)
@@ -422,7 +422,7 @@ namespace {
               is_same = false;
             }
             else {
-              std::cout << "exodiff: ERROR .. The nodelist differences are ignored for the "
+              std::cerr << "exodiff: ERROR .. The nodelist differences are ignored for the "
                            "partial_map case.\n";
             }
           }
@@ -442,7 +442,7 @@ namespace {
     bool is_same = true;
     if (file1.Num_Side_Sets() != file2.Num_Side_Sets()) {
       if (interface.map_flag != PARTIAL) {
-        std::cout << "exodiff: ERROR .. Number of sidesets doesn't agree...\n";
+        std::cerr << "exodiff: ERROR .. Number of sidesets doesn't agree...\n";
         if (interface.pedantic)
           is_same = false;
       }
@@ -457,14 +457,14 @@ namespace {
         set2 = file2.Get_Side_Set_by_Id(set1->Id());
 
       if (set2 == nullptr) {
-        std::cout << "exodiff: ERROR .. Sideset id " << set1->Id()
+        std::cerr << "exodiff: ERROR .. Sideset id " << set1->Id()
                   << " exists in first file but not the second.\n";
         if (interface.pedantic)
           is_same = false;
       }
       else {
         if (set1->Size() != set2->Size()) {
-          std::cout << "exodiff: ERROR .. The side count for sideset id " << set1->Id()
+          std::cerr << "exodiff: ERROR .. The side count for sideset id " << set1->Id()
                     << " is not the same in the two files (" << set1->Size()
                     << " != " << set2->Size() << ")\n";
           if (interface.pedantic)
@@ -476,7 +476,7 @@ namespace {
     for (int b = 0; b < file2.Num_Side_Sets(); ++b) {
       Side_Set<INT> *set2 = file2.Get_Side_Set_by_Index(b);
       if (set2 == nullptr) {
-        std::cout << "exodiff: ERROR .. Could not access the Sideset with index " << b
+        std::cerr << "exodiff: ERROR .. Could not access the Sideset with index " << b
                   << " in the second file.\n";
         if (interface.pedantic)
           is_same = false;
@@ -513,7 +513,7 @@ namespace {
             }
           }
           if (diff >= 0) {
-            std::cout << "exodiff: ERROR .. The sidelists for sideset id " << set1->Id()
+            std::cerr << "exodiff: ERROR .. The sidelists for sideset id " << set1->Id()
                       << " are not the same in the two files.\n"
                       << "\t\tThe first difference is at position " << set1->Side_Index(diff) + 1
                       << ": Side " << set1->Side_Id(diff).first << "." << set1->Side_Id(diff).second
@@ -523,7 +523,7 @@ namespace {
               is_same = false;
             }
             else {
-              std::cout << "exodiff: ERROR .. The sidelist differences are ignored for the "
+              std::cerr << "exodiff: ERROR .. The sidelist differences are ignored for the "
                            "partial_map case.\n";
             }
           }
