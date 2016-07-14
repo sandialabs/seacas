@@ -139,13 +139,13 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
   index_qsort(x2, id, num_elmts);
 
 #if 0
-  std::cout << "******************  elmts  ******************** " << '\n';
+  std::cout << "******************  elmts  ******************** \n";
   {for (size_t i = 0; i < num_elmts; ++i)
       std::cout << i << ")\t"
 		<< x2[id[i]] << "\t"
 		<< y2[id[i]] << "\t"
 		<< z2[id[i]] << "\t" << id[i] << '\n';}
-  std::cout << "******************  elmts  ******************** " << '\n';
+  std::cout << "******************  elmts  ******************** \n";
 #endif
   //  Load and get nodal coordinates for first file.
   file1.Load_Nodal_Coordinates();
@@ -201,9 +201,8 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
                       interface.ignore_dups);
 
       if (sort_idx < 0) {
-        std::cerr << "\nexodiff: ERROR: Files are different (couldn't match element " << (i + 1)
-                  << " from block " << file1.Block_Id(b) << " from first file to second)"
-                  << '\n';
+        ERROR("Files are different (couldn't match element " << (i + 1)
+                  << " from block " << file1.Block_Id(b) << " from first file to second)\n");
         exit(1);
       }
       e2 = id[sort_idx];
@@ -222,11 +221,11 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
 
         // Check that the element types are the same.
         if (num_nodes_per_elmt != block2->Num_Nodes_per_Elmt()) {
-          std::cerr << "\nexodiff: ERROR: Files are different.\n"
+          ERROR("Files are different.\n"
                     << " In File 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                     << " has " << num_nodes_per_elmt << " and\n"
                     << " In File 2: Element " << (l2 + 1) << " in Block " << file2.Block_Id(b2)
-                    << " has " << block2->Num_Nodes_per_Elmt() << '\n';
+		<< " has " << block2->Num_Nodes_per_Elmt() << '\n');
           exit(1);
         }
 
@@ -278,13 +277,13 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
                   SMART_ASSERT(!interface.coord_tol.Diff(x2a, x2b) &&
                                !interface.coord_tol.Diff(y2a, y2b) &&
                                !interface.coord_tol.Diff(z2a, z2b));
-                  std::cerr << "\nexodiff: ERROR - No unique node mapping possible.\n"
+                  ERROR("No unique node mapping possible.\n"
                             << "\tFile 1, Node " << node1 << " at (" << x1a << ", " << y1a << ", "
                             << z1a << ") maps to both:\n"
                             << "\tFile 2, Node " << n1 << " at (" << x2a << ", " << y2a << ", "
                             << z2a << ") and\n"
                             << "\tFile 2, Node " << n2 << " at (" << x2b << ", " << y2b << ", "
-                            << z2b << ")\n\n";
+			<< z2b << ")\n\n");
                   exit(1);
                 }
                 found = 1;
@@ -296,7 +295,8 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
             }
           }
           if (!found) {
-            std::cerr << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
+            std::cerr << trmclr::red
+		      << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
                       << " in first element.\n"
                       << "\tFile 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                       << " nodes:\n";
@@ -318,7 +318,8 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
             }
             std::cerr << "Coordinates compared using tolerance: " << interface.coord_tol.value
                       << " (" << interface.coord_tol.typestr()
-                      << "), floor: " << interface.coord_tol.floor << "\n";
+                      << "), floor: " << interface.coord_tol.floor << "\n"
+		      << trmclr::normal;
             exit(1);
           }
         } // End of local node loop on file1's element.
@@ -453,13 +454,13 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
   index_qsort(x2, id2, num_elmts2);
 
 #if 0
-  std::cout << "******************  elmts  ******************** " << '\n';
+  std::cout << "******************  elmts  ******************** \n";
   {for (size_t i = 0; i < num_elmts; ++i)
     std::cout << i << ")\t"
 	      << x2[id[i]] << "\t"
 	      << y2[id[i]] << "\t"
 	      << z2[id[i]] << "\t" << id[i] << '\n';}
-  std::cout << "******************  elmts  ******************** " << '\n';
+  std::cout << "******************  elmts  ******************** \n";
 #endif
   //  Load and get nodal coordinates for first file.
   file1.Load_Nodal_Coordinates();
@@ -540,11 +541,11 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
 
         // Check that the element types are the same.
         if (num_nodes_per_elmt != block2->Num_Nodes_per_Elmt()) {
-          std::cerr << "\nexodiff: ERROR: Files are different.\n"
+          ERROR("Files are different.\n"
                     << " In File 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                     << " has " << num_nodes_per_elmt << " and\n"
                     << " In File 2: Element " << (l2 + 1) << " in Block " << file2.Block_Id(b2)
-                    << " has " << block2->Num_Nodes_per_Elmt() << '\n';
+		<< " has " << block2->Num_Nodes_per_Elmt() << '\n');
           exit(1);
         }
 
@@ -574,7 +575,8 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
             }
           }
           if (!found) {
-            std::cerr << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
+	    std::cerr << trmclr::red
+		      << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
                       << " in first element.\n"
                       << "\tFile 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                       << " nodes:\n";
@@ -596,7 +598,8 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
             }
             std::cerr << "Coordinates compared using tolerance: " << interface.coord_tol.value
                       << " (" << interface.coord_tol.typestr()
-                      << "), floor: " << interface.coord_tol.floor << "\n";
+                      << "), floor: " << interface.coord_tol.floor << "\n"
+		      << trmclr::normal;
             exit(1);
           }
         } // End of local node loop on file1's element.
@@ -680,8 +683,8 @@ namespace {
         map[id1[i]] = id2[i];
       }
       else {
-        std::cerr << "exodiff: ERROR: Unable to match " << type << " " << file1_id_map[id1[i]]
-                  << " in first file with " << type << " in second file." << '\n';
+        ERROR("Unable to match " << type << " " << file1_id_map[id1[i]]
+	      << " in first file with " << type << " in second file.\n");
         exit(1);
       }
     }
@@ -779,7 +782,7 @@ void Dump_Maps(const INT *node_map, const INT *elmt_map, ExoII_Read<INT> &file1)
   else {
     std::cout << " *** Element map is one-to-one\n";
   }
-  std::cout << "===" << '\n';
+  std::cout << "===\n";
 }
 
 template <typename INT>
@@ -868,8 +871,8 @@ namespace {
     // check that umnapped node counts are equal.  If not, output
     // message and exit.
     if (count_1 != count_2) {
-      std::cerr << "exodiff: ERROR: Files are different (free node count in file1 is " << count_1
-                << " but file2 free node count is " << count_2 << ")" << '\n';
+      ERROR("Files are different (free node count in file1 is " << count_1
+	    << " but file2 free node count is " << count_2 << ")\n");
       exit(1);
     }
 
@@ -913,8 +916,8 @@ namespace {
 
     // Check that all nodes were matched.
     if (matched != count_1) {
-      std::cerr << "exodiff: ERROR: Unable to match all free nodes in the model.  There are "
-                << count_1 - matched << " unmatched nodes remaining." << '\n';
+      ERROR("Unable to match all free nodes in the model.  There are "
+	    << count_1 - matched << " unmatched nodes remaining.\n");
       exit(1);
     }
 
@@ -977,14 +980,14 @@ namespace {
             double y2 = dim > 1 ? y[id[index]] : 0.0;
             double z2 = dim > 2 ? z[id[index]] : 0.0;
 
-            std::cerr << "\nexodiff: ERROR - Two elements in file 2 have the "
+            ERROR("Two elements in file 2 have the "
                       << "same midpoint (within tolerance).\n"
                       << "\tLocal element  " << id[i] + 1 << " in block " << block_id << " at ("
                       << x1 << ", " << y1 << ", " << z1 << ") and\n"
                       << "\tLocal element " << id[index] + 1 << " in block " << block_id << " at ("
                       << x2 << ", " << y2 << ", " << z2 << ")\n"
                       << "\tNo unique element mapping possible.\n"
-                      << '\n';
+		  << '\n');
             return -1;
           }
         }
