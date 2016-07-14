@@ -70,6 +70,7 @@
 #include "side_set.h"
 #include "smart_assert.h"
 #include "stringx.h"
+#include "terminal_color.h"
 
 #include "add_to_log.h"
 
@@ -222,7 +223,7 @@ extern "C" {
 void floating_point_exception_handler(int signo)
 {
   if (!checking_invalid) {
-    std::cout << "exodiff: caught floating point exception (" << signo << ")"
+    std::cerr << "exodiff: ERROR: caught floating point exception (" << signo << ")"
               << " bad data?" << '\n';
     exit(1);
   }
@@ -241,7 +242,7 @@ namespace {
     float dum = 0.0;
     int   err = ex_open(file_name.c_str(), EX_READ, &comp_ws, &ws, &dum);
     if (err < 0) {
-      std::cerr << "ERROR: Couldn't open file \"" << file_name << "\".";
+      std::cerr << "exodiff: ERROR: Couldn't open file \"" << file_name << "\".";
       return 0;
     }
     if (ex_int64_status(err) & EX_ALL_INT64_DB)
@@ -338,7 +339,7 @@ int main(int argc, char *argv[])
   std::string diffile_name = interface.diff_file;
 
   if (interface.summary_flag && file1_name == "") {
-    std::cout << "exodiff: ERROR: Summary option engaged but an exodus "
+    std::cerr << "exodiff: ERROR: Summary option engaged but an exodus "
                  "file was not specified"
               << '\n';
     exit(1);
@@ -408,7 +409,7 @@ namespace {
       std::cout << "Reading first file ... " << '\n';
     std::string serr = file1.Open_File();
     if (!serr.empty()) {
-      std::cout << "exodiff: " << serr << '\n';
+      std::cerr << "exodiff: " << serr << '\n';
       exit(1);
     }
     if (!interface.summary_flag) {
@@ -416,7 +417,7 @@ namespace {
         std::cout << "Reading second file ... " << '\n';
       serr = file2.Open_File();
       if (serr != "") {
-        std::cout << "exodiff: " << serr << '\n';
+        std::cerr << "exodiff: " << serr << '\n';
         exit(1);
       }
     }
@@ -515,7 +516,7 @@ namespace {
         Compute_Maps(node_map, elmt_map, file1, file2);
       }
       else {
-        std::cout << "INTERNAL ERROR: Invalid map option." << '\n';
+        std::cerr << "exodiff: INTERNAL ERROR: Invalid map option." << '\n';
       }
 
       if (interface.dump_mapping) {
@@ -721,7 +722,7 @@ namespace {
       if (interface.time_step_offset == -1) {
         interface.time_step_offset = file1.Num_Times() - file2.Num_Times();
         if (interface.time_step_offset < 0) {
-          std::cout << "ERROR: Second database must have less timesteps than "
+          std::cerr << "exodiff: ERROR: Second database must have less timesteps than "
                     << "first database." << '\n';
           exit(1);
         }
@@ -732,7 +733,7 @@ namespace {
       // Assumes file1 has more steps than file2.
       if (interface.time_step_offset == -2) {
         if (file1.Num_Times() < file2.Num_Times()) {
-          std::cout << "ERROR: Second database must have less timesteps than "
+          std::cerr << "exodiff: ERROR: Second database must have less timesteps than "
                     << "first database." << '\n';
           exit(1);
         }
@@ -782,7 +783,7 @@ namespace {
       }
 
       if (interface.time_step_start > min_num_times && min_num_times > 0) {
-        std::cout << "\tERROR: Time step options resulted in no timesteps being compared\n";
+        std::cerr << "\texodiff: ERROR: Time step options resulted in no timesteps being compared\n";
         diff_flag = true;
       }
 
@@ -1088,7 +1089,7 @@ const double *get_nodal_values(ExoII_Read<INT> &filen, int time_step, size_t idx
 
     if (vals != nullptr) {
       if (Invalid_Values(vals, filen.Num_Nodes())) {
-        std::cout << "\tERROR: NaN found for variable " << name << " in file " << fno << "\n";
+        std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in file " << fno << "\n";
         *diff_flag = true;
       }
     }
@@ -1106,7 +1107,7 @@ const double *get_nodal_values(ExoII_Read<INT> &filen, const TimeInterp &t, size
 
     if (vals != nullptr) {
       if (Invalid_Values(vals, filen.Num_Nodes())) {
-        std::cout << "\tERROR: NaN found for variable " << name << " in file " << fno << "\n";
+        std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in file " << fno << "\n";
         *diff_flag = true;
       }
     }
@@ -1164,7 +1165,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
   file1.Load_Global_Results(step1);
   const double *vals1 = file1.Get_Global_Results();
   if (vals1 == nullptr) {
-    std::cout << "\tERROR: Could not find global variables on file 1\n";
+    std::cerr << "\texodiff: ERROR: Could not find global variables on file 1\n";
     exit(1);
   }
 
@@ -1173,7 +1174,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     file2.Load_Global_Results(t2.step1, t2.step2, t2.proportion);
     vals2 = file2.Get_Global_Results();
     if (vals2 == nullptr) {
-      std::cout << "\tERROR: Could not find global variables on file 2\n";
+      std::cerr << "\texodiff: ERROR: Could not find global variables on file 2\n";
       exit(1);
     }
   }
@@ -1187,7 +1188,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
       int idx2 = find_string(file2.Global_Var_Names(), name, interface.nocase_var_names);
       if (idx1 < 0 || idx2 < 0 || vals1 == nullptr || vals2 == nullptr) {
-        std::cerr << "ERROR: Unable to find global variable named '" << name << "' on database.\n";
+        std::cerr << "exodiff: ERROR: Unable to find global variable named '" << name << "' on database.\n";
         exit(1);
       }
       gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interface.output_type);
@@ -1203,7 +1204,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       const std::string &name = (interface.glob_var_names)[out_idx];
       int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
       if (idx1 < 0) {
-        std::cerr << "ERROR: Unable to find global variable named '" << name << "' on database.\n";
+        std::cerr << "exodiff: ERROR: Unable to find global variable named '" << name << "' on database.\n";
         exit(1);
       }
 
@@ -1223,17 +1224,17 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     int idx1 = find_string(file1.Global_Var_Names(), name, interface.nocase_var_names);
     int idx2 = find_string(file2.Global_Var_Names(), name, interface.nocase_var_names);
     if (idx1 < 0 || idx2 < 0) {
-      std::cerr << "ERROR: Unable to find global variable named '" << name << "' on database.\n";
+      std::cerr << "exodiff: ERROR: Unable to find global variable named '" << name << "' on database.\n";
       exit(1);
     }
 
     if (Invalid_Values(&vals1[idx1], 1)) {
-      std::cout << "\tERROR: NaN found for variable " << name << " in file 1\n";
+      std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in file 1\n";
       diff_flag = true;
     }
 
     if (Invalid_Values(&vals2[idx2], 1)) {
-      std::cout << "\tERROR: NaN found for variable " << name << " in file 2\n";
+      std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in file 2\n";
       diff_flag = true;
     }
 
@@ -1270,7 +1271,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
       int idx1 = find_string(file1.Nodal_Var_Names(), name, interface.nocase_var_names);
       int idx2 = find_string(file2.Nodal_Var_Names(), name, interface.nocase_var_names);
       if (idx1 < 0 || idx2 < 0) {
-        std::cerr << "ERROR: Unable to find nodal variable named '" << name << "' on database.\n";
+        std::cerr << "exodiff: ERROR: Unable to find nodal variable named '" << name << "' on database.\n";
         exit(1);
       }
 
@@ -1278,12 +1279,12 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
       const double *vals2 = get_nodal_values(file2, step2, idx2, 2, name, &diff_flag);
 
       if (vals1 == nullptr) {
-        std::cout << "\tERROR: Could not find nodal variables on file 1\n";
+        std::cerr << "\texodiff: ERROR: Could not find nodal variables on file 1\n";
         exit(1);
       }
 
       if (vals2 == nullptr) {
-        std::cout << "\tERROR: Could not find nodal variables on file 2\n";
+        std::cerr << "\texodiff: ERROR: Could not find nodal variables on file 2\n";
         exit(1);
       }
 
@@ -1313,13 +1314,13 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
       const std::string &name = (interface.node_var_names)[n_idx];
       int idx1 = find_string(file1.Nodal_Var_Names(), name, interface.nocase_var_names);
       if (idx1 < 0) {
-        std::cerr << "ERROR: Unable to find nodal variable named '" << name << "' on database.\n";
+        std::cerr << "exodiff: ERROR: Unable to find nodal variable named '" << name << "' on database.\n";
         exit(1);
       }
       const double *vals1 = get_nodal_values(file1, step1, idx1, 1, name, &diff_flag);
 
       if (vals1 == nullptr) {
-        std::cout << "\tERROR: Could not find nodal variables on file 1\n";
+        std::cerr << "\texodiff: ERROR: Could not find nodal variables on file 1\n";
         exit(1);
       }
 
@@ -1344,7 +1345,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
     int idx1 = find_string(file1.Nodal_Var_Names(), name, interface.nocase_var_names);
     int idx2 = find_string(file2.Nodal_Var_Names(), name, interface.nocase_var_names);
     if (idx1 < 0 || idx2 < 0) {
-      std::cerr << "ERROR: Unable to find nodal variable named '" << name << "' on database.\n";
+      std::cerr << "exodiff: ERROR: Unable to find nodal variable named '" << name << "' on database.\n";
       exit(1);
     }
 
@@ -1352,13 +1353,13 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
     const double *vals2 = get_nodal_values(file2, t2, idx2, 2, name, &diff_flag);
 
     if (vals1 == nullptr) {
-      std::cout << "\tERROR: Could not find nodal variable " << name << " on file 1\n";
+      std::cerr << "\texodiff: ERROR: Could not find nodal variable " << name << " on file 1\n";
       diff_flag = true;
       continue;
     }
 
     if (vals2 == nullptr) {
-      std::cout << "\tERROR: Could not find nodal variable " << name << " on file 2\n";
+      std::cerr << "\texodiff: ERROR: Could not find nodal variable " << name << " on file 2\n";
       diff_flag = true;
       continue;
     }
@@ -1442,7 +1443,7 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     if (!interface.summary_flag)
       vidx2 = find_string(file2.Elmt_Var_Names(), name, interface.nocase_var_names);
     if (vidx1 < 0 || vidx2 < 0) {
-      std::cerr << "ERROR: Unable to find element variable named '" << name << "' on database.\n";
+      std::cerr << "exodiff: ERROR: Unable to find element variable named '" << name << "' on database.\n";
       exit(1);
     }
 
@@ -1485,14 +1486,14 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       eblock1->Load_Results(step1, vidx1);
       const double *vals1 = eblock1->Get_Results(vidx1);
       if (vals1 == nullptr) {
-        std::cout << "\tERROR: Could not find variable " << name << " in block " << eblock1->Id()
+        std::cerr << "\texodiff: ERROR: Could not find variable " << name << " in block " << eblock1->Id()
                   << ", file 1\n";
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals1, eblock1->Size())) {
-        std::cout << "\tERROR: NaN found for variable " << name << " in block " << eblock1->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in block " << eblock1->Id()
                   << ", file 1\n";
         diff_flag = true;
       }
@@ -1511,14 +1512,14 @@ bool diff_element(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
         vals2 = eblock2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
-          std::cout << "\tERROR: Could not find variable " << name << " in block " << eblock2->Id()
+          std::cerr << "\texodiff: ERROR: Could not find variable " << name << " in block " << eblock2->Id()
                     << ", file 2\n";
           diff_flag = true;
           continue;
         }
 
         if (Invalid_Values(vals2, eblock2->Size())) {
-          std::cout << "\tERROR: NaN found for variable " << name << " in block " << eblock2->Id()
+          std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in block " << eblock2->Id()
                     << ", file 2\n";
           diff_flag = true;
         }
@@ -1642,7 +1643,7 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     if (!interface.summary_flag)
       vidx2 = find_string(file2.NS_Var_Names(), name, interface.nocase_var_names);
     if (vidx1 < 0 || vidx2 < 0) {
-      std::cerr << "ERROR: Unable to find nodeset variable named '" << name << "' on database.\n";
+      std::cerr << "exodiff: ERROR: Unable to find nodeset variable named '" << name << "' on database.\n";
       exit(1);
     }
 
@@ -1674,14 +1675,14 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       const double *vals1 = nset1->Get_Results(vidx1);
 
       if (vals1 == nullptr) {
-        std::cout << "\tERROR: Could not find variable " << name << " in nodeset " << nset1->Id()
+        std::cerr << "\texodiff: ERROR: Could not find variable " << name << " in nodeset " << nset1->Id()
                   << ", file 1\n";
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals1, nset1->Size())) {
-        std::cout << "\tERROR: NaN found for variable " << name << " in nodeset " << nset1->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in nodeset " << nset1->Id()
                   << ", file 1\n";
         diff_flag = true;
       }
@@ -1694,14 +1695,14 @@ bool diff_nodeset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
         vals2 = (double *)nset2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
-          std::cout << "\tERROR: Could not find variable " << name << " in nodeset " << nset2->Id()
+          std::cerr << "\texodiff: ERROR: Could not find variable " << name << " in nodeset " << nset2->Id()
                     << ", file 2\n";
           diff_flag = true;
           continue;
         }
 
         if (Invalid_Values(vals2, nset2->Size())) {
-          std::cout << "\tERROR: NaN found for variable " << name << " in nodeset " << nset2->Id()
+          std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in nodeset " << nset2->Id()
                     << ", file 2\n";
           diff_flag = true;
         }
@@ -1817,7 +1818,7 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
     if (!interface.summary_flag)
       vidx2 = find_string(file2.SS_Var_Names(), name, interface.nocase_var_names);
     if (vidx1 < 0 || vidx2 < 0) {
-      std::cerr << "ERROR: Unable to find sideset variable named '" << name << "' on database.\n";
+      std::cerr << "exodiff: ERROR: Unable to find sideset variable named '" << name << "' on database.\n";
       exit(1);
     }
 
@@ -1846,14 +1847,14 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       const double *vals1 = sset1->Get_Results(vidx1);
 
       if (vals1 == nullptr) {
-        std::cout << "\tERROR: Could not find variable " << name << " in sideset " << sset1->Id()
+        std::cerr << "\texodiff: ERROR: Could not find variable " << name << " in sideset " << sset1->Id()
                   << ", file 1\n";
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals1, sset1->Size())) {
-        std::cout << "\tERROR: NaN found for variable " << name << " in sideset " << sset1->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in sideset " << sset1->Id()
                   << ", file 1\n";
         diff_flag = true;
       }
@@ -1865,14 +1866,14 @@ bool diff_sideset(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
         vals2 = (double *)sset2->Get_Results(vidx2);
 
         if (vals2 == nullptr) {
-          std::cout << "\tERROR: Could not find variable " << name << " in sideset " << sset2->Id()
+          std::cerr << "\texodiff: ERROR: Could not find variable " << name << " in sideset " << sset2->Id()
                     << ", file 2\n";
           diff_flag = true;
           continue;
         }
 
         if (Invalid_Values(vals2, sset2->Size())) {
-          std::cout << "\tERROR: NaN found for variable " << name << " in sideset " << sset2->Id()
+          std::cerr << "\texodiff: ERROR: NaN found for variable " << name << " in sideset " << sset2->Id()
                     << ", file 2\n";
           diff_flag = true;
         }
@@ -1993,8 +1994,8 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
     const double *vals1 = sset1->Distribution_Factors();
 
     if (vals1 == nullptr) {
-      std::cout << "\tERROR: Could not distribution factors "
-                   " in sideeset "
+      std::cerr << "\texodiff: ERROR: Could not read distribution factors "
+                   " in sideset "
                 << sset1->Id() << ", file 1\n";
       diff_flag = true;
       continue;
@@ -2010,7 +2011,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
     {
       std::pair<INT, INT> range1 = sset1->Distribution_Factor_Range(ecount - 1);
       if (Invalid_Values(vals1, range1.second)) {
-        std::cout << "\tERROR: NaN found for distribution factors in sideset " << sset1->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for distribution factors in sideset " << sset1->Id()
                   << ", file 1\n";
         diff_flag = true;
       }
@@ -2022,8 +2023,8 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
     double *vals2 = (double *)sset2->Distribution_Factors();
 
     if (vals2 == nullptr) {
-      std::cout << "\tERROR: Could not distribution factors "
-                   " in sideeset "
+      std::cerr << "\texodiff: ERROR: Could not read distribution factors "
+                   " in sideset "
                 << sset2->Id() << ", file 2\n";
       diff_flag = true;
       continue;
@@ -2032,7 +2033,7 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
     {
       std::pair<INT, INT> range2 = sset2->Distribution_Factor_Range(sset2->Size() - 1);
       if (Invalid_Values(vals2, range2.second)) {
-        std::cout << "\tERROR: NaN found for distribution factors in sideset " << sset2->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for distribution factors in sideset " << sset2->Id()
                   << ", file 2\n";
         diff_flag = true;
       }
@@ -2161,14 +2162,14 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
       const double *vals1 = eblock1->Get_Attributes(idx1);
 
       if (vals1 == nullptr) {
-        std::cout << "\tERROR: Could not find element attribute " << name << " in block "
+        std::cerr << "\texodiff: ERROR: Could not find element attribute " << name << " in block "
                   << eblock1->Id() << ", file 1\n";
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals1, eblock1->Size())) {
-        std::cout << "\tERROR: NaN found for attribute " << name << " in block " << eblock1->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for attribute " << name << " in block " << eblock1->Id()
                   << ", file 1\n";
         diff_flag = true;
       }
@@ -2178,14 +2179,14 @@ bool diff_element_attributes(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, INT
       const double *vals2 = eblock2->Get_Attributes(idx2);
 
       if (vals2 == nullptr) {
-        std::cout << "\tERROR: Could not find element attribute " << name << " in block "
+        std::cerr << "\texodiff: ERROR: Could not find element attribute " << name << " in block "
                   << eblock2->Id() << ", file 2\n";
         diff_flag = true;
         continue;
       }
 
       if (Invalid_Values(vals2, eblock2->Size())) {
-        std::cout << "\tERROR: NaN found for attribute " << name << " in block " << eblock2->Id()
+        std::cerr << "\texodiff: ERROR: NaN found for attribute " << name << " in block " << eblock2->Id()
                   << ", file 2\n";
         diff_flag = true;
       }
