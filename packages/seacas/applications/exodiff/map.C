@@ -201,7 +201,7 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
                       interface.ignore_dups);
 
       if (sort_idx < 0) {
-        std::cout << "\nexodiff: ERROR: Files are different (couldn't match element " << (i + 1)
+        std::cerr << "\nexodiff: ERROR: Files are different (couldn't match element " << (i + 1)
                   << " from block " << file1.Block_Id(b) << " from first file to second)"
                   << '\n';
         exit(1);
@@ -222,7 +222,7 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
 
         // Check that the element types are the same.
         if (num_nodes_per_elmt != block2->Num_Nodes_per_Elmt()) {
-          std::cout << "\nexodiff: ERROR: Files are different.\n"
+          std::cerr << "\nexodiff: ERROR: Files are different.\n"
                     << " In File 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                     << " has " << num_nodes_per_elmt << " and\n"
                     << " In File 2: Element " << (l2 + 1) << " in Block " << file2.Block_Id(b2)
@@ -278,7 +278,7 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
                   SMART_ASSERT(!interface.coord_tol.Diff(x2a, x2b) &&
                                !interface.coord_tol.Diff(y2a, y2b) &&
                                !interface.coord_tol.Diff(z2a, z2b));
-                  std::cout << "\nexodiff: ERROR - No unique node mapping possible.\n"
+                  std::cerr << "\nexodiff: ERROR - No unique node mapping possible.\n"
                             << "\tFile 1, Node " << node1 << " at (" << x1a << ", " << y1a << ", "
                             << z1a << ") maps to both:\n"
                             << "\tFile 2, Node " << n1 << " at (" << x2a << ", " << y2a << ", "
@@ -296,7 +296,7 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
             }
           }
           if (!found) {
-            std::cout << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
+            std::cerr << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
                       << " in first element.\n"
                       << "\tFile 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                       << " nodes:\n";
@@ -304,19 +304,19 @@ void Compute_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1, ExoII_
               double x_val = x1_f[conn1[l1] - 1];
               double y_val = dim > 1 ? y1_f[conn1[l1] - 1] : 0.0;
               double z_val = dim > 2 ? z1_f[conn1[l1] - 1] : 0.0;
-              std::cout << "\t(" << l1 + 1 << ")\t" << conn1[l1] << "\t" << std::setprecision(9)
+              std::cerr << "\t(" << l1 + 1 << ")\t" << conn1[l1] << "\t" << std::setprecision(9)
                         << x_val << "\t" << y_val << "\t" << z_val << "\n";
             }
-            std::cout << "\tFile 2: Element " << (l2 + 1) << " in Block " << file1.Block_Id(b)
+            std::cerr << "\tFile 2: Element " << (l2 + 1) << " in Block " << file1.Block_Id(b)
                       << " nodes:\n";
             for (size_t l3 = 0; l3 < num_nodes_per_elmt; ++l3) {
               double x_val = x2_f[conn2[l3] - 1];
               double y_val = dim > 1 ? y2_f[conn2[l3] - 1] : 0.0;
               double z_val = dim > 2 ? z2_f[conn2[l3] - 1] : 0.0;
-              std::cout << "\t(" << l3 + 1 << ")\t" << conn2[l3] << "\t" << std::setprecision(9)
+              std::cerr << "\t(" << l3 + 1 << ")\t" << conn2[l3] << "\t" << std::setprecision(9)
                         << x_val << "\t" << y_val << "\t" << z_val << "\n";
             }
-            std::cout << "Coordinates compared using tolerance: " << interface.coord_tol.value
+            std::cerr << "Coordinates compared using tolerance: " << interface.coord_tol.value
                       << " (" << interface.coord_tol.typestr()
                       << "), floor: " << interface.coord_tol.floor << "\n";
             exit(1);
@@ -540,7 +540,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
 
         // Check that the element types are the same.
         if (num_nodes_per_elmt != block2->Num_Nodes_per_Elmt()) {
-          std::cout << "\nexodiff: ERROR: Files are different.\n"
+          std::cerr << "\nexodiff: ERROR: Files are different.\n"
                     << " In File 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                     << " has " << num_nodes_per_elmt << " and\n"
                     << " In File 2: Element " << (l2 + 1) << " in Block " << file2.Block_Id(b2)
@@ -574,7 +574,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
             }
           }
           if (!found) {
-            std::cout << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
+            std::cerr << "\nexodiff: ERROR: Cannot find a match for node at position " << ln1 + 1
                       << " in first element.\n"
                       << "\tFile 1: Element " << (i + 1) << " in Block " << file1.Block_Id(b)
                       << " nodes:\n";
@@ -582,19 +582,19 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
               double x_val = x1_f[conn1[l1] - 1];
               double y_val = dim > 1 ? y1_f[conn1[l1] - 1] : 0.0;
               double z_val = dim > 2 ? z1_f[conn1[l1] - 1] : 0.0;
-              std::cout << "\t(" << l1 + 1 << ")\t" << conn1[l1] << "\t" << std::setprecision(9)
+              std::cerr << "\t(" << l1 + 1 << ")\t" << conn1[l1] << "\t" << std::setprecision(9)
                         << x_val << "\t" << y_val << "\t" << z_val << "\n";
             }
-            std::cout << "\tFile 2: Element " << (l2 + 1) << " in Block " << file1.Block_Id(b)
+            std::cerr << "\tFile 2: Element " << (l2 + 1) << " in Block " << file1.Block_Id(b)
                       << " nodes:\n";
             for (size_t l3 = 0; l3 < num_nodes_per_elmt; ++l3) {
               double x_val = x2_f[conn2[l3] - 1];
               double y_val = dim > 1 ? y2_f[conn2[l3] - 1] : 0.0;
               double z_val = dim > 2 ? z2_f[conn2[l3] - 1] : 0.0;
-              std::cout << "\t(" << l3 + 1 << ")\t" << conn2[l3] << "\t" << std::setprecision(9)
+              std::cerr << "\t(" << l3 + 1 << ")\t" << conn2[l3] << "\t" << std::setprecision(9)
                         << x_val << "\t" << y_val << "\t" << z_val << "\n";
             }
-            std::cout << "Coordinates compared using tolerance: " << interface.coord_tol.value
+            std::cerr << "Coordinates compared using tolerance: " << interface.coord_tol.value
                       << " (" << interface.coord_tol.typestr()
                       << "), floor: " << interface.coord_tol.floor << "\n";
             exit(1);
@@ -680,7 +680,7 @@ namespace {
         map[id1[i]] = id2[i];
       }
       else {
-        std::cout << "exodiff: ERROR: Unable to match " << type << " " << file1_id_map[id1[i]]
+        std::cerr << "exodiff: ERROR: Unable to match " << type << " " << file1_id_map[id1[i]]
                   << " in first file with " << type << " in second file." << '\n';
         exit(1);
       }
@@ -868,7 +868,7 @@ namespace {
     // check that umnapped node counts are equal.  If not, output
     // message and exit.
     if (count_1 != count_2) {
-      std::cout << "exodiff: ERROR: Files are different (free node count in file1 is " << count_1
+      std::cerr << "exodiff: ERROR: Files are different (free node count in file1 is " << count_1
                 << " but file2 free node count is " << count_2 << ")" << '\n';
       exit(1);
     }
@@ -913,7 +913,7 @@ namespace {
 
     // Check that all nodes were matched.
     if (matched != count_1) {
-      std::cout << "exodiff: ERROR: Unable to match all free nodes in the model.  There are "
+      std::cerr << "exodiff: ERROR: Unable to match all free nodes in the model.  There are "
                 << count_1 - matched << " unmatched nodes remaining." << '\n';
       exit(1);
     }
@@ -977,7 +977,7 @@ namespace {
             double y2 = dim > 1 ? y[id[index]] : 0.0;
             double z2 = dim > 2 ? z[id[index]] : 0.0;
 
-            std::cout << "\nexodiff: ERROR - Two elements in file 2 have the "
+            std::cerr << "\nexodiff: ERROR - Two elements in file 2 have the "
                       << "same midpoint (within tolerance).\n"
                       << "\tLocal element  " << id[i] + 1 << " in block " << block_id << " at ("
                       << x1 << ", " << y1 << ", " << z1 << ") and\n"
@@ -1156,13 +1156,13 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
       if (node_id_map1[i] != node_id_map2[node_map[i]]) {
         if (!(node_id_map2[node_map[i]] == 0 &&
               partial_flag)) { // Don't output diff if non-matched and partial
-          std::cout << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
+          std::cerr << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
                     << node_id_map1[i] << " in file1 has the global id "
                     << node_id_map2[node_map[i]] << " in file2.\n";
           diff = true;
           warn_count++;
           if (warn_count > 100) {
-            std::cout << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+            std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
             break;
           }
         }
@@ -1175,13 +1175,13 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
       if (node_id_map1[i] != node_id_map2[i]) {
         if (!(node_id_map2[i] == 0 &&
               partial_flag)) { // Don't output diff if non-matched and partial
-          std::cout << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
+          std::cerr << "exodiff: WARNING .. The local node " << i + 1 << " with global id "
                     << node_id_map1[i] << " in file1 has the global id " << node_id_map2[i]
                     << " in file2.\n";
           diff = true;
           warn_count++;
           if (warn_count > 100) {
-            std::cout << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+            std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
             break;
           }
         }
@@ -1197,13 +1197,13 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
       if (elem_id_map1[i] != elem_id_map2[elmt_map[i]]) {
         if (!(elem_id_map2[elmt_map[i]] == 0 &&
               partial_flag)) { // Don't output diff if non-matched and partial
-          std::cout << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
+          std::cerr << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
                     << elem_id_map1[i] << " in file1 has the global id "
                     << elem_id_map2[elmt_map[i]] << " in file2.\n";
           diff = true;
           warn_count++;
           if (warn_count > 100) {
-            std::cout << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+            std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
             break;
           }
         }
@@ -1216,13 +1216,13 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
       if (elem_id_map1[i] != elem_id_map2[i]) {
         if (!(elem_id_map2[i] == 0 &&
               partial_flag)) { // Don't output diff if non-matched and partial
-          std::cout << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
+          std::cerr << "exodiff: WARNING .. The local element " << i + 1 << " with global id "
                     << elem_id_map1[i] << " in file1 has the global id " << elem_id_map2[i]
                     << " in file2.\n";
           diff = true;
           warn_count++;
           if (warn_count > 100) {
-            std::cout << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
+            std::cerr << "exodiff: WARNING .. Too many warnings, skipping remainder...\n";
             break;
           }
         }
