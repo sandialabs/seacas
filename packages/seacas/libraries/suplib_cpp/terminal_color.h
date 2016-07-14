@@ -132,7 +132,16 @@
       };
     };
 
-    std::ostream &operator<<(std::ostream &os, const Style &style)
+    static Style black(trmclr::Foreground::BLACK);
+    static Style red(trmclr::Foreground::RED);
+    static Style green(trmclr::Foreground::GREEN);
+    static Style yellow(trmclr::Foreground::YELLOW);
+    static Style blue(trmclr::Foreground::BLUE);
+    static Style magenta(trmclr::Foreground::MAGENTA);
+    static Style cyan(trmclr::Foreground::CYAN);
+    static Style normal(trmclr::Attribute::DEFAULT);
+
+    inline std::ostream &operator<<(std::ostream &os, const Style &style)
     {
       const uint32_t base    = 1 << STYLE_SHIFT;
       uint32_t       encoded = style / base;
