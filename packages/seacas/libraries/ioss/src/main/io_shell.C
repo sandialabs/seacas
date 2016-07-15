@@ -296,6 +296,17 @@ namespace {
       if (max_name_length > 0) {
         properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
       }
+
+      // Get integer size being used on the input file and propgate
+      // to output file...
+      int int_byte_size_api = dbi->int_byte_size_api();
+      if (!properties.exists("INTEGER_SIZE_API")) {
+	properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
+	properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
+      }
+      if (int_byte_size_api == 8) {
+	interface.ints_64_bit = true;
+      }
       //========================================================================
       // OUTPUT ...
       //========================================================================
