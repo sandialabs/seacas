@@ -1,5 +1,5 @@
-#ifndef IOSS__TRMCLR_H__
-#define IOSS__TRMCLR_H__
+#ifndef __TRMCLR_H__
+#define __TRMCLR_H__
 
 // Copyright (c) 2016 Camille Brugel
 //
@@ -52,7 +52,6 @@
 // */
 // `
 
-namespace Ioss {
   namespace trmclr {
 
     struct Style
@@ -73,13 +72,13 @@ namespace Ioss {
       static const uint32_t SHIFT = STYLE_SHIFT * ATTRIBUTE;
 
       enum {
-        DEFAULT     = 0x001 << SHIFT,
-        BOLD        = 0x002 << SHIFT,
-        DIM         = 0x004 << SHIFT,
-        UNDERLINED  = 0x010 << SHIFT,
-        BLINK       = 0x020 << SHIFT,
-        REVERSE     = 0x080 << SHIFT,
-        HIDDEN      = 0x100 << SHIFT
+        DEFAULT    = 0x01 << SHIFT,
+        BOLD       = 0x02 << SHIFT,
+        DIM        = 0x04 << SHIFT,
+        UNDERLINED = 0x08 << SHIFT,
+        BLINK      = 0x10 << SHIFT,
+        REVERSE    = 0x20 << SHIFT,
+        HIDDEN     = 0x40 << SHIFT
       };
     };
 
@@ -133,16 +132,16 @@ namespace Ioss {
       };
     };
 
-    Style black(Ioss::trmclr::Foreground::BLACK);
-    Style red(Ioss::trmclr::Foreground::RED);
-    Style green(Ioss::trmclr::Foreground::GREEN);
-    Style yellow(Ioss::trmclr::Foreground::YELLOW);
-    Style blue(Ioss::trmclr::Foreground::BLUE);
-    Style magenta(Ioss::trmclr::Foreground::MAGENTA);
-    Style cyan(Ioss::trmclr::Foreground::CYAN);
-    Style normal(Ioss::trmclr::Attribute::DEFAULT);
-    
-    std::ostream &operator<<(std::ostream &os, const Style &style)
+    static Style black(trmclr::Foreground::BLACK);
+    static Style red(trmclr::Foreground::RED);
+    static Style green(trmclr::Foreground::GREEN);
+    static Style yellow(trmclr::Foreground::YELLOW);
+    static Style blue(trmclr::Foreground::BLUE);
+    static Style magenta(trmclr::Foreground::MAGENTA);
+    static Style cyan(trmclr::Foreground::CYAN);
+    static Style normal(trmclr::Attribute::DEFAULT);
+
+    inline std::ostream &operator<<(std::ostream &os, const Style &style)
     {
       const uint32_t base    = 1 << STYLE_SHIFT;
       uint32_t       encoded = style / base;
@@ -167,5 +166,4 @@ namespace Ioss {
     }
 
   } // end trmclr namespace
-} // end Ioss namespace
 #endif // end __TRMCLR_H__
