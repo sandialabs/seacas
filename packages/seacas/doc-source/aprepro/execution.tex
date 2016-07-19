@@ -9,12 +9,12 @@ aprepro [--parameters] [-dsviehMWCq] [-I path] [-c char] [var=val] filein fileou
 The effects of the parameters are:
 \begin{longtable}{lp{5.0in}}
 --debug (-d) &  Dump all variables, debug loops/if/endif \\
---statistics (-s) &  Print hash statistics at end of run    \\  
 --version (-v) &  Print version number to stderr           \\
 --comment char (-c char) &  Change comment character to 'char'       \\
 --immutable (-X) &  All variables are immutable--cannot be modified \\
 --interactive (-i) &  Interactive use, no buffering of output.       \\
 --include path (-I path) &  Include file or include path             \\
+--one\_based\_index (-1) & Array indexing is one-based (default = zero-based) \\
 --exit\_on (-e) &  If this is enabled, \aprepro{} will exit when any of the strings 
 EXIT, Exit, exit, QUIT, Quit, or quit are entered. Otherwise, \aprepro{} will exit at end of 
 file. \\
@@ -29,7 +29,8 @@ the value of a variable and change it between runs without editing the
 input file.  Multiple \textit{var=val} pairs can be specified on the
 command line.  A variable that is defined on the command line will be
 an immutable variable whose value cannot be changed\footnote{Unless
-the variable name begins with an underscore.}.  \\
+the variable name begins with an underscore.}.  If \var{var} is a string variable, then
+\var{val} needs to be surrounded by escaped double quotes. For example \cmd{name=\textbackslash{}"My\textbackslash Name\textbackslash{}"} will define the string variable \var{name}.\footnote{Note that any spaces in the string variables value must be escaped also.}\\
 
 input\_file &  specifies  the  file  that  contains  the \aprepro{} input. If this parameter is
 omitted, \aprepro{} will run interactively. \\
