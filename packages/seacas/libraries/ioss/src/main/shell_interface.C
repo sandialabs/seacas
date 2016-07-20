@@ -197,10 +197,10 @@ void IOShell::Interface::enroll_options()
       "EXPERIMENTAL: file written to memory, netcdf library streams to disk at file close",
       nullptr);
 
-  options_.enroll(
-      "native_variable_names", Ioss::GetLongOption::NoValue,
-      "Do not lowercase variable names and replace spaces with underscores. Variable names are left as they appear in the input mesh file",
-      nullptr);
+  options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
+                  "Do not lowercase variable names and replace spaces with underscores. Variable "
+                  "names are left as they appear in the input mesh file",
+                  nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
                   nullptr);
