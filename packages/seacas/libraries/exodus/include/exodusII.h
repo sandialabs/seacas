@@ -95,170 +95,181 @@ extern "C" {
 #define EX_FALSE 0 
 #endif
 
-  /**
-   * \defgroup FileVars Variables controlling the file creation mode.
-   *@{
-   */
-  /* Modes for ex_open */
-#define EX_WRITE                0x0001 /**< ex_open(): open existing file for appending. */
-#define EX_READ                 0x0002 /**< ex_open(): open file for reading (default) */
+/**
+ * \defgroup FileVars Variables controlling the file creation mode.
+ *@{
+ */
+/* Modes for ex_open */
+#define EX_WRITE 0x0001 /**< ex_open(): open existing file for appending. */
+#define EX_READ 0x0002  /**< ex_open(): open file for reading (default) */
 
-#define EX_NOCLOBBER            0x0004 /**< Don't overwrite existing database, default */
-#define EX_CLOBBER              0x0008 /**< Overwrite existing database if it exists */
-#define EX_NORMAL_MODEL         0x0010 /**< disable mods that permit storage of larger models */
-#define EX_64BIT_OFFSET         0x0020 /**< enable mods that permit storage of larger models */
-#define EX_LARGE_MODEL          EX_64BIT_OFFSET /**< enable mods that permit storage of larger models */
-#define EX_64BIT_DATA           0x400000 /**< CDF-5 format: classic model but 64 bit dimensions and sizes */
-#define EX_NETCDF4              0x0040 /**< use the hdf5-based netcdf4 output */
-#define EX_NOSHARE              0x0080  /**< Do not open netcdf file in "share" mode */
-#define EX_SHARE                0x0100 /**< Do open netcdf file in "share" mode */
-#define EX_NOCLASSIC            0x0200 /**< Do not force netcdf to classic mode in netcdf4 mode */
+#define EX_NOCLOBBER 0x0004            /**< Don't overwrite existing database, default */
+#define EX_CLOBBER 0x0008              /**< Overwrite existing database if it exists */
+#define EX_NORMAL_MODEL 0x0010         /**< disable mods that permit storage of larger models */
+#define EX_64BIT_OFFSET 0x0020         /**< enable mods that permit storage of larger models */
+#define EX_LARGE_MODEL EX_64BIT_OFFSET /**< enable mods that permit storage of larger models */
+#define EX_64BIT_DATA 0x400000 /**< CDF-5 format: classic model but 64 bit dimensions and sizes */
+#define EX_NETCDF4 0x0040      /**< use the hdf5-based netcdf4 output */
+#define EX_NOSHARE 0x0080      /**< Do not open netcdf file in "share" mode */
+#define EX_SHARE 0x0100        /**< Do open netcdf file in "share" mode */
+#define EX_NOCLASSIC 0x0200    /**< Do not force netcdf to classic mode in netcdf4 mode */
 
-#define EX_DISKLESS             0x100000 /**< Experimental */
-#define EX_MMAP                 0x200000 /**< Experimental */
+#define EX_DISKLESS 0x100000 /**< Experimental */
+#define EX_MMAP 0x200000     /**< Experimental */
 
-  /* Need to distinguish between storage on database (DB in name) and
-     passed through the API functions (API in name).
-  */
-#define EX_MAPS_INT64_DB        0x0400 /**< All maps (id, order, ...) store int64_t values */
-#define EX_IDS_INT64_DB         0x0800 /**< All entity ids (sets, blocks, maps) are int64_t values */
-#define EX_BULK_INT64_DB        0x1000 /**< All integer bulk data (local indices, counts, maps); not ids */
-#define EX_ALL_INT64_DB         (EX_MAPS_INT64_DB|EX_IDS_INT64_DB|EX_BULK_INT64_DB) /**< All of the above... */
+/* Need to distinguish between storage on database (DB in name) and
+   passed through the API functions (API in name).
+*/
+#define EX_MAPS_INT64_DB 0x0400 /**< All maps (id, order, ...) store int64_t values */
+#define EX_IDS_INT64_DB 0x0800  /**< All entity ids (sets, blocks, maps) are int64_t values */
+#define EX_BULK_INT64_DB                                                                           \
+  0x1000 /**< All integer bulk data (local indices, counts, maps); not ids                         \
+            */
+#define EX_ALL_INT64_DB                                                                            \
+  (EX_MAPS_INT64_DB | EX_IDS_INT64_DB | EX_BULK_INT64_DB) /**< All of the above... */
 
-#define EX_MAPS_INT64_API       0x2000 /**< All maps (id, order, ...) store int64_t values */
-#define EX_IDS_INT64_API        0x4000 /**< All entity ids (sets, blocks, maps) are int64_t values */
-#define EX_BULK_INT64_API       0x8000 /**< All integer bulk data (local indices, counts, maps); not ids */
-#define EX_INQ_INT64_API       0x10000 /**< Integers passed to/from ex_inquire are int64_t */
-#define EX_ALL_INT64_API        (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API|EX_INQ_INT64_API) /**< All of the above... */
+#define EX_MAPS_INT64_API 0x2000 /**< All maps (id, order, ...) store int64_t values */
+#define EX_IDS_INT64_API 0x4000  /**< All entity ids (sets, blocks, maps) are int64_t values */
+#define EX_BULK_INT64_API                                                                          \
+  0x8000 /**< All integer bulk data (local indices, counts, maps); not ids */
+#define EX_INQ_INT64_API 0x10000 /**< Integers passed to/from ex_inquire are int64_t */
+#define EX_ALL_INT64_API                                                                           \
+  (EX_MAPS_INT64_API | EX_IDS_INT64_API | EX_BULK_INT64_API |                                      \
+   EX_INQ_INT64_API) /**< All of the above... */
 
-  /* Parallel IO mode flags... */
-#define EX_MPIIO               0x20000
-#define EX_MPIPOSIX            0x40000  /**< \deprecated As of libhdf5 1.8.13. */
-#define EX_PNETCDF             0x80000
-  
-  /*@}*/
-  
-  /*! \sa ex_inquire() */
-  enum ex_inquiry {
-    EX_INQ_FILE_TYPE       =  1,     /**< inquire EXODUS II file type*/
-    EX_INQ_API_VERS        =  2,     /**< inquire API version number */
-    EX_INQ_DB_VERS         =  3,     /**< inquire database version number */
-    EX_INQ_TITLE           =  4,     /**< inquire database title     */
-    EX_INQ_DIM             =  5,     /**< inquire number of dimensions */
-    EX_INQ_NODES           =  6,     /**< inquire number of nodes    */
-    EX_INQ_ELEM            =  7,     /**< inquire number of elements */
-    EX_INQ_ELEM_BLK        =  8,     /**< inquire number of element blocks */
-    EX_INQ_NODE_SETS       =  9,     /**< inquire number of node sets*/
-    EX_INQ_NS_NODE_LEN     = 10,     /**< inquire length of node set node list */
-    EX_INQ_SIDE_SETS       = 11,     /**< inquire number of side sets*/
-    EX_INQ_SS_NODE_LEN     = 12,     /**< inquire length of side set node list */
-    EX_INQ_SS_ELEM_LEN     = 13,     /**< inquire length of side set element list */
-    EX_INQ_QA              = 14,     /**< inquire number of QA records */
-    EX_INQ_INFO            = 15,     /**< inquire number of info records */
-    EX_INQ_TIME            = 16,     /**< inquire number of time steps in the database */
-    EX_INQ_EB_PROP         = 17,     /**< inquire number of element block properties */
-    EX_INQ_NS_PROP         = 18,     /**< inquire number of node set properties */
-    EX_INQ_SS_PROP         = 19,     /**< inquire number of side set properties */
-    EX_INQ_NS_DF_LEN       = 20,     /**< inquire length of node set distribution factor list*/
-    EX_INQ_SS_DF_LEN       = 21,     /**< inquire length of side set distribution factor list*/
-    EX_INQ_LIB_VERS        = 22,     /**< inquire API Lib vers number*/
-    EX_INQ_EM_PROP         = 23,     /**< inquire number of element map properties */
-    EX_INQ_NM_PROP         = 24,     /**< inquire number of node map properties */
-    EX_INQ_ELEM_MAP        = 25,     /**< inquire number of element maps */
-    EX_INQ_NODE_MAP        = 26,     /**< inquire number of node maps*/
-    EX_INQ_EDGE            = 27,     /**< inquire number of edges    */
-    EX_INQ_EDGE_BLK        = 28,     /**< inquire number of edge blocks */
-    EX_INQ_EDGE_SETS       = 29,     /**< inquire number of edge sets   */
-    EX_INQ_ES_LEN          = 30,     /**< inquire length of concat edge set edge list       */
-    EX_INQ_ES_DF_LEN       = 31,     /**< inquire length of concat edge set dist factor list*/
-    EX_INQ_EDGE_PROP       = 32,     /**< inquire number of properties stored per edge block    */
-    EX_INQ_ES_PROP         = 33,     /**< inquire number of properties stored per edge set      */
-    EX_INQ_FACE            = 34,     /**< inquire number of faces */
-    EX_INQ_FACE_BLK        = 35,     /**< inquire number of face blocks */
-    EX_INQ_FACE_SETS       = 36,     /**< inquire number of face sets */
-    EX_INQ_FS_LEN          = 37,     /**< inquire length of concat face set face list */
-    EX_INQ_FS_DF_LEN       = 38,     /**< inquire length of concat face set dist factor list*/
-    EX_INQ_FACE_PROP       = 39,     /**< inquire number of properties stored per face block */
-    EX_INQ_FS_PROP         = 40,     /**< inquire number of properties stored per face set */
-    EX_INQ_ELEM_SETS       = 41,     /**< inquire number of element sets */
-    EX_INQ_ELS_LEN         = 42,     /**< inquire length of concat element set element list       */
-    EX_INQ_ELS_DF_LEN      = 43,     /**< inquire length of concat element set dist factor list*/
-    EX_INQ_ELS_PROP        = 44,     /**< inquire number of properties stored per elem set      */
-    EX_INQ_EDGE_MAP        = 45,     /**< inquire number of edge maps                     */
-    EX_INQ_FACE_MAP        = 46,     /**< inquire number of face maps                     */
-    EX_INQ_COORD_FRAMES    = 47,     /**< inquire number of coordinate frames */
-    EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH  = 48,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
-    EX_INQ_DB_MAX_USED_NAME_LENGTH  = 49,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
-    EX_INQ_MAX_READ_NAME_LENGTH = 50,     /**< inquire client-specified max size of returned names */
+/* Parallel IO mode flags... */
+#define EX_MPIIO 0x20000
+#define EX_MPIPOSIX 0x40000 /**< \deprecated As of libhdf5 1.8.13. */
+#define EX_PNETCDF 0x80000
 
-    EX_INQ_DB_FLOAT_SIZE = 51,      /**< inquire size of floating-point values stored on database */
-    EX_INQ_NUM_CHILD_GROUPS= 52,     /**< inquire number of groups contained in this (exoid) group */
-    EX_INQ_GROUP_PARENT    = 53,     /**< inquire id of parent of this (exoid) group; returns exoid if at root */
-    EX_INQ_GROUP_ROOT      = 54,     /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
-    EX_INQ_GROUP_NAME_LEN  = 55,     /**< inquire length of name of group exoid */
-    EX_INQ_GROUP_NAME      = 56,     /**< inquire name of group exoid. "/" returned for root group */
-    EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
-    EX_INQ_FULL_GROUP_NAME = 58,     /**< inquire full "/"-separated path name of this (exoid) group */
-    EX_INQ_INVALID         = -1};
+/*@}*/
 
-  typedef enum ex_inquiry ex_inquiry;
-  
-  /* Options */
-  /**
-   * \defgroup FileOptions Variables controlling the compression, name size, and integer size.
-   *@{
-   */
-  /* Modes for ex_open */
-  /*! \sa ex_set_option() */
-  enum ex_option_type {
-    EX_OPT_MAX_NAME_LENGTH = 1,
-    EX_OPT_COMPRESSION_TYPE,     /* Currently not used. GZip by default */
-    EX_OPT_COMPRESSION_LEVEL,    /* 0 (disabled/fastest) ... 9 (best/slowest) */
-    EX_OPT_COMPRESSION_SHUFFLE,  /* 0 (disabled); 1 (enabled) */
-    EX_OPT_INTEGER_SIZE_API,     /* See *_INT64_* values above */
-    EX_OPT_INTEGER_SIZE_DB /* (query only) */
-  };
-  typedef enum ex_option_type ex_option_type;
-  /*@}*/
-  
-  enum ex_entity_type {
-    EX_NODAL       = 14,          /**< nodal "block" for variables*/
-    EX_NODE_BLOCK  = 14,          /**< alias for EX_NODAL         */
-    EX_NODE_SET    =  2,          /**< node set property code     */
-    EX_EDGE_BLOCK  =  6,          /**< edge block property code   */
-    EX_EDGE_SET    =  7,          /**< edge set property code     */
-    EX_FACE_BLOCK  =  8,          /**< face block property code   */
-    EX_FACE_SET    =  9,          /**< face set property code     */
-    EX_ELEM_BLOCK  =  1,          /**< element block property code*/
-    EX_ELEM_SET    = 10,          /**< face set property code     */
-    
-    EX_SIDE_SET    =  3,          /**< side set property code     */
-    
-    EX_ELEM_MAP    =  4,          /**< element map property code  */
-    EX_NODE_MAP    =  5,          /**< node map property code     */
-    EX_EDGE_MAP    = 11,          /**< edge map property code     */
-    EX_FACE_MAP    = 12,          /**< face map property code     */
-    
-    EX_GLOBAL      = 13,          /**< global "block" for variables*/
-    EX_COORDINATE  = 15,          /**< kluge so some internal wrapper functions work */
-    EX_INVALID     = -1};             
-  typedef enum ex_entity_type ex_entity_type;
-  
-  /**
-   * ex_opts() function codes - codes are OR'ed into exopts
-   */
-  enum ex_options {
-    EX_DEFAULT  = 0,
-    EX_VERBOSE  = 1,  /**< verbose mode message flag   */
-    EX_DEBUG    = 2,  /**< debug mode def             */
-    EX_ABORT    = 4,   /**< abort mode flag def        */
-    EX_NULLVERBOSE = 8 /**< verbose mode for null entity detection warning */
-  };
-  typedef enum ex_options ex_options;
-  
-  /** The value used to indicate that an entity (block, nset, sset)
-      has not had its id set to a valid value
-  */
+/*! \sa ex_inquire() */
+enum ex_inquiry {
+  EX_INQ_FILE_TYPE    = 1,  /**< inquire EXODUS II file type*/
+  EX_INQ_API_VERS     = 2,  /**< inquire API version number */
+  EX_INQ_DB_VERS      = 3,  /**< inquire database version number */
+  EX_INQ_TITLE        = 4,  /**< inquire database title     */
+  EX_INQ_DIM          = 5,  /**< inquire number of dimensions */
+  EX_INQ_NODES        = 6,  /**< inquire number of nodes    */
+  EX_INQ_ELEM         = 7,  /**< inquire number of elements */
+  EX_INQ_ELEM_BLK     = 8,  /**< inquire number of element blocks */
+  EX_INQ_NODE_SETS    = 9,  /**< inquire number of node sets*/
+  EX_INQ_NS_NODE_LEN  = 10, /**< inquire length of node set node list */
+  EX_INQ_SIDE_SETS    = 11, /**< inquire number of side sets*/
+  EX_INQ_SS_NODE_LEN  = 12, /**< inquire length of side set node list */
+  EX_INQ_SS_ELEM_LEN  = 13, /**< inquire length of side set element list */
+  EX_INQ_QA           = 14, /**< inquire number of QA records */
+  EX_INQ_INFO         = 15, /**< inquire number of info records */
+  EX_INQ_TIME         = 16, /**< inquire number of time steps in the database */
+  EX_INQ_EB_PROP      = 17, /**< inquire number of element block properties */
+  EX_INQ_NS_PROP      = 18, /**< inquire number of node set properties */
+  EX_INQ_SS_PROP      = 19, /**< inquire number of side set properties */
+  EX_INQ_NS_DF_LEN    = 20, /**< inquire length of node set distribution factor list*/
+  EX_INQ_SS_DF_LEN    = 21, /**< inquire length of side set distribution factor list*/
+  EX_INQ_LIB_VERS     = 22, /**< inquire API Lib vers number*/
+  EX_INQ_EM_PROP      = 23, /**< inquire number of element map properties */
+  EX_INQ_NM_PROP      = 24, /**< inquire number of node map properties */
+  EX_INQ_ELEM_MAP     = 25, /**< inquire number of element maps */
+  EX_INQ_NODE_MAP     = 26, /**< inquire number of node maps*/
+  EX_INQ_EDGE         = 27, /**< inquire number of edges    */
+  EX_INQ_EDGE_BLK     = 28, /**< inquire number of edge blocks */
+  EX_INQ_EDGE_SETS    = 29, /**< inquire number of edge sets   */
+  EX_INQ_ES_LEN       = 30, /**< inquire length of concat edge set edge list       */
+  EX_INQ_ES_DF_LEN    = 31, /**< inquire length of concat edge set dist factor list*/
+  EX_INQ_EDGE_PROP    = 32, /**< inquire number of properties stored per edge block    */
+  EX_INQ_ES_PROP      = 33, /**< inquire number of properties stored per edge set      */
+  EX_INQ_FACE         = 34, /**< inquire number of faces */
+  EX_INQ_FACE_BLK     = 35, /**< inquire number of face blocks */
+  EX_INQ_FACE_SETS    = 36, /**< inquire number of face sets */
+  EX_INQ_FS_LEN       = 37, /**< inquire length of concat face set face list */
+  EX_INQ_FS_DF_LEN    = 38, /**< inquire length of concat face set dist factor list*/
+  EX_INQ_FACE_PROP    = 39, /**< inquire number of properties stored per face block */
+  EX_INQ_FS_PROP      = 40, /**< inquire number of properties stored per face set */
+  EX_INQ_ELEM_SETS    = 41, /**< inquire number of element sets */
+  EX_INQ_ELS_LEN      = 42, /**< inquire length of concat element set element list       */
+  EX_INQ_ELS_DF_LEN   = 43, /**< inquire length of concat element set dist factor list*/
+  EX_INQ_ELS_PROP     = 44, /**< inquire number of properties stored per elem set      */
+  EX_INQ_EDGE_MAP     = 45, /**< inquire number of edge maps                     */
+  EX_INQ_FACE_MAP     = 46, /**< inquire number of face maps                     */
+  EX_INQ_COORD_FRAMES = 47, /**< inquire number of coordinate frames */
+  EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH =
+      48,                              /**< inquire size of MAX_NAME_LENGTH dimension on database */
+  EX_INQ_DB_MAX_USED_NAME_LENGTH = 49, /**< inquire size of MAX_NAME_LENGTH dimension on database */
+  EX_INQ_MAX_READ_NAME_LENGTH    = 50, /**< inquire client-specified max size of returned names */
+
+  EX_INQ_DB_FLOAT_SIZE    = 51, /**< inquire size of floating-point values stored on database */
+  EX_INQ_NUM_CHILD_GROUPS = 52, /**< inquire number of groups contained in this (exoid) group */
+  EX_INQ_GROUP_PARENT =
+      53, /**< inquire id of parent of this (exoid) group; returns exoid if at root */
+  EX_INQ_GROUP_ROOT =
+      54, /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
+  EX_INQ_GROUP_NAME_LEN      = 55, /**< inquire length of name of group exoid */
+  EX_INQ_GROUP_NAME          = 56, /**< inquire name of group exoid. "/" returned for root group */
+  EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
+  EX_INQ_FULL_GROUP_NAME = 58, /**< inquire full "/"-separated path name of this (exoid) group */
+  EX_INQ_INVALID         = -1
+};
+
+typedef enum ex_inquiry ex_inquiry;
+
+/* Options */
+/**
+ * \defgroup FileOptions Variables controlling the compression, name size, and integer size.
+ *@{
+ */
+/* Modes for ex_open */
+/*! \sa ex_set_option() */
+enum ex_option_type {
+  EX_OPT_MAX_NAME_LENGTH = 1,
+  EX_OPT_COMPRESSION_TYPE,    /* Currently not used. GZip by default */
+  EX_OPT_COMPRESSION_LEVEL,   /* 0 (disabled/fastest) ... 9 (best/slowest) */
+  EX_OPT_COMPRESSION_SHUFFLE, /* 0 (disabled); 1 (enabled) */
+  EX_OPT_INTEGER_SIZE_API,    /* See *_INT64_* values above */
+  EX_OPT_INTEGER_SIZE_DB      /* (query only) */
+};
+typedef enum ex_option_type ex_option_type;
+/*@}*/
+
+enum ex_entity_type {
+  EX_NODAL      = 14, /**< nodal "block" for variables*/
+  EX_NODE_BLOCK = 14, /**< alias for EX_NODAL         */
+  EX_NODE_SET   = 2,  /**< node set property code     */
+  EX_EDGE_BLOCK = 6,  /**< edge block property code   */
+  EX_EDGE_SET   = 7,  /**< edge set property code     */
+  EX_FACE_BLOCK = 8,  /**< face block property code   */
+  EX_FACE_SET   = 9,  /**< face set property code     */
+  EX_ELEM_BLOCK = 1,  /**< element block property code*/
+  EX_ELEM_SET   = 10, /**< face set property code     */
+
+  EX_SIDE_SET = 3, /**< side set property code     */
+
+  EX_ELEM_MAP = 4,  /**< element map property code  */
+  EX_NODE_MAP = 5,  /**< node map property code     */
+  EX_EDGE_MAP = 11, /**< edge map property code     */
+  EX_FACE_MAP = 12, /**< face map property code     */
+
+  EX_GLOBAL     = 13, /**< global "block" for variables*/
+  EX_COORDINATE = 15, /**< kluge so some internal wrapper functions work */
+  EX_INVALID    = -1
+};
+typedef enum ex_entity_type ex_entity_type;
+
+/**
+ * ex_opts() function codes - codes are OR'ed into exopts
+ */
+enum ex_options {
+  EX_DEFAULT     = 0,
+  EX_VERBOSE     = 1, /**< verbose mode message flag   */
+  EX_DEBUG       = 2, /**< debug mode def             */
+  EX_ABORT       = 4, /**< abort mode flag def        */
+  EX_NULLVERBOSE = 8  /**< verbose mode for null entity detection warning */
+};
+typedef enum ex_options ex_options;
+
+/** The value used to indicate that an entity (block, nset, sset)
+    has not had its id set to a valid value
+*/
 #define EX_INVALID_ID -1
 
   /**
@@ -611,7 +622,7 @@ EXODUS_EXPORT int ex_large_model(int exoid);
 EXODUS_EXPORT size_t ex_header_size(int exoid);
 
 EXODUS_EXPORT void ex_err(const char *module_name, const char *message, int err_num);
-EXODUS_EXPORT const char* ex_strerror(int err_num);
+EXODUS_EXPORT const char *ex_strerror(int err_num);
 EXODUS_EXPORT void ex_get_err(const char **msg, const char **func, int *err_num);
 EXODUS_EXPORT int ex_opts(int options);
 EXODUS_EXPORT int ex_inquire(int exoid, int req_info, void_int * /*ret_int*/, float * /*ret_float*/,
