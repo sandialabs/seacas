@@ -115,20 +115,7 @@ int main(int argc, char *argv[])
   OUTPUT << '\n';
 
   double begin = timer();
-  if (argc > 2) {
-    file_copy(in_file, out_file);
-  }
-  else {
-    Ioss::PropertyManager properties;
-    Ioss::DatabaseIO *    dbi = Ioss::IOFactory::create("cgns", in_file, Ioss::READ_MODEL,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
-    if (dbi == nullptr || !dbi->ok(true)) {
-      std::exit(EXIT_FAILURE);
-    }
-
-    // NOTE: 'region' owns 'db' pointer at this time...
-    Ioss::Region region(dbi, "region_1");
-  }
+  file_copy(in_file, out_file);
   double end = timer();
 
   OUTPUT << "\n\tElapsed time = " << end - begin << " seconds.\n";
@@ -151,7 +138,9 @@ namespace {
     }
 
     // NOTE: 'region' owns 'db' pointer at this time...
+    std::cerr << "Creating Region\n";
     Ioss::Region region(dbi, "region_1");
+    std::cerr << "Region Created\n";
 
     //========================================================================
     // OUTPUT ...
