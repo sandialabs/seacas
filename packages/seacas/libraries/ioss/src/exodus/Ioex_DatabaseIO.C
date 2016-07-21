@@ -989,6 +989,7 @@ namespace Ioex {
 
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
+	std::cerr << "LowerCaseVariableNames: " << lowerCaseVariableNames << "\n";
         for (int i = 0; i < nvar; i++) {
           if (lowerCaseVariableNames) {
             Ioss::Utils::fixup_name(names[i]);

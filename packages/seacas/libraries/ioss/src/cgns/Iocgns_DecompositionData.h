@@ -83,7 +83,9 @@ namespace Iocgns {
     DecompositionDataBase(MPI_Comm comm) : m_comm(comm), m_myProcessor(0), m_processorCount(0) {}
 
     virtual ~DecompositionDataBase() {}
-    virtual void decompose_model(int filePtr) = 0;
+    virtual void decompose_model(int filePtr,
+				 Ioss::Region &region,
+				 CG_ZoneType_t common_zone_type) = 0;
     virtual size_t ioss_node_count() const    = 0;
     virtual size_t ioss_elem_count() const    = 0;
     virtual int    int_size() const           = 0;
@@ -139,7 +141,9 @@ namespace Iocgns {
 
     int int_size() const { return sizeof(INT); }
 
-    void decompose_model(int filePtr);
+    void decompose_model(int filePtr,
+			 Ioss::Region &region,
+			 CG_ZoneType_t common_zone_type);
 
     int spatial_dimension() const { return m_decomposition.m_spatialDimension; }
 
@@ -189,6 +193,9 @@ namespace Iocgns {
                                   INT *data) const;
 
   private:
+    void decompose_structured(int filePtr, Ioss::Region &region);
+    void decompose_unstructured(int filePtr);
+
     void get_sideset_data(int filePtr);
     void generate_zone_shared_nodes(int filePtr, INT min_node, INT max_node);
 
