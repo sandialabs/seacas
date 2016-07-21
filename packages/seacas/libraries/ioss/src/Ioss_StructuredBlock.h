@@ -48,11 +48,11 @@ namespace Ioss {
   struct ZoneConnectivity
   {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const std::array<int, 3> transform,
+                     int donor_zone, const std::array<int, 3> p_transform,
                      const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
 		     const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end) 
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(transform)), m_rangeBeg(std::move(range_beg)),m_rangeEnd(std::move(range_end)),
+          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),m_rangeEnd(std::move(range_end)),
           m_donorRangeBeg(std::move(donor_beg)), m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
     }

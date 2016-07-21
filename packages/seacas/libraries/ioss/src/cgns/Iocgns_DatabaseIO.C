@@ -787,7 +787,7 @@ namespace Iocgns {
     cgsize_t              base = sb->get_property("base").get_int();
     cgsize_t              zone = sb->get_property("zone").get_int();
 
-    size_t num_to_get = field.verify(data_size);
+    cgsize_t num_to_get = field.verify(data_size);
 
     cgsize_t rmin[3] = {1, 1, 1};
     cgsize_t rmax[3];
@@ -828,8 +828,6 @@ namespace Iocgns {
         cgsize_t cell_dimension = 0;
         cgsize_t phys_dimension = 0;
         cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
-
-        double *rdata = static_cast<double *>(data);
 
         // Data required by upper classes store x0, y0, z0, ... xn,
         // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
@@ -1011,6 +1009,12 @@ namespace Iocgns {
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock * /* eb */,
+                                         const Ioss::Field & /* field */, void * /* data */,
+                                         size_t /* data_size */) const
+  {
+    return -1;
+  }
+  int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock * /* sb */,
                                          const Ioss::Field & /* field */, void * /* data */,
                                          size_t /* data_size */) const
   {

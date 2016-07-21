@@ -301,8 +301,7 @@ namespace Ioss {
           block->field_describe(Ioss::Field::TRANSIENT, &names);
         }
         uniqify(names);
-        strm << " Number of structured block vars  =" << std::setw(12) << names.size()
-             << "\n";
+        strm << " Number of structured block vars  =" << std::setw(12) << names.size() << "\n";
       }
 
       {
