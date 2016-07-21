@@ -48,7 +48,8 @@ IOShell::Interface::Interface()
     : compose_output("none"), maximum_time(0.0), minimum_time(0.0), surface_split_type(1),
       compression_level(0), shuffle(false), debug(false), statistics(false),
       do_transform_fields(false), ints_64_bit(false), reals_32_bit(false), netcdf4(false),
-      in_memory_read(false), in_memory_write(false), fieldSuffixSeparator('_')
+      in_memory_read(false), in_memory_write(false), lower_case_variable_names(true),
+      fieldSuffixSeparator('_')
 {
   enroll_options();
 }
@@ -93,6 +94,7 @@ void IOShell::Interface::enroll_options()
                   "Specify the hdf5 compression level [0..9] to be used on the output file.",
                   nullptr);
 
+#if defined(PARALLEL_AWARE_EXODUS)
   options_.enroll(
       "compose", Ioss::GetLongOption::MandatoryValue,
       "Specify the parallel-io method to be used to output a single file in a parallel run. "
@@ -143,6 +145,7 @@ void IOShell::Interface::enroll_options()
                   "elements assigned randomly to processors in a way that preserves balance (do "
                   "not use for a real run)",
                   nullptr);
+#endif
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
@@ -178,6 +181,11 @@ void IOShell::Interface::enroll_options()
       "memory_write", Ioss::GetLongOption::NoValue,
       "EXPERIMENTAL: file written to memory, netcdf library streams to disk at file close",
       nullptr);
+
+  options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
+                  "Do not lowercase variable names and replace spaces with underscores. Variable "
+                  "names are left as they appear in the input mesh file",
+                  nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
                   nullptr);
@@ -234,6 +242,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     }
   }
 
+#if defined(PARALLEL_AWARE_EXODUS)
   if (options_.retrieve("rcb") != nullptr) {
     decomp_method = "RCB";
   }
@@ -269,6 +278,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   if (options_.retrieve("random") != nullptr) {
     decomp_method = "RANDOM";
   }
+#endif
 
   if (options_.retrieve("external") != nullptr) {
     decomp_method = "EXTERNAL";
@@ -290,6 +300,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     in_memory_write = true;
   }
 
+  if (options_.retrieve("native_variable_names") != nullptr) {
+    lower_case_variable_names = false;
+  }
+
   {
     const char *temp = options_.retrieve("in_type");
     if (temp != nullptr) {
@@ -304,12 +318,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     }
   }
 
+#if defined(PARALLEL_AWARE_EXODUS)
   {
     const char *temp = options_.retrieve("compose");
     if (temp != nullptr) {
       compose_output = Ioss::Utils::lowercase(temp);
     }
   }
+#endif
 
   {
     const char *temp = options_.retrieve("extract_group");

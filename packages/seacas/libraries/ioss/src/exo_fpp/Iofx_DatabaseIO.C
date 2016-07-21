@@ -315,6 +315,10 @@ namespace Iofx {
       assert(exodusFilePtr >= 0);
       // Check byte-size of integers stored on the database...
       if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
+        if (myProcessor == 0) {
+          std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
+                       "integers.\n";
+        }
         ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
@@ -733,9 +737,9 @@ namespace Iofx {
     // Get global data (over all processors)
     int64_t global_nodes    = nodeCount;
     int64_t global_elements = elementCount;
-    int     global_eblocks  = 0; // unused
-    int     global_nsets    = 0; // unused
-    int     global_ssets    = 0; // unused
+    int64_t global_eblocks  = 0; // unused
+    int64_t global_nsets    = 0; // unused
+    int64_t global_ssets    = 0; // unused
 
     int64_t num_external_nodes; // unused
     int64_t num_elem_cmaps     = 0;
@@ -1353,8 +1357,7 @@ namespace Iofx {
         procs[proc]++;
         send[offset++] = glob_id;
         int64_t loc_id = nodeMap.global_to_local(glob_id, true) - 1;
-        for (size_t j = 0; j < inv_con[loc_id].size(); j++) {
-          int    jblk    = inv_con[loc_id][j];
+        for (int jblk : inv_con[loc_id]) {
           size_t wrd_off = jblk / word_size;
           size_t bit     = jblk % word_size;
           send[offset + wrd_off] |= (1 << bit);
