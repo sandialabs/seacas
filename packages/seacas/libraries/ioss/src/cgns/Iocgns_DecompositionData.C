@@ -139,7 +139,7 @@ namespace Iocgns {
 
       // See if all zones are "Unstructured" which is all we currently support...
       if (zone_type == CG_Structured) {
-	cgsize_t size[9];
+        cgsize_t size[9];
         char     zone_name[33];
         cg_zone_read(filePtr, base, zone, zone_name, size);
 

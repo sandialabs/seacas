@@ -159,6 +159,8 @@ namespace Iocgns {
                                size_t data_size) const;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const;
+    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field, void *data,
+                               size_t data_size) const;
 
     // ID Mapping functions.
     const Ioss::Map &get_map(entity_type type) const;
