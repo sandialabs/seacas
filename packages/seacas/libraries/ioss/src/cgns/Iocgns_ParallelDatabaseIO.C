@@ -75,6 +75,37 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
+
+namespace {
+  CG_ZoneType_t check_zone_type(int cgnsFilePtr)
+  {
+    // ========================================================================
+    // Get the number of zones (element blocks) in the mesh...
+    int base = 1;
+    int num_zones = 0;
+    cg_nzones(cgnsFilePtr, base, &num_zones);
+
+    CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
+
+    for (cgsize_t zone = 1; zone <= num_zones; zone++) {
+      CG_ZoneType_t zone_type;
+      cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
+
+      if (common_zone_type == CG_ZoneTypeNull) {
+        common_zone_type = zone_type;
+      }
+
+      if (common_zone_type != zone_type) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
+               << " This is currently not allowed or supported (hybrid mesh).";
+        IOSS_ERROR(errmsg);
+      }
+    }
+    return common_zone_type;
+  }
+}
+
 namespace Iocgns {
 
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -147,6 +178,118 @@ namespace Iocgns {
     return global;
   }
 
+  void ParallelDatabaseIO::create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
+                                           size_t &num_cell)
+  {
+    cgsize_t size[9];
+    char     zone_name[33];
+    cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+    m_zoneNameMap[zone_name] = zone;
+
+    assert(size[0] - 1 == size[3]);
+    assert(size[1] - 1 == size[4]);
+    assert(size[2] - 1 == size[5]);
+
+    assert(size[6] == 0);
+    assert(size[7] == 0);
+    assert(size[8] == 0);
+
+    cgsize_t index_dim = 0;
+    cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
+    // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
+    Ioss::StructuredBlock *block =
+        new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
+
+    block->property_add(Ioss::Property("base", base));
+    block->property_add(Ioss::Property("zone", zone));
+    get_region()->add(block);
+
+    block->set_node_offset(num_node);
+    block->set_cell_offset(num_cell);
+    num_node += block->get_property("node_count").get_int();
+    num_cell += block->get_property("cell_count").get_int();
+
+    // Handle zone-grid-connectivity...
+    int nconn = 0;
+    cg_n1to1(cgnsFilePtr, base, zone, &nconn);
+    for (int i = 0; i < nconn; i++) {
+      char connectname[33];
+      char donorname[33];
+      std::array<cgsize_t, 6> range;
+      std::array<cgsize_t, 6> donor_range;
+      std::array<int, 3>      transform;
+
+      cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                   donor_range.data(), transform.data());
+
+      // Get number of nodes shared with other "previous" zones...
+      // A "previous" zone will have a lower zone number this this zone...
+      int  donor_zone = -1;
+      auto donor_iter = m_zoneNameMap.find(donorname);
+      if (donor_iter != m_zoneNameMap.end()) {
+        donor_zone = (*donor_iter).second;
+      }
+      std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
+      std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
+      std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
+      std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
+
+      block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
+                                             range_beg, range_end, donor_beg, donor_end);
+    }
+  }
+
+  size_t ParallelDatabaseIO::finalize_structured_blocks()
+  {
+    const auto &blocks = get_region()->get_structured_blocks();
+
+    // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
+    // and update the donor_zone id for zones that had not yet been processed at the time of
+    // definition...
+    for (auto &block : blocks) {
+      for (auto &conn : block->m_zoneConnectivity) {
+        if (conn.m_donorZone < 0) {
+          auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
+          assert(donor_iter != m_zoneNameMap.end());
+          conn.m_donorZone = (*donor_iter).second;
+        }
+      }
+    }
+
+    for (auto &block : blocks) {
+      block->generate_shared_nodes(*get_region());
+    }
+
+    // Iterate all structured blocks and fill in the global ids:
+    // Map from local node to global node block accounting for
+    // shared nodes.
+    //
+    // Iterate the m_globalNodeIdList in each block.
+    // If the entry is "ss_max", then this is an owned
+    // node -- file with sequential global node block offsets.
+    // If the entry is not "ss_max", then this node is shared
+    // and its entry currently points to the location in the "global offset"
+    // list of the owning node.  Need to get the "global id" value at that
+    // location and put it in m_globalNodeIdList at that location.
+    ssize_t ss_max = std::numeric_limits<ssize_t>::max();
+    size_t  offset = 0;
+    for (auto &block : blocks) {
+      for (auto &node : block->m_globalNodeIdList) {
+        if (node == ss_max) {
+          node = offset++;
+        }
+        else {
+          // Node is shared and the value points to the owner.
+          // Determine which block contains the owner and get its value.
+          auto owner_block = get_region()->get_structured_block(node);
+          assert(owner_block != nullptr);
+          node = owner_block->m_globalNodeIdList[node - owner_block->get_node_offset()];
+        }
+      }
+    }
+    return offset; // Number of 'equived' nodes in model
+  }
+
   void ParallelDatabaseIO::read_meta_data()
   {
     openDatabase();
@@ -161,6 +304,8 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
+    CG_ZoneType_t zone_type = check_zone_type(cgnsFilePtr);
+    
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
@@ -170,7 +315,7 @@ namespace Iocgns {
           new DecompositionData<int>(properties, util().communicator()));
     }
     assert(decomp != nullptr);
-    decomp->decompose_model(cgnsFilePtr);
+    decomp->decompose_model(cgnsFilePtr, *get_region(), zone_type);
 
     get_region()->property_add(
         Ioss::Property("global_node_count", (int64_t)decomp->global_node_count()));
@@ -179,6 +324,7 @@ namespace Iocgns {
 
     nodeCount    = decomp->ioss_node_count();
     elementCount = decomp->ioss_elem_count();
+    std::cerr << "Nodes, Cells = " << nodeCount << "\t" << elementCount << "\n";
 
     // ========================================================================
     // Get the number of families in the mesh...

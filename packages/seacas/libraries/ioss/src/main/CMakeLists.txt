@@ -74,6 +74,7 @@ TRIBITS_ADD_EXECUTABLE(
 
 
 install_executable(cth_pressure_map)
+install_executable(struc-to-unstruc)
 install_executable(io_shell)
 install_executable(shell_to_hex)
 install_executable(io_info)

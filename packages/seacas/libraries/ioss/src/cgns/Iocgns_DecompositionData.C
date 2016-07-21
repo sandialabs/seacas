@@ -1,8 +1,13 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h>
+#include <Ioss_Region.h>
+#include <Ioss_StructuredBlock.h>
 #include <cgns/Iocgns_DecompositionData.h>
+#include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
+
+#include <Ioss_TerminalColor.h>
 
 #include <algorithm>
 #include <numeric>
@@ -10,9 +15,13 @@
 #include <assert.h>
 #include <mpi.h>
 
+
 #define DEBUG_OUTPUT 1
 namespace {
-// ZOLTAN Callback functions...
+  int rank = 0;
+#define OUTPUT if (rank == 0) std::cerr
+
+  // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
@@ -80,6 +89,283 @@ namespace {
     return;
   }
 #endif
+
+  // These are used for structured parallel decomposition...
+  void create_structured_block(int cgnsFilePtr, Ioss::Region &region)
+  {
+    int base = 1;
+    int num_zones = 0;
+    size_t num_node = 0;
+    size_t num_cell = 0;
+    cg_nzones(cgnsFilePtr, base, &num_zones);
+
+    std::map<std::string, int> zone_name_map;
+
+    for (cgsize_t zone = 1; zone <= num_zones; zone++) {
+      cgsize_t size[9];
+      char     zone_name[33];
+      cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+      zone_name_map[zone_name] = zone;
+
+      assert(size[0] - 1 == size[3]);
+      assert(size[1] - 1 == size[4]);
+      assert(size[2] - 1 == size[5]);
+
+      assert(size[6] == 0);
+      assert(size[7] == 0);
+      assert(size[8] == 0);
+
+      cgsize_t index_dim = 0;
+      cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
+      // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
+      Ioss::StructuredBlock *block =
+	new Ioss::StructuredBlock(region.get_database(), zone_name,
+				  index_dim, size[3], size[4], size[5]);
+
+      block->property_add(Ioss::Property("base", base));
+      block->property_add(Ioss::Property("zone", zone));
+      region.add(block);
+
+      block->set_node_offset(num_node);
+      block->set_cell_offset(num_cell);
+      num_node += block->get_property("node_count").get_int();
+      num_cell += block->get_property("cell_count").get_int();
+
+      // Handle zone-grid-connectivity...
+      int nconn = 0;
+      cg_n1to1(cgnsFilePtr, base, zone, &nconn);
+      for (int i = 0; i < nconn; i++) {
+	char connectname[33];
+	char donorname[33];
+	std::array<cgsize_t, 6> range;
+	std::array<cgsize_t, 6> donor_range;
+	std::array<int, 3>      transform;
+
+	cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+		     donor_range.data(), transform.data());
+
+	// Get number of nodes shared with other "previous" zones...
+	// A "previous" zone will have a lower zone number this this zone...
+	int  donor_zone = -1;
+	auto donor_iter = zone_name_map.find(donorname);
+	if (donor_iter != zone_name_map.end()) {
+	  donor_zone = (*donor_iter).second;
+	}
+	std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
+	std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
+	std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
+	std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
+
+	block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
+					       range_beg, range_end, donor_beg, donor_end);
+      }
+    }
+
+    const auto &blocks = region.get_structured_blocks();
+
+    // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
+    // and update the donor_zone id for zones that had not yet been processed at the time of
+    // definition...
+    for (auto &block : blocks) {
+      for (auto &conn : block->m_zoneConnectivity) {
+        if (conn.m_donorZone < 0) {
+          auto donor_iter = zone_name_map.find(conn.m_donorName);
+          assert(donor_iter != zone_name_map.end());
+          conn.m_donorZone = (*donor_iter).second;
+        }
+      }
+    }
+
+    for (auto &block : blocks) {
+      block->generate_shared_nodes(region);
+    }
+
+    // Iterate all structured blocks and fill in the global ids:
+    // Map from local node to global node block accounting for
+    // shared nodes.
+    //
+    // Iterate the m_globalNodeIdList in each block.
+    // If the entry is "ss_max", then this is an owned
+    // node -- file with sequential global node block offsets.
+    // If the entry is not "ss_max", then this node is shared
+    // and its entry currently points to the location in the "global offset"
+    // list of the owning node.  Need to get the "global id" value at that
+    // location and put it in m_globalNodeIdList at that location.
+    ssize_t ss_max = std::numeric_limits<ssize_t>::max();
+    size_t  offset = 0;
+    for (auto &block : blocks) {
+      for (auto &node : block->m_globalNodeIdList) {
+        if (node == ss_max) {
+          node = offset++;
+        }
+        else {
+          // Node is shared and the value points to the owner.
+          // Determine which block contains the owner and get its value.
+          auto owner_block = region.get_structured_block(node);
+          assert(owner_block != nullptr);
+          node = owner_block->m_globalNodeIdList[node - owner_block->get_node_offset()];
+        }
+      }
+    }
+  }
+
+  size_t proc_with_minimum_work(const std::vector<size_t> &work)
+  {
+    size_t min_work = work[0];
+    size_t min_proc = 0;
+    for (size_t i = 1; i < work.size(); i++) {
+      if (work[i] < min_work) {
+        min_work = work[i];
+        min_proc = i;
+        if (min_work == 0) {
+          break;
+        }
+      }
+    }
+    return min_proc;
+  }
+
+  struct Range
+  {
+    Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b < a) {}
+
+    int  m_beg;
+    int  m_end;
+    bool m_reversed;
+  };
+
+  bool overlaps(const Range &a, const Range &b)
+
+  {
+    OUTPUT << "Range 1: " << a.m_beg << " " << a.m_end << " -- " << b.m_beg << " " << b.m_end
+	   << "\n";
+    return a.m_beg <= b.m_end && b.m_beg <= a.m_end;
+  }
+
+  bool zgc_overlaps(const Iocgns::StructuredZoneData *zone, const Ioss::ZoneConnectivity &zgc)
+  {
+    // Note that zone range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+    Range z_i(1 + zone->m_offset[0], zone->m_ordinal[0] + zone->m_offset[0] + 1);
+    Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
+    Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
+
+    Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
+    Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
+    Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
+
+    return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
+  }
+
+  Range subset_range(const Range &a, const Range &b)
+  {
+    Range ret(std::max(a.m_beg, b.m_beg), std::min(a.m_end, b.m_end));
+    ret.m_reversed = a.m_reversed || b.m_reversed;
+    return ret;
+  }
+
+  void zgc_subset_ranges(const Iocgns::StructuredZoneData *zone, Ioss::ZoneConnectivity &zgc)
+  {
+    // NOTE: Updates the range and donor_range in zgc
+
+    // Note that zone range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+    Range z_i(1 + zone->m_offset[0], zone->m_ordinal[0] + zone->m_offset[0] + 1);
+    Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
+    Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
+
+    Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
+    Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
+    Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
+
+    Range gc_ii = subset_range(z_i, gc_i);
+    Range gc_jj = subset_range(z_j, gc_j);
+    Range gc_kk = subset_range(z_k, gc_k);
+
+    zgc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+    zgc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+    zgc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+    zgc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+    zgc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+    zgc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+
+    auto t_matrix = zgc.transform_matrix();
+
+    zgc.m_donorRangeBeg = zgc.transform(t_matrix, zgc.m_rangeBeg);
+    zgc.m_donorRangeEnd = zgc.transform(t_matrix, zgc.m_rangeEnd);
+  }
+
+  void propogate_zgc(Iocgns::StructuredZoneData *zone, Ioss::Region &region,
+                     std::vector<Ioss::ZoneConnectivity> &zone_connectivity)
+  {
+    if (zone->m_child1 != nullptr && zone->m_child2 != nullptr) {
+
+      auto c1 = zone->m_child1;
+      auto c2 = zone->m_child2;
+
+      std::array<int, 3> transform{{1, 2, 3}};
+
+      // Note that range is specified in terms of 'adam' block i,j,k
+      // space which is converted to local block i,j,k space
+      // via the m_offset[] field on the local block.
+      std::array<int, 3> range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
+      std::array<int, 3> range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
+	    c1->m_ordinal[1] + c1->m_offset[1] + 1,
+	    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
+
+      std::array<int, 3> donor_range_beg(range_beg);
+      std::array<int, 3> donor_range_end(range_end);
+
+      int ordinal              = c1->m_splitOrdinal; // Axis of the split.
+      donor_range_end[ordinal] = donor_range_beg[ordinal] = range_beg[ordinal] = range_end[ordinal];
+
+      auto c1_base =
+	Ioss::Utils::to_string(c1->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c1->m_zone);
+      auto c2_base =
+	Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
+
+      OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
+      zone_connectivity.emplace_back("decomp" + c1_base, c1->m_zone, "decomp" + c2_base, c2->m_zone,
+                                     transform, range_beg, range_end, donor_range_beg,
+                                     donor_range_end);
+      propogate_zgc(c1, region, zone_connectivity);
+
+      zone_connectivity.pop_back();
+      OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
+      zone_connectivity.emplace_back("decomp" + c2_base, c2->m_zone, "decomp" + c1_base, c1->m_zone,
+                                     transform, donor_range_beg, donor_range_end, range_beg,
+                                     range_end);
+      propogate_zgc(c2, region, zone_connectivity);
+    }
+    else {
+      if (zone->m_adam != zone) {
+        // Create a block name based on adam zone and zone id.
+        auto zone_name = Ioss::Utils::to_string(zone->m_adam->m_zone) + "_" +
+	  Ioss::Utils::to_string(zone->m_zone);
+        auto *block = new Ioss::StructuredBlock(
+						region.get_database(), zone_name, 3, zone->m_ordinal[0], zone->m_ordinal[1],
+						zone->m_ordinal[2], zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]);
+        region.add(block);
+        OUTPUT << "Creating zone " << zone_name << " IJK: (" << zone->m_ordinal[0] << " "
+                  << zone->m_ordinal[1] << " " << zone->m_ordinal[2] << ") "
+                  << " Offset: (" << zone->m_offset[0] << " " << zone->m_offset[1] << " "
+                  << zone->m_offset[2] << ")\n";
+
+        // Add zone connectivities...
+        for (auto &zgc : zone_connectivity) {
+          if (zgc_overlaps(zone, zgc)) {
+            // Modify source and donor range to subset it to new block ranges.
+            zgc_subset_ranges(zone, zgc);
+            block->m_zoneConnectivity.push_back(zgc);
+            OUTPUT << zgc << "\n";
+          }
+          else {
+            OUTPUT << Ioss::trmclr::red << "\t\t" << zgc.m_donorName << ":\tName '"
+                      << zgc.m_connectionName << " does not overlap." << Ioss::trmclr::normal
+                      << "\n";
+          }
+        }
+      }
+    }
+  }
 }
 
 namespace Iocgns {
@@ -95,9 +381,200 @@ namespace Iocgns {
   {
     MPI_Comm_rank(m_comm, &m_myProcessor);
     MPI_Comm_size(m_comm, &m_processorCount);
+    rank = m_myProcessor;
   }
 
-  template <typename INT> void DecompositionData<INT>::decompose_model(int filePtr)
+  template <typename INT>
+  void DecompositionData<INT>::decompose_model(int filePtr,
+					       Ioss::Region &region, 
+					       CG_ZoneType_t common_zone_type)
+  {
+    if (common_zone_type == CG_Unstructured) {
+      decompose_unstructured(filePtr);
+    }
+    else if (common_zone_type == CG_Structured) {
+      decompose_structured(filePtr, region);
+    }
+    else {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: The common zone type is not of type Unstructured or Structured "
+	"which are the only types currently supported";
+      IOSS_ERROR(errmsg);
+    }
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::decompose_structured(int filePtr, Ioss::Region &region)
+  {
+    create_structured_block(filePtr, region);
+
+    auto &blocks = region.get_structured_blocks();
+    if (blocks.empty()) {
+      return;
+    }
+
+    double load_balance_threshold = 1.4;
+    size_t                                    work = 0;
+    std::vector<Iocgns::StructuredZoneData *> zones;
+    for (const auto &iblock : blocks) {
+      std::string name = iblock->name();
+      OUTPUT << name << "\n";
+
+      auto *z = new Iocgns::StructuredZoneData(
+          iblock->get_property("zone").get_int(), iblock->get_property("ni").get_int(),
+          iblock->get_property("nj").get_int(), iblock->get_property("nk").get_int());
+      zones.push_back(z);
+      z->m_adam = z;
+      work += z->work();
+
+      assert(z->is_active());
+      assert((int)zones.size() == z->m_zone);
+    }
+
+    size_t new_zone_id            = zones.size() + 1;
+    size_t px                     = 0;
+    size_t num_split              = 0;
+    bool   split                  = false;
+    // Get average work / processor...
+    double avg_work = (double)work / m_processorCount;
+
+    auto num_active = zones.size();
+    OUTPUT << "Number of active zones = " << num_active << ", work = " << work
+           << " average work = " << avg_work << "\n";
+    OUTPUT << "========================================================================\n";
+
+    OUTPUT << "Pre-Splitting:\n";
+    // Split all blocks where block->work() > avg_work * load_balance_threshold
+    do {
+      auto zone_new(zones);
+      split = false;
+      for (auto zone : zones) {
+        if (zone->is_active() && zone->work() > avg_work * load_balance_threshold) {
+          auto children = zone->split(new_zone_id);
+          if (children.first != nullptr && children.second != nullptr) {
+            zone_new.push_back(children.first);
+            zone_new.push_back(children.second);
+            split = true;
+            new_zone_id += 2;
+          }
+        }
+      }
+      std::swap(zone_new, zones);
+    } while (split);
+    OUTPUT << "========================================================================\n";
+
+    do {
+      // Sort zones based on work.  Most work first..
+      // TODO: Possibly filter 'zones' down to only active zones to
+      // reduce sort and iteration time.
+      std::sort(zones.begin(), zones.end(),
+                [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+                  return a->work() > b->work();
+                });
+
+      if (avg_work < 1.0) {
+        OUTPUT << "ERROR: Model size too small to distribute over " << m_processorCount
+               << " processors.\n";
+        std::exit(EXIT_FAILURE);
+      }
+      OUTPUT << "Decomposing structured mesh for " << m_processorCount
+                << " processors. Average workload is " << avg_work << ", Threshold is "
+                << load_balance_threshold << "\n";
+
+      std::vector<size_t> work_vector(m_processorCount);
+
+      auto zone_new(zones);
+      for (auto &zone : zones) {
+        if (zone->is_active()) {
+          // Assign zone to processor with minimum work...
+          size_t proc  = proc_with_minimum_work(work_vector);
+          zone->m_proc = proc;
+          work_vector[proc] += zone->work();
+          OUTPUT << "Assigning zone " << zone->m_zone << " with work " << zone->work()
+                    << " to processor " << proc << "\n";
+        }
+      }
+
+      // Calculate workload ratio for each processor...
+      px = 0; // Number of processors where workload ratio exceeds threshold.
+      std::vector<bool> exceeds(m_processorCount);
+      for (size_t i = 0; i < work_vector.size(); i++) {
+        double workload_ratio = double(work_vector[i]) / double(avg_work);
+        OUTPUT << "Processor " << i << " workload ratio " << workload_ratio << "\n";
+        if (workload_ratio > load_balance_threshold) {
+          exceeds[i] = true;
+          px++;
+        }
+      }
+      OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
+      num_split = 0;
+      if (px > 0) {
+        for (auto zone : zones) {
+          if (zone->is_active() && exceeds[zone->m_proc]) {
+            // Since 'zones' is sorted from most work to least,
+            // we just iterate zones and check whether the zone
+            // is on a proc where the threshold was exceeded.
+            // if so, split the block and set exceeds[proc] to false;
+            // Exit the loop when num_split >= px.
+            auto children = zone->split(new_zone_id);
+            if (children.first != nullptr && children.second != nullptr) {
+              zone_new.push_back(children.first);
+              zone_new.push_back(children.second);
+
+              new_zone_id += 2;
+              exceeds[zone->m_proc] = false;
+              num_split++;
+              if (num_split >= px) {
+                break;
+              }
+            }
+          }
+        }
+        std::swap(zone_new, zones);
+      }
+      auto active = std::count_if(zones.begin(), zones.end(),
+                                  [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
+      OUTPUT << "Number of active zones = " << active << ", average work = " << avg_work << "\n";
+      OUTPUT << "========================================================================\n";
+    } while (px > 0 && num_split > 0);
+
+    // Output the processor assignments...
+    for (auto zone : zones) {
+      if (zone->is_active()) {
+        OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
+               << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // Processor assignment completed...  Now need to propgate
+    // ZoneGridConnectivities. Both original and those resulting from
+    // splitting for decomposition.
+
+    // Re-sort based on 'm_zone' which should give us the original
+    // order, or at least all 'adam' zones at top.
+    std::sort(zones.begin(), zones.end(),
+              [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+                return a->m_zone < b->m_zone;
+              });
+
+    for (auto &zone : zones) {
+      if (zone == zone->m_adam) {
+        // Find 'adam' block.
+        auto adam = blocks[zone->m_zone - 1];
+        OUTPUT << "\tAdam Zone = " << adam->name() << "\n";
+        auto zgcs = adam->m_zoneConnectivity;
+        // Process children...
+        propogate_zgc(zone, region, zgcs);
+      }
+      else {
+        break;
+      }
+    }
+  }
+
+  template <typename INT>
+  void DecompositionData<INT>::decompose_unstructured(int filePtr)
   {
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
@@ -115,70 +592,32 @@ namespace Iocgns {
       m_decomposition.m_spatialDimension = phys_dimension;
     }
 
-    CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
-
     cg_nzones(filePtr, base, &num_zones);
     m_zones.resize(num_zones + 1); // Use 1-based zones.
 
-    size_t global_node_count    = 0;
+    size_t global_cell_node_count    = 0;
     size_t global_element_count = 0;
     for (int zone = 1; zone <= num_zones; zone++) {
-      CG_ZoneType_t zone_type;
-      cg_zone_type(filePtr, base, zone, &zone_type);
+      // All zones are "Unstructured" since this was checked prior to
+      // calling this function...
+      cgsize_t size[3];
+      char     zone_name[33];
+      cg_zone_read(filePtr, base, zone, zone_name, size);
 
-      if (common_zone_type == CG_ZoneTypeNull) {
-        common_zone_type = zone_type;
-      }
+      INT total_block_nodes = size[0];
+      INT total_block_elem  = size[1];
 
-      if (common_zone_type != zone_type) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
-               << " This is currently not allowed or supported (hybrid mesh).";
-        IOSS_ERROR(errmsg);
-      }
-
-      // See if all zones are "Unstructured" which is all we currently support...
-      if (zone_type == CG_Structured) {
-        cgsize_t size[9];
-        char     zone_name[33];
-        cg_zone_read(filePtr, base, zone, zone_name, size);
-
-        INT total_block_nodes = size[0];
-        INT total_block_elem  = size[1];
-
-        m_zones[zone].m_nodeCount     = total_block_nodes;
-        m_zones[zone].m_nodeOffset    = global_node_count;
-        m_zones[zone].m_name          = zone_name;
-        m_zones[zone].m_elementOffset = global_element_count;
-        global_node_count += total_block_nodes;
-        global_element_count += total_block_elem;
-      }
-      else if (zone_type == CG_Unstructured) {
-        cgsize_t size[3];
-        char     zone_name[33];
-        cg_zone_read(filePtr, base, zone, zone_name, size);
-
-        INT total_block_nodes = size[0];
-        INT total_block_elem  = size[1];
-
-        m_zones[zone].m_nodeCount     = total_block_nodes;
-        m_zones[zone].m_nodeOffset    = global_node_count;
-        m_zones[zone].m_name          = zone_name;
-        m_zones[zone].m_elementOffset = global_element_count;
-        global_node_count += total_block_nodes;
-        global_element_count += total_block_elem;
-      }
-      else {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
-                                                  "which are the only types currently supported";
-        IOSS_ERROR(errmsg);
-      }
+      m_zones[zone].m_nodeCount     = total_block_nodes;
+      m_zones[zone].m_nodeOffset    = global_cell_node_count;
+      m_zones[zone].m_name          = zone_name;
+      m_zones[zone].m_elementOffset = global_element_count;
+      global_cell_node_count += total_block_nodes;
+      global_element_count += total_block_elem;
     }
 
-    // Generate element_dist/node_dist --  size proc_count + 1
+    // Generate element_dist/node_dist --  size m_processorCount + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
-    m_decomposition.generate_entity_distributions(global_node_count, global_element_count);
+    m_decomposition.generate_entity_distributions(global_cell_node_count, global_element_count);
 
     generate_adjacency_list(filePtr, m_decomposition);
 
@@ -201,9 +640,9 @@ namespace Iocgns {
     }
 
 #if DEBUG_OUTPUT
-    std::cerr << "Processor " << m_myProcessor << " has " << decomp_elem_count()
+    OUTPUT << "Processor " << m_myProcessor << " has " << decomp_elem_count()
               << " elements; offset = " << decomp_elem_offset() << "\n";
-    std::cerr << "Processor " << m_myProcessor << " has " << decomp_node_count()
+    OUTPUT << "Processor " << m_myProcessor << " has " << decomp_node_count()
               << " nodes; offset = " << decomp_node_offset() << ".\n";
 #endif
 
@@ -464,7 +903,7 @@ namespace Iocgns {
              << "       set to 8. The details of how to do this vary with the code that is being "
                 "run.\n"
              << "       Contact gdsjaar@sandia.gov for more details.\n";
-      std::cerr << errmsg.str();
+      OUTPUT << errmsg.str();
       exit(EXIT_FAILURE);
     }
 
@@ -493,7 +932,7 @@ namespace Iocgns {
         INT                   blk_start = std::max(b_start, p_start) - b_start + 1;
         INT                   blk_end   = blk_start + overlap - 1;
 #if DEBUG_OUTPUT
-        std::cerr << "Processor " << m_myProcessor << " has " << overlap
+        OUTPUT << "Processor " << m_myProcessor << " has " << overlap
                   << " elements on element block " << block.name() << "\t(" << blk_start << " to "
                   << blk_end << ")\n";
 #endif
@@ -662,7 +1101,7 @@ namespace Iocgns {
           // Now adjust start for 1-based node numbering and the start of this zone...
           start  = start - beg + 1;
           finish = finish - beg;
-          std::cerr << m_myProcessor << ": reading " << count << " nodes from zone " << zone
+          OUTPUT << m_myProcessor << ": reading " << count << " nodes from zone " << zone
                     << " starting at " << start << " with an offset of " << offset << " ending at "
                     << finish << "\n";
 

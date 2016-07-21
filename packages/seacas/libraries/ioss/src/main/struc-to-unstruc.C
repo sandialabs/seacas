@@ -205,7 +205,7 @@ namespace {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
         for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-          auto node = block->m_globalNodeIdList[i];
+          size_t node = block->m_globalNodeIdList[i];
           assert(node >= 0 && node < glob_node_count);
           if (ids[node] == 0) {
             ids[node] = cell_id[i];
@@ -224,19 +224,19 @@ namespace {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
       for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-        auto node = block->m_globalNodeIdList[i];
+        size_t node = block->m_globalNodeIdList[i];
         assert(node >= 0 && node < glob_node_count);
         coordinate_x[node] = coord_tmp[i];
       }
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
       for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-        auto node = block->m_globalNodeIdList[i];
+        size_t node = block->m_globalNodeIdList[i];
         assert(node >= 0 && node < glob_node_count);
         coordinate_y[node] = coord_tmp[i];
       }
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
       for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-        auto node = block->m_globalNodeIdList[i];
+        size_t node = block->m_globalNodeIdList[i];
         assert(node >= 0 && node < glob_node_count);
         coordinate_z[node] = coord_tmp[i];
       }
