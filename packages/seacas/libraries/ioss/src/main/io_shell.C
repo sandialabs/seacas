@@ -273,6 +273,9 @@ namespace {
         std::exit(EXIT_FAILURE);
       }
 
+      if (!interface.lower_case_variable_names) {
+        dbi->set_lower_case_variable_names(false);
+      }
       dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
       dbi->set_field_separator(interface.fieldSuffixSeparator);
       if (interface.ints_64_bit) {
@@ -301,11 +304,11 @@ namespace {
       // to output file...
       int int_byte_size_api = dbi->int_byte_size_api();
       if (!properties.exists("INTEGER_SIZE_API")) {
-	properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
-	properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
+        properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
+        properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
       }
       if (int_byte_size_api == 8) {
-	interface.ints_64_bit = true;
+        interface.ints_64_bit = true;
       }
       //========================================================================
       // OUTPUT ...

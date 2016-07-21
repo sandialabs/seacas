@@ -315,9 +315,10 @@ namespace Iofx {
       assert(exodusFilePtr >= 0);
       // Check byte-size of integers stored on the database...
       if ((ex_int64_status(exodusFilePtr) & EX_ALL_INT64_DB) != 0) {
-	if (myProcessor == 0) {
-	  std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte integers.\n";
-	}
+        if (myProcessor == 0) {
+          std::cerr << "IOSS: Input database contains 8-byte integers. Setting Ioss to use 8-byte "
+                       "integers.\n";
+        }
         ex_set_int64_status(exodusFilePtr, EX_ALL_INT64_API);
         set_int_byte_size_api(Ioss::USE_INT64_API);
       }
@@ -1255,8 +1256,10 @@ namespace Iofx {
       if (entity_type == EX_ELEM_BLOCK) {
         Ioss::SerializeIO serializeIO__(this);
         if (nmap > 0) {
-          nmap = Ioex::add_map_fields(get_file_pointer(), dynamic_cast<Ioss::ElementBlock *>(block),
-                                      local_X_count[iblk], maximumNameLength);
+          Ioss::ElementBlock *elb = dynamic_cast<Ioss::ElementBlock *>(block);
+          Ioss::Utils::check_dynamic_cast(elb);
+          nmap =
+              Ioex::add_map_fields(get_file_pointer(), elb, local_X_count[iblk], maximumNameLength);
         }
       }
     }
@@ -4720,7 +4723,7 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
   ssize_t    eb_offset = 0;
   if (ge->type() == Ioss::ELEMENTBLOCK) {
     const Ioss::ElementBlock *elb = dynamic_cast<const Ioss::ElementBlock *>(ge);
-    assert(elb != nullptr);
+    Ioss::Utils::check_dynamic_cast(elb);
     eb_offset = elb->get_offset();
     map       = &elemMap;
   }
