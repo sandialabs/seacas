@@ -44,48 +44,21 @@
 #include <string>            // for string
 namespace Iohb {
   class Layout;
-}
-namespace Ioss {
   class CommSet;
-}
-namespace Ioss {
   class EdgeBlock;
-}
-namespace Ioss {
   class EdgeSet;
-}
-namespace Ioss {
   class ElementBlock;
-}
-namespace Ioss {
   class ElementSet;
-}
-namespace Ioss {
   class FaceBlock;
-}
-namespace Ioss {
   class FaceSet;
-}
-namespace Ioss {
   class Field;
-}
-namespace Ioss {
   class NodeBlock;
-}
-namespace Ioss {
   class NodeSet;
-}
-namespace Ioss {
   class PropertyManager;
-}
-namespace Ioss {
   class Region;
-}
-namespace Ioss {
   class SideBlock;
-}
-namespace Ioss {
   class SideSet;
+  class StructuredBlock;
 }
 
 namespace Ioss {
@@ -153,6 +126,8 @@ namespace Iohb {
                                size_t data_size) const;
     int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const;
+    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+			       void *data, size_t data_size) const {return -1;}
     int64_t get_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field, void *data,
                                size_t data_size) const;
     int64_t get_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,
@@ -192,6 +167,8 @@ namespace Iohb {
                                size_t data_size) const;
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const;
+    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+			       void *data, size_t data_size) const {return -1;}
 
     std::ostream *logStream;
     Layout *      layout_;
