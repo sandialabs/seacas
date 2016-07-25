@@ -32,6 +32,9 @@ C  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       subroutine viridis(icol, ncol, r, g, b) 
       real r, g, b
       
+C  Data and information about viridis from:
+C  https://bids.github.io/colormap/
+
       REAL RGB(3, 256)
       DATA RGB /
      *  0.26700401,  0.00487433,  0.32941519,
