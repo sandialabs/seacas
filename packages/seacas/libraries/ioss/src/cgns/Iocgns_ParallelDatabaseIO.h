@@ -135,6 +135,9 @@ namespace Iocgns {
     void read_meta_data() override;
 
   private:
+    void handle_structured_blocks();
+    void handle_unstructured_blocks();
+
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
     size_t finalize_structured_blocks();
     void create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
@@ -215,7 +218,8 @@ namespace Iocgns {
     mutable int cgnsFilePtr;
     size_t      nodeCount;
     size_t      elementCount;
-
+    CG_ZoneType_t m_zoneType;
+    
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.

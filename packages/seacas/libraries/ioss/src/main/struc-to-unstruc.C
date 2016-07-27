@@ -202,15 +202,15 @@ namespace {
       std::vector<int> ids(glob_node_count); // To hold the global node id map.
       auto &           blocks = region.get_structured_blocks();
       for (auto &block : blocks) {
-        std::vector<int> cell_id;
-        block->get_field_data("cell_node_ids", cell_id);
-        for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-          size_t node = block->m_globalNodeIdList[i];
-          assert(node >= 0 && node < glob_node_count);
-          if (ids[node] == 0) {
-            ids[node] = cell_id[i];
-          }
-        }
+	std::vector<int> cell_id;
+	block->get_field_data("cell_node_ids", cell_id);
+	for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
+	  size_t node = block->m_globalNodeIdList[i];
+	  assert(node >= 0 && node < glob_node_count);
+	  if (ids[node] == 0) {
+	    ids[node] = cell_id[i];
+	  }
+	}
       }
       nb->put_field_data("ids", ids);
     }

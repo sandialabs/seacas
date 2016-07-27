@@ -65,6 +65,7 @@
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
 #include "Ioss_StructuredBlock.h"
+#include "Ioss_TerminalColor.h"
 
 #include "Ioss_Field.h"
 #include "Ioss_IOFactory.h"
@@ -112,7 +113,7 @@ namespace Iocgns {
                                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), cgnsFilePtr(-1),
-        nodeCount(0), elementCount(0)
+        nodeCount(0), elementCount(0), m_zoneType(CG_ZoneTypeNull)
   {
     dbState = Ioss::STATE_UNKNOWN;
 
@@ -176,6 +177,138 @@ namespace Iocgns {
   {
     // TODO: Fix
     return global;
+  }
+
+  void ParallelDatabaseIO::read_meta_data()
+  {
+    openDatabase();
+
+    // Determine the number of bases in the grid.
+    // Currently only handle 1.
+    cgsize_t n_bases = 0;
+    cg_nbases(cgnsFilePtr, &n_bases);
+    if (n_bases != 1) {
+      std::ostringstream errmsg;
+      errmsg << "CGNS: Too many bases; only support files with a single bases at this time";
+      IOSS_ERROR(errmsg);
+    }
+
+    m_zoneType = check_zone_type(cgnsFilePtr);
+    
+    if (int_byte_size_api() == 8) {
+      decomp = std::unique_ptr<DecompositionDataBase>(
+          new DecompositionData<int64_t>(properties, util().communicator()));
+    }
+    else {
+      decomp = std::unique_ptr<DecompositionDataBase>(
+          new DecompositionData<int>(properties, util().communicator()));
+    }
+    assert(decomp != nullptr);
+    decomp->decompose_model(cgnsFilePtr, m_zoneType);
+
+    if (m_zoneType == CG_Structured) {
+      handle_structured_blocks();
+    }
+    else if (m_zoneType == CG_Unstructured) {
+      handle_unstructured_blocks();
+    }
+  }
+
+  void ParallelDatabaseIO::handle_unstructured_blocks()
+  {
+    get_region()->property_add(
+        Ioss::Property("global_node_count", (int64_t)decomp->global_node_count()));
+    get_region()->property_add(
+        Ioss::Property("global_element_count", (int64_t)decomp->global_elem_count()));
+
+    nodeCount    = decomp->ioss_node_count();
+    elementCount = decomp->ioss_elem_count();
+    std::cerr << "Nodes, Cells = " << nodeCount << "\t" << elementCount << "\n";
+
+    // ========================================================================
+    // Get the number of families in the mesh...
+    // Will treat these as sidesets if they are of the type "FamilyBC_t"
+    cgsize_t base         = 1;
+    cgsize_t num_families = 0;
+    cg_nfamilies(cgnsFilePtr, base, &num_families);
+    for (cgsize_t family = 1; family <= num_families; family++) {
+      char     name[33];
+      cgsize_t num_bc  = 0;
+      cgsize_t num_geo = 0;
+      cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
+#if defined(DEBUG_OUTPUT)
+      std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
+                << num_geo << " geometry references\n";
+#endif
+      if (num_bc > 0) {
+        // Create a sideset...
+        std::string    ss_name(name);
+        Ioss::SideSet *ss = new Ioss::SideSet(this, ss_name);
+        get_region()->add(ss);
+      }
+    }
+
+    // ========================================================================
+    // Get the number of zones (element blocks) in the mesh...
+    int i = 0;
+    for (auto &block : decomp->m_elementBlocks) {
+      std::string element_topo = block.topologyType;
+#if defined(DEBUG_OUTPUT)
+      std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
+                << "' with " << block.ioss_count() << " elements\n";
+#endif
+      auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
+      eblock->property_add(Ioss::Property("base", base));
+      eblock->property_add(Ioss::Property("zone", block.zone()));
+      eblock->property_add(Ioss::Property("section", block.section()));
+      eblock->property_add(Ioss::Property("original_block_order", i++));
+      get_region()->add(eblock);
+    }
+
+    // ========================================================================
+    // Have sidesets, now create sideblocks for each sideset...
+    int id = 0;
+    for (auto &sset : decomp->m_sideSets) {
+      // See if there is an Ioss::SideSet with a matching name...
+      Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
+      if (ioss_sset != NULL) {
+        auto        zone = decomp->m_zones[sset.zone()];
+        std::string block_name(zone.m_name);
+        block_name += "/";
+        block_name += sset.name();
+        std::string face_topo = sset.topologyType;
+#if defined(DEBUG_OUTPUT)
+        std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name
+                  << " of topo " << face_topo << " with " << sset.ioss_count() << " faces\n";
+#endif
+        const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
+
+        std::string      parent_topo = block.topologyType;
+        Ioss::SideBlock *sblk =
+            new Ioss::SideBlock(this, block_name, face_topo, parent_topo, sset.ioss_count());
+        sblk->property_add(Ioss::Property("id", id));
+        sblk->property_add(Ioss::Property("base", 1));
+        sblk->property_add(Ioss::Property("zone", sset.zone()));
+        sblk->property_add(Ioss::Property("section", sset.section()));
+        Ioss::ElementBlock *eblock = get_region()->get_element_block(block.name());
+        if (eblock != NULL) {
+          sblk->set_parent_element_block(eblock);
+        }
+        ioss_sset->add(sblk);
+      }
+      id++; // Really just index into m_sideSets list.
+    }
+
+    Ioss::NodeBlock *nblock =
+        new Ioss::NodeBlock(this, "nodeblock_1", decomp->ioss_node_count(), 3);
+    nblock->property_add(Ioss::Property("base", base));
+    get_region()->add(nblock);
+
+    // Create a single node commset
+    Ioss::CommSet *commset =
+        new Ioss::CommSet(this, "commset_node", "node", decomp->get_commset_node_size());
+    commset->property_add(Ioss::Property("id", 1));
+    get_region()->add(commset);
   }
 
   void ParallelDatabaseIO::create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
@@ -290,126 +423,87 @@ namespace Iocgns {
     return offset; // Number of 'equived' nodes in model
   }
 
-  void ParallelDatabaseIO::read_meta_data()
+  void ParallelDatabaseIO::handle_structured_blocks()
   {
-    openDatabase();
-
-    // Determine the number of bases in the grid.
-    // Currently only handle 1.
-    cgsize_t n_bases = 0;
-    cg_nbases(cgnsFilePtr, &n_bases);
-    if (n_bases != 1) {
-      std::ostringstream errmsg;
-      errmsg << "CGNS: Too many bases; only support files with a single bases at this time";
-      IOSS_ERROR(errmsg);
-    }
-
-    CG_ZoneType_t zone_type = check_zone_type(cgnsFilePtr);
+    int base = 1;
     
-    if (int_byte_size_api() == 8) {
-      decomp = std::unique_ptr<DecompositionDataBase>(
-          new DecompositionData<int64_t>(properties, util().communicator()));
-    }
-    else {
-      decomp = std::unique_ptr<DecompositionDataBase>(
-          new DecompositionData<int>(properties, util().communicator()));
-    }
-    assert(decomp != nullptr);
-    decomp->decompose_model(cgnsFilePtr, *get_region(), zone_type);
+    char     basename[33];
+    cgsize_t cell_dimension = 0;
+    cgsize_t phys_dimension = 0;
+    cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
 
-    get_region()->property_add(
-        Ioss::Property("global_node_count", (int64_t)decomp->global_node_count()));
-    get_region()->property_add(
-        Ioss::Property("global_element_count", (int64_t)decomp->global_elem_count()));
+    std::cerr << "In handle structured blocks\n";
+    // Iterate all structured blocks and set the intervals to zero
+    // if the m_proc field does not match current processor...
+    const auto &blocks = decomp->m_structuredBlocks;
+    const auto &zones  = decomp->m_structuredZones;
+    assert(blocks.size() == zones.size());
+    
+    size_t node_offset = 0;
+    size_t cell_offset = 0;
 
-    nodeCount    = decomp->ioss_node_count();
-    elementCount = decomp->ioss_elem_count();
-    std::cerr << "Nodes, Cells = " << nodeCount << "\t" << elementCount << "\n";
+    for (auto &zone : zones) {
+      if (zone->m_adam == zone) {
+	// This is a "root" zone from the undecomposed mesh...
+	// Now see if there are any non-empty blocks with
+	// this m_adam on this processor.  If exists, then create
+	// a StructuredBlock; otherwise, create an empty block.
+	auto block_name = zone->m_adam->m_structuredBlock->name();
 
-    // ========================================================================
-    // Get the number of families in the mesh...
-    // Will treat these as sidesets if they are of the type "FamilyBC_t"
-    cgsize_t base         = 1;
-    cgsize_t num_families = 0;
-    cg_nfamilies(cgnsFilePtr, base, &num_families);
-    for (cgsize_t family = 1; family <= num_families; family++) {
-      char     name[33];
-      cgsize_t num_bc  = 0;
-      cgsize_t num_geo = 0;
-      cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
-#if defined(DEBUG_OUTPUT)
-      std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-                << num_geo << " geometry references\n";
-#endif
-      if (num_bc > 0) {
-        // Create a sideset...
-        std::string    ss_name(name);
-        Ioss::SideSet *ss = new Ioss::SideSet(this, ss_name);
-        get_region()->add(ss);
+	Ioss::StructuredBlock *new_block = nullptr;
+	for (auto &pzone : zones) {
+	  if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
+	    // Create a non-empty structured block on this processor...
+	    auto &block = pzone->m_structuredBlock;
+	    assert(block != nullptr);
+	    std::cerr << Ioss::trmclr::green
+		      << "Creating non-empty " << block_name << " on processor "
+		      << myProcessor
+		      << "\t" << block->get_property("ni").get_int()
+		      << "\t" << block->get_property("nj").get_int()
+		      << "\t" << block->get_property("nk").get_int()
+		      << "\n"
+		      << Ioss::trmclr::normal;
+	    new_block = new Ioss::StructuredBlock(this, block_name,
+						  phys_dimension,
+						  block->get_property("ni").get_int(),
+						  block->get_property("nj").get_int(),
+						  block->get_property("nk").get_int());
+	    new_block->set_index_offset(zone->m_offset);
+	    for (auto &zgc : block->m_zoneConnectivity) {
+	      new_block->m_zoneConnectivity.push_back(zgc);
+	    }
+	    break;
+	  }
+	}
+	if (new_block == nullptr) {
+	  // There is no block on this processor corresponding to the m_adam
+	  // block.  Create an empty block...
+	  std::cerr << Ioss::trmclr::red
+		    << "Creating empty " << block_name << " on processor "
+		    << myProcessor << "\n"
+		    << Ioss::trmclr::normal;
+	  new_block = new Ioss::StructuredBlock(this, block_name,
+						phys_dimension,
+						0, 0, 0);
+	}
+	assert(new_block != nullptr);
+	get_region()->add(new_block);
+	
+	new_block->property_add(Ioss::Property("base", base));
+	new_block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+
+	new_block->set_node_offset(node_offset);
+	new_block->set_cell_offset(cell_offset);
+	node_offset += new_block->get_property("node_count").get_int();
+	cell_offset += new_block->get_property("cell_count").get_int();
       }
     }
 
-    // ========================================================================
-    // Get the number of zones (element blocks) in the mesh...
-    int i = 0;
-    for (auto &block : decomp->m_elementBlocks) {
-      std::string element_topo = block.topologyType;
-#if defined(DEBUG_OUTPUT)
-      std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
-                << "' with " << block.ioss_count() << " elements\n";
-#endif
-      auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
-      eblock->property_add(Ioss::Property("base", base));
-      eblock->property_add(Ioss::Property("zone", block.zone()));
-      eblock->property_add(Ioss::Property("section", block.section()));
-      eblock->property_add(Ioss::Property("original_block_order", i++));
-      get_region()->add(eblock);
-    }
-
-    // ========================================================================
-    // Have sidesets, now create sideblocks for each sideset...
-    int id = 0;
-    for (auto &sset : decomp->m_sideSets) {
-      // See if there is an Ioss::SideSet with a matching name...
-      Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
-      if (ioss_sset != NULL) {
-        auto        zone = decomp->m_zones[sset.zone()];
-        std::string block_name(zone.m_name);
-        block_name += "/";
-        block_name += sset.name();
-        std::string face_topo = sset.topologyType;
-#if defined(DEBUG_OUTPUT)
-        std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name
-                  << " of topo " << face_topo << " with " << sset.ioss_count() << " faces\n";
-#endif
-        const auto &block = decomp->m_elementBlocks[sset.parentBlockIndex];
-
-        std::string      parent_topo = block.topologyType;
-        Ioss::SideBlock *sblk =
-            new Ioss::SideBlock(this, block_name, face_topo, parent_topo, sset.ioss_count());
-        sblk->property_add(Ioss::Property("id", id));
-        sblk->property_add(Ioss::Property("base", 1));
-        sblk->property_add(Ioss::Property("zone", sset.zone()));
-        sblk->property_add(Ioss::Property("section", sset.section()));
-        Ioss::ElementBlock *eblock = get_region()->get_element_block(block.name());
-        if (eblock != NULL) {
-          sblk->set_parent_element_block(eblock);
-        }
-        ioss_sset->add(sblk);
-      }
-      id++; // Really just index into m_sideSets list.
-    }
-
-    Ioss::NodeBlock *nblock =
-        new Ioss::NodeBlock(this, "nodeblock_1", decomp->ioss_node_count(), 3);
+    auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_offset, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
-
-    // Create a single node commset
-    Ioss::CommSet *commset =
-        new Ioss::CommSet(this, "commset_node", "node", decomp->get_commset_node_size());
-    commset->property_add(Ioss::Property("id", 1));
-    get_region()->add(commset);
+    std::cerr << myProcessor << "-Nodes/Cells = " << node_offset << "\t" << cell_offset << "\n";
   }
 
   bool ParallelDatabaseIO::begin(Ioss::State /* state */) { return true; }
@@ -429,24 +523,29 @@ namespace Iocgns {
 
   const Ioss::Map &ParallelDatabaseIO::get_map(entity_type type) const
   {
-    switch (type) {
-    case entity_type::NODE: {
-      size_t offset = decomp->decomp_node_offset();
-      size_t count  = decomp->decomp_node_count();
-      return get_map(nodeMap, nodeCount, offset, count, entity_type::NODE);
+    if (m_zoneType == CG_Unstructured) {
+      switch (type) {
+      case entity_type::NODE: {
+	size_t offset = decomp->decomp_node_offset();
+	size_t count  = decomp->decomp_node_count();
+	return get_map(nodeMap, nodeCount, offset, count, entity_type::NODE);
+      }
+      case entity_type::ELEM: {
+	size_t offset = decomp->decomp_elem_offset();
+	size_t count  = decomp->decomp_elem_count();
+	return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
+      }
+	
+      default:
+	std::ostringstream errmsg;
+	errmsg << "INTERNAL ERROR: Invalid map type. "
+	       << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
+	       << "Please report.\n";
+	IOSS_ERROR(errmsg);
+      }
     }
-    case entity_type::ELEM: {
-      size_t offset = decomp->decomp_elem_offset();
-      size_t count  = decomp->decomp_elem_count();
-      return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
-    }
-
-    default:
-      std::ostringstream errmsg;
-      errmsg << "INTERNAL ERROR: Invalid map type. "
-             << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
-             << "Please report.\n";
-      IOSS_ERROR(errmsg);
+    else {
+      std::cerr << "NodeCount = " << nodeCount << "\n";
     }
   }
 
@@ -609,13 +708,19 @@ namespace Iocgns {
 
     cgsize_t num_to_get = field.verify(data_size);
 
-    cgsize_t rmin[3] = {1, 1, 1};
-    cgsize_t rmax[3];
+    cgsize_t rmin[3] = {0, 0, 0};
+    cgsize_t rmax[3] = {0, 0, 0};
 
-    rmax[0] = sb->get_property("ni").get_int() + 1;
-    rmax[1] = sb->get_property("nj").get_int() + 1;
-    rmax[2] = sb->get_property("nk").get_int() + 1;
-    assert(num_to_get == rmax[0] * rmax[1] * rmax[2]);
+    assert(num_to_get == sb->get_property("node_count").get_int());
+    if (num_to_get > 0) {
+      rmin[0] = sb->get_property("offset_i").get_int() +1 ;
+      rmin[1] = sb->get_property("offset_j").get_int() +1 ;
+      rmin[2] = sb->get_property("offset_k").get_int() +1 ;
+      
+      rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+      rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+      rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+    }
 
     if (role == Ioss::Field::MESH) {
       double *rdata = static_cast<double *>(data);
@@ -693,6 +798,7 @@ namespace Iocgns {
         }
       }
       else if (field.get_name() == "cell_node_ids") {
+
         // Map the local ids in this node block
         // (1...node_count) to global 1-based cell-node ids.
         size_t node_offset = sb->get_node_offset();

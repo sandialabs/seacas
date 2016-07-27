@@ -76,8 +76,8 @@ namespace Ioss {
   {
     assert(index_dim == 1 || index_dim == 2 || index_dim == 3);
 
-    int64_t cell_count = (m_ni == 0 ? 1 : m_ni) * (m_nj == 0 ? 1 : m_nj) * (m_nk == 0 ? 1 : m_nk);
-    int64_t node_count = (m_ni + 1) * (m_nj + 1) * (m_nk + 1);
+    int64_t cell_count = m_ni * (m_nj == 0 ? 1 : m_nj) * (m_nk == 0 ? 1 : m_nk);
+    int64_t node_count = cell_count == 0 ? 0 : (m_ni + 1) * (m_nj + 1) * (m_nk + 1);
 
     properties.add(Property("component_degree", index_dim));
     properties.add(Property("node_count", node_count));

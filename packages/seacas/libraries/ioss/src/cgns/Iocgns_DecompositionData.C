@@ -1,10 +1,8 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h>
-#include <Ioss_Region.h>
 #include <Ioss_StructuredBlock.h>
 #include <cgns/Iocgns_DecompositionData.h>
-#include <cgns/Iocgns_StructuredZoneData.h>
 #include <cgns/Iocgns_Utils.h>
 
 #include <Ioss_TerminalColor.h>
@@ -91,7 +89,7 @@ namespace {
 #endif
 
   // These are used for structured parallel decomposition...
-  void create_structured_block(int cgnsFilePtr, Ioss::Region &region)
+  void create_structured_block(int cgnsFilePtr, std::vector<Ioss::StructuredBlock*> &blocks)
   {
     int base = 1;
     int num_zones = 0;
@@ -99,6 +97,8 @@ namespace {
     size_t num_cell = 0;
     cg_nzones(cgnsFilePtr, base, &num_zones);
 
+    ;
+    
     std::map<std::string, int> zone_name_map;
 
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
@@ -118,19 +118,19 @@ namespace {
       cgsize_t index_dim = 0;
       cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
       // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
-      Ioss::StructuredBlock *block =
-	new Ioss::StructuredBlock(region.get_database(), zone_name,
-				  index_dim, size[3], size[4], size[5]);
+      auto *block = new Ioss::StructuredBlock(nullptr, zone_name, index_dim,
+					      size[3], size[4], size[5]);
 
       block->property_add(Ioss::Property("base", base));
       block->property_add(Ioss::Property("zone", zone));
-      region.add(block);
 
       block->set_node_offset(num_node);
       block->set_cell_offset(num_cell);
       num_node += block->get_property("node_count").get_int();
       num_cell += block->get_property("cell_count").get_int();
 
+      blocks.push_back(block);
+      
       // Handle zone-grid-connectivity...
       int nconn = 0;
       cg_n1to1(cgnsFilePtr, base, zone, &nconn);
@@ -161,8 +161,6 @@ namespace {
       }
     }
 
-    const auto &blocks = region.get_structured_blocks();
-
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
     // definition...
@@ -172,38 +170,6 @@ namespace {
           auto donor_iter = zone_name_map.find(conn.m_donorName);
           assert(donor_iter != zone_name_map.end());
           conn.m_donorZone = (*donor_iter).second;
-        }
-      }
-    }
-
-    for (auto &block : blocks) {
-      block->generate_shared_nodes(region);
-    }
-
-    // Iterate all structured blocks and fill in the global ids:
-    // Map from local node to global node block accounting for
-    // shared nodes.
-    //
-    // Iterate the m_globalNodeIdList in each block.
-    // If the entry is "ss_max", then this is an owned
-    // node -- file with sequential global node block offsets.
-    // If the entry is not "ss_max", then this node is shared
-    // and its entry currently points to the location in the "global offset"
-    // list of the owning node.  Need to get the "global id" value at that
-    // location and put it in m_globalNodeIdList at that location.
-    ssize_t ss_max = std::numeric_limits<ssize_t>::max();
-    size_t  offset = 0;
-    for (auto &block : blocks) {
-      for (auto &node : block->m_globalNodeIdList) {
-        if (node == ss_max) {
-          node = offset++;
-        }
-        else {
-          // Node is shared and the value points to the owner.
-          // Determine which block contains the owner and get its value.
-          auto owner_block = region.get_structured_block(node);
-          assert(owner_block != nullptr);
-          node = owner_block->m_globalNodeIdList[node - owner_block->get_node_offset()];
         }
       }
     }
@@ -293,7 +259,8 @@ namespace {
     zgc.m_donorRangeEnd = zgc.transform(t_matrix, zgc.m_rangeEnd);
   }
 
-  void propogate_zgc(Iocgns::StructuredZoneData *zone, Ioss::Region &region,
+  void propogate_zgc(Iocgns::StructuredZoneData *zone,
+		     std::vector<Ioss::StructuredBlock*> &blocks,
                      std::vector<Ioss::ZoneConnectivity> &zone_connectivity)
   {
     if (zone->m_child1 != nullptr && zone->m_child2 != nullptr) {
@@ -326,24 +293,26 @@ namespace {
       zone_connectivity.emplace_back("decomp" + c1_base, c1->m_zone, "decomp" + c2_base, c2->m_zone,
                                      transform, range_beg, range_end, donor_range_beg,
                                      donor_range_end);
-      propogate_zgc(c1, region, zone_connectivity);
+      propogate_zgc(c1, blocks, zone_connectivity);
 
       zone_connectivity.pop_back();
       OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
       zone_connectivity.emplace_back("decomp" + c2_base, c2->m_zone, "decomp" + c1_base, c1->m_zone,
                                      transform, donor_range_beg, donor_range_end, range_beg,
                                      range_end);
-      propogate_zgc(c2, region, zone_connectivity);
+      propogate_zgc(c2, blocks, zone_connectivity);
     }
     else {
       if (zone->m_adam != zone) {
         // Create a block name based on adam zone and zone id.
         auto zone_name = Ioss::Utils::to_string(zone->m_adam->m_zone) + "_" +
 	  Ioss::Utils::to_string(zone->m_zone);
-        auto *block = new Ioss::StructuredBlock(
-						region.get_database(), zone_name, 3, zone->m_ordinal[0], zone->m_ordinal[1],
+        auto *block = new Ioss::StructuredBlock(nullptr, zone_name, 3, zone->m_ordinal[0], zone->m_ordinal[1],
 						zone->m_ordinal[2], zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]);
-        region.add(block);
+	block->property_add(Ioss::Property("base", 1));
+	block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+	zone->m_structuredBlock = block;
+        blocks.push_back(block);
         OUTPUT << "Creating zone " << zone_name << " IJK: (" << zone->m_ordinal[0] << " "
                   << zone->m_ordinal[1] << " " << zone->m_ordinal[2] << ") "
                   << " Offset: (" << zone->m_offset[0] << " " << zone->m_offset[1] << " "
@@ -386,14 +355,13 @@ namespace Iocgns {
 
   template <typename INT>
   void DecompositionData<INT>::decompose_model(int filePtr,
-					       Ioss::Region &region, 
 					       CG_ZoneType_t common_zone_type)
   {
     if (common_zone_type == CG_Unstructured) {
       decompose_unstructured(filePtr);
     }
     else if (common_zone_type == CG_Structured) {
-      decompose_structured(filePtr, region);
+      decompose_structured(filePtr);
     }
     else {
       std::ostringstream errmsg;
@@ -404,51 +372,59 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::decompose_structured(int filePtr, Ioss::Region &region)
+  void DecompositionData<INT>::decompose_structured(int filePtr)
   {
-    create_structured_block(filePtr, region);
-
-    auto &blocks = region.get_structured_blocks();
-    if (blocks.empty()) {
+    create_structured_block(filePtr, m_structuredBlocks);
+    if (m_structuredBlocks.empty()) {
       return;
     }
-
     double load_balance_threshold = 1.4;
     size_t                                    work = 0;
-    std::vector<Iocgns::StructuredZoneData *> zones;
-    for (const auto &iblock : blocks) {
+    for (const auto &iblock : m_structuredBlocks) {
       std::string name = iblock->name();
       OUTPUT << name << "\n";
 
       auto *z = new Iocgns::StructuredZoneData(
           iblock->get_property("zone").get_int(), iblock->get_property("ni").get_int(),
           iblock->get_property("nj").get_int(), iblock->get_property("nk").get_int());
-      zones.push_back(z);
+      m_structuredZones.push_back(z);
       z->m_adam = z;
+      z->m_structuredBlock = iblock;
       work += z->work();
 
       assert(z->is_active());
-      assert((int)zones.size() == z->m_zone);
+      assert((int)m_structuredZones.size() == z->m_zone);
     }
 
-    size_t new_zone_id            = zones.size() + 1;
+    size_t new_zone_id            = m_structuredZones.size() + 1;
     size_t px                     = 0;
     size_t num_split              = 0;
     bool   split                  = false;
     // Get average work / processor...
     double avg_work = (double)work / m_processorCount;
 
-    auto num_active = zones.size();
+    OUTPUT << "Decomposing structured mesh for " << m_processorCount
+	   << " processors. Average workload is " << avg_work << ", Threshold is "
+	   << load_balance_threshold << "\n";
+
+    auto num_active = m_structuredZones.size();
     OUTPUT << "Number of active zones = " << num_active << ", work = " << work
            << " average work = " << avg_work << "\n";
+
+    if (avg_work < 1.0) {
+      OUTPUT << "ERROR: Model size too small to distribute over " << m_processorCount
+	     << " processors.\n";
+      std::exit(EXIT_FAILURE);
+    }
+
     OUTPUT << "========================================================================\n";
 
     OUTPUT << "Pre-Splitting:\n";
     // Split all blocks where block->work() > avg_work * load_balance_threshold
     do {
-      auto zone_new(zones);
+      auto zone_new(m_structuredZones);
       split = false;
-      for (auto zone : zones) {
+      for (auto zone : m_structuredZones) {
         if (zone->is_active() && zone->work() > avg_work * load_balance_threshold) {
           auto children = zone->split(new_zone_id);
           if (children.first != nullptr && children.second != nullptr) {
@@ -459,7 +435,7 @@ namespace Iocgns {
           }
         }
       }
-      std::swap(zone_new, zones);
+      std::swap(zone_new, m_structuredZones);
     } while (split);
     OUTPUT << "========================================================================\n";
 
@@ -467,24 +443,16 @@ namespace Iocgns {
       // Sort zones based on work.  Most work first..
       // TODO: Possibly filter 'zones' down to only active zones to
       // reduce sort and iteration time.
-      std::sort(zones.begin(), zones.end(),
+      std::sort(m_structuredZones.begin(), m_structuredZones.end(),
                 [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
                   return a->work() > b->work();
                 });
 
-      if (avg_work < 1.0) {
-        OUTPUT << "ERROR: Model size too small to distribute over " << m_processorCount
-               << " processors.\n";
-        std::exit(EXIT_FAILURE);
-      }
-      OUTPUT << "Decomposing structured mesh for " << m_processorCount
-                << " processors. Average workload is " << avg_work << ", Threshold is "
-                << load_balance_threshold << "\n";
-
       std::vector<size_t> work_vector(m_processorCount);
 
-      auto zone_new(zones);
-      for (auto &zone : zones) {
+      auto zone_new(m_structuredZones);
+      for (auto &zone : m_structuredZones) {
+	zone->m_proc = -1;
         if (zone->is_active()) {
           // Assign zone to processor with minimum work...
           size_t proc  = proc_with_minimum_work(work_vector);
@@ -509,7 +477,7 @@ namespace Iocgns {
       OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
       num_split = 0;
       if (px > 0) {
-        for (auto zone : zones) {
+        for (auto zone : m_structuredZones) {
           if (zone->is_active() && exceeds[zone->m_proc]) {
             // Since 'zones' is sorted from most work to least,
             // we just iterate zones and check whether the zone
@@ -530,19 +498,22 @@ namespace Iocgns {
             }
           }
         }
-        std::swap(zone_new, zones);
+        std::swap(zone_new, m_structuredZones);
       }
-      auto active = std::count_if(zones.begin(), zones.end(),
+      auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
       OUTPUT << "Number of active zones = " << active << ", average work = " << avg_work << "\n";
       OUTPUT << "========================================================================\n";
     } while (px > 0 && num_split > 0);
 
-    // Output the processor assignments...
-    for (auto zone : zones) {
+    // Output the processor assignments
+    for (auto zone : m_structuredZones) {
       if (zone->is_active()) {
         OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
                << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+      }
+      else {
+	zone->m_proc = -1;
       }
     }
 
@@ -553,24 +524,26 @@ namespace Iocgns {
 
     // Re-sort based on 'm_zone' which should give us the original
     // order, or at least all 'adam' zones at top.
-    std::sort(zones.begin(), zones.end(),
+    std::sort(m_structuredZones.begin(), m_structuredZones.end(),
               [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
                 return a->m_zone < b->m_zone;
               });
 
-    for (auto &zone : zones) {
+    for (auto &zone : m_structuredZones) {
       if (zone == zone->m_adam) {
         // Find 'adam' block.
-        auto adam = blocks[zone->m_zone - 1];
+        auto &adam = m_structuredBlocks[zone->m_zone - 1];
         OUTPUT << "\tAdam Zone = " << adam->name() << "\n";
         auto zgcs = adam->m_zoneConnectivity;
         // Process children...
-        propogate_zgc(zone, region, zgcs);
+        propogate_zgc(zone, m_structuredBlocks, zgcs);
       }
       else {
         break;
       }
     }
+    OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n"
+	   << Ioss::trmclr::normal;
   }
 
   template <typename INT>
