@@ -140,6 +140,13 @@ namespace Ioss {
     void set_node_offset(size_t offset) { m_nodeOffset = offset; }
     void set_cell_offset(size_t offset) { m_cellOffset = offset; }
 
+    void set_index_offset(std::array<int, 3> &offset)
+    {
+      m_offsetI = offset[0];
+      m_offsetJ = offset[1];
+      m_offsetK = offset[2];
+    }
+
     // Get the local (relative to this block) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
     size_t get_local_node_id(size_t i, size_t j, size_t k) const
