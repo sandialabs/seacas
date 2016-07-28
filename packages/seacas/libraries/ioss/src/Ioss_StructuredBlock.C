@@ -70,9 +70,35 @@ namespace Ioss {
                                    int index_dim, int ni, int nj, int nk, int off_i, int off_j,
                                    int off_k)
       : GroupingEntity(io_database, my_name, ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)), m_ni(ni),
-        m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k), m_nodeOffset(0),
-        m_cellOffset(0), m_nodeBlock(io_database, my_name + "_nodes",
+        m_nj(nj), m_nk(nk),
+	m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
+	m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk),
+	m_nodeOffset(0),  m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0), m_nodeBlock(io_database, my_name + "_nodes",
                                      (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
+  {
+    add_properties_and_fields(index_dim);
+  }
+
+  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
+                                   int index_dim,
+				   std::array<int, 3> &ordinal,
+				   std::array<int, 3> &offset,
+				   std::array<int, 3> &global_ordinal)
+    : GroupingEntity(io_database, my_name, ordinal[0] * ordinal[1] * ordinal[2]),
+		     m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]),
+		     m_offsetI(offset[0]), m_offsetJ(offset[1]), m_offsetK(offset[2]),
+		     m_niGlobal(global_ordinal[0]),
+		     m_njGlobal(global_ordinal[1]),
+		     m_nkGlobal(global_ordinal[2]),
+		     m_nodeOffset(0), m_cellOffset(0),
+		     m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+		     m_nodeBlock(io_database, my_name + "_nodes",
+				 (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
+  {
+    add_properties_and_fields(index_dim);
+  }    
+
+  void StructuredBlock::add_properties_and_fields(int index_dim)
   {
     assert(index_dim == 1 || index_dim == 2 || index_dim == 3);
 
@@ -82,9 +108,15 @@ namespace Ioss {
     properties.add(Property("component_degree", index_dim));
     properties.add(Property("node_count", node_count));
     properties.add(Property("cell_count", cell_count));
+
     properties.add(Property("ni", m_ni));
     properties.add(Property("nj", m_nj));
     properties.add(Property("nk", m_nk));
+
+    properties.add(Property("ni_global", m_niGlobal));
+    properties.add(Property("nj_global", m_njGlobal));
+    properties.add(Property("nk_global", m_nkGlobal));
+
     properties.add(Property("offset_i", m_offsetI));
     properties.add(Property("offset_j", m_offsetJ));
     properties.add(Property("offset_k", m_offsetK));
@@ -99,6 +131,9 @@ namespace Ioss {
     else if (index_dim == 3) {
       vector_name = VECTOR_3D();
     }
+    fields.add(Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
+                           cell_count));
+
     fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
                            node_count));
 

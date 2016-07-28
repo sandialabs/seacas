@@ -153,8 +153,8 @@ namespace Iocgns {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
+    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
     int64_t get_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,
@@ -180,8 +180,8 @@ namespace Iocgns {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field, void *data,
-                               size_t data_size) const override;
+    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override;
     int64_t put_field_internal(const Ioss::SideBlock *fb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeSet *ns, const Ioss::Field &field, void *data,
@@ -215,11 +215,11 @@ namespace Iocgns {
     mutable Ioss::Map nodeMap;
     mutable Ioss::Map elemMap;
 
-    mutable int cgnsFilePtr;
-    size_t      nodeCount;
-    size_t      elementCount;
+    mutable int   cgnsFilePtr;
+    size_t        nodeCount;
+    size_t        elementCount;
     CG_ZoneType_t m_zoneType;
-    
+
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.

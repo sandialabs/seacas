@@ -159,6 +159,8 @@ namespace Iocgns {
 
     block->set_node_offset(num_node);
     block->set_cell_offset(num_cell);
+    block->set_node_global_offset(num_node);
+    block->set_cell_global_offset(num_cell);
     num_node += block->get_property("node_count").get_int();
     num_cell += block->get_property("cell_count").get_int();
 
@@ -789,16 +791,48 @@ namespace Iocgns {
 
     cgsize_t num_to_get = field.verify(data_size);
 
-    cgsize_t rmin[3] = {1, 1, 1};
+    cgsize_t rmin[3];
     cgsize_t rmax[3];
 
-    rmax[0] = sb->get_property("ni").get_int() + 1;
-    rmax[1] = sb->get_property("nj").get_int() + 1;
-    rmax[2] = sb->get_property("nk").get_int() + 1;
-    assert(num_to_get == rmax[0] * rmax[1] * rmax[2]);
-
     if (role == Ioss::Field::MESH) {
+      bool cell_field = true;
+      if (field.get_name() == "mesh_model_coordinates" ||
+	  field.get_name() == "mesh_model_coordinates_x" ||
+	  field.get_name() == "mesh_model_coordinates_y" ||
+	  field.get_name() == "mesh_model_coordinates_z" ||
+	  field.get_name() == "cell_node_ids") {
+	cell_field = false;
+      }
+
+      if (cell_field) {
+	assert(num_to_get == sb->get_property("cell_count").get_int());
+	if (num_to_get > 0) {
+	  rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	  rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	  rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	  rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+	  rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+	  rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+	}
+      }
+      else {
+	// cell nodal field.
+	assert(num_to_get == sb->get_property("node_count").get_int());
+	if (num_to_get > 0) {
+	  rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	  rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	  rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	  rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+	  rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+	  rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+	}
+      }
+
+      assert(num_to_get == (rmax[0]-rmin[0]+1)*(rmax[1]-rmin[1]+1)*(rmax[2]-rmin[2]+1));
       double *rdata = static_cast<double *>(data);
+
       if (field.get_name() == "mesh_model_coordinates_x") {
         int ierr =
             cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax, rdata);
@@ -873,19 +907,25 @@ namespace Iocgns {
         }
       }
       else if (field.get_name() == "cell_node_ids") {
-        // Map the local ids in this node block
-        // (1...node_count) to global 1-based cell-node ids.
-        size_t node_offset = sb->get_node_offset();
-        size_t node_count  = sb->get_property("node_count").get_int();
-
         if (field.get_type() == Ioss::Field::INT64) {
           int64_t *idata = static_cast<int64_t *>(data);
-          std::iota(idata, idata + node_count, node_offset + 1);
+          sb->get_cell_node_ids(idata, true);
         }
         else {
           assert(field.get_type() == Ioss::Field::INT32);
           int *idata = static_cast<int *>(data);
-          std::iota(idata, idata + node_count, node_offset + 1);
+          sb->get_cell_node_ids(idata, true);
+        }
+      }
+      else if (field.get_name() == "cell_ids") {
+        if (field.get_type() == Ioss::Field::INT64) {
+          int64_t *idata = static_cast<int64_t *>(data);
+          sb->get_cell_ids(idata, true);
+        }
+        else {
+          assert(field.get_type() == Ioss::Field::INT32);
+          int *idata = static_cast<int *>(data);
+          sb->get_cell_ids(idata, true);
         }
       }
       else {

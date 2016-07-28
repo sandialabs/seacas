@@ -48,8 +48,8 @@
 #include <Ioss_Decomposition.h>
 #include <Ioss_Field.h>
 #include <Ioss_PropertyManager.h>
-#include <cgns/Iocgns_StructuredZoneData.h>
 #include <Ioss_StructuredBlock.h>
+#include <cgns/Iocgns_StructuredZoneData.h>
 
 #include <cgnslib.h>
 
@@ -85,11 +85,10 @@ namespace Iocgns {
     DecompositionDataBase(MPI_Comm comm) : m_comm(comm), m_myProcessor(0), m_processorCount(0) {}
 
     virtual ~DecompositionDataBase() {}
-    virtual void decompose_model(int filePtr,
-				 CG_ZoneType_t common_zone_type) = 0;
-    virtual size_t ioss_node_count() const    = 0;
-    virtual size_t ioss_elem_count() const    = 0;
-    virtual int    int_size() const           = 0;
+    virtual void decompose_model(int filePtr, CG_ZoneType_t common_zone_type) = 0;
+    virtual size_t ioss_node_count() const = 0;
+    virtual size_t ioss_elem_count() const = 0;
+    virtual int    int_size() const        = 0;
 
     virtual int    spatial_dimension() const = 0;
     virtual size_t global_node_count() const = 0;
@@ -129,9 +128,9 @@ namespace Iocgns {
     std::vector<Ioss::BlockDecompositionData> m_elementBlocks;
     std::vector<Ioss::SetDecompositionData>   m_sideSets;
 
-    std::vector<Ioss::StructuredBlock*>       m_structuredBlocks;
+    std::vector<Ioss::StructuredBlock *>      m_structuredBlocks;
     std::vector<Iocgns::StructuredZoneData *> m_structuredZones;
-    
+
     // Maps nodes shared between zones.
     // TODO: Currently each processor has same map; need to figure out how to reduce size
     std::unordered_map<cgsize_t, cgsize_t> m_zoneSharedMap;
@@ -145,8 +144,7 @@ namespace Iocgns {
 
     int int_size() const { return sizeof(INT); }
 
-    void decompose_model(int filePtr,
-			 CG_ZoneType_t common_zone_type);
+    void decompose_model(int filePtr, CG_ZoneType_t common_zone_type);
 
     int spatial_dimension() const { return m_decomposition.m_spatialDimension; }
 
