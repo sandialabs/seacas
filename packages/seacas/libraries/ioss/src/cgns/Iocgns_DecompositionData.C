@@ -1,7 +1,7 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_ParallelUtils.h>
-#include <Ioss_Utils.h>
 #include <Ioss_StructuredBlock.h>
+#include <Ioss_Utils.h>
 #include <cgns/Iocgns_DecompositionData.h>
 #include <cgns/Iocgns_Utils.h>
 
@@ -13,13 +13,14 @@
 #include <assert.h>
 #include <mpi.h>
 
-
 #define DEBUG_OUTPUT 1
 namespace {
   int rank = 0;
-#define OUTPUT if (rank == 0) std::cerr
+#define OUTPUT                                                                                     \
+  if (rank == 0)                                                                                   \
+  std::cerr
 
-  // ZOLTAN Callback functions...
+// ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
@@ -89,16 +90,16 @@ namespace {
 #endif
 
   // These are used for structured parallel decomposition...
-  void create_structured_block(int cgnsFilePtr, std::vector<Ioss::StructuredBlock*> &blocks)
+  void create_structured_block(int cgnsFilePtr, std::vector<Ioss::StructuredBlock *> &blocks)
   {
-    int base = 1;
-    int num_zones = 0;
-    size_t num_node = 0;
-    size_t num_cell = 0;
+    int    base      = 1;
+    int    num_zones = 0;
+    size_t num_node  = 0;
+    size_t num_cell  = 0;
     cg_nzones(cgnsFilePtr, base, &num_zones);
 
     ;
-    
+
     std::map<std::string, int> zone_name_map;
 
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
@@ -118,8 +119,8 @@ namespace {
       cgsize_t index_dim = 0;
       cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
       // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
-      auto *block = new Ioss::StructuredBlock(nullptr, zone_name, index_dim,
-					      size[3], size[4], size[5]);
+      auto *block =
+          new Ioss::StructuredBlock(nullptr, zone_name, index_dim, size[3], size[4], size[5]);
 
       block->property_add(Ioss::Property("base", base));
       block->property_add(Ioss::Property("zone", zone));
@@ -130,34 +131,34 @@ namespace {
       num_cell += block->get_property("cell_count").get_int();
 
       blocks.push_back(block);
-      
+
       // Handle zone-grid-connectivity...
       int nconn = 0;
       cg_n1to1(cgnsFilePtr, base, zone, &nconn);
       for (int i = 0; i < nconn; i++) {
-	char connectname[33];
-	char donorname[33];
-	std::array<cgsize_t, 6> range;
-	std::array<cgsize_t, 6> donor_range;
-	std::array<int, 3>      transform;
+        char connectname[33];
+        char donorname[33];
+        std::array<cgsize_t, 6> range;
+        std::array<cgsize_t, 6> donor_range;
+        std::array<int, 3>      transform;
 
-	cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-		     donor_range.data(), transform.data());
+        cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                     donor_range.data(), transform.data());
 
-	// Get number of nodes shared with other "previous" zones...
-	// A "previous" zone will have a lower zone number this this zone...
-	int  donor_zone = -1;
-	auto donor_iter = zone_name_map.find(donorname);
-	if (donor_iter != zone_name_map.end()) {
-	  donor_zone = (*donor_iter).second;
-	}
-	std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
-	std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
-	std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
-	std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
+        // Get number of nodes shared with other "previous" zones...
+        // A "previous" zone will have a lower zone number this this zone...
+        int  donor_zone = -1;
+        auto donor_iter = zone_name_map.find(donorname);
+        if (donor_iter != zone_name_map.end()) {
+          donor_zone = (*donor_iter).second;
+        }
+        std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
+        std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
+        std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
+        std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
 
-	block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
-					       range_beg, range_end, donor_beg, donor_end);
+        block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
+                                               range_beg, range_end, donor_beg, donor_end);
       }
     }
 
@@ -204,7 +205,7 @@ namespace {
 
   {
     OUTPUT << "Range 1: " << a.m_beg << " " << a.m_end << " -- " << b.m_beg << " " << b.m_end
-	   << "\n";
+           << "\n";
     return a.m_beg <= b.m_end && b.m_beg <= a.m_end;
   }
 
@@ -259,8 +260,7 @@ namespace {
     zgc.m_donorRangeEnd = zgc.transform(t_matrix, zgc.m_rangeEnd);
   }
 
-  void propogate_zgc(Iocgns::StructuredZoneData *zone,
-		     std::vector<Ioss::StructuredBlock*> &blocks,
+  void propogate_zgc(Iocgns::StructuredZoneData *zone, std::vector<Ioss::StructuredBlock *> &blocks,
                      std::vector<Ioss::ZoneConnectivity> &zone_connectivity)
   {
     if (zone->m_child1 != nullptr && zone->m_child2 != nullptr) {
@@ -275,8 +275,8 @@ namespace {
       // via the m_offset[] field on the local block.
       std::array<int, 3> range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
       std::array<int, 3> range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
-	    c1->m_ordinal[1] + c1->m_offset[1] + 1,
-	    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
+                                    c1->m_ordinal[1] + c1->m_offset[1] + 1,
+                                    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
 
       std::array<int, 3> donor_range_beg(range_beg);
       std::array<int, 3> donor_range_end(range_end);
@@ -285,9 +285,9 @@ namespace {
       donor_range_end[ordinal] = donor_range_beg[ordinal] = range_beg[ordinal] = range_end[ordinal];
 
       auto c1_base =
-	Ioss::Utils::to_string(c1->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c1->m_zone);
+          Ioss::Utils::to_string(c1->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c1->m_zone);
       auto c2_base =
-	Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
+          Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
 
       OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
       zone_connectivity.emplace_back("decomp" + c1_base, c1->m_zone, "decomp" + c2_base, c2->m_zone,
@@ -306,17 +306,18 @@ namespace {
       if (zone->m_adam != zone) {
         // Create a block name based on adam zone and zone id.
         auto zone_name = Ioss::Utils::to_string(zone->m_adam->m_zone) + "_" +
-	  Ioss::Utils::to_string(zone->m_zone);
-        auto *block = new Ioss::StructuredBlock(nullptr, zone_name, 3, zone->m_ordinal[0], zone->m_ordinal[1],
-						zone->m_ordinal[2], zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]);
-	block->property_add(Ioss::Property("base", 1));
-	block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
-	zone->m_structuredBlock = block;
+                         Ioss::Utils::to_string(zone->m_zone);
+        auto *block = new Ioss::StructuredBlock(
+            nullptr, zone_name, 3, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2],
+            zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]);
+        block->property_add(Ioss::Property("base", 1));
+        block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+        zone->m_structuredBlock = block;
         blocks.push_back(block);
         OUTPUT << "Creating zone " << zone_name << " IJK: (" << zone->m_ordinal[0] << " "
-                  << zone->m_ordinal[1] << " " << zone->m_ordinal[2] << ") "
-                  << " Offset: (" << zone->m_offset[0] << " " << zone->m_offset[1] << " "
-                  << zone->m_offset[2] << ")\n";
+               << zone->m_ordinal[1] << " " << zone->m_ordinal[2] << ") "
+               << " Offset: (" << zone->m_offset[0] << " " << zone->m_offset[1] << " "
+               << zone->m_offset[2] << ")\n";
 
         // Add zone connectivities...
         for (auto &zgc : zone_connectivity) {
@@ -328,8 +329,7 @@ namespace {
           }
           else {
             OUTPUT << Ioss::trmclr::red << "\t\t" << zgc.m_donorName << ":\tName '"
-                      << zgc.m_connectionName << " does not overlap." << Ioss::trmclr::normal
-                      << "\n";
+                   << zgc.m_connectionName << " does not overlap." << Ioss::trmclr::normal << "\n";
           }
         }
       }
@@ -354,8 +354,7 @@ namespace Iocgns {
   }
 
   template <typename INT>
-  void DecompositionData<INT>::decompose_model(int filePtr,
-					       CG_ZoneType_t common_zone_type)
+  void DecompositionData<INT>::decompose_model(int filePtr, CG_ZoneType_t common_zone_type)
   {
     if (common_zone_type == CG_Unstructured) {
       decompose_unstructured(filePtr);
@@ -366,20 +365,19 @@ namespace Iocgns {
     else {
       std::ostringstream errmsg;
       errmsg << "ERROR: CGNS: The common zone type is not of type Unstructured or Structured "
-	"which are the only types currently supported";
+                "which are the only types currently supported";
       IOSS_ERROR(errmsg);
     }
   }
 
-  template <typename INT>
-  void DecompositionData<INT>::decompose_structured(int filePtr)
+  template <typename INT> void DecompositionData<INT>::decompose_structured(int filePtr)
   {
     create_structured_block(filePtr, m_structuredBlocks);
     if (m_structuredBlocks.empty()) {
       return;
     }
     double load_balance_threshold = 1.4;
-    size_t                                    work = 0;
+    size_t work                   = 0;
     for (const auto &iblock : m_structuredBlocks) {
       std::string name = iblock->name();
       OUTPUT << name << "\n";
@@ -388,7 +386,7 @@ namespace Iocgns {
           iblock->get_property("zone").get_int(), iblock->get_property("ni").get_int(),
           iblock->get_property("nj").get_int(), iblock->get_property("nk").get_int());
       m_structuredZones.push_back(z);
-      z->m_adam = z;
+      z->m_adam            = z;
       z->m_structuredBlock = iblock;
       work += z->work();
 
@@ -396,16 +394,16 @@ namespace Iocgns {
       assert((int)m_structuredZones.size() == z->m_zone);
     }
 
-    size_t new_zone_id            = m_structuredZones.size() + 1;
-    size_t px                     = 0;
-    size_t num_split              = 0;
-    bool   split                  = false;
+    size_t new_zone_id = m_structuredZones.size() + 1;
+    size_t px          = 0;
+    size_t num_split   = 0;
+    bool   split       = false;
     // Get average work / processor...
     double avg_work = (double)work / m_processorCount;
 
     OUTPUT << "Decomposing structured mesh for " << m_processorCount
-	   << " processors. Average workload is " << avg_work << ", Threshold is "
-	   << load_balance_threshold << "\n";
+           << " processors. Average workload is " << avg_work << ", Threshold is "
+           << load_balance_threshold << "\n";
 
     auto num_active = m_structuredZones.size();
     OUTPUT << "Number of active zones = " << num_active << ", work = " << work
@@ -413,7 +411,7 @@ namespace Iocgns {
 
     if (avg_work < 1.0) {
       OUTPUT << "ERROR: Model size too small to distribute over " << m_processorCount
-	     << " processors.\n";
+             << " processors.\n";
       std::exit(EXIT_FAILURE);
     }
 
@@ -452,14 +450,14 @@ namespace Iocgns {
 
       auto zone_new(m_structuredZones);
       for (auto &zone : m_structuredZones) {
-	zone->m_proc = -1;
+        zone->m_proc = -1;
         if (zone->is_active()) {
           // Assign zone to processor with minimum work...
           size_t proc  = proc_with_minimum_work(work_vector);
           zone->m_proc = proc;
           work_vector[proc] += zone->work();
           OUTPUT << "Assigning zone " << zone->m_zone << " with work " << zone->work()
-                    << " to processor " << proc << "\n";
+                 << " to processor " << proc << "\n";
         }
       }
 
@@ -513,7 +511,7 @@ namespace Iocgns {
                << ", Adam zone = " << zone->m_adam->m_zone << "\n";
       }
       else {
-	zone->m_proc = -1;
+        zone->m_proc = -1;
       }
     }
 
@@ -542,12 +540,10 @@ namespace Iocgns {
         break;
       }
     }
-    OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n"
-	   << Ioss::trmclr::normal;
+    OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
   }
 
-  template <typename INT>
-  void DecompositionData<INT>::decompose_unstructured(int filePtr)
+  template <typename INT> void DecompositionData<INT>::decompose_unstructured(int filePtr)
   {
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
@@ -568,8 +564,8 @@ namespace Iocgns {
     cg_nzones(filePtr, base, &num_zones);
     m_zones.resize(num_zones + 1); // Use 1-based zones.
 
-    size_t global_cell_node_count    = 0;
-    size_t global_element_count = 0;
+    size_t global_cell_node_count = 0;
+    size_t global_element_count   = 0;
     for (int zone = 1; zone <= num_zones; zone++) {
       // All zones are "Unstructured" since this was checked prior to
       // calling this function...
@@ -614,9 +610,9 @@ namespace Iocgns {
 
 #if DEBUG_OUTPUT
     OUTPUT << "Processor " << m_myProcessor << " has " << decomp_elem_count()
-              << " elements; offset = " << decomp_elem_offset() << "\n";
+           << " elements; offset = " << decomp_elem_offset() << "\n";
     OUTPUT << "Processor " << m_myProcessor << " has " << decomp_node_count()
-              << " nodes; offset = " << decomp_node_offset() << ".\n";
+           << " nodes; offset = " << decomp_node_offset() << ".\n";
 #endif
 
     if (m_decomposition.needs_centroids()) {
@@ -906,8 +902,8 @@ namespace Iocgns {
         INT                   blk_end   = blk_start + overlap - 1;
 #if DEBUG_OUTPUT
         OUTPUT << "Processor " << m_myProcessor << " has " << overlap
-                  << " elements on element block " << block.name() << "\t(" << blk_start << " to "
-                  << blk_end << ")\n";
+               << " elements on element block " << block.name() << "\t(" << blk_start << " to "
+               << blk_end << ")\n";
 #endif
         block.fileSectionOffset = blk_start;
         cg_elements_partial_read(filePtr, base, zone, section, blk_start, blk_end,
@@ -1075,8 +1071,8 @@ namespace Iocgns {
           start  = start - beg + 1;
           finish = finish - beg;
           OUTPUT << m_myProcessor << ": reading " << count << " nodes from zone " << zone
-                    << " starting at " << start << " with an offset of " << offset << " ending at "
-                    << finish << "\n";
+                 << " starting at " << start << " with an offset of " << offset << " ending at "
+                 << finish << "\n";
 
           int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
                                    CG_RealDouble, &start, &finish, &data[offset]);

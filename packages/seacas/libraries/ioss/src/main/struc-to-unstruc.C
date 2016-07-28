@@ -89,6 +89,23 @@ namespace {
 
   template <typename INT>
   void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
+
+  size_t transfer_coord(std::vector<double> &to, std::vector<double> &from,
+                        std::vector<ssize_t> &node_id_list, size_t offset)
+  {
+    if (!node_id_list.empty()) {
+      for (size_t i = 0; i < node_id_list.size(); i++) {
+        size_t node = node_id_list[i];
+        to[node]    = from[i];
+      }
+    }
+    else {
+      for (auto x : from) {
+        to[offset++] = x;
+      }
+    }
+    return offset;
+  }
 } // namespace
 // ========================================================================
 
@@ -199,19 +216,28 @@ namespace {
     auto   nb              = output_region.get_node_blocks()[0];
 
     {
+      size_t           nod_ind = 0;
       std::vector<int> ids(glob_node_count); // To hold the global node id map.
       auto &           blocks = region.get_structured_blocks();
       for (auto &block : blocks) {
-	std::vector<int> cell_id;
-	block->get_field_data("cell_node_ids", cell_id);
-	for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-	  size_t node = block->m_globalNodeIdList[i];
-	  assert(node >= 0 && node < glob_node_count);
-	  if (ids[node] == 0) {
-	    ids[node] = cell_id[i];
-	  }
-	}
+        std::vector<int> cell_id;
+        block->get_field_data("cell_node_ids", cell_id);
+        if (!block->m_globalNodeIdList.empty()) {
+          for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
+            size_t node = block->m_globalNodeIdList[i];
+            assert(node >= 0 && node < glob_node_count);
+            if (ids[node] == 0) {
+              ids[node] = cell_id[i];
+            }
+          }
+        }
+        else {
+          for (auto node : cell_id) {
+            ids[nod_ind++] = node;
+          }
+        }
       }
+      assert(nod_ind = glob_node_count);
       nb->put_field_data("ids", ids);
     }
 
@@ -219,27 +245,16 @@ namespace {
     std::vector<double> coordinate_y(glob_node_count, -100000);
     std::vector<double> coordinate_z(glob_node_count, -100000);
 
-    auto &blocks = region.get_structured_blocks();
+    size_t offset = 0; // Used only until parallel shared nodes figured out.
+    auto & blocks = region.get_structured_blocks();
     for (auto &block : blocks) {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
-      for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-        size_t node = block->m_globalNodeIdList[i];
-        assert(node >= 0 && node < glob_node_count);
-        coordinate_x[node] = coord_tmp[i];
-      }
+      transfer_coord(coordinate_x, coord_tmp, block->m_globalNodeIdList, offset);
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
-      for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-        size_t node = block->m_globalNodeIdList[i];
-        assert(node >= 0 && node < glob_node_count);
-        coordinate_y[node] = coord_tmp[i];
-      }
+      transfer_coord(coordinate_y, coord_tmp, block->m_globalNodeIdList, offset);
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
-      for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-        size_t node = block->m_globalNodeIdList[i];
-        assert(node >= 0 && node < glob_node_count);
-        coordinate_z[node] = coord_tmp[i];
-      }
+      offset = transfer_coord(coordinate_z, coord_tmp, block->m_globalNodeIdList, offset);
     }
     nb->put_field_data("mesh_model_coordinates_x", coordinate_x);
     nb->put_field_data("mesh_model_coordinates_y", coordinate_y);
@@ -289,19 +304,24 @@ namespace {
         // Now, map them to processor-global values...
 
         const auto &gnil = block->m_globalNodeIdList;
-
-        for (size_t i = 0; i < connect.size(); i++) {
-          connect[i] = gnil[connect[i]] + 1;
-        }
+	if (!gnil.empty()) {
+	  for (size_t i = 0; i < connect.size(); i++) {
+	    connect[i] = gnil[connect[i]] + 1;
+	  }
+	}
+	else {
+	  for (size_t i = 0; i < connect.size(); i++) {
+	    connect[i] = connect[i] + 1;
+	  }
+	}
 
         output->put_field_data("connectivity_raw", connect);
       }
 
       {
-        size_t           cell_count = block->get_property("cell_count").get_int();
-        std::vector<int> ids(cell_count);
-        std::iota(ids.begin(), ids.end(), block->get_cell_offset() + 1);
-        output->put_field_data("ids", ids);
+        std::vector<int> ids;
+        block->get_field_data("cell_ids", ids);
+	output->put_field_data("ids", ids);
       }
     }
     return;

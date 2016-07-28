@@ -103,6 +103,9 @@ namespace Ioss {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
                     int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, 
+		    std::array<int, 3> &ordinal, std::array<int, 3> &offset,
+		    std::array<int, 3> &global_ordinal);
 
     ~StructuredBlock() override;
 
@@ -139,13 +142,8 @@ namespace Ioss {
      */
     void set_node_offset(size_t offset) { m_nodeOffset = offset; }
     void set_cell_offset(size_t offset) { m_cellOffset = offset; }
-
-    void set_index_offset(std::array<int, 3> &offset)
-    {
-      m_offsetI = offset[0];
-      m_offsetJ = offset[1];
-      m_offsetK = offset[2];
-    }
+    void set_node_global_offset(size_t offset) { m_nodeGlobalOffset = offset; }
+    void set_cell_global_offset(size_t offset) { m_cellGlobalOffset = offset; }
 
     // Get the local (relative to this block) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
@@ -164,6 +162,7 @@ namespace Ioss {
     // Get the global cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_global_node_offset(size_t i, size_t j, size_t k) const
+
     {
       return get_local_node_offset(i, j, k) + m_nodeOffset;
     }
@@ -177,6 +176,84 @@ namespace Ioss {
       size_t offset = get_local_node_offset(i, j, k);
       return m_globalNodeIdList[offset];
     }
+
+  template <typename INT>
+    size_t get_cell_node_ids(INT *idata, bool add_offset) const
+  {
+    // Fill 'idata' with the cell node ids which are the
+    // 1-based location of each node in this zone
+    // The location is based on the "model" zone.
+    // If this is a parallel decomposed model, then
+    // this block may be a subset of the "model" zone
+    //
+    // if 'add_offset' is true, then add the m_cellGlobalOffset
+    // which changes the location to be the location in the
+    // entire "mesh" instead of within a "zone"
+    
+    size_t index = 0;
+    size_t offset = add_offset ? m_nodeGlobalOffset : 0;
+    
+    if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+      return index;
+    }
+
+    for (int kk = 0; kk < m_nk+1; kk++) {
+      int k = m_offsetK + kk;
+      for (int jj = 0; jj < m_nj+1; jj++) {
+	int j = m_offsetJ + jj;
+	for (int ii = 0; ii < m_ni+1; ii++) {
+	  int i = m_offsetI + ii;
+
+	  size_t ind =
+	    k * (m_niGlobal + 1) * (m_njGlobal + 1) +
+	    j * (m_niGlobal + 1) +
+	    i;
+
+	  idata[index++] = ind + offset + 1;
+	}
+      }
+    }
+    return index;
+  }
+
+  template <typename INT>
+    size_t get_cell_ids(INT *idata, bool add_offset) const
+  {
+    // Fill 'idata' with the cell ids which are the
+    // 1-based location of each cell in this zone
+    // The location is based on the "model" zone.
+    // If this is a parallel decomposed model, then
+    // this block may be a subset of the "model" zone
+    //
+    // if 'add_offset' is true, then add the m_cellGlobalOffset
+    // which changes the location to be the location in the
+    // entire "mesh" instead of within a "zone"
+    
+    size_t index = 0;
+    size_t offset = add_offset ? m_cellGlobalOffset : 0;
+    
+    if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+      return index;
+    }
+
+    for (int kk = 0; kk < m_nk; kk++) {
+      int k = m_offsetK + kk;
+      for (int jj = 0; jj < m_nj; jj++) {
+	int j = m_offsetJ + jj;
+	for (int ii = 0; ii < m_ni; ii++) {
+	  int i = m_offsetI + ii;
+
+	  size_t ind =
+	    k * m_niGlobal * m_njGlobal +
+	    j * m_niGlobal +
+	    i;
+
+	  idata[index++] = ind + offset + 1;
+	}
+      }
+    }
+    return index;
+  }
 
     void generate_shared_nodes(const Ioss::Region &region);
 
@@ -197,6 +274,8 @@ namespace Ioss {
      */
     size_t get_node_offset() const { return m_nodeOffset; }
     size_t get_cell_offset() const { return m_cellOffset; }
+    size_t get_node_global_offset() const { return m_nodeGlobalOffset; }
+    size_t get_cell_global_offset() const { return m_cellGlobalOffset; }
 
     bool contains(size_t global_offset) const
     {
@@ -212,6 +291,8 @@ namespace Ioss {
                                     size_t data_size) const override;
 
   private:
+    void add_properties_and_fields(int index_dim);
+
     int m_ni;
     int m_nj;
     int m_nk;
@@ -220,8 +301,15 @@ namespace Ioss {
     int m_offsetJ;
     int m_offsetK;
 
+    int m_niGlobal; // The ni,nj,nk of the master block this is a subset of.
+    int m_njGlobal;
+    int m_nkGlobal;
+
     size_t m_nodeOffset;
     size_t m_cellOffset;
+
+    size_t m_nodeGlobalOffset;
+    size_t m_cellGlobalOffset;
 
     Ioss::NodeBlock m_nodeBlock;
 

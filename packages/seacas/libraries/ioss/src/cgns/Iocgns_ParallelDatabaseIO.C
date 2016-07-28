@@ -76,13 +76,14 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
+#define STR(x) std::cerr << Ioss::trmclr::blue << #x << " = " << x << "\n" << Ioss::trmclr::normal
 
 namespace {
   CG_ZoneType_t check_zone_type(int cgnsFilePtr)
   {
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
-    int base = 1;
+    int base      = 1;
     int num_zones = 0;
     cg_nzones(cgnsFilePtr, base, &num_zones);
 
@@ -194,7 +195,7 @@ namespace Iocgns {
     }
 
     m_zoneType = check_zone_type(cgnsFilePtr);
-    
+
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(
           new DecompositionData<int64_t>(properties, util().communicator()));
@@ -312,7 +313,7 @@ namespace Iocgns {
   }
 
   void ParallelDatabaseIO::create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
-                                           size_t &num_cell)
+                                                   size_t &num_cell)
   {
     cgsize_t size[9];
     char     zone_name[33];
@@ -426,7 +427,7 @@ namespace Iocgns {
   void ParallelDatabaseIO::handle_structured_blocks()
   {
     int base = 1;
-    
+
     char     basename[33];
     cgsize_t cell_dimension = 0;
     cgsize_t phys_dimension = 0;
@@ -438,65 +439,61 @@ namespace Iocgns {
     const auto &blocks = decomp->m_structuredBlocks;
     const auto &zones  = decomp->m_structuredZones;
     assert(blocks.size() == zones.size());
-    
+
     size_t node_offset = 0;
     size_t cell_offset = 0;
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
-	// This is a "root" zone from the undecomposed mesh...
-	// Now see if there are any non-empty blocks with
-	// this m_adam on this processor.  If exists, then create
-	// a StructuredBlock; otherwise, create an empty block.
-	auto block_name = zone->m_adam->m_structuredBlock->name();
+        // This is a "root" zone from the undecomposed mesh...
+        // Now see if there are any non-empty blocks with
+        // this m_adam on this processor.  If exists, then create
+        // a StructuredBlock; otherwise, create an empty block.
+        auto block_name = zone->m_structuredBlock->name();
 
-	Ioss::StructuredBlock *new_block = nullptr;
-	for (auto &pzone : zones) {
-	  if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
-	    // Create a non-empty structured block on this processor...
-	    auto &block = pzone->m_structuredBlock;
-	    assert(block != nullptr);
-	    std::cerr << Ioss::trmclr::green
-		      << "Creating non-empty " << block_name << " on processor "
-		      << myProcessor
-		      << "\t" << block->get_property("ni").get_int()
-		      << "\t" << block->get_property("nj").get_int()
-		      << "\t" << block->get_property("nk").get_int()
-		      << "\n"
-		      << Ioss::trmclr::normal;
-	    new_block = new Ioss::StructuredBlock(this, block_name,
-						  phys_dimension,
-						  block->get_property("ni").get_int(),
-						  block->get_property("nj").get_int(),
-						  block->get_property("nk").get_int());
-	    new_block->set_index_offset(zone->m_offset);
-	    for (auto &zgc : block->m_zoneConnectivity) {
-	      new_block->m_zoneConnectivity.push_back(zgc);
-	    }
-	    break;
-	  }
-	}
-	if (new_block == nullptr) {
-	  // There is no block on this processor corresponding to the m_adam
-	  // block.  Create an empty block...
-	  std::cerr << Ioss::trmclr::red
-		    << "Creating empty " << block_name << " on processor "
-		    << myProcessor << "\n"
-		    << Ioss::trmclr::normal;
-	  new_block = new Ioss::StructuredBlock(this, block_name,
-						phys_dimension,
-						0, 0, 0);
-	}
-	assert(new_block != nullptr);
-	get_region()->add(new_block);
-	
-	new_block->property_add(Ioss::Property("base", base));
-	new_block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+        Ioss::StructuredBlock *new_block = nullptr;
+        for (auto &pzone : zones) {
+          if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
+            // Create a non-empty structured block on this processor...
+            auto &block = pzone->m_structuredBlock;
+            assert(block != nullptr);
+            std::cerr << Ioss::trmclr::green << "Creating non-empty " << block_name
+                      << " on processor " << myProcessor << "\t"
+                      << block->get_property("ni").get_int() << "\t"
+                      << block->get_property("nj").get_int() << "\t"
+                      << block->get_property("nk").get_int() << "\n"
+                      << Ioss::trmclr::normal;
+            new_block =
+                new Ioss::StructuredBlock(this, block_name, phys_dimension, pzone->m_ordinal,
+                                          pzone->m_offset, pzone->m_adam->m_ordinal);
 
-	new_block->set_node_offset(node_offset);
-	new_block->set_cell_offset(cell_offset);
-	node_offset += new_block->get_property("node_count").get_int();
-	cell_offset += new_block->get_property("cell_count").get_int();
+            for (auto &zgc : block->m_zoneConnectivity) {
+              new_block->m_zoneConnectivity.push_back(zgc);
+            }
+            break;
+          }
+        }
+        if (new_block == nullptr) {
+          // There is no block on this processor corresponding to the m_adam
+          // block.  Create an empty block...
+          std::cerr << Ioss::trmclr::red << "Creating empty " << block_name << " on processor "
+                    << myProcessor << "\n"
+                    << Ioss::trmclr::normal;
+          new_block = new Ioss::StructuredBlock(this, block_name, phys_dimension, 0, 0, 0);
+        }
+        assert(new_block != nullptr);
+        get_region()->add(new_block);
+
+        new_block->property_add(Ioss::Property("base", base));
+        new_block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+
+        new_block->set_node_offset(node_offset);
+        new_block->set_cell_offset(cell_offset);
+        node_offset += new_block->get_property("node_count").get_int();
+        cell_offset += new_block->get_property("cell_count").get_int();
+
+        new_block->set_node_global_offset(zone->m_structuredBlock->get_node_offset());
+        new_block->set_cell_global_offset(zone->m_structuredBlock->get_cell_offset());
       }
     }
 
@@ -526,22 +523,22 @@ namespace Iocgns {
     if (m_zoneType == CG_Unstructured) {
       switch (type) {
       case entity_type::NODE: {
-	size_t offset = decomp->decomp_node_offset();
-	size_t count  = decomp->decomp_node_count();
-	return get_map(nodeMap, nodeCount, offset, count, entity_type::NODE);
+        size_t offset = decomp->decomp_node_offset();
+        size_t count  = decomp->decomp_node_count();
+        return get_map(nodeMap, nodeCount, offset, count, entity_type::NODE);
       }
       case entity_type::ELEM: {
-	size_t offset = decomp->decomp_elem_offset();
-	size_t count  = decomp->decomp_elem_count();
-	return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
+        size_t offset = decomp->decomp_elem_offset();
+        size_t count  = decomp->decomp_elem_count();
+        return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
       }
-	
+
       default:
-	std::ostringstream errmsg;
-	errmsg << "INTERNAL ERROR: Invalid map type. "
-	       << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
-	       << "Please report.\n";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "INTERNAL ERROR: Invalid map type. "
+               << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
+               << "Please report.\n";
+        IOSS_ERROR(errmsg);
       }
     }
     else {
@@ -605,6 +602,7 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
+    std::cerr << "Getting Node Field " << field.get_name() << "\n";
     size_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
@@ -699,31 +697,62 @@ namespace Iocgns {
     return -1;
   }
 
-  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                                         void *data, size_t data_size) const
+  int64_t ParallelDatabaseIO::get_field_internal(const Ioss::StructuredBlock *sb,
+                                                 const Ioss::Field &field, void *data,
+                                                 size_t data_size) const
   {
+    cgsize_t num_to_get = field.verify(data_size);
+
+    // TODO: Need to change this if start using parallel API with collectives.
+    if (num_to_get == 0)
+      return num_to_get;
+
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t              base = sb->get_property("base").get_int();
     cgsize_t              zone = sb->get_property("zone").get_int();
 
-    cgsize_t num_to_get = field.verify(data_size);
-
     cgsize_t rmin[3] = {0, 0, 0};
     cgsize_t rmax[3] = {0, 0, 0};
 
-    assert(num_to_get == sb->get_property("node_count").get_int());
-    if (num_to_get > 0) {
-      rmin[0] = sb->get_property("offset_i").get_int() +1 ;
-      rmin[1] = sb->get_property("offset_j").get_int() +1 ;
-      rmin[2] = sb->get_property("offset_k").get_int() +1 ;
-      
-      rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-      rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-      rmax[2] = rmin[2] + sb->get_property("nk").get_int();
-    }
-
     if (role == Ioss::Field::MESH) {
+      bool cell_field = true;
+      if (field.get_name() == "mesh_model_coordinates" ||
+	  field.get_name() == "mesh_model_coordinates_x" ||
+	  field.get_name() == "mesh_model_coordinates_y" ||
+	  field.get_name() == "mesh_model_coordinates_z" ||
+	  field.get_name() == "cell_node_ids") {
+	cell_field = false;
+      }
+
+      if (cell_field) {
+	assert(num_to_get == sb->get_property("cell_count").get_int());
+	if (num_to_get > 0) {
+	  rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	  rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	  rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	  rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+	  rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+	  rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+	}
+      }
+      else {
+	// cell nodal field.
+	assert(num_to_get == sb->get_property("node_count").get_int());
+	if (num_to_get > 0) {
+	  rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	  rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	  rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	  rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+	  rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+	  rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+	}
+      }
+
+      assert(num_to_get == (rmax[0]-rmin[0]+1)*(rmax[1]-rmin[1]+1)*(rmax[2]-rmin[2]+1));
       double *rdata = static_cast<double *>(data);
+
       if (field.get_name() == "mesh_model_coordinates_x") {
         int ierr =
             cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax, rdata);
@@ -798,20 +827,25 @@ namespace Iocgns {
         }
       }
       else if (field.get_name() == "cell_node_ids") {
-
-        // Map the local ids in this node block
-        // (1...node_count) to global 1-based cell-node ids.
-        size_t node_offset = sb->get_node_offset();
-        size_t node_count  = sb->get_property("node_count").get_int();
-
         if (field.get_type() == Ioss::Field::INT64) {
           int64_t *idata = static_cast<int64_t *>(data);
-          std::iota(idata, idata + node_count, node_offset + 1);
+          sb->get_cell_node_ids(idata, true);
         }
         else {
           assert(field.get_type() == Ioss::Field::INT32);
           int *idata = static_cast<int *>(data);
-          std::iota(idata, idata + node_count, node_offset + 1);
+          sb->get_cell_node_ids(idata, true);
+        }
+      }
+      else if (field.get_name() == "cell_ids") {
+        if (field.get_type() == Ioss::Field::INT64) {
+          int64_t *idata = static_cast<int64_t *>(data);
+          sb->get_cell_ids(idata, true);
+        }
+        else {
+          assert(field.get_type() == Ioss::Field::INT32);
+          int *idata = static_cast<int *>(data);
+          sb->get_cell_ids(idata, true);
         }
       }
       else {
@@ -981,8 +1015,8 @@ namespace Iocgns {
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::StructuredBlock * /* sb */,
-                                         const Ioss::Field & /* field */, void * /* data */,
-                                         size_t /* data_size */) const
+                                                 const Ioss::Field & /* field */, void * /* data */,
+                                                 size_t /* data_size */) const
   {
     return -1;
   }
