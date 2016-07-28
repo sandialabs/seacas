@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 2015, 2016
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -70,33 +70,27 @@ namespace Ioss {
                                    int index_dim, int ni, int nj, int nk, int off_i, int off_j,
                                    int off_k)
       : GroupingEntity(io_database, my_name, ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)), m_ni(ni),
-        m_nj(nj), m_nk(nk),
-	m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
-	m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk),
-	m_nodeOffset(0),  m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0), m_nodeBlock(io_database, my_name + "_nodes",
-                                     (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
+        m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k), m_niGlobal(m_ni),
+        m_njGlobal(m_nj), m_nkGlobal(m_nk), m_nodeOffset(0), m_cellOffset(0), m_nodeGlobalOffset(0),
+        m_cellGlobalOffset(0), m_nodeBlock(io_database, my_name + "_nodes",
+                                           (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
   {
     add_properties_and_fields(index_dim);
   }
 
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim,
-				   std::array<int, 3> &ordinal,
-				   std::array<int, 3> &offset,
-				   std::array<int, 3> &global_ordinal)
-    : GroupingEntity(io_database, my_name, ordinal[0] * ordinal[1] * ordinal[2]),
-		     m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]),
-		     m_offsetI(offset[0]), m_offsetJ(offset[1]), m_offsetK(offset[2]),
-		     m_niGlobal(global_ordinal[0]),
-		     m_njGlobal(global_ordinal[1]),
-		     m_nkGlobal(global_ordinal[2]),
-		     m_nodeOffset(0), m_cellOffset(0),
-		     m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
-		     m_nodeBlock(io_database, my_name + "_nodes",
-				 (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
+                                   int index_dim, std::array<int, 3> &ordinal,
+                                   std::array<int, 3> &offset, std::array<int, 3> &global_ordinal)
+      : GroupingEntity(io_database, my_name, ordinal[0] * ordinal[1] * ordinal[2]),
+        m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
+        m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
+        m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]), m_nodeOffset(0),
+        m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
+                    index_dim)
   {
     add_properties_and_fields(index_dim);
-  }    
+  }
 
   void StructuredBlock::add_properties_and_fields(int index_dim)
   {
@@ -131,8 +125,8 @@ namespace Ioss {
     else if (index_dim == 3) {
       vector_name = VECTOR_3D();
     }
-    fields.add(Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
-                           cell_count));
+    fields.add(
+        Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, cell_count));
 
     fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
                            node_count));
@@ -253,7 +247,7 @@ namespace Ioss {
     // offset of the owning node.
   }
 
-  std::ostream& operator<<(std::ostream& os, const ZoneConnectivity& zgc)
+  std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc)
   {
     std::array<std::string, 7> tf = {{"-k", "-j", "-i", " ", "i", "j", "k"}};
 
@@ -271,18 +265,15 @@ namespace Ioss {
     transform += " k..";
     transform += tf[zgc.m_transform[2] + 3];
     transform += "] ";
-    
-    os << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
-       << "' shares " << zgc.get_shared_node_count()
+
+    os << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName << "' shares "
+       << zgc.get_shared_node_count()
        << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
-       << "\n\t\t\t\tRange: ["
-       << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
-       << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", "
-       << zgc.m_rangeBeg[2] << ".." << zgc.m_rangeEnd[2]
-       << "]\tDonor Range: ["
-       << zgc.m_donorRangeBeg[0] << ".." << zgc.m_donorRangeEnd[0] << ", "
-       << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1] << ", "
-       << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]";
+       << "\n\t\t\t\tRange: [" << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
+       << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", " << zgc.m_rangeBeg[2] << ".."
+       << zgc.m_rangeEnd[2] << "]\tDonor Range: [" << zgc.m_donorRangeBeg[0] << ".."
+       << zgc.m_donorRangeEnd[0] << ", " << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1]
+       << ", " << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]";
     return os;
   }
 
@@ -330,9 +321,12 @@ namespace Ioss {
     donor[2] =
         t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRangeBeg[2];
 
-    assert(std::fabs(donor[0] - m_donorRangeBeg[0]) <= std::fabs(m_donorRangeBeg[0] - m_donorRangeEnd[0]));
-    assert(std::fabs(donor[1] - m_donorRangeBeg[1]) <= std::fabs(m_donorRangeBeg[1] - m_donorRangeEnd[1]));
-    assert(std::fabs(donor[2] - m_donorRangeBeg[2]) <= std::fabs(m_donorRangeBeg[2] - m_donorRangeEnd[2]));
+    assert(std::fabs(donor[0] - m_donorRangeBeg[0]) <=
+           std::fabs(m_donorRangeBeg[0] - m_donorRangeEnd[0]));
+    assert(std::fabs(donor[1] - m_donorRangeBeg[1]) <=
+           std::fabs(m_donorRangeBeg[1] - m_donorRangeEnd[1]));
+    assert(std::fabs(donor[2] - m_donorRangeBeg[2]) <=
+           std::fabs(m_donorRangeBeg[2] - m_donorRangeEnd[2]));
     return donor;
   }
 
@@ -348,9 +342,12 @@ namespace Ioss {
     diff[1] = index_1[1] - m_donorRangeBeg[1];
     diff[2] = index_1[2] - m_donorRangeBeg[2];
 
-    index[0] = t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
-    index[1] = t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
-    index[2] = t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
+    index[0] =
+        t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
+    index[1] =
+        t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
+    index[2] =
+        t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
 
     return index;
   }
