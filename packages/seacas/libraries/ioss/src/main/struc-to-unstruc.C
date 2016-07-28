@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 2016
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -80,15 +80,12 @@ namespace {
 
   int rank = 0;
 
-  void transfer_coordinates(Ioss::Region &region, Ioss::Region &output_region);
+  void transfer_nodal(Ioss::Region &region, Ioss::Region &output_region);
   void transfer_connectivity(Ioss::Region &region, Ioss::Region &output_region);
 
-  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
-  void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
-  void file_copy(const std::string &input, const std::string &output);
-
-  template <typename INT>
-  void set_owned_node_count(Ioss::Region &region, int my_processor, INT dummy);
+  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region);
+  void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region);
+  void create_unstructured(const std::string &input, const std::string &output);
 
   size_t transfer_coord(std::vector<double> &to, std::vector<double> &from,
                         std::vector<ssize_t> &node_id_list, size_t offset)
@@ -127,12 +124,17 @@ int main(int argc, char *argv[])
   if (argc > 2) {
     out_file = argv[2];
   }
+  else {
+    OUTPUT << "ERROR: Syntax is " << argv[0] << " {structured_input} {unstructured_output}\n";
+    return EXIT_FAILURE;
+  }
+
   OUTPUT << "Structured Input:    '" << in_file << "'\n";
   OUTPUT << "Unstructured Output: '" << out_file << "'\n";
   OUTPUT << '\n';
 
   double begin = timer();
-  file_copy(in_file, out_file);
+  create_unstructured(in_file, out_file);
   double end = timer();
 
   OUTPUT << "\n\tElapsed time = " << end - begin << " seconds.\n";
@@ -145,19 +147,17 @@ int main(int argc, char *argv[])
 }
 
 namespace {
-  void file_copy(const std::string &inpfile, const std::string &outfile)
+  void create_unstructured(const std::string &inpfile, const std::string &outfile)
   {
     Ioss::PropertyManager properties;
     Ioss::DatabaseIO *    dbi = Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
+							(MPI_Comm)MPI_COMM_WORLD, properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
 
     // NOTE: 'region' owns 'db' pointer at this time...
-    std::cerr << "Creating Region\n";
     Ioss::Region region(dbi, "region_1");
-    std::cerr << "Region Created\n";
 
     //========================================================================
     // OUTPUT ...
@@ -174,50 +174,32 @@ namespace {
     output_region.property_add(Ioss::Property(std::string("code_name"), codename));
     output_region.property_add(Ioss::Property(std::string("code_version"), version));
 
-    OUTPUT << "DEFINING MODEL ... \n";
     if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
       OUTPUT << "ERROR: Could not put output region into define model state\n";
       std::exit(EXIT_FAILURE);
     }
 
-    transfer_nodeblock(region, output_region, true);
-
-#ifdef HAVE_MPI
-    // This also assumes that the node order and count is the same for input
-    // and output regions... (This is checked during nodeset output)
-    if (output_region.get_database()->needs_shared_node_information()) {
-      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-      set_owned_node_count(region, rank, (int)0);
-    }
-#endif
-
-    transfer_elementblocks(region, output_region, true);
-
-    OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
+    transfer_nodeblock(region, output_region);
+    transfer_elementblocks(region, output_region);
 
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
-
-    OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
 
     // Model defined, now fill in the model data...
     output_region.begin_mode(Ioss::STATE_MODEL);
 
-    transfer_coordinates(region, output_region);
+    transfer_nodal(region, output_region);
     transfer_connectivity(region, output_region);
 
-    OUTPUT << "END STATE_MODEL... " << '\n';
     output_region.end_mode(Ioss::STATE_MODEL);
   }
 
-  void transfer_coordinates(Ioss::Region &region, Ioss::Region &output_region)
+  void transfer_nodal(Ioss::Region &region, Ioss::Region &output_region)
   {
-    size_t glob_node_count = region.get_node_blocks()[0]->get_property("entity_count").get_int();
-    auto   nb              = output_region.get_node_blocks()[0];
-
+    auto nb = output_region.get_node_blocks()[0];
+    size_t node_count = region.get_node_blocks()[0]->get_property("entity_count").get_int();
     {
       size_t           nod_ind = 0;
-      std::vector<int> ids(glob_node_count); // To hold the global node id map.
+      std::vector<int> ids(node_count); // To hold the global node id map.
       auto &           blocks = region.get_structured_blocks();
       for (auto &block : blocks) {
         std::vector<int> cell_id;
@@ -225,7 +207,7 @@ namespace {
         if (!block->m_globalNodeIdList.empty()) {
           for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
             size_t node = block->m_globalNodeIdList[i];
-            assert(node >= 0 && node < glob_node_count);
+            assert(node >= 0 && node < node_count);
             if (ids[node] == 0) {
               ids[node] = cell_id[i];
             }
@@ -237,13 +219,13 @@ namespace {
           }
         }
       }
-      assert(nod_ind = glob_node_count);
+      assert(nb != nullptr);
       nb->put_field_data("ids", ids);
     }
 
-    std::vector<double> coordinate_x(glob_node_count, -100000);
-    std::vector<double> coordinate_y(glob_node_count, -100000);
-    std::vector<double> coordinate_z(glob_node_count, -100000);
+    std::vector<double> coordinate_x(node_count);
+    std::vector<double> coordinate_y(node_count);
+    std::vector<double> coordinate_z(node_count);
 
     size_t offset = 0; // Used only until parallel shared nodes figured out.
     auto & blocks = region.get_structured_blocks();
@@ -251,8 +233,10 @@ namespace {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
       transfer_coord(coordinate_x, coord_tmp, block->m_globalNodeIdList, offset);
+
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
       transfer_coord(coordinate_y, coord_tmp, block->m_globalNodeIdList, offset);
+
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
       offset = transfer_coord(coordinate_z, coord_tmp, block->m_globalNodeIdList, offset);
     }
@@ -269,7 +253,9 @@ namespace {
       // Need to convert that to element connectivity
       // Node numbers are zero-based offset into this structured block
       // After generated, then map zero-based block-local into one-based global.
-
+      // Since we are outputting "connectivity_raw", there is no difference
+      // in parallel or serial.
+      
       size_t ni = block->get_property("ni").get_int();
       size_t nj = block->get_property("nj").get_int();
       size_t nk = block->get_property("nk").get_int();
@@ -283,10 +269,11 @@ namespace {
 
       {
         std::vector<int> connect;
-        for (size_t m = 0; m < nk; m++) {
-          for (size_t i = 0, k = 0; i < nj; i++) {
-            for (size_t j = 0; j < ni; j++, k++) {
-              size_t base = (m * xp1yp1) + k + i;
+	connect.reserve(ni*nj*nk*8);
+        for (size_t k = 0; k < nk; k++) {
+          for (size_t j = 0, m = 0; j < nj; j++) {
+            for (size_t i = 0; i < ni; i++, m++) {
+              size_t base = (k * xp1yp1) + m + j;
 
               connect.push_back(base);
               connect.push_back(base + 1);
@@ -302,6 +289,7 @@ namespace {
         }
         // 'connect' contains 0-based block-local node ids at this point
         // Now, map them to processor-global values...
+	// NOTE: "processor-global" is 1..num_node_on_processor
 
         const auto &gnil = block->m_globalNodeIdList;
 	if (!gnil.empty()) {
@@ -310,8 +298,9 @@ namespace {
 	  }
 	}
 	else {
+	  size_t node_offset = block->get_node_offset();
 	  for (size_t i = 0; i < connect.size(); i++) {
-	    connect[i] = connect[i] + 1;
+	    connect[i] = connect[i] + node_offset + 1;
 	  }
 	}
 
@@ -327,80 +316,37 @@ namespace {
     return;
   }
 
-  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region)
   {
-    Ioss::NodeBlockContainer nbs = region.get_node_blocks();
-    size_t                   id  = 1;
-    for (auto inb : nbs) {
-      auto & name      = inb->name();
-      size_t num_nodes = inb->get_property("entity_count").get_int();
-      size_t degree    = inb->get_property("component_degree").get_int();
-      OUTPUT << " Number of coordinates per node       =" << std::setw(12) << degree << "\n";
-      OUTPUT << " Number of nodes                      =" << std::setw(12) << num_nodes << "\n";
+    const auto &nbs = region.get_node_blocks();
+    assert(nbs.size() == 1);
+    size_t degree    = nbs[0]->get_property("component_degree").get_int();
+    size_t num_nodes = nbs[0]->get_property("entity_count").get_int();
+    auto nb = new Ioss::NodeBlock(output_region.get_database(), nbs[0]->name(), num_nodes, degree);
+    output_region.add(nb);
 
-      auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
-      output_region.add(nb);
-      ++id;
-    }
-    if (debug) {
-      OUTPUT << '\n';
-    }
+    std::cout << "P[" << rank << "] Number of coordinates per node ="
+	      << std::setw(12) << degree << "\n";
+    std::cout << "P[" << rank << "] Number of nodes                ="
+	      << std::setw(12) << num_nodes << "\n";
   }
 
-  void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region)
   {
-    auto &blocks = region.get_structured_blocks();
-    if (!blocks.empty()) {
-      size_t total_entities = 0;
-      for (auto iblock : blocks) {
-        std::string name = iblock->name();
-        if (debug) {
-          OUTPUT << name << ", ";
-        }
-        std::string type  = "hex8";
-        size_t      count = iblock->get_property("cell_count").get_int();
-        total_entities += count;
-
-        auto block = new Ioss::ElementBlock(output_region.get_database(), name, type, count);
-        output_region.add(block);
-      }
-      if (!debug) {
-        OUTPUT << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
-               << "s            =" << std::setw(12) << blocks.size() << "\t"
-               << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
-      }
-      else {
-        OUTPUT << '\n';
-      }
+    const auto &blocks = region.get_structured_blocks();
+    size_t total_entities = 0;
+    for (auto iblock : blocks) {
+      std::string name = iblock->name();
+      std::string type  = "hex8";
+      size_t      count = iblock->get_property("cell_count").get_int();
+      auto block = new Ioss::ElementBlock(output_region.get_database(), name, type, count);
+      output_region.add(block);
+      std::cout << "P[" << rank << "] Created Element Block '" << name
+		<< "' with " << count << " elements.\n";
+      total_entities += count;
     }
-  }
-
-  template <typename INT>
-  void set_owned_node_count(Ioss::Region &region, int my_processor, INT /*dummy*/)
-  {
-    Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
-    if (nb->field_exists("owning_processor")) {
-      std::vector<INT> my_data;
-      nb->get_field_data("owning_processor", my_data);
-
-      INT owned = std::count(my_data.begin(), my_data.end(), my_processor);
-      nb->property_add(Ioss::Property("locally_owned_count", owned));
-
-      // Set locally_owned_count property on all nodesets...
-      Ioss::NodeSetContainer nss = region.get_nodesets();
-      for (auto ns : nss) {
-
-        std::vector<INT> ids;
-        ns->get_field_data("ids_raw", ids);
-        owned = 0;
-        for (size_t n = 0; n < ids.size(); n++) {
-          INT id = ids[n];
-          if (my_data[id - 1] == my_processor) {
-            owned++;
-          }
-        }
-        ns->property_add(Ioss::Property("locally_owned_count", owned));
-      }
-    }
+    std::cout << "P[" << rank << "] Number of Element Blocks       ="
+	      << std::setw(12) << blocks.size()
+	      << ", Number of elements (cells) =" << std::setw(12) << total_entities << "\n";
   }
 } // namespace

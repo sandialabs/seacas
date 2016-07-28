@@ -4,7 +4,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists
 
-// Copyright(C) 2015
+// Copyright(C) 2015, 2016
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -76,7 +76,7 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-#define STR(x) std::cerr << Ioss::trmclr::blue << #x << " = " << x << "\n" << Ioss::trmclr::normal
+#define VAL(x) std::cerr << Ioss::trmclr::blue << #x << " = " << x << "\n" << Ioss::trmclr::normal
 
 namespace {
   CG_ZoneType_t check_zone_type(int cgnsFilePtr)
@@ -124,7 +124,9 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    std::cout << "CGNS ParallelDatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
+    if (myProcessor == 0) {
+      std::cout << "CGNS ParallelDatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
+    }
     if (CG_SIZEOF_SIZE == 64) {
       set_int_byte_size_api(Ioss::USE_INT64_API);
     }
@@ -224,7 +226,6 @@ namespace Iocgns {
 
     nodeCount    = decomp->ioss_node_count();
     elementCount = decomp->ioss_elem_count();
-    std::cerr << "Nodes, Cells = " << nodeCount << "\t" << elementCount << "\n";
 
     // ========================================================================
     // Get the number of families in the mesh...
@@ -312,67 +313,8 @@ namespace Iocgns {
     get_region()->add(commset);
   }
 
-  void ParallelDatabaseIO::create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
-                                                   size_t &num_cell)
-  {
-    cgsize_t size[9];
-    char     zone_name[33];
-    cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
-    m_zoneNameMap[zone_name] = zone;
-
-    assert(size[0] - 1 == size[3]);
-    assert(size[1] - 1 == size[4]);
-    assert(size[2] - 1 == size[5]);
-
-    assert(size[6] == 0);
-    assert(size[7] == 0);
-    assert(size[8] == 0);
-
-    cgsize_t index_dim = 0;
-    cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
-    // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
-    Ioss::StructuredBlock *block =
-        new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
-
-    block->property_add(Ioss::Property("base", base));
-    block->property_add(Ioss::Property("zone", zone));
-    get_region()->add(block);
-
-    block->set_node_offset(num_node);
-    block->set_cell_offset(num_cell);
-    num_node += block->get_property("node_count").get_int();
-    num_cell += block->get_property("cell_count").get_int();
-
-    // Handle zone-grid-connectivity...
-    int nconn = 0;
-    cg_n1to1(cgnsFilePtr, base, zone, &nconn);
-    for (int i = 0; i < nconn; i++) {
-      char connectname[33];
-      char donorname[33];
-      std::array<cgsize_t, 6> range;
-      std::array<cgsize_t, 6> donor_range;
-      std::array<int, 3>      transform;
-
-      cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-                   donor_range.data(), transform.data());
-
-      // Get number of nodes shared with other "previous" zones...
-      // A "previous" zone will have a lower zone number this this zone...
-      int  donor_zone = -1;
-      auto donor_iter = m_zoneNameMap.find(donorname);
-      if (donor_iter != m_zoneNameMap.end()) {
-        donor_zone = (*donor_iter).second;
-      }
-      std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
-      std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
-      std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
-      std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
-
-      block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
-                                             range_beg, range_end, donor_beg, donor_end);
-    }
-  }
-
+#if 0
+  // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
     const auto &blocks = get_region()->get_structured_blocks();
@@ -423,6 +365,7 @@ namespace Iocgns {
     }
     return offset; // Number of 'equived' nodes in model
   }
+#endif
 
   void ParallelDatabaseIO::handle_structured_blocks()
   {
@@ -433,7 +376,6 @@ namespace Iocgns {
     cgsize_t phys_dimension = 0;
     cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
 
-    std::cerr << "In handle structured blocks\n";
     // Iterate all structured blocks and set the intervals to zero
     // if the m_proc field does not match current processor...
     const auto &blocks = decomp->m_structuredBlocks;
@@ -457,12 +399,6 @@ namespace Iocgns {
             // Create a non-empty structured block on this processor...
             auto &block = pzone->m_structuredBlock;
             assert(block != nullptr);
-            std::cerr << Ioss::trmclr::green << "Creating non-empty " << block_name
-                      << " on processor " << myProcessor << "\t"
-                      << block->get_property("ni").get_int() << "\t"
-                      << block->get_property("nj").get_int() << "\t"
-                      << block->get_property("nk").get_int() << "\n"
-                      << Ioss::trmclr::normal;
             new_block =
                 new Ioss::StructuredBlock(this, block_name, phys_dimension, pzone->m_ordinal,
                                           pzone->m_offset, pzone->m_adam->m_ordinal);
@@ -476,9 +412,6 @@ namespace Iocgns {
         if (new_block == nullptr) {
           // There is no block on this processor corresponding to the m_adam
           // block.  Create an empty block...
-          std::cerr << Ioss::trmclr::red << "Creating empty " << block_name << " on processor "
-                    << myProcessor << "\n"
-                    << Ioss::trmclr::normal;
           new_block = new Ioss::StructuredBlock(this, block_name, phys_dimension, 0, 0, 0);
         }
         assert(new_block != nullptr);
@@ -500,7 +433,6 @@ namespace Iocgns {
     auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_offset, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
-    std::cerr << myProcessor << "-Nodes/Cells = " << node_offset << "\t" << cell_offset << "\n";
   }
 
   bool ParallelDatabaseIO::begin(Ioss::State /* state */) { return true; }
@@ -543,6 +475,7 @@ namespace Iocgns {
     }
     else {
       std::cerr << "NodeCount = " << nodeCount << "\n";
+      assert(1==0);
     }
   }
 
@@ -602,7 +535,6 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    std::cerr << "Getting Node Field " << field.get_name() << "\n";
     size_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();

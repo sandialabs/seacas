@@ -138,11 +138,6 @@ namespace Iocgns {
     void handle_structured_blocks();
     void handle_unstructured_blocks();
 
-    void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
-    size_t finalize_structured_blocks();
-    void create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
-                                   size_t &num_elem);
-
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010
+// Copyright(C) 2015, 2016
 // Sandia Corporation. Under the terms of Contract
 // DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
 // certain rights in this software.
@@ -50,10 +50,11 @@ namespace Ioss {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
                      int donor_zone, const std::array<int, 3> p_transform,
                      const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
-		     const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end) 
+                     const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),m_rangeEnd(std::move(range_end)),
-          m_donorRangeBeg(std::move(donor_beg)), m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
+          m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
+          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
     {
     }
 
@@ -87,7 +88,7 @@ namespace Ioss {
     std::array<int, 3> m_donorRangeBeg;
     std::array<int, 3> m_donorRangeEnd;
 
-    friend std::ostream& operator<<(std::ostream& os, const ZoneConnectivity& zgc);
+    friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int m_ownerZone; // "id" of zone that owns this connection
@@ -103,9 +104,9 @@ namespace Ioss {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
                     int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
-    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, 
-		    std::array<int, 3> &ordinal, std::array<int, 3> &offset,
-		    std::array<int, 3> &global_ordinal);
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
+                    std::array<int, 3> &ordinal, std::array<int, 3> &offset,
+                    std::array<int, 3> &global_ordinal);
 
     ~StructuredBlock() override;
 
@@ -125,9 +126,14 @@ namespace Ioss {
     /** \brief Set the 'offset' for the block.
      *
      *  The 'offset' is used to map a cell or node location within a
-     *  structured block to the model implicit cell or node location.
-     *  For example, the file descriptor of the 37th cell in the 4th
-     *  block is calculated by:
+     *  structured block to the model implicit cell or node location
+     *  on a single processor.  zero-based.
+     *
+     *  The 'global' offsets do the same except for they apply over
+     *  the entire model on all processors. zero-based.
+     *
+     *  For example, the file descriptor (1-based) of
+     *  the 37th cell in the 4th block is calculated by:
      *
      *  file_descriptor = offset of block 4 + 37
      *
@@ -145,21 +151,26 @@ namespace Ioss {
     void set_node_global_offset(size_t offset) { m_nodeGlobalOffset = offset; }
     void set_cell_global_offset(size_t offset) { m_cellGlobalOffset = offset; }
 
-    // Get the local (relative to this block) node id at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
+    size_t get_node_offset() const { return m_nodeOffset; }
+    size_t get_cell_offset() const { return m_cellOffset; }
+    size_t get_node_global_offset() const { return m_nodeGlobalOffset; }
+    size_t get_cell_global_offset() const { return m_cellGlobalOffset; }
+
+    // Get the local (relative to this block on this processor) node
+    // id at the specified i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
     size_t get_local_node_id(size_t i, size_t j, size_t k) const
     {
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
     }
 
-    // Get the local (relative to this block) node id at the specified
+    // Get the local (relative to this block on this processor) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_local_node_offset(size_t i, size_t j, size_t k) const
     {
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i - 1;
     }
 
-    // Get the global cell-node offset at the specified
+    // Get the global (on this processor) cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
     size_t get_global_node_offset(size_t i, size_t j, size_t k) const
 
@@ -167,9 +178,10 @@ namespace Ioss {
       return get_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
-    // Get the global node id at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    // This is the position in the global node block of the node at i,j,k.
+    // Get the global node id (on this processor) at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.  This
+    // is the position in the global node block (on this processor) of
+    // the node at i,j,k.
     size_t get_global_node_id(size_t i, size_t j, size_t k) const
     {
       assert(!m_globalNodeIdList.empty());
@@ -177,105 +189,77 @@ namespace Ioss {
       return m_globalNodeIdList[offset];
     }
 
-  template <typename INT>
-    size_t get_cell_node_ids(INT *idata, bool add_offset) const
-  {
-    // Fill 'idata' with the cell node ids which are the
-    // 1-based location of each node in this zone
-    // The location is based on the "model" zone.
-    // If this is a parallel decomposed model, then
-    // this block may be a subset of the "model" zone
-    //
-    // if 'add_offset' is true, then add the m_cellGlobalOffset
-    // which changes the location to be the location in the
-    // entire "mesh" instead of within a "zone"
-    
-    size_t index = 0;
-    size_t offset = add_offset ? m_nodeGlobalOffset : 0;
-    
-    if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+    template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
+    {
+      // Fill 'idata' with the cell node ids which are the
+      // 1-based location of each node in this zone
+      // The location is based on the "model" (all processors) zone.
+      // If this is a parallel decomposed model, then
+      // this block may be a subset of the "model" zone
+      //
+      // if 'add_offset' is true, then add the m_cellGlobalOffset
+      // which changes the location to be the location in the
+      // entire "mesh" instead of within a "zone" (all processors)
+
+      size_t index  = 0;
+      size_t offset = add_offset ? m_nodeGlobalOffset : 0;
+
+      if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+        return index;
+      }
+
+      for (int kk = 0; kk < m_nk + 1; kk++) {
+        int k = m_offsetK + kk;
+        for (int jj = 0; jj < m_nj + 1; jj++) {
+          int j = m_offsetJ + jj;
+          for (int ii = 0; ii < m_ni + 1; ii++) {
+            int i = m_offsetI + ii;
+
+            size_t ind = k * (m_niGlobal + 1) * (m_njGlobal + 1) + j * (m_niGlobal + 1) + i;
+
+            idata[index++] = ind + offset + 1;
+          }
+        }
+      }
       return index;
     }
 
-    for (int kk = 0; kk < m_nk+1; kk++) {
-      int k = m_offsetK + kk;
-      for (int jj = 0; jj < m_nj+1; jj++) {
-	int j = m_offsetJ + jj;
-	for (int ii = 0; ii < m_ni+1; ii++) {
-	  int i = m_offsetI + ii;
+    template <typename INT> size_t get_cell_ids(INT *idata, bool add_offset) const
+    {
+      // Fill 'idata' with the cell ids which are the
+      // 1-based location of each cell in this zone
+      // The location is based on the "model" zone.
+      // If this is a parallel decomposed model, then
+      // this block may be a subset of the "model" zone
+      //
+      // if 'add_offset' is true, then add the m_cellGlobalOffset
+      // which changes the location to be the location in the
+      // entire "mesh" instead of within a "zone"
 
-	  size_t ind =
-	    k * (m_niGlobal + 1) * (m_njGlobal + 1) +
-	    j * (m_niGlobal + 1) +
-	    i;
+      size_t index  = 0;
+      size_t offset = add_offset ? m_cellGlobalOffset : 0;
 
-	  idata[index++] = ind + offset + 1;
-	}
+      if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+        return index;
       }
-    }
-    return index;
-  }
 
-  template <typename INT>
-    size_t get_cell_ids(INT *idata, bool add_offset) const
-  {
-    // Fill 'idata' with the cell ids which are the
-    // 1-based location of each cell in this zone
-    // The location is based on the "model" zone.
-    // If this is a parallel decomposed model, then
-    // this block may be a subset of the "model" zone
-    //
-    // if 'add_offset' is true, then add the m_cellGlobalOffset
-    // which changes the location to be the location in the
-    // entire "mesh" instead of within a "zone"
-    
-    size_t index = 0;
-    size_t offset = add_offset ? m_cellGlobalOffset : 0;
-    
-    if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+      for (int kk = 0; kk < m_nk; kk++) {
+        int k = m_offsetK + kk;
+        for (int jj = 0; jj < m_nj; jj++) {
+          int j = m_offsetJ + jj;
+          for (int ii = 0; ii < m_ni; ii++) {
+            int i = m_offsetI + ii;
+
+            size_t ind = k * m_niGlobal * m_njGlobal + j * m_niGlobal + i;
+
+            idata[index++] = ind + offset + 1;
+          }
+        }
+      }
       return index;
     }
-
-    for (int kk = 0; kk < m_nk; kk++) {
-      int k = m_offsetK + kk;
-      for (int jj = 0; jj < m_nj; jj++) {
-	int j = m_offsetJ + jj;
-	for (int ii = 0; ii < m_ni; ii++) {
-	  int i = m_offsetI + ii;
-
-	  size_t ind =
-	    k * m_niGlobal * m_njGlobal +
-	    j * m_niGlobal +
-	    i;
-
-	  idata[index++] = ind + offset + 1;
-	}
-      }
-    }
-    return index;
-  }
 
     void generate_shared_nodes(const Ioss::Region &region);
-
-    /** \brief Get the 'offset' for the block.
-     *
-     *  The 'offset' is used to map an element location within an
-     *  element block to the element 'file descriptor'.
-     *  For example, the file descriptor of the 37th element in the 4th
-     *  block is calculated by:
-     *
-     *  file_descriptor = offset of block 4 + 37
-     *
-     *  This can also be used to determine which element block
-     *  an element with a file_descriptor maps into. An particular
-     *  element block contains all elements in the range:
-     *
-     *  offset < file_descriptor <= offset+number_elements_per_block
-     */
-    size_t get_node_offset() const { return m_nodeOffset; }
-    size_t get_cell_offset() const { return m_cellOffset; }
-    size_t get_node_global_offset() const { return m_nodeGlobalOffset; }
-    size_t get_cell_global_offset() const { return m_cellGlobalOffset; }
 
     bool contains(size_t global_offset) const
     {
