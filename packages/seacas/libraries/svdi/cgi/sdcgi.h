@@ -79,7 +79,7 @@ void cqfl_(f_integer *vstat, f_integer *npdefb, f_integer *nsetb, f_integer *max
            f_integer *dynmod, f_integer *ninsty, f_integer *instyl, f_integer *npdefp,
            f_integer *nsetp, f_integer *maxpi, f_integer *pdiv, f_integer *maxpx, f_integer *maxpy,
            f_integer *ptrans);
-void cqc_(f_integer *vstat, f_integer *nsimul, f_integer *navail, f_integer *nint[3],
+void cqc_(f_integer *vstat, f_integer *nsimul, f_integer *navail, f_integer *nint,
           f_integer *cmode, f_integer *dynmod, f_integer *overit, f_integer *monoc);
 void cqlna_(f_integer *vstat, f_integer *lnbi, f_integer *lntyp, f_integer *lwmode,
             f_integer *lnwid, f_integer *csmode, f_integer *lnclr, f_integer *lcmode);
