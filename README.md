@@ -83,8 +83,8 @@ The most recent released version is recommended. For use with Exodus, some local
    HDF5 library, you may need to do the following and then redo the
    configure step
     ```
-    CFLAGS="-I{HDF5_ROOT}/include"; export CFLAGS
-    LDFLAGS="-L{HDF5_ROOT}/lib   "; export LDFLAGS
+    CFLAGS="-I${HDF5_ROOT}/include"; export CFLAGS
+    LDFLAGS="-L${HDF5_ROOT}/lib   "; export LDFLAGS
     ```
 
  * `make && make install`
