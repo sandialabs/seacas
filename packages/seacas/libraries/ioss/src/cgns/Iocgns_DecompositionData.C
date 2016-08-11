@@ -16,11 +16,11 @@
 #define DEBUG_OUTPUT 1
 namespace {
   int rank = 0;
-#define OUTPUT                                                                                     \
-  if (rank == 0)                                                                                   \
-  std::cerr
+#define OUTPUT					\
+  if (rank == 0)				\
+    std::cerr
 
-// ZOLTAN Callback functions...
+  // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
@@ -120,7 +120,7 @@ namespace {
       cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
       // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
       auto *block =
-          new Ioss::StructuredBlock(nullptr, zone_name, index_dim, size[3], size[4], size[5]);
+	new Ioss::StructuredBlock(nullptr, zone_name, index_dim, size[3], size[4], size[5]);
 
       block->property_add(Ioss::Property("base", base));
       block->property_add(Ioss::Property("zone", zone));
@@ -204,8 +204,6 @@ namespace {
   bool overlaps(const Range &a, const Range &b)
 
   {
-    OUTPUT << "Range 1: " << a.m_beg << " " << a.m_end << " -- " << b.m_beg << " " << b.m_end
-           << "\n";
     return a.m_beg <= b.m_end && b.m_beg <= a.m_end;
   }
 
@@ -219,6 +217,20 @@ namespace {
     Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
     Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
     Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
+
+    return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
+  }
+
+  bool zgc_donor_overlaps(const Iocgns::StructuredZoneData *zone, const Ioss::ZoneConnectivity &zgc)
+  {
+    // Note that zone range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+    Range z_i(1 + zone->m_offset[0], zone->m_ordinal[0] + zone->m_offset[0] + 1);
+    Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
+    Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
+
+    Range gc_i(zgc.m_donorRangeBeg[0], zgc.m_donorRangeEnd[0]);
+    Range gc_j(zgc.m_donorRangeBeg[1], zgc.m_donorRangeEnd[1]);
+    Range gc_k(zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[2]);
 
     return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
   }
@@ -260,11 +272,47 @@ namespace {
     zgc.m_donorRangeEnd = zgc.transform(t_matrix, zgc.m_rangeEnd);
   }
 
-  void propogate_zgc(Iocgns::StructuredZoneData *zone, std::vector<Ioss::StructuredBlock *> &blocks,
-                     std::vector<Ioss::ZoneConnectivity> &zone_connectivity)
+  void zgc_subset_donor_ranges(const Iocgns::StructuredZoneData *zone, Ioss::ZoneConnectivity &zgc)
   {
-    if (zone->m_child1 != nullptr && zone->m_child2 != nullptr) {
+    // NOTE: Updates the range and donor_range in zgc
 
+    // Note that zone range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+    Range z_i(1 + zone->m_offset[0], zone->m_ordinal[0] + zone->m_offset[0] + 1);
+    Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
+    Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
+
+    Range gc_i(zgc.m_donorRangeBeg[0], zgc.m_donorRangeEnd[0]);
+    Range gc_j(zgc.m_donorRangeBeg[1], zgc.m_donorRangeEnd[1]);
+    Range gc_k(zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[2]);
+
+    Range gc_ii = subset_range(z_i, gc_i);
+    Range gc_jj = subset_range(z_j, gc_j);
+    Range gc_kk = subset_range(z_k, gc_k);
+
+    zgc.m_donorRangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+    zgc.m_donorRangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+    zgc.m_donorRangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+    zgc.m_donorRangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+    zgc.m_donorRangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+    zgc.m_donorRangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+
+    auto t_matrix = zgc.transform_matrix();
+
+    zgc.m_rangeBeg = zgc.inverse_transform(t_matrix, zgc.m_donorRangeBeg);
+    zgc.m_rangeEnd = zgc.inverse_transform(t_matrix, zgc.m_donorRangeEnd);
+  }
+
+  void propogate_zgc(Iocgns::StructuredZoneData *zone,
+		     std::vector<Ioss::StructuredBlock *> &blocks,
+		     std::vector<Iocgns::StructuredZoneData *> &zones,
+                     std::vector<Ioss::ZoneConnectivity> &zone_connectivity)
+
+  {
+    const auto &adam_name = blocks[zone->m_adam->m_zone - 1]->name();
+    if (zone->m_child1 != nullptr && zone->m_child2 != nullptr) {
+      // If called with non-null m_child1 and m_child2, then this is being called
+      // on a zone which has been split.  Add the zgc corresponding to the split
+      // and then propogate the other zgc that exist on the adam zone.
       auto c1 = zone->m_child1;
       auto c2 = zone->m_child2;
 
@@ -275,8 +323,8 @@ namespace {
       // via the m_offset[] field on the local block.
       std::array<int, 3> range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
       std::array<int, 3> range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
-                                    c1->m_ordinal[1] + c1->m_offset[1] + 1,
-                                    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
+	    c1->m_ordinal[1] + c1->m_offset[1] + 1,
+	    c1->m_ordinal[2] + c1->m_offset[2] + 1}};
 
       std::array<int, 3> donor_range_beg(range_beg);
       std::array<int, 3> donor_range_end(range_end);
@@ -285,46 +333,75 @@ namespace {
       donor_range_end[ordinal] = donor_range_beg[ordinal] = range_beg[ordinal] = range_end[ordinal];
 
       auto c1_base =
-          Ioss::Utils::to_string(c1->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c1->m_zone);
+	Ioss::Utils::to_string(c1->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c1->m_zone);
       auto c2_base =
-          Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
+	Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
 
       OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
-      zone_connectivity.emplace_back("decomp" + c1_base, c1->m_zone, "decomp" + c2_base, c2->m_zone,
+      zone_connectivity.emplace_back(c1_base+"--"+c2_base, c1->m_zone, adam_name, c2->m_zone,
                                      transform, range_beg, range_end, donor_range_beg,
                                      donor_range_end);
-      propogate_zgc(c1, blocks, zone_connectivity);
+      zone_connectivity.back().m_donorProcessor = c2->m_proc;
+      propogate_zgc(c1, blocks, zones, zone_connectivity);
 
       zone_connectivity.pop_back();
       OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
-      zone_connectivity.emplace_back("decomp" + c2_base, c2->m_zone, "decomp" + c1_base, c1->m_zone,
+      zone_connectivity.emplace_back(c2_base+"--"+c1_base, c2->m_zone, adam_name, c1->m_zone,
                                      transform, donor_range_beg, donor_range_end, range_beg,
                                      range_end);
-      propogate_zgc(c2, blocks, zone_connectivity);
+      zone_connectivity.back().m_donorProcessor = c1->m_proc;
+      propogate_zgc(c2, blocks, zones, zone_connectivity);
     }
     else {
       if (zone->m_adam != zone) {
+	// This propogation is to handle all zgc that should be copied (with possible modification)
+	// from the adam zone to the 'split' zone.  First, the new
+	// 'split' zone needs to have a StructuredBlock created where
+	// the zgc can be stored.
+	
         // Create a block name based on adam zone and zone id.
         auto zone_name = Ioss::Utils::to_string(zone->m_adam->m_zone) + "_" +
-                         Ioss::Utils::to_string(zone->m_zone);
+	  Ioss::Utils::to_string(zone->m_zone);
         auto *block = new Ioss::StructuredBlock(
-            nullptr, zone_name, 3, zone->m_ordinal[0], zone->m_ordinal[1], zone->m_ordinal[2],
-            zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]);
+						nullptr, zone_name, 3, zone->m_ordinal, zone->m_offset, zone->m_ordinal);
         block->property_add(Ioss::Property("base", 1));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+
+	assert(zone->m_structuredBlock == nullptr);
         zone->m_structuredBlock = block;
-        blocks.push_back(block);
+	
         OUTPUT << "Creating zone " << zone_name << " IJK: (" << zone->m_ordinal[0] << " "
                << zone->m_ordinal[1] << " " << zone->m_ordinal[2] << ") "
                << " Offset: (" << zone->m_offset[0] << " " << zone->m_offset[1] << " "
-               << zone->m_offset[2] << ")\n";
+               << zone->m_offset[2] << ") Adam: " << adam_name << "\n";
+        blocks.push_back(block);
 
         // Add zone connectivities...
-        for (auto &zgc : zone_connectivity) {
+        for (auto & zgc : zone_connectivity) {
           if (zgc_overlaps(zone, zgc)) {
             // Modify source and donor range to subset it to new block ranges.
             zgc_subset_ranges(zone, zgc);
-            block->m_zoneConnectivity.push_back(zgc);
+	    
+	    // Update donor zone processor...
+	    if (zgc.m_donorProcessor == -1) {
+	      // Get adam donor zone of zgc
+	      auto &donor_adam_zone = zones[zgc.m_donorZone-1]->m_adam->m_zone;
+	      // Find which processor owns the donor zone.
+	      for (auto &dz : zones) {
+		if (dz != zone && dz->is_active() && dz->m_adam->m_zone == donor_adam_zone) {
+		  if (zgc_donor_overlaps(dz, zgc)) {
+		    auto t_zgc = zgc;
+		    zgc_subset_donor_ranges(dz, t_zgc);
+		    assert(dz->m_proc >= 0);
+		    t_zgc.m_donorProcessor = dz->m_proc;
+		    block->m_zoneConnectivity.push_back(t_zgc);
+		  }
+		}
+	      }
+	    }
+	    else {
+	      block->m_zoneConnectivity.push_back(zgc);
+	    }
             OUTPUT << zgc << "\n";
           }
           else {
@@ -334,6 +411,36 @@ namespace {
         }
       }
     }
+  }
+
+  void set_zgc_processor(Ioss::StructuredBlock *block, std::vector<Iocgns::StructuredZoneData *> &zones)
+  {
+    // Iterate the zgc instances and update donor processor if needed.
+    for (auto &zgc : block->m_zoneConnectivity) {
+      // Update donor zone processor...
+      if (zgc.m_donorProcessor == -1) {
+	// Find which processor owns the donor zone.
+	for (auto &dz : zones) {
+	  if (dz->is_active() && dz->m_adam->m_zone == zgc.m_donorZone) {
+	    if (zgc_donor_overlaps(dz, zgc)) {
+	      zgc_subset_donor_ranges(dz, zgc);
+	      assert(dz->m_proc >= 0);
+	      zgc.m_donorProcessor = dz->m_proc;
+	      break;
+	    }
+	  }
+	}
+      }
+    }
+#if 0
+    block->m_zoneConnectivity.erase(std::remove_if(block->m_zoneConnectivity.begin(),
+						   block->m_zoneConnectivity.end(),
+						   [](Ioss::ZoneConnectivity &zgc)
+						   {
+						     return zgc.m_donorProcessor == -1;
+						   }),
+				    block->m_zoneConnectivity.end());
+#endif
   }
 }
 
@@ -376,7 +483,7 @@ namespace Iocgns {
     if (m_structuredBlocks.empty()) {
       return;
     }
-    double load_balance_threshold = 1.4;
+    double load_balance_threshold = 1.1;
     size_t work                   = 0;
     for (const auto &iblock : m_structuredBlocks) {
       std::string name = iblock->name();
@@ -534,11 +641,15 @@ namespace Iocgns {
         OUTPUT << "\tAdam Zone = " << adam->name() << "\n";
         auto zgcs = adam->m_zoneConnectivity;
         // Process children...
-        propogate_zgc(zone, m_structuredBlocks, zgcs);
+        propogate_zgc(zone, m_structuredBlocks, m_structuredZones, zgcs);
       }
       else {
         break;
       }
+    }
+
+    for (auto &block : m_structuredBlocks) {
+      set_zgc_processor(block, m_structuredZones);
     }
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
   }

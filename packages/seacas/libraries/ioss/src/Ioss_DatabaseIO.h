@@ -391,6 +391,8 @@ namespace Ioss {
      *  \returns The processor that this mesh database is on.
      */
     int parallel_rank() const { return myProcessor; }
+    int parallel_size() const { return util().parallel_size(); }
+    bool is_parallel() const { return isParallel; }
 
   protected:
     DatabaseIO(Region *region, std::string filename, Ioss::DatabaseUsage db_usage,

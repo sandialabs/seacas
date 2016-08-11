@@ -266,7 +266,7 @@ namespace Ioss {
     transform += tf[zgc.m_transform[2] + 3];
     transform += "] ";
 
-    os << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName << "' shares "
+    os << "\t\t" << zgc.m_donorName << "[P" << zgc.m_donorProcessor << "]:\tName '" << zgc.m_connectionName << "' shares "
        << zgc.get_shared_node_count()
        << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
        << "\n\t\t\t\tRange: [" << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "

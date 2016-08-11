@@ -54,7 +54,8 @@ namespace Ioss {
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
-          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone)
+          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
+	  m_donorProcessor(-1)
     {
     }
 
@@ -93,6 +94,7 @@ namespace Ioss {
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int m_ownerZone; // "id" of zone that owns this connection
     int m_donorZone; // "id" of zone that is donor of this connection
+    int m_donorProcessor; // processor that owns the donor zone
   };
 
   class DatabaseIO;
