@@ -143,7 +143,7 @@ namespace Iocgns {
       child1->m_parent          = this;
       child1->m_splitOrdinal    = ordinal;
       child1->m_sibling         = child2;
-      child1->m_structuredBlock = m_structuredBlock;
+      child1->m_structuredBlock = nullptr;
 
       child2->m_ordinal          = m_ordinal;
       child2->m_ordinal[ordinal] = m_ordinal[ordinal] - child1->m_ordinal[ordinal];
@@ -155,7 +155,7 @@ namespace Iocgns {
       child2->m_parent          = this;
       child2->m_splitOrdinal    = ordinal;
       child2->m_sibling         = child1;
-      child2->m_structuredBlock = m_structuredBlock;
+      child2->m_structuredBlock = nullptr;
 
       m_child1 = child1;
       m_child2 = child2;

@@ -380,7 +380,7 @@ namespace Iocgns {
     // if the m_proc field does not match current processor...
     const auto &blocks = decomp->m_structuredBlocks;
     const auto &zones  = decomp->m_structuredZones;
-    assert(blocks.size() == zones.size());
+    assert(blocks.size() <= zones.size());
 
     size_t node_offset = 0;
     size_t cell_offset = 0;
