@@ -345,9 +345,10 @@ namespace Iocgns {
       }
     }
 
-    // Output the processor assignments
-    for (auto zone : m_structuredZones) {
+    // Update and Output the processor assignments
+    for (auto &zone : m_structuredZones) {
       if (zone->is_active()) {
+	zone->update_zgc_processor(m_structuredZones);
         OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
                << ", Adam zone = " << zone->m_adam->m_zone << "\n";
 	auto zgcs = zone->m_zoneConnectivity;
@@ -360,37 +361,12 @@ namespace Iocgns {
       }
     }
 
-#if 0
-    // ------------------------------------------------------------------------
-    // Processor assignment completed...  Now need to propgate
-    // ZoneGridConnectivities. Both original and those resulting from
-    // splitting for decomposition.
-
-    // Re-sort based on 'm_zone' which should give us the original
-    // order, or at least all 'adam' zones at top.
-    std::sort(m_structuredZones.begin(), m_structuredZones.end(),
-              [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
-                return a->m_zone < b->m_zone;
-              });
-
+    // Create Ioss::StructuredBlocks corresponding to all active zones...
     for (auto &zone : m_structuredZones) {
-      if (zone == zone->m_adam) {
-        // Find 'adam' block.
-        auto &adam = m_structuredBlocks[zone->m_zone - 1];
-        OUTPUT << "\tAdam Zone = " << adam->name() << "\n";
-        auto zgcs = adam->m_zoneConnectivity;
-        // Process children...
-        // propogate_zgc(zone, m_structuredBlocks, m_structuredZones, zgcs);
-      }
-      else {
-        break;
+      if (zone->is_active()) {
       }
     }
-
-    for (auto &block : m_structuredBlocks) {
-      set_zgc_processor(block, m_structuredZones);
-    }
-#endif
+    
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
     }
     MPI_Barrier(MPI_COMM_WORLD);
