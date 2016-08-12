@@ -35,12 +35,12 @@
 #ifndef IOCGNS_STRUCTUREDZONEDATA_H
 #define IOCGNS_STRUCTUREDZONEDATA_H
 
+#include <Ioss_StructuredBlock.h>
 #include <array>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
-#include <Ioss_StructuredBlock.h>
 
 namespace Iocgns {
   class StructuredZoneData
@@ -48,14 +48,14 @@ namespace Iocgns {
   public:
     StructuredZoneData()
         : m_ordinal{{0, 0, 0}}, m_offset{{0, 0, 0}}, m_zone(0), m_adam(nullptr), m_parent(nullptr),
-          m_structuredBlock(nullptr), m_proc(-1), m_splitOrdinal(0), m_child1(nullptr),
+          m_proc(-1), m_splitOrdinal(0), m_child1(nullptr),
           m_child2(nullptr), m_sibling(nullptr)
     {
     }
 
       StructuredZoneData(const std::string &name, int zone, int ni, int nj, int nk)
         : m_name(name), m_ordinal{{ni, nj, nk}}, m_offset{{0, 0, 0}}, m_zone(zone), m_adam(nullptr),
-          m_parent(nullptr), m_structuredBlock(nullptr), m_proc(-1), m_splitOrdinal(0),
+          m_parent(nullptr), m_proc(-1), m_splitOrdinal(0),
           m_child1(nullptr), m_child2(nullptr), m_sibling(nullptr)
     {
     }
@@ -78,9 +78,6 @@ namespace Iocgns {
     // vector and the zone number is its position in that vector+1
     // to make it 1-based and match numbering on file.
     StructuredZoneData *m_parent;
-
-    // The Ioss::StructuredBlock that this is associated with.
-    Ioss::StructuredBlock *m_structuredBlock;
 
     int m_proc; // The processor this block might be run on...
 

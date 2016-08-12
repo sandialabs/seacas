@@ -228,7 +228,6 @@ namespace Iocgns {
     m_child1->m_parent          = this;
     m_child1->m_splitOrdinal    = ordinal;
     m_child1->m_sibling         = m_child2;
-    m_child1->m_structuredBlock = nullptr;
 
     m_child2->m_name = m_name + "_c2";
     m_child2->m_ordinal          = m_ordinal;
@@ -241,7 +240,6 @@ namespace Iocgns {
     m_child2->m_parent          = this;
     m_child2->m_splitOrdinal    = ordinal;
     m_child2->m_sibling         = m_child1;
-    m_child2->m_structuredBlock = nullptr;
 
     std::cerr << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
 	      << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work()
