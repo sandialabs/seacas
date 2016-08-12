@@ -216,7 +216,6 @@ namespace Iocgns {
 
   template <typename INT> void DecompositionData<INT>::decompose_structured(int filePtr)
   {
-    if (m_myProcessor == 0) {
     create_zone_data(filePtr, m_structuredZones);
     if (m_structuredZones.empty()) {
       return;
@@ -361,15 +360,27 @@ namespace Iocgns {
       }
     }
 
+#if 0
     // Create Ioss::StructuredBlocks corresponding to all active zones...
     for (auto &zone : m_structuredZones) {
       if (zone->is_active()) {
+	if (zone->m_proc == m_myProcessor) {
+	  Ioss::StructuredBlock *block = new Ioss::StructuredBlock(nullptr, zone->m_adam->m_name,
+					  3, zone->m_ordinal, zone->m_offset, zone->m_adam->m_ordinal);
+	  m_structuredBlocks.push_back(block);
+	}
+	else {
+	  Ioss::StructuredBlock *block = new Ioss::StructuredBlock(nullptr, zone->m_adam->m_name,
+					  3, zone->m_ordinal, zone->m_offset, zone->m_adam->m_ordinal);
+	  m_structuredBlocks.push_back(block);
+	}
+	m_structuredBlocks.back()->property_add(Ioss::Property("base", 1));
+	m_structuredBlocks.back()->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
       }
     }
+#endif
     
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
-    }
-    MPI_Barrier(MPI_COMM_WORLD);
   }
 
   template <typename INT> void DecompositionData<INT>::decompose_unstructured(int filePtr)

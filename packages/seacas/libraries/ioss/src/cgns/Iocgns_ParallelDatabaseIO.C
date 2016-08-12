@@ -378,9 +378,7 @@ namespace Iocgns {
 
     // Iterate all structured blocks and set the intervals to zero
     // if the m_proc field does not match current processor...
-    const auto &blocks = decomp->m_structuredBlocks;
     const auto &zones  = decomp->m_structuredZones;
-    assert(blocks.size() <= zones.size());
 
     size_t node_offset = 0;
     size_t cell_offset = 0;
@@ -391,42 +389,43 @@ namespace Iocgns {
         // Now see if there are any non-empty blocks with
         // this m_adam on this processor.  If exists, then create
         // a StructuredBlock; otherwise, create an empty block.
-        auto block_name = zone->m_structuredBlock->name();
+        auto block_name = zone->m_name;
 
-        Ioss::StructuredBlock *new_block = nullptr;
+        Ioss::StructuredBlock *block = nullptr;
         for (auto &pzone : zones) {
           if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
             // Create a non-empty structured block on this processor...
-            auto &block = pzone->m_structuredBlock;
-            assert(block != nullptr);
-            new_block =
+            block =
                 new Ioss::StructuredBlock(this, block_name, phys_dimension, pzone->m_ordinal,
                                           pzone->m_offset, pzone->m_adam->m_ordinal);
 
-            for (auto &zgc : block->m_zoneConnectivity) {
-              new_block->m_zoneConnectivity.push_back(zgc);
+            for (auto &zgc : pzone->m_zoneConnectivity) {
+              block->m_zoneConnectivity.push_back(zgc);
             }
             break;
           }
         }
-        if (new_block == nullptr) {
+        if (block == nullptr) {
           // There is no block on this processor corresponding to the m_adam
           // block.  Create an empty block...
-          new_block = new Ioss::StructuredBlock(this, block_name, phys_dimension, 0, 0, 0);
+          block = new Ioss::StructuredBlock(this, block_name, phys_dimension, 0, 0, 0);
         }
-        assert(new_block != nullptr);
-        get_region()->add(new_block);
+        assert(block != nullptr);
+        get_region()->add(block);
 
-        new_block->property_add(Ioss::Property("base", base));
-        new_block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+        block->property_add(Ioss::Property("base", base));
+        block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
 
-        new_block->set_node_offset(node_offset);
-        new_block->set_cell_offset(cell_offset);
-        node_offset += new_block->get_property("node_count").get_int();
-        cell_offset += new_block->get_property("cell_count").get_int();
-
-        new_block->set_node_global_offset(zone->m_structuredBlock->get_node_offset());
-        new_block->set_cell_global_offset(zone->m_structuredBlock->get_cell_offset());
+        block->set_node_offset(node_offset);
+        block->set_cell_offset(cell_offset);
+        node_offset += block->get_property("node_count").get_int();
+        cell_offset += block->get_property("cell_count").get_int();
+	
+	std::cerr << "FIX UP node global offset\n";
+#if 0
+        block->set_node_global_offset(zone->m_structuredBlock->get_node_offset());
+        block->set_cell_global_offset(zone->m_structuredBlock->get_cell_offset());
+#endif
       }
     }
 
