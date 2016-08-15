@@ -26,7 +26,7 @@ void cdqerr_(f_integer *nreq, f_integer *vstat, f_integer *nrem, f_integer *nret
 void cerhct_(f_integer *n, f_integer *erclas, f_integer *hflag);
 void ccixp_(f_integer *cip);
 void cesc1_(f_integer *funcid, f_integer *ldr, char *data, f_integer *drec_size);
-void cqid_(f_integer *maxchr, f_integer *vstat, f_integer *dclass, char *devid[4]);
+void cqid_(f_integer *maxchr, f_integer *vstat, f_integer *dclass, char **devid);
 void cqd_(f_integer *vstat, f_integer *hscopy, f_integer *disp, f_integer *bcolor, f_integer *dynbc,
           f_integer *dynvdm, f_integer *dx1, f_integer *dy1, f_integer *dx2, f_integer *dy2,
           f_real *width, f_real *height, f_integer *pixloc);
