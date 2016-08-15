@@ -561,7 +561,7 @@ void cesc1_(f_integer *funcid, f_integer *ldr, char *data, f_integer *drec_size)
 /*      cqid - inquire device identification                                  */
 /*                                                                            */
 /******************************************************************************/
-void cqid_(f_integer *maxchr, f_integer *vstat, f_integer *dclass, char *devid[4])
+void cqid_(f_integer *maxchr, f_integer *vstat, f_integer *dclass, char **devid)
 {
   short     dev;       /* which device to look at now */
   short     dev_found; /* which device was it found on */
