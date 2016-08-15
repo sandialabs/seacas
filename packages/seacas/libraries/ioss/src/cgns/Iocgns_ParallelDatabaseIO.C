@@ -378,10 +378,12 @@ namespace Iocgns {
 
     // Iterate all structured blocks and set the intervals to zero
     // if the m_proc field does not match current processor...
-    const auto &zones  = decomp->m_structuredZones;
+    const auto &zones = decomp->m_structuredZones;
 
-    size_t node_offset = 0;
-    size_t cell_offset = 0;
+    size_t node_offset        = 0;
+    size_t cell_offset        = 0;
+    size_t global_node_offset = 0;
+    size_t global_cell_offset = 0;
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
@@ -392,12 +394,12 @@ namespace Iocgns {
         auto block_name = zone->m_name;
 
         Ioss::StructuredBlock *block = nullptr;
+        std::array<int, 3> zeroes;
         for (auto &pzone : zones) {
           if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
             // Create a non-empty structured block on this processor...
-            block =
-                new Ioss::StructuredBlock(this, block_name, phys_dimension, pzone->m_ordinal,
-                                          pzone->m_offset, pzone->m_adam->m_ordinal);
+            block = new Ioss::StructuredBlock(this, block_name, phys_dimension, pzone->m_ordinal,
+                                              pzone->m_offset, pzone->m_adam->m_ordinal);
 
             for (auto &zgc : pzone->m_zoneConnectivity) {
               block->m_zoneConnectivity.push_back(zgc);
@@ -408,7 +410,8 @@ namespace Iocgns {
         if (block == nullptr) {
           // There is no block on this processor corresponding to the m_adam
           // block.  Create an empty block...
-          block = new Ioss::StructuredBlock(this, block_name, phys_dimension, 0, 0, 0);
+          block = new Ioss::StructuredBlock(this, block_name, phys_dimension, zeroes, zeroes,
+                                            zone->m_adam->m_ordinal);
         }
         assert(block != nullptr);
         get_region()->add(block);
@@ -420,12 +423,13 @@ namespace Iocgns {
         block->set_cell_offset(cell_offset);
         node_offset += block->get_property("node_count").get_int();
         cell_offset += block->get_property("cell_count").get_int();
-	
-	std::cerr << "FIX UP node global offset\n";
-#if 0
-        block->set_node_global_offset(zone->m_structuredBlock->get_node_offset());
-        block->set_cell_global_offset(zone->m_structuredBlock->get_cell_offset());
-#endif
+
+        block->set_node_global_offset(global_node_offset);
+        block->set_cell_global_offset(global_cell_offset);
+        global_node_offset += block->get_property("global_node_count").get_int();
+        ;
+        global_cell_offset += block->get_property("global_cell_count").get_int();
+        ;
       }
     }
 
@@ -474,7 +478,7 @@ namespace Iocgns {
     }
     else {
       std::cerr << "NodeCount = " << nodeCount << "\n";
-      assert(1==0);
+      assert(1 == 0);
     }
   }
 
@@ -648,40 +652,40 @@ namespace Iocgns {
     if (role == Ioss::Field::MESH) {
       bool cell_field = true;
       if (field.get_name() == "mesh_model_coordinates" ||
-	  field.get_name() == "mesh_model_coordinates_x" ||
-	  field.get_name() == "mesh_model_coordinates_y" ||
-	  field.get_name() == "mesh_model_coordinates_z" ||
-	  field.get_name() == "cell_node_ids") {
-	cell_field = false;
+          field.get_name() == "mesh_model_coordinates_x" ||
+          field.get_name() == "mesh_model_coordinates_y" ||
+          field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
+        cell_field = false;
       }
 
       if (cell_field) {
-	assert(num_to_get == sb->get_property("cell_count").get_int());
-	if (num_to_get > 0) {
-	  rmin[0] = sb->get_property("offset_i").get_int() + 1;
-	  rmin[1] = sb->get_property("offset_j").get_int() + 1;
-	  rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        assert(num_to_get == sb->get_property("cell_count").get_int());
+        if (num_to_get > 0) {
+          rmin[0] = sb->get_property("offset_i").get_int() + 1;
+          rmin[1] = sb->get_property("offset_j").get_int() + 1;
+          rmin[2] = sb->get_property("offset_k").get_int() + 1;
 
-	  rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-	  rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-	  rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
-	}
+          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+        }
       }
       else {
-	// cell nodal field.
-	assert(num_to_get == sb->get_property("node_count").get_int());
-	if (num_to_get > 0) {
-	  rmin[0] = sb->get_property("offset_i").get_int() + 1;
-	  rmin[1] = sb->get_property("offset_j").get_int() + 1;
-	  rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        // cell nodal field.
+        assert(num_to_get == sb->get_property("node_count").get_int());
+        if (num_to_get > 0) {
+          rmin[0] = sb->get_property("offset_i").get_int() + 1;
+          rmin[1] = sb->get_property("offset_j").get_int() + 1;
+          rmin[2] = sb->get_property("offset_k").get_int() + 1;
 
-	  rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-	  rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-	  rmax[2] = rmin[2] + sb->get_property("nk").get_int();
-	}
+          rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+          rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+          rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+        }
       }
 
-      assert(num_to_get == (rmax[0]-rmin[0]+1)*(rmax[1]-rmin[1]+1)*(rmax[2]-rmin[2]+1));
+      assert(num_to_get ==
+             (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       double *rdata = static_cast<double *>(data);
 
       if (field.get_name() == "mesh_model_coordinates_x") {
