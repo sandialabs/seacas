@@ -16,11 +16,11 @@
 #define DEBUG_OUTPUT 1
 namespace {
   int rank = 0;
-#define OUTPUT					\
-  if (rank == 0)				\
-    std::cerr
+#define OUTPUT                                                                                     \
+  if (rank == 0)                                                                                   \
+  std::cerr
 
-  // ZOLTAN Callback functions...
+// ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
@@ -90,10 +90,10 @@ namespace {
 #endif
 
   // These are used for structured parallel decomposition...
-  void create_zone_data(int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData*> &zones)
+  void create_zone_data(int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData *> &zones)
   {
-    int    base      = 1;
-    int    num_zones = 0;
+    int base      = 1;
+    int num_zones = 0;
     cg_nzones(cgnsFilePtr, base, &num_zones);
 
     std::map<std::string, int> zone_name_map;
@@ -144,9 +144,11 @@ namespace {
         std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
         std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
 
-	OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname << "\n";
-        zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
-						   range_beg, range_end, donor_beg, donor_end);
+        OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
+               << "\n";
+        zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
+                                                   transform, range_beg, range_end, donor_beg,
+                                                   donor_end);
       }
     }
 
@@ -232,12 +234,12 @@ namespace Iocgns {
     size_t px          = 0;
     size_t num_split   = 0;
     bool   split       = false;
-    double avg_work = (double)work / m_processorCount;
+    double avg_work    = (double)work / m_processorCount;
 
     OUTPUT << "Decomposing structured mesh for " << m_processorCount
            << " processors. Average workload is " << avg_work << ", Threshold is "
-           << load_balance_threshold << ". Work range "
-	   << avg_work/load_balance_threshold << " to " << avg_work*load_balance_threshold << "\n";
+           << load_balance_threshold << ". Work range " << avg_work / load_balance_threshold
+           << " to " << avg_work * load_balance_threshold << "\n";
 
     auto num_active = m_structuredZones.size();
     OUTPUT << "Number of active zones = " << num_active << ", work = " << work
@@ -340,20 +342,20 @@ namespace Iocgns {
 
     for (auto zone : m_structuredZones) {
       if (zone->is_active()) {
-	zone->resolve_zgc_split_donor(m_structuredZones);
+        zone->resolve_zgc_split_donor(m_structuredZones);
       }
     }
 
     // Update and Output the processor assignments
     for (auto &zone : m_structuredZones) {
       if (zone->is_active()) {
-	zone->update_zgc_processor(m_structuredZones);
+        zone->update_zgc_processor(m_structuredZones);
         OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
                << ", Adam zone = " << zone->m_adam->m_zone << "\n";
-	auto zgcs = zone->m_zoneConnectivity;
-	for (auto &zgc : zgcs) {
-	  OUTPUT << zgc << "\n";
-	}
+        auto zgcs = zone->m_zoneConnectivity;
+        for (auto &zgc : zgcs) {
+          OUTPUT << zgc << "\n";
+        }
       }
       else {
         zone->m_proc = -1;
@@ -379,7 +381,7 @@ namespace Iocgns {
       }
     }
 #endif
-    
+
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
   }
 
