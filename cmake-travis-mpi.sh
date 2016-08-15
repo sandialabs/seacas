@@ -21,7 +21,7 @@ pwd
 mpiexec --version
 mpiexec --help
 
-MPI_EXEC="`which mpiexec` --verbose"
+MPI_EXEC=`which mpiexec`
 MPI_BIN=`dirname "${MPI_EXEC}"`
 
 mkdir $BUILDDIR && cd $BUILDDIR
