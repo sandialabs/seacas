@@ -202,7 +202,7 @@ int ne_get_n_side_set(int          neid,               /* NetCDF/Exodus file ID 
 			    side_set_side_list);
 #else
   return ex_get_partial_side_set(neid, side_set_id, start_side_num, num_sides, side_set_elem_list,
-				 side_set_side_list);
+                                 side_set_side_list);
 #endif
 }
 
@@ -215,7 +215,7 @@ int ne_put_n_side_set(int             neid,               /* NetCDF/Exodus file 
                       )
 {
   return ex_put_partial_set(neid, EX_SIDE_SET, side_set_id, start_side_num, num_sides,
-			    side_set_elem_list, side_set_side_list);
+                            side_set_elem_list, side_set_side_list);
 }
 
 int ne_get_n_side_set_df(int          neid,          /* NetCDF/Exodus file ID */
@@ -225,7 +225,8 @@ int ne_get_n_side_set_df(int          neid,          /* NetCDF/Exodus file ID */
                          void *       side_set_df    /* Distribution factors */
                          )
 {
-  return ex_get_partial_set_dist_fact(neid, EX_SIDE_SET, side_set_id, start_num, num_df_to_get, side_set_df);
+  return ex_get_partial_set_dist_fact(neid, EX_SIDE_SET, side_set_id, start_num, num_df_to_get,
+                                      side_set_df);
 }
 
 int ne_put_n_side_set_df(int          neid,          /* NetCDF/Exodus file ID */
@@ -235,7 +236,8 @@ int ne_put_n_side_set_df(int          neid,          /* NetCDF/Exodus file ID */
                          void *       side_set_df    /* Distribution factors */
                          )
 {
-  return ex_put_partial_set_dist_fact(neid, EX_SIDE_SET, side_set_id, start_num, num_df_to_get, side_set_df);
+  return ex_put_partial_set_dist_fact(neid, EX_SIDE_SET, side_set_id, start_num, num_df_to_get,
+                                      side_set_df);
 }
 
 int ne_get_n_node_set(int          neid,              /* NetCDF/Exodus file ID */
@@ -260,7 +262,8 @@ int ne_put_n_node_set(int             neid,              /* NetCDF/Exodus file I
                       const void_int *node_set_node_list /* List of nodes in node set */
                       )
 {
-  return ex_put_partial_set(neid, EX_NODE_SET, node_set_id, start_node_num, num_node, node_set_node_list, NULL);
+  return ex_put_partial_set(neid, EX_NODE_SET, node_set_id, start_node_num, num_node,
+                            node_set_node_list, NULL);
 }
 
 int ne_get_n_node_set_df(int          neid,          /* NetCDF/Exodus file ID */
@@ -270,7 +273,8 @@ int ne_get_n_node_set_df(int          neid,          /* NetCDF/Exodus file ID */
                          void *       node_set_df    /* Distribution factors */
                          )
 {
-  return ex_get_partial_set_dist_fact(neid, EX_NODE_SET, node_set_id, start_num, num_df_to_get, node_set_df);
+  return ex_get_partial_set_dist_fact(neid, EX_NODE_SET, node_set_id, start_num, num_df_to_get,
+                                      node_set_df);
 }
 
 int ne_put_n_node_set_df(int          neid,          /* NetCDF/Exodus file ID */
@@ -280,7 +284,8 @@ int ne_put_n_node_set_df(int          neid,          /* NetCDF/Exodus file ID */
                          void *       node_set_df    /* Distribution factors */
                          )
 {
-  return ex_put_partial_set_dist_fact(neid, EX_NODE_SET, node_set_id, start_num, num_df_to_get, node_set_df);
+  return ex_put_partial_set_dist_fact(neid, EX_NODE_SET, node_set_id, start_num, num_df_to_get,
+                                      node_set_df);
 }
 
 int ne_get_n_coord(int     neid,           /* NetCDF/Exodus file ID */
@@ -313,7 +318,7 @@ int ne_get_n_elem_conn(int          neid,           /* NetCDF/Exodus file ID */
                        )
 {
   return ex_get_partial_conn(neid, EX_ELEM_BLOCK, elem_blk_id, start_elem_num, num_elems, connect,
-			     NULL, NULL);
+                             NULL, NULL);
 }
 
 int ne_put_n_elem_conn(int             neid,           /* NetCDF/Exodus file ID */
@@ -373,8 +378,8 @@ int ne_get_n_elem_var(int          neid,              /* NetCDF/Exodus file ID *
                       void *       elem_var_vals      /* variable values */
                       )
 {
-  return ex_get_partial_var(neid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_elem_num,
-                      num_elem, elem_var_vals);
+  return ex_get_partial_var(neid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id,
+                            start_elem_num, num_elem, elem_var_vals);
 }
 
 int ne_put_elem_var_slab(int          neid,           /* NetCDF/Exodus file ID */
@@ -386,8 +391,8 @@ int ne_put_elem_var_slab(int          neid,           /* NetCDF/Exodus file ID *
                          void *       elem_var_vals   /* variable values */
                          )
 {
-  return ex_put_partial_var(neid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_pos, num_vals,
-                              elem_var_vals);
+  return ex_put_partial_var(neid, time_step, EX_ELEM_BLOCK, elem_var_index, elem_blk_id, start_pos,
+                            num_vals, elem_var_vals);
 }
 
 int ne_get_n_nodal_var(int     neid,            /* NetCDF/Exodus file ID */
@@ -398,8 +403,8 @@ int ne_get_n_nodal_var(int     neid,            /* NetCDF/Exodus file ID */
                        void *  nodal_vars       /* array of nodal var values */
                        )
 {
-  return ex_get_partial_var(neid, time_step, EX_NODAL, nodal_var_index, 1, start_node_num, num_nodes,
-                      nodal_vars);
+  return ex_get_partial_var(neid, time_step, EX_NODAL, nodal_var_index, 1, start_node_num,
+                            num_nodes, nodal_vars);
 }
 
 int ne_put_nodal_var_slab(int     neid,            /* NetCDF/Exodus file ID */
@@ -411,7 +416,7 @@ int ne_put_nodal_var_slab(int     neid,            /* NetCDF/Exodus file ID */
                           )
 {
   return ex_put_partial_var(neid, time_step, EX_NODAL, nodal_var_index, 1, start_pos, num_vals,
-				  nodal_var_vals);
+                            nodal_var_vals);
 }
 
 /*=============================================================================
