@@ -196,14 +196,8 @@ int ne_get_n_side_set(int          neid,               /* NetCDF/Exodus file ID 
                       void_int *   side_set_side_list  /* List of side IDs */
                       )
 {
-#if 0
-  /* TODO: implement ex_get_partial_set */
   return ex_get_partial_set(neid, EX_SIDE_SET, side_set_id, start_side_num, num_sides, side_set_elem_list,
 			    side_set_side_list);
-#else
-  return ex_get_partial_side_set(neid, side_set_id, start_side_num, num_sides, side_set_elem_list,
-                                 side_set_side_list);
-#endif
 }
 
 int ne_put_n_side_set(int             neid,               /* NetCDF/Exodus file ID */
@@ -247,12 +241,7 @@ int ne_get_n_node_set(int          neid,              /* NetCDF/Exodus file ID *
                       void_int *   node_set_node_list /* List of nodes in node set */
                       )
 {
-#if 0
-  /* TODO: This is missing from exodus api ? */
   return ex_get_partial_set(neid, EX_NODE_SET, node_set_id, start_node_num, num_node, node_set_node_list, NULL);
-#else
-  return ex_get_partial_node_set(neid, node_set_id, start_node_num, num_node, node_set_node_list);
-#endif
 }
 
 int ne_put_n_node_set(int             neid,              /* NetCDF/Exodus file ID */
@@ -328,13 +317,8 @@ int ne_put_n_elem_conn(int             neid,           /* NetCDF/Exodus file ID 
                        const void_int *connect         /* Connectivity vector */
                        )
 {
-#if 0
-  /* TODO: This is missing from exodus API ? */
   return ex_put_partial_conn(neid, EX_ELEM_BLOCK, elem_blk_id, start_elem_num, num_elems, connect,
 			     NULL, NULL);
-#else
-  return ex_put_partial_elem_conn(neid, elem_blk_id, start_elem_num, num_elems, connect);
-#endif
 }
 
 int ne_get_n_elem_attr(int          neid,           /* NetCDF/Exodus file ID */
