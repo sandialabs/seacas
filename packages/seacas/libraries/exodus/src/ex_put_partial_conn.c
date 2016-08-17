@@ -68,7 +68,8 @@
  */
 
 int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, int64_t start_num,
-                        int64_t num_ent, const void_int *nodeconn, const void_int *edgeconn, const void_int *faceconn)
+                        int64_t num_ent, const void_int *nodeconn, const void_int *edgeconn,
+                        const void_int *faceconn)
 {
   int connid  = -1;
   int econnid = -1;
@@ -256,7 +257,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     if (count[0] == 0) {
       start[0] = 0;
     }
-    
+
     if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
       status = nc_put_vara_longlong(exoid, econnid, start, count, edgeconn);
     }
@@ -314,7 +315,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     if (count[0] == 0) {
       start[0] = 0;
     }
-    
+
     if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
       status = nc_put_vara_longlong(exoid, connid, start, count, nodeconn);
     }
