@@ -192,6 +192,41 @@ namespace Iocgns {
       block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
                                              range_beg, range_end, donor_beg, donor_end);
     }
+
+    // Handle boundary conditions...
+    int num_bcs;
+    cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
+
+    for (int bc = 0; bc < num_bcs; bc++) {
+      char boconame[32];
+      CG_BCType_t bocotype;
+      CG_PointSetType_t ptset_type;
+      cgsize_t npnts;
+      int NormalIndex;
+      cgsize_t NormalListSize;
+      CG_DataType_t NormalDataType;
+      int ndataset;
+
+      cg_boco_info(cgnsFilePtr, base, zone, bc+1,
+		   boconame, &bocotype, &ptset_type,
+		   &npnts, &NormalIndex, &NormalListSize,
+		   &NormalDataType, &ndataset);
+      //	assert(npnts == 2);
+      
+      cgsize_t pnts[6];
+      cg_boco_read(cgnsFilePtr, base, zone, bc+1, pnts, NULL);
+      std::cerr << "BC: " << boconame << ", Points = (" << npnts << ") "
+		<< pnts[0] << " " << pnts[1] << " " << pnts[2] << " "
+		<< pnts[3] << " " << pnts[4] << " " << pnts[5] << "\n";
+      // See if there is an existing sideset with this name...
+      Ioss::SideSet *sset = get_region()->get_sideset(boconame);
+      if (sset) {
+	std::cerr << "Found matching sideset with name " << boconame << "\n";
+      }
+      else {
+	std::cerr << "Did not find matching sideset with name " << boconame << "\n";
+      }
+    }
   }
 
   size_t DatabaseIO::finalize_structured_blocks()
@@ -440,29 +475,12 @@ namespace Iocgns {
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
-    cgsize_t base         = 1;
-    cgsize_t num_families = 0;
-    cg_nfamilies(cgnsFilePtr, base, &num_families);
-    for (cgsize_t family = 1; family <= num_families; family++) {
-      char     name[33];
-      cgsize_t num_bc  = 0;
-      cgsize_t num_geo = 0;
-      cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
-#if defined(DEBUG_OUTPUT)
-      std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-                << num_geo << " geometry references\n";
-#endif
-      if (num_bc > 0) {
-        // Create a sideset...
-        std::string ss_name(name);
-        auto        ss = new Ioss::SideSet(this, ss_name);
-        get_region()->add(ss);
-      }
-    }
+    Utils::add_sidesets(cgnsFilePtr, this);
 
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int num_zones = 0;
+    int base = 1;
     cg_nzones(cgnsFilePtr, base, &num_zones);
     m_blockLocalNodeMap.resize(num_zones + 1); // Let's use 1-based zones...
     m_zoneOffset.resize(num_zones + 1);        // Let's use 1-based zones...
