@@ -27,11 +27,11 @@ ne_put_eb_info_global        ex_put_eb_info_global
 ```
 #  Nodeset, Sideset & Element Block Subset Routines
 ```
-ne_get_n_side_set            ex_get_partial_side_set
+ne_get_n_side_set            ex_get_partial_set
 ne_put_n_side_set            ex_put_partial_set
 ne_get_n_side_set_df         ex_get_partial_set_dist_fact
 ne_put_n_side_set_df         ex_put_partial_set_dist_fact
-ne_get_n_node_set            ex_get_partial_node_set
+ne_get_n_node_set            ex_get_partial_set
 ne_put_n_node_set            ex_put_partial_set
 ne_get_n_node_set_df         ex_get_partial_set_dist_fact
 ne_put_n_node_set_df         ex_put_partial_set_dist_fact
