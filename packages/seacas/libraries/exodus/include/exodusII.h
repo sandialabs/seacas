@@ -701,6 +701,10 @@ EXODUS_EXPORT int ex_get_partial_conn(int exoid, ex_entity_type blk_type, ex_ent
                                       int64_t start_num, int64_t num_ent, void_int *nodeconn,
                                       void_int *edgeconn, void_int *faceconn);
 
+EXODUS_EXPORT int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
+                                      int64_t start_num, int64_t num_ent, const void_int *nodeconn,
+                                      const void_int *edgeconn, const void_int *faceconn);
+
 /*  Write Edge Face or Element Block Attributes */
 EXODUS_EXPORT int ex_put_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
                               const void *attrib);
@@ -754,6 +758,11 @@ EXODUS_EXPORT int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity
 /*  Write a Node Edge Face or Side Set */
 EXODUS_EXPORT int ex_put_set(int exoid, ex_entity_type set_type, ex_entity_id set_id,
                              const void_int *set_entry_list, const void_int *set_extra_list);
+
+EXODUS_EXPORT int ex_get_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id,
+                                     int64_t offset, int64_t num_to_get,
+                                     void_int *set_entry_list,
+                                     void_int *set_extra_list);
 
 EXODUS_EXPORT int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id,
                                      int64_t offset, int64_t num_to_put,
