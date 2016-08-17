@@ -74,8 +74,7 @@
  */
 
 int ex_get_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, int64_t offset,
-                       int64_t num_to_get, void_int *set_entry_list,
-                       void_int *set_extra_list)
+                       int64_t num_to_get, void_int *set_entry_list, void_int *set_extra_list)
 {
   int    dimid, status;
   int    entry_list_id, extra_list_id, set_id_ndx;
