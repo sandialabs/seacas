@@ -106,6 +106,7 @@ namespace {
     }
     return common_zone_type;
   }
+
 }
 
 namespace Iocgns {
@@ -230,28 +231,11 @@ namespace Iocgns {
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
-    cgsize_t base         = 1;
-    cgsize_t num_families = 0;
-    cg_nfamilies(cgnsFilePtr, base, &num_families);
-    for (cgsize_t family = 1; family <= num_families; family++) {
-      char     name[33];
-      cgsize_t num_bc  = 0;
-      cgsize_t num_geo = 0;
-      cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
-#if defined(DEBUG_OUTPUT)
-      std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-                << num_geo << " geometry references\n";
-#endif
-      if (num_bc > 0) {
-        // Create a sideset...
-        std::string    ss_name(name);
-        Ioss::SideSet *ss = new Ioss::SideSet(this, ss_name);
-        get_region()->add(ss);
-      }
-    }
-
+    Utils::add_sidesets(cgnsFilePtr, this);
+    
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
+    int base = 1;
     int i = 0;
     for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
@@ -371,6 +355,8 @@ namespace Iocgns {
   {
     int base = 1;
 
+    Utils::add_sidesets(cgnsFilePtr, this);
+    
     char     basename[33];
     cgsize_t cell_dimension = 0;
     cgsize_t phys_dimension = 0;
@@ -394,7 +380,7 @@ namespace Iocgns {
         auto block_name = zone->m_name;
 
         Ioss::StructuredBlock *block = nullptr;
-        std::array<int, 3> zeroes;
+        std::array<int, 3> zeroes{{0,0,0}};
         for (auto &pzone : zones) {
           if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
             // Create a non-empty structured block on this processor...
@@ -433,6 +419,71 @@ namespace Iocgns {
       }
     }
 
+    // ========================================================================
+    // Iterate each StructuredBlock, get its zone. For that zone, get the number of
+    // boundary conditions and then iterate those and create sideblocks in the 
+    // corresponding sideset.
+    const auto &sbs = get_region()->get_structured_blocks();
+    for (const auto &block : sbs) {
+      int zone = block->get_property("zone").get_int();
+      base = block->get_property("base").get_int();
+
+      int num_bcs;
+      cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
+
+      for (int bc = 0; bc < num_bcs; bc++) {
+	char boconame[32];
+	CG_BCType_t bocotype;
+	CG_PointSetType_t ptset_type;
+	cgsize_t npnts;
+	int NormalIndex;
+	cgsize_t NormalListSize;
+	CG_DataType_t NormalDataType;
+	int ndataset;
+
+	cg_boco_info(cgnsFilePtr, base, zone, bc+1,
+		     boconame, &bocotype, &ptset_type,
+		     &npnts, &NormalIndex, &NormalListSize,
+		     &NormalDataType, &ndataset);
+	//	assert(npnts == 2);
+	
+	cgsize_t pnts[6];
+	cg_boco_read(cgnsFilePtr, base, zone, bc+1, pnts, NULL);
+	std::cerr << "BC: " << boconame << ", Points = (" << npnts << ") "
+		  << pnts[0] << " " << pnts[1] << " " << pnts[2] << " "
+		  << pnts[3] << " " << pnts[4] << " " << pnts[5] << "\n";
+        // See if there is an existing sideset with this name...
+        Ioss::SideSet *sset = get_region()->get_sideset(boconame);
+	if (sset) {
+	  std::cerr << "Found matching sideset with name " << boconame << "\n";
+	}
+	else {
+	  std::cerr << "Did not find matching sideset with name " << boconame << "\n";
+	}
+      }
+
+#if 0
+        if (sset != nullptr) {
+          std::string block_name(zone_name);
+          block_name += "/";
+          block_name += section_name;
+          std::string face_topo = Utils::map_cgns_to_topology_type(e_type);
+#if defined(DEBUG_OUTPUT)
+          std::cout << "Added sideset " << block_name << " of topo " << face_topo << " with "
+                    << num_entity << " faces\n";
+#endif
+          std::string parent_topo = eblock == nullptr ? "unknown" : eblock->topology()->name();
+          auto sblk = new Ioss::SideBlock(this, block_name, face_topo, parent_topo, num_entity);
+          sblk->property_add(Ioss::Property("base", base));
+          sblk->property_add(Ioss::Property("zone", zone));
+          sblk->property_add(Ioss::Property("section", is));
+          if (eblock != nullptr) {
+            sblk->set_parent_element_block(eblock);
+          }
+          sset->add(sblk);
+        }
+#endif
+      }
     auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_offset, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
