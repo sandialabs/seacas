@@ -174,6 +174,15 @@ void Iocgns::Utils::add_structured_boundary_conditions(int cgnsFilePtr,
       
     cg_boco_read(cgnsFilePtr, base, zone, ibc+1, range, NULL);
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);
+    if (!sset) {
+      // Need to create a new sideset since didn't see this earlier.
+      auto *db = block->get_database();
+      sset = new Ioss::SideSet(db, boconame);
+      // TODO: Figure out an id...
+      //      sset->property_add(Ioss::Property("id", ?));
+      db->get_region()->add(sset);
+    }
+
     if (sset) {
       std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
       std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
