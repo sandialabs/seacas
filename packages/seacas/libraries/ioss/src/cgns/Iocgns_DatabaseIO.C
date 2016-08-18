@@ -194,39 +194,7 @@ namespace Iocgns {
     }
 
     // Handle boundary conditions...
-    int num_bcs;
-    cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
-
-    for (int bc = 0; bc < num_bcs; bc++) {
-      char boconame[32];
-      CG_BCType_t bocotype;
-      CG_PointSetType_t ptset_type;
-      cgsize_t npnts;
-      int NormalIndex;
-      cgsize_t NormalListSize;
-      CG_DataType_t NormalDataType;
-      int ndataset;
-
-      cg_boco_info(cgnsFilePtr, base, zone, bc+1,
-		   boconame, &bocotype, &ptset_type,
-		   &npnts, &NormalIndex, &NormalListSize,
-		   &NormalDataType, &ndataset);
-      //	assert(npnts == 2);
-      
-      cgsize_t pnts[6];
-      cg_boco_read(cgnsFilePtr, base, zone, bc+1, pnts, NULL);
-      std::cerr << "BC: " << boconame << ", Points = (" << npnts << ") "
-		<< pnts[0] << " " << pnts[1] << " " << pnts[2] << " "
-		<< pnts[3] << " " << pnts[4] << " " << pnts[5] << "\n";
-      // See if there is an existing sideset with this name...
-      Ioss::SideSet *sset = get_region()->get_sideset(boconame);
-      if (sset) {
-	std::cerr << "Found matching sideset with name " << boconame << "\n";
-      }
-      else {
-	std::cerr << "Did not find matching sideset with name " << boconame << "\n";
-      }
-    }
+    Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
   }
 
   size_t DatabaseIO::finalize_structured_blocks()

@@ -37,6 +37,8 @@
 #include <Ioss_ElementTopology.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_SideSet.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_StructuredBlock.h>
 #include <Ioss_Region.h>
 #include <Ioss_Utils.h>
 #include <cgnslib.h>
@@ -51,17 +53,7 @@ namespace Iocgns {
     ~Utils() = default;
 
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
-                           int processor)
-      {
-	std::ostringstream errmsg;
-	errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno << " in file '" << file
-	       << "' in function '" << function << "' on processor " << processor
-	       << ". Please report to gdsjaar@sandia.gov if you need help.";
-	if (cgnsid > 0) {
-	  cg_close(cgnsid);
-	}
-	IOSS_ERROR(errmsg);
-      }
+                           int processor);
 
     template <typename INT>
       static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
@@ -106,60 +98,10 @@ namespace Iocgns {
 	}
       }
 
-    static std::string map_cgns_to_topology_type(CG_ElementType_t type)
-      {
-	std::string topology = "unknown";
-	switch (type) {
-	case CG_NODE: topology     = "tetra4"; break;
-	case CG_BAR_2: topology    = "bar2"; break;
-	case CG_BAR_3: topology    = "bar3"; break;
-	case CG_TRI_3: topology    = "tri3"; break;
-	case CG_TRI_6: topology    = "tri6"; break;
-	case CG_QUAD_4: topology   = "quad4"; break;
-	case CG_QUAD_8: topology   = "quad8"; break;
-	case CG_QUAD_9: topology   = "quad9"; break;
-	case CG_TETRA_4: topology  = "tetra4"; break;
-	case CG_TETRA_10: topology = "tetra10"; break;
-	case CG_PYRA_5: topology   = "pyramid5"; break;
-	case CG_PYRA_13: topology  = "pyramid13"; break;
-	case CG_PYRA_14: topology  = "pyramid14"; break;
-	case CG_PENTA_6: topology  = "wedge6"; break;
-	case CG_PENTA_15: topology = "wedge15"; break;
-	case CG_PENTA_18: topology = "wedge18"; break;
-	case CG_HEXA_8: topology   = "hex8"; break;
-	case CG_HEXA_20: topology  = "hex20"; break;
-	case CG_HEXA_27: topology  = "hex27"; break;
-	default:
-	  std::cerr << "WARNING: Found topology of type " << cg_ElementTypeName(type)
-		    << " which is not currently supported.\n";
-	  topology = "unknown";
-	}
-	return topology;
-      }
-
-    static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
-    {
-      cgsize_t base         = 1;
-      cgsize_t num_families = 0;
-      cg_nfamilies(cgnsFilePtr, base, &num_families);
-      for (cgsize_t family = 1; family <= num_families; family++) {
-	char     name[33];
-	cgsize_t num_bc  = 0;
-	cgsize_t num_geo = 0;
-	cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
-#if defined(DEBUG_OUTPUT)
-	std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-		  << num_geo << " geometry references\n";
-#endif
-	if (num_bc > 0) {
-	  // Create a sideset...
-	  std::string    ss_name(name);
-	  Ioss::SideSet *ss = new Ioss::SideSet(db, ss_name);
-	  ss->property_add(Ioss::Property("id", family));
-	  db->get_region()->add(ss);
-	}
-      }
-    }
+    static std::string map_cgns_to_topology_type(CG_ElementType_t type);
+    static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
+    static void add_structured_boundary_conditions(int cgnsFilePtr,
+						   Ioss::StructuredBlock *block);
   };
 }
 

@@ -256,6 +256,12 @@ namespace {
 		OUTPUT << zgc << "\n";
 	      }
 	    }
+	    if (!sb->m_boundaryConditions.empty()) {
+	      OUTPUT << "\tBoundary Conditions:\n";
+	      for (const auto &bc : sb->m_boundaryConditions) {
+		OUTPUT << bc << "\n";
+	      }
+	    }
 	    if (interface.compute_bbox()) {
 	      Ioss::AxisAlignedBoundingBox bbox = sb->get_bounding_box();
 	      OUTPUT << "\tBounding Box: Minimum X,Y,Z = " << std::setprecision(4) << std::scientific
