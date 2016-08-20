@@ -1,0 +1,536 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module exodus</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>exodus</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/gdsjaar/src/SEACAS/ACCESS/scripts/exodus.py">/home/gdsjaar/src/SEACAS/ACCESS/scripts/exodus.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="exodus.html#exodus">exodus</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="exodus">class <strong>exodus</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>e&nbsp;=&nbsp;<a href="#exodus">exodus</a>('file.e',mode='r')&nbsp;-&gt;&nbsp;open&nbsp;existing&nbsp;<a href="#exodus">exodus</a>&nbsp;file&nbsp;for&nbsp;data&nbsp;extraction<br>
+e&nbsp;=&nbsp;<a href="#exodus">exodus</a>('file.e',mode='a')&nbsp;-&gt;&nbsp;open&nbsp;existing&nbsp;<a href="#exodus">exodus</a>&nbsp;file&nbsp;for&nbsp;data&nbsp;insertion/extraction<br>
+e&nbsp;=&nbsp;<a href="#exodus">exodus</a>('file.e',mode='w',title=title,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numDims=numDims,numNodes=numNodes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numElems=numElems,numBlocks=numBlocks,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numNodeSets=numNodeSets,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numSideSets=numSideSets)&nbsp;-&gt;&nbsp;open&nbsp;new&nbsp;<a href="#exodus">exodus</a>&nbsp;file&nbsp;for&nbsp;data&nbsp;insertion<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="exodus-__init__"><strong>__init__</strong></a>(self, file, mode<font color="#909090">=None</font>, title<font color="#909090">=None</font>, numDims<font color="#909090">=None</font>, numNodes<font color="#909090">=None</font>, numElems<font color="#909090">=None</font>, numBlocks<font color="#909090">=None</font>, numNodeSets<font color="#909090">=None</font>, numSideSets<font color="#909090">=None</font>, io_size<font color="#909090">=0</font>)</dt></dl>
+
+<dl><dt><a name="exodus-close"><strong>close</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-close">close</a>()&nbsp;-&gt;&nbsp;close&nbsp;the&nbsp;<a href="#exodus">exodus</a>&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="exodus-copy"><strong>copy</strong></a>(self, fileName)</dt><dd><tt>e.<a href="#exodus-copy">copy</a>(fileName)&nbsp;-&gt;&nbsp;copies&nbsp;Exodus&nbsp;database&nbsp;to&nbsp;fileName&nbsp;and&nbsp;returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;copy&nbsp;as&nbsp;a&nbsp;new&nbsp;<a href="#exodus">exodus</a>&nbsp;object</tt></dd></dl>
+
+<dl><dt><a name="exodus-elem_blk_info"><strong>elem_blk_info</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-elem_blk_info">elem_blk_info</a>(id)&nbsp;-&gt;&nbsp;element&nbsp;block&nbsp;info&nbsp;for&nbsp;block&nbsp;"id"&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-elem_type"><strong>elem_type</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-elem_type">elem_type</a>(id)&nbsp;-&gt;&nbsp;type&nbsp;of&nbsp;element,&nbsp;i.e&nbsp;"QUAD",&nbsp;"TETRA",&nbsp;etc.</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_all_global_variable_values"><strong>get_all_global_variable_values</strong></a>(self, step)</dt><dd><tt>e.<a href="#exodus-get_all_global_variable_values">get_all_global_variable_values</a>(step)&nbsp;-&gt;&nbsp;get&nbsp;all&nbsp;global&nbsp;variable&nbsp;values<br>
+at&nbsp;time&nbsp;step&nbsp;within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_all_node_set_params"><strong>get_all_node_set_params</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_all_node_set_params">get_all_node_set_params</a>()&nbsp;-&gt;&nbsp;get&nbsp;total&nbsp;number&nbsp;of&nbsp;nodes&nbsp;and&nbsp;distribution&nbsp;factors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;combined&nbsp;in&nbsp;all&nbsp;node&nbsp;sets</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_all_side_set_params"><strong>get_all_side_set_params</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_all_side_set_params">get_all_side_set_params</a>()&nbsp;-&gt;&nbsp;get&nbsp;total&nbsp;number&nbsp;of&nbsp;elements,&nbsp;nodes,&nbsp;and&nbsp;distribution<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;factors&nbsp;combined&nbsp;in&nbsp;all&nbsp;side&nbsp;sets</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_coord"><strong>get_coord</strong></a>(self, i)</dt><dd><tt>e.<a href="#exodus-get_coord">get_coord</a>(i)&nbsp;-&gt;&nbsp;get&nbsp;(x,y,z)&nbsp;of&nbsp;i^th&nbsp;node&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_coord_names"><strong>get_coord_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_coord_names">get_coord_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;coordinate&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_coords"><strong>get_coords</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_coords">get_coords</a>()&nbsp;-&gt;&nbsp;get&nbsp;tuple&nbsp;of&nbsp;lists&nbsp;of&nbsp;coordinates&nbsp;(X,Y,Z)&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_attr"><strong>get_elem_attr</strong></a>(self, elemBlkID)</dt><dd><tt>e.get_elm_attr(elemBlkID)&nbsp;-&gt;&nbsp;get&nbsp;element&nbsp;block&nbsp;attributes</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_blk_ids"><strong>get_elem_blk_ids</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_elem_blk_ids">get_elem_blk_ids</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;element&nbsp;block&nbsp;ids&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_blk_name"><strong>get_elem_blk_name</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_elem_blk_name">get_elem_blk_name</a>(id)&nbsp;-&gt;&nbsp;get&nbsp;element&nbsp;block&nbsp;name&nbsp;for&nbsp;block&nbsp;"id"&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_blk_names"><strong>get_elem_blk_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_elem_blk_names">get_elem_blk_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;element&nbsp;block&nbsp;names&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_connectivity"><strong>get_elem_connectivity</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_elem_connectivity">get_elem_connectivity</a>(id)&nbsp;-&gt;&nbsp;get&nbsp;tuple&nbsp;of&nbsp;one&nbsp;list&nbsp;and&nbsp;two&nbsp;reals&nbsp;<br>
+(elem_block_connectivity,num_elem_this_blk,num_nodes_per_elem)</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_id_map"><strong>get_elem_id_map</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_elem_id_map">get_elem_id_map</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;mapping&nbsp;local&nbsp;elem&nbsp;id&nbsp;to&nbsp;global&nbsp;id&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_num_map"><strong>get_elem_num_map</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_elem_num_map">get_elem_num_map</a>()&nbsp;-&gt;&nbsp;**DEPRECATED**&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use:&nbsp;e.ex_get_elem_id_map()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;list&nbsp;mapping&nbsp;local&nbsp;element&nbsp;id&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;global&nbsp;id&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_elem_order_map"><strong>get_elem_order_map</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_elem_order_map">get_elem_order_map</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;optimized&nbsp;element&nbsp;ordering</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_attribute_names"><strong>get_element_attribute_names</strong></a>(self, blkId)</dt><dd><tt>e.<a href="#exodus-get_element_attribute_names">get_element_attribute_names</a>(blId)&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;element&nbsp;attribute&nbsp;names&nbsp;for&nbsp;block&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_property_names"><strong>get_element_property_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_element_property_names">get_element_property_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;element&nbsp;property&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_property_value"><strong>get_element_property_value</strong></a>(self, id, name)</dt><dd><tt>e.<a href="#exodus-get_element_property_value">get_element_property_value</a>(id,name)&nbsp;-&gt;&nbsp;get&nbsp;element&nbsp;property&nbsp;value&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;an&nbsp;element&nbsp;block&nbsp;ID&nbsp;and&nbsp;property&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_variable_names"><strong>get_element_variable_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_element_variable_names">get_element_variable_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;element&nbsp;variable&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_variable_number"><strong>get_element_variable_number</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_element_variable_number">get_element_variable_number</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;element&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_variable_truth_table"><strong>get_element_variable_truth_table</strong></a>(self, blockId<font color="#909090">=None</font>)</dt><dd><tt>e.<a href="#exodus-get_element_variable_truth_table">get_element_variable_truth_table</a>(blockId)&nbsp;-&gt;&nbsp;gets&nbsp;a&nbsp;truth&nbsp;table&nbsp;indicating&nbsp;which&nbsp;variables&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defined&nbsp;for&nbsp;a&nbsp;block.&nbsp;&nbsp;If&nbsp;blockId&nbsp;is&nbsp;not&nbsp;passed,&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;concatenated&nbsp;truth&nbsp;table&nbsp;for&nbsp;all&nbsp;blocks&nbsp;is&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;variable&nbsp;index&nbsp;cycling&nbsp;faster&nbsp;than&nbsp;blockId</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_element_variable_values"><strong>get_element_variable_values</strong></a>(self, blockId, name, step)</dt><dd><tt>e.<a href="#exodus-get_element_variable_values">get_element_variable_values</a>(blockId,"name",step)&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;element&nbsp;variable&nbsp;values<br>
+for&nbsp;an&nbsp;element&nbsp;block&nbsp;id&nbsp;at&nbsp;step&nbsp;within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_global_variable_names"><strong>get_global_variable_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_global_variable_names">get_global_variable_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;global&nbsp;variable&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_global_variable_number"><strong>get_global_variable_number</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_global_variable_number">get_global_variable_number</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;global&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_global_variable_value"><strong>get_global_variable_value</strong></a>(self, name, step)</dt><dd><tt>e.<a href="#exodus-get_global_variable_value">get_global_variable_value</a>("name",step)&nbsp;-&gt;&nbsp;get&nbsp;global&nbsp;variable&nbsp;value<br>
+at&nbsp;time&nbsp;step&nbsp;within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_global_variable_values"><strong>get_global_variable_values</strong></a>(self, name)</dt><dd><tt>e.<a href="#exodus-get_global_variable_values">get_global_variable_values</a>("name",step)&nbsp;-&gt;&nbsp;get&nbsp;global&nbsp;variable&nbsp;values<br>
+within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_info_records"><strong>get_info_records</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_info_records">get_info_records</a>()&nbsp;-&gt;&nbsp;get&nbsp;a&nbsp;list&nbsp;info&nbsp;records&nbsp;from&nbsp;the&nbsp;<a href="#exodus">exodus</a>&nbsp;database;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;entry&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;one&nbsp;line&nbsp;of&nbsp;info,&nbsp;e.g.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;line&nbsp;of&nbsp;an&nbsp;input&nbsp;deck</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_id_map"><strong>get_node_id_map</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_id_map">get_node_id_map</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;mapping&nbsp;local&nbsp;node&nbsp;id&nbsp;to&nbsp;global&nbsp;id&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_num_map"><strong>get_node_num_map</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_num_map">get_node_num_map</a>()&nbsp;-&gt;&nbsp;**DEPRECATED**&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use:&nbsp;e.ex_get_node_id_map()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;list&nbsp;mapping&nbsp;local&nbsp;node&nbsp;id&nbsp;to&nbsp;global&nbsp;id&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_dist_facts"><strong>get_node_set_dist_facts</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_node_set_nodes">get_node_set_nodes</a>(id)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;distribution&nbsp;factors&nbsp;for&nbsp;nodes&nbsp;in&nbsp;node&nbsp;set</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_ids"><strong>get_node_set_ids</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_set_ids">get_node_set_ids</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;node&nbsp;set&nbsp;ids&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_name"><strong>get_node_set_name</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_node_set_name">get_node_set_name</a>(id)&nbsp;-&gt;&nbsp;get&nbsp;node&nbsp;set&nbsp;name&nbsp;for&nbsp;node&nbsp;set&nbsp;"id"&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_names"><strong>get_node_set_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_set_names">get_node_set_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;node&nbsp;set&nbsp;names&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_nodes"><strong>get_node_set_nodes</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_node_set_nodes">get_node_set_nodes</a>(id)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;node&nbsp;id's&nbsp;in&nbsp;node&nbsp;set</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_params"><strong>get_node_set_params</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_node_set_params">get_node_set_params</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;nodes&nbsp;and&nbsp;distribution&nbsp;factors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;a&nbsp;node&nbsp;set</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_property_names"><strong>get_node_set_property_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_set_property_names">get_node_set_property_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;nodeset&nbsp;property&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_property_value"><strong>get_node_set_property_value</strong></a>(self, id, name)</dt><dd><tt>e.<a href="#exodus-get_node_set_property_value">get_node_set_property_value</a>(id,name)&nbsp;-&gt;&nbsp;get&nbsp;nodeset&nbsp;property&nbsp;value&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;an&nbsp;nodeset&nbsp;ID&nbsp;and&nbsp;property&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_variable_names"><strong>get_node_set_variable_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_set_variable_names">get_node_set_variable_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;node&nbsp;set&nbsp;variable&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_variable_number"><strong>get_node_set_variable_number</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_set_variable_number">get_node_set_variable_number</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;node&nbsp;set&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_variable_truth_table"><strong>get_node_set_variable_truth_table</strong></a>(self, nodeSetId<font color="#909090">=None</font>)</dt><dd><tt>e.<a href="#exodus-get_node_set_variable_truth_table">get_node_set_variable_truth_table</a>(nodeSetId)&nbsp;-&gt;&nbsp;gets&nbsp;a&nbsp;truth&nbsp;table&nbsp;indicating&nbsp;which&nbsp;variables&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defined&nbsp;for&nbsp;a&nbsp;node&nbsp;set.&nbsp;&nbsp;If&nbsp;nodeSetId&nbsp;is&nbsp;not&nbsp;passed,&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;concatenated&nbsp;truth&nbsp;table&nbsp;for&nbsp;all&nbsp;node&nbsp;sets&nbsp;is&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;variable&nbsp;index&nbsp;cycling&nbsp;faster&nbsp;than&nbsp;nodeSetId</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_set_variable_values"><strong>get_node_set_variable_values</strong></a>(self, id, name, step)</dt><dd><tt>e.<a href="#exodus-get_node_set_variable_names">get_node_set_variable_names</a>(id,"name",step)&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;node&nbsp;set&nbsp;variable&nbsp;values&nbsp;<br>
+for&nbsp;node&nbsp;set&nbsp;id&nbsp;at&nbsp;step&nbsp;within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_variable_names"><strong>get_node_variable_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_variable_names">get_node_variable_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;node&nbsp;variable&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_variable_number"><strong>get_node_variable_number</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_node_variable_number">get_node_variable_number</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;node&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_node_variable_values"><strong>get_node_variable_values</strong></a>(self, name, step)</dt><dd><tt>e.<a href="#exodus-get_node_variable_values">get_node_variable_values</a>("name",step)&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;node&nbsp;variable&nbsp;values<br>
+for&nbsp;a&nbsp;step&nbsp;within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_qa_records"><strong>get_qa_records</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_qa_records">get_qa_records</a>()&nbsp;-&gt;&nbsp;get&nbsp;a&nbsp;list&nbsp;of&nbsp;QA&nbsp;records&nbsp;from&nbsp;the&nbsp;<a href="#exodus">exodus</a>&nbsp;database;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;QA&nbsp;record&nbsp;is&nbsp;a&nbsp;length-4&nbsp;tuple&nbsp;of&nbsp;strings:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1)&nbsp;the&nbsp;analysis&nbsp;code&nbsp;name<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2)&nbsp;the&nbsp;analysis&nbsp;code&nbsp;descriptor,&nbsp;e.g.&nbsp;version<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3)&nbsp;the&nbsp;analysis&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4)&nbsp;the&nbsp;analysis&nbsp;time</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set"><strong>get_side_set</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_side_set">get_side_set</a>(id)&nbsp;-&gt;&nbsp;get&nbsp;tuple&nbsp;of&nbsp;two&nbsp;lists&nbsp;(side_set_elem_list,<br>
+side_set_side_list)&nbsp;the&nbsp;side_set_elem_list&nbsp;contains&nbsp;the&nbsp;elements&nbsp;in&nbsp;the<br>
+side&nbsp;set,&nbsp;and&nbsp;the&nbsp;side_set_side_list&nbsp;contains&nbsp;the&nbsp;side&nbsp;ID&nbsp;for&nbsp;each&nbsp;of&nbsp;the<br>
+elements&nbsp;in&nbsp;the&nbsp;side_set_elem_list&nbsp;(identifies&nbsp;the&nbsp;side&nbsp;onto&nbsp;which&nbsp;the&nbsp;load<br>
+is&nbsp;applied).</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_dist_fact"><strong>get_side_set_dist_fact</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_side_set_dist_fact">get_side_set_dist_fact</a>(id)&nbsp;-&gt;&nbsp;&nbsp;list&nbsp;of&nbsp;distribution&nbsp;factors&nbsp;for&nbsp;sides&nbsp;in&nbsp;side&nbsp;set</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_ids"><strong>get_side_set_ids</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_side_set_ids">get_side_set_ids</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;side&nbsp;set&nbsp;ids&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_name"><strong>get_side_set_name</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_side_set_name">get_side_set_name</a>(id)&nbsp;-&gt;&nbsp;get&nbsp;side&nbsp;set&nbsp;name&nbsp;for&nbsp;side&nbsp;set&nbsp;"id"&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_names"><strong>get_side_set_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_side_set_names">get_side_set_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;side&nbsp;set&nbsp;names&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_node_list"><strong>get_side_set_node_list</strong></a>(self, id)</dt><dd><tt>e.get_side_set_nodes(id)&nbsp;-&gt;&nbsp;get&nbsp;tuple&nbsp;of&nbsp;two&nbsp;lists&nbsp;(side_set_node_cnt_list,<br>
+side_set_node_list)&nbsp;the&nbsp;side_set_node_cnt_list&nbsp;is&nbsp;the&nbsp;number&nbsp;of&nbsp;nodes&nbsp;on&nbsp;each<br>
+face&nbsp;and&nbsp;the&nbsp;side_set_node_list&nbsp;is&nbsp;the&nbsp;list&nbsp;of&nbsp;local&nbsp;node&nbsp;ids&nbsp;for&nbsp;the&nbsp;side&nbsp;set&nbsp;<br>
+in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_params"><strong>get_side_set_params</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-get_side_set_params">get_side_set_params</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;sides,&nbsp;and&nbsp;distribution&nbsp;factors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;a&nbsp;side&nbsp;set</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_property_names"><strong>get_side_set_property_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_side_set_property_names">get_side_set_property_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;sideset&nbsp;property&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_property_value"><strong>get_side_set_property_value</strong></a>(self, id, name)</dt><dd><tt>e.<a href="#exodus-get_side_set_property_value">get_side_set_property_value</a>(id,name)&nbsp;-&gt;&nbsp;get&nbsp;sideset&nbsp;property&nbsp;value&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;an&nbsp;sideset&nbsp;ID&nbsp;and&nbsp;property&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_variable_names"><strong>get_side_set_variable_names</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_side_set_variable_names">get_side_set_variable_names</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;side&nbsp;set&nbsp;variable&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_variable_number"><strong>get_side_set_variable_number</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_side_set_variable_number">get_side_set_variable_number</a>()&nbsp;-&gt;&nbsp;get&nbsp;number&nbsp;of&nbsp;side&nbsp;set&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_variable_truth_table"><strong>get_side_set_variable_truth_table</strong></a>(self, sideSetId<font color="#909090">=None</font>)</dt><dd><tt>e.<a href="#exodus-get_side_set_variable_truth_table">get_side_set_variable_truth_table</a>(sideSetId)&nbsp;-&gt;&nbsp;gets&nbsp;a&nbsp;truth&nbsp;table&nbsp;indicating&nbsp;which&nbsp;variables&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defined&nbsp;for&nbsp;a&nbsp;side&nbsp;set.&nbsp;&nbsp;If&nbsp;sideSetId&nbsp;is&nbsp;not&nbsp;passed,&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;concatenated&nbsp;truth&nbsp;table&nbsp;for&nbsp;all&nbsp;side&nbsp;sets&nbsp;is&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;variable&nbsp;index&nbsp;cycling&nbsp;faster&nbsp;than&nbsp;sideSetId</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_side_set_variable_values"><strong>get_side_set_variable_values</strong></a>(self, id, name, step)</dt><dd><tt>e.<a href="#exodus-get_side_set_variable_names">get_side_set_variable_names</a>(id,"name",step)&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;side&nbsp;set&nbsp;variable&nbsp;values&nbsp;<br>
+for&nbsp;side&nbsp;set&nbsp;id&nbsp;at&nbsp;step&nbsp;within&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_sierra_input"><strong>get_sierra_input</strong></a>(self, inpFileName<font color="#909090">=None</font>)</dt><dd><tt>e.<a href="#exodus-get_sierra_input">get_sierra_input</a>(inpFileName)&nbsp;-&gt;&nbsp;get&nbsp;sierra&nbsp;input&nbsp;deck&nbsp;from&nbsp;<a href="#exodus">exodus</a>&nbsp;database;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;inpFileName&nbsp;is&nbsp;passed,&nbsp;input&nbsp;is&nbsp;written<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;this&nbsp;file,&nbsp;e.g.&nbsp;myInputDeck.i;&nbsp;otherwise<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;file&nbsp;lines&nbsp;is&nbsp;returned</tt></dd></dl>
+
+<dl><dt><a name="exodus-get_times"><strong>get_times</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-get_times">get_times</a>()&nbsp;-&gt;&nbsp;get&nbsp;list&nbsp;of&nbsp;times&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_attr"><strong>num_attr</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-num_attr">num_attr</a>(id)&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;element&nbsp;attributes</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_blks"><strong>num_blks</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_blks">num_blks</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;element&nbsp;blocks&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_dimensions"><strong>num_dimensions</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_dimensions">num_dimensions</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;dimensions&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_elems"><strong>num_elems</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_elems">num_elems</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;elements&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_elems_in_blk"><strong>num_elems_in_blk</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-num_elems_in_blk">num_elems_in_blk</a>(id)&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;elements&nbsp;in&nbsp;block&nbsp;"id"&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_faces_in_side_set"><strong>num_faces_in_side_set</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-num_faces_in_side_set">num_faces_in_side_set</a>(id)&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;faces&nbsp;in&nbsp;side&nbsp;set&nbsp;id</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_info_records"><strong>num_info_records</strong></a>(self)</dt><dd><tt>#&nbsp;--------------------------------------------------------------------</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_node_sets"><strong>num_node_sets</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_node_sets">num_node_sets</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;node&nbsp;sets&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_nodes"><strong>num_nodes</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_nodes">num_nodes</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;nodes&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_nodes_in_node_set"><strong>num_nodes_in_node_set</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-num_nodes_in_node_set">num_nodes_in_node_set</a>(id)&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;nodes&nbsp;in&nbsp;node&nbsp;set&nbsp;id</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_nodes_per_elem"><strong>num_nodes_per_elem</strong></a>(self, id)</dt><dd><tt>e.<a href="#exodus-num_nodes_per_elem">num_nodes_per_elem</a>(id)&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;nodes&nbsp;per&nbsp;element&nbsp;in&nbsp;block&nbsp;"id"&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_side_sets"><strong>num_side_sets</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_side_sets">num_side_sets</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;side&nbsp;sets&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-num_times"><strong>num_times</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-num_times">num_times</a>()&nbsp;-&gt;&nbsp;number&nbsp;of&nbsp;time&nbsp;steps&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_all_global_variable_values"><strong>put_all_global_variable_values</strong></a>(self, step, values)</dt><dd><tt>e.<a href="#exodus-put_all_global_variable_values">put_all_global_variable_values</a>(step,values)&nbsp;-&gt;&nbsp;put&nbsp;all&nbsp;global&nbsp;variable&nbsp;values<br>
+at&nbsp;time&nbsp;step&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_concat_elem_blk"><strong>put_concat_elem_blk</strong></a>(self, elemBlkIDs, elemType, numElemThisBlk, numNodesPerElem, numAttr, defineMaps)</dt><dd><tt>e.<a href="#exodus-put_concat_elem_blk">put_concat_elem_blk</a>(self,elemBlkIDs,&nbsp;elemType,&nbsp;numElemThisBlk,...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numNodesPerElem,numAttr,defineMaps)</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_coord_names"><strong>put_coord_names</strong></a>(self, names)</dt><dd><tt>e.<a href="#exodus-put_coord_names">put_coord_names</a>()&nbsp;-&gt;&nbsp;set&nbsp;list&nbsp;of&nbsp;coordinate&nbsp;names&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_coords"><strong>put_coords</strong></a>(self, xCoords, yCoords, zCoords)</dt><dd><tt>e.<a href="#exodus-put_coords">put_coords</a>()&nbsp;-&gt;&nbsp;put&nbsp;coordinates&nbsp;(xCoords,yCoords,zCoords)&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_elem_attr"><strong>put_elem_attr</strong></a>(self, elemBlkID, Attr)</dt><dd><tt>e.<a href="#exodus-put_elem_attr">put_elem_attr</a>(elemBlkID,Attr)&nbsp;-&gt;&nbsp;write&nbsp;element&nbsp;attribute&nbsp;lists&nbsp;for&nbsp;each&nbsp;block</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_elem_blk_info"><strong>put_elem_blk_info</strong></a>(self, id, elemType, numElems, numNodesPerElem, numAttrsPerElem)</dt><dd><tt>e.<a href="#exodus-put_elem_blk_info">put_elem_blk_info</a>(id)&nbsp;-&gt;&nbsp;sets&nbsp;ID,&nbsp;element&nbsp;type&nbsp;string&nbsp;(all&nbsp;caps),&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;elements,&nbsp;number&nbsp;of&nbsp;nodes&nbsp;per&nbsp;element,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;number&nbsp;of&nbsp;attributes&nbsp;per&nbsp;element&nbsp;in&nbsp;an<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;element&nbsp;block</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_elem_blk_name"><strong>put_elem_blk_name</strong></a>(self, id, name)</dt><dd><tt>e.<a href="#exodus-put_elem_blk_name">put_elem_blk_name</a>(id,name)&nbsp;-&gt;&nbsp;write&nbsp;element&nbsp;block&nbsp;name&nbsp;for&nbsp;block&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id"&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_elem_blk_names"><strong>put_elem_blk_names</strong></a>(self, names)</dt><dd><tt>e.<a href="#exodus-put_elem_blk_names">put_elem_blk_names</a>(names)&nbsp;-&gt;&nbsp;write&nbsp;list&nbsp;of&nbsp;element&nbsp;block&nbsp;names&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_elem_connectivity"><strong>put_elem_connectivity</strong></a>(self, id, connectivity)</dt><dd><tt>e.<a href="#exodus-put_elem_connectivity">put_elem_connectivity</a>()&nbsp;-&gt;&nbsp;set&nbsp;the&nbsp;element&nbsp;connectivity&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;all&nbsp;elements&nbsp;in&nbsp;a&nbsp;block.&nbsp;&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;information&nbsp;for&nbsp;this&nbsp;block&nbsp;must&nbsp;have<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;already&nbsp;been&nbsp;set&nbsp;by&nbsp;calling<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.<a href="#exodus-put_elem_blk_info">put_elem_blk_info</a>()&nbsp;on&nbsp;this&nbsp;block.</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_elem_id_map"><strong>put_elem_id_map</strong></a>(self, map)</dt><dd><tt>e.<a href="#exodus-put_elem_id_map">put_elem_id_map</a>(map)&nbsp;-&gt;&nbsp;put&nbsp;list&nbsp;mapping&nbsp;local&nbsp;elem&nbsp;id&nbsp;to&nbsp;global&nbsp;id&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_element_attribute_names"><strong>put_element_attribute_names</strong></a>(self, blkId, names)</dt><dd><tt>e.<a href="#exodus-put_element_attribute_names">put_element_attribute_names</a>(blId,names)&nbsp;-&gt;&nbsp;set&nbsp;element&nbsp;attribute&nbsp;names&nbsp;for&nbsp;block&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_element_property_value"><strong>put_element_property_value</strong></a>(self, id, name, value)</dt><dd><tt>e.<a href="#exodus-put_element_property_value">put_element_property_value</a>(id,name,value)&nbsp;-&gt;&nbsp;put&nbsp;an&nbsp;element&nbsp;property&nbsp;name&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;integer&nbsp;value&nbsp;for&nbsp;a&nbsp;block&nbsp;ID<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;into&nbsp;an&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_element_variable_name"><strong>put_element_variable_name</strong></a>(self, name, index)</dt><dd><tt>e.<a href="#exodus-put_element_variable_name">put_element_variable_name</a>("name",index)&nbsp;-&gt;&nbsp;element&nbsp;variable&nbsp;with&nbsp;name&nbsp;at&nbsp;index&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_element_variable_values"><strong>put_element_variable_values</strong></a>(self, blockId, name, step, values)</dt><dd><tt>e.<a href="#exodus-put_element_variable_values">put_element_variable_values</a>(blockId,"name",step,values)&nbsp;-&gt;&nbsp;put&nbsp;values&nbsp;into&nbsp;element&nbsp;block&nbsp;id<br>
+and&nbsp;variable&nbsp;name&nbsp;at&nbsp;step&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_global_variable_name"><strong>put_global_variable_name</strong></a>(self, name, index)</dt><dd><tt>e.<a href="#exodus-put_global_variable_name">put_global_variable_name</a>("name",index)&nbsp;-&gt;&nbsp;put&nbsp;global&nbsp;variable&nbsp;with&nbsp;name&nbsp;at&nbsp;index&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_global_variable_value"><strong>put_global_variable_value</strong></a>(self, name, step, value)</dt><dd><tt>e.<a href="#exodus-put_global_variable_value">put_global_variable_value</a>("name",step,value)&nbsp;-&gt;&nbsp;put&nbsp;global&nbsp;variable&nbsp;value<br>
+and&nbsp;variable&nbsp;name&nbsp;at&nbsp;time&nbsp;step&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_info"><strong>put_info</strong></a>(self, Title, numDim, numNodes, numElem, numElemBlk, numNodeSets, numSideSets)</dt><dd><tt>e.<a href="#exodus-put_info">put_info</a>(self,Title,numDim,numNodes,numElem,numElemBlk,numNodeSets,numSideSets)<br>
+-&gt;&nbsp;put&nbsp;initialization&nbsp;information&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_info_records"><strong>put_info_records</strong></a>(self, info)</dt><dd><tt>e.<a href="#exodus-put_info_records">put_info_records</a>(info)&nbsp;-&gt;&nbsp;put&nbsp;a&nbsp;list&nbsp;of&nbsp;info&nbsp;records&nbsp;into&nbsp;an&nbsp;<a href="#exodus">exodus</a>&nbsp;database;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;entry&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;one&nbsp;line&nbsp;of&nbsp;info,&nbsp;e.g.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;line&nbsp;of&nbsp;an&nbsp;input&nbsp;deck</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_id_map"><strong>put_node_id_map</strong></a>(self, map)</dt><dd><tt>e.<a href="#exodus-put_node_id_map">put_node_id_map</a>(map)&nbsp;-&gt;&nbsp;put&nbsp;list&nbsp;mapping&nbsp;local&nbsp;node&nbsp;id&nbsp;to&nbsp;global&nbsp;id&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set"><strong>put_node_set</strong></a>(self, id, nodeSetNodes)</dt><dd><tt>e.<a href="#exodus-put_node_set">put_node_set</a>()&nbsp;-&gt;&nbsp;set&nbsp;the&nbsp;id&nbsp;and&nbsp;node&nbsp;list&nbsp;for&nbsp;a&nbsp;node&nbsp;set&nbsp;(creates&nbsp;the&nbsp;node&nbsp;set).</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_dist_fact"><strong>put_node_set_dist_fact</strong></a>(self, id, nodeSetDistFact)</dt><dd><tt>e.<a href="#exodus-put_node_set_dist_fact">put_node_set_dist_fact</a>()&nbsp;-&gt;&nbsp;sets&nbsp;the&nbsp;distribution&nbsp;factors&nbsp;for&nbsp;a&nbsp;node&nbsp;set.</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_name"><strong>put_node_set_name</strong></a>(self, id, name)</dt><dd><tt>e.<a href="#exodus-put_node_set_name">put_node_set_name</a>(id,name)&nbsp;-&gt;&nbsp;write&nbsp;node&nbsp;set&nbsp;name&nbsp;for&nbsp;node&nbsp;set&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id"&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_names"><strong>put_node_set_names</strong></a>(self, names)</dt><dd><tt>e.<a href="#exodus-put_node_set_names">put_node_set_names</a>(names)&nbsp;-&gt;&nbsp;write&nbsp;list&nbsp;of&nbsp;node&nbsp;set&nbsp;names&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_params"><strong>put_node_set_params</strong></a>(self, id, numSetNodes, numSetDistFacts<font color="#909090">=None</font>)</dt><dd><tt>e.<a href="#exodus-put_node_set_params">put_node_set_params</a>()&nbsp;-&gt;&nbsp;sets&nbsp;the&nbsp;ID,&nbsp;number&nbsp;of&nbsp;nodes,&nbsp;and&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distribution&nbsp;factors&nbsp;in&nbsp;a&nbsp;node&nbsp;set.&nbsp;&nbsp;If&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last&nbsp;argument&nbsp;is&nbsp;not&nbsp;given,&nbsp;then&nbsp;the&nbsp;number<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;distribution&nbsp;factors&nbsp;is&nbsp;set&nbsp;equal&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;nodes</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_property_value"><strong>put_node_set_property_value</strong></a>(self, id, name, value)</dt><dd><tt>e.<a href="#exodus-put_node_set_property_value">put_node_set_property_value</a>(id,name,value)&nbsp;-&gt;&nbsp;put&nbsp;a&nbsp;nodeset&nbsp;property&nbsp;name&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;integer&nbsp;value&nbsp;for&nbsp;a&nbsp;nodeset<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;into&nbsp;an&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_variable_name"><strong>put_node_set_variable_name</strong></a>(self, name, index)</dt><dd><tt>e.<a href="#exodus-put_node_set_variable_name">put_node_set_variable_name</a>("name",index)&nbsp;-&gt;&nbsp;put&nbsp;node&nbsp;set&nbsp;variable&nbsp;with&nbsp;name&nbsp;at&nbsp;index&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_set_variable_values"><strong>put_node_set_variable_values</strong></a>(self, id, name, step, values)</dt><dd><tt>e.<a href="#exodus-put_node_set_variable_values">put_node_set_variable_values</a>(id,"name",step,values)&nbsp;-&gt;&nbsp;put&nbsp;values&nbsp;into&nbsp;node&nbsp;set&nbsp;id&nbsp;<br>
+and&nbsp;variable&nbsp;name&nbsp;at&nbsp;step&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_variable_name"><strong>put_node_variable_name</strong></a>(self, name, index)</dt><dd><tt>e.<a href="#exodus-put_node_variable_name">put_node_variable_name</a>("name",index)&nbsp;-&gt;&nbsp;node&nbsp;variable&nbsp;with&nbsp;name&nbsp;at&nbsp;index&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_node_variable_values"><strong>put_node_variable_values</strong></a>(self, name, step, values)</dt><dd><tt>e.<a href="#exodus-put_node_variable_values">put_node_variable_values</a>("name",step,values)&nbsp;-&gt;&nbsp;put&nbsp;node&nbsp;values&nbsp;into<br>
+variable&nbsp;name&nbsp;at&nbsp;step&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_qa_records"><strong>put_qa_records</strong></a>(self, records)</dt><dd><tt>e.<a href="#exodus-put_qa_records">put_qa_records</a>(records)&nbsp;-&gt;&nbsp;put&nbsp;a&nbsp;list&nbsp;of&nbsp;QA&nbsp;records&nbsp;into&nbsp;the&nbsp;<a href="#exodus">exodus</a>&nbsp;database;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;QA&nbsp;record&nbsp;must&nbsp;be&nbsp;a&nbsp;length-4&nbsp;tuple&nbsp;of&nbsp;strings:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1)&nbsp;the&nbsp;analysis&nbsp;code&nbsp;name<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2)&nbsp;the&nbsp;analysis&nbsp;code&nbsp;descriptor,&nbsp;e.g.&nbsp;version<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3)&nbsp;the&nbsp;analysis&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4)&nbsp;the&nbsp;analysis&nbsp;time</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set"><strong>put_side_set</strong></a>(self, id, sideSetElements, sideSetSides)</dt><dd><tt>e.<a href="#exodus-put_side_set">put_side_set</a>()&nbsp;-&gt;&nbsp;set&nbsp;the&nbsp;id,&nbsp;element&nbsp;ids,&nbsp;and&nbsp;side&nbsp;ids&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;side&nbsp;set&nbsp;(creates&nbsp;the&nbsp;side&nbsp;set).</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_dist_fact"><strong>put_side_set_dist_fact</strong></a>(self, id, sideSetDistFact)</dt><dd><tt>e.<a href="#exodus-put_side_set_dist_fact">put_side_set_dist_fact</a>()&nbsp;-&gt;&nbsp;sets&nbsp;the&nbsp;distribution&nbsp;factors&nbsp;for&nbsp;a&nbsp;side&nbsp;set.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;distribution&nbsp;factor&nbsp;is&nbsp;given&nbsp;for&nbsp;each&nbsp;node<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;on&nbsp;each&nbsp;face&nbsp;in&nbsp;the&nbsp;side&nbsp;set.</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_name"><strong>put_side_set_name</strong></a>(self, id, name)</dt><dd><tt>e.<a href="#exodus-put_side_set_name">put_side_set_name</a>(id,name)&nbsp;-&gt;&nbsp;write&nbsp;side&nbsp;set&nbsp;name&nbsp;for&nbsp;side&nbsp;set&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id"&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_names"><strong>put_side_set_names</strong></a>(self, names)</dt><dd><tt>e.<a href="#exodus-put_side_set_names">put_side_set_names</a>(names)&nbsp;-&gt;&nbsp;write&nbsp;list&nbsp;of&nbsp;side&nbsp;set&nbsp;names&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_params"><strong>put_side_set_params</strong></a>(self, id, numSetSides, numSetDistFacts)</dt><dd><tt>e.<a href="#exodus-put_side_set_params">put_side_set_params</a>()&nbsp;-&gt;&nbsp;set&nbsp;ID,&nbsp;num&nbsp;elements,&nbsp;and&nbsp;num&nbsp;nodes&nbsp;of&nbsp;a&nbsp;sideset</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_property_value"><strong>put_side_set_property_value</strong></a>(self, id, name, value)</dt><dd><tt>e.<a href="#exodus-put_side_set_property_value">put_side_set_property_value</a>(id,name,value)&nbsp;-&gt;&nbsp;put&nbsp;a&nbsp;sideset&nbsp;property&nbsp;name&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;integer&nbsp;value&nbsp;for&nbsp;a&nbsp;sideset<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;into&nbsp;an&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_variable_name"><strong>put_side_set_variable_name</strong></a>(self, name, index)</dt><dd><tt>e.<a href="#exodus-put_side_set_variable_name">put_side_set_variable_name</a>("name",index)&nbsp;-&gt;&nbsp;put&nbsp;side&nbsp;set&nbsp;variable&nbsp;with&nbsp;name&nbsp;at&nbsp;index&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_side_set_variable_values"><strong>put_side_set_variable_values</strong></a>(self, id, name, step, values)</dt><dd><tt>e.<a href="#exodus-put_side_set_variable_values">put_side_set_variable_values</a>(id,"name",step,values)&nbsp;-&gt;&nbsp;put&nbsp;values&nbsp;into&nbsp;side&nbsp;set&nbsp;id&nbsp;<br>
+and&nbsp;variable&nbsp;name&nbsp;at&nbsp;step&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-put_time"><strong>put_time</strong></a>(self, step, value)</dt><dd><tt>e.<a href="#exodus-put_time">put_time</a>(step,value)&nbsp;-&gt;&nbsp;put&nbsp;time&nbsp;step&nbsp;and&nbsp;value&nbsp;into&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_element_variable_number"><strong>set_element_variable_number</strong></a>(self, number)</dt><dd><tt>e.<a href="#exodus-set_element_variable_number">set_element_variable_number</a>(number)&nbsp;-&gt;&nbsp;set&nbsp;number&nbsp;of&nbsp;element&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_element_variable_truth_table"><strong>set_element_variable_truth_table</strong></a>(self, table)</dt><dd><tt>e.<a href="#exodus-set_element_variable_truth_table">set_element_variable_truth_table</a>(table)&nbsp;-&gt;&nbsp;sets&nbsp;a&nbsp;truth&nbsp;table&nbsp;indicating&nbsp;which&nbsp;variables&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defined&nbsp;for&nbsp;each&nbsp;block&nbsp;in&nbsp;the&nbsp;model.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;variable&nbsp;index&nbsp;cycles&nbsp;faster&nbsp;than&nbsp;the&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;element&nbsp;block&nbsp;index</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_global_variable_number"><strong>set_global_variable_number</strong></a>(self, number)</dt><dd><tt>e.<a href="#exodus-set_global_variable_number">set_global_variable_number</a>(number)&nbsp;-&gt;&nbsp;set&nbsp;number&nbsp;of&nbsp;global&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_node_set_variable_number"><strong>set_node_set_variable_number</strong></a>(self, number)</dt><dd><tt>e.<a href="#exodus-set_node_set_variable_number">set_node_set_variable_number</a>(number)&nbsp;-&gt;&nbsp;set&nbsp;number&nbsp;of&nbsp;node&nbsp;set&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_node_set_variable_truth_table"><strong>set_node_set_variable_truth_table</strong></a>(self, table)</dt><dd><tt>e.<a href="#exodus-set_node_set_variable_truth_table">set_node_set_variable_truth_table</a>(table)&nbsp;-&gt;&nbsp;sets&nbsp;a&nbsp;truth&nbsp;table&nbsp;indicating&nbsp;which&nbsp;variables&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defined&nbsp;for&nbsp;each&nbsp;node&nbsp;set&nbsp;in&nbsp;the&nbsp;model.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Node&nbsp;set&nbsp;variable&nbsp;index&nbsp;cycles&nbsp;faster&nbsp;than&nbsp;the&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node&nbsp;set&nbsp;index</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_node_variable_number"><strong>set_node_variable_number</strong></a>(self, number)</dt><dd><tt>e.<a href="#exodus-set_node_variable_number">set_node_variable_number</a>(number)&nbsp;-&gt;&nbsp;set&nbsp;number&nbsp;of&nbsp;node&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_side_set_variable_number"><strong>set_side_set_variable_number</strong></a>(self, number)</dt><dd><tt>e.<a href="#exodus-set_side_set_variable_number">set_side_set_variable_number</a>(number)&nbsp;-&gt;&nbsp;set&nbsp;number&nbsp;of&nbsp;side&nbsp;set&nbsp;variables&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-set_side_set_variable_truth_table"><strong>set_side_set_variable_truth_table</strong></a>(self, table)</dt><dd><tt>e.<a href="#exodus-set_side_set_variable_truth_table">set_side_set_variable_truth_table</a>(table)&nbsp;-&gt;&nbsp;sets&nbsp;a&nbsp;truth&nbsp;table&nbsp;indicating&nbsp;which&nbsp;variables&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defined&nbsp;for&nbsp;each&nbsp;side&nbsp;set&nbsp;in&nbsp;the&nbsp;model.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Side&nbsp;set&nbsp;variable&nbsp;index&nbsp;cycles&nbsp;faster&nbsp;than&nbsp;the&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;side&nbsp;set&nbsp;index</tt></dd></dl>
+
+<dl><dt><a name="exodus-title"><strong>title</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-title">title</a>()&nbsp;-&gt;&nbsp;title&nbsp;in&nbsp;<a href="#exodus">exodus</a>&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="exodus-version_num"><strong>version_num</strong></a>(self)</dt><dd><tt>e.<a href="#exodus-version_num">version_num</a>()&nbsp;-&gt;&nbsp;string&nbsp;representation&nbsp;of&nbsp;<a href="#exodus">exodus</a>&nbsp;version&nbsp;number</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-POINTER"><strong>POINTER</strong></a>(...)</dt></dl>
+ <dl><dt><a name="-addressof"><strong>addressof</strong></a>(...)</dt><dd><tt><a href="#-addressof">addressof</a>(C&nbsp;instance)&nbsp;-&gt;&nbsp;integer<br>
+Return&nbsp;the&nbsp;address&nbsp;of&nbsp;the&nbsp;C&nbsp;instance&nbsp;internal&nbsp;buffer</tt></dd></dl>
+ <dl><dt><a name="-alignment"><strong>alignment</strong></a>(...)</dt><dd><tt><a href="#-alignment">alignment</a>(C&nbsp;type)&nbsp;-&gt;&nbsp;integer<br>
+<a href="#-alignment">alignment</a>(C&nbsp;instance)&nbsp;-&gt;&nbsp;integer<br>
+Return&nbsp;the&nbsp;alignment&nbsp;requirements&nbsp;of&nbsp;a&nbsp;C&nbsp;instance</tt></dd></dl>
+ <dl><dt><a name="-basename"><strong>basename</strong></a>(file)</dt><dd><tt>Extract&nbsp;base&nbsp;name&nbsp;from&nbsp;file.<br>
+<a href="#-basename">basename</a>("test.e")&nbsp;-&gt;&nbsp;"test"</tt></dd></dl>
+ <dl><dt><a name="-byref"><strong>byref</strong></a>(...)</dt><dd><tt><a href="#-byref">byref</a>(C&nbsp;instance[,&nbsp;offset=0])&nbsp;-&gt;&nbsp;byref-object<br>
+Return&nbsp;a&nbsp;pointer&nbsp;lookalike&nbsp;to&nbsp;a&nbsp;C&nbsp;instance,&nbsp;only&nbsp;usable<br>
+as&nbsp;function&nbsp;argument</tt></dd></dl>
+ <dl><dt><a name="-collectElemConnectivity"><strong>collectElemConnectivity</strong></a>(exodusHandle, connectivity)</dt><dd><tt>This&nbsp;function&nbsp;generates&nbsp;a&nbsp;list&nbsp;of&nbsp;lists&nbsp;that&nbsp;represent&nbsp;the&nbsp;element&nbsp;connectivity.<br>
+&nbsp;<br>
+Usage:<br>
+&nbsp;<br>
+exodusHandle&nbsp;=&nbsp;<a href="#exodus">exodus</a>("file.g","r")<br>
+connectivity&nbsp;=&nbsp;[]<br>
+<a href="#-collectElemConnectivity">collectElemConnectivity</a>(exodusHandle,connectivity)<br>
+&nbsp;<br>
+exodusHandle.close()</tt></dd></dl>
+ <dl><dt><a name="-collectLocalElemToLocalElems"><strong>collectLocalElemToLocalElems</strong></a>(exodusHandle, connectivity, localNodeToLocalElems, localElemToLocalElems)</dt><dd><tt>This&nbsp;function&nbsp;generates&nbsp;a&nbsp;list&nbsp;of&nbsp;lists&nbsp;to&nbsp;go&nbsp;from&nbsp;local&nbsp;elem&nbsp;id<br>
+to&nbsp;connected&nbsp;local&nbsp;elem&nbsp;ids.<br>
+&nbsp;<br>
+Usage:<br>
+&nbsp;<br>
+exodusHandle&nbsp;=&nbsp;<a href="#exodus">exodus</a>("file.g","r")<br>
+connectivity&nbsp;=&nbsp;[]&nbsp;##&nbsp;If&nbsp;this&nbsp;is&nbsp;not&nbsp;empty&nbsp;it&nbsp;will&nbsp;assume&nbsp;it&nbsp;is&nbsp;already&nbsp;filled.<br>
+localNodeToLocalElems&nbsp;=&nbsp;[]&nbsp;##&nbsp;If&nbsp;this&nbsp;is&nbsp;not&nbsp;empty&nbsp;it&nbsp;will&nbsp;assume&nbsp;it&nbsp;is&nbsp;already&nbsp;filled.<br>
+localElemToLocalElems&nbsp;=&nbsp;[]<br>
+<a href="#-collectLocalElemToLocalElems">collectLocalElemToLocalElems</a>(exodusHandle,connectivity,localNodeToLocalElems,localElemToLocalElems)<br>
+&nbsp;<br>
+exodusHandle.close()</tt></dd></dl>
+ <dl><dt><a name="-collectLocalNodeToLocalElems"><strong>collectLocalNodeToLocalElems</strong></a>(exodusHandle, connectivity, localNodeToLocalElems)</dt><dd><tt>This&nbsp;function&nbsp;generates&nbsp;a&nbsp;list&nbsp;of&nbsp;lists&nbsp;to&nbsp;go&nbsp;from&nbsp;local&nbsp;node&nbsp;id<br>
+to&nbsp;local&nbsp;elem&nbsp;id.<br>
+&nbsp;<br>
+Usage:<br>
+&nbsp;<br>
+exodusHandle&nbsp;=&nbsp;<a href="#exodus">exodus</a>("file.g","r")<br>
+connectivity&nbsp;=&nbsp;[]&nbsp;##&nbsp;If&nbsp;this&nbsp;is&nbsp;not&nbsp;empty&nbsp;it&nbsp;will&nbsp;assume&nbsp;it&nbsp;is&nbsp;already&nbsp;filled.<br>
+localNodeToLocalElems&nbsp;=&nbsp;[]<br>
+<a href="#-collectLocalNodeToLocalElems">collectLocalNodeToLocalElems</a>(exodusHandle,connectivity,localNodeToLocalElems)<br>
+&nbsp;<br>
+exodusHandle.close()</tt></dd></dl>
+ <dl><dt><a name="-copyTransfer"><strong>copyTransfer</strong></a>(fromFileName, toFileName, additionalGlobalVariables<font color="#909090">=[]</font>, additionalNodalVariables<font color="#909090">=[]</font>, additionalElementVariables<font color="#909090">=[]</font>)</dt><dd><tt>This&nbsp;function&nbsp;creates&nbsp;an&nbsp;<a href="#exodus">exodus</a>&nbsp;file&nbsp;toFileName&nbsp;and&nbsp;copies&nbsp;everything&nbsp;from&nbsp;<a href="#exodus">exodus</a>&nbsp;file&nbsp;fromFileName&nbsp;returning<br>
+a&nbsp;file&nbsp;handle&nbsp;to&nbsp;toFileName.<br>
+&nbsp;<br>
+Additional&nbsp;space&nbsp;is&nbsp;allocated&nbsp;for&nbsp;additionalGlobalVariables,&nbsp;additionalNodalVariables&nbsp;and&nbsp;additionalElementVariables&nbsp;if&nbsp;specified.<br>
+&nbsp;<br>
+additionalGlobalVariables:&nbsp;list&nbsp;of&nbsp;global&nbsp;variable&nbsp;names&nbsp;to&nbsp;add.<br>
+&nbsp;<br>
+additionalNodalVaraibles:&nbsp;list&nbsp;of&nbsp;nodal&nbsp;variable&nbsp;names&nbsp;to&nbsp;add.<br>
+&nbsp;<br>
+additionalElementVariables:&nbsp;should&nbsp;be&nbsp;a&nbsp;list&nbsp;of&nbsp;element&nbsp;variable&nbsp;names&nbsp;to&nbsp;add&nbsp;to&nbsp;all&nbsp;blocks&nbsp;or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tuples&nbsp;(&nbsp;name,&nbsp;blkIds&nbsp;)&nbsp;where&nbsp;name&nbsp;is&nbsp;the&nbsp;element&nbsp;variable&nbsp;to&nbsp;add<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;blkIds&nbsp;is&nbsp;a&nbsp;list&nbsp;of&nbsp;blkIds&nbsp;to&nbsp;add&nbsp;it&nbsp;to.<br>
+Usage:<br>
+&nbsp;<br>
+fromFileName&nbsp;=&nbsp;"input.e"<br>
+toFileName&nbsp;=&nbsp;"output.e"<br>
+addGlobalVariables&nbsp;=&nbsp;[]&nbsp;##&nbsp;Do&nbsp;not&nbsp;add&nbsp;any&nbsp;new&nbsp;global&nbsp;variables<br>
+addNodeVariables&nbsp;=&nbsp;["node_dummy1","node_dummy2"]&nbsp;##&nbsp;Add&nbsp;node_dummy1&nbsp;and&nbsp;node_dummy2&nbsp;as&nbsp;new&nbsp;node&nbsp;variables<br>
+addElementVariables&nbsp;=&nbsp;[&nbsp;("elem_dummy1",[1,2,3]),&nbsp;"elem_dummy2"&nbsp;]&nbsp;##&nbsp;Add&nbsp;elem_dummy1&nbsp;on&nbsp;blkIds&nbsp;1,2,3&nbsp;and&nbsp;elem_dummy2&nbsp;on&nbsp;all&nbsp;blocks<br>
+&nbsp;<br>
+toFileHandle&nbsp;=&nbsp;copyTranfer(fromFileName,toFileName,addGlobalVariables,addNodeVariables,addElementVariables)<br>
+&nbsp;<br>
+##&nbsp;Fill&nbsp;in&nbsp;new&nbsp;variables<br>
+&nbsp;<br>
+toFileHandle.close()</tt></dd></dl>
+ <dl><dt><a name="-ex_entity_type"><strong>ex_entity_type</strong></a>(varType)</dt></dl>
+ <dl><dt><a name="-ex_inquiry"><strong>ex_inquiry</strong></a>(inquiry)</dt></dl>
+ <dl><dt><a name="-findLibExoPath"><strong>findLibExoPath</strong></a>()</dt></dl>
+ <dl><dt><a name="-getAccessPath"><strong>getAccessPath</strong></a>()</dt><dd><tt>Return&nbsp;the&nbsp;base&nbsp;path&nbsp;of&nbsp;the&nbsp;<a href="#exodus">exodus</a>&nbsp;installation.</tt></dd></dl>
+ <dl><dt><a name="-getExodusVersion"><strong>getExodusVersion</strong></a>()</dt><dd><tt>Parse&nbsp;the&nbsp;exodusII.h&nbsp;header&nbsp;file&nbsp;and&nbsp;return&nbsp;the&nbsp;version&nbsp;number&nbsp;or&nbsp;0&nbsp;if&nbsp;not<br>
+found.</tt></dd></dl>
+ <dl><dt><a name="-get_errno"><strong>get_errno</strong></a>(...)</dt></dl>
+ <dl><dt><a name="-pointer"><strong>pointer</strong></a>(...)</dt></dl>
+ <dl><dt><a name="-resize"><strong>resize</strong></a>(...)</dt><dd><tt>Resize&nbsp;the&nbsp;memory&nbsp;buffer&nbsp;of&nbsp;a&nbsp;ctypes&nbsp;instance</tt></dd></dl>
+ <dl><dt><a name="-set_conversion_mode"><strong>set_conversion_mode</strong></a>(...)</dt><dd><tt><a href="#-set_conversion_mode">set_conversion_mode</a>(encoding,&nbsp;errors)&nbsp;-&gt;&nbsp;(previous-encoding,&nbsp;previous-errors)<br>
+&nbsp;<br>
+Set&nbsp;the&nbsp;encoding&nbsp;and&nbsp;error&nbsp;handling&nbsp;ctypes&nbsp;uses&nbsp;when&nbsp;converting<br>
+between&nbsp;unicode&nbsp;and&nbsp;strings.&nbsp;&nbsp;Returns&nbsp;the&nbsp;previous&nbsp;values.</tt></dd></dl>
+ <dl><dt><a name="-set_errno"><strong>set_errno</strong></a>(...)</dt></dl>
+ <dl><dt><a name="-sizeof"><strong>sizeof</strong></a>(...)</dt><dd><tt><a href="#-sizeof">sizeof</a>(C&nbsp;type)&nbsp;-&gt;&nbsp;integer<br>
+<a href="#-sizeof">sizeof</a>(C&nbsp;instance)&nbsp;-&gt;&nbsp;integer<br>
+Return&nbsp;the&nbsp;size&nbsp;in&nbsp;bytes&nbsp;of&nbsp;a&nbsp;C&nbsp;instance</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>DEFAULT_MODE</strong> = 0<br>
+<strong>EXODUS_LIB</strong> = &lt;CDLL '/home/gdsjaar/src/SEACAS/lib/shared/libexodus.so', handle 2ae0810 at 284b650&gt;<br>
+<strong>EXODUS_PATH</strong> = '/home/gdsjaar/src/SEACAS/lib/shared/'<br>
+<strong>EXODUS_PY_CONTACTS</strong> = '<font color="#c040c0">\n</font>Authors:  Timothy Shelton  (trshelt@sandia.gov)...<font color="#c040c0">\n</font>          David Littlewood (djlittl@sandia.gov)<font color="#c040c0">\n</font>'<br>
+<strong>EXODUS_PY_COPYRIGHT</strong> = '<font color="#c040c0">\n</font>You are using exodus.py v 1.0 (beta), a python ...ernment retains certain rights in this software.<font color="#c040c0">\n</font>'<br>
+<strong>EXODUS_PY_COPYRIGHT_AND_LICENSE</strong> = ' <font color="#c040c0">\n\n</font>exodus.py v 1.0 (beta) is a python wrapper of...N IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<font color="#c040c0">\n\n</font>'<br>
+<strong>EXODUS_PY_VERSION</strong> = '1.0 (beta)'<br>
+<strong>EXODUS_SO</strong> = '/home/gdsjaar/src/SEACAS/lib/shared/libexodus.so'<br>
+<strong>EX_API_VERSION_NODOT</strong> = 602<br>
+<strong>EX_BULK_INT64_API</strong> = 32768<br>
+<strong>EX_CLOBBER</strong> = 8<br>
+<strong>EX_IDS_INT64_API</strong> = 16384<br>
+<strong>EX_INQ_INT64_API</strong> = 65536<br>
+<strong>EX_MAPS_INT64_API</strong> = 8192<br>
+<strong>EX_NOCLOBBER</strong> = 4<br>
+<strong>MAX_LINE_LENGTH</strong> = 80<br>
+<strong>MAX_STR_LENGTH</strong> = 32<br>
+<strong>NETCDF_LIB</strong> = &lt;CDLL '/home/gdsjaar/src/SEACAS/lib/shared/libnetcdf.so', handle 2ae9210 at 2855090&gt;<br>
+<strong>NETCDF_SO</strong> = '/home/gdsjaar/src/SEACAS/lib/shared/libnetcdf.so'<br>
+<strong>RTLD_GLOBAL</strong> = 256<br>
+<strong>RTLD_LOCAL</strong> = 0<br>
+<strong>cdll</strong> = &lt;ctypes.LibraryLoader object&gt;<br>
+<strong>exErrPrintMode</strong> = c_int(1)<br>
+<strong>memmove</strong> = &lt;CFunctionType object&gt;<br>
+<strong>memset</strong> = &lt;CFunctionType object&gt;<br>
+<strong>oneline</strong> = 'Gather from or export to Exodus II files using the Exodus II library'<br>
+<strong>pydll</strong> = &lt;ctypes.LibraryLoader object&gt;<br>
+<strong>pythonapi</strong> = &lt;PyDLL 'None', handle 3224621188 at 2b51190&gt;</td></tr></table>
+</body></html>
