@@ -106,7 +106,6 @@ namespace {
     }
     return common_zone_type;
   }
-
 }
 
 namespace Iocgns {
@@ -232,11 +231,11 @@ namespace Iocgns {
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
     Utils::add_sidesets(cgnsFilePtr, this);
-    
+
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int base = 1;
-    int i = 0;
+    int i    = 0;
     for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
 #if defined(DEBUG_OUTPUT)
@@ -356,7 +355,7 @@ namespace Iocgns {
     int base = 1;
 
     Utils::add_sidesets(cgnsFilePtr, this);
-    
+
     char     basename[33];
     cgsize_t cell_dimension = 0;
     cgsize_t phys_dimension = 0;
@@ -380,7 +379,7 @@ namespace Iocgns {
         auto block_name = zone->m_name;
 
         Ioss::StructuredBlock *block = nullptr;
-        std::array<int, 3> zeroes{{0,0,0}};
+        std::array<int, 3> zeroes{{0, 0, 0}};
         for (auto &pzone : zones) {
           if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
             // Create a non-empty structured block on this processor...
@@ -421,7 +420,7 @@ namespace Iocgns {
 
     // ========================================================================
     // Iterate each StructuredBlock, get its zone. For that zone, get the number of
-    // boundary conditions and then iterate those and create sideblocks in the 
+    // boundary conditions and then iterate those and create sideblocks in the
     // corresponding sideset.
     const auto &sbs = get_region()->get_structured_blocks();
     for (const auto &block : sbs) {

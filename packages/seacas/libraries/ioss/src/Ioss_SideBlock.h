@@ -33,9 +33,9 @@
 #ifndef IOSS_Ioss_SideBlock_h
 #define IOSS_Ioss_SideBlock_h
 
-#include <Ioss_EntityType.h>  // for EntityType, etc
-#include <Ioss_EntityBlock.h> // for EntityBlock
 #include <Ioss_ElementBlock.h>
+#include <Ioss_EntityBlock.h> // for EntityBlock
+#include <Ioss_EntityType.h>  // for EntityType, etc
 #include <Ioss_Property.h>    // for Property
 #include <stddef.h>           // for size_t
 #include <stdint.h>           // for int64_t
@@ -84,20 +84,14 @@ namespace Ioss {
     // faceblock or edgeblock. Has no meaning for other EntityBlock types or split
     // types.
     const ElementBlock *parent_element_block() const
-      {
-	return dynamic_cast<ElementBlock*>(parentBlock_);
-      }
-
-    void set_parent_element_block(ElementBlock *element_block)
     {
-      parentBlock_ = element_block;
+      return dynamic_cast<ElementBlock *>(parentBlock_);
     }
+
+    void set_parent_element_block(ElementBlock *element_block) { parentBlock_ = element_block; }
 
     const EntityBlock *parent_block() const { return parentBlock_; }
-    void set_parent_block(EntityBlock *block)
-    {
-      parentBlock_ = block;
-    }
+    void set_parent_block(EntityBlock *block) { parentBlock_ = block; }
 
     // Describes the contained entities element block topology
     const ElementTopology *parent_element_topology() const { return parentTopology_; }
@@ -118,7 +112,7 @@ namespace Ioss {
   private:
     const SideSet *  owner_;
     ElementTopology *parentTopology_; // Topology of parent element (if any)
-    EntityBlock *   parentBlock_;
+    EntityBlock *    parentBlock_;
 
     // Pointer to the SideSet (if any) that contains this side block.
     std::vector<std::string> blockMembership; // What element blocks do the

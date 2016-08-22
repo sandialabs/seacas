@@ -34,12 +34,12 @@
 #define IOSS_IOCGNS_UTILS_H
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_ElementTopology.h>
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_StructuredBlock.h>
+#include <Ioss_ElementTopology.h>
 #include <Ioss_Region.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <cgnslib.h>
 #include <ostream>
@@ -56,36 +56,36 @@ namespace Iocgns {
                            int processor);
 
     template <typename INT>
-      static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
-					INT *idata)
-      {
-	// The {topo}_map[] arrays map from CGNS face# to IOSS face#.
-	// See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
-	// NOTE: '0' for first entry is to account for 1-based face numbering.
+    static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
+                                      INT *idata)
+    {
+      // The {topo}_map[] arrays map from CGNS face# to IOSS face#.
+      // See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
+      // NOTE: '0' for first entry is to account for 1-based face numbering.
 
-	switch (parent_topo->shape()) {
-	case Ioss::ElementShape::HEX:
-	  static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
-	  for (size_t i = 0; i < num_to_get; i++) {
-	    idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
-	  }
-	  break;
+      switch (parent_topo->shape()) {
+      case Ioss::ElementShape::HEX:
+        static int hex_map[] = {0, 5, 1, 2, 3, 4, 6};
+        for (size_t i = 0; i < num_to_get; i++) {
+          idata[2 * i + 1] = hex_map[idata[2 * i + 1]];
+        }
+        break;
 
-	case Ioss::ElementShape::TET:
-	  static int tet_map[] = {0, 4, 1, 2, 3};
-	  for (size_t i = 0; i < num_to_get; i++) {
-	    idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
-	  }
-	  break;
+      case Ioss::ElementShape::TET:
+        static int tet_map[] = {0, 4, 1, 2, 3};
+        for (size_t i = 0; i < num_to_get; i++) {
+          idata[2 * i + 1] = tet_map[idata[2 * i + 1]];
+        }
+        break;
 
-	case Ioss::ElementShape::PYRAMID:
-	  static int pyr_map[] = {0, 5, 1, 2, 3, 4};
-	  for (size_t i = 0; i < num_to_get; i++) {
-	    idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
-	  }
-	  break;
+      case Ioss::ElementShape::PYRAMID:
+        static int pyr_map[] = {0, 5, 1, 2, 3, 4};
+        for (size_t i = 0; i < num_to_get; i++) {
+          idata[2 * i + 1] = pyr_map[idata[2 * i + 1]];
+        }
+        break;
 
-	case Ioss::ElementShape::WEDGE:
+      case Ioss::ElementShape::WEDGE:
 #if 0
 	  static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
 	  // Not needed -- maps 1 to 1
@@ -93,15 +93,14 @@ namespace Iocgns {
 	    idata[2*i+1] = wed_map[idata[2*i+1]];
 	  }
 #endif
-	  break;
-	default:;
-	}
+        break;
+      default:;
       }
+    }
 
     static std::string map_cgns_to_topology_type(CG_ElementType_t type);
     static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
-    static void add_structured_boundary_conditions(int cgnsFilePtr,
-						   Ioss::StructuredBlock *block);
+    static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block);
   };
 }
 
