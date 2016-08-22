@@ -110,6 +110,9 @@ namespace Ioss {
 
     BoundaryCondition(const BoundaryCondition &copy_from) = default;
 
+    // Determine which "face" of the parent block this BC is applied to.
+    int which_parent_face() const;
+
     // Return number of cell faces in the BC
     size_t get_face_count() const
     {
@@ -127,12 +130,12 @@ namespace Ioss {
     std::array<int, 3> m_rangeBeg;
     std::array<int, 3> m_rangeEnd;
 
-    friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &zgc);
+    friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
   };
 
   class DatabaseIO;
 
-  /** \brief A collection of structureds having the same topology.
+  /** \brief A structured zone -- i,j,k
    */
   class StructuredBlock : public EntityBlock
   {
@@ -196,6 +199,20 @@ namespace Ioss {
     size_t get_local_node_id(size_t i, size_t j, size_t k) const
     {
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
+    }
+
+    // Get the local (relative to this block on this processor) cell
+    // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
+    size_t get_local_cell_id(size_t i, size_t j, size_t k) const
+    {
+      return (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
+    }
+
+    // Get the global (over all processors) cell
+    // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
+    size_t get_global_cell_id(size_t i, size_t j, size_t k) const
+    {
+      return m_cellGlobalOffset + (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
     }
 
     // Get the local (relative to this block on this processor) node id at the specified

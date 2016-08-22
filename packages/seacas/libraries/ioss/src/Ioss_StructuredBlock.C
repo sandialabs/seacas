@@ -380,6 +380,19 @@ namespace Ioss {
     return index;
   }
 
+  int BoundaryCondition::which_parent_face() const
+  {
+    // Determine which "face" of the parent block this BC is applied to.
+    // min X, max X, min Y, max Y, min Z, max Z -- -1, 1, -2, 2, -3, 3
+    if (m_rangeBeg[0] == m_rangeEnd[0]) {
+      return (m_rangeBeg[0] == 1) ? -1 : 1;
+    }
+    if (m_rangeBeg[1] == m_rangeEnd[1]) {
+      return (m_rangeBeg[1] == 1) ? -2 : 2;
+    }
+    return (m_rangeBeg[2] == 1) ? -3 : 3;
+  }
+
   std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc)
   {
     os << "\t\tBC Name '" << bc.m_bcName << "' owns " << bc.get_face_count() << " faces."
