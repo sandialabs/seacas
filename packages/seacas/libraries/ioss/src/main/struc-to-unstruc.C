@@ -82,9 +82,11 @@ namespace {
 
   void transfer_nodal(Ioss::Region &region, Ioss::Region &output_region);
   void transfer_connectivity(Ioss::Region &region, Ioss::Region &output_region);
-
+  void output_sidesets(Ioss::Region &region, Ioss::Region &output_region);
+  
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region);
   void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region);
+  void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region);
   void create_unstructured(const std::string &input, const std::string &output);
 
   size_t transfer_coord(std::vector<double> &to, std::vector<double> &from,
@@ -103,6 +105,8 @@ namespace {
     }
     return offset;
   }
+
+    
 } // namespace
 // ========================================================================
 
@@ -181,6 +185,7 @@ namespace {
 
     transfer_nodeblock(region, output_region);
     transfer_elementblocks(region, output_region);
+    transfer_sidesets(region, output_region);
 
     output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
@@ -189,7 +194,8 @@ namespace {
 
     transfer_nodal(region, output_region);
     transfer_connectivity(region, output_region);
-
+    output_sidesets(region, output_region);
+    
     output_region.end_mode(Ioss::STATE_MODEL);
   }
 
@@ -316,6 +322,81 @@ namespace {
     return;
   }
 
+  void output_sidesets(Ioss::Region &region, Ioss::Region &output_region)
+  {
+    // Maps the 'parent_face'+3 returned from which_parent_face()
+    // to the local 1-based face of the hex elements in that block.
+    static int face_map[] = {5, 1, 4, 0, 2, 3, 6};
+
+    const auto &ssets = region.get_sidesets();
+    for (auto ss : ssets) {
+      // Get corresponding sidset on output region...
+      auto ofs = output_region.get_sideset(ss->name());
+      assert(ofs != nullptr);
+      
+      const auto &fbs  = ss->get_side_blocks();
+      size_t fb_index = 0;
+      for (auto fb : fbs) {
+	// Get corresponding sideblock on output sideset 'ofs'
+	// Assumes sideblocks are ordered the same on input and output.
+	auto ofb = ofs->get_block(fb_index++);
+	assert(ofb != nullptr);
+	
+	// Get parent structured block for this side block...
+	auto parent = fb->parent_block();
+	assert(parent != nullptr);
+	assert(parent->type() == Ioss::STRUCTUREDBLOCK);
+	auto sb_parent = dynamic_cast<const Ioss::StructuredBlock*>(parent);
+	assert(sb_parent != nullptr);
+
+	// Find this sideblock on the parent block...
+	auto &bc_name = fb->name();
+	for (auto &bc : sb_parent->m_boundaryConditions) {
+	  if (bc_name == bc.m_bcName) {
+	    std::array<int, 3> range_beg = bc.m_rangeBeg;
+	    std::array<int, 3> cell_range_end = bc.m_rangeEnd;
+
+	    // The range_beg/end are current points and not cells.
+	    // Need to convert cell_range_end to cells which is typically just point-1
+	    // except if the ordinal is the plane of this surface. In this case,
+	    // range_beg[ord] == cell_range_end[ord].  If this is the case,
+	    // and we are at the top end of the range, then the beg and end must
+	    // both be reduced by 1.  If at the bottom end of the range, then both
+	    // are equal to 1.
+	    // 
+	    for (int i=0; i < 3; i++) {
+	      if (cell_range_end[i] == range_beg[i]) {
+		if (cell_range_end[i] != 1) {
+		  cell_range_end[i]--;
+		  range_beg[i]--;
+		}
+	      }
+	      else {
+		cell_range_end[i]--;
+	      }
+	    }
+
+	    std::cerr << bc << "\n";
+	    auto parent_face = face_map[bc.which_parent_face()+3];
+	    std::vector<int> elem_side;
+	    elem_side.reserve(bc.get_face_count() * 2);
+	    for (auto k=range_beg[2]; k <= cell_range_end[2]; k++) {
+	      for (auto j=range_beg[1]; j <= cell_range_end[1]; j++) {
+		for (auto i=range_beg[0]; i <= cell_range_end[0]; i++) {
+		  auto cell_id = sb_parent->get_global_cell_id(i, j, k);
+		  elem_side.push_back(cell_id);
+		  elem_side.push_back(parent_face);
+		}
+	      }
+	    }
+	    ofb->put_field_data("element_side", elem_side);
+	    break;
+	  }
+	}
+      }
+    }
+  }
+
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region)
   {
     const auto &nbs = region.get_node_blocks();
@@ -348,5 +429,34 @@ namespace {
     std::cout << "P[" << rank << "] Number of Element Blocks       ="
 	      << std::setw(12) << blocks.size()
 	      << ", Number of elements (cells) =" << std::setw(12) << total_entities << "\n";
+  }
+
+  void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region)
+  {
+    size_t total_sides = 0;
+    const auto ssets = region.get_sidesets();
+    for (auto ss : ssets) {
+      std::string name = ss->name();
+      
+      int ss_sides = 0;
+      auto                     surf = new Ioss::SideSet(output_region.get_database(), name);
+      Ioss::SideBlockContainer fbs  = ss->get_side_blocks();
+      for (auto fb : fbs) {
+        std::string fbname = fb->name();
+        std::string fbtype   = fb->get_property("topology_type").get_string();
+        std::string partype  = fb->get_property("parent_topology_type").get_string();
+        size_t      num_side = fb->get_property("entity_count").get_int();
+        total_sides += num_side;
+
+        auto block =
+            new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
+        surf->add(block);
+	block->property_add(Ioss::Property("set_offset", ss_sides));
+
+	ss_sides += num_side;
+      }
+      output_region.add(surf);
+    }
+    std::cout << "P[" << rank << "] Number of SideSets             =" << std::setw(12) << ssets.size() << ", Number of cell faces       =" << std::setw(12) << total_sides << "\n";
   }
 } // namespace

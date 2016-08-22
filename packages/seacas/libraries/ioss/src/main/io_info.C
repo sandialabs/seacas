@@ -431,7 +431,13 @@ namespace {
 	  std::string fbtype  = fb->get_property("topology_type").get_string();
 	  std::string partype = fb->get_property("parent_topology_type").get_string();
 	  OUTPUT << "\t\t" << name(fb) << ", " << num_side << " " << fbtype << " sides"
-		 << ", parent topology: " << partype << "\n";
+		 << ", parent topology: " << partype;
+	  if (fb->parent_block() != nullptr) {
+	    const auto *parent = fb->parent_block();
+	    OUTPUT << ",\tparent block: '" << parent->name() << "' ("
+		   << parent->type_string() << ")";
+	  }
+	  OUTPUT << "\n";
 	  if (interface.adjacencies()) {
 	    std::vector<std::string> blocks;
 	    fb->block_membership(blocks);
