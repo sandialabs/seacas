@@ -51,11 +51,11 @@ namespace Ioss {
                      int donor_zone, const std::array<int, 3> p_transform,
                      const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
                      const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end)
-      : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-	m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
-	m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
-	m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-	m_donorProcessor(-1), m_sameRange(false)
+        : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
+          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
+          m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
+          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
+          m_donorProcessor(-1), m_sameRange(false)
     {
     }
 
@@ -101,12 +101,12 @@ namespace Ioss {
 
   struct BoundaryCondition
   {
-    BoundaryCondition(const std::string name,
-		      const std::array<int, 3> range_beg, const std::array<int, 3> range_end)
-      : m_bcName(std::move(name)),
-	m_rangeBeg(std::move(range_beg)),
-	m_rangeEnd(std::move(range_end))
-    {}
+    BoundaryCondition(const std::string name, const std::array<int, 3> range_beg,
+                      const std::array<int, 3> range_end)
+        : m_bcName(std::move(name)), m_rangeBeg(std::move(range_beg)),
+          m_rangeEnd(std::move(range_end))
+    {
+    }
 
     BoundaryCondition(const BoundaryCondition &copy_from) = default;
 
@@ -115,8 +115,8 @@ namespace Ioss {
     {
       size_t cell_count = 1;
       for (int i = 0; i < 3; i++) {
-	auto diff = std::abs(m_rangeEnd[i] - m_rangeBeg[i]);
-	cell_count *= ((diff == 0) ? 1 : diff);
+        auto diff = std::abs(m_rangeEnd[i] - m_rangeBeg[i]);
+        cell_count *= ((diff == 0) ? 1 : diff);
       }
       return cell_count;
     }
@@ -138,10 +138,10 @@ namespace Ioss {
   {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
-		    int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
+                    int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
-		    std::array<int, 3> &ordinal, std::array<int, 3> &offset,
-		    std::array<int, 3> &global_ordinal);
+                    std::array<int, 3> &ordinal, std::array<int, 3> &offset,
+                    std::array<int, 3> &global_ordinal);
 
     ~StructuredBlock() override;
 
@@ -225,89 +225,89 @@ namespace Ioss {
     }
 
     template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
-      {
-	// Fill 'idata' with the cell node ids which are the
-	// 1-based location of each node in this zone
-	// The location is based on the "model" (all processors) zone.
-	// If this is a parallel decomposed model, then
-	// this block may be a subset of the "model" zone
-	//
-	// if 'add_offset' is true, then add the m_cellGlobalOffset
-	// which changes the location to be the location in the
-	// entire "mesh" instead of within a "zone" (all processors)
+    {
+      // Fill 'idata' with the cell node ids which are the
+      // 1-based location of each node in this zone
+      // The location is based on the "model" (all processors) zone.
+      // If this is a parallel decomposed model, then
+      // this block may be a subset of the "model" zone
+      //
+      // if 'add_offset' is true, then add the m_cellGlobalOffset
+      // which changes the location to be the location in the
+      // entire "mesh" instead of within a "zone" (all processors)
 
-	size_t index  = 0;
-	size_t offset = add_offset ? m_nodeGlobalOffset : 0;
+      size_t index  = 0;
+      size_t offset = add_offset ? m_nodeGlobalOffset : 0;
 
-	if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
-	  return index;
-	}
-
-	for (int kk = 0; kk < m_nk + 1; kk++) {
-	  int k = m_offsetK + kk;
-	  for (int jj = 0; jj < m_nj + 1; jj++) {
-	    int j = m_offsetJ + jj;
-	    for (int ii = 0; ii < m_ni + 1; ii++) {
-	      int i = m_offsetI + ii;
-
-	      size_t ind = k * (m_niGlobal + 1) * (m_njGlobal + 1) + j * (m_niGlobal + 1) + i;
-
-	      idata[index++] = ind + offset + 1;
-	    }
-	  }
-	}
-	return index;
+      if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+        return index;
       }
+
+      for (int kk = 0; kk < m_nk + 1; kk++) {
+        int k = m_offsetK + kk;
+        for (int jj = 0; jj < m_nj + 1; jj++) {
+          int j = m_offsetJ + jj;
+          for (int ii = 0; ii < m_ni + 1; ii++) {
+            int i = m_offsetI + ii;
+
+            size_t ind = k * (m_niGlobal + 1) * (m_njGlobal + 1) + j * (m_niGlobal + 1) + i;
+
+            idata[index++] = ind + offset + 1;
+          }
+        }
+      }
+      return index;
+    }
 
     template <typename INT> size_t get_cell_ids(INT *idata, bool add_offset) const
-      {
-	// Fill 'idata' with the cell ids which are the
-	// 1-based location of each cell in this zone
-	// The location is based on the "model" zone.
-	// If this is a parallel decomposed model, then
-	// this block may be a subset of the "model" zone
-	//
-	// if 'add_offset' is true, then add the m_cellGlobalOffset
-	// which changes the location to be the location in the
-	// entire "mesh" instead of within a "zone"
+    {
+      // Fill 'idata' with the cell ids which are the
+      // 1-based location of each cell in this zone
+      // The location is based on the "model" zone.
+      // If this is a parallel decomposed model, then
+      // this block may be a subset of the "model" zone
+      //
+      // if 'add_offset' is true, then add the m_cellGlobalOffset
+      // which changes the location to be the location in the
+      // entire "mesh" instead of within a "zone"
 
-	size_t index  = 0;
-	size_t offset = add_offset ? m_cellGlobalOffset : 0;
+      size_t index  = 0;
+      size_t offset = add_offset ? m_cellGlobalOffset : 0;
 
-	if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
-	  return index;
-	}
-
-	for (int kk = 0; kk < m_nk; kk++) {
-	  int k = m_offsetK + kk;
-	  for (int jj = 0; jj < m_nj; jj++) {
-	    int j = m_offsetJ + jj;
-	    for (int ii = 0; ii < m_ni; ii++) {
-	      int i = m_offsetI + ii;
-
-	      size_t ind = k * m_niGlobal * m_njGlobal + j * m_niGlobal + i;
-
-	      idata[index++] = ind + offset + 1;
-	    }
-	  }
-	}
-	return index;
+      if (m_nk == 0 && m_nj == 0 && m_ni == 0) {
+        return index;
       }
+
+      for (int kk = 0; kk < m_nk; kk++) {
+        int k = m_offsetK + kk;
+        for (int jj = 0; jj < m_nj; jj++) {
+          int j = m_offsetJ + jj;
+          for (int ii = 0; ii < m_ni; ii++) {
+            int i = m_offsetI + ii;
+
+            size_t ind = k * m_niGlobal * m_njGlobal + j * m_niGlobal + i;
+
+            idata[index++] = ind + offset + 1;
+          }
+        }
+      }
+      return index;
+    }
 
     void generate_shared_nodes(const Ioss::Region &region);
 
     bool contains(size_t global_offset) const
     {
       return (global_offset >= m_nodeOffset &&
-	      global_offset < m_nodeOffset + get_property("node_count").get_int());
+              global_offset < m_nodeOffset + get_property("node_count").get_int());
     }
 
   protected:
     int64_t internal_get_field_data(const Field &field, void *data,
-				    size_t data_size) const override;
+                                    size_t data_size) const override;
 
     int64_t internal_put_field_data(const Field &field, void *data,
-				    size_t data_size) const override;
+                                    size_t data_size) const override;
 
   private:
     void add_properties_and_fields(int index_dim);
@@ -333,9 +333,9 @@ namespace Ioss {
     Ioss::NodeBlock m_nodeBlock;
 
   public:
-    std::vector<ZoneConnectivity> m_zoneConnectivity;
+    std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
-    mutable std::vector<ssize_t>  m_globalNodeIdList;
+    mutable std::vector<ssize_t>   m_globalNodeIdList;
   };
 }
 #endif

@@ -1,5 +1,5 @@
-#include <cgns/Iocgns_Utils.h>
 #include <Ioss_StructuredBlock.h>
+#include <cgns/Iocgns_Utils.h>
 
 namespace {
   struct Range
@@ -81,12 +81,12 @@ namespace {
 }
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
-			       int processor)
+                               int processor)
 {
   std::ostringstream errmsg;
   errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno << " in file '" << file
-	 << "' in function '" << function << "' on processor " << processor
-	 << ". Please report to gdsjaar@sandia.gov if you need help.";
+         << "' in function '" << function << "' on processor " << processor
+         << ". Please report to gdsjaar@sandia.gov if you need help.";
   if (cgnsid > 0) {
     cg_close(cgnsid);
   }
@@ -118,66 +118,64 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
   case CG_HEXA_27: topology  = "hex27"; break;
   default:
     std::cerr << "WARNING: Found topology of type " << cg_ElementTypeName(type)
-	      << " which is not currently supported.\n";
+              << " which is not currently supported.\n";
     topology = "unknown";
   }
   return topology;
 }
 
-  void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
-  {
-    cgsize_t base         = 1;
-    cgsize_t num_families = 0;
-    cg_nfamilies(cgnsFilePtr, base, &num_families);
-    for (cgsize_t family = 1; family <= num_families; family++) {
-      char     name[33];
-      cgsize_t num_bc  = 0;
-      cgsize_t num_geo = 0;
-      cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
+void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
+{
+  cgsize_t base         = 1;
+  cgsize_t num_families = 0;
+  cg_nfamilies(cgnsFilePtr, base, &num_families);
+  for (cgsize_t family = 1; family <= num_families; family++) {
+    char     name[33];
+    cgsize_t num_bc  = 0;
+    cgsize_t num_geo = 0;
+    cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
 #if defined(DEBUG_OUTPUT)
-      std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-		<< num_geo << " geometry references\n";
+    std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
+              << num_geo << " geometry references\n";
 #endif
-      if (num_bc > 0) {
-	// Create a sideset...
-	std::string    ss_name(name);
-	Ioss::SideSet *ss = new Ioss::SideSet(db, ss_name);
-	ss->property_add(Ioss::Property("id", family));
-	db->get_region()->add(ss);
-      }
+    if (num_bc > 0) {
+      // Create a sideset...
+      std::string    ss_name(name);
+      Ioss::SideSet *ss = new Ioss::SideSet(db, ss_name);
+      ss->property_add(Ioss::Property("id", family));
+      db->get_region()->add(ss);
     }
   }
+}
 
-void Iocgns::Utils::add_structured_boundary_conditions(int cgnsFilePtr,
-						       Ioss::StructuredBlock *block)
+void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
+                                                       Ioss::StructuredBlock *block)
 {
   cgsize_t base = block->get_property("base").get_int();
   cgsize_t zone = block->get_property("zone").get_int();
-  int num_bcs;
+  int      num_bcs;
   cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
-    char boconame[32];
-    CG_BCType_t bocotype;
+    char              boconame[32];
+    CG_BCType_t       bocotype;
     CG_PointSetType_t ptset_type;
-    cgsize_t npnts;
-    cgsize_t NormalListSize;
-    CG_DataType_t NormalDataType;
-    int ndataset;
+    cgsize_t          npnts;
+    cgsize_t          NormalListSize;
+    CG_DataType_t     NormalDataType;
+    int               ndataset;
 
     // All we really want from this is 'boconame'
-    cg_boco_info(cgnsFilePtr, base, zone, ibc+1,
-		 boconame, &bocotype, &ptset_type,
-		 &npnts, NULL, &NormalListSize,
-		 &NormalDataType, &ndataset);
-      
-    cg_boco_read(cgnsFilePtr, base, zone, ibc+1, range, NULL);
+    cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts, NULL,
+                 &NormalListSize, &NormalDataType, &ndataset);
+
+    cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, NULL);
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);
     if (!sset) {
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
-      sset = new Ioss::SideSet(db, boconame);
+      sset     = new Ioss::SideSet(db, boconame);
       // TODO: Figure out an id...
       //      sset->property_add(Ioss::Property("id", ?));
       db->get_region()->add(sset);
@@ -192,19 +190,18 @@ void Iocgns::Utils::add_structured_boundary_conditions(int cgnsFilePtr,
       // to may not exist on this decomposed block)
       auto bc = Ioss::BoundaryCondition(boconame, range_beg, range_end);
       if (bc_overlaps(block, bc)) {
-	bc_subset_range(block, bc);
-	block->m_boundaryConditions.push_back(bc);
-	auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8",
-				      block->m_boundaryConditions.back().get_face_count());
-	sb->set_parent_block(block);
-	sset->add(sb);
+        bc_subset_range(block, bc);
+        block->m_boundaryConditions.push_back(bc);
+        auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8",
+                                      block->m_boundaryConditions.back().get_face_count());
+        sb->set_parent_block(block);
+        sset->add(sb);
       }
     }
     else {
       std::ostringstream errmsg;
-      errmsg << "ERROR: CGNS: StructuredBlock '" << block->name() 
-	     << "' Did not find matching sideset with name '"
-	     << boconame << "'";
+      errmsg << "ERROR: CGNS: StructuredBlock '" << block->name()
+             << "' Did not find matching sideset with name '" << boconame << "'";
       IOSS_ERROR(errmsg);
     }
   }
