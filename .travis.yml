@@ -15,7 +15,7 @@ matrix:
       env: MPI=ON
 
 before_install:
-  - sudo apt-get update -qq
+  - sudo apt-get update
   - sudo apt-get -y install cmake
   - sudo apt-get -y install gfortran
   - sudo apt-get -y install libcgns-dev
