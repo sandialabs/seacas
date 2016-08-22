@@ -353,6 +353,8 @@ namespace {
 	auto &bc_name = fb->name();
 	for (auto &bc : sb_parent->m_boundaryConditions) {
 	  if (bc_name == bc.m_bcName) {
+	    std::vector<int> elem_side;
+	    if (bc.get_face_count() > 0) {
 	    std::array<int, 3> range_beg = bc.m_rangeBeg;
 	    std::array<int, 3> cell_range_end = bc.m_rangeEnd;
 
@@ -378,7 +380,6 @@ namespace {
 
 	    std::cerr << bc << "\n";
 	    auto parent_face = face_map[bc.which_parent_face()+3];
-	    std::vector<int> elem_side;
 	    elem_side.reserve(bc.get_face_count() * 2);
 	    for (auto k=range_beg[2]; k <= cell_range_end[2]; k++) {
 	      for (auto j=range_beg[1]; j <= cell_range_end[1]; j++) {
@@ -388,6 +389,7 @@ namespace {
 		  elem_side.push_back(parent_face);
 		}
 	      }
+	    }
 	    }
 	    ofb->put_field_data("element_side", elem_side);
 	    break;

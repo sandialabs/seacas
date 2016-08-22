@@ -106,6 +106,12 @@ namespace Ioss {
         : m_bcName(std::move(name)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end))
     {
+#ifndef NDEBUG
+      int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
+	(m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
+	(m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
+      assert(same_count == 1 || (same_count == 3 && m_rangeBeg[0] == 0));
+#endif
     }
 
     BoundaryCondition(const BoundaryCondition &copy_from) = default;
@@ -116,6 +122,19 @@ namespace Ioss {
     // Return number of cell faces in the BC
     size_t get_face_count() const
     {
+      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 ||
+	  m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+	  m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+	return 0;
+      }
+
+#ifndef NDEBUG
+      int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
+	(m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
+	(m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
+      assert(same_count == 1);
+#endif
+
       size_t cell_count = 1;
       for (int i = 0; i < 3; i++) {
         auto diff = std::abs(m_rangeEnd[i] - m_rangeBeg[i]);
@@ -212,7 +231,7 @@ namespace Ioss {
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
     size_t get_global_cell_id(size_t i, size_t j, size_t k) const
     {
-      return m_cellGlobalOffset + (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
+      return m_cellGlobalOffset + (k - 1) * m_niGlobal * m_njGlobal + (j - 1) * m_niGlobal + i;
     }
 
     // Get the local (relative to this block on this processor) node id at the specified
