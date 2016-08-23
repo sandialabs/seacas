@@ -210,6 +210,8 @@ namespace Ioss {
     ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
     m_localNodeIdList.resize(node_count, ss_max);
 
+    int my_processor = region.get_database()->parallel_rank();
+
     // Iterate through all zoneConnectivity instances.  For each one
     // containing non-owned nodes, set the value of m_localNodeIdList
     // to point to the owning nodes global_node_offset.
@@ -217,7 +219,7 @@ namespace Ioss {
     // is shared multiple times (at a corner of three blocks) and need
     // to resolve which of the nodes it points to is the owner...
     for (const auto &zgc : m_zoneConnectivity) {
-      if (!zgc.owns_shared_nodes()) {
+      if (!zgc.owns_shared_nodes() && zgc.m_donorProcessor == my_processor) {
         // Iterate over the range of nodes on the interface...
         std::vector<int> i_range = zgc.get_range(1);
         std::vector<int> j_range = zgc.get_range(2);
@@ -236,7 +238,8 @@ namespace Ioss {
 
               if (zgc.m_ownerZone != zgc.m_donorZone) {
                 // Convert main and owner i,j,k triplets into model-local m_localNodeIdList
-                size_t block_local_offset = get_block_local_node_offset(index[0], index[1], index[2]);
+                size_t block_local_offset =
+                    get_block_local_node_offset(index[0], index[1], index[2]);
                 size_t local_offset =
                     owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
 
@@ -246,7 +249,8 @@ namespace Ioss {
                   // to instead point to 'm_localNodeIdList[block_local_offset]'
                   size_t owner_offset =
                       owner_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
-                  owner_block->m_localNodeIdList[owner_offset] = m_localNodeIdList[block_local_offset];
+                  owner_block->m_localNodeIdList[owner_offset] =
+                      m_localNodeIdList[block_local_offset];
                 }
                 else {
                   m_localNodeIdList[block_local_offset] = local_offset;
