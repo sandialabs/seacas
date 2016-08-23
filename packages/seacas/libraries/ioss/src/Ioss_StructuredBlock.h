@@ -135,8 +135,6 @@ namespace Ioss {
       return cell_count;
     }
 
-    std::vector<int> get_range(int ordinal) const;
-
     std::string m_bcName;
     std::array<int, 3> m_rangeBeg;
     std::array<int, 3> m_rangeEnd;
@@ -207,14 +205,14 @@ namespace Ioss {
 
     // Get the local (relative to this block on this processor) node
     // id at the specified i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_local_node_id(size_t i, size_t j, size_t k) const
+    size_t get_block_local_node_id(size_t i, size_t j, size_t k) const
     {
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
     }
 
     // Get the local (relative to this block on this processor) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_local_cell_id(size_t i, size_t j, size_t k) const
+    size_t get_block_local_cell_id(size_t i, size_t j, size_t k) const
     {
       return (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
     }
@@ -228,17 +226,17 @@ namespace Ioss {
 
     // Get the local (relative to this block on this processor) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    size_t get_local_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_block_local_node_offset(size_t i, size_t j, size_t k) const
     {
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i - 1;
     }
 
-    // Get the global (on this processor) cell-node offset at the specified
+    // Get the local (on this processor) cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    size_t get_global_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_local_node_offset(size_t i, size_t j, size_t k) const
 
     {
-      return get_local_node_offset(i, j, k) + m_nodeOffset;
+      return get_block_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
     // Get the global node id (on this processor) at the specified
@@ -248,7 +246,7 @@ namespace Ioss {
     size_t get_global_node_id(size_t i, size_t j, size_t k) const
     {
       assert(!m_globalNodeIdList.empty());
-      size_t offset = get_local_node_offset(i, j, k);
+      size_t offset = get_block_local_node_offset(i, j, k);
       return m_globalNodeIdList[offset];
     }
 

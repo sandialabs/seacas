@@ -236,20 +236,20 @@ namespace Ioss {
 
               if (zgc.m_ownerZone != zgc.m_donorZone) {
                 // Convert main and owner i,j,k triplets into model-local m_globalNodeIdList
-                size_t local_offset = get_local_node_offset(index[0], index[1], index[2]);
-                size_t global_offset =
-                    owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+                size_t block_local_offset = get_block_local_node_offset(index[0], index[1], index[2]);
+                size_t local_offset =
+                    owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
 
-                if (m_globalNodeIdList[local_offset] != ss_max) {
+                if (m_globalNodeIdList[block_local_offset] != ss_max) {
                   // This node maps to two different nodes -- probably at a 3-way corner
-                  // Need to adjust the node in 'owner_block' with id 'global_offset'
-                  // to instead point to 'm_globalNodeIdList[local_offset]'
+                  // Need to adjust the node in 'owner_block' with id 'local_offset'
+                  // to instead point to 'm_globalNodeIdList[block_local_offset]'
                   size_t owner_offset =
-                      owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
-                  owner_block->m_globalNodeIdList[owner_offset] = m_globalNodeIdList[local_offset];
+                      owner_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+                  owner_block->m_globalNodeIdList[owner_offset] = m_globalNodeIdList[block_local_offset];
                 }
                 else {
-                  m_globalNodeIdList[local_offset] = global_offset;
+                  m_globalNodeIdList[block_local_offset] = local_offset;
                 }
               }
               else {
@@ -258,11 +258,11 @@ namespace Ioss {
                 // being the "owner"...
                 // Want to map only if local < owner_local
                 // Convert main and owner i,j,k triplets into zone-local offsets
-                size_t local_node = get_local_node_offset(index[0], index[1], index[2]);
-                size_t owner_node = get_local_node_offset(owner[0], owner[1], owner[2]);
+                size_t local_node = get_block_local_node_offset(index[0], index[1], index[2]);
+                size_t owner_node = get_block_local_node_offset(owner[0], owner[1], owner[2]);
                 if (owner_node < local_node) {
-                  size_t global_offset = get_global_node_offset(owner[0], owner[1], owner[2]);
-                  m_globalNodeIdList[local_node] = global_offset;
+                  size_t local_offset = get_local_node_offset(owner[0], owner[1], owner[2]);
+                  m_globalNodeIdList[local_node] = local_offset;
                 }
               }
             }
