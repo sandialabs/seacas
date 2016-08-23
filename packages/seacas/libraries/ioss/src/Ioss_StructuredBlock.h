@@ -108,8 +108,8 @@ namespace Ioss {
     {
 #ifndef NDEBUG
       int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
-	(m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
-	(m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
+                       (m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
+                       (m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
       assert(same_count == 1 || (same_count == 3 && m_rangeBeg[0] == 0));
 #endif
     }
@@ -122,18 +122,10 @@ namespace Ioss {
     // Return number of cell faces in the BC
     size_t get_face_count() const
     {
-      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 ||
-	  m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
-	  m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
-	return 0;
+      if (m_rangeBeg[0] == 0 || m_rangeEnd[0] == 0 || m_rangeBeg[1] == 0 || m_rangeEnd[1] == 0 ||
+          m_rangeBeg[2] == 0 || m_rangeEnd[2] == 0) {
+        return 0;
       }
-
-#ifndef NDEBUG
-      int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
-	(m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
-	(m_rangeBeg[2] == m_rangeEnd[2] ? 1 : 0);
-      assert(same_count == 1);
-#endif
 
       size_t cell_count = 1;
       for (int i = 0; i < 3; i++) {
