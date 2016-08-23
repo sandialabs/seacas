@@ -296,7 +296,6 @@ namespace Iocgns {
     get_region()->add(commset);
   }
 
-#if 0
   // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
@@ -315,6 +314,13 @@ namespace Iocgns {
       }
     }
 
+    ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
+    for (auto &block : blocks) {
+      assert(block->m_localNodeIdList.empty());
+      size_t  node_count = block->get_property("node_count").get_int();
+      block->m_localNodeIdList.resize(node_count, ss_max);
+    }
+
     for (auto &block : blocks) {
       block->generate_shared_nodes(*get_region());
     }
@@ -323,17 +329,16 @@ namespace Iocgns {
     // Map from local node to global node block accounting for
     // shared nodes.
     //
-    // Iterate the m_globalNodeIdList in each block.
+    // Iterate the m_localNodeIdList in each block.
     // If the entry is "ss_max", then this is an owned
     // node -- file with sequential global node block offsets.
     // If the entry is not "ss_max", then this node is shared
     // and its entry currently points to the location in the "global offset"
     // list of the owning node.  Need to get the "global id" value at that
-    // location and put it in m_globalNodeIdList at that location.
-    ssize_t ss_max = std::numeric_limits<ssize_t>::max();
+    // location and put it in m_localNodeIdList at that location.
     size_t  offset = 0;
     for (auto &block : blocks) {
-      for (auto &node : block->m_globalNodeIdList) {
+      for (auto &node : block->m_localNodeIdList) {
         if (node == ss_max) {
           node = offset++;
         }
@@ -342,13 +347,12 @@ namespace Iocgns {
           // Determine which block contains the owner and get its value.
           auto owner_block = get_region()->get_structured_block(node);
           assert(owner_block != nullptr);
-          node = owner_block->m_globalNodeIdList[node - owner_block->get_node_offset()];
+          node = owner_block->m_localNodeIdList[node - owner_block->get_node_offset()];
         }
       }
     }
     return offset; // Number of 'equived' nodes in model
   }
-#endif
 
   void ParallelDatabaseIO::handle_structured_blocks()
   {
@@ -428,7 +432,8 @@ namespace Iocgns {
       Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
     }
 
-    auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_offset, phys_dimension);
+    size_t node_count = finalize_structured_blocks();
+    auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_count, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
   }

@@ -137,6 +137,7 @@ namespace Iocgns {
   private:
     void handle_structured_blocks();
     void handle_unstructured_blocks();
+    size_t finalize_structured_blocks();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;

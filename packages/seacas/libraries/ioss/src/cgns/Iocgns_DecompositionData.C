@@ -146,9 +146,11 @@ namespace {
 
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
                << "\n";
+
+	bool owns_nodes = zone < donor_zone || donor_zone == -1;
         zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
                                                    transform, range_beg, range_end, donor_beg,
-                                                   donor_end);
+                                                   donor_end, owns_nodes);
       }
     }
 
@@ -361,26 +363,6 @@ namespace Iocgns {
         zone->m_proc = -1;
       }
     }
-
-#if 0
-    // Create Ioss::StructuredBlocks corresponding to all active zones...
-    for (auto &zone : m_structuredZones) {
-      if (zone->is_active()) {
-	if (zone->m_proc == m_myProcessor) {
-	  Ioss::StructuredBlock *block = new Ioss::StructuredBlock(nullptr, zone->m_adam->m_name,
-					  3, zone->m_ordinal, zone->m_offset, zone->m_adam->m_ordinal);
-	  m_structuredBlocks.push_back(block);
-	}
-	else {
-	  Ioss::StructuredBlock *block = new Ioss::StructuredBlock(nullptr, zone->m_adam->m_name,
-					  3, zone->m_ordinal, zone->m_offset, zone->m_adam->m_ordinal);
-	  m_structuredBlocks.push_back(block);
-	}
-	m_structuredBlocks.back()->property_add(Ioss::Property("base", 1));
-	m_structuredBlocks.back()->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
-      }
-    }
-#endif
 
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
   }
