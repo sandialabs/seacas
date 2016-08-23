@@ -323,17 +323,17 @@ namespace Iocgns {
     // Map from local node to global node block accounting for
     // shared nodes.
     //
-    // Iterate the m_globalNodeIdList in each block.
+    // Iterate the m_localNodeIdList in each block.
     // If the entry is "ss_max", then this is an owned
     // node -- file with sequential global node block offsets.
     // If the entry is not "ss_max", then this node is shared
     // and its entry currently points to the location in the "global offset"
     // list of the owning node.  Need to get the "global id" value at that
-    // location and put it in m_globalNodeIdList at that location.
+    // location and put it in m_localNodeIdList at that location.
     ssize_t ss_max = std::numeric_limits<ssize_t>::max();
     size_t  offset = 0;
     for (auto &block : blocks) {
-      for (auto &node : block->m_globalNodeIdList) {
+      for (auto &node : block->m_localNodeIdList) {
         if (node == ss_max) {
           node = offset++;
         }
@@ -342,7 +342,7 @@ namespace Iocgns {
           // Determine which block contains the owner and get its value.
           auto owner_block = get_region()->get_structured_block(node);
           assert(owner_block != nullptr);
-          node = owner_block->m_globalNodeIdList[node - owner_block->get_node_offset()];
+          node = owner_block->m_localNodeIdList[node - owner_block->get_node_offset()];
         }
       }
     }
