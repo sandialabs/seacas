@@ -210,9 +210,9 @@ namespace {
       for (auto &block : blocks) {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
-        if (!block->m_globalNodeIdList.empty()) {
-          for (size_t i = 0; i < block->m_globalNodeIdList.size(); i++) {
-            size_t node = block->m_globalNodeIdList[i];
+        if (!block->m_localNodeIdList.empty()) {
+          for (size_t i = 0; i < block->m_localNodeIdList.size(); i++) {
+            size_t node = block->m_localNodeIdList[i];
             assert(node >= 0 && node < node_count);
             if (ids[node] == 0) {
               ids[node] = cell_id[i];
@@ -238,13 +238,13 @@ namespace {
     for (auto &block : blocks) {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
-      transfer_coord(coordinate_x, coord_tmp, block->m_globalNodeIdList, offset);
+      transfer_coord(coordinate_x, coord_tmp, block->m_localNodeIdList, offset);
 
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
-      transfer_coord(coordinate_y, coord_tmp, block->m_globalNodeIdList, offset);
+      transfer_coord(coordinate_y, coord_tmp, block->m_localNodeIdList, offset);
 
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
-      offset = transfer_coord(coordinate_z, coord_tmp, block->m_globalNodeIdList, offset);
+      offset = transfer_coord(coordinate_z, coord_tmp, block->m_localNodeIdList, offset);
     }
     nb->put_field_data("mesh_model_coordinates_x", coordinate_x);
     nb->put_field_data("mesh_model_coordinates_y", coordinate_y);
@@ -297,7 +297,7 @@ namespace {
         // Now, map them to processor-global values...
 	// NOTE: "processor-global" is 1..num_node_on_processor
 
-        const auto &gnil = block->m_globalNodeIdList;
+        const auto &gnil = block->m_localNodeIdList;
 	if (!gnil.empty()) {
 	  for (size_t i = 0; i < connect.size(); i++) {
 	    connect[i] = gnil[connect[i]] + 1;

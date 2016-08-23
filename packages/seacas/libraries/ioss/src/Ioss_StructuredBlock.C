@@ -204,20 +204,18 @@ namespace Ioss {
   {
     // First step in generating the map from "cell-node" to global node position
     // in the model with all duplicate nodes equived out.
-    assert(m_globalNodeIdList.empty());
 
-    size_t  node_count = get_property("node_count").get_int();
-    ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
-    m_globalNodeIdList.resize(node_count, ss_max);
-
+    ssize_t ss_max   = std::numeric_limits<ssize_t>::max();
+    int my_processor = region.get_database()->parallel_rank();
+    
     // Iterate through all zoneConnectivity instances.  For each one
-    // containing non-owned nodes, set the value of m_globalNodeIdList
+    // containing non-owned nodes, set the value of m_localNodeIdList
     // to point to the owning nodes global_node_offset.
     // If a node in this block already has a value, then that node
     // is shared multiple times (at a corner of three blocks) and need
     // to resolve which of the nodes it points to is the owner...
     for (const auto &zgc : m_zoneConnectivity) {
-      if (!zgc.owns_shared_nodes()) {
+      if (!zgc.owns_shared_nodes() && (zgc.m_donorProcessor == my_processor || zgc.m_donorProcessor == -1)) {
         // Iterate over the range of nodes on the interface...
         std::vector<int> i_range = zgc.get_range(1);
         std::vector<int> j_range = zgc.get_range(2);
@@ -225,7 +223,7 @@ namespace Ioss {
 
         auto owner_block = region.get_structured_block(zgc.m_donorName);
         assert(owner_block != nullptr);
-        assert(!owner_block->m_globalNodeIdList.empty());
+        assert(!owner_block->m_localNodeIdList.empty());
 
         const std::array<int, 9> t_matrix = zgc.transform_matrix();
         for (auto &k : k_range) {
@@ -234,22 +232,23 @@ namespace Ioss {
               std::array<int, 3> index{{i, j, k}};
               std::array<int, 3> owner = zgc.transform(t_matrix, index);
 
+	      // Make sure that this isn't a wrapped zone which touches itself.
               if (zgc.m_ownerZone != zgc.m_donorZone) {
-                // Convert main and owner i,j,k triplets into model-local m_globalNodeIdList
-                size_t local_offset = get_local_node_offset(index[0], index[1], index[2]);
+                // Convert main and owner i,j,k triplets into model-local m_localNodeIdList
+                size_t block_local_offset = get_block_local_node_offset(index[0], index[1], index[2]);
                 size_t global_offset =
-                    owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+                    owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
 
-                if (m_globalNodeIdList[local_offset] != ss_max) {
+                if (m_localNodeIdList[block_local_offset] != ss_max) {
                   // This node maps to two different nodes -- probably at a 3-way corner
                   // Need to adjust the node in 'owner_block' with id 'global_offset'
-                  // to instead point to 'm_globalNodeIdList[local_offset]'
+                  // to instead point to 'm_localNodeIdList[block_local_offset]'
                   size_t owner_offset =
-                      owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
-                  owner_block->m_globalNodeIdList[owner_offset] = m_globalNodeIdList[local_offset];
+                      owner_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+                  owner_block->m_localNodeIdList[owner_offset] = m_localNodeIdList[block_local_offset];
                 }
                 else {
-                  m_globalNodeIdList[local_offset] = global_offset;
+                  m_localNodeIdList[block_local_offset] = global_offset;
                 }
               }
               else {
@@ -258,11 +257,11 @@ namespace Ioss {
                 // being the "owner"...
                 // Want to map only if local < owner_local
                 // Convert main and owner i,j,k triplets into zone-local offsets
-                size_t local_node = get_local_node_offset(index[0], index[1], index[2]);
-                size_t owner_node = get_local_node_offset(owner[0], owner[1], owner[2]);
+                size_t local_node = get_block_local_node_offset(index[0], index[1], index[2]);
+                size_t owner_node = get_block_local_node_offset(owner[0], owner[1], owner[2]);
                 if (owner_node < local_node) {
-                  size_t global_offset = get_global_node_offset(owner[0], owner[1], owner[2]);
-                  m_globalNodeIdList[local_node] = global_offset;
+                  size_t global_offset = get_local_node_offset(owner[0], owner[1], owner[2]);
+                  m_localNodeIdList[local_node] = global_offset;
                 }
               }
             }
