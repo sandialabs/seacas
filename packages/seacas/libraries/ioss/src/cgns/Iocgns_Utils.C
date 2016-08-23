@@ -23,7 +23,7 @@ namespace {
     if (ordinal[0] == 0 && ordinal[1] == 0 && ordinal[2] == 0) {
       return false;
     }
-    
+
     int offset[3];
     offset[0] = block->get_property("offset_i").get_int();
     offset[1] = block->get_property("offset_j").get_int();
@@ -203,7 +203,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       }
       else {
         std::array<int, 3> zeros{{0, 0, 0}};
-	auto zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
+        auto zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
         block->m_boundaryConditions.push_back(zero_bc);
         auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8", 0);
         sb->set_parent_block(block);
