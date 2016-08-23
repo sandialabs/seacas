@@ -296,7 +296,6 @@ namespace Iocgns {
     get_region()->add(commset);
   }
 
-#if 0
   // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
@@ -348,7 +347,6 @@ namespace Iocgns {
     }
     return offset; // Number of 'equived' nodes in model
   }
-#endif
 
   void ParallelDatabaseIO::handle_structured_blocks()
   {
@@ -427,6 +425,9 @@ namespace Iocgns {
       // Handle boundary conditions...
       Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
     }
+
+    size_t node_count = finalize_structured_blocks();
+    std::cerr << "NODE: " << node_count << " " << node_offset << "\n";
 
     auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_offset, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
