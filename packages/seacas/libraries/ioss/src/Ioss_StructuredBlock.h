@@ -245,9 +245,9 @@ namespace Ioss {
     // the node at i,j,k.
     size_t get_global_node_id(size_t i, size_t j, size_t k) const
     {
-      assert(!m_globalNodeIdList.empty());
+      assert(!m_localNodeIdList.empty());
       size_t offset = get_block_local_node_offset(i, j, k);
-      return m_globalNodeIdList[offset];
+      return m_localNodeIdList[offset];
     }
 
     template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
@@ -361,7 +361,7 @@ namespace Ioss {
   public:
     std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
-    mutable std::vector<ssize_t>   m_globalNodeIdList;
+    mutable std::vector<ssize_t>   m_localNodeIdList;
   };
 }
 #endif
