@@ -5,6 +5,7 @@ language: c++
 
 os:
   - linux
+  - osx
 
 compiler:
   - gcc
@@ -14,6 +15,8 @@ git:
   depth: 5
 
 matrix:
+  allow_failures:
+    - os: osx
   include:
     - compiler: gcc
       env: MPI=ON
