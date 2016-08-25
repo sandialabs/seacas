@@ -18,6 +18,7 @@ CC='gcc'; export CC
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DBUILD_SHARED_LIBS=ON \
          -DCMAKE_INSTALL_PREFIX=${ACCESS} \
+         -DCMAKE_INSTALL_LIBDIR:PATH=lib \
          -DENABLE_NETCDF_4=ON \
          -DENABLE_PNETCDF=OFF \
          -DENABLE_MMAP:BOOL=ON \
