@@ -67,23 +67,27 @@ namespace {
     Range gc_jj = subset_range(z_j, gc_j);
     Range gc_kk = subset_range(z_k, gc_k);
 
-    zgc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    zgc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    zgc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    zgc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    zgc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    zgc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    std::array<int,3> range_beg;
+    std::array<int,3> range_end;
+    range_beg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+    range_end[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+    range_beg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+    range_end[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+    range_beg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+    range_end[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
 
     if (zgc.m_sameRange) {
+      zgc.m_rangeBeg      = range_beg;
+      zgc.m_rangeEnd      = range_end;
       zgc.m_donorRangeBeg = zgc.m_rangeBeg;
       zgc.m_donorRangeEnd = zgc.m_rangeEnd;
     }
     else {
-      auto t_matrix = zgc.transform_matrix();
-
-      auto range_beg      = zgc.transform(t_matrix, zgc.m_rangeBeg);
-      zgc.m_donorRangeEnd = zgc.transform(t_matrix, zgc.m_rangeEnd);
-      zgc.m_donorRangeBeg = range_beg;
+      auto d_range_beg    = zgc.transform(range_beg);
+      zgc.m_donorRangeEnd = zgc.transform(range_end);
+      zgc.m_donorRangeBeg = d_range_beg;
+      zgc.m_rangeBeg      = range_beg;
+      zgc.m_rangeEnd      = range_end;
     }
   }
 
@@ -105,23 +109,27 @@ namespace {
     Range gc_jj = subset_range(z_j, gc_j);
     Range gc_kk = subset_range(z_k, gc_k);
 
-    zgc.m_donorRangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    zgc.m_donorRangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    zgc.m_donorRangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    zgc.m_donorRangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    zgc.m_donorRangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    zgc.m_donorRangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    std::array<int,3> d_range_beg;
+    std::array<int,3> d_range_end;
+    d_range_beg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+    d_range_end[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+    d_range_beg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+    d_range_end[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+    d_range_beg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+    d_range_end[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
 
     if (zgc.m_sameRange) {
+      zgc.m_donorRangeBeg = d_range_beg;
+      zgc.m_donorRangeEnd = d_range_end;
       zgc.m_rangeEnd = zgc.m_donorRangeEnd;
       zgc.m_rangeBeg = zgc.m_donorRangeBeg;
     }
     else {
-      auto t_matrix = zgc.transform_matrix();
-
-      auto range_beg = zgc.inverse_transform(t_matrix, zgc.m_donorRangeBeg);
-      zgc.m_rangeEnd = zgc.inverse_transform(t_matrix, zgc.m_donorRangeEnd);
+      auto range_beg = zgc.inverse_transform(d_range_beg);
+      zgc.m_rangeEnd = zgc.inverse_transform(d_range_end);
       zgc.m_rangeBeg = range_beg;
+      zgc.m_donorRangeBeg = d_range_beg;
+      zgc.m_donorRangeEnd = d_range_end;
     }
   }
 
@@ -174,14 +182,14 @@ namespace {
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
-                                        donor_range_end, c1->m_zone < c2->m_zone);
+                                        donor_range_end, c1->m_zone < c2->m_zone, true);
     c1->m_zoneConnectivity.back().m_sameRange = true;
     OUTPUT << c1->m_zoneConnectivity.back() << "\n";
 
     OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
-                                        range_end, c2->m_zone < c1->m_zone);
+                                        range_end, c2->m_zone < c1->m_zone, true);
     c2->m_zoneConnectivity.back().m_sameRange = true;
     OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
@@ -205,8 +213,6 @@ namespace Iocgns {
       ordinal = 2;
     }
 
-    //    ordinal = 1;
-    
     if (m_ordinal[ordinal] <= 1) {
       return std::make_pair(nullptr, nullptr);
     }
@@ -306,6 +312,8 @@ namespace Iocgns {
   {
     for (auto &zgc : m_zoneConnectivity) {
       auto &donor_zone     = zones[zgc.m_donorZone - 1];
+      //      assert(donor_zone->is_active());
+      //      assert(donor_zone->m_proc >= 0);
       zgc.m_donorProcessor = donor_zone->m_proc;
     }
   }

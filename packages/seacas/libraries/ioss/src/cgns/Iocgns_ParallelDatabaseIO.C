@@ -314,44 +314,8 @@ namespace Iocgns {
       }
     }
 
-    ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
-    for (auto &block : blocks) {
-      assert(block->m_localNodeIdList.empty());
-      size_t  node_count = block->get_property("node_count").get_int();
-      block->m_localNodeIdList.resize(node_count, ss_max);
-    }
-
-    for (auto &block : blocks) {
-      block->generate_shared_nodes(*get_region());
-    }
-
-    // Iterate all structured blocks and fill in the global ids:
-    // Map from local node to global node block accounting for
-    // shared nodes.
-    //
-    // Iterate the m_localNodeIdList in each block.
-    // If the entry is "ss_max", then this is an owned
-    // node -- file with sequential global node block offsets.
-    // If the entry is not "ss_max", then this node is shared
-    // and its entry currently points to the location in the "global offset"
-    // list of the owning node.  Need to get the "global id" value at that
-    // location and put it in m_localNodeIdList at that location.
-    size_t  offset = 0;
-    for (auto &block : blocks) {
-      for (auto &node : block->m_localNodeIdList) {
-        if (node == ss_max) {
-          node = offset++;
-        }
-        else {
-          // Node is shared and the value points to the owner.
-          // Determine which block contains the owner and get its value.
-          auto owner_block = get_region()->get_structured_block(node);
-          assert(owner_block != nullptr);
-          node = owner_block->m_localNodeIdList[node - owner_block->get_node_offset()];
-        }
-      }
-    }
-    return offset; // Number of 'equived' nodes in model
+    size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor);
+    return num_nodes;
   }
 
   void ParallelDatabaseIO::handle_structured_blocks()

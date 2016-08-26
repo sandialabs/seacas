@@ -152,6 +152,118 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
   }
 }
 
+size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
+{
+  // Each structured block has its own set of "cell_nodes"
+  // At block boundaries, there are duplicate nodes which need to be resolved for the
+  // unstructured mesh output.
+
+  // We need to iterate all of the blocks and then each blocks zgc to determine
+  // which nodes are shared between blocks. For all shared nodes, the node in the lowest
+  // numbered zone is considered the "owner" and all other nodes are shared.
+
+  // Create a vector of size which is the sum of the on-processor cell_nodes size for each block
+  auto &blocks = region.get_structured_blocks();
+
+  ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
+  size_t num_total_cell_nodes = 0;
+  for (auto &block : blocks) {
+    size_t node_count = block->get_property("node_count").get_int();
+    num_total_cell_nodes += node_count;
+  }
+  std::vector<ssize_t> cell_node_map(num_total_cell_nodes, ss_max);
+
+  // Each cell_node location in the cell_node_map is currently initialized to ss_max.
+  // Iterate each block and then each blocks intra-block (i.e., not
+  // due to proc decomps) zgc instances and update cell_node_map
+  // such that for each shared node, it points to the owner nodes
+  // location.
+  for (auto &block : blocks) {
+    for (const auto &zgc : block->m_zoneConnectivity) {
+      if (!zgc.m_intraBlock) { // Not due to processor decomposition.
+	// NOTE: In parallel, the owner block should exist, but may not have
+	// any cells on this processor.  We can access its global i,j,k, but
+	// don't store or access any "bulk" data on it.
+	auto owner_block = region.get_structured_block(zgc.m_donorName);
+	assert(owner_block != nullptr);
+
+	std::vector<int> i_range = zgc.get_range(1);
+	std::vector<int> j_range = zgc.get_range(2);
+	std::vector<int> k_range = zgc.get_range(3);
+	for (auto &k : k_range) {
+	  for (auto &j : j_range) {
+	    for (auto &i : i_range) {
+	      std::array<int, 3> index{{i, j, k}};
+	      std::array<int, 3> owner = zgc.transform(index);
+	      
+	      // The nodes as 'index' and 'owner' are contiguous and
+	      // should refer to the same node. 'owner' should be
+	      // the owner (unless it is already owned by another
+	      // block)
+		
+	      ssize_t global_offset = block->get_global_node_offset(index[0], index[1], index[2]);
+	      ssize_t owner_global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+
+	      if (global_offset > owner_global_offset) {
+		assert(zgc.m_donorProcessor != -1);
+		if (zgc.m_donorProcessor != my_processor) {
+		  size_t block_local_offset = block->get_block_local_node_offset(index[0], index[1], index[2]);
+		  block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset+1);
+		}
+		else {
+		  size_t local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
+		  ssize_t owner_local_offset = owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+
+		  if (cell_node_map[local_offset] == ss_max) {
+		    cell_node_map[local_offset] = owner_local_offset;
+		  }
+		  else {
+		    std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset << " "
+			      << cell_node_map[local_offset] << " " << global_offset << " " << owner_global_offset << "\n";
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  // Now iterate cell_node_map.  If an entry == ss_max, then it is
+  // an owned node and needs to have its index into the unstructed
+  // mesh node map set; otherwise, the value points to the owner
+  // node, so the index at this location should be set to the owner
+  // nodes index.
+  size_t index = 0;
+  for (auto &node : cell_node_map) {
+    if (node == ss_max || node < 0) {
+      node = index++;
+    }
+    else {
+      node = -node;
+    }
+  }
+
+  for (auto &node : cell_node_map) {
+    if (node < 0) {
+      node = cell_node_map[-node];
+    }
+  }
+
+  for (auto &block : blocks) {
+    size_t node_count = block->get_property("node_count").get_int();
+    block->m_blockLocalNodeIndex.resize(node_count);
+
+    size_t beg = block->get_node_offset();
+    size_t end = beg + node_count;
+    for (size_t idx = beg, i=0; idx < end; idx++) {
+      block->m_blockLocalNodeIndex[i++] = cell_node_map[idx];
+    }
+  }
+  return index;
+}
+
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
                                                        Ioss::StructuredBlock *block)
 {
