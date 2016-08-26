@@ -205,7 +205,7 @@ namespace Iocgns {
       ordinal = 2;
     }
 
-    ordinal = 1;
+    //    ordinal = 1;
     
     if (m_ordinal[ordinal] <= 1) {
       return std::make_pair(nullptr, nullptr);
