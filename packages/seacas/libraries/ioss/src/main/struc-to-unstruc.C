@@ -385,6 +385,7 @@ namespace {
 	      for (auto j=range_beg[1]; j <= cell_range_end[1]; j++) {
 		for (auto i=range_beg[0]; i <= cell_range_end[0]; i++) {
 		  auto cell_id = sb_parent->get_global_cell_id(i, j, k);
+		  assert(cell_id > 0);
 		  elem_side.push_back(cell_id);
 		  elem_side.push_back(parent_face);
 		}
