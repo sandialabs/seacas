@@ -336,6 +336,7 @@ namespace Iocgns {
     // and its entry currently points to the location in the "global offset"
     // list of the owning node.  Need to get the "global id" value at that
     // location and put it in m_localNodeIdList at that location.
+    ssize_t ss_max = std::numeric_limits<ssize_t>::max();
     size_t  offset = 0;
     for (auto &block : blocks) {
       for (auto &node : block->m_localNodeIdList) {

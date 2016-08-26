@@ -3,9 +3,16 @@ dist: trusty
 
 language: c++
 
+os:
+  - linux
+  - osx
+
 compiler:
   - gcc
   - clang
+
+git:
+  depth: 5
 
 matrix:
   include:
