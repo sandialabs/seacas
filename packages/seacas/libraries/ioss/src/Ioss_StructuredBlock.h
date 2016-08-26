@@ -51,12 +51,13 @@ namespace Ioss {
                      int donor_zone, const std::array<int, 3> p_transform,
                      const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
                      const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end,
-		     bool owns_nodes)
+		     bool owns_nodes, bool intra_block=false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes)
+          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
+	  m_intraBlock(intra_block)
     {
     }
 
@@ -75,10 +76,8 @@ namespace Ioss {
     bool owns_shared_nodes() const { return m_ownsSharedNodes; }
 
     std::array<int, 9> transform_matrix() const;
-    std::array<int, 3> transform(const std::array<int, 9> &t_matrix,
-                                 const std::array<int, 3> &index_1) const;
-    std::array<int, 3> inverse_transform(const std::array<int, 9> &t_matrix,
-                                         const std::array<int, 3> &index_1) const;
+    std::array<int, 3> transform(const std::array<int, 3> &index_1) const;
+    std::array<int, 3> inverse_transform(const std::array<int, 3> &index_1) const;
 
     std::vector<int> get_range(int ordinal) const;
 
@@ -99,6 +98,7 @@ namespace Ioss {
     bool m_sameRange; // True if owner and donor range should always match...(special use during
                       // decomp)
     bool m_ownsSharedNodes; 
+    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel run.
   };
 
   struct BoundaryCondition
@@ -207,56 +207,64 @@ namespace Ioss {
 
     // Get the local (relative to this block on this processor) node
     // id at the specified i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_block_local_node_id(size_t i, size_t j, size_t k) const
+    size_t get_block_local_node_id(int ii, int jj, int kk) const
     {
+      auto i = ii - m_offsetI;
+      auto j = jj - m_offsetJ;
+      auto k = kk - m_offsetK;
+      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
     }
 
     // Get the local (relative to this block on this processor) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_block_local_cell_id(size_t i, size_t j, size_t k) const
+    size_t get_block_local_cell_id(int ii, int jj, int kk) const
     {
+      auto i = ii - m_offsetI;
+      auto j = jj - m_offsetJ;
+      auto k = kk - m_offsetK;
+      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
       return (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
     }
 
     // Get the global (over all processors) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_global_cell_id(size_t i, size_t j, size_t k) const
+    size_t get_global_cell_id(int i, int j, int k) const
     {
       return m_cellGlobalOffset + (k - 1) * m_niGlobal * m_njGlobal + (j - 1) * m_niGlobal + i;
     }
 
     // Get the global (over all processors) node
     // offset at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  0-based, does not account for shared nodes.
-    size_t get_global_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_global_node_offset(int i, int j, int k) const
     {
       return m_nodeGlobalOffset + (k - 1) * (m_niGlobal+1) * (m_njGlobal+1) + (j - 1) * (m_niGlobal+1) + i - 1;
     }
 
     // Get the local (relative to this block on this processor) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    size_t get_block_local_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_block_local_node_offset(int ii, int jj, int kk) const
     {
+      auto i = ii - m_offsetI;
+      auto j = jj - m_offsetJ;
+      auto k = kk - m_offsetK;
+      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i - 1;
     }
 
     // Get the local (on this processor) cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    size_t get_local_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_local_node_offset(int i, int j, int k) const
 
     {
       return get_block_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
-    // Get the global node id (on this processor) at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.  This
-    // is the position in the global node block (on this processor) of
-    // the node at i,j,k.
-    size_t get_global_node_id(size_t i, size_t j, size_t k) const
+    // Get the global node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
+    size_t get_global_node_id(int i, int j, int k) const
     {
-      assert(!m_localNodeIdList.empty());
-      size_t offset = get_block_local_node_offset(i, j, k);
-      return m_localNodeIdList[offset];
+      return get_global_node_offset(i, j, k) + 1;
     }
 
     template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
@@ -291,6 +299,11 @@ namespace Ioss {
           }
         }
       }
+
+      for (auto idx_id : m_globalIdMap) {
+	idata[idx_id.first] = idx_id.second;
+      }
+
       return index;
     }
 
@@ -328,8 +341,6 @@ namespace Ioss {
       }
       return index;
     }
-
-    void generate_shared_nodes(const Ioss::Region &region);
 
     bool contains(size_t global_offset) const
     {
@@ -370,8 +381,8 @@ namespace Ioss {
   public:
     std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
-    mutable std::vector<ssize_t>   m_localNodeIdList;
-    mutable std::vector<std::pair<ssize_t,ssize_t>> m_globalNodeIdList;
+    std::vector<size_t>            m_blockLocalNodeIndex;
+    std::vector<std::pair<size_t, size_t>> m_globalIdMap;
   };
 }
 #endif
