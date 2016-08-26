@@ -69,12 +69,12 @@ namespace Ioss {
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
                                    int index_dim, int ni, int nj, int nk, int off_i, int off_j,
                                    int off_k)
-      : EntityBlock(io_database, my_name, "Hex8", ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-        m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
-        m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk), m_nodeOffset(0), m_cellOffset(0),
-        m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
-        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-                    index_dim)
+    : EntityBlock(io_database, my_name, "Hex8", ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
+      m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
+      m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk), m_nodeOffset(0), m_cellOffset(0),
+      m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+      m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
+		  index_dim)
   {
     add_properties_and_fields(index_dim);
   }
@@ -82,13 +82,13 @@ namespace Ioss {
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
                                    int index_dim, std::array<int, 3> &ordinal,
                                    std::array<int, 3> &offset, std::array<int, 3> &global_ordinal)
-      : EntityBlock(io_database, my_name, "Hex8", ordinal[0] * ordinal[1] * ordinal[2]),
-        m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
-        m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
-        m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]), m_nodeOffset(0),
-        m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
-        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-                    index_dim)
+    : EntityBlock(io_database, my_name, "Hex8", ordinal[0] * ordinal[1] * ordinal[2]),
+      m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
+      m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
+      m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]), m_nodeOffset(0),
+      m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+      m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
+		  index_dim)
   {
     add_properties_and_fields(index_dim);
   }
@@ -122,7 +122,7 @@ namespace Ioss {
 
       global_cell_count = m_niGlobal * m_njGlobal * m_nkGlobal;
       global_node_count =
-          global_cell_count == 0 ? 0 : (m_niGlobal + 1) * (m_njGlobal + 1) * (m_nkGlobal + 1);
+	global_cell_count == 0 ? 0 : (m_niGlobal + 1) * (m_njGlobal + 1) * (m_nkGlobal + 1);
     }
 
     properties.add(Property("component_degree", index_dim));
@@ -154,7 +154,7 @@ namespace Ioss {
       vector_name = VECTOR_3D();
     }
     fields.add(
-        Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, cell_count));
+	       Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, cell_count));
 
     fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
                            node_count));
@@ -212,66 +212,121 @@ namespace Ioss {
 
     int my_processor = region.get_database()->parallel_rank();
 
-    // Iterate through all zoneConnectivity instances.  For each one
-    // containing non-owned nodes, set the value of m_localNodeIdList
-    // to point to the owning nodes global_node_offset.
-    // If a node in this block already has a value, then that node
-    // is shared multiple times (at a corner of three blocks) and need
-    // to resolve which of the nodes it points to is the owner...
+    // Iterate through all zoneConnectivity (zgc) instances.  For each
+    // zgc containing non-owned nodes, set the value of
+    // m_localNodeIdList to point to the owning nodes
+    // global_node_offset.  If a node in this block already has a
+    // value, then that node is shared multiple times (at a corner of
+    // three blocks) and need to resolve which of the nodes it points
+    // to is the owner...
     for (const auto &zgc : m_zoneConnectivity) {
-      if (!zgc.owns_shared_nodes() && zgc.m_donorProcessor == my_processor) {
-        // Iterate over the range of nodes on the interface...
-        std::vector<int> i_range = zgc.get_range(1);
-        std::vector<int> j_range = zgc.get_range(2);
-        std::vector<int> k_range = zgc.get_range(3);
+      if (!zgc.owns_shared_nodes()) {
+	if (zgc.m_donorProcessor == my_processor) {
+	  // Iterate over the range of nodes on the interface...
+	  std::vector<int> i_range = zgc.get_range(1);
+	  std::vector<int> j_range = zgc.get_range(2);
+	  std::vector<int> k_range = zgc.get_range(3);
 
-        auto owner_block = region.get_structured_block(zgc.m_donorName);
-        assert(owner_block != nullptr);
-        assert(!owner_block->m_localNodeIdList.empty());
+	  auto owner_block = region.get_structured_block(zgc.m_donorName);
+	  assert(owner_block != nullptr);
+	  assert(!owner_block->m_localNodeIdList.empty());
 
-        const std::array<int, 9> t_matrix = zgc.transform_matrix();
-        for (auto &k : k_range) {
-          for (auto &j : j_range) {
-            for (auto &i : i_range) {
-              std::array<int, 3> index{{i, j, k}};
-              std::array<int, 3> owner = zgc.transform(t_matrix, index);
+	  const std::array<int, 9> t_matrix = zgc.transform_matrix();
+	  for (auto &k : k_range) {
+	    for (auto &j : j_range) {
+	      for (auto &i : i_range) {
+		std::array<int, 3> index{{i, j, k}};
+		std::array<int, 3> owner = zgc.transform(t_matrix, index);
 
-              if (zgc.m_ownerZone != zgc.m_donorZone) {
-                // Convert main and owner i,j,k triplets into model-local m_localNodeIdList
-                size_t block_local_offset =
+		if (zgc.m_ownerZone != zgc.m_donorZone) {
+		  // Convert main and owner i,j,k triplets into model-local m_localNodeIdList
+		  size_t block_local_offset =
                     get_block_local_node_offset(index[0], index[1], index[2]);
-                size_t local_offset =
+		  size_t local_offset =
                     owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
 
-                if (m_localNodeIdList[block_local_offset] != ss_max) {
-                  // This node maps to two different nodes -- probably at a 3-way corner
-                  // Need to adjust the node in 'owner_block' with id 'local_offset'
-                  // to instead point to 'm_localNodeIdList[block_local_offset]'
-                  size_t owner_offset =
+		  if (m_localNodeIdList[block_local_offset] != ss_max) {
+		    // This node maps to two different nodes -- probably at a 3-way corner
+		    // Need to adjust the node in 'owner_block' with id 'local_offset'
+		    // to instead point to 'm_localNodeIdList[block_local_offset]'
+		    size_t owner_offset =
                       owner_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
-                  owner_block->m_localNodeIdList[owner_offset] =
+		    owner_block->m_localNodeIdList[owner_offset] =
                       m_localNodeIdList[block_local_offset];
-                }
-                else {
-                  m_localNodeIdList[block_local_offset] = local_offset;
-                }
-              }
-              else {
-                // When mapping WITHIN a zone, need to avoid circular A->B and B->A.
-                // The GridConnectivity object will appear twice; once with each surface
-                // being the "owner"...
-                // Want to map only if local < owner_local
-                // Convert main and owner i,j,k triplets into zone-local offsets
-                size_t local_node = get_block_local_node_offset(index[0], index[1], index[2]);
-                size_t owner_node = get_block_local_node_offset(owner[0], owner[1], owner[2]);
-                if (owner_node < local_node) {
-                  size_t local_offset = get_local_node_offset(owner[0], owner[1], owner[2]);
-                  m_localNodeIdList[local_node] = local_offset;
-                }
-              }
-            }
-          }
-        }
+		  }
+		  else {
+		    m_localNodeIdList[block_local_offset] = local_offset;
+		  }
+		}
+		else {
+		  // When mapping WITHIN a zone, need to avoid circular A->B and B->A.
+		  // The GridConnectivity object will appear twice; once with each surface
+		  // being the "owner"...
+		  // Convert main and owner i,j,k triplets into zone-local offsets
+		  size_t local_node = get_block_local_node_offset(index[0], index[1], index[2]);
+		  size_t owner_node = get_block_local_node_offset(owner[0], owner[1], owner[2]);
+		  if (owner_node < local_node) {
+		    size_t local_offset = get_local_node_offset(owner[0], owner[1], owner[2]);
+		    m_localNodeIdList[local_node] = local_offset;
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+	else {
+#if 0
+	  // This zgc has a donorZone which is on a different processor...
+	  // Iterate over the range of nodes on the interface...
+	  std::vector<int> i_range = zgc.get_range(1);
+	  std::vector<int> j_range = zgc.get_range(2);
+	  std::vector<int> k_range = zgc.get_range(3);
+
+	  const std::array<int, 9> t_matrix = zgc.transform_matrix();
+	  for (auto &k : k_range) {
+	    for (auto &j : j_range) {
+	      for (auto &i : i_range) {
+		std::array<int, 3> index{{i, j, k}};
+		std::array<int, 3> owner = zgc.transform(t_matrix, index);
+
+		if (zgc.m_ownerZone != zgc.m_donorZone) {
+		  // Convert main and owner i,j,k triplets into model-local m_localNodeIdList
+		  size_t block_local_offset =
+                    get_block_local_node_offset(index[0], index[1], index[2]);
+		  size_t local_offset =
+                    owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+
+		  if (m_localNodeIdList[block_local_offset] != ss_max) {
+		    // This node maps to two different nodes -- probably at a 3-way corner
+		    // Need to adjust the node in 'owner_block' with id 'local_offset'
+		    // to instead point to 'm_localNodeIdList[block_local_offset]'
+		    size_t owner_offset =
+                      owner_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+		    owner_block->m_localNodeIdList[owner_offset] =
+                      m_localNodeIdList[block_local_offset];
+		  }
+		  else {
+		    m_localNodeIdList[block_local_offset] = local_offset;
+		  }
+		}
+		else {
+		  assert(this == owner_block);
+		  // When mapping WITHIN a zone, need to avoid circular A->B and B->A.
+		  // The GridConnectivity object will appear twice; once with each surface
+		  // being the "owner"...
+		  // Convert main and owner i,j,k triplets into zone-local offsets
+		  size_t local_node = get_block_local_node_offset(index[0], index[1], index[2]);
+		  size_t owner_node = get_block_local_node_offset(owner[0], owner[1], owner[2]);
+		  if (owner_node < local_node) {
+		    size_t local_offset = get_local_node_offset(owner[0], owner[1], owner[2]);
+		    m_localNodeIdList[local_node] = local_offset;
+		  }
+		}
+	      }
+	    }
+	  }
+#endif
+	}
       }
     }
     // At this point, the vector contains either "owned nodes" which have an entry
@@ -347,11 +402,11 @@ namespace Ioss {
     diff[2] = index_1[2] - m_rangeBeg[2];
 
     donor[0] =
-        t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRangeBeg[0];
+      t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRangeBeg[0];
     donor[1] =
-        t_matrix[3] * diff[0] + t_matrix[4] * diff[1] + t_matrix[5] * diff[2] + m_donorRangeBeg[1];
+      t_matrix[3] * diff[0] + t_matrix[4] * diff[1] + t_matrix[5] * diff[2] + m_donorRangeBeg[1];
     donor[2] =
-        t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRangeBeg[2];
+      t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRangeBeg[2];
 
     assert(std::fabs(donor[0] - m_donorRangeBeg[0]) <=
            std::fabs(m_donorRangeBeg[0] - m_donorRangeEnd[0]));
@@ -375,11 +430,11 @@ namespace Ioss {
     diff[2] = index_1[2] - m_donorRangeBeg[2];
 
     index[0] =
-        t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
+      t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
     index[1] =
-        t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
+      t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
     index[2] =
-        t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
+      t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
 
     return index;
   }

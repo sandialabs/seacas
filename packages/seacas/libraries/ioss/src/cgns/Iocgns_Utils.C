@@ -175,6 +175,20 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
                  &NormalListSize, &NormalDataType, &ndataset);
 
     cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, NULL);
+
+    // There are some BC that are applied on an edge or a vertex;
+    // Don't want those (yet?), so filter them out at this time...
+    int same_count =
+      (range[0] == range[3] ? 1 : 0) +
+      (range[1] == range[4] ? 1 : 0) +
+      (range[2] == range[5] ? 1 : 0);
+    if (same_count != 1) {
+      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '"
+		<< boconame << "' on block '" << block->name() << "'. It is applied to "
+		<< (same_count == 2 ? "an edge" : "a vertex")
+		<< ". This code only supports surfaces.\n";
+      continue;
+    }
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);
     if (!sset) {
       // Need to create a new sideset since didn't see this earlier.
@@ -186,8 +200,15 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     }
 
     if (sset) {
-      std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
-      std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
+      std::array<cgsize_t, 3> range_beg{{
+	  std::min(range[0], range[3]),
+	  std::min(range[1], range[4]),
+	  std::min(range[2], range[5])}};
+      
+      std::array<cgsize_t, 3> range_end{{
+	  std::max(range[0], range[3]),
+	  std::max(range[1], range[4]),
+	  std::max(range[2], range[5])}};
 
       // Determine overlap of surface with block (in parallel, a block may
       // be split among multiple processors and the block face this is applied
