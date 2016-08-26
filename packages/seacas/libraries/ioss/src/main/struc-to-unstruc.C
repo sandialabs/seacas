@@ -211,12 +211,6 @@ namespace {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
 
-	if (!block->m_globalNodeIdList.empty()) {
-	  for (auto id_pair : block->m_globalNodeIdList) {
-	    cell_id[id_pair.first] = id_pair.second;
-	  }
-	}
-
         if (!block->m_localNodeIdList.empty()) {
           for (size_t i = 0; i < block->m_localNodeIdList.size(); i++) {
             size_t node = block->m_localNodeIdList[i];

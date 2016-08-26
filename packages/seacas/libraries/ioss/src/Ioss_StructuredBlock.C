@@ -200,16 +200,13 @@ namespace Ioss {
     return get_database()->get_bounding_box(this);
   }
 
-  void StructuredBlock::generate_shared_nodes(const Ioss::Region &region)
+  size_t StructuredBlock::generate_shared_nodes(const Ioss::Region &region)
   {
     // First step in generating the map from "cell-node" to global node position
     // in the model with all duplicate nodes equived out.
-
-    size_t  node_count = get_property("node_count").get_int();
-    ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
-    m_localNodeIdList.resize(node_count, ss_max);
-
     int my_processor = region.get_database()->parallel_rank();
+
+    size_t num_duplicate = 0; // Number of contiguous nodes.
 
     // Iterate through all zoneConnectivity (zgc) instances.  For each
     // zgc containing non-owned nodes, set the value of
@@ -219,6 +216,50 @@ namespace Ioss {
     // three blocks) and need to resolve which of the nodes it points
     // to is the owner...
     for (const auto &zgc : m_zoneConnectivity) {
+      if (!zgc.m_intraBlock) {
+	std::vector<int> i_range = zgc.get_range(1);
+	std::vector<int> j_range = zgc.get_range(2);
+	std::vector<int> k_range = zgc.get_range(3);
+
+	// NOTE: In parallel, the owner block should exist, but may not have
+	// any cells on this processor.  We can access its global i,j,k, but
+	// don't store or access any "bulk" data on it.
+	auto owner_block = region.get_structured_block(zgc.m_donorName);
+	assert(owner_block != nullptr);
+
+	const std::array<int, 9> t_matrix = zgc.transform_matrix();
+	for (auto &k : k_range) {
+	  for (auto &j : j_range) {
+	    for (auto &i : i_range) {
+	      std::array<int, 3> index{{i, j, k}};
+	      std::array<int, 3> owner = zgc.transform(t_matrix, index);
+	      
+	      // block-local location of the node in this block; 0-based
+	      size_t block_local_offset = get_block_local_node_offset(index[0], index[1], index[2]);
+
+	      size_t block_global_offset = get_global_node_offset(index[0], index[1], index[2])+1;
+	      size_t owner_block_global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2])+1;
+
+	      if (block_global_offset != owner_block_global_offset) {
+		std::cerr << "Node at offset " << block_local_offset << " in block " << name() << " maps to global offsets "
+			  << block_global_offset << " and " << owner_block_global_offset << "\n";
+		size_t new_id = std::min(block_global_offset, owner_block_global_offset);
+		if (new_id < m_localNodeIdList[block_local_offset]) {
+		  m_localNodeIdList[block_local_offset] = new_id;
+		  num_duplicate++;
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      else {
+	// This zgc is the result of processor decomposition.
+	// The adam zones of owner and donor should be the same.
+	assert(1==0 && "TODO: Implement parallel decomposition node id mapping");
+      }
+    }
+#if 0
       if (zgc.m_donorProcessor == my_processor) {
 	if (!zgc.owns_shared_nodes()) {
 	  // Iterate over the range of nodes on the interface...
@@ -309,9 +350,11 @@ namespace Ioss {
 	}
       }
     }
+#endif
     // At this point, the vector contains either "owned nodes" which have an entry
     // of 'ss_max', or shared nodes that it doesn't own which point to the global cell-node
     // offset of the owning node.
+  return num_duplicate;
   }
 
   std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc)

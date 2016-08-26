@@ -174,14 +174,14 @@ namespace {
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
-                                        donor_range_end, c1->m_zone < c2->m_zone);
+                                        donor_range_end, c1->m_zone < c2->m_zone, true);
     c1->m_zoneConnectivity.back().m_sameRange = true;
     OUTPUT << c1->m_zoneConnectivity.back() << "\n";
 
     OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
-                                        range_end, c2->m_zone < c1->m_zone);
+                                        range_end, c2->m_zone < c1->m_zone, true);
     c2->m_zoneConnectivity.back().m_sameRange = true;
     OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }

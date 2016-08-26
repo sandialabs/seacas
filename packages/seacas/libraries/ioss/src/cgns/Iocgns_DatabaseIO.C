@@ -215,17 +215,30 @@ namespace Iocgns {
       }
     }
 
-    ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
+    size_t num_cell_nodes = 0;
     for (auto &block : blocks) {
       assert(block->m_localNodeIdList.empty());
       size_t  node_count = block->get_property("node_count").get_int();
-      block->m_localNodeIdList.resize(node_count, ss_max);
+      num_cell_nodes += node_count;
+      block->m_localNodeIdList.resize(node_count);
+      block->get_cell_node_ids(block->m_localNodeIdList.data(), true);
     }
 
+    size_t num_duplicate = 0;
     for (auto &block : blocks) {
-      block->generate_shared_nodes(*get_region());
+      num_duplicate += block->generate_shared_nodes(*get_region());
     }
 
+    // At this point, each block has the m_localNodeIdList vector initialized.
+    // The values in the vector are the "global" node ids which range
+    // from 1..number_of_cell_nodes in the entire model (sum of cell_node count in each zone/block)
+    // Where the blocks are contiguous, (based on the zgc) the ids have been adjusted to take
+    // the minimum id of the two (or more) nodes at that interface
+    //
+    // This means that for a model with contiguous zones, there will be holes in the global
+    // node id space (this is ok).  This also means that the total number of nodes in the model
+    // will be less than "number_of_cell_nodes". The reduction is "num_duplicate"
+    
     // Iterate all structured blocks and fill in the global ids:
     // Map from local node to global node block accounting for
     // shared nodes.
@@ -237,7 +250,7 @@ namespace Iocgns {
     // and its entry currently points to the location in the "global offset"
     // list of the owning node.  Need to get the "global id" value at that
     // location and put it in m_localNodeIdList at that location.
-    size_t  offset = 0;
+#if 0
     for (auto &block : blocks) {
       for (auto &node : block->m_localNodeIdList) {
         if (node == ss_max) {
@@ -252,7 +265,8 @@ namespace Iocgns {
         }
       }
     }
-    return offset; // Number of 'equived' nodes in model
+#endif
+    return num_cell_nodes - num_duplicate;
   }
 
   void DatabaseIO::create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,

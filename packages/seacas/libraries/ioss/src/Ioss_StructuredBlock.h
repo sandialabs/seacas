@@ -51,12 +51,13 @@ namespace Ioss {
                      int donor_zone, const std::array<int, 3> p_transform,
                      const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
                      const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end,
-		     bool owns_nodes)
+		     bool owns_nodes, bool intra_block=false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes)
+          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
+	  m_intraBlock(intra_block)
     {
     }
 
@@ -99,6 +100,7 @@ namespace Ioss {
     bool m_sameRange; // True if owner and donor range should always match...(special use during
                       // decomp)
     bool m_ownsSharedNodes; 
+    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel run.
   };
 
   struct BoundaryCondition
@@ -329,7 +331,7 @@ namespace Ioss {
       return index;
     }
 
-    void generate_shared_nodes(const Ioss::Region &region);
+    size_t generate_shared_nodes(const Ioss::Region &region);
 
     bool contains(size_t global_offset) const
     {
@@ -371,7 +373,6 @@ namespace Ioss {
     std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
     mutable std::vector<ssize_t>   m_localNodeIdList;
-    mutable std::vector<std::pair<ssize_t,ssize_t>> m_globalNodeIdList;
   };
 }
 #endif
