@@ -371,6 +371,7 @@ namespace Ioss {
     std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
     mutable std::vector<ssize_t>   m_localNodeIdList;
+    mutable std::vector<std::pair<ssize_t,ssize_t>> m_globalNodeIdList;
   };
 }
 #endif
