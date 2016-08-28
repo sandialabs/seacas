@@ -16,7 +16,7 @@ HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI=ON
+MPI=OFF
 
 #COMPILER="gnu"
 COMPILER="clang"
