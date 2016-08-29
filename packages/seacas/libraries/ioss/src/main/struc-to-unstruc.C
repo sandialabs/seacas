@@ -90,7 +90,7 @@ namespace {
   void create_unstructured(const std::string &input, const std::string &output);
 
   size_t transfer_coord(std::vector<double> &to, std::vector<double> &from,
-                        std::vector<ssize_t> &node_id_list, size_t offset)
+                        std::vector<size_t> &node_id_list, size_t offset)
   {
     if (!node_id_list.empty()) {
       for (size_t i = 0; i < node_id_list.size(); i++) {
@@ -106,6 +106,166 @@ namespace {
     return offset;
   }
 
+  size_t generate_shared_nodes(std::map<const std::string&, std::vector<size_t>> &node_list,
+			       const Ioss::Region &region)
+  {
+#if 0
+    // First step in generating the map from "cell-node" to global node position
+    // in the model with all duplicate nodes equived out.
+    int my_processor = region.get_database()->parallel_rank();
+
+    size_t num_duplicate = 0; // Number of contiguous nodes.
+
+    // Iterate through all zoneConnectivity (zgc) instances.  For each
+    // zgc containing non-owned nodes, set the value of
+    // m_blockLocalNodeIndex to point to the owning nodes
+    // global_node_offset.  If a node in this block already has a
+    // value, then that node is shared multiple times (at a corner of
+    // three blocks) and need to resolve which of the nodes it points
+    // to is the owner...
+    for (const auto &zgc : m_zoneConnectivity) {
+      if (!zgc.m_intraBlock) { // Not due to processor decomposition.
+	std::vector<int> i_range = zgc.get_range(1);
+	std::vector<int> j_range = zgc.get_range(2);
+	std::vector<int> k_range = zgc.get_range(3);
+
+	// NOTE: In parallel, the owner block should exist, but may not have
+	// any cells on this processor.  We can access its global i,j,k, but
+	// don't store or access any "bulk" data on it.
+	auto owner_block = region.get_structured_block(zgc.m_donorName);
+	assert(owner_block != nullptr);
+
+	const std::array<int, 9> t_matrix = zgc.transform_matrix();
+	for (auto &k : k_range) {
+	  for (auto &j : j_range) {
+	    for (auto &i : i_range) {
+	      std::array<int, 3> index{{i, j, k}};
+	      std::array<int, 3> owner = zgc.transform(t_matrix, index);
+	      
+	      // block-local location of the node in this block; 0-based
+	      size_t block_local_offset = get_block_local_node_offset(index[0], index[1], index[2]);
+
+	      size_t block_global_offset = get_global_node_offset(index[0], index[1], index[2])+1;
+	      size_t owner_block_global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2])+1;
+
+	      if (block_global_offset != owner_block_global_offset) {
+		std::cerr << "Node at offset " << block_local_offset << " in block " << name() << " maps to global offsets "
+			  << block_global_offset << " and " << owner_block_global_offset << "\n";
+		size_t new_id = std::min(block_global_offset, owner_block_global_offset);
+		if (new_id < m_blockLocalNodeIndex[block_local_offset]) {
+		  m_blockLocalNodeIndex[block_local_offset] = new_id;
+		  num_duplicate++;
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      else {
+	// This zgc is the result of processor decomposition.
+	// The adam zones of owner and donor should be the same.
+	assert(1==0 && "TODO: Implement parallel decomposition node id mapping");
+      }
+    }
+#if 0
+      if (zgc.m_donorProcessor == my_processor) {
+	if (!zgc.owns_shared_nodes()) {
+	  // Iterate over the range of nodes on the interface...
+	  std::vector<int> i_range = zgc.get_range(1);
+	  std::vector<int> j_range = zgc.get_range(2);
+	  std::vector<int> k_range = zgc.get_range(3);
+
+	  auto owner_block = region.get_structured_block(zgc.m_donorName);
+	  assert(owner_block != nullptr);
+	  assert(!owner_block->m_blockLocalNodeIndex.empty());
+
+	  const std::array<int, 9> t_matrix = zgc.transform_matrix();
+	  for (auto &k : k_range) {
+	    for (auto &j : j_range) {
+	      for (auto &i : i_range) {
+		std::array<int, 3> index{{i, j, k}};
+		std::array<int, 3> owner = zgc.transform(t_matrix, index);
+
+		if (zgc.m_ownerZone != zgc.m_donorZone) {
+		  // Convert main and owner i,j,k triplets into model-local m_blockLocalNodeIndex
+		  size_t block_local_offset =
+                    get_block_local_node_offset(index[0], index[1], index[2]);
+		  size_t local_offset =
+                    owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+
+		  if (m_blockLocalNodeIndex[block_local_offset] != ss_max) {
+		    // This node maps to two different nodes -- probably at a 3-way corner
+		    // Need to adjust the node in 'owner_block' with id 'local_offset'
+		    // to instead point to 'm_blockLocalNodeIndex[block_local_offset]'
+		    size_t owner_offset =
+                      owner_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+		    owner_block->m_blockLocalNodeIndex[owner_offset] =
+                      m_blockLocalNodeIndex[block_local_offset];
+		  }
+		  else {
+		    m_blockLocalNodeIndex[block_local_offset] = local_offset;
+		  }
+		}
+		else {
+		  // When mapping WITHIN a zone, need to avoid circular A->B and B->A.
+		  // The GridConnectivity object will appear twice; once with each surface
+		  // being the "owner"...
+		  // Convert main and owner i,j,k triplets into zone-local offsets
+		  size_t local_node = get_block_local_node_offset(index[0], index[1], index[2]);
+		  size_t owner_node = get_block_local_node_offset(owner[0], owner[1], owner[2]);
+		  if (owner_node < local_node) {
+		    size_t local_offset = get_local_node_offset(owner[0], owner[1], owner[2]);
+		    m_blockLocalNodeIndex[local_node] = local_offset;
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      else {
+	if (zgc.m_donorName != name()) {
+	// This zgc has a donorZone which is on a different processor...
+	// Iterate over the range of nodes on the interface...
+	std::vector<int> i_range = zgc.get_range(1);
+	std::vector<int> j_range = zgc.get_range(2);
+	std::vector<int> k_range = zgc.get_range(3);
+
+	auto owner_block = region.get_structured_block(zgc.m_donorName);
+	assert(owner_block != nullptr);
+
+	const std::array<int, 9> t_matrix = zgc.transform_matrix();
+	for (auto &k : k_range) {
+	  for (auto &j : j_range) {
+	    for (auto &i : i_range) {
+	      std::array<int, 3> index{{i, j, k}};
+	      std::array<int, 3> owner = zgc.transform(t_matrix, index);
+	      
+	      // block-local location of the node in this block; 0-based
+	      size_t block_local_offset = get_block_local_node_offset(index[0], index[1], index[2]);
+
+	      size_t block_global_offset = get_global_node_offset(index[0], index[1], index[2]);
+	      size_t owner_block_global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+
+	      if (block_global_offset != owner_block_global_offset) {
+		std::cerr << "Node at offset " << block_local_offset << " in block " << name() << " maps to global offsets "
+			  << block_global_offset << " and " << owner_block_global_offset << "\n";
+		m_globalNodeIdList.emplace_back(block_local_offset, std::min(block_global_offset, owner_block_global_offset)+1);
+	      }
+	    }
+	  }
+	}
+	}
+      }
+    }
+#endif
+    // At this point, the vector contains either "owned nodes" which have an entry
+    // of 'ss_max', or shared nodes that it doesn't own which point to the global cell-node
+    // offset of the owning node.
+  return num_duplicate;
+#endif
+  return 0;
+  }
     
 } // namespace
 // ========================================================================
@@ -204,27 +364,23 @@ namespace {
     auto nb = output_region.get_node_blocks()[0];
     size_t node_count = region.get_node_blocks()[0]->get_property("entity_count").get_int();
     {
-      size_t           nod_ind = 0;
       std::vector<int> ids(node_count); // To hold the global node id map.
       auto &           blocks = region.get_structured_blocks();
       for (auto &block : blocks) {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
 
-        if (!block->m_localNodeIdList.empty()) {
-          for (size_t i = 0; i < block->m_localNodeIdList.size(); i++) {
-            size_t node = block->m_localNodeIdList[i];
-            assert(node >= 0 && node < node_count);
-            if (ids[node] == 0) {
-              ids[node] = cell_id[i];
-            }
-          }
-        }
-        else {
-          for (auto node : cell_id) {
-            ids[nod_ind++] = node;
-          }
-        }
+	for (auto idx_id : block->m_globalIdMap) {
+	  cell_id[idx_id.first] = idx_id.second;
+	}
+
+	for (size_t i=0; i < cell_id.size(); i++) {
+	  size_t idx = block->m_blockLocalNodeIndex[i];
+	  if (ids[idx] == 0) {
+	    ids[idx] = cell_id[i];
+	  }
+	}
+
       }
       assert(nb != nullptr);
       nb->put_field_data("ids", ids);
@@ -239,13 +395,13 @@ namespace {
     for (auto &block : blocks) {
       std::vector<double> coord_tmp;
       block->get_field_data("mesh_model_coordinates_x", coord_tmp);
-      transfer_coord(coordinate_x, coord_tmp, block->m_localNodeIdList, offset);
+      transfer_coord(coordinate_x, coord_tmp, block->m_blockLocalNodeIndex, offset);
 
       block->get_field_data("mesh_model_coordinates_y", coord_tmp);
-      transfer_coord(coordinate_y, coord_tmp, block->m_localNodeIdList, offset);
+      transfer_coord(coordinate_y, coord_tmp, block->m_blockLocalNodeIndex, offset);
 
       block->get_field_data("mesh_model_coordinates_z", coord_tmp);
-      offset = transfer_coord(coordinate_z, coord_tmp, block->m_localNodeIdList, offset);
+      offset = transfer_coord(coordinate_z, coord_tmp, block->m_blockLocalNodeIndex, offset);
     }
     nb->put_field_data("mesh_model_coordinates_x", coordinate_x);
     nb->put_field_data("mesh_model_coordinates_y", coordinate_y);
@@ -298,7 +454,7 @@ namespace {
         // Now, map them to processor-global values...
 	// NOTE: "processor-global" is 1..num_node_on_processor
 
-        const auto &gnil = block->m_localNodeIdList;
+        const auto &gnil = block->m_blockLocalNodeIndex;
 	if (!gnil.empty()) {
 	  for (size_t i = 0; i < connect.size(); i++) {
 	    connect[i] = gnil[connect[i]] + 1;
@@ -463,4 +619,5 @@ namespace {
     }
     std::cout << "P[" << rank << "] Number of SideSets             =" << std::setw(12) << ssets.size() << ", Number of cell faces       =" << std::setw(12) << total_sides << "\n";
   }
+
 } // namespace

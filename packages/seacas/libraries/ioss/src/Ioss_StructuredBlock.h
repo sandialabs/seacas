@@ -250,15 +250,11 @@ namespace Ioss {
       return get_block_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
-    // Get the global node id (on this processor) at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.  This
-    // is the position in the global node block (on this processor) of
-    // the node at i,j,k.
+    // Get the global node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
     size_t get_global_node_id(size_t i, size_t j, size_t k) const
     {
-      assert(!m_localNodeIdList.empty());
-      size_t offset = get_block_local_node_offset(i, j, k);
-      return m_localNodeIdList[offset];
+      return get_global_node_offset(i, j, k) + 1;
     }
 
     template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
@@ -331,8 +327,6 @@ namespace Ioss {
       return index;
     }
 
-    size_t generate_shared_nodes(const Ioss::Region &region);
-
     bool contains(size_t global_offset) const
     {
       return (global_offset >= m_nodeOffset &&
@@ -372,7 +366,8 @@ namespace Ioss {
   public:
     std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
-    mutable std::vector<ssize_t>   m_localNodeIdList;
+    std::vector<size_t>            m_blockLocalNodeIndex;
+    std::vector<std::pair<size_t, size_t>> m_globalIdMap;
   };
 }
 #endif

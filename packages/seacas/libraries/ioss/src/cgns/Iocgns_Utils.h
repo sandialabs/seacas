@@ -98,6 +98,8 @@ namespace Iocgns {
       }
     }
 
+    static  size_t resolve_nodes(Ioss::Region &region, int my_processor);
+    
     static std::string map_cgns_to_topology_type(CG_ElementType_t type);
     static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
     static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block);
