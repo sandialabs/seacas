@@ -215,58 +215,8 @@ namespace Iocgns {
       }
     }
 
-    size_t num_cell_nodes = 0;
-    for (auto &block : blocks) {
-      assert(block->m_localNodeIdList.empty());
-      size_t  node_count = block->get_property("node_count").get_int();
-      num_cell_nodes += node_count;
-      block->m_localNodeIdList.resize(node_count);
-      block->get_cell_node_ids(block->m_localNodeIdList.data(), true);
-    }
-
-    size_t num_duplicate = 0;
-    for (auto &block : blocks) {
-      num_duplicate += block->generate_shared_nodes(*get_region());
-    }
-
-    // At this point, each block has the m_localNodeIdList vector initialized.
-    // The values in the vector are the "global" node ids which range
-    // from 1..number_of_cell_nodes in the entire model (sum of cell_node count in each zone/block)
-    // Where the blocks are contiguous, (based on the zgc) the ids have been adjusted to take
-    // the minimum id of the two (or more) nodes at that interface
-    //
-    // This means that for a model with contiguous zones, there will be holes in the global
-    // node id space (this is ok).  This also means that the total number of nodes in the model
-    // will be less than "number_of_cell_nodes". The reduction is "num_duplicate"
-    
-    // Iterate all structured blocks and fill in the global ids:
-    // Map from local node to global node block accounting for
-    // shared nodes.
-    //
-    // Iterate the m_localNodeIdList in each block.
-    // If the entry is "ss_max", then this is an owned
-    // node -- file with sequential global node block offsets.
-    // If the entry is not "ss_max", then this node is shared
-    // and its entry currently points to the location in the "global offset"
-    // list of the owning node.  Need to get the "global id" value at that
-    // location and put it in m_localNodeIdList at that location.
-#if 0
-    for (auto &block : blocks) {
-      for (auto &node : block->m_localNodeIdList) {
-        if (node == ss_max) {
-          node = offset++;
-        }
-        else {
-          // Node is shared and the value points to the owner.
-          // Determine which block contains the owner and get its value.
-          auto owner_block = get_region()->get_structured_block(node);
-          assert(owner_block != nullptr);
-          node = owner_block->m_localNodeIdList[node - owner_block->get_node_offset()];
-        }
-      }
-    }
-#endif
-    return num_cell_nodes - num_duplicate;
+    size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor);
+    return num_nodes;
   }
 
   void DatabaseIO::create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
