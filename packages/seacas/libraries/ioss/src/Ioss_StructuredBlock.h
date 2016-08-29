@@ -51,12 +51,13 @@ namespace Ioss {
                      int donor_zone, const std::array<int, 3> p_transform,
                      const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
                      const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end,
-		     bool owns_nodes)
+		     bool owns_nodes, bool intra_block=false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes)
+          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
+	  m_intraBlock(intra_block)
     {
     }
 
@@ -99,6 +100,7 @@ namespace Ioss {
     bool m_sameRange; // True if owner and donor range should always match...(special use during
                       // decomp)
     bool m_ownsSharedNodes; 
+    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel run.
   };
 
   struct BoundaryCondition
@@ -248,15 +250,11 @@ namespace Ioss {
       return get_block_local_node_offset(i, j, k) + m_nodeOffset;
     }
 
-    // Get the global node id (on this processor) at the specified
-    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.  This
-    // is the position in the global node block (on this processor) of
-    // the node at i,j,k.
+    // Get the global node id at the specified
+    // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
     size_t get_global_node_id(size_t i, size_t j, size_t k) const
     {
-      assert(!m_localNodeIdList.empty());
-      size_t offset = get_block_local_node_offset(i, j, k);
-      return m_localNodeIdList[offset];
+      return get_global_node_offset(i, j, k) + 1;
     }
 
     template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
@@ -329,8 +327,6 @@ namespace Ioss {
       return index;
     }
 
-    void generate_shared_nodes(const Ioss::Region &region);
-
     bool contains(size_t global_offset) const
     {
       return (global_offset >= m_nodeOffset &&
@@ -370,8 +366,8 @@ namespace Ioss {
   public:
     std::vector<ZoneConnectivity>  m_zoneConnectivity;
     std::vector<BoundaryCondition> m_boundaryConditions;
-    mutable std::vector<ssize_t>   m_localNodeIdList;
-    mutable std::vector<std::pair<ssize_t,ssize_t>> m_globalNodeIdList;
+    std::vector<size_t>            m_blockLocalNodeIndex;
+    std::vector<std::pair<size_t, size_t>> m_globalIdMap;
   };
 }
 #endif
