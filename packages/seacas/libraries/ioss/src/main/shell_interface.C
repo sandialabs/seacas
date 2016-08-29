@@ -177,7 +177,7 @@ void IOShell::Interface::enroll_options()
 #ifdef SEACAS_HAVE_KOKKOS
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
 		          "Data type used internally to store field data\n"
-		          "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D",
+		          "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE",
 				  "POINTER");
 #else
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
@@ -388,12 +388,15 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
       else if (std::strcmp(temp, "KOKKOS_VIEW_2D") == 0) {
         data_storage_type = 4;
       }
+      else if (std::strcmp(temp, "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE") == 0) {
+        data_storage_type = 5;
+      }
 #endif
 
       if (data_storage_type == 0) {
         std::cerr << "ERROR: Option data_storage must be one of" << std::endl;
 #ifdef SEACAS_HAVE_KOKKOS
-        std::cerr << "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, or KOKKOS_VIEW_2D" << std::endl;
+        std::cerr << "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE" << std::endl;
 #else
         std::cerr << "       POINTER, or STD_VECTOR" << std::endl;
 #endif
