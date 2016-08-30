@@ -221,15 +221,17 @@ function(_HDF5_EXTRA_INCLUDE_DIRS _file _var)
   endforeach()  
 
   # Now match all the -I flags
-  string(REGEX MATCHALL "-I([^\" ]+|\"[^\"]+\")" _inc_path_flags ${_cflags})
+  if (${_cflags}) 
+    string(REGEX MATCHALL "-I([^\" ]+|\"[^\"]+\")" _inc_path_flags ${_cflags})
 
-  # Loop through each
-  set(_directories)
-  foreach(_dir ${_inc_path_flags})
-    string(REGEX REPLACE "^-I" "" _dir ${_dir})
-    string(REGEX REPLACE "//" "/" _dir ${_dir})
-    list(APPEND _directories ${_dir})
-  endforeach()  
+    # Loop through each
+    set(_directories)
+    foreach(_dir ${_inc_path_flags})
+      string(REGEX REPLACE "^-I" "" _dir ${_dir})
+      string(REGEX REPLACE "//" "/" _dir ${_dir})
+      list(APPEND _directories ${_dir})
+    endforeach()  
+  endif()
 
   if(_directories)
     list(REMOVE_DUPLICATES _directories)
