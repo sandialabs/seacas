@@ -178,7 +178,6 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   // due to proc decomps) zgc instances and update cell_node_map
   // such that for each shared node, it points to the owner nodes
   // location.
-  bool parallel_global_id_issue = false;
   for (auto &block : blocks) {
     for (const auto &zgc : block->m_zoneConnectivity) {
       if (!zgc.m_intraBlock) { // Not due to processor decomposition.
@@ -188,8 +187,6 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 	auto owner_block = region.get_structured_block(zgc.m_donorName);
 	assert(owner_block != nullptr);
 
-	const std::array<int, 9> t_matrix = zgc.transform_matrix();
-
 	std::vector<int> i_range = zgc.get_range(1);
 	std::vector<int> j_range = zgc.get_range(2);
 	std::vector<int> k_range = zgc.get_range(3);
@@ -197,46 +194,37 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 	  for (auto &j : j_range) {
 	    for (auto &i : i_range) {
 	      std::array<int, 3> index{{i, j, k}};
-	      std::array<int, 3> owner = zgc.transform(t_matrix, index);
+	      std::array<int, 3> owner = zgc.transform(index);
 	      
 	      // The nodes as 'index' and 'owner' are contiguous and
 	      // should refer to the same node. 'owner' should be
 	      // the owner (unless it is already owned by another
 	      // block)
 		
-	      size_t local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
 	      ssize_t global_offset = block->get_global_node_offset(index[0], index[1], index[2]);
 	      ssize_t owner_global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
 
 	      if (global_offset > owner_global_offset) {
-		if (zgc.m_donorProcessor != -1 && zgc.m_donorProcessor != my_processor) {
-		  owner_global_offset *= -1;
-		  parallel_global_id_issue = true;
+		assert(zgc.m_donorProcessor != -1);
+		if (zgc.m_donorProcessor != my_processor) {
+		  size_t block_local_offset = block->get_block_local_node_offset(index[0], index[1], index[2]);
+		  block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset+1);
 		}
-		std::cerr << "Node at offset " << local_offset << " in block " << block->name() << " maps to offsets "
-			  << owner_global_offset << " in block " << owner_block->name() << "\n";
+		else {
+		  size_t local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
+		  ssize_t owner_local_offset = owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
 
-		cell_node_map[local_offset] = owner_global_offset;
+		  if (cell_node_map[local_offset] == ss_max) {
+		    cell_node_map[local_offset] = owner_local_offset;
+		  }
+		  else {
+		    std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset << " "
+			      << cell_node_map[local_offset] << " " << global_offset << " " << owner_global_offset << "\n";
+		  }
+		}
 	      }
 	    }
 	  }
-	}
-      }
-    }
-  }
-
-  // In parallel, there will be some nodes which are shared with
-  // another block, but that block is on another processor.  These
-  // will have a negative entry in cell_node_map.  Need to save these
-  // on the block so we can correctly generate the id map later.
-  if (parallel_global_id_issue) {
-    for (auto &block : blocks) {
-      size_t node_count = block->get_property("node_count").get_int();
-      size_t offset = block->get_node_offset();
-      for (size_t i = 0; i < node_count; i++) {
-	size_t idx = offset+i;
-	if (cell_node_map[idx] < 0) {
-	  block->m_globalIdMap.emplace_back(i, -cell_node_map[idx]+1);
 	}
       }
     }
@@ -253,10 +241,15 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
       node = index++;
     }
     else {
-      node = cell_node_map[node];
+      node = -node;
     }
   }
-  std::cerr << "unstructred mesh node block size = " << index << " compared to " << cell_node_map.size() << "\n";
+
+  for (auto &node : cell_node_map) {
+    if (node < 0) {
+      node = cell_node_map[-node];
+    }
+  }
 
   for (auto &block : blocks) {
     size_t node_count = block->get_property("node_count").get_int();

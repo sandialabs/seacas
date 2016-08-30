@@ -370,12 +370,9 @@ namespace {
         std::vector<int> cell_id;
         block->get_field_data("cell_node_ids", cell_id);
 
-	for (auto idx_id : block->m_globalIdMap) {
-	  cell_id[idx_id.first] = idx_id.second;
-	}
-
 	for (size_t i=0; i < cell_id.size(); i++) {
 	  size_t idx = block->m_blockLocalNodeIndex[i];
+	  assert(idx >= 0 && idx < node_count);
 	  if (ids[idx] == 0) {
 	    ids[idx] = cell_id[i];
 	  }

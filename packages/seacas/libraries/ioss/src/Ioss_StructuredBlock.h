@@ -76,10 +76,8 @@ namespace Ioss {
     bool owns_shared_nodes() const { return m_ownsSharedNodes; }
 
     std::array<int, 9> transform_matrix() const;
-    std::array<int, 3> transform(const std::array<int, 9> &t_matrix,
-                                 const std::array<int, 3> &index_1) const;
-    std::array<int, 3> inverse_transform(const std::array<int, 9> &t_matrix,
-                                         const std::array<int, 3> &index_1) const;
+    std::array<int, 3> transform(const std::array<int, 3> &index_1) const;
+    std::array<int, 3> inverse_transform(const std::array<int, 3> &index_1) const;
 
     std::vector<int> get_range(int ordinal) const;
 
@@ -209,42 +207,54 @@ namespace Ioss {
 
     // Get the local (relative to this block on this processor) node
     // id at the specified i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_block_local_node_id(size_t i, size_t j, size_t k) const
+    size_t get_block_local_node_id(int ii, int jj, int kk) const
     {
+      auto i = ii - m_offsetI;
+      auto j = jj - m_offsetJ;
+      auto k = kk - m_offsetK;
+      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
     }
 
     // Get the local (relative to this block on this processor) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_block_local_cell_id(size_t i, size_t j, size_t k) const
+    size_t get_block_local_cell_id(int ii, int jj, int kk) const
     {
+      auto i = ii - m_offsetI;
+      auto j = jj - m_offsetJ;
+      auto k = kk - m_offsetK;
+      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
       return (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
     }
 
     // Get the global (over all processors) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
-    size_t get_global_cell_id(size_t i, size_t j, size_t k) const
+    size_t get_global_cell_id(int i, int j, int k) const
     {
       return m_cellGlobalOffset + (k - 1) * m_niGlobal * m_njGlobal + (j - 1) * m_niGlobal + i;
     }
 
     // Get the global (over all processors) node
     // offset at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  0-based, does not account for shared nodes.
-    size_t get_global_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_global_node_offset(int i, int j, int k) const
     {
       return m_nodeGlobalOffset + (k - 1) * (m_niGlobal+1) * (m_njGlobal+1) + (j - 1) * (m_niGlobal+1) + i - 1;
     }
 
     // Get the local (relative to this block on this processor) node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    size_t get_block_local_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_block_local_node_offset(int ii, int jj, int kk) const
     {
+      auto i = ii - m_offsetI;
+      auto j = jj - m_offsetJ;
+      auto k = kk - m_offsetK;
+      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i - 1;
     }
 
     // Get the local (on this processor) cell-node offset at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  0-based.
-    size_t get_local_node_offset(size_t i, size_t j, size_t k) const
+    size_t get_local_node_offset(int i, int j, int k) const
 
     {
       return get_block_local_node_offset(i, j, k) + m_nodeOffset;
@@ -252,7 +262,7 @@ namespace Ioss {
 
     // Get the global node id at the specified
     // i,j,k location (1 <= i,j,k <= ni+1,nj+1,nk+1).  1-based.
-    size_t get_global_node_id(size_t i, size_t j, size_t k) const
+    size_t get_global_node_id(int i, int j, int k) const
     {
       return get_global_node_offset(i, j, k) + 1;
     }
@@ -289,6 +299,11 @@ namespace Ioss {
           }
         }
       }
+
+      for (auto idx_id : m_globalIdMap) {
+	idata[idx_id.first] = idx_id.second;
+      }
+
       return index;
     }
 
