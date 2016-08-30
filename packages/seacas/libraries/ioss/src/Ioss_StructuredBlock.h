@@ -57,7 +57,7 @@ namespace Ioss {
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
           m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
-	  m_intraBlock(intra_block)
+          m_intraBlock(intra_block)
     {
     }
 
@@ -97,8 +97,9 @@ namespace Ioss {
     int  m_donorProcessor; // processor that owns the donor zone
     bool m_sameRange; // True if owner and donor range should always match...(special use during
                       // decomp)
-    bool m_ownsSharedNodes; 
-    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel run.
+    bool m_ownsSharedNodes;
+    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel
+                       // run.
   };
 
   struct BoundaryCondition
@@ -212,7 +213,7 @@ namespace Ioss {
       auto i = ii - m_offsetI;
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
+      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i;
     }
 
@@ -223,7 +224,7 @@ namespace Ioss {
       auto i = ii - m_offsetI;
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
+      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
       return (k - 1) * m_ni * m_nj + (j - 1) * m_ni + i;
     }
 
@@ -235,10 +236,12 @@ namespace Ioss {
     }
 
     // Get the global (over all processors) node
-    // offset at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  0-based, does not account for shared nodes.
+    // offset at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  0-based, does not account
+    // for shared nodes.
     size_t get_global_node_offset(int i, int j, int k) const
     {
-      return m_nodeGlobalOffset + (k - 1) * (m_niGlobal+1) * (m_njGlobal+1) + (j - 1) * (m_niGlobal+1) + i - 1;
+      return m_nodeGlobalOffset + (k - 1) * (m_niGlobal + 1) * (m_njGlobal + 1) +
+             (j - 1) * (m_niGlobal + 1) + i - 1;
     }
 
     // Get the local (relative to this block on this processor) node id at the specified
@@ -248,7 +251,7 @@ namespace Ioss {
       auto i = ii - m_offsetI;
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
-      assert(i > 0 && i <= m_ni+1 && j > 0 && j <= m_nj+1 && k > 0 && k <= m_nk+1);
+      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
       return (k - 1) * (m_ni + 1) * (m_nj + 1) + (j - 1) * (m_ni + 1) + i - 1;
     }
 
@@ -301,7 +304,7 @@ namespace Ioss {
       }
 
       for (auto idx_id : m_globalIdMap) {
-	idata[idx_id.first] = idx_id.second;
+        idata[idx_id.first] = idx_id.second;
       }
 
       return index;
