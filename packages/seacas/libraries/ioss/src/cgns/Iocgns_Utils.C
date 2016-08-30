@@ -176,8 +176,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   // Create a vector of size which is the sum of the on-processor cell_nodes size for each block
   auto &blocks = region.get_structured_blocks();
 
-  ssize_t ss_max     = std::numeric_limits<ssize_t>::max();
-  size_t num_total_cell_nodes = 0;
+  ssize_t ss_max               = std::numeric_limits<ssize_t>::max();
+  size_t  num_total_cell_nodes = 0;
   for (auto &block : blocks) {
     size_t node_count = block->get_property("node_count").get_int();
     num_total_cell_nodes += node_count;
@@ -271,7 +271,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 
     size_t beg = block->get_node_offset();
     size_t end = beg + node_count;
-    for (size_t idx = beg, i=0; idx < end; idx++) {
+    for (size_t idx = beg, i = 0; idx < end; idx++) {
       block->m_blockLocalNodeIndex[i++] = cell_node_map[idx];
     }
   }
@@ -304,15 +304,13 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
-    int same_count =
-      (range[0] == range[3] ? 1 : 0) +
-      (range[1] == range[4] ? 1 : 0) +
-      (range[2] == range[5] ? 1 : 0);
+    int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
+                     (range[2] == range[5] ? 1 : 0);
     if (same_count != 1) {
-      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '"
-		<< boconame << "' on block '" << block->name() << "'. It is applied to "
-		<< (same_count == 2 ? "an edge" : "a vertex")
-		<< ". This code only supports surfaces.\n";
+      std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boconame << "' on block '"
+                << block->name() << "'. It is applied to "
+                << (same_count == 2 ? "an edge" : "a vertex")
+                << ". This code only supports surfaces.\n";
       continue;
     }
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);

@@ -365,9 +365,9 @@ namespace Iocgns {
     } while (px > 0 && num_split > 0);
 
     std::sort(m_structuredZones.begin(), m_structuredZones.end(),
-	      [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
-		return a->m_zone < b->m_zone;
-	      });
+              [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+                return a->m_zone < b->m_zone;
+              });
 
     for (auto zone : m_structuredZones) {
       if (zone->is_active()) {

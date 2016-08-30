@@ -418,7 +418,7 @@ namespace Iocgns {
     }
 
     size_t node_count = finalize_structured_blocks();
-    auto *nblock = new Ioss::NodeBlock(this, "nodeblock_1", node_count, phys_dimension);
+    auto * nblock     = new Ioss::NodeBlock(this, "nodeblock_1", node_count, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
   }

@@ -69,12 +69,12 @@ namespace Ioss {
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
                                    int index_dim, int ni, int nj, int nk, int off_i, int off_j,
                                    int off_k)
-    : EntityBlock(io_database, my_name, "Hex8", ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-      m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
-      m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk), m_nodeOffset(0), m_cellOffset(0),
-      m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
-      m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-		  index_dim)
+      : EntityBlock(io_database, my_name, "Hex8", ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
+        m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
+        m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk), m_nodeOffset(0), m_cellOffset(0),
+        m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
+                    index_dim)
   {
     add_properties_and_fields(index_dim);
   }
@@ -122,7 +122,7 @@ namespace Ioss {
 
       global_cell_count = m_niGlobal * m_njGlobal * m_nkGlobal;
       global_node_count =
-	global_cell_count == 0 ? 0 : (m_niGlobal + 1) * (m_njGlobal + 1) * (m_nkGlobal + 1);
+          global_cell_count == 0 ? 0 : (m_niGlobal + 1) * (m_njGlobal + 1) * (m_nkGlobal + 1);
     }
 
     properties.add(Property("component_degree", index_dim));
@@ -154,7 +154,7 @@ namespace Ioss {
       vector_name = VECTOR_3D();
     }
     fields.add(
-	       Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, cell_count));
+        Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, cell_count));
 
     fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
                            node_count));
@@ -269,11 +269,11 @@ namespace Ioss {
     diff[2] = index_1[2] - m_rangeBeg[2];
 
     donor[0] =
-      t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRangeBeg[0];
+        t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRangeBeg[0];
     donor[1] =
-      t_matrix[3] * diff[0] + t_matrix[4] * diff[1] + t_matrix[5] * diff[2] + m_donorRangeBeg[1];
+        t_matrix[3] * diff[0] + t_matrix[4] * diff[1] + t_matrix[5] * diff[2] + m_donorRangeBeg[1];
     donor[2] =
-      t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRangeBeg[2];
+        t_matrix[6] * diff[0] + t_matrix[7] * diff[1] + t_matrix[8] * diff[2] + m_donorRangeBeg[2];
 
     assert(std::fabs(donor[0] - m_donorRangeBeg[0]) <=
            std::fabs(m_donorRangeBeg[0] - m_donorRangeEnd[0]));
@@ -298,11 +298,11 @@ namespace Ioss {
     diff[2] = index_1[2] - m_donorRangeBeg[2];
 
     index[0] =
-      t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
+        t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
     index[1] =
-      t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
+        t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
     index[2] =
-      t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
+        t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
 
     return index;
   }

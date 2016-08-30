@@ -123,13 +123,13 @@ namespace {
     if (zgc.m_sameRange) {
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
-      zgc.m_rangeEnd = zgc.m_donorRangeEnd;
-      zgc.m_rangeBeg = zgc.m_donorRangeBeg;
+      zgc.m_rangeEnd      = zgc.m_donorRangeEnd;
+      zgc.m_rangeBeg      = zgc.m_donorRangeBeg;
     }
     else {
-      auto range_beg = zgc.inverse_transform(d_range_beg);
-      zgc.m_rangeEnd = zgc.inverse_transform(d_range_end);
-      zgc.m_rangeBeg = range_beg;
+      auto range_beg      = zgc.inverse_transform(d_range_beg);
+      zgc.m_rangeEnd      = zgc.inverse_transform(d_range_end);
+      zgc.m_rangeBeg      = range_beg;
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
     }
