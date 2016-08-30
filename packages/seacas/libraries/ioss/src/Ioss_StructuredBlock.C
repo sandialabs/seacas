@@ -257,9 +257,10 @@ namespace Ioss {
     return t_matrix;
   }
 
-  std::array<int, 3> ZoneConnectivity::transform(const std::array<int, 9> &t_matrix,
-                                                 const std::array<int, 3> &index_1) const
+  std::array<int, 3> ZoneConnectivity::transform(const std::array<int, 3> &index_1) const
   {
+    auto t_matrix = transform_matrix();
+    
     std::array<int, 3> diff;
     std::array<int, 3> donor;
 
@@ -285,9 +286,10 @@ namespace Ioss {
 
   // ----------------------------------------------------------------------------
 
-  std::array<int, 3> ZoneConnectivity::inverse_transform(const std::array<int, 9> &t_matrix,
-                                                         const std::array<int, 3> &index_1) const
+  std::array<int, 3> ZoneConnectivity::inverse_transform(const std::array<int, 3> &index_1) const
   {
+    auto t_matrix = transform_matrix();
+
     std::array<int, 3> diff;
     std::array<int, 3> index;
 
