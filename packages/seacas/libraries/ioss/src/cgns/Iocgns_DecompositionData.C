@@ -8,6 +8,8 @@
 #include <cgnsconfig.h>
 #if CG_BUILD_PARALLEL
 #include <pcgnslib.h>
+#else
+#include <cgnslib.h>
 #endif
 
 #include <Ioss_TerminalColor.h>

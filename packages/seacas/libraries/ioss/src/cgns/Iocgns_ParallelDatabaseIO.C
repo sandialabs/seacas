@@ -41,7 +41,6 @@
 #include <assert.h>
 #include <cgns/Iocgns_ParallelDatabaseIO.h>
 #include <cgns/Iocgns_Utils.h>
-#include <cgnslib.h>
 #include <fstream>
 #include <iostream>
 #include <numeric>
@@ -54,6 +53,8 @@
 #include <cgnsconfig.h>
 #if CG_BUILD_PARALLEL
 #include <pcgnslib.h>
+#else
+#include <cgnslib.h>
 #endif
 
 #if !defined(CGNSLIB_H)
@@ -130,7 +131,12 @@ namespace Iocgns {
     }
 
     if (myProcessor == 0) {
-      std::cout << "CGNS ParallelDatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
+      std::cout << "CGNS ParallelDatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n"
+#if CG_BUILD_PARALLEL
+		<< "                        using the parallel CGNS library and API.\n";
+#else
+		<< "                        using the serial CGNS library and API.\n";
+#endif
     }
     if (CG_SIZEOF_SIZE == 64) {
       set_int_byte_size_api(Ioss::USE_INT64_API);
@@ -146,6 +152,7 @@ namespace Iocgns {
       if (is_input()) {
 #if CG_BUILD_PARALLEL
 	cgp_mpi_comm(util().communicator());
+	cgp_pio_mode(CGP_COLLECTIVE);
         int ierr = cgp_open(get_filename().c_str(), CG_MODE_READ, &cgnsFilePtr);
 #else
         int ierr = cg_open(get_filename().c_str(), CG_MODE_READ, &cgnsFilePtr);
