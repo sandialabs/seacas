@@ -193,8 +193,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 	for (auto &k : k_range) {
 	  for (auto &j : j_range) {
 	    for (auto &i : i_range) {
-	      std::array<int, 3> index{{i, j, k}};
-	      std::array<int, 3> owner = zgc.transform(index);
+	      Ioss::IJK_t index{{i, j, k}};
+	      Ioss::IJK_t owner = zgc.transform(index);
 	      
 	      // The nodes as 'index' and 'owner' are contiguous and
 	      // should refer to the same node. 'owner' should be
@@ -315,12 +315,12 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     }
 
     if (sset) {
-      std::array<cgsize_t, 3> range_beg{{
+      Ioss::IJK_t range_beg{{
 	  std::min(range[0], range[3]),
 	  std::min(range[1], range[4]),
 	  std::min(range[2], range[5])}};
       
-      std::array<cgsize_t, 3> range_end{{
+      Ioss::IJK_t range_end{{
 	  std::max(range[0], range[3]),
 	  std::max(range[1], range[4]),
 	  std::max(range[2], range[5])}};
@@ -338,7 +338,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
         sset->add(sb);
       }
       else {
-        std::array<int, 3> zeros{{0, 0, 0}};
+        Ioss::IJK_t zeros{{0, 0, 0}};
         auto zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
         block->m_boundaryConditions.push_back(zero_bc);
         auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8", 0);

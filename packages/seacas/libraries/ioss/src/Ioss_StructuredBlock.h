@@ -48,9 +48,9 @@ namespace Ioss {
   struct ZoneConnectivity
   {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const std::array<int, 3> p_transform,
-                     const std::array<int, 3> range_beg, const std::array<int, 3> range_end,
-                     const std::array<int, 3> donor_beg, const std::array<int, 3> donor_end,
+                     int donor_zone, const Ioss::IJK_t p_transform,
+                     const Ioss::IJK_t range_beg, const Ioss::IJK_t range_end,
+                     const Ioss::IJK_t donor_beg, const Ioss::IJK_t donor_end,
 		     bool owns_nodes, bool intra_block=false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
@@ -76,18 +76,18 @@ namespace Ioss {
     bool owns_shared_nodes() const { return m_ownsSharedNodes; }
 
     std::array<int, 9> transform_matrix() const;
-    std::array<int, 3> transform(const std::array<int, 3> &index_1) const;
-    std::array<int, 3> inverse_transform(const std::array<int, 3> &index_1) const;
+    Ioss::IJK_t transform(const Ioss::IJK_t &index_1) const;
+    Ioss::IJK_t inverse_transform(const Ioss::IJK_t &index_1) const;
 
     std::vector<int> get_range(int ordinal) const;
 
     std::string m_connectionName;
     std::string m_donorName;
-    std::array<int, 3> m_transform;
-    std::array<int, 3> m_rangeBeg;
-    std::array<int, 3> m_rangeEnd;
-    std::array<int, 3> m_donorRangeBeg;
-    std::array<int, 3> m_donorRangeEnd;
+    Ioss::IJK_t m_transform;
+    Ioss::IJK_t m_rangeBeg;
+    Ioss::IJK_t m_rangeEnd;
+    Ioss::IJK_t m_donorRangeBeg;
+    Ioss::IJK_t m_donorRangeEnd;
 
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
@@ -103,8 +103,8 @@ namespace Ioss {
 
   struct BoundaryCondition
   {
-    BoundaryCondition(const std::string name, const std::array<int, 3> range_beg,
-                      const std::array<int, 3> range_end)
+    BoundaryCondition(const std::string name, const Ioss::IJK_t range_beg,
+                      const Ioss::IJK_t range_end)
         : m_bcName(std::move(name)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end))
     {
@@ -138,8 +138,8 @@ namespace Ioss {
     }
 
     std::string m_bcName;
-    std::array<int, 3> m_rangeBeg;
-    std::array<int, 3> m_rangeEnd;
+    Ioss::IJK_t m_rangeBeg;
+    Ioss::IJK_t m_rangeEnd;
 
     friend std::ostream &operator<<(std::ostream &os, const BoundaryCondition &bc);
   };
@@ -154,8 +154,8 @@ namespace Ioss {
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
                     int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
-                    std::array<int, 3> &ordinal, std::array<int, 3> &offset,
-                    std::array<int, 3> &global_ordinal);
+                    Ioss::IJK_t &ordinal, Ioss::IJK_t &offset,
+                    Ioss::IJK_t &global_ordinal);
 
     ~StructuredBlock() override;
 

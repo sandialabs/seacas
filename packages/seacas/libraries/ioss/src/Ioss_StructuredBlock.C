@@ -80,8 +80,8 @@ namespace Ioss {
   }
 
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim, std::array<int, 3> &ordinal,
-                                   std::array<int, 3> &offset, std::array<int, 3> &global_ordinal)
+                                   int index_dim, Ioss::IJK_t &ordinal,
+                                   Ioss::IJK_t &offset, Ioss::IJK_t &global_ordinal)
     : EntityBlock(io_database, my_name, "Hex8", ordinal[0] * ordinal[1] * ordinal[2]),
       m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
       m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
@@ -257,12 +257,12 @@ namespace Ioss {
     return t_matrix;
   }
 
-  std::array<int, 3> ZoneConnectivity::transform(const std::array<int, 3> &index_1) const
+  Ioss::IJK_t ZoneConnectivity::transform(const Ioss::IJK_t &index_1) const
   {
     auto t_matrix = transform_matrix();
     
-    std::array<int, 3> diff;
-    std::array<int, 3> donor;
+    Ioss::IJK_t diff;
+    Ioss::IJK_t donor;
 
     diff[0] = index_1[0] - m_rangeBeg[0];
     diff[1] = index_1[1] - m_rangeBeg[1];
@@ -286,12 +286,12 @@ namespace Ioss {
 
   // ----------------------------------------------------------------------------
 
-  std::array<int, 3> ZoneConnectivity::inverse_transform(const std::array<int, 3> &index_1) const
+  Ioss::IJK_t ZoneConnectivity::inverse_transform(const Ioss::IJK_t &index_1) const
   {
     auto t_matrix = transform_matrix();
 
-    std::array<int, 3> diff;
-    std::array<int, 3> index;
+    Ioss::IJK_t diff;
+    Ioss::IJK_t index;
 
     diff[0] = index_1[0] - m_donorRangeBeg[0];
     diff[1] = index_1[1] - m_donorRangeBeg[1];

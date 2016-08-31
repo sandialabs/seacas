@@ -1,4 +1,3 @@
-#include <Ioss_TerminalColor.h>
 #include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
 
@@ -70,8 +69,8 @@ namespace {
     Range gc_jj = subset_range(z_j, gc_j);
     Range gc_kk = subset_range(z_k, gc_k);
 
-    std::array<int,3> range_beg;
-    std::array<int,3> range_end;
+    Ioss::IJK_t range_beg;
+    Ioss::IJK_t range_end;
     range_beg[0] = gc_ii.begin();
     range_end[0] = gc_ii.end();
     range_beg[1] = gc_jj.begin();
@@ -112,8 +111,8 @@ namespace {
     Range gc_jj = subset_range(z_j, gc_j);
     Range gc_kk = subset_range(z_k, gc_k);
 
-    std::array<int,3> d_range_beg;
-    std::array<int,3> d_range_end;
+    Ioss::IJK_t d_range_beg;
+    Ioss::IJK_t d_range_end;
     d_range_beg[0] = gc_ii.begin();
     d_range_end[0] = gc_ii.end();
     d_range_beg[1] = gc_jj.begin();
@@ -148,8 +147,8 @@ namespace {
         child->m_zoneConnectivity.push_back(zgc);
       }
       else {
-        OUTPUT << Ioss::trmclr::red << "\t\t" << zgc.m_donorName << ":\tName '"
-               << zgc.m_connectionName << " does not overlap." << Ioss::trmclr::normal << "\n";
+        OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '"
+               << zgc.m_connectionName << " does not overlap." << "\n";
       }
     }
   }
@@ -159,18 +158,18 @@ namespace {
   void add_split_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *c1,
                      Iocgns::StructuredZoneData *c2, int ordinal)
   {
-    std::array<int, 3> transform{{1, 2, 3}};
+    Ioss::IJK_t transform{{1, 2, 3}};
 
     // Note that range is specified in terms of 'adam' block i,j,k
     // space which is converted to local block i,j,k space
     // via the m_offset[] field on the local block.
-    std::array<int, 3> range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
-    std::array<int, 3> range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
+    Ioss::IJK_t range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
+    Ioss::IJK_t range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
                                   c1->m_ordinal[1] + c1->m_offset[1] + 1,
                                   c1->m_ordinal[2] + c1->m_offset[2] + 1}};
 
-    std::array<int, 3> donor_range_beg(range_beg);
-    std::array<int, 3> donor_range_end(range_end);
+    Ioss::IJK_t donor_range_beg(range_beg);
+    Ioss::IJK_t donor_range_end(range_end);
 
     donor_range_end[ordinal] = donor_range_beg[ordinal] = range_beg[ordinal] = range_end[ordinal];
 
@@ -249,7 +248,7 @@ namespace Iocgns {
     m_child2->m_splitOrdinal = ordinal;
     m_child2->m_sibling      = m_child1;
 
-    std::cerr << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
+    OUTPUT << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
               << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work()
               << " with offset " << m_offset[0] << " " << m_offset[1] << " " << m_offset[2]
               << " split along ordinal " << ordinal << " with ratio " << ratio << "\n"
@@ -318,8 +317,6 @@ namespace Iocgns {
   {
     for (auto &zgc : m_zoneConnectivity) {
       auto &donor_zone     = zones[zgc.m_donorZone - 1];
-      //      assert(donor_zone->is_active());
-      //      assert(donor_zone->m_proc >= 0);
       zgc.m_donorProcessor = donor_zone->m_proc;
     }
   }

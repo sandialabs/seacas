@@ -172,7 +172,7 @@ namespace Iocgns {
       char donorname[33];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      std::array<int, 3>      transform;
+      Ioss::IJK_t      transform;
 
       cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                    donor_range.data(), transform.data());
@@ -184,10 +184,10 @@ namespace Iocgns {
       if (donor_iter != m_zoneNameMap.end()) {
         donor_zone = (*donor_iter).second;
       }
-      std::array<cgsize_t, 3> range_beg{{range[0], range[1], range[2]}};
-      std::array<cgsize_t, 3> range_end{{range[3], range[4], range[5]}};
-      std::array<cgsize_t, 3> donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
-      std::array<cgsize_t, 3> donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
+      Ioss::IJK_t range_beg{{range[0], range[1], range[2]}};
+      Ioss::IJK_t range_end{{range[3], range[4], range[5]}};
+      Ioss::IJK_t donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
+      Ioss::IJK_t donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
 
       bool owns_nodes = zone < donor_zone || donor_zone == -1;
       block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,

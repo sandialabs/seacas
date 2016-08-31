@@ -59,11 +59,11 @@ namespace Iocgns {
     {
     }
 
-    std::array<int, 3> m_ordinal;
+    Ioss::IJK_t m_ordinal;
 
     // Offset of this block relative to its
     // adam block. ijk_adam = ijk_me + m_offset[ijk];
-    std::array<int, 3> m_offset;
+    Ioss::IJK_t m_offset;
 
     int m_zone;
 

@@ -347,7 +347,7 @@ namespace Iocgns {
         auto block_name = zone->m_name;
 
         Ioss::StructuredBlock *block = nullptr;
-        std::array<int, 3> zeros{{0, 0, 0}};
+        Ioss::IJK_t zeros{{0, 0, 0}};
         for (auto &pzone : zones) {
           if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
             // Create a non-empty structured block on this processor...
