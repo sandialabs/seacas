@@ -209,6 +209,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 		if (zgc.m_donorProcessor != my_processor) {
 		  size_t block_local_offset = block->get_block_local_node_offset(index[0], index[1], index[2]);
 		  block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset+1);
+		  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset << " " << owner_global_offset+1 << "\n";
 		}
 		else {
 		  size_t local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
@@ -218,8 +219,10 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 		    cell_node_map[local_offset] = owner_local_offset;
 		  }
 		  else {
-		    std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset << " "
-			      << cell_node_map[local_offset] << " " << global_offset << " " << owner_global_offset << "\n";
+		    if (cell_node_map[local_offset] != owner_local_offset) {
+		      std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset << " "
+				<< cell_node_map[local_offset] << " " << global_offset << " " << owner_global_offset << "\n";
+		    }
 		  }
 		}
 	      }
