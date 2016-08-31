@@ -192,54 +192,59 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   for (auto &block : blocks) {
     for (const auto &zgc : block->m_zoneConnectivity) {
       if (!zgc.m_intraBlock) { // Not due to processor decomposition.
-	// NOTE: In parallel, the owner block should exist, but may not have
-	// any cells on this processor.  We can access its global i,j,k, but
-	// don't store or access any "bulk" data on it.
-	auto owner_block = region.get_structured_block(zgc.m_donorName);
-	assert(owner_block != nullptr);
+        // NOTE: In parallel, the owner block should exist, but may not have
+        // any cells on this processor.  We can access its global i,j,k, but
+        // don't store or access any "bulk" data on it.
+        auto owner_block = region.get_structured_block(zgc.m_donorName);
+        assert(owner_block != nullptr);
 
-	std::vector<int> i_range = zgc.get_range(1);
-	std::vector<int> j_range = zgc.get_range(2);
-	std::vector<int> k_range = zgc.get_range(3);
-	for (auto &k : k_range) {
-	  for (auto &j : j_range) {
-	    for (auto &i : i_range) {
-	      Ioss::IJK_t index{{i, j, k}};
-	      Ioss::IJK_t owner = zgc.transform(index);
-	      
-	      // The nodes as 'index' and 'owner' are contiguous and
-	      // should refer to the same node. 'owner' should be
-	      // the owner (unless it is already owned by another
-	      // block)
-		
-	      ssize_t global_offset = block->get_global_node_offset(index[0], index[1], index[2]);
-	      ssize_t owner_global_offset = owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+        std::vector<int> i_range = zgc.get_range(1);
+        std::vector<int> j_range = zgc.get_range(2);
+        std::vector<int> k_range = zgc.get_range(3);
+        for (auto &k : k_range) {
+          for (auto &j : j_range) {
+            for (auto &i : i_range) {
+              Ioss::IJK_t index{{i, j, k}};
+              Ioss::IJK_t owner = zgc.transform(index);
 
-	      if (global_offset > owner_global_offset) {
-		assert(zgc.m_donorProcessor != -1);
-		if (zgc.m_donorProcessor != my_processor) {
-		  size_t block_local_offset = block->get_block_local_node_offset(index[0], index[1], index[2]);
-		  block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset+1);
-		  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset << " " << owner_global_offset+1 << "\n";
-		}
-		else {
-		  size_t local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
-		  ssize_t owner_local_offset = owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+              // The nodes as 'index' and 'owner' are contiguous and
+              // should refer to the same node. 'owner' should be
+              // the owner (unless it is already owned by another
+              // block)
 
-		  if (cell_node_map[local_offset] == ss_max) {
-		    cell_node_map[local_offset] = owner_local_offset;
-		  }
-		  else {
-		    if (cell_node_map[local_offset] != owner_local_offset) {
-		      std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset << " "
-				<< cell_node_map[local_offset] << " " << global_offset << " " << owner_global_offset << "\n";
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+              ssize_t global_offset = block->get_global_node_offset(index[0], index[1], index[2]);
+              ssize_t owner_global_offset =
+                  owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
+
+              if (global_offset > owner_global_offset) {
+                assert(zgc.m_donorProcessor != -1);
+                if (zgc.m_donorProcessor != my_processor) {
+                  size_t block_local_offset =
+                      block->get_block_local_node_offset(index[0], index[1], index[2]);
+                  block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
+                  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset << "
+                  //" << owner_global_offset+1 << "\n";
+                }
+                else {
+                  size_t  local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
+                  ssize_t owner_local_offset =
+                      owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+
+                  if (cell_node_map[local_offset] == ss_max) {
+                    cell_node_map[local_offset] = owner_local_offset;
+                  }
+                  else {
+                    if (cell_node_map[local_offset] != owner_local_offset) {
+                      std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
+                                << " " << cell_node_map[local_offset] << " " << global_offset << " "
+                                << owner_global_offset << "\n";
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -324,15 +329,11 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     }
 
     if (sset) {
-      Ioss::IJK_t range_beg{{
-	  std::min(range[0], range[3]),
-	  std::min(range[1], range[4]),
-	  std::min(range[2], range[5])}};
-      
-      Ioss::IJK_t range_end{{
-	  std::max(range[0], range[3]),
-	  std::max(range[1], range[4]),
-	  std::max(range[2], range[5])}};
+      Ioss::IJK_t range_beg{{std::min(range[0], range[3]), std::min(range[1], range[4]),
+                             std::min(range[2], range[5])}};
+
+      Ioss::IJK_t range_end{{std::max(range[0], range[3]), std::max(range[1], range[4]),
+                             std::max(range[2], range[5])}};
 
       // Determine overlap of surface with block (in parallel, a block may
       // be split among multiple processors and the block face this is applied
@@ -348,7 +349,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       }
       else {
         Ioss::IJK_t zeros{{0, 0, 0}};
-        auto zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
+        auto        zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
         block->m_boundaryConditions.push_back(zero_bc);
         auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8", 0);
         sb->set_parent_block(block);

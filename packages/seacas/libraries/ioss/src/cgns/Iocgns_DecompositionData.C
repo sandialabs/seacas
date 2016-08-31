@@ -47,7 +47,7 @@ namespace {
     *ierr = ZOLTAN_OK;
     return zdata->decomp_elem_count();
   }
-  
+
   void zoltan_obj_list(void *data, int ngid_ent, int nlid_ent, ZOLTAN_ID_PTR gids,
                        ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)
   {
@@ -134,7 +134,7 @@ namespace {
         char donorname[33];
         std::array<cgsize_t, 6> range;
         std::array<cgsize_t, 6> donor_range;
-        Ioss::IJK_t      transform;
+        Ioss::IJK_t transform;
 
         cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                      donor_range.data(), transform.data());
@@ -155,7 +155,7 @@ namespace {
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
                << "\n";
 #endif
-	bool owns_nodes = zone < donor_zone || donor_zone == -1;
+        bool owns_nodes = zone < donor_zone || donor_zone == -1;
         zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
                                                    transform, range_beg, range_end, donor_beg,
                                                    donor_end, owns_nodes);
@@ -202,17 +202,18 @@ namespace Iocgns {
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
                                             MPI_Comm                     communicator)
-    : DecompositionDataBase(communicator), m_loadBalanceThreshold(1.4), m_decomposition(props, communicator)
+      : DecompositionDataBase(communicator), m_loadBalanceThreshold(1.4),
+        m_decomposition(props, communicator)
   {
     rank = m_decomposition.m_processor;
 
     if (props.exists("LOAD_BALANCE_THRESHOLD")) {
       if (props.get("LOAD_BALANCE_THRESHOLD").get_type() == Ioss::Property::STRING) {
-	std::string lb_thresh = props.get("LOAD_BALANCE_THRESHOLD").get_string();
-	m_loadBalanceThreshold = std::strtod(lb_thresh.c_str(), nullptr);
+        std::string lb_thresh  = props.get("LOAD_BALANCE_THRESHOLD").get_string();
+        m_loadBalanceThreshold = std::strtod(lb_thresh.c_str(), nullptr);
       }
       else if (props.get("LOAD_BALANCE_THRESHOLD").get_type() == Ioss::Property::REAL) {
-	m_loadBalanceThreshold = props.get("LOAD_BALANCE_THRESHOLD").get_real();
+        m_loadBalanceThreshold = props.get("LOAD_BALANCE_THRESHOLD").get_real();
       }
     }
   }
@@ -241,7 +242,7 @@ namespace Iocgns {
       return;
     }
 
-    size_t work                   = 0;
+    size_t work = 0;
     for (const auto &z : m_structuredZones) {
       work += z->work();
       assert(z->is_active());
@@ -254,14 +255,15 @@ namespace Iocgns {
     double avg_work    = (double)work / m_decomposition.m_processorCount;
 
     auto num_active = m_structuredZones.size();
-    OUTPUT << "Decomposing structured mesh with " << num_active << " zones for " << m_decomposition.m_processorCount
-           << " processors.\nAverage workload is " << avg_work << ", Load Balance Threshold is "
-           << m_loadBalanceThreshold << ", Work range " << avg_work / m_loadBalanceThreshold
-           << " to " << avg_work * m_loadBalanceThreshold << "\n";
+    OUTPUT << "Decomposing structured mesh with " << num_active << " zones for "
+           << m_decomposition.m_processorCount << " processors.\nAverage workload is " << avg_work
+           << ", Load Balance Threshold is " << m_loadBalanceThreshold << ", Work range "
+           << avg_work / m_loadBalanceThreshold << " to " << avg_work * m_loadBalanceThreshold
+           << "\n";
 
     if (avg_work < 1.0) {
-      OUTPUT << "ERROR: Model size too small to distribute over " << m_decomposition.m_processorCount
-             << " processors.\n";
+      OUTPUT << "ERROR: Model size too small to distribute over "
+             << m_decomposition.m_processorCount << " processors.\n";
       std::exit(EXIT_FAILURE);
     }
 
@@ -321,7 +323,8 @@ namespace Iocgns {
       for (size_t i = 0; i < work_vector.size(); i++) {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
 #if defined(IOSS_DEBUG_OUTPUT)
-        OUTPUT << "Processor " << i << " work: " << work_vector[i] << ", workload ratio: " << workload_ratio << "\n";
+        OUTPUT << "Processor " << i << " work: " << work_vector[i]
+               << ", workload ratio: " << workload_ratio << "\n";
 #endif
         if (workload_ratio > m_loadBalanceThreshold) {
           exceeds[i] = true;
@@ -766,7 +769,7 @@ namespace Iocgns {
         block.fileSectionOffset = blk_start;
 #if CG_BUILD_PARALLEL
         cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end,
-                                 TOPTR(connectivity));
+                               TOPTR(connectivity));
 #else
         cg_elements_partial_read(filePtr, base, zone, section, blk_start, blk_end,
                                  TOPTR(connectivity), nullptr);
@@ -853,7 +856,8 @@ namespace Iocgns {
       }
 
       // Broadcast this data to all other processors...
-      MPI_Bcast(TOPTR(elemlist), sizeof(cgsize_t) * elemlist.size(), MPI_BYTE, root, m_decomposition.m_comm);
+      MPI_Bcast(TOPTR(elemlist), sizeof(cgsize_t) * elemlist.size(), MPI_BYTE, root,
+                m_decomposition.m_comm);
 
       // Each processor now has a complete list of all elems in all
       // sidesets.
@@ -934,14 +938,15 @@ namespace Iocgns {
           start  = start - beg + 1;
           finish = finish - beg;
 #if defined(IOSS_DEBUG_OUTPUT)
-          OUTPUT << m_decomposition.m_processor << ": reading " << count << " nodes from zone " << zone
-                 << " starting at " << start << " with an offset of " << offset << " ending at "
-                 << finish << "\n";
+          OUTPUT << m_decomposition.m_processor << ": reading " << count << " nodes from zone "
+                 << zone << " starting at " << start << " with an offset of " << offset
+                 << " ending at " << finish << "\n";
 #endif
 #if CG_BUILD_PARALLEL
-            int ierr = cgp_coord_read_data(filePtr, base, zone, direction+1, &start, &finish, &data[offset]);
+          int ierr = cgp_coord_read_data(filePtr, base, zone, direction + 1, &start, &finish,
+                                         &data[offset]);
 #else
-	    int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
+          int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
                                    CG_RealDouble, &start, &finish, &data[offset]);
 #endif
           if (ierr < 0) {
@@ -1065,7 +1070,7 @@ namespace Iocgns {
     int                   base = 1;
 #if CG_BUILD_PARALLEL
     cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
-			   blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
+                           blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
 #else
     cg_elements_partial_read(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
                              blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn),
