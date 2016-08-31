@@ -347,8 +347,8 @@ namespace {
 	  if (bc_name == bc.m_bcName) {
 	    std::vector<int> elem_side;
 	    if (bc.get_face_count() > 0) {
-	    std::array<int, 3> range_beg = bc.m_rangeBeg;
-	    std::array<int, 3> cell_range_end = bc.m_rangeEnd;
+	    Ioss::IJK_t range_beg = bc.m_rangeBeg;
+	    Ioss::IJK_t cell_range_end = bc.m_rangeEnd;
 
 	    // The range_beg/end are current points and not cells.
 	    // Need to convert cell_range_end to cells which is typically just point-1
