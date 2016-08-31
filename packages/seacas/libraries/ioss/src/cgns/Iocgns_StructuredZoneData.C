@@ -9,6 +9,8 @@ namespace {
   {
     Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b < a) {}
 
+    int begin() const {return m_reversed ? m_end : m_beg;}
+    int end()   const {return m_reversed ? m_beg : m_end;}
     int  m_beg;
     int  m_end;
     bool m_reversed;
@@ -70,12 +72,12 @@ namespace {
 
     std::array<int,3> range_beg;
     std::array<int,3> range_end;
-    range_beg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    range_end[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    range_beg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    range_end[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    range_beg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    range_end[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    range_beg[0] = gc_ii.begin();
+    range_end[0] = gc_ii.end();
+    range_beg[1] = gc_jj.begin();
+    range_end[1] = gc_jj.end();
+    range_beg[2] = gc_kk.begin();
+    range_end[2] = gc_kk.end();
 
     if (zgc.m_sameRange) {
       zgc.m_rangeBeg      = range_beg;
@@ -112,12 +114,12 @@ namespace {
 
     std::array<int,3> d_range_beg;
     std::array<int,3> d_range_end;
-    d_range_beg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    d_range_end[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    d_range_beg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    d_range_end[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    d_range_beg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    d_range_end[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    d_range_beg[0] = gc_ii.begin();
+    d_range_end[0] = gc_ii.end();
+    d_range_beg[1] = gc_jj.begin();
+    d_range_end[1] = gc_jj.end();
+    d_range_beg[2] = gc_kk.begin();
+    d_range_end[2] = gc_kk.end();
 
     if (zgc.m_sameRange) {
       zgc.m_donorRangeBeg = d_range_beg;
@@ -141,10 +143,8 @@ namespace {
     for (auto zgc : parent->m_zoneConnectivity) {
       if (zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
-        OUTPUT << "Pre: " << zgc << "\n";
         zgc_subset_ranges(child, zgc);
 
-        OUTPUT << "Pos: " << zgc << "\n";
         child->m_zoneConnectivity.push_back(zgc);
       }
       else {
@@ -179,20 +179,20 @@ namespace {
     auto c2_base =
         Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
 
-    OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
+    //OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
                                         donor_range_end, c1->m_zone < c2->m_zone, true);
     c1->m_zoneConnectivity.back().m_sameRange = true;
-    OUTPUT << c1->m_zoneConnectivity.back() << "\n";
+    //OUTPUT << c1->m_zoneConnectivity.back() << "\n";
 
-    OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
+    //OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
                                         range_end, c2->m_zone < c1->m_zone, true);
     c2->m_zoneConnectivity.back().m_sameRange = true;
-    OUTPUT << c2->m_zoneConnectivity.back() << "\n";
+    //OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
 }
 
