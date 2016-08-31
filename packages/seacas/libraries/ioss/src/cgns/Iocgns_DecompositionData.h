@@ -82,7 +82,7 @@ namespace Iocgns {
   class DecompositionDataBase
   {
   public:
-    DecompositionDataBase(MPI_Comm comm) : m_comm(comm), m_myProcessor(0), m_processorCount(0) {}
+    DecompositionDataBase(MPI_Comm comm) {}
 
     virtual ~DecompositionDataBase() {}
     virtual void decompose_model(int filePtr, CG_ZoneType_t common_zone_type) = 0;
@@ -119,10 +119,6 @@ namespace Iocgns {
 
     void get_sideset_element_side(int filePtr, const Ioss::SetDecompositionData &sset,
                                   void *data) const;
-
-    MPI_Comm m_comm;
-    int      m_myProcessor;
-    int      m_processorCount;
 
     std::vector<ZoneData>                     m_zones;
     std::vector<Ioss::BlockDecompositionData> m_elementBlocks;
@@ -188,7 +184,7 @@ namespace Iocgns {
 
     void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
 
-    size_t get_commset_node_size() const { return m_decomposition.nodeCommMap.size() / 2; }
+    size_t get_commset_node_size() const { return m_decomposition.m_nodeCommMap.size() / 2; }
 
     void get_sideset_element_side(int filePtr, const Ioss::SetDecompositionData &sset,
                                   INT *data) const;
@@ -246,6 +242,8 @@ namespace Iocgns {
     void get_file_node_coordinates(int filePtr, int direction, double *ioss_data) const;
     void get_node_coordinates(int filePtr, double *ioss_data, const Ioss::Field &field) const;
 
+    double m_loadBalanceThreshold;
+    
   public:
     Ioss::Decomposition<INT> m_decomposition;
   };

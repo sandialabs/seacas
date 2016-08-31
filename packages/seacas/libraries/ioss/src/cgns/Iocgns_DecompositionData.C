@@ -194,11 +194,19 @@ namespace Iocgns {
   template <typename INT>
   DecompositionData<INT>::DecompositionData(const Ioss::PropertyManager &props,
                                             MPI_Comm                     communicator)
-      : DecompositionDataBase(communicator), m_decomposition(props, communicator)
+    : DecompositionDataBase(communicator), m_loadBalanceThreshold(1.4), m_decomposition(props, communicator)
   {
-    MPI_Comm_rank(m_comm, &m_myProcessor);
-    MPI_Comm_size(m_comm, &m_processorCount);
-    rank = m_myProcessor;
+    rank = m_decomposition.m_processor;
+
+    if (props.exists("LOAD_BALANCE_THRESHOLD")) {
+      if (props.get("LOAD_BALANCE_THRESHOLD").get_type() == Ioss::Property::STRING) {
+	std::string lb_thresh = props.get("LOAD_BALANCE_THRESHOLD").get_string();
+	m_loadBalanceThreshold = std::strtod(lb_thresh.c_str(), nullptr);
+      }
+      else if (props.get("LOAD_BALANCE_THRESHOLD").get_type() == Ioss::Property::REAL) {
+	m_loadBalanceThreshold = props.get("LOAD_BALANCE_THRESHOLD").get_real();
+      }
+    }
   }
 
   template <typename INT>
@@ -225,7 +233,6 @@ namespace Iocgns {
       return;
     }
 
-    double load_balance_threshold = 1.1;
     size_t work                   = 0;
     for (const auto &z : m_structuredZones) {
       work += z->work();
@@ -236,19 +243,16 @@ namespace Iocgns {
     size_t px          = 0;
     size_t num_split   = 0;
     bool   split       = false;
-    double avg_work    = (double)work / m_processorCount;
-
-    OUTPUT << "Decomposing structured mesh for " << m_processorCount
-           << " processors. Average workload is " << avg_work << ", Threshold is "
-           << load_balance_threshold << ". Work range " << avg_work / load_balance_threshold
-           << " to " << avg_work * load_balance_threshold << "\n";
+    double avg_work    = (double)work / m_decomposition.m_processorCount;
 
     auto num_active = m_structuredZones.size();
-    OUTPUT << "Number of active zones = " << num_active << ", work = " << work
-           << " average work = " << avg_work << "\n";
+    OUTPUT << "Decomposing structured mesh with " << num_active << " zones for " << m_decomposition.m_processorCount
+           << " processors.\nAverage workload is " << avg_work << ", Load Balance Threshold is "
+           << m_loadBalanceThreshold << ", Work range " << avg_work / m_loadBalanceThreshold
+           << " to " << avg_work * m_loadBalanceThreshold << "\n";
 
     if (avg_work < 1.0) {
-      OUTPUT << "ERROR: Model size too small to distribute over " << m_processorCount
+      OUTPUT << "ERROR: Model size too small to distribute over " << m_decomposition.m_processorCount
              << " processors.\n";
       std::exit(EXIT_FAILURE);
     }
@@ -256,12 +260,12 @@ namespace Iocgns {
     OUTPUT << "========================================================================\n";
 
     OUTPUT << "Pre-Splitting:\n";
-    // Split all blocks where block->work() > avg_work * load_balance_threshold
+    // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
     do {
       auto zone_new(m_structuredZones);
       split = false;
       for (auto zone : m_structuredZones) {
-        if (zone->is_active() && zone->work() > avg_work * load_balance_threshold) {
+        if (zone->is_active() && zone->work() > avg_work * m_loadBalanceThreshold) {
           auto children = zone->split(new_zone_id, zone->work() / avg_work);
           if (children.first != nullptr && children.second != nullptr) {
             zone_new.push_back(children.first);
@@ -284,7 +288,7 @@ namespace Iocgns {
                   return a->work() > b->work();
                 });
 
-      std::vector<size_t> work_vector(m_processorCount);
+      std::vector<size_t> work_vector(m_decomposition.m_processorCount);
 
       auto zone_new(m_structuredZones);
       for (auto &zone : m_structuredZones) {
@@ -301,11 +305,11 @@ namespace Iocgns {
 
       // Calculate workload ratio for each processor...
       px = 0; // Number of processors where workload ratio exceeds threshold.
-      std::vector<bool> exceeds(m_processorCount);
+      std::vector<bool> exceeds(m_decomposition.m_processorCount);
       for (size_t i = 0; i < work_vector.size(); i++) {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
-        OUTPUT << "Processor " << i << " workload ratio " << workload_ratio << "\n";
-        if (workload_ratio > load_balance_threshold) {
+        OUTPUT << "Processor " << i << " work: " << work_vector[i] << ", workload ratio: " << workload_ratio << "\n";
+        if (workload_ratio > m_loadBalanceThreshold) {
           exceeds[i] = true;
           px++;
         }
@@ -416,7 +420,7 @@ namespace Iocgns {
       global_element_count += total_block_elem;
     }
 
-    // Generate element_dist/node_dist --  size m_processorCount + 1
+    // Generate element_dist/node_dist --  size m_decomposition.m_processorCount + 1
     // processor p contains all elements/nodes from X_dist[p] .. X_dist[p+1]
     m_decomposition.generate_entity_distributions(global_cell_node_count, global_element_count);
 
@@ -441,9 +445,9 @@ namespace Iocgns {
     }
 
 #if DEBUG_OUTPUT
-    OUTPUT << "Processor " << m_myProcessor << " has " << decomp_elem_count()
+    OUTPUT << "Processor " << m_decomposition.m_processor << " has " << decomp_elem_count()
            << " elements; offset = " << decomp_elem_offset() << "\n";
-    OUTPUT << "Processor " << m_myProcessor << " has " << decomp_node_count()
+    OUTPUT << "Processor " << m_decomposition.m_processor << " has " << decomp_node_count()
            << " nodes; offset = " << decomp_node_offset() << ".\n";
 #endif
 
@@ -470,7 +474,7 @@ namespace Iocgns {
     float version = 0.0;
     Zoltan_Initialize(0, nullptr, &version);
 
-    Zoltan zz(m_comm);
+    Zoltan zz(m_decomposition.m_comm);
 
     // Register Zoltan Callback functions...
     zz.Set_Num_Obj_Fn(zoltan_num_obj, this);
@@ -687,12 +691,12 @@ namespace Iocgns {
     // The global element at index 'I' (0-based) is on block B
     // if global_block_index[B] <= I && global_block_index[B+1] < I
     // allocate and TODO: Fill
-    m_decomposition.fileBlockIndex.reserve(block_count + 1);
+    m_decomposition.m_fileBlockIndex.reserve(block_count + 1);
     for (auto block : m_elementBlocks) {
-      m_decomposition.fileBlockIndex.push_back(block.file_count());
+      m_decomposition.m_fileBlockIndex.push_back(block.file_count());
     }
-    m_decomposition.fileBlockIndex.push_back(0);
-    Ioss::Utils::generate_index(m_decomposition.fileBlockIndex);
+    m_decomposition.m_fileBlockIndex.push_back(0);
+    Ioss::Utils::generate_index(m_decomposition.m_fileBlockIndex);
 
     // Make sure 'sum' can fit in INT...
     INT tmp_sum = (INT)sum;
@@ -733,7 +737,7 @@ namespace Iocgns {
         INT                   blk_start = std::max(b_start, p_start) - b_start + 1;
         INT                   blk_end   = blk_start + overlap - 1;
 #if DEBUG_OUTPUT
-        OUTPUT << "Processor " << m_myProcessor << " has " << overlap
+        OUTPUT << "Processor " << m_decomposition.m_processor << " has " << overlap
                << " elements on element block " << block.name() << "\t(" << blk_start << " to "
                << blk_end << ")\n";
 #endif
@@ -790,7 +794,7 @@ namespace Iocgns {
       std::vector<cgsize_t> elemlist(elemlist_size);
 
       // Read the elemlists on root processor.
-      if (m_myProcessor == root) {
+      if (m_decomposition.m_processor == root) {
         size_t offset = 0;
         for (auto &sset : m_sideSets) {
 
@@ -809,7 +813,7 @@ namespace Iocgns {
           int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(elements),
                                       TOPTR(parent));
           if (ierr < 0) {
-            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_myProcessor);
+            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
           }
 
           // Move from 'parent' to 'elementlist'
@@ -822,7 +826,7 @@ namespace Iocgns {
       }
 
       // Broadcast this data to all other processors...
-      MPI_Bcast(TOPTR(elemlist), sizeof(cgsize_t) * elemlist.size(), MPI_BYTE, root, m_comm);
+      MPI_Bcast(TOPTR(elemlist), sizeof(cgsize_t) * elemlist.size(), MPI_BYTE, root, m_decomposition.m_comm);
 
       // Each processor now has a complete list of all elems in all
       // sidesets.
@@ -858,14 +862,14 @@ namespace Iocgns {
           has_elems_local[i] = m_sideSets[i].entitylist_map.empty() ? 0 : 1;
         }
 
-        std::vector<int> has_elems(m_sideSets.size() * m_processorCount);
+        std::vector<int> has_elems(m_sideSets.size() * m_decomposition.m_processorCount);
         MPI_Allgather(TOPTR(has_elems_local), has_elems_local.size(), MPI_INT, TOPTR(has_elems),
-                      has_elems_local.size(), MPI_INT, m_comm);
+                      has_elems_local.size(), MPI_INT, m_decomposition.m_comm);
 
         for (size_t i = 0; i < m_sideSets.size(); i++) {
-          m_sideSets[i].hasEntities.resize(m_processorCount);
-          m_sideSets[i].root_ = m_processorCount;
-          for (int p = 0; p < m_processorCount; p++) {
+          m_sideSets[i].hasEntities.resize(m_decomposition.m_processorCount);
+          m_sideSets[i].root_ = m_decomposition.m_processorCount;
+          for (int p = 0; p < m_decomposition.m_processorCount; p++) {
             if (p < m_sideSets[i].root_ && has_elems[p * m_sideSets.size() + i] != 0) {
               m_sideSets[i].root_ = p;
             }
@@ -902,14 +906,14 @@ namespace Iocgns {
           // Now adjust start for 1-based node numbering and the start of this zone...
           start  = start - beg + 1;
           finish = finish - beg;
-          OUTPUT << m_myProcessor << ": reading " << count << " nodes from zone " << zone
+          OUTPUT << m_decomposition.m_processor << ": reading " << count << " nodes from zone " << zone
                  << " starting at " << start << " with an offset of " << offset << " ending at "
                  << finish << "\n";
 
           int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
                                    CG_RealDouble, &start, &finish, &data[offset]);
           if (ierr < 0) {
-            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_myProcessor);
+            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
           }
           offset += count;
         }
@@ -978,7 +982,7 @@ namespace Iocgns {
                                                         INT *ioss_data) const
   {
     std::vector<INT> element_side;
-    if (m_myProcessor == sset.root_) {
+    if (m_decomposition.m_processor == sset.root_) {
       int base = 1;
 
       int                   nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
@@ -1000,7 +1004,7 @@ namespace Iocgns {
       nodes.shrink_to_fit();
 
       if (ierr < 0) {
-        Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_myProcessor);
+        Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
       }
 
       // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
