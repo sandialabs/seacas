@@ -80,15 +80,15 @@ namespace Ioss {
   }
 
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim, Ioss::IJK_t &ordinal,
-                                   Ioss::IJK_t &offset, Ioss::IJK_t &global_ordinal)
-    : EntityBlock(io_database, my_name, "Hex8", ordinal[0] * ordinal[1] * ordinal[2]),
-      m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
-      m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
-      m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]), m_nodeOffset(0),
-      m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
-      m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-		  index_dim)
+                                   int index_dim, Ioss::IJK_t &ordinal, Ioss::IJK_t &offset,
+                                   Ioss::IJK_t &global_ordinal)
+      : EntityBlock(io_database, my_name, "Hex8", ordinal[0] * ordinal[1] * ordinal[2]),
+        m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
+        m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
+        m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]), m_nodeOffset(0),
+        m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
+                    index_dim)
   {
     add_properties_and_fields(index_dim);
   }
@@ -260,7 +260,7 @@ namespace Ioss {
   Ioss::IJK_t ZoneConnectivity::transform(const Ioss::IJK_t &index_1) const
   {
     auto t_matrix = transform_matrix();
-    
+
     Ioss::IJK_t diff;
     Ioss::IJK_t donor;
 

@@ -133,9 +133,9 @@ namespace Iocgns {
     if (myProcessor == 0) {
       std::cout << "CGNS ParallelDatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n"
 #if CG_BUILD_PARALLEL
-		<< "                        using the parallel CGNS library and API.\n";
+                << "                        using the parallel CGNS library and API.\n";
 #else
-		<< "                        using the serial CGNS library and API.\n";
+                << "                        using the serial CGNS library and API.\n";
 #endif
     }
     if (CG_SIZEOF_SIZE == 64) {
@@ -151,8 +151,8 @@ namespace Iocgns {
     if (cgnsFilePtr < 0) {
       if (is_input()) {
 #if CG_BUILD_PARALLEL
-	cgp_mpi_comm(util().communicator());
-	cgp_pio_mode(CGP_COLLECTIVE);
+        cgp_mpi_comm(util().communicator());
+        cgp_pio_mode(CGP_COLLECTIVE);
         int ierr = cgp_open(get_filename().c_str(), CG_MODE_READ, &cgnsFilePtr);
 #else
         int ierr = cg_open(get_filename().c_str(), CG_MODE_READ, &cgnsFilePtr);
@@ -368,7 +368,7 @@ namespace Iocgns {
         auto block_name = zone->m_name;
 
         Ioss::StructuredBlock *block = nullptr;
-        Ioss::IJK_t zeros{{0, 0, 0}};
+        Ioss::IJK_t            zeros{{0, 0, 0}};
         for (auto &pzone : zones) {
           if (pzone->m_proc == myProcessor && pzone->m_adam == zone) {
             // Create a non-empty structured block on this processor...
@@ -666,7 +666,8 @@ namespace Iocgns {
       }
 
       assert(num_to_get == 0 ||
-	     num_to_get == (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+             num_to_get ==
+                 (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       double *rdata = static_cast<double *>(data);
 
       if (field.get_name() == "mesh_model_coordinates_x") {
@@ -718,9 +719,9 @@ namespace Iocgns {
         // 'data'
         std::vector<double> coord(num_to_get);
 #if CG_BUILD_PARALLEL
-	int ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, TOPTR(coord));
+        int ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, TOPTR(coord));
 #else
-	int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax,
+        int ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax,
                                  TOPTR(coord));
 #endif
         if (ierr < 0) {
@@ -734,10 +735,10 @@ namespace Iocgns {
 
         if (phys_dimension >= 2) {
 #if CG_BUILD_PARALLEL
-	  ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 2, rmin, rmax, TOPTR(coord));
+          ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 2, rmin, rmax, TOPTR(coord));
 #else
-	  ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, rmin, rmax,
-				   TOPTR(coord));
+          ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, rmin, rmax,
+                               TOPTR(coord));
 #endif
           if (ierr < 0) {
             Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
@@ -751,7 +752,7 @@ namespace Iocgns {
 
         if (phys_dimension == 3) {
 #if CG_BUILD_PARALLEL
-	  ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 3, rmin, rmax, TOPTR(coord));
+          ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 3, rmin, rmax, TOPTR(coord));
 #else
           ierr = cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, rmin, rmax,
                                TOPTR(coord));

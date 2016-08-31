@@ -48,10 +48,9 @@ namespace Ioss {
   struct ZoneConnectivity
   {
     ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const Ioss::IJK_t p_transform,
-                     const Ioss::IJK_t range_beg, const Ioss::IJK_t range_end,
-                     const Ioss::IJK_t donor_beg, const Ioss::IJK_t donor_end,
-		     bool owns_nodes, bool intra_block=false)
+                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
+                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
+                     const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
@@ -155,8 +154,7 @@ namespace Ioss {
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
                     int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
-                    Ioss::IJK_t &ordinal, Ioss::IJK_t &offset,
-                    Ioss::IJK_t &global_ordinal);
+                    Ioss::IJK_t &ordinal, Ioss::IJK_t &offset, Ioss::IJK_t &global_ordinal);
 
     ~StructuredBlock() override;
 

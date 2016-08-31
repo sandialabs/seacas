@@ -8,8 +8,8 @@ namespace {
   {
     Range(int a, int b) : m_beg(a < b ? a : b), m_end(a < b ? b : a), m_reversed(b < a) {}
 
-    int begin() const {return m_reversed ? m_end : m_beg;}
-    int end()   const {return m_reversed ? m_beg : m_end;}
+    int  begin() const { return m_reversed ? m_end : m_beg; }
+    int  end() const { return m_reversed ? m_beg : m_end; }
     int  m_beg;
     int  m_end;
     bool m_reversed;
@@ -147,8 +147,9 @@ namespace {
         child->m_zoneConnectivity.push_back(zgc);
       }
       else {
-        OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '"
-               << zgc.m_connectionName << " does not overlap." << "\n";
+        OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
+               << " does not overlap."
+               << "\n";
       }
     }
   }
@@ -165,8 +166,8 @@ namespace {
     // via the m_offset[] field on the local block.
     Ioss::IJK_t range_beg{{1 + c1->m_offset[0], 1 + c1->m_offset[1], 1 + c1->m_offset[2]}};
     Ioss::IJK_t range_end{{c1->m_ordinal[0] + c1->m_offset[0] + 1,
-                                  c1->m_ordinal[1] + c1->m_offset[1] + 1,
-                                  c1->m_ordinal[2] + c1->m_offset[2] + 1}};
+                           c1->m_ordinal[1] + c1->m_offset[1] + 1,
+                           c1->m_ordinal[2] + c1->m_offset[2] + 1}};
 
     Ioss::IJK_t donor_range_beg(range_beg);
     Ioss::IJK_t donor_range_end(range_end);
@@ -178,20 +179,20 @@ namespace {
     auto c2_base =
         Ioss::Utils::to_string(c2->m_adam->m_zone) + "_" + Ioss::Utils::to_string(c2->m_zone);
 
-    //OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
+    // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
                                         donor_range_end, c1->m_zone < c2->m_zone, true);
     c1->m_zoneConnectivity.back().m_sameRange = true;
-    //OUTPUT << c1->m_zoneConnectivity.back() << "\n";
+    // OUTPUT << c1->m_zoneConnectivity.back() << "\n";
 
-    //OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
+    // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
                                         range_end, c2->m_zone < c1->m_zone, true);
     c2->m_zoneConnectivity.back().m_sameRange = true;
-    //OUTPUT << c2->m_zoneConnectivity.back() << "\n";
+    // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
 }
 
@@ -200,10 +201,12 @@ namespace Iocgns {
   // ========================================================================
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
-  std::pair<StructuredZoneData *, StructuredZoneData *> StructuredZoneData::split(int zone_id, double ratio)
+  std::pair<StructuredZoneData *, StructuredZoneData *> StructuredZoneData::split(int zone_id,
+                                                                                  double ratio)
   {
     assert(is_active());
-    if (ratio > 1.0) ratio = 1.0 / ratio;
+    if (ratio > 1.0)
+      ratio = 1.0 / ratio;
 
     // Find ordinal with largest value... Split along that ordinal
     int ordinal = 0;
@@ -227,7 +230,7 @@ namespace Iocgns {
     if (m_child1->m_ordinal[ordinal] == 0) {
       m_child1->m_ordinal[ordinal] = 1;
     }
-    m_child1->m_offset           = m_offset; // Child1 offsets the same as parent;
+    m_child1->m_offset = m_offset; // Child1 offsets the same as parent;
 
     m_child1->m_zone         = zone_id++;
     m_child1->m_adam         = m_adam;
@@ -239,7 +242,7 @@ namespace Iocgns {
     m_child2->m_ordinal          = m_ordinal;
     m_child2->m_ordinal[ordinal] = m_ordinal[ordinal] - m_child1->m_ordinal[ordinal];
     assert(m_child2->m_ordinal[ordinal] > 0);
-    m_child2->m_offset           = m_offset;
+    m_child2->m_offset = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
     m_child2->m_zone         = zone_id++;
@@ -249,19 +252,19 @@ namespace Iocgns {
     m_child2->m_sibling      = m_child1;
 
     OUTPUT << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
-              << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work()
-              << " with offset " << m_offset[0] << " " << m_offset[1] << " " << m_offset[2]
-              << " split along ordinal " << ordinal << " with ratio " << ratio << "\n"
-              << "\tChild 1: Zone " << m_child1->m_zone << "(" << m_child1->m_adam->m_zone
-              << ") with intervals " << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1]
-              << " " << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "
-              << m_child1->m_offset[0] << " " << m_child1->m_offset[1] << " "
-              << m_child1->m_offset[2] << "\n"
-              << "\tChild 2: Zone " << m_child2->m_zone << "(" << m_child1->m_adam->m_zone
-              << ") with intervals " << m_child2->m_ordinal[0] << " " << m_child2->m_ordinal[1]
-              << " " << m_child2->m_ordinal[2] << " work = " << m_child2->work() << " with offset "
-              << m_child2->m_offset[0] << " " << m_child2->m_offset[1] << " "
-              << m_child2->m_offset[2] << "\n";
+           << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work() << " with offset "
+           << m_offset[0] << " " << m_offset[1] << " " << m_offset[2] << " split along ordinal "
+           << ordinal << " with ratio " << ratio << "\n"
+           << "\tChild 1: Zone " << m_child1->m_zone << "(" << m_child1->m_adam->m_zone
+           << ") with intervals " << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1] << " "
+           << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "
+           << m_child1->m_offset[0] << " " << m_child1->m_offset[1] << " " << m_child1->m_offset[2]
+           << "\n"
+           << "\tChild 2: Zone " << m_child2->m_zone << "(" << m_child1->m_adam->m_zone
+           << ") with intervals " << m_child2->m_ordinal[0] << " " << m_child2->m_ordinal[1] << " "
+           << m_child2->m_ordinal[2] << " work = " << m_child2->work() << " with offset "
+           << m_child2->m_offset[0] << " " << m_child2->m_offset[1] << " " << m_child2->m_offset[2]
+           << "\n";
 
     // Add ZoneGridConnectivity instance to account for split...
     add_split_zgc(this, m_child1, m_child2, ordinal);

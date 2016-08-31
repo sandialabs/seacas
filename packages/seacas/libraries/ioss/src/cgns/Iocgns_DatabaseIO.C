@@ -172,7 +172,7 @@ namespace Iocgns {
       char donorname[33];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t      transform;
+      Ioss::IJK_t transform;
 
       cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                    donor_range.data(), transform.data());

@@ -204,8 +204,8 @@ namespace Ioss {
 
     m_elementDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalElementCount,
                                          &m_elementOffset, &m_elementCount);
-    m_nodeDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalNodeCount, &m_nodeOffset,
-                                      &m_nodeCount);
+    m_nodeDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalNodeCount,
+                                      &m_nodeOffset, &m_nodeCount);
   }
 
   template <typename INT>
@@ -911,7 +911,7 @@ namespace Ioss {
     if (global_id_size == 1) {
       for (size_t i = 0; i < export_count; i++) {
         // flag all elements to be exported...
-        size_t elem                    = export_global_ids[i];
+        size_t elem                      = export_global_ids[i];
         elements[elem - m_elementOffset] = 1;
       }
     }
@@ -921,7 +921,7 @@ namespace Ioss {
 
       for (size_t i = 0; i < export_count; i++) {
         // flag all elements to be exported...
-        size_t elem                    = export_glob[i];
+        size_t elem                      = export_glob[i];
         elements[elem - m_elementOffset] = 1;
       }
     }
@@ -1218,7 +1218,7 @@ namespace Ioss {
     std::vector<INT> recv_comm_map_disp(recv_comm_map_count);
     Ioss::Utils::generate_index(recv_comm_map_disp);
     m_nodeCommMap.resize(recv_comm_map_disp[m_processorCount - 1] +
-                       recv_comm_map_count[m_processorCount - 1]);
+                         recv_comm_map_count[m_processorCount - 1]);
     Ioss::MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, m_nodeCommMap,
                        recv_comm_map_count, recv_comm_map_disp, m_comm);
 
@@ -1227,7 +1227,8 @@ namespace Ioss {
       m_nodeCommMap[i] = node_global_to_local(m_nodeCommMap[i] + 1);
     }
 #if IOSS_DEBUG_OUTPUT
-    std::cerr << "Processor " << m_processor << " has " << m_nodeCommMap.size() << " shared nodes\n";
+    std::cerr << "Processor " << m_processor << " has " << m_nodeCommMap.size()
+              << " shared nodes\n";
 #endif
   }
 
@@ -1266,7 +1267,7 @@ namespace Ioss {
 
       // Transfer all local data from file_data to ioss_data...
       for (size_t i = 0; i < localElementMap.size(); i++) {
-        size_t index                           = localElementMap[i];
+        size_t index                             = localElementMap[i];
         ioss_data[m_importPreLocalElemIndex + i] = file_data[index];
       }
 
