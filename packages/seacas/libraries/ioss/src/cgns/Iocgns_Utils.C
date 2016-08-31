@@ -1,6 +1,12 @@
 #include <Ioss_StructuredBlock.h>
 #include <cgns/Iocgns_Utils.h>
 
+#include <cgnslib.h>
+#include <cgnsconfig.h>
+#if CG_BUILD_PARALLEL
+#include <pcgnslib.h>
+#endif
+
 namespace {
   struct Range
   {
@@ -92,7 +98,11 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
          << "' in function '" << function << "' on processor " << processor
          << ". Please report to gdsjaar@sandia.gov if you need help.";
   if (cgnsid > 0) {
+#if CG_BUILD_PARALLEL
+    cgp_close(cgnsid);
+#else
     cg_close(cgnsid);
+#endif
   }
   IOSS_ERROR(errmsg);
 }

@@ -5,6 +5,11 @@
 #include <cgns/Iocgns_DecompositionData.h>
 #include <cgns/Iocgns_Utils.h>
 
+#include <cgnsconfig.h>
+#if CG_BUILD_PARALLEL
+#include <pcgnslib.h>
+#endif
+
 #include <Ioss_TerminalColor.h>
 
 #include <algorithm>
@@ -40,7 +45,7 @@ namespace {
     *ierr = ZOLTAN_OK;
     return zdata->decomp_elem_count();
   }
-
+  
   void zoltan_obj_list(void *data, int ngid_ent, int nlid_ent, ZOLTAN_ID_PTR gids,
                        ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)
   {
@@ -144,9 +149,10 @@ namespace {
         Ioss::IJK_t donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
         Ioss::IJK_t donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
 
+#if defined(IOSS_DEBUG_OUTPUT)
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
                << "\n";
-
+#endif
 	bool owns_nodes = zone < donor_zone || donor_zone == -1;
         zone_data->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone,
                                                    transform, range_beg, range_end, donor_beg,
@@ -257,9 +263,10 @@ namespace Iocgns {
       std::exit(EXIT_FAILURE);
     }
 
+#if defined(IOSS_DEBUG_OUTPUT)
     OUTPUT << "========================================================================\n";
-
     OUTPUT << "Pre-Splitting:\n";
+#endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
     do {
       auto zone_new(m_structuredZones);
@@ -277,8 +284,9 @@ namespace Iocgns {
       }
       std::swap(zone_new, m_structuredZones);
     } while (split);
+#if defined(IOSS_DEBUG_OUTPUT)
     OUTPUT << "========================================================================\n";
-
+#endif
     do {
       // Sort zones based on work.  Most work first..
       // TODO: Possibly filter 'zones' down to only active zones to
@@ -298,8 +306,10 @@ namespace Iocgns {
           size_t proc  = proc_with_minimum_work(work_vector);
           zone->m_proc = proc;
           work_vector[proc] += zone->work();
+#if defined(IOSS_DEBUG_OUTPUT)
           OUTPUT << "Assigning zone " << zone->m_zone << " with work " << zone->work()
                  << " to processor " << proc << "\n";
+#endif
         }
       }
 
@@ -308,13 +318,17 @@ namespace Iocgns {
       std::vector<bool> exceeds(m_decomposition.m_processorCount);
       for (size_t i = 0; i < work_vector.size(); i++) {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
+#if defined(IOSS_DEBUG_OUTPUT)
         OUTPUT << "Processor " << i << " work: " << work_vector[i] << ", workload ratio: " << workload_ratio << "\n";
+#endif
         if (workload_ratio > m_loadBalanceThreshold) {
           exceeds[i] = true;
           px++;
         }
       }
+#if defined(IOSS_DEBUG_OUTPUT)
       OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
+#endif
       num_split = 0;
       if (px > 0) {
         for (auto zone : m_structuredZones) {
@@ -342,8 +356,10 @@ namespace Iocgns {
       }
       auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
+#if defined(IOSS_DEBUG_OUTPUT)
       OUTPUT << "Number of active zones = " << active << ", average work = " << avg_work << "\n";
       OUTPUT << "========================================================================\n";
+#endif
     } while (px > 0 && num_split > 0);
 
     std::sort(m_structuredZones.begin(), m_structuredZones.end(),
@@ -361,12 +377,14 @@ namespace Iocgns {
     for (auto &zone : m_structuredZones) {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
+#if defined(IOSS_DEBUG_OUTPUT)
         OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
                << ", Adam zone = " << zone->m_adam->m_zone << "\n";
         auto zgcs = zone->m_zoneConnectivity;
         for (auto &zgc : zgcs) {
           OUTPUT << zgc << "\n";
         }
+#endif
       }
     }
 
@@ -376,7 +394,9 @@ namespace Iocgns {
       }
     }
 
+#if defined(IOSS_DEBUG_OUTPUT)
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
+#endif
   }
 
   template <typename INT> void DecompositionData<INT>::decompose_unstructured(int filePtr)
@@ -742,8 +762,13 @@ namespace Iocgns {
                << blk_end << ")\n";
 #endif
         block.fileSectionOffset = blk_start;
+#if CG_BUILD_PARALLEL
+        cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end,
+                                 TOPTR(connectivity));
+#else
         cg_elements_partial_read(filePtr, base, zone, section, blk_start, blk_end,
                                  TOPTR(connectivity), nullptr);
+#endif
         size_t el          = 0;
         INT    zone_offset = block.zoneNodeOffset;
 
@@ -906,12 +931,17 @@ namespace Iocgns {
           // Now adjust start for 1-based node numbering and the start of this zone...
           start  = start - beg + 1;
           finish = finish - beg;
+#if defined(IOSS_DEBUG_OUTPUT)
           OUTPUT << m_decomposition.m_processor << ": reading " << count << " nodes from zone " << zone
                  << " starting at " << start << " with an offset of " << offset << " ending at "
                  << finish << "\n";
-
-          int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
+#endif
+#if CG_BUILD_PARALLEL
+            int ierr = cgp_coord_read_data(filePtr, base, zone, direction+1, &start, &finish, &data[offset]);
+#else
+	    int ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(),
                                    CG_RealDouble, &start, &finish, &data[offset]);
+#endif
           if (ierr < 0) {
             Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
           }
@@ -1031,9 +1061,14 @@ namespace Iocgns {
     auto                  blk = m_elementBlocks[blk_seq];
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int                   base = 1;
+#if CG_BUILD_PARALLEL
+    cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
+			   blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
+#else
     cg_elements_partial_read(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
                              blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn),
                              nullptr);
+#endif
     // Map from zone-local node numbers to global implicit
     for (auto &node : file_conn) {
       node += blk.zoneNodeOffset;
