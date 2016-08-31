@@ -1,4 +1,5 @@
 #include <Ioss_TerminalColor.h>
+#include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
 
 #define OUTPUT std::cerr
@@ -200,9 +201,10 @@ namespace Iocgns {
   // ========================================================================
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
-  std::pair<StructuredZoneData *, StructuredZoneData *> StructuredZoneData::split(int zone_id)
+  std::pair<StructuredZoneData *, StructuredZoneData *> StructuredZoneData::split(int zone_id, double ratio)
   {
     assert(is_active());
+    if (ratio > 1.0) ratio = 1.0 / ratio;
 
     // Find ordinal with largest value... Split along that ordinal
     int ordinal = 0;
@@ -222,7 +224,10 @@ namespace Iocgns {
 
     m_child1->m_name             = m_name + "_c1";
     m_child1->m_ordinal          = m_ordinal;
-    m_child1->m_ordinal[ordinal] = m_child1->m_ordinal[ordinal] / 2;
+    m_child1->m_ordinal[ordinal] = m_child1->m_ordinal[ordinal] * ratio;
+    if (m_child1->m_ordinal[ordinal] == 0) {
+      m_child1->m_ordinal[ordinal] = 1;
+    }
     m_child1->m_offset           = m_offset; // Child1 offsets the same as parent;
 
     m_child1->m_zone         = zone_id++;
@@ -234,6 +239,7 @@ namespace Iocgns {
     m_child2->m_name             = m_name + "_c2";
     m_child2->m_ordinal          = m_ordinal;
     m_child2->m_ordinal[ordinal] = m_ordinal[ordinal] - m_child1->m_ordinal[ordinal];
+    assert(m_child2->m_ordinal[ordinal] > 0);
     m_child2->m_offset           = m_offset;
     m_child2->m_offset[ordinal] += m_child1->m_ordinal[ordinal];
 
@@ -246,7 +252,7 @@ namespace Iocgns {
     std::cerr << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
               << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work()
               << " with offset " << m_offset[0] << " " << m_offset[1] << " " << m_offset[2]
-              << " split along ordinal " << ordinal << "\n"
+              << " split along ordinal " << ordinal << " with ratio " << ratio << "\n"
               << "\tChild 1: Zone " << m_child1->m_zone << "(" << m_child1->m_adam->m_zone
               << ") with intervals " << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1]
               << " " << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "

@@ -262,7 +262,7 @@ namespace Iocgns {
       split = false;
       for (auto zone : m_structuredZones) {
         if (zone->is_active() && zone->work() > avg_work * load_balance_threshold) {
-          auto children = zone->split(new_zone_id);
+          auto children = zone->split(new_zone_id, zone->work() / avg_work);
           if (children.first != nullptr && children.second != nullptr) {
             zone_new.push_back(children.first);
             zone_new.push_back(children.second);
