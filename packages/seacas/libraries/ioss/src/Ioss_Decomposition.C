@@ -158,7 +158,7 @@ namespace {
     Ioss::ParallelUtils par_util(comm);
     common_nodes = par_util.global_minmax(common_nodes, Ioss::ParallelUtils::DO_MIN);
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Setting common_nodes to " << common_nodes << "\n";
 #endif
     return common_nodes;
@@ -406,7 +406,7 @@ namespace Ioss {
       sums += send_count[p];
     }
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Processor " << m_processor << " communicates " << sumr << " nodes from and "
               << sums << " nodes to other processors\n";
 #endif
@@ -675,7 +675,7 @@ namespace Ioss {
     Ioss::MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex, importElementMap,
                        importElementCount, importElementIndex, m_comm);
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Processor " << m_processor << ":\t" << m_elementCount - exp_size << " local, "
               << imp_size << " imported and " << exp_size << " exported elements\n";
 #endif
@@ -710,7 +710,7 @@ namespace Ioss {
           ParMETIS_V3_PartMeshKway(element_dist, pointer, adjacency, elm_wgt, &wgt_flag, &num_flag,
                                    &ncon, &common_nodes, &nparts, TOPTR(tp_wgts), TOPTR(ub_vec),
                                    TOPTR(options), &edge_cuts, elem_partition, &m_comm);
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
       std::cerr << "Edge Cuts = " << edge_cuts << "\n";
 #endif
       if (rc != METIS_OK) {
@@ -744,7 +744,7 @@ namespace Ioss {
                                     &ncon, &nparts, TOPTR(tp_wgts), TOPTR(ub_vec), TOPTR(options),
                                     &edge_cuts, elem_partition, &m_comm);
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
       std::cerr << "Edge Cuts = " << edge_cuts << "\n";
 #endif
       METIS_Free(dual_xadj);
@@ -817,7 +817,7 @@ namespace Ioss {
       exit(EXIT_FAILURE);
     }
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Processor " << m_processor << ":\t" << m_elementCount - num_export << " local, "
               << num_import << " imported and " << num_export << " exported elements\n";
 #endif
@@ -1107,7 +1107,7 @@ namespace Ioss {
 
 // Map that converts nodes from the global index (1-based) to a
 // local-per-processor index (1-based)
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << m_processor << ":\tNode Count = " << nodes.size() << "\n";
 #endif
     nodeGTL.swap(nodes);
@@ -1226,7 +1226,7 @@ namespace Ioss {
     for (size_t i = 0; i < m_nodeCommMap.size(); i += 2) {
       m_nodeCommMap[i] = node_global_to_local(m_nodeCommMap[i] + 1);
     }
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Processor " << m_processor << " has " << m_nodeCommMap.size() << " shared nodes\n";
 #endif
   }

@@ -274,7 +274,7 @@ namespace Iocgns {
         auto donor_iter = m_zoneNameMap.find(donorname);
         if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
           num_shared += npnts;
-#if defined(DEBUG_OUTPUT)
+#if defined(IOSS_DEBUG_OUTPUT)
           std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
                     << "\n";
 #endif
@@ -339,7 +339,7 @@ namespace Iocgns {
       if (parent_flag == 0 && total_elements > 0) {
         total_elements -= num_entity;
         std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
-#if defined(DEBUG_OUTPUT)
+#if defined(IOSS_DEBUG_OUTPUT)
         std::cout << "Added block " << zone_name << ": CGNS topology = '"
                   << cg_ElementTypeName(e_type) << "', IOSS topology = '" << element_topo
                   << "' with " << num_entity << " elements\n";
@@ -380,7 +380,7 @@ namespace Iocgns {
           block_name += "/";
           block_name += section_name;
           std::string face_topo = Utils::map_cgns_to_topology_type(e_type);
-#if defined(DEBUG_OUTPUT)
+#if defined(IOSS_DEBUG_OUTPUT)
           std::cout << "Added sideset " << block_name << " of topo " << face_topo << " with "
                     << num_entity << " faces\n";
 #endif

@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <mpi.h>
 
-#define DEBUG_OUTPUT 1
+#define IOSS_DEBUG_OUTPUT 1
 namespace {
   int rank = 0;
 #define OUTPUT                                                                                     \
@@ -444,7 +444,7 @@ namespace Iocgns {
       }
     }
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "Processor " << m_decomposition.m_processor << " has " << decomp_elem_count()
            << " elements; offset = " << decomp_elem_offset() << "\n";
     OUTPUT << "Processor " << m_decomposition.m_processor << " has " << decomp_node_count()
@@ -736,7 +736,7 @@ namespace Iocgns {
         std::vector<cgsize_t> connectivity(overlap * element_nodes);
         INT                   blk_start = std::max(b_start, p_start) - b_start + 1;
         INT                   blk_end   = blk_start + overlap - 1;
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
         OUTPUT << "Processor " << m_decomposition.m_processor << " has " << overlap
                << " elements on element block " << block.name() << "\t(" << blk_start << " to "
                << blk_end << ")\n";

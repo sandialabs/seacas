@@ -238,7 +238,7 @@ namespace Iocgns {
     int i    = 0;
     for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
-#if defined(DEBUG_OUTPUT)
+#if defined(IOSS_DEBUG_OUTPUT)
       std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
                 << "' with " << block.ioss_count() << " elements\n";
 #endif
@@ -262,7 +262,7 @@ namespace Iocgns {
         block_name += "/";
         block_name += sset.name();
         std::string face_topo = sset.topologyType;
-#if defined(DEBUG_OUTPUT)
+#if defined(IOSS_DEBUG_OUTPUT)
         std::cout << "Processor " << myProcessor << ": Added sideblock " << block_name
                   << " of topo " << face_topo << " with " << sset.ioss_count() << " faces\n";
 #endif

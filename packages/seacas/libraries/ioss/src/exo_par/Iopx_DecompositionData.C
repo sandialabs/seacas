@@ -167,7 +167,7 @@ namespace Iopx {
 
     generate_adjacency_list(filePtr, m_decomposition);
 
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Processor " << myProcessor << " has " << decomp_elem_count()
               << " elements; offset = " << decomp_elem_offset() << "\n";
     std::cerr << "Processor " << myProcessor << " has " << decomp_node_count()
@@ -311,7 +311,7 @@ namespace Iopx {
         // Get the connectivity (raw) for this portion of elements...
         std::vector<INT> connectivity(overlap * element_nodes);
         size_t           blk_start = std::max(b_start, p_start) - b_start + 1;
-#if DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
         std::cerr << "Processor " << myProcessor << " has " << overlap
                   << " elements on element block " << id << "\n";
 #endif
