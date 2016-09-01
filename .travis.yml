@@ -24,7 +24,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install cmake
   - sudo apt-get -y install gfortran
-  - sudo apt-get -y install libcgns-dev
   - sudo apt-get -y install libmatio-dev
   - sudo apt-get -y install libz-dev
   - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
