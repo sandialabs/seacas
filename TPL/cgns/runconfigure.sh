@@ -1,8 +1,10 @@
 #! /bin/sh
 EXTRA_ARGS=$@
 
-MPI=ON
-#MPI=OFF
+#MPI="${MPI:-ON}"
+MPI="${MPI:-OFF}"
+
+echo "MPI set to ${MPI}"
 
 if [ "X$ACCESS" == "X" ] ; then
   echo "ERROR: Please set the ACCESS environment variable before executing this script."
