@@ -23,8 +23,11 @@ git clone https://github.com/cgns/CGNS
 cd CGNS
 mkdir build
 cd build
-sh MPI=ON ../../runconfigur.sh
+MPI=ON sh ../../runconfigure.sh
 make && sudo make install
+
+cd $ACCESS
+pwd
 
 mpiexec --version
 mpiexec --help
