@@ -42,6 +42,7 @@
 #include <cstdio>  // for printf, nullptr, fprintf, etc
 #include <cstdlib> // for free, exit, malloc
 #include <cstring> // for strcmp
+#include <stdexcept>
 #include <iostream>
 
 #include "add_to_log.h" // for add_to_log
@@ -363,15 +364,20 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
   printf("Time to generate graph: %fs\n", time2 - time1);
 
   /* Generate load balance */
-  time1 = get_time();
-  if (!generate_loadbal(&machine, &problem, &mesh, &lb, &solver, &graph, &weight, &sphere, argc,
-                        argv)) {
-    Gen_Error(0, "fatal: could not generate load balance");
-    error_report();
-    exit(1);
+  try {
+    time1 = get_time();
+    if (!generate_loadbal(&machine, &problem, &mesh, &lb, &solver, &graph, &weight, &sphere, argc,
+			  argv)) {
+      Gen_Error(0, "fatal: could not generate load balance");
+      error_report();
+      exit(1);
+    }
+    time2 = get_time();
+    printf("Time to generate load balance: %fs\n", time2 - time1);
   }
-  time2 = get_time();
-  printf("Time to generate load balance: %fs\n", time2 - time1);
+  catch (const std::exception &e) {
+    std::cerr << "NEM_SLICE: Exception in generate_loadbal: " << e.what();
+  }
 
   /* free up memory */
   if (sphere.adjust)
