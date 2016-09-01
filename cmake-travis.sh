@@ -5,6 +5,20 @@ else
    BUILDDIR=build
 fi
 
+ACCESS=`pwd`
+
+# ==================== INSTALL CGNS ====================
+cd TPL/cgns
+git clone https://github.com/cgns/CGNS
+cd CGNS
+mkdir build
+cd build
+MPI=OFF sh ../../runconfigure.sh
+make && sudo make install
+
+cd $ACCESS
+pwd
+
 mkdir $BUILDDIR && cd $BUILDDIR
 
 cmake \
