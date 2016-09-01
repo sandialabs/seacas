@@ -5,6 +5,20 @@ else
    BUILDDIR=build
 fi
 
+ACCESS=`pwd`
+
+# ==================== INSTALL CGNS ====================
+cd TPL/cgns
+git clone https://github.com/cgns/CGNS
+cd CGNS
+mkdir build
+cd build
+MPI=OFF sh ../../runconfigure.sh
+make && sudo make install
+
+cd $ACCESS
+pwd
+
 mkdir $BUILDDIR && cd $BUILDDIR
 
 cmake \
@@ -17,6 +31,7 @@ cmake \
   -DSEACASProj_ENABLE_TESTS:BOOL=ON \
   -DSEACASProj_USE_GNUINSTALLDIRS:BOOL=ON \
   -DTPL_ENABLE_CGNS:BOOL=ON \
+  -DCGNS_ROOT:PATH=${ACCESS} \
   -DTPL_ENABLE_Matio:BOOL=ON \
   -DTPL_ENABLE_METIS:BOOL=OFF \
   -DTPL_ENABLE_ParMETIS:BOOL=OFF \
