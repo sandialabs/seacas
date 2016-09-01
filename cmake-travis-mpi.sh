@@ -18,6 +18,14 @@ CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fs
 cd $ACCESS
 pwd
 
+cd TPL/cgns
+git clone https://github.com/cgns/CGNS
+cd CGNS
+mkdir build
+cd build
+sh MPI=ON ../../runconfigur.sh
+make && sudo make install
+
 mpiexec --version
 mpiexec --help
 
