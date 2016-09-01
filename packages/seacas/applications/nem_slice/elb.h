@@ -243,7 +243,7 @@ struct Sphere_Info
 template <typename INT> struct Graph_Description
 {
   size_t                        nadj;
-  size_t                        max_nsur;
+  int                           max_nsur;
   std::vector<INT>              adj;
   std::vector<INT>              start;
   std::vector<std::vector<INT>> sur_elem;
