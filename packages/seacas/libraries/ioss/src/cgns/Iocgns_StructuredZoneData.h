@@ -35,12 +35,10 @@
 #ifndef IOCGNS_STRUCTUREDZONEDATA_H
 #define IOCGNS_STRUCTUREDZONEDATA_H
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_StructuredBlock.h>
-#include <array>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <iostream>
 
 namespace Iocgns {
   class StructuredZoneData
