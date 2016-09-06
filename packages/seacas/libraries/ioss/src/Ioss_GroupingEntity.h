@@ -112,7 +112,7 @@ namespace Ioss {
 
     /** \brief Set the name of the entity.
      *
-     *  \param[in] name The new name of the entity.
+     *  \param[in] new_name The new name of the entity.
      */
     void set_name(const std::string &new_name) { entityName = new_name; }
 
@@ -217,7 +217,7 @@ namespace Ioss {
      */
     Ioss::Field::BasicType field_int_type() const
     {
-      if (get_database() == nullptr || get_database()->int_byte_size_api() == 4) {
+      if (database_ == nullptr || get_database()->int_byte_size_api() == 4) {
         return Ioss::Field::INT32;
       }
       else {

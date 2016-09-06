@@ -64,15 +64,15 @@ The most recent released version is recommended. For use with Exodus, some local
 
  * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
- * `tar zxvf netcdf-4.3.3.1.tar.gz`
- * Modify the following defines in seacas/TPL/netcdf/netcdf-4.3.3.1/include/netcdf.h.
+ * `tar zxvf netcdf-4.4.1.tar.gz`
+ * Modify the following defines in seacas/TPL/netcdf/netcdf-4.4.1/include/netcdf.h.
 
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
- * `cd netcdf-4.3.3.1` and enter the command:
+ * `cd netcdf-4.4.1` and enter the command:
     ```
     ./configure --enable-netcdf-4  --enable-shared \
       --disable-fsync --prefix=${ACCESS} \
@@ -83,8 +83,8 @@ The most recent released version is recommended. For use with Exodus, some local
    HDF5 library, you may need to do the following and then redo the
    configure step
     ```
-    CFLAGS="-I{HDF5_ROOT}/include"; export CFLAGS
-    LDFLAGS="-L{HDF5_ROOT}/lib   "; export LDFLAGS
+    CFLAGS="-I${HDF5_ROOT}/include"; export CFLAGS
+    LDFLAGS="-L${HDF5_ROOT}/lib   "; export LDFLAGS
     ```
 
  * `make && make install`
