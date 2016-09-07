@@ -69,9 +69,7 @@ namespace Ioss {
 /** \brief A namespace for the heartbeat database format.
  */
 namespace Iohb {
-}
-
-namespace Iohb {
+  class Layout;
 
   enum Format { DEFAULT = 0, SPYHIS = 1 };
 
@@ -169,6 +167,8 @@ namespace Iohb {
                                size_t data_size) const;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
 			       void *data, size_t data_size) const {return -1;}
+
+    time_t timeLastFlush;
 
     std::ostream *logStream;
     Layout *      layout_;
