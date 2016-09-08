@@ -39,6 +39,7 @@
 #include <Ioss_StructuredBlock.h>
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 
 namespace Iocgns {
   class StructuredZoneData
@@ -50,10 +51,10 @@ namespace Iocgns {
     {
     }
 
-    StructuredZoneData(const std::string &name, int zone, int ni, int nj, int nk)
-        : m_name(name), m_ordinal{{ni, nj, nk}}, m_offset{{0, 0, 0}}, m_zone(zone), m_adam(nullptr),
-          m_parent(nullptr), m_proc(-1), m_splitOrdinal(0), m_child1(nullptr), m_child2(nullptr),
-          m_sibling(nullptr)
+    StructuredZoneData(std::string name, int zone, int ni, int nj, int nk)
+        : m_name(std::move(name)), m_ordinal{{ni, nj, nk}}, m_offset{{0, 0, 0}}, m_zone(zone),
+          m_adam(nullptr), m_parent(nullptr), m_proc(-1), m_splitOrdinal(0), m_child1(nullptr),
+          m_child2(nullptr), m_sibling(nullptr)
     {
     }
 
