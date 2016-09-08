@@ -83,7 +83,7 @@ namespace {
       return true;
     }
 
-    std::string        ge_name    = ge->name();
+    const std::string &ge_name    = ge->name();
     const std::string &field_name = field.get_name();
     unsigned int       hash_code  = Ioss::Utils::hash(ge_name) + Ioss::Utils::hash(field_name);
     unsigned int       max_hash   = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MAX);
@@ -668,7 +668,7 @@ namespace Ioss {
 
       for (size_t i = 0; i < element_blocks.size(); i++) {
         Ioss::ElementBlock *   block = element_blocks[i];
-        std::string            name  = block->name();
+        const std::string &    name  = block->name();
         AxisAlignedBoundingBox bbox(minmax[6 * i + 0], minmax[6 * i + 1], minmax[6 * i + 2],
                                     -minmax[6 * i + 3], -minmax[6 * i + 4], -minmax[6 * i + 5]);
         elementBlockBoundingBoxes[name] = bbox;
@@ -730,7 +730,7 @@ namespace {
       }
 
       if (util.parallel_rank() == 0 || single_proc_only) {
-        std::string        name = entity->name();
+        const std::string &name = entity->name();
         std::ostringstream strm;
         gettimeofday(&tp, nullptr);
         double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;

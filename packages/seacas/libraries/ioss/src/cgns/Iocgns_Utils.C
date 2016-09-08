@@ -177,8 +177,8 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 #endif
     if (num_bc > 0) {
       // Create a sideset...
-      std::string    ss_name(name);
-      Ioss::SideSet *ss = new Ioss::SideSet(db, ss_name);
+      std::string ss_name(name);
+      auto *      ss = new Ioss::SideSet(db, ss_name);
       ss->property_add(Ioss::Property("id", family));
       db->get_region()->add(ss);
     }
@@ -244,7 +244,8 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                   size_t block_local_offset =
                       block->get_block_local_node_offset(index[0], index[1], index[2]);
                   block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
-                  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset <<
+                  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset
+                  //<<
                   //"
                   //" << owner_global_offset+1 << "\n";
                 }
@@ -325,10 +326,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     int               ndataset;
 
     // All we really want from this is 'boconame'
-    cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts, NULL,
-                 &NormalListSize, &NormalDataType, &ndataset);
+    cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
+                 nullptr, &NormalListSize, &NormalDataType, &ndataset);
 
-    cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, NULL);
+    cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr);
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
@@ -342,7 +343,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       continue;
     }
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);
-    if (!sset) {
+    if (sset == nullptr) {
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
       sset     = new Ioss::SideSet(db, boconame);
@@ -351,7 +352,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       db->get_region()->add(sset);
     }
 
-    if (sset) {
+    if (sset != nullptr) {
       Ioss::IJK_t range_beg{{std::min(range[0], range[3]), std::min(range[1], range[4]),
                              std::min(range[2], range[5])}};
 

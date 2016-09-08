@@ -95,7 +95,7 @@ namespace {
 
   void check_for_duplicate_names(const Ioss::Region *region, const Ioss::GroupingEntity *entity)
   {
-    std::string name = entity->name();
+    const std::string &name = entity->name();
 
     // See if any alias with this name...
     std::string alias = region->get_alias(name);
@@ -318,7 +318,7 @@ namespace Ioss {
         Ioss::NameList               names;
         const Ioss::SideSetContainer fss = get_sidesets();
         for (auto fs : fss) {
-          const Ioss::SideBlockContainer fbs = fs->get_side_blocks();
+          const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
           for (auto fb : fbs) {
             fb->field_describe(Ioss::Field::TRANSIENT, &names);
           }
@@ -1233,7 +1233,7 @@ namespace Ioss {
     if (io_type == FACEBLOCK) {
       return get_face_block(my_name);
     }
-    else if (io_type == EDGEBLOCK) {
+    if (io_type == EDGEBLOCK) {
       return get_edge_block(my_name);
     }
     else if (io_type == SIDESET) {
@@ -1611,7 +1611,7 @@ namespace Ioss {
       }
       return true;
     }
-    else if (((io_type & ELEMENTBLOCK) != 0u) && get_element_block(my_name) != nullptr) {
+    if (((io_type & ELEMENTBLOCK) != 0u) && get_element_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "ELEMENT_BLOCK";
       }

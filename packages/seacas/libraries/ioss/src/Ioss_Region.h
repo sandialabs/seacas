@@ -162,7 +162,7 @@ namespace Ioss {
     bool add(FaceSet *faceset);
     bool add(ElementSet *elementset);
     bool add(CommSet *commset);
-    bool add(StructuredBlock *sblock);
+    bool add(StructuredBlock *structured_block);
     bool add(const CoordinateFrame &frame);
 
     const NodeBlockContainer &      get_node_blocks() const;
