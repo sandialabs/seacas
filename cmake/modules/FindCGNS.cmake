@@ -61,8 +61,8 @@ if ( CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )
 else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
 
     # Cache variables
-    if(CGNS_DIR)
-        set(CGNS_DIR "${CGNS_DIR}" CACHE PATH "Path to search for CGNS include and library files")
+    if(CGNS_ROOT)
+        set(CGNS_ROOT "${CGNS_ROOT}" CACHE PATH "Path to search for CGNS include and library files")
     endif()
 
     if(CGNS_INCLUDE_DIR)
@@ -77,7 +77,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
     # Search for include files
     # Search order preference:
     #  (1) CGNS_INCLUDE_DIR - check existence of path AND if the include files exist
-    #  (2) CGNS_DIR/<include>
+    #  (2) CGNS_ROOT/<include>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     set(cgns_inc_names "cgnslib.h")
@@ -102,18 +102,18 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
     else() 
 
         set(cgns_inc_suffixes "include")
-        if(CGNS_DIR)
+        if(CGNS_ROOT)
 
-            if (EXISTS "${CGNS_DIR}" )
+            if (EXISTS "${CGNS_ROOT}" )
 
                 find_path(CGNS_INCLUDE_DIR
                           NAMES ${cgns_inc_names}
-                          HINTS ${CGNS_DIR}/include
+                          HINTS ${CGNS_ROOT}/include
                           PATH_SUFFIXES ${cgns_inc_suffixes}
                           NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "CGNS_DIR=${CGNS_DIR} does not exist")
+                 message(SEND_ERROR "CGNS_ROOT=${CGNS_ROOT} does not exist")
                  set(CGNS_INCLUDE_DIR "CGNS_INCLUDE_DIR-NOTFOUND")
             endif()    
 
@@ -136,7 +136,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
     # Search for libraries 
     # Search order preference:
     #  (1) CGNS_LIBRARY_DIR - check existence of path AND if the include files exist
-    #  (2) CGNS_DIR/<lib,Lib>
+    #  (2) CGNS_ROOT/<lib,Lib>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     if (CGNS_LIBRARY_DIR)
@@ -155,18 +155,18 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
 
     else() 
 
-        if(CGNS_DIR)
+        if(CGNS_ROOT)
 
-            if (EXISTS "${CGNS_DIR}" )
+            if (EXISTS "${CGNS_ROOT}" )
 
                 find_library(CGNS_LIBRARY
                              NAMES cgns
-                             HINTS ${CGNS_DIR}
+                             HINTS ${CGNS_ROOT}
                              PATH_SUFFIXES "lib" "Lib"
                              NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "CGNS_DIR=${CGNS_DIR} does not exist")
+                 message(SEND_ERROR "CGNS_ROOT=${CGNS_ROOT} does not exist")
                  set(CGNS_LIBRARY "CGNS_LIBRARY-NOTFOUND")
             endif()    
 
