@@ -108,7 +108,8 @@ namespace Iocgns {
         if (ierr != CG_OK) {
           // NOTE: Code will not continue past this call...
           std::ostringstream errmsg;
-          errmsg << "ERROR: Problem opening file '" << get_filename() << "' for read access.";
+          errmsg << "ERROR: Problem opening file '" << get_filename() << "' for read access. "
+		 << "CGNS Error: '" << cg_get_error() << "'";
           IOSS_ERROR(errmsg);
         }
       }
@@ -750,8 +751,8 @@ namespace Iocgns {
 
     cgsize_t num_to_get = field.verify(data_size);
 
-    cgsize_t rmin[3];
-    cgsize_t rmax[3];
+    cgsize_t rmin[3] = {0,0,0};
+    cgsize_t rmax[3] = {0,0,0};
 
     if (role == Ioss::Field::MESH) {
       bool cell_field = true;
