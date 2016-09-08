@@ -453,19 +453,15 @@ namespace Iocgns {
         size_t count  = decomp->decomp_elem_count();
         return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
       }
-
-      default:
-        std::ostringstream errmsg;
-        errmsg << "INTERNAL ERROR: Invalid map type. "
-               << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
-               << "Please report.\n";
-        IOSS_ERROR(errmsg);
-      }
     }
     else {
-      std::cerr << "NodeCount = " << nodeCount << "\n";
       assert(1 == 0);
     }
+    std::ostringstream errmsg;
+    errmsg << "INTERNAL ERROR: Invalid map type. "
+	   << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
+	   << "Please report.\n";
+    IOSS_ERROR(errmsg);
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(Ioss::Map &entity_map, int64_t entityCount,
