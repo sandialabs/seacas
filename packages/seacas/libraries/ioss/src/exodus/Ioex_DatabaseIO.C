@@ -132,7 +132,7 @@ namespace Ioex {
     }
 
     timeLastFlush = time(nullptr);
-    dbState = Ioss::STATE_UNKNOWN;
+    dbState       = Ioss::STATE_UNKNOWN;
 
     // Set exodusII warning level.
     if (util().get_environment("EX_DEBUG", isParallel)) {
@@ -990,7 +990,7 @@ namespace Ioex {
 
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
-	std::cerr << "LowerCaseVariableNames: " << lowerCaseVariableNames << "\n";
+        std::cerr << "LowerCaseVariableNames: " << lowerCaseVariableNames << "\n";
         for (int i = 0; i < nvar; i++) {
           if (lowerCaseVariableNames) {
             Ioss::Utils::fixup_name(names[i]);
