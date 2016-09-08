@@ -9,7 +9,9 @@ INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
 SET(SEACASProj_ENABLE_CXX11_DEFAULT ON)
 SET(SEACASProj_ENABLE_Zoltan_DEFAULT ON)
 
+IF(ADD_FORMAT_TARGET)
 add_subdirectory(git-cmake-format)
+ENDIF()
 
 # Define the TriBITS minimum required CMake version
 SET(TRIBITS_CMAKE_MINIMUM_REQUIRED 2.8.11)
