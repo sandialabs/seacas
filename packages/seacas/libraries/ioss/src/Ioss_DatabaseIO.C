@@ -604,10 +604,8 @@ namespace Ioss {
         }
       }
       if (all_sphere) {
-        // If we end up here, the model either contains all spheres, or there
-        // are
-        // no
-        // element blocks in the model...
+        // If we end up here, the model either contains all spheres,
+        // or there are no element blocks in the model...
         const ElementTopology *ftopo = ElementTopology::factory("unknown");
         if (element_blocks.empty()) {
           side_topo.insert(std::make_pair(ftopo, ftopo));
