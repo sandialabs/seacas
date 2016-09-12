@@ -39,6 +39,7 @@
 #include <Ioss_NodeBlock.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Region.h>
+#include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
 #include <cassert>
@@ -82,7 +83,7 @@ namespace {
       return true;
     }
 
-    std::string        ge_name    = ge->name();
+    const std::string &ge_name    = ge->name();
     const std::string &field_name = field.get_name();
     unsigned int       hash_code  = Ioss::Utils::hash(ge_name) + Ioss::Utils::hash(field_name);
     unsigned int       max_hash   = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MAX);
@@ -665,13 +666,41 @@ namespace Ioss {
 
       for (size_t i = 0; i < element_blocks.size(); i++) {
         Ioss::ElementBlock *   block = element_blocks[i];
-        std::string            name  = block->name();
+        const std::string &    name  = block->name();
         AxisAlignedBoundingBox bbox(minmax[6 * i + 0], minmax[6 * i + 1], minmax[6 * i + 2],
                                     -minmax[6 * i + 3], -minmax[6 * i + 4], -minmax[6 * i + 5]);
         elementBlockBoundingBoxes[name] = bbox;
       }
     }
     return elementBlockBoundingBoxes[eb->name()];
+  }
+
+  AxisAlignedBoundingBox DatabaseIO::get_bounding_box(const Ioss::StructuredBlock *sb) const
+  {
+    ssize_t ndim = sb->get_property("component_degree").get_int();
+
+    std::pair<double, double> xx;
+    std::pair<double, double> yy;
+    std::pair<double, double> zz;
+
+    std::vector<double> coordinates;
+    sb->get_field_data("mesh_model_coordinates_x", coordinates);
+    auto x = std::minmax_element(coordinates.begin(), coordinates.end());
+    xx     = std::make_pair(*(x.first), *(x.second));
+
+    if (ndim > 1) {
+      sb->get_field_data("mesh_model_coordinates_y", coordinates);
+      auto y = std::minmax_element(coordinates.begin(), coordinates.end());
+      yy     = std::make_pair(*(y.first), *(y.second));
+    }
+
+    if (ndim > 2) {
+      sb->get_field_data("mesh_model_coordinates_z", coordinates);
+      auto z = std::minmax_element(coordinates.begin(), coordinates.end());
+      zz     = std::make_pair(*(z.first), *(z.second));
+    }
+
+    return AxisAlignedBoundingBox(xx.first, yy.first, zz.first, xx.second, yy.second, zz.second);
   }
 } // namespace Ioss
 
@@ -699,7 +728,7 @@ namespace {
       }
 
       if (util.parallel_rank() == 0 || single_proc_only) {
-        std::string        name = entity->name();
+        const std::string &name = entity->name();
         std::ostringstream strm;
         gettimeofday(&tp, nullptr);
         double time_now = static_cast<double>(tp.tv_sec) + (1.e-6) * tp.tv_usec;
