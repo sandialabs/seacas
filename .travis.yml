@@ -23,25 +23,15 @@ matrix:
       env: MPI=ON
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake  ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gfortran ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libcgns-dev  ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libmatio-dev ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libz-dev ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libhdf5-dev ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libnetcdf-dev ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install netcdf-bin ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install cmake ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install gfortran ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install libcgns-dev ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install libmatio-dev ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install libz-dev ; fi
-  - if [[ -z "$MPI" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install libnetcdf-dev ; fi
-  - if [[ -z "$MPI" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install netcdf-bin ; fi
-  - if [[ -n "$MPI" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install openmpi-bin ; fi
-  - if [[ -n "$MPI" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install libhdf5-mpi-dev ; fi
+  - sudo apt-get update
+  - sudo apt-get -y install cmake
+  - sudo apt-get -y install gfortran
+  - sudo apt-get -y install libmatio-dev
+  - sudo apt-get -y install libz-dev
+  - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
+  - if [ -z "$MPI" ]; then sudo apt-get -y install netcdf-bin; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
 
 before_script:
 

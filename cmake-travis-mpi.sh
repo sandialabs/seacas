@@ -18,6 +18,17 @@ CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fs
 cd $ACCESS
 pwd
 
+cd TPL/cgns
+git clone https://github.com/cgns/CGNS
+cd CGNS
+mkdir build
+cd build
+MPI=ON sh ../../runconfigure.sh
+make && sudo make install
+
+cd $ACCESS
+pwd
+
 mpiexec --version
 mpiexec --help
 
@@ -56,6 +67,7 @@ cmake \
   -DSEACASProj_USE_GNUINSTALLDIRS:BOOL=ON \
   ${KOKKOS_SYMBOLS} \
   -DTPL_ENABLE_CGNS:BOOL=ON \
+  -DCGNS_ROOT:PATH=${ACCESS} \
   -DTPL_ENABLE_Matio:BOOL=ON \
   -DTPL_ENABLE_METIS:BOOL=OFF \
   -DTPL_ENABLE_ParMETIS:BOOL=OFF \
