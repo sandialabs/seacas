@@ -493,14 +493,12 @@ namespace Ioss {
     }
     else {
 
-      // Keep only the last time in the vector... This is to avoid memory growth
-      // for output
-      // databases that write lots of steps (heartbeat, history).  There is no
-      // need to keep
-      // a list of times that have been written since they are just streamed out
-      // and never read
-      // We do sometimes need the list of times written to restart or results
-      // files though...
+      // Keep only the last time in the vector... This is to avoid
+      // memory growth for output databases that write lots of steps
+      // (heartbeat, history).  There is no need to keep a list of
+      // times that have been written since they are just streamed out
+      // and never read We do sometimes need the list of times written
+      // to restart or results files though...
       if (stateTimes.empty()) {
         stateTimes.push_back(time);
       }
@@ -1993,9 +1991,8 @@ namespace Ioss {
                 this_field.set_index(index);
               }
               else {
-                // If the field does not already exist, add it to the output
-                // node
-                // block
+                // If the field does not already exist, add it to the
+                // output node block
                 if (field.raw_count() != entity_count) {
                   Ioss::Field new_field(field);
                   new_field.reset_count(entity_count);
