@@ -244,10 +244,6 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                   size_t block_local_offset =
                       block->get_block_local_node_offset(index[0], index[1], index[2]);
                   block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
-                  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset
-                  //<<
-                  //"
-                  //" << owner_global_offset+1 << "\n";
                 }
                 else {
                   size_t  local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
@@ -257,6 +253,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                   if (cell_node_map[local_offset] == ss_max) {
                     cell_node_map[local_offset] = owner_local_offset;
                   }
+#if defined(IOSS_DEBUG_OUTPUT)
                   else {
                     if (cell_node_map[local_offset] != owner_local_offset) {
                       std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
@@ -264,6 +261,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                                 << owner_global_offset << "\n";
                     }
                   }
+#endif
                 }
               }
             }
