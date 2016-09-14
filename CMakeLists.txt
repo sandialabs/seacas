@@ -37,6 +37,8 @@ SET(${PROJECT_NAME}_ENABLE_CPACK_PACKAGING_DEFAULT ON)
 # Don't allow disabled subpackages to be excluded from tarball
 SET(${PROJECT_NAME}_EXCLUDE_DISABLED_SUBPACKAGES_FROM_DISTRIBUTION_DEFAULT FALSE)
 
+SET(TPL_ENABLE_Pthread OFF CACHE BOOL "")
+
 # Do all of the processing for this Tribits project
 TRIBITS_PROJECT()
 
