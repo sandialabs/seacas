@@ -1,10 +1,8 @@
 #! /usr/bin/env sh
 
-if [ "$1" != "" ]; then
-   BUILDDIR=$1
-else
-   BUILDDIR=build
-fi
+BUILDDIR=${1:-build}
+
+KOKKOS=${KOKKOS:-OFF}
 
 # Install parallel version of netcdf library...
 ACCESS=`pwd`
@@ -42,14 +40,20 @@ CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 ### Set to ON for CUDA compile; otherwise OFF (default)
 CUDA="OFF"
 
-if [ "$CUDA" == "ON" ]
+if [ "$KOKKOS" == "ON" ]
 then
-  export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
-  KOKKOS_SYMBOLS="-DTPL_ENABLE_CUDA:Bool=ON -DCUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} -DTPL_ENABLE_Pthread:Bool=OFF"
+  if [ "$CUDA" == "ON" ]
+  then
+    export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
+    KOKKOS_SYMBOLS="-DTPL_ENABLE_CUDA:Bool=ON -DCUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} -DTPL_ENABLE_Pthread:Bool=OFF"
+  else
+    unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
+    KOKKOS_SYMBOLS="-DSEACASProj_ENABLE_OpenMP:Bool=ON -DTPL_ENABLE_Pthread:Bool=OFF"
+  fi
 else
-  unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
-  KOKKOS_SYMBOLS="-DSEACASProj_ENABLE_OpenMP:Bool=ON -DTPL_ENABLE_Pthread:Bool=OFF"
+  KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
+
 
 cmake \
   -DTPL_ENABLE_MPI=ON \
