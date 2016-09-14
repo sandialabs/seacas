@@ -9,7 +9,7 @@ ACCESS=`pwd`
 pwd
 cd TPL/netcdf
 wget https://github.com/Unidata/netcdf-c/archive/v4.4.0.tar.gz
-tar -xzvf v4.4.0.tar.gz; fi
+tar -xzvf v4.4.0.tar.gz
 cd netcdf-c-4.4.0
 CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
 
