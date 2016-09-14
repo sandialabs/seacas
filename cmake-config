@@ -86,7 +86,7 @@ fi
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
-/usr/netpub/cmake-3.4.3/bin/cmake  \
+cmake  \
 -D CMAKE_CXX_FLAGS="-Wall -pedantic" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
