@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 BUILDDIR=${1:-build}
 
@@ -39,6 +39,8 @@ CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 
 ### Set to ON for CUDA compile; otherwise OFF (default)
 CUDA="OFF"
+
+echo "KOKKOS = ${KOKKOS}"
 
 if [ "$KOKKOS" == "ON" ]
 then
