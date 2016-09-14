@@ -23,8 +23,8 @@ matrix:
       env: MPI=ON
     - compiler: gcc
       env: KOKKOS=ON
-    - compiler: clang
-      env: KOKKOS=ON
+    - compiler: gcc
+      env: KOKKOS=ON MPI=ON
 
 before_install:
   - sudo apt-get update
