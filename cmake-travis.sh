@@ -24,7 +24,7 @@ git clone https://github.com/cgns/CGNS
 cd CGNS
 mkdir build
 cd build
-MPI=${MPI} bash ../../runconfigure.sh
+MPI=${MPI} ACCESS="/usr/local" bash ../../runconfigure.sh
 make && sudo make install
 
 cd $ACCESS
