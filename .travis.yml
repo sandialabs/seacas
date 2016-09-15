@@ -40,7 +40,7 @@ before_install:
 before_script:
 
 install:
-  - if [ -n "$MPI" ]; then ./cmake-travis-mpi.sh; else ./cmake-travis.sh; fi
+  - ./cmake-travis.sh
 
 script:
   - cd build
