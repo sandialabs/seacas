@@ -11,7 +11,7 @@ cd TPL/netcdf
 wget https://github.com/Unidata/netcdf-c/archive/v4.4.1.tar.gz
 tar -xzvf v4.4.1.tar.gz
 cd netcdf-c-4.4.1
-CC=mpicc ./configure --prefix=$ACCESS --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
+CC=mpicc ./configure --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
 
 cd $ACCESS
 pwd
@@ -24,7 +24,7 @@ git clone https://github.com/cgns/CGNS
 cd CGNS
 mkdir build
 cd build
-MPI=${MPI} sh ../../runconfigure.sh
+MPI=${MPI} bash ../../runconfigure.sh
 make && sudo make install
 
 cd $ACCESS
@@ -37,7 +37,7 @@ if [ "${MPI}" == "ON" ]
 then
    MPI_EXEC=`which mpiexec`
    MPI_BIN=`dirname "${MPI_EXEC}"`
-   MPI_SYMBOLS="-DCMAKE_CXX_COMPILER:FILEPATH=mpicxx -DCMAKE_C_COMPILER:FILEPATH=mpicc -DCMAKE_Fortran_COMPILER:FILEPATH=mpif77 -DMPI_BIN_DIR:PATH=${MPI_BIN}-DNetCDF_DIR:PATH=${ACCESS}"
+   MPI_SYMBOLS="-DCMAKE_CXX_COMPILER:FILEPATH=mpicxx -DCMAKE_C_COMPILER:FILEPATH=mpicc -DCMAKE_Fortran_COMPILER:FILEPATH=mpif77 -DMPI_BIN_DIR:PATH=${MPI_BIN}"
 fi
 
 CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
