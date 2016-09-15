@@ -24,8 +24,6 @@ cd netcdf-c-4.4.1
 MPI=${MPI} ACCESS="/usr/local" bash ../runconfigure.sh
 make && sudo make install
 
-export LD_LIBRARY_PATH=/usr/local/lib
-
 cd $ACCESS
 pwd
 
