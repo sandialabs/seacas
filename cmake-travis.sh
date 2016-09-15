@@ -4,14 +4,25 @@ BUILDDIR=${1:-build}
 KOKKOS=${KOKKOS:-OFF}
 ACCESS=`pwd`
 
-# =================== INSTALL NETCDF (if mpi) ===============
+# =================== INSTALL PNETCDF and NETCDF (if mpi) ===============
 if [ "$MPI" == "ON" ]
 then
+
+cd TPL/pnetcdf
+wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.7.0.tar.gz
+tar -xzvf parallel-netcdf-1.7.0.tar.gz
+cd parallel-netcdf-1.7.0
+ACCESS="/usr/local" bash ../../runconfigure.sh
+make && sudo make install
+
+cd $ACCESS
+
 cd TPL/netcdf
 wget https://github.com/Unidata/netcdf-c/archive/v4.4.1.tar.gz
 tar -xzvf v4.4.1.tar.gz
 cd netcdf-c-4.4.1
-CC=mpicc ./configure --enable-netcdf4 --disable-v2 --disable-fsync --disable-dap && make && sudo make install
+MPI=${MPI} ACCESS="/usr/local" bash ../../runconfigure.sh
+make && sudo make install
 
 cd $ACCESS
 pwd
