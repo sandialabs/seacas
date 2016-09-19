@@ -36,12 +36,12 @@
 #include <Ioss_CodeTypes.h>       // for Complex
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
 #include <Ioss_EntityType.h>      // for EntityType
-#include <Ioss_VariableType.h>    // for component_count()
 #include <Ioss_Field.h>           // for Field, Field::RoleType, etc
 #include <Ioss_FieldManager.h>    // for FieldManager, NameList
 #include <Ioss_Property.h>        // for Property
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State
+#include <Ioss_VariableType.h>    // for component_count()
 #include <stddef.h>               // for size_t, nullptr
 #include <stdint.h>               // for int64_t
 #include <string>                 // for string
@@ -435,7 +435,6 @@ inline size_t Ioss::GroupingEntity::field_count() const { return fields.count();
 // Will also want to template on static vs. dynamic data, and other View template parameters,
 // with defaults.
 
-
 /** \brief Read field data from the database file into memory using a 1-D Kokkos:::View.
  *
  *  \tparam T The data type
@@ -445,7 +444,7 @@ inline size_t Ioss::GroupingEntity::field_count() const { return fields.count();
  *
  */
 template <typename T>
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          Kokkos::View<T *> &data) const
 {
   verify_field_exists(field_name, "input");
@@ -487,7 +486,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
  *
  */
 template <typename T>
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string & field_name,
                                          Kokkos::View<T **> &data) const
 {
   verify_field_exists(field_name, "input");
@@ -495,7 +494,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
   Ioss::Field field = get_field(field_name);
 
   // Resize the view
-  int new_view_size_left = field.raw_count();
+  int new_view_size_left  = field.raw_count();
   int new_view_size_right = field.raw_storage()->component_count();
   Kokkos::resize(data, new_view_size_left, new_view_size_right);
   size_t data_size = new_view_size_left * new_view_size_right * sizeof(T);
@@ -504,7 +503,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
   // This is necessary to ensure the data is placed in the correct
   // location in the 2-D array, avoiding incorrect placement due
   // to Views with padded dimensions.
-  T * data_array = new T[data_size];
+  T *data_array = new T[data_size];
 
   // Create a host mirror view. (No memory allocation if data is in HostSpace.)
   typename Kokkos::View<T **>::HostMirror host_data = Kokkos::create_mirror_view(data);
@@ -524,12 +523,12 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
   // compared with the time to copy from disk into memory.
   for (int i = 0; i < new_view_size_left; ++i) {
     for (int j = 0; j < new_view_size_right; ++j) {
-      host_data(i,j) = data_array[new_view_size_right*i+j];
+      host_data(i, j) = data_array[new_view_size_right * i + j];
     }
   }
 
   // Delete the temporary array
-  delete [] data_array;
+  delete[] data_array;
 
   // Copy the data to the device. (No op if data is in HostSpace.)
   Kokkos::deep_copy(data, host_data);
@@ -541,8 +540,6 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
 // Will also want to template on static vs. dynamic data, and other View template parameters,
 // with defaults.
 
-
-
 /** \brief Write field data from memory into the database file using a 1-D Kokkos::View.
  *
  *  \tparam T The data type
@@ -552,13 +549,13 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
  *
  */
 template <typename T>
-int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          Kokkos::View<T *> &data) const
 {
   verify_field_exists(field_name, "output");
 
-  Ioss::Field field = get_field(field_name);
-  size_t data_size = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
+  Ioss::Field field     = get_field(field_name);
+  size_t      data_size = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
 
   // Create a host mirror view. (No memory allocation if data is in HostSpace.)
   typename Kokkos::View<T *>::HostMirror host_data = Kokkos::create_mirror_view(data);
@@ -574,7 +571,6 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
   // Transform the field
   field.transform(host_data_ptr);
 
-
   // Copy the data to disk from the underlying memory pointed to by host_data_ptr.
   return internal_put_field_data(field, host_data_ptr, data_size);
 }
@@ -588,20 +584,21 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
  *
  */
 template <typename T>
-int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string & field_name,
                                          Kokkos::View<T **> &data) const
 {
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
 
-  int view_size_left = data.dimension_0();
-  int view_size_right = data.dimension_1();
-  size_t data_size = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
+  int    view_size_left  = data.dimension_0();
+  int    view_size_right = data.dimension_1();
+  size_t data_size       = field.raw_count() * field.raw_storage()->component_count() * sizeof(T);
 
   if (view_size_left * view_size_right * sizeof(T) != data_size) {
     std::ostringstream errmsg;
-    errmsg << "\nERROR: View dimensions are inconsistent with field raw count or raw storage component count"
+    errmsg << "\nERROR: View dimensions are inconsistent with field raw count or raw storage "
+              "component count"
            << "for field" << field_name << "\n\n";
     IOSS_ERROR(errmsg);
   }
@@ -616,7 +613,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
   // This is necessary to ensure the data is taken from the correct
   // location in the 2-D array, avoiding incorrect location due
   // to Views with padded dimensions.
-  T * data_array = new T[data_size];
+  T *data_array = new T[data_size];
 
   // Copy the data from the host Mirror view.
   // The host mirror view has the same layout as the device view.
@@ -626,7 +623,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
   // compared with the time to copy to disk from memory.
   for (int i = 0; i < view_size_left; ++i) {
     for (int j = 0; j < view_size_right; ++j) {
-      data_array[view_size_right*i+j] = host_data(i,j);
+      data_array[view_size_right * i + j] = host_data(i, j);
     }
   }
 
@@ -637,11 +634,10 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
   int retval = internal_put_field_data(field, data_array, data_size);
 
   // Delete the temporary array
-  delete [] data_array;
+  delete[] data_array;
 
   return retval;
 }
 #endif
-
 
 #endif
