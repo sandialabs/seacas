@@ -240,7 +240,6 @@ namespace Ioss {
 
   void Region::delete_database() { GroupingEntity::really_delete_database(); }
 
-
   MeshType Region::mesh_type() const
   {
     if (elementBlocks.empty() && structuredBlocks.empty()) {
@@ -259,16 +258,12 @@ namespace Ioss {
   const std::string Region::mesh_type_string() const
   {
     switch (mesh_type()) {
-    case MeshType::UNKNOWN:
-      return "Unknown";
-    case MeshType::HYBRID:
-      return "Hybrid";
-    case MeshType::STRUCTURED:
-      return "Structured";
-    case MeshType::UNSTRUCTURED:
-      return "Unstructured";
+    case MeshType::UNKNOWN: return "Unknown";
+    case MeshType::HYBRID: return "Hybrid";
+    case MeshType::STRUCTURED: return "Structured";
+    case MeshType::UNSTRUCTURED: return "Unstructured";
     }
-    assert(1==0 && "Program Error");
+    assert(1 == 0 && "Program Error");
     return "Invalid";
   }
 
