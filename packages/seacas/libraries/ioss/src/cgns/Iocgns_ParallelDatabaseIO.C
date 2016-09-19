@@ -82,8 +82,6 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-#define VAL(x) std::cerr << Ioss::trmclr::blue << #x << " = " << x << "\n" << Ioss::trmclr::normal
-
 namespace {
   CG_ZoneType_t check_zone_type(int cgnsFilePtr)
   {
@@ -161,7 +159,7 @@ namespace Iocgns {
           // NOTE: Code will not continue past this call...
           std::ostringstream errmsg;
           errmsg << "ERROR: Problem opening file '" << get_filename() << "' for read access. "
-		 << "CGNS Error: '" << cg_get_error() << "'";
+                 << "CGNS Error: '" << cg_get_error() << "'";
           IOSS_ERROR(errmsg);
         }
       }
@@ -453,19 +451,16 @@ namespace Iocgns {
         size_t count  = decomp->decomp_elem_count();
         return get_map(elemMap, elementCount, offset, count, entity_type::ELEM);
       }
-
-      default:
-        std::ostringstream errmsg;
-        errmsg << "INTERNAL ERROR: Invalid map type. "
-               << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
-               << "Please report.\n";
-        IOSS_ERROR(errmsg);
       }
     }
     else {
-      std::cerr << "NodeCount = " << nodeCount << "\n";
       assert(1 == 0);
     }
+    std::ostringstream errmsg;
+    errmsg << "INTERNAL ERROR: Invalid map type. "
+           << "Something is wrong in the Iocgns::ParallelDatabaseIO::get_map() function. "
+           << "Please report.\n";
+    IOSS_ERROR(errmsg);
   }
 
   const Ioss::Map &ParallelDatabaseIO::get_map(Ioss::Map &entity_map, int64_t entityCount,

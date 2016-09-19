@@ -9,6 +9,10 @@ INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
 SET(SEACASProj_ENABLE_CXX11_DEFAULT ON)
 SET(SEACASProj_ENABLE_Zoltan_DEFAULT ON)
 
+IF(ADD_FORMAT_TARGET)
+add_subdirectory(git-cmake-format)
+ENDIF()
+
 # Define the TriBITS minimum required CMake version
 SET(TRIBITS_CMAKE_MINIMUM_REQUIRED 2.8.11)
 
@@ -32,6 +36,8 @@ SET(${PROJECT_NAME}_ENABLE_INSTALL_CMAKE_CONFIG_FILES_DEFAULT ON)
 SET(${PROJECT_NAME}_ENABLE_CPACK_PACKAGING_DEFAULT ON)
 # Don't allow disabled subpackages to be excluded from tarball
 SET(${PROJECT_NAME}_EXCLUDE_DISABLED_SUBPACKAGES_FROM_DISTRIBUTION_DEFAULT FALSE)
+
+SET(TPL_ENABLE_Pthread OFF CACHE BOOL "")
 
 # Do all of the processing for this Tribits project
 TRIBITS_PROJECT()

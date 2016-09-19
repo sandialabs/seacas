@@ -130,7 +130,6 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   IOSS_ERROR(errmsg);
 }
 
-
 std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
 {
   std::string topology = "unknown";
@@ -178,8 +177,8 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 #endif
     if (num_bc > 0) {
       // Create a sideset...
-      std::string    ss_name(name);
-      Ioss::SideSet *ss = new Ioss::SideSet(db, ss_name);
+      std::string ss_name(name);
+      auto *      ss = new Ioss::SideSet(db, ss_name);
       ss->property_add(Ioss::Property("id", family));
       db->get_region()->add(ss);
     }
@@ -245,8 +244,6 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                   size_t block_local_offset =
                       block->get_block_local_node_offset(index[0], index[1], index[2]);
                   block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
-                  //		  std::cerr << "GLOBAL: " << block->name() << " " << global_offset << "
-                  //" << owner_global_offset+1 << "\n";
                 }
                 else {
                   size_t  local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
@@ -256,6 +253,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                   if (cell_node_map[local_offset] == ss_max) {
                     cell_node_map[local_offset] = owner_local_offset;
                   }
+#if defined(IOSS_DEBUG_OUTPUT)
                   else {
                     if (cell_node_map[local_offset] != owner_local_offset) {
                       std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
@@ -263,6 +261,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                                 << owner_global_offset << "\n";
                     }
                   }
+#endif
                 }
               }
             }
@@ -325,10 +324,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     int               ndataset;
 
     // All we really want from this is 'boconame'
-    cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts, NULL,
-                 &NormalListSize, &NormalDataType, &ndataset);
+    cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
+                 nullptr, &NormalListSize, &NormalDataType, &ndataset);
 
-    cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, NULL);
+    cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr);
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
@@ -342,7 +341,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       continue;
     }
     Ioss::SideSet *sset = block->get_database()->get_region()->get_sideset(boconame);
-    if (!sset) {
+    if (sset == nullptr) {
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
       sset     = new Ioss::SideSet(db, boconame);
@@ -351,7 +350,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       db->get_region()->add(sset);
     }
 
-    if (sset) {
+    if (sset != nullptr) {
       Ioss::IJK_t range_beg{{std::min(range[0], range[3]), std::min(range[1], range[4]),
                              std::min(range[2], range[5])}};
 
@@ -362,21 +361,29 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // be split among multiple processors and the block face this is applied
       // to may not exist on this decomposed block)
       auto bc = Ioss::BoundaryCondition(boconame, range_beg, range_end);
+      std::string name = std::string(boconame) + "/" + block->name();
+
       if (bc_overlaps(block, bc)) {
         bc_subset_range(block, bc);
         block->m_boundaryConditions.push_back(bc);
-        auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8",
+        auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
                                       block->m_boundaryConditions.back().get_face_count());
         sb->set_parent_block(block);
         sset->add(sb);
+        sb->property_add(Ioss::Property("base", base));
+        sb->property_add(Ioss::Property("zone", zone));
+        sb->property_add(Ioss::Property("section", ibc+1));
       }
       else {
         Ioss::IJK_t zeros{{0, 0, 0}};
         auto        zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
         block->m_boundaryConditions.push_back(zero_bc);
-        auto sb = new Ioss::SideBlock(block->get_database(), boconame, "Quad4", "Hex8", 0);
+        auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8", 0);
         sb->set_parent_block(block);
         sset->add(sb);
+        sb->property_add(Ioss::Property("base", base));
+        sb->property_add(Ioss::Property("zone", zone));
+        sb->property_add(Ioss::Property("section", ibc+1));
       }
     }
     else {

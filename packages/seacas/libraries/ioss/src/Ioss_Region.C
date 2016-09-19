@@ -95,7 +95,7 @@ namespace {
 
   void check_for_duplicate_names(const Ioss::Region *region, const Ioss::GroupingEntity *entity)
   {
-    std::string name = entity->name();
+    const std::string &name = entity->name();
 
     // See if any alias with this name...
     std::string alias = region->get_alias(name);
@@ -203,6 +203,10 @@ namespace Ioss {
         delete (eb);
       }
 
+      for (auto sb : structuredBlocks) {
+        delete (sb);
+      }
+
       for (auto ss : sideSets) {
         delete (ss);
       }
@@ -236,6 +240,38 @@ namespace Ioss {
 
   void Region::delete_database() { GroupingEntity::really_delete_database(); }
 
+
+  MeshType Region::mesh_type() const
+  {
+    if (elementBlocks.empty() && structuredBlocks.empty()) {
+      return MeshType::UNKNOWN;
+    }
+    else if (!elementBlocks.empty() && !structuredBlocks.empty()) {
+      return MeshType::HYBRID;
+    }
+    else if (!structuredBlocks.empty()) {
+      return MeshType::STRUCTURED;
+    }
+    assert(!elementBlocks.empty());
+    return MeshType::UNSTRUCTURED;
+  }
+
+  const std::string Region::mesh_type_string() const
+  {
+    switch (mesh_type()) {
+    case MeshType::UNKNOWN:
+      return "Unknown";
+    case MeshType::HYBRID:
+      return "Hybrid";
+    case MeshType::STRUCTURED:
+      return "Structured";
+    case MeshType::UNSTRUCTURED:
+      return "Unstructured";
+    }
+    assert(1==0 && "Program Error");
+    return "Invalid";
+  }
+
   /** \brief Print a summary of entities in the region.
    *
    *  \param[in,out] strm The output stream to use for printing.
@@ -244,7 +280,7 @@ namespace Ioss {
   void Region::output_summary(std::ostream &strm, bool do_transient)
   {
     strm << "\n Database: " << get_database()->get_filename() << "\n";
-
+    strm << "Mesh Type = " << mesh_type_string() << "\n";
     strm << "\n Number of coordinates per node   =" << std::setw(12)
          << get_property("spatial_dimension").get_int() << "\n";
     strm << " Number of nodes                  =" << std::setw(12)
@@ -318,7 +354,7 @@ namespace Ioss {
         Ioss::NameList               names;
         const Ioss::SideSetContainer fss = get_sidesets();
         for (auto fs : fss) {
-          const Ioss::SideBlockContainer fbs = fs->get_side_blocks();
+          const Ioss::SideBlockContainer &fbs = fs->get_side_blocks();
           for (auto fb : fbs) {
             fb->field_describe(Ioss::Field::TRANSIENT, &names);
           }
@@ -493,14 +529,12 @@ namespace Ioss {
     }
     else {
 
-      // Keep only the last time in the vector... This is to avoid memory growth
-      // for output
-      // databases that write lots of steps (heartbeat, history).  There is no
-      // need to keep
-      // a list of times that have been written since they are just streamed out
-      // and never read
-      // We do sometimes need the list of times written to restart or results
-      // files though...
+      // Keep only the last time in the vector... This is to avoid
+      // memory growth for output databases that write lots of steps
+      // (heartbeat, history).  There is no need to keep a list of
+      // times that have been written since they are just streamed out
+      // and never read We do sometimes need the list of times written
+      // to restart or results files though...
       if (stateTimes.empty()) {
         stateTimes.push_back(time);
       }
@@ -1233,7 +1267,7 @@ namespace Ioss {
     if (io_type == FACEBLOCK) {
       return get_face_block(my_name);
     }
-    else if (io_type == EDGEBLOCK) {
+    if (io_type == EDGEBLOCK) {
       return get_edge_block(my_name);
     }
     else if (io_type == SIDESET) {
@@ -1611,7 +1645,7 @@ namespace Ioss {
       }
       return true;
     }
-    else if (((io_type & ELEMENTBLOCK) != 0u) && get_element_block(my_name) != nullptr) {
+    if (((io_type & ELEMENTBLOCK) != 0u) && get_element_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "ELEMENT_BLOCK";
       }
@@ -1993,9 +2027,8 @@ namespace Ioss {
                 this_field.set_index(index);
               }
               else {
-                // If the field does not already exist, add it to the output
-                // node
-                // block
+                // If the field does not already exist, add it to the
+                // output node block
                 if (field.raw_count() != entity_count) {
                   Ioss::Field new_field(field);
                   new_field.reset_count(entity_count);
