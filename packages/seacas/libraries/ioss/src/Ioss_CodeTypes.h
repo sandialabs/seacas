@@ -64,7 +64,7 @@ namespace Ioss {
 #else
 #ifndef MPI_COMM_WORLD
 #define MPI_COMM_WORLD 0
-using MPI_Comm = int;
+using MPI_Comm       = int;
 #endif
 #endif
 
@@ -85,10 +85,9 @@ using Complex = std::complex<float>;
 using Kokkos_Complex = Kokkos::complex<float>;
 #endif
 #else
-using Complex  = std::complex<double>;
+using Complex        = std::complex<double>;
 #ifdef SEACAS_HAVE_KOKKOS
 using Kokkos_Complex = Kokkos::complex<double>;
 #endif
 #endif
 #endif
-

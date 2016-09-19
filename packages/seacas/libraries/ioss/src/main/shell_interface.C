@@ -36,10 +36,10 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"      // for Utils
 #include "shell_interface.h"
+#include <cctype>   // for tolower
 #include <cstddef>  // for nullptr
 #include <cstdlib>  // for exit, strtod, EXIT_SUCCESS, etc
 #include <cstring>  // for strcmp
-#include <cctype>   // for tolower
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for string, char_traits
 #include <vector>   // for vector
@@ -48,7 +48,7 @@
 
 IOShell::Interface::Interface()
     : compose_output("none"), maximum_time(0.0), minimum_time(0.0), surface_split_type(1),
-      compression_level(0), shuffle(false), debug(false), statistics(false),
+      data_storage_type(0), compression_level(0), shuffle(false), debug(false), statistics(false),
       do_transform_fields(false), ints_64_bit(false), reals_32_bit(false), netcdf4(false),
       in_memory_read(false), in_memory_write(false), lower_case_variable_names(true),
       fieldSuffixSeparator('_')
@@ -176,16 +176,15 @@ void IOShell::Interface::enroll_options()
 
 #ifdef SEACAS_HAVE_KOKKOS
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
-		          "Data type used internally to store field data\n"
-		          "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D",
-				  "POINTER");
+                  "Data type used internally to store field data\n"
+                  "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D",
+                  "POINTER");
 #else
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
-		          "Data type used internally to store field data\n"
-		          "\t\tOptions are: POINTER, STD_VECTOR",
-				  "POINTER");
+                  "Data type used internally to store field data\n"
+                  "\t\tOptions are: POINTER, STD_VECTOR",
+                  "POINTER");
 #endif
-
 
   options_.enroll(
       "memory_read", Ioss::GetLongOption::NoValue,

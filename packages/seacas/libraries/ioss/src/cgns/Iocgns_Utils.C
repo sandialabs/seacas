@@ -360,7 +360,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // Determine overlap of surface with block (in parallel, a block may
       // be split among multiple processors and the block face this is applied
       // to may not exist on this decomposed block)
-      auto bc = Ioss::BoundaryCondition(boconame, range_beg, range_end);
+      auto        bc   = Ioss::BoundaryCondition(boconame, range_beg, range_end);
       std::string name = std::string(boconame) + "/" + block->name();
 
       if (bc_overlaps(block, bc)) {
@@ -372,7 +372,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
         sset->add(sb);
         sb->property_add(Ioss::Property("base", base));
         sb->property_add(Ioss::Property("zone", zone));
-        sb->property_add(Ioss::Property("section", ibc+1));
+        sb->property_add(Ioss::Property("section", ibc + 1));
       }
       else {
         Ioss::IJK_t zeros{{0, 0, 0}};
@@ -383,7 +383,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
         sset->add(sb);
         sb->property_add(Ioss::Property("base", base));
         sb->property_add(Ioss::Property("zone", zone));
-        sb->property_add(Ioss::Property("section", ibc+1));
+        sb->property_add(Ioss::Property("section", ibc + 1));
       }
     }
     else {
