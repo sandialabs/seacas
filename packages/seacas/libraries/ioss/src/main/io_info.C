@@ -406,7 +406,10 @@ namespace {
     int64_t                total_sides = 0;
     for (auto fs : fss) {
       if (!summary) {
-        OUTPUT << '\n' << name(fs) << " id: " << std::setw(6) << id(fs) << ":";
+        OUTPUT << '\n' << name(fs) << " id: " << std::setw(6) << id(fs);
+        if (fs->property_exists("bc_type")) {
+          OUTPUT << ", boundary condition type: " << fs->get_property("bc_type").get_int();
+        }
         info_aliases(region, fs, true, false);
         if (interface.adjacencies()) {
           std::vector<std::string> blocks;
