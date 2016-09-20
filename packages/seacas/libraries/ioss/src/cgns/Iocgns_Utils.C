@@ -173,7 +173,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
     cgsize_t    num_geo = 0;
     cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
 #if defined(IOSS_DEBUG_OUTPUT)
-    std::cout << "Family " << family << " named " << boconame << " has " << num_bc << " BC, and "
+    std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
               << num_geo << " geometry references\n";
 #endif
     if (num_bc > 0) {
