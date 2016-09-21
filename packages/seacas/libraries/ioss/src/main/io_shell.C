@@ -688,7 +688,7 @@ namespace {
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
     const auto &nbs = region.get_node_blocks();
-    size_t                   id  = 1;
+    size_t      id  = 1;
     for (const auto &inb : nbs) {
       std::string name = inb->name();
       if (debug) {
@@ -841,14 +841,14 @@ namespace {
   void transfer_sidesets(Ioss::Region &region, Ioss::Region &output_region, bool debug)
   {
     const auto &fss         = region.get_sidesets();
-    size_t                 total_sides = 0;
+    size_t      total_sides = 0;
     for (const auto &ss : fss) {
       std::string name = ss->name();
       if (debug) {
         OUTPUT << name << ", ";
       }
 
-      auto                     surf = new Ioss::SideSet(output_region.get_database(), name);
+      auto        surf = new Ioss::SideSet(output_region.get_database(), name);
       const auto &fbs  = ss->get_side_blocks();
       for (const auto &fb : fbs) {
         std::string fbname = fb->name();
