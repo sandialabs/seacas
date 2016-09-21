@@ -101,6 +101,7 @@ namespace Iocgns {
 
     // Metadata-related functions.
     void read_meta_data() override;
+    void write_meta_data();
 
   private:
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);

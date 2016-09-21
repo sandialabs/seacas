@@ -86,12 +86,6 @@ namespace Iocgns {
   {
     dbState = Ioss::STATE_UNKNOWN;
 
-    if (!is_input()) {
-      std::ostringstream errmsg;
-      errmsg << "ERROR: IOSS CGNS Currently only supports reading, not writing.\n";
-      IOSS_ERROR(errmsg);
-    }
-
     std::cout << "CGNS DatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
     if (CG_SIZEOF_SIZE == 64) {
       set_int_byte_size_api(Ioss::USE_INT64_API);
@@ -103,15 +97,15 @@ namespace Iocgns {
   void DatabaseIO::openDatabase() const
   {
     if (cgnsFilePtr < 0) {
-      if (is_input()) {
-        int ierr = cg_open(get_filename().c_str(), CG_MODE_READ, &cgnsFilePtr);
-        if (ierr != CG_OK) {
-          // NOTE: Code will not continue past this call...
-          std::ostringstream errmsg;
-          errmsg << "ERROR: Problem opening file '" << get_filename() << "' for read access. "
-                 << "CGNS Error: '" << cg_get_error() << "'";
-          IOSS_ERROR(errmsg);
-        }
+      int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
+      int ierr = cg_open(get_filename().c_str(), mode, &cgnsFilePtr);
+      if (ierr != CG_OK) {
+        // NOTE: Code will not continue past this call...
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Problem opening file '" << get_filename() << "' for "
+               << (is_input() ? "read" : "write") << " access. "
+               << "CGNS Error: '" << cg_get_error() << "'";
+        IOSS_ERROR(errmsg);
       }
     }
     assert(cgnsFilePtr >= 0);
@@ -480,9 +474,110 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
+  void DatabaseIO::write_meta_data()
+  {
+    // Make sure mesh is not hybrid...
+    if (get_region()->mesh_type() == Ioss::MeshType::HYBRID) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: The mesh on region " << get_region()->name()
+             << " is of type 'hybrid'."
+             << " This is currently not allowed or supported.";
+      IOSS_ERROR(errmsg);
+    }
+
+    int base = 0;
+    cg_base_write(cgnsFilePtr, "Base", 3, 3, &base);
+    cg_goto(cgnsFilePtr, base, "end");
+    cg_descriptor_write("Information", "IOSS: CGNS Writer version -1");
+
+    // Output the sidesets as Family_t nodes
+
+    const auto &sidesets = get_region()->get_sidesets();
+    for (const auto &ss : sidesets) {
+      int fam = 0;
+      cg_family_write(cgnsFilePtr, base, ss->name().c_str(), &fam);
+      int         bc_index = 0;
+      CG_BCType_t bocotype = CG_BCTypeNull;
+      if (ss->property_exists("bc_type")) {
+        bocotype = (CG_BCType_t)ss->get_property("bc_type").get_int();
+      }
+
+      int64_t id = fam;
+      if (ss->property_exists("id")) {
+        id = ss->get_property("id").get_int();
+      }
+
+      cg_fambc_write(cgnsFilePtr, base, fam, "FamBC", bocotype, &bc_index);
+
+      int ierr = cg_goto(cgnsFilePtr, base, "Family_t", fam, NULL);
+      if (ierr != CG_OK) {
+        // NOTE: Code will not continue past this call...
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Problem call cg_goto for node " << fam << ", CGNS Error: '"
+               << cg_get_error() << "'";
+        IOSS_ERROR(errmsg);
+      }
+      cg_descriptor_write("FamBC_TypeId", Ioss::Utils::to_string(bocotype).c_str());
+      cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]);
+      cg_descriptor_write("FamBC_UserId", Ioss::Utils::to_string(id).c_str());
+      cg_descriptor_write("FamBC_UserName", ss->name().c_str());
+    }
+
+    const auto &element_blocks = get_region()->get_element_blocks();
+    for (const auto &eb : element_blocks) {
+      int      zone    = 0;
+      cgsize_t size[3] = {1, 0, 0};
+      size[1]          = eb->get_property("entity_count").get_int();
+      int ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
+      if (ierr != CG_OK) {
+        // NOTE: Code will not continue past this call...
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Problem call cg_zone_write for node " << zone << ", CGNS Error: '"
+               << cg_get_error() << "'";
+        IOSS_ERROR(errmsg);
+      }
+    }
+
+    const auto &structured_blocks = get_region()->get_structured_blocks();
+    for (const auto &sb : structured_blocks) {
+      int      zone    = 0;
+      cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+      size[3]          = sb->get_property("ni").get_int();
+      size[4]          = sb->get_property("nj").get_int();
+      size[5]          = sb->get_property("nk").get_int();
+
+      size[0] = size[3] + 1;
+      size[1] = size[4] + 1;
+      size[2] = size[5] + 1;
+
+      int ierr = cg_zone_write(cgnsFilePtr, base, sb->name().c_str(), size, CG_Structured, &zone);
+      if (ierr != CG_OK) {
+        // NOTE: Code will not continue past this call...
+        std::ostringstream errmsg;
+        errmsg << "ERROR: Problem call cg_zone_write for node " << zone << ", CGNS Error: '"
+               << cg_get_error() << "'";
+        IOSS_ERROR(errmsg);
+      }
+    }
+  }
+
   bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end(Ioss::State state)
+  {
+    // Transitioning out of state 'state'
+    assert(state == dbState);
+    switch (state) {
+    case Ioss::STATE_DEFINE_MODEL:
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+        write_meta_data();
+      }
+      break;
+    default: // ignore everything else...
+      break;
+    }
+    return true;
+  }
 
   bool DatabaseIO::begin_state(Ioss::Region * /*region*/, int /* state */, double /*time*/)
   {
