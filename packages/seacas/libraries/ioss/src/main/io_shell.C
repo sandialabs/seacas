@@ -136,6 +136,7 @@ namespace {
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_elementblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
+  void transfer_structuredblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_edgeblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_faceblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug);
   void transfer_nodesets(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -345,9 +346,10 @@ namespace {
       // NOTE: 'region' owns 'db' pointer at this time...
       Ioss::Region region(dbi, "region_1");
 
-      if (region.mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-        OUTPUT << "\nERROR: io_shell does not support '" << region.mesh_type_string()
-               << "' meshes.  Only 'Unstructured' mesh is supported at this time.\n";
+      if (region.mesh_type() == Ioss::MeshType::HYBRID) {
+        OUTPUT
+            << "\nERROR: io_shell does not support '" << region.mesh_type_string()
+            << "' meshes.  Only 'Unstructured' or 'Structured' mesh is supported at this time.\n";
         return;
       }
 
@@ -427,6 +429,7 @@ namespace {
       transfer_edgeblocks(region, output_region, interface.debug);
       transfer_faceblocks(region, output_region, interface.debug);
       transfer_elementblocks(region, output_region, interface.debug);
+      transfer_structuredblocks(region, output_region, interface.debug);
 
       transfer_nodesets(region, output_region, interface.debug);
       transfer_edgesets(region, output_region, interface.debug);
@@ -824,6 +827,40 @@ namespace {
   {
     const auto &ebs = region.get_element_blocks();
     transfer_blocks(ebs, output_region, debug);
+  }
+
+  void transfer_structuredblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug)
+  {
+    auto blocks = region.get_structured_blocks();
+    if (!blocks.empty()) {
+      size_t total_entities = 0;
+      for (const auto &iblock : blocks) {
+        std::string name = iblock->name();
+        if (debug) {
+          OUTPUT << name << ", ";
+        }
+        size_t count = iblock->get_property("entity_count").get_int();
+        total_entities += count;
+
+        auto ni    = iblock->get_property("ni").get_int();
+        auto nj    = iblock->get_property("nj").get_int();
+        auto nk    = iblock->get_property("nk").get_int();
+        auto block = new Ioss::StructuredBlock(output_region.get_database(), name, 3, ni, nj, nk);
+
+        output_region.add(block);
+        transfer_properties(iblock, block);
+        transfer_fields(iblock, block, Ioss::Field::MESH);
+        transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
+      }
+      if (!debug) {
+        OUTPUT << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
+               << "s            =" << std::setw(12) << blocks.size() << "\t"
+               << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
+      }
+      else {
+        OUTPUT << '\n';
+      }
+    }
   }
 
   void transfer_edgeblocks(Ioss::Region &region, Ioss::Region &output_region, bool debug)
