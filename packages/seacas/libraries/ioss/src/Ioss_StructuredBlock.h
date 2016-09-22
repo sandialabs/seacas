@@ -156,6 +156,8 @@ namespace Ioss {
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
                     Ioss::IJK_t &ordinal, Ioss::IJK_t &offset, Ioss::IJK_t &global_ordinal);
 
+    StructuredBlock *clone(DatabaseIO *database) const;
+
     ~StructuredBlock() override;
 
     std::string type_string() const override { return "StructuredBlock"; }

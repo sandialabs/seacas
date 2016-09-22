@@ -179,6 +179,22 @@ namespace Ioss {
 
   StructuredBlock::~StructuredBlock() = default;
 
+  StructuredBlock *StructuredBlock::clone(DatabaseIO *database) const
+  {
+    int index_dim = properties.get("component_degree").get_int();
+
+    IJK_t ijk{m_ni, m_nj, m_nk};
+    IJK_t offset{m_offsetI, m_offsetJ, m_offsetK};
+    IJK_t ijk_glob{m_niGlobal, m_njGlobal, m_nkGlobal};
+
+    auto block = new StructuredBlock(database, name(), index_dim, ijk, offset, ijk_glob);
+
+    block->m_zoneConnectivity   = m_zoneConnectivity;
+    block->m_boundaryConditions = m_boundaryConditions;
+
+    return block;
+  }
+
   Property StructuredBlock::get_implicit_property(const std::string &my_name) const
   {
     return GroupingEntity::get_implicit_property(my_name);
