@@ -475,6 +475,11 @@ namespace {
       transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
                           interface);
 
+      transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::MESH,
+                          interface);
+      transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+                          interface);
+
       transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::MESH, interface);
       transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::ATTRIBUTE, interface);
 
@@ -842,11 +847,7 @@ namespace {
         size_t count = iblock->get_property("entity_count").get_int();
         total_entities += count;
 
-        auto ni    = iblock->get_property("ni").get_int();
-        auto nj    = iblock->get_property("nj").get_int();
-        auto nk    = iblock->get_property("nk").get_int();
-        auto block = new Ioss::StructuredBlock(output_region.get_database(), name, 3, ni, nj, nk);
-
+        auto block = iblock->clone(output_region.get_database());
         output_region.add(block);
         transfer_properties(iblock, block);
         transfer_fields(iblock, block, Ioss::Field::MESH);
@@ -1241,12 +1242,9 @@ namespace {
     // Complication here is that if the 'role' is 'Ioss::Field::MESH',
     // then the 'ids' field must be transferred first...
     if (role == Ioss::Field::MESH) {
-      for (const auto &field_name : state_fields) {
-        assert(oge->field_exists(field_name));
-        if (field_name == "ids") {
-          transfer_field_data_internal(ige, oge, field_name, interface);
-          break;
-        }
+      if (ige->field_exists("ids")) {
+        assert(oge->field_exists("ids"));
+        transfer_field_data_internal(ige, oge, "ids", interface);
       }
     }
 
@@ -1258,10 +1256,11 @@ namespace {
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
-
-      if (field_name != "ids" &&
-          (prefix.length() == 0 ||
-           std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
+      if (field_name == "ids") {
+        continue;
+      }
+      if (prefix.length() == 0 ||
+          std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, field_name, interface);
       }
