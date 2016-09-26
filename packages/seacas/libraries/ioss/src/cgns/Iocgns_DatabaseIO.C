@@ -105,6 +105,16 @@ namespace Iocgns {
                << "CGNS Error: '" << cg_get_error() << "'";
         IOSS_ERROR(errmsg);
       }
+#if 0
+      // This isn't currently working since CGNS currently has chunking
+      // disabled for HDF5 files and compression requires chunking.
+      if (!is_input()) {
+	if (properties.exists("COMPRESSION_LEVEL")) {
+	  int comp = properties.get("COMPRESSION_LEVEL").get_int();
+	  cg_configure(CG_CONFIG_HDF5_COMPRESS, (void*)comp);
+	}
+      }
+#endif
     }
     assert(cgnsFilePtr >= 0);
   }
