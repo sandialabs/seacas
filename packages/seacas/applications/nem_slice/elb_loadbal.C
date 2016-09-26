@@ -89,7 +89,8 @@ int is_tet(E_Type etype)
 int is_3d_element(E_Type etype)
 {
   return (is_hex(etype) || is_tet(etype) || etype == WEDGE6 || etype == WEDGE15 ||
-          etype == WEDGE16 || etype == PYRAMID5 || etype == PYRAMID13);
+          etype == WEDGE16 || etype == PYRAMID5 || etype == PYRAMID13 || etype == PYRAMID14 ||
+	  etype == PYRAMID18 || etype == PYRAMID19);
 }
 
 int ilog2i(size_t n)
@@ -1209,9 +1210,7 @@ namespace {
         E_Type etype = mesh->elem_type[ecnt];
 
         /* need to check for volume elements */
-        if (etype == HEX8 || etype == HEXSHELL || etype == HEX20 || etype == TET4 ||
-            etype == TET10 || etype == WEDGE6 || etype == WEDGE15 || etype == WEDGE16 ||
-            etype == PYRAMID5 || etype == PYRAMID13 || etype == TET8) {
+        if (is_3d_element(etype)) {
 
           int nnodes = get_elem_info(NNODES, mesh->elem_type[ecnt]);
 
