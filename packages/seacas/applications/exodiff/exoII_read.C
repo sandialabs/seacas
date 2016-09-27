@@ -424,7 +424,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Node_Map()
   SMART_ASSERT(node_map != nullptr);
 
   ex_opts(0); // Temporarily turn off error reporting in case map isn't stored.
-  int err = ex_get_node_num_map(file_id, node_map);
+  int err = ex_get_id_map(file_id, EX_NODE_MAP, node_map);
   ex_opts(EX_VERBOSE);
 
   if (err < 0) {
@@ -465,7 +465,7 @@ template <typename INT> std::string ExoII_Read<INT>::Load_Elmt_Map()
   SMART_ASSERT(elmt_map != nullptr);
 
   ex_opts(0); // Temporarily turn off error reporting in case map isn't stored.
-  int err = ex_get_elem_num_map(file_id, elmt_map);
+  int err = ex_get_id_map(file_id, EX_ELEM_MAP, elmt_map);
   ex_opts(EX_VERBOSE);
 
   if (err < 0) {

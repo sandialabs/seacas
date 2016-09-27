@@ -479,7 +479,8 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
       int  num_elem = 0;
       int  num_node = 0;
       int  num_attr = 0;
-      ex_get_elem_block(exo_file, ids[i], type, &num_elem, &num_node, &num_attr);
+      ex_get_block(exo_file, EX_ELEM_BLOCK, ids[i], type, &num_elem, &num_node, NULL, NULL,
+                   &num_attr);
       types[i]             = std::string(type);
       num_elem_in_block[i] = num_elem;
       num_node_per_elem[i] = num_node;
@@ -537,7 +538,8 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
       int num_elem = 0;
       int num_node = 0;
       int num_attr = 0;
-      ex_get_elem_block(exo_file, ids[i], TOPTR(type), &num_elem, &num_node, &num_attr);
+      ex_get_block(exo_file, EX_ELEM_BLOCK, ids[i], TOPTR(type), &num_elem, &num_node, NULL, NULL,
+                   &num_attr);
       types += type.data();
       types += "\n";
       num_elem_in_block[i] = num_elem;
@@ -623,7 +625,7 @@ std::vector<int> handle_node_sets(int exo_file, int num_sets, bool use_cell_arra
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
         /* distribution-factors list */
-        ex_get_node_set_dist_fact(exo_file, ids[i], &dist_fac[df_off]);
+        ex_get_set_dist_fact(exo_file, EX_NODE_SET, ids[i], &dist_fac[df_off]);
         index               = 4 * i + 3;
         cell_element[index] = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims,
                                             &dist_fac[df_off], MAT_F_DONT_COPY_DATA);
@@ -649,7 +651,7 @@ std::vector<int> handle_node_sets(int exo_file, int num_sets, bool use_cell_arra
 
         /* distribution-factors list */
         std::vector<double> dist_fac(num_df[i]);
-        ex_get_node_set_dist_fact(exo_file, ids[i], TOPTR(dist_fac));
+        ex_get_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fac));
         sprintf(str, "nsfac%02d", i + 1);
         PutDbl(str, dist_fac.size(), 1, TOPTR(dist_fac));
       }
@@ -727,10 +729,11 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
         num_sideset_sides[i] = n1;
         num_sideset_dfac[i]  = n2;
         ex_get_side_set_node_list_len(exo_file, ids[i], &num_sideset_nodes[i]);
-	if (n2 != num_sideset_nodes[i]) {
-	  std::cerr << "WARNING: Number of sideset nodes does not match number of distribution factors"
-		    << " for sideset with id = " << ids[i] << ".\n";
-	}
+        if (n2 != num_sideset_nodes[i]) {
+          std::cerr
+              << "WARNING: Number of sideset nodes does not match number of distribution factors"
+              << " for sideset with id = " << ids[i] << ".\n";
+        }
 
         /* element and side list for side sets (dgriffi) */
         ex_get_set(exo_file, EX_SIDE_SET, ids[i], &elem_list[side_off], &side_list[side_off]);
@@ -770,10 +773,10 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
 
         /* distribution-factors list */
         if (has_ss_dfac) {
-          ex_get_side_set_dist_fact(exo_file, ids[i], &ssdfac[df_off]);
+          ex_get_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], &ssdfac[df_off]);
         }
         else {
-	  n2 = num_sideset_dfac[i];
+          n2 = num_sideset_dfac[i];
           for (int j = 0; j < n2; j++) {
             ssdfac[j] = 1.0;
           }
@@ -826,7 +829,7 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
         /* distribution-factors list */
         ssdfac.resize(n2);
         if (has_ss_dfac) {
-          ex_get_side_set_dist_fact(exo_file, ids[i], TOPTR(ssdfac));
+          ex_get_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(ssdfac));
         }
         else {
           for (int j = 0; j < n2; j++) {
@@ -1258,13 +1261,13 @@ int main(int argc, char *argv[])
   }
   ex_opts(0); /* turn off error reporting. It is not an error to have no map*/
   std::vector<int> ids(num_nodes);
-  err = ex_get_node_num_map(exo_file, TOPTR(ids));
+  err = ex_get_id_map(exo_file, EX_NODE_MAP, TOPTR(ids));
   if (err == 0) {
     PutInt("node_num_map", num_nodes, 1, TOPTR(ids));
   }
 
   ids.resize(num_elements);
-  err = ex_get_elem_num_map(exo_file, TOPTR(ids));
+  err = ex_get_id_map(exo_file, EX_ELEM_MAP, TOPTR(ids));
   if (err == 0) {
     PutInt("elem_num_map", num_elements, 1, TOPTR(ids));
   }
