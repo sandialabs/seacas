@@ -709,7 +709,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         return (EX_FATAL);
       }
 
-      if (ex_get_side_set_ids(exoid, ids) == EX_FATAL) {
+      if (ex_get_ids(exoid, EX_SIDE_SET, ids) == EX_FATAL) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get side set ids in file id %d", exoid);
         ex_err("ex_inquire", errmsg, exerrval);
         free(ids);
