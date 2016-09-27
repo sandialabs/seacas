@@ -552,8 +552,20 @@ int main(int argc, char **argv)
   num_df_per_set[0]    = 5;
   num_df_per_set[1]    = 3;
 
-  error = ex_put_concat_node_sets(exoid, nsids, num_nodes_per_set, num_df_per_set, 0, 0, 0, 0);
+  {
+    struct ex_set_specs set_specs;
 
+    set_specs.sets_ids            = nsids;
+    set_specs.num_entries_per_set = num_nodes_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = NULL;
+    set_specs.sets_dist_index     = NULL;
+    set_specs.sets_entry_list     = NULL;
+    set_specs.sets_extra_list     = NULL;
+    set_specs.sets_dist_fact      = NULL;
+
+    error = ex_put_concat_sets(exoid, EX_NODE_SET, &set_specs);
+  }
   printf("after ex_put_concat_node_sets, error = %d\n", error);
 
   if (error) {
@@ -653,7 +665,19 @@ int main(int argc, char **argv)
   num_df_per_set[3] = 0;
   num_df_per_set[4] = 0;
 
-  error = ex_put_concat_side_sets(exoid, ssids, num_elem_per_set, num_df_per_set, 0, 0, 0, 0, 0);
+  {
+    struct ex_set_specs set_specs;
+
+    set_specs.sets_ids            = ssids;
+    set_specs.num_entries_per_set = num_elem_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = NULL;
+    set_specs.sets_dist_index     = NULL;
+    set_specs.sets_entry_list     = NULL;
+    set_specs.sets_extra_list     = NULL;
+    set_specs.sets_dist_fact      = NULL;
+    error                         = ex_put_concat_sets(exoid, EX_SIDE_SET, &set_specs);
+  }
   printf("after ex_put_concat_side_sets, error = %d\n", error);
 
   /* write individual side sets */

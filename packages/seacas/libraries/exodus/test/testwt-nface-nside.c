@@ -460,7 +460,7 @@ int main(int argc, char **argv)
     }
   }
 
-  error = ex_put_elem_var_tab(exoid, num_elem_blk, num_ele_vars, truth_tab);
+  error = ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
   printf("after ex_put_elem_var_tab, error = %d\n", error);
 
   if (error) {
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
       glob_var_vals[j] = (float)(j + 2) * time_value;
     }
 
-    error = ex_put_glob_vars(exoid, whole_time_step, num_glo_vars, glob_var_vals);
+    error = ex_put_var(exoid, whole_time_step, EX_GLOBAL, 1, 1, num_glo_vars, glob_var_vals);
     printf("after ex_put_glob_vars, error = %d\n", error);
 
     if (error) {

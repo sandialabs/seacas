@@ -301,8 +301,8 @@ int main(int argc, char **argv)
         if (strcmp(name, block_names[i]) != 0) {
           printf("error in ex_get_name for block id %d\n", ids[i]);
         }
-        error = ex_get_elem_block(exoid, ids[i], elem_type, &(num_elem_in_block[i]),
-                                  &(num_nodes_per_elem[i]), &(num_attr[i]));
+        error = ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], elem_type, &(num_elem_in_block[i]),
+                             &(num_nodes_per_elem[i]), &(num_attr[i]));
         printf("\nafter ex_get_elem_block, error = %d\n", error);
 
         printf("element block id = %2d\n", ids[i]);
@@ -348,7 +348,7 @@ int main(int argc, char **argv)
       if (num_elem_in_block[i] > 0) {
         connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
-        error = ex_get_elem_conn(exoid, ids[i], connect);
+        error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect);
         printf("\nafter ex_get_elem_conn, error = %d\n", error);
 
         printf("connect array for elem block %2d\n", ids[i]);
@@ -378,11 +378,11 @@ int main(int argc, char **argv)
           attrib_names[j] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
 
         attrib = (float *)calloc(num_attr[i] * num_elem_in_block[i], sizeof(float));
-        error  = ex_get_elem_attr(exoid, ids[i], attrib);
+        error  = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
         printf("\n after ex_get_elem_attr, error = %d\n", error);
 
         if (error == 0) {
-          error = ex_get_elem_attr_names(exoid, ids[i], attrib_names);
+          error = ex_get_attr_names(exoid, EX_ELEM_BLOCK, ids[i], attrib_names);
           printf(" after ex_get_elem_attr_names, error = %d\n", error);
 
           if (error == 0) {
@@ -421,7 +421,7 @@ int main(int argc, char **argv)
           printf("error in ex_get_name for nodeset id %d\n", ids[i]);
         }
 
-        error = ex_get_node_set_param(exoid, ids[i], &num_nodes_in_set, &num_df_in_set);
+        error = ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
         printf("\nafter ex_get_node_set_param, error = %3d\n", error);
 
         printf("\nnode set %2d parameters: \n", ids[i]);
@@ -431,11 +431,11 @@ int main(int argc, char **argv)
         node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
         dist_fact = (float *)calloc(num_nodes_in_set, sizeof(float));
 
-        error = ex_get_node_set(exoid, ids[i], node_list);
+        error = ex_get_set(exoid, EX_NODE_SET, ids[i], node_list);
         printf("\nafter ex_get_node_set, error = %3d\n", error);
 
         if (num_df_in_set > 0) {
-          error = ex_get_node_set_dist_fact(exoid, ids[i], dist_fact);
+          error = ex_get_set_dist_fact(exoid, EX_NODE_SET, ids[i], dist_fact);
           printf("\nafter ex_get_node_set_dist_fact, error = %3d\n", error);
         }
 
@@ -590,7 +590,7 @@ int main(int argc, char **argv)
           printf("error in ex_get_name for sideset id %d\n", ids[i]);
         }
 
-        error = ex_get_side_set_param(exoid, ids[i], &num_sides_in_set, &num_df_in_set);
+        error = ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_sides_in_set, &num_df_in_set);
         printf("\nafter ex_get_side_set_param, error = %3d\n", error);
 
         printf("side set %2d parameters:\n", ids[i]);
@@ -607,14 +607,14 @@ int main(int argc, char **argv)
         node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
         dist_fact       = (float *)calloc(num_df_in_set, sizeof(float));
 
-        error = ex_get_side_set(exoid, ids[i], elem_list, side_list);
+        error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
         printf("\nafter ex_get_side_set, error = %3d\n", error);
 
         error = ex_get_side_set_node_list(exoid, ids[i], node_ctr_list, node_list);
         printf("\nafter ex_get_side_set_node_list, error = %3d\n", error);
 
         if (num_df_in_set > 0) {
-          error = ex_get_side_set_dist_fact(exoid, ids[i], dist_fact);
+          error = ex_get_set_dist_fact(exoid, EX_SIDE_SET, ids[i], dist_fact);
           printf("\nafter ex_get_side_set_dist_fact, error = %3d\n", error);
         }
 
@@ -861,7 +861,7 @@ int main(int argc, char **argv)
       if (num_ele_vars > 0) {
         truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
 
-        error = ex_get_elem_var_tab(exoid, num_elem_blk, num_ele_vars, truth_tab);
+        error = ex_get_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
         printf("\nafter ex_get_elem_var_tab, error = %3d\n", error);
 
         printf("This is the element variable truth table:\n");
@@ -900,7 +900,7 @@ int main(int argc, char **argv)
         if (num_nset_vars > 0) {
           truth_tab = (int *)calloc((num_node_sets * num_nset_vars), sizeof(int));
 
-          error = ex_get_nset_var_tab(exoid, num_node_sets, num_nset_vars, truth_tab);
+          error = ex_get_truth_table(exoid, EX_NODE_SET, num_node_sets, num_nset_vars, truth_tab);
           printf("\nafter ex_get_nset_var_tab, error = %3d\n", error);
 
           printf("This is the nodeset variable truth table:\n");
@@ -940,7 +940,7 @@ int main(int argc, char **argv)
         if (num_sset_vars > 0) {
           truth_tab = (int *)calloc((num_side_sets * num_sset_vars), sizeof(int));
 
-          error = ex_get_sset_var_tab(exoid, num_side_sets, num_sset_vars, truth_tab);
+          error = ex_get_truth_table(exoid, EX_SIDE_SET, num_side_sets, num_sset_vars, truth_tab);
           printf("\nafter ex_get_sset_var_tab, error = %3d\n", error);
 
           printf("This is the sideset variable truth table:\n");
@@ -1016,7 +1016,7 @@ int main(int argc, char **argv)
     if (num_nodes > 0) {
       var_values = (float *)calloc(num_nodes, sizeof(float));
 
-      error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes, var_values);
+      error = ex_get_var(exoid, time_step, EX_NODAL, var_index, 1, num_nodes, var_values);
       printf("\nafter ex_get_nodal_var, error = %3d\n", error);
 
       printf("nodal variable %2d values at time step %2d\n", var_index, time_step);
@@ -1051,8 +1051,8 @@ int main(int argc, char **argv)
         if (num_elem_in_block[i] > 0) {
           var_values = (float *)calloc(num_elem_in_block[i], sizeof(float));
 
-          error = ex_get_elem_var(exoid, time_step, var_index, ids[i], num_elem_in_block[i],
-                                  var_values);
+          error = ex_get_var(exoid, time_step, EX_ELEM_BLOCK, var_index, ids[i],
+                             num_elem_in_block[i], var_values);
           printf("\nafter ex_get_elem_var, error = %3d\n", error);
 
           if (!error) {
@@ -1075,7 +1075,8 @@ int main(int argc, char **argv)
 
       var_index = 2;
       elem_num  = 2;
-      error     = ex_get_elem_var_time(exoid, var_index, elem_num, beg_time, end_time, var_values);
+      error     = ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time,
+                              var_values);
       printf("\nafter ex_get_elem_var_time, error = %3d\n", error);
 
       printf("element variable %2d values for element %2d through time:\n", var_index, elem_num);
@@ -1096,8 +1097,8 @@ int main(int argc, char **argv)
       for (i = 0; i < num_side_sets; i++) {
         var_values = (float *)calloc(num_elem_per_set[i], sizeof(float));
 
-        error =
-            ex_get_sset_var(exoid, time_step, var_index, ids[i], num_elem_per_set[i], var_values);
+        error = ex_get_var(exoid, time_step, EX_SIDE_SET, var_index, ids[i], num_elem_per_set[i],
+                           var_values);
         printf("\nafter ex_get_sset_var, error = %3d\n", error);
 
         if (!error) {
@@ -1124,8 +1125,8 @@ int main(int argc, char **argv)
       for (i = 0; i < num_node_sets; i++) {
         var_values = (float *)calloc(num_nodes_per_set[i], sizeof(float));
 
-        error =
-            ex_get_nset_var(exoid, time_step, var_index, ids[i], num_nodes_per_set[i], var_values);
+        error = ex_get_var(exoid, time_step, EX_NODE_SET, var_index, ids[i], num_nodes_per_set[i],
+                           var_values);
         printf("\nafter ex_get_nset_var, error = %3d\n", error);
 
         if (!error) {

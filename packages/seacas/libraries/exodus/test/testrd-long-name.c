@@ -520,8 +520,21 @@ int main(int argc, char **argv)
     printf("\nafter ex_inquire: EX_INQ_NS_DF_LEN = %d, error = %3d\n", list_len, error);
     dist_fact = (float *)calloc(list_len, sizeof(float));
 
-    error = ex_get_concat_node_sets(exoid, ids, num_nodes_per_set, num_df_per_set, node_ind, df_ind,
-                                    node_list, dist_fact);
+    {
+      struct ex_set_specs set_specs;
+
+      set_specs.sets_ids            = ids;
+      set_specs.num_entries_per_set = num_nodes_per_set;
+      set_specs.num_dist_per_set    = num_df_per_set;
+      set_specs.sets_entry_index    = node_ind;
+      set_specs.sets_dist_index     = df_ind;
+      set_specs.sets_entry_list     = node_list;
+      set_specs.sets_extra_list     = NULL;
+      set_specs.sets_dist_fact      = dist_fact;
+
+      error = ex_get_concat_sets(exoid, EX_NODE_SET, &set_specs);
+    }
+
     printf("\nafter ex_get_concat_node_sets, error = %3d\n", error);
 
     printf("\nconcatenated node set info\n");
@@ -686,6 +699,8 @@ int main(int argc, char **argv)
     /* concatenated side set read */
 
     if (num_side_sets > 0) {
+      struct ex_set_specs set_specs;
+
       ids              = (int *)calloc(num_side_sets, sizeof(int));
       num_elem_per_set = (int *)calloc(num_side_sets, sizeof(int));
       num_df_per_set   = (int *)calloc(num_side_sets, sizeof(int));
@@ -695,8 +710,16 @@ int main(int argc, char **argv)
       side_list        = (int *)calloc(elem_list_len, sizeof(int));
       dist_fact        = (float *)calloc(df_list_len, sizeof(float));
 
-      error = ex_get_concat_side_sets(exoid, ids, num_elem_per_set, num_df_per_set, elem_ind,
-                                      df_ind, elem_list, side_list, dist_fact);
+      set_specs.sets_ids            = ids;
+      set_specs.num_entries_per_set = num_elem_per_set;
+      set_specs.num_dist_per_set    = num_df_per_set;
+      set_specs.sets_entry_index    = elem_ind;
+      set_specs.sets_dist_index     = df_ind;
+      set_specs.sets_entry_list     = elem_list;
+      set_specs.sets_extra_list     = side_list;
+      set_specs.sets_dist_fact      = dist_fact;
+
+      error = ex_get_concat_sets(exoid, EX_SIDE_SET, &set_specs);
       printf("\nafter ex_get_concat_side_sets, error = %3d\n", error);
 
       printf("concatenated side set info\n");

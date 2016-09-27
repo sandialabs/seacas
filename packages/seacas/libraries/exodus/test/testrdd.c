@@ -212,8 +212,8 @@ int main(int argc, char **argv)
   printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
 
   for (i = 0; i < num_elem_blk; i++) {
-    error = ex_get_elem_block(exoid, ids[i], elem_type, &(num_elem_in_block[i]),
-                              &(num_nodes_per_elem[i]), &(num_attr[i]));
+    error = ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], elem_type, &(num_elem_in_block[i]),
+                         &(num_nodes_per_elem[i]), 0, 0, &(num_attr[i]));
     printf("\nafter ex_get_elem_block, error = %d\n", error);
 
     printf("element block id = %2d\n", ids[i]);
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
   for (i = 0; i < num_elem_blk; i++) {
     connect = (int *)calloc((num_nodes_per_elem[i] * num_elem_in_block[i]), sizeof(int));
 
-    error = ex_get_elem_conn(exoid, ids[i], connect);
+    error = ex_get_conn(exoid, EX_ELEM_BLOCK, ids[i], connect, NULL, NULL);
     printf("\nafter ex_get_elem_conn, error = %d\n", error);
 
     printf("connect array for elem block %2d\n", ids[i]);
@@ -262,23 +262,13 @@ int main(int argc, char **argv)
     for (j = 0; j < num_nodes_per_elem[i]; j++) {
       printf("%3d\n", connect[j]);
     }
-    /*
-          error = ex_get_1_elem_conn (exoid, 1, ids[i], connect);
-          printf ("\nafter ex_get_elem_conn, error = %d\n", error);
-
-          printf ("node list for first element of element block %d \n ", ids[i]);
-          for (j=0; j<num_nodes_per_elem[i]; j++)
-          {
-             printf ("%d \n", connect[j]);
-          }
-    */
     free(connect);
   }
 
   /* read element block attributes */
 
   for (i = 0; i < num_elem_blk; i++) {
-    error = ex_get_elem_attr(exoid, ids[i], attrib);
+    error = ex_get_attr(exoid, EX_ELEM_BLOCK, ids[i], attrib);
     printf("\n after ex_get_elem_attr, error = %d\n", error);
 
     if (error == 0)
@@ -297,7 +287,7 @@ int main(int argc, char **argv)
   printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
   for (i = 0; i < num_node_sets; i++) {
-    error = ex_get_node_set_param(exoid, ids[i], &num_nodes_in_set, &num_df_in_set);
+    error = ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_nodes_in_set, &num_df_in_set);
     printf("\nafter ex_get_node_set_param, error = %3d\n", error);
 
     printf("\nnode set %2d parameters: \n", ids[i]);
@@ -306,11 +296,11 @@ int main(int argc, char **argv)
     node_list = (int *)calloc(num_nodes_in_set, sizeof(int));
     dist_fact = (double *)calloc(num_nodes_in_set, sizeof(double));
 
-    error = ex_get_node_set(exoid, ids[i], node_list);
+    error = ex_get_set(exoid, EX_NODE_SET, ids[i], node_list, NULL);
     printf("\nafter ex_get_node_set, error = %3d\n", error);
 
     if (num_df_in_set > 0) {
-      error = ex_get_node_set_dist_fact(exoid, ids[i], dist_fact);
+      error = ex_get_set_dist_fact(exoid, EX_NODE_SET, ids[i], dist_fact);
       printf("\nafter ex_get_node_set_dist_fact, error = %3d\n", error);
     }
 
@@ -383,8 +373,20 @@ int main(int argc, char **argv)
   printf("\nafter ex_inquire: EX_INQ_NS_DF_LEN = %d, error = %3d\n", list_len, error);
   dist_fact = (double *)calloc(list_len, sizeof(double));
 
-  error = ex_get_concat_node_sets(exoid, ids, num_nodes_per_set, num_df_per_set, node_ind, df_ind,
-                                  node_list, dist_fact);
+  {
+    struct ex_set_specs set_specs;
+
+    set_specs.sets_ids            = ids;
+    set_specs.num_entries_per_set = num_nodes_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = node_ind;
+    set_specs.sets_dist_index     = df_ind;
+    set_specs.sets_entry_list     = node_list;
+    set_specs.sets_extra_list     = NULL;
+    set_specs.sets_dist_fact      = dist_fact;
+
+    error = ex_get_concat_sets(exoid, EX_NODE_SET, &set_specs);
+  }
   printf("\nafter ex_get_concat_node_sets, error = %3d\n", error);
 
   printf("\nconcatenated node set info\n");
@@ -425,7 +427,7 @@ int main(int argc, char **argv)
   printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
 
   for (i = 0; i < num_side_sets; i++) {
-    error = ex_get_side_set_param(exoid, ids[i], &num_sides_in_set, &num_df_in_set);
+    error = ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_sides_in_set, &num_df_in_set);
     printf("\nafter ex_get_side_set_param, error = %3d\n", error);
 
     printf("side set %2d parameters:\n", ids[i]);
@@ -440,14 +442,14 @@ int main(int argc, char **argv)
     node_list       = (int *)calloc(num_elem_in_set * 21, sizeof(int));
     dist_fact       = (double *)calloc(num_df_in_set, sizeof(double));
 
-    error = ex_get_side_set(exoid, ids[i], elem_list, side_list);
+    error = ex_get_set(exoid, EX_SIDE_SET, ids[i], elem_list, side_list);
     printf("\nafter ex_get_side_set, error = %3d\n", error);
 
     error = ex_get_side_set_node_list(exoid, ids[i], node_ctr_list, node_list);
     printf("\nafter ex_get_side_set_node_list, error = %3d\n", error);
 
     if (num_df_in_set > 0) {
-      error = ex_get_side_set_dist_fact(exoid, ids[i], dist_fact);
+      error = ex_get_set_dist_fact(exoid, EX_SIDE_SET, ids[i], dist_fact);
       printf("\nafter ex_get_side_set_dist_fact, error = %3d\n", error);
     }
 
@@ -542,8 +544,20 @@ int main(int argc, char **argv)
   side_list        = (int *)calloc(elem_list_len, sizeof(int));
   dist_fact        = (double *)calloc(df_list_len, sizeof(double));
 
-  error = ex_get_concat_side_sets(exoid, ids, num_elem_per_set, num_df_per_set, elem_ind, df_ind,
-                                  elem_list, side_list, dist_fact);
+  {
+    struct ex_set_specs set_specs;
+    set_specs.sets_ids            = ids;
+    set_specs.num_entries_per_set = num_elem_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = elem_ind;
+    set_specs.sets_dist_index     = df_ind;
+    set_specs.sets_entry_list     = elem_list;
+    set_specs.sets_extra_list     = side_list;
+    set_specs.sets_dist_fact      = dist_fact;
+
+    error = ex_get_concat_sets(exoid, EX_SIDE_SET, &set_specs);
+  }
+
   printf("\nafter ex_get_concat_side_sets, error = %3d\n", error);
 
   printf("concatenated side set info\n");
@@ -688,7 +702,7 @@ int main(int argc, char **argv)
 
   truth_tab = (int *)calloc((num_elem_blk * num_ele_vars), sizeof(int));
 
-  error = ex_get_elem_var_tab(exoid, num_elem_blk, num_ele_vars, truth_tab);
+  error = ex_get_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars, truth_tab);
   printf("\nafter ex_get_elem_var_tab, error = %3d\n", error);
 
   printf("This is the element variable truth table:\n");
@@ -730,7 +744,7 @@ int main(int argc, char **argv)
 
   var_values = (double *)calloc(num_glo_vars, sizeof(double));
 
-  error = ex_get_glob_vars(exoid, time_step, num_glo_vars, var_values);
+  error = ex_get_var(exoid, time_step, EX_GLOBAL, 1, 1, num_glo_vars, var_values);
   printf("\nafter ex_get_glob_vars, error = %3d\n", error);
 
   printf("global variable values at time step %2d\n", time_step);
@@ -760,7 +774,7 @@ int main(int argc, char **argv)
 
   var_values = (double *)calloc(num_nodes, sizeof(double));
 
-  error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes, var_values);
+  error = ex_get_var(exoid, time_step, EX_NODAL, var_index, 1, num_nodes, var_values);
   printf("\nafter ex_get_nodal_var, error = %3d\n", error);
 
   printf("nodal variable %2d values at time step %2d\n", var_index, time_step);
@@ -793,7 +807,8 @@ int main(int argc, char **argv)
   for (i = 0; i < num_elem_blk; i++) {
     var_values = (double *)calloc(num_elem_in_block[i], sizeof(double));
 
-    error = ex_get_elem_var(exoid, time_step, var_index, ids[i], num_elem_in_block[i], var_values);
+    error = ex_get_var(exoid, time_step, EX_ELEM_BLOCK, var_index, ids[i], num_elem_in_block[i],
+                       var_values);
     printf("\nafter ex_get_elem_var, error = %3d\n", error);
 
     if (!error) {
@@ -814,7 +829,8 @@ int main(int argc, char **argv)
 
   var_index = 2;
   elem_num  = 2;
-  error     = ex_get_elem_var_time(exoid, var_index, elem_num, beg_time, end_time, var_values);
+  error =
+      ex_get_var_time(exoid, EX_ELEM_BLOCK, var_index, elem_num, beg_time, end_time, var_values);
   printf("\nafter ex_get_elem_var_time, error = %3d\n", error);
 
   printf("element variable %2d values for element %2d through time:\n", var_index, elem_num);

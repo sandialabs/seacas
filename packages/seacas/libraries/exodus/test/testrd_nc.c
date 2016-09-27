@@ -383,8 +383,20 @@ int main(int argc, char **argv)
   printf("\nafter ex_inquire: EX_INQ_NS_DF_LEN = %d, error = %3d\n", list_len, error);
   dist_fact = (float *)calloc(list_len, sizeof(float));
 
-  error = ex_get_concat_node_sets(exoid, ids, num_nodes_per_set, num_df_per_set, node_ind, df_ind,
-                                  node_list, dist_fact);
+  {
+    struct ex_set_specs set_specs;
+
+    set_specs.sets_ids            = ids;
+    set_specs.num_entries_per_set = num_nodes_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = node_ind;
+    set_specs.sets_dist_index     = df_ind;
+    set_specs.sets_entry_list     = node_list;
+    set_specs.sets_extra_list     = NULL;
+    set_specs.sets_dist_fact      = dist_fact;
+
+    error = ex_get_concat_sets(exoid, EX_NODE_SET, &set_specs);
+  }
   printf("\nafter ex_get_concat_node_sets, error = %3d\n", error);
 
   printf("\nconcatenated node set info\n");
@@ -517,16 +529,21 @@ int main(int argc, char **argv)
 
   if (num_side_sets > 0) {
     error = ex_inquire(exoid, EX_INQ_SS_ELEM_LEN, &elem_list_len, &fdum, cdum);
-    printf("\nafter ex_inquire: EX_INQ_SS_ELEM_LEN = %d,  error = %d\n", elem_list_len, error);
+    printf("\nafter ex_inquire: EX_INQ_SS_ELEM_LEN = %d,  error = "
+           "%d\n",
+           elem_list_len, error);
 
     error = ex_inquire(exoid, EX_INQ_SS_NODE_LEN, &node_list_len, &fdum, cdum);
-    printf("\nafter ex_inquire: EX_INQ_SS_NODE_LEN = %d,  error = %d\n", node_list_len, error);
+    printf("\nafter ex_inquire: EX_INQ_SS_NODE_LEN = %d,  error = "
+           "%d\n",
+           node_list_len, error);
 
     error = ex_inquire(exoid, EX_INQ_SS_DF_LEN, &df_list_len, &fdum, cdum);
     printf("\nafter ex_inquire: EX_INQ_SS_DF_LEN = %d,  error = %d\n", df_list_len, error);
   }
 
-  /* read concatenated side sets; this produces the same information as
+  /* read concatenated side sets; this produces the same information
+   * as
    * the above code which reads individual side sets
    */
 
@@ -541,8 +558,20 @@ int main(int argc, char **argv)
   side_list        = (int *)calloc(elem_list_len, sizeof(int));
   dist_fact        = (float *)calloc(df_list_len, sizeof(float));
 
-  error = ex_get_concat_side_sets(exoid, ids, num_elem_per_set, num_df_per_set, elem_ind, df_ind,
-                                  elem_list, side_list, dist_fact);
+  {
+    struct ex_set_specs set_specs;
+
+    set_specs.sets_ids            = ids;
+    set_specs.num_entries_per_set = num_elem_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = elem_ind;
+    set_specs.sets_dist_index     = df_ind;
+    set_specs.sets_entry_list     = elem_list;
+    set_specs.sets_extra_list     = side_list;
+    set_specs.sets_dist_fact      = dist_fact;
+    error                         = ex_get_concat_sets(exoid, EX_SIDE_SET, &set_specs);
+  }
+
   printf("\nafter ex_get_concat_side_sets, error = %3d\n", error);
 
   printf("concatenated side set info\n");
@@ -797,8 +826,9 @@ int main(int argc, char **argv)
     printf("\nafter ex_get_elem_var, error = %3d\n", error);
 
     if (!error) {
-      printf("element variable %2d values of element block %2d at time step %2d\n", var_index,
-             ids[i], time_step);
+      printf("element variable %2d values of element block %2d at "
+             "time step %2d\n",
+             var_index, ids[i], time_step);
       for (j = 0; j < num_elem_in_block[i]; j++)
         printf("%5.3f\n", var_values[j]);
     }
