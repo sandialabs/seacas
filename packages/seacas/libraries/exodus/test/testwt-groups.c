@@ -1074,15 +1074,15 @@ int main(int argc, char **argv)
 
     var_names[0] = "glo_vars";
 
-    error = ex_put_var_param(exoid, "g", num_glo_vars);
-    printf("after ex_put_var_param, error = %d\n", error);
+    error = ex_put_variable_param(exoid, EX_GLOBAL, num_glo_vars);
+    printf("after ex_put_variable_param, error = %d\n", error);
     if (error) {
       ex_close(rootid);
       exit(-1);
     }
 
-    error = ex_put_var_names(exoid, "g", num_glo_vars, var_names);
-    printf("after ex_put_var_names, error = %d\n", error);
+    error = ex_put_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
+    printf("after ex_put_variable_names, error = %d\n", error);
     if (error) {
       ex_close(rootid);
       exit(-1);
@@ -1093,15 +1093,15 @@ int main(int argc, char **argv)
     var_names[0] = "node_variable_a_very_long_name_0";
     var_names[1] = "nod_var1";
 
-    error = ex_put_var_param(exoid, "n", num_nod_vars);
-    printf("after ex_put_var_param, error = %d\n", error);
+    error = ex_put_variable_param(exoid, EX_NODAL, num_nod_vars);
+    printf("after ex_put_variable_param, error = %d\n", error);
     if (error) {
       ex_close(rootid);
       exit(-1);
     }
 
-    error = ex_put_var_names(exoid, "n", num_nod_vars, var_names);
-    printf("after ex_put_var_names, error = %d\n", error);
+    error = ex_put_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
+    printf("after ex_put_variable_names, error = %d\n", error);
     if (error) {
       ex_close(rootid);
       exit(-1);
@@ -1114,15 +1114,15 @@ int main(int argc, char **argv)
     var_names[1] = "this_variable_name_is_just_right";
     var_names[2] = "this_variable_name_is_tooooo_long";
 
-    error = ex_put_var_param(exoid, "e", num_ele_vars);
-    printf("after ex_put_var_param, error = %d\n", error);
+    error = ex_put_variable_param(exoid, EX_ELEM_BLOCK, num_ele_vars);
+    printf("after ex_put_variable_param, error = %d\n", error);
     if (error) {
       ex_close(rootid);
       exit(-1);
     }
 
-    error = ex_put_var_names(exoid, "e", num_ele_vars, var_names);
-    printf("after ex_put_var_names, error = %d\n", error);
+    error = ex_put_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
+    printf("after ex_put_variable_names, error = %d\n", error);
     if (error) {
       ex_close(rootid);
       exit(-1);
@@ -1135,15 +1135,15 @@ int main(int argc, char **argv)
       var_names[1] = "ns_var1";
       var_names[2] = "ns_var2";
 
-      error = ex_put_var_param(exoid, "m", num_nset_vars);
-      printf("after ex_put_var_param, error = %d\n", error);
+      error = ex_put_variable_param(exoid, "m", num_nset_vars);
+      printf("after ex_put_variable_param, error = %d\n", error);
       if (error) {
         ex_close(rootid);
         exit(-1);
       }
 
-      error = ex_put_var_names(exoid, "m", num_nset_vars, var_names);
-      printf("after ex_put_var_names, error = %d\n", error);
+      error = ex_put_variable_names(exoid, "m", num_nset_vars, var_names);
+      printf("after ex_put_variable_names, error = %d\n", error);
       if (error) {
         ex_close(rootid);
         exit(-1);
@@ -1157,15 +1157,15 @@ int main(int argc, char **argv)
       var_names[1] = "ss_var1";
       var_names[2] = "ss_var2";
 
-      error = ex_put_var_param(exoid, "s", num_sset_vars);
-      printf("after ex_put_var_param, error = %d\n", error);
+      error = ex_put_variable_param(exoid, EX_SIDE_SET, num_sset_vars);
+      printf("after ex_put_variable_param, error = %d\n", error);
       if (error) {
         ex_close(rootid);
         exit(-1);
       }
 
-      error = ex_put_var_names(exoid, "s", num_sset_vars, var_names);
-      printf("after ex_put_var_names, error = %d\n", error);
+      error = ex_put_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
+      printf("after ex_put_variable_names, error = %d\n", error);
       if (error) {
         ex_close(rootid);
         exit(-1);

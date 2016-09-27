@@ -130,7 +130,7 @@ int main(int argc, char **argv)
   num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
   num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
 
-  error = ex_get_elem_blk_ids(exoid, ids);
+  error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
   printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
 
   for (i = 0; i < num_elem_blk; i++) {
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 
   ids = (int *)calloc(num_side_sets, sizeof(int));
 
-  error = ex_get_side_set_ids(exoid, ids);
+  error = ex_get_ids(exoid, EX_SIDE_SET, ids);
   printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
 
   for (i = 0; i < num_side_sets; i++) {
