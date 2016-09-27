@@ -251,7 +251,7 @@ int main(int argc, char **argv)
     num_nodes_per_elem = (int *)calloc(num_elem_blk, sizeof(int));
     num_attr           = (int *)calloc(num_elem_blk, sizeof(int));
 
-    error = ex_get_elem_blk_ids(exoid, ids);
+    error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
     printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
 
     for (i = 0; i < num_elem_blk; i++) {
@@ -371,7 +371,7 @@ int main(int argc, char **argv)
   if (num_node_sets > 0) {
     ids = (int *)calloc(num_node_sets, sizeof(int));
 
-    error = ex_get_node_set_ids(exoid, ids);
+    error = ex_get_ids(exoid, EX_NODE_SET, ids);
     printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
     for (i = 0; i < num_node_sets; i++) {
@@ -540,7 +540,7 @@ int main(int argc, char **argv)
   if (num_side_sets > 0) {
     ids = (int *)calloc(num_side_sets, sizeof(int));
 
-    error = ex_get_side_set_ids(exoid, ids);
+    error = ex_get_ids(exoid, EX_SIDE_SET, ids);
     printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
 
     for (i = 0; i < num_side_sets; i++) {
@@ -766,15 +766,15 @@ int main(int argc, char **argv)
 
   /* read global variables parameters and names */
 
-  error = ex_get_var_param(exoid, "g", &num_glo_vars);
-  printf("\nafter ex_get_var_param, error = %3d\n", error);
+  error = ex_get_variable_param(exoid, EX_GLOBAL, &num_glo_vars);
+  printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
   for (i = 0; i < num_glo_vars; i++) {
     var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
   }
 
-  error = ex_get_var_names(exoid, "g", num_glo_vars, var_names);
-  printf("\nafter ex_get_var_names, error = %3d\n", error);
+  error = ex_get_variable_names(exoid, EX_GLOBAL, num_glo_vars, var_names);
+  printf("\nafter ex_get_variable_names, error = %3d\n", error);
 
   printf("There are %2d global variables; their names are :\n", num_glo_vars);
   for (i = 0; i < num_glo_vars; i++) {
@@ -785,15 +785,15 @@ int main(int argc, char **argv)
   /* read nodal variables parameters and names */
   num_nod_vars = 0;
   if (num_nodes > 0) {
-    error = ex_get_var_param(exoid, "n", &num_nod_vars);
-    printf("\nafter ex_get_var_param, error = %3d\n", error);
+    error = ex_get_variable_param(exoid, EX_NODE_SET, &num_nod_vars);
+    printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
     for (i = 0; i < num_nod_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_var_names(exoid, "n", num_nod_vars, var_names);
-    printf("\nafter ex_get_var_names, error = %3d\n", error);
+    error = ex_get_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
+    printf("\nafter ex_get_variable_names, error = %3d\n", error);
 
     printf("There are %2d nodal variables; their names are :\n", num_nod_vars);
     for (i = 0; i < num_nod_vars; i++) {
@@ -806,15 +806,15 @@ int main(int argc, char **argv)
 
   num_ele_vars = 0;
   if (num_elem > 0) {
-    error = ex_get_var_param(exoid, "e", &num_ele_vars);
-    printf("\nafter ex_get_var_param, error = %3d\n", error);
+    error = ex_get_variable_param(exoid, EX_ELEM_BLOCK, &num_ele_vars);
+    printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
     for (i = 0; i < num_ele_vars; i++) {
       var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
     }
 
-    error = ex_get_var_names(exoid, "e", num_ele_vars, var_names);
-    printf("\nafter ex_get_var_names, error = %3d\n", error);
+    error = ex_get_variable_names(exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
+    printf("\nafter ex_get_variable_names, error = %3d\n", error);
 
     printf("There are %2d element variables; their names are :\n", num_ele_vars);
     for (i = 0; i < num_ele_vars; i++) {
@@ -844,16 +844,16 @@ int main(int argc, char **argv)
 
   num_nset_vars = 0;
   if (num_node_sets > 0) {
-    error = ex_get_var_param(exoid, "m", &num_nset_vars);
-    printf("\nafter ex_get_var_param, error = %3d\n", error);
+    error = ex_get_variable_param(exoid, "m", &num_nset_vars);
+    printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
     if (num_nset_vars > 0) {
       for (i = 0; i < num_nset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
 
-      error = ex_get_var_names(exoid, "m", num_nset_vars, var_names);
-      printf("\nafter ex_get_var_names, error = %3d\n", error);
+      error = ex_get_variable_names(exoid, "m", num_nset_vars, var_names);
+      printf("\nafter ex_get_variable_names, error = %3d\n", error);
 
       printf("There are %2d nodeset variables; their names are :\n", num_nset_vars);
       for (i = 0; i < num_nset_vars; i++) {
@@ -884,16 +884,16 @@ int main(int argc, char **argv)
 
   num_sset_vars = 0;
   if (num_side_sets > 0) {
-    error = ex_get_var_param(exoid, "s", &num_sset_vars);
-    printf("\nafter ex_get_var_param, error = %3d\n", error);
+    error = ex_get_variable_param(exoid, EX_SIDE_SET, &num_sset_vars);
+    printf("\nafter ex_get_variable_param, error = %3d\n", error);
 
     if (num_sset_vars > 0) {
       for (i = 0; i < num_sset_vars; i++) {
         var_names[i] = (char *)calloc((MAX_STR_LENGTH + 1), sizeof(char));
       }
 
-      error = ex_get_var_names(exoid, "s", num_sset_vars, var_names);
-      printf("\nafter ex_get_var_names, error = %3d\n", error);
+      error = ex_get_variable_names(exoid, EX_SIDE_SET, num_sset_vars, var_names);
+      printf("\nafter ex_get_variable_names, error = %3d\n", error);
 
       printf("There are %2d sideset variables; their names are :\n", num_sset_vars);
       for (i = 0; i < num_sset_vars; i++) {
@@ -1010,7 +1010,7 @@ int main(int argc, char **argv)
   if (num_elem_blk > 0) {
     ids = (int *)calloc(num_elem_blk, sizeof(int));
 
-    error = ex_get_elem_blk_ids(exoid, ids);
+    error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
     printf("\n after ex_get_elem_blk_ids, error = %3d\n", error);
 
     for (i = 0; i < num_elem_blk; i++) {
@@ -1056,7 +1056,7 @@ int main(int argc, char **argv)
   if (num_sset_vars > 0) {
     ids = (int *)calloc(num_side_sets, sizeof(int));
 
-    error = ex_get_side_set_ids(exoid, ids);
+    error = ex_get_ids(exoid, EX_SIDE_SET, ids);
     printf("\n after ex_get_side_set_ids, error = %3d\n", error);
 
     for (i = 0; i < num_side_sets; i++) {
@@ -1083,7 +1083,7 @@ int main(int argc, char **argv)
   if (num_nset_vars > 0) {
     ids = (int *)calloc(num_node_sets, sizeof(int));
 
-    error = ex_get_node_set_ids(exoid, ids);
+    error = ex_get_ids(exoid, EX_NODE_SET, ids);
     printf("\n after ex_get_node_set_ids, error = %3d\n", error);
 
     for (i = 0; i < num_node_sets; i++) {

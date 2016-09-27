@@ -179,7 +179,7 @@ int main(int argc, char **argv)
   /* read and write element block parameters and element connectivity */
 
   ids   = (int *)calloc(num_elem_blk, sizeof(int));
-  error = ex_get_elem_blk_ids(exoid, ids);
+  error = ex_get_ids(exoid, EX_ELEM_BLOCK, ids);
   printf("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
 
   attrib[0] = 3.14159;
@@ -243,7 +243,7 @@ int main(int argc, char **argv)
 
   ids = (int *)calloc(num_node_sets, sizeof(int));
 
-  error = ex_get_node_set_ids(exoid, ids);
+  error = ex_get_ids(exoid, EX_NODE_SET, ids);
   printf("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
   for (i = 0; i < num_node_sets; i++) {
@@ -305,7 +305,7 @@ int main(int argc, char **argv)
 
   ids = (int *)calloc(num_side_sets, sizeof(int));
 
-  error = ex_get_side_set_ids(exoid, ids);
+  error = ex_get_ids(exoid, EX_SIDE_SET, ids);
   printf("\nafter ex_get_side_set_ids, error = %3d\n", error);
 
   for (i = 0; i < num_side_sets; i++) {
