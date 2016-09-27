@@ -1160,8 +1160,20 @@ int main(int argc, char **argv)
   dist_fact[6] = 31.2;
   dist_fact[7] = 31.3;
 
-  error = ex_put_concat_side_sets(exoid, ids, num_elem_per_set, num_df_per_set, elem_ind, df_ind,
-                                  elem_list, side_list, dist_fact);
+  {
+    struct ex_set_specs set_specs;
+
+    set_specs.sets_ids            = ids;
+    set_specs.num_entries_per_set = num_elem_per_set;
+    set_specs.num_dist_per_set    = num_df_per_set;
+    set_specs.sets_entry_index    = elem_ind;
+    set_specs.sets_dist_index     = df_ind;
+    set_specs.sets_entry_list     = elem_list;
+    set_specs.sets_extra_list     = side_list;
+    set_specs.sets_dist_fact      = dist_fact;
+    error                         = ex_put_concat_sets(exoid, EX_SIDE_SET, &set_specs);
+  }
+
   printf("after ex_put_concat_side_sets, error = %d\n", error);
 
   error = ex_put_prop(exoid, EX_SIDE_SET, 30, "COLOR", 100);
@@ -1331,8 +1343,19 @@ int main(int argc, char **argv)
                                   node_ind2, elem_list2, node_list2, side_list2);
     printf("after ex_cvt_nodes_to_sides (%d), error = %d\n", n, error);
 
-    error = ex_put_concat_side_sets(exoidm[n], ids2, num_elem_per_set2, num_df_per_set2, elem_ind2,
-                                    df_ind2, elem_list2, side_list2, dist_fact2);
+    {
+      struct ex_set_specs set_specs;
+
+      set_specs.sets_ids            = ids2;
+      set_specs.num_entries_per_set = num_elem_per_set2;
+      set_specs.num_dist_per_set    = num_df_per_set2;
+      set_specs.sets_entry_index    = elem_ind2;
+      set_specs.sets_dist_index     = df_ind2;
+      set_specs.sets_entry_list     = elem_list2;
+      set_specs.sets_extra_list     = side_list2;
+      set_specs.sets_dist_fact      = dist_fact2;
+      error                         = ex_put_concat_sets(exoid, EX_SIDE_SET, &set_specs);
+    }
     printf("after ex_put_concat_side_sets (%d), error = %d\n", n, error);
 
     error = ex_put_prop(exoidm[n], EX_SIDE_SET, 30, "COLOR", 100);

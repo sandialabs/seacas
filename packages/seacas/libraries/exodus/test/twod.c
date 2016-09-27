@@ -120,11 +120,16 @@ int main(int argc, char **argv)
     int         num_elem_in_block[]  = {4, 4, 4, 4, 4};
     int         num_nodes_per_elem[] = {3, 4, 2, 2, 1};
 
-    ex_put_elem_block(exoid, ebids[0], "triangle", num_elem_in_block[0], num_nodes_per_elem[0], 0);
-    ex_put_elem_block(exoid, ebids[1], "quad", num_elem_in_block[1], num_nodes_per_elem[1], 0);
-    ex_put_elem_block(exoid, ebids[2], "beam", num_elem_in_block[2], num_nodes_per_elem[2], 3);
-    ex_put_elem_block(exoid, ebids[3], "truss", num_elem_in_block[3], num_nodes_per_elem[3], 1);
-    ex_put_elem_block(exoid, ebids[4], "circle", num_elem_in_block[4], num_nodes_per_elem[4], 2);
+    ex_put_block(exoid, EX_ELEM_BLOCK, ebids[0], "triangle", num_elem_in_block[0],
+                 num_nodes_per_elem[0], 0);
+    ex_put_block(exoid, EX_ELEM_BLOCK, ebids[1], "quad", num_elem_in_block[1],
+                 num_nodes_per_elem[1], 0);
+    ex_put_block(exoid, EX_ELEM_BLOCK, ebids[2], "beam", num_elem_in_block[2],
+                 num_nodes_per_elem[2], 3);
+    ex_put_block(exoid, EX_ELEM_BLOCK, ebids[3], "truss", num_elem_in_block[3],
+                 num_nodes_per_elem[3], 1);
+    ex_put_block(exoid, EX_ELEM_BLOCK, ebids[4], "circle", num_elem_in_block[4],
+                 num_nodes_per_elem[4], 2);
 
     /* Write element block names */
     ex_put_names(exoid, EX_ELEM_BLOCK, (char **)block_names);
@@ -138,11 +143,11 @@ int main(int argc, char **argv)
     int conn_T[] = {10, 6, 9, 10, 7, 12, 12, 8};
     int conn_c[] = {6, 7, 8, 9};
 
-    ex_put_elem_conn(exoid, ebids[0], conn_t);
-    ex_put_elem_conn(exoid, ebids[1], conn_q);
-    ex_put_elem_conn(exoid, ebids[2], conn_B);
-    ex_put_elem_conn(exoid, ebids[3], conn_T);
-    ex_put_elem_conn(exoid, ebids[4], conn_c);
+    ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[0], conn_t);
+    ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[1], conn_q);
+    ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[2], conn_B);
+    ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[3], conn_T);
+    ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[4], conn_c);
   }
 
   /* write element block attributes */
@@ -156,13 +161,13 @@ int main(int argc, char **argv)
     const char *attn_c[] = {"Radius", "A"};
     double      attr_c[] = {1.0, 3.14, 1.1, 4.14, 1.2, 5.14, 1.3, 6.14};
 
-    ex_put_elem_attr(exoid, ebids[2], attr_B);
-    ex_put_elem_attr(exoid, ebids[3], attr_T);
-    ex_put_elem_attr(exoid, ebids[4], attr_c);
+    ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[2], attr_B);
+    ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[3], attr_T);
+    ex_put_attr(exoid, EX_ELEM_BLOCK, ebids[4], attr_c);
 
-    ex_put_elem_attr_names(exoid, ebids[2], (char **)attn_B);
-    ex_put_elem_attr_names(exoid, ebids[3], (char **)attn_T);
-    ex_put_elem_attr_names(exoid, ebids[4], (char **)attn_c);
+    ex_put_attr_names(exoid, EX_ELEM_BLOCK, ebids[2], (char **)attn_B);
+    ex_put_attr_names(exoid, EX_ELEM_BLOCK, ebids[3], (char **)attn_T);
+    ex_put_attr_names(exoid, EX_ELEM_BLOCK, ebids[4], (char **)attn_c);
   }
 
   /* write individual node sets */
@@ -303,7 +308,7 @@ int main(int argc, char **argv)
       for (j = 0; j < num_glo_vars; j++) {
         gvar[j] = (double)(j + 2) * time_value;
       }
-      ex_put_glob_vars(exoid, whole_time_step, num_glo_vars, gvar);
+      ex_put_var(exoid, whole_time_step, EX_GLOBAL, 1, 1, num_glo_vars, gvar);
 
       /* write nodal variables */
       for (k = 0; k < num_nod_vars; k++) {

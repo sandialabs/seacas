@@ -554,7 +554,8 @@ void write_exo_mesh(int debug, char *file_name, INT map_origin, INT num_nodes, I
                                      num_attr_per_block, write_map);
     }
 #else
-    err = ex_put_elem_block(exoid, 10000000000, "hex", loc_num_elements, NUM_NODES_PER_ELEM, 0);
+    err = ex_put_block(exoid, EX_ELEM_BLOCK, 10000000000, "hex", loc_num_elements,
+                       NUM_NODES_PER_ELEM, 0);
 #endif
 
     if (err) {
