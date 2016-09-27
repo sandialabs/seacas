@@ -222,15 +222,15 @@ int main(int argc, char **argv)
    var_names[1] = "this_variable_name_is_just_right";
    var_names[2] = "this_variable_name_is_tooooo_long";
 
-   ex_put_var_param (exoid, "e", num_ele_vars);
-   printf ("after ex_put_var_param, %d\n", error);
+   ex_put_variable_param (exoid, EX_ELEM_BLOCK, num_ele_vars);
+   printf ("after ex_put_variable_param, %d\n", error);
    if (error) {
      ex_close (exoid);
      exit(-1);
    }
 
-   ex_put_var_names (exoid, "e", num_ele_vars, var_names);
-   printf ("after ex_put_var_names, %d\n", error);
+   ex_put_variable_names (exoid, EX_ELEM_BLOCK, num_ele_vars, var_names);
+   printf ("after ex_put_variable_names, %d\n", error);
    if (error) {
      ex_close (exoid);
      exit(-1);
@@ -243,15 +243,15 @@ int main(int argc, char **argv)
      var_names[1] = "ns_var1";
      var_names[2] = "ns_var2";
      
-     ex_put_var_param (exoid, "m", num_nset_vars);
-     printf ("after ex_put_var_param, %d\n", error);
+     ex_put_variable_param (exoid, "m", num_nset_vars);
+     printf ("after ex_put_variable_param, %d\n", error);
      if (error) {
        ex_close (exoid);
        exit(-1);
      }
      
-     ex_put_var_names (exoid, "m", num_nset_vars, var_names);
-     printf ("after ex_put_var_names, %d\n", error);
+     ex_put_variable_names (exoid, "m", num_nset_vars, var_names);
+     printf ("after ex_put_variable_names, %d\n", error);
      if (error) {
        ex_close (exoid);
        exit(-1);
@@ -265,15 +265,15 @@ int main(int argc, char **argv)
      var_names[1] = "ss_var1";
      var_names[2] = "ss_var2";
      
-     ex_put_var_param (exoid, "s", num_sset_vars);
-     printf ("after ex_put_var_param, %d\n", error);
+     ex_put_variable_param (exoid, EX_SIDE_SET, num_sset_vars);
+     printf ("after ex_put_variable_param, %d\n", error);
      if (error) {
        ex_close (exoid);
        exit(-1);
      }
      
-     ex_put_var_names (exoid, "s", num_sset_vars, var_names);
-     printf ("after ex_put_var_names, %d\n", error);
+     ex_put_variable_names (exoid, EX_SIDE_SET, num_sset_vars, var_names);
+     printf ("after ex_put_variable_names, %d\n", error);
      if (error) {
        ex_close (exoid);
        exit(-1);
