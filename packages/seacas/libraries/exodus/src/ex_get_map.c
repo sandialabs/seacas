@@ -41,8 +41,6 @@
 #include <sys/types.h> // for int64_t
 
 /*!
-\deprecated Use ex_get_num_map() instead.
-
 The function ex_get_map() reads the element order map
 from the database. See #ElementOrderMap for a description of the
 element order map. If an element order map is not stored in the data
