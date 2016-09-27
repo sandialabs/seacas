@@ -54,8 +54,6 @@
 #include <stdio.h>
 
 /*!
-\deprecated Use ex_put_num_map() instead.
-
 The function ex_put_map() writes out the optional element order map to
 the database. See #ElementOrderMap for a description of the element
 order map. The function ex_put_init() must be invoked before this call
