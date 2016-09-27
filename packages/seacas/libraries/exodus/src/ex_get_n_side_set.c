@@ -43,6 +43,6 @@
 int ex_get_n_side_set(int exoid, ex_entity_id side_set_id, int64_t start_side_num,
                       int64_t num_sides, void_int *side_set_elem_list, void_int *side_set_side_list)
 {
-  return ex_get_partial_side_set(exoid, side_set_id, start_side_num, num_sides, side_set_elem_list,
-                                 side_set_side_list);
+  return ex_get_partial_set(exoid, EX_SIDE_SET, side_set_id, start_side_num, num_sides,
+                            side_set_elem_list, side_set_side_list);
 }

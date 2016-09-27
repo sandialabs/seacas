@@ -399,7 +399,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
     goto cleanup;
   }
 
-  if (ex_get_elem_blk_ids(exoid, elem_blk_ids) == -1) {
+  if (ex_get_ids(exoid, EX_ELEM_BLOCK, elem_blk_ids) == -1) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get element block ids in file id %d", exoid);
     ex_err("ex_get_side_set_node_list", errmsg, EX_MSG);
     err_stat = EX_FATAL;
@@ -543,7 +543,8 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       }
 
       /* get connectivity array */
-      if (ex_get_elem_conn(exoid, elem_blk_parms[parm_ndx].elem_blk_id, connect) == -1) {
+      if (ex_get_conn(exoid, EX_ELEM_BLOCK, elem_blk_parms[parm_ndx].elem_blk_id, connect, NULL,
+                      NULL) == -1) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for connectivity "
                                          "array for file id %d",
                  exoid);

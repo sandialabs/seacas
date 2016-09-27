@@ -375,7 +375,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
     goto cleanup;
   }
 
-  if (ex_get_elem_blk_ids(exoid, elem_blk_ids)) {
+  if (ex_get_ids(exoid, EX_ELEM_BLOCK, elem_blk_ids)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get element block ids in file id %d", exoid);
     ex_err("ex_cvt_nodes_to_sides", errmsg, EX_MSG);
     err_stat = EX_FATAL;
@@ -653,7 +653,8 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
       }
 
       /* get connectivity array */
-      if (ex_get_elem_conn(exoid, elem_blk_parms[p_ndx].elem_blk_id, connect) == -1) {
+      if (ex_get_conn(exoid, EX_ELEM_BLOCK, elem_blk_parms[p_ndx].elem_blk_id, connect, NULL,
+                      NULL) == -1) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to get connectivity array for elem blk %" PRId64 " for file id %d",
                  elem_blk_parms[p_ndx].elem_blk_id, exoid);
