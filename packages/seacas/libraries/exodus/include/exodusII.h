@@ -1038,7 +1038,6 @@ EXODUS_EXPORT int ex_put_nodal_var(int exoid, int time_step, int nodal_var_index
 EXODUS_EXPORT int ex_put_partial_nodal_var(int exoid, int time_step, int nodal_var_index,
                                            int64_t start_node, int64_t num_nodes,
                                            const void *nodal_var_vals);
-#define NO_EXODUS_DEPRECATED_FUNCTIONS
 #if !defined(NO_EXODUS_DEPRECATED_FUNCTIONS)
 /* ========================================================================
  * Deprecated functiona
