@@ -34,79 +34,75 @@
  */
 
 #include "exodusII.h"     // for exerrval, ex_err, etc
-#include "exodusII_int.h" // for EX_WARN, ex_comp_ws, etc
+#include "exodusII_int.h" // for EX_NOERR, EX_WARN, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR, etc
 #include <stddef.h>       // for size_t
 #include <stdio.h>
 #include <sys/types.h> // for int64_t
 
 /*!
-\deprecated Use ex_put_var()(exoid, time_step, EX_NODAL, nodal_var_index, 1, num_nodes,
+\deprecated Use ex_get_var()(exoid, time_step, EX_NODAL, nodal_var_index, 1, num_nodes,
 nodal_var_vals)
-
-The function ex_put_nodal_var() writes the values of a single nodal
-variable for a single time step. The function ex_put_variable_param()
-must be invoked before this call is made.
+The function ex_get_nodal_var() reads the values of a single nodal
+variable for a single time step. Memory must be allocated for the
+nodal variable values array before this function is invoked.
 
 Because nodal variables are floating point values, the application
 code must declare the array passed to be the appropriate type (\c
 float or \c double) to match the compute word size passed in
 ex_create() or ex_open().
 
-\return In case of an error, ex_put_nodal_var() returns a negative number; a
-warning will return a positive number. Possible causes of errors
-include:
+\return In case of an error, ex_get_nodal_var() returns a negative
+number; a warning will return a positive number. Possible causes of
+errors include:
   -  data file not properly opened with call to ex_create() or ex_open()
-  -  data file opened for read only.
-  -  data file not initialized properly with call to ex_put_init().
-  -  ex_put_variable_param() not called previously specifying the number of
-nodal variables.
+  -  specified nodal variable does not exist.
+  -  a warning value is returned if no nodal variables are stored in the file.
+
+\param[in] exoid                exodus file ID returned from a previous call to
+ex_create()
+                                or ex_open().
+
+\param[in] time_step            The time step, as described under ex_put_time(),
+at which the
+                                nodal variable values are desired. This is
+essentially an index (in
+                                the time dimension) into the nodal variable
+values array stored in
+                                the database. The first time step is 1.
+
+\param[in] nodal_var_index      The index of the desired nodal variable. The
+first variable
+                                has an index of 1.
+
+\param[in] num_nodes            The number of nodal points.
+
+\param[out]  nodal_var_vals     Returned array of \c num_nodes values of the \c
+nodal_var_index-th
+                                nodal variable for the \c time_step-th time
+step.
 
 
-\param[in] exoid              exodus file ID returned from a previous call to
-ex_create() or
-                              ex_open().
-
-\param[in] time_step          The time step number, as described under
-ex_put_time(). This
-                              is essentially a counter that is incremented when
-results variables
-                              are output. The first time step is 1.
-
-\param[in] nodal_var_index    The index of the nodal variable. The first
-variable has an index of 1.
-
-\param[in] num_nodes          The number of nodal points.
-
-\param[in]  nodal_var_vals    Array of \c num_nodes values of the \c
-nodal_var_index-th nodal
-                              variable for the \c time_step-th time step.
-
-
-As an example, the following code segment writes all the nodal
-variables for a single time step:
+For example, the following demonstrates how this function would be
+used:
 
 \code
-int num_nod_vars, num_nodes, error, exoid, time_step;
-float *nodal_var_vals;
+int num_nodes, time_step, var_index;
+float *var_values;
 
-\comment{write nodal variables}
-nodal_var_vals = (float *) calloc(num_nodes, sizeof(float));
-for (k=1; k <= num_nod_vars; k++) {
-   for (j=0; j < num_nodes; j++) {
-      \comment{application code fills in this array}
-      nodal_var_vals[j] = 10.0;
-   }
-   error = ex_put_nodal_var(exoid, time_step, k, num_nodes,
-                            nodal_var_vals);
-}
+\comment{read the second nodal variable at the first time step}
+time_step = 1;
+var_index = 2;
+
+var_values = (float *) calloc (num_nodes, sizeof(float));
+error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes,
+                         var_values);
 \endcode
 
 */
 
-int ex_put_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
-                     const void *nodal_var_vals)
-
+int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                     void *nodal_var_vals)
 {
-  return ex_put_var(exoid, time_step, EX_NODAL, nodal_var_index, 1, num_nodes, nodal_var_vals);
+  return ex_get_var(exoid, time_step, EX_NODAL, nodal_var_index, 1, num_nodes, nodal_var_vals);
 }

@@ -75,6 +75,6 @@ int ex_put_nodal_var_slab(int exoid, int time_step, int nodal_var_index, int64_t
                           int64_t num_vals, void *nodal_var_vals)
 
 {
-  return ex_put_partial_nodal_var(exoid, time_step, nodal_var_index, start_pos, num_vals,
-                                  nodal_var_vals);
+  return ex_put_partial_var(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_pos, num_vals,
+                            nodal_var_vals);
 }

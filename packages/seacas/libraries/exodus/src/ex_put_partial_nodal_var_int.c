@@ -71,8 +71,8 @@
  * \param nodal_var_vals   array of nodal variable values
  */
 
-int ex_put_partial_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t start_node,
-                             int64_t num_nodes, const void *nodal_var_vals)
+int ex_put_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t start_node,
+                                 int64_t num_nodes, const void *nodal_var_vals)
 
 {
   int    status;
