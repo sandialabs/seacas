@@ -8,7 +8,13 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-FILE(GLOB SOURCES src/*.c)
+FILE(GLOB SOURCES src/ex*.c)
+
+if (${SEACAS_HIDE_DEPRECATED_CODE})
+  add_definitions(-DDISABLE_EXODUS_DEPRECATED_FUNCTIONS)
+else()
+  FILE(GLOB DEP_SOURCES src/dep_ex*.c)
+endif()
 
 SET_AND_INC_DIRS(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -20,7 +26,7 @@ SET(HEADERS
 TRIBITS_ADD_LIBRARY(
   exodus
   HEADERS ${HEADERS}
-  SOURCES ${SOURCES}
+  SOURCES ${SOURCES} ${DEP_SOURCES}
 )
 
 if (${TPL_Netcdf_PARALLEL})
@@ -33,7 +39,7 @@ if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
       ADD_LIBRARY(
               exodus_static
               STATIC
-              ${SOURCES}
+              ${SOURCES} ${DEP_SOURCES}
       )
       set_target_properties(exodus_static PROPERTIES OUTPUT_NAME exodus)
       INSTALL(TARGETS exodus_static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

@@ -700,6 +700,25 @@ int ex_check_file_type(const char *path, int *type);
 int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t *count, int *dimid,
                      const char *routine);
 
+int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                         void *nodal_var_vals);
+
+int ex_put_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                         const void *nodal_var_vals);
+
+int ex_get_nodal_var_time_int(int exoid, int nodal_var_index, int64_t node_number,
+                              int beg_time_step, int end_time_step, void *nodal_var_vals);
+
+int ex_get_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t start_node,
+                                 int64_t num_nodes, void *var_vals);
+
+int ex_put_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t start_node,
+                                 int64_t num_nodes, const void *nodal_var_vals);
+int ex_get_glob_vars_int(int exoid, int time_step, int num_glob_vars, void *glob_var_vals);
+
+int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, int end_time_step,
+                             void *glob_var_vals);
+
 int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int name_size,
                          ex_entity_type obj_type, const char *routine);
 int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,

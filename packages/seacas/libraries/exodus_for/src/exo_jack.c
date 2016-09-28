@@ -2046,8 +2046,8 @@ void F2C(exggv, EXGGV)(int *idexo, int *time_step, int *num_glob_vars, real *glo
 void F2C(exggvt, EXGGVT)(int *idexo, int *glob_var_index, int *beg_time_step, int *end_time_step,
                          real *glob_var_vals, int *ierr)
 {
-  *ierr =
-      ex_get_glob_var_time(*idexo, *glob_var_index, *beg_time_step, *end_time_step, glob_var_vals);
+  *ierr = ex_get_var_time(*idexo, EX_GLOBAL, *glob_var_index, 1, *beg_time_step, *end_time_step,
+                          glob_var_vals);
 }
 
 /*
@@ -2098,8 +2098,8 @@ void F2C(exgnvt, EXGNVT)(int *idexo, int *nodal_var_index, void_int *node_number
     nnode = *(int *)node_number;
   }
 
-  *ierr = ex_get_nodal_var_time(*idexo, *nodal_var_index, nnode, *beg_time_step, *end_time_step,
-                                nodal_var_vals);
+  *ierr = ex_get_var_time(*idexo, EX_NODAL, *nodal_var_index, nnode, *beg_time_step, *end_time_step,
+                          nodal_var_vals);
 }
 
 /*
@@ -3381,8 +3381,8 @@ void F2C(expnvs, EXPNVS)(int *idne, int *time_step, int *nodal_var_index, void_i
     cnt = *(int *)count;
   }
 
-  if ((*ierr = ex_put_partial_nodal_var(*idne, *time_step, *nodal_var_index, st, cnt,
-                                        nodal_var_vals)) != 0) {
+  if ((*ierr = ex_put_partial_var(*idne, *time_step, EX_NODAL, *nodal_var_index, 1, st, cnt,
+                                  nodal_var_vals)) != 0) {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "Error: failed to write nodal variable slab to file id %d",
              *idne);

@@ -543,8 +543,10 @@ int cCreateEdgeFace(int argc, char *argv[])
   EXCHECK(ex_put_var(exoid, 2, EX_FACE_SET, 1, 1400, 2, vals_fset_var1fs1[1]),
           "Unable to write face set 1 var 1.\n");
 
-  EXCHECK(ex_put_nodal_var(exoid, 1, 1, 12, vals_nod_var[0]), "Unable to write nodal var 1.\n");
-  EXCHECK(ex_put_nodal_var(exoid, 2, 1, 12, vals_nod_var[1]), "Unable to write nodal var 1.\n");
+  EXCHECK(ex_put_var(exoid, 1, EX_NODAL, 1, 1, 12, vals_nod_var[0]),
+          "Unable to write nodal var 1.\n");
+  EXCHECK(ex_put_var(exoid, 2, EX_NODAL, 1, 1, 12, vals_nod_var[1]),
+          "Unable to write nodal var 1.\n");
 
   EXCHECK(ex_close(exoid), "Unable to close database.\n");
 
