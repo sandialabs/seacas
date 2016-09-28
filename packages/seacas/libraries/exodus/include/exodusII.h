@@ -58,7 +58,9 @@
 #include "netcdf_par.h"
 #endif
 
+#if !defined(SEACAS_IN_SIERRA)
 #include <SEACASExodus_config.h>
+#endif
 
 #include <stddef.h>
 #include <stdint.h>
@@ -1016,10 +1018,18 @@ EXODUS_EXPORT int ex_put_elem_cmap(int          exoid,    /* NetCDF/Exodus file 
                                    int          processor /* This processor ID */
                                    );
 
-#if !defined(DISABLE_EXODUS_DEPRECATED_FUNCTIONS)
+#if !defined(SEACAS_HIDE_DEPRECATED_CODE)
 /* ========================================================================
  * Deprecated functiona
  */
+
+#ifndef SEACAS_DEPRECATED
+#  if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+#    define SEACAS_DEPRECATED  __attribute__((__deprecated__))
+#  else
+#    define SEACAS_DEPRECATED
+#  endif
+#endif
 
 SEACAS_DEPRECATED EXODUS_EXPORT int ex_get_glob_vars(int exoid, int time_step, int num_glob_vars,
                                    void *glob_var_vals);
