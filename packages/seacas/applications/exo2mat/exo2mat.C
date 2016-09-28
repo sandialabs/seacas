@@ -1141,7 +1141,7 @@ int main(int argc, char *argv[])
         Mat_VarSetCell(cell_array, j, cell_element[j]);
         j++;
 
-        ex_get_glob_var_time(exo_file, i + 1, 1, num_time_steps, &scr[offset]);
+        ex_get_var_time(exo_file, EX_GLOBAL, i + 1, 1, 1, num_time_steps, &scr[offset]);
         cell_element[j] = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, &scr[offset],
                                         MAT_F_DONT_COPY_DATA);
         assert(cell_element[j]);
@@ -1157,7 +1157,7 @@ int main(int argc, char *argv[])
       std::vector<double> scr(num_time_steps);
       for (int i = 0; i < num_global_vars; i++) {
         sprintf(str, "gvar%02d", i + 1);
-        ex_get_glob_var_time(exo_file, i + 1, 1, num_time_steps, TOPTR(scr));
+        ex_get_var_time(exo_file, EX_GLOBAL, i + 1, 1, 1, num_time_steps, TOPTR(scr));
         PutDbl(str, num_time_steps, 1, TOPTR(scr));
       }
     }
@@ -1200,7 +1200,7 @@ int main(int argc, char *argv[])
         assert(cell_element[j]);
         Mat_VarSetCell(cell_array, j, cell_element[j]);
         for (int k = 0; k < num_time_steps; k++) {
-          ex_get_nodal_var(exo_file, k + 1, i + 1, num_nodes, &scr[num_nodes * k + offset]);
+          ex_get_var(exo_file, k + 1, EX_NODAL, i + 1, 1, num_nodes, &scr[num_nodes * k + offset]);
         }
         offset += num_time_steps * num_nodes;
         j++;
@@ -1218,7 +1218,7 @@ int main(int argc, char *argv[])
           logger("\tReading");
         }
         for (int j = 0; j < num_time_steps; j++) {
-          ex_get_nodal_var(exo_file, j + 1, i + 1, num_nodes, &scr[num_nodes * j]);
+          ex_get_var(exo_file, j + 1, EX_NODAL, i + 1, 1, num_nodes, &scr[num_nodes * j]);
         }
         if (debug) {
           logger("\tWriting");

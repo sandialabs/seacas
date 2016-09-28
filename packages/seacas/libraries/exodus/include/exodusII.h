@@ -447,12 +447,6 @@ EXODUS_EXPORT int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids);
 EXODUS_EXPORT int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids,
                                            void *pt_coordinates, char *tags);
 
-EXODUS_EXPORT int ex_get_glob_vars(int exoid, int time_step, int num_glob_vars,
-                                   void *glob_var_vals);
-
-EXODUS_EXPORT int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
-                                       int end_time_step, void *glob_var_vals);
-
 EXODUS_EXPORT int ex_get_info(int exoid, char **info);
 
 EXODUS_EXPORT int ex_put_init_ext(int exoid, const ex_init_params *model);
@@ -475,9 +469,6 @@ EXODUS_EXPORT int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id e
                               char *name);
 
 EXODUS_EXPORT int ex_get_names(int exoid, ex_entity_type obj_type, char **names);
-
-EXODUS_EXPORT int ex_get_partial_nodal_var(int exoid, int time_step, int nodal_var_index,
-                                           int64_t start_node, int64_t num_nodes, void *var_vals);
 
 EXODUS_EXPORT int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
                                     void_int *values);
@@ -1023,25 +1014,16 @@ EXODUS_EXPORT int ex_put_elem_cmap(int          exoid,    /* NetCDF/Exodus file 
                                    int          processor /* This processor ID */
                                    );
 
-/* Partially deprecated -- can use ex_get_var, ex_put_var, ...,
- * but those functions internally call the four functions below...
- */
-EXODUS_EXPORT int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
-                                   void *nodal_var_vals);
-
-EXODUS_EXPORT int ex_get_nodal_var_time(int exoid, int nodal_var_index, int64_t node_number,
-                                        int beg_time_step, int end_time_step, void *nodal_var_vals);
-
-EXODUS_EXPORT int ex_put_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
-                                   const void *nodal_var_vals);
-
-EXODUS_EXPORT int ex_put_partial_nodal_var(int exoid, int time_step, int nodal_var_index,
-                                           int64_t start_node, int64_t num_nodes,
-                                           const void *nodal_var_vals);
-#if !defined(NO_EXODUS_DEPRECATED_FUNCTIONS)
+#if !defined(DISABLE_EXODUS_DEPRECATED_FUNCTIONS)
 /* ========================================================================
  * Deprecated functiona
  */
+
+EXODUS_EXPORT int ex_get_glob_vars(int exoid, int time_step, int num_glob_vars,
+                                   void *glob_var_vals);
+
+EXODUS_EXPORT int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step,
+                                       int end_time_step, void *glob_var_vals);
 
 EXODUS_EXPORT int ex_get_concat_node_sets(int exoid, void_int *node_set_ids,
                                           void_int *num_nodes_per_set, void_int *num_df_per_set,
@@ -1071,6 +1053,22 @@ EXODUS_EXPORT int ex_get_elem_conn(int exoid, ex_entity_id elem_blk_id, void_int
 EXODUS_EXPORT int ex_get_elem_map(int exoid, ex_entity_id map_id, void_int *elem_map);
 
 EXODUS_EXPORT int ex_get_elem_num_map(int exoid, void_int *elem_map);
+
+EXODUS_EXPORT int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                                   void *nodal_var_vals);
+
+EXODUS_EXPORT int ex_put_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                                   const void *nodal_var_vals);
+
+EXODUS_EXPORT int ex_get_nodal_var_time(int exoid, int nodal_var_index, int64_t node_number,
+                                        int beg_time_step, int end_time_step, void *nodal_var_vals);
+
+EXODUS_EXPORT int ex_put_partial_nodal_var(int exoid, int time_step, int nodal_var_index,
+                                           int64_t start_node, int64_t num_nodes,
+                                           const void *nodal_var_vals);
+
+EXODUS_EXPORT int ex_get_partial_nodal_var(int exoid, int time_step, int nodal_var_index,
+                                           int64_t start_node, int64_t num_nodes, void *var_vals);
 
 EXODUS_EXPORT int ex_get_elem_var(int exoid, int time_step, int elem_var_index,
                                   ex_entity_id elem_blk_id, int64_t num_elem_this_blk,

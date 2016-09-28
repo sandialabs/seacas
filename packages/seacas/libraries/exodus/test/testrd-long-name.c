@@ -993,7 +993,7 @@ int main(int argc, char **argv)
 
   var_values = (float *)calloc(num_glo_vars, sizeof(float));
 
-  error = ex_get_glob_vars(exoid, time_step, num_glo_vars, var_values);
+  error = ex_get_var(exoid, time_step, EX_GLOBAL, 1, 1, num_glo_vars, var_values);
   printf("\nafter ex_get_glob_vars, error = %3d\n", error);
 
   printf("global variable values at time step %2d\n", time_step);
@@ -1010,7 +1010,7 @@ int main(int argc, char **argv)
 
   var_values = (float *)calloc(num_time_steps, sizeof(float));
 
-  error = ex_get_glob_var_time(exoid, var_index, beg_time, end_time, var_values);
+  error = ex_get_var_time(exoid, EX_GLOBAL, var_index, 1, beg_time, end_time, var_values);
   printf("\nafter ex_get_glob_var_time, error = %3d\n", error);
 
   printf("global variable %2d values through time:\n", var_index);
@@ -1038,7 +1038,7 @@ int main(int argc, char **argv)
     var_values = (float *)calloc(num_time_steps, sizeof(float));
 
     node_num = 1;
-    error    = ex_get_nodal_var_time(exoid, var_index, node_num, beg_time, end_time, var_values);
+    error = ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time, end_time, var_values);
     printf("\nafter ex_get_nodal_var_time, error = %3d\n", error);
 
     printf("nodal variable %2d values for node %2d through time:\n", var_index, node_num);

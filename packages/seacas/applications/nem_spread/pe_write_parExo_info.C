@@ -1311,9 +1311,9 @@ void NemSpread<T, INT>::write_var_timestep(int exoid, int proc, int time_step, I
 
       T *var_ptr = &(Restart_Info.Node_Vals[proc][var_offset]);
 
-      error = ex_put_nodal_var(exoid, time_step, (var_num + 1), num_nodes, var_ptr);
+      error = ex_put_var(exoid, time_step, EX_NODAL, (var_num + 1), 1, num_nodes, var_ptr);
 
-      check_exodus_error(error, "ex_put_nodal_var");
+      check_exodus_error(error, "ex_put_var");
     }
   }
 

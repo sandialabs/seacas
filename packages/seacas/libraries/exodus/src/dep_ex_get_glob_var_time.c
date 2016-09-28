@@ -40,6 +40,9 @@
 #include <stdio.h>
 
 /*!
+\deprecated Use ex_get_var_time()(exoid, EX_GLOBAL, global_var_index,
+1, beg_time_step, end_time_step, glob_var_vals)
+
  The function ex_get_glob_var_time() reads the values of a
  single global variable through a specified number of time
  steps. Memory must be allocated for the global variable values array
@@ -104,71 +107,6 @@ error = ex_get_glob_var_time(exoid, var_index, beg_time,
 int ex_get_glob_var_time(int exoid, int glob_var_index, int beg_time_step, int end_time_step,
                          void *glob_var_vals)
 {
-  int    status;
-  int    varid;
-  size_t start[2], count[2];
-  char   errmsg[MAX_ERR_LENGTH];
-
-  exerrval = 0; /* clear error code */
-
-  /* Check that times are in range */
-  {
-    int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
-    if (beg_time_step <= 0 || beg_time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: beginning time_step is out-of-range. Value = %d, "
-                                       "valid range is 1 to %d in file id %d",
-               beg_time_step, num_time_steps, exoid);
-      ex_err("ex_get_glob_var_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
-    }
-
-    if (end_time_step < 0) {
-      /* user is requesting the maximum time step;  we find this out using the
-       * database inquire function to get the number of time steps;  the ending
-       * time step number is 1 less due to 0 based array indexing in C
-       */
-      end_time_step = num_time_steps;
-    }
-    else if (end_time_step < beg_time_step || end_time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: end time_step is out-of-range. Value = %d, valid "
-                                       "range is %d to %d in file id %d",
-               beg_time_step, end_time_step, num_time_steps, exoid);
-      ex_err("ex_get_glob_var_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
-    }
-  }
-  end_time_step--;
-
-  /* read values of global variables */
-  start[0] = --beg_time_step;
-  start[1] = --glob_var_index;
-
-  count[0] = end_time_step - beg_time_step + 1;
-  count[1] = 1;
-
-  /* inquire previously defined variable */
-  if ((status = nc_inq_varid(exoid, VAR_GLO_VAR, &varid)) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate global variables in file id %d",
-             exoid);
-    ex_err("ex_get_glob_var_time", errmsg, exerrval);
-    return (EX_WARN);
-  }
-
-  if (ex_comp_ws(exoid) == 4) {
-    status = nc_get_vara_float(exoid, varid, start, count, glob_var_vals);
-  }
-  else {
-    status = nc_get_vara_double(exoid, varid, start, count, glob_var_vals);
-  }
-
-  if (status != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to get global variable %d values from file id %d", glob_var_index,
-             exoid);
-    ex_err("ex_get_glob_var_time", errmsg, exerrval);
-    return (EX_FATAL);
-  }
-  return (EX_NOERR);
+  return ex_get_var_time(exoid, EX_GLOBAL, glob_var_index, 1, beg_time_step, end_time_step,
+                         glob_var_vals);
 }
