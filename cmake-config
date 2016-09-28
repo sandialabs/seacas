@@ -17,6 +17,9 @@ COMPILER="gnu"
 BUILD_TYPE=Release
 #BUILD_TYPE=Debug
 
+### Define to YES to *disable* all exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then you will need
 ### to add the line below.  It will disable blot and fastq
@@ -110,6 +113,7 @@ cmake  \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+-D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
 -D TPL_ENABLE_Netcdf:BOOL=ON \
 -D TPL_ENABLE_Matio:BOOL=ON \

@@ -699,7 +699,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
       }
 
       /* Output the nodal variables */
-      if (ex_put_nodal_var(exid_vis, 1, 1, mesh->num_nodes, TOPTR(proc_vals)) < 0) {
+      if (ex_put_var(exid_vis, 1, EX_NODAL, 1, 1, mesh->num_nodes, TOPTR(proc_vals)) < 0) {
         Gen_Error(0, "fatal: unable to output nodal variables");
         return 0;
       }

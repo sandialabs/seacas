@@ -104,14 +104,14 @@ num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
 var_values = (float *) calloc (num_time_steps, sizeof(float));
 
 var_index = 1; node_num = 1; beg_time = 1; end_time = -1;
-error = ex_get_nodal_var_time(exoid, var_index, node_num, beg_time,
+error = ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time,
                               end_time, var_values);
 
 \endcode
 */
 
-int ex_get_nodal_var_time(int exoid, int nodal_var_index, int64_t node_number, int beg_time_step,
-                          int end_time_step, void *nodal_var_vals)
+int ex_get_nodal_var_time_int(int exoid, int nodal_var_index, int64_t node_number,
+                              int beg_time_step, int end_time_step, void *nodal_var_vals)
 {
   int    status;
   int    varid;
