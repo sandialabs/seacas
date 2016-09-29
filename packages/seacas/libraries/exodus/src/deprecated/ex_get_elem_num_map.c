@@ -55,7 +55,7 @@
 The function ex_get_elem_num_map() reads the optional element number
 map from the database. See Section LocalElementIds for a description of
 the element number map. If an element number map is not stored in the
-data file, a default array (1,2,3,. .. \c num_elem) is
+data file, a default array (1,2,3,. .. num_elem) is
 returned. Memory must be allocated for the element number map array
 ({num_elem} in length) before this call is made.
 

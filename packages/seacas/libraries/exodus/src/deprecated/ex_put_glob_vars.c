@@ -61,8 +61,8 @@ variables for a single time step. The function ex_put_variable_param()
 must be invoked before this call is made.
 
 Because global variables are floating point values, the application
-code must declare the array passed to be the appropriate type (\c
-float or \c double) to match the compute word size passed in
+code must declare the array passed to be the appropriate type
+(float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_put_glob_vars() returns a negative
@@ -83,8 +83,8 @@ when results
                            variables are output. The first time step is 1.
 \param[in] num_glob_vars   The number of global variables to be written to the
 database.
-\param[in]  glob_var_vals  Array of \c num_glob_vars global variable values for
-                           the \c time_step-th time step.
+\param[in]  glob_var_vals  Array of num_glob_vars global variable values for
+                           the time_step-th time step.
 
 
 As an example, the following coding will write the values of all the

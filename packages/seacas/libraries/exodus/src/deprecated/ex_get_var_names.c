@@ -53,6 +53,8 @@
 #include "exodusII.h" // for ex_get_variable_names, etc
 
 /*!
+\ingroup ResultsData
+
  * reads the names of the results variables from the database
  * \deprecated Use ex_get_variable_names()(exoid, obj_type, num_vars, var_names)
  */

@@ -52,6 +52,8 @@
 #include "exodusII.h" // for ex_put_variable_param, etc
 
 /*!
+\ingroup ResultsData
+
  * writes the number and names of global, nodal, or element variables
  * that will be written to the database
  * \param       exoid                   exodus file id

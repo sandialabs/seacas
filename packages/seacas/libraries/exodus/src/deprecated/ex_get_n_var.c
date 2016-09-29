@@ -43,6 +43,8 @@
  */
 
 /*!
+\ingroup ResultsData
+
  * \deprecated Use ex_get_partial_var() instead.
  *
  * reads the values of a single variable for a partial block at one time

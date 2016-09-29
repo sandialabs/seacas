@@ -59,10 +59,10 @@ num_elem_var, elem_var_tab)
 The function ex_get_elem_var_tab() reads the exodus element variable
 truth table from the database. For a description of the truth table,
 see the usage of the function ex_put_elem_var_tab(). Memory must be
-allocated for the truth table(\c num_elem_blk \b x \c
-num_elem_var in length) before this function is invoked. If the truth
-table is not stored in the file, it will be created based on
-information in the file and then returned.
+allocated for the truth table(num_elem_blk x num_elem_var in length)
+before this function is invoked. If the truth table is not stored in
+the file, it will be created based on information in the file and then
+returned.
 
 \return In case of an error, ex_get_elem_var_tab() returns a negative
 number; a warning will return a positive number.  Possible causes of
@@ -80,8 +80,8 @@ ex_create() or ex_open().
 \param[in]   num_elem_blk  The number of element blocks.
 \param[in]   num_elem_var  The number of element variables.
 \param[out]  elem_var_tab  Size [num_elem_blk,num_elem_var].
-                           Returned 2-dimensional array (with the \c
-num_elem_var index cycling
+                           Returned 2-dimensional array (with the
+                           num_elem_var index cycling
                            faster) containing the element variable truth table.
 
 As an example, the following coding will read the element

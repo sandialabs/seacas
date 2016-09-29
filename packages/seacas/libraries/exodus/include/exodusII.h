@@ -222,15 +222,25 @@ typedef enum ex_inquiry ex_inquiry;
  * \defgroup FileOptions Variables controlling the compression, name size, and integer size.
  *@{
  */
-/* Modes for ex_open */
-/*! \sa ex_set_option() */
+/*! Modes for ex_set_option()
+
+The compression-related options are only available on netcdf-4 files
+since the underlying hdf5 compression functionality is used for the
+implementation. The compression level indicates how much effort should
+be expended in the compression and the computational expense increases
+with higher levels; in many cases, a compression level of 1 is
+sufficient.
+
+ */
 enum ex_option_type {
-  EX_OPT_MAX_NAME_LENGTH = 1,
-  EX_OPT_COMPRESSION_TYPE,    /* Currently not used. GZip by default */
-  EX_OPT_COMPRESSION_LEVEL,   /* 0 (disabled/fastest) ... 9 (best/slowest) */
-  EX_OPT_COMPRESSION_SHUFFLE, /* 0 (disabled); 1 (enabled) */
-  EX_OPT_INTEGER_SIZE_API,    /* See *_INT64_* values above */
-  EX_OPT_INTEGER_SIZE_DB      /* (query only) */
+  EX_OPT_MAX_NAME_LENGTH =
+      1, /**< Maximum length of names that will be returned/passed via api call. */
+  EX_OPT_COMPRESSION_TYPE,    /**<  Not currently used; default is gzip	*/
+  EX_OPT_COMPRESSION_LEVEL,   /**<  In the range [0..9]. A value of 0 indicates no compression */
+  EX_OPT_COMPRESSION_SHUFFLE, /**<  1 if enabled, 0 if disabled	*/
+  EX_OPT_INTEGER_SIZE_API, /**<  4 or 8 indicating byte size of integers used in api functions. */
+  EX_OPT_INTEGER_SIZE_DB /**<  Query only, returns 4 or 8 indicating byte size of integers stored on
+                            the database. */
 };
 typedef enum ex_option_type ex_option_type;
 /*@}*/
@@ -283,7 +293,8 @@ typedef enum ex_options ex_options;
  */
 /** Maximum length of QA record, element type name */
 #define MAX_STR_LENGTH 32L
-/** Maximum length of an entity name, attribute name, variable name */
+/** Default maximum length of an entity name, attribute name, variable name.
+    Can be changed via a call to ex_set_option() */
 #define MAX_NAME_LENGTH MAX_STR_LENGTH
 
 /** Maximum length of the database title or an information record */

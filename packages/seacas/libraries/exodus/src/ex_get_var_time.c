@@ -64,7 +64,9 @@
 #include <stdlib.h>    // for free, malloc
 #include <sys/types.h> // for int64_t
 
-/*
+/*!
+  \ingroup ResultsData
+
  * reads the values of a variable for a single entry of an object (block or set)
  * through a
  * specified number of time steps in the database; assume the first

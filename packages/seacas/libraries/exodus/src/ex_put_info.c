@@ -42,7 +42,7 @@
 
 /*!
 The function ex_put_info() writes information records to the
-database. The records are \c MAX_LINE_LENGTH-character strings.
+database. The records are MAX_LINE_LENGTH-character strings.
 
 In case of an error, ex_put_info() returns a negative number;
 a warning will return a positive number. Possible causes of errors

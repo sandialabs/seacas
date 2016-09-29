@@ -48,8 +48,8 @@ variable for a single time step. Memory must be allocated for the
 nodal variable values array before this function is invoked.
 
 Because nodal variables are floating point values, the application
-code must declare the array passed to be the appropriate type (\c
-float or \c double) to match the compute word size passed in
+code must declare the array passed to be the appropriate type
+(float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_get_nodal_var() returns a negative
@@ -77,9 +77,9 @@ first variable
 
 \param[in] num_nodes            The number of nodal points.
 
-\param[out]  nodal_var_vals     Returned array of \c num_nodes values of the \c
+\param[out]  nodal_var_vals     Returned array of num_nodes values of the
 nodal_var_index-th
-                                nodal variable for the \c time_step-th time
+                                nodal variable for the time_step-th time
 step.
 
 

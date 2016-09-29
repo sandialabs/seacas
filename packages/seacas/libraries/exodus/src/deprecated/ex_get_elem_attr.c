@@ -39,12 +39,12 @@
 \deprecated Use ex_get_attr()(exoid, EX_ELEM_BLOCK, elem_blk_id, attrib) instead
 
 The function ex_get_elem_attr() reads the attributes for an element
-block. Memory must be allocated for(\c num_attr x \c num_elem_this_blk)
+block. Memory must be allocated for(num_attr x num_elem_this_blk)
 attributes before this routine is called.
 
 Because the attributes are floating point values, the application code
-must declare the array passed to be the appropriate type (\c float or
-\c double) to match the compute word size passed in ex_create() or
+must declare the array passed to be the appropriate type (float or
+double) to match the compute word size passed in ex_create() or
 ex_open().
 
 \return In case of an error, ex_get_elem_attr() returns a negative
@@ -58,9 +58,9 @@ errors include:
 ex_create() or ex_open().
 \param[in]  elem_blk_id   The element block ID.
 \param[out] attrib        Size [num_elem_this_blk*num_attr].
-                          Returned list of(\c num_attr x num_elem_this_blk)
+                          Returned list of(num_attr x num_elem_this_blk)
 attributes for
-                          the element block, with the \c num_attr index cycling
+                          the element block, with the num_attr index cycling
 faster.
 
 

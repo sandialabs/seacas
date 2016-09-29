@@ -54,6 +54,8 @@
 #include "exodusII.h" // for ex_put_truth_table, etc
 
 /*!
+\ingroup ResultsData
+
  * writes the EXODUS variable truth table to the database; also,
  * creates netCDF variables in which to store EXODUS variable
  * values; although this table isn't required (because the netCDF

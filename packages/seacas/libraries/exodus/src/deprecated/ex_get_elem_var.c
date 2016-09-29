@@ -46,8 +46,8 @@ allocated for the element variable values array before this function
 is invoked.
 
 Because element variables are floating point values, the application
-code must declare the array passed to be the appropriate type (\c
-float or \c double) to match the compute word size passed in
+code must declare the array passed to be the appropriate type
+(float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_get_elem_var() returns a negative
@@ -76,14 +76,13 @@ variable
 
 \param[in] num_elem_this_blk  The number of elements in this element block.
 
-\param[out] elem_var_vals   Returned array of \c num_elem_this_blk values of the
-\c elem_var_index
-                            element variable for the element block with ID of \c
-elem_blk_id
-                            at the \c time_step time step.
+\param[out] elem_var_vals   Returned array of num_elem_this_blk values of the
+elem_var_index
+                            element variable for the element block with ID of
+                            elem_blk_id at the time_step time step.
 
 
-As an example, the following code segment will read the \c
+As an example, the following code segment will read the
 var_index-th element variable at one time step stored in an exodus
 file :
 

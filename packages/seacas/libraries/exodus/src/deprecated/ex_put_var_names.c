@@ -53,6 +53,8 @@
 #include "exodusII.h" // for ex_put_variable_names, etc
 
 /*!
+\ingroup ResultsData
+
  * writes the names of the results variables to the database
  * \param     exoid                   exodus file id
  * \param    *var_type                variable type: G,N, or E

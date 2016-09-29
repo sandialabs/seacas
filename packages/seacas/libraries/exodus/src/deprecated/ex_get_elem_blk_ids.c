@@ -41,7 +41,7 @@
 The function ex_get_elem_blk_ids() reads the IDs of all of the element
 blocks. Memory must be allocated for the returned array of
 ({num_elem_blk}) IDs before this function is invoked. The required
-size(\c num_elem_blk) can be determined via a call to ex_inquire() or
+size(num_elem_blk) can be determined via a call to ex_inquire() or
 ex_inquire_int().
 
 \return In case of an error, ex_get_elem_blk_ids() returns a negative

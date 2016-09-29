@@ -50,7 +50,7 @@ Section 3.10 on page 11.
 
 Because the distribution factors are floating point values, the
 application code must declare the array passed to be the appropriate
-type (\c float or \c double) to match the compute word size passed in
+type (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 The length of each of the returned arrays can be determined by
@@ -78,13 +78,13 @@ distribution factors for each
                                   set.
 
 \param[out]  node_sets_node_index Returned array containing the indices into the
-\c node_set_node_list
+node_set_node_list
                                   which are the locations of the first node for
 each set. These indices
                                   are 0-based.
 
 \param[out]  node_sets_df_index   Returned array containing the indices into the
-\c node_set_dist_fact
+node_set_dist_fact
                                   which are the locations of the first
 distribution factor for each
                                   set. These indices are 0-based.

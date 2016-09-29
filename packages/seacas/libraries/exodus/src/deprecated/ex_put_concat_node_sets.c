@@ -52,7 +52,7 @@ discussion of efficiency issues.
 
 Because the distribution factors are floating point values, the
 application code must declare the array passed to be the appropriate
-type (\c float or \c double) to match the compute word size passed in
+type (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_put_concat_node_sets() returns a
@@ -80,15 +80,15 @@ set.
 \param[in] num_dist_per_set     Array containing the number of distribution
 factors for each set.
 
-\param[in] node_sets_node_index Array containing the indices into the \c
+\param[in] node_sets_node_index Array containing the indices into the
 node_set_node_list which
                                 are the locations of the first node for each
 set. These indices are
-                                0-based. Pass \c NULL for remaining parameters
+                                0-based. Pass NULL for remaining parameters
 to just set the
                                 nodeset parameters and not output nodeset data.
 
-\param[in] node_sets_df_index   Array containing the indices into the \c
+\param[in] node_sets_df_index   Array containing the indices into the
 node_set_dist_list which
                                 are the locations of the first distribution
 factor for each set. These

@@ -39,8 +39,8 @@
 instead
 
 The function ex_get_elem_conn() reads the connectivity array for an
-element block. Memory must be allocated for the connectivity array(\c
-num_elem_this_blk * \c num_nodes_per_elem in length) before
+element block. Memory must be allocated for the connectivity array
+(num_elem_this_blk * num_nodes_per_elem in length) before
 this routine is called.
 
 \return In case of an error, ex_get_elem_conn() returns a negative number; a
