@@ -209,7 +209,9 @@ error_ret:
   return (EX_FATAL);
 }
 
-/*!
+/*
+\ingroup ResultsData
+
  * writes the values of a single variable for one entity at one time
  * step to the database; assume the first time step and variable index
  * are 1

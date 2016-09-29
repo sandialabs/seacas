@@ -56,9 +56,9 @@
 The function ex_get_node_num_map() reads the optional node number
 mapnode number map from the database. See Section LocalNodeIds for a
 description of the node number map. If a node number map is not stored
-in the data file, a default array (1,2,3,. .. \c num_nodes) is
+in the data file, a default array (1,2,3,. .. num_nodes) is
 returned. Memory must be allocated for the node number map array
-(\c num_nodes in length) before this call is made.
+(num_nodes in length) before this call is made.
 
 \return In case of an error, ex_get_node_num_map() returns a negative
 number; a warning will return a positive number. Possible causes of

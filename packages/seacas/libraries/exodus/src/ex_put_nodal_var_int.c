@@ -46,8 +46,8 @@ variable for a single time step. The function ex_put_variable_param()
 must be invoked before this call is made.
 
 Because nodal variables are floating point values, the application
-code must declare the array passed to be the appropriate type (\c
-float or \c double) to match the compute word size passed in
+code must declare the array passed to be the appropriate type
+(float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_put_nodal_var() returns a negative number; a
@@ -75,9 +75,9 @@ variable has an index of 1.
 
 \param[in] num_nodes          The number of nodal points.
 
-\param[in]  nodal_var_vals    Array of \c num_nodes values of the \c
+\param[in]  nodal_var_vals    Array of num_nodes values of the
 nodal_var_index-th nodal
-                              variable for the \c time_step-th time step.
+                              variable for the time_step-th time step.
 
 
 As an example, the following code segment writes all the nodal

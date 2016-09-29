@@ -40,13 +40,13 @@
 
 The function ex_put_elem_attr() writes the attributes for an element
 block. Each element in the element block must have the same number of
-attributes, so there are(\c num_attr x \c num_elem_this_blk)
+attributes, so there are(num_attr x num_elem_this_blk)
 attributes for each element block. The function ex_put_elem_block()
 must be invoked before this call is made.
 
 Because the attributes are floating point values, the application code
-must declare the array passed to be the appropriate type (\c float or
-\c double) to match the compute word size passed in ex_create() or
+must declare the array passed to be the appropriate type (float or
+double) to match the compute word size passed in ex_create() or
 ex_open().
 
 \return In case of an error, ex_put_elem_attr() returns a negative
@@ -63,7 +63,7 @@ ID.
 ex_create() or ex_open().
 \param[in] elem_blk_id  The element block ID.
 \param[in] attrib       Size [num_elem_this_blk*num_attr]
-                        The list of attributes for the element block. The \c
+                        The list of attributes for the element block. The
 num_attr
                         index cycles faster.
 

@@ -69,8 +69,8 @@ efficiency. See #Efficiency for a discussion of
 efficiency issues.
 
 Because element variables are floating point values, the application
-code must declare the array passed to be the appropriate type (\c
-float or \c double) to match the compute word size passed in
+code must declare the array passed to be the appropriate type
+(float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_put_elem_var() returns a negative number; a
@@ -100,14 +100,14 @@ has
                            an index of 1.
 \param[in] elem_blk_id     The element block ID.
 \param[in] num_elem_this_blk  The number of elements in the given element block.
-\param[in]  elem_var_vals  Array of \c num_elem_this_blk values of the \c
+\param[in]  elem_var_vals  Array of num_elem_this_blk values of the
 elem_var_index-th
-                           element variable for the element block with ID of \c
+                           element variable for the element block with ID of
 elem_blk_id
-                           at the \c time_step-th time step.
+                           at the time_step-th time step.
 
 The following coding will write out all of the element variables for a
-single time step \c n to an open exodus file :
+single time step n to an open exodus file :
 
 ~~~{.c}
 int num_ele_vars, num_elem_blk, *num_elem_in_block,error,
@@ -129,7 +129,7 @@ for (k=1; k <= num_ele_vars; k++) {
       error = ex_put_elem_var (exoid, n, k, ebids[j],
                                num_elem_in_block[j], elem_var_vals);
 
-\comment {Using non-deprecated function:}
+      \comment{Using non-deprecated function:}
       error = ex_put_var (exoid, n, EX_ELEM_BLOCK, k, ebids[j],
                                num_elem_in_block[j], elem_var_vals);
 

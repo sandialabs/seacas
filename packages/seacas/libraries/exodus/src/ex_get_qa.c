@@ -41,7 +41,7 @@
 
 /*!
 The function ex_get_qa() reads the QA records from the database. Each
-QA record contains four \c MAX_STR_LENGTH-byte character
+QA record contains four MAX_STR_LENGTH-byte character
 strings. The character strings are:
  -  the analysis code name
  -  the analysis code QA descriptor

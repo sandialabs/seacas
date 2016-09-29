@@ -45,7 +45,7 @@ must be called before this routine is invoked.
 
 Because the distribution factors are floating point values, the
 application code must declare the array passed to be the appropriate
-type (\c float or \c double) to match the compute word size passed in
+type (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_put_node_set_dist_fact() returns a

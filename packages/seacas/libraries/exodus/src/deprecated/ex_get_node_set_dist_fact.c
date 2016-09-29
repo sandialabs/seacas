@@ -41,12 +41,12 @@ node_set_dist_fact)
 
 The function ex_get_node_set_dist_fact() returns the node set
 distribution factors for a single node set. Memory must be allocated
-for the list of distribution factors(\c num_dist_in_set in length)
+for the list of distribution factors(num_dist_in_set in length)
 before this function is invoked.
 
 Because the distribution factors are floating point values, the
 application code must declare the array passed to be the appropriate
-type (\c float or \c double) to match the compute word size passed in
+type (float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_get_node_set_dist_fact() returns a

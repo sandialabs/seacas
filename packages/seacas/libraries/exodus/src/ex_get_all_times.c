@@ -47,8 +47,8 @@ time steps) can be determined by using the ex_inquire() or
 ex_inquire_int() routines.
 
 Because time values are floating point values, the application code
-must declare the array passed to be the appropriate type (\c float or
-\c double) to match the compute word size passed in ex_create() or
+must declare the array passed to be the appropriate type (float or
+double) to match the compute word size passed in ex_create() or
 ex_open().
 
 \return In case of an error, ex_get_all_times() returns a negative

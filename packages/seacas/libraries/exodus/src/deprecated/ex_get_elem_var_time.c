@@ -65,8 +65,8 @@ steps. Memory must be allocated for the element variable values array
 before this function is invoked.
 
 Because element variables are floating point values, the application
-code must declare the array passed to be the appropriate type (\c
-float or \c double) to match the compute word size passed in
+code must declare the array passed to be the appropriate type
+(float or double) to match the compute word size passed in
 ex_create() or ex_open().
 
 \return In case of an error, ex_get_elem_var_time() returns a negative
@@ -99,13 +99,13 @@ value is desired. If
                              negative, the last time step in the database will
 be used. The first
                              time step is 1.
-\param[out]  elem_var_vals   returned array of(\c end_time_step {-} \c
+\param[out]  elem_var_vals   returned array of(end_time_step {-}
 beg_time_step +
-                             1) values of the \c elem_number-th element for the
-                             \c elem_var_index-th element variable.
+                             1) values of the elem_number-th element for the
+                             elem_var_index-th element variable.
 
 
-For example, the following coding will read the values of the \c
+For example, the following coding will read the values of the
 var_index-th element variable for element number 2 from the first
 time step to the last time step:
 

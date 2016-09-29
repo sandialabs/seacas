@@ -37,6 +37,8 @@
 #include <sys/types.h>
 
 /*!
+\ingroup ResultsData
+
  * \deprecated Use ex_get_partial_var() instead
  */
 

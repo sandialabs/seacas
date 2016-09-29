@@ -59,6 +59,8 @@
 #include <sys/types.h> // for int64_t
 
 /*!
+\ingroup ResultsData
+
  * \deprecated use ex_get_partial_var()(exoid, time_step, EX_NODAL, nodal_var_index, 1, start_node,
  num_nodes, var_vals);
 

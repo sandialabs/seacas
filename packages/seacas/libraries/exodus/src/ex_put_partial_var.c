@@ -43,6 +43,7 @@
 #include <sys/types.h> // for int64_t
 
 /*!
+\ingroup ResultsData
  * writes the values of a single variable for a partial block at one time
  * step to the database; assume the first time step and variable index
  * are 1

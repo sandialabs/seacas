@@ -96,7 +96,7 @@ ex_create() or ex_open().
 \param[in]  num_elem_var   The number of element variables.
 \param[in]  elem_var_tab   Size [num_elem_blk,num_elem_var]. A 2-dimensional
 array
-                           (with the \c num_elem_var index cycling faster)
+                           (with the num_elem_var index cycling faster)
                            containing the element variable truth table.
 
 The following coding will create, populate, and write an element

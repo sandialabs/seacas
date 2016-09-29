@@ -59,17 +59,19 @@
 #include <stdlib.h> // for free, NULL, malloc
 
 /*!
+\ingroup ResultsData
+
  * writes the EXODUS variable truth table to the database; also,
  * creates netCDF variables in which to store EXODUS variable
  * values; although this table isn't required (because the netCDF
- * variables can also be created in ex_put_var), this call will save
+ * variables can also be created in ex_put_var()), this call will save
  * tremendous time because all of the variables are defined at once
  * while the file is in define mode, rather than going in and out of
  * define mode (causing the entire file to be copied over and over)
- * which is what occurs when the variables are defined in ex_put_var
+ * which is what occurs when the variables are defined in ex_put_var()
  * \param       exoid              exodus file id
  * \param       obj_type           object type
- * \param       num_blk            number of blocks
+ * \param       num_blk            number of blocks or sets
  * \param       num_var            number of variables
  * \param      *var_tab            variable truth table array
  */

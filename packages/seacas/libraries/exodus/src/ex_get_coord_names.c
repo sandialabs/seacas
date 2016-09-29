@@ -53,7 +53,7 @@ errors include:
 
 \param[in]   exoid        exodus file ID returned from a previous call to
 ex_create() or ex_open().
-\param[out]  coord_names  Returned pointer to a vector containing \c num_dim
+\param[out]  coord_names  Returned pointer to a vector containing num_dim
 names of the nodal
                           coordinate arrays.
 

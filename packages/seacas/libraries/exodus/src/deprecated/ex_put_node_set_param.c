@@ -62,8 +62,7 @@ ex_create() or ex_open().
 \param[in] num_nodes_in_set   The number of nodes in the node set.
 \param[in] num_dist_in_set    The number of distribution factors in the node
 set. This should be
-                              either 0 (zero) for no factors, or should equal \c
-num_nodes_in_set.
+                              either 0 (zero) for no factors, or should equal num_nodes_in_set.
 
 
 The following code segment will write out a node set to an open exodus
@@ -95,7 +94,7 @@ error = ex_put_node_set_dist_fact(exoid, id, dist_fact);
 \comment{Same result using non-deprecated functions}
 error = ex_put_set_param(exoid, EX_NODE_SET, id, num_nodes_in_set,
 num_dist_in_set);
-error = ex_put_set(exoid, EX_NODE_SET, id, node_list);
+error = ex_put_set(exoid, EX_NODE_SET, id, node_list, NULL);
 error = ex_put_set_dist_fact(exoid, EX_NODE_SET, id, dist_fact);
 ~~~
  */

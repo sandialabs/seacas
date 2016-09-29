@@ -52,6 +52,8 @@
 #include "exodusII.h" // for ex_get_variable_param, etc
 
 /*!
+\ingroup ResultsData
+
  * reads the number of global, nodal, or element variables that are
  * stored in the database
  * \deprecated Use ex_get_variable_param()(exoid, obj_type, *num_vars)

@@ -48,6 +48,8 @@
  */
 
 /*!
+\ingroup ResultsData
+
  * reads the values of a single variable for a partial block at one time
  * step from the database; assume the first time step and variable index
  * and start_index are 1

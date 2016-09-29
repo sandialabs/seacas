@@ -62,7 +62,9 @@
 #include <stdio.h>
 #include <sys/types.h> // for int64_t
 
-/*
+/*!
+  \ingroup ResultsData
+
  * reads the values of a single nodal variable for a single time step from
  * the database; assume the first time step and nodal variable index is 1
  */

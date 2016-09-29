@@ -60,6 +60,8 @@ n * retains certain rights in this software.
 #include <sys/types.h> // for int64_t
 
 /*!
+\ingroup ResultsData
+
  * \deprecated use ex_get_partial_var()
  */
 

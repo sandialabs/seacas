@@ -54,7 +54,7 @@ include:
 
 \param[in] exoid          exodus file ID returned from a previous call to
 ex_create() or ex_open().
-\param[in] coord_names    Array containing \c num_dim names of length \p
+\param[in] coord_names    Array containing num_dim names of length \p
 ...max_name_length...                         of the nodal coordinate arrays.
 
 The following coding will write the coordinate names to an
