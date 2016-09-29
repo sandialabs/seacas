@@ -93,7 +93,7 @@ For example, the following code segment will read the values of the
 first nodal variable for node number one for all time steps stored in
 the data file:
 
-\code
+~~~{.c}
 int num_time_steps, var_index, node_num, beg_time, end_time, error, exoid;
 float *var_values;
 
@@ -107,7 +107,7 @@ var_index = 1; node_num = 1; beg_time = 1; end_time = -1;
 error = ex_get_var_time(exoid, EX_NODAL, var_index, node_num, beg_time,
                               end_time, var_values);
 
-\endcode
+~~~
 */
 
 int ex_get_nodal_var_time_int(int exoid, int nodal_var_index, int64_t node_number,

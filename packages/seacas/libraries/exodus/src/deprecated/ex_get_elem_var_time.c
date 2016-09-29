@@ -109,7 +109,7 @@ For example, the following coding will read the values of the \c
 var_index-th element variable for element number 2 from the first
 time step to the last time step:
 
-\code
+~~~{.c}
 
 int error, exoid, num_time_steps, var_index, elem_num,
     beg_time, end_time;
@@ -134,7 +134,7 @@ error = ex_get_elem_var_time (exoid, var_index, elem_num,
 \comment{Using non-deprecated function:}
 error = ex_get_elem_var_time (exoid, EX_ELEM_BLOCK, var_index, elem_num,
                               beg_time, end_time, var_values);
-\endcode
+~~~
 
  */
 

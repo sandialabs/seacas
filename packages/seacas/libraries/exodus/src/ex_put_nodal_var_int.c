@@ -83,7 +83,7 @@ nodal_var_index-th nodal
 As an example, the following code segment writes all the nodal
 variables for a single time step:
 
-\code
+~~~{.c}
 int num_nod_vars, num_nodes, error, exoid, time_step;
 float *nodal_var_vals;
 
@@ -97,7 +97,7 @@ for (k=1; k <= num_nod_vars; k++) {
    error = ex_put_nodal_var(exoid, time_step, k, num_nodes,
                             nodal_var_vals);
 }
-\endcode
+~~~
 
 */
 

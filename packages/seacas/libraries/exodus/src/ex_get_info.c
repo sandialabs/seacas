@@ -60,7 +60,7 @@ or ex_open().
 The following code segment will determine the number of information
 records and read them from an open exodus file :
 
-\code
+~~~{.c}
 int error, exoid, num_info;
 char *info[MAXINFO];
 
@@ -70,7 +70,7 @@ for (i=0; i < num_info; i++) {
    info[i] = (char *) calloc ((MAX_LINE_LENGTH+1), sizeof(char));
 }
 error = ex_get_info (exoid, info);
-\endcode
+~~~
 
  */
 

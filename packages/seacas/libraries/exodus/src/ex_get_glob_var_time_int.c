@@ -81,7 +81,7 @@ values
 
 The following is an example of using this function:
 
-\code
+~~~{.c}
 int error, exoid, num_time_steps, var_index;
 int beg_time, end_time;
 
@@ -97,7 +97,7 @@ var_values = (float *) calloc (num_time_steps, sizeof(float));
 
 error = ex_get_glob_var_time(exoid, var_index, beg_time,
                              end_time, var_values);
-\endcode
+~~~
 
 */
 

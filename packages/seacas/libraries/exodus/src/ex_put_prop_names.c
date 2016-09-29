@@ -92,7 +92,7 @@ regardless of their ID) to a group (property) called \b TOP, and the
 2nd, 3rd, and 4th element blocks to a group called \b LSIDE. This
 could be accomplished with the following code:
 
-\code
+~~~{.c}
 
 char* prop_names[2];
 int top_part[]   = {1,0,1,0,1};
@@ -122,7 +122,7 @@ ex_put_prop_array (exoid, EX_ELEM_BLOCK, prop_names[0],
 ex_put_prop_array (exoid, EX_ELEM_BLOCK, prop_names[1],
                    lside_part);
 
-\endcode
+~~~
 
 */
 

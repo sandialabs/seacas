@@ -60,7 +60,7 @@ were introduced
 
 The following code segment reads all the element block IDs:
 
-\code
+~~~{.c}
 int error, exoid, *idelbs, num_elem_blk;
 idelbs = (int *) calloc(num_elem_blk, sizeof(int));
 
@@ -69,7 +69,7 @@ error = ex_get_elem_blk_ids (exoid, idelbs);
 \comment{Same result using non-deprecated functions}
 error = ex_get_ids (exoid, EX_ELEM_BLOCK, idelbs);
 
-\endcode
+~~~
 
 
  */

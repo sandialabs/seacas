@@ -74,10 +74,10 @@ is false.)</td></tr>
 For example, the following will cause all messages to print
 and will cause the program to exit upon receipt of fatal error:
 
-\code
+~~~{.c}
 #include "exodusII.h"
 ex_opts(EX_ABORT|EX_VERBOSE);
-\endcode
+~~~
 
 */
 int ex_opts(int options)

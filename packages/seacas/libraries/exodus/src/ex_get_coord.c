@@ -74,7 +74,7 @@ only if
 The following code segment will read the nodal coordinates
 from an open exodus file :
 
-\code
+~~~{.c}
 int error, exoid;
 
 double *x, *y, *z;
@@ -94,7 +94,7 @@ error = ex_get_coord(exoid, x,    NULL, NULL);
 error = ex_get_coord(exoid, NULL, y,    NULL);
 if (num_dim >= 3)
    error = ex_get_coord(exoid, NULL, NULL, z);
-\endcode
+~~~
 
 */
 

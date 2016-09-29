@@ -60,7 +60,7 @@ names of the nodal
 The following code segment will read the coordinate names from an open
 exodus file :
 
-\code
+~~~{.c}
 int error, exoid;
 char *coord_names[3];
 
@@ -69,7 +69,7 @@ for (i=0; i < num_dim; i++) {
 }
 
 error = ex_get_coord_names (exoid, coord_names);
-\endcode
+~~~
 
 */
 

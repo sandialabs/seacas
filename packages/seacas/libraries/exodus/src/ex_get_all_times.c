@@ -65,7 +65,7 @@ all time steps.
 The following code segment will read the time values for all time
 steps stored in the data file:
 
-\code
+~~~{.c}
 int error, exoid, num_time_steps;
 float *time_values;
 
@@ -76,7 +76,7 @@ num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
 time_values = (float *) calloc(num_time_steps, sizeof(float));
 
 error = ex_get_all_times(exoid, time_values);
-\endcode
+~~~
 
 */
 

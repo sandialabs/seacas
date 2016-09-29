@@ -68,7 +68,7 @@ will be output.
 
 Although writing the element variable truth table is optional, it is
 encouraged because it creates at one time all the necessary
-\code{NetCDF} variables in which to hold the exodus element variable
+~~~{.c}{NetCDF} variables in which to hold the exodus element variable
 values. This results in significant time savings. See
 Section #Efficiency for a discussion of efficiency issues.
 
@@ -103,7 +103,7 @@ The following coding will create, populate, and write an element
 variable truth table to an opened exodus file (NOTE: all element
 variables are valid for all element blocks in this example.):
 
-\code
+~~~{.c}
 int *truth_tab, num_elem_blk, num_ele_vars, error, exoid;
 
 \comment{write element variable truth table}
@@ -116,7 +116,7 @@ for (i=0, k=0; i < num_elem_blk; i++) {
 }
 error = ex_put_elem_var_tab(exoid, num_elem_blk, num_ele_vars,
                             truth_tab);
-\endcode
+~~~
 
 */
 

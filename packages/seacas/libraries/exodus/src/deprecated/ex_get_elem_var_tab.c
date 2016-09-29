@@ -87,7 +87,7 @@ num_elem_var index cycling
 As an example, the following coding will read the element
 variable truth table from an opened exodus file :
 
-\code
+~~~{.c}
 int *truth_tab, num_elem_blk, num_ele_vars, error, exoid;
 
 truth_tab = (int *) calloc ((num_elem_blk*num_ele_vars),
@@ -95,7 +95,7 @@ truth_tab = (int *) calloc ((num_elem_blk*num_ele_vars),
 
 error = ex_get_elem_var_tab (exoid, num_elem_blk, num_ele_vars,
                              truth_tab);
-\endcode
+~~~
 
  */
 

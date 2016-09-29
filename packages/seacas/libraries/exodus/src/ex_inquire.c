@@ -236,7 +236,7 @@ returned in \c ret_int. </td></tr>
 As an example, the following will return the number of element
 block properties stored in the exodus file :
 
-\code
+~~~{.c}
 #include "exodusII.h"
 int error, exoid, num_props;
 float fdum;
@@ -247,7 +247,7 @@ error = ex_inquire (exoid, EX_INQ_EB_PROP, &num_props,
                     &fdum, cdum);
 ...Another way to get the same information
 num_props = ex_inquire_int(exoid, EX_INQ_EB_PROP);
-\endcode
+~~~
 
 */
 
@@ -1169,13 +1169,13 @@ ex_create() or ex_open().
  As an example, the following will return the number of nodes,
  elements, and element blocks stored in the exodus file :
 
-\code
+~~~{.c}
 #include "exodusII.h"
 int exoid;
 int num_nodes = ex_inquire_int(exoid, EX_INQ_NODES);
 int num_elems = ex_inquire_int(exoid, EX_INQ_ELEM);
 int num_block = ex_inquire_int(exoid, EX_INQ_ELEM_BLK);
-\endcode
+~~~
 
 */
 int64_t ex_inquire_int(int exoid, int req_info)

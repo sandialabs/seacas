@@ -101,7 +101,7 @@ factors for all sets.
 As an example, the following code segment will read concatenated node
 sets:
 
-\code
+~~~{.c}
 
 int error, exoid, num_node_sets, list_len, *ids,
     *num_nodes_per_set, *num_df_per_set, *node_ind,
@@ -127,7 +127,7 @@ dist_fact = (float *) calloc(list_len, sizeof(float));
 error = ex_get_concat_node_sets (exoid, ids, num_nodes_per_set,
                                  num_df_per_set, node_ind, df_ind,
                                  node_list, dist_fact);
-\endcode
+~~~
 */
 
 int ex_get_concat_node_sets(int exoid, void_int *node_set_ids, void_int *num_nodes_per_set,

@@ -87,7 +87,7 @@ As an example, the following code segment will read the \c
 var_index-th element variable at one time step stored in an exodus
 file :
 
-\code
+~~~{.c}
 int *ids, num_elem_blk, error, exoid, *num_elem_in_block,
     step, var_ind;
 
@@ -108,7 +108,7 @@ for (i=0; i < num_elem_blk; i++) {
 
    free (var_values);
 }
-\endcode
+~~~
 
 */
 

@@ -72,7 +72,7 @@ ex_create() or ex_open().
 
 The following code will read an element number map from an
 open exodus file :
-\code
+~~~{.c}
 int *elem_map, error, exoid;
 
 \comment{read element number map}
@@ -81,7 +81,7 @@ error = ex_get_elem_num_map (exoid, elem_map);
 
 \comment{Equivalent using non-deprecated function}
 error = ex_get_id_map(exoid, EX_ELEM_MAP, elem_map);
-\endcode
+~~~
  */
 
 int ex_get_elem_num_map(int exoid, void_int *elem_map)

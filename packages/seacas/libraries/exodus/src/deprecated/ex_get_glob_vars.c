@@ -58,7 +58,6 @@
 
 /*!
 \deprecated Use ex_get_var()(exoid, time_step, EX_GLOBAL, 1, 1, num_glob_vars, global_var_vals)
-
 \ingroup ResultsData
 
 The function ex_get_glob_vars() reads the values of all the
@@ -95,7 +94,7 @@ variable values
 The following is an example code segment that reads all the global
 variables at one time step:
 
-\verbatim
+~~~{.c}
 int num_glo_vars, error, time_step;
 float *var_values;
 
@@ -103,7 +102,8 @@ error = ex_get_variable_param (idexo, EX_GLOBAL, &num_glo_vars);
 var_values = (float *) calloc (num_glo_vars, sizeof(float));
 error = ex_get_glob_vars (idexo, time_step, num_glo_vars,
                           var_values);
-\endverbatim
+~~~
+
  */
 
 int ex_get_glob_vars(int exoid, int time_step, int num_glob_vars, void *glob_var_vals)

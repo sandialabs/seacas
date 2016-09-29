@@ -89,7 +89,7 @@ num_dim
 The following will write the nodal coordinates to an open
 exodus file :
 
-\code
+~~~{.c}
 int error, exoid;
 
 // \comment{if file opened with compute word size of sizeof(float)}
@@ -111,7 +111,7 @@ error = ex_put_coord(exoid, x, y, z);
 error = ex_put_coord(exoid, x,    NULL, NULL);
 error = ex_put_coord(exoid, NULL, y,    NULL);
 error = ex_put_coord(exoid, NULL, NULL, z);
-\endcode
+~~~
 
  */
 

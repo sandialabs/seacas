@@ -59,7 +59,7 @@ set.
 
 The following code segment will read a node set from an open exodus
 file :
-\code
+~~~{.c}
 int error, exoid, id, num_nodes_in_set, num_df_in_set, *node_list;
 float *dist_fact;
 
@@ -87,7 +87,7 @@ if (num_df_in_set > 0) {
    error = ex_get_set_dist_fact(exoid, EX_NODE_SET, id, dist_fact);
 }
 
-\endcode
+~~~
 
  */
 

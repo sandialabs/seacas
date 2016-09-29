@@ -90,12 +90,12 @@ in the database.
 As an example, the following coding will determine the number of
 global variables stored in the data file:
 
-\code
+~~~{.c}
 int num_glo_vars, error, exoid;
 
 \comment{read global variables parameters}
 error = ex_get_variable_param(exoid, EX_GLOBAL, &num_glo_vars);
-\endcode
+~~~
 
 */
 

@@ -67,13 +67,13 @@ the data
 The following code segment will write out the simulation time value at
 simulation time step n:
 
-\code
+~~~{.c}
 int error, exoid, n;
 float time_value;
 
 \comment{write time value}
 error = ex_put_time (exoid, n, &time_value);
-\endcode
+~~~
 
 */
 

@@ -58,7 +58,7 @@ the file.
 As an example, the following code will read all of the node set IDs
 from an open data file:
 
-\code
+~~~{.c}
 int *ids, num_node_sets, error, exoid;
 
 \comment{read node sets IDs}
@@ -68,7 +68,7 @@ error = ex_get_node_set_ids (exoid, ids);
 
 \comment{Same result using non-deprecated functions.}
 error = ex_get_ids (exoid, EX_NODE_SET, ids);
-\endcode
+~~~
  */
 
 int ex_get_node_set_ids(int exoid, void_int *ids) { return ex_get_ids(exoid, EX_NODE_SET, ids); }

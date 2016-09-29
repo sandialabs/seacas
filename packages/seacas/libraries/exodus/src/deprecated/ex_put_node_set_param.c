@@ -69,7 +69,7 @@ num_nodes_in_set.
 The following code segment will write out a node set to an open exodus
 file :
 
-\code
+~~~{.c}
 int id, num_nodes_in_set, num_dist_in_set, error, exoid, *node_list;
 float *dist_fact;
 
@@ -97,7 +97,7 @@ error = ex_put_set_param(exoid, EX_NODE_SET, id, num_nodes_in_set,
 num_dist_in_set);
 error = ex_put_set(exoid, EX_NODE_SET, id, node_list);
 error = ex_put_set_dist_fact(exoid, EX_NODE_SET, id, dist_fact);
-\endcode
+~~~
  */
 
 int ex_put_node_set_param(int exoid, ex_entity_id node_set_id, int64_t num_nodes_in_set,

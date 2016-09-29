@@ -74,7 +74,7 @@ ex_create() or ex_open().
 The following code will read a node number map from an open exodus
 file :
 
-\code
+~~~{.c}
 int *node_map, error, exoid;
 
 \comment{read node number map}
@@ -83,7 +83,7 @@ error = ex_get_node_num_map(exoid, node_map);
 
 \comment{Equivalent using non-deprecated function}
 error = ex_get_id_map(exoid, EX_NODE_MAP, node_map);
-\endcode
+~~~
 
 */
 
