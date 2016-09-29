@@ -65,7 +65,7 @@ As an example, the following code segment will read the parameters for
 the element block with an ID of 10 and read the connectivity and
 element attributes arrays from an open exodus file :
 
-\code
+~~~{.c}
 #include "exodusII.h"
 int id, error, exoid, num_el_in_blk, num_nod_per_el, num_attr,
     *connect;
@@ -94,7 +94,7 @@ error = ex_get_block(exoid, EX_ELEM_BLOCK, id, elem_type, &num_el_in_blk,
 error = ex_get_conn (exoid, EX_ELEM_BLOCK, id, connect);
 error = ex_get_attr (exoid, EX_ELEM_BLOCK, id, attrib);
 
-\endcode
+~~~
 
  */
 

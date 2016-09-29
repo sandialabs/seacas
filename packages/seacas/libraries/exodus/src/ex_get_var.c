@@ -66,10 +66,12 @@
 #include <stdio.h>
 #include <sys/types.h> // for int64_t
 
-/*
- * reads the values of a single element variable for one element block at
- * one time step in the database; assume the first time step and
- * element variable index is 1
+/**
+   \ingroup ResultsData
+
+ * reads the values of a single entity variable for one entity block
+ * or set at one time step in the database; assume the first time step
+ * and variable index is 1
  */
 
 int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index,

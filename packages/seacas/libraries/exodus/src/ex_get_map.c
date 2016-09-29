@@ -62,14 +62,14 @@ ex_create() or ex_open().
 The following code will read an element order map from an open exodus
 file :
 
-\code
+~~~{.c}
 int *elem_map, error, exoid;
 
 \comment{read element order map}
 elem_map = (int *)calloc(num_elem, sizeof(int));
 
 error = ex_get_map(exoid, elem_map);
-\endcode
+~~~
 
  */
 

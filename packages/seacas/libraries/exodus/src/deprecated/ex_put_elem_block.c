@@ -86,7 +86,7 @@ For example, the following code segment will initialize an element
 block with an ID of 10, write out the connectivity array, and write
 out the element attributes array:
 
-\code
+~~~{.c}
 int id, error, exoid, num_elem_in_blk, num_nodes_per_elem, *connect, num_attr;
 float *attrib;
 
@@ -127,7 +127,7 @@ error = ex_put_block(exoid, EX_ELEM_BLOCK, id, "SHELL", num_elem_in_blk,
 error = ex_put_conn (exoid, EX_ELEM_BLOCK, id, connect);
 error = ex_put_attr (exoid, EX_ELEM_BLOCK, id, attrib);
 
-\endcode
+~~~
 
  */
 

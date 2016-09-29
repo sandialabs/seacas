@@ -128,7 +128,7 @@ described.
 
 The following coding will write out the names associated with the
 nodal variables:
-\code
+~~~{.c}
 int num_nod_vars, error, exoid;
 char *var_names[2];
 
@@ -140,7 +140,7 @@ var_names[1] = "disy";
 
 error = ex_put_variable_param (exoid, EX_NODAL, num_nod_vars);
 error = ex_put_variable_names (exoid, EX_NODAL, num_nod_vars, var_names);
-\endcode
+~~~
 
 */
 

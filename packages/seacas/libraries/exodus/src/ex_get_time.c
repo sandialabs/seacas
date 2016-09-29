@@ -68,14 +68,14 @@ arrays stored
 As an example, the following coding will read the time value stored in
 the data file for time step n:
 
-\code
+~~~{.c}
 int n, error, exoid;
 float time_value;
 
 \comment{read time value at time step 3}
 n = 3;
 error = ex_get_time (exoid, n, &time_value);
-\endcode
+~~~
 
 */
 

@@ -78,7 +78,7 @@ of the setting
 
 The following is an example of the use of this function:
 
-\code
+~~~{.c}
 int exoid, CPU_word_size, IO_word_size, errval;
 float version;
 char errmsg[MAX_ERR_LENGTH];
@@ -93,7 +93,7 @@ if (exoid = ex_open ("test.exo", EX_READ, &CPU_word_size,
    snprintf(errmsg, MAX_ERR_LENGTH,"ERROR: cannot open file test.exo");
    ex_err("prog_name", errmsg, errval);
 }
-\endcode
+~~~
 
 */
 

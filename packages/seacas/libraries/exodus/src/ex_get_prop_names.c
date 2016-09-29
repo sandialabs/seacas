@@ -84,7 +84,7 @@ array.
 As an example, the following code segment reads in properties assigned
 to node sets:
 
-\code
+~~~{.c}
 int error, exoid, num_props, *prop_values;
 char *prop_names[MAX_PROPS];
 
@@ -102,7 +102,7 @@ for (i=0; i < num_props; i++) {
    error = ex_get_prop_array(exoid, EX_NODE_SET, prop_names[i],
                              prop_values);
 }
-\endcode
+~~~
 
 */
 

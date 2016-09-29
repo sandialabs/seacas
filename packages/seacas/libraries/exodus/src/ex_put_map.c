@@ -75,14 +75,14 @@ it to an open exodus file. This is a trivial case and included just
 for illustration. Since this map is optional, it should be written out
 only if it contains something other than the default map.
 
-\code
+~~~{.c}
 int error, exoid;
 int *elem_map = (int *)calloc(num_elem, sizeof(int));
 for (i=0; i < num_elem; i++) {
    elem_map[i] = i+1;
 }
 error = ex_put_map(exoid, elem_map);
-\endcode
+~~~
 
  */
 

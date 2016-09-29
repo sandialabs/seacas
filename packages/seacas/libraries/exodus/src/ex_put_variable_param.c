@@ -139,14 +139,14 @@ the
 For example, the following code segment initializes the data file to
 store global variables:
 
-\code
+~~~{.c}
 int num_glo_vars, error, exoid;
 
 \comment{write results variables parameters}
 num_glo_vars = 3;
 
 error = ex_put_variable_param (exoid, EX_GLOBAL, num_glo_vars);
-\endcode
+~~~
 
  */
 

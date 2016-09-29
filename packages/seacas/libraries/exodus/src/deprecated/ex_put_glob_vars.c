@@ -90,7 +90,7 @@ database.
 As an example, the following coding will write the values of all the
 global variables at one time step to an open exodus II file:
 
-\code
+~~~{.c}
 int num_glo_vars, error, exoid, time_step;
 
 float *glob_var_vals
@@ -106,7 +106,7 @@ error = ex_put_glob_vars (exoid, time_step, num_glo_vars, glob_var_vals);
 error = ex_put_var (exoid, time_step, EX_GLOBAL, 1, 0, num_glo_vars,
 glob_var_vals);
 
-\endcode
+~~~
 
 */
 

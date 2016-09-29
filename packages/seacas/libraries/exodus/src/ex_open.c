@@ -101,12 +101,13 @@ size
                     of the floating point data already stored in the file is
 returned.
 
-\param[out] version  Returned exodus database version number.
+\param[out] version  Returned exodus database version number. Note that this is always a float,
+never a double.
 
 The following opens an exodus file named \file{test.exo} for read
 only, using default settings for compute and I/O word sizes:
 
-\code
+~~~{.c}
 int CPU_word_size,IO_word_size, exoid;
 float version;
 
@@ -119,7 +120,7 @@ exoid = ex_open ("test.exo",     \co{filename path}
                  &CPU_word_size, \co{CPU word size}
                  &IO_word_size,  \co{IO word size}
                  &version);      \co{ExodusII library version}
-\endcode
+~~~
  */
 
 static int warning_output = 0;

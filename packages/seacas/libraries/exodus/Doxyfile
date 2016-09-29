@@ -231,7 +231,8 @@ TAB_SIZE               = 1
 ALIASES                = "func{1}=<b>\1</b>" \
                          "fparam{1}=<em>\1</em>" \
                          "file{1}=<tt>\1</tt>" \
-                         "comment{1}=...<em>\1</em>" \
+                         "comment{1}=/* \1 */" \
+                         "co{1}=/* \1 */" \
                          "undoc=\xrefitem undoc \"Undocumented\" \"Undocumented\""
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
@@ -771,6 +772,7 @@ WARN_LOGFILE           =
 
 INPUT                  = include \
                          src \
+			 src/deprecated \
                          ../exodus_for/src
 
 # This tag can be used to specify the character encoding of the source files

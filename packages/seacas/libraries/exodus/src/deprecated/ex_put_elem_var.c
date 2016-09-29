@@ -109,7 +109,7 @@ elem_blk_id
 The following coding will write out all of the element variables for a
 single time step \c n to an open exodus file :
 
-\code
+~~~{.c}
 int num_ele_vars, num_elem_blk, *num_elem_in_block,error,
     exoid, n, *ebids;
 
@@ -136,7 +136,7 @@ for (k=1; k <= num_ele_vars; k++) {
       free (elem_var_vals);
    }
 }
-\endcode
+~~~
 
  */
 

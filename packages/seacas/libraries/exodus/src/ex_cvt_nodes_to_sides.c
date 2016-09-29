@@ -122,7 +122,7 @@ side sets.
 The following code segment will convert side sets described
 by nodes to side sets described by local side numbers:
 
-\code
+~~~{.c}
 int error, exoid, ids[2], num_side_per_set[2],
     num_nodes_per_set[2], elem_ind[2], node_ind[2],
     elem_list[4], node_list[8], el_lst_len, *side_list;
@@ -152,7 +152,7 @@ side_list = (int *) calloc (el_lst_len, sizeof(int));
 ex_cvt_nodes_to_sides(exoid, num_side_per_set, num_nodes_per_set,
                       elem_ind, node_ind, elem_list,
                       node_list, side_list);
-\endcode
+~~~
 
  <b>Algorithm:</b>
 

@@ -126,7 +126,7 @@ and include files.
 
 The following code segment creates an exodus file called \file{test.exo}:
 
-\code
+~~~{.c}
 #include "exodusII.h"
 int CPU_word_size, IO_word_size, exoid;
 CPU_word_size = sizeof(float);      \comment{use float or double}
@@ -137,7 +137,7 @@ exoid = ex_create ("test.exo"       \comment{filename path}
                     EX_CLOBBER,     \comment{create mode}
                     &CPU_word_size, \comment{CPU float word size in bytes}
                     &IO_word_size); \comment{I/O float word size in bytes}
-\endcode
+~~~
 
 */
 

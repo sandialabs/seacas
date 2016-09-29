@@ -60,7 +60,7 @@ to an open exodus file. This is a trivial case and included just for
 illustration. Since this map is optional, it should be written out
 only if it contains something other than the default map.
 
-\code
+~~~{.c}
 int error, exoid;
 int *node_map = (int *)calloc(num_nodes, sizeof(int));
 
@@ -71,7 +71,7 @@ error = ex_put_node_num_map(exoid, node_map);
 
 \comment{Equivalent using non-deprecated function}
 error = ex_put_id_map(exoid, EX_NODE_MAP, node_map);
-\endcode
+~~~
  */
 
 int ex_put_node_num_map(int exoid, const void_int *node_map)

@@ -84,7 +84,7 @@ step.
 For example, the following demonstrates how this function would be
 used:
 
-\code
+~~~{.c}
 int num_nodes, time_step, var_index;
 float *var_values;
 
@@ -95,7 +95,7 @@ var_index = 2;
 var_values = (float *) calloc (num_nodes, sizeof(float));
 error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes,
                          var_values);
-\endcode
+~~~
 
 */
 

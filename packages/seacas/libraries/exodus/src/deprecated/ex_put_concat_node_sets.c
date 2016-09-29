@@ -104,7 +104,7 @@ all sets.
 For example, the following code will write out two node sets
 in a concatenated format:
 
-\code
+~~~{.c}
 int ids[2], num_nodes_per_set[2], node_ind[2], node_list[8],
     num_df_per_set[2], df_ind[2], error, exoid;
 
@@ -131,7 +131,7 @@ dist_fact[7] = 3.1;
 error = ex_put_concat_node_sets (exoid, ids, num_nodes_per_set,
                                  num_df_per_set, node_ind, df_ind,
                                  node_list, dist_fact);
-\endcode
+~~~
 
  */
 

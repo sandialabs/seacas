@@ -77,7 +77,7 @@ described. Use one
 As an example, the following code segment will read the names of the
 nodal variables stored in the data file:
 
-\code
+~~~{.c}
 int error, exoid, num_nod_vars;
 char *var_names[10];
 
@@ -87,7 +87,7 @@ for (i=0; i < num_nod_vars; i++) {
    var_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
 }
 error = ex_get_variable_names(exoid, EX_NODAL, num_nod_vars, var_names);
-\endcode
+~~~
 
 */
 
