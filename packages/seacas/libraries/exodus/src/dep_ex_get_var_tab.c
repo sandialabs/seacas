@@ -51,7 +51,7 @@
 #include "exodusII.h" // for ex_get_truth_table, etc
 
 /*!
- * reads the EXODUS II specified variable truth table from the database
+ * reads the EXODUS specified variable truth table from the database
  * \deprecated Use ex_get_truth_table()(exoid, obj_type, num_blk, num_var,
  * var_tab)
  */
