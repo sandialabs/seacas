@@ -8,12 +8,12 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-FILE(GLOB SOURCES src/ex*.c)
+FILE(GLOB SOURCES src/ex_*.c)
 
 if (${SEACAS_HIDE_DEPRECATED_CODE})
   add_definitions(-DDISABLE_EXODUS_DEPRECATED_FUNCTIONS)
 else()
-  FILE(GLOB DEP_SOURCES src/dep_ex*.c)
+  FILE(GLOB DEP_SOURCES src/deprecated/ex_*.c)
 endif()
 TRIBITS_CONFIGURE_FILE(${PACKAGE_NAME}_config.h)
 
