@@ -57,7 +57,8 @@ FILE_PATTERNS          = *.c \
 			 *.f \
                          *.F \
                          *.hh \
-                         *.h
+                         *.h \
+			 *.md
 # GENERATE_TAGFILE =
 # GENERATE_TREEVIEW =
 # HIDE_COMPOUND_REFERENCE =
@@ -69,6 +70,9 @@ ENABLE_PREPROCESSING = YES
 HIDE_UNDOC_CLASSES = NO
 HIDE_UNDOC_MEMBERS = NO
 HTML_TIMESTAMP = YES
+RECURSIVE = YES
+INPUT = packages/seacas
+
 # INLINE_GROUPED_CLASSES =
 # INPUT_ENCODING =
 # INTERNAL_DOCS =
