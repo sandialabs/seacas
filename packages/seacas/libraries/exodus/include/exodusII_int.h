@@ -104,10 +104,10 @@ extern "C" {
 
 /*
  * This file contains defined constants that are used internally in the
- * EXODUS II API.
+ * EXODUS API.
  *
  * The first group of constants refer to netCDF variables, attributes, or
- * dimensions in which the EXODUS II data are stored.  Using the defined
+ * dimensions in which the EXODUS data are stored.  Using the defined
  * constants will allow the names of the netCDF entities to be changed easily
  * in the future if needed.  The first three letters of the constant identify
  * the netCDF entity as a variable (VAR), dimension (DIM), or attribute (ATT).
@@ -120,11 +120,11 @@ extern "C" {
  */
 #define ATT_FILE_TYPE "type"                /* obsolete                  */
 #define ATT_TITLE "title"                   /* the database title        */
-#define ATT_API_VERSION "api_version"       /* the EXODUS II api vers #   */
-#define ATT_API_VERSION_BLANK "api version" /* the EXODUS II api vers #   */
+#define ATT_API_VERSION "api_version"       /* the EXODUS api vers #   */
+#define ATT_API_VERSION_BLANK "api version" /* the EXODUS api vers #   */
                                             /*  used for db version 2.01 */
                                             /*  and earlier              */
-#define ATT_VERSION "version"               /* the EXODUS II file vers # */
+#define ATT_VERSION "version"               /* the EXODUS file vers # */
 #define ATT_FILESIZE "file_size"            /* 1=large, 0=normal */
 #define ATT_FLT_WORDSIZE "floating_point_word_size"
 /* word size of floating     */

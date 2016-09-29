@@ -51,7 +51,7 @@
 #include "exodusII.h" // for ex_get_truth_table, etc
 
 /*!
- * reads the EXODUS II sideset variable truth table from the database
+ * reads the EXODUS sideset variable truth table from the database
  * \deprecated Use ex_get_truth_table()(exoid, EX_SIDE_SET, num_sidesets,
  * num_sset_var, sset_var_tab)
  */

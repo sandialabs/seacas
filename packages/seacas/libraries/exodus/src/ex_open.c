@@ -287,7 +287,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     }
   }
 
-  /* determine version of EXODUS II file, and the word size of
+  /* determine version of EXODUS file, and the word size of
    * floating point and integer values stored in the file
    */
 

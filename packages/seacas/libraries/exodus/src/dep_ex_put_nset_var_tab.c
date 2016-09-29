@@ -51,8 +51,8 @@
 #include "exodusII.h" // for ex_put_truth_table, etc
 
 /*!
- * writes the EXODUS II nodeset variable truth table to the database;
- * also, creates netCDF variables in which to store EXODUS II nodeset
+ * writes the EXODUS nodeset variable truth table to the database;
+ * also, creates netCDF variables in which to store EXODUS nodeset
  * variable values; although this table isn't required (because the
  * netCDF variables can also be created in ex_put_nset_var), this call
  * will save tremendous time because all of the variables are defined

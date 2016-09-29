@@ -402,14 +402,14 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_FILE_TYPE:
 
     /* obsolete call */
-    /*returns "r" for regular EXODUS II file or "h" for history EXODUS file*/
+    /*returns "r" for regular EXODUS file or "h" for history EXODUS file*/
     exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: file type inquire is obsolete");
     ex_err("ex_inquire", errmsg, exerrval);
     return (EX_WARN);
 
   case EX_INQ_API_VERS:
-    /* returns the EXODUS II API version number */
+    /* returns the EXODUS API version number */
     if (!ret_float) {
       exerrval = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: float argument is NULL for EX_INQ_API_VERS "
@@ -433,7 +433,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_DB_VERS:
-    /* returns the EXODUS II database version number */
+    /* returns the EXODUS database version number */
     if (!ret_float) {
       exerrval = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: float argument is NULL for EX_INQ_DB_VERS "
@@ -452,7 +452,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_LIB_VERS:
-    /* returns the EXODUS II Library version number */
+    /* returns the EXODUS Library version number */
     if (ret_float) {
       flt_cvt(ret_float, EX_API_VERS);
     }
