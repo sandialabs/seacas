@@ -32,11 +32,6 @@ else:
 #
 
 
-#
-# Pieces of the --help documentation
-#
-
-
 distRepoStatusLegend = r"""Legend:
 * ID: Repository ID, zero based (order git commands are run)
 * Repo Dir: Relative to base repo (base repo shown first with '(Base)')
