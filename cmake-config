@@ -86,20 +86,13 @@ else
 fi
 
 hostname=`hostname -s`
-if [ "$hostname" == "s974786" ]
-then
-    # Adds a "make format" target that runs clang-format on my Mac...
-    add_format=ON
-else
-    add_format=OFF
-fi
 
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
 cmake  \
--D CMAKE_CXX_FLAGS="-Wall -pedantic" \
--D ADD_FORMAT_TARGET:BOOL=${add_format} \
+-D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=ON \
