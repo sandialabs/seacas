@@ -459,9 +459,11 @@ namespace {
       output_region.begin_mode(Ioss::STATE_MODEL);
 
       // Transfer MESH field_data from input to output...
-      transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, interface);
-      transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-                          interface);
+      if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+	transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, interface);
+	transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+			    interface);
+      }
 
       transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::MESH, interface);
       transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::ATTRIBUTE,
@@ -556,7 +558,9 @@ namespace {
         // blocks, transfer to the output node and element blocks.
         transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
 
-        transfer_fields(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
+	if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+	  transfer_fields(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
+	}
         transfer_fields(region.get_edge_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
         transfer_fields(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
         transfer_fields(region.get_element_blocks(), output_region, Ioss::Field::TRANSIENT,
@@ -634,8 +638,10 @@ namespace {
 
         transfer_field_data(&region, &output_region, Ioss::Field::TRANSIENT, interface);
 
-        transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT,
-                            interface);
+	if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+	  transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT,
+			      interface);
+	}
         transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::TRANSIENT,
                             interface);
         transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT,
