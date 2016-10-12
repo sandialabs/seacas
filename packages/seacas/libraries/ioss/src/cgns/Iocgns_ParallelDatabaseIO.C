@@ -428,8 +428,22 @@ namespace Iocgns {
 
     int base = 0;
     int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
-    cg_base_write(cgnsFilePtr, "Base", phys_dimension, phys_dimension, &base);
-    cg_goto(cgnsFilePtr, base, "end");
+    int ierr = cg_base_write(cgnsFilePtr, "Base", phys_dimension, phys_dimension, &base);
+    if (ierr != CG_OK) {
+      // NOTE: Code will not continue past this call...
+      std::ostringstream errmsg;
+      errmsg << "ERROR: Problem in call to cg_base_write. CGNS Error: '"
+	     << cg_get_error() << "'";
+      IOSS_ERROR(errmsg);
+    }
+    ierr = cg_goto(cgnsFilePtr, base, "end");
+    if (ierr != CG_OK) {
+      // NOTE: Code will not continue past this call...
+      std::ostringstream errmsg;
+      errmsg << "ERROR: Problem in call to cg_goto. CGNS Error: '"
+	     << cg_get_error() << "'";
+      IOSS_ERROR(errmsg);
+    }
     cg_descriptor_write("Information", "IOSS: CGNS Writer version -1");
 
     // Output the sidesets as Family_t nodes
@@ -451,7 +465,7 @@ namespace Iocgns {
 
       cg_fambc_write(cgnsFilePtr, base, fam, "FamBC", bocotype, &bc_index);
 
-      int ierr = cg_goto(cgnsFilePtr, base, "Family_t", fam, NULL);
+      ierr = cg_goto(cgnsFilePtr, base, "Family_t", fam, NULL);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
@@ -470,7 +484,7 @@ namespace Iocgns {
       int      zone    = 0;
       cgsize_t size[3] = {1, 0, 0};
       size[1]          = eb->get_property("entity_count").get_int();
-      int ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
+      ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
@@ -492,7 +506,7 @@ namespace Iocgns {
       size[1] = size[4] + 1;
       size[2] = size[5] + 1;
 
-      int ierr = cg_zone_write(cgnsFilePtr, base, sb->name().c_str(), size, CG_Structured, &zone);
+      ierr = cg_zone_write(cgnsFilePtr, base, sb->name().c_str(), size, CG_Structured, &zone);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
@@ -525,6 +539,7 @@ namespace Iocgns {
 	cg_boco_gridlocation_write(cgnsFilePtr, base, zone, bc_idx, CG_Vertex);
       }
 
+#if 0
       // Transfer Zone Grid Connectivity...
       for (const auto & zgc : sb->m_zoneConnectivity) {
 	cgsize_t zgc_idx = 0;
@@ -541,7 +556,8 @@ namespace Iocgns {
 		      zgc.m_connectionName.c_str(),
 		      zgc.m_donorName.c_str(),
 		      range, donor_range, transform, &zgc_idx);
-      }      
+      }
+#endif
     }
   }
 
@@ -1087,11 +1103,162 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::StructuredBlock * /* sb */,
-                                                 const Ioss::Field & /* field */, void * /* data */,
-                                                 size_t /* data_size */) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb,
+                                                 const Ioss::Field &field, void *data,
+                                                 size_t data_size) const
   {
-    return -1;
+    Ioss::Field::RoleType role = field.get_role();
+    cgsize_t              base = sb->get_property("base").get_int();
+    cgsize_t              zone = sb->get_property("zone").get_int();
+
+    cgsize_t num_to_get = field.verify(data_size);
+
+    cgsize_t rmin[3] = {0, 0, 0};
+    cgsize_t rmax[3] = {0, 0, 0};
+
+    if (role == Ioss::Field::MESH) {
+      bool cell_field = true;
+      if (field.get_name() == "mesh_model_coordinates" ||
+          field.get_name() == "mesh_model_coordinates_x" ||
+          field.get_name() == "mesh_model_coordinates_y" ||
+          field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
+        cell_field = false;
+      }
+
+      if (cell_field) {
+        assert(num_to_get == sb->get_property("cell_count").get_int());
+        if (num_to_get > 0) {
+          rmin[0] = sb->get_property("offset_i").get_int() + 1;
+          rmin[1] = sb->get_property("offset_j").get_int() + 1;
+          rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+        }
+      }
+      else {
+        // cell nodal field.
+        assert(num_to_get == sb->get_property("node_count").get_int());
+        if (num_to_get > 0) {
+          rmin[0] = sb->get_property("offset_i").get_int() + 1;
+          rmin[1] = sb->get_property("offset_j").get_int() + 1;
+          rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+          rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+          rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+          rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+        }
+      }
+
+      assert(num_to_get == 0 ||
+             num_to_get ==
+                 (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+      double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+
+      int crd_idx = 0;
+      if (field.get_name() == "mesh_model_coordinates_x") {
+	int ierr = 
+#if CG_BUILD_PARALLEL
+	  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx);
+	  cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata);
+#else
+	  cg_coord_partial_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", rmin, rmax, rdata, &crd_idx);
+#endif
+        if (ierr != CG_OK) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates_y") {
+	int ierr = 
+#if CG_BUILD_PARALLEL
+	  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx);
+	  cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata);
+#else
+	  cg_coord_partial_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", rmin, rmax, rdata, &crd_idx);
+#endif
+        if (ierr != CG_OK) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates_z") {
+	int ierr =
+#if CG_BUILD_PARALLEL
+	  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx);
+	  cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata);
+#else
+	  cg_coord_partial_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", rmin, rmax, rdata, &crd_idx);
+#endif
+        if (ierr != CG_OK) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+      }
+
+      else if (field.get_name() == "mesh_model_coordinates") {
+	int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
+
+        // Data required by upper classes store x0, y0, z0, ... xn,
+        // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
+        // ..., yn, z0, ..., zn so we have to allocate some scratch
+        // memory to read in the data and then map into supplied
+        // 'data'
+        std::vector<double> coord(num_to_get);
+        // Map to global coordinate position...
+        for (cgsize_t i = 0; i < num_to_get; i++) {
+          coord[i] = rdata[phys_dimension * i + 0];
+        }
+
+	int ierr;
+#if CG_BUILD_PARALLEL
+	cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx);
+	ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord));
+#else
+	ierr = cg_coord_partial_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", rmin, rmax, rdata, &crd_idx);
+#endif
+        if (ierr != CG_OK) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+
+
+        if (phys_dimension >= 2) {
+          // Map to global coordinate position...
+          for (cgsize_t i = 0; i < num_to_get; i++) {
+	    coord[i] = rdata[phys_dimension * i + 1];
+          }
+#if CG_BUILD_PARALLEL
+	  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx);
+	  ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord));
+#else
+	  ierr = cg_coord_partial_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", rmin, rmax, rdata, &crd_idx);
+#endif
+        if (ierr != CG_OK) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+
+        }
+
+        if (phys_dimension == 3) {
+          // Map to global coordinate position...
+          for (cgsize_t i = 0; i < num_to_get; i++) {
+	    coord[i] = rdata[phys_dimension * i + 2];
+          }
+
+#if CG_BUILD_PARALLEL
+	  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx);
+	  ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord));
+#else
+	  ierr = cg_coord_partial_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", rmin, rmax, rdata, &crd_idx);
+#endif
+        if (ierr != CG_OK) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+
+        }
+      }
+    }
+    return num_to_get;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock * /* nb */,
                                                  const Ioss::Field & /* field */, void * /* data */,
