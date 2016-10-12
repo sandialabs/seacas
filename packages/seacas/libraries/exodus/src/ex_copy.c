@@ -111,6 +111,9 @@ int ex_copy(int in_exoid, int out_exoid)
   int          in_large, out_large;
   char         errmsg[MAX_ERR_LENGTH];
 
+  ex_check_valid_file_id(in_exoid);
+  ex_check_valid_file_id(out_exoid);
+
   exerrval = 0; /* clear error code */
 
   /*

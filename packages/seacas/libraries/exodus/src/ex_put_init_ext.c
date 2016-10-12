@@ -251,6 +251,8 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   int rootid = exoid & EX_FILE_ID_MASK;
 
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   if (rootid == exoid && nc_inq_dimid(exoid, DIM_NUM_DIM, &temp) == NC_NOERR) {
