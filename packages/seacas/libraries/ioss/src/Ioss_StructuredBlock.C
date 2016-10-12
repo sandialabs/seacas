@@ -183,9 +183,9 @@ namespace Ioss {
   {
     int index_dim = properties.get("component_degree").get_int();
 
-    IJK_t ijk{m_ni, m_nj, m_nk};
-    IJK_t offset{m_offsetI, m_offsetJ, m_offsetK};
-    IJK_t ijk_glob{m_niGlobal, m_njGlobal, m_nkGlobal};
+    IJK_t ijk{{m_ni, m_nj, m_nk}};
+    IJK_t offset{{m_offsetI, m_offsetJ, m_offsetK}};
+    IJK_t ijk_glob{{m_niGlobal, m_njGlobal, m_nkGlobal}};
 
     auto block = new StructuredBlock(database, name(), index_dim, ijk, offset, ijk_glob);
 
@@ -219,7 +219,7 @@ namespace Ioss {
 
   std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc)
   {
-    std::array<std::string, 7> tf = {{"-k", "-j", "-i", " ", "i", "j", "k"}};
+    std::array<std::string, 7> tf{{"-k", "-j", "-i", " ", "i", "j", "k"}};
 
     // 0 -3 -k
     // 1 -2 -j

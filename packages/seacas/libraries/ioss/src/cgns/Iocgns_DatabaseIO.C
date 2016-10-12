@@ -1262,6 +1262,7 @@ namespace Iocgns {
         }
       }
     }
+    return num_to_get;
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock * /* eb */,
