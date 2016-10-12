@@ -81,6 +81,8 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
   int    cur_num_elem_blk, nelnoddim, numelbdim, numattrdim, connid, numelemdim, numnodedim;
   char   errmsg[MAX_ERR_LENGTH];
 
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   /* first check if any element blocks are specified

@@ -86,6 +86,8 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
   const char *dnepe       = NULL;
   const char *dnfpe       = NULL;
 
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   blocks_to_define = malloc(block_count * sizeof(int));

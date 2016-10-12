@@ -111,6 +111,8 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     elem_id_int = param->elem_blk_id;
   }
 
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   /* inquire previously defined dimensions  */
