@@ -549,8 +549,8 @@ std::string Ioss::Utils::lowercase(const std::string &name)
 
 /** \brief Check whether property 'prop_name' exists and if so, set 'prop_value'
  *
- * based on the property value.  Either "TRUE", "YES", "ON", or 1 for true;
- * or "FALSE", "NO", "OFF", or not equal to 1 for false.
+ * based on the property value.  Either "TRUE", "YES", "ON", or nonzero for true;
+ * or "FALSE", "NO", "OFF", or 0 for false.
  * \param[in] properties the Ioss::PropertyManager containing the properties to be checked.
  * \param[in] prop_name the name of the property to check whether it exists and if so, set its
  * value.
@@ -565,7 +565,7 @@ bool Ioss::Utils::check_set_bool_property(const Ioss::PropertyManager &propertie
   if (properties.exists(prop_name)) {
     found_property = true;
     if (properties.get(prop_name).get_type() == Ioss::Property::INTEGER) {
-      prop_value = properties.get(prop_name).get_int() == 1;
+      prop_value = properties.get(prop_name).get_int() != 0;
     }
     else {
       std::string yesno = Ioss::Utils::uppercase(properties.get(prop_name).get_string());
