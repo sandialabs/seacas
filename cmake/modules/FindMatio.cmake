@@ -23,7 +23,6 @@
 include(FindPackageHandleStandardArgs)
 
 # MSTK CMake functions see <root>/cmake/modules for source
-include(PrintVariable)
 include(AddPackageDependency)
 
 if ( Matio_LIBRARIES AND Matio_INCLUDE_DIRS )
