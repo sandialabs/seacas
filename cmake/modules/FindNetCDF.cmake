@@ -34,7 +34,6 @@
 include(FindPackageHandleStandardArgs)
 
 # MSTK CMake functions see <root>/cmake/modules for source
-include(PrintVariable)
 include(AddPackageDependency)
 
 if ( NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )
@@ -129,11 +128,6 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
         file(STRINGS "${netcdf_h}" netcdf_max_var_dims_string REGEX "^#define NC_MAX_VAR_DIMS")
         string(REGEX REPLACE "[^0-9]" "" netcdf_max_var_dims "${netcdf_max_var_dims_string}")
-
-        #PRINT_VARIABLE(netcdf_max_dims_string)
-        #PRINT_VARIABLE(netcdf_max_dims)
-        #PRINT_VARIABLE(netcdf_max_vars)
-        #PRINT_VARIABLE(netcdf_max_var_dims)
 
         if ( 
              ( (netcdf_max_dims EQUAL 65536)  OR (netcdf_max_dims GREATER 65536) ) AND
