@@ -217,7 +217,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   // location.
   for (auto &block : blocks) {
     for (const auto &zgc : block->m_zoneConnectivity) {
-      if (!zgc.m_intraBlock) { // Not due to processor decomposition.
+      if (!zgc.m_intraBlock && zgc.m_isActive) { // Not due to processor decomposition.
         // NOTE: In parallel, the owner block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.

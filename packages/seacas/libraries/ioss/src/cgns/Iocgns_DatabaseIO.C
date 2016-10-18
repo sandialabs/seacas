@@ -493,7 +493,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    int base = 0;
+    int base           = 0;
     int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
     cg_base_write(cgnsFilePtr, "Base", phys_dimension, phys_dimension, &base);
     cg_goto(cgnsFilePtr, base, "end");
@@ -563,8 +563,8 @@ namespace Iocgns {
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
-        errmsg << "ERROR: Problem in call to cg_zone_write() for zone " << sb->name() << ", CGNS Error: '"
-               << cg_get_error() << "'";
+        errmsg << "ERROR: Problem in call to cg_zone_write() for zone " << sb->name()
+               << ", CGNS Error: '" << cg_get_error() << "'";
         IOSS_ERROR(errmsg);
       }
 
@@ -573,42 +573,42 @@ namespace Iocgns {
       cg_grid_write(cgnsFilePtr, base, zone, "GridCoordinates", &grid_idx);
 
       // Transfer boundary condition nodes...
-      for (const auto & bc : sb->m_boundaryConditions) {
-	cgsize_t bc_idx = 0;
-	cgsize_t range[6] = {bc.m_rangeBeg[0], bc.m_rangeBeg[1], bc.m_rangeBeg[2],
-			     bc.m_rangeEnd[0], bc.m_rangeEnd[1], bc.m_rangeEnd[2]};
-	cg_boco_write(cgnsFilePtr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-		      CG_PointRange, 2, range, &bc_idx);
+      for (const auto &bc : sb->m_boundaryConditions) {
+        cgsize_t bc_idx   = 0;
+        cgsize_t range[6] = {bc.m_rangeBeg[0], bc.m_rangeBeg[1], bc.m_rangeBeg[2],
+                             bc.m_rangeEnd[0], bc.m_rangeEnd[1], bc.m_rangeEnd[2]};
+        cg_boco_write(cgnsFilePtr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
+                      CG_PointRange, 2, range, &bc_idx);
 
-	ierr = cg_goto(cgnsFilePtr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0, "end");
-	if (ierr != CG_OK) {
-	  std::ostringstream errmsg;
-	  errmsg << "ERROR: Problem call cg_goto for BC node " << bc.m_bcName << ", CGNS Error: '"
-		 << cg_get_error() << "'";
-	  IOSS_ERROR(errmsg);
-	}
-	cg_famname_write(bc.m_bcName.c_str());
-	
-	cg_boco_gridlocation_write(cgnsFilePtr, base, zone, bc_idx, CG_Vertex);
+        ierr = cg_goto(cgnsFilePtr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
+                       0, "end");
+        if (ierr != CG_OK) {
+          std::ostringstream errmsg;
+          errmsg << "ERROR: Problem call cg_goto for BC node " << bc.m_bcName << ", CGNS Error: '"
+                 << cg_get_error() << "'";
+          IOSS_ERROR(errmsg);
+        }
+        cg_famname_write(bc.m_bcName.c_str());
+
+        cg_boco_gridlocation_write(cgnsFilePtr, base, zone, bc_idx, CG_Vertex);
       }
 
       // Transfer Zone Grid Connectivity...
-      for (const auto & zgc : sb->m_zoneConnectivity) {
-	cgsize_t zgc_idx = 0;
+      for (const auto &zgc : sb->m_zoneConnectivity) {
+        cgsize_t zgc_idx = 0;
 
-	cgsize_t range[6] = {zgc.m_rangeBeg[0], zgc.m_rangeBeg[1], zgc.m_rangeBeg[2],
-			     zgc.m_rangeEnd[0], zgc.m_rangeEnd[1], zgc.m_rangeEnd[2]};
+        cgsize_t range[6] = {zgc.m_rangeBeg[0], zgc.m_rangeBeg[1], zgc.m_rangeBeg[2],
+                             zgc.m_rangeEnd[0], zgc.m_rangeEnd[1], zgc.m_rangeEnd[2]};
 
-	cgsize_t donor_range[6] = {zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1], zgc.m_donorRangeBeg[2],
-				   zgc.m_donorRangeEnd[0], zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
+        cgsize_t donor_range[6] = {zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
+                                   zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
+                                   zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
 
-	cgsize_t transform[3] = {zgc.m_transform[0], zgc.m_transform[1], zgc.m_transform[2]};
-	
-	cg_1to1_write(cgnsFilePtr, base, zone,
-		      zgc.m_connectionName.c_str(),
-		      zgc.m_donorName.c_str(),
-		      range, donor_range, transform, &zgc_idx);
-      }      
+        cgsize_t transform[3] = {zgc.m_transform[0], zgc.m_transform[1], zgc.m_transform[2]};
+
+        cg_1to1_write(cgnsFilePtr, base, zone, zgc.m_connectionName.c_str(),
+                      zgc.m_donorName.c_str(), range, donor_range, transform, &zgc_idx);
+      }
     }
   }
 
@@ -1155,9 +1155,8 @@ namespace Iocgns {
     return -1;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb,
-                                         const Ioss::Field &field, void *data,
-                                         size_t data_size) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                                         void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t              base = sb->get_property("base").get_int();
@@ -1196,28 +1195,31 @@ namespace Iocgns {
 
       int crd_idx = 0;
       if (field.get_name() == "mesh_model_coordinates_x") {
-        int ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", rdata, &crd_idx);
+        int ierr =
+            cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", rdata, &crd_idx);
         if (ierr < 0) {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
       }
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
-        int ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", rdata, &crd_idx);
+        int ierr =
+            cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", rdata, &crd_idx);
         if (ierr < 0) {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
-        int ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", rdata, &crd_idx);
+        int ierr =
+            cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", rdata, &crd_idx);
         if (ierr < 0) {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-	int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
+        int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
 
         // Data required by upper classes store x0, y0, z0, ... xn,
         // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
@@ -1230,35 +1232,35 @@ namespace Iocgns {
           coord[i] = rdata[phys_dimension * i + 0];
         }
 
-        int ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", TOPTR(coord), &crd_idx);
+        int ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX",
+                                  TOPTR(coord), &crd_idx);
         if (ierr < 0) {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
 
-
         if (phys_dimension >= 2) {
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
-	    coord[i] = rdata[phys_dimension * i + 1];
+            coord[i] = rdata[phys_dimension * i + 1];
           }
-	  ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", TOPTR(coord), &crd_idx);
+          ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", TOPTR(coord),
+                                &crd_idx);
           if (ierr < 0) {
             Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
-
         }
 
         if (phys_dimension == 3) {
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
-	    coord[i] = rdata[phys_dimension * i + 2];
+            coord[i] = rdata[phys_dimension * i + 2];
           }
 
-	  ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", TOPTR(coord), &crd_idx);
+          ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", TOPTR(coord),
+                                &crd_idx);
           if (ierr < 0) {
             Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
-
         }
       }
     }

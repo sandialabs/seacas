@@ -134,7 +134,7 @@ namespace Iocgns {
     // Metadata-related functions.
     void read_meta_data() override;
     void write_meta_data();
-    
+
   private:
     void   handle_structured_blocks();
     void   handle_unstructured_blocks();

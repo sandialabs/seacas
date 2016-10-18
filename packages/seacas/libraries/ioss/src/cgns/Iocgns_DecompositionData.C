@@ -413,6 +413,7 @@ namespace Iocgns {
     }
 
 #if defined(IOSS_DEBUG_OUTPUT)
+    MPI_Barrier(m_decomposition.m_comm);
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
 #endif
   }
