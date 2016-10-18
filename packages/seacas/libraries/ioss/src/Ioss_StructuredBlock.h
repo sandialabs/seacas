@@ -56,8 +56,23 @@ namespace Ioss {
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
           m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
-          m_intraBlock(intra_block)
+          m_intraBlock(intra_block), m_isActive(true)
     {
+      if (!m_intraBlock) {
+        m_ownerRange[0] = m_rangeBeg[0];
+        m_ownerRange[1] = m_rangeBeg[1];
+        m_ownerRange[2] = m_rangeBeg[2];
+        m_ownerRange[3] = m_rangeEnd[0];
+        m_ownerRange[4] = m_rangeEnd[1];
+        m_ownerRange[5] = m_rangeEnd[2];
+
+        m_donorRange[0] = m_donorRangeBeg[0];
+        m_donorRange[1] = m_donorRangeBeg[1];
+        m_donorRange[2] = m_donorRangeBeg[2];
+        m_donorRange[3] = m_donorRangeEnd[0];
+        m_donorRange[4] = m_donorRangeEnd[1];
+        m_donorRange[5] = m_donorRangeEnd[2];
+      }
     }
 
     ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
@@ -80,6 +95,12 @@ namespace Ioss {
 
     std::vector<int> get_range(int ordinal) const;
 
+    // The "original" owner and donor range -- that is, they have not been subsetted
+    // due to block decompositions in a parallel run.  These should be the same on
+    // all processors...  Primarily used to make parallel collective output easier...
+    std::array<int, 6> m_ownerRange;
+    std::array<int, 6> m_donorRange;
+
     std::string m_connectionName;
     std::string m_donorName;
     Ioss::IJK_t m_transform;
@@ -99,6 +120,7 @@ namespace Ioss {
     bool m_ownsSharedNodes;
     bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel
                        // run.
+    bool m_isActive;   // True if non-zero range...
   };
 
   struct BoundaryCondition
