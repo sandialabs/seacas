@@ -501,7 +501,7 @@ namespace {
                           interface);
 
       // Side Sets
-      {
+      if (region.mesh_type() == Ioss::MeshType::UNSTRUCTURED) {
         const auto &fss = region.get_sidesets();
         for (const auto &ifs : fss) {
           std::string name = ifs->name();

@@ -522,10 +522,8 @@ namespace Iocgns {
       // Transfer boundary condition nodes...
       for (const auto &bc : sb->m_boundaryConditions) {
         cgsize_t bc_idx   = 0;
-        cgsize_t range[6] = {bc.m_rangeBeg[0], bc.m_rangeBeg[1], bc.m_rangeBeg[2],
-                             bc.m_rangeEnd[0], bc.m_rangeEnd[1], bc.m_rangeEnd[2]};
         cg_boco_write(cgnsFilePtr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-                      CG_PointRange, 2, range, &bc_idx);
+                      CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx);
 
         ierr = cg_goto(cgnsFilePtr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
                        0, "end");
