@@ -79,37 +79,43 @@ namespace {
 
   void bc_subset_range(const Ioss::StructuredBlock *block, Ioss::BoundaryCondition &bc)
   {
-    int ordinal[3];
-    ordinal[0] = block->get_property("ni").get_int();
-    ordinal[1] = block->get_property("nj").get_int();
-    ordinal[2] = block->get_property("nk").get_int();
+    if (bc_overlaps(block, bc)) {
+      int ordinal[3];
+      ordinal[0] = block->get_property("ni").get_int();
+      ordinal[1] = block->get_property("nj").get_int();
+      ordinal[2] = block->get_property("nk").get_int();
 
-    int offset[3];
-    offset[0] = block->get_property("offset_i").get_int();
-    offset[1] = block->get_property("offset_j").get_int();
-    offset[2] = block->get_property("offset_k").get_int();
+      int offset[3];
+      offset[0] = block->get_property("offset_i").get_int();
+      offset[1] = block->get_property("offset_j").get_int();
+      offset[2] = block->get_property("offset_k").get_int();
 
-    // NOTE: Updates the range in bc
+      // NOTE: Updates the range in bc
 
-    // Note that block range is nodes and m_ordinal[] is cells, so need to add 1 to range.
-    Range z_i(1 + offset[0], ordinal[0] + offset[0] + 1);
-    Range z_j(1 + offset[1], ordinal[1] + offset[1] + 1);
-    Range z_k(1 + offset[2], ordinal[2] + offset[2] + 1);
+      // Note that block range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+      Range z_i(1 + offset[0], ordinal[0] + offset[0] + 1);
+      Range z_j(1 + offset[1], ordinal[1] + offset[1] + 1);
+      Range z_k(1 + offset[2], ordinal[2] + offset[2] + 1);
 
-    Range gc_i(bc.m_rangeBeg[0], bc.m_rangeEnd[0]);
-    Range gc_j(bc.m_rangeBeg[1], bc.m_rangeEnd[1]);
-    Range gc_k(bc.m_rangeBeg[2], bc.m_rangeEnd[2]);
+      Range gc_i(bc.m_rangeBeg[0], bc.m_rangeEnd[0]);
+      Range gc_j(bc.m_rangeBeg[1], bc.m_rangeEnd[1]);
+      Range gc_k(bc.m_rangeBeg[2], bc.m_rangeEnd[2]);
 
-    Range gc_ii = subset_range(z_i, gc_i);
-    Range gc_jj = subset_range(z_j, gc_j);
-    Range gc_kk = subset_range(z_k, gc_k);
+      Range gc_ii = subset_range(z_i, gc_i);
+      Range gc_jj = subset_range(z_j, gc_j);
+      Range gc_kk = subset_range(z_k, gc_k);
 
-    bc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    bc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    bc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    bc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    bc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    bc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+      bc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+      bc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+      bc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+      bc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+      bc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+      bc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    }
+    else {
+      bc.m_rangeBeg = {{0, 0, 0}};
+      bc.m_rangeEnd = {{0, 0, 0}};
+    }
   }
 }
 
@@ -366,28 +372,16 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       auto        bc   = Ioss::BoundaryCondition(boconame, range_beg, range_end);
       std::string name = std::string(boconame) + "/" + block->name();
 
-      if (bc_overlaps(block, bc)) {
-        bc_subset_range(block, bc);
-        block->m_boundaryConditions.push_back(bc);
-        auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
-                                      block->m_boundaryConditions.back().get_face_count());
-        sb->set_parent_block(block);
-        sset->add(sb);
-        sb->property_add(Ioss::Property("base", base));
-        sb->property_add(Ioss::Property("zone", zone));
-        sb->property_add(Ioss::Property("section", ibc + 1));
-      }
-      else {
-        Ioss::IJK_t zeros{{0, 0, 0}};
-        auto        zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
-        block->m_boundaryConditions.push_back(zero_bc);
-        auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8", 0);
-        sb->set_parent_block(block);
-        sset->add(sb);
-        sb->property_add(Ioss::Property("base", base));
-        sb->property_add(Ioss::Property("zone", zone));
-        sb->property_add(Ioss::Property("section", ibc + 1));
-      }
+      bc_subset_range(block, bc);
+      block->m_boundaryConditions.push_back(bc);
+      auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
+				    block->m_boundaryConditions.back().get_face_count());
+      sb->set_parent_block(block);
+      sset->add(sb);
+      sb->property_add(Ioss::Property("base", base));
+      sb->property_add(Ioss::Property("zone", zone));
+      sb->property_add(Ioss::Property("section", ibc + 1));
+      sb->property_add(Ioss::Property("id", (int)block->m_boundaryConditions.size()-1));
 
       // Set a property on the sideset specifying the boundary condition type (bocotype)
       // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
