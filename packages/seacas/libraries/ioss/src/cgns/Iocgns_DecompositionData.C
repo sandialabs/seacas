@@ -101,14 +101,20 @@ namespace {
   {
     int base      = 1;
     int num_zones = 0;
-    cg_nzones(cgnsFilePtr, base, &num_zones);
+    int ierr      = cg_nzones(cgnsFilePtr, base, &num_zones);
+    if (ierr != CG_OK) {
+      Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
 
     std::map<std::string, int> zone_name_map;
 
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
       cgsize_t size[9];
       char     zone_name[33];
-      cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+      ierr = cg_zone_read(cgnsFilePtr, base, zone, zone_name, size);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
       zone_name_map[zone_name] = zone;
 
       assert(size[0] - 1 == size[3]);
@@ -120,7 +126,10 @@ namespace {
       assert(size[8] == 0);
 
       cgsize_t index_dim = 0;
-      cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
+      ierr               = cg_index_dim(cgnsFilePtr, base, zone, &index_dim);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
 
       auto *zone_data = new Iocgns::StructuredZoneData(zone_name, zone, size[3], size[4], size[5]);
       zone_data->m_adam = zone_data;
@@ -128,7 +137,10 @@ namespace {
 
       // Handle zone-grid-connectivity...
       int nconn = 0;
-      cg_n1to1(cgnsFilePtr, base, zone, &nconn);
+      ierr      = cg_n1to1(cgnsFilePtr, base, zone, &nconn);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
       for (int i = 0; i < nconn; i++) {
         char connectname[33];
         char donorname[33];
@@ -136,8 +148,11 @@ namespace {
         std::array<cgsize_t, 6> donor_range;
         Ioss::IJK_t transform;
 
-        cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-                     donor_range.data(), transform.data());
+        ierr = cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                            donor_range.data(), transform.data());
+        if (ierr != CG_OK) {
+          Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+        }
 
         // Get number of nodes shared with other "previous" zones...
         // A "previous" zone will have a lower zone number this this zone...
@@ -432,11 +447,18 @@ namespace Iocgns {
       cgsize_t cell_dimension = 0;
       cgsize_t phys_dimension = 0;
       char     base_name[33];
-      cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension);
+      int      ierr = cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
       m_decomposition.m_spatialDimension = phys_dimension;
     }
 
-    cg_nzones(filePtr, base, &num_zones);
+    int ierr = cg_nzones(filePtr, base, &num_zones);
+    if (ierr != CG_OK) {
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
+    }
     m_zones.resize(num_zones + 1); // Use 1-based zones.
 
     size_t global_cell_node_count = 0;
@@ -446,7 +468,11 @@ namespace Iocgns {
       // calling this function...
       cgsize_t size[3];
       char     zone_name[33];
-      cg_zone_read(filePtr, base, zone, zone_name, size);
+      ierr = cg_zone_read(filePtr, base, zone, zone_name, size);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
 
       INT total_block_nodes = size[0];
       INT total_block_elem  = size[1];
@@ -561,7 +587,11 @@ namespace Iocgns {
 
       // Determine number of "shared" nodes (shared with other zones)
       int nconn = 0;
-      cg_nconns(filePtr, base, zone, &nconn);
+      int ierr  = cg_nconns(filePtr, base, zone, &nconn);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
       for (int i = 0; i < nconn; i++) {
         char                      connectname[33];
         CG_GridLocation_t         location;
@@ -574,9 +604,13 @@ namespace Iocgns {
         CG_DataType_t             donor_datatype;
         cgsize_t                  ndata_donor;
 
-        cg_conn_info(filePtr, base, zone, i + 1, connectname, &location, &connect_type, &ptset_type,
-                     &npnts, donorname, &donor_zonetype, &donor_ptset_type, &donor_datatype,
-                     &ndata_donor);
+        ierr = cg_conn_info(filePtr, base, zone, i + 1, connectname, &location, &connect_type,
+                            &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
+                            &donor_datatype, &ndata_donor);
+        if (ierr != CG_OK) {
+          Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                    m_decomposition.m_processor);
+        }
 
         if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
             donor_ptset_type != CG_PointListDonor) {
@@ -611,7 +645,12 @@ namespace Iocgns {
           std::vector<cgsize_t> points(npnts);
           std::vector<cgsize_t> donors(npnts);
 
-          cg_conn_read(filePtr, base, zone, i + 1, TOPTR(points), donor_datatype, TOPTR(donors));
+          ierr = cg_conn_read(filePtr, base, zone, i + 1, TOPTR(points), donor_datatype,
+                              TOPTR(donors));
+          if (ierr != CG_OK) {
+            Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                      m_decomposition.m_processor);
+          }
 
           for (int j = 0; j < npnts; j++) {
             cgsize_t point = points[j] - 1 + m_zones[zone].m_nodeOffset;
@@ -649,11 +688,18 @@ namespace Iocgns {
     int num_zones        = 0;
     INT zone_node_offset = 0;
 
-    cg_nzones(filePtr, base, &num_zones);
+    int ierr = cg_nzones(filePtr, base, &num_zones);
+    if (ierr != CG_OK) {
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
+    }
     for (int zone = 1; zone <= num_zones; zone++) {
       cgsize_t size[3];
       char     zone_name[33];
-      cg_zone_read(filePtr, base, zone, zone_name, size);
+      ierr = cg_zone_read(filePtr, base, zone, zone_name, size);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
 
       INT total_elements = size[1];
       // NOTE: A Zone will have a single set of nodes, but can have
@@ -662,7 +708,11 @@ namespace Iocgns {
       //       have handled 'size[1]' number of elements; the remaining
       //       sections are then the boundary faces (?)
       int num_sections = 0;
-      cg_nsections(filePtr, base, zone, &num_sections);
+      ierr             = cg_nsections(filePtr, base, zone, &num_sections);
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
 
       size_t last_blk_location = 0;
       for (int is = 1; is <= num_sections; is++) {
@@ -674,8 +724,12 @@ namespace Iocgns {
         int              parent_flag = 0;
 
         // Get the type of elements in this section...
-        cg_section_read(filePtr, base, zone, is, section_name, &e_type, &el_start, &el_end,
-                        &num_bndry, &parent_flag);
+        ierr = cg_section_read(filePtr, base, zone, is, section_name, &e_type, &el_start, &el_end,
+                               &num_bndry, &parent_flag);
+        if (ierr != CG_OK) {
+          Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                    m_decomposition.m_processor);
+        }
 
         INT num_entity = el_end - el_start + 1;
 
@@ -688,7 +742,11 @@ namespace Iocgns {
           size_t b_end = offset;
 
           int element_nodes;
-          cg_npe(e_type, &element_nodes);
+          ierr = cg_npe(e_type, &element_nodes);
+          if (ierr != CG_OK) {
+            Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                      m_decomposition.m_processor);
+          }
 
           if (b_start < p_end && p_start < b_end) {
             // Some of this blocks elements are on this processor...
@@ -783,11 +841,16 @@ namespace Iocgns {
 #endif
       block.fileSectionOffset = blk_start;
 #if CG_BUILD_PARALLEL
-      cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end, TOPTR(connectivity));
+      ierr = cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end,
+                                    TOPTR(connectivity));
 #else
-      cg_elements_partial_read(filePtr, base, zone, section, blk_start, blk_end,
-                               TOPTR(connectivity), nullptr);
+      ierr = cg_elements_partial_read(filePtr, base, zone, section, blk_start, blk_end,
+                                      TOPTR(connectivity), nullptr);
 #endif
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
       size_t el          = 0;
       INT    zone_offset = block.zoneNodeOffset;
 
@@ -1062,6 +1125,10 @@ namespace Iocgns {
 
       int ierr =
           cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent));
+      if (ierr != CG_OK) {
+        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
+                                  m_decomposition.m_processor);
+      }
       // Get rid of 'nodes' list -- not used.
       nodes.resize(0);
       nodes.shrink_to_fit();
@@ -1097,13 +1164,17 @@ namespace Iocgns {
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int                   base = 1;
 #if CG_BUILD_PARALLEL
-    cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
-                           blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
+    int ierr =
+        cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
+                               blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
 #else
-    cg_elements_partial_read(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
-                             blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn),
-                             nullptr);
+    int ierr = cg_elements_partial_read(
+        filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
+        blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn), nullptr);
 #endif
+    if (ierr != CG_OK) {
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
+    }
     // Map from zone-local node numbers to global implicit
     for (auto &node : file_conn) {
       node += blk.zoneNodeOffset;
