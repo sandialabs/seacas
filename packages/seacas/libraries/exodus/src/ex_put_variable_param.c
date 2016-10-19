@@ -158,6 +158,8 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
 
   exerrval = 0; /* clear error code */
 
+  ex_check_valid_file_id(exoid);
+
   /* if no variables are to be stored, return with warning */
   if (num_vars == 0) {
     exerrval = EX_MSG;

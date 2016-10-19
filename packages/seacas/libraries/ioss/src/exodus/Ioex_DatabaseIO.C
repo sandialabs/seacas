@@ -142,15 +142,6 @@ namespace Ioex {
     }
 
     if (!is_input()) {
-      // Check whether appending to existing file...
-      if (open_create_behavior() == Ioss::DB_APPEND ||
-          open_create_behavior() == Ioss::DB_APPEND_GROUP) {
-        // Append to file if it already exists -- See if the file exists.
-        std::string    decoded_filename = util().decode_filename(get_filename(), isParallel);
-        Ioss::FileInfo file             = Ioss::FileInfo(decoded_filename);
-        fileExists                      = file.exists();
-      }
-
       if (util().get_environment("EX_MINIMIZE_OPEN_FILES", isParallel)) {
         std::cerr << "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
                      "variable is set.\n";
@@ -990,7 +981,6 @@ namespace Ioex {
 
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
-        std::cerr << "LowerCaseVariableNames: " << lowerCaseVariableNames << "\n";
         for (int i = 0; i < nvar; i++) {
           if (lowerCaseVariableNames) {
             Ioss::Utils::fixup_name(names[i]);

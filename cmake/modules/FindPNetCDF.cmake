@@ -23,7 +23,6 @@
 include(FindPackageHandleStandardArgs)
 
 # MSTK CMake functions see <root>/cmake/modules for source
-include(PrintVariable)
 include(AddPackageDependency)
 
 if ( PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS )
@@ -119,11 +118,6 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
 
         file(STRINGS "${pnetcdf_h}" pnetcdf_max_var_dims_string REGEX "^#define NC_MAX_VAR_DIMS")
         string(REGEX REPLACE "[^0-9]" "" pnetcdf_max_var_dims "${pnetcdf_max_var_dims_string}")
-
-        #PRINT_VARIABLE(pnetcdf_max_dims_string)
-        #PRINT_VARIABLE(pnetcdf_max_dims)
-        #PRINT_VARIABLE(pnetcdf_max_vars)
-        #PRINT_VARIABLE(pnetcdf_max_var_dims)
 
         if ( 
              ( (pnetcdf_max_dims EQUAL 65536)  OR (pnetcdf_max_dims GREATER 65536) ) AND

@@ -1106,32 +1106,6 @@ namespace Ioss {
     Ioss::MY_Alltoallv(import_nodes, importNodeCount, importNodeIndex, exportNodeMap,
                        exportNodeCount, exportNodeIndex, m_comm);
 
-    // See if all nodes have been accounted for (i.e., process non-connected nodes)
-    std::vector<bool> file_nodes(m_nodeCount);
-    for (const auto &node : exportNodeMap) {
-      file_nodes[node-m_nodeOffset] = true;
-    }
-    for (const auto &node : localNodeMap) {
-      file_nodes[node-m_nodeOffset] = true;
-    }
-
-    bool found_one = false;
-    for (size_t i=0; i < file_nodes.size(); i++) {
-      if (!file_nodes[i]) {
-	localNodeMap.push_back(i+m_nodeOffset);
-	nodes.push_back(i+m_nodeOffset);
-	found_one = true;
-#if IOSS_DEBUG_OUTPUT
-	std::cerr << m_processor << ":Node " << i+m_nodeOffset+1 << " not connected to any elements\n";
-#endif
-      }
-    }
-
-    if (found_one) {
-      nodes.shrink_to_fit();
-      localNodeMap.shrink_to_fit();
-    }
-
     if (m_retainFreeNodes) {
       // See if all nodes have been accounted for (i.e., process non-connected nodes)
       std::vector<bool> file_nodes(m_nodeCount);

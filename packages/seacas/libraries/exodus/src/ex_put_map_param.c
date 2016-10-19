@@ -74,6 +74,8 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
   int  id_type  = NC_INT;
   int  int_type = NC_INT;
 
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
