@@ -433,31 +433,17 @@ namespace Iocgns {
     size_t        num_node         = 0;
     size_t        num_elem         = 0;
     size_t        num_cell         = 0;
-    CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
+    CG_ZoneType_t common_zone_type = Utils::check_zone_type(cgnsFilePtr);
 
     for (cgsize_t zone = 1; zone <= num_zones; zone++) {
-      CG_ZoneType_t zone_type;
-      cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
-
-      if (common_zone_type == CG_ZoneTypeNull) {
-        common_zone_type = zone_type;
-      }
-
-      if (common_zone_type != zone_type) {
-        std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
-               << " This is currently not allowed or supported (hybrid mesh).";
-        IOSS_ERROR(errmsg);
-      }
-
-      if (zone_type == CG_Structured) {
+      if (common_zone_type == CG_Structured) {
         create_structured_block(base, zone, num_node, num_cell);
       }
-
-      else if (zone_type == CG_Unstructured) {
+      else if (common_zone_type == CG_Unstructured) {
         create_unstructured_block(base, zone, num_node, num_elem);
       }
       else {
+        // This should be handled already in check_zone_type...
         std::ostringstream errmsg;
         errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
                                                   "which are the only types currently supported";
@@ -482,135 +468,7 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
-  void DatabaseIO::write_meta_data()
-  {
-    // Make sure mesh is not hybrid...
-    if (get_region()->mesh_type() == Ioss::MeshType::HYBRID) {
-      std::ostringstream errmsg;
-      errmsg << "ERROR: CGNS: The mesh on region " << get_region()->name()
-             << " is of type 'hybrid'."
-             << " This is currently not allowed or supported.";
-      IOSS_ERROR(errmsg);
-    }
-
-    int base           = 0;
-    int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
-    cg_base_write(cgnsFilePtr, "Base", phys_dimension, phys_dimension, &base);
-    cg_goto(cgnsFilePtr, base, "end");
-    cg_descriptor_write("Information", "IOSS: CGNS Writer version -1");
-
-    // Output the sidesets as Family_t nodes
-
-    const auto &sidesets = get_region()->get_sidesets();
-    for (const auto &ss : sidesets) {
-      int fam = 0;
-      cg_family_write(cgnsFilePtr, base, ss->name().c_str(), &fam);
-      int         bc_index = 0;
-      CG_BCType_t bocotype = CG_BCTypeNull;
-      if (ss->property_exists("bc_type")) {
-        bocotype = (CG_BCType_t)ss->get_property("bc_type").get_int();
-      }
-
-      int64_t id = fam;
-      if (ss->property_exists("id")) {
-        id = ss->get_property("id").get_int();
-      }
-
-      cg_fambc_write(cgnsFilePtr, base, fam, "FamBC", bocotype, &bc_index);
-
-      int ierr = cg_goto(cgnsFilePtr, base, "Family_t", fam, NULL);
-      if (ierr != CG_OK) {
-        // NOTE: Code will not continue past this call...
-        std::ostringstream errmsg;
-        errmsg << "ERROR: Problem call cg_goto for node " << fam << ", CGNS Error: '"
-               << cg_get_error() << "'";
-        IOSS_ERROR(errmsg);
-      }
-      cg_descriptor_write("FamBC_TypeId", Ioss::Utils::to_string(bocotype).c_str());
-      cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]);
-      cg_descriptor_write("FamBC_UserId", Ioss::Utils::to_string(id).c_str());
-      cg_descriptor_write("FamBC_UserName", ss->name().c_str());
-    }
-
-    const auto &element_blocks = get_region()->get_element_blocks();
-    for (const auto &eb : element_blocks) {
-      int      zone    = 0;
-      cgsize_t size[3] = {1, 0, 0};
-      size[1]          = eb->get_property("entity_count").get_int();
-      int ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
-      if (ierr != CG_OK) {
-        // NOTE: Code will not continue past this call...
-        std::ostringstream errmsg;
-        errmsg << "ERROR: Problem call cg_zone_write for node " << zone << ", CGNS Error: '"
-               << cg_get_error() << "'";
-        IOSS_ERROR(errmsg);
-      }
-    }
-
-    const auto &structured_blocks = get_region()->get_structured_blocks();
-    for (const auto &sb : structured_blocks) {
-      int      zone    = 0;
-      cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-      size[3]          = sb->get_property("ni_global").get_int();
-      size[4]          = sb->get_property("nj_global").get_int();
-      size[5]          = sb->get_property("nk_global").get_int();
-
-      size[0] = size[3] + 1;
-      size[1] = size[4] + 1;
-      size[2] = size[5] + 1;
-
-      int ierr = cg_zone_write(cgnsFilePtr, base, sb->name().c_str(), size, CG_Structured, &zone);
-      if (ierr != CG_OK) {
-        // NOTE: Code will not continue past this call...
-        std::ostringstream errmsg;
-        errmsg << "ERROR: Problem in call to cg_zone_write() for zone " << sb->name()
-               << ", CGNS Error: '" << cg_get_error() << "'";
-        IOSS_ERROR(errmsg);
-      }
-
-      // Add GridCoordinates Node...
-      int grid_idx = 0;
-      cg_grid_write(cgnsFilePtr, base, zone, "GridCoordinates", &grid_idx);
-
-      // Transfer boundary condition nodes...
-      for (const auto &bc : sb->m_boundaryConditions) {
-        cgsize_t bc_idx   = 0;
-        cgsize_t range[6] = {bc.m_rangeBeg[0], bc.m_rangeBeg[1], bc.m_rangeBeg[2],
-                             bc.m_rangeEnd[0], bc.m_rangeEnd[1], bc.m_rangeEnd[2]};
-        cg_boco_write(cgnsFilePtr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-                      CG_PointRange, 2, range, &bc_idx);
-
-        ierr = cg_goto(cgnsFilePtr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
-                       0, "end");
-        if (ierr != CG_OK) {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: Problem call cg_goto for BC node " << bc.m_bcName << ", CGNS Error: '"
-                 << cg_get_error() << "'";
-          IOSS_ERROR(errmsg);
-        }
-        cg_famname_write(bc.m_bcName.c_str());
-
-        cg_boco_gridlocation_write(cgnsFilePtr, base, zone, bc_idx, CG_Vertex);
-      }
-
-      // Transfer Zone Grid Connectivity...
-      for (const auto &zgc : sb->m_zoneConnectivity) {
-        cgsize_t zgc_idx = 0;
-
-        cgsize_t range[6] = {zgc.m_rangeBeg[0], zgc.m_rangeBeg[1], zgc.m_rangeBeg[2],
-                             zgc.m_rangeEnd[0], zgc.m_rangeEnd[1], zgc.m_rangeEnd[2]};
-
-        cgsize_t donor_range[6] = {zgc.m_donorRangeBeg[0], zgc.m_donorRangeBeg[1],
-                                   zgc.m_donorRangeBeg[2], zgc.m_donorRangeEnd[0],
-                                   zgc.m_donorRangeEnd[1], zgc.m_donorRangeEnd[2]};
-
-        cgsize_t transform[3] = {zgc.m_transform[0], zgc.m_transform[1], zgc.m_transform[2]};
-
-        cg_1to1_write(cgnsFilePtr, base, zone, zgc.m_connectionName.c_str(),
-                      zgc.m_donorName.c_str(), range, donor_range, transform, &zgc_idx);
-      }
-    }
-  }
+  void DatabaseIO::write_meta_data() { Utils::common_write_meta_data(cgnsFilePtr, *get_region()); }
 
   bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
 

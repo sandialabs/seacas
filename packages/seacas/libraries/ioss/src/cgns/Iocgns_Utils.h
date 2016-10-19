@@ -98,6 +98,8 @@ namespace Iocgns {
       }
     }
 
+    static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
+    static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region);
     static size_t resolve_nodes(Ioss::Region &region, int my_processor);
 
     static std::string map_cgns_to_topology_type(CG_ElementType_t type);
