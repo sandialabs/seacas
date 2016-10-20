@@ -163,16 +163,16 @@ namespace Ioss {
   private:
     std::string name_;
 
-    size_t         rawCount_;   // Count of items in field before transformation
-    size_t         transCount_; // Count of items in field after transformed
-    size_t         size_;       // maximum data size (in bytes) required to hold entire field
-    mutable size_t index_; // Optional flag that can be used by a client to indicate an ordering.
-                           // Unused by field itself.
+    size_t         rawCount_{};   // Count of items in field before transformation
+    size_t         transCount_{}; // Count of items in field after transformed
+    size_t         size_{};       // maximum data size (in bytes) required to hold entire field
+    mutable size_t index_{}; // Optional flag that can be used by a client to indicate an ordering.
+                             // Unused by field itself.
     BasicType type_;
     RoleType  role_;
 
-    const VariableType *rawStorage_;   // Storage type of raw field
-    const VariableType *transStorage_; // Storage type after transformation
+    const VariableType *rawStorage_{};   // Storage type of raw field
+    const VariableType *transStorage_{}; // Storage type after transformation
 
     std::vector<Transform *> transforms_;
   };

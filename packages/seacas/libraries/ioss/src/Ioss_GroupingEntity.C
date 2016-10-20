@@ -37,8 +37,8 @@
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <cassert>
+#include <cstddef>
 #include <iostream>
-#include <stddef.h>
 #include <string>
 #include <vector>
 

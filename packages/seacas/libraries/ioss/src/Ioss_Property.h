@@ -51,7 +51,7 @@ namespace Ioss {
     enum VariableType { UNKNOWN_VAR_TYPE = -1, SCALAR };
 
     Property();
-    Property(std::string name, const BasicType type, const VariableType storage, void *data,
+    Property(std::string name, BasicType type, VariableType storage, void *data,
              bool is_it_implicit = false);
     Property(std::string name, int64_t value, bool is_it_implicit = false);
     Property(std::string name, int value, bool is_it_implicit = false);
@@ -60,7 +60,7 @@ namespace Ioss {
     Property(std::string name, void *value, bool is_it_implicit);
 
     // To set implicit property
-    Property(const GroupingEntity *ge, std::string name, const BasicType type);
+    Property(const GroupingEntity *ge, std::string name, BasicType type);
 
     Property(const Property & /*from*/);
 
@@ -136,5 +136,5 @@ namespace Ioss {
     };
     Data data_;
   };
-}
+} // namespace Ioss
 #endif

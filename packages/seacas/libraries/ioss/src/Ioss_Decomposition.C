@@ -39,7 +39,7 @@
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <numeric>
 
 #if !defined(NO_CGNS_SUPPORT)
@@ -73,15 +73,15 @@ namespace {
     for (size_t i = 0; i < proc_count; i++) {
       dist[i] = sum;
       sum += per_proc;
-      if (i < extra)
+      if (i < extra) {
         sum++;
+      }
     }
     dist[proc_count] = sum;
     return dist;
   }
 
-  std::string get_decomposition_method(const Ioss::PropertyManager &properties, int my_processor,
-                                       int processor_count)
+  std::string get_decomposition_method(const Ioss::PropertyManager &properties, int my_processor)
   {
     std::string method = "LINEAR";
 
@@ -164,7 +164,7 @@ namespace {
     return common_nodes;
   }
 #endif
-}
+} // namespace
 
 namespace Ioss {
 
@@ -179,7 +179,7 @@ namespace Ioss {
   {
     MPI_Comm_rank(m_comm, &m_processor);
     MPI_Comm_size(m_comm, &m_processorCount);
-    m_method = get_decomposition_method(props, m_processor, m_processorCount);
+    m_method = get_decomposition_method(props, m_processor);
   }
 
   template bool                Decomposition<int64_t>::needs_centroids() const;
@@ -239,8 +239,9 @@ namespace Ioss {
     std::vector<size_t> imp_index(el_blocks.size());
     for (size_t i = 0; i < importElementMap.size(); i++) {
       size_t elem = importElementMap[i];
-      while (i >= (size_t)importElementIndex[proc + 1])
+      while (i >= (size_t)importElementIndex[proc + 1]) {
         proc++;
+      }
 
       b          = Ioss::Utils::find_index_location(elem, m_fileBlockIndex);
       size_t off = std::max(m_fileBlockIndex[b], m_elementOffset);
@@ -260,8 +261,9 @@ namespace Ioss {
     b    = 0;
     for (size_t i = 0; i < exportElementMap.size(); i++) {
       size_t elem = exportElementMap[i];
-      while (i >= (size_t)exportElementIndex[proc + 1])
+      while (i >= (size_t)exportElementIndex[proc + 1]) {
         proc++;
+      }
 
       b = Ioss::Utils::find_index_location(elem, m_fileBlockIndex);
 
@@ -313,10 +315,12 @@ namespace Ioss {
     }
 #endif
     if (m_method == "LINEAR") {
-      if (m_globalElementCount > 0)
+      if (m_globalElementCount > 0) {
         simple_decompose();
-      else
+      }
+      else {
         simple_node_decompose();
+      }
     }
 
     Ioss::qsort(importElementMap);
@@ -328,8 +332,9 @@ namespace Ioss {
     // that remain locally owned...
     m_importPreLocalElemIndex = 0;
     for (size_t i = 0; i < importElementMap.size(); i++) {
-      if ((size_t)importElementMap[i] >= m_elementOffset)
+      if ((size_t)importElementMap[i] >= m_elementOffset) {
         break;
+      }
       m_importPreLocalElemIndex++;
     }
 
@@ -447,10 +452,12 @@ namespace Ioss {
     for (auto node : node_comm_send) {
       node -= m_nodeOffset;
       coord_send.push_back(x[node]);
-      if (m_spatialDimension > 1)
+      if (m_spatialDimension > 1) {
         coord_send.push_back(y[node]);
-      if (m_spatialDimension > 2)
+      }
+      if (m_spatialDimension > 2) {
         coord_send.push_back(z[node]);
+      }
     }
     assert(coord_send.size() == node_comm_send.size() * m_spatialDimension);
 
@@ -493,26 +500,32 @@ namespace Ioss {
         INT proc = owner[jj];
         if (proc == m_processor) {
           cx += x[node - m_nodeOffset];
-          if (m_spatialDimension > 1)
+          if (m_spatialDimension > 1) {
             cy += y[node - m_nodeOffset];
-          if (m_spatialDimension > 2)
+          }
+          if (m_spatialDimension > 2) {
             cz += z[node - m_nodeOffset];
+          }
         }
         else {
           INT coffset = recv_disp[proc] + recv_tmp[proc];
           recv_tmp[proc] += m_spatialDimension;
           cx += coord_recv[coffset + 0];
-          if (m_spatialDimension > 1)
+          if (m_spatialDimension > 1) {
             cy += coord_recv[coffset + 1];
-          if (m_spatialDimension > 2)
+          }
+          if (m_spatialDimension > 2) {
             cz += coord_recv[coffset + 2];
+          }
         }
       }
       m_centroids.push_back(cx / nnpe);
-      if (m_spatialDimension > 1)
+      if (m_spatialDimension > 1) {
         m_centroids.push_back(cy / nnpe);
-      if (m_spatialDimension > 2)
+      }
+      if (m_spatialDimension > 2) {
         m_centroids.push_back(cz / nnpe);
+      }
     }
   }
 
@@ -843,7 +856,7 @@ namespace Ioss {
       std::vector<std::pair<int, int>> export_map;
       export_map.reserve(num_export);
       for (int i = 0; i < num_export; i++) {
-        export_map.push_back(std::make_pair(export_procs[i], export_global_ids[i]));
+        export_map.emplace_back(std::make_pair(export_procs[i], export_global_ids[i]));
       }
 
       std::sort(export_map.begin(), export_map.end());
@@ -869,7 +882,7 @@ namespace Ioss {
       }
       std::vector<std::pair<int, int64_t>> export_map;
       export_map.reserve(num_export);
-      int64_t *export_glob = (int64_t *)export_global_ids;
+      int64_t *export_glob = reinterpret_cast<int64_t *>(export_global_ids);
       for (int i = 0; i < num_export; i++) {
         export_map.push_back(std::make_pair(export_procs[i], export_glob[i]));
       }
@@ -883,7 +896,7 @@ namespace Ioss {
         exportElementCount[elem_count.first]++;
       }
 
-      int64_t *import_glob = (int64_t *)import_global_ids;
+      int64_t *import_glob = reinterpret_cast<int64_t *>(import_global_ids);
       for (int i = 0; i < num_import; i++) {
         importElementMap.push_back(import_glob[i]);
         importElementCount[import_procs[i]]++;
@@ -916,7 +929,7 @@ namespace Ioss {
     }
     else {
       assert(global_id_size == 2);
-      int64_t *export_glob = (int64_t *)export_global_ids;
+      int64_t *export_glob = reinterpret_cast<int64_t *>(export_global_ids);
 
       for (size_t i = 0; i < export_count; i++) {
         // flag all elements to be exported...
@@ -1136,8 +1149,9 @@ namespace Ioss {
     }
 
     for (int p = 0; p < m_processorCount; p++) {
-      if (p == m_processor)
+      if (p == m_processor) {
         continue;
+      }
       size_t beg = exportNodeIndex[p];
       size_t end = exportNodeIndex[p + 1];
       for (size_t i = beg; i < end; i++) {
@@ -1172,8 +1186,9 @@ namespace Ioss {
       for (size_t p = beg; p <= end; p++) {
         int proc = shared_nodes[p].second;
         for (size_t j = beg; j <= end; j++) {
-          if (j == p)
+          if (j == p) {
             continue;
+          }
           assert(shared_nodes[p].first == shared_nodes[j].first);
           send_comm_map_count[proc] += 2;
         }
@@ -1198,8 +1213,9 @@ namespace Ioss {
       for (size_t p = beg; p <= end; p++) {
         int proc = shared_nodes[p].second;
         for (size_t j = beg; j <= end; j++) {
-          if (j == p)
+          if (j == p) {
             continue;
+          }
           assert(shared_nodes[p].first == shared_nodes[j].first);
           size_t location             = send_comm_map_disp[proc] + nc_offset[proc];
           send_comm_map[location + 0] = shared_nodes[j].first;
@@ -1357,7 +1373,7 @@ namespace Ioss {
                                                 const SetDecompositionData &set,
                                                 size_t                      comp_count) const
   {
-    MPI_Status status;
+    MPI_Status status{};
 
     std::vector<T> recv_data;
     int            result = MPI_SUCCESS;
@@ -1454,8 +1470,8 @@ namespace Ioss {
     std::vector<U> imports(comp_count * block.importMap.size());
 
     if (comp_count == 1) {
-      for (size_t i = 0; i < block.exportMap.size(); i++) {
-        exports.push_back(file_data[block.exportMap[i]]);
+      for (int i : block.exportMap) {
+        exports.push_back(file_data[i]);
       }
 
       // Get my imported data and send my exported data...
@@ -1472,9 +1488,9 @@ namespace Ioss {
       }
     }
     else {
-      for (size_t i = 0; i < block.exportMap.size(); i++) {
+      for (int i : block.exportMap) {
         for (size_t j = 0; j < comp_count; j++) {
-          exports.push_back(file_data[block.exportMap[i] * comp_count + j]);
+          exports.push_back(file_data[i * comp_count + j]);
         }
       }
 
@@ -1631,4 +1647,4 @@ namespace Ioss {
       }
     }
   }
-}
+} // namespace Ioss
