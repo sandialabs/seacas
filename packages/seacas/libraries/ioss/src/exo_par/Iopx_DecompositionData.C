@@ -42,15 +42,15 @@
 #include <exodus/Ioex_Utils.h>
 
 #include <algorithm> // for lower_bound, copy, etc
-#include <assert.h>  // for assert
+#include <cassert>   // for assert
+#include <climits>   // for INT_MAX
+#include <cstdlib>   // for exit, EXIT_FAILURE
 #include <cstring>
 #include <iostream> // for operator<<, ostringstream, etc
 #include <iterator> // for distance
-#include <limits.h> // for INT_MAX
 #include <map>      // for map
 #include <mpi.h>    // for MPI_Alltoall, MPI_Bcast, etc
 #include <numeric>  // for accumulate
-#include <stdlib.h> // for exit, EXIT_FAILURE
 #include <utility>  // for pair, make_pair
 
 #if !defined(NO_PARMETIS_SUPPORT)
@@ -69,7 +69,7 @@ namespace {
   int zoltan_num_dim(void *data, int *ierr)
   {
     // Return dimensionality of coordinate data.
-    Iopx::DecompositionDataBase *zdata = (Iopx::DecompositionDataBase *)(data);
+    Iopx::DecompositionDataBase *zdata = reinterpret_cast<Iopx::DecompositionDataBase *>(data);
 
     *ierr = ZOLTAN_OK;
     return zdata->spatial_dimension();
@@ -78,17 +78,17 @@ namespace {
   int zoltan_num_obj(void *data, int *ierr)
   {
     // Return number of objects (element count) on this processor...
-    Iopx::DecompositionDataBase *zdata = (Iopx::DecompositionDataBase *)(data);
+    Iopx::DecompositionDataBase *zdata = reinterpret_cast<Iopx::DecompositionDataBase *>(data);
 
     *ierr = ZOLTAN_OK;
     return zdata->decomp_elem_count();
   }
 
-  void zoltan_obj_list(void *data, int ngid_ent, int nlid_ent, ZOLTAN_ID_PTR gids,
+  void zoltan_obj_list(void *data, int ngid_ent, int /*nlid_ent*/, ZOLTAN_ID_PTR gids,
                        ZOLTAN_ID_PTR lids, int wdim, float *wgts, int *ierr)
   {
     // Return list of object IDs, both local and global.
-    Iopx::DecompositionDataBase *zdata = (Iopx::DecompositionDataBase *)(data);
+    Iopx::DecompositionDataBase *zdata = reinterpret_cast<Iopx::DecompositionDataBase *>(data);
 
     // At the time this is called, we don't have much information
     // These routines are the ones that are developing that
@@ -98,11 +98,11 @@ namespace {
 
     *ierr = ZOLTAN_OK;
 
-    if (lids) {
+    if (lids != nullptr) {
       std::iota(lids, lids + element_count, 0);
     }
 
-    if (wdim) {
+    if (wdim != 0) {
       std::fill(wgts, wgts + element_count, 1.0);
     }
 
@@ -110,7 +110,7 @@ namespace {
       std::iota(gids, gids + element_count, element_offset);
     }
     else if (ngid_ent == 2) {
-      int64_t *global_ids = (int64_t *)gids;
+      int64_t *global_ids = reinterpret_cast<int64_t *>(gids);
       std::iota(global_ids, global_ids + element_count, element_offset);
     }
     else {
@@ -119,19 +119,19 @@ namespace {
     return;
   }
 
-  void zoltan_geom(void *data, int ngid_ent, int nlid_ent, int nobj, ZOLTAN_ID_PTR gids,
-                   ZOLTAN_ID_PTR lids, int ndim, double *geom, int *ierr)
+  void zoltan_geom(void *data, int /*ngid_ent*/, int /*nlid_ent*/, int /*nobj*/,
+                   ZOLTAN_ID_PTR /*gids*/, ZOLTAN_ID_PTR /*lids*/, int /*ndim*/, double *geom,
+                   int *ierr)
   {
     // Return coordinates for objects.
-    Iopx::DecompositionDataBase *zdata = (Iopx::DecompositionDataBase *)(data);
+    Iopx::DecompositionDataBase *zdata = reinterpret_cast<Iopx::DecompositionDataBase *>(data);
 
     std::copy(zdata->centroids().begin(), zdata->centroids().end(), &geom[0]);
 
     *ierr = ZOLTAN_OK;
-    return;
   }
 #endif
-}
+} // namespace
 
 namespace Iopx {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,
@@ -153,7 +153,7 @@ namespace Iopx {
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
 
-    ex_init_params info;
+    ex_init_params info{};
     ex_get_init_ext(filePtr, &info);
 
     size_t globalElementCount          = info.num_elem;
@@ -180,10 +180,12 @@ namespace Iopx {
       ;
       std::vector<double> y;
       std::vector<double> z;
-      if (m_decomposition.m_spatialDimension > 1)
+      if (m_decomposition.m_spatialDimension > 1) {
         y.resize(decomp_node_count());
-      if (m_decomposition.m_spatialDimension > 2)
+      }
+      if (m_decomposition.m_spatialDimension > 2) {
         z.resize(decomp_node_count());
+      }
 
       ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), TOPTR(x),
                            TOPTR(y), TOPTR(z));
@@ -267,9 +269,9 @@ namespace Iopx {
       }
       decomposition.m_fileBlockIndex[b + 1] = decomposition.m_fileBlockIndex[b] + ebs[b].num_entry;
       el_blocks[b].topologyType             = ebs[b].topology;
-      if (ebs[b].num_entry == 0 && (std::strcmp(ebs[b].topology, "nullptr") == 0))
+      if (ebs[b].num_entry == 0 && (std::strcmp(ebs[b].topology, "nullptr") == 0)) {
         el_blocks[b].topologyType = "sphere";
-
+      }
       el_blocks[b].globalCount    = ebs[b].num_entry;
       el_blocks[b].nodesPerEntity = ebs[b].num_nodes_per_entry;
       el_blocks[b].attributeCount = ebs[b].num_attribute;
@@ -676,7 +678,7 @@ namespace Iopx {
                   break;
                 }
               }
-              df_valcon[3 * i + 2] = (double)nod_per_face;
+              df_valcon[3 * i + 2] = static_cast<double>(nod_per_face);
             }
           }
         }
@@ -687,7 +689,7 @@ namespace Iopx {
       for (size_t i = 0; i < set_count; i++) {
         side_sets[i].distributionFactorValue         = df_valcon[3 * i + 0];
         side_sets[i].distributionFactorConstant      = (df_valcon[3 * i + 1] == 1.0);
-        side_sets[i].distributionFactorValsPerEntity = (int)df_valcon[3 * i + 2];
+        side_sets[i].distributionFactorValsPerEntity = static_cast<int>(df_valcon[3 * i + 2]);
       }
 
       // See if need to communicate the nodes_per_side data on any
@@ -749,22 +751,25 @@ namespace Iopx {
     if (field.get_name() == "mesh_model_coordinates_x") {
       ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
                                   TOPTR(tmp), nullptr, nullptr);
-      if (ierr >= 0)
+      if (ierr >= 0) {
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
+      }
     }
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
       ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), nullptr,
                                   TOPTR(tmp), nullptr);
-      if (ierr >= 0)
+      if (ierr >= 0) {
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
+      }
     }
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
       ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), nullptr,
                                   nullptr, TOPTR(tmp));
-      if (ierr >= 0)
+      if (ierr >= 0) {
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
+      }
     }
 
     else if (field.get_name() == "mesh_model_coordinates") {
@@ -793,8 +798,9 @@ namespace Iopx {
         coord[d]                       = TOPTR(tmp);
         ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
                                     coord[0], coord[1], coord[2]);
-        if (ierr < 0)
+        if (ierr < 0) {
           return ierr;
+        }
 
         communicate_node_data(TOPTR(tmp), TOPTR(ioss_tmp), 1);
 
@@ -954,13 +960,15 @@ namespace Iopx {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      this32->m_decomposition.get_node_entity_proc_data((int *)entity_proc, node_map, do_map);
+      this32->m_decomposition.get_node_entity_proc_data(reinterpret_cast<int *>(entity_proc),
+                                                        node_map, do_map);
     }
     else {
       const DecompositionData<int64_t> *this64 =
           dynamic_cast<const DecompositionData<int64_t> *>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      this64->m_decomposition.get_node_entity_proc_data((int64_t *)entity_proc, node_map, do_map);
+      this64->m_decomposition.get_node_entity_proc_data(reinterpret_cast<int64_t *>(entity_proc),
+                                                        node_map, do_map);
     }
   }
 
@@ -1002,13 +1010,13 @@ namespace Iopx {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
-      this32->get_block_connectivity(filePtr, (int *)data, id, blk_seq, nnpe);
+      this32->get_block_connectivity(filePtr, reinterpret_cast<int *>(data), id, blk_seq, nnpe);
     }
     else {
       const DecompositionData<int64_t> *this64 =
           dynamic_cast<const DecompositionData<int64_t> *>(this);
       Ioss::Utils::check_dynamic_cast(this64);
-      this64->get_block_connectivity(filePtr, (int64_t *)data, id, blk_seq, nnpe);
+      this64->get_block_connectivity(filePtr, reinterpret_cast<int64_t *>(data), id, blk_seq, nnpe);
     }
   }
 
@@ -1016,16 +1024,16 @@ namespace Iopx {
                                                                           ex_entity_id   id) const
   {
     if (type == EX_NODE_SET) {
-      for (size_t i = 0; i < node_sets.size(); i++) {
-        if (node_sets[i].id_ == id) {
-          return node_sets[i];
+      for (const auto &node_set : node_sets) {
+        if (node_set.id_ == id) {
+          return node_set;
         }
       }
     }
     else if (type == EX_SIDE_SET) {
-      for (size_t i = 0; i < side_sets.size(); i++) {
-        if (side_sets[i].id_ == id) {
-          return side_sets[i];
+      for (const auto &side_set : side_sets) {
+        if (side_set.id_ == id) {
+          return side_set;
         }
       }
     }
@@ -1065,8 +1073,9 @@ namespace Iopx {
     size_t bend = std::min(m_decomposition.m_fileBlockIndex[blk_seq + 1],
                            decomp_elem_offset() + decomp_elem_count());
     size_t count = 0;
-    if (bend > bbeg)
+    if (bend > bbeg) {
       count = bend - bbeg;
+    }
     return count;
   }
 
@@ -1074,14 +1083,15 @@ namespace Iopx {
   size_t DecompositionData<INT>::get_block_element_offset(size_t blk_seq) const
   {
     size_t offset = 0;
-    if (decomp_elem_offset() > m_decomposition.m_fileBlockIndex[blk_seq])
+    if (decomp_elem_offset() > m_decomposition.m_fileBlockIndex[blk_seq]) {
       offset = decomp_elem_offset() - m_decomposition.m_fileBlockIndex[blk_seq];
+    }
     return offset;
   }
 
   template <typename INT>
   int DecompositionData<INT>::get_set_var(int filePtr, int step, int var_index, ex_entity_type type,
-                                          ex_entity_id id, int64_t num_entity,
+                                          ex_entity_id         id, int64_t /*num_entity*/,
                                           std::vector<double> &ioss_data) const
   {
     // Find set corresponding to the specified id...
@@ -1095,8 +1105,9 @@ namespace Iopx {
       ierr = ex_get_var(filePtr, step, type, var_index, id, set.file_count(), TOPTR(file_data));
     }
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_set_data(TOPTR(file_data), TOPTR(ioss_data), set, 1);
+    }
 
     return ierr;
   }
@@ -1116,8 +1127,9 @@ namespace Iopx {
       ierr = ex_get_attr(filePtr, type, id, TOPTR(file_data));
     }
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_set_data(TOPTR(file_data), ioss_data, set, comp_count);
+    }
 
     return ierr;
   }
@@ -1137,22 +1149,25 @@ namespace Iopx {
       ierr = ex_get_one_attr(filePtr, type, id, attr_index, TOPTR(file_data));
     }
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_set_data(TOPTR(file_data), ioss_data, set, 1);
+    }
 
     return ierr;
   }
 
   template <typename INT>
   int DecompositionData<INT>::get_node_var(int filePtr, int step, int var_index, ex_entity_id id,
-                                           int64_t num_entity, std::vector<double> &ioss_data) const
+                                           int64_t /*num_entity*/,
+                                           std::vector<double> &ioss_data) const
   {
     std::vector<double> file_data(decomp_node_count());
     int ierr = ex_get_partial_var(filePtr, step, EX_NODAL, var_index, id, decomp_node_offset() + 1,
                                   decomp_node_count(), TOPTR(file_data));
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_node_data(TOPTR(file_data), TOPTR(ioss_data), 1);
+    }
     return ierr;
   }
 
@@ -1164,8 +1179,9 @@ namespace Iopx {
     int                 ierr = ex_get_partial_attr(filePtr, EX_NODAL, id, decomp_node_offset() + 1,
                                    decomp_node_count(), TOPTR(file_data));
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_node_data(TOPTR(file_data), ioss_data, comp_count);
+    }
     return ierr;
   }
 
@@ -1177,14 +1193,16 @@ namespace Iopx {
     int ierr = ex_get_partial_one_attr(filePtr, EX_NODAL, id, decomp_node_offset() + 1,
                                        decomp_node_count(), attr_index, TOPTR(file_data));
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_node_data(TOPTR(file_data), ioss_data, 1);
+    }
     return ierr;
   }
 
   template <typename INT>
   int DecompositionData<INT>::get_elem_var(int filePtr, int step, int var_index, ex_entity_id id,
-                                           int64_t num_entity, std::vector<double> &ioss_data) const
+                                           int64_t /*num_entity*/,
+                                           std::vector<double> &ioss_data) const
   {
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
@@ -1195,9 +1213,10 @@ namespace Iopx {
     int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
                                   TOPTR(file_data));
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       m_decomposition.communicate_block_data(TOPTR(file_data), TOPTR(ioss_data), el_blocks[blk_seq],
                                              1);
+    }
 
     return ierr;
   }
@@ -1214,9 +1233,10 @@ namespace Iopx {
     std::vector<double> file_data(count * comp_count);
     int ierr = ex_get_partial_attr(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, TOPTR(file_data));
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       m_decomposition.communicate_block_data(TOPTR(file_data), ioss_data, el_blocks[blk_seq],
                                              comp_count);
+    }
 
     return ierr;
   }
@@ -1234,8 +1254,9 @@ namespace Iopx {
     int ierr = ex_get_partial_one_attr(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, attr_index,
                                        TOPTR(file_data));
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       m_decomposition.communicate_block_data(TOPTR(file_data), ioss_data, el_blocks[blk_seq], 1);
+    }
 
     return ierr;
   }
@@ -1375,8 +1396,9 @@ namespace Iopx {
       }
     }
 
-    if (ierr >= 0)
+    if (ierr >= 0) {
       communicate_set_data(TOPTR(file_data), ioss_data, set, 1);
+    }
 
     // Map global 0-based index to local 1-based index.
     if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
@@ -1469,8 +1491,9 @@ namespace Iopx {
         set_param[0].distribution_factor_list = TOPTR(file_data);
         ierr                                  = ex_get_sets(filePtr, 1, set_param);
       }
-      if (ierr >= 0)
+      if (ierr >= 0) {
         communicate_set_data(TOPTR(file_data), ioss_data, set, set.distributionFactorValsPerEntity);
+      }
 
       return ierr;
     }
@@ -1501,7 +1524,7 @@ namespace Iopx {
     // NOTE That a processor either sends or receives, but never both,
     // so this will not cause a deadlock...
     if (myProcessor != set.root_ && set.hasEntities[myProcessor]) {
-      MPI_Status status;
+      MPI_Status status{};
       int result = MPI_Recv(TOPTR(nodes_per_face), nodes_per_face.size(), MPI_INT, set.root_, 222,
                             comm_, &status);
 
@@ -1543,7 +1566,7 @@ namespace Iopx {
 
     if (myProcessor != set.root_ && set.hasEntities[myProcessor]) {
       file_data.resize(df_count);
-      MPI_Status status;
+      MPI_Status status{};
       int        result =
           MPI_Recv(TOPTR(file_data), file_data.size(), MPI_DOUBLE, set.root_, 333, comm_, &status);
 
@@ -1638,8 +1661,8 @@ namespace Iopx {
       *processor_offset += rcv_count[i];
     }
 
-    for (size_t i = 0; i < global_implicit_map.size(); i++) {
-      global_implicit_map[i] += *processor_offset + 1;
+    for (long long &i : global_implicit_map) {
+      i += *processor_offset + 1;
     }
 
     // Now, tell the other processors how many nodes I will be sending
@@ -1669,10 +1692,10 @@ namespace Iopx {
     Ioss::MY_Alltoallv(snd_list, snd_count, snd_offset, rcv_list, rcv_count, rcv_offset, comm_);
 
     // Iterate rcv_list and convert global ids to the global-implicit position...
-    for (size_t i = 0; i < rcv_list.size(); i++) {
-      int64_t local_id     = node_map.global_to_local(rcv_list[i]) - 1;
+    for (long long &i : rcv_list) {
+      int64_t local_id     = node_map.global_to_local(i) - 1;
       int64_t rcv_position = global_implicit_map[local_id];
-      rcv_list[i]          = rcv_position;
+      i                    = rcv_position;
     }
 
     // Send the data back now...
@@ -1687,4 +1710,4 @@ namespace Iopx {
       }
     }
   }
-}
+} // namespace Iopx

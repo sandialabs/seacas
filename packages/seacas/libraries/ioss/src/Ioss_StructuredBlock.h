@@ -168,8 +168,8 @@ namespace Ioss {
 
     bool is_active() const
     {
-      return  (m_rangeBeg[0] != 0 || m_rangeEnd[0] != 0 || m_rangeBeg[1] != 0 || m_rangeEnd[1] != 0 ||
-	       m_rangeBeg[2] != 0 || m_rangeEnd[2] != 0);
+      return (m_rangeBeg[0] != 0 || m_rangeEnd[0] != 0 || m_rangeBeg[1] != 0 ||
+              m_rangeEnd[1] != 0 || m_rangeBeg[2] != 0 || m_rangeEnd[2] != 0);
     }
 
     std::string m_bcName;

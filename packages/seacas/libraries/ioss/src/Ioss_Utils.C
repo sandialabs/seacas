@@ -35,13 +35,13 @@
 #include <cassert>
 #include <cctype>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <sstream>
-#include <stdint.h>
 #include <string>
 #include <sys/select.h>
-#include <time.h>
 #include <vector>
 
 #ifndef _WIN32
@@ -284,7 +284,7 @@ int Ioss::Utils::field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field
 std::string Ioss::Utils::platform_information()
 {
 #ifndef _WIN32
-  struct utsname sys_info;
+  struct utsname sys_info{};
   uname(&sys_info);
 
   std::string info = "Node: ";

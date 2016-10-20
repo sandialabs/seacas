@@ -44,11 +44,11 @@
 extern "C" {
 #include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
 }
+#include <cstddef>  // for size_t
+#include <cstdio>   // for sprintf, nullptr
+#include <cstdlib>  // for exit, EXIT_FAILURE
 #include <netcdf.h> // for NC_NOERR, nc_def_var, etc
 #include <ostream>  // for operator<<, etc
-#include <stddef.h> // for size_t
-#include <stdio.h>  // for sprintf, nullptr
-#include <stdlib.h> // for exit, EXIT_FAILURE
 #include <string.h> // for strlen, strncpy, strcpy, etc
 #include <string>   // for string, operator==, etc
 #include <vector>   // for vector
@@ -3407,7 +3407,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
+      status = nc_put_var_longlong(exoid, var_id, const_cast<long long int *>(&ids[0]));
     }
     else {
       // Have entity_id (long long), need ints...
