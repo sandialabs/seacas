@@ -112,6 +112,6 @@ namespace Iocgns {
     void resolve_zgc_split_donor(std::vector<Iocgns::StructuredZoneData *> &zones);
     void update_zgc_processor(std::vector<Iocgns::StructuredZoneData *> &zones);
   };
-}
+} // namespace Iocgns
 
 #endif

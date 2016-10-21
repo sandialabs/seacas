@@ -37,22 +37,22 @@
 #include <Ioss_EntityBlock.h> // for EntityBlock
 #include <Ioss_EntityType.h>  // for EntityType, etc
 #include <Ioss_Property.h>    // for Property
-#include <stddef.h>           // for size_t
-#include <stdint.h>           // for int64_t
+#include <cstddef>           // for size_t
+#include <cstdint>           // for int64_t
 #include <string>             // for string
 #include <vector>             // for vector
 namespace Ioss {
   class DatabaseIO;
-}
+} // namespace Ioss
 namespace Ioss {
   class ElementTopology;
-}
+} // namespace Ioss
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 namespace Ioss {
   class SideSet;
-}
+} // namespace Ioss
 
 namespace Ioss {
 
@@ -119,5 +119,5 @@ namespace Ioss {
                                               // elements in this sideset belong to.
     mutable int consistentSideNumber;
   };
-}
+}  // namespace Ioss
 #endif

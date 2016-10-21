@@ -33,11 +33,11 @@
 #ifndef IOSS_Ioss_Property_h
 #define IOSS_Ioss_Property_h
 
-#include <stdint.h> // for int64_t
+#include <cstdint> // for int64_t
 #include <string>   // for string
 namespace Ioss {
   class GroupingEntity;
-}
+} // namespace Ioss
 
 namespace Ioss {
 
