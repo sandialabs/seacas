@@ -33,15 +33,15 @@
 #ifndef IOSS_Ioss_Field_h
 #define IOSS_Ioss_Field_h
 
-#include <stddef.h> // for size_t
+#include <cstddef> // for size_t
 #include <string>   // for string
 #include <vector>   // for vector
 namespace Ioss {
   class Transform;
-}
+} // namespace Ioss
 namespace Ioss {
   class VariableType;
-}
+} // namespace Ioss
 
 namespace Ioss {
 
@@ -97,13 +97,13 @@ namespace Ioss {
     // Create a field named 'name' that contains values of type 'type'
     // in a storage format of type 'storage'.  There are 'value_count'
     // items in the field.
-    Field(std::string name, const BasicType type, const std::string &storage, const RoleType role,
+    Field(std::string name, BasicType type, const std::string &storage, RoleType role,
           size_t value_count, size_t index = 0);
 
-    Field(std::string name, const BasicType type, const std::string &storage, int copies,
-          const RoleType role, size_t value_count, size_t index = 0);
+    Field(std::string name, BasicType type, const std::string &storage, int copies,
+          RoleType role, size_t value_count, size_t index = 0);
 
-    Field(std::string name, const BasicType type, const VariableType *storage, const RoleType role,
+    Field(std::string name, BasicType type, const VariableType *storage, RoleType role,
           size_t value_count, size_t index = 0);
 
     // Create a field from another field.
@@ -176,5 +176,5 @@ namespace Ioss {
 
     std::vector<Transform *> transforms_;
   };
-}
+}  // namespace Ioss
 #endif

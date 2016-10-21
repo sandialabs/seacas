@@ -36,7 +36,7 @@
 #include <Ioss_CodeTypes.h>
 #include <string>      // for string, operator!=, etc
 #include <sys/types.h> // for off_t
-#include <time.h>      // for time_t
+#include <ctime>      // for time_t
 
 namespace Ioss {
 

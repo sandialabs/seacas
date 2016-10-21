@@ -39,7 +39,7 @@
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
 #include <array>
-#include <assert.h>
+#include <cassert>
 #include <string>
 
 namespace Ioss {
@@ -256,7 +256,7 @@ namespace Ioss {
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
       assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return (size_t)(k - 1) * (m_ni + 1) * (m_nj + 1) + (size_t)(j - 1) * (m_ni + 1) + i;
+      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) + static_cast<size_t>(j - 1) * (m_ni + 1) + i;
     }
 
     // Get the local (relative to this block on this processor) cell
@@ -267,15 +267,15 @@ namespace Ioss {
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
       assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return (size_t)(k - 1) * m_ni * m_nj + (size_t)(j - 1) * m_ni + i;
+      return static_cast<size_t>(k - 1) * m_ni * m_nj + static_cast<size_t>(j - 1) * m_ni + i;
     }
 
     // Get the global (over all processors) cell
     // id at the specified i,j,k location (1 <= i,j,k <= ni,nj,nk).  1-based.
     size_t get_global_cell_id(int i, int j, int k) const
     {
-      return m_cellGlobalOffset + (size_t)(k - 1) * m_niGlobal * m_njGlobal +
-             (size_t)(j - 1) * m_niGlobal + i;
+      return m_cellGlobalOffset + static_cast<size_t>(k - 1) * m_niGlobal * m_njGlobal +
+             static_cast<size_t>(j - 1) * m_niGlobal + i;
     }
 
     // Get the global (over all processors) node
@@ -283,8 +283,8 @@ namespace Ioss {
     // for shared nodes.
     size_t get_global_node_offset(int i, int j, int k) const
     {
-      return m_nodeGlobalOffset + (size_t)(k - 1) * (m_niGlobal + 1) * (m_njGlobal + 1) +
-             (size_t)(j - 1) * (m_niGlobal + 1) + i - 1;
+      return m_nodeGlobalOffset + static_cast<size_t>(k - 1) * (m_niGlobal + 1) * (m_njGlobal + 1) +
+             static_cast<size_t>(j - 1) * (m_niGlobal + 1) + i - 1;
     }
 
     // Get the local (relative to this block on this processor) node id at the specified
@@ -295,7 +295,7 @@ namespace Ioss {
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
       assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return (size_t)(k - 1) * (m_ni + 1) * (m_nj + 1) + (size_t)(j - 1) * (m_ni + 1) + i - 1;
+      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) + static_cast<size_t>(j - 1) * (m_ni + 1) + i - 1;
     }
 
     // Get the local (on this processor) cell-node offset at the specified
@@ -430,5 +430,5 @@ namespace Ioss {
     std::vector<size_t>            m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
   };
-}
+}  // namespace Ioss
 #endif

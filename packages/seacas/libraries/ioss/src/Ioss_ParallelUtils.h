@@ -239,10 +239,10 @@ namespace Ioss {
                    const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
                    MPI_Comm comm)
   {
-    return MPI_Alltoallv(TOPTR(sendbuf), (int *)TOPTR(sendcnts), (int *)TOPTR(senddisp),
-                         mpi_type(T(0)), TOPTR(recvbuf), (int *)TOPTR(recvcnts),
-                         (int *)TOPTR(recvdisp), mpi_type(T(0)), comm);
+    return MPI_Alltoallv(TOPTR(sendbuf), const_cast<int *>(TOPTR(sendcnts)), const_cast<int *>(TOPTR(senddisp)),
+                         mpi_type(T(0)), TOPTR(recvbuf), const_cast<int *>(TOPTR(recvcnts)),
+                         const_cast<int *>(TOPTR(recvdisp)), mpi_type(T(0)), comm);
   }
 #endif
-}
+}  // namespace Ioss
 #endif
