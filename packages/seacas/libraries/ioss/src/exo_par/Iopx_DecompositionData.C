@@ -1661,7 +1661,7 @@ namespace Iopx {
       *processor_offset += rcv_count[i];
     }
 
-    for (long long &i : global_implicit_map) {
+    for (auto &i : global_implicit_map) {
       i += *processor_offset + 1;
     }
 
@@ -1692,7 +1692,7 @@ namespace Iopx {
     Ioss::MY_Alltoallv(snd_list, snd_count, snd_offset, rcv_list, rcv_count, rcv_offset, comm_);
 
     // Iterate rcv_list and convert global ids to the global-implicit position...
-    for (long long &i : rcv_list) {
+    for (auto &i : rcv_list) {
       int64_t local_id     = node_map.global_to_local(i) - 1;
       int64_t rcv_position = global_implicit_map[local_id];
       i                    = rcv_position;
