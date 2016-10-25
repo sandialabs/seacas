@@ -72,6 +72,13 @@
 #endif
 #endif
 
+/* Suppress unused-variable warnings by "using" E.  */
+#if !defined lint || defined __GNUC__
+#define YYUSE(E) ((void)(E))
+#else
+#define YYUSE(E) /* empty */
+#endif
+
 #if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
 #define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                                                        \
@@ -104,7 +111,7 @@ namespace SEAMS {
 #ifndef YYSTYPE
     /// Symbol semantic values.
     union semantic_type {
-#line 90 "aprepro.yy" // lalr1.cc:377
+#line 90 "/scratch/gdsjaar/seacas/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:377
 
       double         val;    /* For returning numbers.		*/
       struct symrec *tptr;   /* For returning symbol-table pointers	*/
