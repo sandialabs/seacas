@@ -265,7 +265,11 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   // Did user specify it via -netcdf4 or -large_model argument...
   int mode = 0;
 
-  if (si.use_netcdf4()) {
+  if (si.compress_data() > 0) {
+    // Force netcdf-4 if compression is specified...
+    mode |= EX_NETCDF4;
+  }
+  else if (si.use_netcdf4()) {
     mode |= EX_NETCDF4;
   }
   else if (ex_large_model(fileids_[0]) == 1) {
@@ -287,10 +291,6 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   }
   else {
     mode |= EX_CLOBBER;
-    if (si.compress_data() > 0) {
-      // Force netcdf-4 if compression is specified...
-      mode |= EX_NETCDF4;
-    }
     std::cout << "Output:   '" << outputFilename_ << "'" << '\n';
     outputId_ = ex_create(outputFilename_.c_str(), mode, &cpuWordSize_, &ioWordSize_);
   }
