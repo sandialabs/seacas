@@ -44,7 +44,7 @@ cycles=-1
 ACCESS=@ACCESSDIR@
 EPU=${ACCESS}/bin/epu
 PARALLEL=${ACCESS}/bin/parallel
-ZPAD=${ACCESS}/bin/zpad
+ZPAD="seq -w"
 if [ $# -eq 0 ] ; then
   usage
 fi
