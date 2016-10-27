@@ -144,12 +144,13 @@ namespace Iopx {
                                             MPI_Comm                     communicator)
       : DecompositionDataBase(communicator), m_decomposition(props, communicator)
   {
-    MPI_Comm_rank(comm_, &myProcessor);
-    MPI_Comm_size(comm_, &processorCount);
+    MPI_Comm_rank(comm_, &m_processor);
+    MPI_Comm_size(comm_, &m_processorCount);
   }
 
   template <typename INT> void DecompositionData<INT>::decompose_model(int filePtr)
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
 
@@ -168,9 +169,9 @@ namespace Iopx {
     generate_adjacency_list(filePtr, m_decomposition);
 
 #if IOSS_DEBUG_OUTPUT
-    std::cerr << "Processor " << myProcessor << " has " << decomp_elem_count()
+    std::cerr << "Processor " << m_processor << " has " << decomp_elem_count()
               << " elements; offset = " << decomp_elem_offset() << "\n";
-    std::cerr << "Processor " << myProcessor << " has " << decomp_node_count()
+    std::cerr << "Processor " << m_processor << " has " << decomp_node_count()
               << " nodes; offset = " << decomp_node_offset() << ".\n";
 #endif
 
@@ -185,6 +186,7 @@ namespace Iopx {
       if (m_decomposition.m_spatialDimension > 2)
         z.resize(decomp_node_count());
 
+      Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_coord");
       ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), TOPTR(x),
                            TOPTR(y), TOPTR(z));
 
@@ -228,6 +230,7 @@ namespace Iopx {
   void DecompositionData<INT>::generate_adjacency_list(int                       filePtr,
                                                        Ioss::Decomposition<INT> &decomposition)
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Range of elements currently handled by this processor [)
     size_t p_start = decomp_elem_offset();
     size_t p_end   = p_start + decomp_elem_count();
@@ -312,9 +315,10 @@ namespace Iopx {
         std::vector<INT> connectivity(overlap * element_nodes);
         size_t           blk_start = std::max(b_start, p_start) - b_start + 1;
 #if IOSS_DEBUG_OUTPUT
-        std::cerr << "Processor " << myProcessor << " has " << overlap
+        std::cerr << "Processor " << m_processor << " has " << overlap
                   << " elements on element block " << id << "\n";
 #endif
+	Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_conn");
         ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity),
                             nullptr, nullptr);
         size_t el = 0;
@@ -372,6 +376,7 @@ namespace Iopx {
     //       (3*globNodeCount/procCount*sizeof(double)/sizeof(INT)) or
     //       less.
 
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     int root = 0; // Root processor that reads all nodeset bulk data (nodelists)
 
     node_sets.resize(set_count);
@@ -420,9 +425,10 @@ namespace Iopx {
       std::vector<INT> nodelist(nodelist_size);
 
       // Read the nodelists on root processor.
-      if (myProcessor == root) {
+      if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
+	  Ioss::ParallelUtils::progress(m_processor, "\tex_get_set (NODE_SET)");
           ex_get_set(filePtr, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
           offset += sets[i].num_entry;
         }
@@ -463,14 +469,14 @@ namespace Iopx {
           has_nodes_local[i] = node_sets[i].entitylist_map.empty() ? 0 : 1;
         }
 
-        std::vector<int> has_nodes(set_count * processorCount);
+        std::vector<int> has_nodes(set_count * m_processorCount);
         MPI_Allgather(TOPTR(has_nodes_local), has_nodes_local.size(), MPI_INT, TOPTR(has_nodes),
                       has_nodes_local.size(), MPI_INT, comm_);
 
         for (size_t i = 0; i < set_count; i++) {
-          node_sets[i].hasEntities.resize(processorCount);
-          node_sets[i].root_ = processorCount;
-          for (int p = 0; p < processorCount; p++) {
+          node_sets[i].hasEntities.resize(m_processorCount);
+          node_sets[i].root_ = m_processorCount;
+          for (int p = 0; p < m_processorCount; p++) {
             if (p < node_sets[i].root_ && has_nodes[p * set_count + i] != 0) {
               node_sets[i].root_ = p;
             }
@@ -484,7 +490,7 @@ namespace Iopx {
       // be communicated.  If constant or empty, then they can be
       // "read" with no communication.
       std::vector<double> df_valcon(2 * set_count);
-      if (myProcessor == root) {
+      if (m_processor == root) {
         for (size_t i = 0; i < set_count; i++) {
           df_valcon[2 * i + 0] = 1.0;
           df_valcon[2 * i + 1] = 1;
@@ -515,6 +521,7 @@ namespace Iopx {
   template <typename INT>
   void DecompositionData<INT>::get_sideset_data(int filePtr, size_t set_count)
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Issues:
     // 0. See 'get_nodeset_data' for most issues.
 
@@ -566,9 +573,10 @@ namespace Iopx {
       std::vector<INT> elemlist(elemlist_size);
 
       // Read the elemlists on root processor.
-      if (myProcessor == root) {
+      if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
+	  Ioss::ParallelUtils::progress(m_processor, "\tex_get_set (SIDE_SET)");
           ex_get_set(filePtr, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
           offset += sets[i].num_entry;
         }
@@ -612,14 +620,14 @@ namespace Iopx {
           has_elems_local[i] = side_sets[i].entitylist_map.empty() ? 0 : 1;
         }
 
-        std::vector<int> has_elems(set_count * processorCount);
+        std::vector<int> has_elems(set_count * m_processorCount);
         MPI_Allgather(TOPTR(has_elems_local), has_elems_local.size(), MPI_INT, TOPTR(has_elems),
                       has_elems_local.size(), MPI_INT, comm_);
 
         for (size_t i = 0; i < set_count; i++) {
-          side_sets[i].hasEntities.resize(processorCount);
-          side_sets[i].root_ = processorCount;
-          for (int p = 0; p < processorCount; p++) {
+          side_sets[i].hasEntities.resize(m_processorCount);
+          side_sets[i].root_ = m_processorCount;
+          for (int p = 0; p < m_processorCount; p++) {
             if (p < side_sets[i].root_ && has_elems[p * set_count + i] != 0) {
               side_sets[i].root_ = p;
             }
@@ -639,7 +647,7 @@ namespace Iopx {
       //                    = -1 if variable
       //                      (0 if df values are constant)
 
-      if (myProcessor == root) {
+      if (m_processor == root) {
         for (size_t i = 0; i < set_count; i++) {
           df_valcon[3 * i + 0] = 1.0;
           df_valcon[3 * i + 1] = 1;
@@ -707,7 +715,7 @@ namespace Iopx {
       if (count > 0) {
         // At least 1 sideset has variable number of nodes per side...
         std::vector<int> nodes_per_face(count); // not INT
-        if (myProcessor == root) {
+        if (m_processor == root) {
           size_t offset = 0;
           for (size_t i = 0; i < set_count; i++) {
             if (side_sets[i].distributionFactorValsPerEntity < 0) {
@@ -743,10 +751,12 @@ namespace Iopx {
   int DecompositionData<INT>::get_node_coordinates(int filePtr, double *ioss_data,
                                                    const Ioss::Field &field) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     std::vector<double> tmp(decomp_node_count());
 
     int ierr = 0;
     if (field.get_name() == "mesh_model_coordinates_x") {
+      Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_coord X");
       ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
                                   TOPTR(tmp), nullptr, nullptr);
       if (ierr >= 0)
@@ -754,6 +764,7 @@ namespace Iopx {
     }
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
+      Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_coord Y");
       ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), nullptr,
                                   TOPTR(tmp), nullptr);
       if (ierr >= 0)
@@ -761,6 +772,7 @@ namespace Iopx {
     }
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
+      Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_coord Z");
       ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), nullptr,
                                   nullptr, TOPTR(tmp));
       if (ierr >= 0)
@@ -791,6 +803,7 @@ namespace Iopx {
         double *coord[3];
         coord[0] = coord[1] = coord[2] = nullptr;
         coord[d]                       = TOPTR(tmp);
+	Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_coord XYZ");
         ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
                                     coord[0], coord[1], coord[2]);
         if (ierr < 0)
@@ -818,6 +831,7 @@ namespace Iopx {
   void DecompositionData<INT>::get_block_connectivity(int filePtr, INT *data, int64_t id,
                                                       size_t blk_seq, size_t nnpe) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     Ioss::BlockDecompositionData blk = el_blocks[blk_seq];
 
     // Determine number of file decomp elements are in this block and the offset into the block.
@@ -826,6 +840,7 @@ namespace Iopx {
 
     assert(sizeof(INT) == Ioex::exodus_byte_size_api(filePtr));
     std::vector<INT> file_conn(count * nnpe);
+    Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_conn");
     ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, offset + 1, count, TOPTR(file_conn), nullptr,
                         nullptr);
     m_decomposition.communicate_block_data(TOPTR(file_conn), data, blk, nnpe);
@@ -840,6 +855,7 @@ namespace Iopx {
                                       ex_entity_id id, int64_t num_entity,
                                       std::vector<double> &data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (type == EX_ELEM_BLOCK) {
       return get_elem_var(filePtr, step, var_index, id, num_entity, data);
     }
@@ -859,6 +875,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id,
                                        size_t attr_count, double *attrib) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (attr_count == 1) {
       return get_one_attr(filePtr, obj_type, id, 1, attrib);
     }
@@ -882,6 +899,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_one_attr(int filePtr, ex_entity_type obj_type, ex_entity_id id,
                                            int attrib_index, double *attrib) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (obj_type == EX_ELEM_BLOCK) {
       return get_one_elem_attr(filePtr, id, attrib_index, attrib);
     }
@@ -908,6 +926,7 @@ namespace Iopx {
   void DecompositionDataBase::communicate_node_data(T *file_data, T *ioss_data,
                                                     size_t comp_count) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
@@ -934,6 +953,7 @@ namespace Iopx {
   void DecompositionDataBase::communicate_element_data(T *file_data, T *ioss_data,
                                                        size_t comp_count) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
@@ -951,6 +971,7 @@ namespace Iopx {
                                                         const Ioss::MapContainer &node_map,
                                                         bool                      do_map) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
@@ -967,6 +988,7 @@ namespace Iopx {
   int DecompositionDataBase::get_set_mesh_double(int filePtr, ex_entity_type type, ex_entity_id id,
                                                  const Ioss::Field &field, double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
@@ -983,6 +1005,7 @@ namespace Iopx {
   int DecompositionDataBase::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                               const Ioss::Field &field, void *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
@@ -999,6 +1022,7 @@ namespace Iopx {
   void DecompositionDataBase::get_block_connectivity(int filePtr, void *data, int64_t id,
                                                      size_t blk_seq, size_t nnpe) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
       Ioss::Utils::check_dynamic_cast(this32);
@@ -1015,6 +1039,7 @@ namespace Iopx {
   const Ioss::SetDecompositionData &DecompositionDataBase::get_decomp_set(ex_entity_type type,
                                                                           ex_entity_id   id) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (type == EX_NODE_SET) {
       for (size_t i = 0; i < node_sets.size(); i++) {
         if (node_sets[i].id_ == id) {
@@ -1047,6 +1072,7 @@ namespace Iopx {
   template <typename INT>
   size_t DecompositionData<INT>::get_block_seq(ex_entity_type type, ex_entity_id id) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     if (type == EX_ELEM_BLOCK) {
       for (size_t i = 0; i < el_blocks.size(); i++) {
         if (el_blocks[i].id_ == id) {
@@ -1060,6 +1086,7 @@ namespace Iopx {
   template <typename INT>
   size_t DecompositionData<INT>::get_block_element_count(size_t blk_seq) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Determine number of file decomp elements are in this block;
     size_t bbeg = std::max(m_decomposition.m_fileBlockIndex[blk_seq], decomp_elem_offset());
     size_t bend = std::min(m_decomposition.m_fileBlockIndex[blk_seq + 1],
@@ -1073,6 +1100,7 @@ namespace Iopx {
   template <typename INT>
   size_t DecompositionData<INT>::get_block_element_offset(size_t blk_seq) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     size_t offset = 0;
     if (decomp_elem_offset() > m_decomposition.m_fileBlockIndex[blk_seq])
       offset = decomp_elem_offset() - m_decomposition.m_fileBlockIndex[blk_seq];
@@ -1084,14 +1112,16 @@ namespace Iopx {
                                           ex_entity_id id, int64_t num_entity,
                                           std::vector<double> &ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Find set corresponding to the specified id...
     auto &set = get_decomp_set(type, id);
 
     std::vector<double> file_data;
     int                 ierr = 0;
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       // Read the set data from the file..
       file_data.resize(set.file_count());
+      Ioss::ParallelUtils::progress(m_processor, "\tex_get_var (set)");
       ierr = ex_get_var(filePtr, step, type, var_index, id, set.file_count(), TOPTR(file_data));
     }
 
@@ -1105,12 +1135,13 @@ namespace Iopx {
   int DecompositionData<INT>::get_set_attr(int filePtr, ex_entity_type type, ex_entity_id id,
                                            size_t comp_count, double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Find set corresponding to the specified id...
     auto &set = get_decomp_set(type, id);
 
     std::vector<double> file_data;
     int                 ierr = 0;
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       // Read the set data from the file..
       file_data.resize(set.file_count() * comp_count);
       ierr = ex_get_attr(filePtr, type, id, TOPTR(file_data));
@@ -1126,12 +1157,13 @@ namespace Iopx {
   int DecompositionData<INT>::get_one_set_attr(int filePtr, ex_entity_type type, ex_entity_id id,
                                                int attr_index, double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Find set corresponding to the specified id...
     auto &set = get_decomp_set(type, id);
 
     std::vector<double> file_data;
     int                 ierr = 0;
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       // Read the set data from the file..
       file_data.resize(set.file_count());
       ierr = ex_get_one_attr(filePtr, type, id, attr_index, TOPTR(file_data));
@@ -1147,7 +1179,9 @@ namespace Iopx {
   int DecompositionData<INT>::get_node_var(int filePtr, int step, int var_index, ex_entity_id id,
                                            int64_t num_entity, std::vector<double> &ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     std::vector<double> file_data(decomp_node_count());
+    Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_var");
     int ierr = ex_get_partial_var(filePtr, step, EX_NODAL, var_index, id, decomp_node_offset() + 1,
                                   decomp_node_count(), TOPTR(file_data));
 
@@ -1160,6 +1194,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_node_attr(int filePtr, ex_entity_id id, size_t comp_count,
                                             double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     std::vector<double> file_data(decomp_node_count() * comp_count);
     int                 ierr = ex_get_partial_attr(filePtr, EX_NODAL, id, decomp_node_offset() + 1,
                                    decomp_node_count(), TOPTR(file_data));
@@ -1173,6 +1208,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_one_node_attr(int filePtr, ex_entity_id id, int attr_index,
                                                 double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     std::vector<double> file_data(decomp_node_count());
     int ierr = ex_get_partial_one_attr(filePtr, EX_NODAL, id, decomp_node_offset() + 1,
                                        decomp_node_count(), attr_index, TOPTR(file_data));
@@ -1186,12 +1222,14 @@ namespace Iopx {
   int DecompositionData<INT>::get_elem_var(int filePtr, int step, int var_index, ex_entity_id id,
                                            int64_t num_entity, std::vector<double> &ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
     size_t count   = get_block_element_count(blk_seq);
     size_t offset  = get_block_element_offset(blk_seq);
 
     std::vector<double> file_data(count);
+    Ioss::ParallelUtils::progress(m_processor, "\tex_get_partial_var (elem)");
     int ierr = ex_get_partial_var(filePtr, step, EX_ELEM_BLOCK, var_index, id, offset + 1, count,
                                   TOPTR(file_data));
 
@@ -1206,6 +1244,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_elem_attr(int filePtr, ex_entity_id id, size_t comp_count,
                                             double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
     size_t count   = get_block_element_count(blk_seq);
@@ -1225,6 +1264,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_one_elem_attr(int filePtr, ex_entity_id id, int attr_index,
                                                 double *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Find blk_seq corresponding to block the specified id...
     size_t blk_seq = get_block_seq(EX_ELEM_BLOCK, id);
     size_t count   = get_block_element_count(blk_seq);
@@ -1260,6 +1300,7 @@ namespace Iopx {
   int DecompositionData<INT>::get_set_mesh_var(int filePtr, ex_entity_type type, ex_entity_id id,
                                                const Ioss::Field &field, T *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Sideset Distribution Factor data can be very complicated.
     // For some sanity, handle all requests for those in a separate routine...
     if (type == EX_SIDE_SET && field.get_name() == "distribution_factors") {
@@ -1330,7 +1371,7 @@ namespace Iopx {
       return 0;
     }
 
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       // Read the nodeset data from the file..
       if (field.get_name() == "ids" || field.get_name() == "ids_raw") {
         file_data.resize(set.file_count());
@@ -1402,6 +1443,7 @@ namespace Iopx {
   int DecompositionData<INT>::handle_sset_df(int filePtr, ex_entity_id id, const Ioss::Field &field,
                                              T *ioss_data) const
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     int ierr = 0;
 
     // Sideset Distribution Factor data can be very complicated.
@@ -1425,7 +1467,7 @@ namespace Iopx {
     //    and we can read the data directly into ioss_data and return...
     size_t proc_active = std::accumulate(set.hasEntities.begin(), set.hasEntities.end(), 0);
     if (proc_active == 1) {
-      if (myProcessor == set.root_) {
+      if (m_processor == set.root_) {
         ex_set set_param[1];
         set_param[0].id                       = id;
         set_param[0].type                     = EX_SIDE_SET;
@@ -1457,7 +1499,7 @@ namespace Iopx {
       // Simply read the values in the file decomposition and
       // communicate with a comp count of set.distributionFactorValsPerEntity.
       std::vector<T> file_data;
-      if (myProcessor == set.root_) {
+      if (m_processor == set.root_) {
         assert(set.distributionFactorValsPerEntity * set.fileCount == set.distributionFactorCount);
         file_data.resize(set.distributionFactorCount);
 
@@ -1478,7 +1520,7 @@ namespace Iopx {
     // non-constant face topology in sideset, non-constant df on faces.
     // Get total number of df on file for this sset...
     size_t df_count = 0;
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       ex_set set_param[1];
       set_param[0].id                       = id;
       set_param[0].type                     = EX_SIDE_SET;
@@ -1491,7 +1533,7 @@ namespace Iopx {
 
     // Get the node-count-per-face for all faces in this set...
     std::vector<int> nodes_per_face(set.file_count() + 1);
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       ex_get_side_set_node_count(filePtr, set.id_, TOPTR(nodes_per_face));
       nodes_per_face[set.file_count()] = df_count;
     }
@@ -1500,23 +1542,23 @@ namespace Iopx {
 
     // NOTE That a processor either sends or receives, but never both,
     // so this will not cause a deadlock...
-    if (myProcessor != set.root_ && set.hasEntities[myProcessor]) {
+    if (m_processor != set.root_ && set.hasEntities[m_processor]) {
       MPI_Status status;
       int result = MPI_Recv(TOPTR(nodes_per_face), nodes_per_face.size(), MPI_INT, set.root_, 222,
                             comm_, &status);
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Recv error on processor " << myProcessor
+        errmsg << "ERROR: MPI_Recv error on processor " << m_processor
                << " receiving nodes_per_face sideset data";
         std::cerr << errmsg.str();
       }
       df_count = nodes_per_face[nodes_per_face.size() - 1];
     }
 
-    if (set.root_ == myProcessor) {
+    if (set.root_ == m_processor) {
       // Sending data to other processors...
-      for (int i = myProcessor + 1; i < processorCount; i++) {
+      for (int i = m_processor + 1; i < m_processorCount; i++) {
         if (set.hasEntities[i]) {
           // Send same data to all active processors...
           MPI_Send(TOPTR(nodes_per_face), nodes_per_face.size(), MPI_INT, i, 222, comm_);
@@ -1527,7 +1569,7 @@ namespace Iopx {
     // Now, read the df on the root processor and send it to the other active
     // processors for this set...
     std::vector<double> file_data;
-    if (myProcessor == set.root_) {
+    if (m_processor == set.root_) {
       file_data.resize(df_count);
 
       ex_set set_param[1];
@@ -1541,7 +1583,7 @@ namespace Iopx {
 
     // Send this data to the other processors
 
-    if (myProcessor != set.root_ && set.hasEntities[myProcessor]) {
+    if (m_processor != set.root_ && set.hasEntities[m_processor]) {
       file_data.resize(df_count);
       MPI_Status status;
       int        result =
@@ -1549,15 +1591,15 @@ namespace Iopx {
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Recv error on processor " << myProcessor
+        errmsg << "ERROR: MPI_Recv error on processor " << m_processor
                << " receiving nodes_per_face sideset data";
         std::cerr << errmsg.str();
       }
     }
 
-    if (set.root_ == myProcessor) {
+    if (set.root_ == m_processor) {
       // Sending data to other processors...
-      for (int i = myProcessor + 1; i < processorCount; i++) {
+      for (int i = m_processor + 1; i < m_processorCount; i++) {
         if (set.hasEntities[i]) {
           // Send same data to all active processors...
           MPI_Send(TOPTR(file_data), file_data.size(), MPI_DOUBLE, i, 333, comm_);
@@ -1567,7 +1609,7 @@ namespace Iopx {
 
     // Now, each active processor for this set needs to step through the df
     // data in file_data and transfer the data it owns to ioss_data.
-    if (set.hasEntities[myProcessor]) {
+    if (set.hasEntities[m_processor]) {
       // Convert nodes_per_face into an offset into the df array...
       Ioss::Utils::generate_index(nodes_per_face);
 
@@ -1598,6 +1640,7 @@ namespace Iopx {
                                                           int64_t *             locally_owned_count,
                                                           int64_t *             processor_offset)
   {
+    Ioss::ParallelUtils::progress(m_processor, __func__);
     // Used on composed output database...
     // If the node is locally owned, then its position is basically
     // determined by removing all shared nodes from the list and
@@ -1613,28 +1656,29 @@ namespace Iopx {
 
     global_implicit_map.resize(owning_proc.size());
 
-    std::vector<int64_t> snd_count(processorCount);
-    std::vector<int64_t> rcv_count(processorCount);
+    std::vector<int64_t> snd_count(m_processorCount);
+    std::vector<int64_t> rcv_count(m_processorCount);
 
     size_t position = 0;
     for (size_t i = 0; i < global_implicit_map.size(); i++) {
       snd_count[owning_proc[i]]++;
-      if (owning_proc[i] == myProcessor) {
+      if (owning_proc[i] == m_processor) {
         global_implicit_map[i] = position++;
       }
     }
-    snd_count[myProcessor] = 0;
+    snd_count[m_processor] = 0;
 
     // The number of locally-owned nodes on this processor is 'position'
     *locally_owned_count = position;
 
     MPI_Allgather(locally_owned_count, 1, MPI_LONG_LONG_INT, &rcv_count[0], 1, MPI_LONG_LONG_INT,
                   comm_);
+    Ioss::ParallelUtils::progress(m_processor, "\tAllgather finished");
 
     // Determine the offset of the nodes on this processor. The offset is the
     // total number of locally-owned nodes on all processors prior to this processor.
     *processor_offset = 0;
-    for (int i = 0; i < myProcessor; i++) {
+    for (int i = 0; i < m_processor; i++) {
       *processor_offset += rcv_count[i];
     }
 
@@ -1646,6 +1690,7 @@ namespace Iopx {
     // them (Nodes they own that I share with them)
     MPI_Alltoall(TOPTR(snd_count), 1, MPI_LONG_LONG_INT, TOPTR(rcv_count), 1, MPI_LONG_LONG_INT,
                  comm_);
+    Ioss::ParallelUtils::progress(m_processor, "\tCommunication 1 finished");
 
     std::vector<int64_t> snd_offset(snd_count);
     Ioss::Utils::generate_index(snd_offset);
@@ -1655,7 +1700,7 @@ namespace Iopx {
       std::vector<int64_t> tmp_disp(snd_offset);
       // Now create the list of nodes to send...
       for (size_t i = 0; i < global_implicit_map.size(); i++) {
-        if (owning_proc[i] != myProcessor) {
+        if (owning_proc[i] != m_processor) {
           int64_t global_id                    = node_map.map[i + 1];
           snd_list[tmp_disp[owning_proc[i]]++] = global_id;
         }
@@ -1667,6 +1712,7 @@ namespace Iopx {
     std::vector<int64_t> rcv_list(*rcv_offset.rbegin() + *rcv_count.rbegin());
 
     Ioss::MY_Alltoallv(snd_list, snd_count, snd_offset, rcv_list, rcv_count, rcv_offset, comm_);
+    Ioss::ParallelUtils::progress(m_processor, "\tCommunication 2 finished");
 
     // Iterate rcv_list and convert global ids to the global-implicit position...
     for (size_t i = 0; i < rcv_list.size(); i++) {
@@ -1677,11 +1723,12 @@ namespace Iopx {
 
     // Send the data back now...
     Ioss::MY_Alltoallv(rcv_list, rcv_count, rcv_offset, snd_list, snd_count, snd_offset, comm_);
+    Ioss::ParallelUtils::progress(m_processor, "\tCommunication 3 finished");
 
     // Fill in the remaining portions of the global_implicit_map...
     std::vector<int64_t> tmp_disp(snd_offset);
     for (size_t i = 0; i < global_implicit_map.size(); i++) {
-      if (owning_proc[i] != myProcessor) {
+      if (owning_proc[i] != m_processor) {
         int64_t implicit       = snd_list[tmp_disp[owning_proc[i]]++];
         global_implicit_map[i] = implicit;
       }

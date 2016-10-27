@@ -402,6 +402,20 @@ template <typename T> void Ioss::ParallelUtils::all_gather(T my_value, std::vect
 #endif
 }
 
+#include <chrono>
+#include <iomanip>
+
+void Ioss::ParallelUtils::progress(int processor, const std::string &output)
+{
+  static auto start = std::chrono::high_resolution_clock::now();
+
+  if (processor == 0) {
+    auto now = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = now - start;
+    std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count() << "]\t" << output << "\n";
+  }
+}
+
 template void Ioss::ParallelUtils::gather(std::vector<int> &my_values,
                                           std::vector<int> &result) const;
 template void Ioss::ParallelUtils::gather(std::vector<int64_t> &my_values,
