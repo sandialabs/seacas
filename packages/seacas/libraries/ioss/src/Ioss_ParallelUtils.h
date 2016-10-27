@@ -115,6 +115,8 @@ namespace Ioss {
     template <typename T> void all_gather(T my_value, std::vector<T> &result) const;
     template <typename T> void gather(std::vector<T> &my_values, std::vector<T> &result) const;
 
+    static void progress(int processor, const std::string &output);
+    
   private:
     MPI_Comm communicator_;
   };
