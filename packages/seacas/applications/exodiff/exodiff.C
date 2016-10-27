@@ -314,7 +314,7 @@ namespace {
               << ", Times = " << file.Num_Times() << "\n\n";
   }
 
-  char buf[256];
+  char buf[2048];
 
   template <typename INT> bool exodiff(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2);
 }
