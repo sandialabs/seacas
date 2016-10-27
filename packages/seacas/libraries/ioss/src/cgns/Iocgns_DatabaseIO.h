@@ -188,6 +188,7 @@ namespace Iocgns {
     std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
     std::map<std::string, int> m_zoneNameMap;
+    mutable std::map<int,Ioss::Map*> m_globalToBlockLocalNodeMap;
   };
 }
 #endif
