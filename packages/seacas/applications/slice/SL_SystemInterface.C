@@ -1,19 +1,19 @@
 #include "SL_SystemInterface.h"
 
-#include <iostream>
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #include <vector>
 
-#include <limits.h>
 #include <cstdlib>
 #include <cstring>
+#include <limits.h>
 
 #include "SL_Version.h"
 #include <SL_tokenize.h>
 
 #if defined(__PUMAGON__)
-#define NPOS (size_t)-1
+#define NPOS (size_t) - 1
 #else
 #define NPOS std::string::npos
 #endif
@@ -23,11 +23,11 @@ namespace {
   {
     const char *c1 = s1.c_str();
     const char *c2 = s2.c_str();
-    for ( ; ; c1++, c2++) {
+    for (;; c1++, c2++) {
       if (std::tolower(*c1) != std::tolower(*c2))
-	return (std::tolower(*c1) - std::tolower(*c2));
+        return (std::tolower(*c1) - std::tolower(*c2));
       if (*c1 == '\0')
-	return 0;
+        return 0;
     }
   }
 #if 0
@@ -39,11 +39,9 @@ namespace {
 }
 
 SystemInterface::SystemInterface()
-  : processorCount_(1), decompMethod_("linear"),
-    debugLevel_(0), screenWidth_(0),
-    stepMin_(1), stepMax_(INT_MAX), stepInterval_(1),
-    omitNodesets_(false), omitSidesets_(false),
-    disableFieldRecognition_(false), contig_(false)
+    : processorCount_(1), decompMethod_("linear"), debugLevel_(0), screenWidth_(0), stepMin_(1),
+      stepMax_(INT_MAX), stepInterval_(1), omitNodesets_(false), omitSidesets_(false),
+      disableFieldRecognition_(false), contig_(false)
 {
   enroll_options();
 }
@@ -54,45 +52,41 @@ void SystemInterface::enroll_options()
 {
   options_.usage("[options] list_of_files_to_join");
 
-  options_.enroll("help", GetLongOption::NoValue,
-		  "Print this summary and exit", 0);
+  options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", 0);
 
-  options_.enroll("version", GetLongOption::NoValue,
-		  "Print version and exit", NULL);
+  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", NULL);
 
   options_.enroll("processors", GetLongOption::MandatoryValue,
-		  "Number of processors to decompose the mesh for",
-		  "1");
-  
+                  "Number of processors to decompose the mesh for", "1");
+
   options_.enroll("input_type", GetLongOption::MandatoryValue,
-		  "File format for input mesh file (default = exodus)",
-		  "exodusii");
-  
+                  "File format for input mesh file (default = exodus)", "exodusii");
+
   options_.enroll("method", GetLongOption::MandatoryValue,
-		  "Decomposition method\n"
-		  "\t\t'linear'   : #elem/#proc to each processor\n"
-		  "\t\t'scattered': Shuffle elements to each processor\n"
-		  "\t\t'random'   : Random distribution of elements, maintains balance\n"
-		  "\t\t'rb'       : Metis multilevel recursive bisection\n"
-		  "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
-		  "\t\t'file'     : Read element-processor assignment from file",
-		  "linear");
+                  "Decomposition method\n"
+                  "\t\t'linear'   : #elem/#proc to each processor\n"
+                  "\t\t'scattered': Shuffle elements to each processor\n"
+                  "\t\t'random'   : Random distribution of elements, maintains balance\n"
+                  "\t\t'rb'       : Metis multilevel recursive bisection\n"
+                  "\t\t'kway'     : Metis multilevel k-way graph partitioning\n"
+                  "\t\t'file'     : Read element-processor assignment from file",
+                  "linear");
 
   options_.enroll("decomposition_file", GetLongOption::MandatoryValue,
-		  "File containing element to processor mapping\n"
-		  "\t\twhen decomposition method 'file' specified\n"
-		  "\t\tThe file contains multiple lines, each line has 1 or 2 integers.\n"
-		  "\t\tIf a single integer, it is the processor for the current element\n"
-		  "\t\tIf two integers (count proc), they specify that the next\n"
-		  "\t\t\t'count' elements are on processor 'proc'",
-		  NULL);
+                  "File containing element to processor mapping\n"
+                  "\t\twhen decomposition method 'file' specified\n"
+                  "\t\tThe file contains multiple lines, each line has 1 or 2 integers.\n"
+                  "\t\tIf a single integer, it is the processor for the current element\n"
+                  "\t\tIf two integers (count proc), they specify that the next\n"
+                  "\t\t\t'count' elements are on processor 'proc'",
+                  NULL);
 
   options_.enroll("output_path", GetLongOption::MandatoryValue,
-		  "Path to where decomposed files will be written.\n"
-		  "\t\tThe string %P will be replaced with the processor count\n"
-		  "\t\tThe string %M will be replaced with the decomposition method.\n"
-		  "\t\tDefault is the location of the input mesh",
-		  NULL);
+                  "Path to where decomposed files will be written.\n"
+                  "\t\tThe string %P will be replaced with the processor count\n"
+                  "\t\tThe string %M will be replaced with the decomposition method.\n"
+                  "\t\tDefault is the location of the input mesh",
+                  NULL);
 
 #if 0
   options_.enroll("omit_blocks", GetLongOption::MandatoryValue,
@@ -127,16 +121,12 @@ void SystemInterface::enroll_options()
 		  "Do not try to combine scalar fields into higher-order fields such as\n"
 		  "\t\tvectors or tensors based on the field suffix",
 		  NULL);
-  
+
 #endif
   options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
-		  "If the input mesh is contiguous, create contiguous decompositions",
-		  NULL);
-  
+                  "If the input mesh is contiguous, create contiguous decompositions", NULL);
 
-  options_.enroll("copyright", GetLongOption::NoValue,
-		  "Show copyright and license data.",
-		  NULL);
+  options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", NULL);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -146,7 +136,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 #endif
 
   int option_index = options_.parse(argc, argv);
-  if ( option_index < 1 )
+  if (option_index < 1)
     return false;
 
   if (options_.retrieve("help")) {
@@ -160,98 +150,102 @@ bool SystemInterface::parse_options(int argc, char **argv)
     // Version is printed up front, just exit...
     exit(0);
   }
-  
+
   if (options_.retrieve("copyright")) {
     std::cerr << "\n"
-	      << "Copyright(C) 2010 Sandia Corporation.\n"
-	      << "\n"
-	      << "Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,\n"
-	      << "the U.S. Government retains certain rights in this software.\n"
-	      << "        \n"
-	      << "Redistribution and use in source and binary forms, with or without\n"
-	      << "modification, are permitted provided that the following conditions are\n"
-	      << "met:\n"
-	      << "\n"
-	      << "    * Redistributions of source code must retain the above copyright\n"
-	      << "      notice, this list of conditions and the following disclaimer.\n"
-	      << "\n"
-	      << "    * Redistributions in binary form must reproduce the above\n"
-	      << "      copyright notice, this list of conditions and the following\n"
-	      << "      disclaimer in the documentation and/or other materials provided\n"
-	      << "      with the distribution.\n"
-	      << "    * Neither the name of Sandia Corporation nor the names of its\n"
-	      << "      contributors may be used to endorse or promote products derived\n"
-	      << "      from this software without specific prior written permission.\n"
-	      << "\n"
-	      << "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
-	      << "'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
-	      << "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n"
-	      << "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
-	      << "OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n"
-	      << "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n"
-	      << "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"
-	      << "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"
-	      << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
-	      << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
-	      << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
+              << "Copyright(C) 2010 Sandia Corporation.\n"
+              << "\n"
+              << "Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,\n"
+              << "the U.S. Government retains certain rights in this software.\n"
+              << "        \n"
+              << "Redistribution and use in source and binary forms, with or without\n"
+              << "modification, are permitted provided that the following conditions are\n"
+              << "met:\n"
+              << "\n"
+              << "    * Redistributions of source code must retain the above copyright\n"
+              << "      notice, this list of conditions and the following disclaimer.\n"
+              << "\n"
+              << "    * Redistributions in binary form must reproduce the above\n"
+              << "      copyright notice, this list of conditions and the following\n"
+              << "      disclaimer in the documentation and/or other materials provided\n"
+              << "      with the distribution.\n"
+              << "    * Neither the name of Sandia Corporation nor the names of its\n"
+              << "      contributors may be used to endorse or promote products derived\n"
+              << "      from this software without specific prior written permission.\n"
+              << "\n"
+              << "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
+              << "'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
+              << "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n"
+              << "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
+              << "OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n"
+              << "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n"
+              << "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"
+              << "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"
+              << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
+              << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
+              << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
     exit(EXIT_SUCCESS);
   }
-  
+
   if (option_index < argc) {
     inputFile_ = argv[option_index++];
-  } else {
+  }
+  else {
     std::cerr << "\nERROR: no input mesh file specified\n\n";
     return false;
   }
 
   if (option_index < argc) {
     nemesisFile_ = argv[option_index++];
-  } else {
+  }
+  else {
     nemesisFile_ = inputFile_;
   }
 
   // Get options from environment variable also...
   char *options = getenv("SLICE_OPTIONS");
   if (options != NULL) {
-    std::cerr << "\nThe following options were specified via the SLICE_OPTIONS environment variable:\n"
-	      << "\t" << options << "\n\n";
+    std::cerr
+        << "\nThe following options were specified via the SLICE_OPTIONS environment variable:\n"
+        << "\t" << options << "\n\n";
     options_.parse(options, options_.basename(*argv));
   }
 
   {
     const char *temp = options_.retrieve("processors");
-    processorCount_ = strtoul(temp, NULL, 0);
+    processorCount_  = strtoul(temp, NULL, 0);
   }
 
   {
     const char *temp = options_.retrieve("input_type");
-    inputFormat_ = temp;
+    inputFormat_     = temp;
   }
 
- {
-   const char *temp = options_.retrieve("method");
-   decompMethod_ = temp;
- }
+  {
+    const char *temp = options_.retrieve("method");
+    decompMethod_    = temp;
+  }
 
- {
-   if (decompMethod_ == "file") {
-     const char *temp = options_.retrieve("decomposition_file");
-     if (temp) {
-       decompFile_ = temp;
-     } else {
-       std::cerr << "\nThe 'file' decompositon method was specified, but no element "
-	 "to processor mapping file was specified via the -decomposition_file option\n";
-	 return false;
-     }
-   }
- }
+  {
+    if (decompMethod_ == "file") {
+      const char *temp = options_.retrieve("decomposition_file");
+      if (temp) {
+        decompFile_ = temp;
+      }
+      else {
+        std::cerr << "\nThe 'file' decompositon method was specified, but no element "
+                     "to processor mapping file was specified via the -decomposition_file option\n";
+        return false;
+      }
+    }
+  }
 
- {
-   const char *temp = options_.retrieve("output_path");
-   if (temp != NULL) {
-     outputPath_ = temp;
-   }
- }
+  {
+    const char *temp = options_.retrieve("output_path");
+    if (temp != NULL) {
+      outputPath_ = temp;
+    }
+  }
 
 #if 0
  {
@@ -297,10 +291,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
     disableFieldRecognition_ = false;
   }
 #endif
-  
+
   if (options_.retrieve("contiguous_decomposition")) {
     contig_ = true;
-  } else {
+  }
+  else {
     contig_ = false;
   }
   return true;
@@ -311,7 +306,8 @@ void SystemInterface::parse_step_option(const char *tokens)
   //: The defined formats for the count attribute are:<br>
   //:  <ul>
   //:    <li><missing> -- default -- 1 <= count <= oo  (all steps)</li>
-  //:    <li>"X"                  -- X <= count <= X  (just step X). If X == LAST, last step only</li>
+  //:    <li>"X"                  -- X <= count <= X  (just step X). If X == LAST, last step
+  // only</li>
   //:    <li>"X:Y"                -- X to Y by 1</li>
   //:    <li>"X:"                 -- X to oo by 1</li>
   //:    <li>":Y"                 -- 1 to Y by 1</li>
@@ -333,11 +329,12 @@ void SystemInterface::parse_step_option(const char *tokens)
       vals[1] = stepMax_;
       vals[2] = stepInterval_;
 
-      int j=0;
-      for (int i=0; i < 3; i++) {
+      int j = 0;
+      for (int i = 0; i < 3; i++) {
         // Parse 'i'th field
-        char tmp_str[128];;
-        int k=0;
+        char tmp_str[128];
+        ;
+        int k = 0;
 
         while (tokens[j] != '\0' && tokens[j] != ':') {
           tmp_str[k++] = tokens[j++];
@@ -354,41 +351,40 @@ void SystemInterface::parse_step_option(const char *tokens)
       stepMin_      = abs(vals[0]);
       stepMax_      = abs(vals[1]);
       stepInterval_ = abs(vals[2]);
-    } else if (case_strcmp("LAST", tokens) == 0) {
+    }
+    else if (case_strcmp("LAST", tokens) == 0) {
       stepMin_ = stepMax_ = -1;
-    } else {
+    }
+    else {
       // Does not contain a separator, min == max
       stepMin_ = stepMax_ = strtol(tokens, NULL, 0);
     }
   }
 }
-void SystemInterface::dump(std::ostream &) const
-{
-}
+void SystemInterface::dump(std::ostream &) const {}
 
 void SystemInterface::show_version()
 {
-  std::cout << "Slice" << "\n"
-	    << "\t(A code for decomposing finite element meshes for running parallel analyses.)\n"
-	    << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  std::cout << "Slice"
+            << "\n"
+            << "\t(A code for decomposing finite element meshes for running parallel analyses.)\n"
+            << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
 }
 
 namespace {
   std::string LowerCase(const std::string &name)
   {
     std::string s = name;
-    std::transform (s.begin(), s.end(),    // source
-		    s.begin(),             // destination
-		    ::tolower);            // operation
+    std::transform(s.begin(), s.end(), // source
+                   s.begin(),          // destination
+                   ::tolower);         // operation
     return s;
   }
 
   typedef std::vector<std::string> StringVector;
-  bool string_id_sort(const std::pair<std::string,int> &t1,
-		      const std::pair<std::string,int> &t2)
+  bool string_id_sort(const std::pair<std::string, int> &t1, const std::pair<std::string, int> &t2)
   {
-    return t1.first < t2.first || (!(t2.first < t1.first) &&
-				   t1.second < t2.second);
+    return t1.first < t2.first || (!(t2.first < t1.first) && t1.second < t2.second);
   }
 
 #if 0

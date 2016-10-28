@@ -49,7 +49,7 @@ public:
 
   bool parse_options(int argc, char **argv);
 
-  int                processor_count() const { return processorCount_; }
+  size_t             processor_count() const { return processorCount_; }
   const std::string &decomposition_method() const { return decompMethod_; }
   const std::string &decomposition_file() const { return decompFile_; }
   const std::string &output_path() const { return outputPath_; }
