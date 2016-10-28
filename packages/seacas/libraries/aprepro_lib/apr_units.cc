@@ -438,6 +438,14 @@ void load_conversion(struct var_init *base, struct svar_init *label)
   DEFINE_VAR("Eib",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
   DEFINE_VAR("Zib",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
   DEFINE_VAR("Yib",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("Kb",   1.0e03, "byte");
+  DEFINE_VAR("Mb",   1.0e06, "byte");
+  DEFINE_VAR("Gb",   1.0e09, "byte");
+  DEFINE_VAR("Tb",   1.0e12, "byte");
+  DEFINE_VAR("Pb",   1.0e15, "byte");
+  DEFINE_VAR("Eb",   1.0e18, "byte");
+  DEFINE_VAR("Zb",   1.0e21, "byte");
+  DEFINE_VAR("Yb",   1.0e24, "byte");
 
   if (echo) *(aprepro->infoStream) << title_prefix << "Time (T)" << '\n';
   DEFINE_VAR("second",                                        sec,         tout);
