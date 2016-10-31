@@ -40,10 +40,13 @@
 #include <Ioss_Utils.h>
 #include <assert.h>
 #include <init/Ionit_Initializer.h>
+#include <exo_fpp/Iofx_DatabaseIO.h>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <exodusII.h>
 
 #include <algorithm>
 #include <fstream>
@@ -54,6 +57,13 @@
 #include <numeric>
 #include <string>
 #include <vector>
+
+#if defined(__APPLE__) && defined(__MACH__)
+#include <mach/mach.h>
+#include <mach/message.h>  // for mach_msg_type_number_t
+#include <mach/kern_return.h>  // for kern_return_t
+#include <mach/task_info.h>
+#endif
 
 #if USE_METIS
 #include <metis.h>
@@ -88,6 +98,60 @@ namespace {
   inline size_t min(size_t x, size_t y) { return y ^ ((x ^ y) & -(x < y)); }
   inline size_t max(size_t x, size_t y) { return y ^ ((x ^ y) & -(x > y)); }
 
+  size_t get_memory_info()
+  {
+    size_t memory_usage = 0;
+#if defined(__APPLE__) && defined(__MACH__)
+    static size_t original = 0;
+    kern_return_t error;
+    mach_msg_type_number_t outCount;
+    mach_task_basic_info_data_t taskinfo;
+
+    taskinfo.virtual_size = 0;
+    outCount = MACH_TASK_BASIC_INFO_COUNT;
+    error = task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&taskinfo, &outCount);
+    if (error == KERN_SUCCESS) {
+      // type is mach_vm_size_t
+      if (original == 0) {
+	original = taskinfo.virtual_size;
+      }
+      memory_usage = taskinfo.virtual_size - original;
+    }
+#elif __linux__
+    size_t faults = 0;
+    std::ifstream proc("/proc/self/stat", std::ios_base::in|std::ios_base::binary);
+    if (proc) {
+
+      std::string s("");
+      int i=0;
+      for (; i < 11; ++i)
+	proc >> s;
+
+      proc >> faults;
+      ++i;
+
+      for (; i < 22; ++i)
+	proc >> s;
+
+      proc >> memory_usage;
+      ++i;
+    }
+#endif
+    return memory_usage;
+  }
+
+  void progress(const std::string &output)
+  {
+    static auto start = std::chrono::high_resolution_clock::now();
+
+    if (debug_level & 1) {
+      auto now = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> diff = now - start;
+      std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count()
+		 << " - " << get_memory_info() << "]\t" << output << "\n";
+    }
+  }
+
   void filename_substitution(std::string &filename, const SystemInterface &interface);
 
   template <typename T> struct remove_pointer
@@ -107,6 +171,7 @@ namespace {
 
   template <typename INT> bool is_sequential(const std::vector<INT> &map)
   {
+    progress(__func__);
     for (size_t i = 0; i < map.size(); i++) {
       if (map[i] != i + 1)
         return false;
@@ -117,6 +182,7 @@ namespace {
 #if USE_METIS
   int get_common_node_count(const Ioss::Region &region)
   {
+    progress(__func__);
     // Determine number of nodes that elements must share to be
     // considered connected.  A 8-node hex-only mesh would have 4
     // A 3D shell mesh should have 2.  Basically, use the minimum
@@ -237,9 +303,11 @@ int main(int argc, char *argv[])
   Ioss::Region region(dbi, "region_1");
 
   if (dbi->int_byte_size_api() == 4) {
+    progress("4-byte slice");
     slice(region, nem_file, interface, (int)1);
   }
   else {
+    progress("8-byte slice");
     slice(region, nem_file, interface, (int64_t)1);
   }
 
@@ -258,6 +326,7 @@ namespace {
                              std::vector<idx_t> &pointer, std::vector<idx_t> &adjacency,
                              INT /*dummy*/)
   {
+    progress(__func__);
     // Size of pointer list is element count + 1;
     // Size of adjacency list is sum of nodes-per-element for each element.
     size_t                      sum         = 0;
@@ -301,6 +370,7 @@ namespace {
   void decompose_elements(const Ioss::Region &region, SystemInterface &interface,
                           std::vector<int> &elem_to_proc, INT dummy)
   {
+    progress(__func__);
     // Populate the 'elem_to_proc' vector with a mapping from element to processor.
 
     size_t element_count = region.get_property("element_count").get_int();
@@ -494,6 +564,7 @@ namespace {
   template <typename INT>
   void free_connectivity_storage(std::vector<std::vector<std::vector<INT>>> &connectivity)
   {
+    progress(__func__);
     size_t processor_count = connectivity.size();
     for (size_t p = 0; p < processor_count; p++) {
       size_t block_count = connectivity[p].size();
@@ -509,6 +580,7 @@ namespace {
   void get_sidesets(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                     const std::vector<int> &elem_to_proc, INT /*dummy*/)
   {
+    progress(__func__);
     // This routine reads the sidesets in the global database;
     // and defines corresponding sidesets on each processor...
     size_t proc_count = proc_region.size();
@@ -557,6 +629,7 @@ namespace {
   void output_sidesets(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                        const std::vector<int> &elem_to_proc, INT /*dummy*/)
   {
+    progress(__func__);
     // This routine reads the sidesets in the global database;
     // and outputs the sidesets on each processor...
     size_t proc_count = proc_region.size();
@@ -614,6 +687,7 @@ namespace {
   void output_communication_map(std::vector<Ioss::Region *> &  proc_region,
                                 std::vector<std::vector<INT>> &border_node_proc_map)
   {
+    progress(__func__);
     size_t proc_count = proc_region.size();
     for (size_t p = 0; p < proc_count; p++) {
       Ioss::CommSet *commset = proc_region[p]->get_commsets()[0];
@@ -630,6 +704,7 @@ namespace {
                                  const std::vector<INT> &       node_to_proc_pointer,
                                  std::vector<std::vector<INT>> &border_node_proc_map)
   {
+    progress(__func__);
     // This routine categorizes the nodes on a processor as interior
     // or border.
     // TODO: Categorize elements also. For now, all treated as
@@ -718,6 +793,7 @@ namespace {
                     const std::vector<int> &node_to_proc,
                     const std::vector<INT> &node_to_proc_pointer)
   {
+    progress(__func__);
     // This routine reads the nodesets in the global database;
     // and defines corresponding nodesets on each processor...
     size_t proc_count = proc_region.size();
@@ -761,6 +837,7 @@ namespace {
                        const std::vector<int> &node_to_proc,
                        const std::vector<INT> &node_to_proc_pointer)
   {
+    progress(__func__);
     // This routine reads the nodesets in the global database;
     // and defines corresponding nodesets on each processor...
     size_t proc_count = proc_region.size();
@@ -813,6 +890,7 @@ namespace {
                        const std::vector<int> &node_to_proc,
                        const std::vector<INT> &node_to_proc_pointer)
   {
+    progress(__func__);
     // This is the processor-local to global-implicit node map...
     // This maps the 1..#node in the global mesh to each processor...
     size_t node_count = region.get_property("node_count").get_int();
@@ -846,6 +924,7 @@ namespace {
                               const std::vector<int> &node_to_proc,
                               const std::vector<INT> &node_to_proc_pointer)
   {
+    progress(__func__);
     // This is the processor-local to global-implicit node map...
     // This maps the node_number map (if it exists) in the global mesh
     // to each processor...
@@ -889,6 +968,7 @@ namespace {
   void output_element_map(const Ioss::Region &region, std::vector<Ioss::Region *> &proc_region,
                           const std::vector<int> &elem_to_proc, INT /* dummy */)
   {
+    progress(__func__);
     // map[p][b] = map for block b on processor p
     size_t proc_count = proc_region.size();
 
@@ -934,6 +1014,7 @@ namespace {
   void output_connectivity(std::vector<Ioss::Region *> &               proc_region,
                            std::vector<std::vector<std::vector<INT>>> &connectivity)
   {
+    progress(__func__);
     // connectivity[p][b] = map for block b on processor p
     size_t proc_count = proc_region.size();
 
@@ -954,6 +1035,7 @@ namespace {
                           const std::vector<int> &node_to_proc,
                           const std::vector<INT> &node_to_proc_pointer)
   {
+    progress(__func__);
     std::vector<double> glob_coord;
     Ioss::NodeBlock *   gnb = region.get_node_blocks()[0];
 
@@ -996,6 +1078,7 @@ namespace {
                         const std::vector<int> &                    elem_to_proc,
                         std::vector<std::vector<std::vector<INT>>> &connectivity)
   {
+    progress(__func__);
     Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
     size_t                      block_count = ebs.size();
 
@@ -1011,24 +1094,44 @@ namespace {
         connectivity[p][b].reserve(element_count * element_nodes); // Use reserve, not resize
       }
     }
+    progress("\tAfter memory allocation");
 
+    Ioss::DatabaseIO *db = region.get_database();
+    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO*>(db);
+    assert(ex_db != nullptr);
+    
+    int exoid = ex_db->get_file_pointer();
+    
+    //    size_t partial_conn = 100000;
+    size_t partial_conn = 100000000;
     std::vector<INT> glob_conn;
     size_t           offset = 0;
     for (size_t b = 0; b < block_count; b++) {
       size_t element_count = ebs[b]->get_property("entity_count").get_int();
       size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+      size_t block_id = ebs[b]->get_property("id").get_int();
 
-      // TODO: Should do a partial get here
-      ebs[b]->get_field_data("connectivity_raw", glob_conn);
+      // Do a 'partial_conn' elements at a time...
+      for (size_t beg = 1; beg <= element_count; beg += partial_conn) {
+	size_t count = partial_conn;
+	if (beg + count - 1 > element_count) {
+	  count = element_count - beg + 1;
+	}
+	glob_conn.resize(count * element_nodes);
+	
+	// TODO: Should do a partial get here
+	ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr, nullptr);
+	progress("\tpartial_conn: " + Ioss::Utils::to_string(beg) + " " + Ioss::Utils::to_string(count));
 
-      size_t el = 0;
-      for (size_t j = 0; j < element_count; j++) {
-        size_t p = elem_to_proc[offset + j];
-        for (size_t k = 0; k < element_nodes; k++) {
-          connectivity[p][b].push_back(glob_conn[el++]);
-        }
+	size_t el = 0;
+	for (size_t j = 0; j < count; j++) {
+	  size_t p = elem_to_proc[offset + j];
+	  for (size_t k = 0; k < element_nodes; k++) {
+	    connectivity[p][b].push_back(glob_conn[el++]);
+	  }
+	}
+	offset += count;
       }
-      offset += element_count;
     }
   }
 
@@ -1036,6 +1139,7 @@ namespace {
   void get_proc_elem_block_count(const Ioss::Region &region, std::vector<int> &elem_to_proc,
                                  std::vector<std::vector<INT>> &proc_elem_block_cnt)
   {
+    progress(__func__);
     Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
     size_t                      block_count = ebs.size();
 
@@ -1067,6 +1171,7 @@ namespace {
                         std::vector<std::vector<std::vector<INT>>> &connectivity,
                         std::vector<int> &node_to_proc, std::vector<INT> &node_to_proc_pointer)
   {
+    progress(__func__);
     // Process each element block connectivity to get the node_to_proc mapping.
 
     // Iterate the elem_to_proc vector to determine the node_to_proc mapping.
@@ -1101,6 +1206,7 @@ namespace {
     for (size_t i = 0; i < node_count; i++) {
       proc_node[i].reserve(4);
     }
+    progress("\tProc_node reserved");
 
     size_t sum_on_proc_count = 0;
     for (size_t p = 0; p < proc_count; p++) {
@@ -1126,7 +1232,8 @@ namespace {
         OUTPUT << "\tProcessor " << p << " has " << on_proc_count << " nodes.\n";
       sum_on_proc_count += on_proc_count;
     }
-
+    progress("\tProc_node populated");
+    
     // Have data for each node showing which processors it is on...
     // proc_node[node].size() is number of processors for this node...
     node_to_proc_pointer.reserve(node_count + 1);
@@ -1160,6 +1267,7 @@ namespace {
 
     node_to_proc_pointer.push_back(node_to_proc_pointer_size);
     node_to_proc.reserve(node_to_proc_pointer_size);
+    progress("\tNode_to_proc reserved");
     assert(sum_on_proc_count == node_to_proc_pointer_size);
 
     for (size_t i = 0; i < node_count; i++) {
@@ -1169,12 +1277,14 @@ namespace {
       }
     }
     assert(node_to_proc.size() == node_to_proc_pointer_size);
+    progress("\tNode_to_proc populated");
   }
 
   template <typename INT>
   void slice(Ioss::Region &region, const std::string &nemfile, SystemInterface &interface,
              INT /*dummy*/)
   {
+    progress(__func__);
     std::vector<Ioss::Region *> proc_region(interface.processor_count());
     bool                        ints64 = (sizeof(INT) == 8);
 
