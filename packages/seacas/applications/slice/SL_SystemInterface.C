@@ -380,6 +380,7 @@ void SystemInterface::show_version()
 }
 
 namespace {
+#if 0
   std::string LowerCase(const std::string &name)
   {
     std::string s = name;
@@ -395,7 +396,6 @@ namespace {
     return t1.first < t2.first || (!(t2.first < t1.first) && t1.second < t2.second);
   }
 
-#if 0
   void parse_variable_names(const char *tokens, StringIdVector *variable_list)
   {
     // Break into tokens separated by ","
