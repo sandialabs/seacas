@@ -1047,9 +1047,11 @@ namespace {
       size_t pnode_count = proc_region[p]->get_property("node_count").get_int();
       coordinates[p].reserve(pnode_count * 3);
     }
-
+    progress("\tReserve processor coordinate vectors");
+    
     // Need partial read...
     gnb->get_field_data("mesh_model_coordinates", glob_coord);
+    progress("\tRead global mesh_model_coordinates");
 
     size_t node_count = region.get_property("node_count").get_int();
     size_t index      = 0;
@@ -1064,13 +1066,16 @@ namespace {
       }
       index += 3;
     }
-
+    progress("\tPopulate processor coordinate vectors");
+    glob_coord.resize(0); glob_coord.shrink_to_fit();
+    
     for (size_t p = 0; p < processor_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("mesh_model_coordinates", coordinates[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
     }
+    progress("\tOutput processor coordinate vectors");
   }
 
   template <typename INT>
@@ -1174,25 +1179,13 @@ namespace {
     progress(__func__);
     // Process each element block connectivity to get the node_to_proc mapping.
 
-    // Iterate the elem_to_proc vector to determine the node_to_proc mapping.
-    // Since nodes are shared between processors, a node will possibly
-    // map to more than one processor.
     // The 'node_to_proc_pointer' vector maps the processor span in the
     // node_to_proc vector.  The processors that node 'node' (0-based)
     // is on are:
     //  * begin = node_to_proc_pointer[node]
     //  * end   = node_to_proc_pointer[node+1]
-    //  * proc_list = node_to_proc[begin] .. node_to_proc[end]-1
+    //  * proc_list = node_to_proc[begin] .. node_to_proc[end-1]
     //
-    // We iterate the elem_to_proc list twice.  The first time is to
-    // count the number of processors that a node is on. Then allocate
-    // the node_to_proc[] vector, and then iterate again and fill the
-    // data.
-    //
-    // To get the count efficiently, need to iterate elem_to_proc[] in
-    // processor order. Currently, only support linear decomposition,
-    // so just iterating in order.  For other types, need to "sort"
-    // the elem_to_proc vector.
 
     size_t proc_count = connectivity.size();
 
@@ -1243,10 +1236,15 @@ namespace {
     size_t node_to_proc_pointer_size = 0;
     for (size_t i = 0; i < node_count; i++) {
       size_t num_procs = proc_node[i].size();
-      if (num_procs < proc_histo.size())
+      if (num_procs == 0) {
+	OUTPUT << "WARNING: Node " << i+1 << " is not connected to any elements.\n";
+      }
+      else if (num_procs < proc_histo.size()) {
         proc_histo[num_procs]++;
-      else
+      }
+      else {
         proc_histo[0]++;
+      }
 
       node_to_proc_pointer.push_back(node_to_proc_pointer_size);
       node_to_proc_pointer_size += num_procs;
@@ -1292,10 +1290,9 @@ namespace {
       std::string outfile = Ioss::Utils::decode_filename(nemfile, i, interface.processor_count());
       Ioss::DatabaseIO *dbo =
           Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-#if 1
       if (ints64)
         dbo->set_int_byte_size_api(Ioss::USE_INT64_API);
-#endif
+
       proc_region[i] = new Ioss::Region(dbo);
       proc_region[i]->begin_mode(Ioss::STATE_DEFINE_MODEL);
     }
