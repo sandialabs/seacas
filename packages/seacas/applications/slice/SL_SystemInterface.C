@@ -59,6 +59,9 @@ void SystemInterface::enroll_options()
   options_.enroll("processors", GetLongOption::MandatoryValue,
                   "Number of processors to decompose the mesh for", "1");
 
+  options_.enroll("debug", GetLongOption::MandatoryValue,
+                  "Debug level: 0, 1, 2", "0");
+
   options_.enroll("input_type", GetLongOption::MandatoryValue,
                   "File format for input mesh file (default = exodus)", "exodusii");
 
@@ -214,6 +217,11 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("processors");
     processorCount_  = strtoul(temp, NULL, 0);
+  }
+
+  {
+    const char *temp = options_.retrieve("debug");
+    debugLevel_ = strtoul(temp, NULL, 0);
   }
 
   {
