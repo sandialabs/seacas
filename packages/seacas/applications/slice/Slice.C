@@ -39,8 +39,8 @@
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <assert.h>
-#include <init/Ionit_Initializer.h>
 #include <exo_fpp/Iofx_DatabaseIO.h>
+#include <init/Ionit_Initializer.h>
 
 #include <chrono>
 #include <cstddef>
@@ -59,16 +59,16 @@
 #include <vector>
 
 #if defined(__APPLE__) && defined(__MACH__)
+#include <mach/kern_return.h> // for kern_return_t
 #include <mach/mach.h>
-#include <mach/message.h>  // for mach_msg_type_number_t
-#include <mach/kern_return.h>  // for kern_return_t
+#include <mach/message.h> // for mach_msg_type_number_t
 #include <mach/task_info.h>
 #endif
 
 #if USE_METIS
 #include <metis.h>
 #else
-typedef int idx_t;
+typedef int       idx_t;
 #endif
 
 #include <to_string.h>
@@ -102,36 +102,36 @@ namespace {
   {
     size_t memory_usage = 0;
 #if defined(__APPLE__) && defined(__MACH__)
-    static size_t original = 0;
-    kern_return_t error;
-    mach_msg_type_number_t outCount;
+    static size_t               original = 0;
+    kern_return_t               error;
+    mach_msg_type_number_t      outCount;
     mach_task_basic_info_data_t taskinfo;
 
     taskinfo.virtual_size = 0;
-    outCount = MACH_TASK_BASIC_INFO_COUNT;
+    outCount              = MACH_TASK_BASIC_INFO_COUNT;
     error = task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&taskinfo, &outCount);
     if (error == KERN_SUCCESS) {
       // type is mach_vm_size_t
       if (original == 0) {
-	original = taskinfo.virtual_size;
+        original = taskinfo.virtual_size;
       }
       memory_usage = taskinfo.virtual_size - original;
     }
 #elif __linux__
-    size_t faults = 0;
-    std::ifstream proc("/proc/self/stat", std::ios_base::in|std::ios_base::binary);
+    size_t        faults = 0;
+    std::ifstream proc("/proc/self/stat", std::ios_base::in | std::ios_base::binary);
     if (proc) {
 
       std::string s("");
-      int i=0;
+      int         i = 0;
       for (; i < 11; ++i)
-	proc >> s;
+        proc >> s;
 
       proc >> faults;
       ++i;
 
       for (; i < 22; ++i)
-	proc >> s;
+        proc >> s;
 
       proc >> memory_usage;
       ++i;
@@ -145,10 +145,10 @@ namespace {
     static auto start = std::chrono::high_resolution_clock::now();
 
     if (debug_level & 1) {
-      auto now = std::chrono::high_resolution_clock::now();
+      auto                          now  = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = now - start;
-      std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count()
-		 << " - " << get_memory_info() << "]\t" << output << "\n";
+      std::cerr << " [" << std::fixed << std::setprecision(2) << diff.count() << " - "
+                << get_memory_info() << "]\t" << output << "\n";
     }
   }
 
@@ -191,10 +191,9 @@ namespace {
 
     int common_nodes = 999;
 
-    Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
-    size_t                      block_count = ebs.size();
-    for (size_t b = 0; b < block_count; b++) {
-      const Ioss::ElementTopology *topology = ebs[b]->topology();
+    auto &ebs = region.get_element_blocks();
+    for (const auto &eb : ebs) {
+      const Ioss::ElementTopology *topology = eb->topology();
       const Ioss::ElementTopology *boundary = topology->boundary_type(0);
       if (boundary != NULL) {
         common_nodes = min(common_nodes, boundary->number_boundaries());
@@ -202,8 +201,8 @@ namespace {
       else {
         // Different topologies on some element faces...
         size_t nb = topology->number_boundaries();
-        for (size_t b = 1; b <= nb; b++) {
-          boundary = topology->boundary_type(b);
+        for (size_t bb = 1; bb <= nb; bb++) {
+          boundary = topology->boundary_type(bb);
           if (boundary != NULL) {
             common_nodes = min(common_nodes, boundary->number_boundaries());
           }
@@ -329,13 +328,12 @@ namespace {
     progress(__func__);
     // Size of pointer list is element count + 1;
     // Size of adjacency list is sum of nodes-per-element for each element.
-    size_t                      sum         = 0;
-    size_t                      count       = 0;
-    Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
-    size_t                      block_count = ebs.size();
-    for (size_t b = 0; b < block_count; b++) {
-      size_t element_count = ebs[b]->get_property("entity_count").get_int();
-      size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+    size_t sum   = 0;
+    size_t count = 0;
+    auto & ebs   = region.get_element_blocks();
+    for (const auto &eb : ebs) {
+      size_t element_count = eb->get_property("entity_count").get_int();
+      size_t element_nodes = eb->get_property("topology_node_count").get_int();
       sum += element_count * element_nodes;
       count += element_count;
     }
@@ -347,10 +345,10 @@ namespace {
     // Now, iterate the blocks again, get connectivity and build adjacency structure.
     size_t           index = 0;
     std::vector<INT> connectivity;
-    for (size_t b = 0; b < block_count; b++) {
-      ebs[b]->get_field_data("connectivity_raw", connectivity);
-      size_t element_count = ebs[b]->get_property("entity_count").get_int();
-      size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
+    for (const auto &eb : ebs) {
+      eb->get_field_data("connectivity_raw", connectivity);
+      size_t element_count = eb->get_property("entity_count").get_int();
+      size_t element_nodes = eb->get_property("topology_node_count").get_int();
 
       size_t el = 0;
       for (size_t j = 0; j < element_count; j++) {
@@ -448,7 +446,8 @@ namespace {
                                        NULL, &common, &proc_count, NULL, &options[0], &obj_val,
                                        &elem_partition[0], &node_partition[0]);
 
-        std::vector<idx_t>().swap(node_partition);
+        node_partition.resize(0);
+        node_partition.shrink_to_fit();
         elem_to_proc.reserve(element_count);
         std::copy(elem_partition.begin(), elem_partition.end(), std::back_inserter(elem_to_proc));
 
@@ -569,11 +568,14 @@ namespace {
     for (size_t p = 0; p < processor_count; p++) {
       size_t block_count = connectivity[p].size();
       for (size_t b = 0; b < block_count; b++) {
-        std::vector<INT>().swap(connectivity[p][b]);
+        connectivity[p][b].resize(0);
+        connectivity[p][b].shrink_to_fit();
       }
-      std::vector<std::vector<INT>>().swap(connectivity[p]);
+      connectivity[p].resize(0);
+      connectivity[p].shrink_to_fit();
     }
-    std::vector<std::vector<std::vector<INT>>>().swap(connectivity);
+    connectivity.resize(0);
+    connectivity.shrink_to_fit();
   }
 
   template <typename INT>
@@ -585,12 +587,12 @@ namespace {
     // and defines corresponding sidesets on each processor...
     size_t proc_count = proc_region.size();
 
-    Ioss::SideSetContainer ss        = region.get_sidesets();
-    size_t                 set_count = ss.size();
+    auto & ss        = region.get_sidesets();
+    size_t set_count = ss.size();
 
     for (size_t s = 0; s < set_count; s++) {
-      Ioss::SideSet *gss     = ss[s];
-      std::string    ss_name = gss->name();
+      auto *gss     = ss[s];
+      auto &ss_name = gss->name();
 
       std::vector<Ioss::SideSet *> sset(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
@@ -598,7 +600,7 @@ namespace {
         proc_region[p]->add(sset[p]);
       }
 
-      Ioss::SideBlockContainer side_blocks = gss->get_side_blocks();
+      auto &side_blocks = gss->get_side_blocks();
       for (size_t b = 0; b < side_blocks.size(); b++) {
         Ioss::SideBlock *gsb = side_blocks[b];
 
@@ -612,9 +614,9 @@ namespace {
           pss[p]++;
         }
 
-        std::string name      = gsb->name();
-        std::string side_type = gsb->topology()->name();
-        std::string elem_type = gsb->parent_element_topology()->name();
+        auto &name      = gsb->name();
+        auto &side_type = gsb->topology()->name();
+        auto &elem_type = gsb->parent_element_topology()->name();
 
         for (size_t p = 0; p < proc_count; p++) {
           Ioss::SideBlock *side_block = new Ioss::SideBlock(proc_region[p]->get_database(), name,
@@ -634,22 +636,22 @@ namespace {
     // and outputs the sidesets on each processor...
     size_t proc_count = proc_region.size();
 
-    Ioss::SideSetContainer ss        = region.get_sidesets();
-    size_t                 set_count = ss.size();
+    auto & ss        = region.get_sidesets();
+    size_t set_count = ss.size();
 
     for (size_t s = 0; s < set_count; s++) {
       Ioss::SideSet *gss     = ss[s];
-      std::string    ss_name = gss->name();
+      auto &         ss_name = gss->name();
 
       std::vector<Ioss::SideSet *> proc_ss(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
         proc_ss[p] = proc_region[p]->get_sideset(ss_name);
       }
 
-      Ioss::SideBlockContainer side_blocks = gss->get_side_blocks();
+      auto &side_blocks = gss->get_side_blocks();
       for (size_t b = 0; b < side_blocks.size(); b++) {
         Ioss::SideBlock *gsb     = side_blocks[b];
-        std::string      sb_name = gsb->name();
+        auto &           sb_name = gsb->name();
 
         std::vector<Ioss::SideBlock *> proc_sb(proc_count);
         std::vector<std::vector<INT>>  psb_elems(proc_count);
@@ -690,7 +692,7 @@ namespace {
     progress(__func__);
     size_t proc_count = proc_region.size();
     for (size_t p = 0; p < proc_count; p++) {
-      Ioss::CommSet *commset = proc_region[p]->get_commsets()[0];
+      auto &commset = proc_region[p]->get_commsets()[0];
       commset->put_field_data("entity_processor", border_node_proc_map[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
@@ -798,8 +800,8 @@ namespace {
     // and defines corresponding nodesets on each processor...
     size_t proc_count = proc_region.size();
 
-    Ioss::NodeSetContainer ns        = region.get_nodesets();
-    size_t                 set_count = ns.size();
+    auto & ns        = region.get_nodesets();
+    size_t set_count = ns.size();
 
     for (size_t s = 0; s < set_count; s++) {
       std::vector<INT> pns(proc_count);
@@ -818,7 +820,7 @@ namespace {
         }
       }
 
-      std::string name = ns[s]->name();
+      auto &name = ns[s]->name();
       if (debug_level & 2)
         OUTPUT << "\tNodeset " << name << "-- ";
       for (size_t p = 0; p < proc_count; p++) {
@@ -842,8 +844,8 @@ namespace {
     // and defines corresponding nodesets on each processor...
     size_t proc_count = proc_region.size();
 
-    Ioss::NodeSetContainer ns        = region.get_nodesets();
-    size_t                 set_count = ns.size();
+    auto & ns        = region.get_nodesets();
+    size_t set_count = ns.size();
 
     for (size_t s = 0; s < set_count; s++) {
       std::vector<INT> pns(proc_count);
@@ -972,8 +974,8 @@ namespace {
     // map[p][b] = map for block b on processor p
     size_t proc_count = proc_region.size();
 
-    Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
-    size_t                      block_count = ebs.size();
+    auto & ebs         = region.get_element_blocks();
+    size_t block_count = ebs.size();
 
     size_t offset = 0;
     for (size_t b = 0; b < block_count; b++) {
@@ -984,8 +986,8 @@ namespace {
 
       std::vector<std::vector<INT>> map(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
-        Ioss::ElementBlockContainer proc_ebs = proc_region[p]->get_element_blocks();
-        size_t proc_element_count            = proc_ebs[b]->get_property("entity_count").get_int();
+        auto & proc_ebs           = proc_region[p]->get_element_blocks();
+        size_t proc_element_count = proc_ebs[b]->get_property("entity_count").get_int();
         map[p].reserve(proc_element_count);
       }
 
@@ -1002,7 +1004,7 @@ namespace {
       offset += element_count;
 
       for (size_t p = 0; p < proc_count; p++) {
-        Ioss::ElementBlockContainer proc_ebs = proc_region[p]->get_element_blocks();
+        auto &proc_ebs = proc_region[p]->get_element_blocks();
         proc_ebs[b]->put_field_data("ids", map[p]);
         if (minimize_open_files)
           proc_region[p]->get_database()->closeDatabase();
@@ -1019,8 +1021,8 @@ namespace {
     size_t proc_count = proc_region.size();
 
     for (size_t p = 0; p < proc_count; p++) {
-      Ioss::ElementBlockContainer proc_ebs    = proc_region[p]->get_element_blocks();
-      size_t                      block_count = proc_ebs.size();
+      auto & proc_ebs    = proc_region[p]->get_element_blocks();
+      size_t block_count = proc_ebs.size();
       for (size_t b = 0; b < block_count; b++) {
         Ioss::ElementBlock *eb = proc_ebs[b];
         eb->put_field_data("connectivity", connectivity[p][b]);
@@ -1048,7 +1050,7 @@ namespace {
       coordinates[p].reserve(pnode_count * 3);
     }
     progress("\tReserve processor coordinate vectors");
-    
+
     // Need partial read...
     gnb->get_field_data("mesh_model_coordinates", glob_coord);
     progress("\tRead global mesh_model_coordinates");
@@ -1067,8 +1069,9 @@ namespace {
       index += 3;
     }
     progress("\tPopulate processor coordinate vectors");
-    glob_coord.resize(0); glob_coord.shrink_to_fit();
-    
+    glob_coord.resize(0);
+    glob_coord.shrink_to_fit();
+
     for (size_t p = 0; p < processor_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("mesh_model_coordinates", coordinates[p]);
@@ -1084,15 +1087,15 @@ namespace {
                         std::vector<std::vector<std::vector<INT>>> &connectivity)
   {
     progress(__func__);
-    Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
-    size_t                      block_count = ebs.size();
+    auto & ebs         = region.get_element_blocks();
+    size_t block_count = ebs.size();
 
     size_t processor_count = proc_region.size();
     connectivity.resize(processor_count);
 
     for (size_t p = 0; p < processor_count; p++) {
       connectivity[p].resize(block_count);
-      Ioss::ElementBlockContainer pebs = proc_region[p]->get_element_blocks();
+      const auto &pebs = proc_region[p]->get_element_blocks();
       for (size_t b = 0; b < block_count; b++) {
         size_t element_count = pebs[b]->get_property("entity_count").get_int();
         size_t element_nodes = pebs[b]->get_property("topology_node_count").get_int();
@@ -1101,41 +1104,43 @@ namespace {
     }
     progress("\tAfter memory allocation");
 
-    Ioss::DatabaseIO *db = region.get_database();
-    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO*>(db);
+    Ioss::DatabaseIO *db    = region.get_database();
+    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
     assert(ex_db != nullptr);
-    
+
     int exoid = ex_db->get_file_pointer();
-    
+
     //    size_t partial_conn = 100000;
-    size_t partial_conn = 100000000;
+    size_t           partial_conn = 100000000;
     std::vector<INT> glob_conn;
     size_t           offset = 0;
     for (size_t b = 0; b < block_count; b++) {
       size_t element_count = ebs[b]->get_property("entity_count").get_int();
       size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
-      size_t block_id = ebs[b]->get_property("id").get_int();
+      size_t block_id      = ebs[b]->get_property("id").get_int();
 
       // Do a 'partial_conn' elements at a time...
       for (size_t beg = 1; beg <= element_count; beg += partial_conn) {
-	size_t count = partial_conn;
-	if (beg + count - 1 > element_count) {
-	  count = element_count - beg + 1;
-	}
-	glob_conn.resize(count * element_nodes);
-	
-	// TODO: Should do a partial get here
-	ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr, nullptr);
-	progress("\tpartial_conn: " + Ioss::Utils::to_string(beg) + " " + Ioss::Utils::to_string(count));
+        size_t count = partial_conn;
+        if (beg + count - 1 > element_count) {
+          count = element_count - beg + 1;
+        }
+        glob_conn.resize(count * element_nodes);
 
-	size_t el = 0;
-	for (size_t j = 0; j < count; j++) {
-	  size_t p = elem_to_proc[offset + j];
-	  for (size_t k = 0; k < element_nodes; k++) {
-	    connectivity[p][b].push_back(glob_conn[el++]);
-	  }
-	}
-	offset += count;
+        // TODO: Should do a partial get here
+        ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
+                            nullptr);
+        progress("\tpartial_conn: " + Ioss::Utils::to_string(beg) + " " +
+                 Ioss::Utils::to_string(count));
+
+        size_t el = 0;
+        for (size_t j = 0; j < count; j++) {
+          size_t p = elem_to_proc[offset + j];
+          for (size_t k = 0; k < element_nodes; k++) {
+            connectivity[p][b].push_back(glob_conn[el++]);
+          }
+        }
+        offset += count;
       }
     }
   }
@@ -1145,8 +1150,8 @@ namespace {
                                  std::vector<std::vector<INT>> &proc_elem_block_cnt)
   {
     progress(__func__);
-    Ioss::ElementBlockContainer ebs         = region.get_element_blocks();
-    size_t                      block_count = ebs.size();
+    auto & ebs         = region.get_element_blocks();
+    size_t block_count = ebs.size();
 
     Ioss::ElementBlockContainer::const_iterator I     = ebs.begin();
     size_t                                      begin = 0;
@@ -1192,20 +1197,20 @@ namespace {
     size_t                        node_count = region.get_property("node_count").get_int();
     std::vector<std::vector<int>> proc_node(node_count);
 
-    // Assume that the majority of nodes will be on 4 or less
+    // Assume that the majority of nodes will be on 2 or less
     // processors (hopefully, most are on 1).
-    // Preallocate the proc_node[node] vector to 4 to minimize
+    // Preallocate the proc_node[node] vector to 2 to minimize
     // resizes... Use 'reserve' instead of 'resize'
     for (size_t i = 0; i < node_count; i++) {
-      proc_node[i].reserve(4);
+      proc_node[i].reserve(2);
     }
     progress("\tProc_node reserved");
 
     size_t sum_on_proc_count = 0;
     for (size_t p = 0; p < proc_count; p++) {
-      size_t                      on_proc_count = 0;
-      Ioss::ElementBlockContainer ebs           = proc_region[p]->get_element_blocks();
-      size_t                      block_count   = ebs.size();
+      size_t on_proc_count = 0;
+      auto & ebs           = proc_region[p]->get_element_blocks();
+      size_t block_count   = ebs.size();
 
       for (size_t b = 0; b < block_count; b++) {
         size_t element_count = ebs[b]->get_property("entity_count").get_int();
@@ -1226,7 +1231,7 @@ namespace {
       sum_on_proc_count += on_proc_count;
     }
     progress("\tProc_node populated");
-    
+
     // Have data for each node showing which processors it is on...
     // proc_node[node].size() is number of processors for this node...
     node_to_proc_pointer.reserve(node_count + 1);
@@ -1237,7 +1242,7 @@ namespace {
     for (size_t i = 0; i < node_count; i++) {
       size_t num_procs = proc_node[i].size();
       if (num_procs == 0) {
-	OUTPUT << "WARNING: Node " << i+1 << " is not connected to any elements.\n";
+        OUTPUT << "WARNING: Node " << i + 1 << " is not connected to any elements.\n";
       }
       else if (num_procs < proc_histo.size()) {
         proc_histo[num_procs]++;
@@ -1251,7 +1256,7 @@ namespace {
     }
     // Output histogram..
     OUTPUT << "Processor count per node histogram:\n";
-    for (size_t i = 1; i < proc_histo.size(); i++) {
+    for (size_t i = 0; i < proc_histo.size(); i++) {
       if (proc_histo[i] > 0) {
         OUTPUT << "\tNodes on " << i << " processors = " << proc_histo[i] << "\t("
                << (proc_histo[i] * 100 + node_count / 2) / node_count << ")%\n";
@@ -1268,10 +1273,10 @@ namespace {
     progress("\tNode_to_proc reserved");
     assert(sum_on_proc_count == node_to_proc_pointer_size);
 
-    for (size_t i = 0; i < node_count; i++) {
-      size_t num_procs = proc_node[i].size();
+    for (auto pn : proc_node) {
+      size_t num_procs = pn.size();
       for (size_t p = 0; p < num_procs; p++) {
-        node_to_proc.push_back(proc_node[i][p]);
+        node_to_proc.push_back(pn[p]);
       }
     }
     assert(node_to_proc.size() == node_to_proc_pointer_size);
@@ -1308,8 +1313,8 @@ namespace {
     // Gives number of elements in block i on processor j
     size_t block_count = region.get_property("element_block_count").get_int();
     std::vector<std::vector<INT>> proc_elem_block_cnt(block_count + 1);
-    for (size_t i = 0; i < block_count + 1; i++) {
-      proc_elem_block_cnt[i].resize(interface.processor_count());
+    for (auto &pebc : proc_elem_block_cnt) {
+      pebc.resize(interface.processor_count());
     }
     get_proc_elem_block_count(region, elem_to_proc, proc_elem_block_cnt);
     end = seacas_timer();
@@ -1318,8 +1323,8 @@ namespace {
 
     // Create element blocks for each processor...
     for (size_t p = 0; p < interface.processor_count(); p++) {
-      Ioss::ElementBlockContainer ebs = region.get_element_blocks();
-      size_t                      bc  = ebs.size();
+      auto & ebs = region.get_element_blocks();
+      size_t bc  = ebs.size();
       for (size_t b = 0; b < bc; b++) {
         std::string         type = ebs[b]->get_property("topology_type").get_string();
         Ioss::ElementBlock *eb   = new Ioss::ElementBlock(
