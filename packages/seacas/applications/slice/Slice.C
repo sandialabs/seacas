@@ -1058,21 +1058,56 @@ namespace {
     }
     progress("\tReserve processor coordinate vectors");
 
-    // Need partial read...
-    gnb->get_field_data("mesh_model_coordinates_x", glob_coord_x);
-    gnb->get_field_data("mesh_model_coordinates_y", glob_coord_y);
-    gnb->get_field_data("mesh_model_coordinates_z", glob_coord_z);
-    progress("\tRead global mesh_model_coordinates");
+    Ioss::DatabaseIO *db    = region.get_database();
+    Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
 
-    size_t node_count = region.get_property("node_count").get_int();
-    for (size_t i = 0; i < node_count; i++) {
-      size_t p_beg = node_to_proc_pointer[i];
-      size_t p_end = node_to_proc_pointer[i + 1];
-      for (size_t j = p_beg; j < p_end; j++) {
-        size_t p = node_to_proc[j];
-        coordinates_x[p].push_back(glob_coord_x[i]);
-        coordinates_y[p].push_back(glob_coord_y[i]);
-        coordinates_z[p].push_back(glob_coord_z[i]);
+    size_t node_count   = region.get_property("node_count").get_int();
+
+    if (ex_db != nullptr && node_count > partial_count) {
+      int exoid = ex_db->get_file_pointer();
+
+      for (size_t beg = 1; beg <= node_count; beg += partial_count) {
+	size_t count = partial_count;
+	if (beg + count - 1 > node_count) {
+	  count = node_count - beg + 1;
+	}
+
+	glob_coord_x.resize(count);
+	glob_coord_y.resize(count);
+	glob_coord_z.resize(count);
+	ex_get_partial_coord(exoid, beg, count,
+			     TOPTR(glob_coord_x), TOPTR(glob_coord_y), TOPTR(glob_coord_z));
+	progress("\tpartial_coord: " + Ioss::Utils::to_string(beg) + " " +
+		 Ioss::Utils::to_string(count));
+
+	for (size_t i = 0; i < count; i++) {
+	  size_t ii = beg + i - 1;
+	  size_t p_beg = node_to_proc_pointer[ii];
+	  size_t p_end = node_to_proc_pointer[ii + 1];
+	  for (size_t j = p_beg; j < p_end; j++) {
+	    size_t p = node_to_proc[j];
+	    coordinates_x[p].push_back(glob_coord_x[i]);
+	    coordinates_y[p].push_back(glob_coord_y[i]);
+	    coordinates_z[p].push_back(glob_coord_z[i]);
+	  }
+	}
+      }
+    }
+    else {
+      gnb->get_field_data("mesh_model_coordinates_x", glob_coord_x);
+      gnb->get_field_data("mesh_model_coordinates_y", glob_coord_y);
+      gnb->get_field_data("mesh_model_coordinates_z", glob_coord_z);
+      progress("\tRead global mesh_model_coordinates");
+
+      for (size_t i = 0; i < node_count; i++) {
+	size_t p_beg = node_to_proc_pointer[i];
+	size_t p_end = node_to_proc_pointer[i + 1];
+	for (size_t j = p_beg; j < p_end; j++) {
+	  size_t p = node_to_proc[j];
+	  coordinates_x[p].push_back(glob_coord_x[i]);
+	  coordinates_y[p].push_back(glob_coord_y[i]);
+	  coordinates_z[p].push_back(glob_coord_z[i]);
+	}
       }
     }
     progress("\tPopulate processor coordinate vectors");
@@ -1085,8 +1120,8 @@ namespace {
 
     for (size_t p = 0; p < processor_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
-      nb->put_field_data("mesh_model_coordinates_x", coordinates_y[p]);
-      nb->put_field_data("mesh_model_coordinates_y", coordinates_x[p]);
+      nb->put_field_data("mesh_model_coordinates_x", coordinates_x[p]);
+      nb->put_field_data("mesh_model_coordinates_y", coordinates_y[p]);
       nb->put_field_data("mesh_model_coordinates_z", coordinates_z[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
