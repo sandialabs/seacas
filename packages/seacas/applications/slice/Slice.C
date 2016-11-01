@@ -1035,43 +1035,55 @@ namespace {
                           const std::vector<INT> &node_to_proc_pointer)
   {
     progress(__func__);
-    std::vector<double> glob_coord;
+    std::vector<double> glob_coord_x;
+    std::vector<double> glob_coord_y;
+    std::vector<double> glob_coord_z;
     Ioss::NodeBlock *   gnb = region.get_node_blocks()[0];
 
     // Distribute nodal coordinates to each processor...
     // coordinates[p][i] = x,y,z coordinates on processor p
     size_t                           processor_count = proc_region.size();
-    std::vector<std::vector<double>> coordinates(processor_count);
+    std::vector<std::vector<double>> coordinates_x(processor_count);
+    std::vector<std::vector<double>> coordinates_y(processor_count);
+    std::vector<std::vector<double>> coordinates_z(processor_count);
     for (size_t p = 0; p < processor_count; p++) {
       size_t pnode_count = proc_region[p]->get_property("node_count").get_int();
-      coordinates[p].reserve(pnode_count * 3);
+      coordinates_x[p].reserve(pnode_count);
+      coordinates_y[p].reserve(pnode_count);
+      coordinates_z[p].reserve(pnode_count);
     }
     progress("\tReserve processor coordinate vectors");
 
     // Need partial read...
-    gnb->get_field_data("mesh_model_coordinates", glob_coord);
+    gnb->get_field_data("mesh_model_coordinates_x", glob_coord_x);
+    gnb->get_field_data("mesh_model_coordinates_y", glob_coord_y);
+    gnb->get_field_data("mesh_model_coordinates_z", glob_coord_z);
     progress("\tRead global mesh_model_coordinates");
 
     size_t node_count = region.get_property("node_count").get_int();
-    size_t index      = 0;
     for (size_t i = 0; i < node_count; i++) {
       size_t p_beg = node_to_proc_pointer[i];
       size_t p_end = node_to_proc_pointer[i + 1];
       for (size_t j = p_beg; j < p_end; j++) {
         size_t p = node_to_proc[j];
-        coordinates[p].push_back(glob_coord[index + 0]); // x
-        coordinates[p].push_back(glob_coord[index + 1]); // y
-        coordinates[p].push_back(glob_coord[index + 2]); // z
+        coordinates_x[p].push_back(glob_coord_x[i]);
+        coordinates_y[p].push_back(glob_coord_y[i]);
+        coordinates_z[p].push_back(glob_coord_z[i]);
       }
-      index += 3;
     }
     progress("\tPopulate processor coordinate vectors");
-    glob_coord.resize(0);
-    glob_coord.shrink_to_fit();
+    glob_coord_x.resize(0);
+    glob_coord_x.shrink_to_fit();
+    glob_coord_y.resize(0);
+    glob_coord_y.shrink_to_fit();
+    glob_coord_z.resize(0);
+    glob_coord_z.shrink_to_fit();
 
     for (size_t p = 0; p < processor_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
-      nb->put_field_data("mesh_model_coordinates", coordinates[p]);
+      nb->put_field_data("mesh_model_coordinates_x", coordinates_y[p]);
+      nb->put_field_data("mesh_model_coordinates_y", coordinates_x[p]);
+      nb->put_field_data("mesh_model_coordinates_z", coordinates_z[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
     }
