@@ -95,9 +95,6 @@ bool          minimize_open_files = false;
 int           debug_level         = 0;
 
 namespace {
-  inline size_t min(size_t x, size_t y) { return y ^ ((x ^ y) & -(x < y)); }
-  inline size_t max(size_t x, size_t y) { return y ^ ((x ^ y) & -(x > y)); }
-
   size_t get_memory_info()
   {
     size_t memory_usage = 0;
@@ -196,7 +193,7 @@ namespace {
       const Ioss::ElementTopology *topology = eb->topology();
       const Ioss::ElementTopology *boundary = topology->boundary_type(0);
       if (boundary != NULL) {
-        common_nodes = min(common_nodes, boundary->number_boundaries());
+        common_nodes = std::min(common_nodes, boundary->number_boundaries());
       }
       else {
         // Different topologies on some element faces...
@@ -204,13 +201,13 @@ namespace {
         for (size_t bb = 1; bb <= nb; bb++) {
           boundary = topology->boundary_type(bb);
           if (boundary != NULL) {
-            common_nodes = min(common_nodes, boundary->number_boundaries());
+            common_nodes = std::min(common_nodes, boundary->number_boundaries());
           }
         }
       }
     }
 
-    common_nodes = max(1, common_nodes);
+    common_nodes = std::max(1, common_nodes);
     OUTPUT << "Setting common_nodes to " << common_nodes << "\n";
     return common_nodes;
   }
@@ -694,9 +691,13 @@ namespace {
     for (size_t p = 0; p < proc_count; p++) {
       auto &commset = proc_region[p]->get_commsets()[0];
       commset->put_field_data("entity_processor", border_node_proc_map[p]);
+      border_node_proc_map[p].resize(0);
+      border_node_proc_map[p].shrink_to_fit();
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
     }
+    border_node_proc_map.resize(0);
+    border_node_proc_map.shrink_to_fit();
   }
 
   template <typename INT>
@@ -716,11 +717,15 @@ namespace {
     // processors that a node is shared with.  If the count is 1, then
     // the node is interior; otherwise, it is border.
 
-    // Iterate all nodes and count the number of processors it is on:
+    // Allocates:
+    // * interior_nodes         INT size - #interior nodes
+    // * border_nodes_proc_map  INT size - (proc-node) pair for each border node
+
     INT              global_node_count = global_region.get_property("node_count").get_int();
     size_t           proc_count = proc_region.size();
     std::vector<INT> interior_nodes(proc_count);
 
+    // Iterate all nodes and count the number of processors it is on:
     for (INT i = 0; i < global_node_count; i++) {
       size_t node_proc_count = node_to_proc_pointer[i + 1] - node_to_proc_pointer[i];
       if (node_proc_count == 1) {
