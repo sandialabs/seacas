@@ -718,26 +718,18 @@ namespace {
 
     // Iterate all nodes and count the number of processors it is on:
     INT              global_node_count = global_region.get_property("node_count").get_int();
-    std::vector<int> node_proc_count;
-    node_proc_count.reserve(global_node_count);
-    for (INT i = 0; i < global_node_count; i++) {
-      node_proc_count.push_back(node_to_proc_pointer[i + 1] - node_to_proc_pointer[i]);
-    }
-
-    // Count the number of interior nodes on each processor...
     size_t           proc_count = proc_region.size();
     std::vector<INT> interior_nodes(proc_count);
+
     for (INT i = 0; i < global_node_count; i++) {
-      if (node_proc_count[i] == 1) {
+      size_t node_proc_count = node_to_proc_pointer[i + 1] - node_to_proc_pointer[i];
+      if (node_proc_count == 1) {
         size_t proc = node_to_proc[node_to_proc_pointer[i]];
         interior_nodes[proc]++;
       }
-    }
-
-    // Get the <node,proc> pairs for all border nodes on this processor...
-    // Not efficient at this time...
-    for (INT i = 0; i < global_node_count; i++) {
-      if (node_proc_count[i] != 1) {
+      else {
+	// Get the <node,proc> pairs for all border nodes on this processor...
+	// Not efficient at this time...
         size_t beg = node_to_proc_pointer[i];
         size_t end = node_to_proc_pointer[i + 1];
         for (size_t j = beg; j < end; j++) {
