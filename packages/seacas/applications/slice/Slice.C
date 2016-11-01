@@ -722,7 +722,7 @@ namespace {
     // * border_nodes_proc_map  INT size - (proc-node) pair for each border node
 
     INT              global_node_count = global_region.get_property("node_count").get_int();
-    size_t           proc_count = proc_region.size();
+    size_t           proc_count        = proc_region.size();
     std::vector<INT> interior_nodes(proc_count);
 
     // Iterate all nodes and count the number of processors it is on:
@@ -733,8 +733,8 @@ namespace {
         interior_nodes[proc]++;
       }
       else {
-	// Get the <node,proc> pairs for all border nodes on this processor...
-	// Not efficient at this time...
+        // Get the <node,proc> pairs for all border nodes on this processor...
+        // Not efficient at this time...
         size_t beg = node_to_proc_pointer[i];
         size_t end = node_to_proc_pointer[i + 1];
         for (size_t j = beg; j < end; j++) {
@@ -1115,41 +1115,55 @@ namespace {
 
     Ioss::DatabaseIO *db    = region.get_database();
     Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
-    assert(ex_db != nullptr);
 
-    int exoid = ex_db->get_file_pointer();
-
-    //    size_t partial_conn = 100000;
-    size_t           partial_conn = 100000000;
     std::vector<INT> glob_conn;
     size_t           offset = 0;
+
     for (size_t b = 0; b < block_count; b++) {
       size_t element_count = ebs[b]->get_property("entity_count").get_int();
       size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
       size_t block_id      = ebs[b]->get_property("id").get_int();
 
       // Do a 'partial_conn' elements at a time...
-      for (size_t beg = 1; beg <= element_count; beg += partial_conn) {
-        size_t count = partial_conn;
-        if (beg + count - 1 > element_count) {
-          count = element_count - beg + 1;
-        }
-        glob_conn.resize(count * element_nodes);
+      //    size_t partial_conn = 100000;
+      size_t partial_conn = 100000000;
 
-        // TODO: Should do a partial get here
-        ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
-                            nullptr);
-        progress("\tpartial_conn: " + Ioss::Utils::to_string(beg) + " " +
-                 Ioss::Utils::to_string(count));
+      if (ex_db != nullptr && element_count >= partial_conn) {
+        int exoid = ex_db->get_file_pointer();
+
+        for (size_t beg = 1; beg <= element_count; beg += partial_conn) {
+          size_t count = partial_conn;
+          if (beg + count - 1 > element_count) {
+            count = element_count - beg + 1;
+          }
+          glob_conn.resize(count * element_nodes);
+
+          ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
+                              nullptr);
+          progress("\tpartial_conn: " + Ioss::Utils::to_string(beg) + " " +
+                   Ioss::Utils::to_string(count));
+
+          size_t el = 0;
+          for (size_t j = 0; j < count; j++) {
+            size_t p = elem_to_proc[offset + j];
+            for (size_t k = 0; k < element_nodes; k++) {
+              connectivity[p][b].push_back(glob_conn[el++]);
+            }
+          }
+          offset += count;
+        }
+      }
+      else {
+        ebs[b]->get_field_data("connectivity_raw", glob_conn);
 
         size_t el = 0;
-        for (size_t j = 0; j < count; j++) {
+        for (size_t j = 0; j < element_count; j++) {
           size_t p = elem_to_proc[offset + j];
           for (size_t k = 0; k < element_nodes; k++) {
             connectivity[p][b].push_back(glob_conn[el++]);
           }
         }
-        offset += count;
+        offset += element_count;
       }
     }
   }
