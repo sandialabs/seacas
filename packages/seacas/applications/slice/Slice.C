@@ -94,6 +94,9 @@ extern double seacas_timer();
 bool          minimize_open_files = false;
 int           debug_level         = 0;
 
+//size_t partial_count = 100000;
+size_t partial_count = 1000000000;
+
 namespace {
   size_t get_memory_info()
   {
@@ -280,6 +283,7 @@ int main(int argc, char *argv[])
   minimize_open_files = (interface.processor_count() + 1 > max_files);
 
   debug_level = interface.debug();
+  partial_count = interface.partial();
 
   //========================================================================
   // INPUT ...
@@ -1124,15 +1128,12 @@ namespace {
       size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
       size_t block_id      = ebs[b]->get_property("id").get_int();
 
-      // Do a 'partial_conn' elements at a time...
-      //    size_t partial_conn = 100000;
-      size_t partial_conn = 100000000;
-
-      if (ex_db != nullptr && element_count >= partial_conn) {
+      // Do a 'partial_count' elements at a time...
+      if (ex_db != nullptr && element_count >= partial_count) {
         int exoid = ex_db->get_file_pointer();
 
-        for (size_t beg = 1; beg <= element_count; beg += partial_conn) {
-          size_t count = partial_conn;
+        for (size_t beg = 1; beg <= element_count; beg += partial_count) {
+          size_t count = partial_count;
           if (beg + count - 1 > element_count) {
             count = element_count - beg + 1;
           }

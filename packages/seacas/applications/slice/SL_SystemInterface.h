@@ -61,7 +61,8 @@ public:
   int step_max() const { return stepMax_; }
   int step_interval() const { return stepInterval_; }
 
-  bool contiguous_decomposition() const { return contig_; }
+  size_t partial() const { return partialReadCount_; }
+  bool   contiguous_decomposition() const { return contig_; }
 
   const StringIdVector &global_var_names() const { return globalVarNames_; }
   const StringIdVector &node_var_names() const { return nodeVarNames_; }
@@ -99,20 +100,21 @@ private:
 
   GetLongOption options_; //!< Options parsing
 
-  int         processorCount_;
   std::string decompMethod_;
   std::string decompFile_;
   std::string outputPath_;
 
-  int  debugLevel_;
-  int  screenWidth_;
-  int  stepMin_;
-  int  stepMax_;
-  int  stepInterval_;
-  bool omitNodesets_;
-  bool omitSidesets_;
-  bool disableFieldRecognition_;
-  bool contig_;
+  size_t partialReadCount_;
+  int    processorCount_;
+  int    debugLevel_;
+  int    screenWidth_;
+  int    stepMin_;
+  int    stepMax_;
+  int    stepInterval_;
+  bool   omitNodesets_;
+  bool   omitSidesets_;
+  bool   disableFieldRecognition_;
+  bool   contig_;
 
   Omissions blockOmissions_;
 
