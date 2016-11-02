@@ -344,7 +344,6 @@ namespace {
     OUTPUT << "\tAdjacency Size = " << sum << " for " << count << " elements.\n";
 
     // Now, iterate the blocks again, get connectivity and build adjacency structure.
-    size_t           index = 0;
     std::vector<INT> connectivity;
     for (const auto &eb : ebs) {
       eb->get_field_data("connectivity_raw", connectivity);
@@ -443,7 +442,7 @@ namespace {
 
         OUTPUT << "\tCalling METIS Decomposition routine.\n";
 
-        int error = METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], NULL,
+        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], NULL,
                                        NULL, &common, &proc_count, NULL, &options[0], &obj_val,
                                        &elem_partition[0], &node_partition[0]);
 
@@ -452,7 +451,7 @@ namespace {
         elem_to_proc.reserve(element_count);
         std::copy(elem_partition.begin(), elem_partition.end(), std::back_inserter(elem_to_proc));
 
-        double end = seacas_timer();
+        end = seacas_timer();
         OUTPUT << "\tMETIS Partition = " << end - start << "\n";
         OUTPUT << "Objective value = " << obj_val << "\n";
 
