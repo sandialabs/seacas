@@ -170,7 +170,7 @@ void Excn::ParallelDisks::Create_IO_Filename(std::string &name, int lnn, int num
       name = name + "." + to_string(lnn);
     }
   }
-  if (num_proc >= 100000) {
+  else if (num_proc >= 100000) {
     if (lnn < 10) {
       name = name + ".00000" + to_string(lnn);
     }
@@ -190,7 +190,7 @@ void Excn::ParallelDisks::Create_IO_Filename(std::string &name, int lnn, int num
       name = name + "." + to_string(lnn);
     }
   }
-  if (num_proc >= 10000) {
+  else if (num_proc >= 10000) {
     if (lnn < 10) {
       name = name + ".0000" + to_string(lnn);
     }
