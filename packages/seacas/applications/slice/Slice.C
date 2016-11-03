@@ -152,6 +152,14 @@ namespace {
     }
   }
 
+  void proc_progress(int p, int proc_count)
+  {
+    if ((debug_level & 4) && ((p+1) % (proc_count / 20) == 0)) {
+      progress("\t\tProcessor " + Ioss::Utils::to_string(p+1));
+    }
+  }
+
+
   void filename_substitution(std::string &filename, const SystemInterface &interface);
 
   template <typename T> struct remove_pointer
@@ -640,6 +648,9 @@ namespace {
     size_t set_count = ss.size();
 
     for (size_t s = 0; s < set_count; s++) {
+      if (debug_level & 4) {
+	progress("\tSideset " + Ioss::Utils::to_string(s+1));
+      }
       Ioss::SideSet *gss     = ss[s];
       auto &         ss_name = gss->name();
 
@@ -678,6 +689,7 @@ namespace {
           psb->put_field_data("element_side", psb_elems[p]);
           if (minimize_open_files)
             proc_region[p]->get_database()->closeDatabase();
+	  proc_progress(p, proc_count);
         }
       }
     }
@@ -698,6 +710,7 @@ namespace {
       border_node_proc_map[p].shrink_to_fit();
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
+      proc_progress(p, proc_count);
     }
     border_node_proc_map.resize(0);
     border_node_proc_map.shrink_to_fit();
@@ -848,6 +861,9 @@ namespace {
     size_t set_count = ns.size();
 
     for (size_t s = 0; s < set_count; s++) {
+      if (debug_level & 4) {
+	progress("\tNodeSet " + Ioss::Utils::to_string(s+1));
+      }
       std::vector<INT> pns(proc_count);
       Ioss::NodeSet *  gns = ns[s];
 
@@ -883,6 +899,7 @@ namespace {
         proc_ns->put_field_data("distribution_factors", pns_df[p]);
         if (minimize_open_files)
           proc_region[p]->get_database()->closeDatabase();
+	proc_progress(p, proc_count);
       }
     }
   }
@@ -918,6 +935,7 @@ namespace {
       nb->put_field_data("ids", proc_map[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
+      proc_progress(p, proc_count);
     }
   }
 
@@ -963,6 +981,7 @@ namespace {
       nb->put_field_data("ids", proc_map[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
+      proc_progress(p, proc_count);
     }
   }
 
@@ -979,6 +998,9 @@ namespace {
 
     size_t offset = 0;
     for (size_t b = 0; b < block_count; b++) {
+      if (debug_level & 4) {
+	progress("\tBlock " + Ioss::Utils::to_string(b+1));
+      }
 #if 0
       std::vector<INT> ids;
       ebs[b]->get_field_data("ids", ids);
@@ -1008,6 +1030,7 @@ namespace {
         proc_ebs[b]->put_field_data("ids", map[p]);
         if (minimize_open_files)
           proc_region[p]->get_database()->closeDatabase();
+	proc_progress(p, proc_count);
       }
     }
   }
@@ -1029,6 +1052,7 @@ namespace {
         if (minimize_open_files)
           proc_region[p]->get_database()->closeDatabase();
       }
+      proc_progress(p, proc_count);
     }
   }
 
@@ -1065,15 +1089,15 @@ namespace {
     if (ex_db != nullptr && node_count > partial_count) {
       int exoid = ex_db->get_file_pointer();
 
+      glob_coord_x.resize(partial_count);
+      glob_coord_y.resize(partial_count);
+      glob_coord_z.resize(partial_count);
       for (size_t beg = 1; beg <= node_count; beg += partial_count) {
 	size_t count = partial_count;
 	if (beg + count - 1 > node_count) {
 	  count = node_count - beg + 1;
 	}
 
-	glob_coord_x.resize(count);
-	glob_coord_y.resize(count);
-	glob_coord_z.resize(count);
 	ex_get_partial_coord(exoid, beg, count,
 			     TOPTR(glob_coord_x), TOPTR(glob_coord_y), TOPTR(glob_coord_z));
 	progress("\tpartial_coord: " + Ioss::Utils::to_string(beg) + " " +
@@ -1124,6 +1148,7 @@ namespace {
       nb->put_field_data("mesh_model_coordinates_z", coordinates_z[p]);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
+      proc_progress(p, processor_count);
     }
     progress("\tOutput processor coordinate vectors");
   }
@@ -1166,12 +1191,12 @@ namespace {
       if (ex_db != nullptr && element_count >= partial_count) {
         int exoid = ex_db->get_file_pointer();
 
+	glob_conn.resize(partial_count * element_nodes);
         for (size_t beg = 1; beg <= element_count; beg += partial_count) {
           size_t count = partial_count;
           if (beg + count - 1 > element_count) {
             count = element_count - beg + 1;
           }
-          glob_conn.resize(count * element_nodes);
 
           ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
                               nullptr);
@@ -1454,12 +1479,14 @@ namespace {
     start             = seacas_timer();
     double start_comb = start;
     OUTPUT << "Begin writing  output files\n";
-    for (size_t p = 0; p < interface.processor_count(); p++) {
+    size_t proc_count = interface.processor_count();
+    for (size_t p = 0; p < proc_count; p++) {
       proc_region[p]->synchronize_id_and_name(&region);
       proc_region[p]->end_mode(Ioss::STATE_DEFINE_MODEL);
       proc_region[p]->begin_mode(Ioss::STATE_MODEL);
       if (minimize_open_files)
         proc_region[p]->get_database()->closeDatabase();
+      proc_progress(p, proc_count);
     }
     end = seacas_timer();
     OUTPUT << "\tDefine output databases = " << end - start << "\n";
