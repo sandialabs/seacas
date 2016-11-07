@@ -64,7 +64,6 @@ namespace IOShell {
     std::string              outFiletype;
     std::string              groupName;
     std::string              decomp_method;
-<<<<<<< HEAD
     std::string              compose_output{"none"};
     double                   maximum_time{0.0};
     double                   minimum_time{0.0};
