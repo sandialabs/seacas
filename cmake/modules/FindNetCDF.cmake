@@ -42,9 +42,23 @@ if ( NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS )
 
 else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
+    # If NetCDF_ROOT was defined in the environment, use it.
+    # Definition from the command line will take precedence.
+    if (NOT NetCDF_ROOT AND NOT $ENV{NetCDF_ROOT} STREQUAL "")
+      set(NetCDF_ROOT $ENV{NetCDF_ROOT})
+    endif()
+
+    # NetCDF_DIR is DEPRECATED WARN THE USER if it is set
+    if (NOT NetCDF_ROOT AND NetCDF_DIR )
+      message(WARNING "The configuration parameter NetCDF_DIR is deprecated."
+                      " Please use NetCDF_ROOT instead to define the NetCDF installation")
+      set(NetCDF_ROOT ${NetCDF_DIR})
+    endif()
+
+
     # Cache variables
-    if(NetCDF_DIR)
-        set(NetCDF_DIR "${NetCDF_DIR}" CACHE PATH "Path to search for NetCDF include and library files")
+    if(NetCDF_ROOT)
+        set(NetCDF_ROOT "${NetCDF_ROOT}" CACHE PATH "Path to search for NetCDF include and library files")
     endif()
 
     if(NetCDF_INCLUDE_DIR)
@@ -58,7 +72,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
     # Search for include files
     # Search order preference:
     #  (1) NetCDF_INCLUDE_DIR - check existence of path AND if the include files exist
-    #  (2) NetCDF_DIR/<include>
+    #  (2) NetCDF_ROOT/<include>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     set(netcdf_inc_names "netcdf.h")
@@ -83,18 +97,18 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
     else() 
 
         set(netcdf_inc_suffixes "include")
-        if(NetCDF_DIR)
+        if(NetCDF_ROOT)
 
-            if (EXISTS "${NetCDF_DIR}" )
+            if (EXISTS "${NetCDF_ROOT}" )
 
                 find_path(NetCDF_INCLUDE_DIR
                           NAMES ${netcdf_inc_names}
-                          HINTS ${NetCDF_DIR}/include
+                          HINTS ${NetCDF_ROOT}/include
                           PATH_SUFFIXES ${netcdf_inc_suffixes}
                           NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "NetCDF_DIR=${NetCDF_DIR} does not exist")
+                 message(SEND_ERROR "NetCDF_ROOT=${NetCDF_ROOT} does not exist")
                  set(NetCDF_INCLUDE_DIR "NetCDF_INCLUDE_DIR-NOTFOUND")
             endif()    
 
@@ -135,7 +149,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
             )
             set(NetCDF_LARGE_DIMS TRUE)
         else()
-            message(WARNING "WARNING: The NetCDF found in ${NetCDF_DIR} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
+            message(WARNING "WARNING: The NetCDF found in ${NetCDF_ROOT} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
                              "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
             set(NetCDF_LARGE_DIMS FALSE)
         endif()
@@ -161,7 +175,7 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
     # Search for libraries 
     # Search order preference:
     #  (1) NetCDF_LIBRARY_DIR - check existence of path AND if the include files exist
-    #  (2) NetCDF_DIR/<lib,Lib>
+    #  (2) NetCDF_ROOT/<lib,Lib>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     if (NetCDF_LIBRARY_DIR)
@@ -186,24 +200,24 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
 
     else() 
 
-        if(NetCDF_DIR)
+        if(NetCDF_ROOT)
 
-            if (EXISTS "${NetCDF_DIR}" )
+            if (EXISTS "${NetCDF_ROOT}" )
 
                 find_library(NetCDF_C_LIBRARY
                              NAMES netcdf
-                             HINTS ${NetCDF_DIR}
+                             HINTS ${NetCDF_ROOT}
                              PATH_SUFFIXES "lib" "Lib"
                              NO_DEFAULT_PATH)
 
 #                find_library(NetCDF_CXX_LIBRARY
 #                             NAMES netcdf_c++
-#                             HINTS ${NetCDF_DIR}
+#                             HINTS ${NetCDF_ROOT}
 #                             PATH_SUFFIXES "lib" "Lib"
 #                             NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "NetCDF_DIR=${NetCDF_DIR} does not exist")
+                 message(SEND_ERROR "NetCDF_ROOT=${NetCDF_ROOT} does not exist")
                  set(NetCDF_LIBRARY "NetCDF_C_LIBRARY-NOTFOUND")
 #                 set(NetCDF_LIBRARY "NetCDF_CXX_LIBRARY-NOTFOUND")
             endif()    
@@ -239,10 +253,10 @@ else(NetCDF_LIBRARIES AND NetCDF_INCLUDE_DIRS)
     set(NetCDF_LIBRARIES    ${NetCDF_CXX_LIBRARY} ${NetCDF_C_LIBRARY})
 
     # Need to find the NetCDF config script to check for HDF5
-    if ( NetCDF_DIR OR NetCDF_BIN_DIR )
-        MESSAGE(STATUS "\tNetCDF_DIR is ${NetCDF_DIR}")
+    if ( NetCDF_ROOT OR NetCDF_BIN_DIR )
+        MESSAGE(STATUS "\tNetCDF_ROOT is ${NetCDF_ROOT}")
         find_program(netcdf_config nc-config 
-                       PATHS ${NetCDF_DIR}/bin ${NetCDF_BIN_DIR}
+                       PATHS ${NetCDF_ROOT}/bin ${NetCDF_BIN_DIR}
 		       NO_DEFAULT_PATH
 		       NO_CMAKE_SYSTEM_PATH
                        DOC "NetCDF configuration script")
@@ -333,25 +347,25 @@ else()
 
         else()
             message(SEND_ERROR "NetCDF_BINARY_DIR=${NetCDF_BINARY_DIR} does not exist")
-            set(NetCDF_INCLUDE_DIR "NetCDF_BINARY_DIR-NOTFOUND")
+            set(NetCDF_BINARY_DIR "NetCDF_BINARY_DIR-NOTFOUND")
         endif()
 
     else() 
 
         set(netcdf_bin_suffixes "bin")
-        if(NetCDF_DIR)
+        if(NetCDF_ROOT)
 
-            if (EXISTS "${NetCDF_DIR}" )
+            if (EXISTS "${NetCDF_ROOT}" )
 
                 find_path(NetCDF_BINARY_DIR
                           NAMES ${netcdf_bin_names}
-                          HINTS ${NetCDF_DIR}/bin
+                          HINTS ${NetCDF_ROOT}/bin
                           PATH_SUFFIXES ${netcdf_bin_suffixes}
                           NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "NetCDF_DIR=${NetCDF_DIR} does not exist")
-                 set(NetCDF_BINARY_DIR "NetCDF_BINAR_DIR-NOTFOUND")
+                 message(SEND_ERROR "NetCDF_ROOT=${NetCDF_ROOT} does not exist")
+                 set(NetCDF_BINARY_DIR "NetCDF_BINARY_DIR-NOTFOUND")
             endif()    
 
 
