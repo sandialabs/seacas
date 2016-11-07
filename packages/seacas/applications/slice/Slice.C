@@ -543,7 +543,7 @@ namespace {
           count = strtoul(tokens[0].c_str(), NULL, 0);
           proc  = strtoul(tokens[1].c_str(), NULL, 0);
         }
-        if (proc < 0 || proc > interface.processor_count()) {
+        if (proc > interface.processor_count()) {
           OUTPUT << "\nERROR: Invalid processor " << proc << " specified on line " << line_num
                  << " of decomposition file.\n"
                  << "\tValid range is 0.." << interface.processor_count() - 1 << "\n";
@@ -1235,9 +1235,7 @@ namespace {
     progress(__func__);
     auto & ebs         = region.get_element_blocks();
     size_t block_count = ebs.size();
-
-    Ioss::ElementBlockContainer::const_iterator I     = ebs.begin();
-    size_t                                      begin = 0;
+    size_t begin = 0;
     for (size_t i = 0; i < block_count; i++) {
       size_t end = begin + ebs[i]->get_property("entity_count").get_int();
       for (size_t j = begin; j < end; j++) {
