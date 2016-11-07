@@ -200,6 +200,10 @@ void IOShell::Interface::enroll_options()
                   "names are left as they appear in the input mesh file",
                   nullptr);
 
+  options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
+                  "Do not transfer any timesteps or transient data to the output database",
+                  nullptr);
+
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
                   nullptr);
 }
@@ -323,6 +327,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("native_variable_names") != nullptr) {
     lower_case_variable_names = false;
+  }
+
+  if (options_.retrieve("delete_timesteps") != nullptr) {
+    delete_timesteps = true;
   }
 
   {

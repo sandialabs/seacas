@@ -64,6 +64,7 @@ namespace IOShell {
     std::string              outFiletype;
     std::string              groupName;
     std::string              decomp_method;
+<<<<<<< HEAD
     std::string              compose_output{"none"};
     double                   maximum_time{0.0};
     double                   minimum_time{0.0};
@@ -81,6 +82,7 @@ namespace IOShell {
     bool                     in_memory_read{false};
     bool                     in_memory_write{false};
     bool                     lower_case_variable_names{true};
+    bool                     delete_timesteps{false};
     char                     fieldSuffixSeparator{'_'};
   };
 }
