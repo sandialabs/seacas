@@ -47,11 +47,6 @@
 #define NPOS std::string::npos
 
 IOShell::Interface::Interface()
-    : compose_output("none"), maximum_time(0.0), minimum_time(0.0), surface_split_type(1),
-      data_storage_type(0), compression_level(0), shuffle(false), debug(false), statistics(false),
-      do_transform_fields(false), ints_64_bit(false), reals_32_bit(false), netcdf4(false),
-      in_memory_read(false), in_memory_write(false), lower_case_variable_names(true),
-      fieldSuffixSeparator('_')
 {
   enroll_options();
 }
@@ -147,6 +142,10 @@ void IOShell::Interface::enroll_options()
                   "elements assigned randomly to processors in a way that preserves balance (do "
                   "not use for a real run)",
                   nullptr);
+  options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
+		  "Number of processors that can perform simulataneous IO operations in "
+		  "a parallel run; 0 to disable",
+		  nullptr);
 #endif
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
@@ -292,6 +291,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   if (options_.retrieve("random") != nullptr) {
     decomp_method = "RANDOM";
   }
+
+  {
+    const char *temp = options_.retrieve("serialize_io_size");
+    if (temp != nullptr) {
+      serialize_io_size = std::strtol(temp, nullptr, 10);
+    }
+  }
+
 #endif
 
   if (options_.retrieve("external") != nullptr) {
