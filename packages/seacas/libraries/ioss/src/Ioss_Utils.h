@@ -121,6 +121,11 @@ namespace Ioss {
           return p - 1;
         }
       }
+      std::cerr << "FATAL ERROR: find_index_location. Searching for " << node << " in:\n";
+      for (auto idx : index) {
+       std::cerr << idx << ", ";
+      }
+      std::cerr << "\n";
       assert(1 == 0); // Cannot happen...
       return -1;
 #else
