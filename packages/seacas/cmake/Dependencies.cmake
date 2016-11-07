@@ -38,6 +38,7 @@ TRIBITS_PACKAGE_DEFINE_DEPENDENCIES(
   Nemslice    applications/nem_slice  SS  REQUIRED
   Nemspread   applications/nem_spread SS  REQUIRED
   Numbers     applications/numbers    SS  REQUIRED
+  Slice	      applications/slice      SS  OPTIONAL
   Txtexo      applications/txtexo     SS  REQUIRED
   Ex2ex1v2    applications/ex2ex1v2   SS  OPTIONAL
 )

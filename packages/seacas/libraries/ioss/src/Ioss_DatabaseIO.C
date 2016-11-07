@@ -160,7 +160,7 @@ namespace Ioss {
         isParallelConsistent(true),
         singleProcOnly(db_usage == WRITE_HISTORY || db_usage == WRITE_HEARTBEAT ||
                        SerializeIO::isEnabled()),
-        doLogging(false), useGenericCanonicalName(false)
+        doLogging(false), useGenericCanonicalName(false), ignoreDatabaseNames(false)
   {
     isParallel  = util_.parallel_size() > 1;
     myProcessor = util_.parallel_rank();
@@ -224,6 +224,8 @@ namespace Ioss {
     Utils::check_set_bool_property(properties, "LOWER_CASE_VARIABLE_NAMES", lowerCaseVariableNames);
     Utils::check_set_bool_property(properties, "USE_GENERIC_CANONICAL_NAMES",
                                    useGenericCanonicalName);
+    Utils::check_set_bool_property(properties, "IGNORE_DATABASE_NAMES",
+                                   ignoreDatabaseNames);
 
     {
       bool consistent;

@@ -430,14 +430,22 @@ void load_conversion(struct var_init *base, struct svar_init *label)
 
   if (echo) *(aprepro->infoStream) << title_prefix << "Binary Prefixes" << '\n';
   DEFINE_VAR("byte", 1, "byte");
-  DEFINE_VAR("Kib",  1024.0, "byte");
-  DEFINE_VAR("Mib",  1024.0*1024.0, "byte");
-  DEFINE_VAR("Gib",  1024.0*1024.0*1024.0, "byte");
-  DEFINE_VAR("Tib",  1024.0*1024.0*1024.0*1024.0, "byte");
-  DEFINE_VAR("Pib",  1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
-  DEFINE_VAR("Eib",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
-  DEFINE_VAR("Zib",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
-  DEFINE_VAR("Yib",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("KiB",  1024.0, "byte");
+  DEFINE_VAR("MiB",  1024.0*1024.0, "byte");
+  DEFINE_VAR("GiB",  1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("TiB",  1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("PiB",  1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("EiB",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("ZiB",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("YiB",  1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0*1024.0, "byte");
+  DEFINE_VAR("KB",   1.0e03, "byte");
+  DEFINE_VAR("MB",   1.0e06, "byte");
+  DEFINE_VAR("GB",   1.0e09, "byte");
+  DEFINE_VAR("TB",   1.0e12, "byte");
+  DEFINE_VAR("PB",   1.0e15, "byte");
+  DEFINE_VAR("EB",   1.0e18, "byte");
+  DEFINE_VAR("ZB",   1.0e21, "byte");
+  DEFINE_VAR("YB",   1.0e24, "byte");
 
   if (echo) *(aprepro->infoStream) << title_prefix << "Time (T)" << '\n';
   DEFINE_VAR("second",                                        sec,         tout);
