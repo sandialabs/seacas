@@ -35,6 +35,7 @@
 #include <Ioss_FileInfo.h>
 #include <Ioss_MeshType.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_SerializeIO.h>
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Transform.h>
@@ -211,6 +212,8 @@ int main(int argc, char *argv[])
   if (!success) {
     exit(EXIT_FAILURE);
   }
+
+  Ioss::SerializeIO::setGroupFactor(interface.serialize_io_size);
 
   Ioss::Init::Initializer io;
 #ifndef NO_XDMF_SUPPORT
@@ -531,6 +534,10 @@ namespace {
       }
       output_region.end_mode(Ioss::STATE_MODEL);
 
+      if (interface.delete_timesteps) {
+	return;
+      }
+	
       if (interface.debug) {
         OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
       }

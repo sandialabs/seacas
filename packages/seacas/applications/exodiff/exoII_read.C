@@ -635,6 +635,17 @@ template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results()
     }
 }
 
+template <typename INT> void ExoII_Read<INT>::Free_Nodal_Results(int var_index)
+{
+  SMART_ASSERT(Check_State());
+  if (results) {
+    if (results[var_index]) {
+      delete[] results[var_index];
+      results[var_index] = nullptr;
+    }
+  }
+}
+
 template <typename INT> const double *ExoII_Read<INT>::Get_Nodal_Results(int var_index) const
 {
   SMART_ASSERT(Check_State());

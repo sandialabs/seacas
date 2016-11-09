@@ -32,7 +32,8 @@
 #ifndef SEACAS_Version_h
 #define SEACAS_Version_h
 
-static std::string version("2.86");
-static std::string verdate("2016-10-27");
+static char const *qainfo[] = {
+    "slice", "2016/11/03", "0.9.8",
+};
 
 #endif // SEACAS_Version_h
