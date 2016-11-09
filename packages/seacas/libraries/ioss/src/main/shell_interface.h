@@ -81,6 +81,7 @@ namespace IOShell {
     bool                     in_memory_read{false};
     bool                     in_memory_write{false};
     bool                     lower_case_variable_names{true};
+    bool                     delete_timesteps{false};
     char                     fieldSuffixSeparator{'_'};
   };
 }
