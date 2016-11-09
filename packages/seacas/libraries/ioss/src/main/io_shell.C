@@ -534,6 +534,10 @@ namespace {
       }
       output_region.end_mode(Ioss::STATE_MODEL);
 
+      if (interface.delete_timesteps) {
+	return;
+      }
+	
       if (interface.debug) {
         OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
       }
