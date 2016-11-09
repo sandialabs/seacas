@@ -1650,7 +1650,11 @@ namespace {
       int num_input_vars = vars.index_.size();
 
       char **input_name_list = get_name_array(num_input_vars, Excn::ExodusFile::max_name_length());
-      ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
+      int error = ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
+      if (error != EX_NOERR) {
+	std::cerr << "ERROR: Cannot get " << vars.label() << " variable names\n";
+	exit(EXIT_FAILURE);
+      }
 
       std::string status;
       if (vars.type() == EX_ELEM_BLOCK || vars.type() == EX_NODAL) {
@@ -2358,7 +2362,11 @@ namespace {
   {
     // Allocate space for variable names...
     char **name_list = get_name_array(var_count, Excn::ExodusFile::max_name_length());
-    ex_get_variable_names(id, elType, var_count, name_list);
+    int error = ex_get_variable_names(id, elType, var_count, name_list);
+    if (error != EX_NOERR) {
+      std::cerr << "ERROR: Cannot get variable names\n";
+      exit(EXIT_FAILURE);
+    }
 
     StringVector names(var_count);
     for (size_t j = 0; j < var_count; j++) {
