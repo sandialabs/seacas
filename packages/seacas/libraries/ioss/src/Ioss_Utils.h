@@ -176,10 +176,9 @@ namespace Ioss {
     // was created.
     static std::string platform_information();
 
-    // The following functions are wrappers around the sierra::Env functions
-    // or similar substitutes to reduce coupling of the Sierra framewk to
-    // the rest of the IO Subsystem. When compiled without the Framework code,
-    // Only these functions need to be reimplemented.
+    // Return amount of memory being used on this processor 
+    static size_t get_memory_info();
+
     static void abort();
 
     // Return a filename relative to the specified working directory (if any)

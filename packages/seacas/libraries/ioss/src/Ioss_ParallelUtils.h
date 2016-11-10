@@ -97,6 +97,9 @@ namespace Ioss {
      */
     void attribute_reduction(const int length, char buffer[]) const;
 
+    /*! Return min, max, average memory used by any process */
+    void memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
+
     /*! Vector 'local_counts' contains the number of objects
      * local to this processor.  On exit, global_counts
      * contains the total number of objects on all processors.
@@ -115,7 +118,7 @@ namespace Ioss {
     template <typename T> void all_gather(T my_value, std::vector<T> &result) const;
     template <typename T> void gather(std::vector<T> &my_values, std::vector<T> &result) const;
 
-    static void progress(int processor, const std::string &output);
+    void progress(int processor, const std::string &output);
     
   private:
     MPI_Comm communicator_;
