@@ -175,6 +175,20 @@ int Ioss::ParallelUtils::parallel_rank() const
   return my_rank;
 }
 
+void Ioss::ParallelUtils::memory_stats(int64_t &min, int64_t &max, int64_t &avg) const
+{
+  int64_t my_memory = Ioss::Utils::get_memory_info();
+  min = max = avg = my_memory;
+#ifdef HAVE_MPI
+  if (parallel_size() > 1) {
+    min = global_minmax(my_memory, DO_MIN);
+    max = global_minmax(my_memory, DO_MAX);
+    avg = global_minmax(my_memory, DO_SUM);
+    avg /= parallel_size();  // Integer truncation probably ok...
+  }
+#endif
+}
+
 void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) const
 {
 #ifdef HAVE_MPI
@@ -407,12 +421,16 @@ template <typename T> void Ioss::ParallelUtils::all_gather(T my_value, std::vect
 
 void Ioss::ParallelUtils::progress(int processor, const std::string &output)
 {
+  int64_t min = 0, max = 0, avg = 0;
+  memory_stats(min, max, avg);
+  
   static auto start = std::chrono::high_resolution_clock::now();
 
   if (processor == 0) {
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = now - start;
-    std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count() << "]\t" << output << "\n";
+    std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count() << "] ("
+	       << min << " " << max << " " << avg << ")\t" << output << "\n";
   }
 }
 

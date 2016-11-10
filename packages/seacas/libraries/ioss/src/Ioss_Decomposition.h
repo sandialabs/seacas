@@ -201,7 +201,7 @@ namespace Ioss {
     void show_progress(const std::string &message) const
     {
       if (m_showProgress) {
-	Ioss::ParallelUtils::progress(m_processor, message);
+	Ioss::ParallelUtils::ParallelUtils(m_comm).progress(m_processor, message);
       }
     }
     
