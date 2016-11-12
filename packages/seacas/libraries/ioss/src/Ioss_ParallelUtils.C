@@ -419,18 +419,19 @@ template <typename T> void Ioss::ParallelUtils::all_gather(T my_value, std::vect
 #include <chrono>
 #include <iomanip>
 
-void Ioss::ParallelUtils::progress(int processor, const std::string &output)
+void Ioss::ParallelUtils::progress(const std::string &output) const
 {
+  int64_t MiB = 1024 * 1024;
   int64_t min = 0, max = 0, avg = 0;
   memory_stats(min, max, avg);
   
   static auto start = std::chrono::high_resolution_clock::now();
 
-  if (processor == 0) {
+  if (parallel_rank() == 0) {
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = now - start;
     std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count() << "] ("
-	       << min << " " << max << " " << avg << ")\t" << output << "\n";
+	       << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M)\t" << output << "\n";
   }
 }
 

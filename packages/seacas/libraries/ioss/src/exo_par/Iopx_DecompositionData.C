@@ -224,6 +224,7 @@ namespace Iopx {
     // Have all the decomposition data needed (except for boundary
     // conditions...)
     // Can now populate the Ioss metadata...
+    m_decomposition.show_progress("\tFinished with Iopx::decompose_model");
   }
 
   template <typename INT>
@@ -305,6 +306,7 @@ namespace Iopx {
       offset += block.num_entry;
       size_t b_end = b_start + block.num_entry;
 
+      m_decomposition.show_progress("\tex_get_partial_conn loop");
       if (b_start < p_end && p_start < b_end) {
         // Some of this blocks elements are on this processor...
         size_t  overlap       = std::min(b_end, p_end) - std::max(b_start, p_start);
@@ -318,7 +320,6 @@ namespace Iopx {
         std::cerr << "Processor " << m_processor << " has " << overlap
                   << " elements on element block " << id << "\n";
 #endif
-	m_decomposition.show_progress("\tex_get_partial_conn");
         ex_get_partial_conn(filePtr, EX_ELEM_BLOCK, id, blk_start, overlap, TOPTR(connectivity),
                             nullptr, nullptr);
         size_t el = 0;
@@ -376,7 +377,6 @@ namespace Iopx {
     //       (3*globNodeCount/procCount*sizeof(double)/sizeof(INT)) or
     //       less.
 
-    m_decomposition.show_progress(__func__);
     int root = 0; // Root processor that reads all nodeset bulk data (nodelists)
 
     node_sets.resize(set_count);
@@ -428,7 +428,7 @@ namespace Iopx {
       if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
-	  m_decomposition.show_progress("\tex_get_set (NODE_SET)");
+	  //	  m_decomposition.show_progress("\tex_get_set (NODE_SET)");
           ex_get_set(filePtr, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
           offset += sets[i].num_entry;
         }
@@ -576,7 +576,7 @@ namespace Iopx {
       if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
-	  m_decomposition.show_progress("\tex_get_set (SIDE_SET)");
+	  // m_decomposition.show_progress("\tex_get_set (SIDE_SET)");
           ex_get_set(filePtr, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
           offset += sets[i].num_entry;
         }

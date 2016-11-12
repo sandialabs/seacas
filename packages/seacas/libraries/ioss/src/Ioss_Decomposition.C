@@ -351,6 +351,8 @@ namespace Ioss {
       get_shared_node_list();
     }
 
+    show_progress("\tprior to releasing some temporary decomposition memory");
+    
     // Release some memory...
     m_adjacency.resize(0);
     m_adjacency.shrink_to_fit();
@@ -360,6 +362,7 @@ namespace Ioss {
     m_elementDist.shrink_to_fit();
     m_nodeDist.resize(0);
     m_nodeDist.shrink_to_fit();
+    show_progress("\tIoss::decompose model finished");
   }
 
   template void Decomposition<int>::calculate_element_centroids(const std::vector<double> &x,
@@ -659,7 +662,7 @@ namespace Ioss {
     importElementCount.resize(m_processorCount + 1);
     MPI_Alltoall(TOPTR(exportElementCount), 1, Ioss::mpi_type((INT)0), TOPTR(importElementCount), 1,
                  Ioss::mpi_type((INT)0), m_comm);
-    show_progress("\tCommunication 1 finished");
+    show_progress("\tmetis_decompose Communication 1 finished");
 
     // Now fill the vectors with the elements ...
     size_t exp_size = std::accumulate(exportElementCount.begin(), exportElementCount.end(), 0);
@@ -687,7 +690,7 @@ namespace Ioss {
 
     Ioss::MY_Alltoallv(exportElementMap, exportElementCount, exportElementIndex, importElementMap,
                        importElementCount, importElementIndex, m_comm);
-    show_progress("\tCommunication 2 finished");
+    show_progress("\tmetis_decompose Communication 2 finished");
 
 #if IOSS_DEBUG_OUTPUT
     std::cerr << "Processor " << m_processor << ":\t" << m_elementCount - exp_size << " local, "
@@ -1182,6 +1185,7 @@ namespace Ioss {
     for (size_t i = 0; i < nodeGTL.size(); i++) {
       nodeGTL[i]++; // convert from 0-based index to 1-based index
     }
+    show_progress(__func__);
   }
 
   template <typename INT> void Decomposition<INT>::get_shared_node_list()
@@ -1301,6 +1305,7 @@ namespace Ioss {
     std::cerr << "Processor " << m_processor << " has " << m_nodeCommMap.size() / 2
               << " shared nodes\n";
 #endif
+    show_progress(__func__);
   }
 
   // The following function is used if reading all element data on a
@@ -1445,7 +1450,6 @@ namespace Ioss {
       recv_data.resize(size);
       result =
           MPI_Recv(TOPTR(recv_data), size, Ioss::mpi_type(T(0)), set.root_, 111, m_comm, &status);
-      show_progress("\tCommunication 1 finished");
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
