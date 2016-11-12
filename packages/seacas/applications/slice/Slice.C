@@ -58,13 +58,6 @@
 #include <string>
 #include <vector>
 
-#if defined(__APPLE__) && defined(__MACH__)
-#include <mach/kern_return.h> // for kern_return_t
-#include <mach/mach.h>
-#include <mach/message.h> // for mach_msg_type_number_t
-#include <mach/task_info.h>
-#endif
-
 #if USE_METIS
 #include <metis.h>
 #else
@@ -98,48 +91,6 @@ int           debug_level         = 0;
 size_t partial_count = 1000000000;
 
 namespace {
-  size_t get_memory_info()
-  {
-    size_t memory_usage = 0;
-#if defined(__APPLE__) && defined(__MACH__)
-    static size_t               original = 0;
-    kern_return_t               error;
-    mach_msg_type_number_t      outCount;
-    mach_task_basic_info_data_t taskinfo;
-
-    taskinfo.virtual_size = 0;
-    outCount              = MACH_TASK_BASIC_INFO_COUNT;
-    error = task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&taskinfo, &outCount);
-    if (error == KERN_SUCCESS) {
-      // type is mach_vm_size_t
-      if (original == 0) {
-        original = taskinfo.virtual_size;
-      }
-      memory_usage = taskinfo.virtual_size - original;
-    }
-#elif __linux__
-    size_t        faults = 0;
-    std::ifstream proc("/proc/self/stat", std::ios_base::in | std::ios_base::binary);
-    if (proc) {
-
-      std::string s("");
-      int         i = 0;
-      for (; i < 11; ++i)
-        proc >> s;
-
-      proc >> faults;
-      ++i;
-
-      for (; i < 22; ++i)
-        proc >> s;
-
-      proc >> memory_usage;
-      ++i;
-    }
-#endif
-    return memory_usage;
-  }
-
   void progress(const std::string &output)
   {
     static auto start = std::chrono::high_resolution_clock::now();
@@ -148,7 +99,7 @@ namespace {
       auto                          now  = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = now - start;
       std::cerr << " [" << std::fixed << std::setprecision(2) << diff.count() << " - "
-                << get_memory_info() << "]\t" << output << "\n";
+                << Ioss::Utils::get_memory_info() << "]\t" << output << "\n";
     }
   }
 
