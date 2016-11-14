@@ -68,7 +68,7 @@ using MPI_Comm       = int;
 #endif
 #endif
 
-#if !defined(SEACAS_IN_SIERRA)
+#if !defined(SIERRA_PARALLEL_MPI)
 #include <SEACASIoss_KOKKOS_config.h>
 #endif
 
