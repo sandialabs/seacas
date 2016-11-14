@@ -1647,13 +1647,16 @@ namespace {
       char **output_name_list =
           get_name_array(vars.count(Excn::OUT), Excn::ExodusFile::max_name_length());
 
-      int num_input_vars = vars.index_.size();
-
-      char **input_name_list = get_name_array(num_input_vars, Excn::ExodusFile::max_name_length());
-      int error = ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
-      if (error != EX_NOERR) {
-	std::cerr << "ERROR: Cannot get " << vars.label() << " variable names\n";
-	exit(EXIT_FAILURE);
+      int num_vars = vars.index_.size();
+      int num_input_vars = num_vars - vars.addStatus ? 1 : 0;
+      
+      char **input_name_list = get_name_array(num_vars, Excn::ExodusFile::max_name_length());
+      if (num_input_vars > 0) {
+	int error = ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
+	if (error != EX_NOERR) {
+	  std::cerr << "ERROR: Cannot get " << vars.label() << " variable names\n";
+	  exit(EXIT_FAILURE);
+	}
       }
 
       std::string status;
@@ -1661,12 +1664,12 @@ namespace {
         if (vars.type() == EX_ELEM_BLOCK) {
           status = si.element_status_variable();
           if (status != "NONE")
-            strcpy(input_name_list[num_input_vars - 1], status.c_str());
+            strcpy(input_name_list[num_vars - 1], status.c_str());
         }
         else if (vars.type() == EX_NODAL) {
           status = si.nodal_status_variable();
           if (status != "NONE")
-            strcpy(input_name_list[num_input_vars - 1], status.c_str());
+            strcpy(input_name_list[num_vars - 1], status.c_str());
         }
       }
 
@@ -1674,7 +1677,7 @@ namespace {
       // Assume that the number of pointers is limited to
       // the number of results variables
       size_t maxlen = 0;
-      for (int i = 0; i < num_input_vars; i++) {
+      for (int i = 0; i < num_vars; i++) {
         if (vars.index_[i] > 0) {
           strcpy(output_name_list[vars.index_[i] - 1], input_name_list[i]);
           if (strlen(input_name_list[i]) > maxlen) {
@@ -1738,7 +1741,7 @@ namespace {
         }
       }
       free_name_array(output_name_list, vars.count(Excn::OUT));
-      free_name_array(input_name_list, num_input_vars);
+      free_name_array(input_name_list, num_vars);
     }
   }
 
@@ -1761,10 +1764,7 @@ namespace {
     // var_index[i] > 0, variable written; is variable 'var_index[i]'
 
     // If 'type' is ELEMENT or NODE, then reserve space for the 'status' variable.
-    int extra = 0;
-    if (vars.addStatus)
-      extra = 1;
-
+    int extra = vars.addStatus ? 1 : 0;
     int num_vars;
     ex_get_variable_param(id, vars.type(), &num_vars);
 
