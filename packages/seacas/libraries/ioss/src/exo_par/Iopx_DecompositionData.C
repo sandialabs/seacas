@@ -428,7 +428,6 @@ namespace Iopx {
       if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
-	  //	  m_decomposition.show_progress("\tex_get_set (NODE_SET)");
           ex_get_set(filePtr, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
           offset += sets[i].num_entry;
         }
@@ -576,7 +575,6 @@ namespace Iopx {
       if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
-	  // m_decomposition.show_progress("\tex_get_set (SIDE_SET)");
           ex_get_set(filePtr, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
           offset += sets[i].num_entry;
         }
