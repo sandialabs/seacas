@@ -1648,7 +1648,8 @@ namespace {
           get_name_array(vars.count(Excn::OUT), Excn::ExodusFile::max_name_length());
 
       int num_vars = vars.index_.size();
-      int num_input_vars = num_vars - vars.addStatus ? 1 : 0;
+      int extra = vars.addStatus ? 1 : 0;
+      int num_input_vars = num_vars - extra;
       
       char **input_name_list = get_name_array(num_vars, Excn::ExodusFile::max_name_length());
       if (num_input_vars > 0) {
