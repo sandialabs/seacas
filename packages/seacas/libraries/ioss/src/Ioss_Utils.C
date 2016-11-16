@@ -341,6 +341,7 @@ size_t Ioss::Utils::get_memory_info()
   Kernel_GetMemorySize(KERNEL_MEMSIZE_HEAP, &heap);
   memory_usage = heap;
 #else
+#if 0
   size_t        faults = 0;
   std::ifstream proc("/proc/self/stat", std::ios_base::in | std::ios_base::binary);
   if (proc) {
@@ -359,6 +360,61 @@ size_t Ioss::Utils::get_memory_info()
     proc >> memory_usage;
     ++i;
   }
+#else
+  std::string vmrss;
+  std::string line(128,'\0');
+
+  /* Read memory size data from /proc/self/status
+   * run "man proc" to get info on the contents of /proc/self/status
+   */
+  std::ifstream proc_status("/proc/self/status");
+  if (!proc_status) return;
+
+  while (vmrss.empty()) {
+
+    if(!std::getline(proc_status, line)) return;
+      /* Find VmRSS */
+    else if (line.substr(0, 6) == "VmRSS:") {
+      vmrss = line.substr(7);
+      std::istringstream iss(vmrss);
+      iss >> memory_usage;
+      memory_usage *= 1024;
+    }
+  }
+  proc_status.close();
+#endif
+#endif
+#endif
+  return memory_usage;
+}
+
+size_t Ioss::Utils::get_hwm_memory_info()
+{
+  size_t memory_usage = 0;
+#if defined(__linux__)
+#if defined(BGQ_LWK)
+
+#else
+  std::string line(128,'\0');
+
+  /* Read memory size data from /proc/self/status
+   * run "man proc" to get info on the contents of /proc/self/status
+   */
+  std::ifstream proc_status("/proc/self/status");
+  if (!proc_status) return;
+
+  while (1) {
+
+    if(!std::getline(proc_status, line)) return;
+    if (line.substr(0, 6) == "VmHWM:") {
+      std::string vmrss = line.substr(7);
+      std::istringstream iss(vmrss);
+      iss >> memory_usage;
+      memory_usage *= 1024;
+      break;
+    }
+  }
+  proc_status.close();
 #endif
 #endif
   return memory_usage;
