@@ -74,6 +74,7 @@ namespace IOShell {
     bool                     shuffle{false};
     bool                     debug{false};
     bool                     statistics{false};
+    bool                     memory_statistics{false};
     bool                     do_transform_fields{false};
     bool                     ints_64_bit{false};
     bool                     reals_32_bit{false};
