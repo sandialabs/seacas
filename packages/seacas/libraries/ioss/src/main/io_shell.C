@@ -257,6 +257,13 @@ int main(int argc, char *argv[])
            << " bytes/second.\n";
   }
 
+  if (mem_stats) {
+    int64_t min, max, avg;
+    parallel.hwm_memory_stats(min, max, avg);
+    int64_t MiB = 1024 * 1024;
+    OUTPUT << "\n\tHigh Water Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+  }
+
   OUTPUT << "\n" << codename << " execution successful.\n";
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -535,6 +542,12 @@ namespace {
       output_region.end_mode(Ioss::STATE_MODEL);
 
       if (interface.delete_timesteps) {
+	if (mem_stats) {
+	  dbi->release_memory();
+	  dbo->release_memory();
+	  data.resize(0); data.shrink_to_fit();
+	  dbi->util().progress("Memory Released... ");
+	}
 	return;
       }
 	
