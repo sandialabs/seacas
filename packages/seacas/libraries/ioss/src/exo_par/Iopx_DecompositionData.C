@@ -225,6 +225,16 @@ namespace Iopx {
     // conditions...)
     // Can now populate the Ioss metadata...
     m_decomposition.show_progress("\tFinished with Iopx::decompose_model");
+
+    if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
+      int64_t min, max, avg;
+      Ioss::ParallelUtils pu(m_decomposition.m_comm);
+      pu.hwm_memory_stats(min, max, avg);
+      int64_t MiB = 1024 * 1024;
+      if (m_processor == 0) {
+	std::cerr << "\n\tHigh Water Memory at end of Decomposition: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+      }
+    }
   }
 
   template <typename INT>

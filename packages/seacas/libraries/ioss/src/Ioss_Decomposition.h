@@ -276,7 +276,8 @@ namespace Ioss {
 
     bool m_retainFreeNodes;
     bool m_showProgress;
-
+    bool m_showHWM;
+    
     std::vector<double> m_centroids;
     std::vector<INT>    m_pointer;   // Index into adjacency, processor list for each element...
     std::vector<INT>    m_adjacency; // Size is sum of element connectivity sizes
