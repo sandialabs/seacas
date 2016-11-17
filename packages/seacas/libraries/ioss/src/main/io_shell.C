@@ -271,8 +271,11 @@ int main(int argc, char *argv[])
 
   if (mem_stats) {
     int64_t min, max, avg;
-    parallel.hwm_memory_stats(min, max, avg);
     int64_t MiB = 1024 * 1024;
+    parallel.memory_stats(min, max, avg);
+    OUTPUT << "\n\tCurrent Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+
+    parallel.hwm_memory_stats(min, max, avg);
     OUTPUT << "\n\tHigh Water Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
   }
 
@@ -575,6 +578,7 @@ namespace {
 
       if (interface.delete_timesteps) {
 	if (mem_stats) {
+	  dbi->util().progress("Prior to Memory Released... ");
 	  dbi->release_memory();
 	  dbo->release_memory();
 	  data.resize(0); data.shrink_to_fit();
@@ -748,6 +752,7 @@ namespace {
       output_region.end_mode(Ioss::STATE_TRANSIENT);
 
       if (mem_stats) {
+	dbi->util().progress("Prior to Memory Released... ");
 	dbi->release_memory();
 	dbo->release_memory();
 	data.resize(0); data.shrink_to_fit();
