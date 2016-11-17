@@ -220,6 +220,7 @@ namespace Ioss {
     //    -- if (sendcnts[#proc-1] + senddisp[#proc-1] < 2^31, then we are ok
     // 2) They are of type 64-bit integers, and storing data in the 64-bit integer range.
     //    -- call special alltoallv which does point-to-point sends
+#if 1
     int processor_count = 0;
     MPI_Comm_size(comm, &processor_count);
     size_t max_comm = sendcnts[processor_count - 1] + senddisp[processor_count - 1];
@@ -234,12 +235,15 @@ namespace Ioss {
                            TOPTR(recvbuf), TOPTR(recv_cnt), TOPTR(recv_dis), mpi_type(T(0)), comm);
     }
     else {
+#endif
       // Same as if each processor sent a message to every other process with:
       //     MPI_Send(sendbuf+senddisp[i]*sizeof(sendtype),sendcnts[i], sendtype, i, tag, comm);
       // And received a message from each processor with a call to:
       //     MPI_Recv(recvbuf+recvdisp[i]*sizeof(recvtype),recvcnts[i], recvtype, i, tag, comm);
       return MY_Alltoallv64(sendbuf, sendcnts, senddisp, recvbuf, recvcnts, recvdisp, comm);
+#if 1
     }
+#endif
   }
 
   template <typename T>
