@@ -209,10 +209,11 @@ namespace Ioss {
 
     static unsigned int hash(const std::string &name);
 
+    static double timer();
+    
     // Return a vector of strings containing the lines of the input file.
     // Should only be called by a single processor or each processor will
     // be accessing the file at the same time...
-    //
     static void input_file(const std::string &file_name, std::vector<std::string> *lines,
                            size_t max_line_length = 0);
 

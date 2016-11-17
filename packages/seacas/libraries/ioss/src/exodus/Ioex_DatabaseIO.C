@@ -266,7 +266,21 @@ namespace Ioex {
   int DatabaseIO::free_file_pointer() const
   {
     if (exodusFilePtr != -1) {
+      bool do_timer = false;
+      if (isParallel) {
+	Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+      }
+      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
       ex_close(exodusFilePtr);
+
+      if (do_timer && isParallel) {
+	double t_end = Ioss::Utils::timer();
+	double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
+	if (myProcessor == 0) {
+	  std::cerr << "File Close Time = " << duration << "\n";
+	}
+      }
     }
     exodusFilePtr = -1;
 

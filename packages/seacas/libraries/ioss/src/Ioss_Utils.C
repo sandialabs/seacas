@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -557,6 +558,19 @@ unsigned int Ioss::Utils::hash(const std::string &name)
   }
   return hashval;
 }
+
+double Ioss::Utils::timer()
+{
+#ifdef HAVE_MPI
+    return MPI_Wtime();
+#else
+    static auto begin = std::chrono::high_resolution_clock::now();
+
+    auto now = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double>(now - begin).count();
+#endif
+}
+
 
 /** \brief Convert an input file to a vector of strings containing one string for each line of the
  * file.

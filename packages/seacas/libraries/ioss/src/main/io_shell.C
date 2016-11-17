@@ -82,24 +82,6 @@ namespace {
     std::string do_grouping() const { return "\3"; }
   };
 
-  double timer()
-  {
-#ifdef HAVE_MPI
-    return MPI_Wtime();
-#else
-    static double ticks_per_second = 0.0;
-    struct tms    time_buf;
-
-    if (ticks_per_second == 0.0) {
-      ticks_per_second = double(sysconf(_SC_CLK_TCK));
-    }
-
-    clock_t ctime = times(&time_buf);
-    double  time  = double(ctime) / ticks_per_second;
-    return time;
-#endif
-  }
-
   size_t MAX(size_t a, size_t b) { return b ^ ((a ^ b) & -static_cast<int>(a > b)); }
 
   template <typename T> struct remove_pointer
@@ -245,9 +227,9 @@ int main(int argc, char *argv[])
   OUTPUT << std::endl;
 #endif
 
-  double begin = timer();
+  double begin = Ioss::Utils::timer();
   file_copy(interface);
-  double end = timer();
+  double end = Ioss::Utils::timer();
 
 #ifdef HAVE_MPI
   // Get total data read/written over all processors, and the max time..
@@ -288,6 +270,7 @@ int main(int argc, char *argv[])
 #ifdef HAVE_MPI
   MPI_Finalize();
 #endif
+
   return EXIT_SUCCESS;
 }
 
@@ -790,11 +773,11 @@ namespace {
         if (inb->field_exists("owning_processor")) {
           size_t isize = inb->get_field("ids").get_size();
           data.resize(isize);
-          double t1 = timer();
+          double t1 = Ioss::Utils::timer();
           inb->get_field_data("ids", &data[0], isize);
-          double t2 = timer();
+          double t2 = Ioss::Utils::timer();
           nb->put_field_data("ids", &data[0], isize);
-          time_write += timer() - t2;
+          time_write += Ioss::Utils::timer() - t2;
           time_read += t2 - t1;
 
           data_read += isize;
@@ -802,12 +785,12 @@ namespace {
 
           isize = inb->get_field("owning_processor").get_size();
           data.resize(isize);
-          t1 = timer();
+          t1 = Ioss::Utils::timer();
           inb->get_field_data("owning_processor", &data[0], isize);
-          t2 = timer();
+          t2 = Ioss::Utils::timer();
           nb->put_field_data("owning_processor", &data[0], isize);
 
-          time_write += timer() - t2;
+          time_write += Ioss::Utils::timer() - t2;
           time_read += t2 - t1;
           data_read += isize;
           data_write += isize;
@@ -1118,7 +1101,7 @@ namespace {
       assert(data.size() >= isize);
       data_read += isize;
       data_write += isize;
-      double t1 = timer();
+      double t1 = Ioss::Utils::timer();
 
       switch (interface.data_storage_type) {
       case 1: ige->get_field_data(field_name, &data[0], isize); break;
@@ -1190,7 +1173,7 @@ namespace {
         return;
       }
 
-      double t2 = timer();
+      double t2 = Ioss::Utils::timer();
 
       switch (interface.data_storage_type) {
       case 1: oge->put_field_data(out_field_name, &data[0], osize); break;
@@ -1263,7 +1246,7 @@ namespace {
         return;
       }
 
-      time_write += timer() - t2;
+      time_write += Ioss::Utils::timer() - t2;
       time_read += t2 - t1;
     }
   }
@@ -1363,7 +1346,7 @@ namespace {
     assert(data.size() >= isize);
     data_read += isize;
     data_write += isize;
-    double t1 = timer();
+    double t1 = Ioss::Utils::timer();
 
     switch (interface.data_storage_type) {
     case 1: ige->get_field_data(field_name, &data[0], isize); break;
@@ -1436,7 +1419,7 @@ namespace {
       return;
     }
 
-    double t2 = timer();
+    double t2 = Ioss::Utils::timer();
 
     switch (interface.data_storage_type) {
     case 1: oge->put_field_data(field_name, &data[0], isize); break;
@@ -1504,7 +1487,7 @@ namespace {
     default: return;
     }
 
-    time_write += timer() - t2;
+    time_write += Ioss::Utils::timer() - t2;
     time_read += t2 - t1;
   }
 
@@ -1545,9 +1528,9 @@ namespace {
     Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
     if (nb->field_exists("owning_processor")) {
       std::vector<INT> my_data;
-      double           t1 = timer();
+      double           t1 = Ioss::Utils::timer();
       nb->get_field_data("owning_processor", my_data);
-      time_read += timer() - t1;
+      time_read += Ioss::Utils::timer() - t1;
       data_read += my_data.size();
 
       INT owned = std::count(my_data.begin(), my_data.end(), my_processor);
@@ -1558,9 +1541,9 @@ namespace {
       for (auto ns : nss) {
 
         std::vector<INT> ids;
-        t1 = timer();
+        t1 = Ioss::Utils::timer();
         ns->get_field_data("ids_raw", ids);
-        time_read += timer() - t1;
+        time_read += Ioss::Utils::timer() - t1;
         data_read += ids.size();
         owned = 0;
         for (size_t n = 0; n < ids.size(); n++) {

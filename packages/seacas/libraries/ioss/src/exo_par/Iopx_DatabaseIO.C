@@ -426,9 +426,21 @@ namespace Iopx {
     char *current_cwd = getcwd(0, 0);
     chdir(path.c_str());
 
+    bool do_timer = false;
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    
     exodusFilePtr = ex_open_par(filename.c_str(), EX_READ | par_mode | mode, &cpu_word_size,
                                 &io_word_size, &version, util().communicator(), info);
 
+    if (do_timer) {
+      double t_end = Ioss::Utils::timer();
+      double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
+      if (myProcessor == 0) {
+	std::cerr << "File Open Time = " << duration << "\n";
+      }
+    }
+    
     chdir(current_cwd);
     std::free(current_cwd);
 
@@ -521,6 +533,10 @@ namespace Iopx {
     char *current_cwd = getcwd(0, 0);
     chdir(path.c_str());
 
+    bool do_timer = false;
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    
     if (fileExists) {
       exodusFilePtr = ex_open_par(filename.c_str(), EX_WRITE | mode | par_mode, &cpu_word_size,
                                   &io_word_size, &version, util().communicator(), info);
@@ -535,6 +551,15 @@ namespace Iopx {
       }
       exodusFilePtr = ex_create_par(filename.c_str(), mode | par_mode, &cpu_word_size,
                                     &dbRealWordSize, util().communicator(), info);
+    }
+
+    if (do_timer) {
+      double t_end = Ioss::Utils::timer();
+      double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
+      std::string open_create = fileExists ? "Open" : "Create";
+      if (myProcessor == 0) {
+	std::cerr << "File " << open_create << " Time = " << duration << "\n";
+      }
     }
 
     chdir(current_cwd);
