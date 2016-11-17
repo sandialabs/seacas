@@ -178,6 +178,7 @@ namespace Ioss {
 
     // Return amount of memory being used on this processor 
     static size_t get_memory_info();
+    static size_t get_hwm_memory_info();
 
     static void abort();
 
