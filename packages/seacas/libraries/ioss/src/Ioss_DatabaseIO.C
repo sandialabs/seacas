@@ -770,7 +770,7 @@ namespace {
 	  }
 	}
 	if (util.parallel_size() > 1) {
-	  strm << "T:" << std::setw(8) << total;
+	  strm << " T:" << std::setw(8) << total;
 	}
         strm << "\t" << name << "/" << field.get_name() << "\n";
         std::cout << strm.str();

@@ -75,6 +75,13 @@
 
 namespace {
 
+  struct my_numpunct : std::numpunct<char>
+  {
+  protected:
+    char        do_thousands_sep() const { return ','; }
+    std::string do_grouping() const { return "\3"; }
+  };
+
   double timer()
   {
 #ifdef HAVE_MPI
@@ -132,7 +139,8 @@ namespace {
   int64_t data_write     = 0;
   double  time_read      = 0.0;
   double  time_write     = 0.0;
-
+  bool    mem_stats      = false;
+  
   void show_step(int istep, double time);
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -194,6 +202,9 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
 
+  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
+  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
+
 #ifdef SEACAS_HAVE_KOKKOS
   Kokkos::initialize(argc, argv);
 
@@ -214,6 +225,7 @@ int main(int argc, char *argv[])
   }
 
   Ioss::SerializeIO::setGroupFactor(interface.serialize_io_size);
+  mem_stats = interface.memory_statistics;
 
   Ioss::Init::Initializer io;
 #ifndef NO_XDMF_SUPPORT
@@ -316,6 +328,11 @@ namespace {
       properties.add(Ioss::Property("LOGGING", 1));
     }
 
+    if (interface.memory_statistics) {
+      properties.add(Ioss::Property("DECOMP_SHOW_PROGRESS", true));
+
+    }
+    
     if (!interface.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
     }
@@ -327,6 +344,9 @@ namespace {
         std::exit(EXIT_FAILURE);
       }
 
+      if (mem_stats) {
+	dbi->util().progress("Database Creation");
+      }
       if (!interface.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
       }
@@ -403,6 +423,9 @@ namespace {
       if (interface.debug) {
         OUTPUT << "DEFINING MODEL ... \n";
       }
+      if (mem_stats) {
+	dbi->util().progress("DEFINING MODEL");
+      }
       if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
         OUTPUT << "ERROR: Could not put output region into define model state\n";
         std::exit(EXIT_FAILURE);
@@ -444,6 +467,9 @@ namespace {
       if (interface.debug) {
         OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
       }
+      if (mem_stats) {
+	dbi->util().progress("END STATE_DEFINE_MODEL");
+      }
 
       output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
@@ -453,6 +479,9 @@ namespace {
 
       if (interface.debug) {
         OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
+      }
+      if (mem_stats) {
+	dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
       }
 
       // Model defined, now fill in the model data...
@@ -532,6 +561,9 @@ namespace {
       if (interface.debug) {
         OUTPUT << "END STATE_MODEL... " << '\n';
       }
+      if (mem_stats) {
+	dbi->util().progress("END STATE_MODEL... ");
+      }
       output_region.end_mode(Ioss::STATE_MODEL);
 
       if (interface.delete_timesteps) {
@@ -540,6 +572,9 @@ namespace {
 	
       if (interface.debug) {
         OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
+      }
+      if (mem_stats) {
+	dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
       }
 
       if (region.property_exists("state_count") &&
@@ -603,11 +638,17 @@ namespace {
         if (interface.debug) {
           OUTPUT << "END STATE_DEFINE_TRANSIENT... " << '\n';
         }
+	if (mem_stats) {
+	  dbi->util().progress("END STATE_DEFINE_TRANSIENT... ");
+	}
         output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
       }
 
       if (interface.debug) {
         OUTPUT << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
+      }
+      if (mem_stats) {
+	dbi->util().progress("TRANSFERRING TRANSIENT FIELDS... ");
       }
 
       output_region.begin_mode(Ioss::STATE_TRANSIENT);
@@ -688,7 +729,17 @@ namespace {
       if (interface.debug) {
         OUTPUT << "END STATE_TRANSIENT... " << '\n';
       }
+      if (mem_stats) {
+	dbi->util().progress("END STATE_TRANSIENT ... ");
+      }
       output_region.end_mode(Ioss::STATE_TRANSIENT);
+
+      if (mem_stats) {
+	dbi->release_memory();
+	dbo->release_memory();
+	data.resize(0); data.shrink_to_fit();
+	dbi->util().progress("Memory Released... ");
+      }
     }
   }
 

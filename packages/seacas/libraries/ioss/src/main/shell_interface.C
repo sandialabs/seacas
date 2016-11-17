@@ -157,6 +157,9 @@ void IOShell::Interface::enroll_options()
   options_.enroll("statistics", Ioss::GetLongOption::NoValue,
                   "output parallel io timing statistics", nullptr);
 
+  options_.enroll("memory_statistics", Ioss::GetLongOption::NoValue,
+                  "output memory usage throughout code execution", nullptr);
+
   options_.enroll("Maximum_Time", Ioss::GetLongOption::MandatoryValue,
                   "Maximum time on input database to transfer to output database", nullptr);
 
@@ -315,6 +318,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("statistics") != nullptr) {
     statistics = true;
+  }
+
+  if (options_.retrieve("memory_statistics") != nullptr) {
+    memory_statistics = true;
   }
 
   if (options_.retrieve("memory_read") != nullptr) {
