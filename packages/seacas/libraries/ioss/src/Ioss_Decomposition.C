@@ -175,7 +175,8 @@ namespace Ioss {
   Decomposition<INT>::Decomposition(const Ioss::PropertyManager &props, MPI_Comm comm)
       : m_comm(comm), m_spatialDimension(3), m_globalElementCount(0), m_elementCount(0),
         m_elementOffset(0), m_importPreLocalElemIndex(0), m_globalNodeCount(0), m_nodeCount(0),
-        m_nodeOffset(0), m_importPreLocalNodeIndex(0), m_retainFreeNodes(true), m_showProgress(false)
+        m_nodeOffset(0), m_importPreLocalNodeIndex(0), m_retainFreeNodes(true), m_showProgress(false),
+	m_showHWM(false)
   {
     MPI_Comm_rank(m_comm, &m_processor);
     MPI_Comm_size(m_comm, &m_processorCount);
@@ -183,6 +184,7 @@ namespace Ioss {
 
     Utils::check_set_bool_property(props, "RETAIN_FREE_NODES", m_retainFreeNodes);
     Utils::check_set_bool_property(props, "DECOMP_SHOW_PROGRESS", m_showProgress);
+    Utils::check_set_bool_property(props, "DECOMP_SHOW_HWM", m_showHWM);
   }
 
   template bool                Decomposition<int64_t>::needs_centroids() const;
