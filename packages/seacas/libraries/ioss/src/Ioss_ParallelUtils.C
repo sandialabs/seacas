@@ -189,6 +189,20 @@ void Ioss::ParallelUtils::memory_stats(int64_t &min, int64_t &max, int64_t &avg)
 #endif
 }
 
+void Ioss::ParallelUtils::hwm_memory_stats(int64_t &min, int64_t &max, int64_t &avg) const
+{
+  int64_t my_memory = Ioss::Utils::get_hwm_memory_info();
+  min = max = avg = my_memory;
+#ifdef HAVE_MPI
+  if (parallel_size() > 1) {
+    min = global_minmax(my_memory, DO_MIN);
+    max = global_minmax(my_memory, DO_MAX);
+    avg = global_minmax(my_memory, DO_SUM);
+    avg /= parallel_size();  // Integer truncation probably ok...
+  }
+#endif
+}
+
 void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) const
 {
 #ifdef HAVE_MPI

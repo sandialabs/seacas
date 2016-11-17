@@ -100,6 +100,10 @@ namespace Ioss {
     /*! Return min, max, average memory used by any process */
     void memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
 
+    /*! Return high-water-mark min, max, average memory used by any process */
+    /* May be inaccurate unless system maintains this information */
+    void hwm_memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
+
     /*! Vector 'local_counts' contains the number of objects
      * local to this processor.  On exit, global_counts
      * contains the total number of objects on all processors.
