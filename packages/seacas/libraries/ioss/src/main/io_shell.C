@@ -252,15 +252,21 @@ int main(int argc, char *argv[])
   }
 
   if (mem_stats) {
-    int64_t min, max, avg;
     int64_t MiB = 1024 * 1024;
+#ifdef HAVE_MPI
+    int64_t min, max, avg;
     parallel.memory_stats(min, max, avg);
     OUTPUT << "\n\tCurrent Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
 
     parallel.hwm_memory_stats(min, max, avg);
     OUTPUT << "\n\tHigh Water Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+#else
+    int64_t mem = Ioss::Utils::get_memory_info();
+    int64_t hwm = Ioss::Utils::get_hwm_memory_info();
+    OUTPUT << "\n\tCurrent Memory:    " << mem/MiB << "M\n"
+	   << "\n\tHigh Water Memory: " << hwm/MiB << "M\n";
+#endif
   }
-
   OUTPUT << "\n" << codename << " execution successful.\n";
 
 #ifdef SEACAS_HAVE_KOKKOS
