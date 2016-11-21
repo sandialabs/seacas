@@ -350,7 +350,7 @@ exp:	  NUM			{ $$ = $1; 				}
 	| IMMVAR INC		{ $$ = $1->value.var; immutable_modify(aprepro, $1);  }
 	| IMMVAR DEC		{ $$ = $1->value.var; immutable_modify(aprepro, $1);  }
         | IMMVAR EQUAL exp	{ $$ = $1->value.var; immutable_modify(aprepro, $1);  }
-	| IMMSVAR EQUAL exp	{ immutable_modify(aprepro, $1);  }
+	| IMMSVAR EQUAL exp	{ immutable_modify(aprepro, $1); YYERROR; }
 	| IMMVAR EQ_PLUS exp	{ $$ = $1->value.var; immutable_modify(aprepro, $1);  }
 	| IMMVAR EQ_MINUS exp	{ $$ = $1->value.var; immutable_modify(aprepro, $1);  }
 	| IMMVAR EQ_TIME exp	{ $$ = $1->value.var; immutable_modify(aprepro, $1);  }
