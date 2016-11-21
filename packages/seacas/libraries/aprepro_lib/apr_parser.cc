@@ -932,6 +932,7 @@ namespace SEAMS {
           case 50:
 #line 272 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.string) = (char *)(yystack_[2].value.tptr)->value.svar;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
           }
 #line 973 "apr_parser.cc" // lalr1.cc:859
@@ -941,6 +942,7 @@ namespace SEAMS {
 #line 273 "aprepro.yy" // lalr1.cc:859
           {
             immutable_modify(aprepro, (yystack_[2].value.tptr));
+            YYERROR;
           }
 #line 979 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1258,6 +1260,7 @@ namespace SEAMS {
 #line 353 "aprepro.yy" // lalr1.cc:859
           {
             immutable_modify(aprepro, (yystack_[2].value.tptr));
+            YYERROR;
           }
 #line 1218 "apr_parser.cc" // lalr1.cc:859
           break;

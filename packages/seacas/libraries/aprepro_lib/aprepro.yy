@@ -269,8 +269,8 @@ sexp:     QSTRING		{ $$ = $1;				}
 				  $1->value.svar= $3;
 				  redefined_warning(aprepro, $1);          
 		                  set_type(aprepro, $1, token::SVAR);		}
-	| IMMSVAR EQUAL sexp	{ immutable_modify(aprepro, $1);  }
-        | IMMVAR EQUAL sexp	{ immutable_modify(aprepro, $1);  }
+	| IMMSVAR EQUAL sexp	{ $$ = (char*)$1->value.svar; immutable_modify(aprepro, $1); }
+        | IMMVAR EQUAL sexp	{ immutable_modify(aprepro, $1); YYERROR; }
         | SFNCT LPAR sexp RPAR	{
 	  if (arg_check($1, $1->value.strfnct_c == NULL))
 	    $$ = (char*)(*($1->value.strfnct_c))($3);
