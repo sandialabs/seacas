@@ -1533,7 +1533,7 @@ namespace {
   {
     Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
     if (nb->field_exists("owning_processor")) {
-      std::vector<INT> my_data;
+      std::vector<int> my_data;
       double           t1 = Ioss::Utils::timer();
       nb->get_field_data("owning_processor", my_data);
       time_read += Ioss::Utils::timer() - t1;

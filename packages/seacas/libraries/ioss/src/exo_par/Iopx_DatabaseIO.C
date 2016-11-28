@@ -3377,18 +3377,12 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
     if (field.get_name() == "owning_processor") {
       // Set the nodeOwningProcessor vector for all nodes on this processor.
       // Value is the processor that owns the node.
+      
+      // NOTE: The owning_processor field is always int32
       nodeOwningProcessor.reserve(num_to_get);
-      if (int_byte_size_api() == 4) {
-        int *owned = (int *)data;
-        for (size_t i = 0; i < num_to_get; i++) {
-          nodeOwningProcessor.push_back(owned[i]);
-        }
-      }
-      else {
-        int64_t *owned = (int64_t *)data;
-        for (size_t i = 0; i < num_to_get; i++) {
-          nodeOwningProcessor.push_back(owned[i]);
-        }
+      int *owned = (int *)data;
+      for (size_t i = 0; i < num_to_get; i++) {
+	nodeOwningProcessor.push_back(owned[i]);
       }
 
       // Now create the "implicit local" to "implicit global"
