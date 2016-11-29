@@ -222,6 +222,14 @@ namespace Ioss {
       }
     }
 
+    if (properties.exists("SERIALIZE_IO")) {
+      int isize = properties.get("SERIALIZE_IO").get_int();
+      Ioss::SerializeIO::setGroupFactor(isize);
+      if (isize > 0) {
+	singleProcOnly = true;
+      }
+    }
+
     {
       bool logging;
       if (Utils::check_set_bool_property(properties, "LOGGING", logging)) {
@@ -762,7 +770,7 @@ namespace {
 	  }
 	}
 	if (util.parallel_size() > 1) {
-	  strm << "T:" << std::setw(8) << total;
+	  strm << " T:" << std::setw(8) << total;
 	}
         strm << "\t" << name << "/" << field.get_name() << "\n";
         std::cout << strm.str();

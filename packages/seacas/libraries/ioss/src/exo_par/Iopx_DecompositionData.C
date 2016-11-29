@@ -225,6 +225,16 @@ namespace Iopx {
     // conditions...)
     // Can now populate the Ioss metadata...
     m_decomposition.show_progress("\tFinished with Iopx::decompose_model");
+
+    if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
+      int64_t min, max, avg;
+      Ioss::ParallelUtils pu(m_decomposition.m_comm);
+      pu.hwm_memory_stats(min, max, avg);
+      int64_t MiB = 1024 * 1024;
+      if (m_processor == 0) {
+	std::cerr << "\n\tHigh Water Memory at end of Decomposition: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+      }
+    }
   }
 
   template <typename INT>
@@ -428,7 +438,6 @@ namespace Iopx {
       if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
-	  //	  m_decomposition.show_progress("\tex_get_set (NODE_SET)");
           ex_get_set(filePtr, EX_NODE_SET, sets[i].id, &nodelist[offset], nullptr);
           offset += sets[i].num_entry;
         }
@@ -576,7 +585,6 @@ namespace Iopx {
       if (m_processor == root) {
         size_t offset = 0;
         for (size_t i = 0; i < set_count; i++) {
-	  // m_decomposition.show_progress("\tex_get_set (SIDE_SET)");
           ex_get_set(filePtr, EX_SIDE_SET, sets[i].id, &elemlist[offset], nullptr);
           offset += sets[i].num_entry;
         }

@@ -108,6 +108,14 @@ namespace {
 
   const char *complex_suffix[] = {".re", ".im"};
 
+  template<typename T>
+  void clear(std::vector<T> &vec)
+  {
+    vec.resize(0);
+    vec.shrink_to_fit();
+    assert(vec.capacity() == 0);
+  }
+  
   int get_parallel_io_mode(const Ioss::PropertyManager &properties)
   {
     static int par_mode         = 0;
@@ -273,10 +281,15 @@ namespace Iopx {
 
   void DatabaseIO::release_memory()
   {
+    free_file_pointer();
     nodeMap.release_memory();
     edgeMap.release_memory();
     faceMap.release_memory();
     elemMap.release_memory();
+    clear(nodeOwningProcessor);
+    clear(nodeGlobalImplicitMap);
+    clear(elemGlobalImplicitMap);
+    nodesetOwnedNodes.clear();
     try {
       decomp.reset();
     }
@@ -413,9 +426,21 @@ namespace Iopx {
     char *current_cwd = getcwd(0, 0);
     chdir(path.c_str());
 
+    bool do_timer = false;
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    
     exodusFilePtr = ex_open_par(filename.c_str(), EX_READ | par_mode | mode, &cpu_word_size,
                                 &io_word_size, &version, util().communicator(), info);
 
+    if (do_timer) {
+      double t_end = Ioss::Utils::timer();
+      double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
+      if (myProcessor == 0) {
+	std::cerr << "File Open Time = " << duration << "\n";
+      }
+    }
+    
     chdir(current_cwd);
     std::free(current_cwd);
 
@@ -508,6 +533,10 @@ namespace Iopx {
     char *current_cwd = getcwd(0, 0);
     chdir(path.c_str());
 
+    bool do_timer = false;
+    Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+    double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+    
     if (fileExists) {
       exodusFilePtr = ex_open_par(filename.c_str(), EX_WRITE | mode | par_mode, &cpu_word_size,
                                   &io_word_size, &version, util().communicator(), info);
@@ -522,6 +551,15 @@ namespace Iopx {
       }
       exodusFilePtr = ex_create_par(filename.c_str(), mode | par_mode, &cpu_word_size,
                                     &dbRealWordSize, util().communicator(), info);
+    }
+
+    if (do_timer) {
+      double t_end = Ioss::Utils::timer();
+      double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
+      std::string open_create = fileExists ? "Open" : "Create";
+      if (myProcessor == 0) {
+	std::cerr << "File " << open_create << " Time = " << duration << "\n";
+      }
     }
 
     chdir(current_cwd);
@@ -3339,18 +3377,12 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
     if (field.get_name() == "owning_processor") {
       // Set the nodeOwningProcessor vector for all nodes on this processor.
       // Value is the processor that owns the node.
+      
+      // NOTE: The owning_processor field is always int32
       nodeOwningProcessor.reserve(num_to_get);
-      if (int_byte_size_api() == 4) {
-        int *owned = (int *)data;
-        for (size_t i = 0; i < num_to_get; i++) {
-          nodeOwningProcessor.push_back(owned[i]);
-        }
-      }
-      else {
-        int64_t *owned = (int64_t *)data;
-        for (size_t i = 0; i < num_to_get; i++) {
-          nodeOwningProcessor.push_back(owned[i]);
-        }
+      int *owned = (int *)data;
+      for (size_t i = 0; i < num_to_get; i++) {
+	nodeOwningProcessor.push_back(owned[i]);
       }
 
       // Now create the "implicit local" to "implicit global"
