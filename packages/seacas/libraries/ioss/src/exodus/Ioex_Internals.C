@@ -3461,7 +3461,7 @@ namespace {
             ex_err(routine, errmsg, status);
             return (EX_FATAL);
           }
-          ex_compress_variable(exodusFilePtr, varid, 1);
+          ex_compress_variable(exodusFilePtr, varid, 2);
         }
 
         if (dimension > 2) {
