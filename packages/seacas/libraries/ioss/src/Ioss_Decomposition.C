@@ -1166,7 +1166,7 @@ namespace Ioss {
 	  nodeIndex[proc]+=found_count;
 	}
 
-	assert(nodeIndex[m_processorCount] == nodes.size());
+	assert((size_t)nodeIndex[m_processorCount] == nodes.size());
 
 	// Also need to update importNodeMap for all nodes being
 	// imported from processors higher than m_processor...

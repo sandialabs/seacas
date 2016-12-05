@@ -254,7 +254,7 @@ namespace Iofx {
             errmsg << "ERROR: Unable to " << open_create << " exodus decomposed database files:\n";
             for (int i = 0; i < util().parallel_size(); i++) {
               if (status[i] < 0) {
-                errmsg << "\t" << decoded_filename() << "\n";
+                errmsg << "\t" << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size()) << "\n";
               }
             }
           }

@@ -102,6 +102,9 @@ namespace SEAMS {
 #endif
 #endif
 
+// Suppress unused-variable warnings by "using" E.
+#define YYUSE(E) ((void)(E))
+
 // Enable debugging if requested.
 #if YYDEBUG
 
@@ -929,8 +932,8 @@ namespace SEAMS {
           case 50:
 #line 272 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.string) = (char *)(yystack_[2].value.tptr)->value.svar;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 973 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1211,8 +1214,8 @@ namespace SEAMS {
           case 78:
 #line 348 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[0].value.tptr));
-            YYERROR;
           }
 #line 1188 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1220,8 +1223,8 @@ namespace SEAMS {
           case 79:
 #line 349 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[0].value.tptr));
-            YYERROR;
           }
 #line 1194 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1229,8 +1232,8 @@ namespace SEAMS {
           case 80:
 #line 350 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[1].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[1].value.tptr));
-            YYERROR;
           }
 #line 1200 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1238,8 +1241,8 @@ namespace SEAMS {
           case 81:
 #line 351 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[1].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[1].value.tptr));
-            YYERROR;
           }
 #line 1206 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1247,8 +1250,8 @@ namespace SEAMS {
           case 82:
 #line 352 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 1212 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1265,8 +1268,8 @@ namespace SEAMS {
           case 84:
 #line 354 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 1224 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1274,8 +1277,8 @@ namespace SEAMS {
           case 85:
 #line 355 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 1230 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1283,8 +1286,8 @@ namespace SEAMS {
           case 86:
 #line 356 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 1236 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1292,8 +1295,8 @@ namespace SEAMS {
           case 87:
 #line 357 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 1242 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -1301,8 +1304,8 @@ namespace SEAMS {
           case 88:
 #line 358 "aprepro.yy" // lalr1.cc:859
           {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
           }
 #line 1248 "apr_parser.cc" // lalr1.cc:859
           break;
