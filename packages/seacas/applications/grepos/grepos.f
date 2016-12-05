@@ -153,7 +153,7 @@ C ... Parse options...
             CALL PRTERR ('FATAL', SCRATCH(:LENSTR(SCRATCH)))
             CALL PRTERR ('CMDSPEC', SYNTAX(:LENSTR(SYNTAX)))
           end if
-          if (i .gt. narg-2) exit
+          if (iarg .gt. narg-2) exit
         end do
       end if
 
