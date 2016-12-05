@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -341,48 +342,30 @@ size_t Ioss::Utils::get_memory_info()
   Kernel_GetMemorySize(KERNEL_MEMSIZE_HEAP, &heap);
   memory_usage = heap;
 #else
-#if 0
-  size_t        faults = 0;
-  std::ifstream proc("/proc/self/stat", std::ios_base::in | std::ios_base::binary);
-  if (proc) {
-    
-    std::string s("");
-    int         i = 0;
-    for (; i < 11; ++i)
-      proc >> s;
-    
-    proc >> faults;
-    ++i;
-    
-    for (; i < 22; ++i)
-      proc >> s;
-    
-    proc >> memory_usage;
-    ++i;
-  }
-#else
-  std::string vmrss;
   std::string line(128,'\0');
 
   /* Read memory size data from /proc/self/status
    * run "man proc" to get info on the contents of /proc/self/status
    */
   std::ifstream proc_status("/proc/self/status");
-  if (!proc_status) return;
+  if (!proc_status) {
+    return memory_usage;
+  }
 
-  while (vmrss.empty()) {
+  while (1) {
+    if(!std::getline(proc_status, line)) {
+      return memory_usage;
+    }
 
-    if(!std::getline(proc_status, line)) return;
-      /* Find VmRSS */
-    else if (line.substr(0, 6) == "VmRSS:") {
-      vmrss = line.substr(7);
+    if (line.substr(0, 6) == "VmRSS:") {
+      std::string vmrss = line.substr(7);
       std::istringstream iss(vmrss);
       iss >> memory_usage;
       memory_usage *= 1024;
+      break;
     }
   }
   proc_status.close();
-#endif
 #endif
 #endif
   return memory_usage;
@@ -401,11 +384,11 @@ size_t Ioss::Utils::get_hwm_memory_info()
    * run "man proc" to get info on the contents of /proc/self/status
    */
   std::ifstream proc_status("/proc/self/status");
-  if (!proc_status) return;
+  if (!proc_status) return memory_usage;
 
   while (1) {
 
-    if(!std::getline(proc_status, line)) return;
+    if(!std::getline(proc_status, line)) return memory_usage;
     if (line.substr(0, 6) == "VmHWM:") {
       std::string vmrss = line.substr(7);
       std::istringstream iss(vmrss);
@@ -575,6 +558,19 @@ unsigned int Ioss::Utils::hash(const std::string &name)
   }
   return hashval;
 }
+
+double Ioss::Utils::timer()
+{
+#ifdef HAVE_MPI
+    return MPI_Wtime();
+#else
+    static auto begin = std::chrono::high_resolution_clock::now();
+
+    auto now = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double>(now - begin).count();
+#endif
+}
+
 
 /** \brief Convert an input file to a vector of strings containing one string for each line of the
  * file.

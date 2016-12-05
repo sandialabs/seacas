@@ -116,11 +116,15 @@ Excn::ExodusFile::~ExodusFile()
 void Excn::ExodusFile::close_all()
 {
   for (int p = 0; p < partCount_; p++) {
-    ex_close(fileids_[p]);
-    fileids_[p] = -1;
+    if (fileids_[p] >= 0) {
+      ex_close(fileids_[p]);
+      fileids_[p] = -1;
+    }
   }
-  ex_close(outputId_);
-  outputId_ = -1;
+  if (outputId_ >= 0) {
+    ex_close(outputId_);
+    outputId_ = -1;
+  }
 }
 
 bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int part_count)
@@ -151,7 +155,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     std::cout << "Single file mode... (Max open = " << max_files << ")\n"
               << "Consider using the -subcycle option for faster execution...\n\n";
   }
-
+  
   fileids_.resize(processorCount_);
   filenames_.resize(processorCount_);
 

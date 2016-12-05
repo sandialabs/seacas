@@ -75,23 +75,12 @@
 
 namespace {
 
-  double timer()
+  struct my_numpunct : std::numpunct<char>
   {
-#ifdef HAVE_MPI
-    return MPI_Wtime();
-#else
-    static double ticks_per_second = 0.0;
-    struct tms    time_buf;
-
-    if (ticks_per_second == 0.0) {
-      ticks_per_second = double(sysconf(_SC_CLK_TCK));
-    }
-
-    clock_t ctime = times(&time_buf);
-    double  time  = double(ctime) / ticks_per_second;
-    return time;
-#endif
-  }
+  protected:
+    char        do_thousands_sep() const { return ','; }
+    std::string do_grouping() const { return "\3"; }
+  };
 
   size_t MAX(size_t a, size_t b) { return b ^ ((a ^ b) & -static_cast<int>(a > b)); }
 
@@ -132,7 +121,8 @@ namespace {
   int64_t data_write     = 0;
   double  time_read      = 0.0;
   double  time_write     = 0.0;
-
+  bool    mem_stats      = false;
+  
   void show_step(int istep, double time);
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -194,6 +184,9 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
 
+  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
+  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
+
 #ifdef SEACAS_HAVE_KOKKOS
   Kokkos::initialize(argc, argv);
 
@@ -214,6 +207,7 @@ int main(int argc, char *argv[])
   }
 
   Ioss::SerializeIO::setGroupFactor(interface.serialize_io_size);
+  mem_stats = interface.memory_statistics;
 
   Ioss::Init::Initializer io;
 #ifndef NO_XDMF_SUPPORT
@@ -233,9 +227,9 @@ int main(int argc, char *argv[])
   OUTPUT << std::endl;
 #endif
 
-  double begin = timer();
+  double begin = Ioss::Utils::timer();
   file_copy(interface);
-  double end = timer();
+  double end = Ioss::Utils::timer();
 
 #ifdef HAVE_MPI
   // Get total data read/written over all processors, and the max time..
@@ -258,12 +252,21 @@ int main(int argc, char *argv[])
   }
 
   if (mem_stats) {
-    int64_t min, max, avg;
-    parallel.hwm_memory_stats(min, max, avg);
     int64_t MiB = 1024 * 1024;
-    OUTPUT << "\n\tHigh Water Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
-  }
+#ifdef HAVE_MPI
+    int64_t min, max, avg;
+    parallel.memory_stats(min, max, avg);
+    OUTPUT << "\n\tCurrent Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
 
+    parallel.hwm_memory_stats(min, max, avg);
+    OUTPUT << "\n\tHigh Water Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+#else
+    int64_t mem = Ioss::Utils::get_memory_info();
+    int64_t hwm = Ioss::Utils::get_hwm_memory_info();
+    OUTPUT << "\n\tCurrent Memory:    " << mem/MiB << "M\n"
+	   << "\n\tHigh Water Memory: " << hwm/MiB << "M\n";
+#endif
+  }
   OUTPUT << "\n" << codename << " execution successful.\n";
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -273,6 +276,7 @@ int main(int argc, char *argv[])
 #ifdef HAVE_MPI
   MPI_Finalize();
 #endif
+
   return EXIT_SUCCESS;
 }
 
@@ -323,6 +327,11 @@ namespace {
       properties.add(Ioss::Property("LOGGING", 1));
     }
 
+    if (interface.memory_statistics) {
+      properties.add(Ioss::Property("DECOMP_SHOW_PROGRESS", true));
+
+    }
+    
     if (!interface.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
     }
@@ -334,6 +343,9 @@ namespace {
         std::exit(EXIT_FAILURE);
       }
 
+      if (mem_stats) {
+	dbi->util().progress("Database Creation");
+      }
       if (!interface.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
       }
@@ -410,6 +422,9 @@ namespace {
       if (interface.debug) {
         OUTPUT << "DEFINING MODEL ... \n";
       }
+      if (mem_stats) {
+	dbi->util().progress("DEFINING MODEL");
+      }
       if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
         OUTPUT << "ERROR: Could not put output region into define model state\n";
         std::exit(EXIT_FAILURE);
@@ -451,6 +466,9 @@ namespace {
       if (interface.debug) {
         OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
       }
+      if (mem_stats) {
+	dbi->util().progress("END STATE_DEFINE_MODEL");
+      }
 
       output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
@@ -460,6 +478,9 @@ namespace {
 
       if (interface.debug) {
         OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
+      }
+      if (mem_stats) {
+	dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
       }
 
       // Model defined, now fill in the model data...
@@ -539,10 +560,14 @@ namespace {
       if (interface.debug) {
         OUTPUT << "END STATE_MODEL... " << '\n';
       }
+      if (mem_stats) {
+	dbi->util().progress("END STATE_MODEL... ");
+      }
       output_region.end_mode(Ioss::STATE_MODEL);
 
       if (interface.delete_timesteps) {
 	if (mem_stats) {
+	  dbi->util().progress("Prior to Memory Released... ");
 	  dbi->release_memory();
 	  dbo->release_memory();
 	  data.resize(0); data.shrink_to_fit();
@@ -553,6 +578,9 @@ namespace {
 	
       if (interface.debug) {
         OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
+      }
+      if (mem_stats) {
+	dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
       }
 
       if (region.property_exists("state_count") &&
@@ -616,11 +644,17 @@ namespace {
         if (interface.debug) {
           OUTPUT << "END STATE_DEFINE_TRANSIENT... " << '\n';
         }
+	if (mem_stats) {
+	  dbi->util().progress("END STATE_DEFINE_TRANSIENT... ");
+	}
         output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
       }
 
       if (interface.debug) {
         OUTPUT << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
+      }
+      if (mem_stats) {
+	dbi->util().progress("TRANSFERRING TRANSIENT FIELDS... ");
       }
 
       output_region.begin_mode(Ioss::STATE_TRANSIENT);
@@ -701,7 +735,18 @@ namespace {
       if (interface.debug) {
         OUTPUT << "END STATE_TRANSIENT... " << '\n';
       }
+      if (mem_stats) {
+	dbi->util().progress("END STATE_TRANSIENT ... ");
+      }
       output_region.end_mode(Ioss::STATE_TRANSIENT);
+
+      if (mem_stats) {
+	dbi->util().progress("Prior to Memory Released... ");
+	dbi->release_memory();
+	dbo->release_memory();
+	data.resize(0); data.shrink_to_fit();
+	dbi->util().progress("Memory Released... ");
+      }
     }
   }
 
@@ -734,11 +779,11 @@ namespace {
         if (inb->field_exists("owning_processor")) {
           size_t isize = inb->get_field("ids").get_size();
           data.resize(isize);
-          double t1 = timer();
+          double t1 = Ioss::Utils::timer();
           inb->get_field_data("ids", &data[0], isize);
-          double t2 = timer();
+          double t2 = Ioss::Utils::timer();
           nb->put_field_data("ids", &data[0], isize);
-          time_write += timer() - t2;
+          time_write += Ioss::Utils::timer() - t2;
           time_read += t2 - t1;
 
           data_read += isize;
@@ -746,12 +791,12 @@ namespace {
 
           isize = inb->get_field("owning_processor").get_size();
           data.resize(isize);
-          t1 = timer();
+          t1 = Ioss::Utils::timer();
           inb->get_field_data("owning_processor", &data[0], isize);
-          t2 = timer();
+          t2 = Ioss::Utils::timer();
           nb->put_field_data("owning_processor", &data[0], isize);
 
-          time_write += timer() - t2;
+          time_write += Ioss::Utils::timer() - t2;
           time_read += t2 - t1;
           data_read += isize;
           data_write += isize;
@@ -1062,7 +1107,7 @@ namespace {
       assert(data.size() >= isize);
       data_read += isize;
       data_write += isize;
-      double t1 = timer();
+      double t1 = Ioss::Utils::timer();
 
       switch (interface.data_storage_type) {
       case 1: ige->get_field_data(field_name, &data[0], isize); break;
@@ -1134,7 +1179,7 @@ namespace {
         return;
       }
 
-      double t2 = timer();
+      double t2 = Ioss::Utils::timer();
 
       switch (interface.data_storage_type) {
       case 1: oge->put_field_data(out_field_name, &data[0], osize); break;
@@ -1207,7 +1252,7 @@ namespace {
         return;
       }
 
-      time_write += timer() - t2;
+      time_write += Ioss::Utils::timer() - t2;
       time_read += t2 - t1;
     }
   }
@@ -1307,7 +1352,7 @@ namespace {
     assert(data.size() >= isize);
     data_read += isize;
     data_write += isize;
-    double t1 = timer();
+    double t1 = Ioss::Utils::timer();
 
     switch (interface.data_storage_type) {
     case 1: ige->get_field_data(field_name, &data[0], isize); break;
@@ -1380,7 +1425,7 @@ namespace {
       return;
     }
 
-    double t2 = timer();
+    double t2 = Ioss::Utils::timer();
 
     switch (interface.data_storage_type) {
     case 1: oge->put_field_data(field_name, &data[0], isize); break;
@@ -1448,7 +1493,7 @@ namespace {
     default: return;
     }
 
-    time_write += timer() - t2;
+    time_write += Ioss::Utils::timer() - t2;
     time_read += t2 - t1;
   }
 
@@ -1488,10 +1533,10 @@ namespace {
   {
     Ioss::NodeBlock *nb = region.get_node_block("nodeblock_1");
     if (nb->field_exists("owning_processor")) {
-      std::vector<INT> my_data;
-      double           t1 = timer();
+      std::vector<int> my_data;
+      double           t1 = Ioss::Utils::timer();
       nb->get_field_data("owning_processor", my_data);
-      time_read += timer() - t1;
+      time_read += Ioss::Utils::timer() - t1;
       data_read += my_data.size();
 
       INT owned = std::count(my_data.begin(), my_data.end(), my_processor);
@@ -1502,9 +1547,9 @@ namespace {
       for (auto ns : nss) {
 
         std::vector<INT> ids;
-        t1 = timer();
+        t1 = Ioss::Utils::timer();
         ns->get_field_data("ids_raw", ids);
-        time_read += timer() - t1;
+        time_read += Ioss::Utils::timer() - t1;
         data_read += ids.size();
         owned = 0;
         for (size_t n = 0; n < ids.size(); n++) {
