@@ -66,3 +66,12 @@ PARALLEL_IO_MODE | mpiio, pnetcdf |
 MEMORY_READ        | on/[off]   | experimental
 MEMORY_WRITE       | on/[off]   | experimental
 ENABLE_FILE_GROUPS | on/[off]   | experimental
+
+## Debugging / Profiling
+
+  Property | Value    | Description
+ ----------|----------|------------
+ LOGGING   | on/[off] | enable/disable logging of field input/output
+ DECOMP_SHOW_PROGRESS | on/[off] | show memory and elapsed time during autodecomp.
+ DECOMP_SHOW_HWM      | on/[off] | show high-water memory during autodecomp
+ IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create
