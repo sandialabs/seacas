@@ -112,11 +112,17 @@ namespace Iocgns {
     if (cgnsFilePtr < 0) {
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
 #if CG_BUILD_PARALLEL
+#if 0
+      // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
+      // is equal to -1.  There is an issue submitted for this.
       int ierr = cgp_mpi_comm(util().communicator());
       if (ierr != CG_OK) {
         Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
       }
-      ierr = cgp_pio_mode(CGP_COLLECTIVE);
+#else
+      cgp_mpi_comm(util().communicator());
+#endif
+      int ierr = cgp_pio_mode(CGP_COLLECTIVE);
       if (ierr != CG_OK) {
         Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
       }
