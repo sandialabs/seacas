@@ -440,6 +440,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
   int  dims[2];
   int  variable;
   int  status;
+  int  fill = NC_FILL_CHAR;
 
   dims[0] = dimension;
   (void)nc_inq_dimid(exoid, DIM_STR_NAME, &dims[1]); /* Checked earlier, so known to exist */
@@ -458,6 +459,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
       ex_err("ex_put_all_var_param_ext", errmsg, exerrval);
     }
   }
+  nc_def_var_fill(exoid, variable, 0, &fill);
   return status;
 }
 

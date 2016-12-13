@@ -87,6 +87,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
   int  status;
   int  varid;
   char errmsg[MAX_ERR_LENGTH];
+  int  fill = NC_FILL_CHAR;
 
   if (count > 0) {
     dim[0] = dimension_var;
@@ -99,6 +100,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       ex_err("ex_put_init_ext", errmsg, exerrval);
       return status; /* exit define mode and return */
     }
+    nc_def_var_fill(exoid, varid, 0, &fill);
   }
   return NC_NOERR;
 }
