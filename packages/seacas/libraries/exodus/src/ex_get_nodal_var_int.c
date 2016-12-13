@@ -99,8 +99,8 @@ error = ex_get_nodal_var(exoid, time_step, var_index, num_nodes,
 
 */
 
-int ex_get_nodal_var(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
-                     void *nodal_var_vals)
+int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t num_nodes,
+                         void *nodal_var_vals)
 {
   int    varid;
   int    status;

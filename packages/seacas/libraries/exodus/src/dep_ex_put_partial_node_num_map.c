@@ -33,16 +33,38 @@
  *
  */
 
-#include "exodusII.h"  // for ex_get_partial_side_set, etc
+/*****************************************************************************
+*
+* ne_pnnnm - ex_put_partial_node_num_map
+*
+* entry conditions -
+*   input parameters:
+*	int	exoid			exodus file id
+*	int	start_ent		first entry in node_map
+*	int	num_ents		number of entries in node_map
+*       int*    node_map                node numbering map
+*
+* exit conditions -
+*
+* revision history -
+*
+*
+*****************************************************************************/
+
+#include "exodusII.h"  // for ex_put_partial_id_map, etc
 #include <sys/types.h> // for int64_t
 
 /*!
- * \deprecated Use ex_get_partial_side_set() instead
+ * \deprecated Use ex_put_partial_id_map() instead.
  */
 
-int ex_get_n_side_set(int exoid, ex_entity_id side_set_id, int64_t start_side_num,
-                      int64_t num_sides, void_int *side_set_elem_list, void_int *side_set_side_list)
+/*
+ * writes out the node numbering map to the database; allows node numbers
+ * to be non-contiguous
+ */
+
+int ex_put_partial_node_num_map(int exoid, int64_t start_ent, int64_t num_ents,
+                                const void_int *node_map)
 {
-  return ex_get_partial_side_set(exoid, side_set_id, start_side_num, num_sides, side_set_elem_list,
-                                 side_set_side_list);
+  return ex_put_partial_id_map(exoid, EX_NODE_MAP, start_ent, num_ents, node_map);
 }

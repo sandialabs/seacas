@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <exodus/Ioex_Internals.h>
 #include <exodus/Ioex_Utils.h>
@@ -59,7 +60,6 @@
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <time.h>
 #include <tokenize.h>
 #include <unistd.h>
 #include <utility>
@@ -523,7 +523,7 @@ namespace Iofx {
   {
     // Add properties and fields to the 'owning' region.
     // Also defines member variables of this class...
-    ex_init_params info;
+    ex_init_params info{};
     int            error = ex_get_init_ext(get_file_pointer(), &info);
     if (error < 0) {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -1059,7 +1059,7 @@ namespace Iofx {
 
         char *const X_type = TOPTR(all_X_type) + iblk * (MAX_STR_LENGTH + 1);
 
-        ex_block block;
+        ex_block block{};
         block.id   = id;
         block.type = entity_type;
         error      = ex_get_block_param(get_file_pointer(), &block);
@@ -4502,8 +4502,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
 namespace {
   size_t handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
                           Ioss::State db_state, Ioss::Map &entity_map, void *ids,
-                          size_t int_byte_size, size_t num_to_get, int file_pointer,
-                          int my_processor)
+                          size_t int_byte_size, size_t num_to_get, int file_pointer)
   {
     /*!
      * NOTE: "element" is generic for "element", "face", or "edge"
@@ -4599,7 +4598,7 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids,
     elemMap.map[0] = -1;
   }
   return handle_block_ids(eb, EX_ELEM_MAP, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
-                          get_file_pointer(), myProcessor);
+                          get_file_pointer());
 }
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
@@ -4609,7 +4608,7 @@ int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t
     faceMap.map[0] = -1;
   }
   return handle_block_ids(eb, EX_FACE_MAP, dbState, faceMap, ids, int_byte_size_api(), num_to_get,
-                          get_file_pointer(), myProcessor);
+                          get_file_pointer());
 }
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
@@ -4619,7 +4618,7 @@ int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t
     edgeMap.map[0] = -1;
   }
   return handle_block_ids(eb, EX_EDGE_MAP, dbState, edgeMap, ids, int_byte_size_api(), num_to_get,
-                          get_file_pointer(), myProcessor);
+                          get_file_pointer());
 }
 
 void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Ioss::Field &field,
@@ -5597,10 +5596,10 @@ void DatabaseIO::gather_communication_metadata(Ioex::CommunicationMetaData *meta
       int64_t     id    = Ioex::get_id(cs, static_cast<ex_entity_type>(0), &ids_);
 
       if (type == "node") {
-        meta->nodeMap.push_back(Ioex::CommunicationMap(id, count, 'n'));
+        meta->nodeMap.emplace_back(id, count, 'n');
       }
       else if (type == "side") {
-        meta->elementMap.push_back(Ioex::CommunicationMap(id, count, 'e'));
+        meta->elementMap.emplace_back(id, count, 'e');
       }
       else {
         std::ostringstream errmsg;

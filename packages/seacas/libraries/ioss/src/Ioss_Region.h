@@ -43,8 +43,8 @@
 #include <functional>      // for less
 #include <iosfwd>          // for ostream
 #include <map>             // for map, map<>::value_compare
-#include <stddef.h>        // for size_t, nullptr
-#include <stdint.h>        // for int64_t
+#include <cstddef>        // for size_t, nullptr
+#include <cstdint>        // for int64_t
 #include <string>          // for string, operator<
 #include <utility>         // for pair
 #include <vector>          // for vector
@@ -62,7 +62,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 // Needed for node_global_to_local inline function.
 
 namespace Ioss {
@@ -289,7 +289,7 @@ namespace Ioss {
     bool        modelDefined;
     bool        transientDefined;
   };
-}
+} // namespace Ioss
 
 /** \brief Get the index (1-based) of the currently-active state.
  *

@@ -44,11 +44,11 @@
 extern "C" {
 #include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
 }
+#include <cstddef>  // for size_t
+#include <cstdio>   // for sprintf, nullptr
+#include <cstdlib>  // for exit, EXIT_FAILURE
 #include <netcdf.h> // for NC_NOERR, nc_def_var, etc
 #include <ostream>  // for operator<<, etc
-#include <stddef.h> // for size_t
-#include <stdio.h>  // for sprintf, nullptr
-#include <stdlib.h> // for exit, EXIT_FAILURE
 #include <string.h> // for strlen, strncpy, strcpy, etc
 #include <string>   // for string, operator==, etc
 #include <vector>   // for vector

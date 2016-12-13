@@ -49,8 +49,8 @@
 #include <iomanip>
 #include <iostream>
 #include <numeric>
-#include <stddef.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdlib>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -154,7 +154,7 @@ namespace {
   {
     Ioss::PropertyManager properties;
     Ioss::DatabaseIO *    dbi = Ioss::IOFactory::create("cgns", inpfile, Ioss::READ_MODEL,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                    MPI_COMM_WORLD, properties);
     if (dbi == nullptr || !dbi->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -166,7 +166,7 @@ namespace {
     // OUTPUT ...
     //========================================================================
     Ioss::DatabaseIO *dbo = Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART,
-                                                    (MPI_Comm)MPI_COMM_WORLD, properties);
+                                                    MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
       std::exit(EXIT_FAILURE);
     }
@@ -211,7 +211,7 @@ namespace {
 
         for (size_t i = 0; i < cell_id.size(); i++) {
           size_t idx = block->m_blockLocalNodeIndex[i];
-          assert(idx >= 0 && idx < node_count);
+          assert(idx < node_count);
           if (ids[idx] == 0) {
             ids[idx] = cell_id[i];
           }
@@ -311,8 +311,7 @@ namespace {
         output->put_field_data("ids", ids);
       }
     }
-    return;
-  }
+     }
 
   void output_sidesets(Ioss::Region &region, Ioss::Region &output_region)
   {

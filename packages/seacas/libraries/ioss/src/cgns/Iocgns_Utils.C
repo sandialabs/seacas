@@ -79,37 +79,43 @@ namespace {
 
   void bc_subset_range(const Ioss::StructuredBlock *block, Ioss::BoundaryCondition &bc)
   {
-    int ordinal[3];
-    ordinal[0] = block->get_property("ni").get_int();
-    ordinal[1] = block->get_property("nj").get_int();
-    ordinal[2] = block->get_property("nk").get_int();
+    if (bc_overlaps(block, bc)) {
+      int ordinal[3];
+      ordinal[0] = block->get_property("ni").get_int();
+      ordinal[1] = block->get_property("nj").get_int();
+      ordinal[2] = block->get_property("nk").get_int();
 
-    int offset[3];
-    offset[0] = block->get_property("offset_i").get_int();
-    offset[1] = block->get_property("offset_j").get_int();
-    offset[2] = block->get_property("offset_k").get_int();
+      int offset[3];
+      offset[0] = block->get_property("offset_i").get_int();
+      offset[1] = block->get_property("offset_j").get_int();
+      offset[2] = block->get_property("offset_k").get_int();
 
-    // NOTE: Updates the range in bc
+      // NOTE: Updates the range in bc
 
-    // Note that block range is nodes and m_ordinal[] is cells, so need to add 1 to range.
-    Range z_i(1 + offset[0], ordinal[0] + offset[0] + 1);
-    Range z_j(1 + offset[1], ordinal[1] + offset[1] + 1);
-    Range z_k(1 + offset[2], ordinal[2] + offset[2] + 1);
+      // Note that block range is nodes and m_ordinal[] is cells, so need to add 1 to range.
+      Range z_i(1 + offset[0], ordinal[0] + offset[0] + 1);
+      Range z_j(1 + offset[1], ordinal[1] + offset[1] + 1);
+      Range z_k(1 + offset[2], ordinal[2] + offset[2] + 1);
 
-    Range gc_i(bc.m_rangeBeg[0], bc.m_rangeEnd[0]);
-    Range gc_j(bc.m_rangeBeg[1], bc.m_rangeEnd[1]);
-    Range gc_k(bc.m_rangeBeg[2], bc.m_rangeEnd[2]);
+      Range gc_i(bc.m_rangeBeg[0], bc.m_rangeEnd[0]);
+      Range gc_j(bc.m_rangeBeg[1], bc.m_rangeEnd[1]);
+      Range gc_k(bc.m_rangeBeg[2], bc.m_rangeEnd[2]);
 
-    Range gc_ii = subset_range(z_i, gc_i);
-    Range gc_jj = subset_range(z_j, gc_j);
-    Range gc_kk = subset_range(z_k, gc_k);
+      Range gc_ii = subset_range(z_i, gc_i);
+      Range gc_jj = subset_range(z_j, gc_j);
+      Range gc_kk = subset_range(z_k, gc_k);
 
-    bc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
-    bc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
-    bc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
-    bc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
-    bc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
-    bc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+      bc.m_rangeBeg[0] = gc_ii.m_reversed ? gc_ii.m_end : gc_ii.m_beg;
+      bc.m_rangeEnd[0] = gc_ii.m_reversed ? gc_ii.m_beg : gc_ii.m_end;
+      bc.m_rangeBeg[1] = gc_jj.m_reversed ? gc_jj.m_end : gc_jj.m_beg;
+      bc.m_rangeEnd[1] = gc_jj.m_reversed ? gc_jj.m_beg : gc_jj.m_end;
+      bc.m_rangeBeg[2] = gc_kk.m_reversed ? gc_kk.m_end : gc_kk.m_beg;
+      bc.m_rangeEnd[2] = gc_kk.m_reversed ? gc_kk.m_beg : gc_kk.m_end;
+    }
+    else {
+      bc.m_rangeBeg = {{0, 0, 0}};
+      bc.m_rangeEnd = {{0, 0, 0}};
+    }
   }
 }
 
@@ -118,8 +124,11 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
 {
   std::ostringstream errmsg;
   errmsg << "CGNS error '" << cg_get_error() << "' at line " << lineno << " in file '" << file
-         << "' in function '" << function << "' on processor " << processor
-         << ". Please report to gdsjaar@sandia.gov if you need help.";
+         << "' in function '" << function << "'";
+  if (processor >= 0) {
+    errmsg << " on processor " << processor;
+  }
+  errmsg << ". Please report to gdsjaar@sandia.gov if you need help.";
   if (cgnsid > 0) {
 #if CG_BUILD_PARALLEL
     cgp_close(cgnsid);
@@ -128,6 +137,193 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
 #endif
   }
   IOSS_ERROR(errmsg);
+}
+
+CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
+{
+  // ========================================================================
+  // Get the number of zones (element blocks) in the mesh...
+  int base      = 1;
+  int num_zones = 0;
+  int ierr      = cg_nzones(cgnsFilePtr, base, &num_zones);
+  if (ierr != CG_OK) {
+    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+  }
+
+  CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
+
+  for (cgsize_t zone = 1; zone <= num_zones; zone++) {
+    CG_ZoneType_t zone_type;
+    ierr = cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+
+    if (common_zone_type == CG_ZoneTypeNull) {
+      common_zone_type = zone_type;
+    }
+
+    if (common_zone_type != zone_type) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: Zone " << zone << " is not the same zone type as previous zones."
+             << " This is currently not allowed or supported (hybrid mesh).";
+      IOSS_ERROR(errmsg);
+    }
+  }
+  return common_zone_type;
+}
+
+void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region)
+{
+  // Make sure mesh is not hybrid...
+  if (region.mesh_type() == Ioss::MeshType::HYBRID) {
+    std::ostringstream errmsg;
+    errmsg << "ERROR: CGNS: The mesh on region " << region.name() << " is of type 'hybrid'."
+           << " This is currently not allowed or supported.";
+    IOSS_ERROR(errmsg);
+  }
+
+  int base           = 0;
+  int phys_dimension = region.get_property("spatial_dimension").get_int();
+  int ierr           = cg_base_write(cgnsFilePtr, "Base", phys_dimension, phys_dimension, &base);
+  if (ierr != CG_OK) {
+    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+  }
+
+  ierr = cg_goto(cgnsFilePtr, base, "end");
+  if (ierr != CG_OK) {
+    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+  }
+
+  ierr = cg_descriptor_write("Information", "IOSS: CGNS Writer version -1");
+  if (ierr != CG_OK) {
+    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+  }
+
+  // Output the sidesets as Family_t nodes
+
+  const auto &sidesets = region.get_sidesets();
+  for (const auto &ss : sidesets) {
+    int fam = 0;
+    ierr    = cg_family_write(cgnsFilePtr, base, ss->name().c_str(), &fam);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+    int         bc_index = 0;
+    CG_BCType_t bocotype = CG_BCTypeNull;
+    if (ss->property_exists("bc_type")) {
+      bocotype = (CG_BCType_t)ss->get_property("bc_type").get_int();
+    }
+
+    int64_t id = fam;
+    if (ss->property_exists("id")) {
+      id = ss->get_property("id").get_int();
+    }
+
+    ierr = cg_fambc_write(cgnsFilePtr, base, fam, "FamBC", bocotype, &bc_index);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+
+    ierr = cg_goto(cgnsFilePtr, base, "Family_t", fam, NULL);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+    ierr = cg_descriptor_write("FamBC_TypeId", Ioss::Utils::to_string(bocotype).c_str());
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+    ierr = cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+    ierr = cg_descriptor_write("FamBC_UserId", Ioss::Utils::to_string(id).c_str());
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+    ierr = cg_descriptor_write("FamBC_UserName", ss->name().c_str());
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+  }
+
+  const auto &element_blocks = region.get_element_blocks();
+  for (const auto &eb : element_blocks) {
+    int      zone    = 0;
+    cgsize_t size[3] = {1, 0, 0};
+    size[1]          = eb->get_property("entity_count").get_int();
+    if (eb->property_exists("node_count")) {
+      size[0] = eb->get_property("node_count").get_int();
+    }
+    ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+  }
+
+  const auto &structured_blocks = region.get_structured_blocks();
+  for (const auto &sb : structured_blocks) {
+    int      zone    = 0;
+    cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    size[3]          = sb->get_property("ni_global").get_int();
+    size[4]          = sb->get_property("nj_global").get_int();
+    size[5]          = sb->get_property("nk_global").get_int();
+
+    size[0] = size[3] + 1;
+    size[1] = size[4] + 1;
+    size[2] = size[5] + 1;
+
+    ierr = cg_zone_write(cgnsFilePtr, base, sb->name().c_str(), size, CG_Structured, &zone);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+
+    // Add GridCoordinates Node...
+    int grid_idx = 0;
+    ierr         = cg_grid_write(cgnsFilePtr, base, zone, "GridCoordinates", &grid_idx);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
+
+    // Transfer boundary condition nodes...
+    for (const auto &bc : sb->m_boundaryConditions) {
+      cgsize_t bc_idx = 0;
+      ierr = cg_boco_write(cgnsFilePtr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
+                           CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx);
+      if (ierr != CG_OK) {
+        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
+
+      ierr = cg_goto(cgnsFilePtr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
+                     0, "end");
+      if (ierr != CG_OK) {
+        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
+      ierr = cg_famname_write(bc.m_bcName.c_str());
+      if (ierr != CG_OK) {
+        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
+
+      ierr = cg_boco_gridlocation_write(cgnsFilePtr, base, zone, bc_idx, CG_Vertex);
+      if (ierr != CG_OK) {
+        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
+    }
+
+    // Transfer Zone Grid Connectivity...
+    for (const auto &zgc : sb->m_zoneConnectivity) {
+      if (zgc.m_intraBlock) {
+        continue;
+      }
+      cgsize_t zgc_idx = 0;
+      ierr             = cg_1to1_write(cgnsFilePtr, base, zone, zgc.m_connectionName.c_str(),
+                           zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
+                           &zgc.m_transform[0], &zgc_idx);
+      if (ierr != CG_OK) {
+        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
+    }
+  }
 }
 
 std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
@@ -165,13 +361,19 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 {
   cgsize_t base         = 1;
   cgsize_t num_families = 0;
-  cg_nfamilies(cgnsFilePtr, base, &num_families);
+  int      ierr         = cg_nfamilies(cgnsFilePtr, base, &num_families);
+  if (ierr != CG_OK) {
+    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+  }
   for (cgsize_t family = 1; family <= num_families; family++) {
     char        name[33];
     CG_BCType_t bocotype;
     cgsize_t    num_bc  = 0;
     cgsize_t    num_geo = 0;
-    cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
+    ierr                = cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
 #if defined(IOSS_DEBUG_OUTPUT)
     std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
               << num_geo << " geometry references\n";
@@ -180,7 +382,10 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
       // Create a sideset...
       std::string ss_name(name); // Use name here before cg_fambc_read call overwrites it...
 
-      cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype);
+      ierr = cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype);
+      if (ierr != CG_OK) {
+        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+      }
       auto *ss = new Ioss::SideSet(db, ss_name);
       ss->property_add(Ioss::Property("id", family));
       ss->property_add(Ioss::Property("bc_type", bocotype));
@@ -217,7 +422,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   // location.
   for (auto &block : blocks) {
     for (const auto &zgc : block->m_zoneConnectivity) {
-      if (!zgc.m_intraBlock) { // Not due to processor decomposition.
+      if (!zgc.m_intraBlock && zgc.m_isActive) { // Not due to processor decomposition.
         // NOTE: In parallel, the owner block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
@@ -315,7 +520,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
   cgsize_t base = block->get_property("base").get_int();
   cgsize_t zone = block->get_property("zone").get_int();
   int      num_bcs;
-  cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
+  int      ierr = cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
+  if (ierr != CG_OK) {
+    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+  }
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
@@ -328,10 +536,16 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     int               ndataset;
 
     // All we really want from this is 'boconame'
-    cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
-                 nullptr, &NormalListSize, &NormalDataType, &ndataset);
+    ierr = cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
+                        nullptr, &NormalListSize, &NormalDataType, &ndataset);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
 
-    cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr);
+    ierr = cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr);
+    if (ierr != CG_OK) {
+      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
+    }
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
@@ -366,28 +580,16 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       auto        bc   = Ioss::BoundaryCondition(boconame, range_beg, range_end);
       std::string name = std::string(boconame) + "/" + block->name();
 
-      if (bc_overlaps(block, bc)) {
-        bc_subset_range(block, bc);
-        block->m_boundaryConditions.push_back(bc);
-        auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
-                                      block->m_boundaryConditions.back().get_face_count());
-        sb->set_parent_block(block);
-        sset->add(sb);
-        sb->property_add(Ioss::Property("base", base));
-        sb->property_add(Ioss::Property("zone", zone));
-        sb->property_add(Ioss::Property("section", ibc + 1));
-      }
-      else {
-        Ioss::IJK_t zeros{{0, 0, 0}};
-        auto        zero_bc = Ioss::BoundaryCondition(boconame, zeros, zeros);
-        block->m_boundaryConditions.push_back(zero_bc);
-        auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8", 0);
-        sb->set_parent_block(block);
-        sset->add(sb);
-        sb->property_add(Ioss::Property("base", base));
-        sb->property_add(Ioss::Property("zone", zone));
-        sb->property_add(Ioss::Property("section", ibc + 1));
-      }
+      bc_subset_range(block, bc);
+      block->m_boundaryConditions.push_back(bc);
+      auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
+                                    block->m_boundaryConditions.back().get_face_count());
+      sb->set_parent_block(block);
+      sset->add(sb);
+      sb->property_add(Ioss::Property("base", base));
+      sb->property_add(Ioss::Property("zone", zone));
+      sb->property_add(Ioss::Property("section", ibc + 1));
+      sb->property_add(Ioss::Property("id", (int)block->m_boundaryConditions.size() - 1));
 
       // Set a property on the sideset specifying the boundary condition type (bocotype)
       // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.

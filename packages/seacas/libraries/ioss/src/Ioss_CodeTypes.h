@@ -43,7 +43,7 @@ namespace Ioss {
   using Int64Vector = std::vector<int64_t>;
   using NameList    = std::vector<std::string>;
   using IJK_t       = std::array<int, 3>;
-}
+} // namespace Ioss
 
 #if defined(PARALLEL_AWARE_EXODUS)
 #define HAVE_MPI
@@ -68,7 +68,9 @@ using MPI_Comm       = int;
 #endif
 #endif
 
+#if !defined(SEACAS_IN_SIERRA)
 #include <SEACASIoss_KOKKOS_config.h>
+#endif
 
 #ifdef SEACAS_HAVE_KOKKOS
 #include <Kokkos_Core.hpp> // for Kokkos::complex

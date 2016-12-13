@@ -30,9 +30,9 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DatabaseIO.h>
-#include <Ioss_ElementBlock.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_EntityBlock.h>
 #include <Ioss_FileInfo.h>
@@ -44,12 +44,12 @@
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
+#include <cstddef>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <set>
-#include <stddef.h>
 #include <string>
 #include <sys/stat.h>
 #include <tokenize.h>
@@ -317,7 +317,7 @@ namespace Ioss {
           continue;
         }
 
-        struct stat st;
+        struct stat st{};
         if (stat(path_root.c_str(), &st) != 0) {
           if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
             errmsg << "ERROR: Cannot create directory '" << path_root
@@ -707,8 +707,8 @@ namespace Ioss {
 #include <sys/time.h>
 
 namespace {
-  static struct timeval tp;
-  static double         initial_time = -1.0;
+  struct timeval tp;
+  double         initial_time = -1.0;
 
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
                  bool single_proc_only, const Ioss::ParallelUtils &util)

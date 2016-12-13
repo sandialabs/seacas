@@ -33,7 +33,7 @@
 #ifndef IOSS_Ioss_DatabaseIO_h
 #define IOSS_Ioss_DatabaseIO_h
 
-#include <Ioss_BoundingBox.h> // for AxisAlignedBoundingBox
+#include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>         // for DatabaseUsage, etc
 #include <Ioss_DataSize.h>        // for DataSize
@@ -42,9 +42,9 @@
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State, State::STATE_INVALID
 #include <Ioss_SurfaceSplit.h>    // for SurfaceSplitType
+#include <cstddef>                // for size_t, nullptr
+#include <cstdint>                // for int64_t
 #include <map>                    // for map
-#include <stddef.h>               // for size_t, nullptr
-#include <stdint.h>               // for int64_t
 #include <string>                 // for string
 #include <utility>                // for pair
 #include <vector>                 // for vector
@@ -65,7 +65,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 namespace Ioss {
   class EntityBlock;
@@ -167,7 +167,7 @@ namespace Ioss {
      *  \param[in] group_name The name of the group to open.
      *  \returns True if successful.
      */
-    virtual bool open_group(const std::string &group_name) { return false; }
+    virtual bool open_group(const std::string & /*group_name*/) { return false; }
 
     /** \brief If a database type supports groups, create the specified
      *        group as a child of the current group.
@@ -179,7 +179,7 @@ namespace Ioss {
      *  \param[in] group_name The name of the subgroup to create.
      *  \returns True if successful.
      */
-    virtual bool create_subgroup(const std::string &group_name) { return false; }
+    virtual bool create_subgroup(const std::string & /*group_name*/) { return false; }
 
     /** \brief Set the database to the given State.
      *
@@ -300,7 +300,7 @@ namespace Ioss {
     set_maximum_symbol_length(int /* requested_symbol_size */){}; // Default does nothing...
 
     char get_field_separator() const;
-    void set_field_separator(const char separator);
+    void set_field_separator(char separator);
     void set_lower_case_variable_names(bool true_false) const
     {
       lowerCaseVariableNames = true_false;
@@ -316,12 +316,12 @@ namespace Ioss {
 
     void set_block_omissions(const std::vector<std::string> &omissions);
 
-    virtual void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                                       std::vector<std::string> &block_adjacency) const
+    virtual void get_block_adjacencies(const Ioss::ElementBlock * /*eb*/,
+                                       std::vector<std::string> & /*block_adjacency*/) const
     {
     }
-    virtual void compute_block_membership(Ioss::SideBlock *         efblock,
-                                          std::vector<std::string> &block_membership) const
+    virtual void compute_block_membership(Ioss::SideBlock * /*efblock*/,
+                                          std::vector<std::string> & /*block_membership*/) const
     {
     }
 
@@ -533,8 +533,8 @@ namespace Ioss {
                                        size_t data_size) const = 0;
     virtual int64_t get_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
-    virtual int64_t get_field_internal(const StructuredBlock *sb, const Field &field, void *data,
-                                       size_t data_size) const
+    virtual int64_t get_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
+                                       void * /*data*/, size_t /*data_size*/) const
     {
       return 0;
     }
@@ -563,8 +563,8 @@ namespace Ioss {
                                        size_t data_size) const = 0;
     virtual int64_t put_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
-    virtual int64_t put_field_internal(const StructuredBlock *sb, const Field &field, void *data,
-                                       size_t data_size) const
+    virtual int64_t put_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
+                                       void * /*data*/, size_t /*data_size*/) const
     {
       return 0;
     }
@@ -589,5 +589,5 @@ namespace Ioss {
         useGenericCanonicalName; // True if "block_id" is used as canonical name instead of the name
     // given on the mesh file e.g. "fireset".  Both names are still aliases.
   };
-}
+} // namespace Ioss
 #endif
