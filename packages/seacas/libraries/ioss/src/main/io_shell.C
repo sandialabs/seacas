@@ -459,11 +459,29 @@ namespace {
       output_region.begin_mode(Ioss::STATE_MODEL);
 
       // Transfer MESH field_data from input to output...
+      bool node_major = false; // region.node_major();
+      if (!node_major) {
+	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
+	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+			    interface);
+      }
+
       if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
 	transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, interface);
 	transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE,
 			    interface);
       }
+
+      if (node_major) {
+	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
+	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+			    interface);
+      }
+      
+      transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::MESH,
+                          interface);
+      transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+                          interface);
 
       transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::MESH, interface);
       transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::ATTRIBUTE,
@@ -471,15 +489,6 @@ namespace {
 
       transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::MESH, interface);
       transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-                          interface);
-
-      transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
-      transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-                          interface);
-
-      transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::MESH,
-                          interface);
-      transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::ATTRIBUTE,
                           interface);
 
       transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::MESH, interface);

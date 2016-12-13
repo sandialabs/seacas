@@ -385,6 +385,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("section", is));
+        eblock->property_add(Ioss::Property("node_count", total_block_nodes));
 
         assert(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
@@ -1316,7 +1317,7 @@ namespace Iocgns {
 	// This map is built during the output of block connectivity,
 	// so for cgns unstructured mesh, we need to output ElementBlock connectivity
 	// prior to outputting nodal coordinates.
-	bool all_non_null = true;
+	bool all_non_null = !m_globalToBlockLocalNodeMap.empty();
 	for (const auto &z : m_globalToBlockLocalNodeMap) {
 	  if (z.second == nullptr) {
 	    all_non_null = false;
@@ -1327,20 +1328,47 @@ namespace Iocgns {
 	  int spatial_dim = nb->get_property("component_degree").get_int();
 	  for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end(); I++) {
 	    auto zone = I->first;
+	    // NOTE: 'block_map' has one more entry than node_count.  First entry is for something else.
+	    //       'block_map' is 1-based.
 	    const auto &block_map = I->second;
-	    std::vector<double> x(block_map->map.size());
-	    std::vector<double> y(block_map->map.size());
-	    std::vector<double> z(block_map->map.size());
+	    std::vector<double> x(block_map->map.size()-1);
+	    std::vector<double> y(block_map->map.size()-1);
+	    std::vector<double> z(block_map->map.size()-1);
 
-	    for (size_t i=0; i < block_map->map.size(); i++) {
-	      auto local = block_map->map[i];
-	      x[i] = rdata[local*spatial_dim + 0];
+	    for (size_t i=0; i < block_map->map.size()-1; i++) {
+	      auto global = block_map->map[i+1] - 1;
+	      x[i] = rdata[global*spatial_dim + 0];
 	      if (spatial_dim > 1) {
-		y[i] = rdata[local*spatial_dim + 1];
+		y[i] = rdata[global*spatial_dim + 1];
 	      }
 	      if (spatial_dim > 2) {
-		z[i] = rdata[local*spatial_dim + 2];
+		z[i] = rdata[global*spatial_dim + 2];
 	      }
+	    }
+
+	    // Create the zone
+	    // Output this zones coordinates...
+	    int crd_idx = 0;
+	    int ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", TOPTR(x),
+				      &crd_idx);
+	    if (ierr != CG_OK) {
+	      Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	    }
+
+	    if (spatial_dim > 1) {
+	    ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", TOPTR(y),
+				      &crd_idx);
+	    if (ierr != CG_OK) {
+	      Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	    }
+	    }
+
+	    if (spatial_dim > 2) {
+	    ierr = cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", TOPTR(z),
+				      &crd_idx);
+	    if (ierr != CG_OK) {
+	      Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	    }
 	    }
 	  }
 	}
