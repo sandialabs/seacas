@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <exodus/Ioex_DatabaseIO.h>
 #include <exodus/Ioex_Utils.h>
 #include <exodusII.h>
@@ -54,7 +55,6 @@
 #include <set>
 #include <string>
 #include <sys/select.h>
-#include <time.h>
 #include <utility>
 #include <vector>
 
@@ -102,7 +102,7 @@ namespace {
 
   template <typename T>
   void write_attribute_names(int exoid, ex_entity_type type, const std::vector<T *> &entities,
-                             const char suffix_separator);
+                             char suffix_separator);
 
   template <typename T>
   void generate_block_truth_table(Ioex::VariableNameMap &variables, Ioss::IntVector &truth_table,
@@ -1070,7 +1070,7 @@ namespace Ioex {
       generate_sideset_truth_table();
     }
 
-    ex_var_params exo_params;
+    ex_var_params exo_params{};
     exo_params.num_glob  = m_variables[EX_GLOBAL].size();
     exo_params.num_node  = m_variables[EX_NODE_BLOCK].size();
     exo_params.num_edge  = m_variables[EX_EDGE_BLOCK].size();
@@ -1898,7 +1898,6 @@ namespace {
       offset += comp_count;
     }
     assert((int)offset == attribute_count + 1);
-    return;
   }
 
   void check_variable_consistency(const ex_var_params &exo_params, int my_processor,

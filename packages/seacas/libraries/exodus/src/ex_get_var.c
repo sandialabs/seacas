@@ -83,11 +83,11 @@ int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
   if (var_type == EX_NODAL) {
     /* FIXME: Special case: ignore obj_id, possible large_file complications,
      * etc. */
-    return ex_get_nodal_var(exoid, time_step, var_index, num_entry_this_obj, var_vals);
+    return ex_get_nodal_var_int(exoid, time_step, var_index, num_entry_this_obj, var_vals);
   }
   if (var_type == EX_GLOBAL) {
     /* FIXME: Special case: all vars stored in 2-D single array. */
-    return ex_get_glob_vars(exoid, time_step, num_entry_this_obj, var_vals);
+    return ex_get_glob_vars_int(exoid, time_step, num_entry_this_obj, var_vals);
   }
 
   exerrval = 0; /* clear error code */
@@ -121,7 +121,7 @@ int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
   }
 
 /* Verify that time_step is within bounds */
-#if 0
+#ifndef NDEBUG
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (time_step <= 0 || time_step > num_time_steps) {

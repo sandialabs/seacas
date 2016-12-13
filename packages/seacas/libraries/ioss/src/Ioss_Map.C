@@ -36,9 +36,9 @@
 #include <Ioss_Utils.h> // for IOSS_ERROR
 #include <algorithm>    // for adjacent_find, lower_bound, etc
 #include <cassert>      // for assert
+#include <cstddef>      // for size_t
 #include <iterator>     // for insert_iterator, inserter
 #include <sstream>      // for operator<<, basic_ostream, etc
-#include <stddef.h>     // for size_t
 #include <string>       // for char_traits, operator<<, etc
 #include <sys/types.h>  // for ssize_t
 #include <utility>      // for pair, make_pair
@@ -129,7 +129,7 @@ namespace {
     }
   };
 
-  typedef std::vector<Ioss::IdPair>::const_iterator RMapI;
+  using RMapI = std::vector<Ioss::IdPair>::const_iterator;
 
   template <typename INT>
   void map_implicit_data_internal(INT *ids, size_t count, const Ioss::MapContainer &map,

@@ -35,23 +35,23 @@
 
 #include <Ioss_CodeTypes.h>
 #include <algorithm> // for sort, lower_bound, copy, etc
-#include <assert.h>
+#include <cassert>
+#include <cstddef>   // for size_t
+#include <cstdint>   // for int64_t
 #include <cstdlib>   // for nullptrr
 #include <iostream>  // for ostringstream, etcstream, etc
-#include <stddef.h>  // for size_t
 #include <stdexcept> // for runtime_error
-#include <stdint.h>  // for int64_t
 #include <string>    // for string
 #include <vector>    // for vector
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 namespace Ioss {
   class GroupingEntity;
   class Region;
   class SideBlock;
   class PropertyManager;
-}
+} // namespace Ioss
 
 #if __cplusplus > 199711L
 #define TOPTR(x) x.data()
@@ -112,8 +112,9 @@ namespace Ioss {
       static size_t prev = 1;
 
       size_t nproc = index.size();
-      if (prev < nproc && index[prev - 1] <= node && index[prev] > node)
+      if (prev < nproc && index[prev - 1] <= node && index[prev] > node) {
         return prev - 1;
+      }
 
       for (size_t p = 1; p < nproc; p++) {
         if (index[p] > node) {
@@ -241,5 +242,5 @@ namespace Ioss {
     // real mesh. This routine will add the mesh portion to a history file.
     static void generate_history_mesh(Ioss::Region *region);
   };
-}
+} // namespace Ioss
 #endif

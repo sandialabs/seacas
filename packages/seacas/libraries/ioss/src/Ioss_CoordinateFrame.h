@@ -33,7 +33,7 @@
 #ifndef IOSS_Ioss_CoordinateFrame_h
 #define IOSS_Ioss_CoordinateFrame_h
 
-#include <stdint.h> // for int64_t
+#include <cstdint> // for int64_t
 #include <vector>   // for vector
 
 namespace Ioss {
@@ -56,5 +56,5 @@ namespace Ioss {
     std::vector<double> pointList_;
     char                tag_;
   };
-}
+}  // namespace Ioss
 #endif

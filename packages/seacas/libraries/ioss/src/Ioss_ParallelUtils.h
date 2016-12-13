@@ -35,10 +35,10 @@
 
 #include <Ioss_CodeTypes.h> // for Int64Vector, IntVector
 #include <Ioss_Utils.h>
-#include <assert.h>
-#include <stddef.h> // for size_t
-#include <string>   // for string
-#include <vector>   // for vector
+#include <cassert>
+#include <cstddef> // for size_t
+#include <string>  // for string
+#include <vector>  // for vector
 
 #ifdef HAVE_MPI
 #include <mpi.h>
@@ -95,7 +95,7 @@ namespace Ioss {
      * knowledge of the value should initialize to '0' and the
      * processors with knowledge set the appropriate values.
      */
-    void attribute_reduction(const int length, char buffer[]) const;
+    void attribute_reduction(int length, char buffer[]) const;
 
     /*! Vector 'local_counts' contains the number of objects
      * local to this processor.  On exit, global_counts
@@ -154,8 +154,8 @@ namespace Ioss {
     // Verify that all 'counts' can fit in an integer. Symmetric
     // communication, so recvcounts are sendcounts on another processor.
     for (int i = 0; i < processor_count; i++) {
-      int snd_cnt = (int)sendcounts[i];
-      if ((int64_t)snd_cnt != sendcounts[i]) {
+      int snd_cnt = static_cast<int>(sendcounts[i]);
+      if (static_cast<int64_t>(snd_cnt) != sendcounts[i]) {
         std::ostringstream errmsg;
         errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
                << "       processor " << my_processor << " to processor " << i << " is "
@@ -169,15 +169,15 @@ namespace Ioss {
     size_t pow_2 = power_2(processor_count);
 
     for (size_t i = 1; i < pow_2; i++) {
-      MPI_Status status;
+      MPI_Status status{};
 
       int    tag           = 24713;
       size_t exchange_proc = i ^ my_processor;
-      if (exchange_proc < (size_t)processor_count) {
-        int snd_cnt =
-            (int)sendcounts[exchange_proc]; // Converts from int64_t to int as needed by mpi
-        int rcv_cnt = (int)recvcounts[exchange_proc];
-        if ((size_t)my_processor < exchange_proc) {
+      if (exchange_proc < static_cast<size_t>(processor_count)) {
+        int snd_cnt = static_cast<int>(
+            sendcounts[exchange_proc]); // Converts from int64_t to int as needed by mpi
+        int rcv_cnt = static_cast<int>(recvcounts[exchange_proc]);
+        if (static_cast<size_t>(my_processor) < exchange_proc) {
           MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag,
                    comm);
           MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag,
@@ -239,10 +239,10 @@ namespace Ioss {
                    const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
                    MPI_Comm comm)
   {
-    return MPI_Alltoallv(TOPTR(sendbuf), (int *)TOPTR(sendcnts), (int *)TOPTR(senddisp),
-                         mpi_type(T(0)), TOPTR(recvbuf), (int *)TOPTR(recvcnts),
-                         (int *)TOPTR(recvdisp), mpi_type(T(0)), comm);
+    return MPI_Alltoallv(TOPTR(sendbuf), const_cast<int *>(TOPTR(sendcnts)), const_cast<int *>(TOPTR(senddisp)),
+                         mpi_type(T(0)), TOPTR(recvbuf), const_cast<int *>(TOPTR(recvcnts)),
+                         const_cast<int *>(TOPTR(recvdisp)), mpi_type(T(0)), comm);
   }
 #endif
-}
+}  // namespace Ioss
 #endif

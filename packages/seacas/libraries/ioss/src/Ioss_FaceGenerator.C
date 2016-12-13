@@ -249,7 +249,7 @@ namespace {
       // add the element...
       for (size_t i = 0; i < check_faces.size(); i += values_per_face) {
         size_t id = check_faces[i + 0];
-        std::array<size_t, 4> conn;
+        std::array<size_t, 4> conn{};
         conn[0]            = check_faces[i + 1];
         conn[1]            = check_faces[i + 2];
         conn[2]            = check_faces[i + 3];
@@ -320,7 +320,7 @@ namespace Ioss {
       int num_face_per_elem = topo->number_faces();
       assert(num_face_per_elem <= 6);
       std::array<Ioss::IntVector, 6> face_conn;
-      std::array<int, 6>             face_count;
+      std::array<int, 6>             face_count{};
       for (int face = 0; face < num_face_per_elem; face++) {
         face_conn[face]  = topo->face_connectivity(face + 1);
         face_count[face] = topo->face_type(face + 1)->number_corner_nodes();
@@ -406,7 +406,7 @@ namespace {
 
     uint64_t h = seed ^ (len * m);
 
-    const uint64_t *data = (const uint64_t *)key;
+    const uint64_t *data = reinterpret_cast<const uint64_t *>(key);
     const uint64_t *end  = data + (len / 8);
 
     while (data != end) {
@@ -420,7 +420,7 @@ namespace {
       h *= m;
     }
 
-    const unsigned char *data2 = (const unsigned char *)data;
+    const unsigned char *data2 = reinterpret_cast<const unsigned char *>(data);
 
     switch (len & 7) {
     case 7: h ^= uint64_t(data2[6]) << 48;
