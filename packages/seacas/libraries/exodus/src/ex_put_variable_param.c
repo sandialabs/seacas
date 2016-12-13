@@ -47,6 +47,7 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
   int varid;
   int dims[2];
   int dim_str_name;
+  int fill = NC_FILL_CHAR;
 
   char errmsg[MAX_ERR_LENGTH];
 
@@ -92,6 +93,7 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
     }
     return 1; /* exit define mode and return */
   }
+  nc_def_var_fill(exoid, varid, 0, &fill);
   return 0;
 }
 /*! \endcond */

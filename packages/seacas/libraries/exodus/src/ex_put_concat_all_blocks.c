@@ -75,6 +75,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
   int    elem_work = 0; /* is DIM_NUM_EL_BLK defined? If so, there's work to do */
   int    edge_work = 0; /* is DIM_NUM_ED_BLK defined? If so, there's work to do */
   int    face_work = 0; /* is DIM_NUM_FA_BLK defined? If so, there's work to do */
+  int    fill      = NC_FILL_CHAR;
 
   int *edge_id_int = NULL;
   int *face_id_int = NULL;
@@ -283,6 +284,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
       goto error_ret; /* exit define mode and return */                                            \
     }                                                                                              \
+    nc_def_var_fill(exoid, temp, 0, &fill);                                                        \
   }
 
 #define EX_PREPARE_CONN(TNAME, BLK, BLKID, BLKSZ, VNAME, DNAME)                                    \
