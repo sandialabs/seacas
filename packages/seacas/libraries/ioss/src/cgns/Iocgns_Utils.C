@@ -252,6 +252,9 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     int      zone    = 0;
     cgsize_t size[3] = {1, 0, 0};
     size[1]          = eb->get_property("entity_count").get_int();
+    if (eb->property_exists("node_count")) {
+      size[0] = eb->get_property("node_count").get_int();
+    }
     ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
