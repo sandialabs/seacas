@@ -513,7 +513,11 @@ namespace Iocgns {
 
   void DatabaseIO::write_meta_data()
   {
-    Utils::common_write_meta_data(cgnsFilePtr, *get_region());
+    int num_zones = get_region()->get_property("element_block_count").get_int()+get_region()->get_property("structured_block_count").get_int();
+    m_bcOffset.resize(num_zones + 1);        // use 1-based zones...
+    m_zoneOffset.resize(num_zones + 1);        // use 1-based zones...
+
+    Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }
 
   bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
@@ -1222,11 +1226,13 @@ namespace Iocgns {
 	  block_map->reverse_map_data(idata, field, num_to_get*element_nodes);
 
           if (my_element_count > 0) {
-            int ierr = cg_section_write(cgnsFilePtr, base, zone, "HexElements", CG_HEXA_8,
+	    CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
+            int ierr = cg_section_write(cgnsFilePtr, base, zone, "HexElements", type,
 					1, num_to_get, 0, idata, &sect);
             if (ierr != CG_OK) {
               Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
             }
+	    m_bcOffset[zone] += num_to_get;
           }
 
         }
@@ -1436,12 +1442,75 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock * /* fb */,
-					 const Ioss::Field & /* field */, void * /* data */,
-					 size_t /* data_size */) const
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *sb,
+					 const Ioss::Field &field, void *data,
+					 size_t data_size) const
   {
-    return -1;
+    cgsize_t base = sb->get_property("base").get_int();
+    cgsize_t zone = sb->get_property("zone").get_int();
+    cgsize_t sect = sb->get_property("section").get_int();
+    ssize_t num_to_get = field.verify(data_size);
+
+    Ioss::Field::RoleType role             = field.get_role();
+
+    if (role == Ioss::Field::MESH) {
+      // Handle the MESH fields required for a CGNS file model.
+      // (The 'genesis' portion)
+      if (field.get_name() == "element_side") {
+	// Get name from parent sideset...
+	auto &name = sb->owner()->name();
+	
+	CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
+	cgsize_t bc_idx = 0;
+	
+	int cg_start = m_bcOffset[zone] + 1;
+	int cg_end   = m_bcOffset[zone] + num_to_get;
+	m_bcOffset[zone] += num_to_get;
+
+	// NOTE: Currently not writing the "ElementConnectivity" data for the
+	//       boundary condition.  It isn't used in the read and don't have
+	//       the data so would have to generate it.  This may cause problems
+	//       with codes that use the downstream data if they base the BC off
+	//       of the nodes instead of the element/side info.
+	int ierr = cg_section_partial_write(cgnsFilePtr, base, zone, name.c_str(), type,
+					    cg_start, cg_end, 0, &bc_idx);
+	if (ierr != CG_OK) {
+	  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	}
+
+        size_t offset = m_zoneOffset[zone];
+        std::vector<cgsize_t> parent(4 * num_to_get);
+
+        if (field.get_type() == Ioss::Field::INT32) {
+          int *  idata = reinterpret_cast<int *>(data);
+          size_t j     = 0;
+          for (ssize_t i = 0; i < num_to_get; i++) {
+            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+            parent[num_to_get * 2 + i] = idata[j++];
+          }
+          // Adjust face numbers to IOSS convention instead of CGNS convention...
+          Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
+        }
+        else {
+          int64_t *idata = reinterpret_cast<int64_t *>(data);
+          size_t j     = 0;
+          for (ssize_t i = 0; i < num_to_get; i++) {
+            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+            parent[num_to_get * 2 + i] = idata[j++];
+          }
+          // Adjust face numbers to IOSS convention instead of CGNS convention...
+          Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
+        }
+
+	ierr = cg_parent_data_write(cgnsFilePtr, base, zone, bc_idx, TOPTR(parent));
+	if (ierr != CG_OK) {
+	  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	}
+	
+      }
+    }
   }
+
   int64_t DatabaseIO::put_field_internal(const Ioss::SideSet * /* fs */,
 					 const Ioss::Field & /* field */, void * /* data */,
 					 size_t /* data_size */) const
