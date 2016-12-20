@@ -459,7 +459,8 @@ namespace {
       output_region.begin_mode(Ioss::STATE_MODEL);
 
       // Transfer MESH field_data from input to output...
-      bool node_major = false; // region.node_major();
+      bool node_major = output_region.node_major();
+      
       if (!node_major) {
 	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
 	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
@@ -916,6 +917,19 @@ namespace {
         auto block =
             new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
         surf->add(block);
+
+	// Need to transfer the parent_block() if set...
+	const Ioss::EntityBlock *parent = fb->parent_block();
+	if (parent != nullptr) {
+	  if (parent->type() == Ioss::ELEMENTBLOCK) {
+	    auto blk = output_region.get_element_block(parent->name());
+	    block->set_parent_block(blk);
+	  }
+	  else if (parent->type() == Ioss::STRUCTUREDBLOCK) {
+	    auto blk = output_region.get_structured_block(parent->name());
+	    block->set_parent_block(blk);
+	  }
+	}
         transfer_properties(fb, block);
         transfer_fields(fb, block, Ioss::Field::MESH);
         transfer_fields(fb, block, Ioss::Field::ATTRIBUTE);

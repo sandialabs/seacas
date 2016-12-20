@@ -85,13 +85,13 @@ namespace Ioss {
     // types.
     const ElementBlock *parent_element_block() const
     {
-      return dynamic_cast<ElementBlock *>(parentBlock_);
+      return dynamic_cast<const ElementBlock *>(parentBlock_);
     }
 
-    void set_parent_element_block(ElementBlock *element_block) { parentBlock_ = element_block; }
+    void set_parent_element_block(const ElementBlock *element_block) { parentBlock_ = element_block; }
 
     const EntityBlock *parent_block() const { return parentBlock_; }
-    void set_parent_block(EntityBlock *block) { parentBlock_ = block; }
+    void set_parent_block(const EntityBlock *block) { parentBlock_ = block; }
 
     // Describes the contained entities element block topology
     const ElementTopology *parent_element_topology() const { return parentTopology_; }
@@ -112,7 +112,7 @@ namespace Ioss {
   private:
     const SideSet *  owner_;
     ElementTopology *parentTopology_; // Topology of parent element (if any)
-    EntityBlock *    parentBlock_;
+    const EntityBlock *    parentBlock_;
 
     // Pointer to the SideSet (if any) that contains this side block.
     std::vector<std::string> blockMembership; // What element blocks do the

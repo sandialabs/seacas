@@ -55,6 +55,8 @@ namespace Iocgns {
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
 
+    static void update_property(const Ioss::GroupingEntity *ge, const std::string &property, int64_t value);
+
     template <typename INT>
     static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
                                       INT *idata)
@@ -98,10 +100,53 @@ namespace Iocgns {
       }
     }
 
+    static void map_ioss_face_to_cgns(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
+                                      std::vector<cgsize_t> &data)
+    {
+      // The {topo}_map[] arrays map from CGNS face# to IOSS face#.
+      // See http://cgns.github.io/CGNS_docs_current/sids/conv.html#unstructgrid
+      // NOTE: '0' for first entry is to account for 1-based face numbering.
+
+      switch (parent_topo->shape()) {
+      case Ioss::ElementShape::HEX:
+        static int hex_map[] = {0, 2, 3, 4, 5, 1, 6};
+        for (size_t i = 0; i < num_to_get; i++) {
+          data[num_to_get * 2 + i] = hex_map[data[num_to_get * 2 + i]];
+        }
+        break;
+
+      case Ioss::ElementShape::TET:
+        static int tet_map[] = {0, 2, 3, 4, 1};
+        for (size_t i = 0; i < num_to_get; i++) {
+          data[num_to_get * 2 + i] = tet_map[data[num_to_get * 2 + i]];
+        }
+        break;
+
+      case Ioss::ElementShape::PYRAMID:
+        static int pyr_map[] = {0, 2, 3, 4, 5, 1};
+        for (size_t i = 0; i < num_to_get; i++) {
+          data[num_to_get * 2 + i] = pyr_map[data[num_to_get * 2 + i]];
+        }
+        break;
+
+      case Ioss::ElementShape::WEDGE:
+#if 0
+	  static int wed_map[] = {0, 1, 2, 3, 4, 5}; // Same
+	  // Not needed -- maps 1 to 1
+	  for (size_t i=0; i < num_to_get; i++) {
+	    data[num_to_get * 2 + i] = wed_map[data[num_to_get * 2 + i]];
+	  }
+#endif
+        break;
+      default:;
+      }
+    }
+
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
-    static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region);
+    static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region, std::vector<size_t> &zone_offset);
     static size_t resolve_nodes(Ioss::Region &region, int my_processor);
 
+    static CG_ElementType_t map_topology_to_cgns(const std::string &name);
     static std::string map_cgns_to_topology_type(CG_ElementType_t type);
     static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
     static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block);
