@@ -139,6 +139,21 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   IOSS_ERROR(errmsg);
 }
 
+void Iocgns::Utils::update_property(const Ioss::GroupingEntity *ge, const std::string &property, int64_t value)
+{
+  if (ge->property_exists(property)) {
+    if (ge->get_property(property).get_int() != value) {
+      auto *nge = const_cast<Ioss::GroupingEntity*>(ge);
+      nge->property_erase(property);
+      nge->property_add(Ioss::Property(property, value));
+    }
+  }
+  else {
+    auto *nge = const_cast<Ioss::GroupingEntity*>(ge);
+    nge->property_add(Ioss::Property(property, value));
+  }
+}
+
 CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
 {
   // ========================================================================
@@ -173,7 +188,7 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
   return common_zone_type;
 }
 
-void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region)
+void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region, std::vector<size_t> &zone_offset)
 {
   // Make sure mesh is not hybrid...
   if (region.mesh_type() == Ioss::MeshType::HYBRID) {
@@ -247,6 +262,10 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     }
   }
 
+
+#if 0
+  // Defer this to put_field_internal for ElementBlock so can generate
+  // node_count if not kn
   const auto &element_blocks = region.get_element_blocks();
   for (const auto &eb : element_blocks) {
     int      zone    = 0;
@@ -259,8 +278,14 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
     }
-  }
+    update_property(eb, "zone", zone);
+    update_property(eb, "section", zone);
+    update_property(eb, "base", base);
 
+    zone_offset[zone] = size[1];
+  }
+#endif
+  
   const auto &structured_blocks = region.get_structured_blocks();
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
@@ -277,6 +302,11 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
     }
+    update_property(sb, "zone", zone);
+    update_property(sb, "base", base);
+
+    assert(zone > 0);
+    zone_offset[zone] = zone_offset[zone-1] + sb->get_property("cell_count").get_int();
 
     // Add GridCoordinates Node...
     int grid_idx = 0;
@@ -355,6 +385,73 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
     topology = Ioss::Unknown::name;
   }
   return topology;
+}
+
+CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
+{
+  CG_ElementType_t topo = CG_ElementTypeNull;
+  if (name == Ioss::Node::name) {
+    topo = CG_NODE;
+  }
+  else if (name == Ioss::Bar2::name) {
+    topo = CG_BAR_2;
+  }
+  else if (name == Ioss::Bar3::name) {
+    topo = CG_BAR_3;
+  }
+  else if (name == Ioss::Tri3::name) {
+    topo = CG_TRI_3;
+  }
+  else if (name == Ioss::Tri6::name) {
+    topo = CG_TRI_6;
+  }
+  else if (name == Ioss::Quad4::name) {
+    topo = CG_QUAD_4;
+  }
+  else if (name == Ioss::Quad8::name) {
+    topo = CG_QUAD_8;
+  }
+  else if (name == Ioss::Quad9::name) {
+    topo = CG_QUAD_9;
+  }
+  else if (name == Ioss::Tet4::name) {
+    topo = CG_TETRA_4;
+  }
+  else if (name == Ioss::Tet10::name) {
+    topo = CG_TETRA_10;
+  }
+  else if (name == Ioss::Pyramid5::name) {
+    topo = CG_PYRA_5;
+  }
+  else if (name == Ioss::Pyramid13::name) {
+    topo = CG_PYRA_13;
+  }
+  else if (name == Ioss::Pyramid14::name) {
+    topo = CG_PYRA_14;
+  }
+  else if (name == Ioss::Wedge6::name) {
+    topo = CG_PENTA_6;
+  }
+  else if (name == Ioss::Wedge15::name) {
+    topo = CG_PENTA_15;
+  }
+  else if (name == Ioss::Wedge18::name) {
+    topo = CG_PENTA_18;
+  }
+  else if (name == Ioss::Hex8::name) {
+    topo = CG_HEXA_8;
+  }
+  else if (name == Ioss::Hex20::name) {
+    topo = CG_HEXA_20;
+  }
+  else if (name == Ioss::Hex27::name) {
+    topo = CG_HEXA_27;
+  }
+  else {
+    std::cerr << "WARNING: Found topology of type " << name
+              << " which is not currently supported.\n";
+  }
+  return topo;
 }
 
 void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)

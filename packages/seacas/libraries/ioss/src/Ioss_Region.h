@@ -108,6 +108,7 @@ namespace Ioss {
 
     MeshType          mesh_type() const;
     const std::string mesh_type_string() const;
+    bool node_major() const;
 
     void output_summary(std::ostream &strm, bool do_transient = true);
 
