@@ -189,7 +189,7 @@ namespace Iocgns {
     size_t      nodeCount;
     size_t      elementCount;
 
-    std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
+    mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     mutable std::vector<size_t> m_bcOffset; // The BC Section element offsets in unstructured output.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
     std::map<std::string, int> m_zoneNameMap;
