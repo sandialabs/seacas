@@ -139,17 +139,18 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   IOSS_ERROR(errmsg);
 }
 
-void Iocgns::Utils::update_property(const Ioss::GroupingEntity *ge, const std::string &property, int64_t value)
+void Iocgns::Utils::update_property(const Ioss::GroupingEntity *ge, const std::string &property,
+                                    int64_t value)
 {
   if (ge->property_exists(property)) {
     if (ge->get_property(property).get_int() != value) {
-      auto *nge = const_cast<Ioss::GroupingEntity*>(ge);
+      auto *nge = const_cast<Ioss::GroupingEntity *>(ge);
       nge->property_erase(property);
       nge->property_add(Ioss::Property(property, value));
     }
   }
   else {
-    auto *nge = const_cast<Ioss::GroupingEntity*>(ge);
+    auto *nge = const_cast<Ioss::GroupingEntity *>(ge);
     nge->property_add(Ioss::Property(property, value));
   }
 }
@@ -188,7 +189,8 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
   return common_zone_type;
 }
 
-void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region, std::vector<size_t> &zone_offset)
+void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
+                                           std::vector<size_t> &zone_offset)
 {
   // Make sure mesh is not hybrid...
   if (region.mesh_type() == Ioss::MeshType::HYBRID) {
@@ -262,7 +264,6 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     }
   }
 
-
 #if 0
   // Defer this to put_field_internal for ElementBlock so can generate
   // node_count if not kn
@@ -285,7 +286,7 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     zone_offset[zone] = size[1];
   }
 #endif
-  
+
   const auto &structured_blocks = region.get_structured_blocks();
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
@@ -306,7 +307,7 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     update_property(sb, "base", base);
 
     assert(zone > 0);
-    zone_offset[zone] = zone_offset[zone-1] + sb->get_property("cell_count").get_int();
+    zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
 
     // Add GridCoordinates Node...
     int grid_idx = 0;

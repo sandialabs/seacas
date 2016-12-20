@@ -420,9 +420,10 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::write_meta_data()
   {
-    int num_zones = get_region()->get_property("element_block_count").get_int()+get_region()->get_property("structured_block_count").get_int();
-    m_bcOffset.resize(num_zones + 1);        // use 1-based zones...
-    m_zoneOffset.resize(num_zones + 1);        // use 1-based zones...
+    int num_zones = get_region()->get_property("element_block_count").get_int() +
+                    get_region()->get_property("structured_block_count").get_int();
+    m_bcOffset.resize(num_zones + 1);   // use 1-based zones...
+    m_zoneOffset.resize(num_zones + 1); // use 1-based zones...
 
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }

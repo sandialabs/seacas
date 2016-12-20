@@ -55,7 +55,8 @@ namespace Iocgns {
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
 
-    static void update_property(const Ioss::GroupingEntity *ge, const std::string &property, int64_t value);
+    static void update_property(const Ioss::GroupingEntity *ge, const std::string &property,
+                                int64_t value);
 
     template <typename INT>
     static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
@@ -143,7 +144,8 @@ namespace Iocgns {
     }
 
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
-    static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region, std::vector<size_t> &zone_offset);
+    static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
+                                       std::vector<size_t> &zone_offset);
     static size_t resolve_nodes(Ioss::Region &region, int my_processor);
 
     static CG_ElementType_t map_topology_to_cgns(const std::string &name);

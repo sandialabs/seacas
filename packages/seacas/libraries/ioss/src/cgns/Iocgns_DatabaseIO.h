@@ -90,7 +90,7 @@ namespace Iocgns {
 
     ~DatabaseIO() override = default;
 
-    bool node_major() const override {return false;}
+    bool node_major() const override { return false; }
 
     void openDatabase() const override;
     void closeDatabase() const override;
@@ -104,7 +104,6 @@ namespace Iocgns {
     // Metadata-related functions.
     void read_meta_data() override;
     void write_meta_data();
-
 
   private:
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
@@ -190,10 +189,11 @@ namespace Iocgns {
     size_t      elementCount;
 
     mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
-    mutable std::vector<size_t> m_bcOffset; // The BC Section element offsets in unstructured output.
+    mutable std::vector<size_t>
+                                       m_bcOffset; // The BC Section element offsets in unstructured output.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
-    std::map<std::string, int> m_zoneNameMap;
-    mutable std::map<int,Ioss::Map*> m_globalToBlockLocalNodeMap;
+    std::map<std::string, int>         m_zoneNameMap;
+    mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
   };
 }
 #endif
