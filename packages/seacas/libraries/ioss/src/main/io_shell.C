@@ -459,7 +459,8 @@ namespace {
       output_region.begin_mode(Ioss::STATE_MODEL);
 
       // Transfer MESH field_data from input to output...
-      bool node_major = false; // region.node_major();
+      bool node_major = output_region.node_major();
+      
       if (!node_major) {
 	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
 	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
