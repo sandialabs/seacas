@@ -114,6 +114,13 @@ namespace Ioss {
     virtual int64_t node_global_to_local(int64_t global, bool must_exist) const = 0;
     virtual int64_t element_global_to_local(int64_t global) const = 0;
 
+    /** If there is a single block of nodes in the model, then it is
+     *	considered a node_major() database.  If instead the nodes are
+     * local to each element block or structured block, then it is
+     *	 not a node_major database.  Exodus is node major, CGNS is not.
+     */
+    virtual bool node_major() const {return true;}
+
     virtual ~DatabaseIO();
 
     // Eliminate as much memory as possible, but still retain meta data information

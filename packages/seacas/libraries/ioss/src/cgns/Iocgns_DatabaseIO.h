@@ -90,6 +90,8 @@ namespace Iocgns {
 
     ~DatabaseIO() override = default;
 
+    bool node_major() const override {return false;}
+
     void openDatabase() const override;
     void closeDatabase() const override;
 
