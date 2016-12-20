@@ -1267,25 +1267,18 @@ namespace Iocgns {
     size_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
 
-      cgsize_t              base             = eb->get_property("base").get_int();
-      cgsize_t              zone             = eb->get_property("zone").get_int();
-      cgsize_t              sect             = eb->get_property("section").get_int();
-      size_t                my_element_count = eb->get_property("entity_count").get_int();
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
         // Handle the MESH fields required for a CGNS file model.
         // (The 'genesis' portion)
+	if (field.get_name() == "connectivity") {
+	    // This blocks zone has not been defined.
+	    // Get the "node block" for this element block...
+	    cgsize_t *idata         = reinterpret_cast<cgsize_t *>(data);
+	    int       element_nodes = eb->topology()->number_nodes();
+	    assert(field.raw_storage()->component_count() == element_nodes);
 
-        if (field.get_name() == "connectivity") {
-          cgsize_t *idata         = reinterpret_cast<cgsize_t *>(data);
-          int       element_nodes = eb->topology()->number_nodes();
-          assert(field.raw_storage()->component_count() == element_nodes);
-
-	  // See if have a "global node to block-local node map" for this
-	  // block...
-	  if (m_globalToBlockLocalNodeMap[zone] == nullptr) {
-	    m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
 	    Ioss::MapContainer nodes;
 	    nodes.reserve(element_nodes * num_to_get + 1);
 	    nodes.push_back(1); // Non-one-to-one map
@@ -1296,9 +1289,30 @@ namespace Iocgns {
 	    std::sort(it, nodes.end());
 	    nodes.erase(std::unique(it, nodes.end()), nodes.end());
 	    nodes.shrink_to_fit();
+
+	    // Now, we have the node count and cell count so we can create a zone...
+	    int base = 1;
+	    int zone = 0;
+	    cgsize_t size[3] = {0, 0, 0};
+	    size[1] = eb->get_property("entity_count").get_int();
+	    size[0] = nodes.size();
+
+	    int ierr = cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
+	    if (ierr != CG_OK) {
+	      Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	    }
+	    Utils::update_property(eb, "zone",    zone);
+	    Utils::update_property(eb, "section", zone);
+	    Utils::update_property(eb, "base",    base);
+
+	    // Now we have a valid zone so can update some data structures...
+	    m_zoneOffset[zone] = m_zoneOffset[zone-1] + size[1];
+	    m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
 	    m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
 	    m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
-	  }
+  
+	    int sect = eb->get_property("section").get_int();
+	    size_t  my_element_count = eb->get_property("entity_count").get_int();
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];
@@ -1306,14 +1320,13 @@ namespace Iocgns {
 
           if (my_element_count > 0) {
 	    CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
-            int ierr = cg_section_write(cgnsFilePtr, base, zone, "HexElements", type,
+            ierr = cg_section_write(cgnsFilePtr, base, zone, "HexElements", type,
 					1, num_to_get, 0, idata, &sect);
             if (ierr != CG_OK) {
               Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
             }
 	    m_bcOffset[zone] += num_to_get;
           }
-
         }
 #if 0
         else if (field.get_name() == "connectivity_raw") {
@@ -1386,7 +1399,7 @@ namespace Iocgns {
                                          size_t data_size) const
   {
     Ioss::Field::RoleType role       = field.get_role();
-    cgsize_t              base       = nb->get_property("base").get_int();
+    cgsize_t              base       = 1;
 
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "mesh_model_coordinates" ||

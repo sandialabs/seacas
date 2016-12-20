@@ -139,6 +139,21 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   IOSS_ERROR(errmsg);
 }
 
+void Iocgns::Utils::update_property(const Ioss::GroupingEntity *ge, const std::string &property, int64_t value)
+{
+  if (ge->property_exists(property)) {
+    if (ge->get_property(property).get_int() != value) {
+      auto *nge = const_cast<Ioss::GroupingEntity*>(ge);
+      nge->property_erase(property);
+      nge->property_add(Ioss::Property(property, value));
+    }
+  }
+  else {
+    auto *nge = const_cast<Ioss::GroupingEntity*>(ge);
+    nge->property_add(Ioss::Property(property, value));
+  }
+}
+
 CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
 {
   // ========================================================================
@@ -247,6 +262,10 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     }
   }
 
+
+#if 0
+  // Defer this to put_field_internal for ElementBlock so can generate
+  // node_count if not kn
   const auto &element_blocks = region.get_element_blocks();
   for (const auto &eb : element_blocks) {
     int      zone    = 0;
@@ -259,9 +278,14 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
     }
+    update_property(eb, "zone", zone);
+    update_property(eb, "section", zone);
+    update_property(eb, "base", base);
+
     zone_offset[zone] = size[1];
   }
-
+#endif
+  
   const auto &structured_blocks = region.get_structured_blocks();
   for (const auto &sb : structured_blocks) {
     int      zone    = 0;
@@ -278,7 +302,11 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
     }
-    zone_offset[zone] = sb->get_property("cell_count").get_int();
+    update_property(sb, "zone", zone);
+    update_property(sb, "base", base);
+
+    assert(zone > 0);
+    zone_offset[zone] = zone_offset[zone-1] + sb->get_property("cell_count").get_int();
 
     // Add GridCoordinates Node...
     int grid_idx = 0;
@@ -325,12 +353,6 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
         cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
       }
     }
-  }
-  size_t off = 0;
-  for (size_t i=1; i < zone_offset.size(); i++) {
-    size_t tmp = zone_offset[i];
-    zone_offset[i] = off;
-    off += tmp;
   }
 }
 
