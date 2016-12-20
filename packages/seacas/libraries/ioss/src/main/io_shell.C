@@ -917,6 +917,19 @@ namespace {
         auto block =
             new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
         surf->add(block);
+
+	// Need to transfer the parent_block() if set...
+	const Ioss::EntityBlock *parent = fb->parent_block();
+	if (parent != nullptr) {
+	  if (parent->type() == Ioss::ELEMENTBLOCK) {
+	    auto blk = output_region.get_element_block(parent->name());
+	    block->set_parent_block(blk);
+	  }
+	  else if (parent->type() == Ioss::STRUCTUREDBLOCK) {
+	    auto blk = output_region.get_structured_block(parent->name());
+	    block->set_parent_block(blk);
+	  }
+	}
         transfer_properties(fb, block);
         transfer_fields(fb, block, Ioss::Field::MESH);
         transfer_fields(fb, block, Ioss::Field::ATTRIBUTE);
