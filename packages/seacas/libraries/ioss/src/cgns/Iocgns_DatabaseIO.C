@@ -1525,8 +1525,16 @@ namespace Iocgns {
 					 const Ioss::Field &field, void *data,
 					 size_t data_size) const
   {
-    cgsize_t base = sb->get_property("base").get_int();
-    cgsize_t zone = sb->get_property("zone").get_int();
+    const Ioss::EntityBlock *parent_block = sb->parent_block();
+    if (parent_block == nullptr) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: SideBlock " << sb->name()
+	     << " does not have a parent-block specified.  This is required for CGNS output.";
+      IOSS_ERROR(errmsg);
+    }
+
+    cgsize_t base = parent_block->get_property("base").get_int();
+    cgsize_t zone = parent_block->get_property("zone").get_int();
     ssize_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role             = field.get_role();
