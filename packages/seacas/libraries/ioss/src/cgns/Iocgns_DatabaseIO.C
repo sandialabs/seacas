@@ -520,6 +520,80 @@ namespace Iocgns {
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }
 
+  void DatabaseIO::write_adjacency_data()
+  {
+    // Determine adjacencie information between unstructured blocks.
+    // Could save this information from the input mesh, but then
+    // could not read an exodus mesh and write a cgns mesh.
+    // However, in long run may still want to read/save input adjacency
+    // data if doing cgns -> cgns...  For now, try generating information.
+
+    // If block I is adjacent to block J, then they will share at
+    // least 1 "side" (face 3D or edge 2D).
+    // Currently, assuming they are adjacent if they share at least one node...
+    
+    size_t node_count = get_region()->get_property("node_count").get_int();
+
+    const auto &blocks = get_region()->get_element_blocks();
+    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+      cgsize_t base = (*I)->get_property("base").get_int();
+      cgsize_t zone = (*I)->get_property("zone").get_int();
+
+      const auto &I_map = m_globalToBlockLocalNodeMap[zone];
+      
+      // Flag all nodes used by this block...
+      std::vector<size_t> I_nodes(node_count);
+      for (size_t i=0; i < I_map->map.size()-1; i++) {
+	auto global = I_map->map[i+1] - 1;
+	I_nodes[global] = i+1;
+      }
+      for (auto J = I+1; J != blocks.end(); J++) {
+	cgsize_t dzone = (*J)->get_property("zone").get_int();
+	const auto &J_map = m_globalToBlockLocalNodeMap[dzone];
+	std::vector<cgsize_t> point_list;
+	std::vector<cgsize_t> point_list_donor;
+	for (size_t i=0; i < J_map->map.size()-1; i++) {
+	  auto global = J_map->map[i+1] - 1;
+	  if (I_nodes[global] > 0) {
+	    // Have a match between nodes used by two different blocks,
+	    // They are adjacent...
+	    point_list.push_back(I_nodes[global]);
+	    point_list_donor.push_back(i+1);
+	  }
+	}
+	
+	// If point_list non_empty, then output this adjacency node...
+	if (!point_list.empty()) {
+	  int gc_idx = 0;
+	  std::string name = (*I)->name();
+	  name += "_to_";
+	  name += (*J)->name();
+	  const auto &d1_name = (*J)->name();
+	  int ierr = cg_conn_write(cgnsFilePtr, base, zone,
+				   name.c_str(), CG_Vertex, CG_Abutting1to1, CG_PointList, point_list.size(), TOPTR(point_list),
+				   d1_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull, point_list_donor.size(), TOPTR(point_list_donor),
+				   &gc_idx);
+	  if (ierr != CG_OK) {
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	  }
+
+	  name = (*J)->name();
+	  name += "_to_";
+	  name += (*I)->name();
+	  const auto &d2_name = (*J)->name();
+
+	  ierr = cg_conn_write(cgnsFilePtr, base, dzone,
+				   name.c_str(), CG_Vertex, CG_Abutting1to1, CG_PointList, point_list_donor.size(), TOPTR(point_list_donor),
+				   d2_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull, point_list.size(), TOPTR(point_list),
+				   &gc_idx);
+	  if (ierr != CG_OK) {
+	    Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+	  }
+	}
+      }
+    }
+  }
+
   bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
 
   bool DatabaseIO::end(Ioss::State state)
@@ -529,6 +603,11 @@ namespace Iocgns {
     case Ioss::STATE_DEFINE_MODEL:
       if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
         write_meta_data();
+      }
+      break;
+    case Ioss::STATE_MODEL:
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+        write_adjacency_data();
       }
       break;
     default: // ignore everything else...
@@ -1448,7 +1527,6 @@ namespace Iocgns {
   {
     cgsize_t base = sb->get_property("base").get_int();
     cgsize_t zone = sb->get_property("zone").get_int();
-    cgsize_t sect = sb->get_property("section").get_int();
     ssize_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role             = field.get_role();
@@ -1461,7 +1539,7 @@ namespace Iocgns {
 	auto &name = sb->owner()->name();
 	
 	CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
-	cgsize_t bc_idx = 0;
+	cgsize_t sect = 0;
 	
 	int cg_start = m_bcOffset[zone] + 1;
 	int cg_end   = m_bcOffset[zone] + num_to_get;
@@ -1473,12 +1551,24 @@ namespace Iocgns {
 	//       with codes that use the downstream data if they base the BC off
 	//       of the nodes instead of the element/side info.
 	int ierr = cg_section_partial_write(cgnsFilePtr, base, zone, name.c_str(), type,
-					    cg_start, cg_end, 0, &bc_idx);
+					    cg_start, cg_end, 0, &sect);
 	if (ierr != CG_OK) {
 	  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
 	}
 
-        size_t offset = m_zoneOffset[zone];
+	if (sb->property_exists("section")) {
+	  if (sb->get_property("section").get_int() != sect) {
+	    Ioss::SideBlock *nsb = const_cast<Ioss::SideBlock *>(sb);
+	    nsb->property_erase("section");
+	    nsb->property_add(Ioss::Property("section", sect));
+	  }
+	}
+	else {
+	  Ioss::SideBlock *nsb = const_cast<Ioss::SideBlock *>(sb);
+	  nsb->property_add(Ioss::Property("section", sect));
+	}
+	
+	size_t offset = m_zoneOffset[zone];
         std::vector<cgsize_t> parent(4 * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {
@@ -1502,13 +1592,14 @@ namespace Iocgns {
           Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
         }
 
-	ierr = cg_parent_data_write(cgnsFilePtr, base, zone, bc_idx, TOPTR(parent));
+	ierr = cg_parent_data_write(cgnsFilePtr, base, zone, sect, TOPTR(parent));
 	if (ierr != CG_OK) {
 	  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
 	}
-	
+	return num_to_get;
       }
     }
+    return -1;
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::SideSet * /* fs */,
