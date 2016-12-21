@@ -328,7 +328,14 @@ namespace {
       if (!interface.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
       }
-      dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
+      if (interface.outFiletype == "cgns") {
+	// CGNS stores BCs (SideSets) on the zones which
+	// correspond to element blocks.  If split input sideblocks
+	// by element block, then output is much easier.
+	dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+      } else {
+	dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
+      }
       dbi->set_field_separator(interface.fieldSuffixSeparator);
       if (interface.ints_64_bit) {
         dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
