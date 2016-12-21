@@ -40,11 +40,11 @@
 #include <Ioss_MeshType.h>
 #include <Ioss_Property.h> // for Property
 #include <Ioss_State.h>    // for State
+#include <cstddef>         // for size_t, nullptr
+#include <cstdint>         // for int64_t
 #include <functional>      // for less
 #include <iosfwd>          // for ostream
 #include <map>             // for map, map<>::value_compare
-#include <cstddef>        // for size_t, nullptr
-#include <cstdint>        // for int64_t
 #include <string>          // for string, operator<
 #include <utility>         // for pair
 #include <vector>          // for vector
@@ -108,7 +108,7 @@ namespace Ioss {
 
     MeshType          mesh_type() const;
     const std::string mesh_type_string() const;
-    bool node_major() const;
+    bool              node_major() const;
 
     void output_summary(std::ostream &strm, bool do_transient = true);
 

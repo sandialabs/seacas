@@ -34,8 +34,8 @@
 #define IOSS_Ioss_Field_h
 
 #include <cstddef> // for size_t
-#include <string>   // for string
-#include <vector>   // for vector
+#include <string>  // for string
+#include <vector>  // for vector
 namespace Ioss {
   class Transform;
 } // namespace Ioss
@@ -100,8 +100,8 @@ namespace Ioss {
     Field(std::string name, BasicType type, const std::string &storage, RoleType role,
           size_t value_count, size_t index = 0);
 
-    Field(std::string name, BasicType type, const std::string &storage, int copies,
-          RoleType role, size_t value_count, size_t index = 0);
+    Field(std::string name, BasicType type, const std::string &storage, int copies, RoleType role,
+          size_t value_count, size_t index = 0);
 
     Field(std::string name, BasicType type, const VariableType *storage, RoleType role,
           size_t value_count, size_t index = 0);
@@ -176,5 +176,5 @@ namespace Ioss {
 
     std::vector<Transform *> transforms_;
   };
-}  // namespace Ioss
+} // namespace Ioss
 #endif

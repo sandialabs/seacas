@@ -111,8 +111,7 @@ namespace Ioss {
 
     static std::string numeric_label(int which, int ncomp, const std::string &name);
     virtual std::string label(int which, char suffix_sep = '_') const = 0;
-    virtual std::string label_name(const std::string &base, int which,
-                                   char suffix_sep = '_') const;
+    virtual std::string label_name(const std::string &base, int which, char suffix_sep = '_') const;
     virtual bool match(const std::vector<Suffix> &suffices) const;
 
     static const VariableType *factory(const std::string &raw_name, int copies = 1);

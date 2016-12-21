@@ -44,8 +44,8 @@ namespace Ioss {
 
 namespace Ioss {
 
-  using MapContainer = std::vector<int64_t>;
-  using IdPair = std::pair<int64_t, int64_t>;
+  using MapContainer        = std::vector<int64_t>;
+  using IdPair              = std::pair<int64_t, int64_t>;
   using ReverseMapContainer = std::vector<IdPair>;
 
   class Map

@@ -74,5 +74,5 @@ namespace Ioss {
 
   private:
   };
-}  // namespace Ioss
+} // namespace Ioss
 #endif

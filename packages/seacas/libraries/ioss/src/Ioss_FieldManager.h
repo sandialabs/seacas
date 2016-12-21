@@ -36,9 +36,9 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h> // for Field, Field::RoleType
 #include <Ioss_Utils.h> // for Utils
+#include <cstddef>      // for size_t
 #include <functional>   // for binary_function
 #include <map>          // for map, map<>::value_compare
-#include <cstddef>     // for size_t
 #include <string>       // for string
 #include <vector>       // for vector
 
@@ -93,5 +93,5 @@ namespace Ioss {
 
     FieldMapType fields;
   };
-}  // namespace Ioss
+} // namespace Ioss
 #endif

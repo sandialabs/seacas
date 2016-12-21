@@ -34,7 +34,7 @@
 #define IOSS_Ioss_Property_h
 
 #include <cstdint> // for int64_t
-#include <string>   // for string
+#include <string>  // for string
 namespace Ioss {
   class GroupingEntity;
 } // namespace Ioss

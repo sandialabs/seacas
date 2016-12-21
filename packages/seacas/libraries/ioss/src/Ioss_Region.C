@@ -240,10 +240,7 @@ namespace Ioss {
 
   void Region::delete_database() { GroupingEntity::really_delete_database(); }
 
-  bool Region::node_major() const
-  {
-    return get_database()->node_major();
-  }
+  bool Region::node_major() const { return get_database()->node_major(); }
 
   MeshType Region::mesh_type() const
   {

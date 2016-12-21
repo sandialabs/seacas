@@ -35,7 +35,7 @@
 
 #include <Ioss_GroupingEntity.h> // for GroupingEntity
 #include <Ioss_Property.h>       // for Property
-#include <cstddef>              // for size_t
+#include <cstddef>               // for size_t
 #include <string>                // for string
 namespace Ioss {
   class DatabaseIO;
@@ -67,10 +67,10 @@ namespace Ioss {
     EntitySet(DatabaseIO *io_database, const std::string &my_name, size_t entity_count);
     EntitySet(const EntitySet &) = delete;
     EntitySet &operator=(const EntitySet &) = delete;
-    ~EntitySet()                            override = default;
+    ~EntitySet() override                   = default;
 
   protected:
     void count_attributes() const;
   };
-}  // namespace Ioss
+} // namespace Ioss
 #endif
