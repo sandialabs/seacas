@@ -1297,7 +1297,7 @@ namespace Iocgns {
           int      zone    = 0;
           cgsize_t size[3] = {0, 0, 0};
           size[1]          = eb->get_property("entity_count").get_int();
-          size[0]          = nodes.size();
+          size[0]          = nodes.size()-1;
 
           int ierr =
               cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
@@ -1314,15 +1314,14 @@ namespace Iocgns {
           m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
           m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
 
-          int    sect             = eb->get_property("section").get_int();
-          size_t my_element_count = eb->get_property("entity_count").get_int();
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];
           block_map->reverse_map_data(idata, field, num_to_get * element_nodes);
 
-          if (my_element_count > 0) {
+          if (eb->get_property("entity_count").get_int() > 0) {
             CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
+	    int sect = 0;
             ierr = cg_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, num_to_get, 0,
                                     idata, &sect);
             if (ierr != CG_OK) {
@@ -1332,49 +1331,6 @@ namespace Iocgns {
 	    eb->property_update("section", sect);
           }
         }
-#if 0
-        else if (field.get_name() == "connectivity_raw") {
-          assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
-
-          if (my_element_count > 0) {
-            int ierr = cg_elements_read(cgnsFilePtr, base, zone, sect,
-                                        reinterpret_cast<cgsize_t *>(data), nullptr);
-            if (ierr != CG_OK) {
-              Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-            }
-          }
-        }
-        else if (field.get_name() == "ids") {
-          // TODO(gdsjaar): This needs to change for parallel.
-          // Map the local ids in this element block
-          // (eb_offset+1...eb_offset+1+my_element_count) to global element ids.
-          size_t eb_offset_plus_one = eb->get_offset() + 1;
-          if (field.get_type() == Ioss::Field::INT64) {
-            int64_t *idata = static_cast<int64_t *>(data);
-            std::iota(idata, idata + my_element_count, eb_offset_plus_one);
-          }
-          else {
-            assert(field.get_type() == Ioss::Field::INT32);
-            int *idata = static_cast<int *>(data);
-            std::iota(idata, idata + my_element_count, eb_offset_plus_one);
-          }
-        }
-        else if (field.get_name() == "implicit_ids") {
-          // TODO(gdsjaar): This needs to change for parallel.
-          // If not parallel, then this is just
-          // (eb_offset+1...eb_offset+1+my_element_count).
-          size_t eb_offset_plus_one = eb->get_offset() + 1;
-          if (field.get_type() == Ioss::Field::INT64) {
-            int64_t *idata = static_cast<int64_t *>(data);
-            std::iota(idata, idata + my_element_count, eb_offset_plus_one);
-          }
-          else {
-            assert(field.get_type() == Ioss::Field::INT32);
-            int *idata = static_cast<int *>(data);
-            std::iota(idata, idata + my_element_count, eb_offset_plus_one);
-          }
-        }
-#endif
         else {
           num_to_get = Ioss::Utils::field_warning(eb, field, "input");
         }
