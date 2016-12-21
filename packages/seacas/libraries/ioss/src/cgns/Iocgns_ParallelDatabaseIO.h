@@ -200,6 +200,7 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
     // Bulk Data
+    void resolve_zone_shared_nodes(Ioss::MapContainer &nodes) const;
 
     // MAPS -- Used to convert from local exodusII ids/names to Sierra
     // database global ids/names
@@ -219,11 +220,14 @@ namespace Iocgns {
 
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 
-    std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
-    mutable std::vector<size_t>
-                                       m_bcOffset; // The BC Section element offsets in unstructured output.
+    mutable std::vector<size_t>        m_zoneOffset; // Offset for local zone/block element ids to global.
+
+    // Of the cells/elements in this zone, this proc handles those starting at m_zoneProcOffset+1 to m_zoneProcOffset+num_entity.
+    mutable std::vector<size_t>        m_zoneProcOffset; 
+    mutable std::vector<size_t>        m_bcOffset; // The BC Section element offsets in unstructured output.
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
-    std::map<std::string, int> m_zoneNameMap;
+    std::map<std::string, int>         m_zoneNameMap;
+    mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
   };
 }
 #endif

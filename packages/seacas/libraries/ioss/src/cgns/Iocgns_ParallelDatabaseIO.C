@@ -81,6 +81,15 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
+namespace {
+  size_t distribute(size_t min, size_t max, size_t proc_count, cgsize_t value)
+  {
+    size_t per_proc = (max - min + proc_count) / proc_count;
+    size_t proc = (value - min) / per_proc;
+    return proc;
+  }
+}
+
 namespace Iocgns {
 
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -416,6 +425,49 @@ namespace Iocgns {
     auto * nblock     = new Ioss::NodeBlock(this, "nodeblock_1", node_count, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
+  }
+
+  void ParallelDatabaseIO::resolve_zone_shared_nodes(Ioss::MapContainer &nodes) const
+  {
+    // Determine number of processors that have nodes for this zone.
+    std::vector<int> has_nodes(util().parallel_size());
+    int have_nodes = nodes.size() > 1 ? 1 : 0;
+    util().all_gather(have_nodes, has_nodes);
+
+    // Count processors:
+    size_t proc_count = std::accumulate(has_nodes.begin(), has_nodes.end(), (size_t)0);
+    if (proc_count <= 1)
+      return;
+
+    // This zone has nodes/cells on two or more processors.  Need to determine
+    // which nodes are shared.
+    
+    // Distribute each node to an "owning" processor based on its id
+    // and assuming a linear distribution (e.g., if on 3 processors, each
+    // proc will "own" 1/3 of the id range.
+    int64_t min = have_nodes ? nodes[1] : std::numeric_limits<int>::max();
+    int64_t max = have_nodes ? nodes[nodes.size()-1] : 0;
+    min = util().global_minmax(min, Ioss::ParallelUtils::DO_MIN);
+    max = util().global_minmax(max, Ioss::ParallelUtils::DO_MAX);
+    
+    std::vector<int> p_count(proc_count);
+    size_t per_proc = (max - min + proc_count) / proc_count;
+    size_t proc = 0;
+    size_t top = min + per_proc;
+    
+    // NOTE: nodes is sorted...
+    for (size_t i=1; i < nodes.size(); i++) {
+      while (nodes[i] >= top) {
+	top += per_proc;
+	proc++;
+      }
+      assert(proc < proc_count);
+      p_count[proc]++;
+    }
+
+    // Need a communicator for just the "active" processors.
+    
+    size_t kkk = p_count[0];
   }
 
   void ParallelDatabaseIO::write_meta_data()
@@ -967,11 +1019,102 @@ namespace Iocgns {
     return -1;
   }
 
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock * /* eb */,
-                                                 const Ioss::Field & /* field */, void * /* data */,
-                                                 size_t /* data_size */) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
+                                                 const Ioss::Field &field, void *data,
+                                                 size_t data_size) const
   {
-    return -1;
+    cgsize_t num_to_get = field.verify(data_size);
+
+      Ioss::Field::RoleType role = field.get_role();
+
+      if (role == Ioss::Field::MESH) {
+        // Handle the MESH fields required for a CGNS file model.
+        // (The 'genesis' portion)
+        if (field.get_name() == "connectivity") {
+          // This blocks zone has not been defined.
+          // Get the "node block" for this element block...
+          cgsize_t *idata         = num_to_get > 0 ? reinterpret_cast<cgsize_t *>(data) : nullptr;
+          int       element_nodes = eb->topology()->number_nodes();
+          assert(field.raw_storage()->component_count() == element_nodes);
+
+          Ioss::MapContainer nodes;
+          nodes.reserve(element_nodes * num_to_get + 1);
+          nodes.push_back(1); // Non-one-to-one map
+          for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+            nodes.push_back(idata[i]);
+          }
+          auto it = nodes.begin();
+          it++;
+          std::sort(it, nodes.end());
+          nodes.erase(std::unique(it, nodes.end()), nodes.end());
+          nodes.shrink_to_fit();
+
+	  // Resolve zone-shared nodes (nodes used in this zone, but are shared on processor boundaries).
+	  resolve_zone_shared_nodes(nodes);
+	  
+	  // Get total count on all processors...
+	  // Note that there will be shared nodes on processor boundaries that need to be
+	  // accounted for...
+          cgsize_t size[3] = {0, 0, 0};
+          size[1]          = eb->get_property("entity_count").get_int();
+          size[0]          = nodes.size()-1;
+
+	  MPI_Allreduce(MPI_IN_PLACE, size, 3, Ioss::mpi_type(cgsize_t(0)), MPI_SUM, util().communicator());
+	    
+          // Now, we have the node count and cell count so we can create a zone...
+          int      base    = 1;
+          int      zone    = 0;
+
+          int ierr =
+              cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
+          if (ierr != CG_OK) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+          eb->property_update("zone", zone);
+          eb->property_update("section", zone);
+          eb->property_update("base", base);
+
+          // Now we have a valid zone so can update some data structures...
+          m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
+          m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
+          m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
+          m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
+
+
+          // Need to map global nodes to block-local node connectivity
+          const auto &block_map = m_globalToBlockLocalNodeMap[zone];
+          block_map->reverse_map_data(idata, field, num_to_get * element_nodes);
+
+          if (size[1] > 0) {
+            CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
+	    int sect = 0;
+            ierr = cgp_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, size[1], 0, &sect);
+            if (ierr != CG_OK) {
+              Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+            }
+
+	    cgsize_t start = 0;
+	    MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM, util().communicator());
+
+	    // Of the cells/elements in this zone, this proc handles those starting at proc_offset+1 to proc_offset+num_entity.
+	    eb->property_update("proc_offset", start);
+	    
+	    ierr = cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start+1, start+num_to_get, idata);
+            if (ierr != CG_OK) {
+              Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+            }
+            m_bcOffset[zone] += num_to_get;
+	    eb->property_update("section", sect);
+          }
+        }
+        else {
+          num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+        }
+      }
+      else {
+        num_to_get = Ioss::Utils::field_warning(eb, field, "unknown");
+      }
+    return num_to_get;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb,
                                                  const Ioss::Field &field, void *data,
