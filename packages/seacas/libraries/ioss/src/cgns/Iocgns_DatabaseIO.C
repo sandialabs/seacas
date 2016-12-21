@@ -1304,9 +1304,9 @@ namespace Iocgns {
           if (ierr != CG_OK) {
             Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
           }
-          Utils::update_property(eb, "zone", zone);
-          Utils::update_property(eb, "section", zone);
-          Utils::update_property(eb, "base", base);
+          eb->property_update("zone", zone);
+          eb->property_update("section", zone);
+          eb->property_update("base", base);
 
           // Now we have a valid zone so can update some data structures...
           m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
@@ -1329,6 +1329,7 @@ namespace Iocgns {
               Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
             }
             m_bcOffset[zone] += num_to_get;
+	    eb->property_update("section", sect);
           }
         }
 #if 0

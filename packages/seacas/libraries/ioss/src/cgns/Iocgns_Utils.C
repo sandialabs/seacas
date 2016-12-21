@@ -139,22 +139,6 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   IOSS_ERROR(errmsg);
 }
 
-void Iocgns::Utils::update_property(const Ioss::GroupingEntity *ge, const std::string &property,
-                                    int64_t value)
-{
-  if (ge->property_exists(property)) {
-    if (ge->get_property(property).get_int() != value) {
-      auto *nge = const_cast<Ioss::GroupingEntity *>(ge);
-      nge->property_erase(property);
-      nge->property_add(Ioss::Property(property, value));
-    }
-  }
-  else {
-    auto *nge = const_cast<Ioss::GroupingEntity *>(ge);
-    nge->property_add(Ioss::Property(property, value));
-  }
-}
-
 CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
 {
   // ========================================================================
@@ -279,9 +263,9 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
     }
-    update_property(eb, "zone", zone);
-    update_property(eb, "section", zone);
-    update_property(eb, "base", base);
+    eb->property_update("zone", zone);
+    eb->property_update("section", zone);
+    eb->property_update("base", base);
 
     zone_offset[zone] = size[1];
   }
@@ -303,8 +287,8 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     if (ierr != CG_OK) {
       cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
     }
-    update_property(sb, "zone", zone);
-    update_property(sb, "base", base);
+    sb->property_update("zone", zone);
+    sb->property_update("base", base);
 
     assert(zone > 0);
     zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
