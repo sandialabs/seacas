@@ -42,8 +42,8 @@
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State
 #include <Ioss_VariableType.h>    // for component_count()
-#include <cstddef>               // for size_t, nullptr
-#include <cstdint>               // for int64_t
+#include <cstddef>                // for size_t, nullptr
+#include <cstdint>                // for int64_t
 #include <string>                 // for string
 #include <vector>                 // for vector
 
@@ -179,6 +179,9 @@ namespace Ioss {
     Property get_property(const std::string &property_name) const;
     int property_describe(NameList *names) const;
     size_t property_count() const;
+    /** Add a property, or change its value if it already exists with
+        a different value */
+    void property_update(const std::string &property, int64_t value) const;
 
     // ========================================================================
     //                                FIELDS
@@ -294,7 +297,7 @@ namespace Ioss {
     mutable int64_t attributeCount;
     unsigned int    hash_;
   };
-}  // namespace Ioss
+} // namespace Ioss
 
 /** \brief Add a property to the entity's property manager.
  *

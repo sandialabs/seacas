@@ -55,9 +55,6 @@ namespace Iocgns {
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
 
-    static void update_property(const Ioss::GroupingEntity *ge, const std::string &property,
-                                int64_t value);
-
     template <typename INT>
     static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
                                       INT *idata)
