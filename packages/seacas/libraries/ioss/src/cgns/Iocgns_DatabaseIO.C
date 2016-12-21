@@ -336,8 +336,8 @@ namespace Iocgns {
     }
     num_node = offset;
 
+    m_zoneOffset[zone]      = m_zoneOffset[zone - 1] + num_elem;
     cgsize_t total_elements = size[1];
-    m_zoneOffset[zone]      = num_elem;
     num_elem += total_elements;
 
     // NOTE: A Zone will have a single set of nodes, but can have
@@ -1100,7 +1100,7 @@ namespace Iocgns {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
 
-        size_t offset = m_zoneOffset[zone];
+        size_t offset = m_zoneOffset[zone-1];
         if (field.get_type() == Ioss::Field::INT32) {
           int *  idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
@@ -1551,7 +1551,7 @@ namespace Iocgns {
           nsb->property_add(Ioss::Property("section", sect));
         }
 
-        size_t                offset = m_zoneOffset[zone];
+        size_t                offset = m_zoneOffset[zone-1];
         std::vector<cgsize_t> parent(4 * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {
