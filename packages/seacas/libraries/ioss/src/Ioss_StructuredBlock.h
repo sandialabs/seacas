@@ -256,7 +256,8 @@ namespace Ioss {
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
       assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) + static_cast<size_t>(j - 1) * (m_ni + 1) + i;
+      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) +
+             static_cast<size_t>(j - 1) * (m_ni + 1) + i;
     }
 
     // Get the local (relative to this block on this processor) cell
@@ -295,7 +296,8 @@ namespace Ioss {
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
       assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
-      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) + static_cast<size_t>(j - 1) * (m_ni + 1) + i - 1;
+      return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) +
+             static_cast<size_t>(j - 1) * (m_ni + 1) + i - 1;
     }
 
     // Get the local (on this processor) cell-node offset at the specified
@@ -430,5 +432,5 @@ namespace Ioss {
     std::vector<size_t>            m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
   };
-}  // namespace Ioss
+} // namespace Ioss
 #endif

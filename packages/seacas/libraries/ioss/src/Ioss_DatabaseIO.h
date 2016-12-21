@@ -119,7 +119,7 @@ namespace Ioss {
      * local to each element block or structured block, then it is
      *	 not a node_major database.  Exodus is node major, CGNS is not.
      */
-    virtual bool node_major() const {return true;}
+    virtual bool node_major() const { return true; }
 
     virtual ~DatabaseIO();
 

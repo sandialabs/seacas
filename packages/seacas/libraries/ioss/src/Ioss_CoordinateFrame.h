@@ -34,7 +34,7 @@
 #define IOSS_Ioss_CoordinateFrame_h
 
 #include <cstdint> // for int64_t
-#include <vector>   // for vector
+#include <vector>  // for vector
 
 namespace Ioss {
   class DatabaseIO;
@@ -56,5 +56,5 @@ namespace Ioss {
     std::vector<double> pointList_;
     char                tag_;
   };
-}  // namespace Ioss
+} // namespace Ioss
 #endif

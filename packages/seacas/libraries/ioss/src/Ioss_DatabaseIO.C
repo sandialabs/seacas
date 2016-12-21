@@ -317,7 +317,9 @@ namespace Ioss {
           continue;
         }
 
-        struct stat st{};
+        struct stat st
+        {
+        };
         if (stat(path_root.c_str(), &st) != 0) {
           if (mkdir(path_root.c_str(), mode) != 0 && errno != EEXIST) {
             errmsg << "ERROR: Cannot create directory '" << path_root

@@ -35,8 +35,8 @@
 
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Property.h> // for Property
+#include <cstddef>         // for size_t
 #include <map>             // for map, map<>::value_compare
-#include <cstddef>        // for size_t
 #include <string>          // for string, operator<
 #include <vector>          // for vector
 

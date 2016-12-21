@@ -34,9 +34,9 @@
 #define IOSS_Ioss_FileInfo_h
 
 #include <Ioss_CodeTypes.h>
+#include <ctime>       // for time_t
 #include <string>      // for string, operator!=, etc
 #include <sys/types.h> // for off_t
-#include <ctime>      // for time_t
 
 namespace Ioss {
 

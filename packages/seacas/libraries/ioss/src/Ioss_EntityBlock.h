@@ -35,7 +35,7 @@
 
 #include <Ioss_GroupingEntity.h> // for GroupingEntity
 #include <Ioss_Property.h>       // for Property
-#include <cstddef>              // for size_t
+#include <cstddef>               // for size_t
 #include <string>                // for string
 namespace Ioss {
   class DatabaseIO;
