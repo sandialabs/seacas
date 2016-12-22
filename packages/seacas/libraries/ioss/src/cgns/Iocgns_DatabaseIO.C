@@ -1539,17 +1539,7 @@ namespace Iocgns {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
 
-        if (sb->property_exists("section")) {
-          if (sb->get_property("section").get_int() != sect) {
-            Ioss::SideBlock *nsb = const_cast<Ioss::SideBlock *>(sb);
-            nsb->property_erase("section");
-            nsb->property_add(Ioss::Property("section", sect));
-          }
-        }
-        else {
-          Ioss::SideBlock *nsb = const_cast<Ioss::SideBlock *>(sb);
-          nsb->property_add(Ioss::Property("section", sect));
-        }
+	sb->property_update("section", sect);
 
         size_t                offset = m_zoneOffset[zone-1];
         std::vector<cgsize_t> parent(4 * num_to_get);

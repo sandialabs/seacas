@@ -203,7 +203,7 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
     // Bulk Data
-    void resolve_zone_shared_nodes(Ioss::MapContainer &nodes) const;
+    void resolve_zone_shared_nodes(Ioss::MapContainer &nodes, std::vector<cgsize_t> &connectivity_map) const;
 
     // MAPS -- Used to convert from local exodusII ids/names to Sierra
     // database global ids/names
