@@ -428,7 +428,7 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
-  void ParallelDatabaseIO::resolve_zone_shared_nodes(Ioss::MapContainer &nodes) const
+  void ParallelDatabaseIO::resolve_zone_shared_nodes(Ioss::MapContainer &nodes, std::vector<cgsize_t> &connectivity_map) const
   {
     // Determine number of processors that have nodes for this zone.
     std::vector<int> has_nodes(util().parallel_size());
@@ -460,7 +460,7 @@ namespace Iocgns {
       std::vector<int> p_count(proc_count);
       size_t per_proc = (max - min + proc_count) / proc_count;
       size_t proc = 0;
-      size_t top = min + per_proc;
+      int64_t top = min + per_proc;
     
       // NOTE: nodes is sorted...
       for (size_t i=1; i < nodes.size(); i++) {
@@ -481,7 +481,7 @@ namespace Iocgns {
       std::vector<int> send_disp(proc_count);
       size_t           sums = 1;
       size_t           sumr = 1;
-      for (int p = 0; p < proc_count; p++) {
+      for (size_t p = 0; p < proc_count; p++) {
 	recv_disp[p] = sumr;
 	sumr += r_count[p];
 	
@@ -495,24 +495,33 @@ namespace Iocgns {
       // Iterate r_nodes list to find duplicate nodes...
       // On this processor, should range from min + my_proc*per_proc to min + (my_proc+1)*per_proc.
       size_t delta = min + pm.parallel_rank() * per_proc;
-      std::vector<int64_t> dup_nodes(per_proc);
+      std::vector<int> dup_nodes(per_proc);
       for (size_t i=1; i < r_nodes.size(); i++) {
-	int64_t n = r_nodes[i] - delta;
-	assert(n >= 0 && n < per_proc);
+	size_t n = (size_t)r_nodes[i] - delta;
+	assert(n < per_proc);
 	dup_nodes[n]++;
 	if (dup_nodes[n] > 1) {
 	  r_nodes[i] = 0;
 	}
       }
 
-      Ioss::MY_Alltoallv(r_nodes, r_count, recv_disp, nodes, p_count, send_disp, pcomm);
+      // Send filtered list back to original processors -- store in u_nodes
+      // This is set of unique block nodes owned by this processor.
+      Ioss::MapContainer u_nodes(nodes.size());
+      Ioss::MY_Alltoallv(r_nodes, r_count, recv_disp, u_nodes, p_count, send_disp, pcomm);
 
       // Collapse out zeros...
-      nodes[0] = 0;
-      std::sort(nodes.begin(), nodes.end());
-      nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
-      nodes.shrink_to_fit();
-      nodes[0] = 1;  // nodes is a MapContainer; first entry is reserved use.
+      u_nodes[0] = 0;
+      std::sort(u_nodes.begin(), u_nodes.end());
+      u_nodes.erase(std::unique(u_nodes.begin(), u_nodes.end()), u_nodes.end());
+      u_nodes.shrink_to_fit();
+      u_nodes[0] = 1;  // nodes is a MapContainer; first entry is reserved use.
+
+      // Determine offset into the zone node block for each processors "chunk"
+      int64_t local_node_count = u_nodes.size();
+      int64_t local_node_offset = 0;
+      MPI_Exscan(&local_node_count, &local_node_offset, 1, Ioss::mpi_type(local_node_count), MPI_SUM, pcomm);
+      
       MPI_Comm_free(&pcomm);
     }
   }
@@ -1135,7 +1144,7 @@ namespace Iocgns {
               for (size_t i = 0; i < block_map->map.size() - 1; i++) {
                 auto global = block_map->map[i + 1];
 		auto local = nodeMap.global_to_local(global)-1;
-		assert(local >= 0 && local < num_to_get);
+		assert(local >= 0 && local < (int64_t)num_to_get);
 		
                 x[i]        = rdata[local * spatial_dim + 0];
                 if (spatial_dim > 1) {
@@ -1251,8 +1260,8 @@ namespace Iocgns {
 	// This blocks zone has not been defined.
 	// Get the "node block" for this element block...
 	cgsize_t *idata         = num_to_get > 0 ? reinterpret_cast<cgsize_t *>(data) : nullptr;
-	int       element_nodes = eb->topology()->number_nodes();
-	assert(field.raw_storage()->component_count() == element_nodes);
+	size_t    element_nodes = eb->topology()->number_nodes();
+	assert((size_t)field.raw_storage()->component_count() == element_nodes);
 
 	Ioss::MapContainer nodes;
 	nodes.reserve(element_nodes * num_to_get + 1);
@@ -1265,7 +1274,13 @@ namespace Iocgns {
 	nodes.shrink_to_fit();
 
 	// Resolve zone-shared nodes (nodes used in this zone, but are shared on processor boundaries).
-	resolve_zone_shared_nodes(nodes);
+	// In addition to the "nodes" MapContainer which is used in mapping global nodes to block local owning node,
+	// we also need a "connectivity_map" which lets each processor map from global node id to block local node position
+	// The difference is that the connectivity_map has references to "shared" nodes -- a shared, non-onwed node N on a processor
+	// needs to know what its overall position in this zones list of nodes is even though that nodes data won't be read/written
+	// on that processor.
+	std::vector<cgsize_t> connectivity_map(nodes.size()-1);
+	resolve_zone_shared_nodes(nodes, connectivity_map);
 	  
 	// Get total count on all processors...
 	// Note that there will be shared nodes on processor boundaries that need to be
@@ -1318,7 +1333,11 @@ namespace Iocgns {
 	  if (ierr != CG_OK) {
 	    Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
 	  }
-	  m_bcOffset[zone] += num_to_get;
+
+	  cgsize_t eb_size = num_to_get;
+	  MPI_Allreduce(MPI_IN_PLACE, &eb_size, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM, util().communicator());
+
+	  m_bcOffset[zone] += eb_size;
 	  eb->property_update("section", sect);
 	}
       }
@@ -1566,10 +1585,86 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock * /* fb */,
-                                                 const Ioss::Field & /* field */, void * /* data */,
-                                                 size_t /* data_size */) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideBlock *sb,
+                                                 const Ioss::Field &field, void *data,
+                                                 size_t data_size) const
   {
+    const Ioss::EntityBlock *parent_block = sb->parent_block();
+    if (parent_block == nullptr) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: CGNS: SideBlock " << sb->name()
+             << " does not have a parent-block specified.  This is required for CGNS output.";
+      IOSS_ERROR(errmsg);
+    }
+
+    cgsize_t base       = parent_block->get_property("base").get_int();
+    cgsize_t zone       = parent_block->get_property("zone").get_int();
+    ssize_t  num_to_get = field.verify(data_size);
+
+    Ioss::Field::RoleType role = field.get_role();
+
+    if (role == Ioss::Field::MESH) {
+      // Handle the MESH fields required for a CGNS file model.
+      // (The 'genesis' portion)
+      if (field.get_name() == "element_side") {
+        // Get name from parent sideset...
+        auto &name = sb->owner()->name();
+
+        CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
+        cgsize_t         sect = 0;
+
+	cgsize_t size = num_to_get;
+	MPI_Allreduce(MPI_IN_PLACE, &size, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM, util().communicator());
+
+        int cg_start = m_bcOffset[zone] + 1;
+        int cg_end   = m_bcOffset[zone] + size;
+        m_bcOffset[zone] += size;
+
+        // NOTE: Currently not writing the "ElementConnectivity" data for the
+        //       boundary condition.  It isn't used in the read and don't have
+        //       the data so would have to generate it.  This may cause problems
+        //       with codes that use the downstream data if they base the BC off
+        //       of the nodes instead of the element/side info.
+	int ierr = cgp_section_write(cgnsFilePtr, base, zone, name.c_str(), type, cg_start, cg_end, 0, &sect);
+        if (ierr != CG_OK) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+
+	sb->property_update("section", sect);
+
+        size_t                offset = m_zoneOffset[zone-1];
+        std::vector<cgsize_t> parent(4 * num_to_get);
+
+        if (field.get_type() == Ioss::Field::INT32) {
+          int *  idata = reinterpret_cast<int *>(data);
+          size_t j     = 0;
+          for (ssize_t i = 0; i < num_to_get; i++) {
+            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+            parent[num_to_get * 2 + i] = idata[j++];
+          }
+          // Adjust face numbers to IOSS convention instead of CGNS convention...
+          Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
+        }
+        else {
+          int64_t *idata = reinterpret_cast<int64_t *>(data);
+          size_t   j     = 0;
+          for (ssize_t i = 0; i < num_to_get; i++) {
+            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+            parent[num_to_get * 2 + i] = idata[j++];
+          }
+          // Adjust face numbers to IOSS convention instead of CGNS convention...
+          Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
+        }
+
+#if 0
+        ierr = cg_parent_data_write(cgnsFilePtr, base, zone, sect, TOPTR(parent));
+        if (ierr != CG_OK) {
+          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+        }
+#endif
+        return num_to_get;
+      }
+    }
     return -1;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideSet * /* fs */,
