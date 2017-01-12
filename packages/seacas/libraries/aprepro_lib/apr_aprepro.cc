@@ -48,7 +48,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "4.32 (2016/11/21)";
+  const char *       version_string = "4.33 (2017/01/12)";
 
   unsigned hash_symbol(const char *symbol)
   {
@@ -266,7 +266,9 @@ namespace SEAMS {
     /* If pointer still null, print error message */
     if (pointer == nullptr || pointer->bad() || !pointer->good()) {
       error("Can't open " + file, false);
-      exit(EXIT_FAILURE);
+      if (!stringInteractive) {
+        exit(EXIT_FAILURE);
+      }
     }
 
     return pointer;
