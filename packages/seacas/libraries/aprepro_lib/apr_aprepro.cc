@@ -242,9 +242,13 @@ namespace SEAMS {
     infoStream    = c_info;
   }
 
-  /* Two methods for opening files. In OPEN_FILE, the file must exist
-     or else the code will exit. If CHECK_OPEN_FILE, it is OK if the
-     file does not exist. A Null 'pointer' will be returned.
+  /* Two methods for opening files:
+
+     In OPEN_FILE, the file must exist or else the code will exit in
+     batch mode or return null pointer if interactive.
+
+     In CHECK_OPEN_FILE, it is OK if the file does not exist. A Null
+     'pointer' will be returned.
   */
   std::fstream *Aprepro::open_file(const std::string &file, const char *mode)
   {
