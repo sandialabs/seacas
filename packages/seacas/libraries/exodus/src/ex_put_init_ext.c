@@ -87,6 +87,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
   int  status;
   int  varid;
   char errmsg[MAX_ERR_LENGTH];
+  int  fill = NC_FILL_CHAR;
 
   if (count > 0) {
     dim[0] = dimension_var;
@@ -99,6 +100,7 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       ex_err("ex_put_init_ext", errmsg, exerrval);
       return status; /* exit define mode and return */
     }
+    nc_def_var_fill(exoid, varid, 0, &fill);
   }
   return NC_NOERR;
 }
@@ -231,7 +233,7 @@ static void invalidate_id_status(int exoid, const char *var_stat, const char *va
 }
 
 /*!
- * writes the initialization parameters to the EXODUS II file
+ * writes the initialization parameters to the EXODUS file
  * \param     exoid     exodus file id
  * \param     model     finite element model parameters
  */
@@ -250,6 +252,8 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
   char errmsg[MAX_ERR_LENGTH];
 
   int rootid = exoid & EX_FILE_ID_MASK;
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
 

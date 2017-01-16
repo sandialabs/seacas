@@ -83,7 +83,7 @@ static int64_t ex_get_dim_value(int exoid, const char *name, const char *dimensi
 }
 
 /*!
- * reads the initialization parameters from an opened EXODUS II file
+ * reads the initialization parameters from an opened EXODUS file
  * \param exoid exodus file id
  * \param[out] info #ex_init_params structure containing metadata for mesh.
  * \sa ex_get_init()
@@ -98,6 +98,8 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   nc_type title_type = 0;
 
   int rootid = exoid & EX_FILE_ID_MASK;
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
 

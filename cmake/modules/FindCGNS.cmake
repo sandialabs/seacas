@@ -23,7 +23,6 @@
 include(FindPackageHandleStandardArgs)
 
 # MSTK CMake functions see <root>/cmake/modules for source
-include(PrintVariable)
 include(AddPackageDependency)
 
 # If CGNS_ROOT was defined in the environment, use it.

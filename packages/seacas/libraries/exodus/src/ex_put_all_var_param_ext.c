@@ -109,27 +109,29 @@ int ex_put_all_var_param_ext(int exoid, const ex_var_params *vp)
   int edblk_varid, fablk_varid, eblk_varid, nset_varid, eset_varid, fset_varid, sset_varid,
       elset_varid, varid;
 
-  void_int *eblk_ids  = 0;
-  void_int *edblk_ids = 0;
-  void_int *fablk_ids = 0;
-  void_int *nset_ids  = 0;
-  void_int *eset_ids  = 0;
-  void_int *fset_ids  = 0;
-  void_int *sset_ids  = 0;
-  void_int *elset_ids = 0;
+  void_int *eblk_ids  = NULL;
+  void_int *edblk_ids = NULL;
+  void_int *fablk_ids = NULL;
+  void_int *nset_ids  = NULL;
+  void_int *eset_ids  = NULL;
+  void_int *fset_ids  = NULL;
+  void_int *sset_ids  = NULL;
+  void_int *elset_ids = NULL;
 
-  int *eblk_stat  = 0;
-  int *edblk_stat = 0;
-  int *fablk_stat = 0;
-  int *nset_stat  = 0;
-  int *eset_stat  = 0;
-  int *fset_stat  = 0;
-  int *sset_stat  = 0;
-  int *elset_stat = 0;
+  int *eblk_stat  = NULL;
+  int *edblk_stat = NULL;
+  int *fablk_stat = NULL;
+  int *nset_stat  = NULL;
+  int *eset_stat  = NULL;
+  int *fset_stat  = NULL;
+  int *sset_stat  = NULL;
+  int *elset_stat = NULL;
 
   int         dims[3];
   char        errmsg[MAX_ERR_LENGTH];
   const char *routine = "ex_put_all_var_param_ext";
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
 
@@ -438,6 +440,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
   int  dims[2];
   int  variable;
   int  status;
+  int  fill = NC_FILL_CHAR;
 
   dims[0] = dimension;
   (void)nc_inq_dimid(exoid, DIM_STR_NAME, &dims[1]); /* Checked earlier, so known to exist */
@@ -456,6 +459,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
       ex_err("ex_put_all_var_param_ext", errmsg, exerrval);
     }
   }
+  nc_def_var_fill(exoid, variable, 0, &fill);
   return status;
 }
 
@@ -570,7 +574,7 @@ static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, i
 
           /* define netCDF variable to store variable values;
            * the j index cycles from 1 through the number of variables so
-           * that the index of the EXODUS II variable (which is part of
+           * that the index of the EXODUS variable (which is part of
            * the name of the netCDF variable) will begin at 1 instead of 0
            */
           status = nc_def_var(exoid, ex_name_var_of_object(obj_type, j, i + 1), nc_flt_code(exoid),

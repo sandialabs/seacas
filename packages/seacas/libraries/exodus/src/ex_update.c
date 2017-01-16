@@ -51,7 +51,7 @@
 #include <stdio.h>
 
 /*!
- * updates an opened EXODUS II file (or EXODUS II history file)
+ * updates an opened EXODUS file (or EXODUS history file)
  * \param  exoid                   exodus file id
  */
 
@@ -61,6 +61,8 @@ int ex_update(int exoid)
   int  status;
 
   exerrval = 0; /* clear error code */
+
+  ex_check_valid_file_id(exoid);
 
   if ((status = nc_sync(exoid)) != NC_NOERR) {
     exerrval = status;

@@ -33,20 +33,21 @@
 #ifndef IOSS_Ioss_Region_h
 #define IOSS_Ioss_Region_h
 
-#include "Ioss_CoordinateFrame.h" // for CoordinateFrame
-#include "Ioss_Property.h"        // for Property
+#include <Ioss_CoordinateFrame.h> // for CoordinateFrame
 #include <Ioss_DatabaseIO.h>      // for DatabaseIO
 #include <Ioss_EntityType.h>      // for EntityType, etc
 #include <Ioss_GroupingEntity.h>  // for GroupingEntity
-#include <Ioss_State.h>           // for State
-#include <functional>             // for less
-#include <iosfwd>                 // for ostream
-#include <map>                    // for map, map<>::value_compare
-#include <stddef.h>               // for size_t, nullptr
-#include <stdint.h>               // for int64_t
-#include <string>                 // for string, operator<
-#include <utility>                // for pair
-#include <vector>                 // for vector
+#include <Ioss_MeshType.h>
+#include <Ioss_Property.h> // for Property
+#include <Ioss_State.h>    // for State
+#include <functional>      // for less
+#include <iosfwd>          // for ostream
+#include <map>             // for map, map<>::value_compare
+#include <stddef.h>        // for size_t, nullptr
+#include <stdint.h>        // for int64_t
+#include <string>          // for string, operator<
+#include <utility>         // for pair
+#include <vector>          // for vector
 namespace Ioss {
   class CommSet;
   class EdgeBlock;
@@ -104,6 +105,9 @@ namespace Ioss {
     std::string type_string() const override { return "Region"; }
     std::string short_type_string() const override { return "region"; }
     EntityType  type() const override { return REGION; }
+
+    MeshType          mesh_type() const;
+    const std::string mesh_type_string() const;
 
     void output_summary(std::ostream &strm, bool do_transient = true);
 

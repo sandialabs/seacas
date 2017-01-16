@@ -142,15 +142,6 @@ namespace Ioex {
     }
 
     if (!is_input()) {
-      // Check whether appending to existing file...
-      if (open_create_behavior() == Ioss::DB_APPEND ||
-          open_create_behavior() == Ioss::DB_APPEND_GROUP) {
-        // Append to file if it already exists -- See if the file exists.
-        std::string    decoded_filename = util().decode_filename(get_filename(), isParallel);
-        Ioss::FileInfo file             = Ioss::FileInfo(decoded_filename);
-        fileExists                      = file.exists();
-      }
-
       if (util().get_environment("EX_MINIMIZE_OPEN_FILES", isParallel)) {
         std::cerr << "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
                      "variable is set.\n";
@@ -275,7 +266,21 @@ namespace Ioex {
   int DatabaseIO::free_file_pointer() const
   {
     if (exodusFilePtr != -1) {
+      bool do_timer = false;
+      if (isParallel) {
+	Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+      }
+      double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
+
       ex_close(exodusFilePtr);
+
+      if (do_timer && isParallel) {
+	double t_end = Ioss::Utils::timer();
+	double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
+	if (myProcessor == 0) {
+	  std::cerr << "File Close Time = " << duration << "\n";
+	}
+      }
     }
     exodusFilePtr = -1;
 
@@ -990,7 +995,6 @@ namespace Ioex {
 
         // Add to VariableNameMap so can determine exodusII index given a
         // Sierra field name.  exodusII index is just 'i+1'
-        std::cerr << "LowerCaseVariableNames: " << lowerCaseVariableNames << "\n";
         for (int i = 0; i < nvar; i++) {
           if (lowerCaseVariableNames) {
             Ioss::Utils::fixup_name(names[i]);
@@ -1335,6 +1339,13 @@ namespace Ioex {
   }
 
   // common
+  void DatabaseIO::flush_database() const
+  {
+    if (!is_input()) {
+      ex_update(get_file_pointer());
+    }
+  }
+
   void DatabaseIO::finalize_write(double sim_time)
   {
     // Attempt to ensure that all data written up to this point has
@@ -1380,7 +1391,7 @@ namespace Ioex {
       }
     }
     if (do_flush) {
-      ex_update(get_file_pointer());
+      flush_database();
     }
   }
 

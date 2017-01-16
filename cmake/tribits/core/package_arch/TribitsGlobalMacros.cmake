@@ -143,7 +143,7 @@ ENDMACRO()
 
 
 #
-# Define and option to include a file that reads in a bunch of options
+# Define an option to include a file that reads in a bunch of options
 #
 #
 
@@ -346,10 +346,10 @@ MACRO(TRIBITS_DEFINE_GLOBAL_OPTIONS_AND_DEFINE_EXTRA_REPOS)
     "If set TRUE, then 'SYSTEM' will be passed into INCLUDE_DIRECTORIES() for TPL includes.")
 
   ADVANCED_SET(TPL_FIND_SHARED_LIBS ON CACHE BOOL
-    "If ON, then the TPL system will find shared libs if the exist, otherwise will only find static libs." )
+    "If ON, then the TPL system will find shared libs if they exist, otherwise will only find static libs." )
 
   ADVANCED_SET(${PROJECT_NAME}_LINK_SEARCH_START_STATIC OFF CACHE BOOL
-    "If on, then the property LINK_SEARCH_START_STATIC will be added to all executables." )
+    "If ON, then the property LINK_SEARCH_START_STATIC will be added to all executables." )
 
   ADVANCED_SET(${PROJECT_NAME}_LIBRARY_NAME_PREFIX ""
     CACHE STRING
@@ -388,7 +388,7 @@ MACRO(TRIBITS_DEFINE_GLOBAL_OPTIONS_AND_DEFINE_EXTRA_REPOS)
   ADVANCED_SET(${PROJECT_NAME}_ENABLE_EXPORT_MAKEFILES
     ${${PROJECT_NAME}_ENABLE_EXPORT_MAKEFILES_DEFAULT}
     CACHE BOOL
-    "Determines if export makefiles will be create and installed."
+    "Determines if export makefiles will be created and installed."
     )
 
   # Creating <Package>Config.cmake files is currently *very* expensive for large
@@ -1801,8 +1801,12 @@ MACRO(TRIBITS_SETUP_ENV)
     IF(OPENMP_FOUND)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
       SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-      # FindOpenMP.cmake doesn't find Fortran flags.  Mike H said this is safe.
-      SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_C_FLAGS}")
+      IF(OpenMP_Fortran_FLAGS)
+        SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
+      ELSE()
+      # Older versions of FindOpenMP.cmake don't find Fortran flags.  Mike H said this is safe.
+        SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_C_FLAGS}")
+      ENDIF()
     ELSE()
       MESSAGE(FATAL_ERROR "Could not find OpenMP, try setting OpenMP_C_FLAGS and OpenMP_CXX_FLAGS directly")
     ENDIF(OPENMP_FOUND)

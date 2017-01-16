@@ -10,7 +10,6 @@
 include(CMakeParseArguments)
 
 # MSTK modules
-include(PrintVariable)
 include(ParseLibraryList)
 
 function(ADD_PACKAGE_DEPENDENCY)
@@ -96,17 +95,14 @@ function(ADD_PACKAGE_DEPENDENCY)
             if ( target_debug_libs OR req_debug_libs )
                 set(_save_debug_list "${target_debug_libs}" "${req_debug_libs}")
                 list(REMOVE_DUPLICATES _save_debug_list)
-                #print_variable(_save_debug_list)
             endif()    
             if ( target_opt_libs OR req_opt_libs )
                 set(_save_opt_list "${target_opt_libs}" "${req_opt_libs}")
                 list(REMOVE_DUPLICATES _save_opt_list)
-                #print_variable(_save_opt_list)
             endif()    
             if ( target_gen_libs OR req_gen_libs )
                 set(_save_gen_list "${target_gen_libs}" "${req_gen_libs}")
                 list(REMOVE_DUPLICATES _save_gen_list)
-                #print_variable(_save_gen_list)
             endif()    
 
             # Now build the _save_lib_list with the keywords

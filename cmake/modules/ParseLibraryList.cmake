@@ -11,9 +11,6 @@
 # CMake module
 include(CMakeParseArguments)
 
-# MSTK modules
-include(PrintVariable)
-
 function(PARSE_LIBRARY_LIST)
 
     # Macro: _print_usage
