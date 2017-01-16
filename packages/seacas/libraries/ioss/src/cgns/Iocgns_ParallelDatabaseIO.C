@@ -82,8 +82,6 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-#define VAL(x) std::cerr << Ioss::trmclr::blue << #x << " = " << x << "\n" << Ioss::trmclr::normal
-
 namespace {
   CG_ZoneType_t check_zone_type(int cgnsFilePtr)
   {
@@ -219,6 +217,10 @@ namespace Iocgns {
     }
 
     m_zoneType = check_zone_type(cgnsFilePtr);
+
+    // In CGNS, there are duplicated nodes at block boundaries.
+    // We typically only want to retain one copy of these and ignore the other.
+    properties.add(Ioss::Property("RETAIN_FREE_NODES", "NO"));
 
     if (int_byte_size_api() == 8) {
       decomp = std::unique_ptr<DecompositionDataBase>(

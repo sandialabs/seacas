@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 EXTRA_ARGS=$@
 
 #MPI="${MPI:-ON}"

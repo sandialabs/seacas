@@ -155,6 +155,7 @@ namespace Ioss {
 
     virtual void openDatabase() const {}
     virtual void closeDatabase() const {}
+    virtual void flush_database() const {}
 
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
@@ -290,6 +291,9 @@ namespace Ioss {
 
     bool get_use_generic_canonical_name() const { return useGenericCanonicalName; }
     void set_use_generic_canonical_name(bool yes_no) { useGenericCanonicalName = yes_no; }
+
+    bool ignore_database_names() const { return ignoreDatabaseNames; }
+    void ignore_database_names(bool yes_no) { ignoreDatabaseNames = yes_no; }
 
     /** \brief Get the length of the longest name in the database file.
      *
@@ -452,10 +456,8 @@ namespace Ioss {
 
     mutable Ioss::State dbState;
 
-    bool         isParallel;       //!< true if running in parallel
-    mutable bool isSerialParallel; //!< true if a serial code that needs to read/write the parallel
-                                   //! information.
-    int myProcessor;               //!< number of processor this database is for
+    bool isParallel;  //!< true if running in parallel
+    int  myProcessor; //!< number of processor this database is for
 
     /*!
      * Check the topology of all face/element pairs in the model and
@@ -588,6 +590,8 @@ namespace Ioss {
     bool
         useGenericCanonicalName; // True if "block_id" is used as canonical name instead of the name
     // given on the mesh file e.g. "fireset".  Both names are still aliases.
+    bool ignoreDatabaseNames; // True if "block_{id}" used as canonical name; ignore any names on
+                              // database.
   };
 }
 #endif

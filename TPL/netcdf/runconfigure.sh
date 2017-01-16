@@ -5,7 +5,7 @@ if [ "X$ACCESS" == "X" ] ; then
   exit
 fi
 
-PARALLEL=0
+PARALLEL="${MPI:-OFF}"
 
 rm -f config.cache
 export CFLAGS="-I${ACCESS}/include"
@@ -14,7 +14,7 @@ export CPPFLAGS="-DNDEBUG"
 # Find the hdf5 library
 export LDFLAGS="-L${ACCESS}/lib"
 
-if [ $PARALLEL == 0 ] ; then
+if [ "$PARALLEL" == "OFF" ] ; then
   export CC='gcc'
   PNETCDF=""
   PARALLEL_TESTS=""

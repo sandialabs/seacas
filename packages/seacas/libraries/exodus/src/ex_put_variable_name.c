@@ -56,6 +56,8 @@
 #include <stdio.h>
 
 /*!
+\ingroup ResultsData
+
  * writes the name of a particular results variable to the database
  *  \param     exoid                   exodus file id
  *  \param     obj_type                variable type
@@ -71,6 +73,8 @@ int ex_put_variable_name(int exoid, ex_entity_type obj_type, int var_num, const 
   const char *vname;
 
   exerrval = 0; /* clear error code */
+
+  ex_check_valid_file_id(exoid);
 
   /* inquire previously defined variables  */
   switch (obj_type) {
