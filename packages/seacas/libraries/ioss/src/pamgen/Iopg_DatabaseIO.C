@@ -990,27 +990,39 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
     Ioss::Field::RoleType role = field.get_role();
     if (role == Ioss::Field::MESH) {
 
-    	if (field.get_name() == "mesh_model_coordinates_x") {
-    	  double *rdata = static_cast<double *>(data);
-    	  int     ierr  = im_ex_get_coord(get_file_pointer(), rdata, nullptr, nullptr);
+    	if ((field.get_name() == "mesh_model_coordinates_x") ||
+    		(field.get_name() == "mesh_model_coordinates_y") ||
+			(field.get_name() == "mesh_model_coordinates_z")){
+
+          std::vector<double> x(num_to_get);
+    	  std::vector<double> y(num_to_get);
+    	  std::vector<double> z;
+    	  if (spatialDimension == 3)
+    		z.resize(num_to_get);
+
+          double *rdata = static_cast<double *>(data);
+
+    	  int     ierr  = im_ex_get_coord(get_file_pointer(), &x[0], &y[0], &z[0]);
     	  if (ierr < 0) {
     		pamgen_error(get_file_pointer(), __LINE__, myProcessor);
     	  }
-    	}
+    	  size_t index = 0;
 
-    	else if (field.get_name() == "mesh_model_coordinates_y") {
-    	  double *rdata = static_cast<double *>(data);
-    	  int     ierr  = im_ex_get_coord(get_file_pointer(), nullptr, rdata, nullptr);
-    	  if (ierr < 0) {
-    		pamgen_error(get_file_pointer(), __LINE__, myProcessor);
+    	  if (field.get_name() == "mesh_model_coordinates_x") {
+    	    for (size_t i = 0; i < num_to_get; i++) {
+    	      rdata[index++] = x[i];
+    	    }
     	  }
-    	}
-
-    	else if (field.get_name() == "mesh_model_coordinates_z") {
-    	  double *rdata = static_cast<double *>(data);
-    	  int     ierr  = im_ex_get_coord(get_file_pointer(), nullptr, nullptr, rdata);
-    	  if (ierr < 0) {
-    		pamgen_error(get_file_pointer(), __LINE__, myProcessor);
+    	  else if (field.get_name() == "mesh_model_coordinates_y") {
+    	    for (size_t i = 0; i < num_to_get; i++) {
+    	      rdata[index++] = y[i];
+    	    }
+    	  }
+    	  else {
+    	    for (size_t i = 0; i < num_to_get; i++) {
+    	      if (spatialDimension == 3)
+    	      	rdata[index++] = z[i];
+    	    }
     	  }
     	}
 
