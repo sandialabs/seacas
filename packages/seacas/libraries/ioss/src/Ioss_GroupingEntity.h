@@ -442,6 +442,7 @@ inline size_t Ioss::GroupingEntity::field_count() const { return fields.count();
  */
 template <typename T, typename... Args>
 int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+                                         Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
 
