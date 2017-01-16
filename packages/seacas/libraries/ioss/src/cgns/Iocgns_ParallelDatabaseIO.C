@@ -1618,7 +1618,6 @@ namespace Iocgns {
 
         int cg_start = m_bcOffset[zone] + 1;
         int cg_end   = m_bcOffset[zone] + size;
-        m_bcOffset[zone] += size;
 
         // NOTE: Currently not writing the "ElementConnectivity" data for the
         //       boundary condition.  It isn't used in the read and don't have
@@ -1656,12 +1655,20 @@ namespace Iocgns {
           Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
         }
 
-#if 0
-        ierr = cg_parent_data_write(cgnsFilePtr, base, zone, sect, TOPTR(parent));
+	int64_t local_face_count = num_to_get;
+	int64_t local_face_offset = 0;
+	MPI_Exscan(&local_face_count, &local_face_offset, 1, Ioss::mpi_type(local_face_count), MPI_SUM,
+		   util().communicator());
+	cg_start = m_bcOffset[zone] + local_face_offset + 1;
+	cg_end   = cg_start + local_face_count - 1;
+
+	auto xx = num_to_get > 0 ? TOPTR(parent) : nullptr;
+        ierr = cgp_parent_data_write(cgnsFilePtr, base, zone, sect, cg_start, cg_end, size, xx);
         if (ierr != CG_OK) {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
-#endif
+        m_bcOffset[zone] += size;
+
         return num_to_get;
       }
     }
