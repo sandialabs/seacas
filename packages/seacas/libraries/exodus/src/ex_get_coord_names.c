@@ -53,14 +53,14 @@ errors include:
 
 \param[in]   exoid        exodus file ID returned from a previous call to
 ex_create() or ex_open().
-\param[out]  coord_names  Returned pointer to a vector containing \c num_dim
+\param[out]  coord_names  Returned pointer to a vector containing num_dim
 names of the nodal
                           coordinate arrays.
 
 The following code segment will read the coordinate names from an open
 exodus file :
 
-\code
+~~~{.c}
 int error, exoid;
 char *coord_names[3];
 
@@ -69,7 +69,7 @@ for (i=0; i < num_dim; i++) {
 }
 
 error = ex_get_coord_names (exoid, coord_names);
-\endcode
+~~~
 
 */
 
@@ -79,6 +79,8 @@ int ex_get_coord_names(int exoid, char **coord_names)
   int    ndimdim, varid;
   size_t num_dim;
   char   errmsg[MAX_ERR_LENGTH];
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0;
 

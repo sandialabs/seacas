@@ -1,5 +1,9 @@
 #! /bin/sh
 
+MPI="${MPI:-OFF}"
+
+echo "MPI set to ${MPI}"
+
 if [ "X$ACCESS" = "X" ] ; then
   echo "ERROR: Please set the ACCESS environment variable before executing this script."
   exit
@@ -12,15 +16,21 @@ else
 LD_EXT="so"
 fi
 
+if [ "$MPI" == "ON" ]
+then
+  export CC=mpicc
+else
+  export CC=gcc
+fi
+
 rm -f config.cache
-CC='gcc'; export CC
 
 cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
-         -DBUILD_SHARED_LIBS=ON \
+         -DBUILD_SHARED_LIBS:BOOL=ON \
          -DCMAKE_INSTALL_PREFIX=${ACCESS} \
          -DCMAKE_INSTALL_LIBDIR:PATH=lib \
-         -DENABLE_NETCDF_4=ON \
-         -DENABLE_PNETCDF=OFF \
+         -DENABLE_NETCDF_4:BOOL=ON \
+         -DENABLE_PNETCDF:BOOL=${MPI} \
          -DENABLE_MMAP:BOOL=ON \
          -DENABLE_DAP:BOOL=OFF \
          -DENABLE_V2_API:BOOL=OFF \

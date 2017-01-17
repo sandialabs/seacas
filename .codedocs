@@ -33,7 +33,12 @@ TAGLINKS =
 # options. To request support for more options, contact support@codedocs.xyz.
 #
 # ABBREVIATE_BRIEF =
-# ALIASES =
+ALIASES                = "func{1}=<b>\1</b>" \
+                         "fparam{1}=<em>\1</em>" \
+                         "file{1}=<tt>\1</tt>" \
+                         "comment{1}=/* \1 */" \
+                         "co{1}=/* \1 */" \
+                         "undoc=\xrefitem undoc \"Undocumented\" \"Undocumented\""
 # ALPHABETICAL_INDEX =
 # ALWAYS_DETAILED_SEC =
 # CASE_SENSE_NAMES =
@@ -47,18 +52,27 @@ TAGLINKS =
 # EXTENSION_MAPPING =
 # EXTRACT_LOCAL_CLASSES =
 FILE_PATTERNS          = *.c \
+		         *.cc \
 		         *.C \
 			 *.f \
                          *.F \
                          *.hh \
-                         *.h
+                         *.h \
+			 *.md
 # GENERATE_TAGFILE =
 # GENERATE_TREEVIEW =
 # HIDE_COMPOUND_REFERENCE =
 # HIDE_SCOPE_NAMES =
+EXPAND_AS_DEFINED = EXODUS_EXPORT \
+                    SEACAS_DEPRECATED
+PREDEFINED = Build64
+ENABLE_PREPROCESSING = YES
 HIDE_UNDOC_CLASSES = NO
 HIDE_UNDOC_MEMBERS = NO
-# HTML_TIMESTAMP =
+HTML_TIMESTAMP = YES
+RECURSIVE = YES
+INPUT = packages/seacas
+
 # INLINE_GROUPED_CLASSES =
 # INPUT_ENCODING =
 # INTERNAL_DOCS =

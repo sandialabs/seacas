@@ -59,17 +59,19 @@
 #include <stdlib.h> // for free, NULL, malloc
 
 /*!
- * writes the EXODUS II variable truth table to the database; also,
- * creates netCDF variables in which to store EXODUS II variable
+\ingroup ResultsData
+
+ * writes the EXODUS variable truth table to the database; also,
+ * creates netCDF variables in which to store EXODUS variable
  * values; although this table isn't required (because the netCDF
- * variables can also be created in ex_put_var), this call will save
+ * variables can also be created in ex_put_var()), this call will save
  * tremendous time because all of the variables are defined at once
  * while the file is in define mode, rather than going in and out of
  * define mode (causing the entire file to be copied over and over)
- * which is what occurs when the variables are defined in ex_put_var
+ * which is what occurs when the variables are defined in ex_put_var()
  * \param       exoid              exodus file id
  * \param       obj_type           object type
- * \param       num_blk            number of blocks
+ * \param       num_blk            number of blocks or sets
  * \param       num_var            number of variables
  * \param      *var_tab            variable truth table array
  */
@@ -95,6 +97,8 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   const char *var_name = NULL;
   const char *ent_size = NULL;
   exerrval             = 0; /* clear error code */
+
+  ex_check_valid_file_id(exoid);
 
   ex_get_dimension(exoid, ex_dim_num_objects(obj_type), ex_name_of_object(obj_type), &num_entity,
                    &numelblkdim, routine);
@@ -248,7 +252,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
     goto error_ret; /* exit define mode and return */
   }
 
-  /* define netCDF variables in which to store EXODUS II element
+  /* define netCDF variables in which to store EXODUS element
    * variable values
    */
 
@@ -280,7 +284,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
 
           /* define netCDF variable to store variable values; the j
            * index cycles from 1 through the number of variables so
-           * that the index of the EXODUS II variable (which is part
+           * that the index of the EXODUS variable (which is part
            * of the name of the netCDF variable) will begin at 1
            * instead of 0
            */

@@ -36,10 +36,10 @@
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "Ioss_Utils.h"      // for Utils
 #include "shell_interface.h"
+#include <cctype>   // for tolower
 #include <cstddef>  // for nullptr
 #include <cstdlib>  // for exit, strtod, EXIT_SUCCESS, etc
 #include <cstring>  // for strcmp
-#include <cctype>   // for tolower
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for string, char_traits
 #include <vector>   // for vector
@@ -47,11 +47,6 @@
 #define NPOS std::string::npos
 
 IOShell::Interface::Interface()
-    : compose_output("none"), maximum_time(0.0), minimum_time(0.0), surface_split_type(1),
-      compression_level(0), shuffle(false), debug(false), statistics(false),
-      do_transform_fields(false), ints_64_bit(false), reals_32_bit(false), netcdf4(false),
-      in_memory_read(false), in_memory_write(false), lower_case_variable_names(true),
-      fieldSuffixSeparator('_')
 {
   enroll_options();
 }
@@ -147,6 +142,10 @@ void IOShell::Interface::enroll_options()
                   "elements assigned randomly to processors in a way that preserves balance (do "
                   "not use for a real run)",
                   nullptr);
+  options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
+		  "Number of processors that can perform simulataneous IO operations in "
+		  "a parallel run; 0 to disable",
+		  nullptr);
 #endif
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
@@ -157,6 +156,9 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("statistics", Ioss::GetLongOption::NoValue,
                   "output parallel io timing statistics", nullptr);
+
+  options_.enroll("memory_statistics", Ioss::GetLongOption::NoValue,
+                  "output memory usage throughout code execution", nullptr);
 
   options_.enroll("Maximum_Time", Ioss::GetLongOption::MandatoryValue,
                   "Maximum time on input database to transfer to output database", nullptr);
@@ -181,11 +183,10 @@ void IOShell::Interface::enroll_options()
 				  "POINTER");
 #else
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
-		          "Data type used internally to store field data\n"
-		          "\t\tOptions are: POINTER, STD_VECTOR",
-				  "POINTER");
+                  "Data type used internally to store field data\n"
+                  "\t\tOptions are: POINTER, STD_VECTOR",
+                  "POINTER");
 #endif
-
 
   options_.enroll(
       "memory_read", Ioss::GetLongOption::NoValue,
@@ -200,6 +201,10 @@ void IOShell::Interface::enroll_options()
   options_.enroll("native_variable_names", Ioss::GetLongOption::NoValue,
                   "Do not lowercase variable names and replace spaces with underscores. Variable "
                   "names are left as they appear in the input mesh file",
+                  nullptr);
+
+  options_.enroll("delete_timesteps", Ioss::GetLongOption::NoValue,
+                  "Do not transfer any timesteps or transient data to the output database",
                   nullptr);
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
@@ -293,6 +298,14 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   if (options_.retrieve("random") != nullptr) {
     decomp_method = "RANDOM";
   }
+
+  {
+    const char *temp = options_.retrieve("serialize_io_size");
+    if (temp != nullptr) {
+      serialize_io_size = std::strtol(temp, nullptr, 10);
+    }
+  }
+
 #endif
 
   if (options_.retrieve("external") != nullptr) {
@@ -307,6 +320,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     statistics = true;
   }
 
+  if (options_.retrieve("memory_statistics") != nullptr) {
+    memory_statistics = true;
+  }
+
   if (options_.retrieve("memory_read") != nullptr) {
     in_memory_read = true;
   }
@@ -317,6 +334,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("native_variable_names") != nullptr) {
     lower_case_variable_names = false;
+  }
+
+  if (options_.retrieve("delete_timesteps") != nullptr) {
+    delete_timesteps = true;
   }
 
   {

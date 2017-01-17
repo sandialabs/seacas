@@ -209,7 +209,9 @@ error_ret:
   return (EX_FATAL);
 }
 
-/*!
+/*
+\ingroup ResultsData
+
  * writes the values of a single variable for one entity at one time
  * step to the database; assume the first time step and variable index
  * are 1
@@ -232,6 +234,8 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
   char   errmsg[MAX_ERR_LENGTH];
 
   exerrval = 0; /* clear error code */
+
+  ex_check_valid_file_id(exoid);
 
   switch (var_type) {
   case EX_GLOBAL:
@@ -261,7 +265,7 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
     }
     break;
   case EX_NODAL:
-    return ex_put_nodal_var(exoid, time_step, var_index, num_entries_this_obj, var_vals);
+    return ex_put_nodal_var_int(exoid, time_step, var_index, num_entries_this_obj, var_vals);
     break;
   case EX_EDGE_BLOCK:
     status = ex_look_up_var(exoid, var_type, var_index, obj_id, VAR_ID_ED_BLK, VAR_EBLK_TAB,

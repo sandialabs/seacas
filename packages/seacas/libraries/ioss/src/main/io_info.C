@@ -31,6 +31,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "io_info.h"
+#if !defined(NO_CGNS_SUPPORT)
+#include <cgnslib.h>
+#endif
 
 // ========================================================================
 
@@ -406,7 +409,15 @@ namespace {
     int64_t                total_sides = 0;
     for (auto fs : fss) {
       if (!summary) {
-        OUTPUT << '\n' << name(fs) << " id: " << std::setw(6) << id(fs) << ":";
+        OUTPUT << '\n' << name(fs) << " id: " << std::setw(6) << id(fs);
+        if (fs->property_exists("bc_type")) {
+#if !defined(NO_CGNS_SUPPORT)
+          auto bc_type = fs->get_property("bc_type").get_int();
+          OUTPUT << ", boundary condition type: " << BCTypeName[bc_type] << " (" << bc_type << ")";
+#else
+          OUTPUT << ", boundary condition type: " << fs->get_property("bc_type").get_int();
+#endif
+        }
         info_aliases(region, fs, true, false);
         if (interface.adjacencies()) {
           std::vector<std::string> blocks;

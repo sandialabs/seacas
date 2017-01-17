@@ -45,8 +45,8 @@ The function ex_put_time() writes the time value for a specified time
 step.
 
 Because time values are floating point values, the application code
-must declare the array passed to be the appropriate type (\c float or
-\c double) to match the compute word size passed in ex_create() or
+must declare the array passed to be the appropriate type (float or
+double) to match the compute word size passed in ex_create() or
 ex_open().
 
 \return In case of an error, ex_put_time() returns a negative number;
@@ -67,13 +67,13 @@ the data
 The following code segment will write out the simulation time value at
 simulation time step n:
 
-\code
+~~~{.c}
 int error, exoid, n;
 float time_value;
 
 \comment{write time value}
 error = ex_put_time (exoid, n, &time_value);
-\endcode
+~~~
 
 */
 
@@ -85,6 +85,8 @@ int ex_put_time(int exoid, int time_step, const void *time_value)
   char   errmsg[MAX_ERR_LENGTH];
 
   exerrval = 0; /* clear error code */
+
+  ex_check_valid_file_id(exoid);
 
   /* inquire previously defined variable */
   if ((status = nc_inq_varid(exoid, VAR_WHOLE_TIME, &varid)) != NC_NOERR) {

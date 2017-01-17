@@ -21,6 +21,10 @@ matrix:
       env: MPI=ON
     - compiler: clang
       env: MPI=ON
+    - compiler: gcc
+      env: KOKKOS=ON
+    - compiler: gcc
+      env: KOKKOS=ON MPI=ON
 
 before_install:
   - sudo apt-get update
@@ -36,10 +40,11 @@ before_install:
 before_script:
 
 install:
-  - if [ -n "$MPI" ]; then ./cmake-travis-mpi.sh; else ./cmake-travis.sh; fi
+  - ./cmake-travis.sh
 
 script:
   - cd build
+  - export LD_LIBRARY_PATH=/usr/local/lib
   - ctest -VV
 
 env:
