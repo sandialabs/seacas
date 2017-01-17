@@ -79,7 +79,7 @@ SystemInterface interface;
 #if 0
 #define DIFF_OUT(buf) std::cout << trmclr::green << buf << '\n' << trmclr::normal
 #else
-#define DIFF_OUT(buf) std::cout << buf << '\n' 
+#define DIFF_OUT(buf) std::cout << buf << '\n'
 #endif
 
 struct TimeInterp
@@ -314,7 +314,7 @@ namespace {
               << ", Times = " << file.Num_Times() << "\n\n";
   }
 
-  char buf[256];
+  char buf[2048];
 
   template <typename INT> bool exodiff(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2);
 }
@@ -872,11 +872,11 @@ namespace {
             int final2 = file2.Num_Times();
             if (interface.final_time_tol.Diff(file1.Time(time_step1), file2.Time(final2))) {
               diff_flag = true;
-	      DIFF_OUT("\tFinal database times differ by "
-		       << FileDiff(file1.Time(time_step1), file2.Time(final2),
-				   interface.final_time_tol.type)
-		       << " which is not within specified " << interface.final_time_tol.typestr()
-		       << " tolerance of " << interface.final_time_tol.value << " (FAILED)");
+              DIFF_OUT("\tFinal database times differ by "
+                       << FileDiff(file1.Time(time_step1), file2.Time(final2),
+                                   interface.final_time_tol.type)
+                       << " which is not within specified " << interface.final_time_tol.typestr()
+                       << " tolerance of " << interface.final_time_tol.value << " (FAILED)");
             }
           }
         }
@@ -1194,7 +1194,7 @@ bool diff_globals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Tim
       }
       gvals[out_idx] = FileDiff(vals1[idx1], vals2[idx2], interface.output_type);
     }
-    ex_put_glob_vars(out_file_id, t2.step1, interface.glob_var_names.size(), gvals);
+    ex_put_var(out_file_id, t2.step1, EX_GLOBAL, 1, 0, interface.glob_var_names.size(), gvals);
     return diff_flag;
   }
 
@@ -1302,6 +1302,8 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
         }
       } // End of node iteration...
       ex_put_var(out_file_id, step2, EX_NODAL, n_idx + 1, 0, file1.Num_Nodes(), nvals);
+      file1.Free_Nodal_Results(idx1);
+      file2.Free_Nodal_Results(idx2);
     }
     file1.Free_Nodal_Results();
     file2.Free_Nodal_Results();
@@ -1329,6 +1331,7 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
       for (size_t n = 0; n < ncount; ++n) {
         mm_node[n_idx].spec_min_max(vals1[n], step1, n);
       }
+      file1.Free_Nodal_Results(idx1);
     }
     file1.Free_Nodal_Results();
     return diff_flag;
@@ -1414,6 +1417,8 @@ bool diff_nodals(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, int step1, Time
         Die_TS(step1);
       }
     }
+    file1.Free_Nodal_Results(idx1);
+    file2.Free_Nodal_Results(idx2);
   }
   file1.Free_Nodal_Results();
   file2.Free_Nodal_Results();
@@ -2068,8 +2073,8 @@ bool diff_sideset_df(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *
       diff_flag = true;
     }
 
-    sset1->Free_Results();
-    sset2->Free_Results();
+    sset1->Free_Distribution_Factors();
+    sset2->Free_Distribution_Factors();
   } // End of sideset loop.
 
   if (max_diff.diff > interface.ss_df_tol.value) {

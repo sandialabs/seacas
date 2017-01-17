@@ -56,6 +56,8 @@
 #include <stdio.h>
 
 /*!
+ * \ingroup ResultsData
+ *
  * reads the name of a particular results variable from the database
  */
 
@@ -65,6 +67,8 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num, char *
   int         varid;
   char        errmsg[MAX_ERR_LENGTH];
   const char *vname = NULL;
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
 

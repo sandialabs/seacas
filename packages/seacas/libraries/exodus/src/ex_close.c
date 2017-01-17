@@ -68,17 +68,21 @@ or ex_open().
 
 The following code segment closes an open exodus file:
 
-\code
+~~~{.c}
 int error,exoid;
 error = ex_close (exoid);
-\endcode
+~~~
 
  */
 int ex_close(int exoid)
 {
   char errmsg[MAX_ERR_LENGTH];
   int  status;
-  int  parent_id = 0;
+#if NC_HAS_HDF5
+  int parent_id = 0;
+#endif
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
                 /*

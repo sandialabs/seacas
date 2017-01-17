@@ -23,7 +23,6 @@
 include(FindPackageHandleStandardArgs)
 
 # MSTK CMake functions see <root>/cmake/modules for source
-include(PrintVariable)
 include(AddPackageDependency)
 
 if ( PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS )
@@ -32,9 +31,22 @@ if ( PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS )
 
 else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
 
+    # If NetCDF_ROOT was defined in the environment, use it.
+    # Definition from the command line will take precedence.
+    if (NOT PNetCDF_ROOT AND NOT $ENV{PNetCDF_ROOT} STREQUAL "")
+      set(PNetCDF_ROOT $ENV{PNetCDF_ROOT})
+    endif()
+
+    # PNetCDF_DIR is DEPRECATED WARN THE USER if it is set
+    if (NOT PNetCDF_ROOT AND PNetCDF_DIR )
+      message(WARNING "The configuration parameter PNetCDF_DIR is deprecated."
+                      " Please use PNetCDF_ROOT instead to define the NetCDF installation")
+      set(PNetCDF_ROOT ${PNetCDF_DIR})
+    endif()  
+
     # Cache variables
-    if(PNetCDF_DIR)
-        set(PNetCDF_DIR "${PNetCDF_DIR}" CACHE PATH "Path to search for PNetCDF include and library files")
+    if(PNetCDF_ROOT)
+        set(PNetCDF_ROOT "${PNetCDF_ROOT}" CACHE PATH "Path to search for PNetCDF include and library files")
     endif()
 
     if(PNetCDF_INCLUDE_DIR)
@@ -49,7 +61,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
     # Search for include files
     # Search order preference:
     #  (1) PNetCDF_INCLUDE_DIR - check existence of path AND if the include files exist
-    #  (2) PNetCDF_DIR/<include>
+    #  (2) PNetCDF_ROOT/<include>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     set(pnetcdf_inc_names "pnetcdf.h")
@@ -74,18 +86,18 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
     else() 
 
         set(pnetcdf_inc_suffixes "include")
-        if(PNetCDF_DIR)
+        if(PNetCDF_ROOT)
 
-            if (EXISTS "${PNetCDF_DIR}" )
+            if (EXISTS "${PNetCDF_ROOT}" )
 
                 find_path(PNetCDF_INCLUDE_DIR
                           NAMES ${pnetcdf_inc_names}
-                          HINTS ${PNetCDF_DIR}/include
+                          HINTS ${PNetCDF_ROOT}/include
                           PATH_SUFFIXES ${pnetcdf_inc_suffixes}
                           NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "PNetCDF_DIR=${PNetCDF_DIR} does not exist")
+                 message(SEND_ERROR "PNetCDF_ROOT=${PNetCDF_ROOT} does not exist")
                  set(PNetCDF_INCLUDE_DIR "PNetCDF_INCLUDE_DIR-NOTFOUND")
             endif()    
 
@@ -117,21 +129,13 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
         file(STRINGS "${pnetcdf_h}" pnetcdf_max_vars_string REGEX "^#define NC_MAX_VARS")
         string(REGEX REPLACE "[^0-9]" "" pnetcdf_max_vars "${pnetcdf_max_vars_string}")
 
-        file(STRINGS "${pnetcdf_h}" pnetcdf_max_var_dims_string REGEX "^#define NC_MAX_VAR_DIMS")
-        string(REGEX REPLACE "[^0-9]" "" pnetcdf_max_var_dims "${pnetcdf_max_var_dims_string}")
-
-        #PRINT_VARIABLE(pnetcdf_max_dims_string)
-        #PRINT_VARIABLE(pnetcdf_max_dims)
-        #PRINT_VARIABLE(pnetcdf_max_vars)
-        #PRINT_VARIABLE(pnetcdf_max_var_dims)
-
         if ( 
              ( (pnetcdf_max_dims EQUAL 65536)  OR (pnetcdf_max_dims GREATER 65536) ) AND
              ( (pnetcdf_max_vars EQUAL 524288) OR (pnetcdf_max_vars GREATER 524288) )
             )
             set(PNetCDF_LARGE_DIMS TRUE)
         else()
-            message(WARNING "WARNING: The PNetCDF found in ${PNetCDF_DIR} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
+            message(WARNING "WARNING: The PNetCDF found in ${PNetCDF_ROOT} does not have the correct NC_MAX_DIMS and NC_MAX_VARS. "
                              "It may not be compatible with Exodus. See NetCDF-Mapping.md for details\n" )
             set(PNetCDF_LARGE_DIMS FALSE)
         endif()
@@ -141,7 +145,7 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
     # Search for libraries 
     # Search order preference:
     #  (1) PNetCDF_LIBRARY_DIR - check existence of path AND if the include files exist
-    #  (2) PNetCDF_DIR/<lib,Lib>
+    #  (2) PNetCDF_ROOT/<lib,Lib>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information
     #
     if (PNetCDF_LIBRARY_DIR)
@@ -160,18 +164,18 @@ else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
 
     else() 
 
-        if(PNetCDF_DIR)
+        if(PNetCDF_ROOT)
 
-            if (EXISTS "${PNetCDF_DIR}" )
+            if (EXISTS "${PNetCDF_ROOT}" )
 
                 find_library(PNetCDF_LIBRARY
                              NAMES pnetcdf
-                             HINTS ${PNetCDF_DIR}
+                             HINTS ${PNetCDF_ROOT}
                              PATH_SUFFIXES "lib" "Lib"
                              NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "PNetCDF_DIR=${PNetCDF_DIR} does not exist")
+                 message(SEND_ERROR "PNetCDF_ROOT=${PNetCDF_ROOT} does not exist")
                  set(PNetCDF_LIBRARY "PNetCDF_LIBRARY-NOTFOUND")
             endif()    
 

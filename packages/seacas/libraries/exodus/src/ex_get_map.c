@@ -41,12 +41,10 @@
 #include <sys/types.h> // for int64_t
 
 /*!
-\deprecated Use ex_get_num_map() instead.
-
 The function ex_get_map() reads the element order map
 from the database. See #ElementOrderMap for a description of the
 element order map. If an element order map is not stored in the data
-file, a default array (1,2,3,. .. \c num_elem) is returned. Memory
+file, a default array (1,2,3,. .. num_elem) is returned. Memory
 must be allocated for the element map array ({num_elem} in length)
 before this call is made.
 
@@ -64,14 +62,14 @@ ex_create() or ex_open().
 The following code will read an element order map from an open exodus
 file :
 
-\code
+~~~{.c}
 int *elem_map, error, exoid;
 
 \comment{read element order map}
 elem_map = (int *)calloc(num_elem, sizeof(int));
 
 error = ex_get_map(exoid, elem_map);
-\endcode
+~~~
 
  */
 
@@ -80,6 +78,8 @@ int ex_get_map(int exoid, void_int *elem_map)
   int    numelemdim, mapid, status;
   size_t num_elem, i;
   char   errmsg[MAX_ERR_LENGTH];
+
+  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
 
