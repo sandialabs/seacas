@@ -141,7 +141,7 @@ namespace Ioss {
   inline MPI_Datatype mpi_type(unsigned int /*dummy*/) { return MPI_UNSIGNED; }
 
   template <typename T>
-  int MY_Alltoallv64(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts,
+  int MY_Alltoallv64(const std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts,
                      const std::vector<int64_t> &senddisp, std::vector<T> &recvbuf,
                      const std::vector<int64_t> &recvcounts, const std::vector<int64_t> &recvdisp,
                      MPI_Comm comm)
@@ -200,7 +200,7 @@ namespace Ioss {
   }
 
   template <typename T>
-  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts,
+  int MY_Alltoallv(const std::vector<T> &sendbuf, const std::vector<int64_t> &sendcnts,
                    const std::vector<int64_t> &senddisp, std::vector<T> &recvbuf,
                    const std::vector<int64_t> &recvcnts, const std::vector<int64_t> &recvdisp,
                    MPI_Comm comm)
@@ -234,7 +234,7 @@ namespace Ioss {
   }
 
   template <typename T>
-  int MY_Alltoallv(std::vector<T> &sendbuf, const std::vector<int> &sendcnts,
+  int MY_Alltoallv(const std::vector<T> &sendbuf, const std::vector<int> &sendcnts,
                    const std::vector<int> &senddisp, std::vector<T> &recvbuf,
                    const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
                    MPI_Comm comm)
