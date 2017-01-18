@@ -403,10 +403,10 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
-  void ParallelDatabaseIO::resolve_zone_shared_nodes(CGNSIntVector &nodes,
-                                                     CGNSIntVector &connectivity_map,
-                                                     size_t &       owned_node_count,
-                                                     size_t &       owned_node_offset) const
+  void ParallelDatabaseIO::resolve_zone_shared_nodes(const CGNSIntVector &nodes,
+                                                     CGNSIntVector &      connectivity_map,
+                                                     size_t &             owned_node_count,
+                                                     size_t &             owned_node_offset) const
   {
     // Determine number of processors that have nodes for this zone.
     // Avoid mpi_comm_split call if possible.
@@ -416,11 +416,11 @@ namespace Iocgns {
                   util().communicator());
 
     if (shared_zone_proc_count <= 1) {
+      // There are no shared nodes in this zone.
       return;
     }
 
     have_nodes = have_nodes == 0 ? MPI_UNDEFINED : 1;
-
     MPI_Comm pcomm;
     MPI_Comm_split(util().communicator(), have_nodes, myProcessor, &pcomm);
 
@@ -458,6 +458,8 @@ namespace Iocgns {
       }
 
       // Tell each processor how many nodes it will be getting...
+      // Each processor will be responsible for a subsetted range of the overall range.
+      // This processor, should range from min + my_proc*per_proc to min + (my_proc+1)*per_proc.
       std::vector<int> r_count(proc_count);
       MPI_Alltoall(TOPTR(p_count), 1, Ioss::mpi_type(int(0)), TOPTR(r_count), 1,
                    Ioss::mpi_type(int(0)), pcomm);
@@ -477,11 +479,10 @@ namespace Iocgns {
       Ioss::MY_Alltoallv(nodes, p_count, send_disp, r_nodes, r_count, recv_disp, pcomm);
 
       // Iterate r_nodes list to find duplicate nodes...
-      // On this processor, should range from min + my_proc*per_proc to min + (my_proc+1)*per_proc.
-      size_t           delta = min + pm.parallel_rank() * per_proc;
+      auto             delta = min + pm.parallel_rank() * per_proc;
       std::vector<int> dup_nodes(per_proc);
       for (size_t i = 0; i < r_nodes.size(); i++) {
-        size_t n = (size_t)r_nodes[i] - delta;
+        auto n = r_nodes[i] - delta;
         assert(n < per_proc);
         dup_nodes[n]++;
         if (dup_nodes[n] > 1) {
@@ -489,22 +490,25 @@ namespace Iocgns {
         }
       }
 
-      // Send filtered list back to original processors -- store in u_nodes
+      // Send filtered list back to original processors -- store in 'u_nodes'
       // This is set of unique block nodes owned by this processor.
+      // If an entry in 'u_nodes' is 0, then that is a non-owned shared node.
       CGNSIntVector u_nodes(nodes.size());
       Ioss::MY_Alltoallv(r_nodes, r_count, recv_disp, u_nodes, p_count, send_disp, pcomm);
 
       // Count non-zero entries in u_nodes...
       int64_t local_node_count =
           std::count_if(u_nodes.begin(), u_nodes.end(), [](int64_t i) { return i > 0; });
-      owned_node_count = local_node_count;
+      owned_node_count = local_node_count; // Calling code wants to know this
 
       // Determine offset into the zone node block for each processors "chunk"
       int64_t local_node_offset = 0;
       MPI_Exscan(&local_node_count, &local_node_offset, 1, Ioss::mpi_type(local_node_count),
                  MPI_SUM, pcomm);
-      owned_node_offset = local_node_offset;
+      owned_node_offset = local_node_offset; // Calling code wants to know this
 
+      // This generates the position of each owned node in this zone consistent
+      // over all processors that this zone is active on.
       for (size_t i = 0; i < u_nodes.size(); i++) {
         if (u_nodes[i] > 0) {
           u_nodes[i] = ++local_node_offset; // 1-based local node id for all owned nodes.
@@ -535,14 +539,16 @@ namespace Iocgns {
       // Now, send updated g_to_zone_local back to original processors...
       Ioss::MY_Alltoallv(g_to_zone_local, r_count, recv_disp, u_nodes, p_count, send_disp, pcomm);
 
-      // At this point:
-      //   'nodes' contains the global node ids that are referenced in this zones connectivity.
-      //   'u_nodes' contains the zone-local 1-based position of that node in this zones node list.
-      //
-      //
+// At this point:
+//   'nodes' contains the global node ids that are referenced in this zones connectivity.
+//   'u_nodes' contains the zone-local 1-based position of that node in this zones node list.
+//
+//
+#ifndef NDEBUG
       for (size_t i = 0; i < u_nodes.size(); i++) {
         assert(u_nodes[i] > 0);
       }
+#endif
       std::swap(connectivity_map, u_nodes);
       MPI_Comm_free(&pcomm);
     }
@@ -1352,16 +1358,18 @@ namespace Iocgns {
         nodes.shrink_to_fit();
 
         // Resolve zone-shared nodes (nodes used in this zone, but are
-        // shared on processor boundaries).  In addition to the
-        // "nodes" MapContainer which is used in mapping global nodes
-        // to block local owning node, we also need a
-        // "connectivity_map" which lets each processor map from
-        // global node id to block local node position The difference
-        // is that the connectivity_map has references to "shared"
-        // nodes -- a shared, non-onwed node N on a processor needs to
-        // know what its overall position in this zones list of nodes
-        // is even though that nodes data won't be read/written on
-        // that processor.
+        // shared on processor boundaries).
+        // This routine determines the mapping of each global id node
+        // in 'nodes' to the zone-local position.
+        // This mapping is in 'connectivity_map' and is correct for all
+        // nodes on this processor whether they are owned or shared.
+        //
+        // 'resolve_zone_shared_nodes' also returns the number of nodes owned on this
+        // processor, and the 'offset' of this processors chunk of nodes into the overall
+        // set of nodes for the zone.  Each processors chunk of nodes is contiguous
+        //
+        // The 'nodes' and 'connectivity_map' vectors are used later below to generate
+        // the map of which global node data is written by this processor for this zone.
         CGNSIntVector connectivity_map(nodes.size());
         size_t        owned_node_count  = 0;
         size_t        owned_node_offset = 0;
@@ -1402,7 +1410,6 @@ namespace Iocgns {
           cgsize_t start = 0;
           MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
                      util().communicator());
-
           // Of the cells/elements in this zone, this proc handles
           // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
           eb->property_update("proc_offset", start);
