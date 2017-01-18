@@ -6,11 +6,7 @@
 #include <cgns/Iocgns_Utils.h>
 
 #include <cgnsconfig.h>
-#if CG_BUILD_PARALLEL
 #include <pcgnslib.h>
-#else
-#include <cgnslib.h>
-#endif
 
 #include <Ioss_TerminalColor.h>
 
@@ -840,13 +836,8 @@ namespace Iocgns {
              << blk_end << ")\n";
 #endif
       block.fileSectionOffset = blk_start;
-#if CG_BUILD_PARALLEL
       ierr = cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end,
                                     TOPTR(connectivity));
-#else
-      ierr = cg_elements_partial_read(filePtr, base, zone, section, blk_start, blk_end,
-                                      TOPTR(connectivity), nullptr);
-#endif
       if (ierr != CG_OK) {
         Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
                                   m_decomposition.m_processor);
@@ -896,12 +887,6 @@ namespace Iocgns {
       std::vector<cgsize_t> elemlist(elemlist_size);
 
       size_t offset = 0;
-#if !CG_BUILD_PARALLEL
-      // Read the elemlists on root processor.
-      // If CG_BUILD_PARALLEL, then all processors must call the cg_elements_read
-      int root = 0; // Root processor that reads all sideset bulk data (nodelists)
-      if (m_decomposition.m_processor == root) {
-#endif
         for (auto &sset : m_sideSets) {
 
           // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
@@ -929,13 +914,6 @@ namespace Iocgns {
           }
         }
         assert(offset == elemlist_size);
-#if !CG_BUILD_PARALLEL
-      }
-
-      // Broadcast this data to all other processors...
-      MPI_Bcast(TOPTR(elemlist), sizeof(cgsize_t) * elemlist.size(), MPI_BYTE, root,
-                m_decomposition.m_comm);
-#endif
 
       // Each processor now has a complete list of all elems in all
       // sidesets.
@@ -993,10 +971,6 @@ namespace Iocgns {
   void DecompositionData<INT>::get_file_node_coordinates(int filePtr, int direction,
                                                          double *data) const
   {
-#if !CG_BUILD_PARALLEL
-    const std::string coord_name[] = {"CoordinateX", "CoordinateY", "CoordinateZ"};
-#endif
-
     int      base        = 1; // Only single base supported so far.
     cgsize_t beg         = 0;
     cgsize_t end         = 0;
@@ -1024,19 +998,11 @@ namespace Iocgns {
              << " starting at " << start << " with an offset of " << offset << " ending at "
              << finish << "\n";
 #endif
-#if CG_BUILD_PARALLEL
       double *coords = nullptr;
       if (count > 0) {
         coords = &data[offset];
       }
       int ierr = cgp_coord_read_data(filePtr, base, zone, direction + 1, &start, &finish, coords);
-#else
-      int ierr = 0;
-      if (count > 0) {
-        ierr = cg_coord_read(filePtr, base, zone, coord_name[direction].c_str(), CG_RealDouble,
-                             &start, &finish, &data[offset]);
-      }
-#endif
       if (ierr < 0) {
         Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
       }
@@ -1105,10 +1071,6 @@ namespace Iocgns {
                                                         INT *ioss_data) const
   {
     std::vector<INT> element_side;
-#if !CG_BUILD_PARALLEL
-    // Cannot do this due to parallel read -- hangs in hdf5
-    if (m_decomposition.m_processor == sset.root_) {
-#endif
       int base = 1;
 
       int                   nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
@@ -1144,9 +1106,6 @@ namespace Iocgns {
         element_side.push_back(parent[0 * sset.file_count() + i] + zone_element_id_offset);
         element_side.push_back(parent[2 * sset.file_count() + i]);
       }
-#if !CG_BUILD_PARALLEL
-    }
-#endif
     // The above was all on root processor for this side set, now need to send data to other
     // processors that own any of the elements in the sideset.
     communicate_set_data(TOPTR(element_side), ioss_data, sset, 2);
@@ -1163,15 +1122,9 @@ namespace Iocgns {
     auto                  blk = m_elementBlocks[blk_seq];
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int                   base = 1;
-#if CG_BUILD_PARALLEL
     int ierr =
         cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
                                blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
-#else
-    int ierr = cg_elements_partial_read(
-        filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
-        blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn), nullptr);
-#endif
     if (ierr != CG_OK) {
       Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
     }
