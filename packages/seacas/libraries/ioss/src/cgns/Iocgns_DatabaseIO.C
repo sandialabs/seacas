@@ -523,7 +523,7 @@ namespace Iocgns {
 
   void DatabaseIO::write_adjacency_data()
   {
-    // Determine adjacencie information between unstructured blocks.
+    // Determine adjacency information between unstructured blocks.
     // Could save this information from the input mesh, but then
     // could not read an exodus mesh and write a cgns mesh.
     // However, in long run may still want to read/save input adjacency
