@@ -1100,7 +1100,7 @@ namespace Iocgns {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
 
-        size_t offset = m_zoneOffset[zone-1];
+        size_t offset = m_zoneOffset[zone - 1];
         if (field.get_type() == Ioss::Field::INT32) {
           int *  idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
@@ -1297,7 +1297,7 @@ namespace Iocgns {
           int      zone    = 0;
           cgsize_t size[3] = {0, 0, 0};
           size[1]          = eb->get_property("entity_count").get_int();
-          size[0]          = nodes.size()-1;
+          size[0]          = nodes.size() - 1;
 
           int ierr =
               cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
@@ -1314,21 +1314,20 @@ namespace Iocgns {
           m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
           m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
 
-
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];
           block_map->reverse_map_data(idata, field, num_to_get * element_nodes);
 
           if (eb->get_property("entity_count").get_int() > 0) {
             CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
-	    int sect = 0;
+            int              sect = 0;
             ierr = cg_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, num_to_get, 0,
                                     idata, &sect);
             if (ierr != CG_OK) {
               Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
             }
             m_bcOffset[zone] += num_to_get;
-	    eb->property_update("section", sect);
+            eb->property_update("section", sect);
           }
         }
         else {
@@ -1539,9 +1538,9 @@ namespace Iocgns {
           Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
         }
 
-	sb->property_update("section", sect);
+        sb->property_update("section", sect);
 
-        size_t                offset = m_zoneOffset[zone-1];
+        size_t                offset = m_zoneOffset[zone - 1];
         std::vector<cgsize_t> parent(4 * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {
