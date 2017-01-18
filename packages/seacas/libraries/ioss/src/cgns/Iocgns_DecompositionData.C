@@ -887,33 +887,33 @@ namespace Iocgns {
       std::vector<cgsize_t> elemlist(elemlist_size);
 
       size_t offset = 0;
-        for (auto &sset : m_sideSets) {
+      for (auto &sset : m_sideSets) {
 
-          // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
-          int                   nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
-          std::vector<cgsize_t> elements(nodes_per_face *
-                                         sset.file_count()); // Not needed, but can't skip
+        // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
+        int                   nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
+        std::vector<cgsize_t> elements(nodes_per_face *
+                                       sset.file_count()); // Not needed, but can't skip
 
-          // We get:
-          // *  num_to_get parent elements,
-          // *  num_to_get zeros (other parent element for face, but on boundary so 0)
-          // *  num_to_get face_on_element
-          // *  num_to_get zeros (face on other parent element)
-          std::vector<cgsize_t> parent(4 * sset.file_count());
+        // We get:
+        // *  num_to_get parent elements,
+        // *  num_to_get zeros (other parent element for face, but on boundary so 0)
+        // *  num_to_get face_on_element
+        // *  num_to_get zeros (face on other parent element)
+        std::vector<cgsize_t> parent(4 * sset.file_count());
 
-          int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(elements),
-                                      TOPTR(parent));
-          if (ierr < 0) {
-            Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
-          }
-
-          // Move from 'parent' to 'elementlist'
-          size_t zone_element_id_offset = m_zones[sset.zone()].m_elementOffset;
-          for (size_t i = 0; i < sset.file_count(); i++) {
-            elemlist[offset++] = parent[i] + zone_element_id_offset;
-          }
+        int ierr = cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(elements),
+                                    TOPTR(parent));
+        if (ierr < 0) {
+          Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
         }
-        assert(offset == elemlist_size);
+
+        // Move from 'parent' to 'elementlist'
+        size_t zone_element_id_offset = m_zones[sset.zone()].m_elementOffset;
+        for (size_t i = 0; i < sset.file_count(); i++) {
+          elemlist[offset++] = parent[i] + zone_element_id_offset;
+        }
+      }
+      assert(offset == elemlist_size);
 
       // Each processor now has a complete list of all elems in all
       // sidesets.
@@ -1071,41 +1071,40 @@ namespace Iocgns {
                                                         INT *ioss_data) const
   {
     std::vector<INT> element_side;
-      int base = 1;
+    int              base = 1;
 
-      int                   nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
-      std::vector<cgsize_t> nodes(nodes_per_face * sset.file_count());
+    int                   nodes_per_face = 4; // FIXME: sb->topology()->number_nodes();
+    std::vector<cgsize_t> nodes(nodes_per_face * sset.file_count());
 
-      // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
+    // TODO? Possibly rewrite using cgi_read_int_data so can skip reading element connectivity
 
-      // We get:
-      // *  num_to_get parent elements,
-      // *  num_to_get zeros (other parent element for face, but on boundary so 0)
-      // *  num_to_get face_on_element
-      // *  num_to_get zeros (face on other parent element)
-      std::vector<cgsize_t> parent(4 * sset.file_count());
+    // We get:
+    // *  num_to_get parent elements,
+    // *  num_to_get zeros (other parent element for face, but on boundary so 0)
+    // *  num_to_get face_on_element
+    // *  num_to_get zeros (face on other parent element)
+    std::vector<cgsize_t> parent(4 * sset.file_count());
 
-      int ierr =
-          cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent));
-      if (ierr != CG_OK) {
-        Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__,
-                                  m_decomposition.m_processor);
-      }
-      // Get rid of 'nodes' list -- not used.
-      nodes.resize(0);
-      nodes.shrink_to_fit();
+    int ierr =
+        cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent));
+    if (ierr != CG_OK) {
+      Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
+    }
+    // Get rid of 'nodes' list -- not used.
+    nodes.resize(0);
+    nodes.shrink_to_fit();
 
-      if (ierr < 0) {
-        Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
-      }
+    if (ierr < 0) {
+      Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor);
+    }
 
-      // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
-      element_side.reserve(sset.file_count() * 2);
-      size_t zone_element_id_offset = m_zones[sset.zone()].m_elementOffset;
-      for (size_t i = 0; i < sset.file_count(); i++) {
-        element_side.push_back(parent[0 * sset.file_count() + i] + zone_element_id_offset);
-        element_side.push_back(parent[2 * sset.file_count() + i]);
-      }
+    // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
+    element_side.reserve(sset.file_count() * 2);
+    size_t zone_element_id_offset = m_zones[sset.zone()].m_elementOffset;
+    for (size_t i = 0; i < sset.file_count(); i++) {
+      element_side.push_back(parent[0 * sset.file_count() + i] + zone_element_id_offset);
+      element_side.push_back(parent[2 * sset.file_count() + i]);
+    }
     // The above was all on root processor for this side set, now need to send data to other
     // processors that own any of the elements in the sideset.
     communicate_set_data(TOPTR(element_side), ioss_data, sset, 2);
@@ -1122,7 +1121,7 @@ namespace Iocgns {
     auto                  blk = m_elementBlocks[blk_seq];
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int                   base = 1;
-    int ierr =
+    int                   ierr =
         cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
                                blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn));
     if (ierr != CG_OK) {
