@@ -428,13 +428,16 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
-  void ParallelDatabaseIO::resolve_zone_shared_nodes(Ioss::MapContainer &nodes, std::vector<cgsize_t> &connectivity_map) const
+  void ParallelDatabaseIO::resolve_zone_shared_nodes(Ioss::MapContainer &nodes,
+						     Ioss::MapContainer &connectivity_map,
+						     size_t &owned_node_count,
+						     size_t &owned_node_offset) const
   {
     // Determine number of processors that have nodes for this zone.
     // Avoid mpi_comm_split call if possible.
-    int have_nodes = nodes.empty() ? 0 : 1;
+    int have_nodes = nodes.size() > 1 ? 1 : 0;
     int shared_zone_proc_count = 0;
-    MPI_Allreduce(&shared_zone_proc_count, &have_nodes, 1,
+    MPI_Allreduce(&have_nodes, &shared_zone_proc_count, 1,
                   Ioss::mpi_type(int(0)), MPI_SUM, util().communicator());
 
     if (shared_zone_proc_count <= 1) {
@@ -458,6 +461,7 @@ namespace Iocgns {
       // Distribute each node to an "owning" processor based on its id
       // and assuming a linear distribution (e.g., if on 3 processors, each
       // proc will "own" 1/3 of the id range.
+      // nodes is sorted.
       int64_t min = nodes[1];
       int64_t max = nodes[nodes.size()-1];
       min = pm.global_minmax(min, Ioss::ParallelUtils::DO_MIN);
@@ -516,18 +520,59 @@ namespace Iocgns {
       Ioss::MapContainer u_nodes(nodes.size());
       Ioss::MY_Alltoallv(r_nodes, r_count, recv_disp, u_nodes, p_count, send_disp, pcomm);
 
-      // Collapse out zeros...
+      // Count non-zero entries in u_nodes...
       u_nodes[0] = 0;
-      std::sort(u_nodes.begin(), u_nodes.end());
-      u_nodes.erase(std::unique(u_nodes.begin(), u_nodes.end()), u_nodes.end());
-      u_nodes.shrink_to_fit();
+      int64_t local_node_count = std::count_if(u_nodes.begin(), u_nodes.end(),
+					       [](int64_t i){return i > 0;});
+      owned_node_count = local_node_count;
+      
       u_nodes[0] = 1;  // nodes is a MapContainer; first entry is reserved use.
 
       // Determine offset into the zone node block for each processors "chunk"
-      int64_t local_node_count = u_nodes.size();
       int64_t local_node_offset = 0;
       MPI_Exscan(&local_node_count, &local_node_offset, 1, Ioss::mpi_type(local_node_count), MPI_SUM, pcomm);
+      owned_node_offset = local_node_offset;
       
+      for (size_t i=1; i < u_nodes.size(); i++) {
+	if (u_nodes[i] > 0) {
+	  u_nodes[i] = ++local_node_offset; // 1-based local node id for all owned nodes.
+	}
+      }
+
+      // u_nodes now contains the global -> block-local node map for all owned nodes
+      // on the processor.
+      // The zeroes in u_nodes are shared nodes on the processor boundary.
+      // Resend nodes and u_nodes so can resolve the ids of the shared nodes.
+      Ioss::MapContainer g_to_zone_local(sumr); 
+      g_to_zone_local[0] = 1;
+      Ioss::MY_Alltoallv(nodes,   p_count, send_disp, r_nodes, r_count, recv_disp, pcomm);
+      Ioss::MY_Alltoallv(u_nodes, p_count, send_disp, g_to_zone_local, r_count, recv_disp, pcomm);
+      
+      // Iterate g_to_zone_local to find a zero entry.
+      for (size_t i=1; i < g_to_zone_local.size(); i++) {
+	if (g_to_zone_local[i] == 0) {
+	  // The global id is r_nodes[i] which must also appear earlier in the list...
+	  for (size_t j=1; j < i; j++) {
+	    if (r_nodes[j] == r_nodes[i]) {
+	      g_to_zone_local[i] = g_to_zone_local[j];
+	      break;
+	    }
+	  }
+	}
+      }
+
+      // Now, send updated g_to_zone_local back to original processors...
+      Ioss::MY_Alltoallv(g_to_zone_local, r_count, recv_disp, u_nodes, p_count, send_disp, pcomm);
+      
+      // At this point:
+      //   'nodes' contains the global node ids that are referenced in this zones connectivity.
+      //   'u_nodes' contains the zone-local 1-based position of that node in this zones node list.
+      // 
+      // 
+      for (size_t i=1; i < u_nodes.size(); i++) {
+	assert(u_nodes[i] > 0);
+      }
+      std::swap(connectivity_map, u_nodes);
       MPI_Comm_free(&pcomm);
     }
   }
@@ -542,6 +587,83 @@ namespace Iocgns {
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }
 
+  void ParallelDatabaseIO::write_adjacency_data()
+  {
+#if 0
+    // Determine adjacency information between unstructured blocks.
+    // Could save this information from the input mesh, but then
+    // could not read an exodus mesh and write a cgns mesh.
+    // However, in long run may still want to read/save input adjacency
+    // data if doing cgns -> cgns...  For now, try generating information.
+
+    // If block I is adjacent to block J, then they will share at
+    // least 1 "side" (face 3D or edge 2D).
+    // Currently, assuming they are adjacent if they share at least one node...
+
+    size_t node_count = get_region()->get_property("node_count").get_int();
+
+    const auto &blocks = get_region()->get_element_blocks();
+    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+      cgsize_t base = (*I)->get_property("base").get_int();
+      cgsize_t zone = (*I)->get_property("zone").get_int();
+
+      const auto &I_map = m_globalToBlockLocalNodeMap[zone];
+
+      // Flag all nodes used by this block...
+      std::vector<size_t> I_nodes(node_count);
+      for (size_t i = 0; i < I_map->map.size() - 1; i++) {
+        auto global     = I_map->map[i + 1] - 1;
+        I_nodes[global] = i + 1;
+      }
+      for (auto J = I + 1; J != blocks.end(); J++) {
+        cgsize_t              dzone = (*J)->get_property("zone").get_int();
+        const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
+        std::vector<cgsize_t> point_list;
+        std::vector<cgsize_t> point_list_donor;
+        for (size_t i = 0; i < J_map->map.size() - 1; i++) {
+          auto global = J_map->map[i + 1] - 1;
+          if (I_nodes[global] > 0) {
+            // Have a match between nodes used by two different blocks,
+            // They are adjacent...
+            point_list.push_back(I_nodes[global]);
+            point_list_donor.push_back(i + 1);
+          }
+        }
+
+        // If point_list non_empty, then output this adjacency node...
+        if (!point_list.empty()) {
+          int         gc_idx = 0;
+          std::string name   = (*I)->name();
+          name += "_to_";
+          name += (*J)->name();
+          const auto &d1_name = (*J)->name();
+          int         ierr =
+              cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
+                            CG_PointList, point_list.size(), TOPTR(point_list), d1_name.c_str(),
+                            CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
+                            point_list_donor.size(), TOPTR(point_list_donor), &gc_idx);
+          if (ierr != CG_OK) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+
+          name = (*J)->name();
+          name += "_to_";
+          name += (*I)->name();
+          const auto &d2_name = (*J)->name();
+
+          ierr = cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
+                               CG_PointList, point_list_donor.size(), TOPTR(point_list_donor),
+                               d2_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
+                               point_list.size(), TOPTR(point_list), &gc_idx);
+          if (ierr != CG_OK) {
+            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+          }
+        }
+      }
+    }
+#endif
+  }
+
   bool ParallelDatabaseIO::begin(Ioss::State /* state */) { return true; }
 
   bool ParallelDatabaseIO::end(Ioss::State state)
@@ -551,6 +673,11 @@ namespace Iocgns {
     case Ioss::STATE_DEFINE_MODEL:
       if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
         write_meta_data();
+      }
+      break;
+    case Ioss::STATE_MODEL:
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+        write_adjacency_data();
       }
       break;
     default: // ignore everything else...
@@ -1279,21 +1406,28 @@ namespace Iocgns {
         nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
         nodes.shrink_to_fit();
 
-        // Resolve zone-shared nodes (nodes used in this zone, but are shared on processor boundaries).
-        // In addition to the "nodes" MapContainer which is used in mapping global nodes to block local owning node,
-        // we also need a "connectivity_map" which lets each processor map from global node id to block local node position
-        // The difference is that the connectivity_map has references to "shared" nodes -- a shared, non-onwed node N on a processor
-        // needs to know what its overall position in this zones list of nodes is even though that nodes data won't be read/written
-        // on that processor.
-        std::vector<cgsize_t> connectivity_map(nodes.size()-1);
-        resolve_zone_shared_nodes(nodes, connectivity_map);
+        // Resolve zone-shared nodes (nodes used in this zone, but are
+        // shared on processor boundaries).  In addition to the
+        // "nodes" MapContainer which is used in mapping global nodes
+        // to block local owning node, we also need a
+        // "connectivity_map" which lets each processor map from
+        // global node id to block local node position The difference
+        // is that the connectivity_map has references to "shared"
+        // nodes -- a shared, non-onwed node N on a processor needs to
+        // know what its overall position in this zones list of nodes
+        // is even though that nodes data won't be read/written on
+        // that processor.
+	Ioss::MapContainer connectivity_map(nodes.size());
+	size_t owned_node_count  = 0;
+	size_t owned_node_offset = 0;
+        resolve_zone_shared_nodes(nodes, connectivity_map, owned_node_count, owned_node_offset);
           
         // Get total count on all processors...
         // Note that there will be shared nodes on processor boundaries that need to be
         // accounted for...
         cgsize_t size[3] = {0, 0, 0};
+        size[0]          = owned_node_count;
         size[1]          = eb->get_property("entity_count").get_int();
-        size[0]          = nodes.size()-1;
 
         MPI_Allreduce(MPI_IN_PLACE, size, 3, Ioss::mpi_type(cgsize_t(0)), MPI_SUM, util().communicator());
             
@@ -1310,12 +1444,6 @@ namespace Iocgns {
         eb->property_update("section", zone);
         eb->property_update("base", base);
 
-        // Now we have a valid zone so can update some data structures...
-        m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
-        m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
-        nodes[0] = 1; // Non one-to-one map
-        m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
-
         if (size[1] > 0) {
           CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
           int sect = 0;
@@ -1327,14 +1455,19 @@ namespace Iocgns {
           cgsize_t start = 0;
           MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM, util().communicator());
 
-          // Of the cells/elements in this zone, this proc handles those starting at proc_offset+1 to proc_offset+num_entity.
+          // Of the cells/elements in this zone, this proc handles
+          // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
           eb->property_update("proc_offset", start);
             
-          // Need to map global nodes to block-local node connectivity
-          //  const auto &block_map = m_globalToBlockLocalNodeMap[zone];
-          //    block_map->reverse_map_data(idata, field, num_to_get * element_nodes);
+	  // Map connectivity global ids to zone-local 1-based ids.
+	  for (size_t i=0; i < num_to_get * element_nodes; i++) {
+	    auto id = idata[i];
+	    auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+	    assert(iter != nodes.end());
+	    auto cur_pos = iter - nodes.begin();
+	    idata[i] = connectivity_map[cur_pos];
+	  }
 
-          // TODO: This is outputting incorrect values... Need mapping from global to block_local
           ierr = cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start+1, start+num_to_get, idata);
           if (ierr != CG_OK) {
             Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
@@ -1346,6 +1479,28 @@ namespace Iocgns {
           m_bcOffset[zone] += eb_size;
           eb->property_update("section", sect);
         }
+
+	// The 'nodes' map needs to be updated to filter out any nodes
+	// that are not owned by this processor.  Currently contains both
+	// owned and shared so we could update the connectivity...
+	// The 'connectivity_map' value indicates whether it is owned or shared --
+	// if 'connectivity_map[i] > owned_node_offset, then it is owned; otherwise shared.
+	for (size_t i=1; i < nodes.size(); i++) {
+	  if (connectivity_map[i] <= owned_node_offset) {
+	    nodes[i] = 0;
+	  }
+	}
+	nodes[0] = 0;
+        std::sort(nodes.begin(), nodes.end());
+        nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
+        nodes.shrink_to_fit();
+	nodes[0] = 1;
+	assert(nodes.size()-1 == owned_node_count);
+        // Now we have a valid zone so can update some data structures...
+        m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
+	m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
+        nodes[0] = 1; // Non one-to-one map
+        m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
       }
       else {
         num_to_get = Ioss::Utils::field_warning(eb, field, "input");
