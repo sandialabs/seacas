@@ -142,6 +142,7 @@ namespace Iocgns {
     void   handle_unstructured_blocks();
     size_t finalize_structured_blocks();
     int64_t handle_node_ids(void *ids, int64_t num_to_get) const;
+    void   write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -203,7 +204,8 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
     // Bulk Data
-    void resolve_zone_shared_nodes(Ioss::MapContainer &nodes, std::vector<cgsize_t> &connectivity_map) const;
+    void resolve_zone_shared_nodes(Ioss::MapContainer &nodes, Ioss::MapContainer &connectivity_map,
+				   size_t &owned_node_count, size_t &owned_node_offset) const;
 
     // MAPS -- Used to convert from local exodusII ids/names to Sierra
     // database global ids/names
