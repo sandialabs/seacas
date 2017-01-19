@@ -1513,7 +1513,7 @@ namespace {
       }
       std::sort(id_pos.begin(), id_pos.end());
 
-      max_id = id_pos[id_pos.size() - 1].first;
+      max_id = id_pos.back().first;
       // Check again for contiguous ids since we now have a sorted list...
       is_contiguous = max_id == global_element_map.size();
 
