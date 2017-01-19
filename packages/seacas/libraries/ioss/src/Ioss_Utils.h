@@ -98,7 +98,7 @@ namespace Ioss {
         index[i] = sum;
         sum += cnt;
       }
-      index[index.size() - 1] = sum;
+      index.back() = sum;
     }
 
     template <typename T> static T find_index_location(T node, const std::vector<T> &index)

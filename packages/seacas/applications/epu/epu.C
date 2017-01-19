@@ -1753,7 +1753,7 @@ namespace {
     // at global_element_map.size() == global_element_map.size();
     bool is_contiguous =
         global_element_map.empty() ||
-        ((size_t)global_element_map[global_element_map.size() - 1] == global_element_map.size());
+      ((size_t)global_element_map.back() == global_element_map.size());
     std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
 
   // Create the map that maps from a local processor element to the
@@ -1920,7 +1920,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
     bool is_contiguous =
-        (size_t)global_node_map[global_node_map.size() - 1] == global_node_map.size();
+      (size_t)global_node_map.back() == global_node_map.size();
     std::cout << "Node map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
 
     // Create the map the maps from a local processor node to the

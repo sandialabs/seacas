@@ -1554,7 +1554,7 @@ namespace Iopx {
                << " receiving nodes_per_face sideset data";
         std::cerr << errmsg.str();
       }
-      df_count = nodes_per_face[nodes_per_face.size() - 1];
+      df_count = nodes_per_face.back();
     }
 
     if (set.root_ == m_processor) {

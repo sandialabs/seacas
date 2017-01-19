@@ -1178,7 +1178,7 @@ namespace Iofx {
         if (tokens.size() >= 2) {
           // Check whether last token names an X topology type...
           const Ioss::ElementTopology *topology =
-              Ioss::ElementTopology::factory(tokens[tokens.size() - 1], true);
+	    Ioss::ElementTopology::factory(tokens.back(), true);
           if (topology != nullptr) {
             type = topology->name();
           }
@@ -1832,7 +1832,7 @@ namespace Iofx {
             // case so that the generated name will match the current
             // name.  Instead of converting from string to int back to
             // string, we just set a variable to query later.
-            sid = tokens[tokens.size() - 1];
+            sid = tokens.back();
           }
           else if (split_type == Ioss::SPLIT_BY_TOPOLOGIES) {
             // There are multiple side types in the model.
