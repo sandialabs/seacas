@@ -410,7 +410,7 @@ namespace Iocgns {
   {
     // Determine number of processors that have nodes for this zone.
     // Avoid mpi_comm_split call if possible.
-    int have_nodes             = !nodes.empty() ? 1 : 0;
+    int have_nodes             = nodes.empty() ? 0 : 1;
     int shared_zone_proc_count = 0;
     MPI_Allreduce(&have_nodes, &shared_zone_proc_count, 1, Ioss::mpi_type(int(0)), MPI_SUM,
                   util().communicator());
@@ -438,7 +438,7 @@ namespace Iocgns {
       // proc will "own" 1/3 of the id range.
       // nodes is sorted.
       int64_t min = nodes[0];
-      int64_t max = nodes[nodes.size() - 1];
+      int64_t max = nodes.back();
       min         = pm.global_minmax(min, Ioss::ParallelUtils::DO_MIN);
       max         = pm.global_minmax(max, Ioss::ParallelUtils::DO_MAX);
 
@@ -527,7 +527,7 @@ namespace Iocgns {
       for (size_t i = 0; i < g_to_zone_local.size(); i++) {
         if (g_to_zone_local[i] == 0) {
           // The global id is r_nodes[i] which must also appear earlier in the list...
-          for (size_t j = 1; j < i; j++) {
+          for (size_t j = 0; j < i; j++) {
             if (r_nodes[j] == r_nodes[i]) {
               g_to_zone_local[i] = g_to_zone_local[j];
               break;
@@ -1442,17 +1442,22 @@ namespace Iocgns {
         // owned and shared so we could update the connectivity...
         // The 'connectivity_map' value indicates whether it is owned or shared --
         // if 'connectivity_map[i] > owned_node_offset, then it is owned; otherwise shared.
-        for (size_t i = 0; i < nodes.size(); i++) {
-          if (connectivity_map[i] <= (cgsize_t)owned_node_offset) {
-            nodes[i] = 0;
-          }
-        }
-        connectivity_map.clear();
-        connectivity_map.shrink_to_fit();
+	if (!nodes.empty()) {
+	  for (size_t i = 0; i < nodes.size(); i++) {
+	    if (connectivity_map[i] <= (cgsize_t)owned_node_offset) {
+	      nodes[i] = std::numeric_limits<cgsize_t>::max();
+	    }
+	  }
+	  connectivity_map.clear();
+	  connectivity_map.shrink_to_fit();
 
-        std::sort(nodes.begin(), nodes.end());
-        nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
-        nodes.shrink_to_fit();
+	  std::sort(nodes.begin(), nodes.end());
+	  nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
+	  if (nodes.back() == std::numeric_limits<cgsize_t>::max()) {
+	    nodes.pop_back();
+	  }
+	  nodes.shrink_to_fit();
+	}
         assert(nodes.size() == owned_node_count);
 
         // Now we have a valid zone so can update some data structures...
