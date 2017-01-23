@@ -48,7 +48,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "4.32 (2016/11/21)";
+  const char *       version_string = "4.33 (2017/01/12)";
 
   unsigned hash_symbol(const char *symbol)
   {
@@ -242,9 +242,13 @@ namespace SEAMS {
     infoStream    = c_info;
   }
 
-  /* Two methods for opening files. In OPEN_FILE, the file must exist
-     or else the code will exit. If CHECK_OPEN_FILE, it is OK if the
-     file does not exist. A Null 'pointer' will be returned.
+  /* Two methods for opening files:
+
+     In OPEN_FILE, the file must exist or else the code will exit in
+     batch mode or return null pointer if interactive.
+
+     In CHECK_OPEN_FILE, it is OK if the file does not exist. A Null
+     'pointer' will be returned.
   */
   std::fstream *Aprepro::open_file(const std::string &file, const char *mode)
   {
@@ -266,7 +270,9 @@ namespace SEAMS {
     /* If pointer still null, print error message */
     if (pointer == nullptr || pointer->bad() || !pointer->good()) {
       error("Can't open " + file, false);
-      exit(EXIT_FAILURE);
+      if (!stringInteractive) {
+        exit(EXIT_FAILURE);
+      }
     }
 
     return pointer;

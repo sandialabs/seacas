@@ -212,17 +212,17 @@ namespace Iopx {
 #endif
         el_blocks);
 
-    get_nodeset_data(filePtr, info.num_node_sets);
+    if (info.num_node_sets > 0) {
+      get_nodeset_data(filePtr, info.num_node_sets);
+    }
 
     if (info.num_side_sets > 0) {
       // Create elemGTL map which is used for sidesets (also element sets)
       build_global_to_local_elem_map();
+      get_sideset_data(filePtr, info.num_side_sets);
     }
 
-    get_sideset_data(filePtr, info.num_side_sets);
-
-    // Have all the decomposition data needed (except for boundary
-    // conditions...)
+    // Have all the decomposition data needed
     // Can now populate the Ioss metadata...
     m_decomposition.show_progress("\tFinished with Iopx::decompose_model");
 
@@ -1554,7 +1554,7 @@ namespace Iopx {
                << " receiving nodes_per_face sideset data";
         std::cerr << errmsg.str();
       }
-      df_count = nodes_per_face[nodes_per_face.size() - 1];
+      df_count = nodes_per_face.back();
     }
 
     if (set.root_ == m_processor) {

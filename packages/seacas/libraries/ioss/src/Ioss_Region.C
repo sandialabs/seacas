@@ -503,12 +503,12 @@ namespace Ioss {
     // NOTE:  For restart input databases, it is possible that the time
     //        is not monotonically increasing...
     if (!get_database()->is_input() && !stateTimes.empty() &&
-        time <= stateTimes[stateTimes.size() - 1]) {
+        time <= stateTimes.back()) {
       // Check that time is increasing...
       if (!warning_output) {
         std::ostringstream errmsg;
         errmsg << "IOSS WARNING: Current time, " << time << ", is not greater than previous time, "
-               << stateTimes[stateTimes.size() - 1] << " in\n"
+               << stateTimes.back() << " in\n"
                << get_database()->get_filename()
                << ". This may cause problems in applications that assume "
                   "monotonically increasing time values.\n";

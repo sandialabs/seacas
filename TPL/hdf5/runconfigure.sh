@@ -15,7 +15,7 @@ echo "ACCESS set to ${ACCESS}"
 
 if [ "$MPI" == "ON" ]
 then
-  PARALLEL_ON_OFF="-enable-parallel"
+  PARALLEL_ON_OFF="--enable-parallel"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=mpicc
@@ -23,7 +23,7 @@ then
       export CC=mpicc-openmpi-clang38
   fi
 else
-  PARALLEL_ON_OFF="-disable-parallel"
+  PARALLEL_ON_OFF="--disable-parallel"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc

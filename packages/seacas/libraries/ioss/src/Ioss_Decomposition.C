@@ -440,9 +440,13 @@ namespace Ioss {
       }
     }
 
+    assert(node_comm_recv.size() == sumr);
+
     Ioss::MY_Alltoallv(node_comm_recv, recv_count, recv_disp, node_comm_send, send_count, send_disp,
                        m_comm);
 
+    node_comm_recv.resize(0); node_comm_recv.shrink_to_fit();
+    
 // At this point, 'node_comm_send' contains the list of nodes that I
 // need to provide coordinate data for.
 
@@ -457,7 +461,7 @@ namespace Ioss {
     // The total vector size I need to send data in is node_comm_send.size()*3
     std::vector<double> coord_send;
     coord_send.reserve(node_comm_send.size() * m_spatialDimension);
-    std::vector<double> coord_recv(node_comm_recv.size() * m_spatialDimension);
+    std::vector<double> coord_recv(sumr * m_spatialDimension);
     for (auto node : node_comm_send) {
       node -= m_nodeOffset;
       coord_send.push_back(x[node]);
@@ -1133,6 +1137,7 @@ namespace Ioss {
 
     Ioss::MY_Alltoallv(import_nodes, importNodeCount, importNodeIndex, exportNodeMap,
                        exportNodeCount, exportNodeIndex, m_comm);
+    import_nodes.resize(0); import_nodes.shrink_to_fit();
     show_progress("\tCommunication 4 finished");
 
     if (m_retainFreeNodes) {
@@ -1297,6 +1302,7 @@ namespace Ioss {
                          recv_comm_map_count[m_processorCount - 1]);
     Ioss::MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, m_nodeCommMap,
                        recv_comm_map_count, recv_comm_map_disp, m_comm);
+    send_comm_map.resize(0); send_comm_map.shrink_to_fit();
     show_progress("\tCommuniation 2 finished");
 
     // Map global 0-based index to local 1-based index.

@@ -110,10 +110,17 @@ namespace {
   Kokkos::View<char **>    data_view_2D_char;
   Kokkos::View<int **>     data_view_2D_int;
   Kokkos::View<int64_t **> data_view_2D_int64;
-  Kokkos::View<double **>  data_view_2D_double;
-// Kokkos::View<Kokkos_Complex **> data_view_2D_complex cannot be a global variable,
-// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
-// have type std::complex entities.
+  Kokkos::View<double **> data_view_2D_double;
+  // Kokkos::View<Kokkos_Complex **> data_view_2D_complex cannot be a global variable,
+  // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
+  // have type std::complex entities.
+  Kokkos::View< char **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_char_layout_space;
+  Kokkos::View< int **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_int_layout_space;
+  Kokkos::View< int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_int64_layout_space;
+  Kokkos::View< double **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_double_layout_space;
+  // Kokkos::View<Kokkos_Complex **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_complex_layout_space cannot be a global variable,
+  // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
+  // have type std::complex entities.
 #endif
   size_t  max_field_size = 0;
   int     rank           = 0;
@@ -198,6 +205,10 @@ int main(int argc, char *argv[])
   data_view_2D_int    = Kokkos::View<int **>("view_2D_int", 0, 0);
   data_view_2D_int64  = Kokkos::View<int64_t **>("view_2D_int64", 0, 0);
   data_view_2D_double = Kokkos::View<double **>("view_2D_double", 0, 0);
+  data_view_2D_char_layout_space = Kokkos::View<char **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_char_layout_space", 0, 0);
+  data_view_2D_int_layout_space = Kokkos::View<int **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int_layout_space", 0, 0);
+  data_view_2D_int64_layout_space = Kokkos::View<int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int64_layout_space", 0, 0);
+  data_view_2D_double_layout_space = Kokkos::View<double **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_double_layout_space", 0, 0);
 #endif
 
   IOShell::Interface interface;
@@ -1171,6 +1182,25 @@ namespace {
         else {
         }
         break;
+      case 5:
+        if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+          ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+        }
+        else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+          ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+        }
+        else if (basic_type == Ioss::Field::INT64) {
+          ige->get_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+        }
+        else if (basic_type == Ioss::Field::REAL) {
+          ige->get_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+        }
+        else if (basic_type == Ioss::Field::COMPLEX) {
+          // Since data_view_complex cannot be a global variable.
+          ige->get_field_data(field_name, &data[0], isize);
+        }
+        else {}
+        break;
 #endif
       default:
         if (field_name == "mesh_model_coordinates") {
@@ -1243,7 +1273,25 @@ namespace {
         else {
         }
         break;
-        return;
+      case 5:
+        if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+            oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+        }
+        else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+          oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+        }
+        else if (basic_type == Ioss::Field::INT64) {
+          oge->put_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+        }
+        else if (basic_type == Ioss::Field::REAL) {
+          oge->put_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+        }
+        else if (basic_type == Ioss::Field::COMPLEX) {
+          // Since data_view_complex cannot be a global variable.
+          oge->put_field_data(out_field_name, &data[0], osize);
+        }
+        else {}
+        break;
 #endif
       default:
         if (field_name == "mesh_model_coordinates") {
@@ -1255,6 +1303,7 @@ namespace {
       time_write += Ioss::Utils::timer() - t2;
       time_read += t2 - t1;
     }
+    return;
   }
 
   void transfer_field_data(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
@@ -1416,7 +1465,25 @@ namespace {
       else {
       }
       break;
-      return;
+    case 5:
+      if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+        ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+      }
+      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+        ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+      }
+      else if (basic_type == Ioss::Field::INT64) {
+      	ige->get_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+      }
+      else if (basic_type == Ioss::Field::REAL) {
+      	ige->get_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+      }
+      else if (basic_type == Ioss::Field::COMPLEX) {
+        // Since data_view_complex cannot be a global variable.
+        ige->get_field_data(field_name, &data[0], isize);
+      }
+      else {}
+      break;
 #endif
     default:
       if (field_name == "mesh_model_coordinates") {
@@ -1489,12 +1556,32 @@ namespace {
       else {
       }
       break;
+    case 5:
+      if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
+        oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+      }
+      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+        oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+      }
+      else if (basic_type == Ioss::Field::INT64) {
+        oge->put_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+      }
+      else if (basic_type == Ioss::Field::REAL) {
+        oge->put_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+      }
+      else if (basic_type == Ioss::Field::COMPLEX) {
+        // Since data_view_complex cannot be a global variable.
+      	oge->put_field_data(field_name, &data[0], isize);
+      }
+      else {}
+      break;
 #endif
     default: return;
     }
 
     time_write += Ioss::Utils::timer() - t2;
     time_read += t2 - t1;
+    return;
   }
 
   void transfer_qa_info(Ioss::Region &in, Ioss::Region &out)
