@@ -1,4 +1,4 @@
-/*
+/* 
  * @HEADER
  *
  * ***********************************************************************
@@ -44,29 +44,32 @@
  * @HEADER
  */
 
-#include "zoltan_timer_cpp.h"
 #include <iostream>
-#include <math.h>
 #include <stdio.h>
+#include <math.h>
+#include "zoltan_timer_cpp.h"
 using namespace std;
 
 /* Test program to exercise Timer capabilities. */
 
 /****************************************************************************/
 
-void first_test(Zoltan_Timer_Object *zt) {
-  /* First test of Timer:  This test accrues times through
-   * separate calls to first_test.
-   * The time for timer two should be roughly twice that of timer one.
-   * The time for timer three should be roughly four times that of timer one.
-   */
+void first_test(Zoltan_Timer_Object *zt)
+{
+/* First test of Timer:  This test accrues times through
+ * separate calls to first_test.  
+ * The time for timer two should be roughly twice that of timer one.
+ * The time for timer three should be roughly four times that of timer one.
+ */
 
-  int i, j, me;
-  static int firsttime = 1;
-  const int LOOP1 = 1000, LOOP2 = 2000, LOOP3 = 4000;
-  const int MAINLOOP = 100;
-  const int USE_BARRIER = 1;
-  static int t1 = -1, t2 = -1, t3 = -1;
+int i, j, me; 
+static int firsttime=1;
+const int LOOP1=1000,
+          LOOP2=2000,
+          LOOP3=4000;
+const int MAINLOOP=100;
+const int USE_BARRIER=1;
+static int t1=-1, t2=-1, t3=-1;
 
   MPI_Comm_rank(MPI_COMM_WORLD, &me);
 
@@ -78,7 +81,7 @@ void first_test(Zoltan_Timer_Object *zt) {
     zt->Start(t1, MPI_COMM_WORLD);
     for (j = 0; j < LOOP1; j++) {
       double a;
-      a = sqrt((double)(j * LOOP1));
+      a = sqrt((double) (j * LOOP1));
     }
     zt->Stop(t1, MPI_COMM_WORLD);
 
@@ -88,7 +91,7 @@ void first_test(Zoltan_Timer_Object *zt) {
     zt->Start(t2, MPI_COMM_WORLD);
     for (j = 0; j < LOOP2; j++) {
       double a;
-      a = sqrt((double)(j * LOOP2));
+      a = sqrt((double) (j * LOOP2));
     }
     zt->Stop(t2, MPI_COMM_WORLD);
 
@@ -98,31 +101,35 @@ void first_test(Zoltan_Timer_Object *zt) {
     zt->Start(t3, MPI_COMM_WORLD);
     for (j = 0; j < LOOP3; j++) {
       double a;
-      a = sqrt((double)(j * LOOP3));
+      a = sqrt((double) (j * LOOP3));
     }
     zt->Stop(t3, MPI_COMM_WORLD);
 
-    firsttime = 0;
+    firsttime=0;
   }
 
   zt->PrintAll(me, MPI_COMM_WORLD, stdout);
+
 }
 
 /****************************************************************************/
 
-void second_test(Zoltan_Timer_Object *zt) {
-  /* Second test of Timer:  This test does not accrue times through
-   * separate function calls.  It exercises the REALLOC when more timers
-   * than INITLENGTH are requested.
-   * Computation is similar to first test.  Timer_flag used is different.
-   */
-  int i, j, me;
-  const int LOOP1 = 1000, LOOP2 = 2000, LOOP3 = 4000;
-  const int MAINLOOP = 100;
-  const int USE_BARRIER = 1;
-  int t1 = -1, t2 = -1, t3 = -1;
-  char str[200];
-  static int cnt = 0;
+void second_test(Zoltan_Timer_Object *zt)
+{
+/* Second test of Timer:  This test does not accrue times through
+ * separate function calls.  It exercises the REALLOC when more timers
+ * than INITLENGTH are requested. 
+ * Computation is similar to first test.  Timer_flag used is different.
+ */
+int i, j, me; 
+const int LOOP1=1000,
+          LOOP2=2000,
+          LOOP3=4000;
+const int MAINLOOP=100;
+const int USE_BARRIER=1;
+int t1=-1, t2=-1, t3=-1;
+char str[200];
+static int cnt = 0;
 
   MPI_Comm_rank(MPI_COMM_WORLD, &me);
 
@@ -138,21 +145,21 @@ void second_test(Zoltan_Timer_Object *zt) {
     zt->Start(t1, MPI_COMM_WORLD);
     for (j = 0; j < LOOP1; j++) {
       double a;
-      a = sqrt((double)(j * LOOP1));
+      a = sqrt((double) (j * LOOP1));
     }
     zt->Stop(t1, MPI_COMM_WORLD);
 
     zt->Start(t2, MPI_COMM_WORLD);
     for (j = 0; j < LOOP2; j++) {
       double a;
-      a = sqrt((double)(j * LOOP2));
+      a = sqrt((double) (j * LOOP2));
     }
     zt->Stop(t2, MPI_COMM_WORLD);
 
     zt->Start(t3, MPI_COMM_WORLD);
     for (j = 0; j < LOOP3; j++) {
       double a;
-      a = sqrt((double)(j * LOOP3));
+      a = sqrt((double) (j * LOOP3));
     }
     zt->Stop(t3, MPI_COMM_WORLD);
   }
@@ -161,10 +168,11 @@ void second_test(Zoltan_Timer_Object *zt) {
 }
 
 /****************************************************************************/
-main(int argc, char *argv[]) {
-  Zoltan_Timer_Object zt1(ZOLTAN_TIME_WALL), zt2(ZOLTAN_TIME_CPU);
-  int i, me;
-  const int MAINLOOP = 20;
+main(int argc, char *argv[])
+{
+Zoltan_Timer_Object zt1(ZOLTAN_TIME_WALL), zt2(ZOLTAN_TIME_CPU);
+int i, me;
+const int MAINLOOP=20;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &me);
@@ -198,7 +206,9 @@ main(int argc, char *argv[]) {
   cout << "\n\nFINAL RESULTS -- SECOND TEST:\n";
   zt4.PrintAll(me, MPI_COMM_WORLD, stdout);
 
+
   cout << "\n\nTHE END\n";
 
   MPI_Finalize();
 }
+
