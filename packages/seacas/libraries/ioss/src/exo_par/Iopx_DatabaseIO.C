@@ -256,6 +256,7 @@ namespace Iopx {
       : Ioex::DatabaseIO(region, filename, db_usage, communicator, props), decomp(nullptr),
         metaDataWritten(false)
   {
+    usingParallelIO = true;
     if (!is_parallel_consistent()) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Parallel IO cannot be used in an application that is not guaranteeing "

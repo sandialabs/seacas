@@ -156,8 +156,8 @@ namespace Ioss {
         dbState(STATE_INVALID), isParallel(false), myProcessor(0),
         cycleCount(0), overlayCount(0), timeScaleFactor(1.0), splitType(SPLIT_BY_TOPOLOGIES),
         dbUsage(db_usage), dbIntSizeAPI(USE_INT32_API), lowerCaseVariableNames(true),
-        util_(communicator), region_(region), isInput(is_input_event(db_usage)),
-        isParallelConsistent(true),
+        usingParallelIO(false), util_(communicator), region_(region),
+        isInput(is_input_event(db_usage)), isParallelConsistent(true),
         singleProcOnly(db_usage == WRITE_HISTORY || db_usage == WRITE_HEARTBEAT ||
                        SerializeIO::isEnabled()),
         doLogging(false), useGenericCanonicalName(false), ignoreDatabaseNames(false)
@@ -218,7 +218,7 @@ namespace Ioss {
       int isize = properties.get("SERIALIZE_IO").get_int();
       Ioss::SerializeIO::setGroupFactor(isize);
       if (isize > 0) {
-	singleProcOnly = true;
+        singleProcOnly = true;
       }
     }
 
@@ -226,7 +226,7 @@ namespace Ioss {
       int isize = properties.get("SERIALIZE_IO").get_int();
       Ioss::SerializeIO::setGroupFactor(isize);
       if (isize > 0) {
-	singleProcOnly = true;
+        singleProcOnly = true;
       }
     }
 
@@ -754,24 +754,24 @@ namespace {
              << "]\t";
 
         int64_t total = 0;
-	for (auto &p_size : all_sizes) {
-	  total += p_size;
-	}
+        for (auto &p_size : all_sizes) {
+          total += p_size;
+        }
         // Now append each processors size onto the stream...
-	if (util.parallel_size() > 4) {
-	  auto min_max = std::minmax_element(all_sizes.begin(), all_sizes.end());
-	  strm << " m:" << std::setw(8) << *min_max.first 
-	       << " M:" << std::setw(8) << *min_max.second 
-	       << " A:" << std::setw(8) << total / all_sizes.size();
-	}
-	else {
-	  for (auto &p_size : all_sizes) {
-	    strm << std::setw(8) << p_size << ":";
-	  }
-	}
-	if (util.parallel_size() > 1) {
-	  strm << " T:" << std::setw(8) << total;
-	}
+        if (util.parallel_size() > 4) {
+          auto min_max = std::minmax_element(all_sizes.begin(), all_sizes.end());
+          strm << " m:" << std::setw(8) << *min_max.first 
+               << " M:" << std::setw(8) << *min_max.second 
+               << " A:" << std::setw(8) << total / all_sizes.size();
+        }
+        else {
+          for (auto &p_size : all_sizes) {
+            strm << std::setw(8) << p_size << ":";
+          }
+        }
+        if (util.parallel_size() > 1) {
+          strm << " T:" << std::setw(8) << total;
+        }
         strm << "\t" << name << "/" << field.get_name() << "\n";
         std::cout << strm.str();
       }
