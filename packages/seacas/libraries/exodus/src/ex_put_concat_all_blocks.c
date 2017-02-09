@@ -248,6 +248,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     return (EX_FATAL);
   }
 
+#if NC_HAS_HDF5
 #define EX_PREPARE_ATTRIB_ARRAY(TNAME, CURBLK, DNAME, DVAL, ID, VANAME, VADIM0, VADIM1, VANNAME)   \
   if (DVAL[iblk] > 0) {                                                                            \
     if ((status = nc_def_dim(exoid, DNAME(CURBLK + 1), DVAL[iblk], &VADIM1)) != NC_NOERR) {        \
@@ -284,10 +285,47 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
       goto error_ret; /* exit define mode and return */                                            \
     }                                                                                              \
-    #if NC_HAS_HDF5
-  nc_def_var_fill(exoid, temp, 0, &fill);
+    nc_def_var_fill(exoid, temp, 0, &fill);                                                        \
+  }
+#else
+#define EX_PREPARE_ATTRIB_ARRAY(TNAME, CURBLK, DNAME, DVAL, ID, VANAME, VADIM0, VADIM1, VANNAME)   \
+  if (DVAL[iblk] > 0) {                                                                            \
+    if ((status = nc_def_dim(exoid, DNAME(CURBLK + 1), DVAL[iblk], &VADIM1)) != NC_NOERR) {        \
+      exerrval = status;                                                                           \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of attributes in " TNAME    \
+                                       " block %" PRId64 " in file id %d",                         \
+               ID, exoid);                                                                         \
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
+      goto error_ret; /* exit define mode and return */                                            \
+    }                                                                                              \
+                                                                                                   \
+    dims[0] = VADIM0;                                                                              \
+    dims[1] = VADIM1;                                                                              \
+                                                                                                   \
+    if ((status = nc_def_var(exoid, VANAME(CURBLK + 1), nc_flt_code(exoid), 2, dims, &temp)) !=    \
+        NC_NOERR) {                                                                                \
+      exerrval = status;                                                                           \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR:  failed to define attributes for " TNAME            \
+                                       " block %" PRId64 " in file id %d",                         \
+               ID, exoid);                                                                         \
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
+      goto error_ret; /* exit define mode and return */                                            \
+    }                                                                                              \
+    ex_compress_variable(exoid, temp, 2);                                                          \
+                                                                                                   \
+    /* Attribute names... */                                                                       \
+    dims[0] = VADIM1;                                                                              \
+    dims[1] = strdim;                                                                              \
+                                                                                                   \
+    if ((status = nc_def_var(exoid, VANNAME(CURBLK + 1), NC_CHAR, 2, dims, &temp)) != NC_NOERR) {  \
+      exerrval = status;                                                                           \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR: failed to define " TNAME " attribute name array in file id %d", exoid);     \
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
+      goto error_ret; /* exit define mode and return */                                            \
+    }                                                                                              \
+  }
 #endif
-}
 
 #define EX_PREPARE_CONN(TNAME, BLK, BLKID, BLKSZ, VNAME, DNAME)                                    \
   if (DNAME > 0) {                                                                                 \
@@ -310,306 +348,308 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     ex_compress_variable(exoid, connid, 1);                                                        \
   }
 
-/* Iterate over edge blocks ... */
-for (iblk = 0; iblk < num_edge_blk; ++iblk) {
-  ex_entity_id eb_id;
-  if (ids_int64) {
-    eb_id = edge_id_int64[iblk];
-  }
-  else {
-    eb_id = edge_id_int[iblk];
-  }
-
-  cur_num_edge_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
-  if (cur_num_edge_blk >= (int)num_edge_blk) {
-    exerrval = EX_FATAL;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: exceeded number of edge blocks (%ld) defined in file id %d",
-             (long)num_edge_blk, exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret;
-  }
-
-  /* NOTE: ex_inc_file_item  is used to find the number of edge blocks
-     for a specific file and returns that value incremented. */
-  cur_num_edge_blk = ex_inc_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
-
-  if (param->num_edge_this_blk[iblk] == 0) { /* Is this a NULL edge block? */
-    continue;
-  }
-
-  /* define some dimensions and variables*/
-  if ((status = nc_def_dim(exoid, DIM_NUM_ED_IN_EBLK(cur_num_edge_blk + 1),
-                           param->num_edge_this_blk[iblk], &numedbdim)) != NC_NOERR) {
-    exerrval = status;
-    if (status == NC_ENAMEINUSE) { /* duplicate entry */
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: edge block %" PRId64 " already defined in file id %d", eb_id, exoid);
+  /* Iterate over edge blocks ... */
+  for (iblk = 0; iblk < num_edge_blk; ++iblk) {
+    ex_entity_id eb_id;
+    if (ids_int64) {
+      eb_id = edge_id_int64[iblk];
     }
     else {
+      eb_id = edge_id_int[iblk];
+    }
+
+    cur_num_edge_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
+    if (cur_num_edge_blk >= (int)num_edge_blk) {
+      exerrval = EX_FATAL;
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to define number of edges/block for block %" PRId64 " file id %d",
+               "ERROR: exceeded number of edge blocks (%ld) defined in file id %d",
+               (long)num_edge_blk, exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret;
+    }
+
+    /* NOTE: ex_inc_file_item  is used to find the number of edge blocks
+       for a specific file and returns that value incremented. */
+    cur_num_edge_blk = ex_inc_file_item(exoid, ex_get_counter_list(EX_EDGE_BLOCK));
+
+    if (param->num_edge_this_blk[iblk] == 0) { /* Is this a NULL edge block? */
+      continue;
+    }
+
+    /* define some dimensions and variables*/
+    if ((status = nc_def_dim(exoid, DIM_NUM_ED_IN_EBLK(cur_num_edge_blk + 1),
+                             param->num_edge_this_blk[iblk], &numedbdim)) != NC_NOERR) {
+      exerrval = status;
+      if (status == NC_ENAMEINUSE) { /* duplicate entry */
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: edge block %" PRId64 " already defined in file id %d", eb_id, exoid);
+      }
+      else {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of edges/block for block %" PRId64 " file id %d",
+                 eb_id, exoid);
+      }
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
+    }
+
+    if ((status = nc_def_dim(exoid, DIM_NUM_NOD_PER_ED(cur_num_edge_blk + 1),
+                             param->num_nodes_per_edge[iblk], &nednoddim)) != NC_NOERR) {
+      exerrval = status;
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to define number of nodes/edge for block %" PRId64 " in file id %d",
                eb_id, exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
     }
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
+
+    /* edge attribute array */
+    EX_PREPARE_ATTRIB_ARRAY("edge", cur_num_edge_blk, DIM_NUM_ATT_IN_EBLK, param->num_attr_edge,
+                            eb_id, VAR_EATTRIB, numedbdim, numattrdim, VAR_NAME_EATTRIB);
+
+    EX_PREPARE_CONN("edge block", cur_num_edge_blk, eb_id, numedbdim, VAR_EBCONN, nednoddim);
+
+    /* store edge type as attribute of connectivity variable */
+    if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(param->edge_type[iblk]) + 1,
+                                  (void *)param->edge_type[iblk])) != NC_NOERR) {
+      exerrval = status;
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store edge type name %s in file id %d",
+               param->edge_type[iblk], exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
+    }
   }
 
-  if ((status = nc_def_dim(exoid, DIM_NUM_NOD_PER_ED(cur_num_edge_blk + 1),
-                           param->num_nodes_per_edge[iblk], &nednoddim)) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to define number of nodes/edge for block %" PRId64 " in file id %d",
-             eb_id, exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
-
-  /* edge attribute array */
-  EX_PREPARE_ATTRIB_ARRAY("edge", cur_num_edge_blk, DIM_NUM_ATT_IN_EBLK, param->num_attr_edge,
-                          eb_id, VAR_EATTRIB, numedbdim, numattrdim, VAR_NAME_EATTRIB);
-
-  EX_PREPARE_CONN("edge block", cur_num_edge_blk, eb_id, numedbdim, VAR_EBCONN, nednoddim);
-
-  /* store edge type as attribute of connectivity variable */
-  if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(param->edge_type[iblk]) + 1,
-                                (void *)param->edge_type[iblk])) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store edge type name %s in file id %d",
-             param->edge_type[iblk], exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
-}
-
-/* Iterate over face blocks ... */
-for (iblk = 0; iblk < num_face_blk; ++iblk) {
-  ex_entity_id fb_id;
-  if (ids_int64) {
-    fb_id = face_id_int64[iblk];
-  }
-  else {
-    fb_id = face_id_int[iblk];
-  }
-
-  cur_num_face_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
-  if (cur_num_face_blk >= (int)num_face_blk) {
-    exerrval = EX_FATAL;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: exceeded number of face blocks (%ld) defined in file id %d",
-             (long)num_face_blk, exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret;
-  }
-
-  /* NOTE: ex_inc_file_item  is used to find the number of edge blocks
-     for a specific file and returns that value incremented. */
-  cur_num_face_blk = ex_inc_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
-
-  if (param->num_face_this_blk[iblk] == 0) { /* Is this a NULL face block? */
-    continue;
-  }
-
-  /* define some dimensions and variables*/
-  if ((status = nc_def_dim(exoid, DIM_NUM_FA_IN_FBLK(cur_num_face_blk + 1),
-                           param->num_face_this_blk[iblk], &numfabdim)) != NC_NOERR) {
-    exerrval = status;
-    if (status == NC_ENAMEINUSE) { /* duplicate entry */
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: face block %" PRId64 " already defined in file id %d", fb_id, exoid);
+  /* Iterate over face blocks ... */
+  for (iblk = 0; iblk < num_face_blk; ++iblk) {
+    ex_entity_id fb_id;
+    if (ids_int64) {
+      fb_id = face_id_int64[iblk];
     }
     else {
+      fb_id = face_id_int[iblk];
+    }
+
+    cur_num_face_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
+    if (cur_num_face_blk >= (int)num_face_blk) {
+      exerrval = EX_FATAL;
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to define number of faces/block for block %" PRId64 " file id %d",
+               "ERROR: exceeded number of face blocks (%ld) defined in file id %d",
+               (long)num_face_blk, exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret;
+    }
+
+    /* NOTE: ex_inc_file_item  is used to find the number of edge blocks
+       for a specific file and returns that value incremented. */
+    cur_num_face_blk = ex_inc_file_item(exoid, ex_get_counter_list(EX_FACE_BLOCK));
+
+    if (param->num_face_this_blk[iblk] == 0) { /* Is this a NULL face block? */
+      continue;
+    }
+
+    /* define some dimensions and variables*/
+    if ((status = nc_def_dim(exoid, DIM_NUM_FA_IN_FBLK(cur_num_face_blk + 1),
+                             param->num_face_this_blk[iblk], &numfabdim)) != NC_NOERR) {
+      exerrval = status;
+      if (status == NC_ENAMEINUSE) { /* duplicate entry */
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: face block %" PRId64 " already defined in file id %d", fb_id, exoid);
+      }
+      else {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of faces/block for block %" PRId64 " file id %d",
+                 fb_id, exoid);
+      }
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
+    }
+
+    if ((status = nc_def_dim(exoid, DIM_NUM_NOD_PER_FA(cur_num_face_blk + 1),
+                             param->num_nodes_per_face[iblk], &nfanoddim)) != NC_NOERR) {
+      exerrval = status;
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to define number of nodes/face for block %" PRId64 " in file id %d",
                fb_id, exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
     }
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
+
+    /* face attribute array */
+    EX_PREPARE_ATTRIB_ARRAY("face", cur_num_face_blk, DIM_NUM_ATT_IN_FBLK, param->num_attr_face,
+                            fb_id, VAR_FATTRIB, numfabdim, numattrdim, VAR_NAME_FATTRIB);
+
+    EX_PREPARE_CONN("face block", cur_num_face_blk, fb_id, numfabdim, VAR_FBCONN, nfanoddim);
+
+    /* store face type as attribute of connectivity variable */
+    if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(param->face_type[iblk]) + 1,
+                                  (void *)param->face_type[iblk])) != NC_NOERR) {
+      exerrval = status;
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store face type name %s in file id %d",
+               param->face_type[iblk], exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
+    }
   }
 
-  if ((status = nc_def_dim(exoid, DIM_NUM_NOD_PER_FA(cur_num_face_blk + 1),
-                           param->num_nodes_per_face[iblk], &nfanoddim)) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to define number of nodes/face for block %" PRId64 " in file id %d",
-             fb_id, exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
-
-  /* face attribute array */
-  EX_PREPARE_ATTRIB_ARRAY("face", cur_num_face_blk, DIM_NUM_ATT_IN_FBLK, param->num_attr_face,
-                          fb_id, VAR_FATTRIB, numfabdim, numattrdim, VAR_NAME_FATTRIB);
-
-  EX_PREPARE_CONN("face block", cur_num_face_blk, fb_id, numfabdim, VAR_FBCONN, nfanoddim);
-
-  /* store face type as attribute of connectivity variable */
-  if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(param->face_type[iblk]) + 1,
-                                (void *)param->face_type[iblk])) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store face type name %s in file id %d",
-             param->face_type[iblk], exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
-}
-
-/* Iterate over element blocks ... */
-for (iblk = 0; iblk < num_elem_blk; ++iblk) {
-  ex_entity_id eb_id;
-  if (ids_int64) {
-    eb_id = elem_id_int64[iblk];
-  }
-  else {
-    eb_id = elem_id_int[iblk];
-  }
-
-  cur_num_elem_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
-  if (cur_num_elem_blk >= (int)num_elem_blk) {
-    exerrval = EX_FATAL;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of element blocks (%ld) defined "
-                                     "in file id %d",
-             (long)num_elem_blk, exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret;
-  }
-
-  /* NOTE: ex_inc_file_item  is used to find the number of element blocks
-     for a specific file and returns that value incremented. */
-  cur_num_elem_blk = ex_inc_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
-
-  if (param->num_elem_this_blk[iblk] == 0) { /* Is this a NULL element block? */
-    continue;
-  }
-
-  /* define some dimensions and variables*/
-  if ((status = nc_def_dim(exoid, DIM_NUM_EL_IN_BLK(cur_num_elem_blk + 1),
-                           param->num_elem_this_blk[iblk], &numelbdim)) != NC_NOERR) {
-    exerrval = status;
-    if (status == NC_ENAMEINUSE) { /* duplicate entry */
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: element block %" PRId64 " already defined in file id %d", eb_id, exoid);
+  /* Iterate over element blocks ... */
+  for (iblk = 0; iblk < num_elem_blk; ++iblk) {
+    ex_entity_id eb_id;
+    if (ids_int64) {
+      eb_id = elem_id_int64[iblk];
     }
     else {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of elements/block for "
-                                       "block %" PRId64 " file id %d",
-               eb_id, exoid);
+      eb_id = elem_id_int[iblk];
     }
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
 
-  /* Always define DIM_NUM_NOD_PER_EL, even if zero.
-   * Do not define DIM_NUM_EDG_PER_EL or DIM_NUM_FAC_PER_EL unless > 0.
-   */
-  if ((status = nc_def_dim(exoid, DIM_NUM_NOD_PER_EL(cur_num_elem_blk + 1),
-                           param->num_nodes_per_elem[iblk], &nelnoddim)) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to define number of nodes/element for block %" PRId64 " in file id %d",
-             eb_id, exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
+    cur_num_elem_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
+    if (cur_num_elem_blk >= (int)num_elem_blk) {
+      exerrval = EX_FATAL;
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of element blocks (%ld) defined "
+                                       "in file id %d",
+               (long)num_elem_blk, exoid);
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret;
+    }
 
-  if (param->num_edges_per_elem[iblk] > 0) {
-    if ((status = nc_def_dim(exoid, DIM_NUM_EDG_PER_EL(cur_num_elem_blk + 1),
-                             param->num_edges_per_elem[iblk], &neledgdim)) != NC_NOERR) {
+    /* NOTE: ex_inc_file_item  is used to find the number of element blocks
+       for a specific file and returns that value incremented. */
+    cur_num_elem_blk = ex_inc_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
+
+    if (param->num_elem_this_blk[iblk] == 0) { /* Is this a NULL element block? */
+      continue;
+    }
+
+    /* define some dimensions and variables*/
+    if ((status = nc_def_dim(exoid, DIM_NUM_EL_IN_BLK(cur_num_elem_blk + 1),
+                             param->num_elem_this_blk[iblk], &numelbdim)) != NC_NOERR) {
+      exerrval = status;
+      if (status == NC_ENAMEINUSE) { /* duplicate entry */
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: element block %" PRId64 " already defined in file id %d", eb_id, exoid);
+      }
+      else {
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of elements/block for "
+                                         "block %" PRId64 " file id %d",
+                 eb_id, exoid);
+      }
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      goto error_ret; /* exit define mode and return */
+    }
+
+    /* Always define DIM_NUM_NOD_PER_EL, even if zero.
+     * Do not define DIM_NUM_EDG_PER_EL or DIM_NUM_FAC_PER_EL unless > 0.
+     */
+    if ((status = nc_def_dim(exoid, DIM_NUM_NOD_PER_EL(cur_num_elem_blk + 1),
+                             param->num_nodes_per_elem[iblk], &nelnoddim)) != NC_NOERR) {
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to define number of edges/element for block %" PRId64
+               "ERROR: failed to define number of nodes/element for block %" PRId64
                " in file id %d",
                eb_id, exoid);
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
       goto error_ret; /* exit define mode and return */
     }
-  }
 
-  if (param->num_faces_per_elem[iblk] > 0) {
-    if ((status = nc_def_dim(exoid, DIM_NUM_FAC_PER_EL(cur_num_elem_blk + 1),
-                             param->num_faces_per_elem[iblk], &nelfacdim)) != NC_NOERR) {
+    if (param->num_edges_per_elem[iblk] > 0) {
+      if ((status = nc_def_dim(exoid, DIM_NUM_EDG_PER_EL(cur_num_elem_blk + 1),
+                               param->num_edges_per_elem[iblk], &neledgdim)) != NC_NOERR) {
+        exerrval = status;
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of edges/element for block %" PRId64
+                 " in file id %d",
+                 eb_id, exoid);
+        ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+        goto error_ret; /* exit define mode and return */
+      }
+    }
+
+    if (param->num_faces_per_elem[iblk] > 0) {
+      if ((status = nc_def_dim(exoid, DIM_NUM_FAC_PER_EL(cur_num_elem_blk + 1),
+                               param->num_faces_per_elem[iblk], &nelfacdim)) != NC_NOERR) {
+        exerrval = status;
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of faces/element for block %" PRId64
+                 " in file id %d",
+                 eb_id, exoid);
+        ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+        goto error_ret; /* exit define mode and return */
+      }
+    }
+
+    EX_PREPARE_ATTRIB_ARRAY("element", cur_num_elem_blk, DIM_NUM_ATT_IN_BLK, param->num_attr_elem,
+                            eb_id, VAR_ATTRIB, numelbdim, numattrdim, VAR_NAME_ATTRIB);
+
+    EX_PREPARE_CONN("nodal", cur_num_elem_blk, eb_id, numelbdim, VAR_CONN, nelnoddim);
+
+    /* store element type as attribute of connectivity variable */
+    if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(param->elem_type[iblk]) + 1,
+                                  (void *)param->elem_type[iblk])) != NC_NOERR) {
       exerrval = status;
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to define number of faces/element for block %" PRId64
-               " in file id %d",
-               eb_id, exoid);
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store element type name %s in file id %d",
+               param->elem_type[iblk], exoid);
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
       goto error_ret; /* exit define mode and return */
     }
+
+    EX_PREPARE_CONN("edge", cur_num_elem_blk, eb_id, numelbdim, VAR_ECONN, neledgdim);
+    EX_PREPARE_CONN("face", cur_num_elem_blk, eb_id, numelbdim, VAR_FCONN, nelfacdim);
   }
 
-  EX_PREPARE_ATTRIB_ARRAY("element", cur_num_elem_blk, DIM_NUM_ATT_IN_BLK, param->num_attr_elem,
-                          eb_id, VAR_ATTRIB, numelbdim, numattrdim, VAR_NAME_ATTRIB);
-
-  EX_PREPARE_CONN("nodal", cur_num_elem_blk, eb_id, numelbdim, VAR_CONN, nelnoddim);
-
-  /* store element type as attribute of connectivity variable */
-  if ((status = nc_put_att_text(exoid, connid, ATT_NAME_ELB, strlen(param->elem_type[iblk]) + 1,
-                                (void *)param->elem_type[iblk])) != NC_NOERR) {
-    exerrval = status;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store element type name %s in file id %d",
-             param->elem_type[iblk], exoid);
-    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    goto error_ret; /* exit define mode and return */
-  }
-
-  EX_PREPARE_CONN("edge", cur_num_elem_blk, eb_id, numelbdim, VAR_ECONN, neledgdim);
-  EX_PREPARE_CONN("face", cur_num_elem_blk, eb_id, numelbdim, VAR_FCONN, nelfacdim);
-}
-
-/* Define the element map here to avoid a later redefine call */
-if (param->define_maps != 0) {
-  size_t map_type;
-  for (map_type = 0; map_type < num_map_dims; ++map_type) {
-    if ((status = nc_inq_dimid(exoid, dim_size_maps[map_type], &dims[0])) != NC_NOERR) {
-      exerrval = status;
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: could not find map size dimension %s in file id %d",
-               dim_size_maps[map_type], exoid);
-      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    }
-    for (i = 1; i <= num_maps[map_type]; ++i) {
-      const char *mapname = ex_name_of_map(map_enums[map_type], i);
-      if (nc_inq_varid(exoid, mapname, &temp) != NC_NOERR) {
-        int map_int_type = NC_INT;
-        if (ex_int64_status(exoid) & EX_MAPS_INT64_DB) {
-          map_int_type = NC_INT64;
-        }
-
-        if ((status = nc_def_var(exoid, mapname, map_int_type, 1, dims, &temp)) != NC_NOERR) {
-          exerrval = status;
-          if (status == NC_ENAMEINUSE) {
-            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number map %s already exists in file id %d",
-                     mapname, exoid);
+  /* Define the element map here to avoid a later redefine call */
+  if (param->define_maps != 0) {
+    size_t map_type;
+    for (map_type = 0; map_type < num_map_dims; ++map_type) {
+      if ((status = nc_inq_dimid(exoid, dim_size_maps[map_type], &dims[0])) != NC_NOERR) {
+        exerrval = status;
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: could not find map size dimension %s in file id %d",
+                 dim_size_maps[map_type], exoid);
+        ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+      }
+      for (i = 1; i <= num_maps[map_type]; ++i) {
+        const char *mapname = ex_name_of_map(map_enums[map_type], i);
+        if (nc_inq_varid(exoid, mapname, &temp) != NC_NOERR) {
+          int map_int_type = NC_INT;
+          if (ex_int64_status(exoid) & EX_MAPS_INT64_DB) {
+            map_int_type = NC_INT64;
           }
-          else {
-            snprintf(errmsg, MAX_ERR_LENGTH,
-                     "ERROR: failed to create number map array %s in file id %d", mapname, exoid);
+
+          if ((status = nc_def_var(exoid, mapname, map_int_type, 1, dims, &temp)) != NC_NOERR) {
+            exerrval = status;
+            if (status == NC_ENAMEINUSE) {
+              snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number map %s already exists in file id %d",
+                       mapname, exoid);
+            }
+            else {
+              snprintf(errmsg, MAX_ERR_LENGTH,
+                       "ERROR: failed to create number map array %s in file id %d", mapname, exoid);
+            }
+            ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+            goto error_ret; /* exit define mode and return */
           }
-          ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-          goto error_ret; /* exit define mode and return */
+          ex_compress_variable(exoid, temp, 1);
         }
-        ex_compress_variable(exoid, temp, 1);
       }
     }
   }
-}
 
-/* leave define mode  */
-if ((status = nc_enddef(exoid)) != NC_NOERR) {
-  exerrval = status;
-  snprintf(errmsg, MAX_ERR_LENGTH,
-           "ERROR: failed to complete element block definition in file id %d", exoid);
-  ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-  return (EX_FATAL);
-}
+  /* leave define mode  */
+  if ((status = nc_enddef(exoid)) != NC_NOERR) {
+    exerrval = status;
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to complete element block definition in file id %d", exoid);
+    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+    return (EX_FATAL);
+  }
 
-return (EX_NOERR);
+  return (EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
-error_ret : if (nc_enddef(exoid) != NC_NOERR)
-{ /* exit define mode */
-  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-  ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-}
-return (EX_FATAL);
+error_ret:
+  if (nc_enddef(exoid) != NC_NOERR) { /* exit define mode */
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
+    ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
+  }
+  return (EX_FATAL);
 }
