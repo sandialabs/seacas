@@ -227,7 +227,9 @@ int ex_put_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
     ex_err("ex_put_attr_param", errmsg, exerrval);
     goto error_ret; /* exit define mode and return */
   }
+#if NC_HAS_HDF5
   nc_def_var_fill(exoid, varid, 0, &fill);
+#endif
 
   /* leave define mode  */
   if ((status = nc_enddef(exoid)) != NC_NOERR) {

@@ -154,7 +154,9 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
         ex_err("ex_put_map_param", errmsg, exerrval);
         goto error_ret; /* exit define mode and return */
       }
+#if NC_HAS_HDF5
       nc_def_var_fill(exoid, varid, 0, &fill);
+#endif
 
       /* determine number of nodes */
       if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &dimid)) != NC_NOERR) {
@@ -229,7 +231,9 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
         ex_err("ex_put_map_param", errmsg, exerrval);
         goto error_ret; /* exit define mode and return */
       }
+#if NC_HAS_HDF5
       nc_def_var_fill(exoid, varid, 0, &fill);
+#endif
 
       /* determine number of elements */
       if ((status = nc_inq_dimid(exoid, DIM_NUM_ELEM, &dimid)) != NC_NOERR) {
