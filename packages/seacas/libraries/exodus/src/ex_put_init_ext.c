@@ -100,7 +100,9 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       ex_err("ex_put_init_ext", errmsg, exerrval);
       return status; /* exit define mode and return */
     }
+#if NC_HAS_HDF5
     nc_def_var_fill(exoid, varid, 0, &fill);
+#endif
   }
   return NC_NOERR;
 }

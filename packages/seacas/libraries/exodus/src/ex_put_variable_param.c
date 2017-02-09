@@ -93,7 +93,9 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
     }
     return 1; /* exit define mode and return */
   }
+#if NC_HAS_HDF5
   nc_def_var_fill(exoid, varid, 0, &fill);
+#endif
   return 0;
 }
 /*! \endcond */
