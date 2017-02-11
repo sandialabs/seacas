@@ -81,7 +81,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unable to find file type for file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the status of this node map */
@@ -90,7 +90,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" from file ID %d",
              VAR_INT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 'p') {
@@ -105,7 +105,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file %d",
              VAR_INT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Write out the internal node-number map */
@@ -118,7 +118,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension */
@@ -129,7 +129,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                  "ERROR: failed to find dimension ID for \"%s\" in file ID %d", DIM_NUM_INT_NODES,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_dimlen(exoid, dimid, count)) != NC_NOERR) {
@@ -138,7 +138,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d",
                  DIM_NUM_INT_NODES, exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       varidx[1] = count[0];
@@ -150,7 +150,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                VAR_NODE_MAP_INT, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     start[0] = varidx[0];
@@ -166,7 +166,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable \"%s\" in file ID %d",
                VAR_NODE_MAP_INT, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End "if (nmstat == 1)" */
 
@@ -176,7 +176,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" from file ID %d",
              VAR_BOR_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 'p') {
@@ -191,7 +191,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file %d",
              VAR_BOR_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -204,7 +204,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension */
@@ -215,7 +215,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                  "ERROR: failed to find dimension ID for \"%s\" in file ID %d", DIM_NUM_BOR_NODES,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_dimlen(exoid, dimid, count)) != NC_NOERR) {
@@ -224,7 +224,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d",
                  DIM_NUM_BOR_NODES, exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       varidx[1] = count[0];
@@ -236,7 +236,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                VAR_NODE_MAP_BOR, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Output the map */
@@ -253,7 +253,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable \"%s\" in file ID %d",
                VAR_NODE_MAP_BOR, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End "if (nmstat == 1)" */
 
@@ -263,7 +263,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" from file ID %d",
              VAR_EXT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 'p') {
@@ -278,7 +278,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file %d",
              VAR_EXT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -290,7 +290,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension */
@@ -301,7 +301,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                  "ERROR: failed to find dimension ID for \"%s\" in file ID %d", DIM_NUM_EXT_NODES,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_dimlen(exoid, dimid, count)) != NC_NOERR) {
@@ -310,7 +310,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d",
                  DIM_NUM_EXT_NODES, exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       varidx[1] = count[0];
     }
@@ -321,7 +321,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
                VAR_NODE_MAP_EXT, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Output the map */
@@ -338,8 +338,8 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable \"%s\" in file ID %d",
                VAR_NODE_MAP_EXT, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End "if (nmstat == 1)" */
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -97,7 +97,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
         ex_err("ex_put_sets", errmsg, exerrval);
       }
       free(sets_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (sets[i].id < 0) {
@@ -129,7 +129,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
       ex_err("ex_put_sets", errmsg, exerrval);
       free(sets_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     for (i = 0; i < set_count; i++) {
@@ -313,7 +313,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
       ex_err("ex_put_sets", errmsg, exerrval);
       free(sets_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Output the set ids and status... */
@@ -347,7 +347,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
                  ex_name_of_object(sets[i].type), sets[i].id, exoid);
         ex_err("ex_put_sets", errmsg, exerrval);
         free(sets_to_define);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* write out set id */
@@ -364,7 +364,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
                  ex_name_of_object(sets[i].type), sets[i].id, exoid);
         ex_err("ex_put_sets", errmsg, exerrval);
         free(sets_to_define);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       set_stat = (sets[i].num_entry == 0) ? 0 : 1;
@@ -375,7 +375,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
                  ex_name_of_object(sets[i].type), exoid);
         ex_err("ex_put_sets", errmsg, exerrval);
         free(sets_to_define);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_put_var1_int(exoid, varid, start, &set_stat)) != NC_NOERR) {
@@ -385,7 +385,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
                  ex_name_of_object(sets[i].type), sets[i].id, exoid);
         ex_err("ex_put_sets", errmsg, exerrval);
         free(sets_to_define);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
@@ -415,7 +415,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
       }
     }
   }
-  return (status);
+  EX_FUNC_LEAVE(status);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -425,5 +425,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_sets", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

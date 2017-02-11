@@ -109,7 +109,7 @@ int ex_get_init(int exoid, char *title, void_int *num_dim, void_int *num_nodes, 
   info.title[0] = '\0';
   errval        = ex_get_init_ext(exoid, &info);
   if (errval < 0) {
-    return errval;
+    EX_FUNC_LEAVE(errval);
   }
 
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
@@ -144,5 +144,5 @@ int ex_get_init(int exoid, char *title, void_int *num_dim, void_int *num_nodes, 
   }
   strcpy(title, info.title);
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

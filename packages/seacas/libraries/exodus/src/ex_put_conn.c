@@ -54,7 +54,7 @@
              "ERROR: failed to write connectivity array for %s block %" PRId64 " in file id %d",   \
              TNAME, blk_id, exoid);                                                                \
     ex_err("ex_put_conn", errmsg, exerrval);                                                       \
-    return (EX_FATAL);                                                                             \
+    EX_FUNC_LEAVE(EX_FATAL);                                                                       \
   }
 
 /*!
@@ -84,14 +84,14 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                "Warning: connectivity array not allowed for NULL %s %" PRId64 " in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
       ex_err("ex_put_conn", errmsg, EX_NULLENTITY);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in id array in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
     ex_err("ex_put_conn", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire id's of previously defined dimensions  */
@@ -106,7 +106,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                "Internal ERROR: unrecognized block type in switch: %d in file id %d", blk_type,
                exoid);
       ex_err("ex_putt_conn", errmsg, EX_MSG);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     if (status != NC_NOERR) {
       exerrval = status;
@@ -114,7 +114,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                "ERROR: failed to locate connectivity array for %s %" PRId64 " in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
       ex_err("ex_put_conn", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     EX_WRITE_CONN(ex_name_of_object(blk_type), connid, node_conn);
@@ -137,7 +137,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                  "locate number of edges/element in block %" PRId64 " in file id %d",
                  blk_id, exoid);
         ex_err("ex_put_conn", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -150,7 +150,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                  "locate number of faces/element in block %" PRId64 " in file id %d",
                  blk_id, exoid);
         ex_err("ex_put_conn", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -162,7 +162,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                "ERROR: failed to get number of edges/elem in block %" PRId64 " in file id %d",
                blk_id, exoid);
       ex_err("ex_put_conn", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     num_fa_per_elem = 0;
@@ -173,7 +173,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                "ERROR: failed to get number of faces/elem in block %" PRId64 " in file id %d",
                blk_id, exoid);
       ex_err("ex_put_conn", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((num_ed_per_elem == 0 && elem_edge_conn != 0) ||
@@ -183,7 +183,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                                        "agree with elem_edge_conn (0x%p)",
                (long)num_ed_per_elem, (void *)elem_edge_conn);
       ex_err("ex_put_conn", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((num_fa_per_elem == 0 && elem_face_conn != 0) ||
@@ -193,7 +193,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                                        "agree with elem_face_conn (0x%p)",
                (long)num_fa_per_elem, (void *)elem_face_conn);
       ex_err("ex_put_conn", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (num_ed_per_elem != 0) {
@@ -204,7 +204,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                                          "element edge block %" PRId64 " in file id %d",
                  blk_id, exoid);
         ex_err("ex_put_conn", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       EX_WRITE_CONN("element edge", connid, elem_edge_conn);
     }
@@ -217,11 +217,11 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                                          "element face block %" PRId64 " in file id %d",
                  blk_id, exoid);
         ex_err("ex_put_conn", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       EX_WRITE_CONN("element face", connid, elem_face_conn);
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

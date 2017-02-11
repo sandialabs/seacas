@@ -133,7 +133,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unable to get processor info from file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -146,7 +146,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
              DIM_NUM_PROCS_F, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Put NetCDF file into define mode */
@@ -154,7 +154,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Set the fill mode */
@@ -162,12 +162,12 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file ID %d into no-fill mode", exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the file version */
   if ((status = ex_put_nemesis_version(exoid)) < 0) {
-    return (status);
+    EX_FUNC_LEAVE(status);
   }
 
   /* Output the file type */
@@ -180,7 +180,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -194,7 +194,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -208,7 +208,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -221,7 +221,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -235,7 +235,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -247,7 +247,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -260,7 +260,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, VAR_BOR_N_STAT, &varid_nm[1])) != NC_NOERR) {
@@ -271,7 +271,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, VAR_EXT_N_STAT, &varid_nm[2])) != NC_NOERR) {
@@ -282,7 +282,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the variable IDs for the elemental status vectors */
@@ -294,7 +294,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, VAR_BOR_E_STAT, &varid_em[1])) != NC_NOERR) {
@@ -305,7 +305,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* mms: NEW STUFF HERE */
@@ -346,7 +346,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_ELEM_MAP_INT, map_type, 1, dimid, &varid)) != NC_NOERR) {
@@ -357,7 +357,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -371,7 +371,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End "if (num_int_elem > 0)" */
 
@@ -385,7 +385,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_ELEM_MAP_BOR, map_type, 1, dimid, &varid)) != NC_NOERR) {
@@ -396,7 +396,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -410,7 +410,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_bor_elem > 0)" */
@@ -425,7 +425,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_NODE_MAP_INT, map_type, 1, &dimid[0], &varid)) !=
@@ -437,7 +437,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -451,7 +451,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_int_node > 0)" */
@@ -466,7 +466,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_NODE_MAP_BOR, map_type, 1, &dimid[1], &varid)) !=
@@ -478,7 +478,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -492,7 +492,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_bor_node > 0)" */
@@ -507,7 +507,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_NODE_MAP_EXT, map_type, 1, &dimid[2], &varid)) !=
@@ -519,7 +519,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -533,7 +533,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_ext_node > 0)" */
@@ -548,7 +548,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Add variables for communication maps */
@@ -560,7 +560,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_N_COMM_STAT, NC_INT, 1, dimid, &varid)) != NC_NOERR) {
@@ -571,7 +571,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* and the index variable */
@@ -584,7 +584,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_n_cmaps > 0)" */
@@ -598,7 +598,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Add variables for elemental communication maps */
@@ -610,7 +610,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_def_var(exoid, VAR_E_COMM_STAT, NC_INT, 1, dimid, &varid)) != NC_NOERR) {
@@ -621,7 +621,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* and the index variable */
@@ -634,14 +634,14 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_e_cmaps > 0)" */
 
   /* Leave define mode */
   if (ex_leavedef(exoid, func_name) != EX_NOERR) {
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* need to reset these counters */
@@ -695,7 +695,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output status int node map in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (nbn > 0) {
@@ -710,7 +710,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output status bor node map in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (nen > 0) {
@@ -725,7 +725,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output status ext node map in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (nie > 0) {
@@ -740,7 +740,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output status int elem map in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (nbe > 0) {
@@ -755,7 +755,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output status bor elem map in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* now fill the index variables */
@@ -772,7 +772,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output internal element map index in file ID %d", exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -789,7 +789,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output border element map index in file ID %d", exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -806,7 +806,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output internal node map index in file ID %d", exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -823,7 +823,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output border node map index in file ID %d", exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -840,7 +840,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to output external node map index in file ID %d", exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -858,7 +858,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
                                          "in file ID %d",
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -876,10 +876,10 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
                                          "in file ID %d",
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
   } /* End "for(iproc=0; iproc < num_proc_in_f; iproc++)" */
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

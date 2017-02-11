@@ -73,7 +73,7 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
     exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
     ex_err("ex_get_ids", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Determine if there are any 'obj-type' objects */
@@ -82,7 +82,7 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s defined in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_ids", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* inquire id's of previously defined dimensions and variables  */
@@ -91,7 +91,7 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s ids variable in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_ids", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* read in the element block ids  */
@@ -107,7 +107,7 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to return %s ids in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_ids", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

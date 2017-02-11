@@ -101,7 +101,7 @@ int ex_get_qa(int exoid, char *qa_record[][4])
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no qa records stored in file id %d", rootid);
     ex_err("ex_get_qa", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   if ((status = nc_inq_dimlen(rootid, dimid, &num_qa_records)) != NC_NOERR) {
@@ -109,7 +109,7 @@ int ex_get_qa(int exoid, char *qa_record[][4])
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of qa records in file id %d",
              rootid);
     ex_err("ex_get_qa", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* do this only if there are any QA records */
@@ -119,7 +119,7 @@ int ex_get_qa(int exoid, char *qa_record[][4])
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate qa record data in file id %d",
                rootid);
       ex_err("ex_get_qa", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* read the QA records */
@@ -136,12 +136,12 @@ int ex_get_qa(int exoid, char *qa_record[][4])
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get qa record data in file id %d",
                    rootid);
           ex_err("ex_get_qa", errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
         qa_record[i][j][MAX_STR_LENGTH] = '\0';
         ex_trim_internal(qa_record[i][j]);
       }
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

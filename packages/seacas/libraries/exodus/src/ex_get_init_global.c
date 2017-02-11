@@ -90,7 +90,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
              DIM_NUM_NODES_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the value of the number of global FEM nodes */
@@ -101,7 +101,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
              exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the dimension ID for the number of global FEM elements */
@@ -111,7 +111,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
              DIM_NUM_ELEMS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the value of the number of global FEM elements */
@@ -122,7 +122,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
              exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the dimension ID for the number of global element blocks */
@@ -132,7 +132,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
              DIM_NUM_ELBLK_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the value of the number of global element blocks */
@@ -143,7 +143,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
              exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the dimension ID for the number of global node sets */
@@ -159,7 +159,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -176,7 +176,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -195,5 +195,5 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
     *(int *)num_side_sets_g = nssg;
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

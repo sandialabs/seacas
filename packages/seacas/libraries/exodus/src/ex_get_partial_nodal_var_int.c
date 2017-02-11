@@ -89,7 +89,7 @@ int ex_get_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
                                        "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
       ex_err("ex_get_partial_nodal_var", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -100,7 +100,7 @@ int ex_get_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variables in file id %d",
                exoid);
       ex_err("ex_get_partial_nodal_var", errmsg, exerrval);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
 
     start[0] = --time_step;
@@ -119,7 +119,7 @@ int ex_get_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
                nodal_var_index, exoid);
       ex_err("ex_get_partial_nodal_var", errmsg, exerrval);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
 
     start[0] = --time_step;
@@ -140,7 +140,7 @@ int ex_get_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get nodal variables in file id %d", exoid);
     ex_err("ex_get_partial_nodal_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

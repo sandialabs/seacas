@@ -119,7 +119,7 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
                                        "valid range is 1 to %d in file id %d",
                beg_time_step, num_time_steps, exoid);
       ex_err("ex_get_glob_var_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (end_time_step < 0) {
@@ -134,7 +134,7 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
                                        "range is %d to %d in file id %d",
                beg_time_step, end_time_step, num_time_steps, exoid);
       ex_err("ex_get_glob_var_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   end_time_step--;
@@ -152,7 +152,7 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate global variables in file id %d",
              exoid);
     ex_err("ex_get_glob_var_time", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   if (ex_comp_ws(exoid) == 4) {
@@ -168,7 +168,7 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
              "ERROR: failed to get global variable %d values from file id %d", glob_var_index,
              exoid);
     ex_err("ex_get_glob_var_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

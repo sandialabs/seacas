@@ -42,6 +42,7 @@
 int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_name,
                           char *variable_name)
 {
+  EX_FUNC_ENTER();
   int status;
   int dimid;
   int varid;
@@ -65,7 +66,7 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
                "ERROR: failed to define number of %s variables in file id %d", type_name, exoid);
       ex_err("ex_put_variable_param", errmsg, exerrval);
     }
-    return 1; /* exit define mode and return */
+    EX_FUNC_LEAVE(EX_FATAL); /* exit define mode and return */
   }
 
   /* Now define type_name variable name variable */
@@ -73,7 +74,7 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get string length in file id %d", exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   dims[0] = dimid;
@@ -91,12 +92,12 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
                type_name, exoid);
       ex_err("ex_put_variable_param", errmsg, exerrval);
     }
-    return 1; /* exit define mode and return */
+    EX_FUNC_LEAVE(EX_FATAL); /* exit define mode and return */
   }
 #if NC_HAS_HDF5
   nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
-  return 0;
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 /*! \endcond */
 
@@ -171,7 +172,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
 
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   if (obj_type != EX_NODAL && obj_type != EX_NODE_SET && obj_type != EX_EDGE_BLOCK &&
@@ -182,7 +183,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* inquire previously defined dimensions  */
@@ -190,12 +191,12 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time dimension in file id %d", exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_dimid(exoid, DIM_NUM_NODES, &num_nod_dim)) != NC_NOERR) {
     if (obj_type == EX_NODAL) {
-      return (EX_NOERR); /* Probably no nodes on database (e.g., badly
+      EX_FUNC_LEAVE(EX_NOERR); /* Probably no nodes on database (e.g., badly
                             load-balanced parallel run) */
     }
   }
@@ -205,7 +206,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get name string length in file id %d",
              exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* put file into define mode  */
@@ -213,13 +214,13 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* define dimensions and variables */
   if (obj_type == EX_GLOBAL) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "global", DIM_NUM_GLO_VAR,
-                                        VAR_NAME_GLO_VAR)) == 1) {
+                                        VAR_NAME_GLO_VAR)) != EX_NOERR) {
       goto error_ret;
     }
 
@@ -228,7 +229,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get global variable count in file id %d",
                exoid);
       ex_err("ex_put_variable_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     dims[0] = time_dim;
     dims[1] = dimid;
@@ -332,49 +333,49 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
    */
   else if (obj_type == EX_ELEM_BLOCK) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "element", DIM_NUM_ELE_VAR,
-                                        VAR_NAME_ELE_VAR)) == 1) {
+                                        VAR_NAME_ELE_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_NODE_SET) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "nodeset", DIM_NUM_NSET_VAR,
-                                        VAR_NAME_NSET_VAR)) == 1) {
+                                        VAR_NAME_NSET_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_SIDE_SET) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "sideset", DIM_NUM_SSET_VAR,
-                                        VAR_NAME_SSET_VAR)) == 1) {
+                                        VAR_NAME_SSET_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_EDGE_BLOCK) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "edge", DIM_NUM_EDG_VAR,
-                                        VAR_NAME_EDG_VAR)) == 1) {
+                                        VAR_NAME_EDG_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_FACE_BLOCK) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "face", DIM_NUM_FAC_VAR,
-                                        VAR_NAME_FAC_VAR)) == 1) {
+                                        VAR_NAME_FAC_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_EDGE_SET) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "edgeset", DIM_NUM_ESET_VAR,
-                                        VAR_NAME_ESET_VAR)) == 1) {
+                                        VAR_NAME_ESET_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_FACE_SET) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "faceset", DIM_NUM_FSET_VAR,
-                                        VAR_NAME_FSET_VAR)) == 1) {
+                                        VAR_NAME_FSET_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
   else if (obj_type == EX_ELEM_SET) {
     if ((status = ex_prepare_result_var(exoid, num_vars, "elementset", DIM_NUM_ELSET_VAR,
-                                        VAR_NAME_ELSET_VAR)) == 1) {
+                                        VAR_NAME_ELSET_VAR)) != EX_NOERR) {
       goto error_ret;
     }
   }
@@ -384,10 +385,10 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -395,5 +396,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

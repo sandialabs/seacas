@@ -97,7 +97,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
     exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vobj, &varid)) != NC_NOERR) {
@@ -105,7 +105,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s names in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   ent_ndx = ex_id_lkup(exoid, obj_type, entity_id);
@@ -114,7 +114,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s id %" PRId64 " not found in file id %d",
              ex_name_of_object(obj_type), entity_id, exoid);
     ex_err("ex_put_name", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* If this is a null entity, then 'ent_ndx' will be negative.
@@ -127,5 +127,5 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   /* write EXODUS entityname */
   status = ex_put_name_internal(exoid, varid, ent_ndx - 1, name, obj_type, "", routine);
 
-  return (status);
+  EX_FUNC_LEAVE(status);
 }

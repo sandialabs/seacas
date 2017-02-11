@@ -144,7 +144,7 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
       ex_err("ex_get_prop_names", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_inq_varid(exoid, var_name, &propid)) != NC_NOERR) {
@@ -152,7 +152,7 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate property array %s in file id %d",
                var_name, exoid);
       ex_err("ex_get_prop_names", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*   for each property, read the "name" attribute of property array variable
@@ -162,7 +162,7 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get property attributes (type, len) in file id %d", exoid);
       ex_err("ex_get_prop_names", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (att_len - 1 <= api_name_size) {
@@ -171,7 +171,7 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
         exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property name in file id %d", exoid);
         ex_err("ex_get_prop_names", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
     else {
@@ -181,8 +181,8 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
                                        "store it in file id %d",
                exoid);
       ex_err("ex_get_prop_names", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -95,13 +95,13 @@ int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Bad map type (%d) specified for file id %d", map_type,
              exoid);
     ex_err("ex_get_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   exerrval = 0; /* clear error code */
 
   /* See if any entries are stored in this file */
   if (nc_inq_dimid(exoid, dnumentries, &dimid) != NC_NOERR) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   if (nc_inq_varid(exoid, vmap, &mapid) != NC_NOERR) {
@@ -110,7 +110,7 @@ int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss in file id %d", tname,
                exoid);
       ex_err("ex_get_id_map", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* generate default map of 1..n, where n is num_entries */
@@ -127,7 +127,7 @@ int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)
       }
     }
 
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   /* read in the id map  */
@@ -142,8 +142,8 @@ int ex_get_id_map(int exoid, ex_entity_type map_type, void_int *map)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s id map in file id %d", tname, exoid);
     ex_err("ex_get_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

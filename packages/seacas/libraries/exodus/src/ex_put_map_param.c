@@ -92,7 +92,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
     exerrval = EX_MSG;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number of maps already defined for file id %d", exoid);
     ex_err("ex_put_map_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((num_node_maps > 0) || (num_elem_maps > 0)) {
@@ -102,7 +102,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get string length in file id %d", exoid);
       ex_err("ex_put_map_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* put file into define mode */
@@ -110,7 +110,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
       ex_err("ex_put_map_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* node maps: */
@@ -273,7 +273,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to complete variable definitions in file id %d", exoid);
       ex_err("ex_put_map_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Fill the id arrays with EX_INVALID_ID */
@@ -286,7 +286,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
                                          "storage in file id %d",
                  exoid);
         ex_err("ex_put_map_param", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       for (i = 0; i < maxset; i++) {
         invalid_ids[i] = EX_INVALID_ID;
@@ -303,7 +303,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -312,5 +312,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_map_param", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

@@ -156,7 +156,7 @@ int ex_put_prop_names(int exoid, ex_entity_type obj_type, int num_props, char **
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of %s in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_put_prop_names", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   nc_set_fill(exoid, NC_FILL, &oldfill); /* fill with zeros per routine spec */
@@ -166,7 +166,7 @@ int ex_put_prop_names(int exoid, ex_entity_type obj_type, int num_props, char **
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
     ex_err("ex_put_prop_names", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* define num_props variables; we postpend the netcdf variable name with  */
@@ -244,14 +244,14 @@ int ex_put_prop_names(int exoid, ex_entity_type obj_type, int num_props, char **
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to leave define mode in file id %d", exoid);
     ex_err("ex_put_prop_names", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Update the maximum_name_length attribute on the file. */
   ex_update_max_name_length(exoid, max_name_len - 1);
 
   nc_set_fill(exoid, oldfill, &temp); /* default: turn off fill */
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -259,5 +259,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_prop_names", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

@@ -96,7 +96,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
              VAR_N_COMM_INFO_IDX, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the number of nodal communications maps in the file */
@@ -109,7 +109,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d", DIM_NUM_N_CMAPS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -128,7 +128,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                  "ERROR: failed to get variable ID for \"%s\" in file ID %d", VAR_N_COMM_IDS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* Get the vector of nodal communication map IDs */
@@ -146,7 +146,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
                    VAR_N_COMM_IDS, exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
 
         if ((status = nc_inq_varid(exoid, VAR_N_COMM_STAT, &varid)) != NC_NOERR) {
@@ -155,7 +155,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                    "ERROR: failed to find variable ID for \"%s\" from file ID %d", VAR_N_COMM_STAT,
                    exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
 
         if (node_cmap_node_cnts != NULL) {
@@ -176,7 +176,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                        "ERROR: failed to find nodal comm map with ID %" PRId64 " in file ID %d",
                        cmap_id, exoid);
               ex_err(func_name, errmsg, exerrval);
-              return (EX_FATAL);
+              EX_FUNC_LEAVE(EX_FATAL);
             }
 
             /* Check the status of the node map */
@@ -187,7 +187,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                        "ERROR: failed to get status for \"%s\" from file ID %d", VAR_N_COMM_STAT,
                        exoid);
               ex_err(func_name, errmsg, exerrval);
-              return (EX_FATAL);
+              EX_FUNC_LEAVE(EX_FATAL);
             }
 
             if (nmstat == 1) {
@@ -200,7 +200,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                          VAR_N_COMM_DATA_IDX, exoid);
                 ex_err(func_name, errmsg, exerrval);
 
-                return (EX_FATAL);
+                EX_FUNC_LEAVE(EX_FATAL);
               }
 
               if (cmap_data_idx[1] == -1) {
@@ -214,7 +214,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                                                    "\"%s\" in file ID %d",
                            DIM_NCNT_CMAP, exoid);
                   ex_err(func_name, errmsg, exerrval);
-                  return (EX_FATAL);
+                  EX_FUNC_LEAVE(EX_FATAL);
                 }
 
                 /* Find the value of the number of nodes in this nodal comm map
@@ -225,7 +225,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                                                    "\"%s\" in file ID %d",
                            DIM_NCNT_CMAP, exoid);
                   ex_err(func_name, errmsg, exerrval);
-                  return (EX_FATAL);
+                  EX_FUNC_LEAVE(EX_FATAL);
                 }
 
                 cmap_data_idx[1] = count[0];
@@ -263,7 +263,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
              VAR_E_COMM_INFO_IDX, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the number of elemental communications maps in the file */
@@ -276,7 +276,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d", DIM_NUM_E_CMAPS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -295,7 +295,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                  "ERROR: failed to get variable ID for \"%s\" in file ID %d", VAR_E_COMM_IDS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* Get the vector of elemental communication map IDs */
@@ -312,7 +312,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
                    VAR_E_COMM_IDS, exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
 
         if ((status = nc_inq_varid(exoid, VAR_E_COMM_STAT, &varid)) != NC_NOERR) {
@@ -321,7 +321,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                    "ERROR: failed to find variable ID for \"%s\" from file ID %d", VAR_E_COMM_STAT,
                    exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
 
         if (elem_cmap_elem_cnts != NULL) {
@@ -344,7 +344,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                        "ERROR: failed to find elemental comm map with ID %" PRId64 " in file ID %d",
                        cmap_id, exoid);
               ex_err(func_name, errmsg, exerrval);
-              return (EX_FATAL);
+              EX_FUNC_LEAVE(EX_FATAL);
             }
 
             /* Check the status of the requested elemental map */
@@ -355,7 +355,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                        "ERROR: failed to get status for \"%s\" from file ID %d", VAR_E_COMM_STAT,
                        exoid);
               ex_err(func_name, errmsg, exerrval);
-              return (EX_FATAL);
+              EX_FUNC_LEAVE(EX_FATAL);
             }
 
             if (nmstat == 1) {
@@ -368,7 +368,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                          VAR_E_COMM_DATA_IDX, exoid);
                 ex_err(func_name, errmsg, exerrval);
 
-                return (EX_FATAL);
+                EX_FUNC_LEAVE(EX_FATAL);
               }
 
               if (cmap_data_idx[1] == -1) {
@@ -382,7 +382,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                                                    "\"%s\" in file ID %d",
                            DIM_ECNT_CMAP, exoid);
                   ex_err(func_name, errmsg, exerrval);
-                  return (EX_FATAL);
+                  EX_FUNC_LEAVE(EX_FATAL);
                 }
 
                 /*
@@ -395,7 +395,7 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
                                                    "\"%s\" in file ID %d",
                            DIM_ECNT_CMAP, exoid);
                   ex_err(func_name, errmsg, exerrval);
-                  return (EX_FATAL);
+                  EX_FUNC_LEAVE(EX_FATAL);
                 }
                 cmap_data_idx[1] = count[0];
               }
@@ -418,5 +418,5 @@ int ex_get_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
     }       /* "if (num_e_comm_maps > 0)" */
   }         /* End "if ((dimid = nc_inq_dimid(exoid, DIM_NUM_E_CMAPS(processor))) !=
                -1)" */
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -87,13 +87,13 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of side sets in file id %d",
              exoid);
     ex_err("ex_get_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (num_side_sets == 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no side sets defined in file id %d", exoid);
     ex_err("ex_get_side_set_node_count", errmsg, EX_WARN);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Lookup index of side set id in VAR_SS_IDS array */
@@ -103,14 +103,14 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: side set %" PRId64 " is NULL in file id %d",
                side_set_id, exoid);
       ex_err("ex_get_side_set_node_count", errmsg, EX_NULLENTITY);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate side set %" PRId64 " in VAR_SS_IDS array in file id %d",
              side_set_id, exoid);
     ex_err("ex_get_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   num_elem_blks = ex_inquire_int(exoid, EX_INQ_ELEM_BLK);
@@ -118,7 +118,7 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of element blocks in file id %d",
              exoid);
     ex_err("ex_get_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* get the dimensionality of the coordinates;  this is necessary to
@@ -127,7 +127,7 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
   if (ndim < 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get dimensionality in file id %d", exoid);
     ex_err("ex_get_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   int int_size = sizeof(int);
@@ -155,7 +155,7 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
              "ERROR: failed to get number of elements in side set %" PRId64 " in file id %d",
              side_set_id, exoid);
     ex_err("ex_get_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Allocate space for the side set element list */
@@ -166,7 +166,7 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
                                        "list for file id %d",
                exoid);
       ex_err("ex_get_side_set_node_count", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Allocate space for the side set side list */
@@ -330,5 +330,5 @@ cleanup:
   free(side_set_side_list);
   free(side_set_elem_list);
 
-  return (err_stat);
+  EX_FUNC_LEAVE(err_stat);
 }

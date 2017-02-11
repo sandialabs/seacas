@@ -117,7 +117,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                (int)i, exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* first check if any blocks of that type are specified */
@@ -127,7 +127,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return EX_FATAL;
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Next: Make sure that there are not any duplicate block ids by
@@ -143,7 +143,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return EX_FATAL;
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     ex_id_lkup(exoid, blocks[i].type,
@@ -154,7 +154,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Keep track of the total number of element blocks defined using a counter
@@ -169,7 +169,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), (int)num_blk, exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*   NOTE: ex_inc_file_item  is a function that finds the number of element
@@ -186,7 +186,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     blocks_to_define[i] = start[0] + 1; /* element id index into vblkids array*/
@@ -204,7 +204,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_put_var1_int(exoid, varid, start, &blk_stat)) != NC_NOERR) {
@@ -214,7 +214,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
                ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
       ex_err("ex_put_block_params", errmsg, exerrval);
       free(blocks_to_define);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -224,7 +224,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
     ex_err("ex_put_block_params", errmsg, exerrval);
     free(blocks_to_define);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   for (i = 0; i < block_count; i++) {
@@ -545,7 +545,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete %s definition in file id %d",
              ex_name_of_object(blocks[i].type), exoid);
     ex_err("ex_put_block_params", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   for (i = 0; i < block_count; i++) {
@@ -554,7 +554,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     case EX_FACE_BLOCK: vblkids = VAR_ID_FA_BLK; break;
     case EX_ELEM_BLOCK: vblkids = VAR_ID_EL_BLK; break;
     default:
-      return (EX_FATAL); /* should have been handled earlier; quiet compiler here */
+      EX_FUNC_LEAVE(EX_FATAL); /* should have been handled earlier; quiet compiler here */
     }
 
     nc_inq_varid(exoid, vblkids, &att_name_varid);
@@ -578,7 +578,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -588,5 +588,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_block_params", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

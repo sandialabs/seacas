@@ -119,7 +119,7 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid variable type %d requested from file id %d",
              obj_type, exoid);
     ex_err("ex_get_variable_names", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* inquire previously defined variables  */
@@ -128,14 +128,14 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variables names stored in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_variable_names", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* read the variable names */
   status =
       ex_get_names_internal(exoid, varid, num_vars, var_names, obj_type, "ex_get_variable_names");
   if (status != NC_NOERR) {
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

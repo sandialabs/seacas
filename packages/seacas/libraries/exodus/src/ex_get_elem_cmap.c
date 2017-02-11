@@ -86,7 +86,7 @@ int ex_get_elem_cmap(int exoid, ex_entity_id map_id, void_int *elem_ids, void_in
              VAR_E_COMM_INFO_IDX, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -102,7 +102,7 @@ int ex_get_elem_cmap(int exoid, ex_entity_id map_id, void_int *elem_ids, void_in
 ID %d",
              map_id, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* get the cmap data variables index for this map */
@@ -111,7 +111,7 @@ ID %d",
              VAR_E_COMM_DATA_IDX, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (varidx[1] == -1) {
@@ -121,7 +121,7 @@ ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to find dimension ID for \"%s\" in file ID %d", DIM_ECNT_CMAP, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_inq_dimlen(exoid, dimid, count)) != NC_NOERR) {
@@ -130,7 +130,7 @@ ID %d",
                "ERROR: failed to find length of dimension \"%s\" in file ID %d", DIM_ECNT_CMAP,
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     varidx[1] = count[0];
@@ -142,7 +142,7 @@ ID %d",
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              VAR_E_COMM_EIDS, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the variable ID for the elemental side set IDs */
@@ -151,7 +151,7 @@ ID %d",
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              VAR_E_COMM_SIDS, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the variable ID for the elemental comm map processor IDs */
@@ -160,7 +160,7 @@ ID %d",
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              VAR_E_COMM_PROC, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the elemental comm map element IDs */
@@ -177,7 +177,7 @@ ID %d",
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
              VAR_E_COMM_EIDS, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the elemental comm map side IDs */
@@ -192,7 +192,7 @@ ID %d",
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
              VAR_E_COMM_SIDS, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the elemental comm map processor IDs */
@@ -207,7 +207,7 @@ ID %d",
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
              VAR_E_COMM_PROC, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

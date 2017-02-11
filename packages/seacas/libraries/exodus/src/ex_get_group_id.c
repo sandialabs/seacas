@@ -69,7 +69,7 @@ int ex_get_group_id(int parent_id, const char *group_name, int *group_id)
                                        "group in file id %d",
                group_name, parent_id);
       ex_err("ex_get_group_id", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   else {
@@ -81,15 +81,15 @@ int ex_get_group_id(int parent_id, const char *group_name, int *group_id)
                "ERROR: Failed to locate group with full path name %s in file id %d", group_name,
                parent_id);
       ex_err("ex_get_group_id", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 #else
   exerrval = NC_ENOTNC4;
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
                                    "version--not netcdf4");
   ex_err("ex_get_group_id", errmsg, exerrval);
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 #endif
 }

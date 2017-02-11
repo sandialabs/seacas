@@ -75,11 +75,11 @@ static int64_t ex_get_dim_value(int exoid, const char *name, const char *dimensi
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", name,
                exoid);
       ex_err("ex_get_init_ext", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     *value = tmp;
   }
-  return EX_NOERR;
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*!
@@ -123,70 +123,70 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
 
   dimid = 0;
   if (ex_get_dim_value(exoid, "dimensions", DIM_NUM_DIM, dimid, &info->num_dim) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "nodes", DIM_NUM_NODES, dimid, &info->num_nodes) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "edges", DIM_NUM_EDGE, dimid, &info->num_edge) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "faces", DIM_NUM_FACE, dimid, &info->num_face) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "elements", DIM_NUM_ELEM, dimid, &info->num_elem) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_get_dim_value(exoid, "element blocks", DIM_NUM_EL_BLK, dimid, &info->num_elem_blk) !=
       EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (info->num_elem_blk == 0 && info->num_elem > 0) {
     exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate number of element blocks in file id %d", exoid);
     ex_err("ex_get_init_ext", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_get_dim_value(exoid, "node sets", DIM_NUM_NS, dimid, &info->num_node_sets) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "edge sets", DIM_NUM_ES, dimid, &info->num_edge_sets) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "face sets", DIM_NUM_FS, dimid, &info->num_face_sets) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "side sets", DIM_NUM_SS, dimid, &info->num_side_sets) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "elem sets", DIM_NUM_ELS, dimid, &info->num_elem_sets) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_get_dim_value(exoid, "node maps", DIM_NUM_NM, dimid, &info->num_node_maps) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "edge maps", DIM_NUM_EDM, dimid, &info->num_edge_maps) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "face maps", DIM_NUM_FAM, dimid, &info->num_face_maps) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "elem maps", DIM_NUM_EM, dimid, &info->num_elem_maps) != EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Edge and face blocks are also optional (for backwards compatability) */
   if (ex_get_dim_value(exoid, "edge blocks", DIM_NUM_ED_BLK, dimid, &info->num_edge_blk) !=
       EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ex_get_dim_value(exoid, "face blocks", DIM_NUM_FA_BLK, dimid, &info->num_face_blk) !=
       EX_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type, &title_len)) != NC_NOERR) {
@@ -214,7 +214,7 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get title in file id %d", rootid);
       ex_err("ex_get_init_ext", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   else {
@@ -231,5 +231,5 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
       file->has_elems = info->num_elem > 0;
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

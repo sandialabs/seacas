@@ -95,7 +95,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable in file id %d", exoid);
     ex_err("ex_get_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Verify that time_step is within bounds */
@@ -106,7 +106,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
                                        "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
       ex_err("ex_get_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -124,7 +124,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get time value in file id %d", exoid);
     ex_err("ex_get_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

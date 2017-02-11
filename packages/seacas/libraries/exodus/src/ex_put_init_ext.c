@@ -98,13 +98,13 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s name array in file id %d", type,
                exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status; /* exit define mode and return */
+      EX_FUNC_LEAVE(status); /* exit define mode and return */
     }
 #if NC_HAS_HDF5
     nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
   }
-  return NC_NOERR;
+  EX_FUNC_LEAVE(NC_NOERR);
 }
 
 static int ex_write_object_params(int exoid, const char *type, const char *dimension_name,
@@ -124,7 +124,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d", type,
                exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status; /* exit define mode and return */
+      EX_FUNC_LEAVE(status); /* exit define mode and return */
     }
     /* ...and some variables */
     /* element block id status array */
@@ -134,7 +134,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s status array in file id %d",
                type, exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status; /* exit define mode and return */
+      EX_FUNC_LEAVE(status); /* exit define mode and return */
     }
 
     /* type id array */
@@ -147,7 +147,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s id array in file id %d", type,
                exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status; /* exit define mode and return */
+      EX_FUNC_LEAVE(status); /* exit define mode and return */
     }
 
     /*   store property name as attribute of property array variable */
@@ -156,10 +156,10 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s property name %s in file id %d",
                type, "ID", exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status;
+      EX_FUNC_LEAVE(status);
     }
   }
-  return NC_NOERR;
+  EX_FUNC_LEAVE(NC_NOERR);
 }
 
 static int ex_write_map_params(int exoid, const char *map_name, const char *map_dim_name,
@@ -182,7 +182,7 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d",
                map_name, exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status; /* exit define mode and return */
+      EX_FUNC_LEAVE(status); /* exit define mode and return */
     }
 
     dim[0] = *map_dimension;
@@ -193,7 +193,7 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s id array in file id %d",
                map_name, exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return status; /* exit define mode and return */
+      EX_FUNC_LEAVE(status); /* exit define mode and return */
     }
 
     /*   store property name as attribute of property array variable */
@@ -202,10 +202,10 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s property name %s in file id %d",
                map_name, "ID", exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-  return NC_NOERR;
+  EX_FUNC_LEAVE(NC_NOERR);
 }
 
 static void invalidate_id_status(int exoid, const char *var_stat, const char *var_id, int count,
@@ -263,7 +263,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     exerrval = EX_MSG;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: initialization already done for file id %d", exoid);
     ex_err("ex_put_init_ext", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* put file into define mode */
@@ -271,7 +271,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err("ex_put_init_ext", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* define some attributes... */
@@ -307,7 +307,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define time dimension in file id %d", exoid);
     ex_err("ex_put_init_ext", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   dim[0] = timedim;
@@ -316,7 +316,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to define whole time step variable in file id %d", exoid);
     ex_err("ex_put_init_ext", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   ex_compress_variable(exoid, temp, 2);
 
@@ -584,7 +584,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete variable definitions in file id %d",
              exoid);
     ex_err("ex_put_init_ext", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Fill the id and status arrays with EX_INVALID_ID */
@@ -631,7 +631,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for id/status array for file id %d", exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     invalidate_id_status(exoid, VAR_STAT_EL_BLK, VAR_ID_EL_BLK, model->num_elem_blk, invalid_ids);
@@ -693,7 +693,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     write_dummy_names(exoid, EX_ELEM_MAP);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -702,5 +702,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_init_ext", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

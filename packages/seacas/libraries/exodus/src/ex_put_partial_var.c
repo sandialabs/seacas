@@ -83,14 +83,14 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                "Warning: no variables allowed for NULL block %" PRId64 " in file id %d", obj_id,   \
                exoid);                                                                             \
       ex_err("ex_put_partial_var", errmsg, EX_NULLENTITY);                                         \
-      return (EX_WARN);                                                                            \
+      EX_FUNC_LEAVE(EX_WARN);                                                                      \
     }                                                                                              \
     else {                                                                                         \
       snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
                "ERROR: failed to locate %s id %" PRId64 " in %s array in file id %d",              \
                ex_name_of_object(var_type), obj_id, VOBJID, exoid);                                \
       ex_err("ex_put_partial_var", errmsg, exerrval);                                              \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
   }                                                                                                \
                                                                                                    \
@@ -103,12 +103,12 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
         status = ex_get_dimension(exoid, DNUMOBJ, ex_name_of_object(var_type), &num_obj, &dimid,   \
                                   "ex_put_partial_var");                                           \
         if (status != NC_NOERR)                                                                    \
-          return status;                                                                           \
+          EX_FUNC_LEAVE(status);                                                                   \
                                                                                                    \
         status = ex_get_dimension(exoid, DNUMOBJVAR, ex_name_of_object(var_type), &num_obj_var,    \
                                   &dimid, "ex_put_partial_var");                                   \
         if (status != NC_NOERR)                                                                    \
-          return status;                                                                           \
+          EX_FUNC_LEAVE(status);                                                                   \
                                                                                                    \
         if (!(obj_var_truth_tab = malloc(num_obj * num_obj_var * sizeof(int)))) {                  \
           exerrval = EX_MEMFAIL;                                                                   \
@@ -116,7 +116,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                                            "truth table in file id %d",                            \
                    ex_name_of_object(var_type), exoid);                                            \
           ex_err("ex_put_partial_var", errmsg, exerrval);                                          \
-          return (EX_FATAL);                                                                       \
+          EX_FUNC_LEAVE(EX_FATAL);                                                                 \
         }                                                                                          \
                                                                                                    \
         /*   read in the TNAME variable truth table */                                             \
@@ -125,7 +125,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get truth table from file id %d",     \
                    exoid);                                                                         \
           ex_err("ex_put_partial_var", errmsg, exerrval);                                          \
-          return (EX_FATAL);                                                                       \
+          EX_FUNC_LEAVE(EX_FATAL);                                                                 \
         }                                                                                          \
                                                                                                    \
         if (obj_var_truth_tab[num_obj_var * (obj_id_ndx - 1) + var_index - 1] == 0L) {             \
@@ -136,7 +136,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                    ex_name_of_object(var_type), var_index, ex_name_of_object(var_type), obj_id,    \
                    exoid);                                                                         \
           ex_err("ex_put_partial_var", errmsg, exerrval);                                          \
-          return (EX_FATAL);                                                                       \
+          EX_FUNC_LEAVE(EX_FATAL);                                                                 \
         }                                                                                          \
         free(obj_var_truth_tab);                                                                   \
       }                                                                                            \
@@ -159,7 +159,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode",       \
                  exoid);                                                                           \
         ex_err("ex_put_partial_var", errmsg, exerrval);                                            \
-        return (EX_FATAL);                                                                         \
+        EX_FUNC_LEAVE(EX_FATAL);                                                                   \
       }                                                                                            \
                                                                                                    \
       /* define netCDF variable to store TNAME variable values */                                  \
@@ -183,7 +183,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                                          "to file id %d",                                          \
                  ex_name_of_object(var_type), VVAR(var_index, obj_id_ndx), exoid);                 \
         ex_err("ex_put_partial_var", errmsg, exerrval);                                            \
-        return (EX_FATAL);                                                                         \
+        EX_FUNC_LEAVE(EX_FATAL);                                                                   \
       }                                                                                            \
     }                                                                                              \
     else {                                                                                         \
@@ -191,7 +191,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s variable %s in file id %d",     \
                ex_name_of_object(var_type), VVAR(var_index, obj_id_ndx), exoid);                   \
       ex_err("ex_put_partial_var", errmsg, exerrval);                                              \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
   }
 
@@ -203,7 +203,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                exoid);
       ex_err("ex_put_partial_var", errmsg, exerrval);
 
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
     /* inquire previously defined variable */
 
@@ -219,7 +219,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                  "ERROR: failed to get global variables parameters in file id %d", exoid);
         ex_err("ex_put_partial_var", errmsg, exerrval);
       }
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     break;
   case EX_NODAL:
@@ -255,7 +255,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid variable type (%d) specified for file id %d",
              var_type, exoid);
     ex_err("ex_put_partial_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   /* store element variable values */
 
@@ -291,10 +291,10 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
              "ERROR: failed to store %s %" PRId64 " variable %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
     ex_err("ex_put_partial_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -303,5 +303,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_partial_var", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

@@ -132,7 +132,7 @@ int ex_copy(int in_exoid, int out_exoid)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: integer sizes do not match for input and output databases.");
     ex_err("ex_copy", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -204,7 +204,7 @@ int ex_copy(int in_exoid, int out_exoid)
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s dimension in file id %d",
                    dim_nm, out_exoid);
           ex_err("ex_copy", errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       } /* end if */
     }   /* end if */
@@ -230,7 +230,7 @@ int ex_copy(int in_exoid, int out_exoid)
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to define string name dimension in file id %d", out_exoid);
         ex_err("ex_copy", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
@@ -290,7 +290,7 @@ int ex_copy(int in_exoid, int out_exoid)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
              out_exoid);
     ex_err("ex_copy", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* output variable data */
@@ -357,7 +357,7 @@ int ex_copy(int in_exoid, int out_exoid)
 
   (void)ex_update(out_exoid);
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*! \cond INTERNAL */
@@ -392,7 +392,7 @@ int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
     (void)nc_copy_att(in_id, var_in_id, att_nm, out_id, var_out_id);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*! \internal */
@@ -418,7 +418,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
 
   /* Handle easiest situation first: in_large matches out_large */
   if (in_large == out_large) {
-    return cpy_var_def(in_id, out_id, rec_dim_id, var_nm);
+    return cpy_var_def(in_id, out_id, rec_dim_id, var_nm); /* OK */
   }
 
   /* At this point, know that in_large != out_large, so some change to
@@ -438,7 +438,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
       int status3 = nc_inq_varid(out_id, VAR_COORD_Y, &var_out_idz);
 
       if (status1 == NC_NOERR && status2 == NC_NOERR && (spatial_dim == 2 || status3 == NC_NOERR)) {
-        return NC_NOERR; /* already defined in output file */
+        return NC_NOERR; /* already defined in output file */ /* OK */
       }
     }
 
@@ -466,7 +466,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
        have "coord".  See if is already defined in output file. */
     status = nc_inq_varid(out_id, VAR_COORD, &var_out_id);
     if (status == NC_NOERR) {
-      return NC_NOERR; /* already defined in output file */
+      return NC_NOERR; /* already defined in output file */ /* OK */
     }
 
     /* Get dimid of the spatial dimension and num_nodes dimensions in output
@@ -480,7 +480,7 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
     nbr_dim = 2;
     (void)nc_def_var(out_id, VAR_COORD, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id);
   }
-  return var_out_id;
+  return var_out_id; /* OK */
 }
 
 /*! \internal */
@@ -511,7 +511,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   /* See if the requested variable is already in the output file. */
   status = nc_inq_varid(out_id, var_nm, &var_out_id);
   if (status == NC_NOERR) {
-    return var_out_id;
+    return var_out_id; /* OK */
   }
 
   /* See if the requested variable is in the input file. */
@@ -569,7 +569,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s variable in file id %d", var_nm,
                out_id);
       ex_err("ex_copy", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(out_id, var_out_id, 1);
   }
@@ -578,7 +578,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   free(dim_in_id);
   free(dim_out_id);
 
-  return var_out_id;
+  return var_out_id; /* OK */
 } /* end cpy_var_def() */
 
 /*! \internal */
@@ -733,7 +733,7 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   /* Free the space that held the variable */
   free(void_ptr);
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 } /* end cpy_var_val() */
 
@@ -760,7 +760,7 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
 
   /* Handle easiest situation first: in_large matches out_large */
   if (in_large == out_large) {
-    return cpy_var_val(in_id, out_id, var_nm);
+    return cpy_var_val(in_id, out_id, var_nm); /* OK */
   }
 
   /* At this point, know that in_large != out_large, so will need to
@@ -840,7 +840,7 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
 
   /* Free the space that held the variable */
   free(void_ptr);
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 } /* end cpy_coord_val() */
 
 /*! \internal */
@@ -859,22 +859,22 @@ void update_internal_structs(int out_exoid, ex_inquiry inqcode, struct list_item
 size_t type_size(nc_type type)
 {
   if (type == NC_CHAR) {
-    return sizeof(char);
+    return sizeof(char); /* OK */
   }
   else if (type == NC_INT) {
-    return sizeof(int);
+    return sizeof(int); /* OK */
   }
   else if (type == NC_INT64) {
-    return sizeof(int64_t);
+    return sizeof(int64_t); /* OK */
   }
   else if (type == NC_FLOAT) {
-    return sizeof(float);
+    return sizeof(float); /* OK */
   }
   else if (type == NC_DOUBLE) {
-    return sizeof(double);
+    return sizeof(double); /* OK */
   }
   else {
-    return 0;
+    return 0; /* OK */
   }
 }
 

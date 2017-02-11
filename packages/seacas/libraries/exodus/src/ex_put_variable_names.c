@@ -75,7 +75,7 @@ static int ex_put_var_names_int(int exoid, char *tname, char *dnumvar, char *vna
                "ERROR: failed to locate number of %s variables in file id %d", tname, exoid);
       ex_err("ex_put_variable_names", errmsg, exerrval);
     }
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vnames, varid)) != NC_NOERR) {
@@ -90,9 +90,9 @@ static int ex_put_var_names_int(int exoid, char *tname, char *dnumvar, char *vna
                tname, exoid);
       ex_err("ex_put_variable_names", errmsg, exerrval);
     }
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return EX_NOERR;
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*!
@@ -199,12 +199,12 @@ int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err("ex_put_variable_names", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* write EXODUS variable names */
   status = ex_put_names_internal(exoid, varid, num_vars, var_names, obj_type, "variable",
                                  "ex_put_variable_names");
 
-  return (status);
+  EX_FUNC_LEAVE(status);
 }
