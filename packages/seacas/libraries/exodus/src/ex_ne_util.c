@@ -75,9 +75,9 @@ int ex_leavedef(int exoid, const char *call_rout)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to end define mode for file id %d", exoid);
     ex_err(call_rout, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*****************************************************************************/
@@ -140,7 +140,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              ne_var_name, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* check if I need the length for this variable */
@@ -218,7 +218,7 @@ int ex_get_file_type(int exoid, char *ftype)
     ftype[0] = 'p';
     ftype[1] = '\0';
 
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   if ((status = nc_get_var1_int(exoid, varid, NULL, &lftype)) != NC_NOERR) {
@@ -226,7 +226,7 @@ int ex_get_file_type(int exoid, char *ftype)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
              VAR_FILE_TYPE, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Set the appropriate character */
@@ -237,7 +237,7 @@ int ex_get_file_type(int exoid, char *ftype)
     strcpy(ftype, "s");
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*****************************************************************************/
@@ -269,7 +269,7 @@ int ex_put_nemesis_version(int exoid)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output nemesis file version in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Output the Nemesis API version */
@@ -279,10 +279,10 @@ int ex_put_nemesis_version(int exoid)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output nemesis api version in file ID %d",
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*****************************************************************************/
@@ -310,7 +310,7 @@ int ne_check_file_version(int exoid)
             "ERROR: failed to get the nemesis file version from file ID %d",
             exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (fabs(NEMESIS_FILE_VERSION-file_ver) > 0.001) {
@@ -318,10 +318,10 @@ int ne_check_file_version(int exoid)
     snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: Nemesis version mismatch in file ID %d!\n", exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*****************************************************************************/

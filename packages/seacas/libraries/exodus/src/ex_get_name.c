@@ -89,7 +89,7 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
     exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vobj, &varid)) == NC_NOERR) {
@@ -109,7 +109,7 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
 
       status = ex_get_name_internal(exoid, varid, ent_ndx - 1, name, name_size, obj_type, routine);
       if (status != NC_NOERR) {
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
@@ -119,5 +119,5 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
      */
     name[0] = '\0';
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

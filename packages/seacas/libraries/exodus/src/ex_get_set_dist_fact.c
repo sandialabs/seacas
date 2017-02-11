@@ -79,7 +79,7 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s sets stored in file id %d",
              ex_name_of_object(set_type), exoid);
     ex_err("ex_get_set_dist_fact", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Lookup index of set id in VAR_*S_IDS array */
@@ -89,13 +89,13 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: %s set %" PRId64 " is NULL in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set_dist_fact", errmsg, EX_NULLENTITY);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s set %" PRId64 " in VAR_*S_IDS array in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* setup more pointers based on set_type */
@@ -125,7 +125,7 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
                "Warning: dist factors not stored for %s set %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set_dist_fact", errmsg, exerrval);
-      return (EX_WARN); /* complain - but not too loud */
+      EX_FUNC_LEAVE(EX_WARN); /* complain - but not too loud */
     }
     /* is an error for other sets */
 
@@ -133,7 +133,7 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
              "ERROR: failed to locate dist factors list for %s set %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* read in the distribution factors array */
@@ -150,7 +150,7 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
              "ERROR: failed to get dist factors list for %s set %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

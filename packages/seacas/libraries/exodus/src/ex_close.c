@@ -99,7 +99,7 @@ int ex_close(int exoid)
     exerrval = EX_NOTROOTID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file id %d does not refer to root group.", exoid);
     ex_err("ex_close", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
 
@@ -107,7 +107,7 @@ int ex_close(int exoid)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to update file id %d", exoid);
     ex_err("ex_close", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if ((status = nc_close(exoid)) == NC_NOERR) {
     ex_conv_exit(exoid);
@@ -142,7 +142,7 @@ int ex_close(int exoid)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to close file id %d", exoid);
     ex_err("ex_close", errmsg, status);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

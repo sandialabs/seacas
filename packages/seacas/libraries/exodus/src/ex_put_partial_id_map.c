@@ -82,7 +82,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
 
   exerrval = 0; /* clear error code */
   if (num_entities == 0 && !ex_is_parallel(exoid)) {
-    return EX_NOERR;
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   switch (map_type) {
@@ -111,7 +111,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Bad map type (%d) specified for file id %d", map_type,
              exoid);
     ex_err("ex_put_partial_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Make sure the file contains entries */
@@ -128,7 +128,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
                                      ", but the %s dimension is not defined on file id %d.",
              tname, num_entities, dnumentries, exoid);
     ex_err("ex_put_partial_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* define the map if it doesn't already exist... */
@@ -137,7 +137,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
       ex_err("ex_put_partial_id_map", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* create a variable array in which to store the id map  */
@@ -171,7 +171,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
       ex_err("ex_put_partial_id_map", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -195,10 +195,10 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s numbering map in file id %d", tname,
              exoid);
     ex_err("ex_put_partial_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -207,5 +207,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_partial_id_map", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

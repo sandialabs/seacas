@@ -71,7 +71,7 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss stored in file id %d",
              ex_name_of_object(set_type), exoid);
     ex_err("ex_get_set", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Lookup index of set id in VAR_*S_IDS array */
@@ -81,14 +81,14 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: %s %" PRId64 " is NULL in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, EX_NULLENTITY);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in VAR_*S_IDS array in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* setup more pointers based on set_type */
@@ -120,7 +120,7 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
              "ERROR: failed to locate entry list for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* If client doet not pass in an array to store the
@@ -134,7 +134,7 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
                "ERROR: failed to locate extra list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -153,7 +153,7 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
                "ERROR: failed to get entry list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -172,8 +172,8 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
                "ERROR: failed to get extra list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

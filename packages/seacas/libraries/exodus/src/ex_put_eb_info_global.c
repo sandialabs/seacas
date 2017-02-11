@@ -72,7 +72,7 @@ int ex_put_eb_info_global(int exoid, void_int *el_blk_ids, void_int *el_blk_cnts
              VAR_ELBLK_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the global element block IDs */
@@ -88,7 +88,7 @@ int ex_put_eb_info_global(int exoid, void_int *el_blk_ids, void_int *el_blk_cnts
              VAR_ELBLK_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Find the variable ID for the element block counts */
@@ -98,7 +98,7 @@ int ex_put_eb_info_global(int exoid, void_int *el_blk_ids, void_int *el_blk_cnts
              VAR_ELBLK_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the global element block counts */
@@ -114,8 +114,8 @@ int ex_put_eb_info_global(int exoid, void_int *el_blk_ids, void_int *el_blk_cnts
              VAR_ELBLK_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

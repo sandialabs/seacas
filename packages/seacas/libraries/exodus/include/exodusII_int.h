@@ -41,6 +41,10 @@
 #ifndef EXODUS_II_INT_HDR
 #define EXODUS_II_INT_HDR
 
+#if EX_THREADSAFE
+#include <pthread.h>
+#endif
+
 #include "netcdf.h"
 #if defined(NC_HAVE_META_H)
 #include "netcdf_meta.h"
@@ -87,11 +91,6 @@ extern "C" {
 
 #define MAX_VAR_NAME_LENGTH 32 /**< Internal use only */
 
-/* this should be defined in ANSI C and C++, but just in case ... */
-#ifndef NULL
-#define NULL 0
-#endif
-
 /* Default "filesize" for newly created files.
  * Set to 0 for normal filesize setting.
  * Set to 1 for EXODUS_LARGE_MODEL setting to be the default
@@ -102,6 +101,22 @@ extern "C" {
 #define EX_FILE_ID_MASK (0xffff0000) /* Must match FILE_ID_MASK in netcdf nc4internal.h */
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
+#define EX_FUNC_ENTER() /* Nothing so far */
+#if 0
+#define EX_FUNC_LEAVE(error)                                                                       \
+  do {                                                                                             \
+    fprintf(stderr, "%s\n", __func__);                                                             \
+    return error;                                                                                  \
+  } while (0)
+#define EX_FUNC_LEAVE_VOID()                                                                       \
+  do {                                                                                             \
+    fprintf(stderr, "%s\n", __func__);                                                             \
+    return;                                                                                        \
+  } while (0)
+#else
+#define EX_FUNC_LEAVE(error) return error
+#define EX_FUNC_LEAVE_VOID() return
+#endif
 /*
  * This file contains defined constants that are used internally in the
  * EXODUS API.

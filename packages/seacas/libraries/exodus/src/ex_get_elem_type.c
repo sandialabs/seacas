@@ -79,7 +79,7 @@ int ex_get_elem_type(int exoid, ex_entity_id elem_blk_id, char *elem_type)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to find element block ID %" PRId64 " in file %d", elem_blk_id, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, VAR_CONN(el_blk_id_ndx), &connid)) != NC_NOERR) {
@@ -87,7 +87,7 @@ int ex_get_elem_type(int exoid, ex_entity_id elem_blk_id, char *elem_type)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find connectivity variable in file ID %d",
              exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* get the element type name */
@@ -96,7 +96,7 @@ int ex_get_elem_type(int exoid, ex_entity_id elem_blk_id, char *elem_type)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find attribute in file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (len > (MAX_STR_LENGTH + 1)) {
@@ -105,7 +105,7 @@ int ex_get_elem_type(int exoid, ex_entity_id elem_blk_id, char *elem_type)
              (int)len, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Make sure the end of the string is terminated with a null character */
@@ -117,7 +117,7 @@ int ex_get_elem_type(int exoid, ex_entity_id elem_blk_id, char *elem_type)
              ATT_NAME_ELB, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

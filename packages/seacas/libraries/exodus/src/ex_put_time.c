@@ -93,7 +93,7 @@ int ex_put_time(int exoid, int time_step, const void *time_value)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable in file id %d", exoid);
     ex_err("ex_put_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* store time value */
@@ -110,8 +110,8 @@ int ex_put_time(int exoid, int time_step, const void *time_value)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store time value in file id %d", exoid);
     ex_err("ex_put_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

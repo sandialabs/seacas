@@ -94,7 +94,7 @@ int ex_get_info(int exoid, char **info)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Warning: failed to locate number of info records in file id %d", rootid);
     ex_err("ex_get_info", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   if ((status = nc_inq_dimlen(rootid, dimid, &num_info)) != NC_NOERR) {
@@ -102,7 +102,7 @@ int ex_get_info(int exoid, char **info)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of info records in file id %d",
              rootid);
     ex_err("ex_get_info", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* do this only if there are any information records */
@@ -112,7 +112,7 @@ int ex_get_info(int exoid, char **info)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate info record data in file id %d",
                rootid);
       ex_err("ex_get_info", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* read the information records */
@@ -127,11 +127,11 @@ int ex_get_info(int exoid, char **info)
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get info record data in file id %d",
                  rootid);
         ex_err("ex_get_info", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       info[i][MAX_LINE_LENGTH] = '\0';
       ex_trim_internal(info[i]);
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -50,7 +50,7 @@ static int el_node_count_error(struct elem_blk_parm elem_blk_parms)
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: An element of type '%s' with %d nodes is not valid.",
            elem_blk_parms.elem_type, elem_blk_parms.num_nodes_per_elem);
   ex_err("ex_int_get_block_param", errmsg, EX_MSG);
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }
 
 int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
@@ -72,7 +72,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
              "ERROR: failed to get element block %" PRId64 " parameters in file id %d", block.id,
              exoid);
     ex_err("ex_int_get_block_param", errmsg, EX_MSG);
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   elem_blk_parm->num_elem_in_blk    = block.num_entry;
@@ -372,5 +372,5 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
     elem_blk_parm->num_sides             = 0;
     elem_blk_parm->num_nodes_per_side[0] = 0;
   }
-  return EX_NOERR;
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -90,12 +90,12 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file ID %d into define mode", exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the file version */
   if ((status = ex_put_nemesis_version(exoid)) < 0) {
-    return (status);
+    EX_FUNC_LEAVE(status);
   }
 
   /* Define dimension for number of global nodes */
@@ -107,7 +107,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Define dimension for number of global elements */
@@ -119,7 +119,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -135,7 +135,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Define the element block IDs variable. */
@@ -148,7 +148,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Define the element block counts variable. */
@@ -161,7 +161,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
     /* Leave define mode before returning */
     ex_leavedef(exoid, func_name);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -178,7 +178,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Define the variable for output of global node set IDs */
@@ -192,7 +192,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Define variable for global node counts in each global node set */
@@ -206,7 +206,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returing */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*
@@ -223,7 +223,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returing */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_node_sets_g > 0)" */
@@ -242,7 +242,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Define the variable for output of global side set IDs */
@@ -256,7 +256,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*
@@ -274,7 +274,7 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*
@@ -292,15 +292,15 @@ int ex_put_init_global(int exoid, int64_t num_nodes_g, int64_t num_elems_g, int6
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (num_side_sets_g > 0)" */
 
   /* End define mode */
   if (ex_leavedef(exoid, func_name) != EX_NOERR) {
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

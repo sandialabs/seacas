@@ -70,6 +70,7 @@ static struct ex_file_item *file_list = NULL;
 
 struct ex_file_item *ex_find_file_item(int exoid)
 {
+  EX_FUNC_ENTER();
   /* Find base filename in case exoid refers to a group */
   int                  base_exoid = (unsigned)exoid & EX_FILE_ID_MASK;
   struct ex_file_item *ptr        = file_list;
@@ -79,11 +80,12 @@ struct ex_file_item *ex_find_file_item(int exoid)
     }
     ptr = ptr->next;
   }
-  return ptr;
+  EX_FUNC_LEAVE(ptr);
 }
 
 void ex_check_valid_file_id(int exoid)
 {
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   if (!file) {
@@ -94,6 +96,7 @@ void ex_check_valid_file_id(int exoid)
              "ERROR: invalid file id %d. Does not refer to an open exodus file.", exoid);
     ex_err("ex_check_valid_file_id", errmsg, exerrval);
   }
+  EX_FUNC_LEAVE_VOID();
 }
 
 int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
@@ -142,11 +145,13 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
    * word size parameters are specified in bytes. valid values are 0, 4, and 8:
    */
 
+  EX_FUNC_ENTER();
+
   /* check to make sure machine word sizes aren't weird */
   if ((sizeof(float) != 4 && sizeof(float) != 8) || (sizeof(double) != 4 && sizeof(double) != 8)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d", exoid);
     ex_err("ex_conv_ini", errmsg, EX_FATAL);
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* check to see if requested word sizes are valid */
@@ -162,7 +167,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   else if (*io_wordsize != 4 && *io_wordsize != 8) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported I/O word size for file id: %d", exoid);
     ex_err("ex_conv_ini", errmsg, EX_FATAL);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   else if (file_wordsize && *io_wordsize != file_wordsize) {
@@ -178,7 +183,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   }
   else if (*comp_wordsize != 4 && *comp_wordsize != 8) {
     ex_err("ex_conv_ini", "ERROR: invalid compute wordsize specified", EX_FATAL);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Check that the int64_status contains only valid bits... */
@@ -208,7 +213,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
                                      "structure storage file id %d",
              exoid);
     ex_err("ex_inquire", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   new_file->file_id               = exoid;
@@ -236,7 +241,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
     new_file->netcdf_type_code = NC_DOUBLE;
   }
 
-  return EX_NOERR;
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 /*............................................................................*/
@@ -259,6 +264,7 @@ void ex_conv_exit(int exoid)
   struct ex_file_item *file = file_list;
   struct ex_file_item *prev = NULL;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
   while (file) {
     if (file->file_id == exoid) {
@@ -273,7 +279,7 @@ void ex_conv_exit(int exoid)
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failure to clear file id %d - not in list.", exoid);
     ex_err("ex_conv_exit", errmsg, EX_MSG);
     exerrval = EX_BADFILEID;
-    return;
+    EX_FUNC_LEAVE_VOID();
   }
 
   if (prev) {
@@ -284,6 +290,7 @@ void ex_conv_exit(int exoid)
   }
 
   free(file);
+  EX_FUNC_LEAVE_VOID();
 }
 
 /*............................................................................*/
@@ -297,6 +304,7 @@ nc_type nc_flt_code(int exoid)
    *
    * "exoid" is some integer which uniquely identifies the file of interest.
    */
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -306,9 +314,9 @@ nc_type nc_flt_code(int exoid)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for nc_flt_code().", exoid);
     ex_err("nc_flt_code", errmsg, exerrval);
-    return (nc_type)-1;
+    EX_FUNC_LEAVE((nc_type)-1);
   }
-  return file->netcdf_type_code;
+  EX_FUNC_LEAVE(file->netcdf_type_code);
 }
 
 int ex_int64_status(int exoid)
@@ -330,6 +338,7 @@ int ex_int64_status(int exoid)
      EX_BULK_INT64_API
      EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
   */
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -339,9 +348,9 @@ int ex_int64_status(int exoid)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_int64_status().", exoid);
     ex_err("ex_int64_status", errmsg, exerrval);
-    return 0;
+    EX_FUNC_LEAVE(0);
   }
-  return file->int64_status;
+  EX_FUNC_LEAVE(file->int64_status);
 }
 
 int ex_set_int64_status(int exoid, int mode)
@@ -362,6 +371,7 @@ int ex_set_int64_status(int exoid, int mode)
   int api_mode = 0;
   int db_mode  = 0;
 
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -371,7 +381,7 @@ int ex_set_int64_status(int exoid, int mode)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_int64_status().", exoid);
     ex_err("ex_int64_status", errmsg, exerrval);
-    return 0;
+    EX_FUNC_LEAVE(0);
   }
 
   /* Strip of all non-INT64_API values */
@@ -379,18 +389,19 @@ int ex_set_int64_status(int exoid, int mode)
   db_mode  = file->int64_status & EX_ALL_INT64_DB;
 
   file->int64_status = api_mode | db_mode;
-  return file->int64_status;
+  EX_FUNC_LEAVE(file->int64_status);
 }
 
 int ex_set_option(int exoid, ex_option_type option, int option_value)
 {
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_set_option().", exoid);
     ex_err("ex_set_option", errmsg, exerrval);
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   exerrval = 0; /* clear error code */
@@ -426,10 +437,10 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().", (int)option);
     ex_err("ex_set_option", errmsg, exerrval);
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   }
-  return EX_NOERR;
+  EX_FUNC_LEAVE(EX_NOERR);
 }
 
 int ex_comp_ws(int exoid)
@@ -440,6 +451,7 @@ int ex_comp_ws(int exoid)
    * the conversion facility for this file id (exoid).
    * \param exoid  integer which uniquely identifies the file of interest.
    */
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -449,10 +461,10 @@ int ex_comp_ws(int exoid)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
     ex_err("ex_comp_ws", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   /* Stored as 0 for 4-byte; 1 for 8-byte */
-  return (file->user_compute_wordsize + 1) * 4;
+  EX_FUNC_LEAVE((file->user_compute_wordsize + 1) * 4);
 }
 
 int ex_is_parallel(int exoid)
@@ -462,6 +474,7 @@ int ex_is_parallel(int exoid)
    * Note that in this case parallel assumes the output of a single file,
    * not a parallel run using file-per-processor.
    */
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -471,8 +484,8 @@ int ex_is_parallel(int exoid)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
     ex_err("ex_is_parallel", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   /* Stored as 1 for parallel, 0 for serial or file-per-processor */
-  return file->is_parallel;
+  EX_FUNC_LEAVE(file->is_parallel);
 }

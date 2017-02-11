@@ -92,13 +92,13 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of side sets in file id %d",
              exoid);
     ex_err("ex_get_concat_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (num_side_sets == 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no side sets defined in file id %d", exoid);
     ex_err("ex_get_concat_side_set_node_count", errmsg, EX_WARN);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   num_elem_blks = ex_inquire_int(exoid, EX_INQ_ELEM_BLK);
@@ -106,7 +106,7 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of element blocks in file id %d",
              exoid);
     ex_err("ex_get_concat_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   tot_num_elem = ex_inquire_int(exoid, EX_INQ_ELEM);
@@ -114,7 +114,7 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get total number of elements in file id %d",
              exoid);
     ex_err("ex_get_concat_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* get the dimensionality of the coordinates;  this is necessary to
@@ -123,7 +123,7 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
   if (ndim < 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get dimensionality in file id %d", exoid);
     ex_err("ex_get_concat_side_set_node_count", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   int_size = sizeof(int);
@@ -342,7 +342,7 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
   free(side_set_elem_list);
   free(side_set_side_list);
   free(elem_blk_parms);
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 error_ret:
   free(elem_blk_ids);
@@ -351,5 +351,5 @@ error_ret:
   free(side_set_elem_list);
   free(side_set_side_list);
   free(elem_blk_parms);
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

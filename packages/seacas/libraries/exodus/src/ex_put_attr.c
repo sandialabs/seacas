@@ -83,12 +83,12 @@ int ex_put_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
                  "Warning: no attributes allowed for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(blk_type), blk_id, exoid);
         ex_err("ex_put_attr", errmsg, EX_NULLENTITY);
-        return (EX_WARN); /* no attributes for this block */
+        EX_FUNC_LEAVE(EX_WARN); /* no attributes for this block */
       }
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %s id %" PRId64 " in in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
       ex_err("ex_put_attr", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -108,7 +108,7 @@ int ex_put_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", blk_type,
              exoid);
     ex_err("ex_put_attr", errmsg, EX_MSG);
-    return (EX_FATAL); /* number of attributes not defined */
+    EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
 
   if (status != NC_NOERR) {
@@ -117,7 +117,7 @@ int ex_put_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
              "ERROR: failed to locate attribute variable for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
     ex_err("ex_put_attr", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* write out the attributes  */
@@ -134,7 +134,7 @@ int ex_put_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
              "ERROR: failed to put attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
     ex_err("ex_put_attr", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

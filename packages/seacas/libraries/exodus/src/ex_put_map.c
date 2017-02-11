@@ -100,7 +100,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
 
   /* determine number of elements. Return if zero... */
   if (nc_inq_dimid(exoid, DIM_NUM_ELEM, &numelemdim) != NC_NOERR) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   /* put netcdf file into define mode  */
@@ -108,7 +108,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err("ex_put_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* create a variable array in which to store the element map  */
@@ -140,7 +140,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
     ex_err("ex_put_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* write out the element order map  */
@@ -155,10 +155,10 @@ int ex_put_map(int exoid, const void_int *elem_map)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store element map in file id %d", exoid);
     ex_err("ex_put_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -167,5 +167,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_map", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

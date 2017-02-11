@@ -93,7 +93,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   exerrval = 0; /* clear error code */
 
   if (num_ent == 0) {
-    return 0;
+    EX_FUNC_LEAVE(EX_NOERR);
   }
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
@@ -104,13 +104,13 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
                  "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
         ex_err("ex_get_partial_attr", errmsg, EX_NULLENTITY);
-        return (EX_WARN); /* no attributes for this object */
+        EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: failed to locate %s id%" PRId64 " in id array in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
       ex_err("ex_get_partial_attr", errmsg, exerrval);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
   }
 
@@ -166,13 +166,13 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
     ex_err("ex_get_partial_attr", errmsg, EX_MSG);
-    return (EX_FATAL); /* number of attributes not defined */
+    EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
 
   /* inquire id's of previously defined dimensions  */
   if (ex_get_dimension(exoid, dnumobjent, "entries", &num_entries_this_obj, &temp,
                        "ex_get_partial_attr") != NC_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (start_num + num_ent - 1 > num_entries_this_obj) {
@@ -182,12 +182,12 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
              ") is larger than total number of entities (%" ST_ZU ") in file id %d",
              start_num, num_ent, num_entries_this_obj, exoid);
     ex_err("ex_get_partial_attr", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_get_dimension(exoid, dnumobjatt, "attributes", &num_attr, &temp, "ex_get_partial_attr") !=
       NC_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vattrbname, &attrid)) != NC_NOERR) {
@@ -196,7 +196,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
              "ERROR: failed to locate attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_partial_attr", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* read in the attributes */
@@ -219,7 +219,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
              "ERROR: failed to get attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_partial_attr", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

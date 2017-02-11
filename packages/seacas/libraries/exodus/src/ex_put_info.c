@@ -130,7 +130,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get line string length in file id %d",
                  rootid);
         ex_err("ex_put_info", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* put file into define mode  */
@@ -138,7 +138,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
         exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed put file id %d into define mode", rootid);
         ex_err("ex_put_info", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* define dimensions */
@@ -178,7 +178,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to complete info record definition in file id %d", rootid);
         ex_err("ex_put_info", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
     else {
@@ -187,7 +187,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find info record variable in file id %d",
                  rootid);
         ex_err("ex_put_info", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -206,7 +206,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store info record in file id %d",
                    rootid);
           ex_err("ex_put_info", errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
     }
@@ -221,7 +221,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
       }
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -229,5 +229,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", rootid);
     ex_err("ex_put_info", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

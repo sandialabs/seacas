@@ -83,7 +83,7 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %ss specified in file id %d",
              ex_name_of_object(set_type), exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Lookup index of set id in VAR_*S_IDS array */
@@ -94,13 +94,13 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
                "Warning: no data allowed for NULL %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_put_set_fact", errmsg, EX_NULLENTITY);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in VAR_*S_IDS array in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* setup more pointers based on set_type */
@@ -133,14 +133,14 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
                "Warning: no dist factors defined for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_put_set_dist_fact", errmsg, exerrval);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate dist factors list for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* write out the distribution factors array */
@@ -157,8 +157,8 @@ int ex_put_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
              "ERROR: failed to store dist factors for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_put_set_dist_fact", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

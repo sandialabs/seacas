@@ -79,7 +79,7 @@ int ex_put_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the vector of global side set IDs */
@@ -95,7 +95,7 @@ int ex_put_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the variable ID for the vector of global side-set side counts */
@@ -105,7 +105,7 @@ int ex_put_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_SIDE_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the vector of global side counts in each global side set */
@@ -121,7 +121,7 @@ int ex_put_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_SIDE_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the variable ID for the number of dist. factors in each side set */
@@ -131,7 +131,7 @@ int ex_put_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_DF_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Output the vector of dist. factor counts */
@@ -147,8 +147,8 @@ int ex_put_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_DF_CNT_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

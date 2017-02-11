@@ -78,5 +78,5 @@ int ex_get_sets(int exoid, size_t set_count, struct ex_set *sets)
       }
     }
   }
-  return status;
+  EX_FUNC_LEAVE(status);
 }

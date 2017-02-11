@@ -79,7 +79,7 @@ int ex_get_map_param(int exoid, int *num_node_maps, int *num_elem_maps)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of node maps in file id %d",
                exoid);
       ex_err("ex_get_map_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     *num_node_maps = lnum_node_maps;
   }
@@ -94,9 +94,9 @@ int ex_get_map_param(int exoid, int *num_node_maps, int *num_elem_maps)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of element maps in file id %d",
                exoid);
       ex_err("ex_get_map_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     *num_elem_maps = lnum_elem_maps;
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

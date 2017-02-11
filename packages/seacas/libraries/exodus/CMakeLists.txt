@@ -30,6 +30,10 @@ TRIBITS_ADD_LIBRARY(
   SOURCES ${SOURCES} ${DEP_SOURCES}
 )
 
+if (${EXODUS_ENABLE_THREADSAFE})
+   add_definitions(-DEX_THREADSAFE)
+endif()
+
 if (${TPL_Netcdf_PARALLEL})
    add_definitions(-DPARALLEL_AWARE_EXODUS)
 endif()

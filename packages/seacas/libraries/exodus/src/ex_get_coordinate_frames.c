@@ -146,14 +146,14 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
   status = nc_inq_dimid(exoid, DIM_NUM_CFRAMES, &dimid);
   if (status != NC_NOERR) {
     *nframes = 0;
-    return EX_NOERR;
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   (void)nc_inq_dimlen(exoid, dimid, &count);
   *nframes = (int)count;
 
   if (count == 0) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   if (cf_ids) {
@@ -162,7 +162,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read number coordinate ids from file id %d", exoid);
       ex_err(PROCNAME, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
@@ -177,7 +177,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to read coordinate frame ids from file id %d",
                exoid);
       ex_err(PROCNAME, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -188,7 +188,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read number coordinate tags from file id %d", exoid);
       ex_err(PROCNAME, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -198,7 +198,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read number coordinate tags from file id %d", exoid);
       ex_err(PROCNAME, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (ex_comp_ws(exoid) == 4) {
@@ -213,9 +213,9 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to read number coordinate tags from file id %d", exoid);
       ex_err(PROCNAME, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

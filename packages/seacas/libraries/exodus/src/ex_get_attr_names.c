@@ -83,13 +83,13 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
                  "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
         ex_err("ex_get_attr_names", errmsg, EX_NULLENTITY);
-        return (EX_WARN); /* no attributes for this object */
+        EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: failed to locate %s id %" PRId64 " in id array in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
       ex_err("ex_get_attr_names", errmsg, exerrval);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
   }
 
@@ -136,7 +136,7 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
     ex_err("ex_get_attr_names", errmsg, EX_MSG);
-    return (EX_FATAL); /* number of attributes not defined */
+    EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
   /* inquire id's of previously defined dimensions  */
 
@@ -146,7 +146,7 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
              "Warning: no attributes found for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_attr_names", errmsg, EX_MSG);
-    return (EX_WARN); /* no attributes for this object */
+    EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
   }
 
   if ((status = nc_inq_dimlen(exoid, numattrdim, &num_attr)) != NC_NOERR) {
@@ -155,7 +155,7 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
              "ERROR: failed to get number of attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_attr_names", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* It is OK if we don't find the attribute names since they were
@@ -169,7 +169,7 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
     /* read the names */
     status = ex_get_names_internal(exoid, varid, num_attr, names, obj_type, "ex_get_attr_names");
     if (status != NC_NOERR) {
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   else {
@@ -180,5 +180,5 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
       names[i][0] = '\0';
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

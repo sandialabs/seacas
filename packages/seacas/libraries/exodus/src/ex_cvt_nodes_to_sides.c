@@ -288,13 +288,13 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of side sets in file id %d",
              exoid);
     ex_err("ex_cvt_nodes_to_sides", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (num_side_sets == 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no side sets defined in file id %d", exoid);
     ex_err("ex_cvt_nodes_to_sides", errmsg, EX_WARN);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   num_elem_blks = ex_inquire_int(exoid, EX_INQ_ELEM_BLK);
@@ -302,7 +302,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of element blocks in file id %d",
              exoid);
     ex_err("ex_cvt_nodes_to_sides", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   tot_num_elem = ex_inquire_int(exoid, EX_INQ_ELEM);
@@ -310,7 +310,7 @@ int ex_cvt_nodes_to_sides(int exoid, void_int *num_elem_per_set, void_int *num_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get total number of elements in file id %d",
              exoid);
     ex_err("ex_cvt_nodes_to_sides", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* get the dimensionality of the coordinates;  this is necessary to
@@ -920,5 +920,5 @@ cleanup:
   free(ss_elem_ndx);
   free(same_elem_type);
 
-  return (err_stat);
+  EX_FUNC_LEAVE(err_stat);
 }

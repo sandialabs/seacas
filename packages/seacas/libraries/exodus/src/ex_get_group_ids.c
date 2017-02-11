@@ -59,14 +59,14 @@ int ex_get_group_ids(int parent_id, int *num_groups, int *group_ids)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Failed to get child group ids in file id %d",
              parent_id);
     ex_err("ex_get_group_ids", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 #else
   exerrval = NC_ENOTNC4;
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
                                    "version--not netcdf4");
   ex_err("ex_get_group_ids", errmsg, exerrval);
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 #endif
 }

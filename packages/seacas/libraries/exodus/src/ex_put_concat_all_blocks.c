@@ -121,7 +121,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get string length in file id %d", exoid);
     ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (param->define_maps) {
@@ -131,14 +131,14 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find node map size of file id %d",
                  exoid);
         ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       if ((status = nc_inq_dimlen(exoid, dimid, num_maps + i)) != NC_NOERR) {
         exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to retrieve node map size of file id %d",
                  exoid);
         ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
@@ -157,7 +157,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
                "ERROR: failed to get number of " TNAME " blocks in file id %d", exoid);            \
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
                                                                                                    \
     /* Fill out the TNAME block status array */                                                    \
@@ -167,7 +167,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                "ERROR: failed to allocate space for " TNAME " block status array in file id %d",   \
                exoid);                                                                             \
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
                                                                                                    \
     for (i = 0; i < LNUMNAME; i++) {                                                               \
@@ -184,7 +184,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                "ERROR: failed to locate " TNAME " block status in file id %d", exoid);             \
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
       free(GSTAT);                                                                                 \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
                                                                                                    \
     status = nc_put_var_int(exoid, varid, GSTAT);                                                  \
@@ -195,7 +195,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                "ERROR: failed to store " TNAME " block status array to file id %d", exoid);        \
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
       free(GSTAT);                                                                                 \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
                                                                                                    \
     free(GSTAT);                                                                                   \
@@ -207,7 +207,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
                "ERROR: failed to locate " TNAME " block ids array in file id %d", exoid);          \
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
                                                                                                    \
     /* then, write out id list */                                                                  \
@@ -223,7 +223,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
                "ERROR: failed to store " TNAME " block id array in file id %d", exoid);            \
       ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
-      return (EX_FATAL);                                                                           \
+      EX_FUNC_LEAVE(EX_FATAL);                                                                     \
     }                                                                                              \
   }
 
@@ -238,14 +238,14 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     /* Nothing to do. This is not an error, but we can save
      * ourselves from entering define mode by returning here.
      */
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
   /* put netcdf file into define mode  */
   if ((status = nc_redef(exoid)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
     ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
 #if NC_HAS_HDF5
@@ -640,10 +640,10 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to complete element block definition in file id %d", exoid);
     ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -651,5 +651,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_concat_all_blocks", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

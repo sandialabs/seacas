@@ -379,7 +379,7 @@ int ex_put_all_var_param_ext(int exoid, const ex_var_params *vp)
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -408,7 +408,7 @@ error_ret:
   free(fset_stat);
   free(sset_stat);
   free(elset_stat);
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }
 
 static int define_dimension(int exoid, const char *DIMENSION, int count, const char *label,
@@ -430,7 +430,7 @@ static int define_dimension(int exoid, const char *DIMENSION, int count, const c
       ex_err("ex_put_all_var_param_ext", errmsg, exerrval);
     }
   }
-  return status;
+  EX_FUNC_LEAVE(status);
 }
 
 static int define_variable_name_variable(int exoid, const char *VARIABLE, int dimension,
@@ -462,7 +462,7 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
 #if NC_HAS_HDF5
   nc_def_var_fill(exoid, variable, 0, &fill);
 #endif
-  return status;
+  EX_FUNC_LEAVE(status);
 }
 
 static int *get_status_array(int exoid, int var_count, const char *VARIABLE, const char *label)
@@ -571,7 +571,7 @@ static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, i
                      "ERROR: failed to locate number of entities in %s %" PRId64 " in file id %d",
                      label, id, exoid);
             ex_err("ex_put_all_var_param_ext", errmsg, exerrval);
-            return status;
+            EX_FUNC_LEAVE(status);
           }
 
           /* define netCDF variable to store variable values;
@@ -588,7 +588,7 @@ static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, i
                        "ERROR: failed to define %s variable for %s %" PRId64 " in file id %d",
                        label, label, id, exoid);
               ex_err("ex_put_all_var_param_ext", errmsg, exerrval);
-              return status;
+              EX_FUNC_LEAVE(status);
             }
           }
           ex_compress_variable(exoid, varid, 2);
