@@ -300,6 +300,10 @@ namespace {
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
 
+    if (interface.ints_32_bit) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    }
+
     if (interface.reals_32_bit) {
       properties.add(Ioss::Property("REAL_SIZE_DB", 4));
     }
@@ -394,7 +398,12 @@ namespace {
       // to output file...
       int int_byte_size_api = dbi->int_byte_size_api();
       if (!properties.exists("INTEGER_SIZE_API")) {
-        properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
+	if (interface.ints_32_bit) {
+	  properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+	}
+	else {
+	  properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
+	}
         properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
       }
       if (int_byte_size_api == 8) {
