@@ -159,6 +159,7 @@ namespace Ioss {
 
     bool add_transform(Transform *my_transform);
     bool transform(void *data);
+    bool has_transform() const { return !transforms_.empty(); }
 
   private:
     std::string name_;

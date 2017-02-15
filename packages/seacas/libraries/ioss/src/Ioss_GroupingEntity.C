@@ -397,15 +397,16 @@ int Ioss::GroupingEntity::get_field_data(const std::string &   field_name,
  *
  */
 int Ioss::GroupingEntity::put_field_data(const std::string &  field_name,
-                                         std::vector<double> &data) const
+                                         const std::vector<double> &data) const
 {
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::REAL);
   size_t data_size = data.size() * sizeof(double);
-  field.transform(TOPTR(data));
-  return internal_put_field_data(field, TOPTR(data), data_size);
+  double *my_data = const_cast<double*>(data.data());
+  field.transform(my_data);
+  return internal_put_field_data(field, my_data, data_size);
 }
 
 /** \brief Write type int field data from memory into the database file using a std::vector.
@@ -416,15 +417,16 @@ int Ioss::GroupingEntity::put_field_data(const std::string &  field_name,
  *
  */
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
-                                         std::vector<int> & data) const
+                                         const std::vector<int> & data) const
 {
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::INTEGER);
   size_t data_size = data.size() * sizeof(int);
-  field.transform(TOPTR(data));
-  return internal_put_field_data(field, TOPTR(data), data_size);
+  int *my_data = const_cast<int*>(data.data());
+  field.transform(my_data);
+  return internal_put_field_data(field, my_data, data_size);
 }
 
 /** \brief Write type int64_t field data from memory into the database file using a std::vector.
@@ -435,15 +437,16 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
  *
  */
 int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
-                                         std::vector<int64_t> &data) const
+                                         const std::vector<int64_t> &data) const
 {
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::INT64);
   size_t data_size = data.size() * sizeof(int64_t);
-  field.transform(TOPTR(data));
-  return internal_put_field_data(field, TOPTR(data), data_size);
+  int64_t *my_data = const_cast<int64_t*>(data.data());
+  field.transform(my_data);
+  return internal_put_field_data(field, my_data, data_size);
 }
 
 /** \brief Write type char field data from memory into the database file using a std::vector.
@@ -454,15 +457,16 @@ int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
  *
  */
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
-                                         std::vector<char> &data) const
+                                         const std::vector<char> &data) const
 {
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::CHARACTER);
   size_t data_size = data.size() * sizeof(char);
-  field.transform(TOPTR(data));
-  return internal_put_field_data(field, TOPTR(data), data_size);
+  char *my_data = const_cast<char*>(data.data());
+  field.transform(my_data);
+  return internal_put_field_data(field, my_data, data_size);
 }
 
 /** \brief Write type complex field data from memory into the database file using a std::vector.
@@ -473,15 +477,16 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
  *
  */
 int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
-                                         std::vector<Complex> &data) const
+                                         const std::vector<Complex> &data) const
 {
   verify_field_exists(field_name, "output");
 
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::COMPLEX);
   size_t data_size = data.size() * sizeof(Complex);
-  field.transform(TOPTR(data));
-  return internal_put_field_data(field, TOPTR(data), data_size);
+  Complex *my_data = const_cast<Complex*>(data.data());
+  field.transform(my_data);
+  return internal_put_field_data(field, my_data, data_size);
 }
 
 /** \brief Get the number of fields with the given role (MESH, ATTRIBUTE, TRANSIENT, REDUCTION,

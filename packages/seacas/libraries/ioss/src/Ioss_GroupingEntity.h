@@ -210,11 +210,11 @@ namespace Ioss {
     int get_field_data(const std::string &field_name, std::vector<int64_t> &data) const;
     int get_field_data(const std::string &field_name, std::vector<Complex> &data) const;
 
-    int put_field_data(const std::string &field_name, std::vector<char> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<double> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<int> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<int64_t> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<Complex> &data) const;
+    int put_field_data(const std::string &field_name, const std::vector<char> &data) const;
+    int put_field_data(const std::string &field_name, const std::vector<double> &data) const;
+    int put_field_data(const std::string &field_name, const std::vector<int> &data) const;
+    int put_field_data(const std::string &field_name, const std::vector<int64_t> &data) const;
+    int put_field_data(const std::string &field_name, const std::vector<Complex> &data) const;
 
 #ifdef SEACAS_HAVE_KOKKOS
     // Get and put this field's data into the specified Kokkos::View.
@@ -441,7 +441,7 @@ inline size_t Ioss::GroupingEntity::field_count() const { return fields.count();
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
@@ -486,7 +486,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;
@@ -548,7 +548,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
@@ -586,7 +586,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;
