@@ -36,16 +36,13 @@
 #include <stddef.h> // for size_t
 #include <string>   // for string
 #include <vector>   // for vector
-namespace Ioss {
-  class Transform;
-}
-namespace Ioss {
-  class VariableType;
-}
+#include <Ioss_CodeTypes.h>
 
 namespace Ioss {
 
   class GroupingEntity;
+  class Transform;
+  class VariableType;
 
   /** \brief Holds metadata for bulk data associated with a GroupingEntity.
    */
@@ -66,6 +63,13 @@ namespace Ioss {
       CHARACTER
     };
 
+    static Ioss::Field::BasicType get_field_type(char /*dummy*/) { return CHARACTER; }
+    static Ioss::Field::BasicType get_field_type(double /*dummy*/) { return DOUBLE; }
+    static Ioss::Field::BasicType get_field_type(int /*dummy*/) { return INTEGER; }
+    static Ioss::Field::BasicType get_field_type(int64_t /*dummy*/) { return INT64; }
+    static Ioss::Field::BasicType get_field_type(Complex /*dummy*/) { return COMPLEX; }
+    static Ioss::Field::BasicType get_field_type(std::string /*dummy*/) { return STRING; }
+    
     /* \brief Categorizes the type of information held in the field.
      */
     enum RoleType {
