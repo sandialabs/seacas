@@ -188,7 +188,7 @@ namespace Iopg {
                                size_t data_size) const;
 
     int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-			       void *data, size_t data_size) const
+                               void *data, size_t data_size) const
     {
       return 0;
     }
@@ -233,7 +233,7 @@ namespace Iopg {
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-			       void *data, size_t data_size) const
+                               void *data, size_t data_size) const
     {
       return 0;
     }
