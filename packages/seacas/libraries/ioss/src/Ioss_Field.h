@@ -33,10 +33,10 @@
 #ifndef IOSS_Ioss_Field_h
 #define IOSS_Ioss_Field_h
 
+#include <Ioss_CodeTypes.h>
 #include <stddef.h> // for size_t
 #include <string>   // for string
 #include <vector>   // for vector
-#include <Ioss_CodeTypes.h>
 
 namespace Ioss {
 
@@ -69,7 +69,7 @@ namespace Ioss {
     static Ioss::Field::BasicType get_field_type(int64_t /*dummy*/) { return INT64; }
     static Ioss::Field::BasicType get_field_type(Complex /*dummy*/) { return COMPLEX; }
     static Ioss::Field::BasicType get_field_type(std::string /*dummy*/) { return STRING; }
-    
+
     /* \brief Categorizes the type of information held in the field.
      */
     enum RoleType {

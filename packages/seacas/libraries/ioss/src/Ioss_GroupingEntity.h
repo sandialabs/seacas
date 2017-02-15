@@ -205,12 +205,12 @@ namespace Ioss {
     // Returns number of entities for which the field was read.
     // Resizes 'data' to size needed to hold all values.
     template <typename T>
-      int get_field_data(const std::string &field_name, std::vector<T> &data) const;
+    int get_field_data(const std::string &field_name, std::vector<T> &data) const;
 
     template <typename T>
-      int put_field_data(const std::string &field_name, const std::vector<T> &data) const;
+    int put_field_data(const std::string &field_name, const std::vector<T> &data) const;
     template <typename T>
-      int put_field_data(const std::string &field_name, std::vector<T> &data) const;
+    int put_field_data(const std::string &field_name, std::vector<T> &data) const;
 
 #ifdef SEACAS_HAVE_KOKKOS
     // Get and put this field's data into the specified Kokkos::View.
@@ -460,7 +460,8 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name, std::vec
  *
  */
 template <typename T>
-int Ioss::GroupingEntity::put_field_data(const std::string &field_name, const std::vector<T> &data) const
+int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
+                                         const std::vector<T> &data) const
 {
   verify_field_exists(field_name, "output");
 
@@ -474,7 +475,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name, const st
     return internal_put_field_data(field, nc_data.data(), data_size);
   }
   else {
-    T *my_data = const_cast<T*>(data.data());
+    T *my_data = const_cast<T *>(data.data());
     return internal_put_field_data(field, my_data, data_size);
   }
 }
@@ -487,7 +488,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name, std::vec
   Ioss::Field field = get_field(field_name);
   field.check_type(Ioss::Field::get_field_type(T(0)));
   size_t data_size = data.size() * sizeof(T);
-  T *my_data = const_cast<T*>(data.data());
+  T *    my_data   = const_cast<T *>(data.data());
   field.transform(my_data);
   return internal_put_field_data(field, my_data, data_size);
 }
