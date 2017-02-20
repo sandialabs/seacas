@@ -169,6 +169,7 @@ void ex_update_max_name_length(int exoid, int length)
 
   if (length > db_length) {
     /* Update with new value... */
+    ex_set_max_name_length(exoid, length);
     nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
     nc_sync(rootid);
   }
