@@ -54,9 +54,10 @@
 
 SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   Zlib            "cmake/TPLs/"    SS
-  Pnetcdf         "cmake/TPLs/"    SS
-  Netcdf          "cmake/TPLs/"    SS
-  CGNS		  "cmake/TPLs/"	   SS
+  HDF5            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
+  Pnetcdf         "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
+  Netcdf          "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
+  CGNS            "${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/"  SS
   METIS           "cmake/TPLs/"    TS
   ParMETIS        "cmake/TPLs/"    SS
   Pamgen          "cmake/TPLs/"    SS
