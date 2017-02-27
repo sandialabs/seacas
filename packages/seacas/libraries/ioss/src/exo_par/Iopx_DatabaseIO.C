@@ -547,9 +547,10 @@ namespace Iopx {
 	// Check whether client actually wants 4-byte output on db
 	// - If they specified INTEGER_SIZE_DB and the size isn't 8,
 	//   then don't change mode and use the default 4-byte output.
-	if (properties.exists("INTEGER_SIZE_DB") &&
-	    properties.get("INTEGER_SIZE_DB").get_int() == 8) {
+	if (properties.exists("INTEGER_SIZE_DB")) {
+	  if (properties.get("INTEGER_SIZE_DB").get_int() == 8) {
 	    mode |= EX_ALL_INT64_DB;
+	  }
 	}
 	else {
 	  mode |= EX_ALL_INT64_DB;
