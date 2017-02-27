@@ -106,8 +106,8 @@ INCLUDE(ParseVariableArguments)
 #   ``NOEXESUFFIX``
 #
 #     If passed in, then ``${${PROJECT_NAME}_CMAKE_EXECUTABLE_SUFFIX}`` and
-#     not added to the end of the executable name (see `Executable and
-#     Target Name (TRIBITS_ADD_EXECUTABLE())`_).
+#     not added to the end of the executable name (except for native Windows
+#     builds, see `Executable and Target Name (TRIBITS_ADD_EXECUTABLE())`_).
 #
 #   ``ADD_DIR_TO_NAME``
 #
@@ -214,11 +214,25 @@ INCLUDE(ParseVariableArguments)
 #   ``LINKER_LANGUAGE (C|CXX|Fortran)``
 #
 #     If specified, overrides the linker language used by setting the built-in
-#     CMake target property ``LINKER_LANGUAGE``.  By default, CMake chooses the
-#     compiler to be used as the linker based on file extensions.  The most
-#     typical use case for this option is when Fortran-only or C-only sources
-#     are passed in through ``SOURCES`` but a C++ linker is needed because
-#     there are upstream C++ libraries.
+#     CMake target property ``LINKER_LANGUAGE``.  TriBITS sets the default
+#     linker language as follows::
+#
+#       IF (${PROJECT_NAME}_ENABLE_CXX)
+#         SET(LINKER_LANGUAGE CXX)
+#       ELSEIF (${PROJECT_NAME}_ENABLE_C)
+#         SET(LINKER_LANGUAGE C)
+#       ELSE()
+#         # Let CMake set the default linker language it wants based
+#         # on source file extensions passed into ``ADD_EXECUTABLE()``.
+#       ENDIF()
+#
+#     The reason for this logic is that on some platform if you have a Fortran
+#     or C main that links to C++ libraries, then you need the C++ compiler to
+#     do the final linking.  CMake does not seem to automatically know that it
+#     is pulling in C++ libraries and therefore needs to be told use C++ for
+#     linking.  This is the correct default behavior for mixed-language
+#     projects. However, this argument allows the developer to override this
+#     logic and use any linker language desired based on other considerations.
 #
 #   ``TARGET_DEFINES -D<define0> -D<define1> ...``
 #
@@ -263,6 +277,9 @@ INCLUDE(ParseVariableArguments)
 # The executable suffix ``${${PROJECT_NAME}_CMAKE_EXECUTABLE_SUFFIX}`` will be
 # added to the actual executable file name if the option ``NOEXESUFFIX`` is
 # *not* passed in but this suffix is never added to the target name.
+# (However, note that on Windows platforms, the default ``*.exe`` extension is
+# always added because windows will not run an exectuable in many contexts
+# unless it has the ``*.exe`` extension.)
 #
 # The reason that a default prefix is prepended to the executable and target
 # name is because the primary reason to create an executable is typically to
