@@ -104,6 +104,8 @@ namespace Ioss {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     virtual unsigned entity_field_support() const = 0;
 
+    bool using_parallel_io() const { return usingParallelIO; }
+
     /** \brief Get the local (process-specific) node number corresponding to a global node number.
      *
      *  \param[in] global The global node number
@@ -496,6 +498,7 @@ namespace Ioss {
     Ioss::DatabaseUsage    dbUsage;
     mutable Ioss::DataSize dbIntSizeAPI;
     mutable bool           lowerCaseVariableNames;
+    bool usingParallelIO;
 
     // List of element blocks that should be omitted from this model.
     // Surfaces will take this into account while splitting;

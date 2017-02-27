@@ -459,7 +459,9 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
       ex_err("ex_put_all_var_param_ext", errmsg, exerrval);
     }
   }
+#if NC_HAS_HDF5
   nc_def_var_fill(exoid, variable, 0, &fill);
+#endif
   return status;
 }
 

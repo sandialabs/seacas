@@ -260,6 +260,11 @@ if (NOT HDF5_ROOT AND HDF5_DIR )
   set(HDF5_ROOT ${HDF5_DIR})
 endif()  
 
+# If not set, default HDF5_ROOT to /usr
+if (NOT HDF5_ROOT)
+  set(HDF5_ROOT "/usr")
+endif()
+
 # Add the usual paths for searching using the HDF5_ROOT variable
 if (HDF5_ROOT)
   list(APPEND _hdf5_INCLUDE_SEARCH_DIRS

@@ -316,7 +316,9 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
         ex_err("ex_put_concat_elem_block", errmsg, exerrval);
         goto error_ret; /* exit define mode and return */
       }
+#if NC_HAS_HDF5
       nc_def_var_fill(exoid, temp, 0, &fill);
+#endif
       eb_array[iblk] = temp;
 
       dims[0] = numelbdim;

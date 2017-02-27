@@ -365,6 +365,10 @@ namespace Ioex {
         std::strncpy(qa[i].qa_record[0][1], qaRecords[j++].c_str(), MAX_STR_LENGTH);
         std::strncpy(qa[i].qa_record[0][2], qaRecords[j++].c_str(), MAX_STR_LENGTH);
         std::strncpy(qa[i].qa_record[0][3], qaRecords[j++].c_str(), MAX_STR_LENGTH);
+        qa[i].qa_record[0][0][MAX_STR_LENGTH] = '\0';
+        qa[i].qa_record[0][1][MAX_STR_LENGTH] = '\0';
+        qa[i].qa_record[0][2][MAX_STR_LENGTH] = '\0';
+        qa[i].qa_record[0][3][MAX_STR_LENGTH] = '\0';
       }
     }
 

@@ -1,4 +1,4 @@
-/*
+/* 
  * @HEADER
  *
  * ***********************************************************************
@@ -49,12 +49,14 @@
 extern "C" {
 #endif
 
-#include "zoltan_mem.h"
-#include <stdio.h>
 
-int main(int argc, char *argv[]) {
-  printf("This is a stub driver for the Memory Management package.\n");
-  return 0;
+#include <stdio.h>
+#include "zoltan_mem.h"
+
+int main(int argc, char *argv[])
+{
+printf("This is a stub driver for the Memory Management package.\n");
+return 0;
 }
 
 #ifdef __cplusplus

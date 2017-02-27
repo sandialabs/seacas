@@ -55,6 +55,9 @@ namespace Ioss {
       : m_databaseIO(database_io), m_activeFallThru(s_owner != -1)
 
   {
+    if (m_databaseIO->using_parallel_io()) {
+      return;
+    }
 
     const Ioss::ParallelUtils util = m_databaseIO->util();
     if (s_rank == -1) {
@@ -105,6 +108,9 @@ namespace Ioss {
 
   SerializeIO::~SerializeIO()
   {
+    if (m_databaseIO->using_parallel_io()) {
+      return;
+    }
     try {
       if (m_activeFallThru) {
         ;

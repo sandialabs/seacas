@@ -248,6 +248,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     return (EX_FATAL);
   }
 
+#if NC_HAS_HDF5
 #define EX_PREPARE_ATTRIB_ARRAY(TNAME, CURBLK, DNAME, DVAL, ID, VANAME, VADIM0, VADIM1, VANNAME)   \
   if (DVAL[iblk] > 0) {                                                                            \
     if ((status = nc_def_dim(exoid, DNAME(CURBLK + 1), DVAL[iblk], &VADIM1)) != NC_NOERR) {        \
@@ -286,6 +287,45 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     }                                                                                              \
     nc_def_var_fill(exoid, temp, 0, &fill);                                                        \
   }
+#else
+#define EX_PREPARE_ATTRIB_ARRAY(TNAME, CURBLK, DNAME, DVAL, ID, VANAME, VADIM0, VADIM1, VANNAME)   \
+  if (DVAL[iblk] > 0) {                                                                            \
+    if ((status = nc_def_dim(exoid, DNAME(CURBLK + 1), DVAL[iblk], &VADIM1)) != NC_NOERR) {        \
+      exerrval = status;                                                                           \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of attributes in " TNAME    \
+                                       " block %" PRId64 " in file id %d",                         \
+               ID, exoid);                                                                         \
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
+      goto error_ret; /* exit define mode and return */                                            \
+    }                                                                                              \
+                                                                                                   \
+    dims[0] = VADIM0;                                                                              \
+    dims[1] = VADIM1;                                                                              \
+                                                                                                   \
+    if ((status = nc_def_var(exoid, VANAME(CURBLK + 1), nc_flt_code(exoid), 2, dims, &temp)) !=    \
+        NC_NOERR) {                                                                                \
+      exerrval = status;                                                                           \
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR:  failed to define attributes for " TNAME            \
+                                       " block %" PRId64 " in file id %d",                         \
+               ID, exoid);                                                                         \
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
+      goto error_ret; /* exit define mode and return */                                            \
+    }                                                                                              \
+    ex_compress_variable(exoid, temp, 2);                                                          \
+                                                                                                   \
+    /* Attribute names... */                                                                       \
+    dims[0] = VADIM1;                                                                              \
+    dims[1] = strdim;                                                                              \
+                                                                                                   \
+    if ((status = nc_def_var(exoid, VANNAME(CURBLK + 1), NC_CHAR, 2, dims, &temp)) != NC_NOERR) {  \
+      exerrval = status;                                                                           \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR: failed to define " TNAME " attribute name array in file id %d", exoid);     \
+      ex_err("ex_put_concat_all_blocks", errmsg, exerrval);                                        \
+      goto error_ret; /* exit define mode and return */                                            \
+    }                                                                                              \
+  }
+#endif
 
 #define EX_PREPARE_CONN(TNAME, BLK, BLKID, BLKSZ, VNAME, DNAME)                                    \
   if (DNAME > 0) {                                                                                 \

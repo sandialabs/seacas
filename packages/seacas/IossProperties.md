@@ -16,7 +16,7 @@ DECOMPOSITION_METHOD | {method} | Decompose all input DB using `method`
 PARALLEL_CONSISTENCY | [on]/off | On if the client will call Ioss functions consistently on all processors. If off, then the auto-decomp and auto-join cannot be used.
 RETAIN_FREE_NODES | [on]/off | In auto-decomp, will nodes not connected to any elements be retained. 
 
-### Valid values for Decomposition Method*
+### Valid values for Decomposition Method
 
 Method     | Description
 ------------|-------------------
@@ -31,7 +31,7 @@ cyclic     | elements handed out to id % proc_count
 random     | elements assigned randomly to processors in a way that preserves balance (do not use for a real run)
 external   | Files are decomposed externally into a file-per-processor in a parallel run.
 
-## Output File Composition -- Single File output from parallel run instead of file-per-processor **
+## Output File Composition -- Single File output from parallel run instead of file-per-processor 
 
  Property        | Value  | Description
 -----------------|--------|-----------------------------------------------------------
@@ -39,7 +39,7 @@ COMPOSE_RESTART  | on/[off] |
 COMPOSE_RESULTS  | on/[off] |
 PARALLEL_IO_MODE | mpiio, pnetcdf |
 
-## Properties Related to byte size of reals and integers **
+## Properties Related to byte size of reals and integers 
  
  Property              | Value  | Description
 -----------------------|--------|-----------------------------------------------------------
@@ -48,7 +48,7 @@ PARALLEL_IO_MODE | mpiio, pnetcdf |
  REAL_SIZE_DB          | 4 / [8] | byte size of floating point stored on the database.
  REAL_SIZE_API         | 4 / [8] | byte size of floating point used in api functions.
 
-## Properties related to underlying file type (exodus only) **
+## Properties related to underlying file type (exodus only) 
  
  Property              | Value  | Description
 -----------------------|--------|-----------------------------------------------------------
@@ -59,7 +59,20 @@ PARALLEL_IO_MODE | mpiio, pnetcdf |
  APPEND_OUTPUT         | on/[off] | Append output to end of existing output database
 
 
-## Experimental **
+## Properties for the heartbeat output 
+ Property              | Value  | Description
+-----------------------|--------|-----------------------------------------------------------
+  FLUSH_INTERVAL       | int   | Minimum time interval between flushing heartbeat data to disk.  Default is 10 seconds
+  TIME_STAMP_FORMAT    | [%H:%M:%S] | Format used to format time stamp.  See strftime man page
+  SHOW_TIME_STAMP      | on/off | Should the output lines be preceded by the timestamp
+  PRECISION            | 0..16 [5] | Precision used for floating point output.
+  FIELD_WIDTH          | 0.. |  Width of an output field. If 0, then use natural width.
+  SHOW_LABELS          | on/[off]  | Should each field be preceded by its name (ke=1.3e9, ie=2.0e9)
+  SHOW_LEGEND          | [on]/off  | Should a legend be printed at the beginning of the output showing the field names for each column of data.
+  SHOW_TIME_FIELD      | on/[off]  | Should the current analysis time be output as the first field.
+
+
+## Experimental 
 
  Property              | Value  | Description
 -----------------------|--------|-----------------------------------------------------------
