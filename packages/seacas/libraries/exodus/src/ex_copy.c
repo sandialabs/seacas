@@ -51,6 +51,12 @@
     return EX_FATAL;                                                 \
   }
 
+#define EXCHECKF(funcall)                                      \
+  if ((funcall) != NC_NOERR) {                                        \
+    fprintf(stderr, "Error calling %s\n", TOSTRING(funcall)); \
+    goto err_ret;                                                 \
+  }
+
 
 /*! \cond INTERNAL */
 struct ncdim
@@ -509,8 +515,8 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 
   char errmsg[MAX_ERR_LENGTH];
   int  status;
-  int *dim_in_id;
-  int *dim_out_id;
+  int *dim_in_id = NULL;
+  int *dim_out_id = NULL;
   int  idx;
   int  nbr_dim;
   int  var_in_id;
@@ -540,14 +546,14 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   dim_out_id = malloc(nbr_dim * sizeof(int));
 
   /* Get the dimension IDs */
-  EXCHECK(nc_inq_vardimid(in_id, var_in_id, dim_in_id));
+  EXCHECKF(nc_inq_vardimid(in_id, var_in_id, dim_in_id));
 
   /* Get the dimension sizes and names */
   for (idx = 0; idx < nbr_dim; idx++) {
     char   dim_nm[NC_MAX_NAME];
     size_t dim_sz;
 
-    EXCHECK(nc_inq_dim(in_id, dim_in_id[idx], dim_nm, &dim_sz));
+    EXCHECKF(nc_inq_dim(in_id, dim_in_id[idx], dim_nm, &dim_sz));
 
     /* See if the dimension has already been defined */
     status = nc_inq_dimid(out_id, dim_nm, &dim_out_id[idx]);
@@ -555,10 +561,10 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
     /* If the dimension hasn't been defined, copy it */
     if (status != NC_NOERR) {
       if (dim_in_id[idx] != rec_dim_id) {
-        EXCHECK(nc_def_dim(out_id, dim_nm, dim_sz, &dim_out_id[idx]));
+        EXCHECKF(nc_def_dim(out_id, dim_nm, dim_sz, &dim_out_id[idx]));
       }
       else {
-        EXCHECK(nc_def_dim(out_id, dim_nm, NC_UNLIMITED, &dim_out_id[idx]));
+        EXCHECKF(nc_def_dim(out_id, dim_nm, NC_UNLIMITED, &dim_out_id[idx]));
       }
     }
   }
@@ -569,7 +575,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
      file's IO_word_size */
 
   if ((var_type == NC_FLOAT) || (var_type == NC_DOUBLE)) {
-    EXCHECK(nc_def_var(out_id, var_nm, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
+    EXCHECKF(nc_def_var(out_id, var_nm, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
     ex_compress_variable(out_id, var_out_id, 2);
   }
   else {
@@ -589,6 +595,12 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   free(dim_out_id);
 
   return var_out_id;
+
+ err_ret:
+  free(dim_in_id);
+  free(dim_out_id);
+  return EX_FATAL;
+  
 } /* end cpy_var_def() */
 
 /*! \internal */
@@ -603,15 +615,15 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
    * to an output netCDF file.
    */
 
-  int *   dim_id_in;
-  int *   dim_id_out;
+  int *   dim_id_in = NULL;
+  int *   dim_id_out = NULL;
   int     idx;
   int     nbr_dim;
   int     var_in_id;
   int     var_out_id;
-  size_t *dim_cnt;
-  size_t *dim_sz;
-  size_t *dim_srt;
+  size_t *dim_cnt = NULL;
+  size_t *dim_sz = NULL;
+  size_t *dim_srt = NULL;
   size_t  var_sz = 1L;
   nc_type var_type_in, var_type_out;
 
@@ -635,8 +647,8 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   dim_srt    = calloc(nbr_dim, sizeof(size_t));
 
   /* Get the dimension IDs from the input file */
-  EXCHECK(nc_inq_vardimid(in_id, var_in_id, dim_id_in));
-  EXCHECK(nc_inq_vardimid(out_id, var_out_id, dim_id_out));
+  EXCHECKF(nc_inq_vardimid(in_id, var_in_id, dim_id_in));
+  EXCHECKF(nc_inq_vardimid(out_id, var_out_id, dim_id_out));
 
   /* Get the dimension sizes and names from the input file */
   for (idx = 0; idx < nbr_dim; idx++) {
@@ -652,8 +664,8 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
 
     /* If client is increasing any sizes, then need to make sure
        the void_ptr is large enough to hold new dimension */
-    EXCHECK(nc_inq_dimlen(in_id, dim_id_in[idx], &dim_in));
-    EXCHECK(nc_inq_dimlen(out_id, dim_id_out[idx], &dim_out));
+    EXCHECKF(nc_inq_dimlen(in_id, dim_id_in[idx], &dim_in));
+    EXCHECKF(nc_inq_dimlen(out_id, dim_id_out[idx], &dim_out));
     dim_cnt[idx] = dim_in > dim_out ? dim_in : dim_out;
 
     /* Initialize the indicial offset and stride arrays */
@@ -673,28 +685,28 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   if (nbr_dim == 0) { /* variable is a scalar */
 
     if (var_type_in == NC_INT && var_type_out == NC_INT) {
-      EXCHECK(nc_get_var1_int(in_id, var_in_id, 0L, void_ptr));
-      EXCHECK(nc_put_var1_int(out_id, var_out_id, 0L, void_ptr));
+      EXCHECKF(nc_get_var1_int(in_id, var_in_id, 0L, void_ptr));
+      EXCHECKF(nc_put_var1_int(out_id, var_out_id, 0L, void_ptr));
     }
 
     else if (var_type_in == NC_INT64 && var_type_out == NC_INT64) {
-      EXCHECK(nc_get_var1_longlong(in_id, var_in_id, 0L, void_ptr));
-      EXCHECK(nc_put_var1_longlong(out_id, var_out_id, 0L, void_ptr));
+      EXCHECKF(nc_get_var1_longlong(in_id, var_in_id, 0L, void_ptr));
+      EXCHECKF(nc_put_var1_longlong(out_id, var_out_id, 0L, void_ptr));
     }
 
     else if (var_type_in == NC_FLOAT) {
-      EXCHECK(nc_get_var1_float(in_id, var_in_id, 0L, void_ptr));
-      EXCHECK(nc_put_var1_float(out_id, var_out_id, 0L, void_ptr));
+      EXCHECKF(nc_get_var1_float(in_id, var_in_id, 0L, void_ptr));
+      EXCHECKF(nc_put_var1_float(out_id, var_out_id, 0L, void_ptr));
     }
 
     else if (var_type_in == NC_DOUBLE) {
-      EXCHECK(nc_get_var1_double(in_id, var_in_id, 0L, void_ptr));
-      EXCHECK(nc_put_var1_double(out_id, var_out_id, 0L, void_ptr));
+      EXCHECKF(nc_get_var1_double(in_id, var_in_id, 0L, void_ptr));
+      EXCHECKF(nc_put_var1_double(out_id, var_out_id, 0L, void_ptr));
     }
 
     else if (var_type_in == NC_CHAR) {
-      EXCHECK(nc_get_var1_text(in_id, var_in_id, 0L, void_ptr));
-      EXCHECK(nc_put_var1_text(out_id, var_out_id, 0L, void_ptr));
+      EXCHECKF(nc_get_var1_text(in_id, var_in_id, 0L, void_ptr));
+      EXCHECKF(nc_put_var1_text(out_id, var_out_id, 0L, void_ptr));
     }
 
     else {
@@ -704,28 +716,28 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   else { /* variable is a vector */
 
     if (var_type_in == NC_INT && var_type_out == NC_INT) {
-      EXCHECK(nc_get_var_int(in_id, var_in_id, void_ptr));
-      EXCHECK(nc_put_var_int(out_id, var_out_id, void_ptr));
+      EXCHECKF(nc_get_var_int(in_id, var_in_id, void_ptr));
+      EXCHECKF(nc_put_var_int(out_id, var_out_id, void_ptr));
     }
 
     else if (var_type_in == NC_INT64 && var_type_out == NC_INT64) {
-      EXCHECK(nc_get_var_longlong(in_id, var_in_id, void_ptr));
-      EXCHECK(nc_put_var_longlong(out_id, var_out_id, void_ptr));
+      EXCHECKF(nc_get_var_longlong(in_id, var_in_id, void_ptr));
+      EXCHECKF(nc_put_var_longlong(out_id, var_out_id, void_ptr));
     }
 
     else if (var_type_in == NC_FLOAT) {
-      EXCHECK(nc_get_var_float(in_id, var_in_id, void_ptr));
-      EXCHECK(nc_put_var_float(out_id, var_out_id, void_ptr));
+      EXCHECKF(nc_get_var_float(in_id, var_in_id, void_ptr));
+      EXCHECKF(nc_put_var_float(out_id, var_out_id, void_ptr));
     }
 
     else if (var_type_in == NC_DOUBLE) {
-      EXCHECK(nc_get_var_double(in_id, var_in_id, void_ptr));
-      EXCHECK(nc_put_var_double(out_id, var_out_id, void_ptr));
+      EXCHECKF(nc_get_var_double(in_id, var_in_id, void_ptr));
+      EXCHECKF(nc_put_var_double(out_id, var_out_id, void_ptr));
     }
 
     else if (var_type_in == NC_CHAR) {
-      EXCHECK(nc_get_var_text(in_id, var_in_id, void_ptr));
-      EXCHECK(nc_put_var_text(out_id, var_out_id, void_ptr));
+      EXCHECKF(nc_get_var_text(in_id, var_in_id, void_ptr));
+      EXCHECKF(nc_put_var_text(out_id, var_out_id, void_ptr));
     }
 
     else {
@@ -744,6 +756,16 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   free(void_ptr);
 
   return (EX_NOERR);
+
+ err_ret:
+  if (dim_cnt) free(dim_cnt);
+  if (dim_id_in) free(dim_id_in);
+  if (dim_id_out) free(dim_id_out);
+  if (dim_sz) free(dim_sz);
+  if (dim_srt)  free(dim_srt);
+  if (void_ptr) free(void_ptr);
+
+  return (EX_FATAL);
 
 } /* end cpy_var_val() */
 
@@ -838,12 +860,12 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
       count[1] = num_nodes;
 
       if (var_type_in == NC_FLOAT) {
-        EXCHECK(nc_get_var_float(in_id, var_in_id[i], void_ptr));
-        EXCHECK(nc_put_vara_float(out_id, var_out_id, start, count, void_ptr));
+        EXCHECKF(nc_get_var_float(in_id, var_in_id[i], void_ptr));
+        EXCHECKF(nc_put_vara_float(out_id, var_out_id, start, count, void_ptr));
       }
       else {
-        EXCHECK(nc_get_var_double(in_id, var_in_id[i], void_ptr));
-        EXCHECK(nc_put_vara_double(out_id, var_out_id, start, count, void_ptr));
+        EXCHECKF(nc_get_var_double(in_id, var_in_id[i], void_ptr));
+        EXCHECKF(nc_put_vara_double(out_id, var_out_id, start, count, void_ptr));
       }
     }
   }
@@ -851,6 +873,11 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
   /* Free the space that held the variable */
   free(void_ptr);
   return (EX_NOERR);
+
+ err_ret:
+  free(void_ptr);
+  return EX_FATAL;
+  
 } /* end cpy_coord_val() */
 
 /*! \internal */
