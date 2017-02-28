@@ -104,6 +104,7 @@ namespace Iocgns {
     // Metadata-related functions.
     void read_meta_data() override;
     void write_meta_data();
+    void write_results_meta_data();
 
   private:
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
@@ -187,6 +188,9 @@ namespace Iocgns {
     mutable int cgnsFilePtr;
     size_t      nodeCount;
     size_t      elementCount;
+
+    int currentVertexSolutionIndex = 0;
+    int currentCellCenterSolutionIndex = 0;
 
     mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     mutable std::vector<size_t>
