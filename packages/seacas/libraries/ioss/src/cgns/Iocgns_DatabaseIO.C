@@ -92,6 +92,14 @@ namespace Iocgns {
     openDatabase();
   }
 
+  DatabaseIO::~DatabaseIO()
+  {
+    for (auto &gtb : m_globalToBlockLocalNodeMap) {
+      delete gtb.second;
+    }
+    cg_close(cgnsFilePtr);
+  }
+
   void DatabaseIO::openDatabase() const
   {
     if (cgnsFilePtr < 0) {

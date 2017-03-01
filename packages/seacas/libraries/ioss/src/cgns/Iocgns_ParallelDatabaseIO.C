@@ -99,7 +99,14 @@ namespace Iocgns {
     openDatabase();
   }
 
-  ParallelDatabaseIO::~ParallelDatabaseIO() = default;
+  ParallelDatabaseIO::~ParallelDatabaseIO()
+  {
+    for (auto &gtb : m_globalToBlockLocalNodeMap) {
+      delete gtb.second;
+    }
+    cgp_close(cgnsFilePtr);
+  }
+
   void ParallelDatabaseIO::openDatabase() const
   {
     if (cgnsFilePtr < 0) {
