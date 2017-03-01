@@ -1202,8 +1202,10 @@ C     --Read the database time steps
       
 C ... NOTE: VARNP and VAREL are treated as doubly-dimensioned arrays
 C           dimensioned as (NUMEL, NVAREL)
+      iostep = 0
       do 110 istep = 1, nsteps
         if (ia(kitims+istep-1) .eq. 0) then
+          iostep = iostep + 1
            CALL DBISTE (NDBIN, '*', istep,
      &      NVARGL,
      *      NVARNP, NUMNP0,
@@ -1255,7 +1257,7 @@ C     number element blocks, and truth table.
 
            END IF
 
-           CALL DBOSTE (NDBOUT, ISTEP,
+           CALL DBOSTE (NDBOUT, IOSTEP,
      &          NVARGL, NVARNP, NUMNP, NVAREL, INOD2EL, NELBLK,
      $          IA(KNELB), LA(KIEVOK), IA(KIDELB),
      $          NVARNS, NUMNPS0, IA(KNNNS0), IA(KNSVOK0), IA(KIDNS0),
@@ -1264,13 +1266,13 @@ C     number element blocks, and truth table.
      $          A(KVARGL), A(KVARNP), A(KVAREL), A(KVARNS), A(KVARSS),
      $          A(KELMTZ))
            
-           WRITE (*, 10000) ISTEP, TIME
+           WRITE (*, 10000) IOSTEP, TIME
 10000      FORMAT (' ', I8, ' time steps processed.  Time = ',1PE10.3)
         end if
  110  continue
       
  120  CONTINUE
-      WRITE (SCRSTR, '(I9)', IOSTAT=K) NSTEPS
+      WRITE (SCRSTR, '(I9)', IOSTAT=K) IOSTEP
       CALL SQZSTR (SCRSTR, LSTR)
       WRITE (*, 10010) SCRSTR(:LSTR)
 10010 FORMAT (/, 4X, A,
