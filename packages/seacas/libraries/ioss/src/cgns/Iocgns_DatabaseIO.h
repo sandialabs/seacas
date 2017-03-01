@@ -88,7 +88,7 @@ namespace Iocgns {
     int64_t node_global_to_local(int64_t global, bool must_exist) const override;
     int64_t element_global_to_local(int64_t global) const override;
 
-    ~DatabaseIO() override = default;
+    ~DatabaseIO() override;
 
     bool node_major() const override { return false; }
 
