@@ -114,18 +114,12 @@ namespace Iocgns {
 #if 0
       // Currently, cgp_mpi_comm returns an internal NO_ERROR value which
       // is equal to -1.  There is an issue submitted for this.
-      int ierr = cgp_mpi_comm(util().communicator());
-      if (ierr != CG_OK) {
-        Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-      }
+      CGCHECK(cgp_mpi_comm(util().communicator()));
 #else
       cgp_mpi_comm(util().communicator());
 #endif
-      int ierr = cgp_pio_mode(CGP_COLLECTIVE);
-      if (ierr != CG_OK) {
-        Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-      }
-      ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
+      CGCHECK(cgp_pio_mode(CGP_COLLECTIVE));
+      int ierr = cgp_open(get_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
         // NOTE: Code will not continue past this call...
         std::ostringstream errmsg;
@@ -151,10 +145,7 @@ namespace Iocgns {
   void ParallelDatabaseIO::closeDatabase() const
   {
     if (cgnsFilePtr != -1) {
-      int ierr = cgp_close(cgnsFilePtr);
-      if (ierr != CG_OK) {
-        Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-      }
+      CGCHECK(cgp_close(cgnsFilePtr));
     }
     cgnsFilePtr = -1;
   }
@@ -189,10 +180,7 @@ namespace Iocgns {
     // Determine the number of bases in the grid.
     // Currently only handle 1.
     cgsize_t n_bases = 0;
-    int      ierr    = cg_nbases(cgnsFilePtr, &n_bases);
-    if (ierr != CG_OK) {
-      Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-    }
+    CGCHECK(cg_nbases(cgnsFilePtr, &n_bases));
     if (n_bases != 1) {
       std::ostringstream errmsg;
       errmsg << "CGNS: Too many bases; only support files with a single bases at this time";
@@ -330,10 +318,7 @@ namespace Iocgns {
     char     basename[33];
     cgsize_t cell_dimension = 0;
     cgsize_t phys_dimension = 0;
-    int      ierr = cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
-    if (ierr != CG_OK) {
-      Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-    }
+    CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
     // Iterate all structured blocks and set the intervals to zero
     // if the m_proc field does not match current processor...
@@ -621,27 +606,20 @@ namespace Iocgns {
           name += "_to_";
           name += (*J)->name();
           const auto &d1_name = (*J)->name();
-          int         ierr =
-              cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
+	  CGCHECK(cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
                             CG_PointList, point_list.size(), TOPTR(point_list), d1_name.c_str(),
                             CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-                            point_list_donor.size(), TOPTR(point_list_donor), &gc_idx);
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+				point_list_donor.size(), TOPTR(point_list_donor), &gc_idx));
 
           name = (*J)->name();
           name += "_to_";
           name += (*I)->name();
           const auto &d2_name = (*J)->name();
 
-          ierr = cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
+          CGCHECK(cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
                                CG_PointList, point_list_donor.size(), TOPTR(point_list_donor),
                                d2_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-                               point_list.size(), TOPTR(point_list), &gc_idx);
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+				point_list.size(), TOPTR(point_list), &gc_idx));
         }
       }
     }
@@ -911,34 +889,22 @@ namespace Iocgns {
       double *rdata = static_cast<double *>(data);
 
       if (field.get_name() == "mesh_model_coordinates_x") {
-        int ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, rdata);
-        if (ierr < 0) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
-        int ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 2, rmin, rmax, rdata);
-        if (ierr < 0) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 2, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
-        int ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 3, rmin, rmax, rdata);
-        if (ierr < 0) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 3, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
         char     basename[33];
         cgsize_t cell_dimension = 0;
         cgsize_t phys_dimension = 0;
-        int      ierr = cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
         // Data required by upper classes store x0, y0, z0, ... xn,
         // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
@@ -946,10 +912,7 @@ namespace Iocgns {
         // memory to read in the data and then map into supplied
         // 'data'
         std::vector<double> coord(num_to_get);
-        ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, TOPTR(coord));
-        if (ierr < 0) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, TOPTR(coord)));
 
         // Map to global coordinate position...
         for (cgsize_t i = 0; i < num_to_get; i++) {
@@ -957,10 +920,7 @@ namespace Iocgns {
         }
 
         if (phys_dimension >= 2) {
-          ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 2, rmin, rmax, TOPTR(coord));
-          if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+          CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 2, rmin, rmax, TOPTR(coord)));
 
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
@@ -969,10 +929,7 @@ namespace Iocgns {
         }
 
         if (phys_dimension == 3) {
-          ierr = cgp_coord_read_data(cgnsFilePtr, base, zone, 3, rmin, rmax, TOPTR(coord));
-          if (ierr < 0) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+          CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 3, rmin, rmax, TOPTR(coord)));
 
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
@@ -1246,44 +1203,23 @@ namespace Iocgns {
               // Create the zone
               // Output this zones coordinates...
               int crd_idx = 0;
-              int ierr =
-                  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx);
-              if (ierr != CG_OK) {
-                Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-              }
+	      CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
               cgsize_t start  = node_offset[zone - 1] + 1;
               cgsize_t finish = start + node_count[zone - 1] - 1;
 
               auto xx = node_count[zone - 1] > 0 ? TOPTR(x) : nullptr;
-              ierr    = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx);
-              if (ierr != CG_OK) {
-                Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-              }
+              CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
 
               if (spatial_dim > 1) {
-                ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY",
-                                       &crd_idx);
-                if (ierr != CG_OK) {
-                  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-                }
+                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
                 auto yy = node_count[zone - 1] > 0 ? TOPTR(y) : nullptr;
-                ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy);
-                if (ierr != CG_OK) {
-                  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-                }
+                CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy));
               }
 
               if (spatial_dim > 2) {
-                ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ",
-                                       &crd_idx);
-                if (ierr != CG_OK) {
-                  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-                }
+                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
                 auto zz = node_count[zone - 1] > 0 ? TOPTR(z) : nullptr;
-                ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz);
-                if (ierr != CG_OK) {
-                  Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-                }
+                CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz));
               }
             }
           }
@@ -1317,18 +1253,12 @@ namespace Iocgns {
               // Create the zone
               // Output this zones coordinates...
               int crd_idx = 0;
-              int ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, cgns_name.c_str(),
-                                         &crd_idx);
-              if (ierr != CG_OK) {
-                Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-              }
+              CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, cgns_name.c_str(),
+				      &crd_idx));
               cgsize_t start  = node_offset[zone - 1] + 1;
               cgsize_t finish = start + node_count[zone - 1] - 1;
               auto     xx     = node_count[zone - 1] > 0 ? TOPTR(xyz) : nullptr;
-              ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx);
-              if (ierr != CG_OK) {
-                Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-              }
+              CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
             }
           }
         }
@@ -1396,11 +1326,7 @@ namespace Iocgns {
         int base = 1;
         int zone = 0;
 
-        int ierr =
-            cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+	CGCHECK(cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
         eb->property_update("zone", zone);
         eb->property_update("section", zone);
         eb->property_update("base", base);
@@ -1408,11 +1334,7 @@ namespace Iocgns {
         if (size[1] > 0) {
           CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
           int              sect = 0;
-          ierr =
-              cgp_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, size[1], 0, &sect);
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+	  CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, size[1], 0, &sect));
 
           cgsize_t start = 0;
           MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
@@ -1430,11 +1352,8 @@ namespace Iocgns {
             idata[i]     = connectivity_map[cur_pos];
           }
 
-          ierr = cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start + 1,
-                                         start + num_to_get, idata);
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+          CGCHECK(cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start + 1,
+					  start + num_to_get, idata));
 
           cgsize_t eb_size = num_to_get;
           MPI_Allreduce(MPI_IN_PLACE, &eb_size, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
@@ -1540,39 +1459,18 @@ namespace Iocgns {
 
       int crd_idx = 0;
       if (field.get_name() == "mesh_model_coordinates_x") {
-        int ierr;
-        ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
-        ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
+        CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
-        int ierr;
-        ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
-        ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
+	CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
-        int ierr;
-        ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
-        ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
+        CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
@@ -1589,30 +1487,16 @@ namespace Iocgns {
           coord[i] = rdata[phys_dimension * i + 0];
         }
 
-        int ierr;
-        ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
-        ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord));
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
+        CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
 
         if (phys_dimension >= 2) {
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
             coord[i] = rdata[phys_dimension * i + 1];
           }
-          ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx);
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
-
-          ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord));
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+          CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
+          CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
         }
 
         if (phys_dimension == 3) {
@@ -1621,14 +1505,8 @@ namespace Iocgns {
             coord[i] = rdata[phys_dimension * i + 2];
           }
 
-          ierr = cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx);
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
-          ierr = cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord));
-          if (ierr != CG_OK) {
-            Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-          }
+          CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
+          CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
         }
       }
     }
@@ -1710,11 +1588,8 @@ namespace Iocgns {
         //       the data so would have to generate it.  This may cause problems
         //       with codes that use the downstream data if they base the BC off
         //       of the nodes instead of the element/side info.
-        int ierr = cgp_section_write(cgnsFilePtr, base, zone, name.c_str(), type, cg_start, cg_end,
-                                     0, &sect);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, name.c_str(), type, cg_start, cg_end,
+				  0, &sect));
 
         sb->property_update("section", sect);
 
@@ -1750,10 +1625,7 @@ namespace Iocgns {
         cg_end   = cg_start + local_face_count - 1;
 
         auto xx = num_to_get > 0 ? TOPTR(parent) : nullptr;
-        ierr    = cgp_parent_data_write(cgnsFilePtr, base, zone, sect, cg_start, cg_end, xx);
-        if (ierr != CG_OK) {
-          Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
-        }
+        CGCHECK(cgp_parent_data_write(cgnsFilePtr, base, zone, sect, cg_start, cg_end, xx));
         m_bcOffset[zone] += size;
 
         return num_to_get;
