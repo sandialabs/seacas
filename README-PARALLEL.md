@@ -55,14 +55,13 @@ and `REALTYPEWIDTH` to 64
     ```
 
 #### NetCDF
- * `cd netcdf-4.3.3.1` and enter the command:
+ * `cd netcdf-4.4.1.1` and enter the command:
  
     ```
     export CC=mpicc
     ./configure --enable-netcdf-4  --enable-shared \
       --disable-fsync --prefix ${ACCESS} \
-      --disable-dap --disable-cdmremote 
-      --enable-parallel --enable-pnetcdf
+      --disable-dap --enable-parallel --enable-pnetcdf
     ```
 
  * If the configure step complains about not being able to find the
@@ -72,6 +71,9 @@ and `REALTYPEWIDTH` to 64
     CFLAGS='-I{HDF5_ROOT}/include'; export CFLAGS
     LDFLAGS='-L{HDF5_ROOT}/lib   '; export LDFLAGS
     ```
+
+	Where `HDF5_ROOT` points to the root of where the HDF5 library and include files
+    are installed (HDF5_ROOT = ACCESS if you followed the example above for building HDF5).
 
 ## Configure, Build, and Install SEACAS
 Build as described in README.md.  If you are using the `cmake-config`
