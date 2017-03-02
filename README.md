@@ -41,7 +41,7 @@ build SEACAS.
  * [CGNS](#cgns) -- experimental optional
 
 #### Zoltan
-A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
+A snapshot of [zoltan_distrib_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 #### HDF5
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
@@ -72,7 +72,8 @@ The most recent released version is recommended. For use with Exodus, some local
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
- * `cd netcdf-4.4.1.1` and enter the command:
+  * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
+  * `cd netcdf-4.4.1.1` and enter the command:
 
     ```
     mkdir build
@@ -81,6 +82,7 @@ The most recent released version is recommended. For use with Exodus, some local
     ```
 
  * `make && make install`
+
 
 #### MatIO
 The MatIO library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
