@@ -185,6 +185,9 @@ namespace Ioss {
 
   Region::~Region()
   {
+    // Do anything to the database to make it consistent prior to closing and desctructing...
+    get_database()->finalize_database();
+    
     // Region owns all sub-grouping entities it contains...
     try {
       for (auto nb : nodeBlocks) {
