@@ -72,8 +72,8 @@ The most recent released version is recommended. For use with Exodus, some local
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
-  * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
-  * `cd netcdf-4.4.1.1` and enter the command:
+ * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
+ * `cd netcdf-4.4.1.1` and enter the command:
 
     ```
     mkdir build
