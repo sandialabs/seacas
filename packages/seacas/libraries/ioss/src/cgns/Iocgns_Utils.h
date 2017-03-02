@@ -45,6 +45,15 @@
 #include <ostream>
 #include <string>
 
+#define CGCHECK(funcall)                                                                           \
+  if ((funcall) != CG_OK) {                                                                        \
+    Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);             \
+  }
+#define CGCHECK2(funcall)                                                                          \
+  if ((funcall) != CG_OK) {                                                                        \
+    Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor); \
+  }
+
 namespace Iocgns {
   class Utils
   {

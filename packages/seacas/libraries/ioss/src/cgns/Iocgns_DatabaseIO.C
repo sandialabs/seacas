@@ -74,11 +74,6 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
-#define CGCHECK(funcall)                                                                           \
-  if ((funcall) != CG_OK) {                                                                        \
-    Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);                     \
-  }
-
 extern char hdf5_access[64];
 
 namespace Iocgns {
