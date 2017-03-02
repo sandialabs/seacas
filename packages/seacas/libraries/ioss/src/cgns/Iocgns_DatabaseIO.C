@@ -79,6 +79,8 @@
     Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor); \
   }
 
+extern char hdf5_access[64];
+
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -108,6 +110,10 @@ namespace Iocgns {
   void DatabaseIO::openDatabase() const
   {
     if (cgnsFilePtr < 0) {
+      if ((is_input() && properties.exists("MEMORY_READ")) ||
+          (!is_input() && properties.exists("MEMORY_WRITE"))) {
+        strcpy(hdf5_access, "PARALLEL");
+      }
       int mode = is_input() ? CG_MODE_READ : CG_MODE_WRITE;
       int ierr = cg_open(get_filename().c_str(), mode, &cgnsFilePtr);
       if (ierr != CG_OK) {
@@ -118,6 +124,11 @@ namespace Iocgns {
                << "CGNS Error: '" << cg_get_error() << "'";
         IOSS_ERROR(errmsg);
       }
+      if ((is_input() && properties.exists("MEMORY_READ")) ||
+          (!is_input() && properties.exists("MEMORY_WRITE"))) {
+        strcpy(hdf5_access, "NATIVE");
+      }
+
 #if 0
       // This isn't currently working since CGNS currently has chunking
       // disabled for HDF5 files and compression requires chunking.
