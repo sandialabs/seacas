@@ -1449,22 +1449,22 @@ namespace Iocgns {
         // owned and shared so we could update the connectivity...
         // The 'connectivity_map' value indicates whether it is owned or shared --
         // if 'connectivity_map[i] > owned_node_offset, then it is owned; otherwise shared.
-	if (!nodes.empty()) {
-	  for (size_t i = 0; i < nodes.size(); i++) {
-	    if (connectivity_map[i] <= (cgsize_t)owned_node_offset) {
-	      nodes[i] = std::numeric_limits<cgsize_t>::max();
-	    }
-	  }
-	  connectivity_map.clear();
-	  connectivity_map.shrink_to_fit();
+        if (!nodes.empty()) {
+          for (size_t i = 0; i < nodes.size(); i++) {
+            if (connectivity_map[i] <= (cgsize_t)owned_node_offset) {
+              nodes[i] = std::numeric_limits<cgsize_t>::max();
+            }
+          }
+          connectivity_map.clear();
+          connectivity_map.shrink_to_fit();
 
-	  std::sort(nodes.begin(), nodes.end());
-	  nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
-	  if (nodes.back() == std::numeric_limits<cgsize_t>::max()) {
-	    nodes.pop_back();
-	  }
-	  nodes.shrink_to_fit();
-	}
+          std::sort(nodes.begin(), nodes.end());
+          nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
+          if (nodes.back() == std::numeric_limits<cgsize_t>::max()) {
+            nodes.pop_back();
+          }
+          nodes.shrink_to_fit();
+        }
         assert(nodes.size() == owned_node_count);
 
         // Now we have a valid zone so can update some data structures...

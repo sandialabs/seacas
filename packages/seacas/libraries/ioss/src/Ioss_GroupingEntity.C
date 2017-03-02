@@ -531,8 +531,7 @@ void Ioss::GroupingEntity::verify_field_exists(const std::string &field_name,
   }
 }
 
-void Ioss::GroupingEntity::property_update(const std::string &property,
-					   int64_t value) const
+void Ioss::GroupingEntity::property_update(const std::string &property, int64_t value) const
 {
   if (property_exists(property)) {
     if (get_property(property).get_int() != value) {
@@ -546,4 +545,3 @@ void Ioss::GroupingEntity::property_update(const std::string &property,
     nge->property_add(Ioss::Property(property, value));
   }
 }
-
