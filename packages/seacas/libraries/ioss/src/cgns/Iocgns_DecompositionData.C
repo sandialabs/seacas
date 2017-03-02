@@ -188,8 +188,8 @@ namespace {
     }
   }
 
-  void set_preferential_ordinals(const std::string &preferential_ordinals,
-				 std::vector<Iocgns::StructuredZoneData *> &zones)
+  void set_preferential_ordinals(const std::string &                        preferential_ordinals,
+                                 std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     // The "preferential_ordinals" string is of the form:
     //   z#o,z#o,z#o
@@ -205,7 +205,7 @@ namespace {
     //:    <li>"--Z"                -- zones 1 to oo by Z</li>
     //:  </ul>
     // The ordinal specifies which direction the zone will *not* be split along.
-    
+
     // Slit into fields using the commas as delimiters
     std::vector<std::string> fields = Ioss::tokenize(preferential_ordinals, ",");
 
@@ -218,48 +218,50 @@ namespace {
       // Convert ordinal to integer 0,1,2
       int ordinal = -1;
       if (ordinal_c == 'I' || ordinal_c == 'i') {
-	ordinal = 0;
+        ordinal = 0;
       }
       else if (ordinal_c == 'J' || ordinal_c == 'j') {
-	ordinal = 1;
+        ordinal = 1;
       }
       else if (ordinal_c == 'K' || ordinal_c == 'k') {
-	ordinal = 2;
+        ordinal = 2;
       }
       else {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: The preferential ordinals string specifies an illegal ordinal direction: '"
-	       << ordinal_c << "'.  Valid values are I, J, or K.";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: The preferential ordinals string specifies an illegal ordinal "
+                  "direction: '"
+               << ordinal_c << "'.  Valid values are I, J, or K.";
+        IOSS_ERROR(errmsg);
       }
-      
+
       // Convert remaining characters of 'field' to integer...
       auto beg_end_step = Ioss::tokenize(field, "-");
-      int beg  = 1;
-      int end  = (int)zones.size();
-      int step = 1;
+      int  beg          = 1;
+      int  end          = (int)zones.size();
+      int  step         = 1;
 
       if (beg_end_step.size() >= 1) {
-	beg = strtol(beg_end_step[0].c_str(), nullptr, 0);
+        beg = strtol(beg_end_step[0].c_str(), nullptr, 0);
       }
       if (beg_end_step.size() >= 2) {
-	end = strtol(beg_end_step[1].c_str(), nullptr, 0);
+        end = strtol(beg_end_step[1].c_str(), nullptr, 0);
       }
       if (beg_end_step.size() == 3) {
-	step = strtol(beg_end_step[2].c_str(), nullptr, 0);
+        step = strtol(beg_end_step[2].c_str(), nullptr, 0);
       }
 
-      if (beg <= 0 || beg > (int)zones.size() ||
-	  end <= 0 || end > (int)zones.size() ||
-	  beg > end || step <= 0) {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: The preferential ordinals string specifies an illegal zone range: begin = "
-	       << beg << ", end = " << end << ", step = " << step << ". Valid values are in the range 1 to " << zones.size() << ".";
-	IOSS_ERROR(errmsg);
+      if (beg <= 0 || beg > (int)zones.size() || end <= 0 || end > (int)zones.size() || beg > end ||
+          step <= 0) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: The preferential ordinals string specifies an illegal zone range: "
+                  "begin = "
+               << beg << ", end = " << end << ", step = " << step
+               << ". Valid values are in the range 1 to " << zones.size() << ".";
+        IOSS_ERROR(errmsg);
       }
 
-      for (auto zone = beg; zone <= end; zone+=step) {
-	zones[zone-1]->m_preferentialOrdinal = ordinal;
+      for (auto zone = beg; zone <= end; zone += step) {
+        zones[zone - 1]->m_preferentialOrdinal = ordinal;
       }
     }
   }

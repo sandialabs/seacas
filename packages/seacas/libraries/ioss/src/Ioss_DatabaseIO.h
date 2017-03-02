@@ -130,7 +130,7 @@ namespace Ioss {
     // Do anything that might be needed to the database prior to it
     // being closed and destructed.
     virtual void finalize_database() {}
-    
+
     /** \brief Get the file name associated with the database.
      *
      *  \returns The database file name.
