@@ -43,7 +43,7 @@ and `REALTYPEWIDTH` to 64
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
-   * `cd` to the parallel-netcdf source directory and enter the command:
+  * `cd` to the parallel-netcdf source directory and enter the command:
    
     ```
 	sh ../runconfigure.sh
@@ -51,7 +51,7 @@ and `REALTYPEWIDTH` to 64
     ```
 
 #### HDF5
-   * `cd` to the hdf5 source directory and enter the command:
+  * `cd` to the hdf5 source directory and enter the command:
    
     ```
     MPI=ON sh ../runconfigure.sh
@@ -59,7 +59,8 @@ and `REALTYPEWIDTH` to 64
     ```
 
 #### NetCDF
- * `cd netcdf-4.4.1.1` and enter the command:
+  * Make the modifications to include/netcdf.h as documented in README.md
+  * `cd netcdf-4.4.1.1` and enter the command:
  
     ```
 	mkdir build
