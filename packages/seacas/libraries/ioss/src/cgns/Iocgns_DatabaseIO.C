@@ -169,23 +169,27 @@ namespace Iocgns {
       }
     }
 
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+    auto ziter = [this, base, dim, names](Ioss::GroupingEntity *block) {
+      cgsize_t zone = block->get_property("zone").get_int();
+      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+	CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
+	CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
+	CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
+      }
+    };
+
+    // Use the lambda...
     const auto &sblocks = get_region()->get_structured_blocks();
     for (auto &block : sblocks) {
-      cgsize_t zone = block->get_property("zone").get_int();
-      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-	CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
-	CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
-	CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
-      }
+      ziter(block);
     }
+
+    // Use the lambda...
     const auto &eblocks = get_region()->get_element_blocks();
     for (auto &block : eblocks) {
-      cgsize_t zone = block->get_property("zone").get_int();
-      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-	CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
-	CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
-	CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
-      }
+      ziter(block);
     }
   }
 
@@ -654,8 +658,9 @@ namespace Iocgns {
     auto &nblock = nblocks[0];
     bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
 
-    const auto &sblocks = get_region()->get_structured_blocks();
-    for (auto &block : sblocks) {
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+    auto sol_lambda = [this, v_name, c_name, has_nodal_fields](Ioss::GroupingEntity *block) {
       cgsize_t base = block->get_property("base").get_int();
       cgsize_t zone = block->get_property("zone").get_int();
       if (has_nodal_fields) {
@@ -667,21 +672,17 @@ namespace Iocgns {
 	CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, c_name.c_str(),
 			     CG_CellCenter, &currentCellCenterSolutionIndex));
       }
+    };
+
+    // Use the lambda
+    const auto &sblocks = get_region()->get_structured_blocks();
+    for (auto &block : sblocks) {
+      sol_lambda(block);
     }
+    // Use the lambda
     const auto &eblocks = get_region()->get_element_blocks();
     for (auto &block : eblocks) {
-      cgsize_t base = block->get_property("base").get_int();
-      cgsize_t zone = block->get_property("zone").get_int();
-      if (has_nodal_fields) {
-	CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, v_name.c_str(),
-			     CG_Vertex, &currentVertexSolutionIndex));
-	CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t", currentVertexSolutionIndex, "end"));
-	CGCHECK(cg_gridlocation_write(CG_Vertex));
-      }
-      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-	CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, c_name.c_str(),
-			     CG_CellCenter, &currentCellCenterSolutionIndex));
-      }
+      sol_lambda(block);
     }
     return true;
   }
@@ -710,56 +711,37 @@ namespace Iocgns {
 
     char basename[33];
 
+    // Create a lambda to eliminate lots of duplicate code in coordinate outputs...
+    auto coord_lambda = [this, &data, &first, base](const char *ordinate) {
+      double *rdata = static_cast<double *>(data);
+
+      for (int zone = 1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
+	auto &              block_map = m_blockLocalNodeMap[zone];
+	cgsize_t            num_coord = block_map.size();
+	std::vector<double> coord(num_coord);
+	CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, ordinate, CG_RealDouble, &first,
+			      &num_coord, TOPTR(coord)));
+
+	// Map to global coordinate position...
+	for (cgsize_t i = 0; i < num_coord; i++) {
+	  rdata[block_map[i]] = coord[i];
+	}
+      }
+    };
+    // End of lambda...
+    
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "mesh_model_coordinates_x") {
-        double *rdata = static_cast<double *>(data);
-
-        for (int zone = 1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
-          auto &              block_map = m_blockLocalNodeMap[zone];
-          cgsize_t            num_coord = block_map.size();
-          std::vector<double> coord(num_coord);
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, &first,
-				&num_coord, TOPTR(coord)));
-
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_coord; i++) {
-            rdata[block_map[i]] = coord[i];
-          }
-        }
+	// Use the lambda...
+	coord_lambda("CoordinateX");
       }
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
-        double *rdata = static_cast<double *>(data);
-
-        for (int zone = 1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
-          auto &              block_map = m_blockLocalNodeMap[zone];
-          cgsize_t            num_coord = block_map.size();
-          std::vector<double> coord(num_coord);
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, &first,
-				&num_coord, TOPTR(coord)));
-
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_coord; i++) {
-            rdata[block_map[i]] = coord[i];
-          }
-        }
+	coord_lambda("CoordinateY");
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
-        double *rdata = static_cast<double *>(data);
-
-        for (int zone = 1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
-          auto &              block_map = m_blockLocalNodeMap[zone];
-          cgsize_t            num_coord = block_map.size();
-          std::vector<double> coord(num_coord);
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, &first,
-				&num_coord, TOPTR(coord)));
-
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_coord; i++) {
-            rdata[block_map[i]] = coord[i];
-          }
-        }
+	coord_lambda("CoordinateZ");
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
@@ -993,33 +975,32 @@ namespace Iocgns {
         // ..., yn, z0, ..., zn so we have to allocate some scratch
         // memory to read in the data and then map into supplied
         // 'data'
+
         std::vector<double> coord(num_to_get);
-        CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax,
-			      TOPTR(coord)));
 
-        // Map to global coordinate position...
-        for (cgsize_t i = 0; i < num_to_get; i++) {
-          rdata[phys_dimension * i + 0] = coord[i];
-        }
-
-        if (phys_dimension >= 2) {
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, rmin, rmax,
+	// ========================================================================
+	// Repetitive code for each coordinate direction; use a lambda to consolidate...
+	auto coord_lambda = [this, base, zone, &coord, rmin, rmax, phys_dimension, num_to_get, &rdata]
+	  (const char *ord_name, int ordinate) {
+	  CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, ord_name, CG_RealDouble, rmin, rmax,
 				TOPTR(coord)));
 
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_to_get; i++) {
-            rdata[phys_dimension * i + 1] = coord[i];
-          }
+	  // Map to global coordinate position...
+	  for (cgsize_t i = 0; i < num_to_get; i++) {
+	    rdata[phys_dimension * i + ordinate] = coord[i];
+	  }
+	};
+	// End of lambda...
+	// ========================================================================
+	
+	coord_lambda("CoordinateX", 0);
+
+        if (phys_dimension >= 2) {
+	  coord_lambda("CoordinateY", 1);
         }
 
         if (phys_dimension == 3) {
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, rmin, rmax,
-				TOPTR(coord)));
-
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_to_get; i++) {
-            rdata[phys_dimension * i + 2] = coord[i];
-          }
+	  coord_lambda("CoordinateZ", 2);
         }
       }
       else if (field.get_name() == "cell_node_ids") {
@@ -1221,31 +1202,31 @@ namespace Iocgns {
         // memory to read in the data and then map into supplied
         // 'data'
         std::vector<double> coord(num_to_get);
-        // Map to global coordinate position...
-        for (cgsize_t i = 0; i < num_to_get; i++) {
-          coord[i] = rdata[phys_dimension * i + 0];
-        }
 
-        CGCHECK(cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX",
-			       TOPTR(coord), &crd_idx));
+	// ========================================================================
+	// Repetitive code for each coordinate direction; use a lambda to consolidate...
+	auto coord_lambda = [this, &coord, num_to_get, phys_dimension, &rdata, base, zone]
+	  (const char *ord_name, int ordinate) {
+	  int crd_index = 0;
+	  
+	  // Map to global coordinate position...
+	  for (cgsize_t i = 0; i < num_to_get; i++) {
+	    coord[i] = rdata[phys_dimension * i + ordinate];
+	  }
+	  
+	  CGCHECK(cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, ord_name,
+				 TOPTR(coord), &crd_index));
+	};
+	// End of lambda...
+	// ========================================================================
+	
+	coord_lambda("CoordinateX", 0);
 
         if (phys_dimension >= 2) {
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_to_get; i++) {
-            coord[i] = rdata[phys_dimension * i + 1];
-          }
-          CGCHECK(cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", TOPTR(coord),
-				 &crd_idx));
+	  coord_lambda("CoordinateY", 1);
         }
-
         if (phys_dimension == 3) {
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_to_get; i++) {
-            coord[i] = rdata[phys_dimension * i + 2];
-          }
-
-          CGCHECK(cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", TOPTR(coord),
-				 &crd_idx));
+	  coord_lambda("CoordinateZ", 2);
         }
       }
     }
