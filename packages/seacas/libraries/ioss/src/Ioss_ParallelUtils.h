@@ -221,8 +221,9 @@ namespace Ioss {
       std::vector<int> send_dis(senddisp.begin(), senddisp.end());
       std::vector<int> recv_cnt(recvcnts.begin(), recvcnts.end());
       std::vector<int> recv_dis(recvdisp.begin(), recvdisp.end());
-      return MPI_Alltoallv(TOPTR(sendbuf), TOPTR(send_cnt), TOPTR(send_dis), mpi_type(T(0)),
-                           TOPTR(recvbuf), TOPTR(recv_cnt), TOPTR(recv_dis), mpi_type(T(0)), comm);
+      return MPI_Alltoallv((void *)sendbuf.data(), send_cnt.data(), send_dis.data(), mpi_type(T(0)),
+                           (void *)recvbuf.data(), recv_cnt.data(), recv_dis.data(), mpi_type(T(0)),
+                           comm);
     }
     else {
       // Same as if each processor sent a message to every other process with:
