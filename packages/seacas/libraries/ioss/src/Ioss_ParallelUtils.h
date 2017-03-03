@@ -178,16 +178,16 @@ namespace Ioss {
             sendcounts[exchange_proc]); // Converts from int64_t to int as needed by mpi
         int rcv_cnt = static_cast<int>(recvcounts[exchange_proc]);
         if (static_cast<size_t>(my_processor) < exchange_proc) {
-          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag,
-                   comm);
+          MPI_Send((void *)&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)),
+                   exchange_proc, tag, comm);
           MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag,
                    comm, &status);
         }
         else {
           MPI_Recv(&recvbuf[recvdisp[exchange_proc]], rcv_cnt, mpi_type(T(0)), exchange_proc, tag,
                    comm, &status);
-          MPI_Send(&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)), exchange_proc, tag,
-                   comm);
+          MPI_Send((void *)&sendbuf[senddisp[exchange_proc]], snd_cnt, mpi_type(T(0)),
+                   exchange_proc, tag, comm);
         }
       }
     }
@@ -240,7 +240,7 @@ namespace Ioss {
                    const std::vector<int> &recvcnts, const std::vector<int> &recvdisp,
                    MPI_Comm comm)
   {
-    return MPI_Alltoallv(TOPTR(sendbuf), const_cast<int *>(TOPTR(sendcnts)),
+    return MPI_Alltoallv((void *)sendbuf.data(), const_cast<int *>(TOPTR(sendcnts)),
                          const_cast<int *>(TOPTR(senddisp)), mpi_type(T(0)), TOPTR(recvbuf),
                          const_cast<int *>(TOPTR(recvcnts)), const_cast<int *>(TOPTR(recvdisp)),
                          mpi_type(T(0)), comm);
