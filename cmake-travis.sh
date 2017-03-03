@@ -9,18 +9,18 @@ if [ "$MPI" == "ON" ]
 then
 
 cd TPL/pnetcdf
-wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.7.0.tar.gz
-tar -xzf parallel-netcdf-1.7.0.tar.gz
-cd parallel-netcdf-1.7.0
+wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.8.1.tar.gz
+tar -xzf parallel-netcdf-1.8.1.tar.gz
+cd parallel-netcdf-1.8.1
 ACCESS="/usr/local" bash ../runconfigure.sh
 make && sudo make install
 
 cd $ACCESS
 
 cd TPL/netcdf
-wget https://github.com/Unidata/netcdf-c/archive/v4.4.1.tar.gz
-tar -xzf v4.4.1.tar.gz
-cd netcdf-c-4.4.1
+wget https://github.com/Unidata/netcdf-c/archive/v4.4.1.1.tar.gz
+tar -xzf v4.4.1.1.tar.gz
+cd netcdf-c-4.4.1.1
 MPI=${MPI} ACCESS="/usr/local" bash ../runconfigure.sh
 make && sudo make install
 
