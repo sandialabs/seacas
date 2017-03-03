@@ -1,12 +1,12 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 MPI="${MPI:-OFF}"
-
 echo "MPI set to ${MPI}"
 
-if [ "X$ACCESS" = "X" ] ; then
-  echo "ERROR: Please set the ACCESS environment variable before executing this script."
-  exit
+### The following assumes you are building in a subdirectory of ACCESS Root
+if [ "X$ACCESS" == "X" ] ; then
+  ACCESS=$(cd ../../../..; pwd)
+  echo "ACCESS set to ${ACCESS}"
 fi
 
 OS=`uname -s`
@@ -37,3 +37,9 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DHDF5_C_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} \
          -DHDF5_HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.${LD_EXT} \
          -DHDF5_INCLUDE_DIR:PATH=${ACCESS}/include
+
+echo ""
+echo "     MPI: ${MPI}"
+echo "COMPILER: ${CC}"
+echo "  ACCESS: ${ACCESS}"
+echo ""

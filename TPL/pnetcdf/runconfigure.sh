@@ -1,8 +1,9 @@
 #! /bin/sh
 
+### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
-  echo "ERROR: Please set the ACCESS environment variable before executing this script."
-  exit
+  ACCESS=$(cd ../../..; pwd)
+  echo "ACCESS set to ${ACCESS}"
 fi
 
 rm -f config.cache
@@ -15,3 +16,8 @@ AR_FLAGS='cru'; export AR_FLAGS
 LDFLAGS='-L${ACCESS}/lib'; export LDFLAGS
 
 ./configure --disable-fortran --prefix=${ACCESS}
+
+echo ""
+echo "COMPILER: ${CC}"
+echo "  ACCESS: ${ACCESS}"
+echo ""

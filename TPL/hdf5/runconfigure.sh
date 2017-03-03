@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 MPI="${MPI:-OFF}"
 echo "MPI set to ${MPI}"
@@ -10,8 +10,8 @@ echo "COMPILER set to ${COMPILER}"
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
+  echo "ACCESS set to ${ACCESS}"
 fi
-echo "ACCESS set to ${ACCESS}"
 
 if [ "$MPI" == "ON" ]
 then
