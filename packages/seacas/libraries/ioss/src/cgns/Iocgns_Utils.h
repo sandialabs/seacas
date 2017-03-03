@@ -45,10 +45,13 @@
 #include <ostream>
 #include <string>
 
+// Used in Iocgns_DatabaseIO.C and Iocgns_ParallelDatabase.C
 #define CGCHECK(funcall)                                                                           \
   if ((funcall) != CG_OK) {                                                                        \
     Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);             \
   }
+
+// Used in Iocgns_Decomposition.C
 #define CGCHECK2(funcall)                                                                          \
   if ((funcall) != CG_OK) {                                                                        \
     Iocgns::Utils::cgns_error(filePtr, __FILE__, __func__, __LINE__, m_decomposition.m_processor); \
