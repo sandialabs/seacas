@@ -1,10 +1,12 @@
 #! /bin/sh
 
+### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
-  echo "ERROR: Please set the ACCESS environment variable before executing this script."
-  exit
+  ACCESS=$(cd ../../..; pwd)
+  echo "ACCESS set to ${ACCESS}"
 fi
 
+MPI="${MPI:-OFF}"
 PARALLEL="${MPI:-OFF}"
 
 rm -f config.cache
@@ -27,3 +29,9 @@ fi
 SHARED="--enable-shared"
 
 ./configure --enable-netcdf-4 ${PNETCDF} ${SHARED} ${PARALLEL_TESTS} --disable-v2 --disable-fsync --prefix=${ACCESS} --disable-dap $1
+
+echo ""
+echo "     MPI: ${MPI}"
+echo "COMPILER: ${CC}"
+echo "  ACCESS: ${ACCESS}"
+echo ""

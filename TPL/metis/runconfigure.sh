@@ -1,13 +1,12 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
+  echo "ACCESS set to ${ACCESS}"
 fi
-echo "ACCESS set to ${ACCESS}"
 
 MPI="${MPI:-OFF}"
-echo "MPI set to ${MPI}"
 
 if [ "$MPI" == "ON" ]
 then
@@ -17,3 +16,9 @@ else
 fi
 
 make config cc=${CC} prefix=${ACCESS}
+
+echo ""
+echo "     MPI: ${MPI}"
+echo "COMPILER: ${CC}"
+echo "  ACCESS: ${ACCESS}"
+echo ""
