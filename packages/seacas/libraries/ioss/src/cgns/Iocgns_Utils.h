@@ -51,6 +51,11 @@
     Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);             \
   }
 
+#define CGCHECKNP(funcall)                                                                         \
+  if ((funcall) != CG_OK) {                                                                        \
+    Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);                      \
+  }
+
 // Used in Iocgns_Decomposition.C
 #define CGCHECK2(funcall)                                                                          \
   if ((funcall) != CG_OK) {                                                                        \
