@@ -148,6 +148,10 @@ namespace Iocgns {
 
   void DatabaseIO::finalize_database()
   {
+    if (is_input()) {
+      return;
+    }
+
     int base = 1;
     CGCHECK(cg_biter_write(cgnsFilePtr, base, "TimeIterValues", m_timesteps.size()));
 
@@ -489,6 +493,8 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
+    get_step_times();
+    
     // ========================================================================
     // Get the number of families in the mesh...
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
@@ -539,6 +545,80 @@ namespace Iocgns {
     Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", num_node, phys_dimension);
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
+
+
+    // ==========================================
+    // Add transient variables (if any) to all zones...
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+
+    // Assuming that the fields on all steps are the same, but can vary
+    // from zone to zone.
+    auto sol_iter = [this](Ioss::GroupingEntity *block) {
+      cgsize_t b = block->get_property("base").get_int();
+      cgsize_t z = block->get_property("zone").get_int();
+
+      int sol_count = 0;
+      CGCHECK(cg_nsols(cgnsFilePtr, b, z, &sol_count));
+      int sol_per_step = sol_count / (int)m_timesteps.size();
+      assert(sol_count % (int)m_timesteps.size() == 0);
+	
+      for (int sol = 1; sol <= sol_per_step; sol++) {
+	char solution_name[33];
+	CG_GridLocation_t grid_loc;
+	CGCHECK(cg_sol_info(cgnsFilePtr, b, z, sol, solution_name, &grid_loc));
+      
+	int field_count = 0;
+	CGCHECK(cg_nfields(cgnsFilePtr, b, z, sol, &field_count));
+
+	char **field_names = Ioss::Utils::get_name_array(field_count, 33);
+	for (int field = 1; field <= field_count; field++) {
+	  CG_DataType_t data_type;
+	  char field_name[33];
+	  CGCHECK(cg_field_info(cgnsFilePtr, b, z, sol, field, &data_type, field_name));
+	  std::strncpy(field_names[field-1], field_name, 32);
+	}
+       
+	// Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
+	std::vector<Ioss::Field> fields;
+	if (grid_loc == CG_CellCenter) {
+	  size_t entity_count = block->get_property("entity_count").get_int();
+	  Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+				  '_', nullptr, fields);
+	  for (const auto &field : fields) {
+	    block->field_add(field);
+	  }
+	}
+	else {
+	  assert(grid_loc == CG_Vertex);
+	  const Ioss::NodeBlock *cnb = (block->type() == Ioss::STRUCTUREDBLOCK) ?
+	    &(dynamic_cast<Ioss::StructuredBlock*>(block)->get_node_block()) :
+	    get_region()->get_node_blocks()[0];
+	  Ioss::NodeBlock *nb = const_cast<Ioss::NodeBlock*>(cnb);
+	  size_t entity_count = nb->get_property("entity_count").get_int();
+	  Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+				  '_', nullptr, fields);
+	  for (const auto &field : fields) {
+	    nb->field_add(field);
+	  }
+	}
+	
+	Ioss::Utils::delete_name_array(field_names, field_count);
+	
+      }
+    };
+    // ==========================================
+
+    if (!m_timesteps.empty()) {
+      const auto &sblocks = get_region()->get_structured_blocks();
+      for (auto &block : sblocks) {
+	sol_iter(block);
+      }
+      const auto &eblocks = get_region()->get_element_blocks();
+      for (auto &block : eblocks) {
+	sol_iter(block);
+      }
+    }
   }
 
   void DatabaseIO::write_meta_data()
@@ -549,6 +629,30 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1); // use 1-based zones...
 
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
+  }
+
+  void DatabaseIO::get_step_times()
+  {
+    int base = 1;
+    int num_timesteps = 0;
+    char bitername[33];
+    CGCHECK(cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps));
+    
+    if (num_timesteps <= 0)
+      return;
+
+    // Read the timestep time values.
+    CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
+    std::vector<double> times(num_timesteps);
+    CGCHECK(cg_array_read_as(1, CG_RealDouble, times.data()));
+
+    m_timesteps.reserve(num_timesteps);
+    Ioss::Region *this_region = get_region();
+    for (int i = 0; i < num_timesteps; i++) {
+      this_region->add_state(times[i] * timeScaleFactor);
+      m_timesteps.push_back(times[i]);
+    }
+    return;
   }
 
   void DatabaseIO::write_adjacency_data()
@@ -654,6 +758,9 @@ namespace Iocgns {
 
   bool DatabaseIO::begin_state(Ioss::Region *region, int state, double time)
   {
+    if (is_input()) {
+      return true;
+    }
     std::string c_name = "CellSolutionAtStep";
     std::string v_name = "VertexSolutionAtStep";
     std::string step   = Ioss::Utils::to_string(state);
@@ -697,8 +804,10 @@ namespace Iocgns {
 
   bool DatabaseIO::end_state(Ioss::Region * /* region */, int state, double time)
   {
-    m_timesteps.push_back(time);
-    assert(m_timesteps.size() == (size_t)state);
+    if (!is_input()) {
+      m_timesteps.push_back(time);
+      assert(m_timesteps.size() == (size_t)state);
+    }
     return true;
   }
 
@@ -837,7 +946,7 @@ namespace Iocgns {
       cgsize_t              base             = eb->get_property("base").get_int();
       cgsize_t              zone             = eb->get_property("zone").get_int();
       cgsize_t              sect             = eb->get_property("section").get_int();
-      size_t                my_element_count = eb->get_property("entity_count").get_int();
+      cgsize_t              my_element_count = eb->get_property("entity_count").get_int();
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
@@ -900,6 +1009,31 @@ namespace Iocgns {
         }
         else {
           num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+        }
+      }
+      else if (role == Ioss::Field::TRANSIENT) {
+        double *                  rdata                  = static_cast<double *>(data);
+        const Ioss::VariableType *var_type               = field.transformed_storage();
+        int                       comp_count             = var_type->component_count();
+        char                      field_suffix_separator = get_field_separator();
+	cgsize_t range_min[1] = {1};
+	cgsize_t range_max[1] = {my_element_count};
+        if (comp_count == 1) {
+          cg_field_read(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, 
+			field.get_name().c_str(), CG_RealDouble, range_min, range_max, rdata);
+        }
+        else {
+          std::vector<double> cgns_data(my_element_count);
+          for (int i = 0; i < comp_count; i++) {
+            std::string var_name =
+                var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+
+            cg_field_read(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, 
+			  var_name.c_str(), CG_RealDouble, range_min, range_max, cgns_data.data());
+            for (cgsize_t j = 0; j < my_element_count; j++) {
+              rdata[comp_count * j + i] = cgns_data[j];
+            }
+          }
         }
       }
       else {
