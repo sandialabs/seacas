@@ -709,7 +709,7 @@ namespace Iopx {
       for (int i = 0; i < num_info; i++) {
         add_information_record(info_rec[i]);
       }
-      Ioex::delete_exodus_names(info_rec, num_info);
+      Ioss::Utils::delete_name_array(info_rec, num_info);
     }
   }
 
@@ -838,7 +838,7 @@ namespace Iopx {
               map_read = true;
             }
           }
-          Ioex::delete_exodus_names(names, map_count);
+	  Ioss::Utils::delete_name_array(names, map_count);
         }
 
         if (!map_read) {
