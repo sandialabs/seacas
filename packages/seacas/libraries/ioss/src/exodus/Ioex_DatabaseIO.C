@@ -419,8 +419,8 @@ namespace Ioex {
 
     size_t total_lines = in_lines + qa_lines + info_rec_size;
 
-    char **info =
-      Ioss::Utils::get_name_array(total_lines, max_line_length); // 'total_lines' pointers to char buffers
+    char **info = Ioss::Utils::get_name_array(
+        total_lines, max_line_length); // 'total_lines' pointers to char buffers
 
     int i = 0;
     std::strncpy(info[i++], Ioss::Utils::platform_information().c_str(), max_line_length);
@@ -1006,7 +1006,7 @@ namespace Ioex {
         std::vector<Ioss::Field> fields;
         int64_t                  count = entity->get_property("entity_count").get_int();
         Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_separator(),
-                         local_truth, fields);
+                                local_truth, fields);
 
         for (const auto &field : fields) {
           entity->field_add(field);
@@ -1483,7 +1483,7 @@ namespace Ioex {
       if (attributes_named) {
         std::vector<Ioss::Field> attributes;
         Ioss::Utils::get_fields(my_element_count, names, attribute_count, Ioss::Field::ATTRIBUTE,
-                         field_suffix_separator, nullptr, attributes);
+                                field_suffix_separator, nullptr, attributes);
         int offset = 1;
         for (const auto &field : attributes) {
           if (block->field_exists(field.get_name())) {

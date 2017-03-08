@@ -1203,7 +1203,8 @@ namespace Iocgns {
               // Create the zone
               // Output this zones coordinates...
               int crd_idx = 0;
-	      CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
+              CGCHECK(
+                  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
               cgsize_t start  = node_offset[zone - 1] + 1;
               cgsize_t finish = start + node_count[zone - 1] - 1;
 
@@ -1211,15 +1212,19 @@ namespace Iocgns {
               CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
 
               if (spatial_dim > 1) {
-                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
+                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY",
+                                        &crd_idx));
                 auto yy = node_count[zone - 1] > 0 ? TOPTR(y) : nullptr;
-                CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy));
+                CGCHECK(
+                    cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy));
               }
 
               if (spatial_dim > 2) {
-                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
+                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ",
+                                        &crd_idx));
                 auto zz = node_count[zone - 1] > 0 ? TOPTR(z) : nullptr;
-                CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz));
+                CGCHECK(
+                    cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz));
               }
             }
           }
@@ -1254,7 +1259,7 @@ namespace Iocgns {
               // Output this zones coordinates...
               int crd_idx = 0;
               CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, cgns_name.c_str(),
-				      &crd_idx));
+                                      &crd_idx));
               cgsize_t start  = node_offset[zone - 1] + 1;
               cgsize_t finish = start + node_count[zone - 1] - 1;
               auto     xx     = node_count[zone - 1] > 0 ? TOPTR(xyz) : nullptr;
@@ -1326,7 +1331,7 @@ namespace Iocgns {
         int base = 1;
         int zone = 0;
 
-	CGCHECK(cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
+        CGCHECK(cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
         eb->property_update("zone", zone);
         eb->property_update("section", zone);
         eb->property_update("base", base);
@@ -1334,7 +1339,8 @@ namespace Iocgns {
         if (size[1] > 0) {
           CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
           int              sect = 0;
-	  CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, size[1], 0, &sect));
+          CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, size[1], 0,
+                                    &sect));
 
           cgsize_t start = 0;
           MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
@@ -1353,7 +1359,7 @@ namespace Iocgns {
           }
 
           CGCHECK(cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start + 1,
-					  start + num_to_get, idata));
+                                          start + num_to_get, idata));
 
           cgsize_t eb_size = num_to_get;
           MPI_Allreduce(MPI_IN_PLACE, &eb_size, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
@@ -1465,7 +1471,7 @@ namespace Iocgns {
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
         CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
-	CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata));
+        CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, rdata));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
@@ -1588,8 +1594,8 @@ namespace Iocgns {
         //       the data so would have to generate it.  This may cause problems
         //       with codes that use the downstream data if they base the BC off
         //       of the nodes instead of the element/side info.
-        CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, name.c_str(), type, cg_start, cg_end,
-				  0, &sect));
+        CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, name.c_str(), type, cg_start, cg_end, 0,
+                                  &sect));
 
         sb->property_update("section", sect);
 
