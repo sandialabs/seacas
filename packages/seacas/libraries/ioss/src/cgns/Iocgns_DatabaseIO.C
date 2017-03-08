@@ -245,7 +245,8 @@ namespace Iocgns {
     cgsize_t          dim[2] = {32, (cgsize_t)m_timesteps.size()};
     std::vector<char> names(32 * m_timesteps.size(), ' ');
     for (size_t state = 0; state < m_timesteps.size(); state++) {
-      std::string name = "CellSolutionAtStep" + Ioss::Utils::to_string(state + 1);
+      // This name is the "postfix" or common portion of all FlowSolution names...
+      std::string name = "SolutionAtStep" + Ioss::Utils::to_string(state + 1);
       std::strncpy(&names[state * 32], name.c_str(), 32);
       for (size_t i = name.size(); i < 32; i++) {
         names[state * 32 + i] = ' ';
@@ -254,12 +255,19 @@ namespace Iocgns {
 
     // Create a lambda to avoid code duplication for similar treatment
     // of structured blocks and element blocks.
-    auto ziter = [this, base, dim, names](Ioss::GroupingEntity *block) {
+    auto ziter = [this, base, dim, names, has_nodal_fields](Ioss::GroupingEntity *block) {
       cgsize_t zone = block->get_property("zone").get_int();
-      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+      if (block->field_count(Ioss::Field::TRANSIENT) > 0 || has_nodal_fields) {
         CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
         CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
         CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
+
+	if (has_nodal_fields) {
+	  CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
+	}
+	if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+	  CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
+	}
       }
     };
 
