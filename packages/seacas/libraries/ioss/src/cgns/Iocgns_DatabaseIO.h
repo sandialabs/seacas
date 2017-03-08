@@ -110,7 +110,8 @@ namespace Iocgns {
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
     size_t finalize_structured_blocks();
     void   finalize_database() override;
-
+    void   get_step_times() override;
+    
     void create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
                                    size_t &num_elem);
     void write_adjacency_data();
