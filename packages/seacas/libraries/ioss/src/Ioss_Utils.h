@@ -130,7 +130,7 @@ namespace Ioss {
 #endif
     }
 
-    static char ** get_name_array(size_t count, int size);
+    static char **get_name_array(size_t count, int size);
     static void delete_name_array(char **names, int count);
 
     // Fill time_string and date_string with current time and date
@@ -188,9 +188,8 @@ namespace Ioss {
                                       const std::string &working_directory);
 
     static void get_fields(int64_t entity_count, char **names, size_t num_names,
-			   Ioss::Field::RoleType fld_role, const char suffix_separator, int *local_truth,
-			   std::vector<Ioss::Field> &fields);
-
+                           Ioss::Field::RoleType fld_role, const char suffix_separator,
+                           int *local_truth, std::vector<Ioss::Field> &fields);
 
     static int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                              const std::string &inout);

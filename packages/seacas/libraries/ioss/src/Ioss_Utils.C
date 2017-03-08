@@ -226,24 +226,23 @@ std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int6
   return entity_name;
 }
 
-char ** Ioss::Utils::get_name_array(size_t count, int size)
-  {
-    auto names = new char *[count];
-    for (size_t i = 0; i < count; i++) {
-      names[i] = new char[size + 1];
-      std::memset(names[i], '\0', size + 1);
-    }
-    return names;
+char **Ioss::Utils::get_name_array(size_t count, int size)
+{
+  auto names = new char *[count];
+  for (size_t i = 0; i < count; i++) {
+    names[i] = new char[size + 1];
+    std::memset(names[i], '\0', size + 1);
   }
+  return names;
+}
 
 void Ioss::Utils::delete_name_array(char **names, int count)
-  {
-    for (int i = 0; i < count; i++) {
-      delete[] names[i];
-    }
-    delete[] names;
+{
+  for (int i = 0; i < count; i++) {
+    delete[] names[i];
   }
-
+  delete[] names;
+}
 
 /** \brief Process the base element type 'base' which has
  *         'nodes_per_element' nodes and a spatial dimension of 'spatial'
@@ -584,7 +583,7 @@ namespace {
         assert(type->component_count() == static_cast<int>(which_names.size()));
         Ioss::Field field(base_name.substr(0, bn_len - 1), Ioss::Field::REAL, type, fld_role,
                           count);
-	field.set_index(index);
+        field.set_index(index);
         for (const auto &which_name : which_names) {
           names[which_name][0] = '\0';
         }
@@ -592,7 +591,7 @@ namespace {
       }
       if (suffix_size == 1) {
         Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
-	field.set_index(index);
+        field.set_index(index);
         names[index][0] = '\0';
         return field;
       }
@@ -642,118 +641,118 @@ namespace {
     return false; // Can't get here...  Quiet the compiler
   }
 }
-  // Read scalar fields off an input database and determine whether
-  // they are components of a higher order type (vector, tensor, ...).
-  // This routine is used if there is no field component separator.  E.g.,
-  // fieldx, fieldy, fieldz instead of field_x field_y field_z
+// Read scalar fields off an input database and determine whether
+// they are components of a higher order type (vector, tensor, ...).
+// This routine is used if there is no field component separator.  E.g.,
+// fieldx, fieldy, fieldz instead of field_x field_y field_z
 
-void Ioss::Utils::get_fields(int64_t               entity_count, // The number of objects in this entity.
-			     char **               names,        // Raw list of field names from exodus
-			     size_t                num_names,    // Number of names in list
-			     Ioss::Field::RoleType fld_role,     // Role of field
-			     const char            suffix_separator,
-			     int *                 local_truth, // Truth table for this entity;
-			     // null if not applicable.
-			     std::vector<Ioss::Field> &fields) // The fields that were found.
+void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in this entity.
+                             char ** names,        // Raw list of field names from exodus
+                             size_t  num_names,    // Number of names in list
+                             Ioss::Field::RoleType fld_role, // Role of field
+                             const char            suffix_separator,
+                             int *                 local_truth, // Truth table for this entity;
+                             // null if not applicable.
+                             std::vector<Ioss::Field> &fields) // The fields that were found.
 {
-    if (suffix_separator != 0) {
-      while (true) {
-        // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
-        Ioss::Field field =
-            get_next_field(names, num_names, entity_count, fld_role, suffix_separator, local_truth);
-        if (field.is_valid()) {
-          fields.push_back(field);
+  if (suffix_separator != 0) {
+    while (true) {
+      // NOTE: 'get_next_field' determines storage type (vector, tensor,...)
+      Ioss::Field field =
+          get_next_field(names, num_names, entity_count, fld_role, suffix_separator, local_truth);
+      if (field.is_valid()) {
+        fields.push_back(field);
+      }
+      else {
+        break;
+      }
+    }
+  }
+  else {
+    size_t                    nmatch = 1;
+    size_t                    ibeg   = 0;
+    size_t                    pmat   = 0;
+    std::vector<Ioss::Suffix> suffices;
+  top:
+
+    while (ibeg + nmatch < num_names) {
+      if (local_truth != nullptr) {
+        while (ibeg < num_names && local_truth[ibeg] == 0) {
+          ibeg++;
+        }
+      }
+      for (size_t i = ibeg + 1; i < num_names; i++) {
+        size_t mat = match(names[ibeg], names[i]);
+        if (local_truth != nullptr && local_truth[i] == 0) {
+          mat = 0;
+        }
+
+        // For all fields, the total length of the name is the same
+        // for all components of that field.  The 'basename' of the
+        // field will also be the same for all cases.
+        //
+        // It is possible that the length of the match won't be the
+        // same for all components of a field since the match may
+        // include a portion of the suffix; (sigxx, sigxy, sigyy
+        // should match only 3 characters of the basename (sig), but
+        // sigxx and sigxy will match 4 characters) so consider a
+        // valid match if the match length is >= previous match length.
+        if ((std::strlen(names[ibeg]) == std::strlen(names[i])) && mat > 0 &&
+            (pmat == 0 || mat >= pmat)) {
+          nmatch++;
+          if (nmatch == 2) {
+            // Get suffix for first field in the match
+            pmat = mat;
+            Ioss::Suffix tmp(&names[ibeg][pmat]);
+            suffices.push_back(tmp);
+          }
+          // Get suffix for next fields in the match
+          Ioss::Suffix tmp(&names[i][pmat]);
+          suffices.push_back(tmp);
         }
         else {
+
+          bool multi_component =
+              define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields);
+          if (!multi_component) {
+            // Although we matched multiple suffices, it wasn't a
+            // higher-order field, so we only used 1 name instead of
+            // the 'nmatch' we thought we might use.
+            i = ibeg + 1;
+          }
+
+          // Cleanout the suffices vector.
+          std::vector<Ioss::Suffix>().swap(suffices);
+
+          // Reset for the next time through the while loop...
+          nmatch = 1;
+          pmat   = 0;
+          ibeg   = i;
           break;
         }
       }
     }
-    else {
-      size_t                    nmatch = 1;
-      size_t                    ibeg   = 0;
-      size_t                    pmat   = 0;
-      std::vector<Ioss::Suffix> suffices;
-    top:
-
-      while (ibeg + nmatch < num_names) {
-        if (local_truth != nullptr) {
-          while (ibeg < num_names && local_truth[ibeg] == 0) {
-            ibeg++;
-          }
-        }
-        for (size_t i = ibeg + 1; i < num_names; i++) {
-          size_t mat = match(names[ibeg], names[i]);
-          if (local_truth != nullptr && local_truth[i] == 0) {
-            mat = 0;
-          }
-
-          // For all fields, the total length of the name is the same
-          // for all components of that field.  The 'basename' of the
-          // field will also be the same for all cases.
-          //
-          // It is possible that the length of the match won't be the
-          // same for all components of a field since the match may
-          // include a portion of the suffix; (sigxx, sigxy, sigyy
-          // should match only 3 characters of the basename (sig), but
-          // sigxx and sigxy will match 4 characters) so consider a
-          // valid match if the match length is >= previous match length.
-          if ((std::strlen(names[ibeg]) == std::strlen(names[i])) && mat > 0 &&
-              (pmat == 0 || mat >= pmat)) {
-            nmatch++;
-            if (nmatch == 2) {
-              // Get suffix for first field in the match
-              pmat = mat;
-              Ioss::Suffix tmp(&names[ibeg][pmat]);
-              suffices.push_back(tmp);
-            }
-            // Get suffix for next fields in the match
-            Ioss::Suffix tmp(&names[i][pmat]);
-            suffices.push_back(tmp);
-          }
-          else {
-
-            bool multi_component =
-                define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields);
-            if (!multi_component) {
-              // Although we matched multiple suffices, it wasn't a
-              // higher-order field, so we only used 1 name instead of
-              // the 'nmatch' we thought we might use.
-              i = ibeg + 1;
-            }
-
-            // Cleanout the suffices vector.
-            std::vector<Ioss::Suffix>().swap(suffices);
-
-            // Reset for the next time through the while loop...
-            nmatch = 1;
-            pmat   = 0;
-            ibeg   = i;
-            break;
-          }
-        }
-      }
-      // We've gone through the entire list of names; see if what we
-      // have forms a multi-component field; if not, then define a
-      // scalar field and jump up to the loop again to handle the others
-      // that had been gathered.
-      if (ibeg < num_names) {
-        if (local_truth == nullptr || local_truth[ibeg] == 1) {
-          bool multi_component =
-              define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields);
-          std::vector<Ioss::Suffix>().swap(suffices);
-          if (nmatch > 1 && !multi_component) {
-            ibeg++;
-            goto top;
-          }
-        }
-        else {
+    // We've gone through the entire list of names; see if what we
+    // have forms a multi-component field; if not, then define a
+    // scalar field and jump up to the loop again to handle the others
+    // that had been gathered.
+    if (ibeg < num_names) {
+      if (local_truth == nullptr || local_truth[ibeg] == 1) {
+        bool multi_component =
+            define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields);
+        std::vector<Ioss::Suffix>().swap(suffices);
+        if (nmatch > 1 && !multi_component) {
           ibeg++;
           goto top;
         }
       }
+      else {
+        ibeg++;
+        goto top;
+      }
     }
   }
+}
 
 /** \brief Get a string containing 'uname' output.
  *

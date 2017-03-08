@@ -944,7 +944,7 @@ namespace Iofx {
               map_read = false;
             }
           }
-	  Ioss::Utils::delete_name_array(names, map_count);
+          Ioss::Utils::delete_name_array(names, map_count);
         }
 
         if (!map_read) {

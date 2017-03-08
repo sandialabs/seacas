@@ -97,8 +97,8 @@ namespace {
   void create_zone_data(int cgnsFilePtr, std::vector<Iocgns::StructuredZoneData *> &zones)
   {
     int myProcessor = -1; // To make error macro work...
-    int base      = 1;
-    int num_zones = 0;
+    int base        = 1;
+    int num_zones   = 0;
     CGCHECK(cg_nzones(cgnsFilePtr, base, &num_zones));
 
     std::map<std::string, int> zone_name_map;
@@ -135,7 +135,7 @@ namespace {
         Ioss::IJK_t transform;
 
         CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-			     donor_range.data(), transform.data()));
+                             donor_range.data(), transform.data()));
 
         // Get number of nodes shared with other "previous" zones...
         // A "previous" zone will have a lower zone number this this zone...
@@ -661,8 +661,8 @@ namespace Iocgns {
         cgsize_t                  ndata_donor;
 
         CGCHECK2(cg_conn_info(filePtr, base, zone, i + 1, connectname, &location, &connect_type,
-                            &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
-			      &donor_datatype, &ndata_donor));
+                              &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
+                              &donor_datatype, &ndata_donor));
 
         if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
             donor_ptset_type != CG_PointListDonor) {
@@ -698,7 +698,7 @@ namespace Iocgns {
           std::vector<cgsize_t> donors(npnts);
 
           CGCHECK2(cg_conn_read(filePtr, base, zone, i + 1, TOPTR(points), donor_datatype,
-				TOPTR(donors)));
+                                TOPTR(donors)));
 
           for (int j = 0; j < npnts; j++) {
             cgsize_t point = points[j] - 1 + m_zones[zone].m_nodeOffset;
@@ -762,7 +762,7 @@ namespace Iocgns {
 
         // Get the type of elements in this section...
         CGCHECK2(cg_section_read(filePtr, base, zone, is, section_name, &e_type, &el_start, &el_end,
-				 &num_bndry, &parent_flag));
+                                 &num_bndry, &parent_flag));
 
         INT num_entity = el_end - el_start + 1;
 
@@ -870,7 +870,7 @@ namespace Iocgns {
 #endif
       block.fileSectionOffset = blk_start;
       CGCHECK2(cgp_elements_read_data(filePtr, base, zone, section, blk_start, blk_end,
-				      TOPTR(connectivity)));
+                                      TOPTR(connectivity)));
       size_t el          = 0;
       INT    zone_offset = block.zoneNodeOffset;
 
@@ -931,7 +931,7 @@ namespace Iocgns {
         std::vector<cgsize_t> parent(4 * sset.file_count());
 
         CGCHECK2(cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(elements),
-				  TOPTR(parent)));
+                                  TOPTR(parent)));
 
         // Move from 'parent' to 'elementlist'
         size_t zone_element_id_offset = m_zones[sset.zone()].m_elementOffset;
@@ -1108,7 +1108,8 @@ namespace Iocgns {
     // *  num_to_get zeros (face on other parent element)
     std::vector<cgsize_t> parent(4 * sset.file_count());
 
-    CGCHECK2(cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent)));
+    CGCHECK2(
+        cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent)));
     // Get rid of 'nodes' list -- not used.
     nodes.resize(0);
     nodes.shrink_to_fit();
@@ -1137,7 +1138,8 @@ namespace Iocgns {
     std::vector<cgsize_t> file_conn(blk.file_count() * blk.nodesPerEntity);
     int                   base = 1;
     CGCHECK2(cgp_elements_read_data(filePtr, base, blk.zone(), blk.section(), blk.fileSectionOffset,
-				    blk.fileSectionOffset + blk.file_count() - 1, TOPTR(file_conn)));
+                                    blk.fileSectionOffset + blk.file_count() - 1,
+                                    TOPTR(file_conn)));
 
     // Map from zone-local node numbers to global implicit
     for (auto &node : file_conn) {
