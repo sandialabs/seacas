@@ -671,14 +671,14 @@ namespace Iocgns {
       cgsize_t zone = block->get_property("zone").get_int();
       if (has_nodal_fields) {
         CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, v_name.c_str(), CG_Vertex,
-                             &currentVertexSolutionIndex));
+                             &m_currentVertexSolutionIndex));
         CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
-                        currentVertexSolutionIndex, "end"));
+                        m_currentVertexSolutionIndex, "end"));
         CGCHECK(cg_gridlocation_write(CG_Vertex));
       }
       if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
         CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, c_name.c_str(), CG_CellCenter,
-                             &currentCellCenterSolutionIndex));
+                             &m_currentCellCenterSolutionIndex));
       }
     };
 
@@ -1251,7 +1251,7 @@ namespace Iocgns {
       int                       comp_count             = var_type->component_count();
       char                      field_suffix_separator = get_field_separator();
       if (comp_count == 1) {
-        cg_field_write(cgnsFilePtr, base, zone, currentCellCenterSolutionIndex, CG_RealDouble,
+        cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
                        field.get_name().c_str(), rdata, &cgns_field);
       }
       else {
@@ -1263,7 +1263,7 @@ namespace Iocgns {
           std::string var_name =
               var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
-          cg_field_write(cgnsFilePtr, base, zone, currentCellCenterSolutionIndex, CG_RealDouble,
+          cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
                          var_name.c_str(), cgns_data.data(), &cgns_field);
         }
       }
@@ -1346,7 +1346,7 @@ namespace Iocgns {
         int                       comp_count             = var_type->component_count();
         char                      field_suffix_separator = get_field_separator();
         if (comp_count == 1) {
-          cg_field_write(cgnsFilePtr, base, zone, currentCellCenterSolutionIndex, CG_RealDouble,
+          cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
                          field.get_name().c_str(), rdata, &cgns_field);
         }
         else {
@@ -1358,7 +1358,7 @@ namespace Iocgns {
             std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
-            cg_field_write(cgnsFilePtr, base, zone, currentCellCenterSolutionIndex, CG_RealDouble,
+            cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
                            var_name.c_str(), cgns_data.data(), &cgns_field);
           }
         }
@@ -1524,7 +1524,7 @@ namespace Iocgns {
             }
             std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-            cg_field_write(cgnsFilePtr, base, zone, currentVertexSolutionIndex, CG_RealDouble,
+            cg_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, CG_RealDouble,
                            var_name.c_str(), blk_data.data(), &cgns_field);
           }
         }

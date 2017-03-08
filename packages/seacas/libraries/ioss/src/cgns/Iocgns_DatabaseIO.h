@@ -191,8 +191,8 @@ namespace Iocgns {
     size_t      nodeCount;
     size_t      elementCount;
 
-    int currentVertexSolutionIndex     = 0;
-    int currentCellCenterSolutionIndex = 0;
+    int m_currentVertexSolutionIndex     = 0;
+    int m_currentCellCenterSolutionIndex = 0;
 
     mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
     mutable std::vector<size_t>
