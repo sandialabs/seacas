@@ -420,7 +420,7 @@ namespace Ioex {
     size_t total_lines = in_lines + qa_lines + info_rec_size;
 
     char **info =
-        get_exodus_names(total_lines, max_line_length); // 'total_lines' pointers to char buffers
+      Ioss::Utils::get_name_array(total_lines, max_line_length); // 'total_lines' pointers to char buffers
 
     int i = 0;
     std::strncpy(info[i++], Ioss::Utils::platform_information().c_str(), max_line_length);
@@ -444,7 +444,7 @@ namespace Ioex {
       Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
     }
 
-    delete_exodus_names(info, total_lines);
+    Ioss::Utils::delete_name_array(info, total_lines);
   }
 
   // common
@@ -976,7 +976,7 @@ namespace Ioex {
       // Get the variable names and add as fields. Need to decode these
       // into vector/tensor/... eventually, for now store all as
       // scalars.
-      char **names = get_exodus_names(nvar, maximumNameLength);
+      char **names = Ioss::Utils::get_name_array(nvar, maximumNameLength);
 
       // Read the names...
       // (Currently, names are read for every block.  We could save them...)
@@ -1005,7 +1005,7 @@ namespace Ioex {
 
         std::vector<Ioss::Field> fields;
         int64_t                  count = entity->get_property("entity_count").get_int();
-        Ioex::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_separator(),
+        Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_separator(),
                          local_truth, fields);
 
         for (const auto &field : fields) {
@@ -1420,7 +1420,7 @@ namespace Ioex {
       size_t      my_element_count = block->get_property("entity_count").get_int();
 
       // Get the attribute names. May not exist or may be blank...
-      char ** names = get_exodus_names(attribute_count, maximumNameLength);
+      char ** names = Ioss::Utils::get_name_array(attribute_count, maximumNameLength);
       int64_t id    = block->get_property("id").get_int();
 
       // Some older applications do not want to used named
@@ -1482,7 +1482,7 @@ namespace Ioex {
 
       if (attributes_named) {
         std::vector<Ioss::Field> attributes;
-        Ioex::get_fields(my_element_count, names, attribute_count, Ioss::Field::ATTRIBUTE,
+        Ioss::Utils::get_fields(my_element_count, names, attribute_count, Ioss::Field::ATTRIBUTE,
                          field_suffix_separator, nullptr, attributes);
         int offset = 1;
         for (const auto &field : attributes) {
@@ -1634,7 +1634,7 @@ namespace Ioex {
                                    my_element_count, 1));
 
       // Release memory...
-      delete_exodus_names(names, attribute_count);
+      Ioss::Utils::delete_name_array(names, attribute_count);
     }
   }
 
