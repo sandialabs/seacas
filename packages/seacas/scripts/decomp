@@ -391,7 +391,7 @@ while true ; do
 done
 
 # Figure out how to run nem_slice where we are. 
-if [ ${LAUNCH:-} == nolaunch ]
+if [ "${LAUNCH:-}" == "nolaunch" ]
 then
     # Ensure launch is NOT used --nolaunch was passed.
     LAUNCH=
