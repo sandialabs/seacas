@@ -112,7 +112,6 @@ namespace {
       if (location == db_location) {
 	// Check if steps match.
 	// NOTE: Using non-standard "Descriptor_t" node in FlowSolution_t
-	//       Assuming only a single descriptor...
 	CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
 			i+1, "end"));
 	int descriptor_count = 0;
@@ -120,7 +119,7 @@ namespace {
 
 	bool found_step_descriptor = false;
 	for (int d=0; d < descriptor_count; d++) {
-	  char *db_step;
+	  char *db_step = nullptr;
 	  char  name[33];
 	  CGCHECKNP(cg_descriptor_read(d+1, name, &db_step));
 	  if (strcmp(name, "step") == 0) {
@@ -257,10 +256,13 @@ namespace Iocgns {
     // of structured blocks and element blocks.
     auto ziter = [this, base, dim, names, has_nodal_fields](Ioss::GroupingEntity *block) {
       cgsize_t zone = block->get_property("zone").get_int();
+      std::vector<int> indices(m_timesteps.size());
       if (block->field_count(Ioss::Field::TRANSIENT) > 0 || has_nodal_fields) {
         CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
         CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
         CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
+	CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
+	CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
 
 	if (has_nodal_fields) {
 	  CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
