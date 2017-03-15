@@ -166,7 +166,6 @@ namespace {
       throw std::runtime_error("Invalid Object Type in exodus_object_type: " +
                                to_string(conjoin_type));
     }
-    return EX_INVALID;
   }
 
   char **get_name_array(int size, size_t length)
