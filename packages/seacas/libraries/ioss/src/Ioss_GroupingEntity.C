@@ -183,7 +183,6 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
   errmsg << "\nERROR: Property '" << my_name << "' does not exist on " << type_string() << " "
          << name() << "\n\n";
   IOSS_ERROR(errmsg);
-  return Ioss::Property();
 }
 
 /** \brief Add a field to the entity's field manager.
