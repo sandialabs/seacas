@@ -1742,7 +1742,7 @@ namespace Iocgns {
           for (int i = 0; i < comp_count; i++) {
             for (size_t j = 0; j < block_map->map.size() - 1; j++) {
               auto global = block_map->map[j + 1] - 1;
-              blk_data[i] = rdata[comp_count * global + i];
+              blk_data[j] = rdata[comp_count * global + i];
             }
             std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
