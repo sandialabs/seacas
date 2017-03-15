@@ -117,7 +117,6 @@ namespace {
     default:
       throw std::runtime_error("Invalid Object Type in exodus_object_type: " + to_string(epu_type));
     }
-    return EX_INVALID;
   }
 
   char **get_name_array(int size, int length)

@@ -1203,7 +1203,6 @@ namespace Ioss {
     errmsg << "\n\nERROR: The entity named '" << db_name << "' which is being aliased to '" << alias
            << "' does not exist in region '" << name() << "'.\n";
     IOSS_ERROR(errmsg);
-    return false;
   }
 
   /** \brief Get the original name for an alias.
@@ -1719,7 +1718,6 @@ namespace Ioss {
            << " is specified.  The valid range is 1 to "
            << get_implicit_property("element_count").get_int();
     IOSS_ERROR(errmsg);
-    return nullptr;
   }
 
   /** \brief Get the structured block containing a specified global-offset-node.
@@ -1740,7 +1738,6 @@ namespace Ioss {
     errmsg << "ERROR: In Ioss::Region::get_structured_block, an invalid global_offset of "
            << global_offset << " is specified.";
     IOSS_ERROR(errmsg);
-    return nullptr;
   }
 
   /** \brief Get an implicit property -- These are calcuated from data stored
