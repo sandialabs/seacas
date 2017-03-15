@@ -259,14 +259,16 @@ namespace Iocgns {
         CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
         CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
         CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
-        CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
+        CGCHECK(cg_array_write("VertexIndices", CG_Integer, 1, &dim[1], indices.data()));
         CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
 
         if (has_nodal_fields) {
-          CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
+          CGCHECK(cg_descriptor_write("VertexPrefix",
+				      cg_GridLocationName(CG_Vertex)));
         }
         if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-          CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
+          CGCHECK(cg_descriptor_write("CellCenterPrefix",
+				      cg_GridLocationName(CG_CellCenter)));
         }
       }
     };
