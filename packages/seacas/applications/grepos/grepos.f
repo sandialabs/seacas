@@ -665,6 +665,15 @@ C     --location of original numelb, isevok arrays
       
       if (renel .or. delnp) then
         CALL MDRSRV ('MSCR', KMSCR, MAX(NUMEL0, NUMNP0))
+        if (exodus) then
+C     ... Map from new var to old for mapping variables.
+          CALL MDRSRV ('MAPL', KMAPL, NUMEL0)
+          CALL MDRSRV ('MAPN', KMAPN, NUMNP0)
+          CALL MDSTAT (NERR, MEM)
+          IF (NERR .GT. 0) GOTO 40
+          CALL INIMAP(NUMEL0, IA(KMAPL))
+          CALL INIMAP(NUMNP0, IA(KMAPN))
+        end if
       end if
 
       IF (RENEL) THEN
@@ -680,14 +689,6 @@ C     old array contents into new (Only needed if EXODUS)
             CALL CPYINT (NELBLK0, IA(KNELB),  IA(KNELB0))
             CALL CPYINT (NELBLK0, IA(KIDELB2), IA(KIDELB0))
             CALL CPYINT (LIEVOK,  LA(KIEVOK), LA(KIEVOK0))
-
-C     ... Map from new var to old for mapping variables.
-            CALL MDRSRV ('MAPL', KMAPL, NUMEL0)
-            CALL MDRSRV ('MAPN', KMAPN, NUMNP0)
-            CALL MDSTAT (NERR, MEM)
-            IF (NERR .GT. 0) GOTO 40
-            CALL INIMAP(NUMEL0, IA(KMAPL))
-            CALL INIMAP(NUMNP0, IA(KMAPN))
          END IF
          
          CALL MDRSRV ('IXEL', KIXEL, NUMEL)
@@ -764,6 +765,9 @@ C     ... NUMNP modified in this call
          CALL MDSTAT (NERR, MEM)
          IF (NERR .GT. 0) GOTO 40
          CALL REMAP(NUMNP0, IA(KIXNP), IA(KMAPNN), IA(KMSCR))
+         IF (EXODUS) THEN
+            CALL REMAP (NUMNP0, IA(KIXNP), IA(KMAPN),  IA(KMSCR))
+         END IF
       END IF
 
 C     --Renumber the element map
@@ -779,12 +783,10 @@ C     --Squeeze the element map
 
       IF (DELEL) THEN
 C     ... Changes first argument
-         NSAVE = NUMEL0
-         CALL ZMMAP (NSAVE, IA(KMAPEL))
+         CALL ZMMAP (NUMEL0, IA(KMAPEL))
          CALL MDLONG ('MAPEL', KMAPEL, NUMEL)
-         NSAVE = NUMEL0
          IF (EXODUS) THEN
-            CALL ZMMAP (NSAVE, IA(KMAPL))
+            CALL ZMMAP (NUMEL0, IA(KMAPL))
             CALL MDLONG ('MAPL',  KMAPL,  NUMEL)
          END IF
       END IF
@@ -792,8 +794,7 @@ C     ... Changes first argument
 C     --Renumber the element block nodes
 
       IF (DELNP) THEN
-        NSAVE = NUMNP0
-        CALL ZMMAP(NSAVE, IA(KMAPNN))
+        CALL ZMMAP(NUMNP0, IA(KMAPNN))
         CALL MDLONG ('MAPNN', KMAPNN, NUMNP)
         CALL RENELB (NELBLK, -999, IA(KIXNP),
      &    IA(KNELB), IA(KNLNK), IA(KLINK))
@@ -803,15 +804,6 @@ C     --Renumber the nodal point set nodes
 
       IF (DELNP) THEN
          CALL RENIX (LNPSNL, -999, IA(KIXNP), IA(KLTNNS), .TRUE.)
-         NSAVE = NUMNP0
-         IF (EXODUS) THEN
-            IF (.not. DELEL) THEN
-              CALL MDRSRV ('MSCR', KMSCR, MAX(NUMEL0, NUMNP0))
-            ENDIF
-            CALL REMAP (NSAVE, IA(KIXNP), IA(KMAPN),  IA(KMSCR))
-            NSAVE = NUMNP0
-            CALL ZMMAP (NSAVE, IA(KMAPN))
-         END IF
       END IF
 
 C     --Renumber the element side set elements
