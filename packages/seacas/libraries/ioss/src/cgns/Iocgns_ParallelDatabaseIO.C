@@ -614,7 +614,7 @@ namespace Iocgns {
           name = (*J)->name();
           name += "_to_";
           name += (*I)->name();
-          const auto &d2_name = (*J)->name();
+          const auto &d2_name = (*I)->name();
 
           CGCHECK(cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
                                CG_PointList, point_list_donor.size(), TOPTR(point_list_donor),
