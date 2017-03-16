@@ -794,7 +794,7 @@ namespace Iocgns {
           name = (*J)->name();
           name += "_to_";
           name += (*I)->name();
-          const auto &d2_name = (*J)->name();
+          const auto &d2_name = (*I)->name();
 
           CGCHECK(cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
                                 CG_PointList, point_list_donor.size(), TOPTR(point_list_donor),
@@ -999,12 +999,53 @@ namespace Iocgns {
           std::iota(idata, idata + num_to_get, 1);
         }
       }
-      else {
-        num_to_get = Ioss::Utils::field_warning(nb, field, "input");
-      }
-      return num_to_get;
     }
-    return -1;
+    else if (role == Ioss::Field::TRANSIENT) {
+      // Locate the FlowSolution node corresponding to the correct state/step/time
+      // TODO: do this at read_meta_data() and store...
+      int step           = get_region()->get_current_state();
+
+      for (int zone = 1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
+	int solution_index = find_solution_index(cgnsFilePtr, base, zone, step, CG_Vertex);
+	auto &              block_map = m_blockLocalNodeMap[zone];
+	cgsize_t            num_block_node = block_map.size();
+
+	double *rdata                  = static_cast<double *>(data);
+	cgsize_t range_min[1] = {1};
+	cgsize_t range_max[1] = {num_block_node};
+	auto    var_type               = field.transformed_storage();
+	int     comp_count             = var_type->component_count();
+	std::vector<double> cgns_data(num_block_node);
+	if (comp_count == 1) {
+	  CGCHECK(cg_field_read(cgnsFilePtr, base, zone, solution_index,
+				field.get_name().c_str(), CG_RealDouble,
+				range_min, range_max, cgns_data.data()));
+
+	  // Map to global nodal field position...
+	  for (cgsize_t i = 0; i < num_block_node; i++) {
+	    rdata[block_map[i]] = cgns_data[i];
+	  }
+	}
+	else {
+	  char    field_suffix_separator = get_field_separator();
+	  for (int i = 0; i < comp_count; i++) {
+	    std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+
+	    CGCHECK(cg_field_read(cgnsFilePtr, base, zone, solution_index,
+				  var_name.c_str(), CG_RealDouble,
+				  range_min, range_max, cgns_data.data()));
+	    for (cgsize_t j = 0; j < num_block_node; j++) {
+	      auto global = block_map[j];
+	      rdata[comp_count * global + i] = cgns_data[j];
+	    }
+	  }
+	}
+      }
+    }
+    else {
+      num_to_get = Ioss::Utils::field_warning(nb, field, "input");
+    }
+    return num_to_get;
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock * /* nb */,
@@ -1107,8 +1148,8 @@ namespace Iocgns {
         auto var_type   = field.transformed_storage();
         int  comp_count = var_type->component_count();
         if (comp_count == 1) {
-          cg_field_read(cgnsFilePtr, base, zone, solution_index, field.get_name().c_str(),
-                        CG_RealDouble, range_min, range_max, rdata);
+          CGCHECK(cg_field_read(cgnsFilePtr, base, zone, solution_index, field.get_name().c_str(),
+				CG_RealDouble, range_min, range_max, rdata));
         }
         else {
           std::vector<double> cgns_data(my_element_count);
@@ -1117,8 +1158,8 @@ namespace Iocgns {
             std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
-            cg_field_read(cgnsFilePtr, base, zone, solution_index, var_name.c_str(), CG_RealDouble,
-                          range_min, range_max, cgns_data.data());
+            CGCHECK(cg_field_read(cgnsFilePtr, base, zone, solution_index, var_name.c_str(), CG_RealDouble,
+				  range_min, range_max, cgns_data.data()));
             for (cgsize_t j = 0; j < my_element_count; j++) {
               rdata[comp_count * j + i] = cgns_data[j];
             }
@@ -1474,8 +1515,8 @@ namespace Iocgns {
       int     comp_count             = var_type->component_count();
       char    field_suffix_separator = get_field_separator();
       if (comp_count == 1) {
-        cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
-                       field.get_name().c_str(), rdata, &cgns_field);
+        CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
+			       field.get_name().c_str(), rdata, &cgns_field));
       }
       else {
         std::vector<double> cgns_data(num_to_get);
@@ -1486,8 +1527,8 @@ namespace Iocgns {
           std::string var_name =
               var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
-          cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
-                         var_name.c_str(), cgns_data.data(), &cgns_field);
+          CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
+				 var_name.c_str(), cgns_data.data(), &cgns_field));
         }
       }
     }
@@ -1569,8 +1610,8 @@ namespace Iocgns {
         int      comp_count             = var_type->component_count();
         char     field_suffix_separator = get_field_separator();
         if (comp_count == 1) {
-          cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
-                         field.get_name().c_str(), rdata, &cgns_field);
+          CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
+				 field.get_name().c_str(), rdata, &cgns_field));
         }
         else {
           std::vector<double> cgns_data(num_to_get);
@@ -1581,8 +1622,8 @@ namespace Iocgns {
             std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
 
-            cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
-                           var_name.c_str(), cgns_data.data(), &cgns_field);
+            CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
+				   var_name.c_str(), cgns_data.data(), &cgns_field));
           }
         }
       }
@@ -1744,12 +1785,12 @@ namespace Iocgns {
           for (int i = 0; i < comp_count; i++) {
             for (size_t j = 0; j < block_map->map.size() - 1; j++) {
               auto global = block_map->map[j + 1] - 1;
-              blk_data[i] = rdata[comp_count * global + i];
+              blk_data[j] = rdata[comp_count * global + i];
             }
             std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-            cg_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, CG_RealDouble,
-                           var_name.c_str(), blk_data.data(), &cgns_field);
+            CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, CG_RealDouble,
+				   var_name.c_str(), blk_data.data(), &cgns_field));
           }
         }
       }
