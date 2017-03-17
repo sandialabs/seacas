@@ -157,6 +157,7 @@ namespace Iocgns {
       }
     }
 
+    static int find_solution_index(int cgnsFilePtr, int base, int zone, int step, CG_GridLocation_t location);
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
     static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
                                        std::vector<size_t> &zone_offset);

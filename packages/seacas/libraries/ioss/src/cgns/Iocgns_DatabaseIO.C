@@ -76,76 +76,6 @@
 
 extern char hdf5_access[64];
 
-namespace {
-  int extract_trailing_int(char *name)
-  {
-    // 'name' consists of an arbitray number of characters followed by
-    // zero or more digits.  Return the integer value of the contiguous
-    // set of trailing digits.
-    // Example: Name42 returns 42;  Name_52or_perhaps_3_43 returns 43.
-
-    size_t len   = std::strlen(name);
-    int    nstep = 0;
-    int    mul   = 1;
-    for (size_t d = len; d > 0; d--) {
-      if (isdigit(name[d - 1])) {
-        nstep += mul * (name[d - 1] - '0');
-        mul *= 10;
-      }
-      else {
-        break;
-      }
-    }
-    return nstep;
-  }
-
-  int find_solution_index(int cgnsFilePtr, int base, int zone, int step, CG_GridLocation_t location)
-  {
-    auto str_step = Ioss::Utils::to_string(step);
-    int  nsols    = 0;
-    CGCHECKNP(cg_nsols(cgnsFilePtr, base, zone, &nsols));
-    for (int i = 0; i < nsols; i++) {
-      CG_GridLocation_t db_location;
-      char              db_name[33];
-      CGCHECKNP(cg_sol_info(cgnsFilePtr, base, zone, i + 1, db_name, &db_location));
-      if (location == db_location) {
-        // Check if steps match.
-        // NOTE: Using non-standard "Descriptor_t" node in FlowSolution_t
-        CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t", i + 1, "end"));
-        int descriptor_count = 0;
-        CGCHECKNP(cg_ndescriptors(&descriptor_count));
-
-        bool found_step_descriptor = false;
-        for (int d = 0; d < descriptor_count; d++) {
-          char *db_step = nullptr;
-          char  name[33];
-          CGCHECKNP(cg_descriptor_read(d + 1, name, &db_step));
-          if (strcmp(name, "step") == 0) {
-            found_step_descriptor = true;
-            if (str_step == db_step) {
-              cg_free(db_step);
-              return i + 1;
-            }
-            else {
-              cg_free(db_step);
-              break; // Found "step" descriptor, but wasn't correct step...
-            }
-          }
-        }
-        if (!found_step_descriptor) {
-          // There was no Descriptor_t node with the name "step",
-          // Try to decode the step from the FlowSolution_t name.
-          int nstep = extract_trailing_int(db_name);
-          if (nstep == step) {
-            return i + 1;
-          }
-        }
-      }
-    }
-    return 0;
-  }
-}
-
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -1004,7 +934,7 @@ namespace Iocgns {
       int step           = get_region()->get_current_state();
 
       for (int zone = 1; zone < static_cast<int>(m_blockLocalNodeMap.size()); zone++) {
-	int solution_index = find_solution_index(cgnsFilePtr, base, zone, step, CG_Vertex);
+	int solution_index = Utils::find_solution_index(cgnsFilePtr, base, zone, step, CG_Vertex);
 	auto &              block_map = m_blockLocalNodeMap[zone];
 	cgsize_t            num_block_node = block_map.size();
 
@@ -1137,7 +1067,7 @@ namespace Iocgns {
         // Locate the FlowSolution node corresponding to the correct state/step/time
         // TODO: do this at read_meta_data() and store...
         int step           = get_region()->get_current_state();
-        int solution_index = find_solution_index(cgnsFilePtr, base, zone, step, CG_CellCenter);
+        int solution_index = Utils::find_solution_index(cgnsFilePtr, base, zone, step, CG_CellCenter);
 
         double * rdata        = static_cast<double *>(data);
         cgsize_t range_min[1] = {1};

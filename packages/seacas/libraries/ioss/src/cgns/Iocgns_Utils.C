@@ -117,6 +117,28 @@ namespace {
       bc.m_rangeEnd = {{0, 0, 0}};
     }
   }
+
+  int extract_trailing_int(char *name)
+  {
+    // 'name' consists of an arbitray number of characters followed by
+    // zero or more digits.  Return the integer value of the contiguous
+    // set of trailing digits.
+    // Example: Name42 returns 42;  Name_52or_perhaps_3_43 returns 43.
+
+    size_t len   = std::strlen(name);
+    int    nstep = 0;
+    int    mul   = 1;
+    for (size_t d = len; d > 0; d--) {
+      if (isdigit(name[d - 1])) {
+        nstep += mul * (name[d - 1] - '0');
+        mul *= 10;
+      }
+      else {
+        break;
+      }
+    }
+    return nstep;
+  }
 }
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
@@ -418,6 +440,52 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
   }
   return topo;
 }
+
+int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int step, CG_GridLocation_t location)
+  {
+    auto str_step = Ioss::Utils::to_string(step);
+    int  nsols    = 0;
+    CGCHECKNP(cg_nsols(cgnsFilePtr, base, zone, &nsols));
+    for (int i = 0; i < nsols; i++) {
+      CG_GridLocation_t db_location;
+      char              db_name[33];
+      CGCHECKNP(cg_sol_info(cgnsFilePtr, base, zone, i + 1, db_name, &db_location));
+      if (location == db_location) {
+        // Check if steps match.
+        // NOTE: Using non-standard "Descriptor_t" node in FlowSolution_t
+        CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t", i + 1, "end"));
+        int descriptor_count = 0;
+        CGCHECKNP(cg_ndescriptors(&descriptor_count));
+
+        bool found_step_descriptor = false;
+        for (int d = 0; d < descriptor_count; d++) {
+          char *db_step = nullptr;
+          char  name[33];
+          CGCHECKNP(cg_descriptor_read(d + 1, name, &db_step));
+          if (strcmp(name, "step") == 0) {
+            found_step_descriptor = true;
+            if (str_step == db_step) {
+              cg_free(db_step);
+              return i + 1;
+            }
+            else {
+              cg_free(db_step);
+              break; // Found "step" descriptor, but wasn't correct step...
+            }
+          }
+        }
+        if (!found_step_descriptor) {
+          // There was no Descriptor_t node with the name "step",
+          // Try to decode the step from the FlowSolution_t name.
+          int nstep = extract_trailing_int(db_name);
+          if (nstep == step) {
+            return i + 1;
+          }
+        }
+      }
+    }
+    return 0;
+  }
 
 void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 {
