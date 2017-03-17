@@ -1159,6 +1159,31 @@ namespace Iocgns {
     communicate_block_data(TOPTR(file_conn), data, blk, blk.nodesPerEntity);
   }
 
+  template void DecompositionData<int>::get_element_field(int filePtr, int step, int solution_index,
+							  int blk_seq, const std::string &var_name,
+							  double *data) const;
+  template void DecompositionData<int64_t>::get_element_field(int filePtr, int step, int solution_index,
+							  int blk_seq, const std::string &var_name,
+							  double *data) const;
+
+
+  template <typename INT>
+  void DecompositionData<INT>::get_element_field(int filePtr, int step, int solution_index,
+						 int blk_seq, const std::string &field,
+						 double *data) const
+  {
+    auto                  blk = m_elementBlocks[blk_seq];
+    std::vector<double> cgns_data(blk.file_count());
+    int                   base = 1;
+    cgsize_t range_min[1] = {(cgsize_t)blk.fileSectionOffset};
+    cgsize_t range_max[1] = {(cgsize_t)(blk.fileSectionOffset+blk.file_count() -1)};
+
+    CGCHECK2(cgp_field_read_data(filePtr, base, blk.zone(), solution_index, field.c_str(),
+				 range_min, range_max, cgns_data.data()));
+
+    communicate_element_data(cgns_data.data(), data, 1);
+  }
+
   DecompositionDataBase::~DecompositionDataBase()
   {
     for (auto &zone : m_structuredZones) {

@@ -108,6 +108,9 @@ namespace Iocgns {
 
     void get_block_connectivity(int filePtr, void *data, int blk_seq) const;
 
+    void get_element_field(int filePtr, int step, int solution_index, int blk_seq,
+			   const std::string &name, double *data) const;
+
     void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map,
                                    bool do_map) const;
 
@@ -181,6 +184,9 @@ namespace Iocgns {
     }
 
     void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
+
+    void get_element_field(int filePtr, int step, int solution_index, int blk_seq,
+			   const std::string &name, double *data) const;
 
     size_t get_commset_node_size() const { return m_decomposition.m_nodeCommMap.size() / 2; }
 
