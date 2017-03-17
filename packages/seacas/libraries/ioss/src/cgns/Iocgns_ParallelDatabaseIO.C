@@ -150,6 +150,74 @@ namespace Iocgns {
     cgnsFilePtr = -1;
   }
 
+  void ParallelDatabaseIO::finalize_database()
+  {
+    if (is_input()) {
+      return;
+    }
+
+    int base = 1;
+    CGCHECK(cg_biter_write(cgnsFilePtr, base, "TimeIterValues", m_timesteps.size()));
+
+    // Now write the timestep time values...
+    CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
+    cgsize_t dimtv[1] = {(cgsize_t)m_timesteps.size()};
+    CGCHECK(cg_array_write("TimeValues", CG_RealDouble, 1, dimtv, m_timesteps.data()));
+
+    // Output the ZoneIterativeData which maps a zones flow solutions to timesteps.
+    // One per zone and the number of entries matches the number of timesteps...
+    const auto &nblocks = get_region()->get_node_blocks();
+    auto &      nblock  = nblocks[0];
+
+    // TODO: Not sure how to handle both Vertex and CellCenter FlowSolution data
+    // in the same file.  For now, just output CellCenter ZoneIterativeData...
+    bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+
+    cgsize_t          dim[2] = {32, (cgsize_t)m_timesteps.size()};
+    std::vector<char> names(32 * m_timesteps.size(), ' ');
+    for (size_t state = 0; state < m_timesteps.size(); state++) {
+      // This name is the "postfix" or common portion of all FlowSolution names...
+      std::string name = "SolutionAtStep" + Ioss::Utils::to_string(state + 1);
+      std::strncpy(&names[state * 32], name.c_str(), 32);
+      for (size_t i = name.size(); i < 32; i++) {
+        names[state * 32 + i] = ' ';
+      }
+    }
+
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+    auto ziter = [this, base, dim, names, has_nodal_fields](Ioss::GroupingEntity *block) {
+      cgsize_t         zone = block->get_property("zone").get_int();
+      std::vector<int> indices(m_timesteps.size());
+      if (block->field_count(Ioss::Field::TRANSIENT) > 0 || has_nodal_fields) {
+        CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
+        CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
+        CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
+        CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
+        CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
+
+        if (has_nodal_fields) {
+          CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
+        }
+        if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+          CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
+        }
+      }
+    };
+
+    // Use the lambda...
+    const auto &sblocks = get_region()->get_structured_blocks();
+    for (auto &block : sblocks) {
+      ziter(block);
+    }
+
+    // Use the lambda...
+    const auto &eblocks = get_region()->get_element_blocks();
+    for (auto &block : eblocks) {
+      ziter(block);
+    }
+  }
+
   void ParallelDatabaseIO::release_memory()
   {
     nodeMap.release_memory();
@@ -187,6 +255,8 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
+    get_step_times();
+
     m_zoneType = Utils::check_zone_type(cgnsFilePtr);
 
     if (int_byte_size_api() == 8) {
@@ -205,6 +275,79 @@ namespace Iocgns {
     }
     else if (m_zoneType == CG_Unstructured) {
       handle_unstructured_blocks();
+    }
+
+    // ==========================================
+    // Add transient variables (if any) to all zones...
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+
+    // Assuming that the fields on all steps are the same, but can vary
+    // from zone to zone.
+    auto sol_iter = [this](Ioss::GroupingEntity *block) {
+      cgsize_t b = block->get_property("base").get_int();
+      cgsize_t z = block->get_property("zone").get_int();
+
+      int sol_count = 0;
+      CGCHECK(cg_nsols(cgnsFilePtr, b, z, &sol_count));
+      int sol_per_step = sol_count / (int)m_timesteps.size();
+      assert(sol_count % (int)m_timesteps.size() == 0);
+
+      for (int sol = 1; sol <= sol_per_step; sol++) {
+        char              solution_name[33];
+        CG_GridLocation_t grid_loc;
+        CGCHECK(cg_sol_info(cgnsFilePtr, b, z, sol, solution_name, &grid_loc));
+
+        int field_count = 0;
+        CGCHECK(cg_nfields(cgnsFilePtr, b, z, sol, &field_count));
+
+        char **field_names = Ioss::Utils::get_name_array(field_count, 33);
+        for (int field = 1; field <= field_count; field++) {
+          CG_DataType_t data_type;
+          char          field_name[33];
+          CGCHECK(cg_field_info(cgnsFilePtr, b, z, sol, field, &data_type, field_name));
+          std::strncpy(field_names[field - 1], field_name, 32);
+        }
+
+        // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
+        std::vector<Ioss::Field> fields;
+        if (grid_loc == CG_CellCenter) {
+          size_t entity_count = block->get_property("entity_count").get_int();
+          Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+                                  '_', nullptr, fields);
+          for (const auto &field : fields) {
+            block->field_add(field);
+          }
+        }
+        else {
+          assert(grid_loc == CG_Vertex);
+          const Ioss::NodeBlock *cnb =
+              (block->type() == Ioss::STRUCTUREDBLOCK)
+                  ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
+                  : get_region()->get_node_blocks()[0];
+          Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
+          size_t           entity_count = nb->get_property("entity_count").get_int();
+          Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
+                                  '_', nullptr, fields);
+          for (const auto &field : fields) {
+            nb->field_add(field);
+          }
+        }
+
+        Ioss::Utils::delete_name_array(field_names, field_count);
+      }
+    };
+    // ==========================================
+
+    if (!m_timesteps.empty()) {
+      const auto &sblocks = get_region()->get_structured_blocks();
+      for (auto &block : sblocks) {
+        sol_iter(block);
+      }
+      const auto &eblocks = get_region()->get_element_blocks();
+      for (auto &block : eblocks) {
+        sol_iter(block);
+      }
     }
   }
 
@@ -409,6 +552,8 @@ namespace Iocgns {
 
     if (shared_zone_proc_count <= 1) {
       // There are no shared nodes in this zone.
+      owned_node_count = nodes.size();
+      std::iota(connectivity_map.begin(), connectivity_map.end(), 1);
       return;
     }
 
@@ -556,6 +701,30 @@ namespace Iocgns {
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }
 
+  void ParallelDatabaseIO::get_step_times()
+  {
+    int  base          = 1;
+    int  num_timesteps = 0;
+    char bitername[33];
+    CGCHECK(cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps));
+
+    if (num_timesteps <= 0)
+      return;
+
+    // Read the timestep time values.
+    CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
+    std::vector<double> times(num_timesteps);
+    CGCHECK(cg_array_read_as(1, CG_RealDouble, times.data()));
+
+    m_timesteps.reserve(num_timesteps);
+    Ioss::Region *this_region = get_region();
+    for (int i = 0; i < num_timesteps; i++) {
+      this_region->add_state(times[i] * timeScaleFactor);
+      m_timesteps.push_back(times[i]);
+    }
+    return;
+  }
+
   void ParallelDatabaseIO::write_adjacency_data()
   {
 #if 0
@@ -642,20 +811,70 @@ namespace Iocgns {
         write_adjacency_data();
       }
       break;
+    case Ioss::STATE_DEFINE_TRANSIENT:
+      if (!is_input() && open_create_behavior() != Ioss::DB_APPEND) {
+        write_results_meta_data();
+      }
+      break;
     default: // ignore everything else...
       break;
     }
     return true;
   }
 
-  bool ParallelDatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time)
+  bool ParallelDatabaseIO::begin_state(Ioss::Region *region, int state, double time)
   {
+    if (is_input()) {
+      return true;
+    }
+    std::string c_name = "CellSolutionAtStep";
+    std::string v_name = "VertexSolutionAtStep";
+    std::string step   = Ioss::Utils::to_string(state);
+    c_name += step;
+    v_name += step;
+
+    const auto &nblocks          = get_region()->get_node_blocks();
+    auto &      nblock           = nblocks[0];
+    bool        has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+    auto sol_lambda = [this, v_name, c_name, has_nodal_fields, step](Ioss::GroupingEntity *block) {
+      cgsize_t base = block->get_property("base").get_int();
+      cgsize_t zone = block->get_property("zone").get_int();
+      if (has_nodal_fields) {
+        CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, v_name.c_str(), CG_Vertex,
+                             &m_currentVertexSolutionIndex));
+        CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
+                        m_currentVertexSolutionIndex, "end"));
+        CGCHECK(cg_gridlocation_write(CG_Vertex));
+        CGCHECK(cg_descriptor_write("Step", step.c_str()));
+      }
+      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+        CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, c_name.c_str(), CG_CellCenter,
+                             &m_currentCellCenterSolutionIndex));
+      }
+    };
+
+    // Use the lambda
+    const auto &sblocks = get_region()->get_structured_blocks();
+    for (auto &block : sblocks) {
+      sol_lambda(block);
+    }
+    // Use the lambda
+    const auto &eblocks = get_region()->get_element_blocks();
+    for (auto &block : eblocks) {
+      sol_lambda(block);
+    }
     return true;
   }
 
-  bool ParallelDatabaseIO::end_state(Ioss::Region * /* region */, int /* state */,
-                                     double /* time */)
+  bool ParallelDatabaseIO::end_state(Ioss::Region * /* region */, int state, double time)
   {
+    if (!is_input()) {
+      m_timesteps.push_back(time);
+      assert(m_timesteps.size() == (size_t)state);
+    }
     return true;
   }
 
@@ -971,8 +1190,10 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    size_t                num_to_get = field.verify(data_size);
-    Ioss::Field::RoleType role       = field.get_role();
+    cgsize_t base             = eb->get_property("base").get_int();
+    cgsize_t zone             = eb->get_property("zone").get_int();
+    size_t   num_to_get       = field.verify(data_size);
+    auto     role             = field.get_role();
 
     if (role == Ioss::Field::MESH) {
       // Handle the MESH fields required for a CGNS file model.
@@ -984,12 +1205,6 @@ namespace Iocgns {
         // The element_node index varies fastet
         int order = eb->get_property("original_block_order").get_int();
         decomp->get_block_connectivity(cgnsFilePtr, data, order);
-
-#if 0
-        int element_nodes = eb->topology()->number_nodes();
-        assert(field.raw_storage()->component_count() == element_nodes);
-        get_map(entity_type::NODE).map_data(data, field, num_to_get*element_nodes);
-#endif
       }
       else if (field.get_name() == "ids" || field.get_name() == "implicit_ids") {
         // Map the local ids in this node block
@@ -998,6 +1213,41 @@ namespace Iocgns {
       }
       else {
         num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+      }
+    }
+    else if (role == Ioss::Field::TRANSIENT) {
+      // Locate the FlowSolution node corresponding to the correct state/step/time
+      // TODO: do this at read_meta_data() and store...
+      int step           = get_region()->get_current_state();
+      int solution_index = Utils::find_solution_index(cgnsFilePtr, base, zone, step, CG_CellCenter);
+
+      int order = eb->get_property("original_block_order").get_int();
+
+      const Ioss::VariableType *var_type = field.raw_storage();
+
+      // Read into a double variable
+      // TODO: Support other field types...
+      size_t              num_entity = eb->get_property("entity_count").get_int();
+      std::vector<double> temp(num_entity);
+
+      // get number of components, cycle through each component
+      // and add suffix to base 'field_name'.  Look up index
+      // of this name in 'nodeVariables' map
+      size_t comp_count = var_type->component_count();
+      char field_suffix_separator = get_field_separator();
+
+      for (size_t i = 0; i < comp_count; i++) {
+	std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+	decomp->get_element_field(cgnsFilePtr, step, solution_index, order, var_name, temp.data());
+
+	// Transfer to 'data' array.
+	size_t k = 0;
+	assert(field.get_type() == Ioss::Field::REAL);
+	double *rvar = static_cast<double *>(data);
+	for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
+	  rvar[j] = temp[k++];
+	}
+	assert(k == num_entity);
       }
     }
     else {
@@ -1650,6 +1900,50 @@ namespace Iocgns {
                                                  size_t /* data_size */) const
   {
     return -1;
+  }
+
+  void ParallelDatabaseIO::write_results_meta_data()
+  {
+#if 0
+    const auto &blocks = get_region()->get_structured_blocks();
+
+    // Iterate all blocks and determine what TRANSIENT fields are defined on them.
+    // Create a FlowSolution subnode for each field...
+    for (auto &block : blocks) {
+      std::cerr << "Structured Block: " << block->name() << "\n";
+      Ioss::NameList fields;
+      block->field_describe(Ioss::Field::TRANSIENT, &fields);
+
+      for (const auto &field_name : fields) {
+	Ioss::Field field = block->get_field(field_name);
+	std::cerr << "\tField: " << field_name << "\n";
+      }
+    }
+
+    const auto &eblocks = get_region()->get_element_blocks();
+
+    // Iterate all blocks and determine what TRANSIENT fields are defined on them.
+    // Create a FlowSolution subnode for each field...
+    for (auto &block : eblocks) {
+      std::cerr << "Element Block: " << block->name() << "\n";
+      cgsize_t base = block->get_property("base").get_int();
+      cgsize_t zone = block->get_property("zone").get_int();
+
+      Ioss::NameList fields;
+      block->field_describe(Ioss::Field::TRANSIENT, &fields);
+
+      if (!fields.empty()) {
+	CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, "FlowSolution",
+			     CG_CellCenter, &sol_index));
+
+	for (const auto &field_name : fields) {
+	  Ioss::Field field = block->get_field(field_name);
+	  std::cerr << "\tField: " << field_name << "\n";
+
+	}
+      }
+    }
+#endif
   }
 
   unsigned ParallelDatabaseIO::entity_field_support() const { return Ioss::REGION; }
