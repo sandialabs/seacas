@@ -176,8 +176,8 @@ namespace Iocgns {
       m_decomposition.communicate_node_data(file_data, ioss_data, comp_count);
     }
 
-    template <typename T>
-    void communicate_block_data(cgsize_t *file_data, T *ioss_data,
+    template <typename U, typename T>
+    void communicate_block_data(U *file_data, T *ioss_data,
                                 const Ioss::BlockDecompositionData &block, size_t comp_count) const
     {
       m_decomposition.communicate_block_data(file_data, ioss_data, block, comp_count);
