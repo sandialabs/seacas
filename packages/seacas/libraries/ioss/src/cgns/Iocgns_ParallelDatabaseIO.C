@@ -1518,6 +1518,79 @@ namespace Iocgns {
         }
       }
     }
+    else if (role == Ioss::Field::TRANSIENT) {
+      // Instead of outputting a global nodeblock's worth of data,
+      // the data is output a "zone" at a time.
+      // The m_globalToBlockLocalNodeMap[zone] map is used (Ioss::Map pointer)
+      // This map is built during the output of block connectivity,
+      // so for cgns unstructured mesh, we need to output ElementBlock connectivity
+      // prior to outputting nodal coordinates.
+      bool all_non_null = !m_globalToBlockLocalNodeMap.empty();
+      for (const auto &z : m_globalToBlockLocalNodeMap) {
+	if (z.second == nullptr) {
+	  all_non_null = false;
+	}
+      }
+
+      if (all_non_null) {
+	size_t               num_zones = m_globalToBlockLocalNodeMap.size();
+	std::vector<cgsize_t> node_count(num_zones);
+	std::vector<cgsize_t> node_offset(num_zones);
+
+	for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end();
+	     I++) {
+	  auto        zone      = I->first;
+	  const auto &block_map = I->second;
+	  node_count[zone - 1]  = block_map->map.size() - 1;
+	}
+	MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones,
+		   Ioss::mpi_type(node_count[0]), MPI_SUM, util().communicator());
+	
+	const Ioss::VariableType *var_type = field.raw_storage();
+	size_t comp_count = var_type->component_count();
+	
+	double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+
+        for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end(); I++) {
+          auto zone = I->first;
+          // NOTE: 'block_map' has one more entry than node_count.
+          // First entry is for something else.  'block_map' is
+          // 1-based.
+          const auto &        block_map = I->second;
+          std::vector<double> blk_data(block_map->map.size() - 1);
+
+	  cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
+	  cgsize_t range_max[1] = {range_min[0] + node_count[zone - 1] - 1};
+	  int cgns_field = 0;
+
+	  if (comp_count > 1) {
+	    char field_suffix_separator = get_field_separator();
+
+	    for (size_t i = 0; i < comp_count; i++) {
+	      for (size_t j = 0; j < block_map->map.size() - 1; j++) {
+		auto global = block_map->map[j + 1] - 1;
+		blk_data[j] = rdata[comp_count * global + i];
+	      }
+	      std::string var_name =
+                var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+              int cgns_field = 0;
+	      CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, CG_RealDouble,
+				     var_name.c_str(), &cgns_field));
+	      
+	      CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, cgns_field,
+				       range_min, range_max, blk_data.data()));
+	    }
+	  }
+	  else {
+	    CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, CG_RealDouble,
+				    field.get_name().c_str(), &cgns_field));
+	      
+	    CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, cgns_field,
+					 range_min, range_max, rdata));
+	  }
+	}	   
+      }
+    }
     return -1;
   }
 
