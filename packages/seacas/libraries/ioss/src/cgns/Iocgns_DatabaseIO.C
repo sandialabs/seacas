@@ -1398,6 +1398,7 @@ namespace Iocgns {
       if (comp_count == 1) {
         CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
 			       field.get_name().c_str(), rdata, &cgns_field));
+	field.set_index(cgns_field);
       }
       else {
         std::vector<double> cgns_data(num_to_get);
@@ -1410,6 +1411,7 @@ namespace Iocgns {
 
           CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
 				 var_name.c_str(), cgns_data.data(), &cgns_field));
+	  if (i == 0) field.set_index(cgns_field);
         }
       }
     }
@@ -1493,6 +1495,7 @@ namespace Iocgns {
         if (comp_count == 1) {
           CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
 				 field.get_name().c_str(), rdata, &cgns_field));
+	  field.set_index(cgns_field);
         }
         else {
           std::vector<double> cgns_data(num_to_get);
@@ -1505,6 +1508,7 @@ namespace Iocgns {
 
             CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
 				   var_name.c_str(), cgns_data.data(), &cgns_field));
+	    if (i == 0) field.set_index(cgns_field);
           }
         }
       }
