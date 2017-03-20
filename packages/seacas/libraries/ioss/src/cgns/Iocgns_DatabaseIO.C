@@ -799,7 +799,6 @@ namespace Iocgns {
                              &m_currentCellCenterSolutionIndex));
         CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
                         m_currentCellCenterSolutionIndex, "end"));
-        CGCHECK(cg_gridlocation_write(CG_CellCenter));
         CGCHECK(cg_descriptor_write("Step", step.c_str()));
       }
     };

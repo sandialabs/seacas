@@ -111,6 +111,9 @@ namespace Iocgns {
     void get_element_field(int filePtr, int solution_index, int blk_seq, int field_index,
                            double *data) const;
 
+    void get_node_field(int filePtr, int solution_index, int field_index,
+                           double *data) const;
+
     void get_node_entity_proc_data(void *entity_proc, const Ioss::MapContainer &node_map,
                                    bool do_map) const;
 
@@ -186,6 +189,9 @@ namespace Iocgns {
     void get_block_connectivity(int filePtr, INT *data, int blk_seq) const;
 
     void get_element_field(int filePtr, int solution_index, int blk_seq, int field_index,
+                           double *data) const;
+
+    void get_node_field(int filePtr, int solution_index, int field_index,
                            double *data) const;
 
     size_t get_commset_node_size() const { return m_decomposition.m_nodeCommMap.size() / 2; }
