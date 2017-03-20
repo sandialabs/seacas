@@ -1651,7 +1651,44 @@ namespace Iocgns {
         }
       }
       else {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+        num_to_get = Ioss::Utils::field_warning(eb, field, "output");
+      }
+    }
+    else if (role == Ioss::Field::TRANSIENT) {
+      double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+      const Ioss::VariableType *var_type = field.raw_storage();
+
+      cgsize_t base = eb->get_property("base").get_int();
+      cgsize_t zone = eb->get_property("zone").get_int();
+
+      cgsize_t start = eb->get_property("proc_offset").get_int();
+      cgsize_t range_min[1] = {start + 1};
+      cgsize_t range_max[1] = {start + num_to_get};
+
+      // get number of components, cycle through each component
+      size_t comp_count = var_type->component_count();
+      if (comp_count == 1) {
+	int cgns_field = 0;
+	CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
+				 field.get_name().c_str(), &cgns_field));
+	CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, cgns_field,
+				      range_min, range_max, rdata));
+      }
+      else {
+	char field_suffix_separator = get_field_separator();
+	std::vector<double> cgns_data(num_to_get);
+	for (size_t i = 0; i < comp_count; i++) {
+	  for (cgsize_t j = 0; j < num_to_get; j++) {
+	    cgns_data[j] = rdata[comp_count * j + i];
+	  }
+	  std::string var_name =
+	    var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+	  int cgns_field = 0;
+	  CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, CG_RealDouble,
+				  var_name.c_str(), &cgns_field));
+	  CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex, cgns_field,
+				       range_min, range_max, cgns_data.data()));
+	}
       }
     }
     else {
