@@ -195,6 +195,18 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
   return common_zone_type;
 }
 
+bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
+{
+  bool cell_field = true;
+  if (field.get_name() == "mesh_model_coordinates" ||
+      field.get_name() == "mesh_model_coordinates_x" ||
+      field.get_name() == "mesh_model_coordinates_y" ||
+      field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
+    cell_field = false;
+  }
+  return cell_field;
+}
+
 void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
                                            std::vector<size_t> &zone_offset)
 {
