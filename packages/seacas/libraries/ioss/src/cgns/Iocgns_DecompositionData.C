@@ -1159,27 +1159,26 @@ namespace Iocgns {
     communicate_block_data(TOPTR(file_conn), data, blk, blk.nodesPerEntity);
   }
 
-  template void DecompositionData<int>::get_element_field(int filePtr, int step, int solution_index,
-							  int blk_seq, const std::string &var_name,
-							  double *data) const;
-  template void DecompositionData<int64_t>::get_element_field(int filePtr, int step, int solution_index,
-							  int blk_seq, const std::string &var_name,
-							  double *data) const;
-
+  template void DecompositionData<int>::get_element_field(int filePtr, int solution_index,
+                                                          int blk_seq, int field_index,
+                                                          double *data) const;
+  template void DecompositionData<int64_t>::get_element_field(int filePtr, int solution_index,
+                                                              int blk_seq, int field_index,
+                                                              double *data) const;
 
   template <typename INT>
-  void DecompositionData<INT>::get_element_field(int filePtr, int step, int solution_index,
-						 int blk_seq, const std::string &field,
-						 double *data) const
+  void DecompositionData<INT>::get_element_field(int filePtr, int solution_index, int blk_seq,
+                                                 int field_index, double *data) const
   {
-    auto                  blk = m_elementBlocks[blk_seq];
+    auto blk = m_elementBlocks[blk_seq];
+    std::cerr << blk.file_count() << ", " << blk.fileSectionOffset << "\n";
     std::vector<double> cgns_data(blk.file_count());
-    int                   base = 1;
-    cgsize_t range_min[1] = {(cgsize_t)blk.fileSectionOffset};
-    cgsize_t range_max[1] = {(cgsize_t)(blk.fileSectionOffset+blk.file_count() -1)};
+    int                 base         = 1;
+    cgsize_t            range_min[1] = {(cgsize_t)blk.fileSectionOffset};
+    cgsize_t            range_max[1] = {(cgsize_t)(blk.fileSectionOffset + blk.file_count() - 1)};
 
-    CGCHECK2(cgp_field_read_data(filePtr, base, blk.zone(), solution_index, field.c_str(),
-				 range_min, range_max, cgns_data.data()));
+    CGCHECK2(cgp_field_read_data(filePtr, base, blk.zone(), solution_index, field_index, range_min,
+                                 range_max, cgns_data.data()));
 
     communicate_element_data(cgns_data.data(), data, 1);
   }
@@ -1270,6 +1269,22 @@ namespace Iocgns {
           dynamic_cast<const DecompositionData<int64_t> *>(this);
       Ioss::Utils::check_dynamic_cast(this64);
       this64->get_block_connectivity(filePtr, (int64_t *)data, blk_seq);
+    }
+  }
+
+  void DecompositionDataBase::get_element_field(int filePtr, int solution_index, int blk_seq,
+                                                int field_index, double *data) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
+      Ioss::Utils::check_dynamic_cast(this32);
+      this32->get_element_field(filePtr, solution_index, blk_seq, field_index, data);
+    }
+    else {
+      const DecompositionData<int64_t> *this64 =
+          dynamic_cast<const DecompositionData<int64_t> *>(this);
+      Ioss::Utils::check_dynamic_cast(this64);
+      this64->get_element_field(filePtr, solution_index, blk_seq, field_index, data);
     }
   }
 

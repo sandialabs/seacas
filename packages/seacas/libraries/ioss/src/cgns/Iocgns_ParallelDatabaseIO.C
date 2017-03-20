@@ -1190,10 +1190,10 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    cgsize_t base             = eb->get_property("base").get_int();
-    cgsize_t zone             = eb->get_property("zone").get_int();
-    size_t   num_to_get       = field.verify(data_size);
-    auto     role             = field.get_role();
+    cgsize_t base       = eb->get_property("base").get_int();
+    cgsize_t zone       = eb->get_property("zone").get_int();
+    size_t   num_to_get = field.verify(data_size);
+    auto     role       = field.get_role();
 
     if (role == Ioss::Field::MESH) {
       // Handle the MESH fields required for a CGNS file model.
@@ -1231,23 +1231,19 @@ namespace Iocgns {
       std::vector<double> temp(num_entity);
 
       // get number of components, cycle through each component
-      // and add suffix to base 'field_name'.  Look up index
-      // of this name in 'nodeVariables' map
       size_t comp_count = var_type->component_count();
-      char field_suffix_separator = get_field_separator();
-
       for (size_t i = 0; i < comp_count; i++) {
-	std::string var_name = var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-	decomp->get_element_field(cgnsFilePtr, step, solution_index, order, var_name, temp.data());
+        int field_offset = field.get_index() + i + 1;
+        decomp->get_element_field(cgnsFilePtr, solution_index, order, field_offset, temp.data());
 
-	// Transfer to 'data' array.
-	size_t k = 0;
-	assert(field.get_type() == Ioss::Field::REAL);
-	double *rvar = static_cast<double *>(data);
-	for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
-	  rvar[j] = temp[k++];
-	}
-	assert(k == num_entity);
+        // Transfer to 'data' array.
+        size_t k = 0;
+        assert(field.get_type() == Ioss::Field::REAL);
+        double *rvar = static_cast<double *>(data);
+        for (size_t j = i; j < num_entity * comp_count; j += comp_count) {
+          rvar[j] = temp[k++];
+        }
+        assert(k == num_entity);
       }
     }
     else {
