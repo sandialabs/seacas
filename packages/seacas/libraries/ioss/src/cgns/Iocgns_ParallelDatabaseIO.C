@@ -1041,7 +1041,31 @@ namespace Iocgns {
       }
       return num_to_get;
     }
-    return -1;
+    else if (role == Ioss::Field::TRANSIENT) {
+      // Locate the FlowSolution node corresponding to the correct state/step/time
+      // TODO: do this at read_meta_data() and store...
+      int step        = get_region()->get_current_state();
+      auto var_type   = field.transformed_storage();
+      int  comp_count = var_type->component_count();
+
+      if (comp_count == 1) {
+	decomp->get_node_field(cgnsFilePtr, step, field.get_index() + 1, (double *)data);
+      }
+      else {
+	std::vector<double> ioss_tmp(num_to_get);
+	for (int i = 0; i < comp_count; i++) {
+	  decomp->get_node_field(cgnsFilePtr, step, field.get_index() + i + 1, ioss_tmp.data());
+
+	  size_t index = i;
+	  double *rdata = static_cast<double *>(data);
+	  for (size_t j = 0; j < num_to_get; j++) {
+	    rdata[index] = ioss_tmp[j];
+	    index += comp_count;
+	  }
+	}
+      }
+    }
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::EdgeBlock * /* nb */,
@@ -1573,7 +1597,6 @@ namespace Iocgns {
 	      }
 	      std::string var_name =
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-              int cgns_field = 0;
 	      CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex, CG_RealDouble,
 				     var_name.c_str(), &cgns_field));
 	      

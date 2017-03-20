@@ -1084,6 +1084,46 @@ namespace Iocgns {
     }
   }
 
+  template <typename INT>
+  void DecompositionData<INT>::get_node_field(int filePtr, int step, int field_offset,
+					      double *ioss_data) const
+  {
+    std::vector<double> tmp(decomp_node_count());
+    
+    int      base        = 1; // Only single base supported so far.
+    cgsize_t beg         = 0;
+    cgsize_t end         = 0;
+    cgsize_t offset      = 0;
+    cgsize_t node_count  = decomp_node_count();
+    cgsize_t node_offset = decomp_node_offset();
+
+    int num_zones = (int)m_zones.size() - 1;
+    for (int zone = 1; zone <= num_zones; zone++) {
+      end += m_zones[zone].m_nodeCount;
+
+      int solution_index = Utils::find_solution_index(filePtr, base, zone, step, CG_Vertex);
+
+      cgsize_t start  = std::max(node_offset, beg);
+      cgsize_t finish = std::min(end, node_offset + node_count);
+      cgsize_t count  = (finish > start) ? finish - start : 0;
+
+      // Now adjust start for 1-based node numbering and the start of this zone...
+      start  = (count == 0) ? 0 : start - beg + 1;
+      finish = (count == 0) ? 0 : finish - beg;
+
+      double *data = (count > 0) ? &tmp[offset] : nullptr;
+      cgsize_t            range_min[1] = {start};
+      cgsize_t            range_max[1] = {finish};
+
+      CGCHECK2(cgp_field_read_data(filePtr, base, zone, solution_index, field_offset, range_min,
+                                 range_max, data));
+
+      offset += count;
+      beg = end;
+    }
+    communicate_node_data(TOPTR(tmp), ioss_data, 1);
+  }
+
   template void DecompositionData<int>::get_sideset_element_side(
       int filePtr, const Ioss::SetDecompositionData &sset, int *data) const;
   template void DecompositionData<int64_t>::get_sideset_element_side(
@@ -1171,7 +1211,6 @@ namespace Iocgns {
                                                  int field_index, double *data) const
   {
     const auto blk = m_elementBlocks[blk_seq];
-    std::cerr << blk.file_count() << ", " << blk.fileSectionOffset << "\n";
     std::vector<double> cgns_data(blk.file_count());
     int                 base         = 1;
     cgsize_t            range_min[1] = {(cgsize_t)blk.fileSectionOffset};
@@ -1285,6 +1324,22 @@ namespace Iocgns {
           dynamic_cast<const DecompositionData<int64_t> *>(this);
       Ioss::Utils::check_dynamic_cast(this64);
       this64->get_element_field(filePtr, solution_index, blk_seq, field_index, data);
+    }
+  }
+
+  void DecompositionDataBase::get_node_field(int filePtr, int step, 
+                                                int field_index, double *data) const
+  {
+    if (int_size() == sizeof(int)) {
+      const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
+      Ioss::Utils::check_dynamic_cast(this32);
+      this32->get_node_field(filePtr, step, field_index, data);
+    }
+    else {
+      const DecompositionData<int64_t> *this64 =
+          dynamic_cast<const DecompositionData<int64_t> *>(this);
+      Ioss::Utils::check_dynamic_cast(this64);
+      this64->get_node_field(filePtr, step, field_index, data);
     }
   }
 
