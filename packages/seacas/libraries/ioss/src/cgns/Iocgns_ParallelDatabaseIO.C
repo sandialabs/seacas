@@ -853,6 +853,9 @@ namespace Iocgns {
       if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
         CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, c_name.c_str(), CG_CellCenter,
                              &m_currentCellCenterSolutionIndex));
+        CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
+                        m_currentCellCenterSolutionIndex, "end"));
+        CGCHECK(cg_descriptor_write("Step", step.c_str()));
       }
     };
 
