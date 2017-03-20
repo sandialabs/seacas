@@ -441,6 +441,59 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
   return topo;
 }
 
+#define CGERR(funcall)                                                                         \
+  if ((funcall) != CG_OK) {                                                                        \
+    Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                      \
+  }
+
+
+void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
+						 int *vertex_solution_index,
+						 int *cell_center_solution_index) {
+    std::string c_name = "CellSolutionAtStep";
+    std::string v_name = "VertexSolutionAtStep";
+    std::string step   = Ioss::Utils::to_string(state);
+    c_name += step;
+    v_name += step;
+
+    const auto &nblocks          = region->get_node_blocks();
+    auto &      nblock           = nblocks[0];
+    bool        has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+
+    // Create a lambda to avoid code duplication for similar treatment
+    // of structured blocks and element blocks.
+    auto sol_lambda = [=](Ioss::GroupingEntity *block) {
+      cgsize_t base = block->get_property("base").get_int();
+      cgsize_t zone = block->get_property("zone").get_int();
+      if (has_nodal_fields) {
+        CGERR(cg_sol_write(file_ptr, base, zone, v_name.c_str(), CG_Vertex,
+                             vertex_solution_index));
+        CGERR(cg_goto(file_ptr, base, "Zone_t", zone, "FlowSolution_t",
+			*vertex_solution_index, "end"));
+        CGERR(cg_gridlocation_write(CG_Vertex));
+        CGERR(cg_descriptor_write("Step", step.c_str()));
+      }
+      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+        CGERR(cg_sol_write(file_ptr, base, zone, c_name.c_str(), CG_CellCenter,
+                             cell_center_solution_index));
+        CGERR(cg_goto(file_ptr, base, "Zone_t", zone, "FlowSolution_t",
+                        *cell_center_solution_index, "end"));
+        CGERR(cg_descriptor_write("Step", step.c_str()));
+      }
+    };
+
+    // Use the lambda
+    const auto &sblocks = region->get_structured_blocks();
+    for (auto &block : sblocks) {
+      sol_lambda(block);
+    }
+    // Use the lambda
+    const auto &eblocks = region->get_element_blocks();
+    for (auto &block : eblocks) {
+      sol_lambda(block);
+    }
+}
+
 int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int step, CG_GridLocation_t location)
   {
     auto str_step = Ioss::Utils::to_string(step);
