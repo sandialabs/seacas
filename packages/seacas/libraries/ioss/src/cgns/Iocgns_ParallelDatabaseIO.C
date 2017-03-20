@@ -78,6 +78,9 @@
 #include "Ioss_Utils.h"
 #include "Ioss_VariableType.h"
 
+namespace {
+}
+
 namespace Iocgns {
 
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -1166,6 +1169,43 @@ namespace Iocgns {
       }
       return num_to_get;
     }
+    else if (role == Ioss::Field::TRANSIENT) {
+      double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+      int     cgns_field             = 0;
+      auto    var_type               = field.transformed_storage();
+      int     comp_count             = var_type->component_count();
+      char    field_suffix_separator = get_field_separator();
+
+      int sol_index = 0;
+      if (cell_field) {
+	sol_index = m_currentCellCenterSolutionIndex;
+      }
+      else {
+	sol_index = m_currentVertexSolutionIndex;
+      }
+      int field_offset = field.get_index() + 1;
+      
+      if (comp_count == 1) {
+	CGCHECK(cgp_field_read_data(cgnsFilePtr, base, zone, sol_index, field_offset,
+				     rmin, rmax, rdata));
+      }
+      else {
+        std::vector<double> cgns_data(num_to_get);
+        for (int i = 0; i < comp_count; i++) {
+          for (cgsize_t j = 0; j < num_to_get; j++) {
+            cgns_data[j] = rdata[comp_count * j + i];
+          }
+          std::string var_name =
+              var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+
+	  CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, sol_index, CG_RealDouble,
+				  var_name.c_str(), &cgns_field));
+
+	  CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, sol_index, cgns_field,
+				       rmin, rmax, rdata));
+        }
+      }
+    }
     return -1;
   }
 
@@ -1849,8 +1889,49 @@ namespace Iocgns {
         }
       }
     }
+    else if (role == Ioss::Field::TRANSIENT) {
+      double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+      int     cgns_field             = 0;
+      auto    var_type               = field.transformed_storage();
+      int     comp_count             = var_type->component_count();
+      char    field_suffix_separator = get_field_separator();
+
+      int sol_index = 0;
+      if (cell_field) {
+	sol_index = m_currentCellCenterSolutionIndex;
+      }
+      else {
+	sol_index = m_currentVertexSolutionIndex;
+      }
+      if (comp_count == 1) {
+	CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, sol_index, CG_RealDouble,
+				field.get_name().c_str(), &cgns_field));
+	field.set_index(cgns_field);
+	
+	CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, sol_index, cgns_field,
+				     rmin, rmax, rdata));
+      }
+      else {
+        std::vector<double> cgns_data(num_to_get);
+        for (int i = 0; i < comp_count; i++) {
+          for (cgsize_t j = 0; j < num_to_get; j++) {
+            cgns_data[j] = rdata[comp_count * j + i];
+          }
+          std::string var_name =
+              var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+
+	  CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, sol_index, CG_RealDouble,
+				  var_name.c_str(), &cgns_field));
+	  if (i == 0) field.set_index(cgns_field);
+
+	  CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, sol_index, cgns_field,
+				       rmin, rmax, rdata));
+        }
+      }
+    }
     return num_to_get;
   }
+
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::FaceBlock * /* nb */,
                                                  const Ioss::Field & /* field */, void * /* data */,
                                                  size_t /* data_size */) const
