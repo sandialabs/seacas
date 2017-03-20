@@ -1055,14 +1055,9 @@ namespace Iocgns {
     cgsize_t rmin[3] = {0, 0, 0};
     cgsize_t rmax[3] = {0, 0, 0};
 
+    bool cell_field = Utils::is_cell_field(field);
+
     if (role == Ioss::Field::MESH) {
-      bool cell_field = true;
-      if (field.get_name() == "mesh_model_coordinates" ||
-          field.get_name() == "mesh_model_coordinates_x" ||
-          field.get_name() == "mesh_model_coordinates_y" ||
-          field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
-        cell_field = false;
-      }
 
       if (cell_field) {
         assert(num_to_get == sb->get_property("cell_count").get_int());
@@ -1766,15 +1761,10 @@ namespace Iocgns {
     cgsize_t rmin[3] = {0, 0, 0};
     cgsize_t rmax[3] = {0, 0, 0};
 
-    if (role == Ioss::Field::MESH) {
-      bool cell_field = true;
-      if (field.get_name() == "mesh_model_coordinates" ||
-          field.get_name() == "mesh_model_coordinates_x" ||
-          field.get_name() == "mesh_model_coordinates_y" ||
-          field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
-        cell_field = false;
-      }
+    // TODO: Need way of telling whether cell-center of vertex field--specifically for transient
+    bool cell_field = Utils::is_cell_field(field);
 
+    if (role == Ioss::Field::MESH) {
       if (cell_field) {
         assert(num_to_get == sb->get_property("cell_count").get_int());
         if (num_to_get > 0) {

@@ -72,6 +72,8 @@ namespace Iocgns {
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
 
+    static bool is_cell_field(const Ioss::Field &field);
+
     template <typename INT>
     static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
                                       INT *idata)
