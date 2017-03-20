@@ -827,48 +827,9 @@ namespace Iocgns {
     if (is_input()) {
       return true;
     }
-    std::string c_name = "CellSolutionAtStep";
-    std::string v_name = "VertexSolutionAtStep";
-    std::string step   = Ioss::Utils::to_string(state);
-    c_name += step;
-    v_name += step;
-
-    const auto &nblocks          = get_region()->get_node_blocks();
-    auto &      nblock           = nblocks[0];
-    bool        has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
-
-    // Create a lambda to avoid code duplication for similar treatment
-    // of structured blocks and element blocks.
-    auto sol_lambda = [this, v_name, c_name, has_nodal_fields, step](Ioss::GroupingEntity *block) {
-      cgsize_t base = block->get_property("base").get_int();
-      cgsize_t zone = block->get_property("zone").get_int();
-      if (has_nodal_fields) {
-        CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, v_name.c_str(), CG_Vertex,
-                             &m_currentVertexSolutionIndex));
-        CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
-                        m_currentVertexSolutionIndex, "end"));
-        CGCHECK(cg_gridlocation_write(CG_Vertex));
-        CGCHECK(cg_descriptor_write("Step", step.c_str()));
-      }
-      if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
-        CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, c_name.c_str(), CG_CellCenter,
-                             &m_currentCellCenterSolutionIndex));
-        CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t",
-                        m_currentCellCenterSolutionIndex, "end"));
-        CGCHECK(cg_descriptor_write("Step", step.c_str()));
-      }
-    };
-
-    // Use the lambda
-    const auto &sblocks = get_region()->get_structured_blocks();
-    for (auto &block : sblocks) {
-      sol_lambda(block);
-    }
-    // Use the lambda
-    const auto &eblocks = get_region()->get_element_blocks();
-    for (auto &block : eblocks) {
-      sol_lambda(block);
-    }
+    Utils::write_flow_solution_metadata(cgnsFilePtr, get_region(), state,
+					&m_currentVertexSolutionIndex,
+					&m_currentCellCenterSolutionIndex);
     return true;
   }
 
