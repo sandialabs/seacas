@@ -1170,7 +1170,7 @@ namespace Iocgns {
   void DecompositionData<INT>::get_element_field(int filePtr, int solution_index, int blk_seq,
                                                  int field_index, double *data) const
   {
-    auto blk = m_elementBlocks[blk_seq];
+    const auto blk = m_elementBlocks[blk_seq];
     std::cerr << blk.file_count() << ", " << blk.fileSectionOffset << "\n";
     std::vector<double> cgns_data(blk.file_count());
     int                 base         = 1;
@@ -1180,7 +1180,7 @@ namespace Iocgns {
     CGCHECK2(cgp_field_read_data(filePtr, base, blk.zone(), solution_index, field_index, range_min,
                                  range_max, cgns_data.data()));
 
-    communicate_element_data(cgns_data.data(), data, 1);
+    communicate_block_data(cgns_data.data(), data, blk, 1);
   }
 
   DecompositionDataBase::~DecompositionDataBase()
