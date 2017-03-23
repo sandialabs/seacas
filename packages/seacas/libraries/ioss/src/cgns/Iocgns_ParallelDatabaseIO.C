@@ -1392,6 +1392,20 @@ namespace Iocgns {
     cgsize_t              base       = 1;
     size_t                num_to_get = field.verify(data_size);
 
+    // Instead of outputting a global nodeblock's worth of data,
+    // the data is output a "zone" at a time.
+    // The m_globalToBlockLocalNodeMap[zone] map is used (Ioss::Map pointer)
+    // This map is built during the output of block connectivity,
+    // so for cgns unstructured mesh, we need to output ElementBlock connectivity
+    // prior to outputting nodal coordinates.
+    for (const auto &z : m_globalToBlockLocalNodeMap) {
+      if (z.second == nullptr) {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: CGNS: The globalToBlockLocalNodeMap is not defined, so nodal fields cannot be output.";
+	IOSS_ERROR(errmsg);
+      }
+    }
+
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "ids") {
         // The ids coming in are the global ids; their position is the
@@ -1408,28 +1422,13 @@ namespace Iocgns {
           field.get_name() == "mesh_model_coordinates_z") {
         double *rdata = static_cast<double *>(data);
 
-        // Instead of outputting a global nodeblock's worth of data,
-        // the data is output a "zone" at a time.
-        // The m_globalToBlockLocalNodeMap[zone] map is used (Ioss::Map pointer)
-        // This map is built during the output of block connectivity,
-        // so for cgns unstructured mesh, we need to output ElementBlock connectivity
-        // prior to outputting nodal coordinates.
-        bool all_non_null = !m_globalToBlockLocalNodeMap.empty();
-        for (const auto &z : m_globalToBlockLocalNodeMap) {
-          if (z.second == nullptr) {
-            all_non_null = false;
-          }
-        }
-
-        if (all_non_null) {
           size_t               num_zones = m_globalToBlockLocalNodeMap.size();
           std::vector<int64_t> node_count(num_zones);
           std::vector<int64_t> node_offset(num_zones);
 
-          for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end();
-               I++) {
-            auto        zone      = I->first;
-            const auto &block_map = I->second;
+	  for (const auto &block : m_globalToBlockLocalNodeMap) {
+            auto        zone      = block.first;
+            const auto &block_map = block.second;
             node_count[zone - 1]  = block_map->map.size() - 1;
           }
           MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones,
@@ -1440,13 +1439,12 @@ namespace Iocgns {
 
             // Output all coordinates, a zone's worth of data at a time...
 
-            for (auto I = m_globalToBlockLocalNodeMap.begin();
-                 I != m_globalToBlockLocalNodeMap.end(); I++) {
-              auto zone = I->first;
+	    for (const auto &block : m_globalToBlockLocalNodeMap) {
+              auto zone = block.first;
               // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
               // else.
               //       'block_map' is 1-based.
-              const auto &        block_map = I->second;
+              const auto &        block_map = block.second;
               std::vector<double> x(block_map->map.size() - 1);
               std::vector<double> y(block_map->map.size() - 1);
               std::vector<double> z(block_map->map.size() - 1);
@@ -1495,13 +1493,12 @@ namespace Iocgns {
           }
           else {
             // Outputting only a single coordinate value...
-            for (auto I = m_globalToBlockLocalNodeMap.begin();
-                 I != m_globalToBlockLocalNodeMap.end(); I++) {
-              auto zone = I->first;
+	    for (const auto &block : m_globalToBlockLocalNodeMap) {
+              auto zone = block.first;
               // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
               // else.
               //       'block_map' is 1-based.
-              const auto &        block_map = I->second;
+              const auto &        block_map = block.second;
               std::vector<double> xyz(block_map->map.size() - 1);
 
               for (size_t i = 0; i < block_map->map.size() - 1; i++) {
@@ -1531,7 +1528,6 @@ namespace Iocgns {
               CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
             }
           }
-        }
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
@@ -1541,22 +1537,13 @@ namespace Iocgns {
       // This map is built during the output of block connectivity,
       // so for cgns unstructured mesh, we need to output ElementBlock connectivity
       // prior to outputting nodal coordinates.
-      bool all_non_null = !m_globalToBlockLocalNodeMap.empty();
-      for (const auto &z : m_globalToBlockLocalNodeMap) {
-        if (z.second == nullptr) {
-          all_non_null = false;
-        }
-      }
-
-      if (all_non_null) {
         size_t                num_zones = m_globalToBlockLocalNodeMap.size();
         std::vector<cgsize_t> node_count(num_zones);
         std::vector<cgsize_t> node_offset(num_zones);
 
-        for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end();
-             I++) {
-          auto        zone      = I->first;
-          const auto &block_map = I->second;
+	for (const auto &block : m_globalToBlockLocalNodeMap) {
+          auto        zone      = block.first;
+          const auto &block_map = block.second;
           node_count[zone - 1]  = block_map->map.size() - 1;
         }
         MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
@@ -1567,13 +1554,12 @@ namespace Iocgns {
 
         double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
-        for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end();
-             I++) {
-          auto zone = I->first;
+	for (const auto &block : m_globalToBlockLocalNodeMap) {
+          auto zone = block.first;
           // NOTE: 'block_map' has one more entry than node_count.
           // First entry is for something else.  'block_map' is
           // 1-based.
-          const auto &        block_map = I->second;
+          const auto &        block_map = block.second;
           std::vector<double> blk_data(block_map->map.size() - 1);
 
           cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
@@ -1608,7 +1594,6 @@ namespace Iocgns {
             field.set_index(cgns_field);
           }
         }
-      }
     }
     return -1;
   }

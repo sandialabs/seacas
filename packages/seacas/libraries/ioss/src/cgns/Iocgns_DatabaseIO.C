@@ -1313,25 +1313,11 @@ namespace Iocgns {
 
     cgsize_t num_to_get = field.verify(data_size);
 
-    //    cgsize_t rmin[3] = {0, 0, 0};
-    //    cgsize_t rmax[3] = {0, 0, 0};
-
     if (role == Ioss::Field::MESH) {
       bool cell_field = Utils::is_cell_field(field);
 
       if (cell_field) {
         assert(num_to_get == sb->get_property("cell_count").get_int());
-#if 0
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
-        }
-#endif
       }
 
       double *rdata = static_cast<double *>(data);
@@ -1536,6 +1522,20 @@ namespace Iocgns {
   int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
+    // Instead of outputting a global nodeblock's worth of data,
+    // the data is output a "zone" at a time.
+    // The m_globalToBlockLocalNodeMap[zone] map is used (Ioss::Map pointer)
+    // This map is built during the output of block connectivity,
+    // so for cgns unstructured mesh, we need to output ElementBlock connectivity
+    // prior to outputting nodal coordinates.
+    for (const auto &z : m_globalToBlockLocalNodeMap) {
+      if (z.second == nullptr) {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: CGNS: The globalToBlockLocalNodeMap is not defined, so nodal fields cannot be output.";
+	IOSS_ERROR(errmsg);
+      }
+    }
+
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t              base = 1;
 
@@ -1546,29 +1546,14 @@ namespace Iocgns {
           field.get_name() == "mesh_model_coordinates_z") {
         double *rdata = static_cast<double *>(data);
 
-        // Instead of outputting a global nodeblock's worth of data,
-        // the data is output a "zone" at a time.
-        // The m_globalToBlockLocalNodeMap[zone] map is used (Ioss::Map pointer)
-        // This map is built during the output of block connectivity,
-        // so for cgns unstructured mesh, we need to output ElementBlock connectivity
-        // prior to outputting nodal coordinates.
-        bool all_non_null = !m_globalToBlockLocalNodeMap.empty();
-        for (const auto &z : m_globalToBlockLocalNodeMap) {
-          if (z.second == nullptr) {
-            all_non_null = false;
-          }
-        }
-
-        if (all_non_null) {
           if (field.get_name() == "mesh_model_coordinates") {
             int spatial_dim = nb->get_property("component_degree").get_int();
-            for (auto I = m_globalToBlockLocalNodeMap.begin();
-                 I != m_globalToBlockLocalNodeMap.end(); I++) {
-              auto zone = I->first;
+	    for (const auto &block : m_globalToBlockLocalNodeMap) {
+              auto zone = block.first;
               // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
               // else.
               //       'block_map' is 1-based.
-              const auto &        block_map = I->second;
+              const auto &        block_map = block.second;
               std::vector<double> x(block_map->map.size() - 1);
               std::vector<double> y(block_map->map.size() - 1);
               std::vector<double> z(block_map->map.size() - 1);
@@ -1603,13 +1588,12 @@ namespace Iocgns {
           }
           else {
             // Outputting only a single coordinate value...
-            for (auto I = m_globalToBlockLocalNodeMap.begin();
-                 I != m_globalToBlockLocalNodeMap.end(); I++) {
-              auto zone = I->first;
+	    for (const auto &block : m_globalToBlockLocalNodeMap) {
+              auto zone = block.first;
               // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
               // else.
               //       'block_map' is 1-based.
-              const auto &        block_map = I->second;
+              const auto &        block_map = block.second;
               std::vector<double> xyz(block_map->map.size() - 1);
 
               for (size_t i = 0; i < block_map->map.size() - 1; i++) {
@@ -1634,35 +1618,18 @@ namespace Iocgns {
                                      TOPTR(xyz), &crd_idx));
             }
           }
-        }
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
       double *rdata      = static_cast<double *>(data);
       int     cgns_field = 0;
 
-      // Instead of outputting a global nodeblock's worth of data, the
-      // data is output a "zone" at a time.  The
-      // m_globalToBlockLocalNodeMap[zone] map is used (Ioss::Map
-      // pointer) This map is built during the output of block
-      // connectivity, so for cgns unstructured mesh, we need to
-      // output ElementBlock connectivity prior to outputting nodal
-      // transient variables.
-      bool all_non_null = !m_globalToBlockLocalNodeMap.empty();
-      for (const auto &z : m_globalToBlockLocalNodeMap) {
-        if (z.second == nullptr) {
-          all_non_null = false;
-        }
-      }
-
-      if (all_non_null) {
-        for (auto I = m_globalToBlockLocalNodeMap.begin(); I != m_globalToBlockLocalNodeMap.end();
-             I++) {
-          auto zone = I->first;
+      for (const auto &block : m_globalToBlockLocalNodeMap) {
+	auto zone = block.first;
           // NOTE: 'block_map' has one more entry than node_count.
           // First entry is for something else.  'block_map' is
           // 1-based.
-          const auto &        block_map = I->second;
+          const auto &        block_map = block.second;
           std::vector<double> blk_data(block_map->map.size() - 1);
 
           auto var_type   = field.transformed_storage();
@@ -1695,7 +1662,6 @@ namespace Iocgns {
                 field.set_index(cgns_field);
             }
           }
-        }
       }
     }
     return -1;
