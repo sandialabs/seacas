@@ -61,8 +61,15 @@
 #include "Ioss_ElementTopology.h"
 #include "Ioss_EntityType.h"
 #include "Ioss_NodeBlock.h"
+#include "Ioss_FaceBlock.h"
+#include "Ioss_EdgeBlock.h"
 #include "Ioss_SideBlock.h"
 #include "Ioss_SideSet.h"
+#include "Ioss_EdgeSet.h"
+#include "Ioss_NodeSet.h"
+#include "Ioss_FaceSet.h"
+#include "Ioss_ElementSet.h"
+#include "Ioss_CommSet.h"
 #include "Ioss_StructuredBlock.h"
 
 #include "Ioss_Field.h"
@@ -787,11 +794,11 @@ namespace Iocgns {
     return true;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::Region * /* reg */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::Region *reg,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(reg, field, "input");
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
@@ -892,6 +899,9 @@ namespace Iocgns {
           std::iota(idata, idata + num_to_get, 1);
         }
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(nb, field, "input");
+      }
     }
     else if (role == Ioss::Field::TRANSIENT) {
       // Locate the FlowSolution node corresponding to the correct state/step/time
@@ -940,17 +950,18 @@ namespace Iocgns {
     return num_to_get;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock * /* nb */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(eb, field, "input");
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock * /* nb */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+
+  int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *fb,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(fb, field, "input");
   }
 
   int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field,
@@ -1060,7 +1071,7 @@ namespace Iocgns {
         }
       }
       else {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "unknown");
+        num_to_get = Ioss::Utils::field_warning(eb, field, "output");
       }
     }
     return num_to_get;
@@ -1078,35 +1089,34 @@ namespace Iocgns {
     cgsize_t rmin[3] = {0, 0, 0};
     cgsize_t rmax[3] = {0, 0, 0};
 
+    bool cell_field = Utils::is_cell_field(field);
+    if (cell_field) {
+      assert(num_to_get == sb->get_property("cell_count").get_int());
+      if (num_to_get > 0) {
+	rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+	rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+	rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+      }
+    }
+    else {
+      // cell nodal field.
+      assert(num_to_get == sb->get_property("node_count").get_int());
+      if (num_to_get > 0) {
+	rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+	rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+	rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+      }
+    }
+
     if (role == Ioss::Field::MESH) {
-      bool cell_field = Utils::is_cell_field(field);
-
-      if (cell_field) {
-        assert(num_to_get == sb->get_property("cell_count").get_int());
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
-        }
-      }
-      else {
-        // cell nodal field.
-        assert(num_to_get == sb->get_property("node_count").get_int());
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int();
-        }
-      }
-
       assert(num_to_get ==
              (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
       double *rdata = static_cast<double *>(data);
@@ -1190,34 +1200,66 @@ namespace Iocgns {
       else {
         num_to_get = Ioss::Utils::field_warning(sb, field, "input");
       }
-      return num_to_get;
     }
-    return -1;
+    else if (role == Ioss::Field::TRANSIENT) {
+      double *rdata                  = static_cast<double *>(data);
+      auto    var_type               = field.transformed_storage();
+      int     comp_count             = var_type->component_count();
+      char    field_suffix_separator = get_field_separator();
+
+      int sol_index = 0;
+      if (cell_field) {
+        sol_index = m_currentCellCenterSolutionIndex;
+      }
+      else {
+        sol_index = m_currentVertexSolutionIndex;
+      }
+      if (comp_count == 1) {
+        CGCHECK(cg_field_read(cgnsFilePtr, base, zone, sol_index, field.get_name().c_str(),
+			      CG_RealDouble, rmin, rmax, rdata));
+      }
+      else {
+        std::vector<double> cgns_data(num_to_get);
+        for (int i = 0; i < comp_count; i++) {
+	  std::string var_name =
+	    var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
+	  CGCHECK(cg_field_read(cgnsFilePtr, base, zone, sol_index, var_name.c_str(),
+				CG_RealDouble, rmin, rmax, cgns_data.data()));
+          for (cgsize_t j = 0; j < num_to_get; j++) {
+            rdata[comp_count * j + i] = cgns_data[j];
+          }
+        }
+      }
+    }
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+    }
+    return num_to_get;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet *ns,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(ns, field, "input");
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::EdgeSet *es,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(es, field, "input");
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::FaceSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::FaceSet *fs,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(fs, field, "input");
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::ElementSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::ElementSet *es,
+                                         const Ioss::Field & field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(es, field, "input");
   }
   int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -1280,28 +1322,34 @@ namespace Iocgns {
           Utils::map_cgns_face_to_ioss(sb->parent_element_topology(), num_to_get, idata);
         }
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+      }
     }
-    return -1;
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+    }
+    return num_to_get;
   }
 
-  int64_t DatabaseIO::get_field_internal(const Ioss::SideSet * /* fs */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::SideSet *fs,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(fs, field, "input");
   }
-  int64_t DatabaseIO::get_field_internal(const Ioss::CommSet * /* cs */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(cs, field, "input");
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::Region * /*region*/,
-                                         const Ioss::Field & /*field*/, void * /*data*/,
+  int64_t DatabaseIO::put_field_internal(const Ioss::Region *region,
+                                         const Ioss::Field &field, void * /*data*/,
                                          size_t /*data_size*/) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(region, field, "output");
   }
 
   int64_t DatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
@@ -1324,21 +1372,25 @@ namespace Iocgns {
 
       int crd_idx = 0;
       if (field.get_name() == "mesh_model_coordinates_x") {
+	assert(!cell_field);
         CGCHECK(
             cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", rdata, &crd_idx));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_y") {
+	assert(!cell_field);
         CGCHECK(
             cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", rdata, &crd_idx));
       }
 
       else if (field.get_name() == "mesh_model_coordinates_z") {
+	assert(!cell_field);
         CGCHECK(
             cg_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", rdata, &crd_idx));
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
+	assert(!cell_field);
         int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
 
         // Data required by upper classes store x0, y0, z0, ... xn,
@@ -1374,8 +1426,13 @@ namespace Iocgns {
           coord_lambda("CoordinateZ", 2);
         }
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(sb, field, "output");
+      }
     }
     else if (role == Ioss::Field::TRANSIENT) {
+      assert(cell_field);
+      
       double *rdata                  = static_cast<double *>(data);
       int     cgns_field             = 0;
       auto    var_type               = field.transformed_storage();
@@ -1402,6 +1459,10 @@ namespace Iocgns {
         }
       }
     }
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "output");
+    }
+    
     return num_to_get;
   }
 
@@ -1468,7 +1529,7 @@ namespace Iocgns {
           }
         }
         else {
-          num_to_get = Ioss::Utils::field_warning(eb, field, "input");
+          num_to_get = Ioss::Utils::field_warning(eb, field, "output");
         }
       }
       else if (role == Ioss::Field::TRANSIENT) {
@@ -1501,23 +1562,23 @@ namespace Iocgns {
         }
       }
       else {
-        num_to_get = Ioss::Utils::field_warning(eb, field, "unknown");
+        num_to_get = Ioss::Utils::field_warning(eb, field, "output");
       }
     }
     return num_to_get;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock * /* nb */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock *fb,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(fb, field, "output");
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock * /* nb */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock *eb,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(eb, field, "output");
   }
   int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -1539,6 +1600,7 @@ namespace Iocgns {
 
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t              base = 1;
+    cgsize_t              num_to_get = field.verify(data_size);
 
     if (role == Ioss::Field::MESH) {
       if (field.get_name() == "mesh_model_coordinates" ||
@@ -1620,6 +1682,9 @@ namespace Iocgns {
           }
         }
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(nb, field, "output");
+      }
     }
     else if (role == Ioss::Field::TRANSIENT) {
       double *rdata      = static_cast<double *>(data);
@@ -1664,32 +1729,35 @@ namespace Iocgns {
         }
       }
     }
-    return -1;
+    else {
+      num_to_get = Ioss::Utils::field_warning(nb, field, "output");
+    }
+    return num_to_get;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::NodeSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::NodeSet *ns,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(ns, field, "output");
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::EdgeSet *es,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(es, field, "output");
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::FaceSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::FaceSet *fs,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(fs, field, "output");
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::ElementSet * /* ns */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::ElementSet *es,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(es, field, "output");
   }
   int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
@@ -1759,21 +1827,27 @@ namespace Iocgns {
         CGCHECK(cg_parent_data_write(cgnsFilePtr, base, zone, sect, TOPTR(parent)));
         return num_to_get;
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(sb, field, "output");
+      }
     }
-    return -1;
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "output");
+    }
+    return num_to_get;
   }
 
-  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet * /* fs */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::SideSet *ss,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(ss, field, "output");
   }
-  int64_t DatabaseIO::put_field_internal(const Ioss::CommSet * /* cs */,
-                                         const Ioss::Field & /* field */, void * /* data */,
+  int64_t DatabaseIO::put_field_internal(const Ioss::CommSet *cs,
+                                         const Ioss::Field &field, void * /* data */,
                                          size_t /* data_size */) const
   {
-    return -1;
+    return Ioss::Utils::field_warning(cs, field, "output");
   }
 
   void DatabaseIO::write_results_meta_data()
