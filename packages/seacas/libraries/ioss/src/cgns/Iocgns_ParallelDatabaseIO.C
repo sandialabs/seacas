@@ -1400,9 +1400,10 @@ namespace Iocgns {
     // prior to outputting nodal coordinates.
     for (const auto &z : m_globalToBlockLocalNodeMap) {
       if (z.second == nullptr) {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: The globalToBlockLocalNodeMap is not defined, so nodal fields cannot be output.";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: The globalToBlockLocalNodeMap is not defined, so nodal fields "
+                  "cannot be output.";
+        IOSS_ERROR(errmsg);
       }
     }
 
@@ -1422,112 +1423,110 @@ namespace Iocgns {
           field.get_name() == "mesh_model_coordinates_z") {
         double *rdata = static_cast<double *>(data);
 
-          size_t               num_zones = m_globalToBlockLocalNodeMap.size();
-          std::vector<int64_t> node_count(num_zones);
-          std::vector<int64_t> node_offset(num_zones);
+        size_t               num_zones = m_globalToBlockLocalNodeMap.size();
+        std::vector<int64_t> node_count(num_zones);
+        std::vector<int64_t> node_offset(num_zones);
 
-	  for (const auto &block : m_globalToBlockLocalNodeMap) {
-            auto        zone      = block.first;
-            const auto &block_map = block.second;
-            node_count[zone - 1]  = block_map->map.size() - 1;
-          }
-          MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones,
-                     Ioss::mpi_type(node_count[0]), MPI_SUM, util().communicator());
+        for (const auto &block : m_globalToBlockLocalNodeMap) {
+          auto        zone      = block.first;
+          const auto &block_map = block.second;
+          node_count[zone - 1]  = block_map->map.size() - 1;
+        }
+        MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
+                   MPI_SUM, util().communicator());
 
-          if (field.get_name() == "mesh_model_coordinates") {
-            int spatial_dim = nb->get_property("component_degree").get_int();
+        if (field.get_name() == "mesh_model_coordinates") {
+          int spatial_dim = nb->get_property("component_degree").get_int();
 
-            // Output all coordinates, a zone's worth of data at a time...
+          // Output all coordinates, a zone's worth of data at a time...
 
-	    for (const auto &block : m_globalToBlockLocalNodeMap) {
-              auto zone = block.first;
-              // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
-              // else.
-              //       'block_map' is 1-based.
-              const auto &        block_map = block.second;
-              std::vector<double> x(block_map->map.size() - 1);
-              std::vector<double> y(block_map->map.size() - 1);
-              std::vector<double> z(block_map->map.size() - 1);
+          for (const auto &block : m_globalToBlockLocalNodeMap) {
+            auto zone = block.first;
+            // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
+            // else.
+            //       'block_map' is 1-based.
+            const auto &        block_map = block.second;
+            std::vector<double> x(block_map->map.size() - 1);
+            std::vector<double> y(block_map->map.size() - 1);
+            std::vector<double> z(block_map->map.size() - 1);
 
-              for (size_t i = 0; i < block_map->map.size() - 1; i++) {
-                auto global = block_map->map[i + 1];
-                auto local  = nodeMap.global_to_local(global) - 1;
-                assert(local >= 0 && local < (int64_t)num_to_get);
+            for (size_t i = 0; i < block_map->map.size() - 1; i++) {
+              auto global = block_map->map[i + 1];
+              auto local  = nodeMap.global_to_local(global) - 1;
+              assert(local >= 0 && local < (int64_t)num_to_get);
 
-                x[i] = rdata[local * spatial_dim + 0];
-                if (spatial_dim > 1) {
-                  y[i] = rdata[local * spatial_dim + 1];
-                }
-                if (spatial_dim > 2) {
-                  z[i] = rdata[local * spatial_dim + 2];
-                }
-              }
-
-              // Create the zone
-              // Output this zones coordinates...
-              int crd_idx = 0;
-              CGCHECK(
-                  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
-              cgsize_t start  = node_offset[zone - 1] + 1;
-              cgsize_t finish = start + node_count[zone - 1] - 1;
-
-              auto xx = node_count[zone - 1] > 0 ? TOPTR(x) : nullptr;
-              CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
-
+              x[i] = rdata[local * spatial_dim + 0];
               if (spatial_dim > 1) {
-                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY",
-                                        &crd_idx));
-                auto yy = node_count[zone - 1] > 0 ? TOPTR(y) : nullptr;
-                CGCHECK(
-                    cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy));
+                y[i] = rdata[local * spatial_dim + 1];
               }
-
               if (spatial_dim > 2) {
-                CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ",
-                                        &crd_idx));
-                auto zz = node_count[zone - 1] > 0 ? TOPTR(z) : nullptr;
-                CGCHECK(
-                    cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz));
+                z[i] = rdata[local * spatial_dim + 2];
               }
             }
-          }
-          else {
-            // Outputting only a single coordinate value...
-	    for (const auto &block : m_globalToBlockLocalNodeMap) {
-              auto zone = block.first;
-              // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
-              // else.
-              //       'block_map' is 1-based.
-              const auto &        block_map = block.second;
-              std::vector<double> xyz(block_map->map.size() - 1);
 
-              for (size_t i = 0; i < block_map->map.size() - 1; i++) {
-                auto global = block_map->map[i + 1];
-                auto local  = nodeMap.global_to_local(global) - 1;
-                xyz[i]      = rdata[local];
-              }
+            // Create the zone
+            // Output this zones coordinates...
+            int crd_idx = 0;
+            CGCHECK(
+                cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
+            cgsize_t start  = node_offset[zone - 1] + 1;
+            cgsize_t finish = start + node_count[zone - 1] - 1;
 
-              std::string cgns_name = "Invalid";
-              if (field.get_name() == "mesh_model_coordinates_x") {
-                cgns_name = "CoordinateX";
-              }
-              else if (field.get_name() == "mesh_model_coordinates_y") {
-                cgns_name = "CoordinateY";
-              }
-              else if (field.get_name() == "mesh_model_coordinates_z") {
-                cgns_name = "CoordinateZ";
-              }
-              // Create the zone
-              // Output this zones coordinates...
-              int crd_idx = 0;
-              CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, cgns_name.c_str(),
-                                      &crd_idx));
-              cgsize_t start  = node_offset[zone - 1] + 1;
-              cgsize_t finish = start + node_count[zone - 1] - 1;
-              auto     xx     = node_count[zone - 1] > 0 ? TOPTR(xyz) : nullptr;
-              CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
+            auto xx = node_count[zone - 1] > 0 ? TOPTR(x) : nullptr;
+            CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
+
+            if (spatial_dim > 1) {
+              CGCHECK(
+                  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
+              auto yy = node_count[zone - 1] > 0 ? TOPTR(y) : nullptr;
+              CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, yy));
+            }
+
+            if (spatial_dim > 2) {
+              CGCHECK(
+                  cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
+              auto zz = node_count[zone - 1] > 0 ? TOPTR(z) : nullptr;
+              CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, zz));
             }
           }
+        }
+        else {
+          // Outputting only a single coordinate value...
+          for (const auto &block : m_globalToBlockLocalNodeMap) {
+            auto zone = block.first;
+            // NOTE: 'block_map' has one more entry than node_count.  First entry is for something
+            // else.
+            //       'block_map' is 1-based.
+            const auto &        block_map = block.second;
+            std::vector<double> xyz(block_map->map.size() - 1);
+
+            for (size_t i = 0; i < block_map->map.size() - 1; i++) {
+              auto global = block_map->map[i + 1];
+              auto local  = nodeMap.global_to_local(global) - 1;
+              xyz[i]      = rdata[local];
+            }
+
+            std::string cgns_name = "Invalid";
+            if (field.get_name() == "mesh_model_coordinates_x") {
+              cgns_name = "CoordinateX";
+            }
+            else if (field.get_name() == "mesh_model_coordinates_y") {
+              cgns_name = "CoordinateY";
+            }
+            else if (field.get_name() == "mesh_model_coordinates_z") {
+              cgns_name = "CoordinateZ";
+            }
+            // Create the zone
+            // Output this zones coordinates...
+            int crd_idx = 0;
+            CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, cgns_name.c_str(),
+                                    &crd_idx));
+            cgsize_t start  = node_offset[zone - 1] + 1;
+            cgsize_t finish = start + node_count[zone - 1] - 1;
+            auto     xx     = node_count[zone - 1] > 0 ? TOPTR(xyz) : nullptr;
+            CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, &start, &finish, xx));
+          }
+        }
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
@@ -1537,63 +1536,63 @@ namespace Iocgns {
       // This map is built during the output of block connectivity,
       // so for cgns unstructured mesh, we need to output ElementBlock connectivity
       // prior to outputting nodal coordinates.
-        size_t                num_zones = m_globalToBlockLocalNodeMap.size();
-        std::vector<cgsize_t> node_count(num_zones);
-        std::vector<cgsize_t> node_offset(num_zones);
+      size_t                num_zones = m_globalToBlockLocalNodeMap.size();
+      std::vector<cgsize_t> node_count(num_zones);
+      std::vector<cgsize_t> node_offset(num_zones);
 
-	for (const auto &block : m_globalToBlockLocalNodeMap) {
-          auto        zone      = block.first;
-          const auto &block_map = block.second;
-          node_count[zone - 1]  = block_map->map.size() - 1;
-        }
-        MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
-                   MPI_SUM, util().communicator());
+      for (const auto &block : m_globalToBlockLocalNodeMap) {
+        auto        zone      = block.first;
+        const auto &block_map = block.second;
+        node_count[zone - 1]  = block_map->map.size() - 1;
+      }
+      MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
+                 MPI_SUM, util().communicator());
 
-        const Ioss::VariableType *var_type   = field.raw_storage();
-        size_t                    comp_count = var_type->component_count();
+      const Ioss::VariableType *var_type   = field.raw_storage();
+      size_t                    comp_count = var_type->component_count();
 
-        double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+      double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
-	for (const auto &block : m_globalToBlockLocalNodeMap) {
-          auto zone = block.first;
-          // NOTE: 'block_map' has one more entry than node_count.
-          // First entry is for something else.  'block_map' is
-          // 1-based.
-          const auto &        block_map = block.second;
-          std::vector<double> blk_data(block_map->map.size() - 1);
+      for (const auto &block : m_globalToBlockLocalNodeMap) {
+        auto zone = block.first;
+        // NOTE: 'block_map' has one more entry than node_count.
+        // First entry is for something else.  'block_map' is
+        // 1-based.
+        const auto &        block_map = block.second;
+        std::vector<double> blk_data(block_map->map.size() - 1);
 
-          cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
-          cgsize_t range_max[1] = {range_min[0] + node_count[zone - 1] - 1};
-          int      cgns_field   = 0;
+        cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
+        cgsize_t range_max[1] = {range_min[0] + node_count[zone - 1] - 1};
+        int      cgns_field   = 0;
 
-          if (comp_count > 1) {
-            char field_suffix_separator = get_field_separator();
+        if (comp_count > 1) {
+          char field_suffix_separator = get_field_separator();
 
-            for (size_t i = 0; i < comp_count; i++) {
-              for (size_t j = 0; j < block_map->map.size() - 1; j++) {
-                auto global = block_map->map[j + 1] - 1;
-                blk_data[j] = rdata[comp_count * global + i];
-              }
-              std::string var_name =
-                  var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-              CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                      CG_RealDouble, var_name.c_str(), &cgns_field));
-
-              CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                           cgns_field, range_min, range_max, blk_data.data()));
-              if (i == 0)
-                field.set_index(cgns_field);
+          for (size_t i = 0; i < comp_count; i++) {
+            for (size_t j = 0; j < block_map->map.size() - 1; j++) {
+              auto global = block_map->map[j + 1] - 1;
+              blk_data[j] = rdata[comp_count * global + i];
             }
-          }
-          else {
+            std::string var_name =
+                var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
             CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                    CG_RealDouble, field.get_name().c_str(), &cgns_field));
+                                    CG_RealDouble, var_name.c_str(), &cgns_field));
 
             CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                         cgns_field, range_min, range_max, rdata));
-            field.set_index(cgns_field);
+                                         cgns_field, range_min, range_max, blk_data.data()));
+            if (i == 0)
+              field.set_index(cgns_field);
           }
         }
+        else {
+          CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
+                                  CG_RealDouble, field.get_name().c_str(), &cgns_field));
+
+          CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
+                                       cgns_field, range_min, range_max, rdata));
+          field.set_index(cgns_field);
+        }
+      }
     }
     return -1;
   }

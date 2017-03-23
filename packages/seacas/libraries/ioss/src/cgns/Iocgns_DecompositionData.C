@@ -1086,10 +1086,10 @@ namespace Iocgns {
 
   template <typename INT>
   void DecompositionData<INT>::get_node_field(int filePtr, int step, int field_offset,
-					      double *ioss_data) const
+                                              double *ioss_data) const
   {
     std::vector<double> tmp(decomp_node_count());
-    
+
     int      base        = 1; // Only single base supported so far.
     cgsize_t beg         = 0;
     cgsize_t end         = 0;
@@ -1111,12 +1111,12 @@ namespace Iocgns {
       start  = (count == 0) ? 0 : start - beg + 1;
       finish = (count == 0) ? 0 : finish - beg;
 
-      double *data = (count > 0) ? &tmp[offset] : nullptr;
-      cgsize_t            range_min[1] = {start};
-      cgsize_t            range_max[1] = {finish};
+      double * data         = (count > 0) ? &tmp[offset] : nullptr;
+      cgsize_t range_min[1] = {start};
+      cgsize_t range_max[1] = {finish};
 
       CGCHECK2(cgp_field_read_data(filePtr, base, zone, solution_index, field_offset, range_min,
-                                 range_max, data));
+                                   range_max, data));
 
       offset += count;
       beg = end;
@@ -1210,7 +1210,7 @@ namespace Iocgns {
   void DecompositionData<INT>::get_element_field(int filePtr, int solution_index, int blk_seq,
                                                  int field_index, double *data) const
   {
-    const auto blk = m_elementBlocks[blk_seq];
+    const auto          blk = m_elementBlocks[blk_seq];
     std::vector<double> cgns_data(blk.file_count());
     int                 base         = 1;
     cgsize_t            range_min[1] = {(cgsize_t)blk.fileSectionOffset};
@@ -1327,8 +1327,8 @@ namespace Iocgns {
     }
   }
 
-  void DecompositionDataBase::get_node_field(int filePtr, int step, 
-                                                int field_index, double *data) const
+  void DecompositionDataBase::get_node_field(int filePtr, int step, int field_index,
+                                             double *data) const
   {
     if (int_size() == sizeof(int)) {
       const DecompositionData<int> *this32 = dynamic_cast<const DecompositionData<int> *>(this);
