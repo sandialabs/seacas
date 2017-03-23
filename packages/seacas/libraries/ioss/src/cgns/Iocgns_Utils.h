@@ -160,9 +160,10 @@ namespace Iocgns {
     }
 
     static void write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
-						 int *vertex_solution_index,
-					     int *cell_center_solution_index);
-    static int find_solution_index(int cgnsFilePtr, int base, int zone, int step, CG_GridLocation_t location);
+                                             int *vertex_solution_index,
+                                             int *cell_center_solution_index);
+    static int find_solution_index(int cgnsFilePtr, int base, int zone, int step,
+                                   CG_GridLocation_t location);
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
     static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
                                        std::vector<size_t> &zone_offset);
