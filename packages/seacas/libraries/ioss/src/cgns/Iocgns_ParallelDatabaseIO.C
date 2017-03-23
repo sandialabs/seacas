@@ -1003,7 +1003,6 @@ namespace Iocgns {
       else {
         num_to_get = Ioss::Utils::field_warning(nb, field, "input");
       }
-      return num_to_get;
     }
     else if (role == Ioss::Field::TRANSIENT) {
       // Locate the FlowSolution node corresponding to the correct state/step/time
@@ -1028,6 +1027,9 @@ namespace Iocgns {
           }
         }
       }
+    }
+    else {
+      num_to_get = Ioss::Utils::field_warning(nb, field, "input");
     }
     return num_to_get;
   }
@@ -1167,13 +1169,11 @@ namespace Iocgns {
       else {
         num_to_get = Ioss::Utils::field_warning(sb, field, "input");
       }
-      return num_to_get;
     }
     else if (role == Ioss::Field::TRANSIENT) {
       double *rdata                  = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
       auto    var_type               = field.transformed_storage();
       int     comp_count             = var_type->component_count();
-      char    field_suffix_separator = get_field_separator();
 
       int sol_index = 0;
       if (cell_field) {
@@ -1191,18 +1191,18 @@ namespace Iocgns {
       else {
         std::vector<double> cgns_data(num_to_get);
         for (int i = 0; i < comp_count; i++) {
-          for (cgsize_t j = 0; j < num_to_get; j++) {
-            cgns_data[j] = rdata[comp_count * j + i];
-          }
-          std::string var_name =
-              var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-
           CGCHECK(cgp_field_read_data(cgnsFilePtr, base, zone, sol_index, field_offset + i, rmin,
                                       rmax, cgns_data.data()));
+          for (cgsize_t j = 0; j < num_to_get; j++) {
+            rdata[comp_count * j + i] = cgns_data[j];
+          }
         }
       }
     }
-    return -1;
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+    }
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::get_field_internal(const Ioss::ElementBlock *eb,
@@ -1328,8 +1328,13 @@ namespace Iocgns {
         }
         return num_to_get;
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+      }
     }
-    num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "input");
+    }
     return num_to_get;
   }
 
@@ -1528,6 +1533,9 @@ namespace Iocgns {
           }
         }
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(nb, field, "input");
+      }
     }
     else if (role == Ioss::Field::TRANSIENT) {
       // Instead of outputting a global nodeblock's worth of data,
@@ -1594,7 +1602,10 @@ namespace Iocgns {
         }
       }
     }
-    return -1;
+    else {
+      num_to_get = Ioss::Utils::field_warning(nb, field, "input");
+    }
+    return num_to_get;
   }
 
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::ElementBlock *eb,
@@ -1775,6 +1786,7 @@ namespace Iocgns {
     }
     return num_to_get;
   }
+
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::StructuredBlock *sb,
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
@@ -1875,6 +1887,9 @@ namespace Iocgns {
           CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
         }
       }
+      else {
+	num_to_get = Ioss::Utils::field_warning(sb, field, "output");
+      }
     }
     else if (role == Ioss::Field::TRANSIENT) {
       double *rdata                  = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
@@ -1916,6 +1931,9 @@ namespace Iocgns {
                                        rdata));
         }
       }
+    }
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "output");
     }
     return num_to_get;
   }
@@ -2035,11 +2053,15 @@ namespace Iocgns {
         auto xx = num_to_get > 0 ? TOPTR(parent) : nullptr;
         CGCHECK(cgp_parent_data_write(cgnsFilePtr, base, zone, sect, cg_start, cg_end, xx));
         m_bcOffset[zone] += size;
-
-        return num_to_get;
+      }
+      else {
+	num_to_get = Ioss::Utils::field_warning(sb, field, "output");
       }
     }
-    return -1;
+    else {
+      num_to_get = Ioss::Utils::field_warning(sb, field, "output");
+    }
+    return num_to_get;
   }
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::SideSet * /* fs */,
                                                  const Ioss::Field & /* field */, void * /* data */,
