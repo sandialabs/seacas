@@ -195,6 +195,20 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
   return common_zone_type;
 }
 
+size_t Iocgns::Utils::index(const Ioss::Field &field) { return field.get_index() & 0xffffffff; }
+
+void Iocgns::Utils::set_field_index(const Ioss::Field &field, size_t index,
+                                    CG_GridLocation_t location)
+{
+  if (location == CG_CellCenter) {
+    index |= CG_CELL_CENTER_FIELD_ID;
+  }
+  if (location == CG_Vertex) {
+    index |= CG_VERTEX_FIELD_ID;
+  }
+  field.set_index(index);
+}
+
 bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
 {
   bool cell_field = true;
@@ -203,6 +217,13 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
       field.get_name() == "mesh_model_coordinates_y" ||
       field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
     cell_field = false;
+  }
+  size_t index = field.get_index();
+  if (index & CG_VERTEX_FIELD_ID) {
+    cell_field = false;
+  }
+  else if (index & CG_CELL_CENTER_FIELD_ID) {
+    cell_field = true;
   }
   return cell_field;
 }
@@ -511,11 +532,13 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
   auto str_step = Ioss::Utils::to_string(step);
   int  nsols    = 0;
   CGCHECKNP(cg_nsols(cgnsFilePtr, base, zone, &nsols));
+  bool location_matches = false;
   for (int i = 0; i < nsols; i++) {
     CG_GridLocation_t db_location;
     char              db_name[33];
     CGCHECKNP(cg_sol_info(cgnsFilePtr, base, zone, i + 1, db_name, &db_location));
     if (location == db_location) {
+      location_matches = true;
       // Check if steps match.
       // NOTE: Using non-standard "Descriptor_t" node in FlowSolution_t
       CGCHECKNP(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "FlowSolution_t", i + 1, "end"));
@@ -549,6 +572,12 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
       }
     }
   }
+
+  if (nsols == 1 && location_matches) {
+    return 1;
+  }
+  std::cerr << "WARNING: CGNS: Could not find valid solution index for step " << step << ", zone "
+            << zone << ", and location " << GridLocationName[location] << "\n";
   return 0;
 }
 

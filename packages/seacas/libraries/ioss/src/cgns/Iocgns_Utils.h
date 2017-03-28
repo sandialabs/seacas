@@ -69,9 +69,15 @@ namespace Iocgns {
     Utils()  = default;
     ~Utils() = default;
 
+    static const size_t CG_CELL_CENTER_FIELD_ID = 1ul << 33;
+    static const size_t CG_VERTEX_FIELD_ID      = 1ul << 34;
+
+    static size_t index(const Ioss::Field &field);
+
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
 
+    static void set_field_index(const Ioss::Field &field, size_t index, CG_GridLocation_t location);
     static bool is_cell_field(const Ioss::Field &field);
 
     template <typename INT>
