@@ -580,26 +580,7 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::get_step_times()
   {
-    int  base          = 1;
-    int  num_timesteps = 0;
-    char bitername[33];
-    CGCHECK(cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps));
-
-    if (num_timesteps <= 0)
-      return;
-
-    // Read the timestep time values.
-    CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
-    std::vector<double> times(num_timesteps);
-    CGCHECK(cg_array_read_as(1, CG_RealDouble, times.data()));
-
-    m_timesteps.reserve(num_timesteps);
-    Ioss::Region *this_region = get_region();
-    for (int i = 0; i < num_timesteps; i++) {
-      this_region->add_state(times[i] * timeScaleFactor);
-      m_timesteps.push_back(times[i]);
-    }
-    return;
+    Utils::get_step_times(cgnsFilePtr, m_timesteps, get_region(), timeScaleFactor, myProcessor);
   }
 
   void ParallelDatabaseIO::write_adjacency_data()

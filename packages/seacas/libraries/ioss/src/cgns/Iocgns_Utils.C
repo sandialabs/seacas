@@ -981,3 +981,34 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
     }
   }
 }
+
+int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
+				  double timeScaleFactor, int myProcessor)
+{
+  int  base          = 1;
+  int  num_timesteps = 0;
+  char bitername[33];
+  int  ierr = cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps);
+  if (ierr == CG_NODE_NOT_FOUND) {
+    return num_timesteps;
+  }
+  else if (ierr == CG_ERROR) {
+    Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+  }
+
+  if (num_timesteps <= 0)
+    return num_timesteps;
+
+  // Read the timestep time values.
+  CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
+  std::vector<double> times(num_timesteps);
+  CGCHECK(cg_array_read_as(1, CG_RealDouble, times.data()));
+
+  timesteps.reserve(num_timesteps);
+  for (int i = 0; i < num_timesteps; i++) {
+    region->add_state(times[i] * timeScaleFactor);
+    timesteps.push_back(times[i]);
+  }
+  return num_timesteps;
+}
+
