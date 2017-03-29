@@ -83,6 +83,8 @@
 
 extern char hdf5_access[64];
 
+#define IOSS_DEBUG_OUTPUT 1
+
 namespace Iocgns {
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
@@ -653,7 +655,13 @@ namespace Iocgns {
     int  base          = 1;
     int  num_timesteps = 0;
     char bitername[33];
-    CGCHECK(cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps));
+    int  ierr = cg_biter_read(cgnsFilePtr, base, bitername, &num_timesteps);
+    if (ierr == CG_NODE_NOT_FOUND) {
+      return;
+    }
+    else if (ierr == CG_ERROR) {
+      Iocgns::Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
+    }
 
     if (num_timesteps <= 0)
       return;
