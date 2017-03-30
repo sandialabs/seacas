@@ -256,6 +256,7 @@ namespace Iocgns {
       auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
+      eblock->property_add(Ioss::Property("id", block.zone()));
       eblock->property_add(Ioss::Property("section", block.section()));
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
@@ -386,6 +387,7 @@ namespace Iocgns {
 
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
+        block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
 
         block->set_node_offset(node_offset);
         block->set_cell_offset(cell_offset);
@@ -1525,7 +1527,8 @@ namespace Iocgns {
 
         CGCHECK(cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
         eb->property_update("zone", zone);
-        eb->property_update("section", zone);
+        eb->property_update("id", zone);
+        eb->property_update("section", 1);
         eb->property_update("base", base);
 
         if (size[1] > 0) {
