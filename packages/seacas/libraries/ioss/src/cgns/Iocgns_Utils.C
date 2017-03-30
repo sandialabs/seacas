@@ -1,3 +1,4 @@
+#include <set>
 #include <Ioss_Bar2.h>
 #include <Ioss_Bar3.h>
 #include <Ioss_Hex20.h>
@@ -309,14 +310,18 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     }
 
     // Transfer Zone Grid Connectivity...
+    std::set<std::string> defined; // Will have entry if the zgc already output.
     for (const auto &zgc : sb->m_zoneConnectivity) {
       if (zgc.m_intraBlock) {
         continue;
       }
-      cgsize_t zgc_idx = 0;
-      CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
-			  zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
-			  &zgc.m_transform[0], &zgc_idx));
+      // In parallel decomposition, can have multiple copies of a zgc; only output the first instance
+      if (defined.insert(zgc.m_connectionName).second) {
+	cgsize_t zgc_idx = 0;
+	CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
+			    zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
+			    &zgc.m_transform[0], &zgc_idx));
+      }
     }
   }
 }
