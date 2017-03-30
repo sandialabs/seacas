@@ -199,6 +199,7 @@ namespace Iocgns {
 
     block->property_add(Ioss::Property("base", base));
     block->property_add(Ioss::Property("zone", zone));
+    block->property_add(Ioss::Property("id", zone));
     get_region()->add(block);
 
     block->set_node_offset(num_node);
@@ -392,6 +393,7 @@ namespace Iocgns {
         eblock = new Ioss::ElementBlock(this, zone_name, element_topo, num_entity);
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
+        eblock->property_add(Ioss::Property("id", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", total_block_nodes));
 
@@ -1353,7 +1355,8 @@ namespace Iocgns {
           CGCHECK(
               cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
           eb->property_update("zone", zone);
-          eb->property_update("section", zone);
+          eb->property_update("id", zone);
+          eb->property_update("section", 1);
           eb->property_update("base", base);
 
           // Now we have a valid zone so can update some data structures...
