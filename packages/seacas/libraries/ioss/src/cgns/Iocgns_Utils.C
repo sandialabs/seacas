@@ -30,6 +30,11 @@
 #include <cgnslib.h>
 #endif
 
+#define CGERR(funcall)                                                                             \
+  if ((funcall) != CG_OK) {                                                                        \
+    Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                         \
+  }
+
 namespace {
   struct Range
   {
@@ -167,19 +172,13 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
   // Get the number of zones (element blocks) in the mesh...
   int base      = 1;
   int num_zones = 0;
-  int ierr      = cg_nzones(cgnsFilePtr, base, &num_zones);
-  if (ierr != CG_OK) {
-    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-  }
+  CGCHECKNP(cg_nzones(cgnsFilePtr, base, &num_zones));
 
   CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
 
   for (cgsize_t zone = 1; zone <= num_zones; zone++) {
     CG_ZoneType_t zone_type;
-    ierr = cg_zone_type(cgnsFilePtr, base, zone, &zone_type);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGCHECKNP(cg_zone_type(cgnsFilePtr, base, zone, &zone_type));
 
     if (common_zone_type == CG_ZoneTypeNull) {
       common_zone_type = zone_type;
@@ -228,7 +227,7 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
   return cell_field;
 }
 
-void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
+void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                            std::vector<size_t> &zone_offset)
 {
   // Make sure mesh is not hybrid...
@@ -241,30 +240,18 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
 
   int base           = 0;
   int phys_dimension = region.get_property("spatial_dimension").get_int();
-  int ierr           = cg_base_write(cgnsFilePtr, "Base", phys_dimension, phys_dimension, &base);
-  if (ierr != CG_OK) {
-    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-  }
+  CGERR(cg_base_write(file_ptr, "Base", phys_dimension, phys_dimension, &base));
 
-  ierr = cg_goto(cgnsFilePtr, base, "end");
-  if (ierr != CG_OK) {
-    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-  }
-
-  ierr = cg_descriptor_write("Information", "IOSS: CGNS Writer version -1");
-  if (ierr != CG_OK) {
-    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-  }
+  CGERR(cg_goto(file_ptr, base, "end"));
+  CGERR(cg_descriptor_write("Information", "IOSS: CGNS Writer version -1"));
 
   // Output the sidesets as Family_t nodes
 
   const auto &sidesets = region.get_sidesets();
   for (const auto &ss : sidesets) {
     int fam = 0;
-    ierr    = cg_family_write(cgnsFilePtr, base, ss->name().c_str(), &fam);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGERR(cg_family_write(file_ptr, base, ss->name().c_str(), &fam));
+
     int         bc_index = 0;
     CG_BCType_t bocotype = CG_BCTypeNull;
     if (ss->property_exists("bc_type")) {
@@ -276,31 +263,12 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
       id = ss->get_property("id").get_int();
     }
 
-    ierr = cg_fambc_write(cgnsFilePtr, base, fam, "FamBC", bocotype, &bc_index);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
-
-    ierr = cg_goto(cgnsFilePtr, base, "Family_t", fam, NULL);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
-    ierr = cg_descriptor_write("FamBC_TypeId", Ioss::Utils::to_string(bocotype).c_str());
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
-    ierr = cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
-    ierr = cg_descriptor_write("FamBC_UserId", Ioss::Utils::to_string(id).c_str());
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
-    ierr = cg_descriptor_write("FamBC_UserName", ss->name().c_str());
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
+    CGERR(cg_goto(file_ptr, base, "Family_t", fam, NULL));
+    CGERR(cg_descriptor_write("FamBC_TypeId", Ioss::Utils::to_string(bocotype).c_str()));
+    CGERR(cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]));
+    CGERR(cg_descriptor_write("FamBC_UserId", Ioss::Utils::to_string(id).c_str()));
+    CGERR(cg_descriptor_write("FamBC_UserName", ss->name().c_str()));
   }
 
   // NOTE: Element Block zone write is deferred to put_field_internal so can
@@ -318,10 +286,7 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
     size[1] = size[4] + 1;
     size[2] = size[5] + 1;
 
-    ierr = cg_zone_write(cgnsFilePtr, base, sb->name().c_str(), size, CG_Structured, &zone);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGERR(cg_zone_write(file_ptr, base, sb->name().c_str(), size, CG_Structured, &zone));
     sb->property_update("zone", zone);
     sb->property_update("base", base);
 
@@ -330,34 +295,17 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
 
     // Add GridCoordinates Node...
     int grid_idx = 0;
-    ierr         = cg_grid_write(cgnsFilePtr, base, zone, "GridCoordinates", &grid_idx);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
 
     // Transfer boundary condition nodes...
     for (const auto &bc : sb->m_boundaryConditions) {
       cgsize_t bc_idx = 0;
-      ierr = cg_boco_write(cgnsFilePtr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-                           CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx);
-      if (ierr != CG_OK) {
-        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-      }
-
-      ierr = cg_goto(cgnsFilePtr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
-                     0, "end");
-      if (ierr != CG_OK) {
-        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-      }
-      ierr = cg_famname_write(bc.m_bcName.c_str());
-      if (ierr != CG_OK) {
-        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-      }
-
-      ierr = cg_boco_gridlocation_write(cgnsFilePtr, base, zone, bc_idx, CG_Vertex);
-      if (ierr != CG_OK) {
-        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-      }
+      CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
+			  CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx));
+      CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
+		    0, "end"));
+      CGERR(cg_famname_write(bc.m_bcName.c_str()));
+      CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
     }
 
     // Transfer Zone Grid Connectivity...
@@ -366,12 +314,9 @@ void Iocgns::Utils::common_write_meta_data(int cgnsFilePtr, const Ioss::Region &
         continue;
       }
       cgsize_t zgc_idx = 0;
-      ierr             = cg_1to1_write(cgnsFilePtr, base, zone, zgc.m_connectionName.c_str(),
-                           zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
-                           &zgc.m_transform[0], &zgc_idx);
-      if (ierr != CG_OK) {
-        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-      }
+      CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
+			  zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
+			  &zgc.m_transform[0], &zgc_idx));
     }
   }
 }
@@ -473,11 +418,6 @@ CG_ElementType_t Iocgns::Utils::map_topology_to_cgns(const std::string &name)
   }
   return topo;
 }
-
-#define CGERR(funcall)                                                                             \
-  if ((funcall) != CG_OK) {                                                                        \
-    Iocgns::Utils::cgns_error(file_ptr, __FILE__, __func__, __LINE__, -1);                         \
-  }
 
 void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
                                                  int *vertex_solution_index,
@@ -585,19 +525,15 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 {
   cgsize_t base         = 1;
   cgsize_t num_families = 0;
-  int      ierr         = cg_nfamilies(cgnsFilePtr, base, &num_families);
-  if (ierr != CG_OK) {
-    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-  }
+  CGCHECKNP(cg_nfamilies(cgnsFilePtr, base, &num_families));
+
   for (cgsize_t family = 1; family <= num_families; family++) {
     char        name[33];
     CG_BCType_t bocotype;
     cgsize_t    num_bc  = 0;
     cgsize_t    num_geo = 0;
-    ierr                = cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
+
 #if defined(IOSS_DEBUG_OUTPUT)
     std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
               << num_geo << " geometry references\n";
@@ -606,10 +542,8 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
       // Create a sideset...
       std::string ss_name(name); // Use name here before cg_fambc_read call overwrites it...
 
-      ierr = cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype);
-      if (ierr != CG_OK) {
-        cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-      }
+      CGCHECKNP(cg_fambc_read(cgnsFilePtr, base, family, 1, name, &bocotype));
+
       auto *ss = new Ioss::SideSet(db, ss_name);
       ss->property_add(Ioss::Property("id", family));
       ss->property_add(Ioss::Property("bc_type", bocotype));
@@ -744,10 +678,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
   cgsize_t base = block->get_property("base").get_int();
   cgsize_t zone = block->get_property("zone").get_int();
   int      num_bcs;
-  int      ierr = cg_nbocos(cgnsFilePtr, base, zone, &num_bcs);
-  if (ierr != CG_OK) {
-    cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-  }
+  CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
 
   cgsize_t range[6];
   for (int ibc = 0; ibc < num_bcs; ibc++) {
@@ -760,16 +691,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     int               ndataset;
 
     // All we really want from this is 'boconame'
-    ierr = cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
-                        nullptr, &NormalListSize, &NormalDataType, &ndataset);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
+			   nullptr, &NormalListSize, &NormalDataType, &ndataset));
 
-    ierr = cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr);
-    if (ierr != CG_OK) {
-      cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, -1);
-    }
+    CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
 
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
