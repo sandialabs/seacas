@@ -310,6 +310,22 @@ void delete_exodus_names(char **names, int count)
   delete[] names;
 }
 
+void get_put_user_names(int exo_file, ex_entity_type type, int num_blocks, const char *mname)
+{
+  int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+  max_name_length     = max_name_length < 32 ? 32 : max_name_length;
+  char **names        = get_exodus_names(num_blocks, max_name_length + 1);
+  ex_get_names(exo_file, type, names);
+
+  std::string user_names;
+  for (int j = 0; j < num_blocks; j++) {
+    user_names += names[j];
+    user_names += "\n";
+  }
+  PutStr(mname, user_names.c_str());
+  delete_exodus_names(names, num_blocks);
+}
+
 void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *mname)
 {
   int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
@@ -572,6 +588,8 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
         }
       }
     }
+
+    get_put_user_names(exo_file, EX_ELEM_BLOCK, num_blocks, "blkusernames");
     PutStr("blknames", types.c_str());
   }
   return num_elem_in_block;
@@ -680,6 +698,8 @@ std::vector<int> handle_node_sets(int exo_file, int num_sets, bool use_cell_arra
         PutDbl(str, dist_fac.size(), 1, TOPTR(dist_fac));
       }
     }
+
+    get_put_user_names(exo_file, EX_NODE_SET, num_sets, "nsusernames");
 
     /* Store # nodes and # dis. factors per node set */
     PutInt("nnsnodes", num_sets, 1, TOPTR(num_nodes));
@@ -873,6 +893,8 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
         PutInt(str, n1, 1, TOPTR(elem_list));
       }
     }
+    get_put_user_names(exo_file, EX_SIDE_SET, num_sets, "ssusernames");
+
     /* Store # sides and # dis. factors per side set (dgriffi) */
     PutInt("nsssides", num_sets, 1, TOPTR(num_sideset_sides));
     PutInt("nssdfac", num_sets, 1, TOPTR(num_sideset_dfac));

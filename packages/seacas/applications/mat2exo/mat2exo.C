@@ -90,6 +90,7 @@ static const char *qainfo[] = {
 
 /**********************************************************************/
 void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std::string &name);
+void get_put_user_names(int exo_file, ex_entity_type entity, int num_entity, const char *mname);
 void get_put_attr_names(int exo_file, int seq, int id, int num_attr);
 void get_put_vars(int exo_file, ex_entity_type type, const std::vector<int> &ids, int num_blocks,
                   int num_vars, int num_time_steps, const std::vector<int> &num_per_block,
@@ -226,6 +227,8 @@ int main(int argc, char *argv[])
       matGetDbl(name, nssdfac[i], 1, dist_fact);
       ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
     }
+
+    get_put_user_names(exo_file, EX_SIDE_SET, num_side_sets, "ssusernames");
   }
 
   /* node sets */
@@ -253,6 +256,8 @@ int main(int argc, char *argv[])
       matGetDbl(name, nnsdfac[i], 1, dist_fact);
       ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
     }
+
+    get_put_user_names(exo_file, EX_NODE_SET, num_node_sets, "nsusernames");
   }
 
   /* element blocks */
@@ -291,6 +296,7 @@ int main(int argc, char *argv[])
         }
       }
     }
+    get_put_user_names(exo_file, EX_ELEM_BLOCK, num_blocks, "blkusernames");
     free(blknames);
   }
 
@@ -505,6 +511,24 @@ void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std:
   }
   ex_put_variable_names(exo_file, entity, num_vars, str2);
   free(str);
+  free(str2);
+}
+
+void get_put_user_names(int exo_file, ex_entity_type entity, int num_entity, const char *mname)
+{
+  int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
+  max_name_length     = max_name_length < 32 ? 32 : max_name_length;
+  char *names         = (char *)calloc(num_entity * (max_name_length + 1), sizeof(char));
+
+  matGetStr(mname, names);
+  char **str2 = (char **)calloc(num_entity, sizeof(char *));
+  char * curr = strtok(names, "\n");
+  for (int i = 0; i < num_entity; i++) {
+    str2[i] = curr;
+    curr    = strtok(nullptr, "\n");
+  }
+  ex_put_names(exo_file, entity, str2);
+  free(names);
   free(str2);
 }
 
