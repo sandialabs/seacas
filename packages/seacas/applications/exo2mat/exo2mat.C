@@ -84,7 +84,7 @@ mat_t *mat_file = nullptr; /* file for binary .mat output */
 bool   debug    = false;
 
 static const char *qainfo[] = {
-    "exo2mat", "2016/09/08", "4.01",
+    "exo2mat", "2017/03/31", "4.02",
 };
 
 std::string time_stamp(const std::string &format)
@@ -528,8 +528,9 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
     Mat_VarFree(cell_array);
   }
   else {
-    char             str[33];
-    std::vector<int> connect;
+    char                str[33];
+    std::vector<int>    connect;
+    std::vector<double> attr;
 
     PutInt("blkids", num_blocks, 1, TOPTR(ids));
     std::vector<char> type(max_name_length + 1);
@@ -547,6 +548,29 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
       ex_get_conn(exo_file, EX_ELEM_BLOCK, ids[i], TOPTR(connect), nullptr, nullptr);
       sprintf(str, "blk%02d", i + 1);
       PutInt(str, num_node, num_elem, TOPTR(connect));
+
+      // Handle block attributes (if any...)
+      attr.resize(num_elem);
+      sprintf(str, "blk%02d_nattr", i + 1);
+      PutInt(str, num_attr);
+      if (num_attr > 0) {
+        std::string attr_names;
+        char **     names = get_exodus_names(num_attr, max_name_length + 1);
+        ex_get_attr_names(exo_file, EX_ELEM_BLOCK, ids[i], names);
+        for (int j = 0; j < num_attr; j++) {
+          attr_names += names[j];
+          attr_names += "\n";
+        }
+        sprintf(str, "blk%02d_attrnames", i + 1);
+        PutStr(str, attr_names.c_str());
+        delete_exodus_names(names, num_attr);
+
+        for (int j = 0; j < num_attr; j++) {
+          sprintf(str, "blk%02d_attr%02d", i + 1, j + 1);
+          ex_get_one_attr(exo_file, EX_ELEM_BLOCK, ids[i], j + 1, attr.data());
+          PutDbl(str, num_elem, 1, attr.data());
+        }
+      }
     }
     PutStr("blknames", types.c_str());
   }
@@ -1010,6 +1034,8 @@ int main(int argc, char *argv[])
       exit(1);
     }
   }
+
+  ex_opts(EX_VERBOSE);
 
   /* word sizes */
   int cpu_word_size = sizeof(double);
