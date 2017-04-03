@@ -719,28 +719,29 @@ namespace Iocgns {
           cgsize_t            num_coord = block_map.size();
           std::vector<double> coord(num_coord);
 
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, &first,
-                                &num_coord, TOPTR(coord)));
+          // ========================================================================
+          // Repetitive code for each coordinate direction; use a lambda to consolidate...
+          auto blk_coord_lambda = [this, block_map, base, zone, &coord, first, num_coord,
+                                   phys_dimension, &rdata](const char *ord_name, int ordinate) {
+            CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, ord_name, CG_RealDouble, &first,
+                                  &num_coord, coord.data()));
 
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_coord; i++) {
-            rdata[phys_dimension * block_map[i] + 0] = coord[i];
+            // Map to global coordinate position...
+            for (cgsize_t i = 0; i < num_coord; i++) {
+              rdata[phys_dimension * block_map[i] + ordinate] = coord[i];
+            }
+          };
+          // End of lambda...
+          // ========================================================================
+
+          blk_coord_lambda("CoordinateX", 0);
+
+          if (phys_dimension >= 2) {
+            blk_coord_lambda("CoordinateY", 1);
           }
 
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateY", CG_RealDouble, &first,
-                                &num_coord, TOPTR(coord)));
-
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_coord; i++) {
-            rdata[phys_dimension * block_map[i] + 1] = coord[i];
-          }
-
-          CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateZ", CG_RealDouble, &first,
-                                &num_coord, TOPTR(coord)));
-
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_coord; i++) {
-            rdata[phys_dimension * block_map[i] + 2] = coord[i];
+          if (phys_dimension >= 3) {
+            blk_coord_lambda("CoordinateZ", 2);
           }
         }
       }
