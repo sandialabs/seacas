@@ -1713,37 +1713,35 @@ namespace Iocgns {
       else if (field.get_name() == "mesh_model_coordinates") {
         int phys_dimension = get_region()->get_property("spatial_dimension").get_int();
 
-        // Data required by upper classes store x0, y0, z0, ... xn,
-        // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
-        // ..., yn, z0, ..., zn so we have to allocate some scratch
-        // memory to read in the data and then map into supplied
-        // 'data'
         std::vector<double> coord(num_to_get);
-        // Map to global coordinate position...
-        for (cgsize_t i = 0; i < num_to_get; i++) {
-          coord[i] = rdata[phys_dimension * i + 0];
-        }
 
-        CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
-        CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
-
-        if (phys_dimension >= 2) {
+        // ========================================================================
+        // Repetitive code for each coordinate direction; use a lambda to consolidate...
+        auto coord_lambda = [=, &coord](const char *ordinate, int ordinal) {
+          // Data required by upper classes store x0, y0, z0, ... xn,
+          // yn, zn. Data stored in cgns file is x0, ..., xn, y0,
+          // ..., yn, z0, ..., zn so we have to allocate some scratch
+          // memory to read in the data and then map into supplied
+          // 'data'
           // Map to global coordinate position...
           for (cgsize_t i = 0; i < num_to_get; i++) {
-            coord[i] = rdata[phys_dimension * i + 1];
+            coord[i] = rdata[phys_dimension * i + ordinal];
           }
-          CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateY", &crd_idx));
-          CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
+
+          int idx = 0;
+          CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, ordinate, &idx));
+          CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, idx, rmin, rmax, TOPTR(coord)));
+        };
+        // ========================================================================
+
+        coord_lambda("CoordinateX", 0);
+
+        if (phys_dimension >= 2) {
+          coord_lambda("CoordinateY", 1);
         }
 
         if (phys_dimension == 3) {
-          // Map to global coordinate position...
-          for (cgsize_t i = 0; i < num_to_get; i++) {
-            coord[i] = rdata[phys_dimension * i + 2];
-          }
-
-          CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateZ", &crd_idx));
-          CGCHECK(cgp_coord_write_data(cgnsFilePtr, base, zone, crd_idx, rmin, rmax, TOPTR(coord)));
+          coord_lambda("CoordinateZ", 2);
         }
       }
       else {
