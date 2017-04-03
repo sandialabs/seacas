@@ -1939,49 +1939,7 @@ namespace Iocgns {
     return -1;
   }
 
-  void ParallelDatabaseIO::write_results_meta_data()
-  {
-#if 0
-    const auto &blocks = get_region()->get_structured_blocks();
-
-    // Iterate all blocks and determine what TRANSIENT fields are defined on them.
-    // Create a FlowSolution subnode for each field...
-    for (auto &block : blocks) {
-      std::cerr << "Structured Block: " << block->name() << "\n";
-      Ioss::NameList fields;
-      block->field_describe(Ioss::Field::TRANSIENT, &fields);
-
-      for (const auto &field_name : fields) {
-	Ioss::Field field = block->get_field(field_name);
-	std::cerr << "\tField: " << field_name << "\n";
-      }
-    }
-
-    const auto &eblocks = get_region()->get_element_blocks();
-
-    // Iterate all blocks and determine what TRANSIENT fields are defined on them.
-    // Create a FlowSolution subnode for each field...
-    for (auto &block : eblocks) {
-      std::cerr << "Element Block: " << block->name() << "\n";
-      cgsize_t base = block->get_property("base").get_int();
-      cgsize_t zone = block->get_property("zone").get_int();
-
-      Ioss::NameList fields;
-      block->field_describe(Ioss::Field::TRANSIENT, &fields);
-
-      if (!fields.empty()) {
-	CGCHECK(cg_sol_write(cgnsFilePtr, base, zone, "FlowSolution",
-			     CG_CellCenter, &sol_index));
-
-	for (const auto &field_name : fields) {
-	  Ioss::Field field = block->get_field(field_name);
-	  std::cerr << "\tField: " << field_name << "\n";
-
-	}
-      }
-    }
-#endif
-  }
+  void ParallelDatabaseIO::write_results_meta_data() {}
 
   unsigned ParallelDatabaseIO::entity_field_support() const { return Ioss::REGION; }
 
