@@ -582,6 +582,8 @@ namespace {
         transfer_fields(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
         transfer_fields(region.get_element_blocks(), output_region, Ioss::Field::TRANSIENT,
                         interface);
+        transfer_fields(region.get_structured_blocks(), output_region, Ioss::Field::TRANSIENT,
+                        interface);
 
         transfer_fields(region.get_nodesets(), output_region, Ioss::Field::TRANSIENT, interface);
         transfer_fields(region.get_edgesets(), output_region, Ioss::Field::TRANSIENT, interface);
@@ -664,6 +666,8 @@ namespace {
         transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT,
                             interface);
         transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::TRANSIENT,
+                            interface);
+        transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::TRANSIENT,
                             interface);
 
         transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::TRANSIENT,
