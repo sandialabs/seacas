@@ -428,7 +428,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
                                                  int *vertex_solution_index,
                                                  int *cell_center_solution_index)
 {
-  std::string c_name = "CellSolutionAtStep";
+  std::string c_name = "CellCenterSolutionAtStep";
   std::string v_name = "VertexSolutionAtStep";
   std::string step   = Ioss::Utils::to_string(state);
   c_name += step;
@@ -806,17 +806,32 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
     auto ziter = [=](Ioss::GroupingEntity *block) {
       cgsize_t         zone = block->get_property("zone").get_int();
       std::vector<int> indices(timesteps.size());
-      if (block->field_count(Ioss::Field::TRANSIENT) > 0 || has_nodal_fields) {
+      bool has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
+      if (has_cell_center_fields || has_nodal_fields) {
         CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
         CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
         CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
-        CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
-        CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
 
         if (has_nodal_fields) {
+	  int index = 1;
+	  int increment = has_cell_center_fields ? 2 : 1;
+	  for (size_t state = 0; state < timesteps.size(); state++) {
+	    indices[state] = index;
+	    index += increment;
+	  }
+	  
+	  CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
           CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
         }
-        if (block->field_count(Ioss::Field::TRANSIENT) > 0) {
+        if (has_cell_center_fields) {
+	  int index = has_nodal_fields ? 2 : 1;
+	  int increment = has_nodal_fields ? 2 : 1;
+	  for (size_t state = 0; state < timesteps.size(); state++) {
+	    indices[state] = index;
+	    index += increment;
+	  }
+
+	  CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
           CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
         }
       }
