@@ -89,8 +89,8 @@ namespace Iopg {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO();
 
-    int64_t node_global_to_local(int64_t /* global */, bool /* must_exist */) const { return 0; }
-    int64_t element_global_to_local(int64_t /* global */) const { return 0; }
+    int64_t node_global_to_local(int64_t global, bool /* must_exist */) const { return global; }
+    int64_t element_global_to_local(int64_t global) const { return global; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
