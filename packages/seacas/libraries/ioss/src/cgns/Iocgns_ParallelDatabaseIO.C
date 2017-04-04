@@ -908,49 +908,48 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    cgsize_t num_to_get = field.verify(data_size);
-
     Ioss::Field::RoleType role = field.get_role();
     cgsize_t              base = sb->get_property("base").get_int();
     cgsize_t              zone = sb->get_property("zone").get_int();
+
+    cgsize_t num_to_get = field.verify(data_size);
 
     cgsize_t rmin[3] = {0, 0, 0};
     cgsize_t rmax[3] = {0, 0, 0};
 
     bool cell_field = Utils::is_cell_field(field);
+    if (cell_field) {
+      assert(num_to_get == sb->get_property("cell_count").get_int());
+      if (num_to_get > 0) {
+	rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+	rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+	rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+      }
+    }
+    else {
+      // cell nodal field.
+      assert(num_to_get == sb->get_property("node_count").get_int());
+      if (num_to_get > 0) {
+	rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+	rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+	rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+      }
+    }
+
+    assert(num_to_get == 0 ||
+	   num_to_get ==
+	   (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    double *rdata      = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
-
-      if (cell_field) {
-        assert(num_to_get == sb->get_property("cell_count").get_int());
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
-        }
-      }
-      else {
-        // cell nodal field.
-        assert(num_to_get == sb->get_property("node_count").get_int());
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int();
-        }
-      }
-
-      assert(num_to_get == 0 ||
-             num_to_get ==
-                 (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
-      double *rdata = static_cast<double *>(data);
 
       if (field.get_name() == "mesh_model_coordinates_x") {
         CGCHECK(cgp_coord_read_data(cgnsFilePtr, base, zone, 1, rmin, rmax, rdata));
@@ -1028,7 +1027,6 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      double *rdata      = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
       auto    var_type   = field.transformed_storage();
       int     comp_count = var_type->component_count();
 
@@ -1659,41 +1657,40 @@ namespace Iocgns {
     cgsize_t rmin[3] = {0, 0, 0};
     cgsize_t rmax[3] = {0, 0, 0};
 
-    // TODO: Need way of telling whether cell-center of vertex field--specifically for transient
     bool cell_field = Utils::is_cell_field(field);
 
+    if (cell_field) {
+      assert(num_to_get == sb->get_property("cell_count").get_int());
+      if (num_to_get > 0) {
+	rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+	rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+	rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+      }
+    }
+    else {
+      // cell nodal field.
+      assert(num_to_get == sb->get_property("node_count").get_int());
+      if (num_to_get > 0) {
+	rmin[0] = sb->get_property("offset_i").get_int() + 1;
+	rmin[1] = sb->get_property("offset_j").get_int() + 1;
+	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+
+	rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+	rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+	rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+      }
+    }
+
+    assert(num_to_get == 0 ||
+	   num_to_get ==
+	   (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+
     if (role == Ioss::Field::MESH) {
-      if (cell_field) {
-        assert(num_to_get == sb->get_property("cell_count").get_int());
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
-        }
-      }
-      else {
-        // cell nodal field.
-        assert(num_to_get == sb->get_property("node_count").get_int());
-        if (num_to_get > 0) {
-          rmin[0] = sb->get_property("offset_i").get_int() + 1;
-          rmin[1] = sb->get_property("offset_j").get_int() + 1;
-          rmin[2] = sb->get_property("offset_k").get_int() + 1;
-
-          rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-          rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-          rmax[2] = rmin[2] + sb->get_property("nk").get_int();
-        }
-      }
-
-      assert(num_to_get == 0 ||
-             num_to_get ==
-                 (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
-      double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
-
       int crd_idx = 0;
       if (field.get_name() == "mesh_model_coordinates_x") {
         CGCHECK(cgp_coord_write(cgnsFilePtr, base, zone, CG_RealDouble, "CoordinateX", &crd_idx));
@@ -1749,7 +1746,6 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      double *rdata                  = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
       int     cgns_field             = 0;
       auto    var_type               = field.transformed_storage();
       int     comp_count             = var_type->component_count();
