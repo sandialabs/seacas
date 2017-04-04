@@ -785,8 +785,6 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
     const auto &nblocks = region->get_node_blocks();
     auto &      nblock  = nblocks[0];
 
-    // TODO: Not sure how to handle both Vertex and CellCenter FlowSolution data
-    // in the same file.  For now, just output CellCenter ZoneIterativeData...
     bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
 
     cgsize_t          dim[2] = {32, (cgsize_t)timesteps.size()};
