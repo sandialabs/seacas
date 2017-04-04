@@ -848,7 +848,6 @@ namespace Iocgns {
           }
         }
         else if (field.get_name() == "ids") {
-          // TODO(gdsjaar): This needs to change for parallel.
           // Map the local ids in this element block
           // (eb_offset+1...eb_offset+1+my_element_count) to global element ids.
           size_t eb_offset_plus_one = eb->get_offset() + 1;
@@ -863,9 +862,6 @@ namespace Iocgns {
           }
         }
         else if (field.get_name() == "implicit_ids") {
-          // TODO(gdsjaar): This needs to change for parallel.
-          // If not parallel, then this is just
-          // (eb_offset+1...eb_offset+1+my_element_count).
           size_t eb_offset_plus_one = eb->get_offset() + 1;
           if (field.get_type() == Ioss::Field::INT64) {
             int64_t *idata = static_cast<int64_t *>(data);
