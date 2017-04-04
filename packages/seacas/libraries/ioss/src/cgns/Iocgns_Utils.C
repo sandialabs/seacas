@@ -211,21 +211,20 @@ void Iocgns::Utils::set_field_index(const Ioss::Field &field, size_t index,
 
 bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
 {
-  bool cell_field = true;
+  size_t index = field.get_index();
+  if (index & CG_VERTEX_FIELD_ID) {
+    return false;
+  }
+  else if (index & CG_CELL_CENTER_FIELD_ID) {
+    return true;
+  }
   if (field.get_name() == "mesh_model_coordinates" ||
       field.get_name() == "mesh_model_coordinates_x" ||
       field.get_name() == "mesh_model_coordinates_y" ||
       field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
-    cell_field = false;
+    return false;
   }
-  size_t index = field.get_index();
-  if (index & CG_VERTEX_FIELD_ID) {
-    cell_field = false;
-  }
-  else if (index & CG_CELL_CENTER_FIELD_ID) {
-    cell_field = true;
-  }
-  return cell_field;
+  return true; // Default to cell field...
 }
 
 void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
@@ -891,7 +890,10 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
 	size_t entity_count = block->get_property("entity_count").get_int();
 	Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
 				'_', nullptr, fields);
+	size_t index = 1;
 	for (const auto &field : fields) {
+	  Utils::set_field_index(field, index, grid_loc);
+	  index += field.raw_storage()->component_count();
 	  block->field_add(field);
 	}
       }
@@ -905,7 +907,10 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
 	size_t           entity_count = nb->get_property("entity_count").get_int();
 	Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
 				'_', nullptr, fields);
+	size_t index = 1;
 	for (const auto &field : fields) {
+	  Utils::set_field_index(field, index, grid_loc);
+	  index += field.raw_storage()->component_count();
 	  nb->field_add(field);
 	}
       }
