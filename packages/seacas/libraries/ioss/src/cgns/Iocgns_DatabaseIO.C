@@ -959,11 +959,11 @@ namespace Iocgns {
       }
     }
 
-    if (role == Ioss::Field::MESH) {
-      assert(num_to_get ==
-             (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
-      double *rdata = static_cast<double *>(data);
+    assert(num_to_get ==
+	   (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    double *rdata = static_cast<double *>(data);
 
+    if (role == Ioss::Field::MESH) {
       if (field.get_name() == "mesh_model_coordinates_x") {
         CGCHECK(cg_coord_read(cgnsFilePtr, base, zone, "CoordinateX", CG_RealDouble, rmin, rmax,
                               rdata));
@@ -1045,7 +1045,6 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      double *rdata                  = static_cast<double *>(data);
       auto    var_type               = field.transformed_storage();
       int     comp_count             = var_type->component_count();
       char    field_suffix_separator = get_field_separator();
