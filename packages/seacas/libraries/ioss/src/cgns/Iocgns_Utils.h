@@ -179,12 +179,12 @@ namespace Iocgns {
     static std::string map_cgns_to_topology_type(CG_ElementType_t type);
     static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
     static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block);
-    static void finalize_database(int cgnsFilePtr, const std::vector<double>& timesteps,
-				  Ioss::Region *region, int myProcessor);
+    static void finalize_database(int cgnsFilePtr, const std::vector<double> &timesteps,
+                                  Ioss::Region *region, int myProcessor);
     static int get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
-			      double timeScaleFactor, int myProcessor);
-    static void add_transient_variables(int cgnsFilePtr, const std::vector<double>& timesteps,
-					Ioss::Region *region, int myProcessor);
+                              double timeScaleFactor, int myProcessor);
+    static void add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
+                                        Ioss::Region *region, int myProcessor);
   };
 }
 

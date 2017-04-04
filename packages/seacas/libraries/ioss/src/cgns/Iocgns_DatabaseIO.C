@@ -956,7 +956,7 @@ namespace Iocgns {
     }
 
     assert(num_to_get ==
-	   (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+           (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
     double *rdata = static_cast<double *>(data);
 
     if (role == Ioss::Field::MESH) {
@@ -1041,9 +1041,9 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      auto    var_type               = field.transformed_storage();
-      int     comp_count             = var_type->component_count();
-      char    field_suffix_separator = get_field_separator();
+      auto var_type               = field.transformed_storage();
+      int  comp_count             = var_type->component_count();
+      char field_suffix_separator = get_field_separator();
 
       int sol_index = 0;
       int step      = get_region()->get_current_state();
