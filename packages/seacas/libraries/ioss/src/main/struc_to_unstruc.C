@@ -181,6 +181,7 @@ namespace {
     //========================================================================
     // OUTPUT ...
     //========================================================================
+    properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
