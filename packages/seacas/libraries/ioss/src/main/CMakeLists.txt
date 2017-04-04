@@ -89,6 +89,11 @@ install_executable(skinner)
 
 IF (TPL_ENABLE_CGNS)
 
+if (TPL_ENABLE_MPI)
+  set(DECOMP_ARG "--rcb")
+  set(JOIN_ARG   "--compose=mpiio")
+endif()
+
 if ( CGNS_CGNSLIST_BINARY )
    # Do nothing. Set earlier in config process...
 else()
@@ -133,7 +138,7 @@ TRIBITS_ADD_ADVANCED_TEST(generated_to_unstructured_cgns
   )
 
 TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns
-   TEST_0 EXEC io_shell ARGS --rcb --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.cgns
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
    TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -a 8-block.cgns
@@ -143,10 +148,10 @@ TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns
   )
 
 TRIBITS_ADD_ADVANCED_TEST(exodus_to_unstructured_cgns_to_exodus
-   TEST_0 EXEC io_shell ARGS --rcb --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.cgns
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.cgns
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
-   TEST_1 EXEC ${CMAKE_CURRENT_BINARY_DIR}/io_shell ARGS --compose mpiio --in_type cgns 8-block.cgns 8-block.g
+   TEST_1 EXEC ${CMAKE_CURRENT_BINARY_DIR}/io_shell ARGS ${JOIN_ARG} --in_type cgns 8-block.cgns 8-block.g
      NOEXEPREFIX NOEXESUFFIX
      NUM_MPI_PROCS 1-4
    TEST_2 CMND ${CMAKE_BINARY_DIR}/packages/seacas/applications/exodiff/exodiff ARGS -stat -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block.g
