@@ -1,4 +1,3 @@
-#include <set>
 #include <Ioss_Bar2.h>
 #include <Ioss_Bar3.h>
 #include <Ioss_Hex20.h>
@@ -21,6 +20,7 @@
 #include <Ioss_Wedge15.h>
 #include <Ioss_Wedge18.h>
 #include <Ioss_Wedge6.h>
+#include <set>
 
 #include <cgns/Iocgns_Utils.h>
 
@@ -301,9 +301,9 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     for (const auto &bc : sb->m_boundaryConditions) {
       cgsize_t bc_idx = 0;
       CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-			  CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx));
-      CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(),
-		    0, "end"));
+                          CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx));
+      CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0,
+                    "end"));
       CGERR(cg_famname_write(bc.m_bcName.c_str()));
       CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
     }
@@ -314,12 +314,13 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
       if (zgc.m_intraBlock) {
         continue;
       }
-      // In parallel decomposition, can have multiple copies of a zgc; only output the first instance
+      // In parallel decomposition, can have multiple copies of a zgc; only output the first
+      // instance
       if (defined.insert(zgc.m_connectionName).second) {
-	cgsize_t zgc_idx = 0;
-	CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
-			    zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
-			    &zgc.m_transform[0], &zgc_idx));
+        cgsize_t zgc_idx = 0;
+        CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
+                            zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
+                            &zgc.m_transform[0], &zgc_idx));
       }
     }
   }
@@ -567,14 +568,14 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   // numbered zone is considered the "owner" and all other nodes are shared.
 
   // Create a vector of size which is the sum of the on-processor cell_nodes size for each block
-  size_t  num_total_cell_nodes = 0;
-  auto &blocks = region.get_structured_blocks();
+  size_t num_total_cell_nodes = 0;
+  auto & blocks               = region.get_structured_blocks();
   for (auto &block : blocks) {
     size_t node_count = block->get_property("node_count").get_int();
     num_total_cell_nodes += node_count;
   }
 
-  ssize_t ss_max               = std::numeric_limits<ssize_t>::max();
+  ssize_t              ss_max = std::numeric_limits<ssize_t>::max();
   std::vector<ssize_t> cell_node_map(num_total_cell_nodes, ss_max);
 
   // Each cell_node location in the cell_node_map is currently initialized to ss_max.
@@ -695,8 +696,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     int               ndataset;
 
     // All we really want from this is 'boconame'
-    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type, &npnts,
-			   nullptr, &NormalListSize, &NormalDataType, &ndataset));
+    CGCHECKNP(cg_boco_info(cgnsFilePtr, base, zone, ibc + 1, boconame, &bocotype, &ptset_type,
+                           &npnts, nullptr, &NormalListSize, &NormalDataType, &ndataset));
 
     CGCHECKNP(cg_boco_read(cgnsFilePtr, base, zone, ibc + 1, range, nullptr));
 
@@ -769,86 +770,86 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
   }
 }
 
-void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>& timesteps,
-				      Ioss::Region *region, int myProcessor)
-  {
-    int base = 1;
-    CGCHECK(cg_biter_write(cgnsFilePtr, base, "TimeIterValues", timesteps.size()));
+void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double> &timesteps,
+                                      Ioss::Region *region, int myProcessor)
+{
+  int base = 1;
+  CGCHECK(cg_biter_write(cgnsFilePtr, base, "TimeIterValues", timesteps.size()));
 
-    // Now write the timestep time values...
-    CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
-    cgsize_t dimtv[1] = {(cgsize_t)timesteps.size()};
-    CGCHECK(cg_array_write("TimeValues", CG_RealDouble, 1, dimtv, timesteps.data()));
+  // Now write the timestep time values...
+  CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));
+  cgsize_t dimtv[1] = {(cgsize_t)timesteps.size()};
+  CGCHECK(cg_array_write("TimeValues", CG_RealDouble, 1, dimtv, timesteps.data()));
 
-    // Output the ZoneIterativeData which maps a zones flow solutions to timesteps.
-    // One per zone and the number of entries matches the number of timesteps...
-    const auto &nblocks = region->get_node_blocks();
-    auto &      nblock  = nblocks[0];
+  // Output the ZoneIterativeData which maps a zones flow solutions to timesteps.
+  // One per zone and the number of entries matches the number of timesteps...
+  const auto &nblocks = region->get_node_blocks();
+  auto &      nblock  = nblocks[0];
 
-    bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
+  bool has_nodal_fields = nblock->field_count(Ioss::Field::TRANSIENT) > 0;
 
-    cgsize_t          dim[2] = {32, (cgsize_t)timesteps.size()};
-    std::vector<char> names(32 * timesteps.size(), ' ');
-    for (size_t state = 0; state < timesteps.size(); state++) {
-      // This name is the "postfix" or common portion of all FlowSolution names...
-      std::string name = "SolutionAtStep" + Ioss::Utils::to_string(state + 1);
-      std::strncpy(&names[state * 32], name.c_str(), 32);
-      for (size_t i = name.size(); i < 32; i++) {
-        names[state * 32 + i] = ' ';
-      }
-    }
-
-    // Create a lambda to avoid code duplication for similar treatment
-    // of structured blocks and element blocks.
-    auto ziter = [=](Ioss::GroupingEntity *block) {
-      cgsize_t         zone = block->get_property("zone").get_int();
-      std::vector<int> indices(timesteps.size());
-      bool has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
-      if (has_cell_center_fields || has_nodal_fields) {
-        CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
-        CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
-        CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
-
-        if (has_nodal_fields) {
-	  int index = 1;
-	  int increment = has_cell_center_fields ? 2 : 1;
-	  for (size_t state = 0; state < timesteps.size(); state++) {
-	    indices[state] = index;
-	    index += increment;
-	  }
-	  
-	  CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
-          CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
-        }
-        if (has_cell_center_fields) {
-	  int index = has_nodal_fields ? 2 : 1;
-	  int increment = has_nodal_fields ? 2 : 1;
-	  for (size_t state = 0; state < timesteps.size(); state++) {
-	    indices[state] = index;
-	    index += increment;
-	  }
-
-	  CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
-          CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
-        }
-      }
-    };
-
-    // Use the lambda...
-    const auto &sblocks = region->get_structured_blocks();
-    for (auto &block : sblocks) {
-      ziter(block);
-    }
-
-    // Use the lambda...
-    const auto &eblocks = region->get_element_blocks();
-    for (auto &block : eblocks) {
-      ziter(block);
+  cgsize_t          dim[2] = {32, (cgsize_t)timesteps.size()};
+  std::vector<char> names(32 * timesteps.size(), ' ');
+  for (size_t state = 0; state < timesteps.size(); state++) {
+    // This name is the "postfix" or common portion of all FlowSolution names...
+    std::string name = "SolutionAtStep" + Ioss::Utils::to_string(state + 1);
+    std::strncpy(&names[state * 32], name.c_str(), 32);
+    for (size_t i = name.size(); i < 32; i++) {
+      names[state * 32 + i] = ' ';
     }
   }
 
-void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<double>& timesteps,
-					    Ioss::Region *region, int myProcessor)
+  // Create a lambda to avoid code duplication for similar treatment
+  // of structured blocks and element blocks.
+  auto ziter = [=](Ioss::GroupingEntity *block) {
+    cgsize_t         zone = block->get_property("zone").get_int();
+    std::vector<int> indices(timesteps.size());
+    bool             has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
+    if (has_cell_center_fields || has_nodal_fields) {
+      CGCHECK(cg_ziter_write(cgnsFilePtr, base, zone, "ZoneIterativeData"));
+      CGCHECK(cg_goto(cgnsFilePtr, base, "Zone_t", zone, "ZoneIterativeData_t", 1, "end"));
+      CGCHECK(cg_array_write("FlowSolutionPointers", CG_Character, 2, dim, names.data()));
+
+      if (has_nodal_fields) {
+        int index     = 1;
+        int increment = has_cell_center_fields ? 2 : 1;
+        for (size_t state = 0; state < timesteps.size(); state++) {
+          indices[state] = index;
+          index += increment;
+        }
+
+        CGCHECK(cg_array_write("VertexSolutionIndices", CG_Integer, 1, &dim[1], indices.data()));
+        CGCHECK(cg_descriptor_write("VertexPrefix", "Vertex"));
+      }
+      if (has_cell_center_fields) {
+        int index     = has_nodal_fields ? 2 : 1;
+        int increment = has_nodal_fields ? 2 : 1;
+        for (size_t state = 0; state < timesteps.size(); state++) {
+          indices[state] = index;
+          index += increment;
+        }
+
+        CGCHECK(cg_array_write("CellCenterIndices", CG_Integer, 1, &dim[1], indices.data()));
+        CGCHECK(cg_descriptor_write("CellCenterPrefix", "CellCenter"));
+      }
+    }
+  };
+
+  // Use the lambda...
+  const auto &sblocks = region->get_structured_blocks();
+  for (auto &block : sblocks) {
+    ziter(block);
+  }
+
+  // Use the lambda...
+  const auto &eblocks = region->get_element_blocks();
+  for (auto &block : eblocks) {
+    ziter(block);
+  }
+}
+
+void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<double> &timesteps,
+                                            Ioss::Region *region, int myProcessor)
 {
   // ==========================================
   // Add transient variables (if any) to all zones...
@@ -876,41 +877,41 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
 
       char **field_names = Ioss::Utils::get_name_array(field_count, 33);
       for (int field = 1; field <= field_count; field++) {
-	CG_DataType_t data_type;
-	char          field_name[33];
-	CGCHECK(cg_field_info(cgnsFilePtr, b, z, sol, field, &data_type, field_name));
-	std::strncpy(field_names[field - 1], field_name, 32);
+        CG_DataType_t data_type;
+        char          field_name[33];
+        CGCHECK(cg_field_info(cgnsFilePtr, b, z, sol, field, &data_type, field_name));
+        std::strncpy(field_names[field - 1], field_name, 32);
       }
 
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
       std::vector<Ioss::Field> fields;
       if (grid_loc == CG_CellCenter) {
-	size_t entity_count = block->get_property("entity_count").get_int();
-	Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
-				'_', nullptr, fields);
-	size_t index = 1;
-	for (const auto &field : fields) {
-	  Utils::set_field_index(field, index, grid_loc);
-	  index += field.raw_storage()->component_count();
-	  block->field_add(field);
-	}
+        size_t entity_count = block->get_property("entity_count").get_int();
+        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
+                                nullptr, fields);
+        size_t index = 1;
+        for (const auto &field : fields) {
+          Utils::set_field_index(field, index, grid_loc);
+          index += field.raw_storage()->component_count();
+          block->field_add(field);
+        }
       }
       else {
-	assert(grid_loc == CG_Vertex);
-	const Ioss::NodeBlock *cnb =
-	  (block->type() == Ioss::STRUCTUREDBLOCK)
-	  ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
-	  : region->get_node_blocks()[0];
-	Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
-	size_t           entity_count = nb->get_property("entity_count").get_int();
-	Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT,
-				'_', nullptr, fields);
-	size_t index = 1;
-	for (const auto &field : fields) {
-	  Utils::set_field_index(field, index, grid_loc);
-	  index += field.raw_storage()->component_count();
-	  nb->field_add(field);
-	}
+        assert(grid_loc == CG_Vertex);
+        const Ioss::NodeBlock *cnb =
+            (block->type() == Ioss::STRUCTUREDBLOCK)
+                ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
+                : region->get_node_blocks()[0];
+        Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
+        size_t           entity_count = nb->get_property("entity_count").get_int();
+        Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
+                                nullptr, fields);
+        size_t index = 1;
+        for (const auto &field : fields) {
+          Utils::set_field_index(field, index, grid_loc);
+          index += field.raw_storage()->component_count();
+          nb->field_add(field);
+        }
       }
 
       Ioss::Utils::delete_name_array(field_names, field_count);
@@ -930,8 +931,8 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
   }
 }
 
-int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
-				  double timeScaleFactor, int myProcessor)
+int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timesteps,
+                                  Ioss::Region *region, double timeScaleFactor, int myProcessor)
 {
   int  base          = 1;
   int  num_timesteps = 0;
@@ -959,4 +960,3 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
   }
   return num_timesteps;
 }
-

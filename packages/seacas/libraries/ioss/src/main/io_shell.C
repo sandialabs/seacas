@@ -329,12 +329,13 @@ namespace {
         dbi->set_lower_case_variable_names(false);
       }
       if (interface.outFiletype == "cgns") {
-	// CGNS stores BCs (SideSets) on the zones which
-	// correspond to element blocks.  If split input sideblocks
-	// by element block, then output is much easier.
-	dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
-      } else {
-	dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
+        // CGNS stores BCs (SideSets) on the zones which
+        // correspond to element blocks.  If split input sideblocks
+        // by element block, then output is much easier.
+        dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+      }
+      else {
+        dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
       }
       dbi->set_field_separator(interface.fieldSuffixSeparator);
       if (interface.ints_64_bit) {
@@ -467,25 +468,27 @@ namespace {
 
       // Transfer MESH field_data from input to output...
       bool node_major = output_region.node_major();
-      
+
       if (!node_major) {
-	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
-	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-			    interface);
+        transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH,
+                            interface);
+        transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+                            interface);
       }
 
       if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
-	transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, interface);
-	transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-			    interface);
+        transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, interface);
+        transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+                            interface);
       }
 
       if (node_major) {
-	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, interface);
-	transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-			    interface);
+        transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH,
+                            interface);
+        transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+                            interface);
       }
-      
+
       transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::MESH,
                           interface);
       transfer_field_data(region.get_structured_blocks(), output_region, Ioss::Field::ATTRIBUTE,
@@ -575,9 +578,10 @@ namespace {
         // blocks, transfer to the output node and element blocks.
         transfer_fields(&region, &output_region, Ioss::Field::TRANSIENT);
 
-	if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
-	  transfer_fields(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
-	}
+        if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+          transfer_fields(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT,
+                          interface);
+        }
         transfer_fields(region.get_edge_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
         transfer_fields(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT, interface);
         transfer_fields(region.get_element_blocks(), output_region, Ioss::Field::TRANSIENT,
@@ -657,10 +661,10 @@ namespace {
 
         transfer_field_data(&region, &output_region, Ioss::Field::TRANSIENT, interface);
 
-	if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
-	  transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT,
-			      interface);
-	}
+        if (region.mesh_type() != Ioss::MeshType::STRUCTURED) {
+          transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT,
+                              interface);
+        }
         transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::TRANSIENT,
                             interface);
         transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT,
@@ -929,18 +933,18 @@ namespace {
             new Ioss::SideBlock(output_region.get_database(), fbname, fbtype, partype, num_side);
         surf->add(block);
 
-	// Need to transfer the parent_block() if set...
-	const Ioss::EntityBlock *parent = fb->parent_block();
-	if (parent != nullptr) {
-	  if (parent->type() == Ioss::ELEMENTBLOCK) {
-	    auto blk = output_region.get_element_block(parent->name());
-	    block->set_parent_block(blk);
-	  }
-	  else if (parent->type() == Ioss::STRUCTUREDBLOCK) {
-	    auto blk = output_region.get_structured_block(parent->name());
-	    block->set_parent_block(blk);
-	  }
-	}
+        // Need to transfer the parent_block() if set...
+        const Ioss::EntityBlock *parent = fb->parent_block();
+        if (parent != nullptr) {
+          if (parent->type() == Ioss::ELEMENTBLOCK) {
+            auto blk = output_region.get_element_block(parent->name());
+            block->set_parent_block(blk);
+          }
+          else if (parent->type() == Ioss::STRUCTUREDBLOCK) {
+            auto blk = output_region.get_structured_block(parent->name());
+            block->set_parent_block(blk);
+          }
+        }
         transfer_properties(fb, block);
         transfer_fields(fb, block, Ioss::Field::MESH);
         transfer_fields(fb, block, Ioss::Field::ATTRIBUTE);

@@ -921,33 +921,33 @@ namespace Iocgns {
     if (cell_field) {
       assert(num_to_get == sb->get_property("cell_count").get_int());
       if (num_to_get > 0) {
-	rmin[0] = sb->get_property("offset_i").get_int() + 1;
-	rmin[1] = sb->get_property("offset_j").get_int() + 1;
-	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        rmin[0] = sb->get_property("offset_i").get_int() + 1;
+        rmin[1] = sb->get_property("offset_j").get_int() + 1;
+        rmin[2] = sb->get_property("offset_k").get_int() + 1;
 
-	rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-	rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-	rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
       }
     }
     else {
       // cell nodal field.
       assert(num_to_get == sb->get_property("node_count").get_int());
       if (num_to_get > 0) {
-	rmin[0] = sb->get_property("offset_i").get_int() + 1;
-	rmin[1] = sb->get_property("offset_j").get_int() + 1;
-	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        rmin[0] = sb->get_property("offset_i").get_int() + 1;
+        rmin[1] = sb->get_property("offset_j").get_int() + 1;
+        rmin[2] = sb->get_property("offset_k").get_int() + 1;
 
-	rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-	rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-	rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int();
       }
     }
 
     assert(num_to_get == 0 ||
-	   num_to_get ==
-	   (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
-    double *rdata      = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
+           num_to_get ==
+               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
 
@@ -1027,8 +1027,8 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      auto    var_type   = field.transformed_storage();
-      int     comp_count = var_type->component_count();
+      auto var_type   = field.transformed_storage();
+      int  comp_count = var_type->component_count();
 
       int sol_index = 0;
       int step      = get_region()->get_current_state();
@@ -1662,32 +1662,32 @@ namespace Iocgns {
     if (cell_field) {
       assert(num_to_get == sb->get_property("cell_count").get_int());
       if (num_to_get > 0) {
-	rmin[0] = sb->get_property("offset_i").get_int() + 1;
-	rmin[1] = sb->get_property("offset_j").get_int() + 1;
-	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        rmin[0] = sb->get_property("offset_i").get_int() + 1;
+        rmin[1] = sb->get_property("offset_j").get_int() + 1;
+        rmin[2] = sb->get_property("offset_k").get_int() + 1;
 
-	rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
-	rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
-	rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int() - 1;
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int() - 1;
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int() - 1;
       }
     }
     else {
       // cell nodal field.
       assert(num_to_get == sb->get_property("node_count").get_int());
       if (num_to_get > 0) {
-	rmin[0] = sb->get_property("offset_i").get_int() + 1;
-	rmin[1] = sb->get_property("offset_j").get_int() + 1;
-	rmin[2] = sb->get_property("offset_k").get_int() + 1;
+        rmin[0] = sb->get_property("offset_i").get_int() + 1;
+        rmin[1] = sb->get_property("offset_j").get_int() + 1;
+        rmin[2] = sb->get_property("offset_k").get_int() + 1;
 
-	rmax[0] = rmin[0] + sb->get_property("ni").get_int();
-	rmax[1] = rmin[1] + sb->get_property("nj").get_int();
-	rmax[2] = rmin[2] + sb->get_property("nk").get_int();
+        rmax[0] = rmin[0] + sb->get_property("ni").get_int();
+        rmax[1] = rmin[1] + sb->get_property("nj").get_int();
+        rmax[2] = rmin[2] + sb->get_property("nk").get_int();
       }
     }
 
     assert(num_to_get == 0 ||
-	   num_to_get ==
-	   (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+           num_to_get ==
+               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
     double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
@@ -1746,10 +1746,10 @@ namespace Iocgns {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      int     cgns_field             = 0;
-      auto    var_type               = field.transformed_storage();
-      int     comp_count             = var_type->component_count();
-      char    field_suffix_separator = get_field_separator();
+      int  cgns_field             = 0;
+      auto var_type               = field.transformed_storage();
+      int  comp_count             = var_type->component_count();
+      char field_suffix_separator = get_field_separator();
 
       int               sol_index = 0;
       CG_GridLocation_t location;
