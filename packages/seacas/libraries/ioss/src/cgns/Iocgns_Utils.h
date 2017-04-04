@@ -69,8 +69,16 @@ namespace Iocgns {
     Utils()  = default;
     ~Utils() = default;
 
+    static const size_t CG_CELL_CENTER_FIELD_ID = 1ul << 33;
+    static const size_t CG_VERTEX_FIELD_ID      = 1ul << 34;
+
+    static size_t index(const Ioss::Field &field);
+
     static void cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                            int processor);
+
+    static void set_field_index(const Ioss::Field &field, size_t index, CG_GridLocation_t location);
+    static bool is_cell_field(const Ioss::Field &field);
 
     template <typename INT>
     static void map_cgns_face_to_ioss(const Ioss::ElementTopology *parent_topo, size_t num_to_get,
@@ -157,6 +165,11 @@ namespace Iocgns {
       }
     }
 
+    static void write_flow_solution_metadata(int file_ptr, Ioss::Region *region, int state,
+                                             int *vertex_solution_index,
+                                             int *cell_center_solution_index);
+    static int find_solution_index(int cgnsFilePtr, int base, int zone, int step,
+                                   CG_GridLocation_t location);
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
     static void common_write_meta_data(int cgnsFilePtr, const Ioss::Region &region,
                                        std::vector<size_t> &zone_offset);
@@ -166,6 +179,12 @@ namespace Iocgns {
     static std::string map_cgns_to_topology_type(CG_ElementType_t type);
     static void add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db);
     static void add_structured_boundary_conditions(int cgnsFilePtr, Ioss::StructuredBlock *block);
+    static void finalize_database(int cgnsFilePtr, const std::vector<double>& timesteps,
+				  Ioss::Region *region, int myProcessor);
+    static int get_step_times(int cgnsFilePtr, std::vector<double> &timesteps, Ioss::Region *region,
+			      double timeScaleFactor, int myProcessor);
+    static void add_transient_variables(int cgnsFilePtr, const std::vector<double>& timesteps,
+					Ioss::Region *region, int myProcessor);
   };
 }
 

@@ -838,7 +838,7 @@ namespace Iopx {
               map_read = true;
             }
           }
-	  Ioss::Utils::delete_name_array(names, map_count);
+          Ioss::Utils::delete_name_array(names, map_count);
         }
 
         if (!map_read) {
