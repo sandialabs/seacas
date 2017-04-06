@@ -153,11 +153,11 @@ namespace Ioss {
   DatabaseIO::DatabaseIO(Region *region, std::string filename, DatabaseUsage db_usage,
                          MPI_Comm communicator, const PropertyManager &props)
       : properties(props), commonSideTopology(nullptr), DBFilename(std::move(filename)),
-        dbState(STATE_INVALID), isParallel(false), myProcessor(0),
-        cycleCount(0), overlayCount(0), timeScaleFactor(1.0), splitType(SPLIT_BY_TOPOLOGIES),
-        dbUsage(db_usage), dbIntSizeAPI(USE_INT32_API), lowerCaseVariableNames(true),
-        usingParallelIO(false), util_(communicator), region_(region),
-        isInput(is_input_event(db_usage)), isParallelConsistent(true),
+        dbState(STATE_INVALID), isParallel(false), myProcessor(0), cycleCount(0), overlayCount(0),
+        timeScaleFactor(1.0), splitType(SPLIT_BY_TOPOLOGIES), dbUsage(db_usage),
+        dbIntSizeAPI(USE_INT32_API), lowerCaseVariableNames(true), usingParallelIO(false),
+        util_(communicator), region_(region), isInput(is_input_event(db_usage)),
+        isParallelConsistent(true),
         singleProcOnly(db_usage == WRITE_HISTORY || db_usage == WRITE_HEARTBEAT ||
                        SerializeIO::isEnabled()),
         doLogging(false), useGenericCanonicalName(false), ignoreDatabaseNames(false)
@@ -240,8 +240,7 @@ namespace Ioss {
     Utils::check_set_bool_property(properties, "LOWER_CASE_VARIABLE_NAMES", lowerCaseVariableNames);
     Utils::check_set_bool_property(properties, "USE_GENERIC_CANONICAL_NAMES",
                                    useGenericCanonicalName);
-    Utils::check_set_bool_property(properties, "IGNORE_DATABASE_NAMES",
-                                   ignoreDatabaseNames);
+    Utils::check_set_bool_property(properties, "IGNORE_DATABASE_NAMES", ignoreDatabaseNames);
 
     {
       bool consistent;
@@ -760,9 +759,8 @@ namespace {
         // Now append each processors size onto the stream...
         if (util.parallel_size() > 4) {
           auto min_max = std::minmax_element(all_sizes.begin(), all_sizes.end());
-          strm << " m:" << std::setw(8) << *min_max.first 
-               << " M:" << std::setw(8) << *min_max.second 
-               << " A:" << std::setw(8) << total / all_sizes.size();
+          strm << " m:" << std::setw(8) << *min_max.first << " M:" << std::setw(8)
+               << *min_max.second << " A:" << std::setw(8) << total / all_sizes.size();
         }
         else {
           for (auto &p_size : all_sizes) {

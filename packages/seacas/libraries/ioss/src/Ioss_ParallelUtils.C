@@ -184,7 +184,7 @@ void Ioss::ParallelUtils::memory_stats(int64_t &min, int64_t &max, int64_t &avg)
     min = global_minmax(my_memory, DO_MIN);
     max = global_minmax(my_memory, DO_MAX);
     avg = global_minmax(my_memory, DO_SUM);
-    avg /= parallel_size();  // Integer truncation probably ok...
+    avg /= parallel_size(); // Integer truncation probably ok...
   }
 #endif
 }
@@ -198,7 +198,7 @@ void Ioss::ParallelUtils::hwm_memory_stats(int64_t &min, int64_t &max, int64_t &
     min = global_minmax(my_memory, DO_MIN);
     max = global_minmax(my_memory, DO_MAX);
     avg = global_minmax(my_memory, DO_SUM);
-    avg /= parallel_size();  // Integer truncation probably ok...
+    avg /= parallel_size(); // Integer truncation probably ok...
   }
 #endif
 }
@@ -438,14 +438,14 @@ void Ioss::ParallelUtils::progress(const std::string &output) const
   int64_t MiB = 1024 * 1024;
   int64_t min = 0, max = 0, avg = 0;
   memory_stats(min, max, avg);
-  
+
   static auto start = std::chrono::high_resolution_clock::now();
 
   if (parallel_rank() == 0) {
-    auto now = std::chrono::high_resolution_clock::now();
+    auto                          now  = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = now - start;
-    std::cerr  << " [" << std::fixed << std::setprecision(2) << diff.count() << "] ("
-	       << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M)\t" << output << "\n";
+    std::cerr << " [" << std::fixed << std::setprecision(2) << diff.count() << "] (" << min / MiB
+              << "M  " << max / MiB << "M  " << avg / MiB << "M)\t" << output << "\n";
   }
 }
 
