@@ -239,6 +239,7 @@ namespace Iocgns {
                                              range_beg, range_end, donor_beg, donor_end,
                                              owns_nodes);
       block->m_zoneConnectivity.back().m_donorProcessor = 0;
+      block->m_zoneConnectivity.back().m_ownerProcessor = 0;
     }
 
     // Handle boundary conditions...

@@ -351,6 +351,8 @@ namespace Iocgns {
     for (auto &zgc : m_zoneConnectivity) {
       auto &donor_zone     = zones[zgc.m_donorZone - 1];
       zgc.m_donorProcessor = donor_zone->m_proc;
+      auto &owner_zone     = zones[zgc.m_ownerZone - 1];
+      zgc.m_ownerProcessor = owner_zone->m_proc;
     }
   }
 }

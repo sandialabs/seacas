@@ -612,6 +612,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 
               if (global_offset > owner_global_offset) {
                 assert(zgc.m_donorProcessor != -1);
+                assert(zgc.m_ownerProcessor != -1);
                 if (zgc.m_donorProcessor != my_processor) {
                   size_t block_local_offset =
                       block->get_block_local_node_offset(index[0], index[1], index[2]);
@@ -674,6 +675,142 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
       block->m_blockLocalNodeIndex[i++] = cell_node_map[idx];
     }
   }
+  return index;
+}
+
+size_t Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
+{
+  // Determine which nodes are shared across processor boundaries.
+  // Only need to check on block boundaries.. 
+
+  // We need to iterate all of the blocks and then each blocks zgc to determine
+  // which nodes are shared between processors. For all shared nodes, the node in the lowest
+  // numbered zone is considered the "owner" and all other nodes are shared.
+
+  // Create a vector of size which is the sum of the on-processor cell_nodes size for each block
+  size_t num_total_cell_nodes = 0;
+  auto & blocks               = region.get_structured_blocks();
+  for (auto &block : blocks) {
+    size_t node_count = block->get_property("node_count").get_int();
+    num_total_cell_nodes += node_count;
+  }
+
+  ssize_t              ss_max = std::numeric_limits<ssize_t>::max();
+  std::vector<ssize_t> cell_node_map(num_total_cell_nodes, ss_max);
+
+  // Each cell_node location in the cell_node_map is currently
+  // initialized to ss_max.  Iterate each block and then each blocks
+  // intra-block (i.e., due to proc decomps) zgc instances and
+  // update cell_node_map such that for each shared node, it points to
+  // the owner nodes location.
+  for (auto &owner_block : blocks) {
+    auto owner_ids = owner_block->get_cell_node_ids(true);
+    for (const auto &zgc : owner_block->m_zoneConnectivity) {
+      if (zgc.m_isActive && (zgc.m_donorProcessor != my_processor || zgc.m_ownerProcessor != my_processor)) { // Due to processor decomposition.
+        // NOTE: In parallel, the donor block should exist, but may not have
+        // any cells on this processor.  We can access its global i,j,k, but
+        // don't store or access any "bulk" data on it.
+        auto donor_block = region.get_structured_block(zgc.m_donorName);
+        assert(donor_block != nullptr);
+
+	auto donor_ids = donor_block->get_cell_node_ids(true);
+	
+        std::vector<int> i_range = zgc.get_range(1);
+        std::vector<int> j_range = zgc.get_range(2);
+        std::vector<int> k_range = zgc.get_range(3);
+        for (auto &k : k_range) {
+          for (auto &j : j_range) {
+            for (auto &i : i_range) {
+              Ioss::IJK_t index{{i, j, k}};
+              Ioss::IJK_t owner = zgc.transform(index);
+
+              // The nodes as 'index' and 'owner' are contiguous and
+              // should refer to the same node.
+
+              ssize_t owner_offset = owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
+              ssize_t donor_offset = donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+
+	      if (my_processor == zgc.m_ownerProcessor) {
+		std::cerr << "P:" << zgc.m_ownerProcessor << " zone " << zgc.m_ownerZone
+			  << " index " << owner_offset << "(" << owner_ids[owner_offset] << ")"
+			  << " shares P:" << zgc.m_donorProcessor << " zone " << zgc.m_donorZone
+			  << " index " << donor_offset << "(" << donor_ids[donor_offset] << ")" << "\n";
+	      }
+	      else {
+		std::cerr << "P:" << zgc.m_donorProcessor << " zone " << zgc.m_donorZone
+			  << " index " << donor_offset << "(" << donor_ids[donor_offset] << ")"
+			  << " shares P:" << zgc.m_ownerProcessor << " zone " << zgc.m_ownerZone
+			  << " index " << owner_offset << "(" << owner_ids[owner_offset] << ")" << "\n";
+	      }
+#if 0
+              if (global_offset > owner_global_offset) {
+                assert(zgc.m_donorProcessor != -1);
+                assert(zgc.m_ownerProcessor != -1);
+                if (zgc.m_donorProcessor != my_processor) {
+                  size_t block_local_offset =
+                      owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
+		  //                  owner_block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
+                }
+                else {
+                  size_t  local_offset = owner_block->get_local_node_offset(index[0], index[1], index[2]);
+                  ssize_t owner_local_offset =
+		    donor_block->get_local_node_offset(owner[0], owner[1], owner[2]);
+
+                  if (cell_node_map[local_offset] == ss_max) {
+                    cell_node_map[local_offset] = owner_local_offset;
+                  }
+#if defined(IOSS_DEBUG_OUTPUT)
+                  else {
+                    if (cell_node_map[local_offset] != owner_local_offset) {
+                      std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
+                                << " " << cell_node_map[local_offset] << " " << global_offset << " "
+                                << owner_global_offset << "\n";
+                    }
+                  }
+#endif
+                }
+              }
+#endif
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Now iterate cell_node_map.  If an entry == ss_max, then it is
+  // an owned node and needs to have its index into the unstructed
+  // mesh node map set; otherwise, the value points to the owner
+  // node, so the index at this location should be set to the owner
+  // nodes index.
+  size_t index = 0;
+  for (auto &node : cell_node_map) {
+    if (node == ss_max || node < 0) {
+      node = index++;
+    }
+    else {
+      node = -node;
+    }
+  }
+
+  for (auto &node : cell_node_map) {
+    if (node < 0) {
+      node = cell_node_map[-node];
+    }
+  }
+
+#if 0
+  for (auto &block : blocks) {
+    size_t node_count = block->get_property("node_count").get_int();
+    block->m_blockLocalNodeIndex.resize(node_count);
+
+    size_t beg = block->get_node_offset();
+    size_t end = beg + node_count;
+    for (size_t idx = beg, i = 0; idx < end; idx++) {
+      block->m_blockLocalNodeIndex[i++] = cell_node_map[idx];
+    }
+  }
+#endif
   return index;
 }
 
