@@ -211,7 +211,6 @@ namespace {
     transfer_nodal(region, output_region);
     transfer_connectivity(region, output_region);
     output_sidesets(region, output_region);
-
     output_region.end_mode(Ioss::STATE_MODEL);
 
     if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
@@ -344,7 +343,6 @@ namespace {
         // 'connect' contains 0-based block-local node ids at this point
         // Now, map them to processor-global values...
         // NOTE: "processor-global" is 1..num_node_on_processor
-
         const auto &gnil = block->m_blockLocalNodeIndex;
         if (!gnil.empty()) {
           for (int &i : connect) {
@@ -457,6 +455,21 @@ namespace {
     auto nb = new Ioss::NodeBlock(output_region.get_database(), nbs[0]->name(), num_nodes, degree);
     output_region.add(nb);
 
+    if (output_region.get_database()->needs_shared_node_information()) {
+      // If the "owning_processor" field exists on the input
+      // nodeblock, transfer it and the "ids" field to the output
+      // nodeblock at this time since it is used to determine
+      // per-processor sizes of nodeblocks and nodesets.
+      if (nbs[0]->field_exists("owning_processor")) {
+	std::vector<int> data;
+	nbs[0]->get_field_data("ids", data);
+	nb->put_field_data("ids", data);
+
+	nbs[0]->get_field_data("owning_processor", data);
+	nb->put_field_data("owning_processor", data);
+      }
+    }
+    
     std::cout << "P[" << rank << "] Number of coordinates per node =" << std::setw(12) << degree
               << "\n";
     std::cout << "P[" << rank << "] Number of nodes                =" << std::setw(12) << num_nodes

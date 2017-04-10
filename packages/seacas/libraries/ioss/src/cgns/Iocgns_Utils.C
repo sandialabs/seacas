@@ -540,7 +540,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
     CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
 
 #if defined(IOSS_DEBUG_OUTPUT)
-    std::cout << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
+    std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
               << num_geo << " geometry references\n";
 #endif
     if (num_bc > 0) {
@@ -678,7 +678,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
   return index;
 }
 
-size_t Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
+void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
 {
   // Determine which nodes are shared across processor boundaries.
   // Only need to check on block boundaries.. 
@@ -717,7 +717,7 @@ size_t Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processo
 	
         std::vector<int> i_range = zgc.get_range(1);
         std::vector<int> j_range = zgc.get_range(2);
-        std::vector<int> k_range = zgc.get_range(3);
+	std::vector<int> k_range = zgc.get_range(3);
         for (auto &k : k_range) {
           for (auto &j : j_range) {
             for (auto &i : i_range) {
@@ -727,91 +727,23 @@ size_t Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processo
               // The nodes as 'index' and 'owner' are contiguous and
               // should refer to the same node.
 
-              ssize_t owner_offset = owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
-              ssize_t donor_offset = donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
-
 	      if (my_processor == zgc.m_ownerProcessor) {
-		std::cerr << "P:" << zgc.m_ownerProcessor << " zone " << zgc.m_ownerZone
-			  << " index " << owner_offset << "(" << owner_ids[owner_offset] << ")"
-			  << " shares P:" << zgc.m_donorProcessor << " zone " << zgc.m_donorZone
-			  << " index " << donor_offset << "(" << donor_ids[donor_offset] << ")" << "\n";
+		ssize_t owner_offset = owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
+		owner_block->m_sharedNode.emplace_back(owner_offset, zgc.m_donorProcessor);
 	      }
 	      else {
-		std::cerr << "P:" << zgc.m_donorProcessor << " zone " << zgc.m_donorZone
-			  << " index " << donor_offset << "(" << donor_ids[donor_offset] << ")"
-			  << " shares P:" << zgc.m_ownerProcessor << " zone " << zgc.m_ownerZone
-			  << " index " << owner_offset << "(" << owner_ids[owner_offset] << ")" << "\n";
+		ssize_t donor_offset = donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+		donor_block->m_sharedNode.emplace_back(donor_offset, zgc.m_ownerProcessor);
 	      }
-#if 0
-              if (global_offset > owner_global_offset) {
-                assert(zgc.m_donorProcessor != -1);
-                assert(zgc.m_ownerProcessor != -1);
-                if (zgc.m_donorProcessor != my_processor) {
-                  size_t block_local_offset =
-                      owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
-		  //                  owner_block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
-                }
-                else {
-                  size_t  local_offset = owner_block->get_local_node_offset(index[0], index[1], index[2]);
-                  ssize_t owner_local_offset =
-		    donor_block->get_local_node_offset(owner[0], owner[1], owner[2]);
-
-                  if (cell_node_map[local_offset] == ss_max) {
-                    cell_node_map[local_offset] = owner_local_offset;
-                  }
-#if defined(IOSS_DEBUG_OUTPUT)
-                  else {
-                    if (cell_node_map[local_offset] != owner_local_offset) {
-                      std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
-                                << " " << cell_node_map[local_offset] << " " << global_offset << " "
-                                << owner_global_offset << "\n";
-                    }
-                  }
-#endif
-                }
-              }
-#endif
             }
           }
         }
       }
     }
-  }
-
-  // Now iterate cell_node_map.  If an entry == ss_max, then it is
-  // an owned node and needs to have its index into the unstructed
-  // mesh node map set; otherwise, the value points to the owner
-  // node, so the index at this location should be set to the owner
-  // nodes index.
-  size_t index = 0;
-  for (auto &node : cell_node_map) {
-    if (node == ss_max || node < 0) {
-      node = index++;
-    }
-    else {
-      node = -node;
-    }
-  }
-
-  for (auto &node : cell_node_map) {
-    if (node < 0) {
-      node = cell_node_map[-node];
-    }
-  }
-
-#if 0
-  for (auto &block : blocks) {
-    size_t node_count = block->get_property("node_count").get_int();
-    block->m_blockLocalNodeIndex.resize(node_count);
-
-    size_t beg = block->get_node_offset();
-    size_t end = beg + node_count;
-    for (size_t idx = beg, i = 0; idx < end; idx++) {
-      block->m_blockLocalNodeIndex[i++] = cell_node_map[idx];
-    }
-  }
+#if defined(IOSS_DEBUG_OUTPUT)
+    std::cerr << "P" << my_processor << ", Block " << owner_block->name() << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
 #endif
-  return index;
+  }
 }
 
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
