@@ -204,17 +204,13 @@ namespace Ioss {
     // Put this fields data into the specified std::vector space.
     // Returns number of entities for which the field was read.
     // Resizes 'data' to size needed to hold all values.
-    int get_field_data(const std::string &field_name, std::vector<char> &data) const;
-    int get_field_data(const std::string &field_name, std::vector<double> &data) const;
-    int get_field_data(const std::string &field_name, std::vector<int> &data) const;
-    int get_field_data(const std::string &field_name, std::vector<int64_t> &data) const;
-    int get_field_data(const std::string &field_name, std::vector<Complex> &data) const;
+    template <typename T>
+    int get_field_data(const std::string &field_name, std::vector<T> &data) const;
 
-    int put_field_data(const std::string &field_name, std::vector<char> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<double> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<int> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<int64_t> &data) const;
-    int put_field_data(const std::string &field_name, std::vector<Complex> &data) const;
+    template <typename T>
+    int put_field_data(const std::string &field_name, const std::vector<T> &data) const;
+    template <typename T>
+    int put_field_data(const std::string &field_name, std::vector<T> &data) const;
 
 #ifdef SEACAS_HAVE_KOKKOS
     // Get and put this field's data into the specified Kokkos::View.
@@ -429,6 +425,74 @@ inline int Ioss::GroupingEntity::field_describe(Ioss::Field::RoleType role, Name
  */
 inline size_t Ioss::GroupingEntity::field_count() const { return fields.count(); }
 
+/** \brief Read type 'T' field data from the database file into memory using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to read.
+ *  \param[out] data The data.
+ *  \returns The number of values read.
+ *
+ */
+template <typename T>
+int Ioss::GroupingEntity::get_field_data(const std::string &field_name, std::vector<T> &data) const
+{
+  verify_field_exists(field_name, "input");
+
+  Ioss::Field field = get_field(field_name);
+  field.check_type(Ioss::Field::get_field_type(T(0)));
+
+  data.resize(field.raw_count() * field.raw_storage()->component_count());
+  size_t data_size = data.size() * sizeof(T);
+  int    retval    = internal_get_field_data(field, TOPTR(data), data_size);
+
+  // At this point, transform the field if specified...
+  if (retval >= 0) {
+    field.transform(TOPTR(data));
+  }
+
+  return retval;
+}
+
+/** \brief Write type 'T' field data from memory into the database file using a std::vector.
+ *
+ *  \param[in] field_name The name of the field to write.
+ *  \param[in] data The data.
+ *  \returns The number of values written.
+ *
+ */
+template <typename T>
+int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
+                                         const std::vector<T> &data) const
+{
+  verify_field_exists(field_name, "output");
+
+  Ioss::Field field = get_field(field_name);
+  field.check_type(Ioss::Field::get_field_type(T(0)));
+  size_t data_size = data.size() * sizeof(T);
+  if (field.has_transform()) {
+    // Need non-const data since the transform will change the users data.
+    std::vector<T> nc_data(data);
+    field.transform(nc_data.data());
+    return internal_put_field_data(field, nc_data.data(), data_size);
+  }
+  else {
+    T *my_data = const_cast<T *>(data.data());
+    return internal_put_field_data(field, my_data, data_size);
+  }
+}
+
+template <typename T>
+int Ioss::GroupingEntity::put_field_data(const std::string &field_name, std::vector<T> &data) const
+{
+  verify_field_exists(field_name, "output");
+
+  Ioss::Field field = get_field(field_name);
+  field.check_type(Ioss::Field::get_field_type(T(0)));
+  size_t data_size = data.size() * sizeof(T);
+  T *    my_data   = const_cast<T *>(data.data());
+  field.transform(my_data);
+  return internal_put_field_data(field, my_data, data_size);
+}
+
 #ifdef SEACAS_HAVE_KOKKOS
 
 /** \brief Read field data from the database file into memory using a 1-D Kokkos:::View.
@@ -441,7 +505,7 @@ inline size_t Ioss::GroupingEntity::field_count() const { return fields.count();
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
@@ -486,7 +550,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
                                          Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;
@@ -548,7 +612,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &     field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
@@ -586,7 +650,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::put_field_data(const std::string &     field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
                                          Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;

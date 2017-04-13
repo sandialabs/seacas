@@ -74,6 +74,10 @@ void IOShell::Interface::enroll_options()
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue, "Use 64-bit integers on output database",
                   nullptr);
 
+  options_.enroll("32-bit", Ioss::GetLongOption::NoValue, "Use 32-bit integers on output database."
+		  " This is the default unless input database uses 64-bit integers",
+                  nullptr);
+
   options_.enroll("float", Ioss::GetLongOption::NoValue,
                   "Use 32-bit floating point values on output database; default is 64-bits",
                   nullptr);
@@ -241,6 +245,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("64-bit") != nullptr) {
     ints_64_bit = true;
+  }
+
+  if (options_.retrieve("32-bit") != nullptr) {
+    ints_32_bit = true;
   }
 
   if (options_.retrieve("float") != nullptr) {

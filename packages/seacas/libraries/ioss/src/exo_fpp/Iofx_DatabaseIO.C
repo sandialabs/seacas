@@ -429,7 +429,17 @@ namespace Iofx {
     else {
       // If the first write for this file, create it...
       if (int_byte_size_api() == 8) {
-        mode |= EX_ALL_INT64_DB;
+	// Check whether client actually wants 4-byte output on db
+	// - If they specified INTEGER_SIZE_DB and the size isn't 8,
+	//   then don't change mode and use the default 4-byte output.
+	if (properties.exists("INTEGER_SIZE_DB")) {
+	  if (properties.get("INTEGER_SIZE_DB").get_int() == 8) {
+	    mode |= EX_ALL_INT64_DB;
+	  }
+	}
+	else {
+	  mode |= EX_ALL_INT64_DB;
+	}
       }
       exodusFilePtr = ex_create(decoded_filename().c_str(), mode, &cpu_word_size, &dbRealWordSize);
     }

@@ -41,7 +41,7 @@ build SEACAS.
  * [CGNS](#cgns) -- experimental optional
 
 #### Zoltan
-A snapshot of [zoltan_distrib_v3.82.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
+A snapshot of [zoltan_distrib_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 #### HDF5
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
@@ -52,10 +52,10 @@ large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5. 
 
    * Download HDF5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside `seacas/TPL/hdf5`
-   * untar it, creating a directory will will refer to as `hdf5-X.X.X`
+   * untar it
    * `cd` to that directory and enter the command:
     ```
-    ./configure --prefix=${ACCESS} --enable-shared --enable-production --enable-debug=no --enable-static-exec
+    sh ../runconfigure.sh
     ```
    * `make && make install`
 
@@ -64,30 +64,25 @@ The most recent released version is recommended. For use with Exodus, some local
 
  * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
- * `tar zxvf netcdf-4.4.1.tar.gz`
- * Modify the following defines in seacas/TPL/netcdf/netcdf-4.4.1/include/netcdf.h.
+ * `tar zxvf netcdf-4.4.1.1.tar.gz`
+ * Modify the following defines in seacas/TPL/netcdf/netcdf-4.4.1.1/include/netcdf.h.
 
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
- * `cd netcdf-4.4.1` and enter the command:
-    ```
-    ./configure --enable-netcdf-4  --enable-shared \
-      --disable-fsync --prefix=${ACCESS} \
-      --disable-dap --disable-cdmremote
-    ```
+ * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
+ * `cd netcdf-4.4.1.1` and enter the command:
 
- * If the configure step complains about not being able to find the
-   HDF5 library, you may need to do the following and then redo the
-   configure step
     ```
-    CFLAGS="-I${HDF5_ROOT}/include"; export CFLAGS
-    LDFLAGS="-L${HDF5_ROOT}/lib   "; export LDFLAGS
+    mkdir build
+    cd build
+	sh ../../runcmake.sh
     ```
 
  * `make && make install`
+
 
 #### MatIO
 The MatIO library is used in the exo2mat and mat2exo programs which convert an exodus file to and from a MATLAB binary file.  To use this do:
@@ -96,11 +91,10 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
  * `cd TPL/matio`
  * `git clone https://github.com/tbeu/matio.git`
  * `cd matio` and enter the command:
+ 
     ```
     ./autogen.sh
-    # The -L is to find the hdf5 library...
-    export LDFLAGS="-L${ACCESS}/lib"
-    ./configure --with-hdf5=${ACCESS} --enable-mat73 --enable-shared --prefix=${ACCESS}
+	sh ../runconfigure.sh
     ```
     
  * `make && make install`
@@ -109,15 +103,17 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
 
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
-   * Download the most recent version of the library from ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2.
+ * Download the most recent version of the library from ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2.
 
     ```
     cd TPL/parallel
     tar jxvf /path/to/parallel-latest.tar.bz2
     cd parallel-20150522
-    ./configure --prefix=${ACCESS}
+	sh ../runconfigure.sh
     ```
-    
+
+ *  `make && make install`
+
 #### CGNS
 Experimental support for CGNS in the IOSS library is being added.  To use this capability, you will need to download and install the CGNS library:
 

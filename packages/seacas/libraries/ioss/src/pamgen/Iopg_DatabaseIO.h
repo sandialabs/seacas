@@ -89,8 +89,15 @@ namespace Iopg {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO();
 
-    int64_t node_global_to_local(int64_t /* global */, bool /* must_exist */) const { return 0; }
-    int64_t element_global_to_local(int64_t /* global */) const { return 0; }
+    int64_t node_global_to_local(int64_t global, bool must_exist) const override
+    {
+      return nodeMap.global_to_local(global, must_exist);
+    }
+
+    int64_t element_global_to_local(int64_t global) const override
+    {
+      return elemMap.global_to_local(global);
+    }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -188,7 +195,7 @@ namespace Iopg {
                                size_t data_size) const;
 
     int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-			       void *data, size_t data_size) const
+                               void *data, size_t data_size) const
     {
       return 0;
     }
@@ -233,7 +240,7 @@ namespace Iopg {
     int64_t put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field, void *data,
                                size_t data_size) const;
     int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-			       void *data, size_t data_size) const
+                               void *data, size_t data_size) const
     {
       return 0;
     }
