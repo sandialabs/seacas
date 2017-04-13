@@ -9,10 +9,6 @@ INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
 SET(SEACASProj_ENABLE_CXX11_DEFAULT ON)
 SET(SEACASProj_ENABLE_Zoltan_DEFAULT ON)
 
-IF(ADD_FORMAT_TARGET)
-add_subdirectory(git-cmake-format)
-ENDIF()
-
 # Define the TriBITS minimum required CMake version
 SET(TRIBITS_CMAKE_MINIMUM_REQUIRED 2.8.11)
 
@@ -29,6 +25,7 @@ PROJECT(${PROJECT_NAME} NONE)
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tribits/TriBITS.cmake)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${${PROJECT_NAME}_TRIBITS_DIR}/common_tpls/utils)
 
 # Make Trilinos create <Package>Config.cmake files by default
 SET(${PROJECT_NAME}_ENABLE_INSTALL_CMAKE_CONFIG_FILES_DEFAULT ON)

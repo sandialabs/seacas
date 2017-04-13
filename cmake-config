@@ -4,43 +4,47 @@ EXTRA_ARGS=$@
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 MPI=OFF
 
+### Switch for Debug or Release build:
+BUILD_TYPE=Release
+#BUILD_TYPE=Debug
+
+### The following assumes you are building in a subdirectory of ACCESS Root
+### If not, then define "ACCESS" to point to the root of the SEACAS source code.
+ACCESS=$(cd ..; pwd)
+
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then change the "ON"
+### below to "OFF". It will disable blot and fastq
+HAVE_X11=ON
+
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${ACCESS}
+
+### TPLs -- 
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+HAVE_NETCDF=ON
+HAVE_MATIO=ON
+HAVE_CGNS=ON
+
+NETCDF_PATH=${ACCESS}
+MATIO_PATH=${ACCESS}
+HDF5_PATH=${ACCESS}
+CGNS_PATH=${ACCESS}
+
+### Define to NO to *enable* exodus deprecated functions
+OMIT_DEPRECATED_CODE="YES"
+
 ### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
 KOKKOS=OFF
 
 ### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
 CUDA=OFF
 
+### Change this to point to the compilers you want to use
 COMPILER="gnu"
 #COMPILER="clang"
-
-### Switch for Debug or Release build:
-BUILD_TYPE=Release
-#BUILD_TYPE=Debug
-
-### Define to YES to *disable* all exodus deprecated functions
-OMIT_DEPRECATED_CODE="NO"
-
-### If you do not have the X11 developer package on your system
-### which provides X11/Xlib.h and the libX11, then you will need
-### to add the line below.  It will disable blot and fastq
-#-D TPL_ENABLE_X11=OFF \
-
-
-### The following assumes you are building in a subdirectory of ACCESS Root
-ACCESS=$(cd ..; pwd)
-
-### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
-INSTALL_PATH=${ACCESS}
-
-### Make sure these point to the locations to find the libraries and includes in lib and include
-### subdirectories of the specified paths.
-### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${ACCESS}
-MATIO_PATH=${ACCESS}
-HDF5_PATH=${ACCESS}
-CGNS_PATH=${ACCESS}
-
-### Change this to point to the compilers you want to use
 if [ "$MPI" == "ON" ]
 then
   MPI_EXEC=`which mpiexec`
@@ -85,8 +89,6 @@ else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
 
-hostname=`hostname -s`
-
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
@@ -108,16 +110,17 @@ cmake  \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
--D TPL_ENABLE_Netcdf:BOOL=ON \
--D TPL_ENABLE_Matio:BOOL=ON \
--D TPL_ENABLE_MPI=${MPI} \
--D TPL_ENABLE_Pamgen=OFF \
--D TPL_ENABLE_CGNS:BOOL=ON \
+-D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
+-D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
+-D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
+-D TPL_ENABLE_MPI:BOOL=${MPI} \
+-D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
 ${KOKKOS_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
--D NetCDF_DIR:PATH=${NETCDF_PATH} \
+-D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \

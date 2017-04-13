@@ -6,9 +6,10 @@ MPI="${MPI:-OFF}"
 
 echo "MPI set to ${MPI}"
 
+### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
-  echo "ERROR: Please set the ACCESS environment variable before executing this script."
-  exit
+  ACCESS=$(cd ../../..; pwd)
+  echo "ACCESS set to ${ACCESS}"
 fi
 
 if [ "$MPI" == "ON" ]
@@ -62,3 +63,9 @@ $EXTRA_ARGS \
 ..
 
 fi
+
+echo ""
+echo "     MPI: ${MPI}"
+echo "COMPILER: ${CC}"
+echo "  ACCESS: ${ACCESS}"
+echo ""
