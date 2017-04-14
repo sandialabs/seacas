@@ -108,6 +108,7 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
   const char *dnumvar;
   int         status;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval  = 0; /* clear error code */

@@ -82,6 +82,7 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
   char   errmsg[MAX_ERR_LENGTH];
   int    fill = NC_FILL_CHAR;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

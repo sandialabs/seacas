@@ -67,6 +67,7 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
   const char *dim_map_size;
   const char *dim_num_maps;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   switch (map_type) {

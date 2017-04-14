@@ -34,10 +34,11 @@
  */
 
 #include "exodusII.h" // for exoptval, MAX_ERR_LENGTH, etc
-#include "netcdf.h"   // for NC_EAXISTYPE, NC_EBADDIM, etc
-#include <stdio.h>    // for fprintf, stderr, fflush
-#include <stdlib.h>   // for exit
-#include <string.h>   // for strcpy
+#include "exodusII_int.h"
+#include "netcdf.h" // for NC_EAXISTYPE, NC_EBADDIM, etc
+#include <stdio.h>  // for fprintf, stderr, fflush
+#include <stdlib.h> // for exit
+#include <string.h> // for strcpy
 
 /*!
 \fn{void ex_err(const char *module_name, const char *message, int err_num)}
@@ -105,14 +106,15 @@ static int  last_err_num;
 
 void ex_err(const char *module_name, const char *message, int err_num)
 {
+  EX_FUNC_ENTER();
   if (err_num == 0) { /* zero is no error, ignore and return */
-    return;
+    EX_FUNC_VOID();
   }
 
   else if (err_num == EX_PRTLASTMSG) {
     fprintf(stderr, "[%s] %s\n", last_pname, last_errmsg);
     fprintf(stderr, "    exerrval = %d\n", last_err_num);
-    return;
+    EX_FUNC_VOID();
   }
 
   else if (err_num == EX_NULLENTITY) {
@@ -139,13 +141,16 @@ void ex_err(const char *module_name, const char *message, int err_num)
   if ((err_num > 0) && (exoptval & EX_ABORT)) {
     exit(err_num);
   }
+  EX_FUNC_VOID();
 }
 
 void ex_get_err(const char **msg, const char **func, int *err_num)
 {
+  EX_FUNC_ENTER();
   (*msg)     = last_errmsg;
   (*func)    = last_pname;
   (*err_num) = last_err_num;
+  EX_FUNC_VOID();
 }
 
 const char *ex_strerror(int err_num)

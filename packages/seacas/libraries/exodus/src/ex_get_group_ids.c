@@ -51,6 +51,7 @@ int ex_get_group_ids(int parent_id, int *num_groups, int *group_ids)
 #if NC_HAS_HDF5
   int status;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(parent_id);
 
   status = nc_inq_grps(parent_id, num_groups, group_ids);
@@ -63,6 +64,7 @@ int ex_get_group_ids(int parent_id, int *num_groups, int *group_ids)
   }
   EX_FUNC_LEAVE(EX_NOERR);
 #else
+  EX_FUNC_ENTER();
   exerrval = NC_ENOTNC4;
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
                                    "version--not netcdf4");

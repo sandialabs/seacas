@@ -70,7 +70,6 @@ static struct ex_file_item *file_list = NULL;
 
 struct ex_file_item *ex_find_file_item(int exoid)
 {
-  EX_FUNC_ENTER();
   /* Find base filename in case exoid refers to a group */
   int                  base_exoid = (unsigned)exoid & EX_FILE_ID_MASK;
   struct ex_file_item *ptr        = file_list;
@@ -80,12 +79,11 @@ struct ex_file_item *ex_find_file_item(int exoid)
     }
     ptr = ptr->next;
   }
-  EX_FUNC_LEAVE(ptr);
+  return (ptr);
 }
 
 void ex_check_valid_file_id(int exoid)
 {
-  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   if (!file) {
@@ -96,7 +94,6 @@ void ex_check_valid_file_id(int exoid)
              "ERROR: invalid file id %d. Does not refer to an open exodus file.", exoid);
     ex_err("ex_check_valid_file_id", errmsg, exerrval);
   }
-  EX_FUNC_LEAVE_VOID();
 }
 
 int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
@@ -279,7 +276,7 @@ void ex_conv_exit(int exoid)
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: failure to clear file id %d - not in list.", exoid);
     ex_err("ex_conv_exit", errmsg, EX_MSG);
     exerrval = EX_BADFILEID;
-    EX_FUNC_LEAVE_VOID();
+    EX_FUNC_VOID();
   }
 
   if (prev) {
@@ -290,7 +287,7 @@ void ex_conv_exit(int exoid)
   }
 
   free(file);
-  EX_FUNC_LEAVE_VOID();
+  EX_FUNC_VOID();
 }
 
 /*............................................................................*/
@@ -304,7 +301,6 @@ nc_type nc_flt_code(int exoid)
    *
    * "exoid" is some integer which uniquely identifies the file of interest.
    */
-  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -314,9 +310,9 @@ nc_type nc_flt_code(int exoid)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for nc_flt_code().", exoid);
     ex_err("nc_flt_code", errmsg, exerrval);
-    EX_FUNC_LEAVE((nc_type)-1);
+    return ((nc_type)-1);
   }
-  EX_FUNC_LEAVE(file->netcdf_type_code);
+  return (file->netcdf_type_code);
 }
 
 int ex_int64_status(int exoid)
@@ -451,7 +447,6 @@ int ex_comp_ws(int exoid)
    * the conversion facility for this file id (exoid).
    * \param exoid  integer which uniquely identifies the file of interest.
    */
-  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -461,10 +456,10 @@ int ex_comp_ws(int exoid)
     exerrval = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d", exoid);
     ex_err("ex_comp_ws", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
   /* Stored as 0 for 4-byte; 1 for 8-byte */
-  EX_FUNC_LEAVE((file->user_compute_wordsize + 1) * 4);
+  return ((file->user_compute_wordsize + 1) * 4);
 }
 
 int ex_is_parallel(int exoid)

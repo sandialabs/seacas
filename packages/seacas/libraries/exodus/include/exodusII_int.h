@@ -101,21 +101,29 @@ extern "C" {
 #define EX_FILE_ID_MASK (0xffff0000) /* Must match FILE_ID_MASK in netcdf nc4internal.h */
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
-#define EX_FUNC_ENTER() /* Nothing so far */
 #if 0
+EXODUS_EXPORT int indent;
+#define EX_FUNC_ENTER()                                                                            \
+  do {                                                                                             \
+    fprintf(stderr, "%d Enter: %s\n", indent, __func__);                                           \
+    indent++;                                                                                      \
+  } while (0)
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
-    fprintf(stderr, "%s\n", __func__);                                                             \
+    indent--;                                                                                      \
+    fprintf(stderr, "%d Leave: %s\n", indent, __func__);                                           \
     return error;                                                                                  \
   } while (0)
-#define EX_FUNC_LEAVE_VOID()                                                                       \
+#define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
-    fprintf(stderr, "%s\n", __func__);                                                             \
+    indent--;                                                                                      \
+    fprintf(stderr, "%d Leave: %s\n", indent, __func__);                                           \
     return;                                                                                        \
   } while (0)
 #else
+#define EX_FUNC_ENTER() /* Nothing so far */
 #define EX_FUNC_LEAVE(error) return error
-#define EX_FUNC_LEAVE_VOID() return
+#define EX_FUNC_VOID() return
 #endif
 /*
  * This file contains defined constants that are used internally in the

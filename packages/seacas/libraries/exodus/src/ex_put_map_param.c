@@ -75,6 +75,7 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
   int  int_type = NC_INT;
   int  fill     = NC_FILL_CHAR;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

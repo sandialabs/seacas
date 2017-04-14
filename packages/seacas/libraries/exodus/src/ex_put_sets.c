@@ -70,6 +70,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
 
   int int_type;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);

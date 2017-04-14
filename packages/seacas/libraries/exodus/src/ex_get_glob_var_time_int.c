@@ -109,6 +109,9 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
   size_t start[2], count[2];
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   /* Check that times are in range */

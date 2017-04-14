@@ -44,6 +44,7 @@ int ex_get_sets(int exoid, size_t set_count, struct ex_set *sets)
   int    status = EX_NOERR;
   int    stat;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   for (i = 0; i < set_count; i++) {

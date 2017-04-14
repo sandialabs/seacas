@@ -75,7 +75,7 @@ static int ex_put_var_names_int(int exoid, char *tname, char *dnumvar, char *vna
                "ERROR: failed to locate number of %s variables in file id %d", tname, exoid);
       ex_err("ex_put_variable_names", errmsg, exerrval);
     }
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vnames, varid)) != NC_NOERR) {
@@ -90,9 +90,9 @@ static int ex_put_var_names_int(int exoid, char *tname, char *dnumvar, char *vna
                tname, exoid);
       ex_err("ex_put_variable_names", errmsg, exerrval);
     }
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 
 /*!
@@ -159,9 +159,10 @@ int ex_put_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   int  varid, status;
   char errmsg[MAX_ERR_LENGTH];
 
-  exerrval = 0; /* clear error code */
-
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
+
+  exerrval = 0; /* clear error code */
 
   switch (obj_type) {
   case EX_GLOBAL:

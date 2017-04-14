@@ -86,6 +86,7 @@ int ex_get_all_times(int exoid, void *time_values)
   int  status;
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0;

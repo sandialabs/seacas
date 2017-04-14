@@ -69,6 +69,7 @@ int ex_get_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_id set_id
   char  errmsg[MAX_ERR_LENGTH];
   char *factptr = NULL;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

@@ -89,7 +89,7 @@ static int check_valid_side(size_t side_num, size_t max_sides, char *topology, i
     ex_err("ex_get_side_set_node_list", errmsg, exerrval);
     err_stat = EX_FATAL;
   }
-  EX_FUNC_LEAVE(err_stat);
+  return (err_stat);
 }
 
 static void get_nodes(int exoid, void_int *to, size_t ito, void_int *from, size_t ifrom)
@@ -243,6 +243,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

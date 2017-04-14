@@ -96,7 +96,9 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   const char *ent_type = NULL;
   const char *var_name = NULL;
   const char *ent_size = NULL;
-  exerrval             = 0; /* clear error code */
+
+  EX_FUNC_ENTER();
+  exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);
 

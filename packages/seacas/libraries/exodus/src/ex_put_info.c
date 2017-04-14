@@ -110,6 +110,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
 
   int rootid = exoid & EX_FILE_ID_MASK;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

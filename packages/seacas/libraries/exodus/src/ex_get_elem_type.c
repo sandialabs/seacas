@@ -72,6 +72,7 @@ int ex_get_elem_type(int exoid, ex_entity_id elem_blk_id, char *elem_type)
 
   /*****************************************************************************/
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   /* inquire id's of previously defined dimensions */

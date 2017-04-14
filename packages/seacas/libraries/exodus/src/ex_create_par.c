@@ -176,6 +176,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   /* Contains a 1 in all bits corresponding to file modes */
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
 #if !NC_HAS_PARALLEL

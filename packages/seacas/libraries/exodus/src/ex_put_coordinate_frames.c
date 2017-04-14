@@ -73,6 +73,8 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   int  i;                      /* general indices */
   int  int_type;
 
+  EX_FUNC_ENTER();
+
   if (exoid < 0) {
     return exoid;
   }

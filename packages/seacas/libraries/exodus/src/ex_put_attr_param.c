@@ -78,6 +78,7 @@ int ex_put_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   int         numattrdim;
   int         fill = NC_FILL_CHAR;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   /* Determine index of obj_id in obj_type id array */

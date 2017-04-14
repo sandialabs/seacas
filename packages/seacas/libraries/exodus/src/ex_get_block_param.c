@@ -79,7 +79,11 @@ int ex_get_block_param(int exoid, ex_block *block)
   const char *ablknam;
   const char *vblkcon;
 
-  struct ex_file_item *file = ex_find_file_item(exoid);
+  struct ex_file_item *file = NULL;
+
+  EX_FUNC_ENTER();
+
+  file = ex_find_file_item(exoid);
   if (!file) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;

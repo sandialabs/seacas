@@ -71,6 +71,7 @@ int ex_get_node_cmap(int exoid, ex_entity_id map_id, void_int *node_ids, void_in
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

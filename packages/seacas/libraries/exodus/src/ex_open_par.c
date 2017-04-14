@@ -146,6 +146,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   /* set error handling mode to no messages, non-fatal errors */

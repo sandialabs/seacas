@@ -67,6 +67,9 @@ int ex_get_glob_vars_int(int exoid, int time_step, int num_glob_vars, void *glob
   size_t start[2], count[2];
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   /* inquire previously defined variable */

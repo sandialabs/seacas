@@ -72,6 +72,7 @@ int ex_put_variable_name(int exoid, ex_entity_type obj_type, int var_num, const 
   char        errmsg[MAX_ERR_LENGTH];
   const char *vname;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);

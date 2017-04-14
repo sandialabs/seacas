@@ -98,13 +98,13 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s name array in file id %d", type,
                exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status); /* exit define mode and return */
+      return (status); /* exit define mode and return */
     }
 #if NC_HAS_HDF5
     nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
   }
-  EX_FUNC_LEAVE(NC_NOERR);
+  return (NC_NOERR);
 }
 
 static int ex_write_object_params(int exoid, const char *type, const char *dimension_name,
@@ -124,7 +124,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d", type,
                exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status); /* exit define mode and return */
+      return (status); /* exit define mode and return */
     }
     /* ...and some variables */
     /* element block id status array */
@@ -134,7 +134,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s status array in file id %d",
                type, exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status); /* exit define mode and return */
+      return (status); /* exit define mode and return */
     }
 
     /* type id array */
@@ -147,7 +147,7 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s id array in file id %d", type,
                exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status); /* exit define mode and return */
+      return (status); /* exit define mode and return */
     }
 
     /*   store property name as attribute of property array variable */
@@ -156,10 +156,10 @@ static int ex_write_object_params(int exoid, const char *type, const char *dimen
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s property name %s in file id %d",
                type, "ID", exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status);
+      return (status);
     }
   }
-  EX_FUNC_LEAVE(NC_NOERR);
+  return (NC_NOERR);
 }
 
 static int ex_write_map_params(int exoid, const char *map_name, const char *map_dim_name,
@@ -182,7 +182,7 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of %ss in file id %d",
                map_name, exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status); /* exit define mode and return */
+      return (status); /* exit define mode and return */
     }
 
     dim[0] = *map_dimension;
@@ -193,7 +193,7 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s id array in file id %d",
                map_name, exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(status); /* exit define mode and return */
+      return (status); /* exit define mode and return */
     }
 
     /*   store property name as attribute of property array variable */
@@ -202,10 +202,10 @@ static int ex_write_map_params(int exoid, const char *map_name, const char *map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s property name %s in file id %d",
                map_name, "ID", exoid);
       ex_err("ex_put_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
   }
-  EX_FUNC_LEAVE(NC_NOERR);
+  return (NC_NOERR);
 }
 
 static void invalidate_id_status(int exoid, const char *var_stat, const char *var_id, int count,
@@ -253,6 +253,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 #endif
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   int rootid = exoid & EX_FILE_ID_MASK;
 
   ex_check_valid_file_id(exoid);

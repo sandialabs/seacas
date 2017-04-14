@@ -39,10 +39,9 @@
 #include <stdio.h>
 
 /*! \cond INTERNAL */
-int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_name,
-                          char *variable_name)
+static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_name,
+                                 char *variable_name)
 {
-  EX_FUNC_ENTER();
   int status;
   int dimid;
   int varid;
@@ -66,7 +65,7 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
                "ERROR: failed to define number of %s variables in file id %d", type_name, exoid);
       ex_err("ex_put_variable_param", errmsg, exerrval);
     }
-    EX_FUNC_LEAVE(EX_FATAL); /* exit define mode and return */
+    return (EX_FATAL); /* exit define mode and return */
   }
 
   /* Now define type_name variable name variable */
@@ -74,7 +73,7 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get string length in file id %d", exoid);
     ex_err("ex_put_variable_param", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
 
   dims[0] = dimid;
@@ -92,12 +91,12 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
                type_name, exoid);
       ex_err("ex_put_variable_param", errmsg, exerrval);
     }
-    EX_FUNC_LEAVE(EX_FATAL); /* exit define mode and return */
+    return (EX_FATAL); /* exit define mode and return */
   }
 #if NC_HAS_HDF5
   nc_def_var_fill(exoid, varid, 0, &fill);
 #endif
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 /*! \endcond */
 
@@ -161,9 +160,10 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   char errmsg[MAX_ERR_LENGTH];
   int  status;
 
-  exerrval = 0; /* clear error code */
-
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
+
+  exerrval = 0; /* clear error code */
 
   /* if no variables are to be stored, return with warning */
   if (num_vars == 0) {

@@ -101,6 +101,8 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
   size_t num_maps[sizeof(dim_num_maps) / sizeof(dim_num_maps[0])];
   size_t num_map_dims = sizeof(dim_num_maps) / sizeof(dim_num_maps[0]);
 
+  EX_FUNC_ENTER();
+
   if (ids_int64) {
     edge_id_int64 = param->edge_blk_id;
     face_id_int64 = param->face_blk_id;

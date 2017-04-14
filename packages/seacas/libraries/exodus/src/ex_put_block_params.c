@@ -87,6 +87,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
   const char *dnfpe       = NULL;
   int         fill        = NC_FILL_CHAR;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

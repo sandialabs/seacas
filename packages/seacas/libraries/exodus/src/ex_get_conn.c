@@ -84,6 +84,7 @@ int ex_get_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, void_in
   const char *vedgeconn  = NULL;
   const char *vfaceconn  = NULL;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   /* Should we warn if edgeconn or faceconn are non-NULL?

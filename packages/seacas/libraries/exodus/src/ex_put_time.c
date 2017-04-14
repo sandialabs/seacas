@@ -84,6 +84,8 @@ int ex_put_time(int exoid, int time_step, const void *time_value)
   size_t start[1];
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
+
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);

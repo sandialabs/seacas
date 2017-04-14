@@ -110,6 +110,8 @@ int ex_put_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
   size_t start[3], count[3];
   char   errmsg[MAX_ERR_LENGTH];
 
+  ex_check_valid_file_id(exoid);
+
   exerrval = 0; /* clear error code */
 
   if (ex_large_model(exoid) == 0) {
@@ -119,7 +121,7 @@ int ex_put_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variables in file id %d",
                exoid);
       ex_err("ex_put_nodal_var", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_WARN);
+      return (EX_WARN);
     }
     start[0] = --time_step;
     start[1] = --nodal_var_index;
@@ -137,7 +139,7 @@ int ex_put_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
                nodal_var_index, exoid);
       ex_err("ex_put_nodal_var", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_WARN);
+      return (EX_WARN);
     }
 
     start[0] = --time_step;
@@ -160,7 +162,7 @@ int ex_put_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store nodal variables in file id %d", exoid);
     ex_err("ex_put_nodal_var", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }

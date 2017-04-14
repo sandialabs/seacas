@@ -88,14 +88,14 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
                "Warning: no variables allowed for NULL block %" PRId64 " in file id %d", obj_id,
                exoid);
       ex_err("ex_put_var", errmsg, EX_NULLENTITY);
-      EX_FUNC_LEAVE(EX_WARN);
+      return (EX_WARN);
     }
 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in %s array in file id %d",
              ex_name_of_object(var_type), obj_id, VOBJID, exoid);
     ex_err("ex_put_var", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, ex_name_var_of_object(var_type, var_index, obj_id_ndx),
@@ -107,13 +107,13 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
         status = ex_get_dimension(exoid, DNUMOBJ, ex_name_of_object(var_type), &num_obj, &dimid,
                                   "ex_put_var");
         if (status != NC_NOERR) {
-          EX_FUNC_LEAVE(status);
+          return (status);
         }
 
         status = ex_get_dimension(exoid, DNUMOBJVAR, ex_name_of_object(var_type), &num_obj_var,
                                   &dimid, "ex_put_var");
         if (status != NC_NOERR) {
-          EX_FUNC_LEAVE(status);
+          return (status);
         }
 
         if (!(obj_var_truth_tab = malloc(num_obj * num_obj_var * sizeof(int)))) {
@@ -122,7 +122,7 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
                                            "truth table in file id %d",
                    ex_name_of_object(var_type), exoid);
           ex_err("ex_put_var", errmsg, exerrval);
-          EX_FUNC_LEAVE(EX_FATAL);
+          return (EX_FATAL);
         }
 
         /*   read in the TNAME variable truth table */
@@ -131,7 +131,7 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get truth table from file id %d",
                    exoid);
           ex_err("ex_put_var", errmsg, exerrval);
-          EX_FUNC_LEAVE(EX_FATAL);
+          return (EX_FATAL);
         }
 
         if (obj_var_truth_tab[num_obj_var * (obj_id_ndx - 1) + var_index - 1] == 0L) {
@@ -141,7 +141,7 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
               errmsg, MAX_ERR_LENGTH, "ERROR: Invalid %s variable %d, %s %" PRId64 " in file id %d",
               ex_name_of_object(var_type), var_index, ex_name_of_object(var_type), obj_id, exoid);
           ex_err("ex_put_var", errmsg, exerrval);
-          EX_FUNC_LEAVE(EX_FATAL);
+          return (EX_FATAL);
         }
         free(obj_var_truth_tab);
       }
@@ -162,7 +162,7 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
         exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
         ex_err("ex_put_var", errmsg, exerrval);
-        EX_FUNC_LEAVE(EX_FATAL);
+        return (EX_FATAL);
       }
 
       /* define netCDF variable to store TNAME variable values */
@@ -186,7 +186,7 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
                  ex_name_of_object(var_type),
                  ex_name_var_of_object(var_type, var_index, obj_id_ndx), exoid);
         ex_err("ex_put_var", errmsg, exerrval);
-        EX_FUNC_LEAVE(EX_FATAL);
+        return (EX_FATAL);
       }
     }
     else {
@@ -195,10 +195,10 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
                ex_name_of_object(var_type), ex_name_var_of_object(var_type, var_index, obj_id_ndx),
                exoid);
       ex_err("ex_put_var", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
   }
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -206,7 +206,7 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_var", errmsg, exerrval);
   }
-  EX_FUNC_LEAVE(EX_FATAL);
+  return (EX_FATAL);
 }
 
 /*
@@ -233,6 +233,7 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
   int    status;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);
@@ -265,7 +266,8 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
     }
     break;
   case EX_NODAL:
-    return ex_put_nodal_var_int(exoid, time_step, var_index, num_entries_this_obj, var_vals);
+    status = ex_put_nodal_var_int(exoid, time_step, var_index, num_entries_this_obj, var_vals);
+    EX_FUNC_LEAVE(status);
     break;
   case EX_EDGE_BLOCK:
     status = ex_look_up_var(exoid, var_type, var_index, obj_id, VAR_ID_ED_BLK, VAR_EBLK_TAB,

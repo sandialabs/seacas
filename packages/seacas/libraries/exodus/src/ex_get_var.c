@@ -105,16 +105,19 @@ int ex_get_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
   size_t start[2], count[2];
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   if (var_type == EX_NODAL) {
     /* FIXME: Special case: ignore obj_id, possible large_file complications,
      * etc. */
-    return ex_get_nodal_var_int(exoid, time_step, var_index, num_entry_this_obj, var_vals);
+    status = ex_get_nodal_var_int(exoid, time_step, var_index, num_entry_this_obj, var_vals);
+    EX_FUNC_LEAVE(status);
   }
   if (var_type == EX_GLOBAL) {
     /* FIXME: Special case: all vars stored in 2-D single array. */
-    return ex_get_glob_vars_int(exoid, time_step, num_entry_this_obj, var_vals);
+    status = ex_get_glob_vars_int(exoid, time_step, num_entry_this_obj, var_vals);
+    EX_FUNC_LEAVE(status);
   }
 
   exerrval = 0; /* clear error code */

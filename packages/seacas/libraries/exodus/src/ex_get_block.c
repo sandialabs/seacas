@@ -69,6 +69,9 @@ int ex_get_block(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, char *
 {
   int      err;
   ex_block block;
+
+  EX_FUNC_ENTER();
+
   block.id   = blk_id;
   block.type = blk_type;
 
