@@ -60,6 +60,7 @@ int ex_update(int exoid)
   char errmsg[MAX_ERR_LENGTH];
   int  status;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);

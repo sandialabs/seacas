@@ -84,10 +84,6 @@ static char *cur_string = &ret_string[0];
 
 int ex_check_file_type(const char *path, int *type)
 {
-/* Not thread-safe or reentrant:
- * uses errno;
- */
-
 /* Based on (stolen from?) NC_check_file_type from netcdf sources.
 
 Type is set to:
@@ -135,8 +131,9 @@ Type is set to:
 
 int ex_set_max_name_length(int exoid, int length)
 {
-  /* Not thread-safe -- sets exerrval */
   char errmsg[MAX_ERR_LENGTH];
+
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
   if (length <= 0) {
     exerrval = NC_EMAXNAME;
@@ -159,12 +156,14 @@ int ex_set_max_name_length(int exoid, int length)
 
 void ex_update_max_name_length(int exoid, int length)
 {
-  /* Not thread-safe -- sets exerrval, calls netcdf */
   int status;
   int db_length = 0;
   int rootid    = exoid & EX_FILE_ID_MASK;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
+  exerrval = 0;
+
   /* Get current value of the maximum_name_length attribute... */
   if ((status = nc_get_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
     char errmsg[MAX_ERR_LENGTH];
@@ -180,12 +179,12 @@ void ex_update_max_name_length(int exoid, int length)
     nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
     nc_sync(rootid);
   }
+  EX_FUNC_VOID();
 }
 
 int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
                           ex_entity_type obj_type, const char *subtype, const char *routine)
 {
-  /* Not thread-safe -- sets exerrval, calls netcdf */
   size_t i;
   int    status;
   char   errmsg[MAX_ERR_LENGTH];
@@ -196,6 +195,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   size_t idx        = 0;
   int    found_name = 0;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
   /* inquire previously defined dimensions  */
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
@@ -243,7 +243,6 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
 int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
                          ex_entity_type obj_type, const char *subtype, const char *routine)
 {
-  /* Not thread-safe -- sets exerrval, calls netcdf */
   int    status;
   size_t start[2], count[2];
   char   errmsg[MAX_ERR_LENGTH];
@@ -275,7 +274,7 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s name in file id %d",
                ex_name_of_object(obj_type), exoid);
       ex_err(routine, errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
 
     /* Add the trailing null if the variable name was too long */
@@ -287,14 +286,12 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
     /* Update the maximum_name_length attribute on the file. */
     ex_update_max_name_length(exoid, count[1] - 1);
   }
-
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 
 int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,
                           ex_entity_type obj_type, const char *routine)
 {
-  /* Not thread-safe -- calls non-thread-safe routine */
   size_t i;
   int    status;
 
@@ -308,20 +305,21 @@ int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,
   for (i = 0; i < num_entity; i++) {
     status = ex_get_name_internal(exoid, varid, i, names[i], name_size, obj_type, routine);
     if (status != NC_NOERR) {
-      EX_FUNC_LEAVE(status);
+      return (status);
     }
   }
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 
 int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int name_size,
                          ex_entity_type obj_type, const char *routine)
 {
-  /* Not thread-safe -- sets exerrval, calls netcdf */
   size_t start[2], count[2];
   int    status;
   char   errmsg[MAX_ERR_LENGTH];
-  int    api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
+  int    api_name_size = 0;
+
+  api_name_size = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
 
   /* read the name */
   start[0] = index;
@@ -335,13 +333,13 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int nam
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s name at index %d from file id %d",
              ex_name_of_object(obj_type), (int)index, exoid);
     ex_err(routine, errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
 
   name[api_name_size] = '\0';
 
   ex_trim_internal(name);
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 
 void ex_trim_internal(char *name)
@@ -372,25 +370,25 @@ void ex_trim_internal(char *name)
  */
 char *ex_catstr(const char *string, int num)
 {
-  /* Not thread-safe: uses cur_string and ret_string */
+  /* Only called from an already locked function */
   char *tmp_string = cur_string;
   cur_string += sprintf(cur_string, "%s%d", string, num) + 1;
   if (cur_string - ret_string > 9 * (MAX_VAR_NAME_LENGTH + 1)) {
     cur_string = ret_string;
   }
-  EX_FUNC_LEAVE(tmp_string);
+  return (tmp_string);
 }
 
 /** ex_catstr2 - concatenate  string1num1string2num2   */
 char *ex_catstr2(const char *string1, int num1, const char *string2, int num2)
 {
-  /* Not thread-safe: uses cur_string and ret_string */
+  /* Only called from an already locked function */
   char *tmp_string = cur_string;
   cur_string += sprintf(cur_string, "%s%d%s%d", string1, num1, string2, num2) + 1;
   if (cur_string - ret_string > 9 * (MAX_VAR_NAME_LENGTH + 1)) {
     cur_string = ret_string;
   }
-  EX_FUNC_LEAVE(tmp_string);
+  return (tmp_string);
 }
 
 char *ex_name_of_object(ex_entity_type obj_type)
@@ -457,8 +455,6 @@ ex_entity_type ex_var_type_to_ex_entity_type(char var_type)
 
 char *ex_dim_num_objects(ex_entity_type obj_type)
 {
-  /* Not thread-safe: uses exerrval */
-  exerrval = 0; /* clear error code */
   switch (obj_type) {
   case EX_NODAL: return DIM_NUM_NODES;
   case EX_ELEM_BLOCK: return DIM_NUM_EL_BLK;
@@ -479,14 +475,13 @@ char *ex_dim_num_objects(ex_entity_type obj_type)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: object type %d not supported in call to ex_dim_num_objects", obj_type);
     ex_err("ex_dim_num_objects", errmsg, exerrval);
-    EX_FUNC_LEAVE(NULL);
+    return (NULL);
   }
   }
 }
 
 char *ex_dim_num_entries_in_object(ex_entity_type obj_type, int idx)
 {
-  /* Not thread-safe: uses ex_catstr */
   switch (obj_type) {
   case EX_NODAL: return DIM_NUM_NODES;
   case EX_EDGE_BLOCK: return DIM_NUM_ED_IN_EBLK(idx);
@@ -503,7 +498,6 @@ char *ex_dim_num_entries_in_object(ex_entity_type obj_type, int idx)
 
 char *ex_name_var_of_object(ex_entity_type obj_type, int i, int j)
 {
-  /* Not thread-safe: uses ex_catstr */
   switch (obj_type) {
   case EX_EDGE_BLOCK: return VAR_EDGE_VAR(i, j);
   case EX_FACE_BLOCK: return VAR_FACE_VAR(i, j);
@@ -519,7 +513,6 @@ char *ex_name_var_of_object(ex_entity_type obj_type, int i, int j)
 
 char *ex_name_of_map(ex_entity_type map_type, int map_index)
 {
-  /* Not thread-safe: uses ex_catstr */
   switch (map_type) {
   case EX_NODE_MAP: return VAR_NODE_MAP(map_index);
   case EX_EDGE_MAP: return VAR_EDGE_MAP(map_index);
@@ -539,7 +532,7 @@ char *ex_name_of_map(ex_entity_type map_type, int map_index)
 *       ex_entity_type id_type           id type name:
 *                                         elem_ss
 *                                         node_ns
-*                                         side_ss
+2*                                         side_ss
 *       int     num                     id value
 *
 * exit conditions -
@@ -549,8 +542,6 @@ char *ex_name_of_map(ex_entity_type map_type, int map_index)
 
 int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 {
-  /* Not thread-safe: uses exerrval, other globals */
-
   char *   id_table;
   char *   id_dim;
   char *   stat_table;
@@ -567,8 +558,8 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   exerrval = 0; /* clear error code */
 
   switch (id_type) {
-  case EX_NODAL: return 0;
-  case EX_GLOBAL: return 0;
+  case EX_NODAL: return (0);
+  case EX_GLOBAL: return (0);
   case EX_ELEM_BLOCK:
     id_table   = VAR_ID_EL_BLK;   /* id array name */
     id_dim     = DIM_NUM_EL_BLK;  /* id array dimension name*/
@@ -646,7 +637,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported id array type %d for file id %d", id_type,
              exoid);
     ex_err("ex_id_lkup", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
 
   if ((tmp_stats->id_vals == NULL) || (!(tmp_stats->valid_ids))) {
@@ -661,7 +652,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate id array dimension in file id %d",
                exoid);
       ex_err("ex_id_lkup", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
 
     /* Next get value of dimension */
@@ -670,7 +661,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s array length in file id %d",
                id_table, exoid);
       ex_err("ex_id_lkup", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
 
     /* get variable id of id array */
@@ -679,7 +670,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s array in file id %d", id_table,
                exoid);
       ex_err("ex_id_lkup", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
 
     /* allocate space for id array and initialize to zero to ensure
@@ -689,7 +680,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
       ex_err("ex_id_lkup", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
 
     if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
@@ -704,7 +695,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
                  exoid);
         ex_err("ex_id_lkup", errmsg, exerrval);
         free(id_vals);
-        EX_FUNC_LEAVE(EX_FATAL);
+        return (EX_FATAL);
       }
       status = nc_get_var_int(exoid, varid, (int *)id_vals_int);
       if (status == NC_NOERR) {
@@ -721,7 +712,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
                exoid);
       ex_err("ex_id_lkup", errmsg, exerrval);
       free(id_vals);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
 
     /* check if values in stored arrays are filled with non-zeroes */
@@ -758,7 +749,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       free(id_vals);
     }
     exerrval = EX_LOOKUPFAIL;
-    EX_FUNC_LEAVE(EX_LOOKUPFAIL); /*if we got here, the id array value doesn't exist */
+    return (EX_LOOKUPFAIL); /*if we got here, the id array value doesn't exist */
   }
 
   /* Now check status array to see if object is null */
@@ -779,7 +770,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
         ex_err("ex_id_lkup", errmsg, exerrval);
-        EX_FUNC_LEAVE(EX_FATAL);
+        return (EX_FATAL);
       }
 
       if ((status = nc_get_var_int(exoid, varid, stat_vals)) != NC_NOERR) {
@@ -789,7 +780,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s array from file id %d",
                  stat_table, exoid);
         ex_err("ex_id_lkup", errmsg, exerrval);
-        EX_FUNC_LEAVE(EX_FATAL);
+        return (EX_FATAL);
       }
 
       if (tmp_stats->valid_ids) {
@@ -810,14 +801,14 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
       if (!(tmp_stats->valid_ids)) {
         free(id_vals);
       }
-      EX_FUNC_LEAVE(-((int)i + 1)); /* return index into id array (1-based) */
+      return (-((int)i + 1)); /* return index into id array (1-based) */
     }
   }
   if (!(tmp_stats->valid_ids)) {
     free(id_vals);
     free(stat_vals);
   }
-  EX_FUNC_LEAVE(i + 1); /* return index into id array (1-based) */
+  return (i + 1); /* return index into id array (1-based) */
 }
 
 /******************************************************************************
@@ -833,7 +824,6 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 
 struct obj_stats *ex_get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
 {
-  /* Not thread-safe: obj_ptr passed in is a global */
   struct obj_stats *tmp_ptr;
 
   tmp_ptr = *obj_ptr;
@@ -856,8 +846,7 @@ struct obj_stats *ex_get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
     tmp_ptr->valid_stat = 0;
     *obj_ptr            = tmp_ptr;
   }
-
-  EX_FUNC_LEAVE(tmp_ptr);
+  return tmp_ptr;
 }
 
 /******************************************************************************
@@ -874,7 +863,6 @@ struct obj_stats *ex_get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
 
 void ex_rm_stat_ptr(int exoid, struct obj_stats **obj_ptr)
 {
-  /* Not thread-safe: obj_ptr passed in is a global */
   struct obj_stats *last_head_list_ptr, *tmp_ptr;
 
   tmp_ptr            = *obj_ptr;
@@ -919,6 +907,7 @@ static struct list_item *em_ctr_list  = 0; /* element maps */
 struct list_item **ex_get_counter_list(ex_entity_type obj_type)
 {
   /* Thread-safe, but is dealing with globals */
+  /* Only called from a routine which will be using locks */
   switch (obj_type) {
   case EX_ELEM_BLOCK: return &eb_ctr_list;
   case EX_NODE_SET: return &ns_ctr_list;
@@ -932,7 +921,7 @@ struct list_item **ex_get_counter_list(ex_entity_type obj_type)
   case EX_ELEM_SET: return &els_ctr_list;
   case EX_EDGE_MAP: return &edm_ctr_list;
   case EX_FACE_MAP: return &fam_ctr_list;
-  default: EX_FUNC_LEAVE(NULL);
+  default: return (NULL);
   }
 }
 
@@ -966,7 +955,6 @@ struct list_item **ex_get_counter_list(ex_entity_type obj_type)
 int ex_inc_file_item(int                exoid,    /* file id */
                      struct list_item **list_ptr) /* ptr to ptr to list_item */
 {
-  /* Not thread-safe: list_ptr passed in is a global, modifies it */
   struct list_item *tlist_ptr = *list_ptr; /* use temp list ptr to walk linked list */
   while (tlist_ptr) {                      /* Walk linked list of file ids/vals */
     if (exoid == tlist_ptr->exo_id) {      /* linear search for exodus file id */
@@ -982,7 +970,7 @@ int ex_inc_file_item(int                exoid,    /* file id */
     tlist_ptr->next   = *list_ptr; /* insert into head of list */
     *list_ptr         = tlist_ptr; /* fix up new head of list  */
   }
-  EX_FUNC_LEAVE(tlist_ptr->value++);
+  return (tlist_ptr->value++);
 }
 
 /*****************************************************************************
@@ -1028,10 +1016,10 @@ int ex_get_file_item(int                exoid,    /* file id */
   }
 
   if (!tlist_ptr) { /* ptr NULL? */
-    EX_FUNC_LEAVE(-1);
+    return (-1);
   }
 
-  EX_FUNC_LEAVE(tlist_ptr->value);
+  return (tlist_ptr->value);
 }
 
 /*****************************************************************************
@@ -1062,7 +1050,6 @@ void ex_rm_file_item(int                exoid,    /* file id */
                      struct list_item **list_ptr) /* ptr to ptr to list_item */
 
 {
-  /* Not thread-safe: list_ptr passed in is a global, modifies it */
   struct list_item *last_head_list_ptr = *list_ptr; /* save last head pointer */
 
   struct list_item *tlist_ptr = *list_ptr;
@@ -1089,11 +1076,11 @@ void ex_rm_file_item(int                exoid,    /* file id */
 *****************************************************************************/
 int ex_get_num_props(int exoid, ex_entity_type obj_type)
 {
-  /* Not thread-safe: uses excatstr, sets exerrval */
   int   cntr, varid;
   char *var_name;
   char  errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   cntr = 0;
 
   /* loop until there is not a property variable defined; the name of */
@@ -1369,12 +1356,8 @@ void ex_iqsort64(int64_t v[], int64_t iv[], int64_t N)
  */
 int ex_large_model(int exoid)
 {
-  /* Not thread-safe due to use of 'message_output' static and
-   * 'getenv()' however, getenv is typically thread-safe unless
-   * unsetenv() or putenv() called. message_output race would
-   * just cause extra output; nothing catastrophic
-   */
   static int message_output = EX_FALSE;
+  EX_FUNC_ENTER();
   if (exoid < 0) {
     /* If exoid not specified, then query is to see if user specified
      * the large model via an environment variable
@@ -1387,17 +1370,17 @@ int ex_large_model(int exoid)
                           "EXODUS_LARGE_MODEL environment variable\n");
           message_output = EX_TRUE;
         }
-        return 0;
+        EX_FUNC_LEAVE(0);
       }
       if (!message_output) {
         fprintf(stderr, "EXODUSII: Large model size selected via "
                         "EXODUS_LARGE_MODEL environment variable\n");
         message_output = EX_TRUE;
       }
-      return 1;
+      EX_FUNC_LEAVE(1);
     }
     else {
-      return EXODUS_DEFAULT_SIZE; /* Specified in exodusII_int.h */
+      EX_FUNC_LEAVE(EXODUS_DEFAULT_SIZE); /* Specified in exodusII_int.h */
     }
   }
   else {
@@ -1407,14 +1390,13 @@ int ex_large_model(int exoid)
       /* Variable not found; default is 0 */
       file_size = 0;
     }
-    return file_size;
+    EX_FUNC_LEAVE(file_size);
   }
 }
 
 int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t *count, int *dimid,
                      const char *routine)
 {
-  /* Not thread-safe: uses exerrval */
   char errmsg[MAX_ERR_LENGTH];
   int  status;
 
@@ -1434,7 +1416,7 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
         ex_err(routine, errmsg, exerrval);
       }
     }
-    EX_FUNC_LEAVE(status);
+    return (status);
   }
 
   if ((status = nc_inq_dimlen(exoid, *dimid, count)) != NC_NOERR) {
@@ -1446,7 +1428,7 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
       return -1;
     }
   }
-  EX_FUNC_LEAVE(status);
+  return (status);
 }
 
 /* Deprecated. do not use */
@@ -1455,7 +1437,6 @@ size_t ex_header_size(int exoid) { return 0; }
 /* type = 1 for integer, 2 for real, 3 for character */
 void ex_compress_variable(int exoid, int varid, int type)
 {
-/* Not thread-safe: uses exerrval, file_item global */
 #if NC_HAS_HDF5
 
   struct ex_file_item *file = ex_find_file_item(exoid);

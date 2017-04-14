@@ -82,6 +82,7 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
   const char *vmap;
   int         status;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

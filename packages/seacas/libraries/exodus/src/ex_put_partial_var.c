@@ -72,6 +72,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
   exerrval = 0; /* clear error code */
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
 #define EX_LOOK_UP_VAR(VOBJID, VVAR, VOBJTAB, DNUMOBJ, DNUMOBJVAR)                                 \

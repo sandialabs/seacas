@@ -169,6 +169,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   /* Contains a 1 in all bits corresponding to file modes */
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {

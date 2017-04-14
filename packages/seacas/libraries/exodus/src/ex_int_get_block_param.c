@@ -50,7 +50,7 @@ static int el_node_count_error(struct elem_blk_parm elem_blk_parms)
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: An element of type '%s' with %d nodes is not valid.",
            elem_blk_parms.elem_type, elem_blk_parms.num_nodes_per_elem);
   ex_err("ex_int_get_block_param", errmsg, EX_MSG);
-  EX_FUNC_LEAVE(EX_FATAL);
+  return (EX_FATAL);
 }
 
 int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
@@ -58,6 +58,8 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
 {
   size_t m;
   char   errmsg[MAX_ERR_LENGTH];
+
+  EX_FUNC_ENTER();
 
   ex_block block;
   block.id   = id;

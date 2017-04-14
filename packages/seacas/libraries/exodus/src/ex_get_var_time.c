@@ -86,13 +86,17 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   const char *varobjids;
   const char *varobstat;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   switch (var_type) {
   case EX_GLOBAL:
-    return ex_get_glob_var_time_int(exoid, var_index, beg_time_step, end_time_step, var_vals);
+    status = ex_get_glob_var_time_int(exoid, var_index, beg_time_step, end_time_step, var_vals);
+    EX_FUNC_LEAVE(status);
   case EX_NODAL:
-    return ex_get_nodal_var_time_int(exoid, var_index, id, beg_time_step, end_time_step, var_vals);
+    status =
+        ex_get_nodal_var_time_int(exoid, var_index, id, beg_time_step, end_time_step, var_vals);
+    EX_FUNC_LEAVE(status);
   case EX_EDGE_BLOCK:
     varobjids = VAR_ID_ED_BLK;
     varobstat = VAR_STAT_ED_BLK;

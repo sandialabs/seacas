@@ -70,6 +70,7 @@ int ex_leavedef(int exoid, const char *call_rout)
   char errmsg[MAX_ERR_LENGTH];
   int  status;
 
+  EX_FUNC_ENTER();
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to end define mode for file id %d", exoid);
@@ -85,6 +86,7 @@ int ex_leavedef(int exoid, const char *call_rout)
 /*****************************************************************************/
 char *ex_catstrn12(char *name, int num1, int num2)
 {
+  /* Should only be called by an already locked function */
   const char *func_name = "ex_catstrn12";
 
   char errmsg[MAX_ERR_LENGTH];
@@ -133,6 +135,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   if ((status = nc_inq_varid(exoid, ne_var_name, &varid)) != NC_NOERR) {
@@ -153,7 +156,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
                                        "in file ID %d",
                ne_var_name, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return -1;
+      EX_FUNC_LEAVE(-1);
     }
 
     /* Get the length of this variable */
@@ -163,7 +166,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
                "ERROR: failed to find dimension for variable \"%s\" in file ID %d", ne_var_name,
                exoid);
       ex_err(func_name, errmsg, exerrval);
-      return -1;
+      EX_FUNC_LEAVE(-1);
     }
 
     idx[1] = length;
@@ -182,7 +185,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable \"%s\" in file ID %d",
                ne_var_name, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return -1;
+      EX_FUNC_LEAVE(-1);
     }
 
     if (id_val == ne_var_id) {
@@ -190,8 +193,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
       break;
     }
   }
-
-  return ret;
+  EX_FUNC_LEAVE(ret);
 }
 
 /*****************************************************************************/
@@ -210,6 +212,7 @@ int ex_get_file_type(int exoid, char *ftype)
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   if ((status = nc_inq_varid(exoid, VAR_FILE_TYPE, &varid)) != NC_NOERR) {
@@ -253,6 +256,8 @@ int ex_put_nemesis_version(int exoid)
   float       file_ver, api_ver;
 
   char errmsg[MAX_ERR_LENGTH];
+
+  EX_FUNC_ENTER();
 
   exerrval = 0; /* clear the error code */
 
@@ -301,6 +306,7 @@ int ne_check_file_version(int exoid)
   int    status;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   exerrval = 0;  /* clear error code */
 
   /* Get the file version */
@@ -320,8 +326,10 @@ int ne_check_file_version(int exoid)
     ex_err(func_name, errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
-#endif
   EX_FUNC_LEAVE(EX_NOERR);
+#else
+  return EX_NOERR;
+#endif
 }
 
 /*****************************************************************************/
@@ -345,6 +353,7 @@ int ex_get_idx(int exoid, const char *ne_var_name, int64_t *my_index, int pos)
 #endif
   char errmsg[MAX_ERR_LENGTH];
   /*-----------------------------Execution begins-----------------------------*/
+  EX_FUNC_ENTER();
 
   exerrval = 0; /* clear error code */
 
@@ -378,7 +387,7 @@ int ex_get_idx(int exoid, const char *ne_var_name, int64_t *my_index, int pos)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable \"%s\" in file ID %d",
                ne_var_name, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return -1;
+      EX_FUNC_LEAVE(-1);
     }
 
     if (pos == 0) {
@@ -390,6 +399,5 @@ int ex_get_idx(int exoid, const char *ne_var_name, int64_t *my_index, int pos)
       my_index[1] = varidx[1];
     }
   }
-
-  return 1;
+  EX_FUNC_LEAVE(1);
 }

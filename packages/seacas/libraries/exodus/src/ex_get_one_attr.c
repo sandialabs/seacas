@@ -75,6 +75,7 @@ int ex_get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
   const char *dnumobjatt;
   const char *vattrbname;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

@@ -90,6 +90,7 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

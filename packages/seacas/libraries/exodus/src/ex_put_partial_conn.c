@@ -99,6 +99,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   /* The partial connectivity input function can currently only handle nodal
    * connectivity.  Print a warning if edgeconn or faceconn is non-NULL
    */
+  EX_FUNC_ENTER();
   if (edgeconn != NULL || faceconn != NULL) {
     exerrval = 1005;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: ex_put_partial_conn only supports nodal "

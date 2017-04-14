@@ -45,18 +45,17 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#define EXCHECK(funcall)                                      \
-  if ((funcall) != NC_NOERR) {                                        \
-    fprintf(stderr, "Error calling %s\n", TOSTRING(funcall)); \
-    return EX_FATAL;                                                 \
+#define EXCHECK(funcall)                                                                           \
+  if ((funcall) != NC_NOERR) {                                                                     \
+    fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                      \
+    return EX_FATAL;                                                                               \
   }
 
-#define EXCHECKF(funcall)                                      \
-  if ((funcall) != NC_NOERR) {                                        \
-    fprintf(stderr, "Error calling %s\n", TOSTRING(funcall)); \
-    goto err_ret;                                                 \
+#define EXCHECKF(funcall)                                                                          \
+  if ((funcall) != NC_NOERR) {                                                                     \
+    fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                      \
+    goto err_ret;                                                                                  \
   }
-
 
 /*! \cond INTERNAL */
 struct ncdim
@@ -127,6 +126,7 @@ int ex_copy(int in_exoid, int out_exoid)
   int          in_large, out_large;
   char         errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(in_exoid);
   ex_check_valid_file_id(out_exoid);
 
@@ -408,7 +408,7 @@ int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
     EXCHECK(nc_copy_att(in_id, var_in_id, att_nm, out_id, var_out_id));
   }
 
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 
 /*! \internal */
@@ -468,11 +468,13 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
     EXCHECK(nc_def_var(out_id, VAR_COORD_X, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
     ex_compress_variable(out_id, var_out_id, 2);
     if (spatial_dim > 1) {
-      EXCHECK(nc_def_var(out_id, VAR_COORD_Y, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
+      EXCHECK(
+          nc_def_var(out_id, VAR_COORD_Y, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
       ex_compress_variable(out_id, var_out_id, 2);
     }
     if (spatial_dim > 2) {
-      EXCHECK(nc_def_var(out_id, VAR_COORD_Z, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
+      EXCHECK(
+          nc_def_var(out_id, VAR_COORD_Z, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
       ex_compress_variable(out_id, var_out_id, 2);
     }
   }
@@ -515,7 +517,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 
   char errmsg[MAX_ERR_LENGTH];
   int  status;
-  int *dim_in_id = NULL;
+  int *dim_in_id  = NULL;
   int *dim_out_id = NULL;
   int  idx;
   int  nbr_dim;
@@ -585,7 +587,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s variable in file id %d", var_nm,
                out_id);
       ex_err("ex_copy", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
     ex_compress_variable(out_id, var_out_id, 1);
   }
@@ -596,11 +598,11 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
 
   return var_out_id; /* OK */
 
- err_ret:
+err_ret:
   free(dim_in_id);
   free(dim_out_id);
   return EX_FATAL;
-  
+
 } /* end cpy_var_def() */
 
 /*! \internal */
@@ -615,16 +617,16 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
    * to an output netCDF file.
    */
 
-  int *   dim_id_in = NULL;
+  int *   dim_id_in  = NULL;
   int *   dim_id_out = NULL;
   int     idx;
   int     nbr_dim;
   int     var_in_id;
   int     var_out_id;
   size_t *dim_cnt = NULL;
-  size_t *dim_sz = NULL;
+  size_t *dim_sz  = NULL;
   size_t *dim_srt = NULL;
-  size_t  var_sz = 1L;
+  size_t  var_sz  = 1L;
   nc_type var_type_in, var_type_out;
 
   void *void_ptr = NULL;
@@ -755,15 +757,21 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   /* Free the space that held the variable */
   free(void_ptr);
 
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 
- err_ret:
-  if (dim_cnt) free(dim_cnt);
-  if (dim_id_in) free(dim_id_in);
-  if (dim_id_out) free(dim_id_out);
-  if (dim_sz) free(dim_sz);
-  if (dim_srt)  free(dim_srt);
-  if (void_ptr) free(void_ptr);
+err_ret:
+  if (dim_cnt)
+    free(dim_cnt);
+  if (dim_id_in)
+    free(dim_id_in);
+  if (dim_id_out)
+    free(dim_id_out);
+  if (dim_sz)
+    free(dim_sz);
+  if (dim_srt)
+    free(dim_srt);
+  if (void_ptr)
+    free(void_ptr);
 
   return (EX_FATAL);
 
@@ -872,12 +880,12 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
 
   /* Free the space that held the variable */
   free(void_ptr);
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 
- err_ret:
+err_ret:
   free(void_ptr);
-  EX_FUNC_LEAVE(EX_FATAL);
-  
+  return (EX_FATAL);
+
 } /* end cpy_coord_val() */
 
 /*! \internal */

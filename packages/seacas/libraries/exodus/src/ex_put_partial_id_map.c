@@ -78,6 +78,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
   const char *dnumentries;
   const char *vmap;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

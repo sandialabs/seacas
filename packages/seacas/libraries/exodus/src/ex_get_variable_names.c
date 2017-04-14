@@ -99,6 +99,7 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   char        errmsg[MAX_ERR_LENGTH];
   const char *vvarname;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

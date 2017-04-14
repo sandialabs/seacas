@@ -98,6 +98,7 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
   size_t start[3], count[3];
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   int rootid = exoid & EX_FILE_ID_MASK;
 
   ex_check_valid_file_id(exoid);

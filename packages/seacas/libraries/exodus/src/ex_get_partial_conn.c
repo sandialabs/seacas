@@ -93,6 +93,7 @@ int ex_get_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   const char *vedgeconn  = NULL;
   const char *vfaceconn  = NULL;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   /* The partial connectivity input function can currently only handle nodal

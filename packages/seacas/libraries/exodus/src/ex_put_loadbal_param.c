@@ -86,6 +86,7 @@ int ex_put_loadbal_param(int exoid, int64_t num_int_nodes, int64_t num_bor_nodes
   }
   /*-----------------------------Execution begins-----------------------------*/
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

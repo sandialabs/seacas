@@ -45,6 +45,7 @@ int ex_create_group(int parent_id, const char *group_name)
   int exoid = -1;
   int status;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(parent_id);
 
   if ((status = nc_redef(parent_id)) != NC_NOERR) {
@@ -68,8 +69,9 @@ int ex_create_group(int parent_id, const char *group_name)
     ex_err("ex_create", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (exoid);
+  EX_FUNC_LEAVE(exoid);
 #else
+  EX_FUNC_ENTER();
   exerrval = NC_ENOTNC4;
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
                                    "version--not netcdf4");

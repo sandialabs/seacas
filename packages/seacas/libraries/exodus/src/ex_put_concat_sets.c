@@ -93,6 +93,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
   char *        extraptr = NULL;
   ex_inquiry    ex_inq_val;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

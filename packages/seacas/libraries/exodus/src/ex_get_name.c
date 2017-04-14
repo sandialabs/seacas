@@ -67,6 +67,7 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
   char *      vobj    = NULL;
   const char *routine = "ex_get_name";
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0;

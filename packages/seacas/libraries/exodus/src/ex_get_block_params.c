@@ -51,6 +51,7 @@
 int ex_get_block_params(int exoid, size_t block_count, struct ex_block **blocks)
 {
   size_t i;
+  EX_FUNC_ENTER();
   for (i = 0; i < block_count; i++) {
     int status = ex_get_block_param(exoid, blocks[i]);
     if (status != EX_NOERR) {

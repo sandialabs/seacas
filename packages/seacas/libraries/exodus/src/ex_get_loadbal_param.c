@@ -76,6 +76,9 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
 
   char errmsg[MAX_ERR_LENGTH];
   /*-----------------------------Execution begins-----------------------------*/
+  EX_FUNC_ENTER();
+  ex_check_valid_file_id(exoid);
+
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
     *(int64_t *)num_int_nodes  = 0;
     *(int64_t *)num_bor_nodes  = 0;
@@ -94,8 +97,6 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     *(int *)num_node_cmaps = 0;
     *(int *)num_elem_cmaps = 0;
   }
-
-  ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
 

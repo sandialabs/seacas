@@ -70,6 +70,7 @@ int ex_put_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
   char errmsg[MAX_ERR_LENGTH];
   /*-----------------------------Execution begins-----------------------------*/
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   /* Get the file type */

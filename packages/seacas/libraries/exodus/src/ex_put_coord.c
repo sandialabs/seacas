@@ -124,6 +124,7 @@ int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *
   size_t num_nod, num_dim, start[2], count[2], i;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

@@ -75,11 +75,11 @@ static int64_t ex_get_dim_value(int exoid, const char *name, const char *dimensi
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", name,
                exoid);
       ex_err("ex_get_init_ext", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_FATAL);
+      return (EX_FATAL);
     }
     *value = tmp;
   }
-  EX_FUNC_LEAVE(EX_NOERR);
+  return (EX_NOERR);
 }
 
 /*!
@@ -99,6 +99,7 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
 
   int rootid = exoid & EX_FILE_ID_MASK;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

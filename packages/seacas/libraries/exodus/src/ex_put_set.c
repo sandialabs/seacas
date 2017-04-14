@@ -78,6 +78,7 @@ int ex_put_set(int exoid, ex_entity_type set_type, ex_entity_id set_id,
   char *entryptr = NULL;
   char *extraptr = NULL;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);

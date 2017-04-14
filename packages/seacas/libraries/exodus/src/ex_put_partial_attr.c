@@ -77,6 +77,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   size_t num_attr;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */

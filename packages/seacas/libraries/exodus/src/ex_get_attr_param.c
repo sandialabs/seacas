@@ -70,7 +70,10 @@ int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   int    obj_id_ndx;
   size_t lnum_attr_per_entry;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
+
+  exerrval = 0;
 
   /* Determine index of obj_id in vobjids array */
   if (obj_type == EX_NODAL) {
