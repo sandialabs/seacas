@@ -40,7 +40,7 @@
 #include <string.h>    // for strncmp, strlen
 #include <sys/types.h> // for int64_t
 
-#include "exodusII.h"     // for ex_err, exerrval, ex_block, etc
+#include "exodusII.h"     // for ex_err, EXERRVAL, ex_block, etc
 #include "exodusII_int.h" // for elem_blk_parm, EX_FATAL, etc
 
 /* Generic error message for element type/node count mapping...*/
@@ -67,7 +67,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
 
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
   /* read in an element block parameter */
   if ((ex_get_block_param(exoid, &block)) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,

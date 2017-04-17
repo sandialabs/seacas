@@ -102,6 +102,8 @@ extern "C" {
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
 #if defined(EX_THREADSAFE)
+EXODUS_EXPORT int *exerrval; /**< shared error return value                */
+#define EXERRVAL *exerrval
 extern pthread_once_t EX_first_init_g;
 
 typedef struct EX_mutex_struct
@@ -119,36 +121,40 @@ typedef struct EX_api_struct
 } EX_api_t;
 
 extern EX_api_t EX_g;
-extern int      EX_cancel_count_dec(void);
-extern int      EX_cancel_count_inc(void);
-extern int EX_mutex_lock(EX_mutex_t *mutex);
-extern int EX_mutex_unlock(EX_mutex_t *mutex);
-extern void EX_pthread_first_thread_init(void);
+extern int      ex_cancel_count_dec(void);
+extern int      ex_cancel_count_inc(void);
+extern int ex_mutex_lock(EX_mutex_t *mutex);
+extern int ex_mutex_unlock(EX_mutex_t *mutex);
+extern void ex_pthread_first_thread_init(void);
+extern int *exerrval_get();
 
 #define EX_FUNC_ENTER()                                                                            \
   do {                                                                                             \
     /* Initialize the thread-safe code */                                                          \
-    pthread_once(&EX_first_init_g, EX_pthread_first_thread_init);                                  \
+    pthread_once(&EX_first_init_g, ex_pthread_first_thread_init);                                  \
                                                                                                    \
     /* Grab the mutex for the library */                                                           \
-    EX_cancel_count_inc();                                                                         \
-    EX_mutex_lock(&EX_g.init_lock);                                                                \
+    ex_cancel_count_inc();                                                                         \
+    ex_mutex_lock(&EX_g.init_lock);                                                                \
+    exerrval = exerrval_get();                                                                     \
   } while (0)
 
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
-    EX_mutex_unlock(&EX_g.init_lock);                                                              \
-    EX_cancel_count_dec();                                                                         \
+    ex_mutex_unlock(&EX_g.init_lock);                                                              \
+    ex_cancel_count_dec();                                                                         \
     return error;                                                                                  \
   } while (0)
 
 #define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
-    EX_mutex_unlock(&EX_g.init_lock);                                                              \
-    EX_cancel_count_dec();                                                                         \
+    ex_mutex_unlock(&EX_g.init_lock);                                                              \
+    ex_cancel_count_dec();                                                                         \
   } while (0)
 
 #else
+#define EXERRVAL exerrval
+
 #if 0
 EXODUS_EXPORT int indent;
 #define EX_FUNC_ENTER()                                                                            \

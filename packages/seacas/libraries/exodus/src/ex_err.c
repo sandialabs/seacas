@@ -65,7 +65,7 @@ MAX_ERR_LENGTH.
 
 \param[in] err_num       This is an integer code identifying the error. exodus C
 functions
-                         place an error code value in exerrval, an external
+                         place an error code value in EXERRVAL, an external
 int. Negative
                          values are considered fatal errors while positive
 values are
@@ -98,7 +98,7 @@ if (exoid = ex_open ("test.exo", EX_READ, &CPU_word_size,
 
 */
 
-int exerrval = 0; /* clear initial global error code value */
+int EXERRVAL = 0; /* clear initial global error code value */
 
 static char last_pname[MAX_ERR_LENGTH];
 static char last_errmsg[MAX_ERR_LENGTH];
@@ -113,7 +113,7 @@ void ex_err(const char *module_name, const char *message, int err_num)
 
   else if (err_num == EX_PRTLASTMSG) {
     fprintf(stderr, "[%s] %s\n", last_pname, last_errmsg);
-    fprintf(stderr, "    exerrval = %d\n", last_err_num);
+    fprintf(stderr, "    EXERRVAL = %d\n", last_err_num);
     EX_FUNC_VOID();
   }
 

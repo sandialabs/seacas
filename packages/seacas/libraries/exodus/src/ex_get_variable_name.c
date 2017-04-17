@@ -50,7 +50,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for EXERRVAL, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid
 #include <stdio.h>
@@ -71,7 +71,7 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num, char *
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   /* inquire previously defined variables  */
 
@@ -87,18 +87,18 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num, char *
   case EX_SIDE_SET: vname   = VAR_NAME_SSET_VAR; break;
   case EX_ELEM_SET: vname   = VAR_NAME_ELSET_VAR; break;
   default:
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type (%d) given for file id %d",
              obj_type, exoid);
-    ex_err("ex_get_variable_name", errmsg, exerrval);
+    ex_err("ex_get_variable_name", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vname, &varid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variable names stored in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err("ex_get_variable_name", errmsg, exerrval);
+    ex_err("ex_get_variable_name", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_WARN);
   }
 

@@ -1,9 +1,13 @@
 #include "exodusII.h"
 #include "exodusII_int.h"
 
+/* NOTE: All code in this file is based on the thread-safe code from the
+ * hdf5 library.
+ */
+
 /* Global variable definitions */
 pthread_once_t EX_first_init_g = PTHREAD_ONCE_INIT;
-pthread_key_t  EX_errstk_key_g;
+pthread_key_t  EX_errval_key_g;
 pthread_key_t  EX_cancel_key_g;
 
 /* cancelability structure */
@@ -17,7 +21,7 @@ typedef struct EX_cancel_struct
 /* the first global mutex                                                 */
 EX_api_t EX_g;
 
-static void EX_key_destructor(void *key_val)
+static void ex_key_destructor(void *key_val)
 {
   if (key_val != NULL)
     free(key_val);
@@ -25,10 +29,10 @@ static void EX_key_destructor(void *key_val)
 
 /*--------------------------------------------------------------------------
  * NAME
- *    EX_pthread_first_thread_init
+ *    ex_pthread_first_thread_init
  *
  * USAGE
- *    EX_pthread_first_thread_init()
+ *    ex_pthread_first_thread_init()
  *
  * RETURNS
  *
@@ -42,7 +46,7 @@ static void EX_key_destructor(void *key_val)
  *
  *--------------------------------------------------------------------------
  */
-void EX_pthread_first_thread_init(void)
+void ex_pthread_first_thread_init(void)
 {
   EX_g.EX_libinit_g = EX_FALSE;
 
@@ -52,18 +56,18 @@ void EX_pthread_first_thread_init(void)
   EX_g.init_lock.lock_count = 0;
 
   /* initialize key for thread-specific error stacks */
-  pthread_key_create(&EX_errstk_key_g, EX_key_destructor);
+  pthread_key_create(&EX_errval_key_g, ex_key_destructor);
 
   /* initialize key for thread cancellability mechanism */
-  pthread_key_create(&EX_cancel_key_g, EX_key_destructor);
+  pthread_key_create(&EX_cancel_key_g, ex_key_destructor);
 }
 
 /*--------------------------------------------------------------------------
  * NAME
- *    EX_mutex_lock
+ *    ex_mutex_lock
  *
  * USAGE
- *    EX_mutex_lock(&mutex_var)
+ *    ex_mutex_lock(&mutex_var)
  *
  * RETURNS
  *    0 on success and non-zero on error.
@@ -78,7 +82,7 @@ void EX_pthread_first_thread_init(void)
  *
  *--------------------------------------------------------------------------
  */
-int EX_mutex_lock(EX_mutex_t *mutex)
+int ex_mutex_lock(EX_mutex_t *mutex)
 {
   int ret_value = pthread_mutex_lock(&mutex->atomic_lock);
 
@@ -91,8 +95,9 @@ int EX_mutex_lock(EX_mutex_t *mutex)
   }
   else {
     /* if owned by other thread, wait for condition signal */
-    while (mutex->lock_count)
+    while (mutex->lock_count) {
       pthread_cond_wait(&mutex->cond_var, &mutex->atomic_lock);
+    }
 
     /* After we've received the signal, take ownership of the mutex */
     mutex->owner_thread = pthread_self();
@@ -104,10 +109,10 @@ int EX_mutex_lock(EX_mutex_t *mutex)
 
 /*--------------------------------------------------------------------------
  * NAME
- *    EX_mutex_unlock
+ *    ex_mutex_unlock
  *
  * USAGE
- *    EX_mutex_unlock(&mutex_var)
+ *    ex_mutex_unlock(&mutex_var)
  *
  * RETURNS
  *    0 on success and non-zero on error.
@@ -122,7 +127,7 @@ int EX_mutex_lock(EX_mutex_t *mutex)
  *
  *--------------------------------------------------------------------------
  */
-int EX_mutex_unlock(EX_mutex_t *mutex)
+int ex_mutex_unlock(EX_mutex_t *mutex)
 {
   int ret_value = pthread_mutex_lock(&mutex->atomic_lock);
 
@@ -142,14 +147,14 @@ int EX_mutex_unlock(EX_mutex_t *mutex)
   } /* end if */
 
   return ret_value;
-} /* EX_mutex_unlock */
+} /* ex_mutex_unlock */
 
 /*--------------------------------------------------------------------------
  * NAME
- *    EX_cancel_count_inc
+ *    ex_cancel_count_inc
  *
  * USAGE
- *    EX_cancel_count_inc()
+ *    ex_cancel_count_inc()
  *
  * RETURNS
  *    0 on success non-zero error code on error.
@@ -168,7 +173,7 @@ int EX_mutex_unlock(EX_mutex_t *mutex)
  *
  *--------------------------------------------------------------------------
  */
-int EX_cancel_count_inc(void)
+int ex_cancel_count_inc(void)
 {
   EX_cancel_t *cancel_counter;
   int          ret_value = EX_NOERR;
@@ -177,14 +182,14 @@ int EX_cancel_count_inc(void)
 
   if (!cancel_counter) {
     /*
-*First time thread calls library - create new counter and associate
+     *First time thread calls library - create new counter and associate
      * with key
      */
     cancel_counter = (EX_cancel_t *)calloc(1, sizeof(EX_cancel_t));
 
     if (!cancel_counter) {
-      exerrval = EX_MEMFAIL;
-      ex_err("ex_put_concat_sets", "ERROR: failed to allocate space for counter array.", exerrval);
+      EXERRVAL = EX_MEMFAIL;
+      ex_err("ex_put_concat_sets", "ERROR: failed to allocate space for counter array.", EXERRVAL);
       return (EX_FATAL);
     }
 
@@ -202,10 +207,10 @@ int EX_cancel_count_inc(void)
 
 /*--------------------------------------------------------------------------
  * NAME
- *    EX_cancel_count_dec
+ *    ex_cancel_count_dec
  *
  * USAGE
- *    EX_cancel_count_dec()
+ *    ex_cancel_count_dec()
  *
  * RETURNS
  *    0 on success and a non-zero error code on error.
@@ -222,7 +227,7 @@ int EX_cancel_count_inc(void)
  *
  *--------------------------------------------------------------------------
  */
-int EX_cancel_count_dec(void)
+int ex_cancel_count_dec(void)
 {
   register EX_cancel_t *cancel_counter;
   int                   ret_value = EX_NOERR;
@@ -235,4 +240,20 @@ int EX_cancel_count_dec(void)
   --cancel_counter->cancel_count;
 
   return ret_value;
+}
+
+int *exerrval_get(void)
+{
+  int *exerrval = (int *)pthread_getspecific(EX_errval_key_g);
+
+  if (!exerrval) {
+    /*
+     * First time thread calls library - create new value and associate
+     * with key
+     */
+    exerrval = (int *)calloc(1, sizeof(int));
+    pthread_setspecific(EX_errval_key_g, (void *)exerrval);
+  }
+
+  return exerrval;
 }

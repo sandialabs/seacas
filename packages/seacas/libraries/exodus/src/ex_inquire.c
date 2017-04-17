@@ -53,19 +53,19 @@ static int ex_get_dimension_value(int exoid, int64_t *var, int default_value,
     if (missing_ok) {
       return (EX_NOERR);
     }
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to retrieve dimension %s for file id %d",
              dimension_name, exoid);
-    ex_err("ex_inquire", errmsg, exerrval);
+    ex_err("ex_inquire", errmsg, EXERRVAL);
     return (EX_FATAL);
   }
   if ((status = nc_inq_dimlen(exoid, dimid, &idum)) != NC_NOERR) {
     *var     = default_value;
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to retrieve value for dimension %s for file id %d", dimension_name,
              exoid);
-    ex_err("ex_inquire", errmsg, exerrval);
+    ex_err("ex_inquire", errmsg, EXERRVAL);
     return (EX_FATAL);
   }
   *var = idum;
@@ -89,20 +89,20 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
 
   if ((status = nc_inq_dimid(exoid, set_num_dim, &dimid)) == NC_NOERR) {
     if ((status = nc_inq_dimlen(exoid, dimid, &num_sets)) != NC_NOERR) {
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s sets in file id %d",
                set_name, exoid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
 
     /* Allocate space for stat array */
     if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
-      exerrval = EX_MEMFAIL;
+      EXERRVAL = EX_MEMFAIL;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for %s set status "
                                        "array for file id %d",
                set_name, exoid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
 
@@ -111,11 +111,11 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
       /* if status array exists, use it, otherwise assume, object exists
          to be backward compatible */
       if ((status = nc_get_var_int(exoid, varid, stat_vals)) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         free(stat_vals);
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s set status array from file id %d",
                  set_name, exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
     }
@@ -174,15 +174,15 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   if (ret_char) {
     *ret_char = '\0'; /* Only needs to be non-null for TITLE */
   }
   if (!ret_int) {
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: integer argument is NULL which is not allowed.");
-    ex_err("ex_inquire", errmsg, exerrval);
+    ex_err("ex_inquire", errmsg, EXERRVAL);
     return (EX_FATAL);
   }
 
@@ -193,18 +193,18 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
     /* obsolete call */
     /*returns "r" for regular EXODUS file or "h" for history EXODUS file*/
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: file type inquire is obsolete");
-    ex_err("ex_inquire", errmsg, exerrval);
+    ex_err("ex_inquire", errmsg, EXERRVAL);
     return (EX_WARN);
 
   case EX_INQ_API_VERS:
     /* returns the EXODUS API version number */
     if (!ret_float) {
-      exerrval = EX_BADPARAM;
+      EXERRVAL = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: float argument is NULL for EX_INQ_API_VERS "
                                        "which is not allowed.");
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
 
@@ -212,10 +212,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         NC_NOERR) { /* try old (prior to db version 2.02) attribute name */
       if ((status = nc_get_att_float(rootid, NC_GLOBAL, ATT_API_VERSION_BLANK, ret_float)) !=
           NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get EXODUS API version for file id %d",
                  rootid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
     }
@@ -225,18 +225,18 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_DB_VERS:
     /* returns the EXODUS database version number */
     if (!ret_float) {
-      exerrval = EX_BADPARAM;
+      EXERRVAL = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: float argument is NULL for EX_INQ_DB_VERS "
                                        "which is not allowed.");
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
 
     if ((status = nc_get_att_float(rootid, NC_GLOBAL, ATT_VERSION, ret_float)) != NC_NOERR) {
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get EXODUS database version for file id %d", rootid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
     break;
@@ -263,10 +263,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
       /* Get the name string length */
       size_t name_length = 0;
       if ((status = nc_inq_dimlen(rootid, dimid, &name_length)) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get name string length in file id %d",
                  exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
 
@@ -309,9 +309,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     struct ex_file_item *file = ex_find_file_item(rootid);
 
     if (!file) {
-      exerrval = EX_BADFILEID;
+      EXERRVAL = EX_BADFILEID;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_inquire_int().", rootid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       *ret_int = 0;
     }
     else {
@@ -324,7 +324,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Requested title, but character pointer was null "
                                        "for file id %d",
                rootid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
     else {
@@ -332,10 +332,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
       /* Title is stored at root level... */
       if ((status = nc_get_att_text(rootid, NC_GLOBAL, ATT_TITLE, tmp_title)) != NC_NOERR) {
         *ret_char = '\0';
-        exerrval  = status;
+        EXERRVAL  = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database title for file id %d",
                  exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
       strncpy(ret_char, tmp_title, MAX_LINE_LENGTH + 1);
@@ -416,10 +416,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
     if (nc_inq_dimid(exoid, DIM_NUM_NS, &dimid) == NC_NOERR) {
       if ((status = nc_inq_dimlen(exoid, dimid, &num_sets)) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of node sets in file id %d",
                  exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
 
@@ -430,32 +430,32 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
           }
           else {
             *ret_int = 0;
-            exerrval = status;
+            EXERRVAL = status;
             snprintf(errmsg, MAX_ERR_LENGTH,
                      "ERROR: failed to locate number of dist fact for %" ST_ZU
                      "'th node set in file id %d",
                      i, exoid);
-            ex_err("ex_inquire", errmsg, exerrval);
+            ex_err("ex_inquire", errmsg, EXERRVAL);
             return (EX_FATAL);
           }
         }
         else {
           if ((status = nc_inq_dimid(exoid, DIM_NUM_NOD_NS(i + 1), &dimid)) != NC_NOERR) {
             *ret_int = 0;
-            exerrval = status;
+            EXERRVAL = status;
             snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of nodes in %" ST_ZU
                                              "'th node set in file id %d",
                      i, exoid);
-            ex_err("ex_inquire", errmsg, exerrval);
+            ex_err("ex_inquire", errmsg, EXERRVAL);
             return (EX_FATAL);
           }
           if ((status = nc_inq_dimlen(exoid, dimid, &idum)) != NC_NOERR) {
             *ret_int = 0;
-            exerrval = status;
+            EXERRVAL = status;
             snprintf(errmsg, MAX_ERR_LENGTH,
                      "ERROR: failed to get number of nodes in %" ST_ZU "'th node set in file id %d",
                      i, exoid);
-            ex_err("ex_inquire", errmsg, exerrval);
+            ex_err("ex_inquire", errmsg, EXERRVAL);
             return (EX_FATAL);
           }
         }
@@ -483,37 +483,37 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
     if (nc_inq_dimid(exoid, DIM_NUM_SS, &dimid) == NC_NOERR) {
       if ((status = nc_inq_dimlen(exoid, dimid, &num_sets)) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of side sets in file id %d",
                  exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
 
       if (!(ids = malloc(num_sets * sizeof(int64_t)))) { /* May be getting 2x what is
                                                             needed, but should be OK */
-        exerrval = EX_MEMFAIL;
+        EXERRVAL = EX_MEMFAIL;
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to allocate memory for side set ids for file id %d", exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
 
       if (ex_get_ids(exoid, EX_SIDE_SET, ids) == EX_FATAL) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get side set ids in file id %d", exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         free(ids);
         return (EX_FATAL);
       }
 
       /* allocate space for stat array */
       if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
-        exerrval = EX_MEMFAIL;
+        EXERRVAL = EX_MEMFAIL;
         free(ids);
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for side set status "
                                          "array for file id %d",
                  exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
       /* get variable id of status array */
@@ -522,12 +522,12 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
            to be backward compatible */
 
         if ((status = nc_get_var_int(exoid, varid, stat_vals)) != NC_NOERR) {
-          exerrval = status;
+          EXERRVAL = status;
           free(ids);
           free(stat_vals);
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to get element block status array from file id %d", exoid);
-          ex_err("ex_inquire", errmsg, exerrval);
+          ex_err("ex_inquire", errmsg, EXERRVAL);
           return (EX_FATAL);
         }
       }
@@ -564,10 +564,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
         if (status != NC_NOERR) {
           *ret_int = 0;
-          exerrval = status;
+          EXERRVAL = status;
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to side set %" PRId64 " node length in file id %d", id, exoid);
-          ex_err("ex_inquire", errmsg, exerrval);
+          ex_err("ex_inquire", errmsg, EXERRVAL);
           free(stat_vals);
           free(ids);
           return (EX_FATAL);
@@ -605,10 +605,10 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
     if (nc_inq_dimid(exoid, DIM_NUM_SS, &dimid) == NC_NOERR) {
       if ((status = nc_inq_dimlen(exoid, dimid, &num_sets)) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of side sets in file id %d",
                  exoid);
-        ex_err("ex_inquire", errmsg, exerrval);
+        ex_err("ex_inquire", errmsg, EXERRVAL);
         return (EX_FATAL);
       }
 
@@ -619,24 +619,24 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
           }
           else {
             *ret_int = 0;
-            exerrval = status;
+            EXERRVAL = status;
             snprintf(errmsg, MAX_ERR_LENGTH,
                      "ERROR: failed to locate number of dist fact for %" ST_ZU
                      "'th side set in file id %d",
                      i, exoid);
-            ex_err("ex_inquire", errmsg, exerrval);
+            ex_err("ex_inquire", errmsg, EXERRVAL);
             return (EX_FATAL);
           }
         }
         else {
           if ((status = nc_inq_dimlen(exoid, dimid, &ldum)) != NC_NOERR) {
             *ret_int = 0;
-            exerrval = status;
+            EXERRVAL = status;
             snprintf(errmsg, MAX_ERR_LENGTH,
                      "ERROR: failed to get number of dist factors in %" ST_ZU
                      "'th side set in file id %d",
                      i, exoid);
-            ex_err("ex_inquire", errmsg, exerrval);
+            ex_err("ex_inquire", errmsg, EXERRVAL);
             return (EX_FATAL);
           }
         }
@@ -898,7 +898,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Requested group name, but character pointer was "
                                        "null for file id %d",
                exoid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
 #if NC_HAS_HDF5
@@ -929,7 +929,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Requested group name, but character pointer was "
                                        "null for file id %d",
                exoid);
-      ex_err("ex_inquire", errmsg, exerrval);
+      ex_err("ex_inquire", errmsg, EXERRVAL);
       return (EX_FATAL);
     }
 #if NC_HAS_HDF5
@@ -939,9 +939,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   default:
     *ret_int = 0;
-    exerrval = EX_FATAL;
+    EXERRVAL = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid inquiry %d", req_info);
-    ex_err("ex_inquire", errmsg, exerrval);
+    ex_err("ex_inquire", errmsg, EXERRVAL);
     return (EX_FATAL);
   }
   return (EX_NOERR);
