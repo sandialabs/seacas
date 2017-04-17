@@ -50,7 +50,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_inquire_int, exerrval, etc
+#include "exodusII.h"     // for ex_inquire_int, EXERRVAL, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid
 #include <stdio.h>
@@ -70,7 +70,7 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0;
+  EXERRVAL = 0;
 
   switch (obj_type) {
   case EX_ELEM_BLOCK: vobj = VAR_NAME_EL_BLK; break;
@@ -87,9 +87,9 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
   case EX_ELEM_MAP: vobj   = VAR_NAME_EM; break;
   default:
     /* invalid variable type */
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

@@ -84,7 +84,7 @@ int ex_opts(int options)
 {
   EX_FUNC_ENTER();
   int oldval = exoptval;
-  exerrval   = 0; /* clear error code */
+  EXERRVAL   = 0; /* clear error code */
   exoptval   = options;
   EX_FUNC_LEAVE(oldval);
 }

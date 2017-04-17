@@ -170,7 +170,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
 
   EX_FUNC_ENTER();
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
     int run_version_major = run_version / 100;
@@ -191,22 +191,22 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
  */
 #if !NC_HAS_HDF5
   if (my_mode & EX_NETCDF4) {
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: File format specified as netcdf-4, but the "
                                      "NetCDF library being used was not configured to enable "
                                      "this format\n");
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
 
 #if !defined(NC_64BIT_DATA)
   if (my_mode & EX_64BIT_DATA) {
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: File format specified as 64bit_data, but "
                                      "the NetCDF library being used does not support this "
                                      "format\n");
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
@@ -222,13 +222,13 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
       /* Checks that only a single bit is set */
       set_modes = set_modes && !(set_modes & (set_modes - 1));
       if (!set_modes) {
-        exerrval = EX_BADPARAM;
+        EXERRVAL = EX_BADPARAM;
         snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: More than 1 file format "
                                          "(EX_NORMAL_MODEL, EX_LARGE_MODEL, EX_64BIT_OFFSET, "
                                          "EX_64BIT_DATA, or EX_NETCDF4)\nwas specified in the "
                                          "mode argument of the ex_create call. Only a single "
                                          "format can be specified.\n");
-        ex_err(routine, errmsg, exerrval);
+        ex_err(routine, errmsg, EXERRVAL);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -273,11 +273,11 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     }
 #else
     /* Library does NOT support netcdf4 or cdf5 */
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: 64-bit integer storage requested, but the "
                                      "netcdf library does not support the required netcdf-4 or "
                                      "64BIT_DATA extensions.\n");
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
 #endif
   }
@@ -382,7 +382,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
 #endif
 
   if ((status = nc_create(path, nc_mode, &exoid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
 #if NC_HAS_HDF5
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s, mode: %s", path, mode_name);
 #else
@@ -396,16 +396,16 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
                mode_name);
     }
 #endif
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* turn off automatic filling of netCDF variables */
 
   if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -418,13 +418,13 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
      this exoid
   */
   if (ex_find_file_item(exoid) != NULL) {
-    exerrval = EX_BADFILEID;
+    EXERRVAL = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: There is an existing file already using the file "
                                      "id %d which was also assigned to file %s.\n\tWas "
                                      "nc_close() called instead of ex_close() on an open Exodus "
                                      "file?\n",
              exoid, path);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     nc_close(exoid);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -433,10 +433,10 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
    * i/o wordsize attribute from file is zero.
    */
   if (ex_conv_ini(exoid, comp_ws, io_ws, 0, int64_status, 0, 0, 0) != EX_NOERR) {
-    exerrval = EX_FATAL;
+    EXERRVAL = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -448,20 +448,20 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   vers = EX_API_VERS;
   if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_API_VERSION, NC_FLOAT, 1, &vers)) !=
       NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II API version attribute in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* store Exodus file version # as an attribute */
   vers = EX_VERS;
   if ((status = nc_put_att_float(exoid, NC_GLOBAL, ATT_VERSION, NC_FLOAT, 1, &vers)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II file version attribute in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -469,20 +469,20 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   lio_ws = (int)(*io_ws);
   if ((status = nc_put_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE, NC_INT, 1, &lio_ws)) !=
       NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store Exodus II file float word size "
                                      "attribute in file id %d",
              exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* store Exodus file size (1=large, 0=normal) as an attribute */
   if ((status = nc_put_att_int(exoid, NC_GLOBAL, ATT_FILESIZE, NC_INT, 1, &filesiz)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II file size attribute in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -490,10 +490,10 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     int max_so_far = 32;
     if ((status = nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far)) !=
         NC_NOERR) {
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to add maximum_name_length attribute in file id %d", exoid);
-      ex_err(routine, errmsg, exerrval);
+      ex_err(routine, errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -502,9 +502,9 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
 
   /* create string length dimension */
   if ((status = nc_def_dim(exoid, DIM_STR, (MAX_STR_LENGTH + 1), &dimid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define string length in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -513,18 +513,18 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
 
   /* create line length dimension */
   if ((status = nc_def_dim(exoid, DIM_LIN, (MAX_LINE_LENGTH + 1), &dimid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define line length in file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* create number "4" dimension; must be of type long */
   if ((status = nc_def_dim(exoid, DIM_N4, 4L, &dimid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number \"4\" dimension in file id %d",
              exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -532,18 +532,18 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     int int64_db_status = int64_status & EX_ALL_INT64_DB;
     if ((status = nc_put_att_int(exoid, NC_GLOBAL, ATT_INT64_STATUS, NC_INT, 1,
                                  &int64_db_status)) != NC_NOERR) {
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to add int64_status attribute in file id %d",
                exoid);
-      ex_err(routine, errmsg, exerrval);
+      ex_err(routine, errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err(routine, errmsg, exerrval);
+    ex_err(routine, errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

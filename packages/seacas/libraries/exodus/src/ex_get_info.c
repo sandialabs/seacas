@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for EXERRVAL, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_trim_internal, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_vara_text, etc
 #include <stddef.h>       // for size_t
@@ -87,32 +87,32 @@ int ex_get_info(int exoid, char **info)
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   /* inquire previously defined dimensions and variables  */
   if ((status = nc_inq_dimid(rootid, DIM_NUM_INFO, &dimid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Warning: failed to locate number of info records in file id %d", rootid);
-    ex_err("ex_get_info", errmsg, exerrval);
+    ex_err("ex_get_info", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
   if ((status = nc_inq_dimlen(rootid, dimid, &num_info)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of info records in file id %d",
              rootid);
-    ex_err("ex_get_info", errmsg, exerrval);
+    ex_err("ex_get_info", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* do this only if there are any information records */
   if (num_info > 0) {
     if ((status = nc_inq_varid(rootid, VAR_INFO, &varid)) != NC_NOERR) {
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate info record data in file id %d",
                rootid);
-      ex_err("ex_get_info", errmsg, exerrval);
+      ex_err("ex_get_info", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -124,10 +124,10 @@ int ex_get_info(int exoid, char **info)
       count[1] = MAX_LINE_LENGTH + 1;
 
       if ((status = nc_get_vara_text(rootid, varid, start, count, info[i])) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get info record data in file id %d",
                  rootid);
-        ex_err("ex_get_info", errmsg, exerrval);
+        ex_err("ex_get_info", errmsg, EXERRVAL);
         EX_FUNC_LEAVE(EX_FATAL);
       }
       info[i][MAX_LINE_LENGTH] = '\0';

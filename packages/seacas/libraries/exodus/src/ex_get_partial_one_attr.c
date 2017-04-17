@@ -54,7 +54,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, exerrval, etc
+#include "exodusII.h"     // for ex_err, EXERRVAL, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_get_dimension, etc
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
@@ -93,7 +93,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   if (num_ent == 0) {
     EX_FUNC_LEAVE(EX_NOERR);
@@ -101,8 +101,8 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
-    if (exerrval != 0) {
-      if (exerrval == EX_NULLENTITY) {
+    if (EXERRVAL != 0) {
+      if (EXERRVAL == EX_NULLENTITY) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
@@ -112,7 +112,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: failed to locate %s id%" PRId64 " in id array in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
-      ex_err("ex_get_partial_one_attr", errmsg, exerrval);
+      ex_err("ex_get_partial_one_attr", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_WARN);
     }
   }
@@ -164,7 +164,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
     vattrbname = VAR_ATTRIB(obj_id_ndx);
     break;
   default:
-    exerrval = 1005;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
@@ -179,12 +179,12 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   }
 
   if (start_num + num_ent - 1 > num_entries_this_obj) {
-    exerrval = EX_BADPARAM;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + count (%" PRId64
              ") is larger than total number of entities (%" ST_ZU ") in file id %d",
              start_num, num_ent, num_entries_this_obj, exoid);
-    ex_err("ex_get_partial_one_attr", errmsg, exerrval);
+    ex_err("ex_get_partial_one_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -194,20 +194,20 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   }
 
   if (attrib_index < 1 || attrib_index > (int)num_attr) {
-    exerrval = EX_FATAL;
+    EXERRVAL = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid attribute index specified: %d.  Valid "
                                      "range is 1 to %d for %s %" PRId64 " in file id %d",
              attrib_index, (int)num_attr, ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_partial_one_attr", errmsg, exerrval);
+    ex_err("ex_get_partial_one_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vattrbname, &attrid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_partial_one_attr", errmsg, exerrval);
+    ex_err("ex_get_partial_one_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -229,11 +229,11 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get attribute %d for %s %" PRId64 " in file id %d", attrib_index,
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_partial_one_attr", errmsg, exerrval);
+    ex_err("ex_get_partial_one_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

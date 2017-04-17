@@ -82,23 +82,23 @@ int ex_put_partial_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_i
   char * factptr = NULL;
 
   EX_FUNC_ENTER();
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);
 
   /* first check if any sets are specified */
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %ss specified in file id %d",
              ex_name_of_object(set_type), exoid);
-    ex_err("ex_put_partial_set_dist_fact", errmsg, exerrval);
+    ex_err("ex_put_partial_set_dist_fact", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Lookup index of set id in VAR_*S_IDS array */
   set_id_ndx = ex_id_lkup(exoid, set_type, set_id);
-  if (exerrval != 0) {
-    if (exerrval == EX_NULLENTITY) {
+  if (EXERRVAL != 0) {
+    if (EXERRVAL == EX_NULLENTITY) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: no data allowed for NULL %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
@@ -108,7 +108,7 @@ int ex_put_partial_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_i
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in VAR_*S_IDS array in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_put_partial_set_dist_fact", errmsg, exerrval);
+    ex_err("ex_put_partial_set_dist_fact", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -137,18 +137,18 @@ int ex_put_partial_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_i
     /* this test is only needed for node set because we're using
        DIM_NUM_NOD_NS instead of  DIM_NUM_DF_NS*/
     if (status == NC_ENOTVAR) {
-      exerrval = EX_BADPARAM;
+      EXERRVAL = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: no dist factors defined for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_put_partial_set_dist_fact", errmsg, exerrval);
+      ex_err("ex_put_partial_set_dist_fact", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_WARN);
     }
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate dist factors list for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_put_partial_set_dist_fact", errmsg, exerrval);
+    ex_err("ex_put_partial_set_dist_fact", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -167,11 +167,11 @@ int ex_put_partial_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_i
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store dist factors for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_put_partial_set_dist_fact", errmsg, exerrval);
+    ex_err("ex_put_partial_set_dist_fact", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

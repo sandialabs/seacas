@@ -1605,8 +1605,10 @@ ex_put_nodal_var_slab(int     exoid,           /* NetCDF/Exodus file ID */
  * ======================================================================== */
 
 /* ERROR CODE DEFINITIONS AND STORAGE                                       */
-EXODUS_EXPORT int exerrval; /**< shared error return value                */
 EXODUS_EXPORT int exoptval; /**< error reporting flag (default is quiet)  */
+#if !defined(EX_THREADSAFE)
+EXODUS_EXPORT int exerrval; /**< shared error return value                */
+#endif
 
 EXODUS_EXPORT char *ex_name_of_object(ex_entity_type obj_type);
 EXODUS_EXPORT ex_entity_type ex_var_type_to_ex_entity_type(char var_type);

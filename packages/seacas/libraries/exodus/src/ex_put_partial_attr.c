@@ -80,13 +80,13 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   if (blk_type != EX_NODAL) {
     /* Determine index of blk_id in VAR_ID_EL_BLK array */
     blk_id_ndx = ex_id_lkup(exoid, blk_type, blk_id);
-    if (exerrval != 0) {
-      if (exerrval == EX_NULLENTITY) {
+    if (EXERRVAL != 0) {
+      if (EXERRVAL == EX_NULLENTITY) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "Warning: no attributes allowed for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(blk_type), blk_id, exoid);
@@ -95,7 +95,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
       }
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %s id %" PRId64 " in in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
-      ex_err("ex_put_partial_attr", errmsg, exerrval);
+      ex_err("ex_put_partial_attr", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -111,7 +111,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   case EX_FACE_BLOCK: status = nc_inq_varid(exoid, VAR_FATTRIB(blk_id_ndx), &attrid); break;
   case EX_ELEM_BLOCK: status = nc_inq_varid(exoid, VAR_ATTRIB(blk_id_ndx), &attrid); break;
   default:
-    exerrval = 1005;
+    EXERRVAL = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", blk_type,
              exoid);
@@ -120,11 +120,11 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate attribute variable for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, exerrval);
+    ex_err("ex_put_partial_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -154,7 +154,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: number of attributes not defined for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
@@ -163,11 +163,11 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   }
 
   if ((status = nc_inq_dimlen(exoid, numattrdim, &num_attr)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get number of attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, exerrval);
+    ex_err("ex_put_partial_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -189,11 +189,11 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to put attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, exerrval);
+    ex_err("ex_put_partial_attr", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

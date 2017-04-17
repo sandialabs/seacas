@@ -52,7 +52,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for EXERRVAL, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
 #include <stddef.h>       // for size_t
 #include <stdio.h>
@@ -141,7 +141,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  exerrval = 0; /* clear error code */
+  EXERRVAL = 0; /* clear error code */
 
   /* set error handling mode to no messages, non-fatal errors */
   ex_opts(exoptval); /* call required to set ncopts first time through */
@@ -160,9 +160,9 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
   }
 
   if ((mode & EX_READ) && (mode & EX_WRITE)) {
-    exerrval = EX_BADFILEMODE;
+    EXERRVAL = EX_BADFILEMODE;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot specify both EX_READ and EX_WRITE");
-    ex_err("ex_open", errmsg, exerrval);
+    ex_err("ex_open", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -221,10 +221,10 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
                 path);
 
 #endif
-        exerrval = status;
+        EXERRVAL = status;
       }
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s read only", path);
-      ex_err("ex_open", errmsg, exerrval);
+      ex_err("ex_open", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -237,17 +237,17 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
 #endif
     if ((status = nc_open(path, NC_WRITE | NC_SHARE, &exoid)) != NC_NOERR) {
       /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only", path);
-      ex_err("ex_open", errmsg, exerrval);
+      ex_err("ex_open", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* turn off automatic filling of netCDF variables */
     if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
-      exerrval = status;
+      EXERRVAL = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
-      ex_err("ex_open", errmsg, exerrval);
+      ex_err("ex_open", errmsg, EXERRVAL);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -255,10 +255,10 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
     stat_dim = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
     if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
       if ((status = nc_redef(exoid)) != NC_NOERR) {
-        exerrval = status;
+        EXERRVAL = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode",
                  exoid);
-        ex_err("ex_open", errmsg, exerrval);
+        ex_err("ex_open", errmsg, EXERRVAL);
         EX_FUNC_LEAVE(EX_FATAL);
       }
 
@@ -273,17 +273,17 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
         /* Not found; set to default value of 32+1. */
         int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
         if ((status = nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name)) != NC_NOERR) {
-          exerrval = status;
+          EXERRVAL = status;
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to define string name dimension in file id %d", exoid);
-          ex_err("ex_open", errmsg, exerrval);
+          ex_err("ex_open", errmsg, EXERRVAL);
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }
-      if ((exerrval = nc_enddef(exoid)) != NC_NOERR) {
+      if ((EXERRVAL = nc_enddef(exoid)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
                  exoid);
-        ex_err("ex_open", errmsg, exerrval);
+        ex_err("ex_open", errmsg, EXERRVAL);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -294,30 +294,30 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
    */
 
   if ((status = nc_get_att_float(exoid, NC_GLOBAL, ATT_VERSION, version)) != NC_NOERR) {
-    exerrval = status;
+    EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get database version for file id: %d",
              exoid);
-    ex_err("ex_open", errmsg, exerrval);
+    ex_err("ex_open", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* check ExodusII file version - old version 1.x files are not supported */
   if (*version < 2.0) {
-    exerrval = EX_FATAL;
+    EXERRVAL = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
              *version, exoid);
-    ex_err("ex_open", errmsg, exerrval);
+    ex_err("ex_open", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE, &file_wordsize) != NC_NOERR) {
     /* try old (prior to db version 2.02) attribute name */
     if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE_BLANK, &file_wordsize) != NC_NOERR) {
-      exerrval = EX_FATAL;
+      EXERRVAL = EX_FATAL;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file wordsize from file id: %d",
                exoid);
-      ex_err("ex_open", errmsg, exerrval);
-      EX_FUNC_LEAVE(exerrval);
+      ex_err("ex_open", errmsg, EXERRVAL);
+      EX_FUNC_LEAVE(EXERRVAL);
     }
   }
 
@@ -343,23 +343,23 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
   */
   if (ex_find_file_item(exoid) != NULL) {
     char errmsg[MAX_ERR_LENGTH];
-    exerrval = EX_BADFILEID;
+    EXERRVAL = EX_BADFILEID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: There is an existing file already using the file "
                                      "id %d which was also assigned to file %s.\n\tWas "
                                      "nc_close() called instead of ex_close() on an open Exodus "
                                      "file?\n",
              exoid, path);
-    ex_err("ex_open", errmsg, exerrval);
+    ex_err("ex_open", errmsg, EXERRVAL);
     nc_close(exoid);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* initialize floating point and integer size conversion. */
   if (ex_conv_ini(exoid, comp_ws, io_ws, file_wordsize, int64_status, 0, 0, 0) != EX_NOERR) {
-    exerrval = EX_FATAL;
+    EXERRVAL = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d", exoid);
-    ex_err("ex_open", errmsg, exerrval);
+    ex_err("ex_open", errmsg, EXERRVAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
