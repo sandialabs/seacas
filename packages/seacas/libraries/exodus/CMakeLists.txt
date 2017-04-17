@@ -16,6 +16,12 @@ else()
 endif()
 TRIBITS_CONFIGURE_FILE(exodus_config.h)
 
+if (${EXODUS_ENABLE_THREADSAFE})
+   add_definitions(-DEX_THREADSAFE)
+else()
+   list(REMOVE_ITEM SOURCES src/ex_threadsafe.c)
+endif()
+
 SET_AND_INC_DIRS(DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 SET(HEADERS
@@ -29,10 +35,6 @@ TRIBITS_ADD_LIBRARY(
   HEADERS ${HEADERS}
   SOURCES ${SOURCES} ${DEP_SOURCES}
 )
-
-if (${EXODUS_ENABLE_THREADSAFE})
-   add_definitions(-DEX_THREADSAFE)
-endif()
 
 if (${TPL_Netcdf_PARALLEL})
    add_definitions(-DPARALLEL_AWARE_EXODUS)
