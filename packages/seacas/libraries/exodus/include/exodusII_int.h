@@ -101,6 +101,54 @@ extern "C" {
 #define EX_FILE_ID_MASK (0xffff0000) /* Must match FILE_ID_MASK in netcdf nc4internal.h */
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
+#if defined(EX_THREADSAFE)
+extern pthread_once_t EX_first_init_g;
+
+typedef struct EX_mutex_struct
+{
+  pthread_t       owner_thread; /* current lock owner */
+  pthread_mutex_t atomic_lock;  /* lock for atomicity of new mechanism */
+  pthread_cond_t  cond_var;     /* condition variable */
+  unsigned int    lock_count;
+} EX_mutex_t;
+
+typedef struct EX_api_struct
+{
+  EX_mutex_t   init_lock;    /* API entrance mutex */
+  unsigned int EX_libinit_g; /* Has the library been initialized? */
+} EX_api_t;
+
+extern EX_api_t EX_g;
+extern int      EX_cancel_count_dec(void);
+extern int      EX_cancel_count_inc(void);
+extern int EX_mutex_lock(EX_mutex_t *mutex);
+extern int EX_mutex_unlock(EX_mutex_t *mutex);
+extern void EX_pthread_first_thread_init(void);
+
+#define EX_FUNC_ENTER()                                                                            \
+  do {                                                                                             \
+    /* Initialize the thread-safe code */                                                          \
+    pthread_once(&EX_first_init_g, EX_pthread_first_thread_init);                                  \
+                                                                                                   \
+    /* Grab the mutex for the library */                                                           \
+    EX_cancel_count_inc();                                                                         \
+    EX_mutex_lock(&EX_g.init_lock);                                                                \
+  } while (0)
+
+#define EX_FUNC_LEAVE(error)                                                                       \
+  do {                                                                                             \
+    EX_mutex_unlock(&EX_g.init_lock);                                                              \
+    EX_cancel_count_dec();                                                                         \
+    return error;                                                                                  \
+  } while (0)
+
+#define EX_FUNC_VOID()                                                                             \
+  do {                                                                                             \
+    EX_mutex_unlock(&EX_g.init_lock);                                                              \
+    EX_cancel_count_dec();                                                                         \
+  } while (0)
+
+#else
 #if 0
 EXODUS_EXPORT int indent;
 #define EX_FUNC_ENTER()                                                                            \
@@ -124,6 +172,7 @@ EXODUS_EXPORT int indent;
 #define EX_FUNC_ENTER() /* Nothing so far */
 #define EX_FUNC_LEAVE(error) return error
 #define EX_FUNC_VOID() return
+#endif
 #endif
 /*
  * This file contains defined constants that are used internally in the
