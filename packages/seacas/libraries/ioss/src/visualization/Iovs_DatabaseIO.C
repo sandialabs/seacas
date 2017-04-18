@@ -256,6 +256,9 @@ namespace Iovs {
 
       typedef ParaViewCatalystIossAdapterBase * (*PvCatSrrAdapterMakerFuncType)();
 
+#ifdef __GNUC__
+__extension__
+#endif
       PvCatSrrAdapterMakerFuncType mkr =
         reinterpret_cast<PvCatSrrAdapterMakerFuncType>(
           dlsym(globalCatalystIossDlHandle,
