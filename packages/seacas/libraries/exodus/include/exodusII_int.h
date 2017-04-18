@@ -108,21 +108,11 @@ extern pthread_once_t EX_first_init_g;
 
 typedef struct EX_mutex_struct
 {
-  pthread_t       owner_thread; /* current lock owner */
   pthread_mutex_t atomic_lock;  /* lock for atomicity of new mechanism */
-  pthread_cond_t  cond_var;     /* condition variable */
-  unsigned int    lock_count;
+  pthread_mutexattr_t attribute;
 } EX_mutex_t;
 
-typedef struct EX_api_struct
-{
-  EX_mutex_t   init_lock;    /* API entrance mutex */
-  unsigned int EX_libinit_g; /* Has the library been initialized? */
-} EX_api_t;
-
-extern EX_api_t EX_g;
-extern int      ex_cancel_count_dec(void);
-extern int      ex_cancel_count_inc(void);
+extern EX_mutex_t EX_g;
 extern int ex_mutex_lock(EX_mutex_t *mutex);
 extern int ex_mutex_unlock(EX_mutex_t *mutex);
 extern void ex_pthread_first_thread_init(void);
@@ -134,22 +124,19 @@ extern int *exerrval_get();
     pthread_once(&EX_first_init_g, ex_pthread_first_thread_init);                                  \
                                                                                                    \
     /* Grab the mutex for the library */                                                           \
-    ex_cancel_count_inc();                                                                         \
-    ex_mutex_lock(&EX_g.init_lock);                                                                \
+    ex_mutex_lock(&EX_g);                                                                \
     exerrval = exerrval_get();                                                                     \
   } while (0)
 
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
-    ex_mutex_unlock(&EX_g.init_lock);                                                              \
-    ex_cancel_count_dec();                                                                         \
+    ex_mutex_unlock(&EX_g);                                                              \
     return error;                                                                                  \
   } while (0)
 
 #define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
-    ex_mutex_unlock(&EX_g.init_lock);                                                              \
-    ex_cancel_count_dec();                                                                         \
+    ex_mutex_unlock(&EX_g);                                                              \
   } while (0)
 
 #else
