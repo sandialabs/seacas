@@ -1,3 +1,4 @@
+#if EX_THREADSAFE
 #define _GNU_SOURCE
 #include <pthread.h>
 
@@ -86,3 +87,4 @@ int *exerrval_get(void)
 
   return exerrval;
 }
+#endif
