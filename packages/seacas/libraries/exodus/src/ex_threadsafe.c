@@ -4,9 +4,8 @@
 
 #include "exodusII.h"
 #include "exodusII_int.h"
-#include <string.h>
 #include <stdio.h>
-
+#include <string.h>
 
 /* NOTE: All code in this file is based on the thread-safe code from the
  * hdf5 library.
@@ -24,12 +23,12 @@ static void ex_key_destructor(void *key_val)
     free(key_val);
 }
 
-#define ex_err_abort(status, message) do { \
-    fprintf(stderr, "%s in file %s at line %d: %s\n", \
-	    message, __FILE__, __LINE__, strerror(status)); \
-    abort(); \
-  } while(0)
-
+#define ex_err_abort(status, message)                                                              \
+  do {                                                                                             \
+    fprintf(stderr, "%s in file %s at line %d: %s\n", message, __FILE__, __LINE__,                 \
+            strerror(status));                                                                     \
+    abort();                                                                                       \
+  } while (0)
 
 void ex_pthread_first_thread_init(void)
 {
@@ -71,7 +70,7 @@ int ex_mutex_unlock(EX_mutex_t *mutex)
     ex_err_abort(ret_value, "Unlock mutex");
   }
   return ret_value;
-} 
+}
 
 int *exerrval_get(void)
 {

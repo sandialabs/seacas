@@ -1,20 +1,20 @@
+#include <exodusII.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <exodusII.h>
 
 /*
  * Create an exodus file with NUM_NODES nodes and 0 elements.
  * Initial mesh is created on main thread.
- * There are 
+ * There are
  * Nodal var data and names is written on multiple threads
  * -- Each thread handles a portion of the nodes for each nodal variable
  * -- Each thread handles a portion of the nodes for each coordinate variable
  */
 
-#define NUM_THREADS	8
-#define NUM_NODES      64 /* should be multiple of NUM_THREADS */
-#define NUM_NODAL_VAR   4
+#define NUM_THREADS 8
+#define NUM_NODES 64 /* should be multiple of NUM_THREADS */
+#define NUM_NODAL_VAR 4
 
 typedef struct
 {
@@ -25,32 +25,32 @@ typedef struct
 
 void *output_nodal_var(void *varg)
 {
-  char name[33];
-  param *arg = (param*)varg;
-  int num_node = ex_inquire_int(arg->exoid, EX_INQ_NODES);
-  int segment = num_node / NUM_THREADS;
-  int begin = arg->threadid * segment;
+  char   name[33];
+  param *arg      = (param *)varg;
+  int    num_node = ex_inquire_int(arg->exoid, EX_INQ_NODES);
+  int    segment  = num_node / NUM_THREADS;
+  int    begin    = arg->threadid * segment;
 
   float *data = malloc(segment * sizeof(float));
-  int i, var;
+  int    i, var;
 
   if (arg->timestep == 1) {
-    for (i=0; i < segment; i++) {
-      data[i] = (float)(begin+i) / 100.0;
+    for (i = 0; i < segment; i++) {
+      data[i] = (float)(begin + i) / 100.0;
     }
-    ex_put_partial_coord(arg->exoid, begin+1, segment, data, data, data);
+    ex_put_partial_coord(arg->exoid, begin + 1, segment, data, data, data);
   }
 
   if (arg->threadid < NUM_NODAL_VAR) {
-    sprintf(name, "NodalVar%d", arg->threadid+1);
-    ex_put_variable_name(arg->exoid, EX_NODAL, arg->threadid+1, name);
+    sprintf(name, "NodalVar%d", arg->threadid + 1);
+    ex_put_variable_name(arg->exoid, EX_NODAL, arg->threadid + 1, name);
   }
-  
+
   for (var = 1; var <= NUM_NODAL_VAR; var++) {
-    for (i=0; i < segment; i++) {
-      data[i] = (arg->timestep-1)*10 + var + (float)(begin+i) / 100.0;
+    for (i = 0; i < segment; i++) {
+      data[i] = (arg->timestep - 1) * 10 + var + (float)(begin + i) / 100.0;
     }
-    ex_put_partial_var(arg->exoid, arg->timestep, EX_NODAL, var, 1, begin+1, segment, data);
+    ex_put_partial_var(arg->exoid, arg->timestep, EX_NODAL, var, 1, begin + 1, segment, data);
   }
   free(data);
   return NULL;
@@ -63,12 +63,12 @@ int init_file(int num_nodal_vars)
   int IO_word_size  = 4; /* (4 bytes) */
 
   ex_opts(EX_VERBOSE);
-  
+
   /* create EXODUS II file */
   int exoid = ex_create("test.exo",     /* filename path */
-                    EX_CLOBBER,     /* create mode */
-                    &CPU_word_size, /* CPU float word size in bytes */
-                    &IO_word_size); /* I/O float word size in bytes */
+                        EX_CLOBBER,     /* create mode */
+                        &CPU_word_size, /* CPU float word size in bytes */
+                        &IO_word_size); /* I/O float word size in bytes */
   printf("after ex_create for test.exo, exoid = %d\n", exoid);
   printf(" cpu word size: %d io word size: %d\n", CPU_word_size, IO_word_size);
 
@@ -81,7 +81,7 @@ int init_file(int num_nodal_vars)
   int num_side_sets = 0;
 
   int error = ex_put_init(exoid, "This is a test", num_dim, num_nodes, num_elem, num_elem_blk,
-                      num_node_sets, num_side_sets);
+                          num_node_sets, num_side_sets);
 
   printf("after ex_put_init, error = %d\n", error);
 
@@ -93,7 +93,7 @@ int init_file(int num_nodal_vars)
   }
 
   float time_value = 0.0;
-  error = ex_put_time(exoid, 1, &time_value);
+  error            = ex_put_time(exoid, 1, &time_value);
   printf("after ex_put_time, error = %d\n", error);
 
   return exoid;
@@ -101,36 +101,33 @@ int init_file(int num_nodal_vars)
 
 int main(int argc, char *argv[])
 {
-   pthread_t threads[NUM_THREADS];
-   int rc;
-   long t;
+  pthread_t threads[NUM_THREADS];
+  int       rc;
+  long      t;
 
-   int exoid = init_file(NUM_NODAL_VAR);
-   
-   param arg[NUM_THREADS];
+  int exoid = init_file(NUM_NODAL_VAR);
 
-   printf("Running on %d threads\n", NUM_THREADS);
-   for(t=0;t<NUM_THREADS;t++){
-     arg[t].exoid = exoid;
-     arg[t].threadid = t;
-     arg[t].timestep = 1;
+  param arg[NUM_THREADS];
 
-     rc = pthread_create(&threads[t], NULL, output_nodal_var, (void *)(arg+t));
-     if (rc){
-       printf("ERROR; return code from pthread_create() is %d\n", rc);
-       exit(-1);
-       }
-     }
+  printf("Running on %d threads\n", NUM_THREADS);
+  for (t = 0; t < NUM_THREADS; t++) {
+    arg[t].exoid    = exoid;
+    arg[t].threadid = t;
+    arg[t].timestep = 1;
 
-   for (t = 0; t < NUM_THREADS; t++)
-     {
-       pthread_join(threads[t], NULL);
-     }
-   
-   ex_close(exoid);
-   
-   /* Last thing that main() should do */
-   pthread_exit(NULL);
+    rc = pthread_create(&threads[t], NULL, output_nodal_var, (void *)(arg + t));
+    if (rc) {
+      printf("ERROR; return code from pthread_create() is %d\n", rc);
+      exit(-1);
+    }
+  }
+
+  for (t = 0; t < NUM_THREADS; t++) {
+    pthread_join(threads[t], NULL);
+  }
+
+  ex_close(exoid);
+
+  /* Last thing that main() should do */
+  pthread_exit(NULL);
 }
-
-

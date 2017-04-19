@@ -225,7 +225,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     break;
   case EX_NODAL:
     status = ex_put_partial_nodal_var_int(exoid, time_step, var_index, start_index, num_entities,
-					  var_vals);
+                                          var_vals);
     EX_FUNC_LEAVE(status);
     break;
   case EX_EDGE_BLOCK:
