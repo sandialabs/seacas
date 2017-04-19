@@ -23,7 +23,7 @@ typedef struct
 
 void *output_nodal_var(void *varg)
 {
-  char name[32];
+  char name[33];
   param *arg = (param*)varg;
   int num_node = ex_inquire_int(arg->exoid, EX_INQ_NODES);
   float *data = malloc(num_node * sizeof(float));
@@ -105,10 +105,10 @@ int main(int argc, char *argv[])
 
    int exoid = init_file(NUM_THREADS);
    
-   param *arg=(param *)malloc(sizeof(param)*NUM_THREADS);
+   param arg[NUM_THREADS];
 
+   printf("Running on %d threads\n", NUM_THREADS);
    for(t=0;t<NUM_THREADS;t++){
-     printf("In main: creating thread %ld\n", t);
      arg[t].exoid = exoid;
      arg[t].threadid = t;
      arg[t].timestep = 1;
@@ -126,6 +126,7 @@ int main(int argc, char *argv[])
      }
    
    ex_close(exoid);
+   
    /* Last thing that main() should do */
    pthread_exit(NULL);
 }
