@@ -336,5 +336,5 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     }
   }
 
-  return iexit;
+  EX_FUNC_LEAVE(iexit);
 }

@@ -76,7 +76,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   EX_FUNC_ENTER();
 
   if (exoid < 0) {
-    return exoid;
+    EX_FUNC_LEAVE(exoid);
   }
 
   if (nframes == 0) { /* write nothing */
@@ -84,7 +84,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   }
 
   if (nframes < 0) {
-    return 1;
+    EX_FUNC_LEAVE(1);
   }
 
   assert(cf_ids != 0);

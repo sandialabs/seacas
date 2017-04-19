@@ -39,7 +39,6 @@
 /* Function(s) contained in this file:
  *
  *     ex_leavedef()
- *     ex_catstrn12()
  *     ne_id_lkup()
  *     ex_get_file_type()
  *     ex_put_nemesis_version()
@@ -70,50 +69,14 @@ int ex_leavedef(int exoid, const char *call_rout)
   char errmsg[MAX_ERR_LENGTH];
   int  status;
 
-  EX_FUNC_ENTER();
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
     EXERRVAL = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to end define mode for file id %d", exoid);
     ex_err(call_rout, errmsg, EXERRVAL);
 
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
-  EX_FUNC_LEAVE(EX_NOERR);
-}
-
-/*****************************************************************************/
-/*****************************************************************************/
-/*****************************************************************************/
-char *ex_catstrn12(char *name, int num1, int num2)
-{
-  /* Should only be called by an already locked function */
-  const char *func_name = "ex_catstrn12";
-
-  char errmsg[MAX_ERR_LENGTH];
-
-  EXERRVAL = 0; /* clear error code */
-
-  if (ne_ret_string == NULL) {
-    ne_ret_string = (char *)malloc((NC_MAX_NAME + 1) * sizeof(char));
-    if (ne_ret_string == NULL) {
-      EXERRVAL = EX_MSG;
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Insufficient memory!\n");
-      ex_err(func_name, errmsg, EXERRVAL);
-      return NULL;
-    }
-  }
-
-  if (strlen(name) > NC_MAX_NAME) {
-    EXERRVAL = EX_MSG;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: name too long!");
-    ex_err(func_name, errmsg, EXERRVAL);
-
-    return (NULL);
-  }
-
-  sprintf(ne_ret_string, "%s%d-%d", name, num1, num2);
-
-  return ne_ret_string;
+  return (EX_NOERR);
 }
 
 /*****************************************************************************/
@@ -135,7 +98,6 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
 
   char errmsg[MAX_ERR_LENGTH];
 
-  EX_FUNC_ENTER();
   EXERRVAL = 0; /* clear error code */
 
   if ((status = nc_inq_varid(exoid, ne_var_name, &varid)) != NC_NOERR) {
@@ -143,7 +105,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              ne_var_name, exoid);
     ex_err(func_name, errmsg, EXERRVAL);
-    EX_FUNC_LEAVE(EX_FATAL);
+    return (EX_FATAL);
   }
 
   /* check if I need the length for this variable */
@@ -156,7 +118,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
                                        "in file ID %d",
                ne_var_name, exoid);
       ex_err(func_name, errmsg, EXERRVAL);
-      EX_FUNC_LEAVE(-1);
+      return (-1);
     }
 
     /* Get the length of this variable */
@@ -166,7 +128,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
                "ERROR: failed to find dimension for variable \"%s\" in file ID %d", ne_var_name,
                exoid);
       ex_err(func_name, errmsg, EXERRVAL);
-      EX_FUNC_LEAVE(-1);
+      return (-1);
     }
 
     idx[1] = length;
@@ -185,7 +147,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable \"%s\" in file ID %d",
                ne_var_name, exoid);
       ex_err(func_name, errmsg, EXERRVAL);
-      EX_FUNC_LEAVE(-1);
+      return (-1);
     }
 
     if (id_val == ne_var_id) {
@@ -193,7 +155,7 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
       break;
     }
   }
-  EX_FUNC_LEAVE(ret);
+  return (ret);
 }
 
 /*****************************************************************************/

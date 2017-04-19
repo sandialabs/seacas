@@ -108,7 +108,7 @@ extern pthread_once_t EX_first_init_g;
 
 typedef struct EX_mutex_struct
 {
-  pthread_mutex_t atomic_lock;  /* lock for atomicity of new mechanism */
+  pthread_mutex_t     atomic_lock; /* lock for atomicity of new mechanism */
   pthread_mutexattr_t attribute;
 } EX_mutex_t;
 
@@ -124,19 +124,19 @@ extern int *exerrval_get();
     pthread_once(&EX_first_init_g, ex_pthread_first_thread_init);                                  \
                                                                                                    \
     /* Grab the mutex for the library */                                                           \
-    ex_mutex_lock(&EX_g);                                                                \
+    ex_mutex_lock(&EX_g);                                                                          \
     exerrval = exerrval_get();                                                                     \
   } while (0)
 
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
-    ex_mutex_unlock(&EX_g);                                                              \
+    ex_mutex_unlock(&EX_g);                                                                        \
     return error;                                                                                  \
   } while (0)
 
 #define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
-    ex_mutex_unlock(&EX_g);                                                              \
+    ex_mutex_unlock(&EX_g);                                                                        \
   } while (0)
 
 #else
@@ -810,8 +810,6 @@ int ex_put_nemesis_version(int exoid); /* NetCDF/Exodus file ID */
 
 int ne_check_file_version(int neid /* NetCDF/Exodus file ID */
                           );
-
-char *ex_catstrn12(char *name, int num1, int num2);
 
 int ne_id_lkup(int          exoid,       /* NetCDF/Exodus file ID */
                const char * ne_var_name, /* Nemesis variable name */
