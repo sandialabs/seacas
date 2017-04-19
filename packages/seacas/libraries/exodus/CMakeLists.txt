@@ -31,7 +31,7 @@ ENDIF ()
 if (${EXODUS_THREADSAFE})
    add_definitions(-DEX_THREADSAFE)
 else()
-   list(REMOVE_ITEM SOURCES src/ex_threadsafe.c)
+   list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/ex_threadsafe.c)
 endif()
 
 SET_AND_INC_DIRS(DIR ${CMAKE_CURRENT_BINARY_DIR})
