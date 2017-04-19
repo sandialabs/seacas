@@ -19,8 +19,16 @@ matrix:
   include:
     - compiler: gcc
       env: MPI=ON
+    - compiler: gcc
+      env: THREAD_SAFE=ON
     - compiler: clang
       env: MPI=ON
+    - compiler: clang
+      env: THREAD_SAFE=ON
+    - compiler: cgcc
+      env: MPI=ON THREAD_SAFE=ON
+    - compiler: clang
+      env: MPI=ON THREAD_SAFE=ON
     - compiler: gcc
       env: KOKKOS=ON
     - compiler: gcc
