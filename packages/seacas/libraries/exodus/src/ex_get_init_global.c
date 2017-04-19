@@ -81,7 +81,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
 
   /* Check the file version information */
   if ((dimid = ne_check_file_version(exoid)) != EX_NOERR) {
-    return (dimid);
+    EX_FUNC_LEAVE(dimid);
   }
 
   /* Get the dimension ID for the number of global FEM nodes */

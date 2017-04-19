@@ -79,12 +79,14 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
   if (var_type == EX_NODAL) {
     /* FIXME: Special case: ignore obj_id, possible large_file complications,
      * etc. */
-    return ex_get_partial_nodal_var_int(exoid, time_step, var_index, start_index, num_entities,
-                                        var_vals);
+    status = ex_get_partial_nodal_var_int(exoid, time_step, var_index, start_index, num_entities,
+                                          var_vals);
+    EX_FUNC_LEAVE(status);
   }
   if (var_type == EX_GLOBAL) {
     /* FIXME: Special case: all vars stored in 2-D single array. */
-    return ex_get_glob_vars_int(exoid, time_step, num_entities, var_vals);
+    status = ex_get_glob_vars_int(exoid, time_step, num_entities, var_vals);
+    EX_FUNC_LEAVE(status);
   }
 
   EX_FUNC_ENTER();

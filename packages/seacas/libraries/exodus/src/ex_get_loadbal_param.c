@@ -102,7 +102,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
 
   /* Check the file version information */
   if ((dimid = ne_check_file_version(exoid)) != EX_NOERR) {
-    return (dimid);
+    EX_FUNC_LEAVE(dimid);
   }
 
   /* Get the file type */

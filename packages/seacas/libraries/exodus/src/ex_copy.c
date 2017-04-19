@@ -48,7 +48,13 @@
 #define EXCHECK(funcall)                                                                           \
   if ((funcall) != NC_NOERR) {                                                                     \
     fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                      \
-    return EX_FATAL;                                                                               \
+    EX_FUNC_LEAVE(EX_FATAL);                                                                       \
+  }
+
+#define EXCHECKI(funcall)                                                                          \
+  if ((funcall) != NC_NOERR) {                                                                     \
+    fprintf(stderr, "Error calling %s\n", TOSTRING(funcall));                                      \
+    return (EX_FATAL);                                                                             \
   }
 
 #define EXCHECKF(funcall)                                                                          \
@@ -394,18 +400,18 @@ int cpy_att(int in_id, int out_id, int var_in_id, int var_out_id)
   int nbr_att;
 
   if (var_in_id == NC_GLOBAL) {
-    EXCHECK(nc_inq_natts(in_id, &nbr_att));
+    EXCHECKI(nc_inq_natts(in_id, &nbr_att));
   }
   else {
-    EXCHECK(nc_inq_varnatts(in_id, var_in_id, &nbr_att));
+    EXCHECKI(nc_inq_varnatts(in_id, var_in_id, &nbr_att));
   }
 
   /* Get the attributes names, types, lengths, and values */
   for (idx = 0; idx < nbr_att; idx++) {
     char att_nm[MAX_VAR_NAME_LENGTH];
 
-    EXCHECK(nc_inq_attname(in_id, var_in_id, idx, att_nm));
-    EXCHECK(nc_copy_att(in_id, var_in_id, att_nm, out_id, var_out_id));
+    EXCHECKI(nc_inq_attname(in_id, var_in_id, idx, att_nm));
+    EXCHECKI(nc_copy_att(in_id, var_in_id, att_nm, out_id, var_out_id));
   }
 
   return (EX_NOERR);
@@ -459,21 +465,22 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
     }
 
     /* Get dimid of the num_nodes dimension in output file... */
-    EXCHECK(nc_inq_dimid(out_id, DIM_NUM_NODES, &dim_out_id[0]));
+    EXCHECKI(nc_inq_dimid(out_id, DIM_NUM_NODES, &dim_out_id[0]));
 
     /* Define the variables in the output file */
 
     /* Define according to the EXODUS file's IO_word_size */
     nbr_dim = 1;
-    EXCHECK(nc_def_var(out_id, VAR_COORD_X, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
+    EXCHECKI(
+        nc_def_var(out_id, VAR_COORD_X, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
     ex_compress_variable(out_id, var_out_id, 2);
     if (spatial_dim > 1) {
-      EXCHECK(
+      EXCHECKI(
           nc_def_var(out_id, VAR_COORD_Y, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
       ex_compress_variable(out_id, var_out_id, 2);
     }
     if (spatial_dim > 2) {
-      EXCHECK(
+      EXCHECKI(
           nc_def_var(out_id, VAR_COORD_Z, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
       ex_compress_variable(out_id, var_out_id, 2);
     }
@@ -489,14 +496,14 @@ int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_la
 
     /* Get dimid of the spatial dimension and num_nodes dimensions in output
      * file... */
-    EXCHECK(nc_inq_dimid(out_id, DIM_NUM_DIM, &dim_out_id[0]));
-    EXCHECK(nc_inq_dimid(out_id, DIM_NUM_NODES, &dim_out_id[1]));
+    EXCHECKI(nc_inq_dimid(out_id, DIM_NUM_DIM, &dim_out_id[0]));
+    EXCHECKI(nc_inq_dimid(out_id, DIM_NUM_NODES, &dim_out_id[1]));
 
     /* Define the variable in the output file */
 
     /* Define according to the EXODUS file's IO_word_size */
     nbr_dim = 2;
-    EXCHECK(nc_def_var(out_id, VAR_COORD, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
+    EXCHECKI(nc_def_var(out_id, VAR_COORD, nc_flt_code(out_id), nbr_dim, dim_out_id, &var_out_id));
   }
   return var_out_id; /* OK */
 }
@@ -533,11 +540,11 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   }
 
   /* See if the requested variable is in the input file. */
-  EXCHECK(nc_inq_varid(in_id, var_nm, &var_in_id));
+  EXCHECKI(nc_inq_varid(in_id, var_nm, &var_in_id));
 
   /* Get the type of the variable and the number of dimensions. */
-  EXCHECK(nc_inq_vartype(in_id, var_in_id, &var_type));
-  EXCHECK(nc_inq_varndims(in_id, var_in_id, &nbr_dim));
+  EXCHECKI(nc_inq_vartype(in_id, var_in_id, &var_type));
+  EXCHECKI(nc_inq_varndims(in_id, var_in_id, &nbr_dim));
 
   /* Recall:
      1. The dimensions must be defined before the variable.
@@ -632,14 +639,14 @@ int cpy_var_val(int in_id, int out_id, char *var_nm)
   void *void_ptr = NULL;
 
   /* Get the var_id for the requested variable from both files. */
-  EXCHECK(nc_inq_varid(in_id, var_nm, &var_in_id));
-  EXCHECK(nc_inq_varid(out_id, var_nm, &var_out_id));
+  EXCHECKI(nc_inq_varid(in_id, var_nm, &var_in_id));
+  EXCHECKI(nc_inq_varid(out_id, var_nm, &var_out_id));
 
   /* Get the number of dimensions for the variable. */
-  EXCHECK(nc_inq_vartype(out_id, var_out_id, &var_type_out));
+  EXCHECKI(nc_inq_vartype(out_id, var_out_id, &var_type_out));
 
-  EXCHECK(nc_inq_vartype(in_id, var_in_id, &var_type_in));
-  EXCHECK(nc_inq_varndims(in_id, var_in_id, &nbr_dim));
+  EXCHECKI(nc_inq_vartype(in_id, var_in_id, &var_type_in));
+  EXCHECKI(nc_inq_varndims(in_id, var_in_id, &nbr_dim));
 
   /* Allocate space to hold the dimension IDs */
   dim_cnt    = calloc(nbr_dim, sizeof(size_t));
@@ -813,14 +820,14 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
     /* output file will have coordx, coordy, coordz (if 3d). */
     /* Get the var_id for the requested variable from both files. */
     int var_in_id, var_out_id[3];
-    EXCHECK(nc_inq_varid(in_id, VAR_COORD, &var_in_id));
+    EXCHECKI(nc_inq_varid(in_id, VAR_COORD, &var_in_id));
 
-    EXCHECK(nc_inq_varid(out_id, VAR_COORD_X, &var_out_id[0]));
-    EXCHECK(nc_inq_varid(out_id, VAR_COORD_Y, &var_out_id[1]));
-    EXCHECK(nc_inq_varid(out_id, VAR_COORD_Z, &var_out_id[2]));
+    EXCHECKI(nc_inq_varid(out_id, VAR_COORD_X, &var_out_id[0]));
+    EXCHECKI(nc_inq_varid(out_id, VAR_COORD_Y, &var_out_id[1]));
+    EXCHECKI(nc_inq_varid(out_id, VAR_COORD_Z, &var_out_id[2]));
 
-    EXCHECK(nc_inq_vartype(in_id, var_in_id, &var_type_in));
-    EXCHECK(nc_inq_vartype(out_id, var_out_id[0], &var_type_out));
+    EXCHECKI(nc_inq_vartype(in_id, var_in_id, &var_type_in));
+    EXCHECKI(nc_inq_vartype(out_id, var_out_id[0], &var_type_out));
 
     if (num_nodes > 0) {
       void_ptr = malloc(num_nodes * type_size(var_type_in));
@@ -833,13 +840,13 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
       count[0] = 1;
       count[1] = num_nodes;
       if (var_type_in == NC_FLOAT) {
-        EXCHECK(nc_get_vara_float(in_id, var_in_id, start, count, void_ptr));
-        EXCHECK(nc_put_var_float(out_id, var_out_id[i], void_ptr));
+        EXCHECKI(nc_get_vara_float(in_id, var_in_id, start, count, void_ptr));
+        EXCHECKI(nc_put_var_float(out_id, var_out_id[i], void_ptr));
       }
       else {
         assert(var_type_in == NC_DOUBLE);
-        EXCHECK(nc_get_vara_double(in_id, var_in_id, start, count, void_ptr));
-        EXCHECK(nc_put_var_double(out_id, var_out_id[i], void_ptr));
+        EXCHECKI(nc_get_vara_double(in_id, var_in_id, start, count, void_ptr));
+        EXCHECKI(nc_put_var_double(out_id, var_out_id[i], void_ptr));
       }
     }
   }
@@ -848,13 +855,13 @@ int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_lar
     /* input file will have coordx, coordy, coordz (if 3d); output has only
      * "coord" */
     int var_in_id[3], var_out_id;
-    EXCHECK(nc_inq_varid(in_id, VAR_COORD_X, &var_in_id[0]));
-    EXCHECK(nc_inq_varid(in_id, VAR_COORD_Y, &var_in_id[1]));
-    EXCHECK(nc_inq_varid(in_id, VAR_COORD_Z, &var_in_id[2]));
-    EXCHECK(nc_inq_varid(out_id, VAR_COORD, &var_out_id));
+    EXCHECKI(nc_inq_varid(in_id, VAR_COORD_X, &var_in_id[0]));
+    EXCHECKI(nc_inq_varid(in_id, VAR_COORD_Y, &var_in_id[1]));
+    EXCHECKI(nc_inq_varid(in_id, VAR_COORD_Z, &var_in_id[2]));
+    EXCHECKI(nc_inq_varid(out_id, VAR_COORD, &var_out_id));
 
-    EXCHECK(nc_inq_vartype(in_id, var_in_id[0], &var_type_in));
-    EXCHECK(nc_inq_vartype(out_id, var_out_id, &var_type_out));
+    EXCHECKI(nc_inq_vartype(in_id, var_in_id[0], &var_type_in));
+    EXCHECKI(nc_inq_vartype(out_id, var_out_id, &var_type_out));
 
     if (num_nodes > 0) {
       void_ptr = malloc(num_nodes * type_size(var_type_in));
