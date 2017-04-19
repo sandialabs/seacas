@@ -47,7 +47,9 @@ int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char *dim_na
   int varid;
   int dims[2];
   int dim_str_name;
+#if NC_HAS_HDF5
   int fill = NC_FILL_CHAR;
+#endif
 
   char errmsg[MAX_ERR_LENGTH];
 

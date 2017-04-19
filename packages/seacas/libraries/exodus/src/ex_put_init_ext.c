@@ -87,8 +87,10 @@ static int ex_write_object_names(int exoid, const char *type, const char *dimens
   int  status;
   int  varid;
   char errmsg[MAX_ERR_LENGTH];
+#if NC_HAS_HDF5
   int  fill = NC_FILL_CHAR;
-
+#endif
+  
   if (count > 0) {
     dim[0] = dimension_var;
     dim[1] = string_dimension;
