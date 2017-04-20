@@ -40,4 +40,11 @@ TRIBITS_ADD_EXECUTABLE(blot_cps NOEXEPREFIX NOEXESUFFIX
 			        COMM serial mpi)
 install_executable(blot_cps)
 
+TRIBITS_ADD_EXECUTABLE(blot_met NOEXEPREFIX NOEXESUFFIX
+				LINKER_LANGUAGE Fortran
+			        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/blot.f
+					${CMAKE_CURRENT_SOURCE_DIR}/cgi/vdicps.f
+			        COMM serial mpi)
+install_executable(blot_met)
+
 TRIBITS_SUBPACKAGE_POSTPROCESS()
