@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for EXERRVAL, ex_err, etc
+#include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR
 #include "netcdf.h"       // for nc_inq_grps, NC_NOERR
 #include <stdio.h>
@@ -56,19 +56,19 @@ int ex_get_group_ids(int parent_id, int *num_groups, int *group_ids)
 
   status = nc_inq_grps(parent_id, num_groups, group_ids);
   if (status != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Failed to get child group ids in file id %d",
              parent_id);
-    ex_err("ex_get_group_ids", errmsg, EXERRVAL);
+    ex_err("ex_get_group_ids", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
 #else
   EX_FUNC_ENTER();
-  EXERRVAL = NC_ENOTNC4;
+  exerrval = NC_ENOTNC4;
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
                                    "version--not netcdf4");
-  ex_err("ex_get_group_ids", errmsg, EXERRVAL);
+  ex_err("ex_get_group_ids", errmsg, exerrval);
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 }

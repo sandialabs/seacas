@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for EXERRVAL, ex_err, etc
+#include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL
 #include "netcdf.h"       // for NC_NOERR, nc_def_grp, etc
 #include <stdio.h>
@@ -49,33 +49,33 @@ int ex_create_group(int parent_id, const char *group_name)
   ex_check_valid_file_id(parent_id);
 
   if ((status = nc_redef(parent_id)) != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", parent_id);
-    ex_err("ex_create_group", errmsg, EXERRVAL);
+    ex_err("ex_create_group", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_def_grp(parent_id, group_name, &exoid)) != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: group create failed for %s in file id %d", group_name,
              parent_id);
-    ex_err("ex_create_group", errmsg, EXERRVAL);
+    ex_err("ex_create_group", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_enddef(parent_id)) != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err("ex_create", errmsg, EXERRVAL);
+    ex_err("ex_create", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(exoid);
 #else
   EX_FUNC_ENTER();
-  EXERRVAL = NC_ENOTNC4;
+  exerrval = NC_ENOTNC4;
   snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
                                    "version--not netcdf4");
-  ex_err("ex_create_group", errmsg, EXERRVAL);
+  ex_err("ex_create_group", errmsg, exerrval);
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
 }

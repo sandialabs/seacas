@@ -48,7 +48,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for EXERRVAL, ex_err, etc
+#include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_dimid, etc
 #include <inttypes.h>     // for PRId64
@@ -73,7 +73,7 @@ int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  EXERRVAL = 0;
+  exerrval = 0;
 
   /* Determine index of obj_id in vobjids array */
   if (obj_type == EX_NODAL) {
@@ -82,15 +82,15 @@ int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   else {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
 
-    if (EXERRVAL != 0) {
-      if (EXERRVAL == EX_NULLENTITY) {
+    if (exerrval != 0) {
+      if (exerrval == EX_NULLENTITY) {
         *num_attrs = 0;
         EX_FUNC_LEAVE(EX_NOERR);
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: failed to locate %s id %" PRId64 " in id array in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
-      ex_err("ex_get_attr_param", errmsg, EXERRVAL);
+      ex_err("ex_get_attr_param", errmsg, exerrval);
       EX_FUNC_LEAVE(EX_WARN);
     }
   }
@@ -106,14 +106,14 @@ int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   case EX_FACE_BLOCK: dnumobjatt = DIM_NUM_ATT_IN_FBLK(obj_id_ndx); break;
   case EX_ELEM_BLOCK: dnumobjatt = DIM_NUM_ATT_IN_BLK(obj_id_ndx); break;
   default:
-    EXERRVAL = EX_BADPARAM;
+    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Bad block type (%d) specified for file id %d",
              obj_type, exoid);
-    ex_err("ex_get_attr_param", errmsg, EXERRVAL);
+    ex_err("ex_get_attr_param", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   if ((status = nc_inq_dimid(exoid, dnumobjatt, &dimid)) != NC_NOERR) {
     /* dimension is undefined */
@@ -121,11 +121,11 @@ int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   }
   else {
     if ((status = nc_inq_dimlen(exoid, dimid, &lnum_attr_per_entry)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get number of attributes in %s %" PRId64 " in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
-      ex_err("ex_get_attr_param", errmsg, EXERRVAL);
+      ex_err("ex_get_attr_param", errmsg, exerrval);
       EX_FUNC_LEAVE(EX_FATAL);
     }
     *num_attrs = lnum_attr_per_entry;

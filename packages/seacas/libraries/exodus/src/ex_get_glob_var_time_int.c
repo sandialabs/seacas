@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for EXERRVAL, ex_err, etc
+#include "exodusII.h"     // for exerrval, ex_err, etc
 #include "exodusII_int.h" // for ex_comp_ws, EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <stddef.h>       // for size_t
@@ -112,7 +112,7 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   /* Check that times are in range */
   {
@@ -151,10 +151,10 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
 
   /* inquire previously defined variable */
   if ((status = nc_inq_varid(exoid, VAR_GLO_VAR, &varid)) != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate global variables in file id %d",
              exoid);
-    ex_err("ex_get_glob_var_time", errmsg, EXERRVAL);
+    ex_err("ex_get_glob_var_time", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
@@ -166,11 +166,11 @@ int ex_get_glob_var_time_int(int exoid, int glob_var_index, int beg_time_step, i
   }
 
   if (status != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get global variable %d values from file id %d", glob_var_index,
              exoid);
-    ex_err("ex_get_glob_var_time", errmsg, EXERRVAL);
+    ex_err("ex_get_glob_var_time", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

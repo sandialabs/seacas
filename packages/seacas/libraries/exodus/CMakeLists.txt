@@ -16,21 +16,7 @@ else()
 endif()
 TRIBITS_CONFIGURE_FILE(exodus_config.h)
 
-TRIBITS_ADD_OPTION_AND_DEFINE(
-  SEACASExodus_ENABLE_THREADSAFE
-  EXODUS_THREADSAFE
-  "Enable thread-safe version of Exodus."
-  OFF
-  )
-
-ASSERT_DEFINED(TPL_ENABLE_Pthread)
-IF (EXODUS_ENABLE_THREADSAFE AND NOT TPL_ENABLE_Pthread)
-  MESSAGE(FATAL_ERROR "You set EXODUS_ENABLE_THREADSAFE=ON, but TriBITs support for Pthread(s) is not enabled (TPL_ENABLE_Pthread=OFF).  This is not allowed.  Please enable Pthreads before attempting to enable the thread-safe Exodus support.")
-ENDIF ()
-
-if (${EXODUS_THREADSAFE})
-   add_definitions(-DEX_THREADSAFE)
-else()
+if (NOT ${EXODUS_THREADSAFE})
    list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/ex_threadsafe.c)
 endif()
 

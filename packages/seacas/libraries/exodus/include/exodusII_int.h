@@ -102,8 +102,20 @@ extern "C" {
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
 #if defined(EX_THREADSAFE)
-EXODUS_EXPORT int *exerrval; /**< shared error return value                */
-#define EXERRVAL *exerrval
+#if !defined(exerrval)
+/* In both exodusII.h and exodusII_int.h */
+typedef struct EX_errval
+{
+  int  errval;
+  char last_pname[MAX_ERR_LENGTH];
+  char last_errmsg[MAX_ERR_LENGTH];
+  int  last_err_num;
+} EX_errval_t;
+
+EXODUS_EXPORT EX_errval_t *ex_errval;
+#define exerrval ex_errval->errval
+#endif
+
 extern pthread_once_t EX_first_init_g;
 
 typedef struct EX_mutex_struct
@@ -115,8 +127,8 @@ typedef struct EX_mutex_struct
 extern EX_mutex_t EX_g;
 extern int ex_mutex_lock(EX_mutex_t *mutex);
 extern int ex_mutex_unlock(EX_mutex_t *mutex);
-extern void ex_pthread_first_thread_init(void);
-extern int *exerrval_get();
+extern void         ex_pthread_first_thread_init(void);
+extern EX_errval_t *exerrval_get();
 
 #define EX_FUNC_ENTER()                                                                            \
   do {                                                                                             \
@@ -125,7 +137,7 @@ extern int *exerrval_get();
                                                                                                    \
     /* Grab the mutex for the library */                                                           \
     ex_mutex_lock(&EX_g);                                                                          \
-    exerrval = exerrval_get();                                                                     \
+    ex_errval = exerrval_get();                                                                    \
   } while (0)
 
 #define EX_FUNC_LEAVE(error)                                                                       \
@@ -140,7 +152,6 @@ extern int *exerrval_get();
   } while (0)
 
 #else
-#define EXERRVAL exerrval
 
 #if 0
 EXODUS_EXPORT int indent;

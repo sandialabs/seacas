@@ -72,18 +72,18 @@ int ex_mutex_unlock(EX_mutex_t *mutex)
   return ret_value;
 }
 
-int *exerrval_get(void)
+EX_errval_t *exerrval_get(void)
 {
-  int *exerrval = (int *)pthread_getspecific(EX_errval_key_g);
-  if (!exerrval) {
+  EX_errval_t *ex_errval = (EX_errval_t *)pthread_getspecific(EX_errval_key_g);
+  if (!ex_errval) {
     /*
      * First time thread calls library - create new value and associate
      * with key
      */
-    exerrval = (int *)calloc(1, sizeof(int));
-    pthread_setspecific(EX_errval_key_g, (void *)exerrval);
+    ex_errval = (EX_errval_t *)calloc(1, sizeof(EX_errval_t));
+    pthread_setspecific(EX_errval_key_g, (void *)ex_errval);
   }
 
-  return exerrval;
+  return ex_errval;
 }
 #endif

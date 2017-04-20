@@ -38,7 +38,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, EXERRVAL, etc
+#include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
@@ -62,11 +62,11 @@ int ex_get_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type, ex_ent
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   blk_id_ndx = ex_id_lkup(exoid, blk_type, blk_id);
-  if (EXERRVAL != 0) {
-    if (EXERRVAL == EX_NULLENTITY) {
+  if (exerrval != 0) {
+    if (exerrval == EX_NULLENTITY) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: entity_counts array not allowed for NULL %s block %" PRId64
                " in file id %d",
@@ -78,7 +78,7 @@ int ex_get_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type, ex_ent
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s block id %" PRId64 " in id array in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_get_entity_count_per_polyhedra", errmsg, EXERRVAL);
+    ex_err("ex_get_entity_count_per_polyhedra", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -87,7 +87,7 @@ int ex_get_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type, ex_ent
   case EX_ELEM_BLOCK: status = nc_inq_varid(exoid, VAR_EBEPEC(blk_id_ndx), &npeid); break;
   case EX_FACE_BLOCK: status = nc_inq_varid(exoid, VAR_FBEPEC(blk_id_ndx), &npeid); break;
   default:
-    EXERRVAL = EX_BADPARAM;
+    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized block type in switch: %d in file id %d", blk_type,
              exoid);
@@ -95,21 +95,21 @@ int ex_get_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type, ex_ent
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (status != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate entity_counts array for %s block %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_get_entity_count_per_polyhedra", errmsg, EXERRVAL);
+    ex_err("ex_get_entity_count_per_polyhedra", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   status = nc_get_var_int(exoid, npeid, entity_counts);
   if (status != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to read node counts array for %s block %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_get_entity_count_per_polyhedra", errmsg, EXERRVAL);
+    ex_err("ex_get_entity_count_per_polyhedra", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
