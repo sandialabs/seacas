@@ -41,7 +41,9 @@
 #ifndef EXODUS_II_INT_HDR
 #define EXODUS_II_INT_HDR
 
-#if EX_THREADSAFE
+#include "exodus_config.h"
+
+#if defined(EXODUS_THREADSAFE)
 #include <pthread.h>
 #endif
 
@@ -101,7 +103,7 @@ extern "C" {
 #define EX_FILE_ID_MASK (0xffff0000) /* Must match FILE_ID_MASK in netcdf nc4internal.h */
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
-#if defined(EX_THREADSAFE)
+#if defined(EXODUS_THREADSAFE)
 #if !defined(exerrval)
 /* In both exodusII.h and exodusII_int.h */
 typedef struct EX_errval

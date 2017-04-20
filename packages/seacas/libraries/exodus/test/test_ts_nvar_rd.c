@@ -132,6 +132,12 @@ int init_file(int num_nodal_vars)
   if (exoid < 0)
     exit(1);
 
+  if (!ex_inquire_int(exoid, EX_INQ_THREADSAFE)) {
+    fprintf(stderr,
+	    "ERROR: This exodus library is not compiled to allow thread-safe operations.\n");
+    exit(1);
+  }
+
   return exoid;
 }
 
