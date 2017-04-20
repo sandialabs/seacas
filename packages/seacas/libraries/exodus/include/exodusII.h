@@ -1606,7 +1606,21 @@ ex_put_nodal_var_slab(int     exoid,           /* NetCDF/Exodus file ID */
 
 /* ERROR CODE DEFINITIONS AND STORAGE                                       */
 EXODUS_EXPORT int exoptval; /**< error reporting flag (default is quiet)  */
-#if !defined(EX_THREADSAFE)
+#if defined(EX_THREADSAFE)
+#if !defined(exerrval)
+/* In both exodusII.h and exodusII_int.h */
+typedef struct EX_errval
+{
+  int  errval;
+  char last_pname[MAX_ERR_LENGTH];
+  char last_errmsg[MAX_ERR_LENGTH];
+  int  last_err_num;
+} EX_errval_t;
+
+EXODUS_EXPORT EX_errval_t *ex_errval;
+#define exerrval ex_errval->errval
+#endif
+#else
 EXODUS_EXPORT int exerrval; /**< shared error return value                */
 #endif
 

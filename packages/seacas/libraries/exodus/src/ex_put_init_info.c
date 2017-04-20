@@ -72,13 +72,13 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   /* Check the file type */
   if (!ftype) {
-    EXERRVAL = EX_MSG;
+    exerrval = EX_MSG;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: NULL file type input for file ID %d", exoid);
-    ex_err(func_name, errmsg, EXERRVAL);
+    ex_err(func_name, errmsg, exerrval);
 
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -91,18 +91,18 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
     lftype = 1;
   }
   else {
-    EXERRVAL = EX_MSG;
+    exerrval = EX_MSG;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file type requested for file ID %d", exoid);
-    ex_err(func_name, errmsg, EXERRVAL);
+    ex_err(func_name, errmsg, exerrval);
 
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Put file into define mode */
   if ((status = nc_redef(exoid)) != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file ID %d into define mode", exoid);
-    ex_err(func_name, errmsg, EXERRVAL);
+    ex_err(func_name, errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -110,10 +110,10 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
   if ((status = nc_inq_dimid(exoid, DIM_NUM_PROCS, &dimid)) != NC_NOERR) {
     ltempsv = num_proc;
     if ((status = nc_def_dim(exoid, DIM_NUM_PROCS, ltempsv, &dimid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to dimension \"%s\" in file ID %d",
                DIM_NUM_PROCS, exoid);
-      ex_err(func_name, errmsg, EXERRVAL);
+      ex_err(func_name, errmsg, exerrval);
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
@@ -125,10 +125,10 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
   if (nc_inq_dimid(exoid, DIM_NUM_PROCS_F, &dimid) != NC_NOERR) {
     ltempsv = num_proc_in_f;
     if ((status = nc_def_dim(exoid, DIM_NUM_PROCS_F, ltempsv, &dimid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to dimension \"%s\" in file ID %d",
                DIM_NUM_PROCS_F, exoid);
-      ex_err(func_name, errmsg, EXERRVAL);
+      ex_err(func_name, errmsg, exerrval);
 
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
@@ -140,9 +140,9 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
   /* Output the file type */
   if (nc_inq_varid(exoid, VAR_FILE_TYPE, &varid) != NC_NOERR) {
     if ((status = nc_def_var(exoid, VAR_FILE_TYPE, NC_INT, 0, NULL, &varid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define file type in file ID %d", exoid);
-      ex_err(func_name, errmsg, EXERRVAL);
+      ex_err(func_name, errmsg, exerrval);
 
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
@@ -155,10 +155,10 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
     }
 
     if ((status = nc_put_var1_int(exoid, varid, NULL, &lftype)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unable to output file type variable in file ID %d",
                exoid);
-      ex_err(func_name, errmsg, EXERRVAL);
+      ex_err(func_name, errmsg, exerrval);
 
       EX_FUNC_LEAVE(EX_FATAL);
     }

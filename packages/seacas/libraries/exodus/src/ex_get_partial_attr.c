@@ -54,7 +54,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, EXERRVAL, etc
+#include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_get_dimension, etc
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
@@ -91,7 +91,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   if (num_ent == 0) {
     EX_FUNC_LEAVE(EX_NOERR);
@@ -99,8 +99,8 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
-    if (EXERRVAL != 0) {
-      if (EXERRVAL == EX_NULLENTITY) {
+    if (exerrval != 0) {
+      if (exerrval == EX_NULLENTITY) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
@@ -110,7 +110,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: failed to locate %s id%" PRId64 " in id array in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
-      ex_err("ex_get_partial_attr", errmsg, EXERRVAL);
+      ex_err("ex_get_partial_attr", errmsg, exerrval);
       EX_FUNC_LEAVE(EX_WARN);
     }
   }
@@ -162,7 +162,7 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
     vattrbname = VAR_ATTRIB(obj_id_ndx);
     break;
   default:
-    EXERRVAL = EX_BADPARAM;
+    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
@@ -177,12 +177,12 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   }
 
   if (start_num + num_ent - 1 > num_entries_this_obj) {
-    EXERRVAL = EX_BADPARAM;
+    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + count (%" PRId64
              ") is larger than total number of entities (%" ST_ZU ") in file id %d",
              start_num, num_ent, num_entries_this_obj, exoid);
-    ex_err("ex_get_partial_attr", errmsg, EXERRVAL);
+    ex_err("ex_get_partial_attr", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -192,11 +192,11 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   }
 
   if ((status = nc_inq_varid(exoid, vattrbname, &attrid)) != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_partial_attr", errmsg, EXERRVAL);
+    ex_err("ex_get_partial_attr", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -215,11 +215,11 @@ int ex_get_partial_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id,
   }
 
   if (status != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_partial_attr", errmsg, EXERRVAL);
+    ex_err("ex_get_partial_attr", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

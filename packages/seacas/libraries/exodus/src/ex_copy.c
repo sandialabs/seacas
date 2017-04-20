@@ -136,7 +136,7 @@ int ex_copy(int in_exoid, int out_exoid)
   ex_check_valid_file_id(in_exoid);
   ex_check_valid_file_id(out_exoid);
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   /*
    * Get exodus_large_model setting on both input and output
@@ -150,10 +150,10 @@ int ex_copy(int in_exoid, int out_exoid)
    * Currently they should both match or there will be an error.
    */
   if (ex_int64_status(in_exoid) != ex_int64_status(out_exoid)) {
-    EXERRVAL = EX_WRONGFILETYPE;
+    exerrval = EX_WRONGFILETYPE;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: integer sizes do not match for input and output databases.");
-    ex_err("ex_copy", errmsg, EXERRVAL);
+    ex_err("ex_copy", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -222,10 +222,10 @@ int ex_copy(int in_exoid, int out_exoid)
           status = nc_def_dim(out_exoid, dim_nm, NC_UNLIMITED, &dim_out_id);
         } /* end else */
         if (status != NC_NOERR) {
-          EXERRVAL = status;
+          exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s dimension in file id %d",
                    dim_nm, out_exoid);
-          ex_err("ex_copy", errmsg, EXERRVAL);
+          ex_err("ex_copy", errmsg, exerrval);
           EX_FUNC_LEAVE(EX_FATAL);
         }
       } /* end if */
@@ -248,10 +248,10 @@ int ex_copy(int in_exoid, int out_exoid)
       /* Not found; set to default value of 32+1. */
 
       if ((status = nc_def_dim(out_exoid, DIM_STR_NAME, 33, &dim_out_id)) != NC_NOERR) {
-        EXERRVAL = status;
+        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to define string name dimension in file id %d", out_exoid);
-        ex_err("ex_copy", errmsg, EXERRVAL);
+        ex_err("ex_copy", errmsg, exerrval);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -308,10 +308,10 @@ int ex_copy(int in_exoid, int out_exoid)
   }
 
   /* take the output file out of define mode */
-  if ((EXERRVAL = nc_enddef(out_exoid)) != NC_NOERR) {
+  if ((exerrval = nc_enddef(out_exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
              out_exoid);
-    ex_err("ex_copy", errmsg, EXERRVAL);
+    ex_err("ex_copy", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -590,10 +590,10 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
   else {
     if ((status = nc_def_var(out_id, var_nm, var_type, nbr_dim, dim_out_id, &var_out_id)) !=
         NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s variable in file id %d", var_nm,
                out_id);
-      ex_err("ex_copy", errmsg, EXERRVAL);
+      ex_err("ex_copy", errmsg, exerrval);
       return (EX_FATAL);
     }
     ex_compress_variable(out_id, var_out_id, 1);

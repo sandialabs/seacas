@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for ex_err, EXERRVAL, etc
+#include "exodusII.h"     // for ex_err, exerrval, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
 #include "netcdf.h"       // for NC_NOERR, nc_set_fill, etc
 #include <inttypes.h>     // for PRId64
@@ -127,7 +127,7 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  EXERRVAL = 0; /* clear error code */
+  exerrval = 0; /* clear error code */
 
   /* check if property has already been created */
 
@@ -150,27 +150,27 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
       case EX_EDGE_MAP: name   = VAR_EDM_PROP(i); break;
       case EX_NODE_MAP: name   = VAR_NM_PROP(i); break;
       default:
-        EXERRVAL = EX_BADPARAM;
+        exerrval = EX_BADPARAM;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d",
                  obj_type, exoid);
-        ex_err("ex_put_prop", errmsg, EXERRVAL);
+        ex_err("ex_put_prop", errmsg, exerrval);
         EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_varid(exoid, name, &propid)) != NC_NOERR) {
-        EXERRVAL = status;
+        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property array id in file id %d",
                  exoid);
-        ex_err("ex_put_prop", errmsg, EXERRVAL);
+        ex_err("ex_put_prop", errmsg, exerrval);
         EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /*   compare stored attribute name with passed property name   */
       memset(tmpstr, 0, MAX_STR_LENGTH + 1);
       if ((status = nc_get_att_text(exoid, propid, ATT_PROP_NAME, tmpstr)) != NC_NOERR) {
-        EXERRVAL = status;
+        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property name in file id %d", exoid);
-        ex_err("ex_put_prop", errmsg, EXERRVAL);
+        ex_err("ex_put_prop", errmsg, exerrval);
         EX_FUNC_LEAVE(EX_FATAL);
       }
 
@@ -188,9 +188,9 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
 
     /* put netcdf file into define mode  */
     if ((status = nc_redef(exoid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -247,19 +247,19 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
       dim_name = DIM_NUM_NM;
       break;
     default:
-      EXERRVAL = EX_BADPARAM;
+      exerrval = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       goto error_ret; /* Exit define mode and return */
     }
 
     /*   inquire id of previously defined dimension (number of objects) */
     if ((status = nc_inq_dimid(exoid, dim_name, &dimid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of objects in file id %d",
                exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       goto error_ret; /* Exit define mode and return */
     }
 
@@ -272,10 +272,10 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
     }
 
     if ((status = nc_def_var(exoid, name, int_type, 1, dims, &propid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to create property array variable in file id %d", exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       goto error_ret; /* Exit define mode and return */
     }
 
@@ -283,10 +283,10 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
     /*   create attribute to cause variable to fill with zeros per routine spec
      */
     if ((status = nc_put_att_longlong(exoid, propid, _FillValue, int_type, 1, vals)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to create property name fill attribute in file id %d", exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       goto error_ret; /* Exit define mode and return */
     }
 
@@ -302,10 +302,10 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
     /*   store property name as attribute of property array variable */
     if ((status = nc_put_att_text(exoid, propid, ATT_PROP_NAME, prop_name_len,
                                   (void *)prop_name)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store property name %s in file id %d",
                prop_name, exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       goto error_ret; /* Exit define mode and return */
     }
 
@@ -313,9 +313,9 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
 
     /* leave define mode  */
     if ((status = nc_enddef(exoid)) != NC_NOERR) {
-      EXERRVAL = status;
+      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to leave define mode in file id %d", exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -329,20 +329,20 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
   /* special case: property name ID - check for duplicate ID assignment */
   if (strcmp("ID", prop_name) == 0) {
     start[0] = ex_id_lkup(exoid, obj_type, value);
-    if (EXERRVAL != EX_LOOKUPFAIL) /* found the id */
+    if (exerrval != EX_LOOKUPFAIL) /* found the id */
     {
-      EXERRVAL = EX_BADPARAM;
+      exerrval = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: attempt to assign duplicate %s ID %" PRId64 " in file id %d",
                ex_name_of_object(obj_type), value, exoid);
-      ex_err("ex_put_prop", errmsg, EXERRVAL);
+      ex_err("ex_put_prop", errmsg, exerrval);
       EX_FUNC_LEAVE(EX_WARN);
     }
   }
 
   start[0] = ex_id_lkup(exoid, obj_type, obj_id);
-  if (EXERRVAL != 0) {
-    if (EXERRVAL == EX_NULLENTITY) {
+  if (exerrval != 0) {
+    if (exerrval == EX_NULLENTITY) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "Warning: no properties allowed for NULL %s id %" PRId64 " in file id %d",
                ex_name_of_object(obj_type), obj_id, exoid);
@@ -352,7 +352,7 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to find value %" PRId64 " in %s property array in file id %d", obj_id,
              ex_name_of_object(obj_type), exoid);
-    ex_err("ex_put_prop", errmsg, EXERRVAL);
+    ex_err("ex_put_prop", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -363,9 +363,9 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
   status = nc_put_var1_longlong(exoid, propid, start, (long long *)&value);
 
   if (status != NC_NOERR) {
-    EXERRVAL = status;
+    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store property value in file id %d", exoid);
-    ex_err("ex_put_prop", errmsg, EXERRVAL);
+    ex_err("ex_put_prop", errmsg, exerrval);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -377,7 +377,7 @@ error_ret:
 
   if (nc_enddef(exoid) != NC_NOERR) { /* exit define mode */
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err("ex_put_prop", errmsg, EXERRVAL);
+    ex_err("ex_put_prop", errmsg, exerrval);
   }
   EX_FUNC_LEAVE(EX_FATAL);
 }
