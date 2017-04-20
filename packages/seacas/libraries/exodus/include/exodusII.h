@@ -209,6 +209,7 @@ enum ex_inquiry {
   EX_INQ_GROUP_NAME          = 56, /**< inquire name of group exoid. "/" returned for root group */
   EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
   EX_INQ_FULL_GROUP_NAME = 58, /**< inquire full "/"-separated path name of this (exoid) group */
+  EX_INQ_THREADSAFE = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
   EX_INQ_INVALID         = -1
 };
 
@@ -1606,7 +1607,7 @@ ex_put_nodal_var_slab(int     exoid,           /* NetCDF/Exodus file ID */
 
 /* ERROR CODE DEFINITIONS AND STORAGE                                       */
 EXODUS_EXPORT int exoptval; /**< error reporting flag (default is quiet)  */
-#if defined(EX_THREADSAFE)
+#if defined(EXODUS_THREADSAFE)
 #if !defined(exerrval)
 /* In both exodusII.h and exodusII_int.h */
 typedef struct EX_errval

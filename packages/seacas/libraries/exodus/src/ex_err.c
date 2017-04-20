@@ -98,7 +98,7 @@ if (exoid = ex_open ("test.exo", EX_READ, &CPU_word_size,
 
 */
 
-#if defined(EX_THREADSAFE)
+#if defined(EXODUS_THREADSAFE)
 EX_errval_t *ex_errval = NULL;
 #define EX_PNAME ex_errval->last_pname
 #define EX_ERRMSG ex_errval->last_errmsg

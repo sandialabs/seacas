@@ -177,7 +177,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   exerrval = 0; /* clear error code */
 
   if (ret_char) {
-    *ret_char = '\0'; /* Only needs to be non-null for TITLE */
+    *ret_char = '\0'; /* Only needs to be non-null for TITLE and some GROUP NAME inquiries */
   }
   if (!ret_int) {
     exerrval = EX_BADPARAM;
@@ -860,11 +860,11 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_NUM_CHILD_GROUPS: {
 /* return number of groups contained in this (exoid) group */
+    int tmp_num = 0;
 #if NC_HAS_HDF5
-    int tmp_num;
     nc_inq_grps(exoid, &tmp_num, NULL);
-    *ret_int = tmp_num;
 #endif
+    *ret_int = tmp_num;
   } break;
 
   case EX_INQ_GROUP_PARENT: {
@@ -873,6 +873,8 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     int tmp_num = exoid;
     nc_inq_grp_parent(exoid, &tmp_num);
     *ret_int = tmp_num;
+#else
+    *ret_int = exoid;
 #endif
   } break;
 
@@ -883,12 +885,12 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_GROUP_NAME_LEN: {
-#if NC_HAS_HDF5
     size_t len_name = 0;
+#if NC_HAS_HDF5
     /* return name length of group exoid */
     nc_inq_grpname_len(exoid, &len_name);
-    *ret_int = (int)len_name;
 #endif
+    *ret_int = (int)len_name;
   } break;
 
   case EX_INQ_GROUP_NAME:
@@ -907,16 +909,16 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_FULL_GROUP_NAME_LEN: {
-#if NC_HAS_HDF5
     size_t len_name = 0;
+#if NC_HAS_HDF5
     /* return length of full group name which is the "/" separated path from
      * root
      * For example "/group1/subgroup1/subsubgroup1"
      * length does not include the NULL terminator byte.
      */
     nc_inq_grpname_full(exoid, &len_name, NULL);
-    *ret_int = (int)len_name;
 #endif
+    *ret_int = (int)len_name;
   } break;
 
   case EX_INQ_FULL_GROUP_NAME:
@@ -937,6 +939,17 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 #endif
     break;
 
+  case EX_INQ_THREADSAFE:
+    /* Return 1 if the library was compiled in thread-safe mode.
+     * Return 0 otherwise
+     */
+#if defined(EXODUS_THREADSAFE)
+    *ret_int = 1;
+#else
+    *ret_int = 0;
+#endif
+    break;
+    
   default:
     *ret_int = 0;
     exerrval = EX_FATAL;

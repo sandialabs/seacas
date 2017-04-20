@@ -22,10 +22,6 @@ IF (EXODUS_ENABLE_THREADSAFE AND NOT TPL_ENABLE_Pthread)
   MESSAGE(FATAL_ERROR "You set EXODUS_ENABLE_THREADSAFE=ON, but TriBITs support for Pthread(s) is not enabled (TPL_ENABLE_Pthread=OFF).  This is not allowed.  Please enable Pthreads before attempting to enable the thread-safe Exodus support.")
 ENDIF ()
 
-if (${SEACASExodus_ENABLE_THREADSAFE})
-   add_definitions(-DEX_THREADSAFE)
-endif()
-
 # C) Add the libraries, tests, and examples
 #- Add executable that will be installed in bin dir...
 #

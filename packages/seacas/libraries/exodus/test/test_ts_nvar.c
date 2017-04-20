@@ -63,6 +63,12 @@ int init_file(int num_nodal_vars)
   printf("after ex_create for test.exo, exoid = %d\n", exoid);
   printf(" cpu word size: %d io word size: %d\n", CPU_word_size, IO_word_size);
 
+  if (!ex_inquire_int(exoid, EX_INQ_THREADSAFE)) {
+    fprintf(stderr,
+	    "ERROR: This exodus library is not compiled to allow thread-safe operations.\n");
+    exit(1);
+  }
+
   /* initialize file with parameters */
   int num_dim       = 3;
   int num_nodes     = NUM_NODES;
