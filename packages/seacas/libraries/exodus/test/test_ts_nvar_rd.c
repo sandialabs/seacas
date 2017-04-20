@@ -63,7 +63,7 @@ void *input_nodal_var(void *varg)
       for (i = 0; i < num_node; i++) {
         if (!approx_equal(data[i], arg->threadid + 1 + (float)i / 100.0)) {
           fprintf(stderr,
-                  "ERROR: Thread %d: X Coordinate mismatch at node %d: Got: %f, expected %f\n",
+                  "ERROR: Thread %ld: X Coordinate mismatch at node %d: Got: %f, expected %f\n",
                   arg->threadid, i + 1, data[i], arg->threadid + 1 + (float)i / 100.0);
         }
       }
@@ -73,7 +73,7 @@ void *input_nodal_var(void *varg)
       for (i = 0; i < num_node; i++) {
         if (!approx_equal(data[i], arg->threadid + 1 + (float)i / 100.0)) {
           fprintf(stderr,
-                  "ERROR: Thread %d: Y Coordinate mismatch at node %d: Got: %f, expected %f\n",
+                  "ERROR: Thread %ld: Y Coordinate mismatch at node %d: Got: %f, expected %f\n",
                   arg->threadid, i + 1, data[i], arg->threadid + 1 + (float)i / 100.0);
         }
       }
@@ -83,7 +83,7 @@ void *input_nodal_var(void *varg)
       for (i = 0; i < num_node; i++) {
         if (!approx_equal(data[i], arg->threadid + 1 + (float)i / 100.0)) {
           fprintf(stderr,
-                  "ERROR: Thread %d: Z Coordinate mismatch at node %d: Got: %f, expected %f\n",
+                  "ERROR: Thread %ld: Z Coordinate mismatch at node %d: Got: %f, expected %f\n",
                   arg->threadid, i + 1, data[i], arg->threadid + 1 + (float)i / 100.0);
         }
       }
@@ -92,20 +92,20 @@ void *input_nodal_var(void *varg)
     }
   }
 
-  sprintf(ex_name, "NodalVar%d", arg->threadid + 1);
+  sprintf(ex_name, "NodalVar%ld", arg->threadid + 1);
   ex_get_variable_name(arg->exoid, EX_NODAL, arg->threadid + 1, db_name);
   if (strcmp(db_name, ex_name) != 0) {
     fprintf(stderr,
-            "ERROR: Thread %d: Incorrect variable name for variable %d: Got: %s, expected %s\n",
-            arg->threadid, arg->threadid + 1, db_name, ex_name);
+            "ERROR: Thread %ld: Incorrect variable name for variable %d: Got: %s, expected %s\n",
+            arg->threadid, (int)arg->threadid + 1, db_name, ex_name);
   }
 
   ex_get_var(arg->exoid, arg->timestep, EX_NODAL, arg->threadid + 1, 1, num_node, data);
   for (i = 0; i < num_node; i++) {
     if (!approx_equal(data[i], (arg->timestep - 1) * 10 + arg->threadid + 1 + (float)i / 100.0)) {
       fprintf(stderr,
-              "ERROR: Thread %d: Nodal variable %d mismatch at node %d: Got: %f, expected %f\n",
-              arg->threadid, arg->threadid + 1, i + 1, data[i],
+              "ERROR: Thread %ld: Nodal variable %d mismatch at node %d: Got: %f, expected %f\n",
+              arg->threadid, (int)arg->threadid + 1, i + 1, data[i],
               (arg->timestep - 1) * 10 + arg->threadid + 1 + (float)i / 100.0);
     }
   }

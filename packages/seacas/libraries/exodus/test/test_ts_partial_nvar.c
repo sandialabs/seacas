@@ -42,7 +42,7 @@ void *output_nodal_var(void *varg)
   }
 
   if (arg->threadid < NUM_NODAL_VAR) {
-    sprintf(name, "NodalVar%d", arg->threadid + 1);
+    sprintf(name, "NodalVar%ld", arg->threadid + 1);
     ex_put_variable_name(arg->exoid, EX_NODAL, arg->threadid + 1, name);
   }
 
