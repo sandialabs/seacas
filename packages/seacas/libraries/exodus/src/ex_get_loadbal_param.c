@@ -76,6 +76,9 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
 
   char errmsg[MAX_ERR_LENGTH];
   /*-----------------------------Execution begins-----------------------------*/
+  EX_FUNC_ENTER();
+  ex_check_valid_file_id(exoid);
+
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
     *(int64_t *)num_int_nodes  = 0;
     *(int64_t *)num_bor_nodes  = 0;
@@ -95,13 +98,11 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     *(int *)num_elem_cmaps = 0;
   }
 
-  ex_check_valid_file_id(exoid);
-
   exerrval = 0; /* clear error code */
 
   /* Check the file version information */
   if ((dimid = ne_check_file_version(exoid)) != EX_NOERR) {
-    return (dimid);
+    EX_FUNC_LEAVE(dimid);
   }
 
   /* Get the file type */
@@ -110,7 +111,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unable to find file type for file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the status for this node map */
@@ -120,7 +121,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
              VAR_INT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 's') {
@@ -135,7 +136,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_INT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -146,7 +147,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension of the internal node map */
@@ -159,7 +160,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /*
@@ -173,7 +174,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  DIM_NUM_INT_NODES, exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -196,7 +197,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
              VAR_BOR_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 's') {
@@ -211,7 +212,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_BOR_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -222,7 +223,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension of the border node map */
@@ -235,7 +236,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /*
@@ -249,7 +250,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  DIM_NUM_BOR_NODES, exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -272,7 +273,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
              VAR_EXT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 's') {
@@ -287,7 +288,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_EXT_N_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -298,7 +299,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension of the external node map */
@@ -311,7 +312,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /*
@@ -325,7 +326,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  DIM_NUM_EXT_NODES, exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       /* set the end value for the node map */
       varidx[1] = nen;
@@ -346,7 +347,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" from file ID %d",
              VAR_INT_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 's') {
@@ -361,7 +362,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_INT_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -372,7 +373,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension of the internal element map */
@@ -385,7 +386,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /*
@@ -398,7 +399,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  "ERROR: failed to find length of dimesion \"%s\" in file ID %d", DIM_NUM_INT_ELEMS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -420,7 +421,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" from file ID %d",
              VAR_BOR_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 's') {
@@ -435,7 +436,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_BOR_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nmstat == 1) {
@@ -446,7 +447,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* check if I need to get the dimension of the border element map */
@@ -459,7 +460,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  exoid);
         ex_err(func_name, errmsg, exerrval);
 
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /*
@@ -472,7 +473,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  "ERROR: failed to find length of dimesion \"%s\" in file ID %d", DIM_NUM_BOR_ELEMS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -494,7 +495,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
              VAR_N_COMM_INFO_IDX, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* check if I need to get the dimension of the nodal comm map */
@@ -510,7 +511,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d", DIM_NUM_N_CMAPS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       /* set the end value for the node map */
       varidx[1] = nncm;
@@ -530,7 +531,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
              VAR_E_COMM_INFO_IDX, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* check if I need to get the dimension of the elemental comm map */
@@ -546,7 +547,7 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d", DIM_NUM_E_CMAPS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       /* set the end value for the node map */
@@ -561,5 +562,5 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
     *(int *)num_elem_cmaps = varidx[1] - varidx[0];
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -34,10 +34,11 @@
  */
 
 #include "exodusII.h" // for exoptval, MAX_ERR_LENGTH, etc
-#include "netcdf.h"   // for NC_EAXISTYPE, NC_EBADDIM, etc
-#include <stdio.h>    // for fprintf, stderr, fflush
-#include <stdlib.h>   // for exit
-#include <string.h>   // for strcpy
+#include "exodusII_int.h"
+#include "netcdf.h" // for NC_EAXISTYPE, NC_EBADDIM, etc
+#include <stdio.h>  // for fprintf, stderr, fflush
+#include <stdlib.h> // for exit
+#include <string.h> // for strcpy
 
 /*!
 \fn{void ex_err(const char *module_name, const char *message, int err_num)}
@@ -97,22 +98,34 @@ if (exoid = ex_open ("test.exo", EX_READ, &CPU_word_size,
 
 */
 
+#if defined(EXODUS_THREADSAFE)
+EX_errval_t *ex_errval = NULL;
+#define EX_PNAME ex_errval->last_pname
+#define EX_ERRMSG ex_errval->last_errmsg
+#define EX_ERR_NUM ex_errval->last_err_num
+#else
 int exerrval = 0; /* clear initial global error code value */
 
 static char last_pname[MAX_ERR_LENGTH];
 static char last_errmsg[MAX_ERR_LENGTH];
 static int  last_err_num;
 
+#define EX_PNAME last_pname
+#define EX_ERRMSG last_errmsg
+#define EX_ERR_NUM last_err_num
+#endif
+
 void ex_err(const char *module_name, const char *message, int err_num)
 {
+  EX_FUNC_ENTER();
   if (err_num == 0) { /* zero is no error, ignore and return */
-    return;
+    EX_FUNC_VOID();
   }
 
   else if (err_num == EX_PRTLASTMSG) {
-    fprintf(stderr, "[%s] %s\n", last_pname, last_errmsg);
-    fprintf(stderr, "    exerrval = %d\n", last_err_num);
-    return;
+    fprintf(stderr, "[%s] %s\n", EX_PNAME, EX_ERRMSG);
+    fprintf(stderr, "    exerrval = %d\n", EX_ERR_NUM);
+    EX_FUNC_VOID();
   }
 
   else if (err_num == EX_NULLENTITY) {
@@ -128,9 +141,9 @@ void ex_err(const char *module_name, const char *message, int err_num)
     }
   }
   /* save the error message for replays */
-  strcpy(last_errmsg, message);
-  strcpy(last_pname, module_name);
-  last_err_num = err_num;
+  strcpy(EX_ERRMSG, message);
+  strcpy(EX_PNAME, module_name);
+  EX_ERR_NUM = err_num;
 
   fflush(stderr);
 
@@ -139,13 +152,16 @@ void ex_err(const char *module_name, const char *message, int err_num)
   if ((err_num > 0) && (exoptval & EX_ABORT)) {
     exit(err_num);
   }
+  EX_FUNC_VOID();
 }
 
 void ex_get_err(const char **msg, const char **func, int *err_num)
 {
-  (*msg)     = last_errmsg;
-  (*func)    = last_pname;
-  (*err_num) = last_err_num;
+  EX_FUNC_ENTER();
+  (*msg)     = EX_ERRMSG;
+  (*func)    = EX_PNAME;
+  (*err_num) = EX_ERR_NUM;
+  EX_FUNC_VOID();
 }
 
 const char *ex_strerror(int err_num)

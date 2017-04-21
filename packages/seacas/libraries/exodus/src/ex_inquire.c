@@ -177,7 +177,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   exerrval = 0; /* clear error code */
 
   if (ret_char) {
-    *ret_char = '\0'; /* Only needs to be non-null for TITLE */
+    *ret_char = '\0'; /* Only needs to be non-null for TITLE and some GROUP NAME inquiries */
   }
   if (!ret_int) {
     exerrval = EX_BADPARAM;
@@ -347,7 +347,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     /* returns the dimensionality (2 or 3, for 2-d or 3-d) of the database */
     if (ex_get_dimension(exoid, DIM_NUM_DIM, "database dimensionality", &ldum, &dimid,
                          "ex_inquire") != NC_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     *ret_int = ldum;
     break;
@@ -670,7 +670,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     /*     returns the number of time steps stored in the database */
     if (ex_get_dimension(exoid, DIM_TIME, "time dimension", &ldum, &dimid, "ex_inquire") !=
         NC_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     *ret_int = ldum;
     break;
@@ -723,21 +723,21 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_EDGE:
     /* returns the number of edges (defined across all edge blocks). */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_EDGE, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_EDGE_BLK:
     /* returns the number of edge blocks. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_ED_BLK, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_EDGE_SETS:
     /* returns the number of edge sets. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_ES, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
@@ -769,21 +769,21 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_FACE:
     /* returns the number of faces (defined across all face blocks). */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_FACE, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_FACE_BLK:
     /* returns the number of face blocks. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_FA_BLK, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_FACE_SETS:
     /* returns the number of face sets. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_FS, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
@@ -815,7 +815,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_ELEM_SETS:
     /* returns the number of element sets. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_ELS, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
@@ -840,31 +840,31 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_EDGE_MAP:
     /* returns the number of edge maps. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_EDM, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_FACE_MAP:
     /*     returns the number of face maps. */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_FAM, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_COORD_FRAMES:
     /* return the number of coordinate frames */
     if (ex_get_dimension_value(exoid, ret_int, 0, DIM_NUM_CFRAMES, 1) != EX_NOERR) {
-      return EX_FATAL;
+      return (EX_FATAL);
     }
     break;
 
   case EX_INQ_NUM_CHILD_GROUPS: {
-/* return number of groups contained in this (exoid) group */
+    /* return number of groups contained in this (exoid) group */
+    int tmp_num = 0;
 #if NC_HAS_HDF5
-    int tmp_num;
     nc_inq_grps(exoid, &tmp_num, NULL);
-    *ret_int = tmp_num;
 #endif
+    *ret_int = tmp_num;
   } break;
 
   case EX_INQ_GROUP_PARENT: {
@@ -873,6 +873,8 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     int tmp_num = exoid;
     nc_inq_grp_parent(exoid, &tmp_num);
     *ret_int = tmp_num;
+#else
+    *ret_int = exoid;
 #endif
   } break;
 
@@ -883,12 +885,12 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_GROUP_NAME_LEN: {
-#if NC_HAS_HDF5
     size_t len_name = 0;
+#if NC_HAS_HDF5
     /* return name length of group exoid */
     nc_inq_grpname_len(exoid, &len_name);
-    *ret_int = (int)len_name;
 #endif
+    *ret_int = (int)len_name;
   } break;
 
   case EX_INQ_GROUP_NAME:
@@ -907,16 +909,16 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_FULL_GROUP_NAME_LEN: {
-#if NC_HAS_HDF5
     size_t len_name = 0;
+#if NC_HAS_HDF5
     /* return length of full group name which is the "/" separated path from
      * root
      * For example "/group1/subgroup1/subsubgroup1"
      * length does not include the NULL terminator byte.
      */
     nc_inq_grpname_full(exoid, &len_name, NULL);
-    *ret_int = (int)len_name;
 #endif
+    *ret_int = (int)len_name;
   } break;
 
   case EX_INQ_FULL_GROUP_NAME:
@@ -934,6 +936,17 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     }
 #if NC_HAS_HDF5
     nc_inq_grpname_full(exoid, NULL, ret_char);
+#endif
+    break;
+
+  case EX_INQ_THREADSAFE:
+/* Return 1 if the library was compiled in thread-safe mode.
+ * Return 0 otherwise
+ */
+#if defined(EXODUS_THREADSAFE)
+    *ret_int = 1;
+#else
+    *ret_int = 0;
 #endif
     break;
 
@@ -973,12 +986,13 @@ int64_t ex_inquire_int(int exoid, int req_info)
   char *  cdummy  = NULL; /* Needed just for function call, unused. */
   float   fdummy  = 0;    /* Needed just for function call, unused. */
   int64_t ret_val = 0;
-  int     error   = ex_inquire_internal(exoid, req_info, &ret_val, &fdummy, cdummy);
+  int     error;
+  EX_FUNC_ENTER();
+  error = ex_inquire_internal(exoid, req_info, &ret_val, &fdummy, cdummy);
   if (error < 0) {
     ret_val = error;
   }
-
-  return ret_val;
+  EX_FUNC_LEAVE(ret_val);
 }
 
 /*!
@@ -1188,13 +1202,18 @@ num_props = ex_inquire_int(exoid, EX_INQ_EB_PROP);
 
 int ex_inquire(int exoid, int req_info, void_int *ret_int, float *ret_float, char *ret_char)
 {
+  int ierr;
   if (ex_int64_status(exoid) & EX_INQ_INT64_API) {
-    return ex_inquire_internal(exoid, req_info, ret_int, ret_float, ret_char);
+    EX_FUNC_ENTER();
+    ierr = ex_inquire_internal(exoid, req_info, ret_int, ret_float, ret_char);
+    EX_FUNC_LEAVE(ierr);
   }
   /* ret_int is a 32-bit int */
   int64_t tmp_int;
   int *   return_int = ret_int;
-  int     ierr       = ex_inquire_internal(exoid, req_info, &tmp_int, ret_float, ret_char);
-  *return_int        = (int)tmp_int;
-  return ierr;
+
+  EX_FUNC_ENTER();
+  ierr        = ex_inquire_internal(exoid, req_info, &tmp_int, ret_float, ret_char);
+  *return_int = (int)tmp_int;
+  EX_FUNC_LEAVE(ierr);
 }

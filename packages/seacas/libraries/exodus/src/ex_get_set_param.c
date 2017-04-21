@@ -76,6 +76,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
   char * numentryptr = NULL;
   char * numdfptr    = NULL;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -102,7 +103,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss stored in file id %d",
              ex_name_of_object(set_type), exoid);
     ex_err("ex_get_set_param", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Lookup index of set id in VAR_*S_IDS array */
@@ -110,13 +111,13 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
   if (exerrval != 0) {
     if (exerrval == EX_NULLENTITY) /* NULL set? */
     {
-      return (EX_NOERR);
+      EX_FUNC_LEAVE(EX_NOERR);
     }
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in id array in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
     ex_err("ex_get_set_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* setup more pointers based on set_type */
@@ -145,7 +146,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
   /* inquire values of dimension for number of entities in set */
   if (ex_get_dimension(exoid, numentryptr, "entries", &lnum_entry_in_set, &dimid,
                        "ex_get_set_param") != NC_NOERR) {
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
@@ -168,7 +169,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
   if (set_type == EX_NODE_SET) {
     if ((status = nc_inq_varid(exoid, VAR_FACT_NS(set_id_ndx), &varid)) != NC_NOERR) {
       if (status == NC_ENOTVAR) {
-        return (EX_NOERR);
+        EX_FUNC_LEAVE(EX_NOERR);
       }
       else {
         exerrval = status;
@@ -176,7 +177,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
                  "ERROR: failed to locate the dist factors for %s %" PRId64 " in file id %d",
                  ex_name_of_object(set_type), set_id, exoid);
         ex_err("ex_get_set_param", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
     if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
@@ -193,7 +194,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
   else { /* all other set types */
     if ((status = nc_inq_dimid(exoid, numdfptr, &dimid)) != NC_NOERR) {
       if (status == NC_EBADDIM) {
-        return (EX_NOERR);
+        EX_FUNC_LEAVE(EX_NOERR);
       }
       else {
         exerrval = status;
@@ -201,7 +202,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
                  "ERROR: failed to locate number of dist factors in %s %" PRId64 " in file id %d",
                  ex_name_of_object(set_type), set_id, exoid);
         ex_err("ex_get_set_param", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
 
@@ -211,7 +212,7 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
                "ERROR: failed to get number of dist factors in %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
       ex_err("ex_get_set_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
       if (num_dist_fact_in_set) {
@@ -225,5 +226,5 @@ int ex_get_set_param(int exoid, ex_entity_type set_type, ex_entity_id set_id,
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

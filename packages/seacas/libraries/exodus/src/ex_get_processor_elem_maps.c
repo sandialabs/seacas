@@ -69,6 +69,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   /* Get the file type */
@@ -77,7 +78,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unable to find file type for file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Check the status of the internal element map */
@@ -86,7 +87,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              VAR_INT_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 'p') {
@@ -101,7 +102,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_INT_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (emstat == 1) {
@@ -113,7 +114,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (varidx[1] == -1) {
@@ -124,7 +125,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
                  "ERROR: failed to find dimension ID for \"%s\" in file ID %d", DIM_NUM_INT_ELEMS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_dimlen(exoid, dimid, count)) != NC_NOERR) {
@@ -133,7 +134,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d",
                  DIM_NUM_INT_ELEMS, exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       varidx[1] = count[0];
@@ -145,7 +146,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_ELEM_MAP_INT, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     start[0] = varidx[0];
@@ -162,7 +163,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
                VAR_ELEM_MAP_INT, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (emstat == 1)" */
@@ -173,7 +174,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              VAR_BOR_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ftype[0] == 'p') {
@@ -188,7 +189,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get status for \"%s\" from file ID %d",
              VAR_INT_E_STAT, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (emstat == 1) {
@@ -200,7 +201,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (varidx[1] == -1) {
@@ -211,7 +212,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
                  "ERROR: failed to find dimension ID for \"%s\" in file ID %d", DIM_NUM_BOR_ELEMS,
                  exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_dimlen(exoid, dimid, count)) != NC_NOERR) {
@@ -220,7 +221,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
                  "ERROR: failed to find length of dimension \"%s\" in file ID %d",
                  DIM_NUM_BOR_ELEMS, exoid);
         ex_err(func_name, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       varidx[1] = count[0];
@@ -232,7 +233,7 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_ELEM_MAP_BOR, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     start[0] = varidx[0];
@@ -249,9 +250,9 @@ int ex_get_processor_elem_maps(int exoid, void_int *elem_mapi, void_int *elem_ma
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
                VAR_ELEM_MAP_BOR, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End "if (emstat == 1)" */
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

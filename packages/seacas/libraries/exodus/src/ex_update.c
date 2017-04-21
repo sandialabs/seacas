@@ -60,6 +60,7 @@ int ex_update(int exoid)
   char errmsg[MAX_ERR_LENGTH];
   int  status;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);
@@ -68,7 +69,7 @@ int ex_update(int exoid)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to update file id %d", exoid);
     ex_err("ex_update", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

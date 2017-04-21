@@ -73,16 +73,18 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   int  i;                      /* general indices */
   int  int_type;
 
+  EX_FUNC_ENTER();
+
   if (exoid < 0) {
-    return exoid;
+    EX_FUNC_LEAVE(exoid);
   }
 
   if (nframes == 0) { /* write nothing */
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   if (nframes < 0) {
-    return 1;
+    EX_FUNC_LEAVE(1);
   }
 
   assert(cf_ids != 0);
@@ -97,7 +99,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to place file id %d into define mode", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_def_dim(exoid, DIM_NUM_CFRAMES, nframes, &dim)) != NC_NOERR ||
@@ -131,7 +133,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to complete coordinate frame definition in file id %d", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* check variables consistency */
@@ -151,7 +153,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed writing frame data in file id %d", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
@@ -165,7 +167,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed writing frame data in file id %d", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ex_comp_ws(exoid) == 4) {
@@ -179,9 +181,9 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed writing frame data in file id %d", exoid);
     ex_err(PROCNAME, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 error_ret:
   if (nc_enddef(exoid) != NC_NOERR) { /* exit define mode */
@@ -189,5 +191,5 @@ error_ret:
              exoid);
     ex_err(PROCNAME, errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }

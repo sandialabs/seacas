@@ -107,13 +107,13 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
         status = ex_get_dimension(exoid, DNUMOBJ, ex_name_of_object(var_type), &num_obj, &dimid,
                                   "ex_put_var");
         if (status != NC_NOERR) {
-          return status;
+          return (status);
         }
 
         status = ex_get_dimension(exoid, DNUMOBJVAR, ex_name_of_object(var_type), &num_obj_var,
                                   &dimid, "ex_put_var");
         if (status != NC_NOERR) {
-          return status;
+          return (status);
         }
 
         if (!(obj_var_truth_tab = malloc(num_obj * num_obj_var * sizeof(int)))) {
@@ -233,6 +233,7 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
   int    status;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   ex_check_valid_file_id(exoid);
@@ -245,7 +246,7 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
                exoid);
       ex_err("ex_put_var", errmsg, exerrval);
 
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
 
     /* inquire previously defined variable */
@@ -261,11 +262,12 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
                  "ERROR: failed to get global variables parameters in file id %d", exoid);
         ex_err("ex_put_var", errmsg, exerrval);
       }
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     break;
   case EX_NODAL:
-    return ex_put_nodal_var_int(exoid, time_step, var_index, num_entries_this_obj, var_vals);
+    status = ex_put_nodal_var_int(exoid, time_step, var_index, num_entries_this_obj, var_vals);
+    EX_FUNC_LEAVE(status);
     break;
   case EX_EDGE_BLOCK:
     status = ex_look_up_var(exoid, var_type, var_index, obj_id, VAR_ID_ED_BLK, VAR_EBLK_TAB,
@@ -304,11 +306,11 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid variable type (%d) specified for file id %d",
              var_type, exoid);
     ex_err("ex_put_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (status != EX_NOERR) {
-    return status;
+    EX_FUNC_LEAVE(status);
   }
 
   /* store element variable values */
@@ -342,8 +344,8 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
              "ERROR: failed to store %s %" PRId64 " variable %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
     ex_err("ex_put_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

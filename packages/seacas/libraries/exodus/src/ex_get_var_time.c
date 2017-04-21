@@ -86,13 +86,17 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   const char *varobjids;
   const char *varobstat;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   switch (var_type) {
   case EX_GLOBAL:
-    return ex_get_glob_var_time_int(exoid, var_index, beg_time_step, end_time_step, var_vals);
+    status = ex_get_glob_var_time_int(exoid, var_index, beg_time_step, end_time_step, var_vals);
+    EX_FUNC_LEAVE(status);
   case EX_NODAL:
-    return ex_get_nodal_var_time_int(exoid, var_index, id, beg_time_step, end_time_step, var_vals);
+    status =
+        ex_get_nodal_var_time_int(exoid, var_index, id, beg_time_step, end_time_step, var_vals);
+    EX_FUNC_LEAVE(status);
   case EX_EDGE_BLOCK:
     varobjids = VAR_ID_ED_BLK;
     varobstat = VAR_STAT_ED_BLK;
@@ -130,7 +134,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type (%d) specified for file id %d",
              var_type, exoid);
     ex_err("ex_get_var_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   exerrval = 0; /* clear error code */
@@ -146,7 +150,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   status = ex_get_dimension(exoid, ex_dim_num_objects(var_type), ex_name_of_object(var_type),
                             &num_obj, &dimid, "ex_get_var_time");
   if (status != NC_NOERR) {
-    return status;
+    EX_FUNC_LEAVE(status);
   }
 
   /* get the array of object ids */
@@ -158,7 +162,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s ids in file id %d",
              ex_name_of_object(var_type), exoid);
     ex_err("ex_get_var_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* allocate space for stat array */
@@ -168,7 +172,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
              "ERROR: failed to allocate memory for %s status array for file id %d",
              ex_name_of_object(var_type), exoid);
     ex_err("ex_get_var_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* get variable id of status array */
@@ -182,7 +186,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s status array from file id %d",
                ex_name_of_object(var_type), exoid);
       ex_err("ex_get_var_time", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   else { /* default: status is true */
@@ -209,7 +213,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
                ex_name_of_object(var_type), exoid);
       ex_err("ex_get_var_time", errmsg, exerrval);
       free(stat_vals);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_inq_dimlen(exoid, dimid, &num_entries_this_obj)) != NC_NOERR) {
@@ -219,7 +223,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
                ex_name_of_object(var_type), exoid);
       ex_err("ex_get_var_time", errmsg, exerrval);
       free(stat_vals);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End NULL object check */
 
@@ -235,7 +239,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
                  ex_name_of_object(var_type), exoid);
         ex_err("ex_get_var_time", errmsg, exerrval);
         free(stat_vals);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
 
       if ((status = nc_inq_dimlen(exoid, dimid, &num_entries_this_obj)) != NC_NOERR) {
@@ -245,7 +249,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
                  ex_name_of_object(var_type), exoid);
         ex_err("ex_get_var_time", errmsg, exerrval);
         free(stat_vals);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
       numel += num_entries_this_obj;
     }
@@ -261,7 +265,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
              ex_name_of_object(var_type), exoid);
     ex_err("ex_get_var_time", errmsg, exerrval);
     free(stat_vals);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   free(stat_vals);
@@ -274,7 +278,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
                                        "valid range is 1 to %d in file id %d",
                beg_time_step, num_time_steps, exoid);
       ex_err("ex_get_var_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (end_time_step < 0) {
@@ -289,7 +293,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
                                        "range is %d to %d in file id %d",
                beg_time_step, end_time_step, num_time_steps, exoid);
       ex_err("ex_get_var_time", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -314,7 +318,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s variable values in file id %d",
              ex_name_of_object(var_type), exoid);
     ex_err("ex_get_var_time", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

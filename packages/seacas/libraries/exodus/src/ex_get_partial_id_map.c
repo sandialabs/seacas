@@ -56,6 +56,7 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
   const char *vmap;
   const char *tname;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   switch (map_type) {
@@ -84,13 +85,13 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Bad map type (%d) specified for file id %d", map_type,
              exoid);
     ex_err("ex_get_partial_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   exerrval = 0; /* clear error code */
 
   /* See if any entries are stored in this file */
   if (nc_inq_dimid(exoid, dnumentries, &dimid) != NC_NOERR) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   if (nc_inq_varid(exoid, vmap, &mapid) != NC_NOERR) {
@@ -99,7 +100,7 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss in file id %d", tname,
                exoid);
       ex_err("ex_get_partial_id_map", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* generate default map of 1..n, where n is num_entries */
@@ -116,7 +117,7 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
       }
     }
 
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   start[0] = start_entity_num - 1;
@@ -134,8 +135,8 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s id map in file id %d", tname, exoid);
     ex_err("ex_get_partial_id_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

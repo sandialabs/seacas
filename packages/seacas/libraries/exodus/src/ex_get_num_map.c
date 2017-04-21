@@ -67,6 +67,7 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
   const char *dim_map_size;
   const char *dim_num_maps;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   switch (map_type) {
@@ -90,14 +91,14 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
     exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "Bad map type (%d) specified", map_type);
     ex_err("ex_get_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   exerrval = 0; /* clear error code */
 
   /* See if any entries are stored in this file */
   if (nc_inq_dimid(exoid, dim_map_size, &dimid) != NC_NOERR) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   /* first check if any maps have been defined */
@@ -106,7 +107,7 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss defined in file id %d",
              ex_name_of_object(map_type), exoid);
     ex_err("ex_get_num_map", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Lookup index of map id property array */
@@ -116,7 +117,7 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
              "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
              ex_name_of_object(map_type), map_id, exoid);
     ex_err("ex_get_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire id's of previously defined dimensions and variables */
@@ -125,7 +126,7 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s %" PRId64 " in file id %d",
              ex_name_of_object(map_type), map_id, exoid);
     ex_err("ex_get_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* read in the map */
@@ -141,8 +142,8 @@ int ex_get_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, void
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s in file id %d",
              ex_name_of_object(map_type), exoid);
     ex_err("ex_get_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
