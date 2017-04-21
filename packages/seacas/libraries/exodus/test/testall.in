@@ -289,13 +289,18 @@ mv test6.exo test.exo
 ${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files6.res
 mv test7.exo test.exo
 ${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files7.res
+echo "test_ts_errval - multiple threads calling ex_err and ex_get_err..."
+echo "begin test_ts_errval" >> test.output
+${PREFIX} ${BINDIR}/test_ts_errval${SUFFIX} >> test.output
+echo "end test_ts_errval" >> test.output
  
 else
-# This is so gold file has correct data...
+# This is so gold file has correct data for non-thread-safe runs...
 echo "test_ts_nvar - each thread writes data for a single nodal variable..."
 echo "test_ts_nvar_rd - each thread reads data for a single nodal variable..."
 echo "test_ts_partial_nvar - each thread writes data for a single nodal variable..."
 echo "test_ts_partial_nvar_rd - each thread reads data for a single nodal variable..."
 echo "test_ts_files - each thread creates its own file..."
+echo "test_ts_errval - multiple threads calling ex_err and ex_get_err..."
 fi
 
