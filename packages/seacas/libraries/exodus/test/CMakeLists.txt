@@ -110,6 +110,7 @@ IF ( NETCDF_NCDUMP_BINARY )
        test_ts_partial_nvar
        test_ts_partial_nvar_rd
        test_ts_files
+       test_ts_errval
      )
   ENDIF()
 

@@ -72,3 +72,4 @@ Warning: The element block variable name 'this_variable_name_is_tooooo_long' is 
 	It will be truncated from 33 to 32 characters
 Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
 	It will be truncated from 33 to 32 characters
+test_ts_errval - multiple threads calling ex_err and ex_get_err...
