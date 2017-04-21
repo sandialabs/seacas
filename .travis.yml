@@ -70,6 +70,6 @@ addons:
 
     build_command_prepend: 
 
-    build_command: "./cmake-travis.sh coverity"
+    build_command: "THREAD_SAFE=ON ./cmake-travis.sh coverity"
 
     branch_pattern: coverity_scan
