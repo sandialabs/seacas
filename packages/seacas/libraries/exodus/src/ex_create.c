@@ -169,6 +169,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   /* Contains a 1 in all bits corresponding to file modes */
   static unsigned int all_modes = EX_NORMAL_MODEL | EX_64BIT_OFFSET | EX_64BIT_DATA | EX_NETCDF4;
 
+  EX_FUNC_ENTER();
   exerrval = 0; /* clear error code */
 
   if (run_version != EX_API_VERS_NODOT && warning_output == 0) {
@@ -195,7 +196,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
                                      "NetCDF library being used was not configured to enable "
                                      "this format\n");
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
 
@@ -206,7 +207,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
                                      "the NetCDF library being used does not support this "
                                      "format\n");
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
 
@@ -228,7 +229,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
                                          "mode argument of the ex_create call. Only a single "
                                          "format can be specified.\n");
         ex_err(routine, errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
@@ -277,7 +278,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
                                      "netcdf library does not support the required netcdf-4 or "
                                      "64BIT_DATA extensions.\n");
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
 #endif
   }
 
@@ -396,7 +397,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     }
 #endif
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* turn off automatic filling of netCDF variables */
@@ -405,7 +406,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Verify that there is not an existing file_item struct for this
@@ -425,7 +426,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
              exoid, path);
     ex_err(routine, errmsg, exerrval);
     nc_close(exoid);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* initialize floating point size conversion.  since creating new file,
@@ -436,7 +437,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* put the EXODUS version number, and i/o floating point word size as
@@ -451,7 +452,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II API version attribute in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* store Exodus file version # as an attribute */
@@ -461,7 +462,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II file version attribute in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* store Exodus file float word size  as an attribute */
@@ -473,7 +474,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
                                      "attribute in file id %d",
              exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* store Exodus file size (1=large, 0=normal) as an attribute */
@@ -482,7 +483,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to store Exodus II file size attribute in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   {
@@ -493,7 +494,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to add maximum_name_length attribute in file id %d", exoid);
       ex_err(routine, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -504,7 +505,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define string length in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* The name string length dimension is delayed until the ex_put_init function
@@ -515,7 +516,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define line length in file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* create number "4" dimension; must be of type long */
@@ -524,7 +525,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number \"4\" dimension in file id %d",
              exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   {
@@ -535,7 +536,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to add int64_status attribute in file id %d",
                exoid);
       ex_err(routine, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -543,8 +544,8 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (exoid);
+  EX_FUNC_LEAVE(exoid);
 }

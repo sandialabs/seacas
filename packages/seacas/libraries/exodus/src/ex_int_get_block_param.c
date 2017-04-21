@@ -59,6 +59,8 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
   size_t m;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
+
   ex_block block;
   block.id   = id;
   block.type = EX_ELEM_BLOCK;
@@ -72,7 +74,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
              "ERROR: failed to get element block %" PRId64 " parameters in file id %d", block.id,
              exoid);
     ex_err("ex_int_get_block_param", errmsg, EX_MSG);
-    return EX_FATAL;
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   elem_blk_parm->num_elem_in_blk    = block.num_entry;
@@ -117,7 +119,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[3] = 3;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if (strncmp(elem_blk_parm->elem_type, "TRIANGLE", 3) == 0) {
@@ -154,7 +156,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
         elem_blk_parm->num_nodes_per_side[4] = 3;
       }
       else {
-        return el_node_count_error(*elem_blk_parm);
+        EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
       }
     }
   }
@@ -185,7 +187,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[5] = 3;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if (strncmp(elem_blk_parm->elem_type, "HEX", 3) == 0) {
@@ -233,7 +235,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[5] = 9;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if (strncmp(elem_blk_parm->elem_type, "TETRA", 3) == 0) {
@@ -265,7 +267,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[3] = 7;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if (strncmp(elem_blk_parm->elem_type, "WEDGE", 3) == 0) {
@@ -300,7 +302,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[4] = 7;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if (strncmp(elem_blk_parm->elem_type, "PYRAMID", 3) == 0) {
@@ -321,7 +323,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[4] = 8;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if (strncmp(elem_blk_parm->elem_type, "BEAM", 3) == 0) {
@@ -337,7 +339,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[1] = 3;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   else if ((strncmp(elem_blk_parm->elem_type, "TRUSS", 3) == 0) ||
@@ -355,7 +357,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[1] = 3;
     }
     else {
-      return el_node_count_error(*elem_blk_parm);
+      EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));
     }
   }
   /* Used for an empty block in a parallel decomposition */
@@ -372,5 +374,5 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
     elem_blk_parm->num_sides             = 0;
     elem_blk_parm->num_nodes_per_side[0] = 0;
   }
-  return EX_NOERR;
+  EX_FUNC_LEAVE(EX_NOERR);
 }

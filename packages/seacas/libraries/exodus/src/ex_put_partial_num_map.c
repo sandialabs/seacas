@@ -77,6 +77,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   const char *vmapids;
   const char *vmap;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -107,12 +108,12 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Bad map type (%d) specified for file id %d", map_type,
              exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Make sure the file contains entries */
   if (nc_inq_dimid(exoid, dnumentries, &dimid) != NC_NOERR) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   /* first check if any maps are specified */
@@ -121,7 +122,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %ss specified in file id %d",
              ex_name_of_object(map_type), exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Check for duplicate map id entry */
@@ -141,7 +142,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss in file id %d",
                ex_name_of_object(map_type), exoid);
       ex_err("ex_put_partial_num_map", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Keep track of the total number of maps defined using a
@@ -156,7 +157,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
                "ERROR: exceeded number of %ss (%" ST_ZU ") specified in file id %d",
                ex_name_of_object(map_type), num_maps, exoid);
       ex_err("ex_put_partial_num_map", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*   NOTE: ex_inc_file_item  is used to find the number of element maps
@@ -174,7 +175,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: couldn't determine number of mesh objects in file id %d", exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_dimlen(exoid, dimid, &num_mobj)) != NC_NOERR) {
@@ -182,7 +183,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of mesh objects in file id %d",
              exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Check input parameters for a valid range of numbers */
@@ -190,20 +191,20 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: start count is invalid in file id %d", exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ent_count < 0) {
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid count value in file id %d", exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ent_start + ent_count - 1 > num_mobj) {
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start+count-1 is larger than mesh object count in file id %d", exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* write out information to previously defined variable */
@@ -214,7 +215,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s ids in file id %d",
              ex_name_of_object(map_type), exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* then, write out map id */
@@ -226,7 +227,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s id %" PRId64 " in file id %d",
                  ex_name_of_object(map_type), map_id, exoid);
         ex_err("ex_put_partial_num_map", errmsg, exerrval);
-        return (EX_FATAL);
+        EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
@@ -237,11 +238,11 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   case EX_FACE_MAP: vmap = VAR_FACE_MAP(cur_num_maps + 1); break;
   case EX_ELEM_MAP: vmap = VAR_ELEM_MAP(cur_num_maps + 1); break;
   default:
-    exerrval = 1005;
+    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized map type in switch: %d in file id %d", map_type, exoid);
     ex_err("ex_put_partial_num_map", errmsg, EX_MSG);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* locate variable array in which to store the map */
@@ -250,7 +251,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s %" PRId64 " in file id %d",
              ex_name_of_object(map_type), map_id, exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* write out the map  */
@@ -273,8 +274,8 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s in file id %d",
              ex_name_of_object(map_type), exoid);
     ex_err("ex_put_partial_num_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -17,6 +17,9 @@ ACCESS=$(cd ..; pwd)
 ### below to "OFF". It will disable blot and fastq
 HAVE_X11=ON
 
+### Set to ON to enable the building of a thread-safe version of the Exodus library.
+THREADSAFE_EXODUS=OFF
+
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
 
@@ -115,6 +118,8 @@ cmake  \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_EXODUS} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_EXODUS} \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
 ${KOKKOS_SYMBOLS} \

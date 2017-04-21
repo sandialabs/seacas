@@ -92,6 +92,7 @@ int ex_put_cmap_params_cc(int exoid, void_int *node_cmap_ids, void_int *node_cma
   int  index_type, bulk_type;
   /*-----------------------------Execution begins-----------------------------*/
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -117,7 +118,7 @@ int ex_put_cmap_params_cc(int exoid, void_int *node_cmap_ids, void_int *node_cma
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get dimension ID for \"%s\" in file ID %d",
              DIM_NUM_PROCS_F, exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_dimlen(exoid, n_dimid[0], &num_procs_in_file)) != NC_NOERR) {
@@ -126,7 +127,7 @@ int ex_put_cmap_params_cc(int exoid, void_int *node_cmap_ids, void_int *node_cma
              "ERROR: failed to find length of dimension \"%s\" in file ID %d", DIM_NUM_PROCS_F,
              exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -146,7 +147,7 @@ int ex_put_cmap_params_cc(int exoid, void_int *node_cmap_ids, void_int *node_cma
 file ID %d",
                DIM_NUM_N_CMAPS, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -157,7 +158,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_N_COMM_INFO_IDX, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* allocate space for the index variable */
@@ -172,7 +173,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: insufficient memory to read index variable from file ID %d", exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* and set the last value of the index */
@@ -191,7 +192,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
                VAR_N_COMM_INFO_IDX, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* "if (num_n_comm_maps > 0)" */
 
@@ -206,7 +207,7 @@ file ID %d",
 file ID %d",
                DIM_NUM_E_CMAPS, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -217,7 +218,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_E_COMM_INFO_IDX, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* allocate space for the index variable */
@@ -232,7 +233,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: insufficient memory to read index variable from file ID %d", exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* get the communication map info index */
@@ -249,7 +250,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
                VAR_E_COMM_INFO_IDX, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* "if (num_e_comm_maps >0)" */
 
@@ -258,7 +259,7 @@ file ID %d",
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file ID %d into define mode", exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*
@@ -276,7 +277,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* now add up all of the nodal communications maps */
@@ -307,7 +308,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Define variables for the nodal IDS and processor vectors */
@@ -319,7 +320,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -331,7 +332,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -352,7 +353,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* now add up all of the nodal communications maps */
@@ -383,7 +384,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Define variables for the element IDS and processor vectors */
@@ -395,7 +396,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -407,7 +408,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -419,7 +420,7 @@ file ID %d",
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
     ex_compress_variable(exoid, varid, 1);
 
@@ -438,7 +439,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_N_COMM_STAT, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Get the variable ID for the comm map IDs vector */
@@ -447,7 +448,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_N_COMM_IDS, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* reset the index variable */
@@ -494,7 +495,7 @@ file ID %d",
           exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unable to output variable in file ID %d", exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
 
         /* increment to the next starting position */
@@ -508,7 +509,7 @@ file ID %d",
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to output int elem map index in file ID %d", exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       } /* End "for(icm=0; icm < num_icm; icm++)" */
 
@@ -534,7 +535,7 @@ file ID %d",
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable in file ID %d", exoid);
           ex_err(func_name, errmsg, exerrval);
 
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
     } /* End "for(iproc=0; iproc < num_procs_in_file; iproc++)" */
@@ -555,7 +556,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_E_COMM_STAT, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Get the variable ID for the elemental comm map IDs vector */
@@ -564,7 +565,7 @@ file ID %d",
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
                VAR_E_COMM_IDS, exoid);
       ex_err(func_name, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* reset the index variable */
@@ -611,7 +612,7 @@ file ID %d",
           exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unable to output variable in file ID %d", exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
 
         /* increment to the next starting position */
@@ -625,7 +626,7 @@ file ID %d",
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to output int elem map index in file ID %d", exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       } /* End "for(icm=0; icm < num_icm; icm++)" */
 
@@ -650,7 +651,7 @@ file ID %d",
           exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable in file ID %d", exoid);
           ex_err(func_name, errmsg, exerrval);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
     } /* End "for(iproc=0; iproc < num_procs_in_file; iproc++)" */
@@ -659,5 +660,5 @@ file ID %d",
 
   } /* End "if (num_e_comm_maps > 0)" */
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

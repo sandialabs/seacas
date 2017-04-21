@@ -123,6 +123,7 @@ int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
 
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -150,7 +151,7 @@ int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
       ex_err("ex_get_prop_array", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_inq_varid(exoid, name, &propid)) != NC_NOERR) {
@@ -158,7 +159,7 @@ int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate property array %s in file id %d",
                name, exoid);
       ex_err("ex_get_prop_array", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*   compare stored attribute name with passed property name   */
@@ -167,7 +168,7 @@ int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property name in file id %d", exoid);
       ex_err("ex_get_prop_array", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (strcmp(tmpstr, prop_name) == 0) {
@@ -183,7 +184,7 @@ int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
              "Warning: object type %d, property %s not defined in file id %d", obj_type, prop_name,
              exoid);
     ex_err("ex_get_prop_array", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* read num_obj values from property variable */
@@ -200,8 +201,8 @@ int ex_get_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
              "ERROR: failed to read values in %s property array in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_prop_array", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

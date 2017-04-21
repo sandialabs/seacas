@@ -93,6 +93,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
   char *        extraptr = NULL;
   ex_inquiry    ex_inq_val;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -134,7 +135,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
     exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid set type (%d)", set_type);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* first check if any sets are specified */
@@ -151,7 +152,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
                ex_name_of_object(set_type), exoid);
       ex_err("ex_put_concat_sets", errmsg, exerrval);
     }
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire how many sets are to be stored */
@@ -161,7 +162,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
              ex_name_of_object(set_type), exoid);
     /* use error val from inquire */
     ex_err("ex_put_concat_sets", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Fill out set status array */
@@ -173,7 +174,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
              "ERROR: failed to allocate space for %s status array in file id %d",
              ex_name_of_object(set_type), exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (int_size == sizeof(int64_t)) {
@@ -194,7 +195,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
              ex_name_of_object(set_type), exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
     free(set_stat);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   status = nc_put_var_int(exoid, varid, set_stat);
@@ -205,7 +206,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
              ex_name_of_object(set_type), exoid);
     ex_err("ex_put_concat_set", errmsg, exerrval);
     free(set_stat);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* put netcdf file into define mode  */
@@ -214,7 +215,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
     free(set_stat);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* create set definitions */
@@ -436,7 +437,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
     free(set_stat);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Next, fill out set ids array */
@@ -448,7 +449,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
              ex_name_of_object(set_type), exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
     free(set_stat);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* then, write out set id list */
@@ -465,7 +466,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
              ex_name_of_object(set_type), exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
     free(set_stat);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* If the sets_entry_index is passed in as a NULL pointer, then
@@ -474,7 +475,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
    */
   if (sets_entry_index == 0) {
     free(set_stat);
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   /* Now, use ExodusII call to store sets */
@@ -517,7 +518,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
     }
     if (status != NC_NOERR) {
       free(set_stat);
-      return (EX_FATAL); /* error will be reported by subroutine */
+      EX_FUNC_LEAVE(EX_FATAL); /* error will be reported by subroutine */
     }
 
     if (int_size == sizeof(int)) {
@@ -539,7 +540,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
           /* use error val from exodusII routine */
           ex_err("ex_put_concat_sets", errmsg, exerrval);
           free(set_stat);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
     }
@@ -553,7 +554,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
           /* use error val from exodusII routine */
           ex_err("ex_put_concat_sets", errmsg, exerrval);
           free(set_stat);
-          return (EX_FATAL);
+          EX_FUNC_LEAVE(EX_FATAL);
         }
       }
     }
@@ -565,11 +566,11 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
                exoid);
       ex_err("ex_put_concat_sets", errmsg, exerrval);
       free(set_stat);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   free(set_stat);
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 
 /* Fatal error: exit definition mode and return */
 error_ret:
@@ -580,5 +581,5 @@ error_ret:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
     ex_err("ex_put_concat_sets", errmsg, exerrval);
   }
-  return (EX_FATAL);
+  EX_FUNC_LEAVE(EX_FATAL);
 }
