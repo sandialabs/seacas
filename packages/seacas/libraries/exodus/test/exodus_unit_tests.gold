@@ -55,3 +55,20 @@ test_ts_nvar - each thread writes data for a single nodal variable...
 test_ts_nvar_rd - each thread reads data for a single nodal variable...
 test_ts_partial_nvar - each thread writes data for a single nodal variable...
 test_ts_partial_nvar_rd - each thread reads data for a single nodal variable...
+test_ts_files - each thread creates its own file...
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
+Warning: The element block variable name 'this_variable_name_is_tooooo_long' is too long.
+	It will be truncated from 33 to 32 characters
