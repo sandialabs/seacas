@@ -859,7 +859,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_NUM_CHILD_GROUPS: {
-/* return number of groups contained in this (exoid) group */
+    /* return number of groups contained in this (exoid) group */
     int tmp_num = 0;
 #if NC_HAS_HDF5
     nc_inq_grps(exoid, &tmp_num, NULL);
@@ -940,16 +940,16 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     break;
 
   case EX_INQ_THREADSAFE:
-    /* Return 1 if the library was compiled in thread-safe mode.
-     * Return 0 otherwise
-     */
+/* Return 1 if the library was compiled in thread-safe mode.
+ * Return 0 otherwise
+ */
 #if defined(EXODUS_THREADSAFE)
     *ret_int = 1;
 #else
     *ret_int = 0;
 #endif
     break;
-    
+
   default:
     *ret_int = 0;
     exerrval = EX_FATAL;
