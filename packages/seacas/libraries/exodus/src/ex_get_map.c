@@ -79,6 +79,7 @@ int ex_get_map(int exoid, void_int *elem_map)
   size_t num_elem, i;
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -87,7 +88,7 @@ int ex_get_map(int exoid, void_int *elem_map)
 
   /* See if file contains any elements...*/
   if ((status = nc_inq_dimid(exoid, DIM_NUM_ELEM, &numelemdim)) != NC_NOERR) {
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   if ((status = nc_inq_dimlen(exoid, numelemdim, &num_elem)) != NC_NOERR) {
@@ -95,7 +96,7 @@ int ex_get_map(int exoid, void_int *elem_map)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of elements in file id %d",
              exoid);
     ex_err("ex_get_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nc_inq_varid(exoid, VAR_MAP, &mapid) != NC_NOERR) {
@@ -113,7 +114,7 @@ int ex_get_map(int exoid, void_int *elem_map)
       }
     }
 
-    return (EX_NOERR);
+    EX_FUNC_LEAVE(EX_NOERR);
   }
 
   /* read in the element order map  */
@@ -128,8 +129,8 @@ int ex_get_map(int exoid, void_int *elem_map)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get element order map in file id %d", exoid);
     ex_err("ex_get_map", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

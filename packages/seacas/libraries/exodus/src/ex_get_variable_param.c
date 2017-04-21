@@ -108,6 +108,7 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
   const char *dnumvar;
   int         status;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval  = 0; /* clear error code */
@@ -129,20 +130,20 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid variable type %d requested from file id %d",
              obj_type, exoid);
     ex_err("ex_get_variable_param", errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   if ((status = nc_inq_dimid(exoid, dnumvar, &dimid)) != NC_NOERR) {
     *num_vars = 0;
     if (status == NC_EBADDIM) {
-      return (EX_NOERR); /* no global variables defined */
+      EX_FUNC_LEAVE(EX_NOERR); /* no global variables defined */
     }
     else {
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s variable names in file id %d",
                ex_name_of_object(obj_type), exoid);
       ex_err("ex_get_variable_param", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -151,9 +152,9 @@ int ex_get_variable_param(int exoid, ex_entity_type obj_type, int *num_vars)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s variables in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_get_variable_param", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
   *num_vars = dimlen;
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

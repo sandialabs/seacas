@@ -64,6 +64,7 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
   char errmsg[MAX_ERR_LENGTH];
   /*-----------------------------Execution begins-----------------------------*/
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -75,7 +76,7 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the vector of side set IDs */
@@ -91,7 +92,7 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
              VAR_SS_IDS_GLOBAL, exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get the variable ID for the vector of global side set side count */
@@ -102,7 +103,7 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
                VAR_SS_SIDE_CNT_GLOBAL, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Get the vector of side set side counts */
@@ -118,7 +119,7 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
                VAR_SS_SIDE_CNT_GLOBAL, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
   } /* End "if (side_cnts != NULL)" */
@@ -131,7 +132,7 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
                VAR_SS_DF_CNT_GLOBAL, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Get the vector of side set dist. fact counts */
@@ -147,8 +148,8 @@ int ex_get_ss_param_global(int exoid, void_int *global_ids, void_int *side_cnts,
                VAR_SS_DF_CNT_GLOBAL, exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   } /* End "if (df_cnts != NULL)" */
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

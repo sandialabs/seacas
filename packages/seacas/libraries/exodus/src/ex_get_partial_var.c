@@ -72,19 +72,23 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
   size_t start[2], count[2];
   char   errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
+
   if (num_entities == 0) {
-    return status;
+    EX_FUNC_LEAVE(status);
   }
 
   if (var_type == EX_NODAL) {
     /* FIXME: Special case: ignore obj_id, possible large_file complications,
      * etc. */
-    return ex_get_partial_nodal_var_int(exoid, time_step, var_index, start_index, num_entities,
-                                        var_vals);
+    status = ex_get_partial_nodal_var_int(exoid, time_step, var_index, start_index, num_entities,
+                                          var_vals);
+    EX_FUNC_LEAVE(status);
   }
   if (var_type == EX_GLOBAL) {
     /* FIXME: Special case: all vars stored in 2-D single array. */
-    return ex_get_glob_vars_int(exoid, time_step, num_entities, var_vals);
+    status = ex_get_glob_vars_int(exoid, time_step, num_entities, var_vals);
+    EX_FUNC_LEAVE(status);
   }
 
   ex_check_valid_file_id(exoid);
@@ -99,13 +103,13 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                "Warning: no %s variables for NULL block %" PRId64 " in file id %d",
                ex_name_of_object(var_type), obj_id, exoid);
       ex_err("ex_get_partial_var", errmsg, EX_NULLENTITY);
-      return (EX_WARN);
+      EX_FUNC_LEAVE(EX_WARN);
     }
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
              ex_name_of_object(var_type), obj_id, exoid);
     ex_err("ex_get_partial_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire previously defined variable */
@@ -116,7 +120,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s %" PRId64 " var %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
     ex_err("ex_get_partial_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Verify that time_step is within bounds */
@@ -127,7 +131,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                                        "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
       ex_err("ex_get_partial_var", errmsg, EX_BADPARAM);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -151,7 +155,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
              "ERROR: failed to get %s %" PRId64 " variable %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
     ex_err("ex_get_partial_var", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

@@ -86,6 +86,7 @@ int ex_get_all_times(int exoid, void *time_values)
   int  status;
   char errmsg[MAX_ERR_LENGTH];
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0;
@@ -95,7 +96,7 @@ int ex_get_all_times(int exoid, void *time_values)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable %s in file id %d",
              VAR_WHOLE_TIME, exoid);
     ex_err("ex_get_all_times", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /*read time values */
@@ -110,8 +111,8 @@ int ex_get_all_times(int exoid, void *time_values)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get time values from file id %d", exoid);
     ex_err("ex_get_all_times", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

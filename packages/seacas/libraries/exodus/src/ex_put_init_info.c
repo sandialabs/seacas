@@ -69,6 +69,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
   char errmsg[MAX_ERR_LENGTH];
   /*-----------------------------Execution begins-----------------------------*/
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -79,7 +80,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: NULL file type input for file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Set the file type */
@@ -94,7 +95,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file type requested for file ID %d", exoid);
     ex_err(func_name, errmsg, exerrval);
 
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Put file into define mode */
@@ -102,7 +103,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
     exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file ID %d into define mode", exoid);
     ex_err(func_name, errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Define dimension for the number of processors */
@@ -116,7 +117,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -132,7 +133,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -146,11 +147,11 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
       /* Leave define mode before returning */
       ex_leavedef(exoid, func_name);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (ex_leavedef(exoid, func_name) != EX_NOERR) {
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if ((status = nc_put_var1_int(exoid, varid, NULL, &lftype)) != NC_NOERR) {
@@ -159,14 +160,14 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
                exoid);
       ex_err(func_name, errmsg, exerrval);
 
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   else {
     if (ex_leavedef(exoid, func_name) != EX_NOERR) {
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }

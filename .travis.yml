@@ -33,6 +33,6 @@ addons:
       name: "gsjaardema/seacas"
       description: "Build submitted via Travis CI"
     notification_email: gsjaardema@gmail.com
-    build_command: "./cmake-travis.sh coverity"
+    build_command: "THREAD_SAFE=ON ./cmake-travis.sh coverity"
     branch_pattern: coverity_scan
 

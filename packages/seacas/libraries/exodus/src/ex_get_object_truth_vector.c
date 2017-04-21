@@ -71,6 +71,7 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
   const char *ent_type = NULL;
   const char *var_name = NULL;
 
+  EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
   exerrval = 0; /* clear error code */
@@ -137,12 +138,12 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
     ex_err(routine, errmsg, exerrval);
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   if (status != NC_NOERR) {
     exerrval = status;
-    return (EX_WARN);
+    EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Determine index of entity_id in id array */
@@ -153,7 +154,7 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
                "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
                ex_name_of_object(obj_type), entity_id, exoid);
       ex_err(routine, errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
 
@@ -169,7 +170,7 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: # of variables doesn't match those defined in file id %d", exoid);
     ex_err("ex_get_object_truth_vector", errmsg, exerrval);
-    return (EX_FATAL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (statust != NC_NOERR) {
@@ -203,8 +204,8 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
       exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get truth vector from file id %d", exoid);
       ex_err("ex_get_object_truth_vector", errmsg, exerrval);
-      return (EX_FATAL);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-  return (EX_NOERR);
+  EX_FUNC_LEAVE(EX_NOERR);
 }
