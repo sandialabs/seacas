@@ -3,6 +3,8 @@ dist: trusty
 
 language: c++
 
+env: THREAD_SAFE=ON
+
 before_install:
   - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt
   - sudo apt-get update -qq
@@ -33,6 +35,6 @@ addons:
       name: "gsjaardema/seacas"
       description: "Build submitted via Travis CI"
     notification_email: gsjaardema@gmail.com
-    build_command: "THREAD_SAFE=ON ./cmake-travis.sh coverity"
+    build_command: ./cmake-travis.sh coverity"
     branch_pattern: coverity_scan
 
