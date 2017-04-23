@@ -151,6 +151,7 @@ extern EX_errval_t *exerrval_get();
 #define EX_FUNC_VOID()                                                                             \
   do {                                                                                             \
     ex_mutex_unlock(&EX_g);                                                                        \
+    return;                                                                                        \
   } while (0)
 
 #else

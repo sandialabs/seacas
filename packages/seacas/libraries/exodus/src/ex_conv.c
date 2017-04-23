@@ -296,6 +296,7 @@ nc_type nc_flt_code(int exoid)
    *
    * "exoid" is some integer which uniquely identifies the file of interest.
    */
+  EX_FUNC_ENTER()
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
@@ -307,7 +308,7 @@ nc_type nc_flt_code(int exoid)
     ex_err("nc_flt_code", errmsg, exerrval);
     return ((nc_type)-1);
   }
-  return (file->netcdf_type_code);
+  EX_FUNC_LEAVE(file->netcdf_type_code);
 }
 
 int ex_int64_status(int exoid)
