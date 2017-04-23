@@ -51,11 +51,10 @@
 int ex_get_group_id(int parent_id, const char *group_name, int *group_id)
 {
   char errmsg[MAX_ERR_LENGTH];
+#if NC_HAS_HDF5
 
   exerrval = 0; /* clear error code */
 
-#if NC_HAS_HDF5
-  EX_FUNC_ENTER();
   /* See if name contains "/" indicating it is a full path name... */
   if (group_name == NULL) {
     /* Return root */
