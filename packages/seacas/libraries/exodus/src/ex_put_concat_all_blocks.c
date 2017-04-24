@@ -76,7 +76,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
   int    edge_work = 0; /* is DIM_NUM_ED_BLK defined? If so, there's work to do */
   int    face_work = 0; /* is DIM_NUM_FA_BLK defined? If so, there's work to do */
 #if NC_HAS_HDF5
-  int    fill      = NC_FILL_CHAR;
+  int fill = NC_FILL_CHAR;
 #endif
 
   int *edge_id_int = NULL;

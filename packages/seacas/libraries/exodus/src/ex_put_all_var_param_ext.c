@@ -430,9 +430,9 @@ static int define_variable_name_variable(int exoid, const char *VARIABLE, int di
   int  variable;
   int  status;
 #if NC_HAS_HDF5
-  int  fill = NC_FILL_CHAR;
+  int fill = NC_FILL_CHAR;
 #endif
-  
+
   dims[0] = dimension;
   (void)nc_inq_dimid(exoid, DIM_STR_NAME, &dims[1]); /* Checked earlier, so known to exist */
 
