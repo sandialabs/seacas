@@ -53,7 +53,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
@@ -96,8 +96,6 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0;
-
   /* inquire id's of previously defined dimensions  */
 
   if (nc_inq_dimid(exoid, DIM_NUM_NODES, &numnoddim) != NC_NOERR) {
@@ -107,19 +105,17 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
   }
 
   if ((status = nc_inq_dimlen(exoid, numnoddim, &num_nod)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of nodes in file id %d", exoid);
-    ex_err("ex_get_partial_coord", errmsg, exerrval);
+    ex_err("ex_get_partial_coord", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (start_node_num + num_nodes - 1 > num_nod) {
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + node count (%" PRId64
              ") is larger than total number of nodes (%" ST_ZU ") in file id %d",
              start_node_num, num_nodes, num_nod, exoid);
-    ex_err("ex_get_partial_coord", errmsg, exerrval);
+    ex_err("ex_get_partial_coord", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -133,10 +129,9 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
   /* read in the coordinates  */
   if (ex_large_model(exoid) == 0) {
     if ((status = nc_inq_varid(exoid, VAR_COORD, &coordid)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate nodal coordinates in file id %d",
                exoid);
-      ex_err("ex_get_partial_coord", errmsg, exerrval);
+      ex_err("ex_get_partial_coord", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -177,29 +172,26 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
       }
 
       if (status != NC_NOERR) {
-        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s coord array in file id %d", which,
                  exoid);
-        ex_err("ex_get_partial_coord", errmsg, exerrval);
+        ex_err("ex_get_partial_coord", errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
   }
   else {
     if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate x nodal coordinates in file id %d",
                exoid);
-      ex_err("ex_get_partial_coord", errmsg, exerrval);
+      ex_err("ex_get_partial_coord", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (num_dim > 1) {
       if ((status = nc_inq_varid(exoid, VAR_COORD_Y, &coordidy)) != NC_NOERR) {
-        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to locate y nodal coordinates in file id %d", exoid);
-        ex_err("ex_get_partial_coord", errmsg, exerrval);
+        ex_err("ex_get_partial_coord", errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -209,10 +201,9 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
 
     if (num_dim > 2) {
       if ((status = nc_inq_varid(exoid, VAR_COORD_Z, &coordidz)) != NC_NOERR) {
-        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to locate z nodal coordinates in file id %d", exoid);
-        ex_err("ex_get_partial_coord", errmsg, exerrval);
+        ex_err("ex_get_partial_coord", errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -253,10 +244,9 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
         }
 
         if (status != NC_NOERR) {
-          exerrval = status;
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s coord array in file id %d",
                    which, exoid);
-          ex_err("ex_get_partial_coord", errmsg, exerrval);
+          ex_err("ex_get_partial_coord", errmsg, status);
           EX_FUNC_LEAVE(EX_FATAL);
         }
       }

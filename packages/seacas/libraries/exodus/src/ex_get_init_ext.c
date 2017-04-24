@@ -48,7 +48,7 @@
  *
  *****************************************************************************/
 
-#include "exodusII.h"     // for ex_init_params, exerrval, etc
+#include "exodusII.h"     // for ex_init_params, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_att_text, etc
 #include <stddef.h>       // for size_t
@@ -71,10 +71,9 @@ static int64_t ex_get_dim_value(int exoid, const char *name, const char *dimensi
   else {
     size_t tmp;
     if ((status = nc_inq_dimlen(exoid, dimension, &tmp)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", name,
                exoid);
-      ex_err("ex_get_init_ext", errmsg, exerrval);
+      ex_err("ex_get_init_ext", errmsg, status);
       return (EX_FATAL);
     }
     *value = tmp;
@@ -101,8 +100,6 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
 
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
-
-  exerrval = 0; /* clear error code */
 
   info->num_dim       = 0;
   info->num_nodes     = 0;
@@ -144,10 +141,9 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (info->num_elem_blk == 0 && info->num_elem > 0) {
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate number of element blocks in file id %d", exoid);
-    ex_err("ex_get_init_ext", errmsg, exerrval);
+    ex_err("ex_get_init_ext", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -191,9 +187,8 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
   }
 
   if ((status = nc_inq_att(rootid, NC_GLOBAL, ATT_TITLE, &title_type, &title_len)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no title in file id %d", rootid);
-    ex_err("ex_get_init_ext", errmsg, exerrval);
+    ex_err("ex_get_init_ext", errmsg, status);
   }
 
   /* Check title length to avoid overrunning clients memory space; include
@@ -212,9 +207,8 @@ int ex_get_init_ext(int exoid, ex_init_params *info)
       info->title[title_len] = '\0';
     }
     if (status != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get title in file id %d", rootid);
-      ex_err("ex_get_init_ext", errmsg, exerrval);
+      ex_err("ex_get_init_ext", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }

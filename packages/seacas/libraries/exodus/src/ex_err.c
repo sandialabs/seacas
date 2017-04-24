@@ -115,10 +115,17 @@ static int  last_err_num;
 #define EX_ERR_NUM last_err_num
 #endif
 
+void ex_reset_error_status()
+{
+  exerrval   = 0;
+  EX_ERR_NUM = 0;
+}
+
 void ex_err(const char *module_name, const char *message, int err_num)
 {
-  EX_FUNC_ENTER();
+  EX_FUNC_ENTER_INT();
   if (err_num == 0) { /* zero is no error, ignore and return */
+    exerrval = err_num;
     EX_FUNC_VOID();
   }
 
@@ -143,7 +150,10 @@ void ex_err(const char *module_name, const char *message, int err_num)
   /* save the error message for replays */
   strcpy(EX_ERRMSG, message);
   strcpy(EX_PNAME, module_name);
-  EX_ERR_NUM = err_num;
+  if (err_num != EX_LASTERR) {
+    exerrval   = err_num;
+    EX_ERR_NUM = err_num;
+  }
 
   fflush(stderr);
 
@@ -155,12 +165,33 @@ void ex_err(const char *module_name, const char *message, int err_num)
   EX_FUNC_VOID();
 }
 
+void ex_set_err(const char *module_name, const char *message, int err_num)
+{
+  EX_FUNC_ENTER_INT();
+  /* save the error message for replays */
+  strcpy(EX_ERRMSG, message);
+  strcpy(EX_PNAME, module_name);
+  if (err_num != EX_LASTERR) {
+    /* Use last set error number, but add new function and message */
+    EX_ERR_NUM = err_num;
+  }
+  EX_FUNC_VOID();
+}
+
 void ex_get_err(const char **msg, const char **func, int *err_num)
 {
-  EX_FUNC_ENTER();
-  (*msg)     = EX_ERRMSG;
-  (*func)    = EX_PNAME;
-  (*err_num) = EX_ERR_NUM;
+  EX_FUNC_ENTER_INT();
+  if (msg) {
+    (*msg) = EX_ERRMSG;
+  }
+
+  if (func) {
+    (*func) = EX_PNAME;
+  }
+
+  if (err_num) {
+    (*err_num) = EX_ERR_NUM;
+  }
   EX_FUNC_VOID();
 }
 

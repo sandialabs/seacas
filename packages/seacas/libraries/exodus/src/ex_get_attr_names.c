@@ -73,24 +73,26 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
-    if (exerrval != 0) {
-      if (exerrval == EX_NULLENTITY) {
+    if (obj_id_ndx <= 0) {
+      ex_get_err(NULL, NULL, &status);
+
+      if (status != 0) {
+        if (status == EX_NULLENTITY) {
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
+                   ex_name_of_object(obj_type), obj_id, exoid);
+          ex_err("ex_get_attr_names", errmsg, EX_NULLENTITY);
+          EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
+        }
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
+                 "Warning: failed to locate %s id %" PRId64 " in id array in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
-        ex_err("ex_get_attr_names", errmsg, EX_NULLENTITY);
-        EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
+        ex_err("ex_get_attr_names", errmsg, status);
+        EX_FUNC_LEAVE(EX_WARN);
       }
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "Warning: failed to locate %s id %" PRId64 " in id array in file id %d",
-               ex_name_of_object(obj_type), obj_id, exoid);
-      ex_err("ex_get_attr_names", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_WARN);
     }
   }
 
@@ -132,30 +134,27 @@ int ex_get_attr_names(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, c
     vattrbname = VAR_NAME_ATTRIB(obj_id_ndx);
     break;
   default:
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
-    ex_err("ex_get_attr_names", errmsg, EX_MSG);
+    ex_err("ex_get_attr_names", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
   /* inquire id's of previously defined dimensions  */
 
   if ((status = nc_inq_dimid(exoid, dnumobjatt, &numattrdim)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Warning: no attributes found for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_attr_names", errmsg, EX_MSG);
+    ex_err("ex_get_attr_names", errmsg, status);
     EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
   }
 
   if ((status = nc_inq_dimlen(exoid, numattrdim, &num_attr)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get number of attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_attr_names", errmsg, exerrval);
+    ex_err("ex_get_attr_names", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
