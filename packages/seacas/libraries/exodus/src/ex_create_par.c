@@ -517,7 +517,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
         NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to add maximum_name_length attribute in file id %d", exoid);
-      ex_err(routine, errmsg, = status);
+      ex_err(routine, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -555,7 +555,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
                                  &int64_db_status)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to add int64_status attribute in file id %d",
                exoid);
-      ex_err(routine, errmsg, = status);
+      ex_err(routine, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
