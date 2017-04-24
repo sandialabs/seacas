@@ -93,33 +93,34 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* Determine index of obj_id in VAR_ID_EL_BLK array */
   obj_id_ndx = ex_id_lkup(exoid, var_type, obj_id);
-  if (exerrval != 0) {
-    if (exerrval == EX_NULLENTITY) {
+  if (obj_id_ndx <= 0) {
+    ex_get_err(NULL, NULL, &status);
+
+    if (status != 0) {
+      if (status == EX_NULLENTITY) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "Warning: no %s variables for NULL block %" PRId64 " in file id %d",
+                 ex_name_of_object(var_type), obj_id, exoid);
+        ex_err("ex_get_partial_var", errmsg, EX_NULLENTITY);
+        EX_FUNC_LEAVE(EX_WARN);
+      }
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "Warning: no %s variables for NULL block %" PRId64 " in file id %d",
+               "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
                ex_name_of_object(var_type), obj_id, exoid);
-      ex_err("ex_get_partial_var", errmsg, EX_NULLENTITY);
-      EX_FUNC_LEAVE(EX_WARN);
+      ex_err("ex_get_partial_var", errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
-             ex_name_of_object(var_type), obj_id, exoid);
-    ex_err("ex_get_partial_var", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* inquire previously defined variable */
 
   if ((status = nc_inq_varid(exoid, ex_name_var_of_object(var_type, var_index, obj_id_ndx),
                              &varid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s %" PRId64 " var %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
-    ex_err("ex_get_partial_var", errmsg, exerrval);
+    ex_err("ex_get_partial_var", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -150,11 +151,10 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get %s %" PRId64 " variable %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
-    ex_err("ex_get_partial_var", errmsg, exerrval);
+    ex_err("ex_get_partial_var", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

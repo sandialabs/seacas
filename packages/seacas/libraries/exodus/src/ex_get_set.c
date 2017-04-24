@@ -64,32 +64,33 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* first check if any sets are specified */
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss stored in file id %d",
              ex_name_of_object(set_type), exoid);
-    ex_err("ex_get_set", errmsg, exerrval);
+    ex_err("ex_get_set", errmsg, status);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* Lookup index of set id in VAR_*S_IDS array */
   set_id_ndx = ex_id_lkup(exoid, set_type, set_id);
-  if (exerrval != 0) {
-    if (exerrval == EX_NULLENTITY) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: %s %" PRId64 " is NULL in file id %d",
-               ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_get_set", errmsg, EX_NULLENTITY);
-      EX_FUNC_LEAVE(EX_WARN);
-    }
+  if (set_id_ndx <= 0) {
+    ex_get_err(NULL, NULL, &status);
 
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: failed to locate %s id %" PRId64 " in VAR_*S_IDS array in file id %d",
-             ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_get_set", errmsg, exerrval);
-    EX_FUNC_LEAVE(EX_FATAL);
+    if (status != 0) {
+      if (status == EX_NULLENTITY) {
+        snprintf(errmsg, MAX_ERR_LENGTH, "Warning: %s %" PRId64 " is NULL in file id %d",
+                 ex_name_of_object(set_type), set_id, exoid);
+        ex_err("ex_get_set", errmsg, EX_NULLENTITY);
+        EX_FUNC_LEAVE(EX_WARN);
+      }
+
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to locate %s id %" PRId64 " in VAR_*S_IDS array in file id %d",
+               ex_name_of_object(set_type), set_id, exoid);
+      ex_err("ex_get_set", errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
   }
 
   /* setup more pointers based on set_type */
@@ -116,11 +117,10 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
 
   /* inquire id's of previously defined dimensions and variables */
   if ((status = nc_inq_varid(exoid, entryptr, &entry_list_id)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate entry list for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_get_set", errmsg, exerrval);
+    ex_err("ex_get_set", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -130,11 +130,10 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
   /* only do extra list for edge, face and side sets */
   if (set_extra_list) {
     if ((status = nc_inq_varid(exoid, extraptr, &extra_list_id)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate extra list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_get_set", errmsg, exerrval);
+      ex_err("ex_get_set", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -149,11 +148,10 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
     }
 
     if (status != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get entry list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_get_set", errmsg, exerrval);
+      ex_err("ex_get_set", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -168,11 +166,10 @@ int ex_get_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, void_int
     }
 
     if (status != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get extra list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_get_set", errmsg, exerrval);
+      ex_err("ex_get_set", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }

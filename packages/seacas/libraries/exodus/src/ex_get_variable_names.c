@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_WARN, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid
 #include <stdio.h>
@@ -102,8 +102,6 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   switch (obj_type) {
   case EX_NODAL: vvarname      = VAR_NAME_NOD_VAR; break;
   case EX_EDGE_BLOCK: vvarname = VAR_NAME_EDG_VAR; break;
@@ -116,19 +114,17 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   case EX_ELEM_SET: vvarname   = VAR_NAME_ELSET_VAR; break;
   case EX_GLOBAL: vvarname     = VAR_NAME_GLO_VAR; break;
   default:
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid variable type %d requested from file id %d",
              obj_type, exoid);
-    ex_err("ex_get_variable_names", errmsg, exerrval);
+    ex_err("ex_get_variable_names", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* inquire previously defined variables  */
   if ((status = nc_inq_varid(exoid, vvarname, &varid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variables names stored in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err("ex_get_variable_names", errmsg, exerrval);
+    ex_err("ex_get_variable_names", errmsg, status);
     EX_FUNC_LEAVE(EX_WARN);
   }
 

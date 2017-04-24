@@ -52,7 +52,7 @@
 /*****************************************************************************/
 /*****************************************************************************/
 
-#include <exodusII.h>     // for exerrval, ex_err, etc
+#include <exodusII.h>     // for ex_err, etc
 #include <exodusII_int.h> // for EX_FATAL, EX_NOERR, etc
 #include <netcdf.h>       // for NC_NOERR, nc_inq_varid, etc
 #include <stddef.h>       // for size_t
@@ -70,9 +70,8 @@ int ex_leavedef(int exoid, const char *call_rout)
   int  status;
 
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to end define mode for file id %d", exoid);
-    ex_err(call_rout, errmsg, exerrval);
+    ex_err(call_rout, errmsg, status);
 
     return (EX_FATAL);
   }
@@ -98,13 +97,10 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
 
   char errmsg[MAX_ERR_LENGTH];
 
-  exerrval = 0; /* clear error code */
-
   if ((status = nc_inq_varid(exoid, ne_var_name, &varid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable ID for \"%s\" in file ID %d",
              ne_var_name, exoid);
-    ex_err(func_name, errmsg, exerrval);
+    ex_err(func_name, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -113,21 +109,19 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
     /* Get the dimension IDs for this variable */
     if ((status = nc_inq_var(exoid, varid, (char *)0, &var_type, &ndims, dimid, (int *)0)) !=
         NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find dimension ID for variable \"%s\" "
                                        "in file ID %d",
                ne_var_name, exoid);
-      ex_err(func_name, errmsg, exerrval);
+      ex_err(func_name, errmsg, status);
       return (-1);
     }
 
     /* Get the length of this variable */
     if ((status = nc_inq_dimlen(exoid, dimid[0], &length)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to find dimension for variable \"%s\" in file ID %d", ne_var_name,
                exoid);
-      ex_err(func_name, errmsg, exerrval);
+      ex_err(func_name, errmsg, status);
       return (-1);
     }
 
@@ -143,10 +137,9 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
     status   = nc_get_var1_longlong(exoid, varid, start, &id_val);
 
     if (status != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable \"%s\" in file ID %d",
                ne_var_name, exoid);
-      ex_err(func_name, errmsg, exerrval);
+      ex_err(func_name, errmsg, status);
       return (-1);
     }
 
@@ -175,7 +168,6 @@ int ex_get_file_type(int exoid, char *ftype)
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  exerrval = 0; /* clear error code */
 
   if ((status = nc_inq_varid(exoid, VAR_FILE_TYPE, &varid)) != NC_NOERR) {
 
@@ -187,10 +179,9 @@ int ex_get_file_type(int exoid, char *ftype)
   }
 
   if ((status = nc_get_var1_int(exoid, varid, NULL, &lftype)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get variable \"%s\" from file ID %d",
              VAR_FILE_TYPE, exoid);
-    ex_err(func_name, errmsg, exerrval);
+    ex_err(func_name, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -221,8 +212,6 @@ int ex_put_nemesis_version(int exoid)
 
   EX_FUNC_ENTER();
 
-  exerrval = 0; /* clear the error code */
-
   file_ver = NEMESIS_FILE_VERSION;
   api_ver  = NEMESIS_API_VERSION;
 
@@ -232,20 +221,18 @@ int ex_put_nemesis_version(int exoid)
     /* Output the Nemesis file version */
     if ((status = nc_put_att_float(exoid, NC_GLOBAL, "nemesis_file_version", NC_FLOAT, 1,
                                    &file_ver)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output nemesis file version in file ID %d",
                exoid);
-      ex_err(func_name, errmsg, exerrval);
+      ex_err(func_name, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Output the Nemesis API version */
     if ((status = nc_put_att_float(exoid, NC_GLOBAL, "nemesis_api_version", NC_FLOAT, 1,
                                    &api_ver)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output nemesis api version in file ID %d",
                exoid);
-      ex_err(func_name, errmsg, exerrval);
+      ex_err(func_name, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -269,23 +256,20 @@ int ne_check_file_version(int exoid)
   char   errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  exerrval = 0;  /* clear error code */
 
   /* Get the file version */
   if ((status = nc_get_att_float(exoid, NC_GLOBAL, "nemesis_file_version", &file_ver)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: failed to get the nemesis file version from file ID %d",
             exoid);
-    ex_err(func_name, errmsg, exerrval);
+    ex_err(func_name, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (fabs(NEMESIS_FILE_VERSION-file_ver) > 0.001) {
-    exerrval = EX_MSG;
     snprintf(errmsg, MAX_ERR_LENGTH,
             "ERROR: Nemesis version mismatch in file ID %d!\n", exoid);
-    ex_err(func_name, errmsg, exerrval);
+    ex_err(func_name, errmsg, EX_MSG);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
@@ -317,8 +301,6 @@ int ex_get_idx(int exoid, const char *ne_var_name, int64_t *my_index, int pos)
   /*-----------------------------Execution begins-----------------------------*/
   EX_FUNC_ENTER();
 
-  exerrval = 0; /* clear error code */
-
   /* set default values for idx */
   my_index[0] = 0;
   my_index[1] = -1;
@@ -345,10 +327,9 @@ int ex_get_idx(int exoid, const char *ne_var_name, int64_t *my_index, int pos)
     status = nc_get_vara_int(exoid, varid, start, count, varidx);
 #endif
     if (status != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find variable \"%s\" in file ID %d",
                ne_var_name, exoid);
-      ex_err(func_name, errmsg, exerrval);
+      ex_err(func_name, errmsg, status);
       EX_FUNC_LEAVE(-1);
     }
 

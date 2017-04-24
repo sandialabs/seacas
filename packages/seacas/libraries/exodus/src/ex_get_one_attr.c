@@ -50,7 +50,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, exerrval, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_get_dimension, etc
 #include "netcdf.h"       // for NC_NOERR, etc
 #include <inttypes.h>     // for PRId64
@@ -78,24 +78,26 @@ int ex_get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
-    if (exerrval != 0) {
-      if (exerrval == EX_NULLENTITY) {
+    if (obj_id_ndx <= 0) {
+      ex_get_err(NULL, NULL, &status);
+
+      if (status != 0) {
+        if (status == EX_NULLENTITY) {
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
+                   ex_name_of_object(obj_type), obj_id, exoid);
+          ex_err("ex_get_one_attr", errmsg, EX_NULLENTITY);
+          EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
+        }
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "Warning: no attributes found for NULL %s %" PRId64 " in file id %d",
+                 "Warning: failed to locate %s id %" PRId64 " in id array in file id %d",
                  ex_name_of_object(obj_type), obj_id, exoid);
-        ex_err("ex_get_one_attr", errmsg, EX_NULLENTITY);
-        EX_FUNC_LEAVE(EX_WARN); /* no attributes for this object */
+        ex_err("ex_get_one_attr", errmsg, status);
+        EX_FUNC_LEAVE(EX_WARN);
       }
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "Warning: failed to locate %s id %" PRId64 " in id array in file id %d",
-               ex_name_of_object(obj_type), obj_id, exoid);
-      ex_err("ex_get_one_attr", errmsg, exerrval);
-      EX_FUNC_LEAVE(EX_WARN);
     }
   }
 
@@ -146,11 +148,10 @@ int ex_get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
     vattrbname = VAR_ATTRIB(obj_id_ndx);
     break;
   default:
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", obj_type,
              exoid);
-    ex_err("ex_get_one_attr", errmsg, EX_MSG);
+    ex_err("ex_get_one_attr", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
 
@@ -166,20 +167,18 @@ int ex_get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
   }
 
   if (attrib_index < 1 || attrib_index > (int)num_attr) {
-    exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid attribute index specified: %d.  Valid "
                                      "range is 1 to %d for %s %" PRId64 " in file id %d",
              attrib_index, (int)num_attr, ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_one_attr", errmsg, exerrval);
+    ex_err("ex_get_one_attr", errmsg, EX_FATAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vattrbname, &attrid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_one_attr", errmsg, exerrval);
+    ex_err("ex_get_one_attr", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -201,11 +200,10 @@ int ex_get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get attribute %d for %s %" PRId64 " in file id %d", attrib_index,
              ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_get_one_attr", errmsg, exerrval);
+    ex_err("ex_get_one_attr", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

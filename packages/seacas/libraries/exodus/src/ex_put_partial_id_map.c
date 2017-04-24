@@ -49,7 +49,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, exerrval, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
 #include "netcdf.h"       // for NC_NOERR, nc_enddef, etc
 #include <stddef.h>       // for size_t
@@ -81,7 +81,6 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
   if (num_entities == 0 && !ex_is_parallel(exoid)) {
     EX_FUNC_LEAVE(EX_NOERR);
   }
@@ -108,10 +107,9 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
     vmap        = VAR_ELEM_NUM_MAP;
     break;
   default:
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Bad map type (%d) specified for file id %d", map_type,
              exoid);
-    ex_err("ex_put_partial_id_map", errmsg, exerrval);
+    ex_err("ex_put_partial_id_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -124,20 +122,18 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
      * been defined. Note that in parallel, num_entities could
      * be zero on a processor, but non-zero globally.
      */
-    exerrval = EX_BADPARAM;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: The %s count is %" PRId64
                                      ", but the %s dimension is not defined on file id %d.",
              tname, num_entities, dnumentries, exoid);
-    ex_err("ex_put_partial_id_map", errmsg, exerrval);
+    ex_err("ex_put_partial_id_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* define the map if it doesn't already exist... */
   if (nc_inq_varid(exoid, vmap, &mapid) != NC_NOERR) {
     if ((status = nc_redef(exoid)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
-      ex_err("ex_put_partial_id_map", errmsg, exerrval);
+      ex_err("ex_put_partial_id_map", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -152,16 +148,14 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
 
     if ((status = nc_def_var(exoid, vmap, map_int_type, 1, dims, &mapid)) != NC_NOERR) {
       if (status == NC_ENAMEINUSE) {
-        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s numbering map already exists in file id %d",
                  tname, exoid);
-        ex_err("ex_put_partial_id_map", errmsg, exerrval);
+        ex_err("ex_put_partial_id_map", errmsg, status);
       }
       else {
-        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to create %s id map in file id %d", tname,
                  exoid);
-        ex_err("ex_put_partial_id_map", errmsg, exerrval);
+        ex_err("ex_put_partial_id_map", errmsg, status);
       }
       goto error_ret; /* exit define mode and return */
     }
@@ -169,9 +163,8 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
 
     /* leave define mode  */
     if ((status = nc_enddef(exoid)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d", exoid);
-      ex_err("ex_put_partial_id_map", errmsg, exerrval);
+      ex_err("ex_put_partial_id_map", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -192,10 +185,9 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s numbering map in file id %d", tname,
              exoid);
-    ex_err("ex_put_partial_id_map", errmsg, exerrval);
+    ex_err("ex_put_partial_id_map", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -203,10 +195,10 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
 
 /* Fatal error: exit definition mode and return */
 error_ret:
-  if (nc_enddef(exoid) != NC_NOERR) /* exit define mode */
+  if ((status = nc_enddef(exoid)) != NC_NOERR) /* exit define mode */
   {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err("ex_put_partial_id_map", errmsg, exerrval);
+    ex_err("ex_put_partial_id_map", errmsg, status);
   }
   EX_FUNC_LEAVE(EX_FATAL);
 }

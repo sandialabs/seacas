@@ -47,7 +47,7 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_err, exerrval, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_counter_list, etc
 #include "netcdf.h"       // for NC_NOERR, nc_close, etc
 #include <stdio.h>
@@ -86,29 +86,26 @@ int ex_close(int exoid)
 
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-                /*
-                 * NOTE: If using netcdf-4, exoid must refer to the root group.
-                 * Need to determine whether there are any groups and if so,
-                 * call ex_rm_file_item and ex_rm_stat_ptr on each group.
-                 */
+/*
+ * NOTE: If using netcdf-4, exoid must refer to the root group.
+ * Need to determine whether there are any groups and if so,
+ * call ex_rm_file_item and ex_rm_stat_ptr on each group.
+ */
 
 #if NC_HAS_HDF5
   /* nc_inq_grp_parent() will return NC_ENOGRP error if exoid
    * refers to the root group (which is what we want)
    */
   if ((status = nc_inq_grp_parent(exoid, &parent_id)) != NC_ENOGRP) {
-    exerrval = EX_NOTROOTID;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file id %d does not refer to root group.", exoid);
-    ex_err("ex_close", errmsg, exerrval);
+    ex_err("ex_close", errmsg, EX_NOTROOTID);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
 
   if ((status = nc_sync(exoid)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to update file id %d", exoid);
-    ex_err("ex_close", errmsg, exerrval);
+    ex_err("ex_close", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if ((status = nc_close(exoid)) == NC_NOERR) {
@@ -141,7 +138,6 @@ int ex_close(int exoid)
     ex_rm_stat_ptr(exoid, &exoII_em);
   }
   else {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to close file id %d", exoid);
     ex_err("ex_close", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
