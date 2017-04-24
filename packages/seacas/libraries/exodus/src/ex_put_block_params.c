@@ -86,7 +86,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
   const char *dnepe       = NULL;
   const char *dnfpe       = NULL;
 #if NC_HAS_HDF5
-  int         fill        = NC_FILL_CHAR;
+  int fill = NC_FILL_CHAR;
 #endif
 
   EX_FUNC_ENTER();
