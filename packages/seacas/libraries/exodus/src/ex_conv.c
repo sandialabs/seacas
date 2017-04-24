@@ -292,7 +292,7 @@ nc_type nc_flt_code(int exoid)
    *
    * "exoid" is some integer which uniquely identifies the file of interest.
    */
-  EX_FUNC_ENTER()
+  EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   if (!file) {
