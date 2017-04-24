@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_NOERR, EX_WARN, etc
 #include "netcdf.h"       // for nc_inq_varid, NC_NOERR, etc
 #include <stddef.h>       // for size_t
@@ -109,8 +109,6 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
 
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* inquire previously defined variable */
 
   /* Need to see how this works in the parallel-aware exodus... */
@@ -133,10 +131,9 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
   if (ex_large_model(exoid) == 0) {
     /* read values of the nodal variable */
     if ((status = nc_inq_varid(exoid, VAR_NOD_VAR, &varid)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variables in file id %d",
                exoid);
-      ex_err("ex_get_nodal_var", errmsg, exerrval);
+      ex_err("ex_get_nodal_var", errmsg, status);
       return (EX_WARN);
     }
 
@@ -152,10 +149,9 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
     /* read values of the nodal variable  -- stored as separate variables... */
     /* Get the varid.... */
     if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index), &varid)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
                nodal_var_index, exoid);
-      ex_err("ex_get_nodal_var", errmsg, exerrval);
+      ex_err("ex_get_nodal_var", errmsg, status);
       return (EX_WARN);
     }
 
@@ -174,9 +170,8 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get nodal variables in file id %d", exoid);
-    ex_err("ex_get_nodal_var", errmsg, exerrval);
+    ex_err("ex_get_nodal_var", errmsg, status);
     return (EX_FATAL);
   }
   return (EX_NOERR);

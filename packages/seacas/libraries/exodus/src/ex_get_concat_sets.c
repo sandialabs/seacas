@@ -79,8 +79,6 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* setup pointers based on set_type
      NOTE: there is another block that sets more stuff later ... */
 
@@ -100,25 +98,23 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
     ex_inq_val = EX_INQ_ELEM_SETS;
   }
   else {
-    exerrval = EX_FATAL;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid set type (%d)", set_type);
-    ex_err("ex_get_concat_sets", errmsg, exerrval);
+    ex_err("ex_get_concat_sets", errmsg, EX_FATAL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* first check if any sets are specified */
 
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) != NC_NOERR) {
-    exerrval = status;
     if (status == NC_EBADDIM) {
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %ss defined for file id %d",
                ex_name_of_object(set_type), exoid);
-      ex_err("ex_get_concat_sets", errmsg, exerrval);
+      ex_err("ex_get_concat_sets", errmsg, status);
       EX_FUNC_LEAVE(EX_WARN);
     }
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %ss defined in file id %d",
              ex_name_of_object(set_type), exoid);
-    ex_err("ex_get_concat_sets", errmsg, exerrval);
+    ex_err("ex_get_concat_sets", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -129,7 +125,7 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %ss defined for file id %d",
              ex_name_of_object(set_type), exoid);
     /* use error val from inquire */
-    ex_err("ex_get_concat_sets", errmsg, exerrval);
+    ex_err("ex_get_concat_sets", errmsg, EX_LASTERR);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -137,7 +133,7 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s ids for file id %d",
              ex_name_of_object(set_type), exoid);
     /* use error val from inquire */
-    ex_err("ex_get_concat_sets", errmsg, exerrval);
+    ex_err("ex_get_concat_sets", errmsg, EX_LASTERR);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

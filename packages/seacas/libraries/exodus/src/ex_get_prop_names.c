@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for ex_err, exerrval, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ATT_PROP_NAME, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_att_text, etc
 #include <stddef.h>       // for size_t
@@ -120,8 +120,6 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0;
-
   /* determine which type of object property names are desired for */
 
   num_props = ex_get_num_props(exoid, obj_type);
@@ -141,7 +139,6 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
     case EX_EDGE_MAP: var_name   = VAR_EDM_PROP(i + 1); break;
     case EX_NODE_MAP: var_name   = VAR_NM_PROP(i + 1); break;
     default:
-      exerrval = EX_BADPARAM;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
       ex_err("ex_get_prop_names", errmsg, EX_BADPARAM);
@@ -149,39 +146,35 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
     }
 
     if ((status = nc_inq_varid(exoid, var_name, &propid)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate property array %s in file id %d",
                var_name, exoid);
-      ex_err("ex_get_prop_names", errmsg, exerrval);
+      ex_err("ex_get_prop_names", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /*   for each property, read the "name" attribute of property array variable
      */
     if ((status = nc_inq_att(exoid, propid, ATT_PROP_NAME, &att_type, &att_len)) != NC_NOERR) {
-      exerrval = status;
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to get property attributes (type, len) in file id %d", exoid);
-      ex_err("ex_get_prop_names", errmsg, exerrval);
+      ex_err("ex_get_prop_names", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
     if (att_len - 1 <= api_name_size) {
       /* Client has large enough char string to hold text... */
       if ((status = nc_get_att_text(exoid, propid, ATT_PROP_NAME, prop_names[i])) != NC_NOERR) {
-        exerrval = status;
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get property name in file id %d", exoid);
-        ex_err("ex_get_prop_names", errmsg, exerrval);
+        ex_err("ex_get_prop_names", errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
     else {
       /* FIXME */
-      exerrval = NC_ESTS;
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: property name length exceeds space available to "
                                        "store it in file id %d",
                exoid);
-      ex_err("ex_get_prop_names", errmsg, exerrval);
+      ex_err("ex_get_prop_names", errmsg, NC_ESTS);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }

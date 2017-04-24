@@ -103,6 +103,8 @@ extern "C" {
 #define EX_FILE_ID_MASK (0xffff0000) /* Must match FILE_ID_MASK in netcdf nc4internal.h */
 #define EX_GRP_ID_MASK (0x0000ffff)  /* Must match GRP_ID_MASK in netcdf nc4internal.h */
 
+void ex_reset_error_status();
+
 #if defined(EXODUS_THREADSAFE)
 #if !defined(exerrval)
 /* In both exodusII.h and exodusII_int.h */
@@ -139,6 +141,18 @@ extern EX_errval_t *exerrval_get();
                                                                                                    \
     /* Grab the mutex for the library */                                                           \
     ex_mutex_lock(&EX_g);                                                                          \
+    ex_errval               = exerrval_get();                                                      \
+    exerrval                = 0;                                                                   \
+    ex_errval->last_err_num = 0;                                                                   \
+  } while (0)
+
+#define EX_FUNC_ENTER_INT()                                                                        \
+  do {                                                                                             \
+    /* Initialize the thread-safe code */                                                          \
+    pthread_once(&EX_first_init_g, ex_pthread_first_thread_init);                                  \
+                                                                                                   \
+    /* Grab the mutex for the library */                                                           \
+    ex_mutex_lock(&EX_g);                                                                          \
     ex_errval = exerrval_get();                                                                    \
   } while (0)
 
@@ -163,6 +177,11 @@ EXODUS_EXPORT int indent;
     fprintf(stderr, "%d Enter: %s\n", indent, __func__);                                           \
     indent++;                                                                                      \
   } while (0)
+#define EX_FUNC_ENTER_INT()                                                                        \
+  do {                                                                                             \
+    fprintf(stderr, "%d Enter: %s\n", indent, __func__);                                           \
+    indent++;                                                                                      \
+  } while (0)
 #define EX_FUNC_LEAVE(error)                                                                       \
   do {                                                                                             \
     indent--;                                                                                      \
@@ -176,7 +195,11 @@ EXODUS_EXPORT int indent;
     return;                                                                                        \
   } while (0)
 #else
-#define EX_FUNC_ENTER() /* Nothing so far */
+#define EX_FUNC_ENTER()                                                                            \
+  {                                                                                                \
+    ex_reset_error_status();                                                                       \
+  }
+#define EX_FUNC_ENTER_INT()
 #define EX_FUNC_LEAVE(error) return error
 #define EX_FUNC_VOID() return
 #endif

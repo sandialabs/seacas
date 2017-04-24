@@ -33,7 +33,7 @@
  *
  */
 
-#include "exodusII.h"     // for exerrval, ex_err, etc
+#include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_NOERR, EX_FATAL, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_var_int, etc
 #include <stddef.h>       // for size_t
@@ -82,8 +82,6 @@ int ex_get_map(int exoid, void_int *elem_map)
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);
 
-  exerrval = 0; /* clear error code */
-
   /* inquire id's of previously defined dimensions and variables  */
 
   /* See if file contains any elements...*/
@@ -92,10 +90,9 @@ int ex_get_map(int exoid, void_int *elem_map)
   }
 
   if ((status = nc_inq_dimlen(exoid, numelemdim, &num_elem)) != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of elements in file id %d",
              exoid);
-    ex_err("ex_get_map", errmsg, exerrval);
+    ex_err("ex_get_map", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -126,9 +123,8 @@ int ex_get_map(int exoid, void_int *elem_map)
   }
 
   if (status != NC_NOERR) {
-    exerrval = status;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get element order map in file id %d", exoid);
-    ex_err("ex_get_map", errmsg, exerrval);
+    ex_err("ex_get_map", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

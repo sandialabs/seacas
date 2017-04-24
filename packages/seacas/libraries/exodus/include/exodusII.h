@@ -209,7 +209,7 @@ enum ex_inquiry {
   EX_INQ_GROUP_NAME          = 56, /**< inquire name of group exoid. "/" returned for root group */
   EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
   EX_INQ_FULL_GROUP_NAME = 58, /**< inquire full "/"-separated path name of this (exoid) group */
-  EX_INQ_THREADSAFE = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
+  EX_INQ_THREADSAFE      = 59, /**< Returns 1 if library is thread-safe; 0 otherwise */
   EX_INQ_INVALID         = -1
 };
 
@@ -611,6 +611,7 @@ EXODUS_EXPORT int ex_large_model(int exoid);
 EXODUS_EXPORT size_t ex_header_size(int exoid);
 
 EXODUS_EXPORT void ex_err(const char *module_name, const char *message, int err_num);
+EXODUS_EXPORT void ex_set_err(const char *module_name, const char *message, int err_num);
 EXODUS_EXPORT const char *ex_strerror(int err_num);
 EXODUS_EXPORT void ex_get_err(const char **msg, const char **func, int *err_num);
 EXODUS_EXPORT int ex_opts(int options);
@@ -1651,6 +1652,7 @@ EXODUS_EXPORT int ex_get_idx(int         exoid,       /* NetCDF/Exodus file ID *
 #define EX_MSG -1000          /**< message print code - no error implied    */
 #define EX_PRTLASTMSG -1001   /**< print last error message msg code        */
 #define EX_NOTROOTID -1002    /**< file id is not the root id; it is a subgroup id */
+#define EX_LASTERR -1003      /**< in ex_err, use existing err_num value */
 #define EX_NULLENTITY -1006   /**< null entity found                        */
 /* @} */
 
