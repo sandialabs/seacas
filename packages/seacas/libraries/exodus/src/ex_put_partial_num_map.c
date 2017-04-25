@@ -122,12 +122,12 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   }
 
   /* Check for duplicate map id entry */
-  map_exists = 1; /* assume a portion of this map has already been written */
-  if (ex_id_lkup(exoid, map_type, map_id) <= 0) {
-    ex_get_err(NULL, NULL, &status);
-    if (status == EX_LOOKUPFAIL) { /* did not find the map id */
-      map_exists = 0;              /* Map is being defined */
-    }
+  status = ex_id_lkup(exoid, map_type, map_id);
+  if (status == -EX_LOOKUPFAIL) { /* did not find the map id */
+    map_exists = 0;               /* Map is being defined */
+  }
+  else {
+    map_exists = 1; /* assume a portion of this map has already been written */
   }
 
   /* Check for duplicate map id entry */
@@ -150,7 +150,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of %ss (%" ST_ZU ") specified in file id %d",
                ex_name_of_object(map_type), num_maps, exoid);
-      ex_err("ex_put_partial_num_map", errmsg, EX_FATAL);
+      ex_err("ex_put_partial_num_map", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -181,18 +181,18 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   /* Check input parameters for a valid range of numbers */
   if (ent_start <= 0 || ent_start > num_mobj) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: start count is invalid in file id %d", exoid);
-    ex_err("ex_put_partial_num_map", errmsg, EX_FATAL);
+    ex_err("ex_put_partial_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ent_count < 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid count value in file id %d", exoid);
-    ex_err("ex_put_partial_num_map", errmsg, EX_FATAL);
+    ex_err("ex_put_partial_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (ent_start + ent_count - 1 > num_mobj) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start+count-1 is larger than mesh object count in file id %d", exoid);
-    ex_err("ex_put_partial_num_map", errmsg, EX_FATAL);
+    ex_err("ex_put_partial_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

@@ -146,15 +146,12 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     }
 
     status = ex_id_lkup(exoid, blocks[i].type, blocks[i].id);
-    if (status <= 0) {
-      ex_get_err(NULL, NULL, &status);
-      if (status != EX_LOOKUPFAIL) { /* found the element block id */
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s id %" PRId64 " already exists in file id %d",
-                 ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
-        ex_err("ex_put_block_params", errmsg, EX_FATAL);
-        free(blocks_to_define);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
+    if (-status != EX_LOOKUPFAIL) { /* found the element block id */
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s id %" PRId64 " already exists in file id %d",
+               ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
+      ex_err("ex_put_block_params", errmsg, EX_DUPLICATEID);
+      free(blocks_to_define);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
 
     /* Keep track of the total number of element blocks defined using a counter
@@ -166,7 +163,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
     if (cur_num_blk >= (int)num_blk) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of %ss (%d) defined in file id %d",
                ex_name_of_object(blocks[i].type), (int)num_blk, exoid);
-      ex_err("ex_put_block_params", errmsg, EX_FATAL);
+      ex_err("ex_put_block_params", errmsg, EX_BADPARAM);
       free(blocks_to_define);
       EX_FUNC_LEAVE(EX_FATAL);
     }

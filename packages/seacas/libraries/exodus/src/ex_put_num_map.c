@@ -127,15 +127,12 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
   }
 
   /* Check for duplicate map id entry */
-  if (ex_id_lkup(exoid, map_type, map_id) <= 0) {
-    ex_get_err(NULL, NULL, &status);
-    if (status != EX_LOOKUPFAIL) /* found the map id */
-    {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s %" PRId64 " already defined in file id %d",
-               ex_name_of_object(map_type), map_id, exoid);
-      ex_err("ex_put_num_map", errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
+  status = ex_id_lkup(exoid, map_type, map_id);
+  if (status != -EX_LOOKUPFAIL) { /* found the map id */
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s %" PRId64 " already defined in file id %d",
+             ex_name_of_object(map_type), map_id, exoid);
+    ex_err("ex_put_num_map", errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* Get number of maps initialized for this file */
@@ -156,7 +153,7 @@ int ex_put_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_id, cons
   if (cur_num_maps >= num_maps) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of %ss (%d) specified in file id %d",
              ex_name_of_object(map_type), num_maps, exoid);
-    ex_err("ex_put_num_map", errmsg, EX_FATAL);
+    ex_err("ex_put_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

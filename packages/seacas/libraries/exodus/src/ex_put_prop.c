@@ -316,21 +316,21 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
 
   /* special case: property name ID - check for duplicate ID assignment */
   if (strcmp("ID", prop_name) == 0) {
-    start[0] = ex_id_lkup(exoid, obj_type, value);
-    if (start[0] <= 0) {
-      ex_get_err(NULL, NULL, &status);
-      if (status != EX_LOOKUPFAIL) { /* found the id */
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "Warning: attempt to assign duplicate %s ID %" PRId64 " in file id %d",
-                 ex_name_of_object(obj_type), value, exoid);
-        ex_err("ex_put_prop", errmsg, EX_BADPARAM);
-        EX_FUNC_LEAVE(EX_WARN);
-      }
+    int indx = ex_id_lkup(exoid, obj_type, value);
+    if (indx != -EX_LOOKUPFAIL) { /* found the id */
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "Warning: attempt to assign duplicate %s ID %" PRId64 " in file id %d",
+               ex_name_of_object(obj_type), value, exoid);
+      ex_err("ex_put_prop", errmsg, EX_DUPLICATEID);
+      EX_FUNC_LEAVE(EX_WARN);
     }
   }
 
-  start[0] = ex_id_lkup(exoid, obj_type, obj_id);
-  if (start[0] <= 0) {
+  status = ex_id_lkup(exoid, obj_type, obj_id);
+  if (status > 0) {
+    start[0] = status - 1;
+  }
+  else {
     ex_get_err(NULL, NULL, &status);
 
     if (status != 0) {
@@ -348,8 +348,6 @@ int ex_put_prop(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, const c
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
-
-  start[0] = start[0] - 1;
 
   /* value is of type 'ex_entity_id' which is a typedef to int64_t or long long
    */

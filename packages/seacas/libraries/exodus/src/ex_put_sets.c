@@ -108,17 +108,12 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
     }
     else {
       status = ex_id_lkup(exoid, sets[i].type, sets[i].id);
-      if (status <= 0) {
-        ex_get_err(NULL, NULL, &status);
-        if (status != EX_LOOKUPFAIL) { /* found the side set id, so set is
-                                            already defined... */
-          sets_to_define[i] = 0;
-          continue;
-        }
-        else {
-          needs_define++;
-          sets_to_define[i] = 1;
-        }
+      if (status != -EX_LOOKUPFAIL) { /* found the side set id, so set is already defined... */
+        sets_to_define[i] = 0;
+      }
+      else {
+        needs_define++;
+        sets_to_define[i] = 1;
       }
     }
   }
@@ -261,7 +256,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
                      "ERROR: # dist fact (%" PRId64 ") not equal to # nodes (%" PRId64
                      ") in node  set %" PRId64 " file id %d",
                      sets[i].num_distribution_factor, sets[i].num_entry, sets[i].id, exoid);
-            ex_err("ex_put_sets", errmsg, EX_FATAL);
+            ex_err("ex_put_sets", errmsg, EX_BADPARAM);
             goto error_ret; /* exit define mode and return */
           }
         }

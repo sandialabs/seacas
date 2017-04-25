@@ -141,7 +141,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   /* check to make sure machine word sizes aren't weird */
   if ((sizeof(float) != 4 && sizeof(float) != 8) || (sizeof(double) != 4 && sizeof(double) != 8)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d", exoid);
-    ex_err("ex_conv_ini", errmsg, EX_FATAL);
+    ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -157,23 +157,23 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
 
   else if (*io_wordsize != 4 && *io_wordsize != 8) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported I/O word size for file id: %d", exoid);
-    ex_err("ex_conv_ini", errmsg, EX_FATAL);
+    ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   else if (file_wordsize && *io_wordsize != file_wordsize) {
     *io_wordsize = file_wordsize;
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: invalid I/O word size specified for existing file id: %d", exoid);
-    ex_err("ex_conv_ini", errmsg, EX_MSG);
-    ex_err("ex_conv_ini", "       Requested I/O word size overridden.", EX_MSG);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid I/O word size specified for existing file id: "
+                                     "%d, Requested I/O word size overridden.",
+             exoid);
+    ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
   }
 
   if (!*comp_wordsize) {
     *comp_wordsize = sizeof(float);
   }
   else if (*comp_wordsize != 4 && *comp_wordsize != 8) {
-    ex_err("ex_conv_ini", "ERROR: invalid compute wordsize specified", EX_FATAL);
+    ex_err("ex_conv_ini", "ERROR: invalid compute wordsize specified", EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -184,7 +184,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
       snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid int64_status flag (%d) specified for "
                                        "existing file id: %d. Ignoring invalids",
                int64_status, exoid);
-      ex_err("ex_conv_ini", errmsg, EX_MSG);
+      ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
     }
     int64_status &= valid_int64;
   }
@@ -411,7 +411,7 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   default: {
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid option %d for ex_set_option().", (int)option);
-    ex_err("ex_set_option", errmsg, EX_FATAL);
+    ex_err("ex_set_option", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   }
