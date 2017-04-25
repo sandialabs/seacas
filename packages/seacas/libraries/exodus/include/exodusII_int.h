@@ -174,6 +174,7 @@ extern EX_errval_t *exerrval_get();
 EXODUS_EXPORT int indent;
 #define EX_FUNC_ENTER()                                                                            \
   do {                                                                                             \
+    ex_reset_error_status();                                                                       \
     fprintf(stderr, "%d Enter: %s\n", indent, __func__);                                           \
     indent++;                                                                                      \
   } while (0)

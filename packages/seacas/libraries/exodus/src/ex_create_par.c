@@ -465,7 +465,7 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   if (ex_conv_ini(exoid, comp_ws, io_ws, 0, int64_status, 1, is_mpiio, is_pnetcdf) != EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to init conversion routines in file id %d",
              exoid);
-    ex_err(routine, errmsg, EX_FATAL);
+    ex_err(routine, errmsg, EX_LASTERR);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

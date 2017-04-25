@@ -216,7 +216,7 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of element blocks (%d) defined in file id %d", num_elem_blk,
                exoid);
-      ex_err("ex_put_concat_elem_block", errmsg, EX_FATAL);
+      ex_err("ex_put_concat_elem_block", errmsg, EX_BADPARAM);
       goto error_ret;
     }
 

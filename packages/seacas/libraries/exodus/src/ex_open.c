@@ -297,7 +297,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
   if (*version < 2.0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
              *version, exoid);
-    ex_err("ex_open", errmsg, EX_FATAL);
+    ex_err("ex_open", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

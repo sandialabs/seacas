@@ -925,7 +925,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   default:
     *ret_int = 0;
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid inquiry %d", req_info);
-    ex_err("ex_inquire", errmsg, EX_FATAL);
+    ex_err("ex_inquire", errmsg, EX_BADPARAM);
     return (EX_FATAL);
   }
   return (EX_NOERR);

@@ -1654,6 +1654,7 @@ EXODUS_EXPORT int ex_get_idx(int         exoid,       /* NetCDF/Exodus file ID *
 #define EX_NOTROOTID -1002    /**< file id is not the root id; it is a subgroup id */
 #define EX_LASTERR -1003      /**< in ex_err, use existing err_num value */
 #define EX_NULLENTITY -1006   /**< null entity found                        */
+#define EX_DUPLICATEID -1007  /**< duplicate id found                        */
 /* @} */
 
 /* Exodus error return codes - function return values:                      */

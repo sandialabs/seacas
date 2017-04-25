@@ -131,7 +131,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
   }
   else {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid set type (%d)", set_type);
-    ex_err("ex_put_concat_sets", errmsg, EX_FATAL);
+    ex_err("ex_put_concat_sets", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -228,7 +228,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
     if (cur_num_sets >= num_sets) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of %ss (%d) defined in file id %d",
                ex_name_of_object(set_type), num_sets, exoid);
-      ex_err("ex_put_concat_sets", errmsg, EX_FATAL);
+      ex_err("ex_put_concat_sets", errmsg, EX_BADPARAM);
       goto error_ret;
     }
 
@@ -365,7 +365,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
                    "ERROR: # dist fact (%" ST_ZU ") not equal to # nodes (%" ST_ZU
                    ") in node set %" PRId64 " file id %d",
                    num_df, num_entry, set_id, exoid);
-          ex_err("ex_put_concat_sets", errmsg, EX_FATAL);
+          ex_err("ex_put_concat_sets", errmsg, EX_BADPARAM);
           goto error_ret; /* exit define mode and return */
         }
 

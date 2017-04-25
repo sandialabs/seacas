@@ -166,7 +166,7 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
   if ((int)num_var_db != num_var) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: # of variables doesn't match those defined in file id %d", exoid);
-    ex_err("ex_get_object_truth_vector", errmsg, EX_FATAL);
+    ex_err("ex_get_object_truth_vector", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

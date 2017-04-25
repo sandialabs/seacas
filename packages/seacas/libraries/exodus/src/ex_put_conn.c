@@ -176,7 +176,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number of edges per element (%ld) doesn't "
                                        "agree with elem_edge_conn (0x%p)",
                (long)num_ed_per_elem, (void *)elem_edge_conn);
-      ex_err("ex_put_conn", errmsg, EX_FATAL);
+      ex_err("ex_put_conn", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -185,7 +185,7 @@ int ex_put_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, const v
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: number of faces per element (%ld) doesn't "
                                        "agree with elem_face_conn (0x%p)",
                (long)num_fa_per_elem, (void *)elem_face_conn);
-      ex_err("ex_put_conn", errmsg, EX_FATAL);
+      ex_err("ex_put_conn", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
