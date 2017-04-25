@@ -117,8 +117,10 @@ static int  last_err_num;
 
 void ex_reset_error_status()
 {
+#if !defined(EXODUS_THREADSAFE)
   exerrval   = 0;
   EX_ERR_NUM = 0;
+#endif
 }
 
 void ex_err(const char *module_name, const char *message, int err_num)
@@ -148,8 +150,10 @@ void ex_err(const char *module_name, const char *message, int err_num)
     }
   }
   /* save the error message for replays */
-  strcpy(EX_ERRMSG, message);
-  strcpy(EX_PNAME, module_name);
+  strncpy(EX_ERRMSG, message, MAX_ERR_LENGTH);
+  strncpy(EX_PNAME, module_name, MAX_ERR_LENGTH);
+  EX_ERRMSG[MAX_ERR_LENGTH - 1] = '\0';
+  EX_PNAME[MAX_ERR_LENGTH - 1]  = '\0';
   if (err_num != EX_LASTERR) {
     exerrval   = err_num;
     EX_ERR_NUM = err_num;
@@ -169,8 +173,10 @@ void ex_set_err(const char *module_name, const char *message, int err_num)
 {
   EX_FUNC_ENTER_INT();
   /* save the error message for replays */
-  strcpy(EX_ERRMSG, message);
-  strcpy(EX_PNAME, module_name);
+  strncpy(EX_ERRMSG, message, MAX_ERR_LENGTH);
+  strncpy(EX_PNAME, module_name, MAX_ERR_LENGTH);
+  EX_ERRMSG[MAX_ERR_LENGTH - 1] = '\0';
+  EX_PNAME[MAX_ERR_LENGTH - 1]  = '\0';
   if (err_num != EX_LASTERR) {
     /* Use last set error number, but add new function and message */
     EX_ERR_NUM = err_num;
@@ -208,6 +214,7 @@ const char *ex_strerror(int err_num)
   case EX_INTERNAL: return "Internal logic error in exodus library.";
   case EX_NOTROOTID: return "File id is not the root id; it is a subgroup id.";
   case EX_NULLENTITY: return "Null entity found.";
+  case EX_DUPLICATEID: return "Duplicate entity id found.";
   default: return nc_strerror(err_num);
   }
 }

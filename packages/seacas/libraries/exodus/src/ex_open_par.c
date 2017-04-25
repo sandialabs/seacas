@@ -263,7 +263,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     stat_att = nc_inq_att(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
     stat_dim = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
     if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
-      nc_redef(exoid);
+      if ((status = nc_redef(exoid)) != NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
+        ex_err("ex_open_par", errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
       if (stat_att != NC_NOERR) {
         int max_so_far = 32;
         nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far);
@@ -276,7 +280,12 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
         nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name);
       }
-      nc_enddef(exoid);
+      if ((status = nc_enddef(exoid)) != NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
+                 exoid);
+        ex_err("ex_open_par", errmsg, status);
+        EX_FUNC_LEAVE(EX_FATAL);
+      }
     }
   }
 
@@ -295,16 +304,17 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   if (*version < 2.0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Unsupported file version %.2f in file id: %d",
              *version, exoid);
-    ex_err("ex_open_par", errmsg, EX_FATAL);
+    ex_err("ex_open_par", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE, &file_wordsize) !=
       NC_NOERR) { /* try old (prior to db version 2.02) attribute name */
-    if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE_BLANK, &file_wordsize) != NC_NOERR) {
+    if ((status = nc_get_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE_BLANK, &file_wordsize)) !=
+        NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get file wordsize from file id: %d",
                exoid);
-      ex_err("ex_open_par", errmsg, EX_FATAL);
+      ex_err("ex_open_par", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -346,7 +356,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
       EX_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to initialize conversion routines in file id %d", exoid);
-    ex_err("ex_open_par", errmsg, EX_FATAL);
+    ex_err("ex_open_par", errmsg, EX_LASTERR);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

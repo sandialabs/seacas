@@ -107,14 +107,11 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
 
   ent_ndx = ex_id_lkup(exoid, obj_type, entity_id);
 
-  if (ent_ndx <= 0) {
-    ex_get_err(NULL, NULL, &status);
-    if (status == EX_LOOKUPFAIL) { /* could not find the element block id */
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s id %" PRId64 " not found in file id %d",
-               ex_name_of_object(obj_type), entity_id, exoid);
-      ex_err("ex_put_name", errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
+  if (ent_ndx == -EX_LOOKUPFAIL) { /* could not find the element block id */
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s id %" PRId64 " not found in file id %d",
+             ex_name_of_object(obj_type), entity_id, exoid);
+    ex_err("ex_put_name", errmsg, EX_LOOKUPFAIL);
+    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* If this is a null entity, then 'ent_ndx' will be negative.

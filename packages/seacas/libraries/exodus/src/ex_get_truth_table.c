@@ -161,7 +161,7 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   if (num_entity != (size_t)num_blk) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: # of %s doesn't match those defined in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, EX_FATAL);
+    ex_err(routine, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -169,7 +169,7 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: # of %s variables doesn't match those defined in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, EX_FATAL);
+    ex_err(routine, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

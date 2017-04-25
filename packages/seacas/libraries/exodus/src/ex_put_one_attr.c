@@ -171,7 +171,7 @@ int ex_put_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid attribute index specified: %d.  Valid "
                                      "range is 1 to %d for %s %" PRId64 " in file id %d",
              attrib_index, (int)num_attr, ex_name_of_object(obj_type), obj_id, exoid);
-    ex_err("ex_put_one_attr", errmsg, EX_FATAL);
+    ex_err("ex_put_one_attr", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

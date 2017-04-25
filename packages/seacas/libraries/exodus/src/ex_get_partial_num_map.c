@@ -113,20 +113,20 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   /* Check input parameters for a valid range of numbers */
   if (ent_start <= 0 || ent_start > num_mobj) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: start count is invalid in file id %d", exoid);
-    ex_err("ex_get_partial_num_map", errmsg, EX_FATAL);
+    ex_err("ex_get_partial_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ent_count < 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid count value in file id %d", exoid);
-    ex_err("ex_get_partial_num_map", errmsg, EX_FATAL);
+    ex_err("ex_get_partial_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if (ent_start + ent_count - 1 > num_mobj) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start+count-1 is larger than element count in file id %d", exoid);
-    ex_err("ex_get_partial_num_map", errmsg, EX_FATAL);
+    ex_err("ex_get_partial_num_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

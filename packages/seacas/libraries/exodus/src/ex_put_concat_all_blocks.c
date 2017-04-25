@@ -348,7 +348,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of edge blocks (%ld) defined in file id %d",
                (long)num_edge_blk, exoid);
-      ex_err("ex_put_concat_all_blocks", errmsg, EX_FATAL);
+      ex_err("ex_put_concat_all_blocks", errmsg, EX_BADPARAM);
       goto error_ret;
     }
 
@@ -416,7 +416,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: exceeded number of face blocks (%ld) defined in file id %d",
                (long)num_face_blk, exoid);
-      ex_err("ex_put_concat_all_blocks", errmsg, EX_FATAL);
+      ex_err("ex_put_concat_all_blocks", errmsg, EX_BADPARAM);
       goto error_ret;
     }
 
@@ -484,7 +484,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of element blocks (%ld) defined "
                                        "in file id %d",
                (long)num_elem_blk, exoid);
-      ex_err("ex_put_concat_all_blocks", errmsg, EX_FATAL);
+      ex_err("ex_put_concat_all_blocks", errmsg, EX_BADPARAM);
       goto error_ret;
     }
 
