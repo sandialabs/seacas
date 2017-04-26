@@ -30,6 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_CodeTypes.h>
 #include <Ionit_Initializer.h>
 
 #if !defined(NO_EXODUS_SUPPORT)
@@ -68,6 +69,11 @@ namespace Ioss {
      */
     Initializer::Initializer()
     {
+#if defined(IOSS_THREADSAFE)
+      std::mutex m;
+      std::lock_guard<std::mutex> guard(m);  
+#endif  
+
 #if !defined(NO_EXODUS_SUPPORT)
       Ioex::IOFactory::factory(); // Exodus
 #endif
@@ -88,6 +94,10 @@ namespace Ioss {
     Initializer::~Initializer()
     {
       try {
+#if defined IOSS_THREADSAFE
+	std::mutex m;
+	std::lock_guard<std::mutex> guard(m);  
+#endif  
         Ioss::IOFactory::clean();
         // Put code here that should run after sierra is finished
         // executing...

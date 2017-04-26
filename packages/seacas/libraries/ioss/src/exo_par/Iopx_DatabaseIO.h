@@ -105,7 +105,7 @@ namespace Iopx {
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
     //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
     bool ok__(bool write_message = false, std::string *error_message = nullptr,
-            int *bad_count = nullptr) const override;
+              int *bad_count = nullptr) const override;
 
     void get_step_times__() override;
 
