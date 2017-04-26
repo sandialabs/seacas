@@ -103,23 +103,24 @@ namespace Ioex {
 
     virtual ~DatabaseIO();
 
-    // Check to see if database state is ok...
-    // If 'write_message' true, then output a warning message indicating the problem.
-    // If 'error_message' non-null, then put the warning message into the string and return it.
-    // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
-    //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-    virtual bool ok(bool write_message = false, std::string *error_message = nullptr,
-                    int *bad_count = nullptr) const override = 0;
-
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    virtual void release_memory__() override;
-
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override;
+
+  protected:
+    // Check to see if database state is ok...
+    // If 'write_message' true, then output a warning message indicating the problem.
+    // If 'error_message' non-null, then put the warning message into the string and return it.
+    // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
+    //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
+    virtual bool ok__(bool write_message = false, std::string *error_message = nullptr,
+                      int *bad_count = nullptr) const override = 0;
+
+    // Eliminate as much memory as possible, but still retain meta data information
+    // Typically, eliminate the maps...
+    virtual void release_memory__() override;
 
     bool open_group__(const std::string &group_name) override;
     bool create_subgroup__(const std::string &group_name) override;
