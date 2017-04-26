@@ -92,21 +92,23 @@ namespace Iopx {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO();
 
-    void release_memory__() override;
     bool needs_shared_node_information() const override { return true; }
+
+  private:
     void compute_node_status() const;
+
+    void release_memory__() override;
 
     // Check to see if database state is ok...
     // If 'write_message' true, then output a warning message indicating the problem.
     // If 'error_message' non-null, then put the warning message into the string and return it.
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
     //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-    bool ok(bool write_message = false, std::string *error_message = nullptr,
+    bool ok__(bool write_message = false, std::string *error_message = nullptr,
             int *bad_count = nullptr) const override;
 
     void get_step_times__() override;
 
-  private:
     void compute_block_adjacencies() const override;
 
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
