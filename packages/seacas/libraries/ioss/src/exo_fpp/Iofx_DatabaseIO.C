@@ -288,7 +288,7 @@ namespace Iofx {
     return true;
   }
 
-  bool DatabaseIO::ok(bool write_message, std::string *error_msg, int *bad_count) const
+  bool DatabaseIO::ok__(bool write_message, std::string *error_msg, int *bad_count) const
   {
     // For input, we try to open the existing file.
 
