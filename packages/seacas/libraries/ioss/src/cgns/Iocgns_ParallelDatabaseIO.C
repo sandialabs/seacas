@@ -145,7 +145,7 @@ namespace Iocgns {
   }
 
   ParallelDatabaseIO::~ParallelDatabaseIO() = default;
-  void ParallelDatabaseIO::openDatabase() const
+  void ParallelDatabaseIO::openDatabase__() const
   {
     if (cgnsFilePtr < 0) {
       if (is_input()) {
@@ -168,7 +168,7 @@ namespace Iocgns {
     assert(cgnsFilePtr >= 0);
   }
 
-  void ParallelDatabaseIO::closeDatabase() const
+  void ParallelDatabaseIO::closeDatabase__() const
   {
     if (cgnsFilePtr != -1) {
 #if CG_BUILD_PARALLEL
@@ -180,7 +180,7 @@ namespace Iocgns {
     cgnsFilePtr = -1;
   }
 
-  void ParallelDatabaseIO::release_memory()
+  void ParallelDatabaseIO::release_memory__()
   {
     nodeMap.release_memory();
     elemMap.release_memory();
@@ -191,19 +191,19 @@ namespace Iocgns {
     }
   }
 
-  int64_t ParallelDatabaseIO::node_global_to_local(int64_t global, bool must_exist) const
+  int64_t ParallelDatabaseIO::node_global_to_local__(int64_t global, bool must_exist) const
   {
     // TODO: Fix
     return global;
   }
 
-  int64_t ParallelDatabaseIO::element_global_to_local(int64_t global) const
+  int64_t ParallelDatabaseIO::element_global_to_local__(int64_t global) const
   {
     // TODO: Fix
     return global;
   }
 
-  void ParallelDatabaseIO::read_meta_data()
+  void ParallelDatabaseIO::read_meta_data__()
   {
     openDatabase();
 
@@ -427,16 +427,16 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
-  bool ParallelDatabaseIO::begin(Ioss::State /* state */) { return true; }
+  bool ParallelDatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
-  bool ParallelDatabaseIO::end(Ioss::State /* state */) { return true; }
+  bool ParallelDatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool ParallelDatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time)
+  bool ParallelDatabaseIO::begin_state__(Ioss::Region *region, int /* state */, double time)
   {
     return true;
   }
 
-  bool ParallelDatabaseIO::end_state(Ioss::Region * /* region */, int /* state */,
+  bool ParallelDatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */,
                                      double /* time */)
   {
     return true;

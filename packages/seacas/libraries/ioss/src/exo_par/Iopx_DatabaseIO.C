@@ -279,7 +279,7 @@ namespace Iopx {
 
   DatabaseIO::~DatabaseIO() = default;
 
-  void DatabaseIO::release_memory()
+  void DatabaseIO::release_memory__()
   {
     free_file_pointer();
     nodeMap.release_memory();
@@ -640,7 +640,7 @@ namespace Iopx {
     return Ioex::DatabaseIO::free_file_pointer();
   }
 
-  void DatabaseIO::read_meta_data()
+  void DatabaseIO::read_meta_data__()
   {
     int exoid = get_file_pointer(); // get_file_pointer() must be called first.
 
@@ -764,7 +764,7 @@ namespace Iopx {
     }
   }
 
-  void DatabaseIO::get_step_times()
+  void DatabaseIO::get_step_times__()
   {
     double              last_time      = DBL_MAX;
     int                 timestep_count = 0;
