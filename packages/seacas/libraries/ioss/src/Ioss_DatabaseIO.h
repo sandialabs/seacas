@@ -89,13 +89,10 @@ namespace Ioss {
      *                 then the routine does not support this argument.
      *  \returns True if database state is OK. False if not.
      */
-    virtual bool ok(bool write_message = false, std::string *error_message = nullptr,
-                    int *bad_count = nullptr) const
+    bool ok(bool write_message = false, std::string *error_message = nullptr,
+            int *bad_count = nullptr) const
     {
-      if (bad_count != nullptr) {
-        *bad_count = 0;
-      }
-      return dbState != Ioss::STATE_INVALID;
+      return ok__(write_message, error_message, bad_count);
     }
 
     // Check capabilities of input/output database...  Returns an
@@ -122,15 +119,12 @@ namespace Ioss {
     {
       return element_global_to_local__(global);
     }
-    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const = 0;
-    virtual int64_t element_global_to_local__(int64_t global) const = 0;
 
     virtual ~DatabaseIO();
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
-    void         release_memory() { release_memory__(); }
-    virtual void release_memory__() {}
+    void release_memory() { release_memory__(); }
 
     /** \brief Get the file name associated with the database.
      *
@@ -169,10 +163,6 @@ namespace Ioss {
     void closeDatabase() const { closeDatabase__(); }
     void flush_database() const { flush_database__(); }
 
-    virtual void openDatabase__() const {}
-    virtual void closeDatabase__() const {}
-    virtual void flush_database__() const {}
-
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
      *
@@ -185,7 +175,6 @@ namespace Ioss {
      *  \returns True if successful.
      */
     bool open_group(const std::string &group_name) { return open_group__(group_name); }
-    virtual bool open_group__(const std::string &group_name) { return false; }
 
     /** \brief If a database type supports groups, create the specified
      *        group as a child of the current group.
@@ -198,7 +187,6 @@ namespace Ioss {
      *  \returns True if successful.
      */
     bool create_subgroup(const std::string &group_name) { return create_subgroup__(group_name); }
-    virtual bool create_subgroup__(const std::string &group_name) { return false; }
 
     /** \brief Set the database to the given State.
      *
@@ -215,7 +203,6 @@ namespace Ioss {
      *
      */
     bool begin(Ioss::State state) { return begin__(state); }
-    virtual bool begin__(Ioss::State state) = 0;
 
     /** \brief Return the database to STATE_CLOSED.
      *
@@ -228,7 +215,6 @@ namespace Ioss {
      *
      */
     bool end(Ioss::State state) { return end__(state); }
-    virtual bool end__(Ioss::State state) = 0;
 
     bool begin_state(Region *region, int state, double time)
     {
@@ -238,14 +224,9 @@ namespace Ioss {
     {
       return end_state__(region, state, time);
     }
-    virtual bool begin_state__(Region *region, int state, double time);
-    virtual bool end_state__(Region *region, int state, double time);
-
     // Metadata-related functions.
-    void         read_meta_data() { return read_meta_data__(); }
-    void         get_step_times() { return get_step_times__(); }
-    virtual void read_meta_data__() = 0;
-    virtual void get_step_times__() {}
+    void read_meta_data() { return read_meta_data__(); }
+    void get_step_times() { return get_step_times__(); }
 
     virtual bool internal_edges_available() const { return false; }
     virtual bool internal_faces_available() const { return false; }
@@ -359,15 +340,6 @@ namespace Ioss {
                                   std::vector<std::string> &block_membership) const
     {
       return compute_block_membership__(efblock, block_membership);
-    }
-
-    virtual void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                         std::vector<std::string> &block_adjacency) const
-    {
-    }
-    virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
-                                            std::vector<std::string> &block_membership) const
-    {
     }
 
     AxisAlignedBoundingBox get_bounding_box(const Ioss::ElementBlock *eb) const;
@@ -551,6 +523,42 @@ namespace Ioss {
     std::vector<std::string> qaRecords;
 
   private:
+    virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
+    {
+      if (bad_count != nullptr) {
+        *bad_count = 0;
+      }
+      return dbState != Ioss::STATE_INVALID;
+    }
+
+    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const = 0;
+    virtual int64_t element_global_to_local__(int64_t global) const = 0;
+
+    virtual void release_memory__() {}
+    virtual void openDatabase__() const {}
+    virtual void closeDatabase__() const {}
+    virtual void flush_database__() const {}
+
+    virtual bool open_group__(const std::string &group_name) { return false; }
+    virtual bool create_subgroup__(const std::string &group_name) { return false; }
+    virtual bool begin__(Ioss::State state) = 0;
+    virtual bool end__(Ioss::State state)   = 0;
+
+    virtual void read_meta_data__() = 0;
+    virtual void get_step_times__() {}
+
+    virtual bool begin_state__(Region *region, int state, double time);
+    virtual bool end_state__(Region *region, int state, double time);
+
+    virtual void get_block_adjacencies__(const Ioss::ElementBlock *eb,
+                                         std::vector<std::string> &block_adjacency) const
+    {
+    }
+    virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
+                                            std::vector<std::string> &block_membership) const
+    {
+    }
+
     void verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const;
 
     virtual int64_t get_field_internal(const Region *reg, const Field &field, void *data,
