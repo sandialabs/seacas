@@ -100,7 +100,7 @@ namespace Iocgns {
     openDatabase();
   }
 
-  void DatabaseIO::openDatabase() const
+  void DatabaseIO::openDatabase__() const
   {
     if (cgnsFilePtr < 0) {
       if (is_input()) {
@@ -117,7 +117,7 @@ namespace Iocgns {
     assert(cgnsFilePtr >= 0);
   }
 
-  void DatabaseIO::closeDatabase() const
+  void DatabaseIO::closeDatabase__() const
   {
     if (cgnsFilePtr != -1) {
       cg_close(cgnsFilePtr);
@@ -125,12 +125,12 @@ namespace Iocgns {
     cgnsFilePtr = -1;
   }
 
-  int64_t DatabaseIO::node_global_to_local(int64_t global, bool /*must_exist*/) const
+  int64_t DatabaseIO::node_global_to_local__(int64_t global, bool /*must_exist*/) const
   {
     return global;
   }
 
-  int64_t DatabaseIO::element_global_to_local(int64_t global) const { return global; }
+  int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
   void DatabaseIO::create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
                                            size_t &num_cell)
@@ -400,7 +400,7 @@ namespace Iocgns {
     }
   }
 
-  void DatabaseIO::read_meta_data()
+  void DatabaseIO::read_meta_data__()
   {
     openDatabase();
 
@@ -480,16 +480,16 @@ namespace Iocgns {
     get_region()->add(nblock);
   }
 
-  bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state(Ioss::Region * /*region*/, int /* state */, double /*time*/)
+  bool DatabaseIO::begin_state__(Ioss::Region * /*region*/, int /* state */, double /*time*/)
   {
     return true;
   }
 
-  bool DatabaseIO::end_state(Ioss::Region * /* region */, int /* state */, double /* time */)
+  bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
   {
     return true;
   }

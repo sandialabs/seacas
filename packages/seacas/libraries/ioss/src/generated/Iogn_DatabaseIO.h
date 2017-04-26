@@ -96,12 +96,12 @@ namespace Iogn {
 
     ~DatabaseIO() override;
 
-    int64_t node_global_to_local(int64_t global, bool must_exist) const override
+    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
     {
       return nodeMap.global_to_local(global, must_exist);
     }
 
-    int64_t element_global_to_local(int64_t global) const override
+    int64_t element_global_to_local__(int64_t global) const override
     {
       return elemMap.global_to_local(global);
     }
@@ -114,15 +114,15 @@ namespace Iogn {
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
-    void release_memory() override;
+    void release_memory__() override;
 
-    void read_meta_data() override;
+    void read_meta_data__() override;
 
-    bool begin(Ioss::State state) override;
-    bool end(Ioss::State state) override;
+    bool begin__(Ioss::State state) override;
+    bool end__(Ioss::State state) override;
 
-    bool begin_state(Ioss::Region *region, int state, double time) override;
-    bool end_state(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(Ioss::Region *region, int state, double time) override;
+    bool end_state__(Ioss::Region *region, int state, double time) override;
 
     const GeneratedMesh *get_generated_mesh() const { return m_generatedMesh; }
 
@@ -131,7 +131,7 @@ namespace Iogn {
     const std::vector<std::string> &get_sideset_names() const { return m_sideset_names; }
 
   private:
-    void get_step_times() override;
+    void get_step_times__() override;
     void get_nodeblocks();
     void get_elemblocks();
     void get_nodesets();

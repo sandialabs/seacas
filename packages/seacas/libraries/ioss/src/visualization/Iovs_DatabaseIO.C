@@ -274,7 +274,7 @@ __extension__
 #endif
   }
 
-  bool DatabaseIO::begin(Ioss::State state)
+  bool DatabaseIO::begin__(Ioss::State state)
   {
     dbState = state;
     Ioss::Region *region = this->get_region();
@@ -323,7 +323,7 @@ __extension__
     return true;
   }
 
-  bool DatabaseIO::end(Ioss::State state)
+  bool DatabaseIO::end__(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -349,7 +349,7 @@ __extension__
 
   // Default versions do nothing at this time...
   // Will be used for global variables...
-  bool DatabaseIO::begin_state(Ioss::Region* region, int state, double time)
+  bool DatabaseIO::begin_state__(Ioss::Region* region, int state, double time)
   {
     Ioss::SerializeIO   serializeIO__(this);
 
@@ -366,7 +366,7 @@ __extension__
     return true;
   }
 
-  bool DatabaseIO::end_state(Ioss::Region*, int state, double time)
+  bool DatabaseIO::end_state__(Ioss::Region*, int state, double time)
   {
     Ioss::SerializeIO   serializeIO__(this);
 
@@ -406,7 +406,7 @@ __extension__
     return true;
   }
 
-  void DatabaseIO::read_meta_data ()
+  void DatabaseIO::read_meta_data__()
   {
 
   }
