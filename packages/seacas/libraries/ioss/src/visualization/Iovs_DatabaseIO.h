@@ -61,23 +61,23 @@ namespace Iovs {
      * does not exist in the map; otherwise, it must exist and will
      * throw an exception if not found.
      */
-    int64_t node_global_to_local(int64_t global, bool must_exist) const
+    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
     {
       return nodeMap.global_to_local(global, must_exist);
     }
 
-    int64_t element_global_to_local(int64_t global) const
+    int64_t element_global_to_local__(int64_t global) const override
     {
       return elemMap.global_to_local(global);
     }
 
-    bool begin(Ioss::State state);
-    bool end(Ioss::State state);
+    bool begin__(Ioss::State state) override;
+    bool end__(Ioss::State state) override;
 
-    bool begin_state(Ioss::Region *region, int state, double time);
-    bool end_state(Ioss::Region *region, int state, double time);
+    bool begin_state__(Ioss::Region *region, int state, double time) override;
+    bool end_state__(Ioss::Region *region, int state, double time) override;
 
-    void read_meta_data();
+    void read_meta_data__() override;
 
     static int parseCatalystFile(const std::string &filepath, std::string &json_result);
 

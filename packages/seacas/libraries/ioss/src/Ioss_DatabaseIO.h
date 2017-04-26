@@ -113,14 +113,24 @@ namespace Ioss {
      *             mapped to any local node number on the current process.
      *  \returns The local node number
      */
-    virtual int64_t node_global_to_local(int64_t global, bool must_exist) const = 0;
-    virtual int64_t element_global_to_local(int64_t global) const = 0;
+    int64_t node_global_to_local(int64_t global, bool must_exist) const
+    {
+      return node_global_to_local__(global, must_exist);
+    }
+
+    int64_t element_global_to_local(int64_t global) const
+    {
+      return element_global_to_local__(global);
+    }
+    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const = 0;
+    virtual int64_t element_global_to_local__(int64_t global) const = 0;
 
     virtual ~DatabaseIO();
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
-    virtual void release_memory() {}
+    void         release_memory() { release_memory__(); }
+    virtual void release_memory__() {}
 
     /** \brief Get the file name associated with the database.
      *
@@ -155,9 +165,13 @@ namespace Ioss {
 
     void set_region(Region *region) { region_ = region; }
 
-    virtual void openDatabase() const {}
-    virtual void closeDatabase() const {}
-    virtual void flush_database() const {}
+    void openDatabase() const { openDatabase__(); }
+    void closeDatabase() const { closeDatabase__(); }
+    void flush_database() const { flush_database__(); }
+
+    virtual void openDatabase__() const {}
+    virtual void closeDatabase__() const {}
+    virtual void flush_database__() const {}
 
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
@@ -170,7 +184,8 @@ namespace Ioss {
      *  \param[in] group_name The name of the group to open.
      *  \returns True if successful.
      */
-    virtual bool open_group(const std::string &group_name) { return false; }
+    bool open_group(const std::string &group_name) { return open_group__(group_name); }
+    virtual bool open_group__(const std::string &group_name) { return false; }
 
     /** \brief If a database type supports groups, create the specified
      *        group as a child of the current group.
@@ -182,7 +197,8 @@ namespace Ioss {
      *  \param[in] group_name The name of the subgroup to create.
      *  \returns True if successful.
      */
-    virtual bool create_subgroup(const std::string &group_name) { return false; }
+    bool create_subgroup(const std::string &group_name) { return create_subgroup__(group_name); }
+    virtual bool create_subgroup__(const std::string &group_name) { return false; }
 
     /** \brief Set the database to the given State.
      *
@@ -198,7 +214,8 @@ namespace Ioss {
      *  \returns True if successful.
      *
      */
-    virtual bool begin(Ioss::State state) = 0;
+    bool begin(Ioss::State state) { return begin__(state); }
+    virtual bool begin__(Ioss::State state) = 0;
 
     /** \brief Return the database to STATE_CLOSED.
      *
@@ -210,14 +227,25 @@ namespace Ioss {
      *  \returns True if successful.
      *
      */
-    virtual bool end(Ioss::State state) = 0;
+    bool end(Ioss::State state) { return end__(state); }
+    virtual bool end__(Ioss::State state) = 0;
 
-    virtual bool begin_state(Region *region, int state, double time);
-    virtual bool end_state(Region *region, int state, double time);
+    bool begin_state(Region *region, int state, double time)
+    {
+      return begin_state__(region, state, time);
+    }
+    bool end_state(Region *region, int state, double time)
+    {
+      return end_state__(region, state, time);
+    }
+    virtual bool begin_state__(Region *region, int state, double time);
+    virtual bool end_state__(Region *region, int state, double time);
 
     // Metadata-related functions.
-    virtual void read_meta_data() = 0;
-    virtual void get_step_times() {}
+    void         read_meta_data() { return read_meta_data__(); }
+    void         get_step_times() { return get_step_times__(); }
+    virtual void read_meta_data__() = 0;
+    virtual void get_step_times__() {}
 
     virtual bool internal_edges_available() const { return false; }
     virtual bool internal_faces_available() const { return false; }
@@ -322,12 +350,23 @@ namespace Ioss {
 
     void set_block_omissions(const std::vector<std::string> &omissions);
 
-    virtual void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                                       std::vector<std::string> &block_adjacency) const
+    void get_block_adjacencies(const Ioss::ElementBlock *eb,
+                               std::vector<std::string> &block_adjacency) const
+    {
+      return get_block_adjacencies__(eb, block_adjacency);
+    }
+    void compute_block_membership(Ioss::SideBlock *         efblock,
+                                  std::vector<std::string> &block_membership) const
+    {
+      return compute_block_membership__(efblock, block_membership);
+    }
+
+    virtual void get_block_adjacencies__(const Ioss::ElementBlock *eb,
+                                         std::vector<std::string> &block_adjacency) const
     {
     }
-    virtual void compute_block_membership(Ioss::SideBlock *         efblock,
-                                          std::vector<std::string> &block_membership) const
+    virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
+                                            std::vector<std::string> &block_membership) const
     {
     }
 

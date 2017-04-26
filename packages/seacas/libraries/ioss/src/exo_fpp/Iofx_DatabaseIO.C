@@ -505,7 +505,7 @@ namespace Iofx {
     return exodusFilePtr;
   }
 
-  void DatabaseIO::read_meta_data()
+  void DatabaseIO::read_meta_data__()
   {
     // If this is a HISTORY file, there isn't really any metadata
     // Other than a single node and single element.  Just hardwire
@@ -672,7 +672,7 @@ namespace Iofx {
     }
   }
 
-  void DatabaseIO::get_step_times()
+  void DatabaseIO::get_step_times__()
   {
     bool                exists         = false;
     double              last_time      = DBL_MAX;

@@ -96,7 +96,7 @@ namespace Iofx {
     bool ok(bool write_message = false, std::string *error_msg = nullptr,
             int *bad_count = nullptr) const override;
 
-    void get_step_times() override;
+    void get_step_times__() override;
 
     const std::string &decoded_filename() const;
 
@@ -186,7 +186,7 @@ namespace Iofx {
     void compute_node_status() const;
 
     // Metadata-related functions.
-    void read_meta_data() override;
+    void read_meta_data__() override;
     void read_communication_metadata();
 
     int64_t read_transient_field(ex_entity_type type, const Ioex::VariableNameMap &variables,
@@ -238,12 +238,12 @@ namespace Iofx {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, ex_entity_type entity_type,
                              ex_inquiry inquiry_type) const;
 
-    int64_t node_global_to_local(int64_t global, bool must_exist) const override
+    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
     {
       return nodeMap.global_to_local(global, must_exist);
     }
 
-    int64_t element_global_to_local(int64_t global) const override
+    int64_t element_global_to_local__(int64_t global) const override
     {
       return elemMap.global_to_local(global);
     }

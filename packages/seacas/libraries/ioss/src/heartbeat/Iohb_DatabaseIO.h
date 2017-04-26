@@ -95,11 +95,11 @@ namespace Iohb {
 
     ~DatabaseIO() override;
 
-    int64_t node_global_to_local(int64_t /* global */, bool /* must_exist */) const override
+    int64_t node_global_to_local__(int64_t /* global */, bool /* must_exist */) const override
     {
       return 0;
     }
-    int64_t element_global_to_local(int64_t /* global */) const override { return 0; }
+    int64_t element_global_to_local__(int64_t /* global */) const override { return 0; }
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -107,15 +107,15 @@ namespace Iohb {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override;
 
-    void read_meta_data() override {}
+    void read_meta_data__() override {}
 
-    void flush_database() const override;
+    void flush_database__() const override;
 
-    bool begin(Ioss::State state) override;
-    bool end(Ioss::State state) override;
+    bool begin__(Ioss::State state) override;
+    bool end__(Ioss::State state) override;
 
-    bool begin_state(Ioss::Region *region, int state, double time) override;
-    bool end_state(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(Ioss::Region *region, int state, double time) override;
+    bool end_state__(Ioss::Region *region, int state, double time) override;
 
   private:
     void initialize(const Ioss::Region *region) const;

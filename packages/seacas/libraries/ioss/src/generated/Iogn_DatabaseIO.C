@@ -171,13 +171,13 @@ namespace Iogn {
 
   DatabaseIO::~DatabaseIO() { delete m_generatedMesh; }
 
-  void DatabaseIO::release_memory()
+  void DatabaseIO::release_memory__()
   {
     nodeMap.release_memory();
     elemMap.release_memory();
   }
 
-  void DatabaseIO::read_meta_data()
+  void DatabaseIO::read_meta_data__()
   {
     if (m_generatedMesh == nullptr) {
       if (get_filename() == "external") {
@@ -219,16 +219,16 @@ namespace Iogn {
         Ioss::Property(std::string("title"), std::string("GeneratedMesh: ") += get_filename()));
   }
 
-  bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state(Ioss::Region * /*region*/, int /* state */, double /*time*/)
+  bool DatabaseIO::begin_state__(Ioss::Region * /*region*/, int /* state */, double /*time*/)
   {
     return true;
   }
 
-  bool DatabaseIO::end_state(Ioss::Region * /* region */, int /* state */, double /* time */)
+  bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
   {
     return true;
   }
@@ -718,7 +718,7 @@ namespace Iogn {
     add_transient_fields(block);
   }
 
-  void DatabaseIO::get_step_times()
+  void DatabaseIO::get_step_times__()
   {
     int time_step_count = m_generatedMesh->timestep_count();
     for (int i = 0; i < time_step_count; i++) {
