@@ -208,7 +208,7 @@ namespace Iovs {
     }
   }
 
-  void DatabaseIO::release_memory()
+  void DatabaseIO::release_memory__()
   {
     nodeMap.release_memory();
     elemMap.release_memory();
