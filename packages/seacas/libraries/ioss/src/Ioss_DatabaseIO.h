@@ -92,6 +92,7 @@ namespace Ioss {
     bool ok(bool write_message = false, std::string *error_message = nullptr,
             int *bad_count = nullptr) const
     {
+      IOSS_FUNC_ENTER(m_);
       return ok__(write_message, error_message, bad_count);
     }
 
@@ -112,11 +113,13 @@ namespace Ioss {
      */
     int64_t node_global_to_local(int64_t global, bool must_exist) const
     {
+      IOSS_FUNC_ENTER(m_);
       return node_global_to_local__(global, must_exist);
     }
 
     int64_t element_global_to_local(int64_t global) const
     {
+      IOSS_FUNC_ENTER(m_);
       return element_global_to_local__(global);
     }
 
@@ -124,7 +127,11 @@ namespace Ioss {
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
-    void release_memory() { release_memory__(); }
+    void release_memory()
+    {
+      IOSS_FUNC_ENTER(m_);
+      release_memory__();
+    }
 
     /** \brief Get the file name associated with the database.
      *
@@ -159,9 +166,23 @@ namespace Ioss {
 
     void set_region(Region *region) { region_ = region; }
 
-    void openDatabase() const { openDatabase__(); }
-    void closeDatabase() const { closeDatabase__(); }
-    void flush_database() const { flush_database__(); }
+    void openDatabase() const
+    {
+      IOSS_FUNC_ENTER(m_);
+      openDatabase__();
+    }
+
+    void closeDatabase() const
+    {
+      IOSS_FUNC_ENTER(m_);
+      closeDatabase__();
+    }
+
+    void flush_database() const
+    {
+      IOSS_FUNC_ENTER(m_);
+      flush_database__();
+    }
 
     /** \brief If a database type supports groups and if the database
      *         contains groups, open the specified group.
@@ -174,7 +195,11 @@ namespace Ioss {
      *  \param[in] group_name The name of the group to open.
      *  \returns True if successful.
      */
-    bool open_group(const std::string &group_name) { return open_group__(group_name); }
+    bool open_group(const std::string &group_name)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return open_group__(group_name);
+    }
 
     /** \brief If a database type supports groups, create the specified
      *        group as a child of the current group.
@@ -186,7 +211,11 @@ namespace Ioss {
      *  \param[in] group_name The name of the subgroup to create.
      *  \returns True if successful.
      */
-    bool create_subgroup(const std::string &group_name) { return create_subgroup__(group_name); }
+    bool create_subgroup(const std::string &group_name)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return create_subgroup__(group_name);
+    }
 
     /** \brief Set the database to the given State.
      *
@@ -202,7 +231,11 @@ namespace Ioss {
      *  \returns True if successful.
      *
      */
-    bool begin(Ioss::State state) { return begin__(state); }
+    bool begin(Ioss::State state)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return begin__(state);
+    }
 
     /** \brief Return the database to STATE_CLOSED.
      *
@@ -214,19 +247,34 @@ namespace Ioss {
      *  \returns True if successful.
      *
      */
-    bool end(Ioss::State state) { return end__(state); }
+    bool end(Ioss::State state)
+    {
+      IOSS_FUNC_ENTER(m_);
+      return end__(state);
+    }
 
     bool begin_state(Region *region, int state, double time)
     {
+      IOSS_FUNC_ENTER(m_);
       return begin_state__(region, state, time);
     }
     bool end_state(Region *region, int state, double time)
     {
+      IOSS_FUNC_ENTER(m_);
       return end_state__(region, state, time);
     }
     // Metadata-related functions.
-    void read_meta_data() { return read_meta_data__(); }
-    void get_step_times() { return get_step_times__(); }
+    void read_meta_data()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return read_meta_data__();
+    }
+
+    void get_step_times()
+    {
+      IOSS_FUNC_ENTER(m_);
+      return get_step_times__();
+    }
 
     virtual bool internal_edges_available() const { return false; }
     virtual bool internal_faces_available() const { return false; }
@@ -274,6 +322,7 @@ namespace Ioss {
     template <typename T>
     int64_t get_field(const T *reg, const Field &field, void *data, size_t data_size) const
     {
+      IOSS_FUNC_ENTER(m_);
       verify_and_log(reg, field, 1);
       int64_t retval = get_field_internal(reg, field, data, data_size);
       verify_and_log(nullptr, field, 1);
@@ -283,6 +332,7 @@ namespace Ioss {
     template <typename T>
     int64_t put_field(const T *reg, const Field &field, void *data, size_t data_size) const
     {
+      IOSS_FUNC_ENTER(m_);
       verify_and_log(reg, field, 0);
       int64_t retval = put_field_internal(reg, field, data, data_size);
       verify_and_log(nullptr, field, 0);
@@ -334,11 +384,13 @@ namespace Ioss {
     void get_block_adjacencies(const Ioss::ElementBlock *eb,
                                std::vector<std::string> &block_adjacency) const
     {
+      IOSS_FUNC_ENTER(m_);
       return get_block_adjacencies__(eb, block_adjacency);
     }
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const
     {
+      IOSS_FUNC_ENTER(m_);
       return compute_block_membership__(efblock, block_membership);
     }
 
@@ -628,11 +680,14 @@ namespace Ioss {
     mutable std::map<std::string, AxisAlignedBoundingBox> elementBlockBoundingBoxes;
 
     Ioss::ParallelUtils util_; // Encapsulate parallel and other utility functions.
-    Region *            region_;
-    bool                isInput;
-    bool isParallelConsistent; // True if application will make field data get/put calls parallel
-                               // consistently.
-                               // True is default and required for parallel-io databases.
+#if defined(IOSS_THREADSAFE)
+    mutable std::mutex m_;
+#endif
+    Region *region_;
+    bool    isInput;
+    bool    isParallelConsistent; // True if application will make field data get/put calls parallel
+                                  // consistently.
+                                  // True is default and required for parallel-io databases.
     // Even if false, metadata operations must be called by all processors
 
     bool singleProcOnly; // True if history or heartbeat which is only written from proc 0...

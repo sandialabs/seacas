@@ -53,6 +53,12 @@
 #include <transform/Iotr_Initializer.h>
 #include <visualization/Iovs_IOFactory.h>
 
+namespace {
+#if defined(IOSS_THREADSAFE)
+  std::mutex m_;
+#endif
+}
+
 namespace Ioss {
   namespace Init {
     Initializer &Initializer::initialize_ioss()
@@ -69,23 +75,21 @@ namespace Ioss {
      */
     Initializer::Initializer()
     {
-#if defined(IOSS_THREADSAFE)
-      std::mutex m;
-      std::lock_guard<std::mutex> guard(m);  
-#endif  
+      IOSS_FUNC_ENTER(m_);
 
 #if !defined(NO_EXODUS_SUPPORT)
       Ioex::IOFactory::factory(); // Exodus
 #endif
-      Iohb::IOFactory::factory(); // HeartBeat
-      Iogn::IOFactory::factory(); // Generated
 #if !defined(NO_PAMGEN_SUPPORT)
       Iopg::IOFactory::factory(); // Pamgen
 #endif
-      Iovs::IOFactory::factory(); // Visualization
 #if !defined(NO_CGNS_SUPPORT)
       Iocgns::IOFactory::factory();
 #endif
+
+      Iovs::IOFactory::factory(); // Visualization
+      Iohb::IOFactory::factory(); // HeartBeat
+      Iogn::IOFactory::factory(); // Generated
       Ioss::StorageInitializer();
       Ioss::Initializer();
       Iotr::Initializer();
@@ -94,10 +98,7 @@ namespace Ioss {
     Initializer::~Initializer()
     {
       try {
-#if defined IOSS_THREADSAFE
-	std::mutex m;
-	std::lock_guard<std::mutex> guard(m);  
-#endif  
+	IOSS_FUNC_ENTER(m_);
         Ioss::IOFactory::clean();
         // Put code here that should run after sierra is finished
         // executing...
