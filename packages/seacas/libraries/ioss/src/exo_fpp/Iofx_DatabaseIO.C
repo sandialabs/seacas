@@ -521,7 +521,7 @@ namespace Iofx {
         Ioss::ElementBlock *eb = new Ioss::ElementBlock(this, "e1", "sphere", 1);
         eb->property_add(Ioss::Property("id", 1));
         get_region()->add(eb);
-        get_step_times();
+        get_step_times__();
         add_region_fields();
       }
       return;
@@ -536,7 +536,7 @@ namespace Iofx {
       read_communication_metadata();
     }
 
-    get_step_times();
+    get_step_times__();
 
     get_nodeblocks();
     get_edgeblocks();

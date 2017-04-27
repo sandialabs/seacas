@@ -146,7 +146,7 @@ namespace Iopg {
 
   DatabaseIO::~DatabaseIO() { Delete_Pamgen_Mesh(); }
 
-  void DatabaseIO::release_memory()
+  void DatabaseIO::release_memory__()
   {
     nodeMap.release_memory();
     elemMap.release_memory();
@@ -194,7 +194,7 @@ namespace Iopg {
     return mesh_description;
   }
 
-  void DatabaseIO::read_meta_data()
+  void DatabaseIO::read_meta_data__()
   {
     // The file for pamgen contains the mesh description.
     // The Iopg routine is expecting the mesh description to be a
@@ -970,13 +970,13 @@ namespace Iopg {
   }
 }
 
-bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
+bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
-bool DatabaseIO::end(Ioss::State /* state */) { return true; }
+bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-bool DatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time) { return true; }
+bool DatabaseIO::begin_state__(Ioss::Region *region, int /* state */, double time) { return true; }
 
-bool DatabaseIO::end_state(Ioss::Region * /* region */, int /* state */, double /* time */)
+bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
 {
   return true;
 }

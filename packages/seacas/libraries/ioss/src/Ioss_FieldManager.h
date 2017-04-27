@@ -62,8 +62,10 @@ namespace Ioss {
   class FieldManager
   {
   public:
-    FieldManager();
-    ~FieldManager();
+    FieldManager()                     = default;
+    FieldManager(const FieldManager &) = delete;
+    FieldManager &operator=(const FieldManager &) = delete;
+    ~FieldManager()                               = default;
 
     // Assumes: Field with the same 'name' does not exist.
     // Add the specified field to the list.
@@ -88,10 +90,10 @@ namespace Ioss {
 
   private:
     // Disallow copying; don't implement...
-    FieldManager(const FieldManager &);
-    FieldManager &operator=(const FieldManager &); // Do not implement
-
     FieldMapType fields;
+#if defined(IOSS_THREADSAFE)
+    mutable std::mutex m_;
+#endif
   };
 }
 #endif
