@@ -442,7 +442,7 @@ __extension__
     if(this->pvcsa)
       this->pvcsa->CreateElementVariable(component_names,
                                          bid,
-                                         &this->elemMap.map[eb_offset + 1],
+                                         &this->elemMap.map()[eb_offset + 1],
                                          this->DBFilename.c_str());
     }
 
@@ -450,7 +450,7 @@ __extension__
   component_names.push_back("GlobalNodeId");
   if(this->pvcsa)
     this->pvcsa->CreateNodalVariable(component_names,
-                                     &this->nodeMap.map[1],
+                                     &this->nodeMap.map()[1],
                                      this->DBFilename.c_str());
 
   this->globalNodeAndElementIDsCreated = true;
@@ -647,7 +647,7 @@ __extension__
                                                   eb->get_property("topology_type").get_string(),
                                                   element_nodes,
                                                   num_to_get,
-                                                  &this->elemMap.map[eb_offset + 1],
+                                                  &this->elemMap.map()[eb_offset + 1],
                                                   static_cast<int*>(data),
                                                   this->DBFilename.c_str());
               }
@@ -658,7 +658,7 @@ __extension__
                                                   eb->get_property("topology_type").get_string(),
                                                   element_nodes,
                                                   num_to_get,
-                                                  &this->elemMap.map[eb_offset + 1],
+                                                  &this->elemMap.map()[eb_offset + 1],
                                                   static_cast<int64_t*>(data),
                                                   this->DBFilename.c_str());
               }
@@ -831,13 +831,13 @@ __extension__
     assert(num_to_get == nodeCount);
 
     if (dbState == Ioss::STATE_MODEL) {
-      if (nodeMap.map.empty()) {
+      if (nodeMap.map().empty()) {
         //std::cerr << "DatabaseIO::handle_node_ids nodeMap was empty, resizing and tagging serial\n";
-        nodeMap.map.resize(nodeCount+1);
-	nodeMap.map[0] = -1;
+        nodeMap.map().resize(nodeCount+1);
+	nodeMap.map()[0] = -1;
       }
 
-      if (nodeMap.map[0] == -1) {
+      if (nodeMap.map()[0] == -1) {
         //std::cerr << "DatabaseIO::handle_node_ids nodeMap tagged serial, doing mapping\n";
 	if (int_byte_size_api() == 4) {
 	  nodeMap.set_map(static_cast<int*>(ids), num_to_get, 0);
@@ -850,7 +850,7 @@ __extension__
       
       // Only a single nodeblock and all set
       if (num_to_get == nodeCount) {
-	assert(nodeMap.map[0] == -1 || nodeMap.reverse.size() == (size_t)nodeCount);
+	assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
       }
       assert(get_region()->get_property("node_block_count").get_int() == 1);
     }
@@ -949,10 +949,10 @@ __extension__
   int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void* ids, size_t num_to_get)
   {
       //std::cerr << "DatabaseIO::handle_element_ids executing num_to_get: " << num_to_get << "\n";
-      if (elemMap.map.empty()) {
+      if (elemMap.map().empty()) {
         //std::cerr << "DatabaseIO::handle_element_ids elementMap was empty; allocating and marking as sequential\nelmenetCount: " << elementCount << "\n";
-        elemMap.map.resize(elementCount+1);
-        elemMap.map[0] = -1;
+        elemMap.map().resize(elementCount+1);
+        elemMap.map()[0] = -1;
       }
       //std::cerr << "DatabaseIO::handle_element_ids elementMap size: " << elementMap.size() << "\n";
       return handle_block_ids(eb, EX_ELEM_MAP, dbState, elemMap,
@@ -965,16 +965,16 @@ __extension__
     //std::cerr << "in new nathan Iovs DatabaseIO::get_node_reorder_map\n";
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
-    if (nodeMap.map.empty()) {
+    if (nodeMap.map().empty()) {
       //std::cerr << "DatabaseIO::get_node_map  nodeMap was empty, resizing and tagging sequential\n";
-      nodeMap.map.resize(nodeCount+1);
+      nodeMap.map().resize(nodeCount+1);
 
       // Output database; nodeMap not set yet... Build a default map.
       for (int64_t i=1; i < nodeCount+1; i++) {
-    nodeMap.map[i] = i;
+    nodeMap.map()[i] = i;
       }
       // Sequential map
-      nodeMap.map[0] = -1;
+      nodeMap.map()[0] = -1;
     }
     return nodeMap;
   }
@@ -985,15 +985,15 @@ __extension__
     //std::cercercerrn new nathan Iovs DatabaseIO::get_element_map\n";
     // Allocate space for elemente number map and read it in...
     // Can be called multiple times, allocate 1 time only
-    if (elemMap.map.empty()) {
-      elemMap.map.resize(elementCount+1);
+    if (elemMap.map().empty()) {
+      elemMap.map().resize(elementCount+1);
 
     // Output database; elementMap not set yet... Build a default map.
     for (int64_t i=1; i < elementCount+1; i++) {
-      elemMap.map[i] = i;
+      elemMap.map()[i] = i;
     }
     // Sequential map
-    elemMap.map[0] = -1;
+    elemMap.map()[0] = -1;
     }
     return elemMap;
   }
