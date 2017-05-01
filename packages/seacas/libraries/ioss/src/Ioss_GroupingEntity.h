@@ -279,16 +279,16 @@ namespace Ioss {
 
     int64_t entityCount = 0;
 
+#if defined(IOSS_THREADSAFE)
+    mutable std::mutex m_;
+#endif
+
   private:
     void verify_field_exists(const std::string &field_name, const std::string &inout) const;
 
     std::string entityName;
 
     DatabaseIO *database_ = nullptr;
-
-#if defined(IOSS_THREADSAFE)
-    mutable std::mutex m_;
-#endif
 
     State           entityState    = STATE_CLOSED;
     mutable int64_t attributeCount = 0;
