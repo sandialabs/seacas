@@ -52,6 +52,12 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES io_shell.C shell_interface.C
   )
 TRIBITS_ADD_EXECUTABLE(
+  io_shell_ts
+  NOEXEPREFIX
+  NOEXESUFFIX
+  SOURCES io_shell_ts.C shell_interface.C
+  )
+TRIBITS_ADD_EXECUTABLE(
   shell_to_hex
   NOEXEPREFIX
   NOEXESUFFIX
@@ -81,6 +87,7 @@ TRIBITS_ADD_EXECUTABLE(
 install_executable(cth_pressure_map)
 install_executable(struc_to_unstruc)
 install_executable(io_shell)
+install_executable(io_shell_ts)
 install_executable(shell_to_hex)
 install_executable(io_info)
 install_executable(sphgen)
