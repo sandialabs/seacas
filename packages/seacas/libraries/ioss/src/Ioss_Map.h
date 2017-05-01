@@ -91,6 +91,9 @@ namespace Ioss {
     void set_defined(bool yes_no) { m_defined = yes_no; }
 
   private:
+#if defined(IOSS_THREADSAFE)
+    mutable std::mutex m_;
+#endif
     MapContainer        m_map;
     MapContainer        m_reorder;
     ReverseMapContainer m_reverse;

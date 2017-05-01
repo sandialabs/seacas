@@ -681,7 +681,9 @@ namespace Ioss {
 
     Ioss::ParallelUtils util_; // Encapsulate parallel and other utility functions.
 #if defined(IOSS_THREADSAFE)
+  protected:
     mutable std::mutex m_;
+  private:
 #endif
     Region *region_;
     bool    isInput;
