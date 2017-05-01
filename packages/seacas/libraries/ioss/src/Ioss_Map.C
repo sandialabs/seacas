@@ -141,6 +141,7 @@ namespace {
 
 void Ioss::Map::release_memory()
 {
+  IOSS_FUNC_ENTER(m_);
   MapContainer().swap(m_map);
   MapContainer().swap(m_reorder);
   ReverseMapContainer().swap(m_reverse);
@@ -165,6 +166,7 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
   // 5. Check for duplicate global_ids...
 
   // Build a vector containing the current ids...
+  IOSS_FUNC_ENTER(m_);
   ReverseMapContainer new_ids(num_to_get);
   for (int64_t i = 0; i < num_to_get; i++) {
     int64_t local_id = offset + i + 1;
@@ -225,6 +227,7 @@ template void Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset);
 
 template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t offset)
 {
+  IOSS_FUNC_ENTER(m_);
   for (size_t i = 0; i < count; i++) {
     ssize_t local_id = offset + i + 1;
     m_map[local_id]    = ids[i];
@@ -243,6 +246,7 @@ template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t o
 
 void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
 {
+  IOSS_FUNC_ENTER(m_);
   assert(!m_map.empty());
   if (!is_sequential(m_map)) {
     if (field.get_type() == Ioss::Field::INTEGER) {
@@ -264,6 +268,7 @@ void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t co
 
 void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
 {
+  IOSS_FUNC_ENTER(m_);
   if (!is_sequential(m_map)) {
     if (field.get_type() == Ioss::Field::INTEGER) {
       int *datum = static_cast<int *>(data);
@@ -283,6 +288,7 @@ void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) con
 void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t count,
                                   size_t offset) const
 {
+  IOSS_FUNC_ENTER(m_);
   if (field.get_type() == Ioss::Field::INTEGER) {
     map_implicit_data_internal(static_cast<int *>(data), count, m_map, offset);
   }
@@ -308,6 +314,7 @@ size_t Ioss::Map::map_field_to_db_scalar_order(T *variables, std::vector<double>
                                                size_t begin_offset, size_t count, size_t stride,
                                                size_t offset)
 {
+  IOSS_FUNC_ENTER(m_);
   size_t num_out = 0;
   if (!m_reorder.empty()) {
     size_t k = offset;
@@ -352,6 +359,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
   //
   // start is based on a 0-based array -- start of the reorderMap to build.
 
+  IOSS_FUNC_ENTER(m_);
   if (m_reorder.empty()) {
     // See if actually need a reorder map first...
     bool    need_reorder_map = false;
@@ -404,6 +412,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
 
 int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 {
+  IOSS_FUNC_ENTER(m_);
   int64_t local = global;
   if (m_map[0] == 1) {
     auto iter = std::lower_bound(m_reverse.begin(), m_reverse.end(), global, IdPairCompare());

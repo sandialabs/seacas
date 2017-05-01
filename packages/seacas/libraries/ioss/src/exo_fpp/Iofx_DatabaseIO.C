@@ -465,6 +465,7 @@ namespace Iofx {
 
   int DatabaseIO::get_file_pointer() const
   {
+    IOSS_FUNC_ENTER(m_);
     // Returns the file_pointer used to access the file on disk.
     // Checks that the file is open and if not, opens it first.
 
@@ -500,8 +501,8 @@ namespace Iofx {
         ex_get_group_id(exodusFilePtr, m_groupName.c_str(), &exodusFilePtr);
       }
     }
-    assert(exodusFilePtr >= 0);
     fileExists = true;
+    assert(exodusFilePtr >= 0);
     return exodusFilePtr;
   }
 
