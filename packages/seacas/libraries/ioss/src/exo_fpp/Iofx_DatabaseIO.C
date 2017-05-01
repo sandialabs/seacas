@@ -945,8 +945,8 @@ namespace Iofx {
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
-    if (entity_map.map.empty()) {
-      entity_map.map.resize(entityCount + 1);
+    if (entity_map.map().empty()) {
+      entity_map.map().resize(entityCount + 1);
 
       if (is_input() || open_create_behavior() == Ioss::DB_APPEND) {
 
@@ -965,14 +965,14 @@ namespace Iofx {
           if (map_count == 1 && Ioss::Utils::case_strcmp(names[0], "original_global_id_map") == 0) {
             int error = 0;
             if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, &entity_map.map[1]);
+              error = ex_get_num_map(get_file_pointer(), entity_type, 1, &entity_map.map()[1]);
             }
             else {
               // Ioss stores as 64-bit, read as 32-bit and copy over...
-              Ioss::IntVector tmp_map(entity_map.map.size());
+              Ioss::IntVector tmp_map(entity_map.map().size());
               error = ex_get_num_map(get_file_pointer(), entity_type, 1, &tmp_map[1]);
               if (error >= 0) {
-                std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map.begin());
+                std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map().begin());
               }
             }
             if (error >= 0) {
@@ -980,7 +980,7 @@ namespace Iofx {
             }
             else {
               // Clear out the vector...
-              Ioss::MapContainer().swap(entity_map.map);
+              Ioss::MapContainer().swap(entity_map.map());
               Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
               map_read = false;
             }
@@ -991,29 +991,29 @@ namespace Iofx {
         if (!map_read) {
           int error = 0;
           if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-            error = ex_get_id_map(get_file_pointer(), entity_type, &entity_map.map[1]);
+            error = ex_get_id_map(get_file_pointer(), entity_type, &entity_map.map()[1]);
           }
           else {
             // Ioss stores as 64-bit, read as 32-bit and copy over...
-            Ioss::IntVector tmp_map(entity_map.map.size());
+            Ioss::IntVector tmp_map(entity_map.map().size());
             error = ex_get_id_map(get_file_pointer(), entity_type, &tmp_map[1]);
             if (error >= 0) {
-              std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map.begin());
+              std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map().begin());
             }
           }
           if (error < 0) {
             // Clear out the vector...
-            Ioss::MapContainer().swap(entity_map.map);
+            Ioss::MapContainer().swap(entity_map.map());
             Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
           }
         }
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.map[0] = -1;
+        entity_map.map()[0] = -1;
         for (int64_t i = 1; i < entityCount + 1; i++) {
-          if (i != entity_map.map[i]) {
-            entity_map.map[0] = 1;
+          if (i != entity_map.map()[i]) {
+            entity_map.map()[0] = 1;
             break;
           }
         }
@@ -1023,10 +1023,10 @@ namespace Iofx {
       else {
         // Output database; entity_map.map not set yet... Build a default map.
         for (int64_t i = 1; i < nodeCount + 1; i++) {
-          entity_map.map[i] = i;
+          entity_map.map()[i] = i;
         }
         // Sequential map
-        entity_map.map[0] = -1;
+        entity_map.map()[0] = -1;
       }
     }
     return entity_map;
@@ -3051,7 +3051,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
 
             size_t j = 0;
             if (field.get_name() == "entity_processor") {
-              const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map;
+              const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map();
 
               for (int64_t i = 0; i < entity_count; i++) {
                 int local_id     = ents[i];
@@ -3073,7 +3073,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
 
             size_t j = 0;
             if (field.get_name() == "entity_processor") {
-              const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map;
+              const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map();
 
               for (int64_t i = 0; i < entity_count; i++) {
                 int64_t local_id = ents[i];
@@ -3110,7 +3110,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
 
             size_t j = 0;
             if (field.get_name() == "entity_processor") {
-              const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map;
+              const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
               for (ssize_t i = 0; i < entity_count; i++) {
                 entity_proc[j++] = map[ents[i]];
@@ -3134,7 +3134,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
 
             size_t j = 0;
             if (field.get_name() == "entity_processor") {
-              const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map;
+              const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
               for (ssize_t i = 0; i < entity_count; i++) {
                 entity_proc[j++] = map[ents[i]];
@@ -3304,7 +3304,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
         // map from local_to_global prior to generating the side  id...
 
         // Get the element number map (1-based)...
-        const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map;
+        const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
         // Allocate space for local side number and element numbers
         // numbers.
@@ -4513,12 +4513,12 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
   assert(num_to_get == nodeCount);
 
   if (dbState == Ioss::STATE_MODEL) {
-    if (nodeMap.map.empty()) {
-      nodeMap.map.resize(nodeCount + 1);
-      nodeMap.map[0] = -1;
+    if (nodeMap.map().empty()) {
+      nodeMap.map().resize(nodeCount + 1);
+      nodeMap.map()[0] = -1;
     }
 
-    if (nodeMap.map[0] == -1) {
+    if (nodeMap.map()[0] == -1) {
       if (int_byte_size_api() == 4) {
         nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
       }
@@ -4531,7 +4531,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
 
     // Only a single nodeblock and all set
     if (num_to_get == nodeCount) {
-      assert(nodeMap.map[0] == -1 || nodeMap.reverse.size() == (size_t)nodeCount);
+      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
     }
     assert(get_region()->get_property("node_block_count").get_int() == 1);
 
@@ -4641,9 +4641,9 @@ namespace {
 int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids,
                                        size_t num_to_get) const
 {
-  if (elemMap.map.empty()) {
-    elemMap.map.resize(elementCount + 1);
-    elemMap.map[0] = -1;
+  if (elemMap.map().empty()) {
+    elemMap.map().resize(elementCount + 1);
+    elemMap.map()[0] = -1;
   }
   return handle_block_ids(eb, EX_ELEM_MAP, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
                           get_file_pointer(), myProcessor);
@@ -4651,9 +4651,9 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids,
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (faceMap.map.empty()) {
-    faceMap.map.resize(faceCount + 1);
-    faceMap.map[0] = -1;
+  if (faceMap.map().empty()) {
+    faceMap.map().resize(faceCount + 1);
+    faceMap.map()[0] = -1;
   }
   return handle_block_ids(eb, EX_FACE_MAP, dbState, faceMap, ids, int_byte_size_api(), num_to_get,
                           get_file_pointer(), myProcessor);
@@ -4661,9 +4661,9 @@ int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (edgeMap.map.empty()) {
-    edgeMap.map.resize(edgeCount + 1);
-    edgeMap.map[0] = -1;
+  if (edgeMap.map().empty()) {
+    edgeMap.map().resize(edgeCount + 1);
+    edgeMap.map()[0] = -1;
   }
   return handle_block_ids(eb, EX_EDGE_MAP, dbState, edgeMap, ids, int_byte_size_api(), num_to_get,
                           get_file_pointer(), myProcessor);

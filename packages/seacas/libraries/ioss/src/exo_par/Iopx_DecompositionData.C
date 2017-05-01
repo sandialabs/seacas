@@ -1702,7 +1702,7 @@ namespace Iopx {
       // Now create the list of nodes to send...
       for (size_t i = 0; i < global_implicit_map.size(); i++) {
         if (owning_proc[i] != m_processor) {
-          int64_t global_id                    = node_map.map[i + 1];
+          int64_t global_id                    = node_map.map()[i + 1];
           snd_list[tmp_disp[owning_proc[i]]++] = global_id;
         }
       }

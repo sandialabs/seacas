@@ -475,8 +475,8 @@ namespace Iocgns {
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
-    if (entity_map.map.empty()) {
-      entity_map.map.resize(entityCount + 1);
+    if (entity_map.map().empty()) {
+      entity_map.map().resize(entityCount + 1);
 
       if (is_input()) {
         Ioss::MapContainer file_data(file_count);
@@ -485,16 +485,16 @@ namespace Iocgns {
         std::iota(file_data.begin(), file_data.end(), file_offset + 1);
 
         if (type == entity_type::NODE)
-          decomp->communicate_node_data(TOPTR(file_data), &entity_map.map[1], 1);
+          decomp->communicate_node_data(TOPTR(file_data), &entity_map.map()[1], 1);
         else if (type == entity_type::ELEM)
-          decomp->communicate_element_data(TOPTR(file_data), &entity_map.map[1], 1);
+          decomp->communicate_element_data(TOPTR(file_data), &entity_map.map()[1], 1);
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.map[0] = -1;
+        entity_map.map()[0] = -1;
         for (int64_t i = 1; i < entityCount + 1; i++) {
-          if (i != entity_map.map[i]) {
-            entity_map.map[0] = 1;
+          if (i != entity_map.map()[i]) {
+            entity_map.map()[0] = 1;
             break;
           }
         }
@@ -504,10 +504,10 @@ namespace Iocgns {
       else {
         // Output database; entity_map.map not set yet... Build a default map.
         for (int64_t i = 1; i < entityCount + 1; i++) {
-          entity_map.map[i] = i;
+          entity_map.map()[i] = i;
         }
         // Sequential map
-        entity_map.map[0] = -1;
+        entity_map.map()[0] = -1;
       }
     }
     return entity_map;
@@ -920,7 +920,7 @@ namespace Iocgns {
 
         bool do_map = field.get_name() == "entity_processor";
         // Convert local node id to global node id and store in 'data'
-        const Ioss::MapContainer &map = get_map(entity_type::NODE).map;
+        const Ioss::MapContainer &map = get_map(entity_type::NODE).map();
         if (int_byte_size_api() == 4) {
           decomp->get_node_entity_proc_data(static_cast<int *>(data), map, do_map);
         }

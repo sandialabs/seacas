@@ -854,8 +854,8 @@ namespace Iopx {
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
-    if (entity_map.map.empty()) {
-      entity_map.map.resize(entityCount + 1);
+    if (entity_map.map().empty()) {
+      entity_map.map().resize(entityCount + 1);
 
       if (is_input()) {
         Ioss::MapContainer file_data(file_count);
@@ -905,22 +905,22 @@ namespace Iopx {
 
         if (error >= 0) {
           if (entity_type == EX_NODE_MAP)
-            decomp->communicate_node_data(TOPTR(file_data), &entity_map.map[1], 1);
+            decomp->communicate_node_data(TOPTR(file_data), &entity_map.map()[1], 1);
           else if (entity_type == EX_ELEM_MAP)
-            decomp->communicate_element_data(TOPTR(file_data), &entity_map.map[1], 1);
+            decomp->communicate_element_data(TOPTR(file_data), &entity_map.map()[1], 1);
         }
         else {
           // Clear out the vector...
-          Ioss::MapContainer().swap(entity_map.map);
+          Ioss::MapContainer().swap(entity_map.map());
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.map[0] = -1;
+        entity_map.map()[0] = -1;
         for (int64_t i = 1; i < entityCount + 1; i++) {
-          if (i != entity_map.map[i]) {
-            entity_map.map[0] = 1;
+          if (i != entity_map.map()[i]) {
+            entity_map.map()[0] = 1;
             break;
           }
         }
@@ -928,12 +928,12 @@ namespace Iopx {
         entity_map.build_reverse_map();
       }
       else {
-        // Output database; entity_map.map not set yet... Build a default map.
+        // Output database; entity_map.map() not set yet... Build a default map.
         for (int64_t i = 1; i < entityCount + 1; i++) {
-          entity_map.map[i] = i;
+          entity_map.map()[i] = i;
         }
         // Sequential map
-        entity_map.map[0] = -1;
+        entity_map.map()[0] = -1;
       }
     }
     return entity_map;
@@ -2457,7 +2457,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
 
       bool do_map = field.get_name() == "entity_processor";
       // Convert local node id to global node id and store in 'data'
-      const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map;
+      const Ioss::MapContainer &map = get_map(EX_NODE_BLOCK).map();
       if (int_byte_size_api() == 4) {
         decomp->get_node_entity_proc_data(static_cast<int *>(data), map, do_map);
       }
@@ -2602,7 +2602,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
       // map from local_to_global prior to generating the side  id...
 
       // Get the element number map (1-based)...
-      const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map;
+      const Ioss::MapContainer &map = get_map(EX_ELEM_BLOCK).map();
 
       // Allocate space for local side number and element numbers
       // numbers.
@@ -3836,13 +3836,13 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t offset
    *       should be in the orginal order...
    */
   if (dbState == Ioss::STATE_MODEL || dbState == Ioss::STATE_DEFINE_MODEL) {
-    if (!nodeMap.defined) {
-      if (nodeMap.map.empty()) {
-        nodeMap.map.resize(num_to_get + 1);
-        nodeMap.map[0] = -1;
+    if (!nodeMap.defined()) {
+      if (nodeMap.map().empty()) {
+        nodeMap.map().resize(num_to_get + 1);
+        nodeMap.map()[0] = -1;
       }
 
-      if (nodeMap.map[0] == -1) {
+      if (nodeMap.map()[0] == -1) {
         if (int_byte_size_api() == 4) {
           nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
         }
@@ -3855,9 +3855,9 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t offset
       nodeMap.build_reorder_map(0, num_to_get);
 
       // Only a single nodeblock and all set
-      assert(nodeMap.map[0] == -1 || nodeMap.reverse.size() == (size_t)num_to_get);
+      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)num_to_get);
       assert(get_region()->get_property("node_block_count").get_int() == 1);
-      nodeMap.defined = true;
+      nodeMap.set_defined(true);
     }
   }
   return num_to_get;
@@ -3972,9 +3972,9 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, 
     }
   }
 
-  if (elemMap.map.empty()) {
-    elemMap.map.resize(elementCount + 1);
-    elemMap.map[0] = -1;
+  if (elemMap.map().empty()) {
+    elemMap.map().resize(elementCount + 1);
+    elemMap.map()[0] = -1;
   }
   return handle_block_ids(eb, EX_ELEM_MAP, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
                           offset, count, get_file_pointer(), myProcessor);
@@ -3982,9 +3982,9 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, 
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (faceMap.map.empty()) {
-    faceMap.map.resize(faceCount + 1);
-    faceMap.map[0] = -1;
+  if (faceMap.map().empty()) {
+    faceMap.map().resize(faceCount + 1);
+    faceMap.map()[0] = -1;
   }
   return handle_block_ids(eb, EX_FACE_MAP, dbState, faceMap, ids, int_byte_size_api(), num_to_get,
                           0, 0, get_file_pointer(), myProcessor);
@@ -3992,9 +3992,9 @@ int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (edgeMap.map.empty()) {
-    edgeMap.map.resize(edgeCount + 1);
-    edgeMap.map[0] = -1;
+  if (edgeMap.map().empty()) {
+    edgeMap.map().resize(edgeCount + 1);
+    edgeMap.map()[0] = -1;
   }
   return handle_block_ids(eb, EX_EDGE_MAP, dbState, edgeMap, ids, int_byte_size_api(), num_to_get,
                           0, 0, get_file_pointer(), myProcessor);
@@ -4862,7 +4862,7 @@ void DatabaseIO::output_node_map() const
   // the metadata has been written to the output database AND if
   // the nodeMap.map and nodeGlobalImplicitMap are defined.
 
-  if (metaDataWritten && !nodeMap.map.empty() && !nodeGlobalImplicitMap.empty()) {
+  if (metaDataWritten && !nodeMap.map().empty() && !nodeGlobalImplicitMap.empty()) {
     Ioss::NodeBlockContainer node_blocks = get_region()->get_node_blocks();
     assert(node_blocks[0]->property_exists("processor_offset"));
     assert(node_blocks[0]->property_exists("locally_owned_count"));
@@ -4873,14 +4873,14 @@ void DatabaseIO::output_node_map() const
     if (int_byte_size_api() == 4) {
       std::vector<int> file_ids;
       file_ids.reserve(locally_owned_count);
-      map_data(nodeOwningProcessor, myProcessor, &nodeMap.map[1], file_ids);
+      map_data(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
       ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
                                    locally_owned_count, TOPTR(file_ids));
     }
     else {
       std::vector<int64_t> file_ids;
       file_ids.reserve(locally_owned_count);
-      map_data(nodeOwningProcessor, myProcessor, &nodeMap.map[1], file_ids);
+      map_data(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
       ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
                                    locally_owned_count, TOPTR(file_ids));
     }
