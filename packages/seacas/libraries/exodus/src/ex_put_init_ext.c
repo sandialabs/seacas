@@ -50,12 +50,13 @@
 *****************************************************************************/
 
 #include "exodusII.h"     // for ex_init_params, ex_err, etc
-#include "exodusII_int.h" // for nc_flt_code, EX_FATAL, etc
+#include "exodusII_int.h" // for nc_flt_code, etc
 #include "netcdf.h"       // for NC_NOERR, nc_def_dim, etc
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <stdlib.h> // for NULL, free, malloc
-#include <string.h> // for strlen
+#include "netcdf_meta.h"  // for NC_HAS_HDF5
+#include <stddef.h>       // for size_t, NULL
+#include <stdio.h>        // for snprintf
+#include <stdlib.h>       // for free, malloc
+#include <string.h>       // for strlen
 
 static void write_dummy_names(int exoid, ex_entity_type obj_type)
 {

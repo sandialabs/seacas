@@ -31,14 +31,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include "ED_SystemInterface.h" // for SystemInterface, interface
-#include "exodusII.h"           // for ex_set, etc
-#include "iqsort.h"             // for index_qsort
 #include "side_set.h"
-#include "smart_assert.h" // for SMART_ASSERT
-#include <cstdlib>        // for nullptr, exit
-#include <iostream>       // for operator<<, endl, ostream, etc
-#include <vector>         // for vector
+#include <ext/alloc_traits.h>
+#include <cstdlib>                      // for exit
+#include <iostream>                     // for operator<<, basic_ostream, etc
+#include <vector>                       // for vector
+#include "ED_SystemInterface.h"         // for ERROR, SystemInterface, etc
+#include "exodusII.h"                   // for ex_set, etc
+#include "iqsort.h"                     // for index_qsort
+#include "smart_assert.h"               // for SMART_ASSERT
 
 template <typename INT>
 Side_Set<INT>::Side_Set()

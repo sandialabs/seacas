@@ -53,8 +53,9 @@
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-#include "exodusII.h"  // for ex_put_partial_elem_conn, etc
-#include <sys/types.h> // for int64_t
+#include "exodusII.h" // for ex_put_partial_conn, etc
+#include <stddef.h>   // for NULL
+#include <stdint.h>   // for int64_t
 
 /*!
  * \deprecated Use ex_put_partial_conn() instead.

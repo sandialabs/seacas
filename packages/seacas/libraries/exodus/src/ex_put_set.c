@@ -52,11 +52,10 @@
 *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
-#include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
+#include "exodusII_int.h" // for ex_check_valid_file_id, etc
 #include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
 #include <inttypes.h>     // for PRId64
-#include <stdio.h>
-#include <stdlib.h> // for NULL
+#include <stdio.h>        // for snprintf, NULL
 
 /*!
  * writes the set entry list and set extra list for a single set
