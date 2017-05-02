@@ -54,7 +54,7 @@
 /*****************************************************************************/
 /*****************************************************************************/
 #include "exodusII.h"
-#include <sys/types.h> // for int64_t
+#include <stdint.h> // for int64_t
 
 /*!
  * \deprecated use ex_put_partial_set_dist_fact() instead
