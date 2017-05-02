@@ -1326,14 +1326,9 @@ namespace {
 
     // Complication here is that if the 'role' is 'Ioss::Field::MESH',
     // then the 'ids' field must be transferred first...
-    if (role == Ioss::Field::MESH) {
-      for (const auto &field_name : state_fields) {
-        assert(oge->field_exists(field_name));
-        if (field_name == "ids") {
-          transfer_field_data_internal(ige, oge, field_name, interface);
-          break;
-        }
-      }
+    if (role == Ioss::Field::MESH && ige->field_exists("ids")) {
+      assert(oge->field_exists("ids"));
+      transfer_field_data_internal(ige, oge, "ids", interface);
     }
 
     for (const auto &field_name : state_fields) {
@@ -1344,9 +1339,10 @@ namespace {
       if (field_name == "connectivity" && ige->type() != Ioss::ELEMENTBLOCK) {
         continue;
       }
-
-      if (field_name != "ids" &&
-          (prefix.length() == 0 ||
+      if (field_name == "ids") {
+	continue;
+      }
+      if ((prefix.length() == 0 ||
            std::strncmp(prefix.c_str(), field_name.c_str(), prefix.length()) == 0)) {
         assert(oge->field_exists(field_name));
         transfer_field_data_internal(ige, oge, field_name, interface);
