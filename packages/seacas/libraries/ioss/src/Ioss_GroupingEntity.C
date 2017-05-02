@@ -88,7 +88,6 @@ void Ioss::GroupingEntity::delete_database() {}
 
 void Ioss::GroupingEntity::really_delete_database()
 {
-  IOSS_FUNC_ENTER(m_);
   Ioss::DatabaseIO *new_db = const_cast<Ioss::DatabaseIO *>(database_);
   delete new_db;
   new_db = nullptr;

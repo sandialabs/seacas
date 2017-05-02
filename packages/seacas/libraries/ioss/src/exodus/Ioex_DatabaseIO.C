@@ -1395,7 +1395,7 @@ namespace Ioex {
       }
     }
     if (do_flush) {
-      flush_database();
+      flush_database__();
     }
   }
 
