@@ -97,7 +97,7 @@ namespace Iocgns {
       set_int_byte_size_api(Ioss::USE_INT64_API);
     }
 
-    openDatabase();
+    openDatabase__();
   }
 
   void DatabaseIO::openDatabase__() const
@@ -402,7 +402,7 @@ namespace Iocgns {
 
   void DatabaseIO::read_meta_data__()
   {
-    openDatabase();
+    openDatabase__();
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
