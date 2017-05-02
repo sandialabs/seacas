@@ -91,6 +91,7 @@ namespace Ioss {
     void set_defined(bool yes_no) { m_defined = yes_no; }
 
   private:
+    int64_t global_to_local__(int64_t global, bool must_exist = true) const;
 #if defined(IOSS_THREADSAFE)
     mutable std::mutex m_;
 #endif

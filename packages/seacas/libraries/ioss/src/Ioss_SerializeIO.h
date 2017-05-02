@@ -92,7 +92,7 @@ namespace Ioss {
 #if defined(IOSS_THREADSAFE)
     static std::mutex m_;
 #endif
-    const bool        m_activeFallThru; ///< No barries since my group is running
+    bool              m_activeFallThru; ///< No barries since my group is running
     int               m_manualOwner;    ///< Manually specified owner
 
     static int s_groupFactor; ///< Grouping factor

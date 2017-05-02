@@ -253,14 +253,14 @@ void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t co
       int *connect = static_cast<int *>(data);
       for (size_t i = 0; i < count; i++) {
         int global_id = connect[i];
-        connect[i]    = global_to_local(global_id, true);
+        connect[i]    = global_to_local__(global_id, true);
       }
     }
     else {
       int64_t *connect = static_cast<int64_t *>(data);
       for (size_t i = 0; i < count; i++) {
         int64_t global_id = connect[i];
-        connect[i]        = global_to_local(global_id, true);
+        connect[i]        = global_to_local__(global_id, true);
       }
     }
   }
@@ -366,7 +366,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
     int64_t my_end           = start + count;
     for (int64_t i = start; i < my_end; i++) {
       int64_t global_id     = m_map[i + 1];
-      int64_t orig_local_id = global_to_local(global_id) - 1;
+      int64_t orig_local_id = global_to_local__(global_id) - 1;
 
       // The reordering should only be a permutation of the original
       // ordering within this entity block...
@@ -396,7 +396,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
   int64_t my_end = start + count;
   for (int64_t i = start; i < my_end; i++) {
     int64_t global_id     = m_map[i + 1];
-    int64_t orig_local_id = global_to_local(global_id) - 1;
+    int64_t orig_local_id = global_to_local__(global_id) - 1;
 
     // The reordering should only be a permutation of the original
     // ordering within this entity block...
@@ -413,6 +413,11 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
 int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 {
   IOSS_FUNC_ENTER(m_);
+  return global_to_local__(global, must_exist);
+}
+
+int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
+{
   int64_t local = global;
   if (m_map[0] == 1) {
     auto iter = std::lower_bound(m_reverse.begin(), m_reverse.end(), global, IdPairCompare());

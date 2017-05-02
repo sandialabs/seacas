@@ -92,9 +92,7 @@ using Kokkos_Complex = Kokkos::complex<double>;
 
 #if defined(IOSS_THREADSAFE)
 #define IOSS_FUNC_ENTER(m)                                                                         \
-  do {                                                                                             \
-    std::lock_guard<std::mutex> guard(m);                                                          \
-  } while (0)
+  std::lock_guard<std::mutex> guard(m)
 #else
 
 #if defined IOSS_TRACE

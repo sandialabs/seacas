@@ -270,6 +270,9 @@ namespace Ioss {
     bool add_alias__(const GroupingEntity *ge);
     std::string get_alias__(const std::string &alias) const;
 
+    bool begin_mode__(State new_state);
+    bool end_mode__(State current_state);
+
     void delete_database() override;
 
     AliasMap aliases_; ///< Stores alias mappings
