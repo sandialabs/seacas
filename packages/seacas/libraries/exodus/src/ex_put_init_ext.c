@@ -52,7 +52,6 @@
 #include "exodusII.h"     // for ex_init_params, ex_err, etc
 #include "exodusII_int.h" // for nc_flt_code, etc
 #include "netcdf.h"       // for NC_NOERR, nc_def_dim, etc
-#include "netcdf_meta.h"  // for NC_HAS_HDF5
 #include <stddef.h>       // for size_t, NULL
 #include <stdio.h>        // for snprintf
 #include <stdlib.h>       // for free, malloc
