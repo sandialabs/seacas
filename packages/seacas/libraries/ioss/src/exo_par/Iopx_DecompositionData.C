@@ -227,12 +227,13 @@ namespace Iopx {
     m_decomposition.show_progress("\tFinished with Iopx::decompose_model");
 
     if (m_decomposition.m_showHWM || m_decomposition.m_showProgress) {
-      int64_t min, max, avg;
+      int64_t             min, max, avg;
       Ioss::ParallelUtils pu(m_decomposition.m_comm);
       pu.hwm_memory_stats(min, max, avg);
       int64_t MiB = 1024 * 1024;
       if (m_processor == 0) {
-	std::cerr << "\n\tHigh Water Memory at end of Decomposition: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+        std::cerr << "\n\tHigh Water Memory at end of Decomposition: " << min / MiB << "M  "
+                  << max / MiB << "M  " << avg / MiB << "M\n";
       }
     }
   }
@@ -811,7 +812,7 @@ namespace Iopx {
         double *coord[3];
         coord[0] = coord[1] = coord[2] = nullptr;
         coord[d]                       = TOPTR(tmp);
-	m_decomposition.show_progress("\tex_get_partial_coord XYZ");
+        m_decomposition.show_progress("\tex_get_partial_coord XYZ");
         ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
                                     coord[0], coord[1], coord[2]);
         if (ierr < 0)

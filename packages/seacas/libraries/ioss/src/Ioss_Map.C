@@ -230,7 +230,7 @@ template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t o
   IOSS_FUNC_ENTER(m_);
   for (size_t i = 0; i < count; i++) {
     ssize_t local_id = offset + i + 1;
-    m_map[local_id]    = ids[i];
+    m_map[local_id]  = ids[i];
     if (local_id != ids[i]) {
       m_map[0] = 1;
     }
@@ -433,8 +433,9 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
   }
   if (local > static_cast<int64_t>(m_map.size()) - 1 || (local <= 0 && must_exist)) {
     std::ostringstream errmsg;
-    errmsg << "ERROR: Ioss Mapping routines detected " << m_entityType << " with global id equal to "
-           << global << " returns a local id of " << local << " which is invalid\n"
+    errmsg << "ERROR: Ioss Mapping routines detected " << m_entityType
+           << " with global id equal to " << global << " returns a local id of " << local
+           << " which is invalid\n"
            << "on processor " << m_myProcessor << ", filename '" << m_filename << "'.\n"
            << "This should not happen, please report.\n";
     IOSS_ERROR(errmsg);

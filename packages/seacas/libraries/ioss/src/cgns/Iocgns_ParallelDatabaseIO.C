@@ -121,7 +121,7 @@ namespace Iocgns {
         nodeCount(0), elementCount(0), m_zoneType(CG_ZoneTypeNull)
   {
     usingParallelIO = true;
-    dbState = Ioss::STATE_UNKNOWN;
+    dbState         = Ioss::STATE_UNKNOWN;
 
     if (!is_input()) {
       std::ostringstream errmsg;
@@ -437,7 +437,7 @@ namespace Iocgns {
   }
 
   bool ParallelDatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */,
-                                     double /* time */)
+                                       double /* time */)
   {
     return true;
   }

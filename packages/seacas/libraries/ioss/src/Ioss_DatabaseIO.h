@@ -683,6 +683,7 @@ namespace Ioss {
 #if defined(IOSS_THREADSAFE)
   protected:
     mutable std::mutex m_;
+
   private:
 #endif
     Region *region_;

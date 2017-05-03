@@ -1257,7 +1257,7 @@ namespace Ioss {
     IOSS_FUNC_ENTER(m_);
     return get_alias__(alias);
   }
-  
+
   std::string Region::get_alias__(const std::string &alias) const
   {
     std::string ci_alias = uppercase(alias);

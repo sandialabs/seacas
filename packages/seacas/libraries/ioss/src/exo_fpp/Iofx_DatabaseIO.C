@@ -161,29 +161,30 @@ namespace Iofx {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-    : Ioex::DatabaseIO(region, filename, db_usage, communicator, props), isSerialParallel(false)
+      : Ioex::DatabaseIO(region, filename, db_usage, communicator, props), isSerialParallel(false)
   {
     if (!is_input()) {
       // Check whether appending to existing file...
       if (open_create_behavior() == Ioss::DB_APPEND ||
           open_create_behavior() == Ioss::DB_APPEND_GROUP) {
         // Append to file if it already exists -- See if the file exists.
-        Ioss::FileInfo file             = Ioss::FileInfo(decoded_filename());
-        fileExists                      = file.exists();
+        Ioss::FileInfo file = Ioss::FileInfo(decoded_filename());
+        fileExists          = file.exists();
       }
     }
 
     if (properties.exists("processor_count") && properties.exists("my_processor")) {
       if (!isParallel) {
-	isSerialParallel = true;
+        isSerialParallel = true;
       }
       else {
         std::ostringstream errmsg;
         errmsg << "ERROR: Procssor id and processor count are specified via the "
-	       << "'processor_count' and 'processor_id' properties which indicates that this database is "
-	       << "being run in 'serial-parallel' mode, but the database constructor was passed an "
-	       << "mpi communicator which has more than 1 processor. This is not allowed.\n";
-	IOSS_ERROR(errmsg);
+               << "'processor_count' and 'processor_id' properties which indicates that this "
+                  "database is "
+               << "being run in 'serial-parallel' mode, but the database constructor was passed an "
+               << "mpi communicator which has more than 1 processor. This is not allowed.\n";
+        IOSS_ERROR(errmsg);
       }
     }
   }
@@ -192,15 +193,15 @@ namespace Iofx {
   {
     if (decodedFilename.empty()) {
       if (isParallel) {
-	decodedFilename = util().decode_filename(get_filename(), isParallel);
+        decodedFilename = util().decode_filename(get_filename(), isParallel);
       }
       else if (properties.exists("processor_count") && properties.exists("my_processor")) {
-	int proc_count = properties.get("processor_count").get_int();
-	int my_proc    = properties.get("my_processor").get_int();
-	decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
+        int proc_count  = properties.get("processor_count").get_int();
+        int my_proc     = properties.get("my_processor").get_int();
+        decodedFilename = Ioss::Utils::decode_filename(get_filename(), my_proc, proc_count);
       }
       else {
-	decodedFilename = get_filename();
+        decodedFilename = get_filename();
       }
     }
     return decodedFilename;
@@ -254,7 +255,9 @@ namespace Iofx {
             errmsg << "ERROR: Unable to " << open_create << " exodus decomposed database files:\n";
             for (int i = 0; i < util().parallel_size(); i++) {
               if (status[i] < 0) {
-                errmsg << "\t" << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size()) << "\n";
+                errmsg << "\t"
+                       << Ioss::Utils::decode_filename(get_filename(), i, util().parallel_size())
+                       << "\n";
               }
             }
           }
@@ -328,9 +331,9 @@ namespace Iofx {
   bool DatabaseIO::open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                                    bool abort_if_error) const
   {
-    int         cpu_word_size = sizeof(double);
-    int         io_word_size  = 0;
-    float       version;
+    int   cpu_word_size = sizeof(double);
+    int   io_word_size  = 0;
+    float version;
 
     int mode = exodusMode;
     if (int_byte_size_api() == 8) {
@@ -344,8 +347,8 @@ namespace Iofx {
     }
 #endif
     int app_opt_val = ex_opts(EX_VERBOSE);
-    exodusFilePtr =
-      ex_open(decoded_filename().c_str(), EX_READ | mode, &cpu_word_size, &io_word_size, &version);
+    exodusFilePtr   = ex_open(decoded_filename().c_str(), EX_READ | mode, &cpu_word_size,
+                            &io_word_size, &version);
 
     bool is_ok = check_valid_file_ptr(write_message, error_msg, bad_count, abort_if_error);
 
@@ -429,17 +432,17 @@ namespace Iofx {
     else {
       // If the first write for this file, create it...
       if (int_byte_size_api() == 8) {
-	// Check whether client actually wants 4-byte output on db
-	// - If they specified INTEGER_SIZE_DB and the size isn't 8,
-	//   then don't change mode and use the default 4-byte output.
-	if (properties.exists("INTEGER_SIZE_DB")) {
-	  if (properties.get("INTEGER_SIZE_DB").get_int() == 8) {
-	    mode |= EX_ALL_INT64_DB;
-	  }
-	}
-	else {
-	  mode |= EX_ALL_INT64_DB;
-	}
+        // Check whether client actually wants 4-byte output on db
+        // - If they specified INTEGER_SIZE_DB and the size isn't 8,
+        //   then don't change mode and use the default 4-byte output.
+        if (properties.exists("INTEGER_SIZE_DB")) {
+          if (properties.get("INTEGER_SIZE_DB").get_int() == 8) {
+            mode |= EX_ALL_INT64_DB;
+          }
+        }
+        else {
+          mode |= EX_ALL_INT64_DB;
+        }
       }
       exodusFilePtr = ex_create(decoded_filename().c_str(), mode, &cpu_word_size, &dbRealWordSize);
     }
@@ -611,8 +614,8 @@ namespace Iofx {
     if (elementCount < 0) {
       // NOTE: Code will not continue past this call...
       std::ostringstream errmsg;
-      errmsg << "ERROR: Negative element count was found in the model, file: '" << decoded_filename()
-             << "'";
+      errmsg << "ERROR: Negative element count was found in the model, file: '"
+             << decoded_filename() << "'";
       IOSS_ERROR(errmsg);
     }
 
@@ -1163,7 +1166,7 @@ namespace Iofx {
       bool        db_has_name = false;
       std::string block_name;
       if (ignore_database_names()) {
-	block_name = alias;
+        block_name = alias;
       }
       else {
         Ioss::SerializeIO serializeIO__(this);
@@ -1171,7 +1174,7 @@ namespace Iofx {
                                            maximumNameLength, db_has_name);
       }
       if (get_use_generic_canonical_name()) {
-	std::swap(block_name, alias);
+        std::swap(block_name, alias);
       }
 
       std::string save_type = X_type;
@@ -1188,7 +1191,7 @@ namespace Iofx {
         if (tokens.size() >= 2) {
           // Check whether last token names an X topology type...
           const Ioss::ElementTopology *topology =
-	    Ioss::ElementTopology::factory(tokens.back(), true);
+              Ioss::ElementTopology::factory(tokens.back(), true);
           if (topology != nullptr) {
             type = topology->name();
           }
@@ -1714,16 +1717,15 @@ namespace Iofx {
         {
           Ioss::SerializeIO serializeIO__(this);
 
-          bool db_has_name = false;
-          std::string alias = Ioss::Utils::encode_entity_name("surface", id);
-	  if (ignore_database_names()) {
-	    side_set_name = alias;
-	  }
-	  else {
-	    side_set_name    = Ioex::get_entity_name(get_file_pointer(), EX_SIDE_SET, id, "surface",
-						     maximumNameLength, db_has_name);
-	  }
-
+          bool        db_has_name = false;
+          std::string alias       = Ioss::Utils::encode_entity_name("surface", id);
+          if (ignore_database_names()) {
+            side_set_name = alias;
+          }
+          else {
+            side_set_name = Ioex::get_entity_name(get_file_pointer(), EX_SIDE_SET, id, "surface",
+                                                  maximumNameLength, db_has_name);
+          }
 
           if (side_set_name == "universal_sideset") {
             split_type = Ioss::SPLIT_BY_DONT_SPLIT;
@@ -1739,7 +1741,7 @@ namespace Iofx {
           }
           else {
             if (get_use_generic_canonical_name()) {
-	      std::swap(side_set_name, alias);
+              std::swap(side_set_name, alias);
             }
             side_set = new Ioss::SideSet(this, side_set_name);
             side_set->property_add(Ioss::Property("id", id));
@@ -2117,18 +2119,18 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
         attributes[ins] = num_attr;
 
         bool        db_has_name = false;
-        std::string alias = Ioss::Utils::encode_entity_name(base + "list", id);
-	std::string Xset_name;
-	if (ignore_database_names()) {
-	  Xset_name = alias;
-	}
-	else {
-	  Xset_name   = Ioex::get_entity_name(get_file_pointer(), type, id, base + "list",
-					      maximumNameLength, db_has_name);
-	}
+        std::string alias       = Ioss::Utils::encode_entity_name(base + "list", id);
+        std::string Xset_name;
+        if (ignore_database_names()) {
+          Xset_name = alias;
+        }
+        else {
+          Xset_name = Ioex::get_entity_name(get_file_pointer(), type, id, base + "list",
+                                            maximumNameLength, db_has_name);
+        }
 
         if (get_use_generic_canonical_name()) {
-	  std::swap(Xset_name, alias);
+          std::swap(Xset_name, alias);
         }
 
         bool              filtered          = false;
@@ -4741,8 +4743,7 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
       if (num_out != nodeCount) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Problem outputting nodal variable '" << var_name
-               << "' with index = " << var_index << " to file "
-               << decoded_filename() << "\n"
+               << "' with index = " << var_index << " to file " << decoded_filename() << "\n"
                << "Should have output " << nodeCount << " values, but instead only output "
                << num_out << " values.\n";
         IOSS_ERROR(errmsg);
@@ -4754,8 +4755,7 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
       if (ierr < 0) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Problem outputting nodal variable '" << var_name
-               << "' with index = " << var_index << " to file "
-               << decoded_filename() << "\n";
+               << "' with index = " << var_index << " to file " << decoded_filename() << "\n";
         IOSS_ERROR(errmsg);
       }
     }
@@ -5579,7 +5579,7 @@ void DatabaseIO::gather_communication_metadata(Ioex::CommunicationMetaData *meta
     else if (get_region()->property_exists("my_processor")) {
       meta->processorId = get_region()->get_property("my_processor").get_int();
     }
-    
+
     if (!get_region()->get_commsets().empty()) {
       isSerialParallel    = true;
       meta->outputNemesis = true;
