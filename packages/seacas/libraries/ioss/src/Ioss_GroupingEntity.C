@@ -274,7 +274,7 @@ void Ioss::GroupingEntity::count_attributes() const
   field_describe(Ioss::Field::ATTRIBUTE, &results_fields);
 
   Ioss::NameList::const_iterator IF;
-  int64_t attribute_count = 0; 
+  int64_t                        attribute_count = 0;
   for (IF = results_fields.begin(); IF != results_fields.end(); ++IF) {
     std::string field_name = *IF;
     if (field_name != "attribute" || (field_name == "attribute" && results_fields.size() == 1)) {

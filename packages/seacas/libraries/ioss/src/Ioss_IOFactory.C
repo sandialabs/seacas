@@ -40,8 +40,8 @@
 #include <utility>      // for pair
 namespace {
 #if defined(IOSS_THREADSAFE)
-    std::mutex m_;
-#endif  
+  std::mutex m_;
+#endif
 
   int describe__(Ioss::IOFactoryMap *registry, Ioss::NameList *names)
   {
@@ -53,7 +53,7 @@ namespace {
     }
     return count;
   }
-}  
+}
 
 namespace Ioss {
   class DatabaseIO;

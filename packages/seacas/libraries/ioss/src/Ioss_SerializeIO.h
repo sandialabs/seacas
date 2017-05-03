@@ -88,12 +88,12 @@ namespace Ioss {
     inline static bool inMyGroup() { return s_owner == s_groupRank; }
 
   private:
-    const DatabaseIO *m_databaseIO;     ///< Database I/O pointer
+    const DatabaseIO *m_databaseIO; ///< Database I/O pointer
 #if defined(IOSS_THREADSAFE)
     static std::mutex m_;
 #endif
-    bool              m_activeFallThru; ///< No barries since my group is running
-    int               m_manualOwner;    ///< Manually specified owner
+    bool m_activeFallThru; ///< No barries since my group is running
+    int  m_manualOwner;    ///< Manually specified owner
 
     static int s_groupFactor; ///< Grouping factor
     static int s_size;        ///< Number of processors
