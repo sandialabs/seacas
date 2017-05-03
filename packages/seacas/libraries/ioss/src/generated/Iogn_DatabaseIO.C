@@ -86,19 +86,16 @@ namespace {
 
   template <typename INT>
   void fill_transient_data(const Ioss::GroupingEntity *entity, size_t component_count, double *data,
-                           INT /*dummy*/)
+                           INT *ids, size_t count)
   {
-    std::vector<INT> ids;
-    entity->get_field_data("ids", ids);
-
     double *rdata = static_cast<double *>(data);
     if (component_count == 1) {
-      for (size_t i = 0; i < ids.size(); i++) {
+      for (size_t i = 0; i < count; i++) {
         rdata[i] = std::sqrt((double)ids[i]);
       }
     }
     else {
-      for (size_t i = 0; i < ids.size(); i++) {
+      for (size_t i = 0; i < count; i++) {
         for (size_t j = 0; j < component_count; j++) {
           rdata[i * component_count + j] = j + std::sqrt((double)ids[i]);
         }
@@ -106,16 +103,19 @@ namespace {
     }
   }
 
-  void fill_transient_data(const Ioss::GroupingEntity *entity, const Ioss::Field &field, void *data)
+  void fill_transient_data(const Ioss::GroupingEntity *entity, const Ioss::Field &field, void *data,
+                           void *id_data, size_t count)
   {
     const Ioss::Field &ids = entity->get_fieldref("ids");
     if (ids.is_type(Ioss::Field::INTEGER)) {
       fill_transient_data(entity, field.raw_storage()->component_count(),
-                          reinterpret_cast<double *>(data), 0);
+                          reinterpret_cast<double *>(data), reinterpret_cast<int *>(id_data),
+                          count);
     }
     else {
       fill_transient_data(entity, field.raw_storage()->component_count(),
-                          reinterpret_cast<double *>(data), static_cast<int64_t>(0));
+                          reinterpret_cast<double *>(data), reinterpret_cast<int64_t *>(id_data),
+                          count);
     }
   }
 
@@ -269,7 +269,11 @@ namespace Iogn {
       }
       return num_to_get;
     }
-    fill_transient_data(nb, field, data);
+
+    const Ioss::Field &id_fld = nb->get_fieldref("ids");
+    std::vector<char>  ids(id_fld.get_size());
+    get_field_internal(nb, id_fld, ids.data(), id_fld.get_size());
+    fill_transient_data(nb, field, data, ids.data(), num_to_get);
 
     return num_to_get;
   }
@@ -343,7 +347,10 @@ namespace Iogn {
 
     else if (role == Ioss::Field::TRANSIENT) {
       // Fill the field with arbitrary data...
-      fill_transient_data(eb, field, data);
+      const Ioss::Field &id_fld = eb->get_fieldref("ids");
+      std::vector<char>  ids(id_fld.get_size());
+      get_field_internal(eb, id_fld, ids.data(), id_fld.get_size());
+      fill_transient_data(eb, field, data, ids.data(), num_to_get);
     }
     else if (role == Ioss::Field::REDUCTION) {
       num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
@@ -419,7 +426,10 @@ namespace Iogn {
 
       else if (field.get_name() == "distribution_factors") {
         if (m_useVariableDf) {
-          fill_transient_data(ef_blk, field, data);
+          const Ioss::Field &id_fld = ef_blk->get_fieldref("ids");
+          std::vector<char>  ids(id_fld.get_size());
+          get_field_internal(ef_blk, id_fld, ids.data(), id_fld.get_size());
+          fill_transient_data(ef_blk, field, data, ids.data(), num_to_get);
         }
         else {
           fill_constant_data(field, data, 1.0);
@@ -431,7 +441,10 @@ namespace Iogn {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      fill_transient_data(ef_blk, field, data);
+      const Ioss::Field &id_fld = ef_blk->get_fieldref("ids");
+      std::vector<char>  ids(id_fld.get_size());
+      get_field_internal(ef_blk, id_fld, ids.data(), id_fld.get_size());
+      fill_transient_data(ef_blk, field, data, ids.data(), num_to_get);
     }
     return num_to_get;
   }
@@ -463,7 +476,10 @@ namespace Iogn {
       }
       else if (field.get_name() == "distribution_factors") {
         if (m_useVariableDf) {
-          fill_transient_data(ns, field, data);
+          const Ioss::Field &id_fld = ns->get_fieldref("ids");
+          std::vector<char>  ids(id_fld.get_size());
+          get_field_internal(ns, id_fld, ids.data(), id_fld.get_size());
+          fill_transient_data(ns, field, data, ids.data(), num_to_get);
         }
         else {
           fill_constant_data(field, data, 1.0);
@@ -474,7 +490,10 @@ namespace Iogn {
       }
     }
     else if (role == Ioss::Field::TRANSIENT) {
-      fill_transient_data(ns, field, data);
+      const Ioss::Field &id_fld = ns->get_fieldref("ids");
+      std::vector<char>  ids(id_fld.get_size());
+      get_field_internal(ns, id_fld, ids.data(), id_fld.get_size());
+      fill_transient_data(ns, field, data, ids.data(), num_to_get);
     }
     return num_to_get;
   }
