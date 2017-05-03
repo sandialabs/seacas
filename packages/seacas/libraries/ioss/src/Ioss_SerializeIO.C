@@ -51,7 +51,9 @@ namespace Ioss {
 
   int SerializeIO::s_groupFactor = 0;
 
+#if defined(IOSS_THREADSAFE)
   std::mutex SerializeIO::m_;
+#endif
 
   SerializeIO::SerializeIO(const DatabaseIO *database_io, int manual_owner_processor)
       : m_databaseIO(database_io), m_activeFallThru(true), m_manualOwner(-1)
