@@ -104,8 +104,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "SGI-%4s", SysInfo.machine);
-  sprintf(softname, "%8s", SysInfo.release);
+  sprintf(hardname, "SGI-%.4s", SysInfo.machine);
+  sprintf(softname, "%.8s", SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -124,8 +124,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "IBM %4s", SysInfo.machine);
-  sprintf(softname, "%03s %4s", SysInfo.sysname, SysInfo.release);
+  sprintf(hardname, "IBM %.4s", SysInfo.machine);
+  sprintf(softname, "%03s %.4s", SysInfo.sysname, SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -144,8 +144,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "HP  %4s", SysInfo.machine);
-  sprintf(softname, "HP-UX%3s", SysInfo.release);
+  sprintf(hardname, "HP  %.4s", SysInfo.machine);
+  sprintf(softname, "HP-UX%.3s", SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -164,8 +164,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "%8s", "i860 GP ");
-  sprintf(softname, "OSF %2s.%1s", SysInfo.version, SysInfo.release);
+  sprintf(hardname, "%.8s", "i860 GP ");
+  sprintf(softname, "OSF %.2s.%.1s", SysInfo.version, SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -182,7 +182,7 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
   *kcsu = sizeof(FTNREAL); /* 860 has 32 bit words */
   *knsu = 1;
 
-  sprintf(hardname, "%8s", "i860 GP ");
+  sprintf(hardname, "%.8s", "i860 GP ");
   sprintf(softname, "SUNMOS ");
 
   strncpy(hard, HARD, WORDLEN);
@@ -200,7 +200,7 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
   *kcsu = sizeof(FTNREAL); /* P6 has 32 bit words */
   *knsu = 1;
 
-  sprintf(hardname, "%8s", "P6      ");
+  sprintf(hardname, "%.8s", "P6      ");
   sprintf(softname, "Solari  ");
 
   strncpy(hard, HARD, WORDLEN);
@@ -217,7 +217,7 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
   *kcsu = sizeof(FTNREAL); /* p6 has 32 bit words */
   *knsu = 1;
 
-  sprintf(hardname, "%8s", "PentPro ");
+  sprintf(hardname, "%.8s", "PentPro ");
   sprintf(softname, "COUGAR  ");
 
   strncpy(hard, HARD, WORDLEN);
@@ -237,8 +237,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "%8s", SysInfo.machine);
-  sprintf(softname, "%4s%4s", SysInfo.sysname, SysInfo.release);
+  sprintf(hardname, "%.8s", SysInfo.machine);
+  sprintf(softname, "%.4s%.4s", SysInfo.sysname, SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -258,8 +258,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "%8s", SysInfo.machine);
-  sprintf(softname, "SunOS%3s", SysInfo.release);
+  sprintf(hardname, "%.8s", SysInfo.machine);
+  sprintf(softname, "SunOS%.3s", SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -351,8 +351,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "%8s", SysInfo.machine);
-  sprintf(softname, "CW%6s", SysInfo.release);
+  sprintf(hardname, "%.8s", SysInfo.machine);
+  sprintf(softname, "CW%.6s", SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -370,8 +370,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "%8s", "PowerMac");
-  sprintf(softname, "Darw %3s", SysInfo.release);
+  sprintf(hardname, "%.8s", "PowerMac");
+  sprintf(softname, "Darw %.3s", SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
@@ -390,8 +390,8 @@ void exparm(char *hard, char *soft, FTNINT *mode, FTNINT *kcsu, FTNINT *knsu, FT
 
   uname(&SysInfo);
 
-  sprintf(hardname, "%8s", SysInfo.machine);
-  sprintf(softname, "Lx%6s", SysInfo.release);
+  sprintf(hardname, "%.8s", SysInfo.machine);
+  sprintf(softname, "Lx%.6s", SysInfo.release);
 
   strncpy(hard, HARD, WORDLEN);
   strncpy(soft, SOFT, WORDLEN);
