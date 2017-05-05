@@ -193,6 +193,13 @@ template <typename INT> void Side_Set<INT>::load_df() const
   dfIndex[numEntity] = index;
 
   // index value should now equal df count for this sideset...
+  if (index != num_dist_factors) {
+    ERROR("Side_Set::load_df(): Mismatch in distribution factor count for sideset " << id_
+	  << ", file says there should be "
+	  << num_dist_factors << ",\n\t\tbut ex_get_side_set_node_count says there should be " << index
+	  << "!  Aborting...\n");
+    exit(1);
+  }
   SMART_ASSERT(index == num_dist_factors);
   dist_factors = new double[index];
   int err      = ex_get_set_dist_fact(fileId, EX_SIDE_SET, id_, dist_factors);
