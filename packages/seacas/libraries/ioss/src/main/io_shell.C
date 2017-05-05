@@ -139,6 +139,7 @@ int main(int argc, char *argv[])
     int64_t MiB = 1024 * 1024;
 #ifdef HAVE_MPI
     int64_t min, max, avg;
+    Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
     if (rank == 0)
       std::cerr << "\n\tCurrent Memory: " << min / MiB << "M  " << max / MiB << "M  " << avg / MiB
