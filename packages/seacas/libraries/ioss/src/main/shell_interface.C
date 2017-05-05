@@ -46,10 +46,7 @@
 
 #define NPOS std::string::npos
 
-IOShell::Interface::Interface()
-{
-  enroll_options();
-}
+IOShell::Interface::Interface() { enroll_options(); }
 
 IOShell::Interface::~Interface() = default;
 
@@ -74,8 +71,9 @@ void IOShell::Interface::enroll_options()
   options_.enroll("64-bit", Ioss::GetLongOption::NoValue, "Use 64-bit integers on output database",
                   nullptr);
 
-  options_.enroll("32-bit", Ioss::GetLongOption::NoValue, "Use 32-bit integers on output database."
-		  " This is the default unless input database uses 64-bit integers",
+  options_.enroll("32-bit", Ioss::GetLongOption::NoValue,
+                  "Use 32-bit integers on output database."
+                  " This is the default unless input database uses 64-bit integers",
                   nullptr);
 
   options_.enroll("float", Ioss::GetLongOption::NoValue,
@@ -147,9 +145,9 @@ void IOShell::Interface::enroll_options()
                   "not use for a real run)",
                   nullptr);
   options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
-		  "Number of processors that can perform simulataneous IO operations in "
-		  "a parallel run; 0 to disable",
-		  nullptr);
+                  "Number of processors that can perform simulataneous IO operations in "
+                  "a parallel run; 0 to disable",
+                  nullptr);
 #endif
 
   options_.enroll("external", Ioss::GetLongOption::NoValue,
@@ -182,9 +180,10 @@ void IOShell::Interface::enroll_options()
 
 #ifdef SEACAS_HAVE_KOKKOS
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
-		          "Data type used internally to store field data\n"
-		          "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE",
-				  "POINTER");
+                  "Data type used internally to store field data\n"
+                  "\t\tOptions are: POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, "
+                  "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE",
+                  "POINTER");
 #else
   options_.enroll("data_storage", Ioss::GetLongOption::MandatoryValue,
                   "Data type used internally to store field data\n"
@@ -425,7 +424,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
       if (data_storage_type == 0) {
         std::cerr << "ERROR: Option data_storage must be one of" << std::endl;
 #ifdef SEACAS_HAVE_KOKKOS
-        std::cerr << "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE" << std::endl;
+        std::cerr << "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
+                     "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE"
+                  << std::endl;
 #else
         std::cerr << "       POINTER, or STD_VECTOR" << std::endl;
 #endif
