@@ -114,17 +114,17 @@ int main(int argc, char *argv[])
   std::string in_file  = interface.inputFile[0];
   std::string out_file = interface.outputFile;
 
-  if (interface.verbose && rank == 0) {
+  if (rank == 0) {
     std::cerr << "Input:    '" << in_file << "', Type: " << interface.inFiletype << '\n';
     std::cerr << "Output:   '" << out_file << "', Type: " << interface.outFiletype << '\n';
     std::cerr << '\n';
   }
 
 #ifdef SEACAS_HAVE_KOKKOS
-  if (interface.verbose && rank == 0)
+  if (rank == 0)
     std::cerr << "Kokkos default execution space configuration:" << std::endl;
   Kokkos::DefaultExecutionSpace::print_configuration(std::cout, false);
-  if (interface.verbose && rank == 0)
+  if (rank == 0)
     std::cerr << std::endl;
 #endif
 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
   file_copy(interface, rank);
   double end = Ioss::Utils::timer();
 
-  if (interface.verbose && rank == 0) {
+  if (rank == 0) {
     std::cerr << "\n\tTotal Execution time = " << end-begin << " seconds.\n";
   }
   if (mem_stats) {
@@ -140,23 +140,23 @@ int main(int argc, char *argv[])
 #ifdef HAVE_MPI
     int64_t min, max, avg;
     parallel.memory_stats(min, max, avg);
-    if (interface.verbose && rank == 0)
+    if (rank == 0)
       std::cerr << "\n\tCurrent Memory: " << min / MiB << "M  " << max / MiB << "M  " << avg / MiB
                 << "M\n";
 
     parallel.hwm_memory_stats(min, max, avg);
-    if (interface.verbose && rank == 0)
+    if (rank == 0)
       std::cerr << "\n\tHigh Water Memory: " << min / MiB << "M  " << max / MiB << "M  "
                 << avg / MiB << "M\n";
 #else
     int64_t mem = Ioss::Utils::get_memory_info();
     int64_t hwm = Ioss::Utils::get_hwm_memory_info();
-    if (interface.verbose && rank == 0)
+    if (rank == 0)
       std::cerr << "\n\tCurrent Memory:    " << mem / MiB << "M\n"
                 << "\n\tHigh Water Memory: " << hwm / MiB << "M\n";
 #endif
   }
-  if (interface.verbose && rank == 0)
+  if (rank == 0)
     std::cerr << "\n" << codename << " execution successful.\n";
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -202,7 +202,7 @@ namespace {
       if (!interface.groupName.empty()) {
         bool success = dbi->open_group(interface.groupName);
         if (!success) {
-          if (interface.verbose && rank == 0)
+          if (rank == 0)
             std::cerr << "ERROR: Unable to open group '" << interface.groupName << "' in file '"
                       << inpfile << "\n";
           return;
@@ -213,7 +213,7 @@ namespace {
       Ioss::Region region(dbi, "region_1");
 
       if (region.mesh_type() != Ioss::MeshType::UNSTRUCTURED) {
-        if (interface.verbose && rank == 0)
+        if (rank == 0)
           std::cerr << "\nERROR: io_shell does not support '" << region.mesh_type_string()
                     << "' meshes.  Only 'Unstructured' mesh is supported at this time.\n";
         return;
@@ -270,7 +270,7 @@ namespace {
       Ioss::MeshCopyOptions options;
       options.memory_statistics = interface.memory_statistics;
       options.debug = interface.debug;
-      options.verbose = interface.verbose;
+      options.verbose = true;
       options.ints_64_bit = interface.ints_64_bit;
       options.delete_timesteps = interface.delete_timesteps;
       options.minimum_time = interface.minimum_time;
