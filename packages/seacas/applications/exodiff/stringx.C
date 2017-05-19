@@ -33,7 +33,6 @@
 
 #include "stringx.h"
 #include <ctype.h>                      // for tolower, isspace
-#include <ext/alloc_traits.h>
 #include <cstring>                      // for strspn, strcspn
 #include <string>                       // for string, operator==
 #include <vector>                       // for vector
