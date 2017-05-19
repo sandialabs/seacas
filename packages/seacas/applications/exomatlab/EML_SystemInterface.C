@@ -36,7 +36,6 @@
 #include "EML_SystemInterface.h"
 #include <Ioss_FileInfo.h>              // for FileInfo
 #include <ctype.h>                      // for tolower
-#include <ext/alloc_traits.h>
 #include <stddef.h>                     // for size_t
 #include <stdlib.h>                     // for exit, strtod, EXIT_SUCCESS, etc
 #include <string.h>                     // for strcmp

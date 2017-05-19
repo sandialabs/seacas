@@ -34,7 +34,6 @@
  */
 
 #include "elb_err.h"
-#include <ext/alloc_traits.h>
 #include <stddef.h>                     // for size_t
 #include <cstdio>                       // for fprintf, stderr
 #include <vector>                       // for vector

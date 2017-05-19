@@ -32,7 +32,6 @@
 //
 
 #include "node_set.h"
-#include <ext/alloc_traits.h>
 #include <cstdlib>                      // for exit
 #include <iostream>                     // for operator<<, ostream, etc
 #include <vector>                       // for vector

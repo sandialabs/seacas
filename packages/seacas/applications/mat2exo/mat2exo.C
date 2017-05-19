@@ -59,7 +59,6 @@
 #include <SL_tokenize.h>                // for tokenize
 #include <assert.h>                     // for assert
 #include <exodusII.h>                   // for ex_put_variable_param, etc
-#include <ext/alloc_traits.h>
 #include <stddef.h>                     // for size_t
 #include <stdio.h>                      // for sprintf, printf, fprintf, etc
 #include <stdlib.h>                     // for calloc, free, exit

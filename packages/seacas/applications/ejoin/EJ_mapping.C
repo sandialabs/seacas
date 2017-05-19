@@ -31,7 +31,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "EJ_mapping.h"
-#include <ext/alloc_traits.h>
 #include <smart_assert.h>               // for SMART_ASSERT
 #include <stddef.h>                     // for size_t
 #include <algorithm>                    // for sort, unique

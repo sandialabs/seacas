@@ -32,7 +32,6 @@
 //
 
 #include "exo_entity.h"
-#include <ext/alloc_traits.h>
 #include <cstdint>                      // for int64_t
 #include <cstdlib>                      // for exit
 #include <cstring>                      // for strlen

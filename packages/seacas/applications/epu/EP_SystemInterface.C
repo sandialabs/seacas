@@ -34,7 +34,6 @@
  */
 #include "EP_SystemInterface.h"
 #include <ctype.h>                      // for tolower
-#include <ext/alloc_traits.h>
 #include <limits.h>                     // for INT_MAX
 #include <stddef.h>                     // for size_t
 #include <algorithm>                    // for sort, transform

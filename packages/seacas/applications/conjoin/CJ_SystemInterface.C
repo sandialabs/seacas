@@ -1,7 +1,6 @@
 
 #include "CJ_SystemInterface.h"
 #include <ctype.h>                      // for tolower
-#include <ext/alloc_traits.h>
 #include <stddef.h>                     // for size_t
 #include <stdlib.h>                     // for exit, strtol, EXIT_SUCCESS, etc
 #include <algorithm>                    // for sort, transform

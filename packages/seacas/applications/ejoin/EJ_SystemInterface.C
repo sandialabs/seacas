@@ -2,7 +2,6 @@
 #include "EJ_SystemInterface.h"
 #include <SL_tokenize.h>                // for tokenize
 #include <ctype.h>                      // for tolower
-#include <ext/alloc_traits.h>
 #include <limits.h>                     // for INT_MAX
 #include <stddef.h>                     // for size_t
 #include <algorithm>                    // for sort, find, transform
