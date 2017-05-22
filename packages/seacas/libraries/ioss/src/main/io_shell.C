@@ -53,10 +53,6 @@
 
 #include "shell_interface.h"
 
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
-
 #ifndef NO_XDMF_SUPPORT
 #include <xdmf/Ioxf_Initializer.h>
 #endif

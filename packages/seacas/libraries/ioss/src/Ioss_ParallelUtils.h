@@ -40,10 +40,6 @@
 #include <string>   // for string
 #include <vector>   // for vector
 
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
-
 namespace Ioss {
 
   class ParallelUtils
