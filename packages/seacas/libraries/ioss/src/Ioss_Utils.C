@@ -30,6 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_Utils.h>
 #include <Ioss_MeshCopyOptions.h>
 #include <algorithm>
@@ -49,14 +50,6 @@
 
 #ifndef _WIN32
 #include <sys/utsname.h>
-#endif
-
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
-
-#ifdef SEACAS_HAVE_KOKKOS
-#include <Kokkos_Core.hpp> // for Kokkos::View
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
