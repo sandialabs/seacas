@@ -422,13 +422,12 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 #endif
 
       if (data_storage_type == 0) {
-        std::cerr << "ERROR: Option data_storage must be one of" << std::endl;
+        std::cerr << "ERROR: Option data_storage must be one of\n";
 #ifdef SEACAS_HAVE_KOKKOS
         std::cerr << "       POINTER, STD_VECTOR, KOKKOS_VIEW_1D, KOKKOS_VIEW_2D, or "
-                     "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE"
-                  << std::endl;
+	  "KOKKOS_VIEW_2D_LAYOUTRIGHT_HOSTSPACE\n";
 #else
-        std::cerr << "       POINTER, or STD_VECTOR" << std::endl;
+        std::cerr << "       POINTER, or STD_VECTOR\n";
 #endif
         return false;
       }

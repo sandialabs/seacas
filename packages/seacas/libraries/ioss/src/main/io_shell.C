@@ -118,10 +118,10 @@ int main(int argc, char *argv[])
 
 #ifdef SEACAS_HAVE_KOKKOS
   if (rank == 0)
-    std::cerr << "Kokkos default execution space configuration:" << std::endl;
+    std::cerr << "Kokkos default execution space configuration:\n";
   Kokkos::DefaultExecutionSpace::print_configuration(std::cout, false);
   if (rank == 0)
-    std::cerr << std::endl;
+    std::cerr << '\n';
 #endif
 
   double begin = Ioss::Utils::timer();
