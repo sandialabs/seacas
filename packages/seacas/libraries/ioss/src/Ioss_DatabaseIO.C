@@ -56,19 +56,15 @@
 #include <utility>
 #include <vector>
 
-#include "Ioss_DBUsage.h"
-#include "Ioss_Field.h"
-#include "Ioss_GroupingEntity.h"
-#include "Ioss_Property.h"
-#include "Ioss_SerializeIO.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_State.h"
-#include "Ioss_SurfaceSplit.h"
-
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
+#include <Ioss_DBUsage.h>
+#include <Ioss_Field.h>
+#include <Ioss_GroupingEntity.h>
+#include <Ioss_Property.h>
+#include <Ioss_SerializeIO.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_State.h>
+#include <Ioss_SurfaceSplit.h>
 
 namespace {
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,

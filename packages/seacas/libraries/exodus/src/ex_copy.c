@@ -33,14 +33,15 @@
  *
  */
 
-#include "exodusII.h"     // for ex_large_model, etc
+#include "exodusII.h"     // for EX_FATAL, exerrval, ex_err, etc
 #include "exodusII_int.h" // for ex_get_counter_list, etc
-#include "netcdf.h"       // for nc_inq_varid, etc
+#include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
 #include <assert.h>       // for assert
 #include <stddef.h>       // for size_t
-#include <stdlib.h>       // for malloc, free
+#include <stdint.h>       // for int64_t
+#include <stdio.h>        // for fprintf, stderr, snprintf
+#include <stdlib.h>       // for free, calloc, malloc
 #include <string.h>       // for strcmp, strncmp, NULL
-#include <sys/types.h>    // for int64_t
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
