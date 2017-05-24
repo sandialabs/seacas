@@ -1,6 +1,6 @@
+#define _GNU_SOURCE
 #include "exodusII.h"
 #if defined(EXODUS_THREADSAFE)
-#define _GNU_SOURCE
 #include <pthread.h>
 
 #include "exodusII_int.h"
