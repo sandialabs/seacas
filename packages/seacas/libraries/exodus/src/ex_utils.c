@@ -199,7 +199,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   int_names = calloc(num_entity * name_length, 1);
 
   for (i = 0; i < num_entity; i++) {
-    if (names[i][0] != '\0') {
+    if (names[i] != NULL && names[i][0] != '\0') {
       found_name = 1;
       strncpy(&int_names[idx], names[i], name_length - 1);
       int_names[idx + name_length - 1] = '\0';
