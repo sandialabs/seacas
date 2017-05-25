@@ -83,17 +83,6 @@ namespace {
     std::string do_grouping() const { return "\3"; }
   };
 
-  size_t MAX(size_t a, size_t b) { return b ^ ((a ^ b) & -static_cast<int>(a > b)); }
-
-  template <typename T> struct remove_pointer
-  {
-    typedef T type;
-  };
-  template <typename T> struct remove_pointer<T *>
-  {
-    typedef T type;
-  };
-
   // Data space shared by most field input/output routines...
   std::vector<int>     data_int;
   std::vector<int64_t> data_int64;
@@ -331,7 +320,8 @@ namespace {
       if (dbi == nullptr || !dbi->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
-
+      dbi->set_parallel_consistency(false);
+      
       if (mem_stats) {
 	dbi->util().progress("Database Creation");
       }
@@ -392,6 +382,7 @@ namespace {
       if (dbo == nullptr || !dbo->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
+      dbo->set_parallel_consistency(false);
 
       // NOTE: 'output_region' owns 'dbo' pointer at this time
       Ioss::Region output_region(dbo, "region_2");
