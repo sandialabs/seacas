@@ -237,6 +237,21 @@ namespace {
       //========================================================================
       // OUTPUT Database...
       //========================================================================
+      bool append = false;
+      if (interface.append_step < std::numeric_limits<int>::max()) {
+        properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_STEP", interface.append_step));
+	append = true;
+      }
+
+      if (interface.append_time < std::numeric_limits<double>::max()) {
+        properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_TIME", interface.append_time));
+	append = true;
+      }
+
+      if (append) {
+        properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND));
+      }
+
       Ioss::DatabaseIO *dbo =
           Ioss::IOFactory::create(interface.outFiletype, interface.outputFile, Ioss::WRITE_RESTART,
                                   (MPI_Comm)MPI_COMM_WORLD, properties);
