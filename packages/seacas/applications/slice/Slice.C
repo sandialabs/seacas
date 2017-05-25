@@ -61,7 +61,7 @@
 #if USE_METIS
 #include <metis.h>
 #else
-typedef int       idx_t;
+typedef int idx_t;
 #endif
 
 #include <to_string.h>
@@ -87,7 +87,7 @@ extern double seacas_timer();
 bool          minimize_open_files = false;
 int           debug_level         = 0;
 
-//size_t partial_count = 100000;
+// size_t partial_count = 100000;
 size_t partial_count = 1000000000;
 
 namespace {
@@ -105,11 +105,10 @@ namespace {
 
   void proc_progress(int p, int proc_count)
   {
-    if ((debug_level & 4) && ((p+1) % (proc_count / 20) == 0)) {
-      progress("\t\tProcessor " + Ioss::Utils::to_string(p+1));
+    if ((debug_level & 4) && ((p + 1) % (proc_count / 20) == 0)) {
+      progress("\t\tProcessor " + Ioss::Utils::to_string(p + 1));
     }
   }
-
 
   void filename_substitution(std::string &filename, const SystemInterface &interface);
 
@@ -241,7 +240,7 @@ int main(int argc, char *argv[])
   size_t max_files    = get_free_descriptor_count();
   minimize_open_files = (interface.processor_count() + 1 > max_files);
 
-  debug_level = interface.debug();
+  debug_level   = interface.debug();
   partial_count = interface.partial();
 
   //========================================================================
@@ -401,9 +400,9 @@ namespace {
 
         OUTPUT << "\tCalling METIS Decomposition routine.\n";
 
-        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], NULL,
-                                       NULL, &common, &proc_count, NULL, &options[0], &obj_val,
-                                       &elem_partition[0], &node_partition[0]);
+        METIS_PartMeshDual(&elem_count, &node_count, &pointer[0], &adjacency[0], NULL, NULL,
+                           &common, &proc_count, NULL, &options[0], &obj_val, &elem_partition[0],
+                           &node_partition[0]);
 
         node_partition.resize(0);
         node_partition.shrink_to_fit();
@@ -600,7 +599,7 @@ namespace {
 
     for (size_t s = 0; s < set_count; s++) {
       if (debug_level & 4) {
-	progress("\tSideset " + Ioss::Utils::to_string(s+1));
+        progress("\tSideset " + Ioss::Utils::to_string(s + 1));
       }
       Ioss::SideSet *gss     = ss[s];
       auto &         ss_name = gss->name();
@@ -640,7 +639,7 @@ namespace {
           psb->put_field_data("element_side", psb_elems[p]);
           if (minimize_open_files)
             proc_region[p]->get_database()->closeDatabase();
-	  proc_progress(p, proc_count);
+          proc_progress(p, proc_count);
         }
       }
     }
@@ -813,7 +812,7 @@ namespace {
 
     for (size_t s = 0; s < set_count; s++) {
       if (debug_level & 4) {
-	progress("\tNodeSet " + Ioss::Utils::to_string(s+1));
+        progress("\tNodeSet " + Ioss::Utils::to_string(s + 1));
       }
       std::vector<INT> pns(proc_count);
       Ioss::NodeSet *  gns = ns[s];
@@ -850,7 +849,7 @@ namespace {
         proc_ns->put_field_data("distribution_factors", pns_df[p]);
         if (minimize_open_files)
           proc_region[p]->get_database()->closeDatabase();
-	proc_progress(p, proc_count);
+        proc_progress(p, proc_count);
       }
     }
   }
@@ -950,7 +949,7 @@ namespace {
     size_t offset = 0;
     for (size_t b = 0; b < block_count; b++) {
       if (debug_level & 4) {
-	progress("\tBlock " + Ioss::Utils::to_string(b+1));
+        progress("\tBlock " + Ioss::Utils::to_string(b + 1));
       }
 #if 0
       std::vector<INT> ids;
@@ -981,7 +980,7 @@ namespace {
         proc_ebs[b]->put_field_data("ids", map[p]);
         if (minimize_open_files)
           proc_region[p]->get_database()->closeDatabase();
-	proc_progress(p, proc_count);
+        proc_progress(p, proc_count);
       }
     }
   }
@@ -1035,7 +1034,7 @@ namespace {
     Ioss::DatabaseIO *db    = region.get_database();
     Iofx::DatabaseIO *ex_db = dynamic_cast<Iofx::DatabaseIO *>(db);
 
-    size_t node_count   = region.get_property("node_count").get_int();
+    size_t node_count = region.get_property("node_count").get_int();
 
     if (ex_db != nullptr && node_count > partial_count) {
       int exoid = ex_db->get_file_pointer();
@@ -1044,27 +1043,27 @@ namespace {
       glob_coord_y.resize(partial_count);
       glob_coord_z.resize(partial_count);
       for (size_t beg = 1; beg <= node_count; beg += partial_count) {
-	size_t count = partial_count;
-	if (beg + count - 1 > node_count) {
-	  count = node_count - beg + 1;
-	}
+        size_t count = partial_count;
+        if (beg + count - 1 > node_count) {
+          count = node_count - beg + 1;
+        }
 
-	ex_get_partial_coord(exoid, beg, count,
-			     TOPTR(glob_coord_x), TOPTR(glob_coord_y), TOPTR(glob_coord_z));
-	progress("\tpartial_coord: " + Ioss::Utils::to_string(beg) + " " +
-		 Ioss::Utils::to_string(count));
+        ex_get_partial_coord(exoid, beg, count, TOPTR(glob_coord_x), TOPTR(glob_coord_y),
+                             TOPTR(glob_coord_z));
+        progress("\tpartial_coord: " + Ioss::Utils::to_string(beg) + " " +
+                 Ioss::Utils::to_string(count));
 
-	for (size_t i = 0; i < count; i++) {
-	  size_t ii = beg + i - 1;
-	  size_t p_beg = node_to_proc_pointer[ii];
-	  size_t p_end = node_to_proc_pointer[ii + 1];
-	  for (size_t j = p_beg; j < p_end; j++) {
-	    size_t p = node_to_proc[j];
-	    coordinates_x[p].push_back(glob_coord_x[i]);
-	    coordinates_y[p].push_back(glob_coord_y[i]);
-	    coordinates_z[p].push_back(glob_coord_z[i]);
-	  }
-	}
+        for (size_t i = 0; i < count; i++) {
+          size_t ii    = beg + i - 1;
+          size_t p_beg = node_to_proc_pointer[ii];
+          size_t p_end = node_to_proc_pointer[ii + 1];
+          for (size_t j = p_beg; j < p_end; j++) {
+            size_t p = node_to_proc[j];
+            coordinates_x[p].push_back(glob_coord_x[i]);
+            coordinates_y[p].push_back(glob_coord_y[i]);
+            coordinates_z[p].push_back(glob_coord_z[i]);
+          }
+        }
       }
     }
     else {
@@ -1074,14 +1073,14 @@ namespace {
       progress("\tRead global mesh_model_coordinates");
 
       for (size_t i = 0; i < node_count; i++) {
-	size_t p_beg = node_to_proc_pointer[i];
-	size_t p_end = node_to_proc_pointer[i + 1];
-	for (size_t j = p_beg; j < p_end; j++) {
-	  size_t p = node_to_proc[j];
-	  coordinates_x[p].push_back(glob_coord_x[i]);
-	  coordinates_y[p].push_back(glob_coord_y[i]);
-	  coordinates_z[p].push_back(glob_coord_z[i]);
-	}
+        size_t p_beg = node_to_proc_pointer[i];
+        size_t p_end = node_to_proc_pointer[i + 1];
+        for (size_t j = p_beg; j < p_end; j++) {
+          size_t p = node_to_proc[j];
+          coordinates_x[p].push_back(glob_coord_x[i]);
+          coordinates_y[p].push_back(glob_coord_y[i]);
+          coordinates_z[p].push_back(glob_coord_z[i]);
+        }
       }
     }
     progress("\tPopulate processor coordinate vectors");
@@ -1142,7 +1141,7 @@ namespace {
       if (ex_db != nullptr && element_count >= partial_count) {
         int exoid = ex_db->get_file_pointer();
 
-	glob_conn.resize(partial_count * element_nodes);
+        glob_conn.resize(partial_count * element_nodes);
         for (size_t beg = 1; beg <= element_count; beg += partial_count) {
           size_t count = partial_count;
           if (beg + count - 1 > element_count) {
@@ -1186,7 +1185,7 @@ namespace {
     progress(__func__);
     auto & ebs         = region.get_element_blocks();
     size_t block_count = ebs.size();
-    size_t begin = 0;
+    size_t begin       = 0;
     for (size_t i = 0; i < block_count; i++) {
       size_t end = begin + ebs[i]->get_property("entity_count").get_int();
       for (size_t j = begin; j < end; j++) {
