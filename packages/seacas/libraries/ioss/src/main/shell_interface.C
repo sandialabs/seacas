@@ -168,6 +168,12 @@ void IOShell::Interface::enroll_options()
   options_.enroll("Minimum_Time", Ioss::GetLongOption::MandatoryValue,
                   "Minimum time on input database to transfer to output database", nullptr);
 
+  options_.enroll("append_after_time", Ioss::GetLongOption::MandatoryValue,
+                  "add steps on input database after specified time on output database", nullptr);
+
+  options_.enroll("append_after_step", Ioss::GetLongOption::MandatoryValue,
+                  "add steps on input database after specified step on output database", nullptr);
+
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separator",
@@ -445,6 +451,20 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("Minimum_Time");
     if (temp != nullptr) {
       minimum_time = std::strtod(temp, nullptr);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("append_after_time");
+    if (temp != nullptr) {
+      append_time = std::strtod(temp, nullptr);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("append_after_step");
+    if (temp != nullptr) {
+      append_step = std::strtol(temp, nullptr, 10);
     }
   }
 

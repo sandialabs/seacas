@@ -1056,6 +1056,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   int rank = dbi->util().parallel_rank();
 
+  bool appending = output_region.get_database()->open_create_behavior() == Ioss::DB_APPEND;
+
+  if (!appending) {
+
   if (options.debug && rank == 0)
     std::cerr << "DEFINING MODEL ... \n";
 
@@ -1203,6 +1207,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     data.shrink_to_fit();
     return;
   }
+  } // appending
 
   if (options.debug && rank == 0) {
     std::cerr << "DEFINING TRANSIENT FIELDS ... " << '\n';
@@ -1210,7 +1215,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   if (memory_stats) {
     dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
   }
-
+  
   if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
     if (options.verbose && rank == 0) {
       std::cerr << "\n Number of time steps on database     =" << std::setw(12)
@@ -1275,7 +1280,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
   }
-
+  
   if (options.debug && rank == 0) {
     std::cerr << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
   }
