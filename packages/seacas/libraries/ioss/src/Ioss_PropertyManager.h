@@ -49,7 +49,8 @@ namespace Ioss {
   class PropertyManager
   {
   public:
-    PropertyManager();
+    PropertyManager() = default;
+    PropertyManager(const PropertyManager &from);
     PropertyManager &operator=(const PropertyManager &from) = delete;
     ~PropertyManager();
 
@@ -71,6 +72,9 @@ namespace Ioss {
 
   private:
     PropMapType properties;
+#if defined(IOSS_THREADSAFE)
+    mutable std::mutex m_;
+#endif
   };
 }
 #endif

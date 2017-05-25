@@ -246,7 +246,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::release_memory()
+  void DatabaseIO::release_memory__()
   {
     nodeMap.release_memory();
     edgeMap.release_memory();
@@ -268,18 +268,18 @@ namespace Ioex {
     if (exodusFilePtr != -1) {
       bool do_timer = false;
       if (isParallel) {
-	Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+        Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
       }
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
       ex_close(exodusFilePtr);
 
       if (do_timer && isParallel) {
-	double t_end = Ioss::Utils::timer();
-	double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
-	if (myProcessor == 0) {
-	  std::cerr << "File Close Time = " << duration << "\n";
-	}
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          std::cerr << "File Close Time = " << duration << "\n";
+        }
       }
     }
     exodusFilePtr = -1;
@@ -287,7 +287,7 @@ namespace Ioex {
     return exodusFilePtr;
   }
 
-  bool DatabaseIO::open_group(const std::string &group_name)
+  bool DatabaseIO::open_group__(const std::string &group_name)
   {
     // Get existing file pointer...
     bool success = false;
@@ -309,7 +309,7 @@ namespace Ioex {
     return success;
   }
 
-  bool DatabaseIO::create_subgroup(const std::string &group_name)
+  bool DatabaseIO::create_subgroup__(const std::string &group_name)
   {
     bool success = false;
     if (!is_input()) {
@@ -503,8 +503,8 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::get_block_adjacencies(const Ioss::ElementBlock *eb,
-                                         std::vector<std::string> &block_adjacency) const
+  void DatabaseIO::get_block_adjacencies__(const Ioss::ElementBlock *eb,
+                                           std::vector<std::string> &block_adjacency) const
   {
     if (!blockAdjacenciesCalculated) {
       compute_block_adjacencies();
@@ -528,8 +528,8 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::compute_block_membership(Ioss::SideBlock *         efblock,
-                                            std::vector<std::string> &block_membership) const
+  void DatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
+                                              std::vector<std::string> &block_membership) const
   {
     Ioss::Int64Vector block_ids(m_groupCount[EX_ELEM_BLOCK]);
     if (m_groupCount[EX_ELEM_BLOCK] == 1) {
@@ -836,14 +836,14 @@ namespace Ioex {
   }
 
   // common
-  bool DatabaseIO::begin(Ioss::State state)
+  bool DatabaseIO::begin__(Ioss::State state)
   {
     dbState = state;
     return true;
   }
 
   // common
-  bool DatabaseIO::end(Ioss::State state)
+  bool DatabaseIO::end__(Ioss::State state)
   {
     // Transitioning out of state 'state'
     assert(state == dbState);
@@ -880,7 +880,7 @@ namespace Ioex {
   // Default versions do nothing at this time...
   // Will be used for global variables...
   // common
-  bool DatabaseIO::begin_state(Ioss::Region * /* region */, int state, double time)
+  bool DatabaseIO::begin_state__(Ioss::Region * /* region */, int state, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 
@@ -904,7 +904,7 @@ namespace Ioex {
   }
 
   // common
-  bool DatabaseIO::end_state(Ioss::Region * /*region*/, int /*state*/, double time)
+  bool DatabaseIO::end_state__(Ioss::Region * /*region*/, int /*state*/, double time)
   {
     Ioss::SerializeIO serializeIO__(this);
 
@@ -1343,7 +1343,7 @@ namespace Ioex {
   }
 
   // common
-  void DatabaseIO::flush_database() const
+  void DatabaseIO::flush_database__() const
   {
     if (!is_input()) {
       ex_update(get_file_pointer());
@@ -1395,7 +1395,7 @@ namespace Ioex {
       }
     }
     if (do_flush) {
-      flush_database();
+      flush_database__();
     }
   }
 

@@ -286,11 +286,11 @@ namespace Iohb {
     }
   }
 
-  bool DatabaseIO::begin(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::end(Ioss::State /* state */) { return true; }
+  bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state(Ioss::Region *region, int /* state */, double time)
+  bool DatabaseIO::begin_state__(Ioss::Region *region, int /* state */, double time)
   {
     // If this is the first time, open the output stream and see if user wants a legend
     initialize(region);
@@ -309,12 +309,12 @@ namespace Iohb {
     return true;
   }
 
-  void DatabaseIO::flush_database() const
+  void DatabaseIO::flush_database__() const
   {
     logStream->flush();
   }
 
-  bool DatabaseIO::end_state(Ioss::Region * /* region */, int /* state */, double /* time */)
+  bool DatabaseIO::end_state__(Ioss::Region * /* region */, int /* state */, double /* time */)
   {
     if (legend_ != nullptr) {
       if (fileFormat == SPYHIS) {

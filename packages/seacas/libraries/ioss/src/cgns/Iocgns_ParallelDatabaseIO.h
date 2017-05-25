@@ -117,22 +117,22 @@ namespace Iocgns {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override;
 
-    int64_t node_global_to_local(int64_t global, bool must_exist) const override;
-    int64_t element_global_to_local(int64_t global) const override;
+    int64_t node_global_to_local__(int64_t global, bool must_exist) const override;
+    int64_t element_global_to_local__(int64_t global) const override;
 
-    void release_memory() override;
+    void release_memory__() override;
 
-    void openDatabase() const override;
-    void closeDatabase() const override;
+    void openDatabase__() const override;
+    void closeDatabase__() const override;
 
-    bool begin(Ioss::State state) override;
-    bool end(Ioss::State state) override;
+    bool begin__(Ioss::State state) override;
+    bool end__(Ioss::State state) override;
 
-    bool begin_state(Ioss::Region *region, int state, double time) override;
-    bool end_state(Ioss::Region *region, int state, double time) override;
+    bool begin_state__(Ioss::Region *region, int state, double time) override;
+    bool end_state__(Ioss::Region *region, int state, double time) override;
 
     // Metadata-related functions.
-    void read_meta_data() override;
+    void read_meta_data__() override;
 
   private:
     void   handle_structured_blocks();
