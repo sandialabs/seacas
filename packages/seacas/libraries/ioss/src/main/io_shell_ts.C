@@ -99,21 +99,22 @@ namespace {
   Kokkos::View<char **>    data_view_2D_char;
   Kokkos::View<int **>     data_view_2D_int;
   Kokkos::View<int64_t **> data_view_2D_int64;
-  Kokkos::View<double **> data_view_2D_double;
+  Kokkos::View<double **>  data_view_2D_double;
   // Kokkos::View<Kokkos_Complex **> data_view_2D_complex cannot be a global variable,
   // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
   // have type std::complex entities.
-  Kokkos::View< char **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_char_layout_space;
-  Kokkos::View< int **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_int_layout_space;
-  Kokkos::View< int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_int64_layout_space;
-  Kokkos::View< double **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_double_layout_space;
-  // Kokkos::View<Kokkos_Complex **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_complex_layout_space cannot be a global variable,
-  // Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
-  // have type std::complex entities.
+  Kokkos::View<char **, Kokkos::LayoutRight, Kokkos::HostSpace>    data_view_2D_char_layout_space;
+  Kokkos::View<int **, Kokkos::LayoutRight, Kokkos::HostSpace>     data_view_2D_int_layout_space;
+  Kokkos::View<int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace> data_view_2D_int64_layout_space;
+  Kokkos::View<double **, Kokkos::LayoutRight, Kokkos::HostSpace>  data_view_2D_double_layout_space;
+// Kokkos::View<Kokkos_Complex **, Kokkos::LayoutRight, Kokkos::HostSpace>
+// data_view_2D_complex_layout_space cannot be a global variable,
+// Since Kokkos::initialize() has not yet been called. Also, a Kokkos:View cannot
+// have type std::complex entities.
 #endif
-  int     rank           = 0;
-  bool    mem_stats      = false;
-  
+  int  rank      = 0;
+  bool mem_stats = false;
+
   void show_step(int istep, double time);
 
   void transfer_nodeblock(Ioss::Region &region, Ioss::Region &output_region, bool debug);
@@ -181,18 +182,24 @@ int main(int argc, char *argv[])
 #ifdef SEACAS_HAVE_KOKKOS
   Kokkos::initialize(argc, argv);
 
-  data_view_char      = Kokkos::View<char *>("view_char", 0);
-  data_view_int       = Kokkos::View<int *>("view_int", 0);
-  data_view_int64     = Kokkos::View<int64_t *>("view_int64", 0);
-  data_view_double    = Kokkos::View<double *>("view_double", 0);
-  data_view_2D_char   = Kokkos::View<char **>("view_2D_char", 0, 0);
-  data_view_2D_int    = Kokkos::View<int **>("view_2D_int", 0, 0);
-  data_view_2D_int64  = Kokkos::View<int64_t **>("view_2D_int64", 0, 0);
-  data_view_2D_double = Kokkos::View<double **>("view_2D_double", 0, 0);
-  data_view_2D_char_layout_space = Kokkos::View<char **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_char_layout_space", 0, 0);
-  data_view_2D_int_layout_space = Kokkos::View<int **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int_layout_space", 0, 0);
-  data_view_2D_int64_layout_space = Kokkos::View<int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int64_layout_space", 0, 0);
-  data_view_2D_double_layout_space = Kokkos::View<double **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_double_layout_space", 0, 0);
+  data_view_char                 = Kokkos::View<char *>("view_char", 0);
+  data_view_int                  = Kokkos::View<int *>("view_int", 0);
+  data_view_int64                = Kokkos::View<int64_t *>("view_int64", 0);
+  data_view_double               = Kokkos::View<double *>("view_double", 0);
+  data_view_2D_char              = Kokkos::View<char **>("view_2D_char", 0, 0);
+  data_view_2D_int               = Kokkos::View<int **>("view_2D_int", 0, 0);
+  data_view_2D_int64             = Kokkos::View<int64_t **>("view_2D_int64", 0, 0);
+  data_view_2D_double            = Kokkos::View<double **>("view_2D_double", 0, 0);
+  data_view_2D_char_layout_space = Kokkos::View<char **, Kokkos::LayoutRight, Kokkos::HostSpace>(
+      "view_2D_char_layout_space", 0, 0);
+  data_view_2D_int_layout_space = Kokkos::View<int **, Kokkos::LayoutRight, Kokkos::HostSpace>(
+      "view_2D_int_layout_space", 0, 0);
+  data_view_2D_int64_layout_space =
+      Kokkos::View<int64_t **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_int64_layout_space",
+                                                                       0, 0);
+  data_view_2D_double_layout_space =
+      Kokkos::View<double **, Kokkos::LayoutRight, Kokkos::HostSpace>("view_2D_double_layout_space",
+                                                                      0, 0);
 #endif
 
   IOShell::Interface interface;
@@ -227,18 +234,20 @@ int main(int argc, char *argv[])
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
 #ifdef HAVE_MPI
-    int64_t min, max, avg;
+    int64_t             min, max, avg;
     Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
-    OUTPUT << "\n\tCurrent Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+    OUTPUT << "\n\tCurrent Memory: " << min / MiB << "M  " << max / MiB << "M  " << avg / MiB
+           << "M\n";
 
     parallel.hwm_memory_stats(min, max, avg);
-    OUTPUT << "\n\tHigh Water Memory: " << min/MiB << "M  " << max/MiB << "M  " << avg/MiB << "M\n";
+    OUTPUT << "\n\tHigh Water Memory: " << min / MiB << "M  " << max / MiB << "M  " << avg / MiB
+           << "M\n";
 #else
     int64_t mem = Ioss::Utils::get_memory_info();
     int64_t hwm = Ioss::Utils::get_hwm_memory_info();
-    OUTPUT << "\n\tCurrent Memory:    " << mem/MiB << "M\n"
-	   << "\n\tHigh Water Memory: " << hwm/MiB << "M\n";
+    OUTPUT << "\n\tCurrent Memory:    " << mem / MiB << "M\n"
+           << "\n\tHigh Water Memory: " << hwm / MiB << "M\n";
 #endif
   }
   OUTPUT << "\n" << codename << " execution successful.\n";
@@ -307,9 +316,8 @@ namespace {
 
     if (interface.memory_statistics) {
       properties.add(Ioss::Property("DECOMP_SHOW_PROGRESS", true));
-
     }
-    
+
     if (!interface.decomp_method.empty()) {
       properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
     }
@@ -321,9 +329,9 @@ namespace {
         std::exit(EXIT_FAILURE);
       }
       dbi->set_parallel_consistency(false);
-      
+
       if (mem_stats) {
-	dbi->util().progress("Database Creation");
+        dbi->util().progress("Database Creation");
       }
       if (!interface.lower_case_variable_names) {
         dbi->set_lower_case_variable_names(false);
@@ -362,12 +370,12 @@ namespace {
       // to output file...
       int int_byte_size_api = dbi->int_byte_size_api();
       if (!properties.exists("INTEGER_SIZE_API")) {
-	if (interface.ints_32_bit) {
-	  properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-	}
-	else {
-	  properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
-	}
+        if (interface.ints_32_bit) {
+          properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+        }
+        else {
+          properties.add(Ioss::Property("INTEGER_SIZE_DB", int_byte_size_api));
+        }
         properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
       }
       if (int_byte_size_api == 8) {
@@ -408,7 +416,7 @@ namespace {
         OUTPUT << "DEFINING MODEL ... \n";
       }
       if (mem_stats) {
-	dbi->util().progress("DEFINING MODEL");
+        dbi->util().progress("DEFINING MODEL");
       }
       if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
         OUTPUT << "ERROR: Could not put output region into define model state\n";
@@ -452,7 +460,7 @@ namespace {
         OUTPUT << "END STATE_DEFINE_MODEL... " << '\n';
       }
       if (mem_stats) {
-	dbi->util().progress("END STATE_DEFINE_MODEL");
+        dbi->util().progress("END STATE_DEFINE_MODEL");
       }
 
       output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
@@ -461,7 +469,7 @@ namespace {
         OUTPUT << "TRANSFERRING MESH FIELD DATA ... " << '\n';
       }
       if (mem_stats) {
-	dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
+        dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
       }
 
       // Model defined, now fill in the model data...
@@ -542,25 +550,25 @@ namespace {
         OUTPUT << "END STATE_MODEL... " << '\n';
       }
       if (mem_stats) {
-	dbi->util().progress("END STATE_MODEL... ");
+        dbi->util().progress("END STATE_MODEL... ");
       }
       output_region.end_mode(Ioss::STATE_MODEL);
 
       if (interface.delete_timesteps) {
-	if (mem_stats) {
-	  dbi->util().progress("Prior to Memory Released... ");
-	  dbi->release_memory();
-	  dbo->release_memory();
-	  dbi->util().progress("Memory Released... ");
-	}
-	return;
+        if (mem_stats) {
+          dbi->util().progress("Prior to Memory Released... ");
+          dbi->release_memory();
+          dbo->release_memory();
+          dbi->util().progress("Memory Released... ");
+        }
+        return;
       }
-	
+
       if (interface.debug) {
         OUTPUT << "DEFINING TRANSIENT FIELDS ... " << '\n';
       }
       if (mem_stats) {
-	dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
+        dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
       }
 
       if (region.property_exists("state_count") &&
@@ -624,9 +632,9 @@ namespace {
         if (interface.debug) {
           OUTPUT << "END STATE_DEFINE_TRANSIENT... " << '\n';
         }
-	if (mem_stats) {
-	  dbi->util().progress("END STATE_DEFINE_TRANSIENT... ");
-	}
+        if (mem_stats) {
+          dbi->util().progress("END STATE_DEFINE_TRANSIENT... ");
+        }
         output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
       }
 
@@ -634,7 +642,7 @@ namespace {
         OUTPUT << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
       }
       if (mem_stats) {
-	dbi->util().progress("TRANSFERRING TRANSIENT FIELDS... ");
+        dbi->util().progress("TRANSFERRING TRANSIENT FIELDS... ");
       }
 
       output_region.begin_mode(Ioss::STATE_TRANSIENT);
@@ -716,15 +724,15 @@ namespace {
         OUTPUT << "END STATE_TRANSIENT... " << '\n';
       }
       if (mem_stats) {
-	dbi->util().progress("END STATE_TRANSIENT ... ");
+        dbi->util().progress("END STATE_TRANSIENT ... ");
       }
       output_region.end_mode(Ioss::STATE_TRANSIENT);
 
       if (mem_stats) {
-	dbi->util().progress("Prior to Memory Released... ");
-	dbi->release_memory();
-	dbo->release_memory();
-	dbi->util().progress("Memory Released... ");
+        dbi->util().progress("Prior to Memory Released... ");
+        dbi->release_memory();
+        dbo->release_memory();
+        dbi->util().progress("Memory Released... ");
       }
     }
   }
@@ -756,15 +764,14 @@ namespace {
         // nodeblock at this time since it is used to determine
         // per-processor sizes of nodeblocks and nodesets.
         if (inb->field_exists("owning_processor")) {
-          size_t isize = inb->get_field("ids").get_size();
-	  std::vector<char> data(isize);
+          size_t            isize = inb->get_field("ids").get_size();
+          std::vector<char> data(isize);
           inb->get_field_data("ids", &data[0], isize);
           nb->put_field_data("ids", &data[0], isize);
           isize = inb->get_field("owning_processor").get_size();
           data.resize(isize);
           inb->get_field_data("owning_processor", &data[0], isize);
           nb->put_field_data("owning_processor", &data[0], isize);
-
         }
       }
 
@@ -805,31 +812,31 @@ namespace {
 
   struct param
   {
-    Ioss::GroupingEntity *entity;
-    Ioss::Region *output_region;
-    Ioss::Field::RoleType role;
+    Ioss::GroupingEntity *    entity;
+    Ioss::Region *            output_region;
+    Ioss::Field::RoleType     role;
     const IOShell::Interface *interface;
   };
-    
+
   void *transfer_fields_ts(void *varg)
   {
-    param *arg = (param*)varg;
-    auto entity = arg->entity;
-    auto output_region = arg->output_region;
-    auto interface = arg->interface;
-    auto role = arg->role;
-    
+    param *arg           = (param *)varg;
+    auto   entity        = arg->entity;
+    auto   output_region = arg->output_region;
+    auto   interface     = arg->interface;
+    auto   role          = arg->role;
+
     std::string name = entity->name();
     if (interface->debug) {
       OUTPUT << name << ", ";
     }
-    
+
     // Find the corresponding output entity...
     Ioss::GroupingEntity *oeb = output_region->get_entity(name, entity->type());
     if (oeb != nullptr) {
       transfer_fields(entity, oeb, role);
       if (interface->do_transform_fields) {
-	transform_fields(entity, oeb, role);
+        transform_fields(entity, oeb, role);
       }
     }
     if (interface->debug) {
@@ -843,31 +850,31 @@ namespace {
                        Ioss::Field::RoleType role, const IOShell::Interface &interface)
   {
     std::vector<pthread_t> threads(entities.size());
-    std::vector<param> params(entities.size());
-    
+    std::vector<param>     params(entities.size());
+
     int t = 0;
     for (const auto &entity : entities) {
-      params[t].entity = entity;
+      params[t].entity        = entity;
       params[t].output_region = &output_region;
-      params[t].interface = &interface;
-      params[t].role = role;
-      pthread_create(&threads[t], NULL, transfer_fields_ts, (void*)(params.data()+t));
+      params[t].interface     = &interface;
+      params[t].role          = role;
+      pthread_create(&threads[t], NULL, transfer_fields_ts, (void *)(params.data() + t));
       t++;
     }
 
-    for (t=0; t < (int)threads.size(); t++) {
+    for (t = 0; t < (int)threads.size(); t++) {
       pthread_join(threads[t], NULL);
     }
   }
 
-  void* transfer_field_data_ts(void *varg)
+  void *transfer_field_data_ts(void *varg)
   {
-    param *arg = (param*)varg;
-    auto entity = arg->entity;
-    auto output_region = arg->output_region;
-    auto interface = arg->interface;
-    auto role = arg->role;
-    
+    param *arg           = (param *)varg;
+    auto   entity        = arg->entity;
+    auto   output_region = arg->output_region;
+    auto   interface     = arg->interface;
+    auto   role          = arg->role;
+
     std::string name = entity->name();
 
     // Find the corresponding output block...
@@ -875,7 +882,7 @@ namespace {
     if (output != nullptr) {
       transfer_field_data(entity, output, role, *interface);
       if (interface->do_transform_fields) {
-	transform_field_data(entity, output, role, *interface);
+        transform_field_data(entity, output, role, *interface);
       }
     }
     return arg;
@@ -886,19 +893,19 @@ namespace {
                            Ioss::Field::RoleType role, const IOShell::Interface &interface)
   {
     std::vector<pthread_t> threads(entities.size());
-    std::vector<param> params(entities.size());
-    
+    std::vector<param>     params(entities.size());
+
     int t = 0;
     for (const auto &entity : entities) {
-      params[t].entity = entity;
+      params[t].entity        = entity;
       params[t].output_region = &output_region;
-      params[t].interface = &interface;
-      params[t].role = role;
-      pthread_create(&threads[t], NULL, transfer_field_data_ts, (void*)(params.data()+t));
+      params[t].interface     = &interface;
+      params[t].role          = role;
+      pthread_create(&threads[t], NULL, transfer_field_data_ts, (void *)(params.data() + t));
       t++;
     }
 
-    for (t=0; t < (int)threads.size(); t++) {
+    for (t = 0; t < (int)threads.size(); t++) {
       pthread_join(threads[t], NULL);
     }
   }
@@ -1217,22 +1224,27 @@ namespace {
         break;
       case 5:
         if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
-          ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+          ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_char_layout_space);
         }
         else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
-          ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+          ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_int_layout_space);
         }
         else if (basic_type == Ioss::Field::INT64) {
-          ige->get_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+          ige->get_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_int64_layout_space);
         }
         else if (basic_type == Ioss::Field::REAL) {
-          ige->get_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+          ige->get_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_double_layout_space);
         }
         else if (basic_type == Ioss::Field::COMPLEX) {
           // Since data_view_complex cannot be a global variable.
           ige->get_field_data(field_name, &data[0], isize);
         }
-        else {}
+        else {
+        }
         break;
 #endif
       default:
@@ -1306,22 +1318,27 @@ namespace {
         break;
       case 5:
         if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
-            oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+          oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_char_layout_space);
         }
         else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
-          oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+          oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_int_layout_space);
         }
         else if (basic_type == Ioss::Field::INT64) {
-          oge->put_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+          oge->put_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_int64_layout_space);
         }
         else if (basic_type == Ioss::Field::REAL) {
-          oge->put_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+          oge->put_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(
+              field_name, data_view_2D_double_layout_space);
         }
         else if (basic_type == Ioss::Field::COMPLEX) {
           // Since data_view_complex cannot be a global variable.
           oge->put_field_data(out_field_name, &data[0], osize);
         }
-        else {}
+        else {
+        }
         break;
 #endif
       default:
@@ -1483,22 +1500,27 @@ namespace {
       break;
     case 5:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
-        ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+        ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_char_layout_space);
       }
       else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
-        ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+        ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_int_layout_space);
       }
       else if (basic_type == Ioss::Field::INT64) {
-      	ige->get_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+        ige->get_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_int64_layout_space);
       }
       else if (basic_type == Ioss::Field::REAL) {
-      	ige->get_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+        ige->get_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_double_layout_space);
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
         ige->get_field_data(field_name, &data[0], isize);
       }
-      else {}
+      else {
+      }
       break;
 #endif
     default:
@@ -1572,22 +1594,27 @@ namespace {
       break;
     case 5:
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
-        oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_char_layout_space);
+        oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_char_layout_space);
       }
       else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
-        oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int_layout_space);
+        oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_int_layout_space);
       }
       else if (basic_type == Ioss::Field::INT64) {
-        oge->put_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_int64_layout_space);
+        oge->put_field_data<int64_t, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_int64_layout_space);
       }
       else if (basic_type == Ioss::Field::REAL) {
-        oge->put_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(field_name, data_view_2D_double_layout_space);
+        oge->put_field_data<double, Kokkos::LayoutRight, Kokkos::HostSpace>(
+            field_name, data_view_2D_double_layout_space);
       }
       else if (basic_type == Ioss::Field::COMPLEX) {
         // Since data_view_complex cannot be a global variable.
-      	oge->put_field_data(field_name, &data[0], isize);
+        oge->put_field_data(field_name, &data[0], isize);
       }
-      else {}
+      else {
+      }
       break;
 #endif
     default: return;

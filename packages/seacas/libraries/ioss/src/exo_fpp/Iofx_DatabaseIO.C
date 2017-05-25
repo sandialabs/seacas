@@ -700,24 +700,24 @@ namespace Iofx {
           Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
         }
 
-	int max_step = timestep_count;
-	if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-	  max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
-	}
-	if (max_step > timestep_count) {
-	  max_step = timestep_count;
-	}
+        int max_step = timestep_count;
+        if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
+          max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
+        }
+        if (max_step > timestep_count) {
+          max_step = timestep_count;
+        }
 
-	double max_time = std::numeric_limits<double>::max();
-	if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-	  max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
-	}
-	
+        double max_time = std::numeric_limits<double>::max();
+        if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
+          max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
+        }
+
         Ioss::Region *this_region = get_region();
         for (int i = 0; i < max_step; i++) {
-	  if (tsteps[i] <= max_time) {
-	    this_region->add_state(tsteps[i] * timeScaleFactor);
-	  }
+          if (tsteps[i] <= max_time) {
+            this_region->add_state(tsteps[i] * timeScaleFactor);
+          }
         }
       }
     }
@@ -762,18 +762,18 @@ namespace Iofx {
       // restart time instead of at end time on database.
       int max_step = timestep_count;
       if (properties.exists("APPEND_OUTPUT_AFTER_STEP")) {
-	max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
+        max_step = properties.get("APPEND_OUTPUT_AFTER_STEP").get_int();
       }
       if (max_step > timestep_count) {
-	max_step = timestep_count;
+        max_step = timestep_count;
       }
-      
+
       double max_time = std::numeric_limits<double>::max();
       if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
-	max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
+        max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
       }
       if (last_time > max_time) {
-	last_time = max_time;
+        last_time = max_time;
       }
 
       Ioss::Region *this_region = get_region();

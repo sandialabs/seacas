@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_CodeTypes.h>
 #include <Ionit_Initializer.h>
+#include <Ioss_CodeTypes.h>
 
 #if !defined(NO_EXODUS_SUPPORT)
 #include <exo_fac/Ioex_IOFactory.h>
@@ -98,7 +98,7 @@ namespace Ioss {
     Initializer::~Initializer()
     {
       try {
-	IOSS_FUNC_ENTER(m_);
+        IOSS_FUNC_ENTER(m_);
         Ioss::IOFactory::clean();
         // Put code here that should run after sierra is finished
         // executing...

@@ -31,18 +31,18 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_CodeTypes.h>
+#include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementBlock.h>
 #include <Ioss_ElementTopology.h>
+#include <Ioss_FaceGenerator.h>
 #include <Ioss_IOFactory.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Property.h>
 #include <Ioss_Region.h>
-#include <Ioss_CodeTypes.h>
-#include <Ioss_FaceGenerator.h>
 
 #include <algorithm>
 #include <chrono>

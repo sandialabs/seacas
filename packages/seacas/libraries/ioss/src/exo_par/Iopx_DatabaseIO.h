@@ -35,9 +35,9 @@
 #define IOSS_Iopx_DatabaseIO_h
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_State.h>             // for State
 #include <Ioss_DBUsage.h>           // for DatabaseUsage
 #include <Ioss_Map.h>               // for Map
+#include <Ioss_State.h>             // for State
 #include <exodus/Ioex_DatabaseIO.h> // for DatabaseIO
 #include <exodusII.h>               // for ex_entity_type, etc
 #include <functional>               // for less

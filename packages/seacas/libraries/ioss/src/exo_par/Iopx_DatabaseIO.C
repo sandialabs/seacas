@@ -806,7 +806,7 @@ namespace Iopx {
     if (max_step > timestep_count) {
       max_step = timestep_count;
     }
-      
+
     double max_time = std::numeric_limits<double>::max();
     if (properties.exists("APPEND_OUTPUT_AFTER_TIME")) {
       max_time = properties.get("APPEND_OUTPUT_AFTER_TIME").get_real();
@@ -821,7 +821,7 @@ namespace Iopx {
         this_region->add_state(tsteps[i] * timeScaleFactor);
       }
       else {
-	if (myProcessor == 0 && max_time == std::numeric_limits<double>::max()) {
+        if (myProcessor == 0 && max_time == std::numeric_limits<double>::max()) {
           // NOTE: Don't want to warn on all processors if there are
           // corrupt steps on all databases, but this will only print
           // a warning if there is a corrupt step on processor
