@@ -32,9 +32,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include "exodusII.h"     // for ex_get_block_param, etc
-#include "exodusII_int.h" // for EX_NOERR
-#include <stddef.h>       // for size_t
+#include "exodusII.h" // for EX_NOERR, etc
+#include "exodusII_int.h"
+#include <stddef.h> // for size_t
 
 /*!
  * Reads the parameters describing element/face/edge blocks

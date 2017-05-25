@@ -35,12 +35,12 @@
 #ifndef IOSS_DECOMPOSITON_H
 #define IOSS_DECOMPOSITON_H
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_Map.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_PropertyManager.h>
 #include <algorithm>
 #include <assert.h>
-#include <mpi.h>
 #include <string>
 #include <vector>
 

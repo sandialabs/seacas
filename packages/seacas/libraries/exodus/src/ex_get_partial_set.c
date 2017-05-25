@@ -52,13 +52,12 @@
 *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
-#include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
-#include "netcdf.h"       // for NC_NOERR, nc_inq_varid, etc
+#include "exodusII_int.h" // for ex_is_parallel, etc
+#include "netcdf.h"       // for NC_NOERR, nc_get_vara_int, etc
 #include <inttypes.h>     // for PRId64
-#include <stddef.h>       // for size_t
-#include <stdio.h>
-#include <stdlib.h>    // for NULL
-#include <sys/types.h> // for int64_t
+#include <stddef.h>       // for size_t, NULL
+#include <stdint.h>       // for int64_t
+#include <stdio.h>        // for snprintf
 
 /*!
  * writes the set entry list and set extra list for a single set

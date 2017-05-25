@@ -51,7 +51,9 @@
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-#include "exodusII.h" // for ex_err, exerrval, etc
+#include "exodusII.h" // for ex_get_partial_set, etc
+#include <stddef.h>   // for NULL
+#include <stdint.h>   // for int64_t
 
 /*!
  * \deprecated use ex_get_partial_set()
