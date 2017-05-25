@@ -115,18 +115,24 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
 
   /* Make sure the file contains entries */
   if (nc_inq_dimid(exoid, dnumentries, &dimid) != NC_NOERR) {
-    /* Error -- if we made it this far, num_entities is > 0,
-     * but the dimension 'dnumentries' is not defined which
-     * indicates that either the entity count is zero, or
-     * there is an error in that the dimension has not yet
-     * been defined. Note that in parallel, num_entities could
-     * be zero on a processor, but non-zero globally.
+    /* Possible Error -- if we made it this far, num_entities is > 0,
+     * or this is a parallel run but the dimension 'dnumentries' is
+     * not defined which indicates that either the entity count is
+     * zero, or there is an error in that the dimension has not yet
+     * been defined. Assume that if num_entities == 0 and this is a
+     * parallel run that there is no error; otherwise if in serial and
+     * num_entities != 0, there is an error.
      */
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: The %s count is %" PRId64
-                                     ", but the %s dimension is not defined on file id %d.",
-             tname, num_entities, dnumentries, exoid);
-    ex_err("ex_put_partial_id_map", errmsg, EX_BADPARAM);
-    EX_FUNC_LEAVE(EX_FATAL);
+    if (num_entities == 0) { /* Parallel run with no entities OK */
+      EX_FUNC_LEAVE(EX_NOERR);
+    }
+    else {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: The %s count is %" PRId64
+                                       ", but the %s dimension is not defined on file id %d.",
+               tname, num_entities, dnumentries, exoid);
+      ex_err("ex_put_partial_id_map", errmsg, EX_BADPARAM);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
   }
 
   /* define the map if it doesn't already exist... */

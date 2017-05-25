@@ -80,7 +80,9 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
   size_t length;
   int    cur_num_elem_blk, nelnoddim, numelbdim, numattrdim, connid, numelemdim, numnodedim;
   char   errmsg[MAX_ERR_LENGTH];
-  int    fill = NC_FILL_CHAR;
+#if NC_HAS_HDF5
+  int fill = NC_FILL_CHAR;
+#endif
 
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);

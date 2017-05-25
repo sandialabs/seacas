@@ -30,6 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
@@ -40,13 +41,10 @@
 #include <string>
 #include <vector>
 
-#include <Ioss_CodeTypes.h>
 #ifdef HAVE_MPI
 #include <Ioss_SerializeIO.h>
 #include <assert.h>
 #include <cstring>
-#include <mpi.h>
-
 #endif
 
 Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator) : communicator_(the_communicator) {}

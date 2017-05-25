@@ -55,10 +55,10 @@
 *
 *****************************************************************************/
 
-#include "exodusII.h"     // for ex_init_params, void_int, etc
-#include "exodusII_int.h" // for EX_NOERR
-#include <string.h>       // for strcpy
-#include <sys/types.h>    // for int64_t
+#include "exodusII.h" // for ex_init_params, void_int, etc
+#include "exodusII_int.h"
+#include <stdint.h> // for int64_t
+#include <string.h> // for strcpy
 
 /*!
 

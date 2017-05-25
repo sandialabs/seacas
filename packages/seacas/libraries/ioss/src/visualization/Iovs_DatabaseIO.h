@@ -10,6 +10,7 @@
 #ifndef SIERRA_Iovs_DatabaseIO_h
 #define SIERRA_Iovs_DatabaseIO_h
 
+#include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_EntityType.h>
@@ -24,8 +25,6 @@
 #include <string>
 #include <time.h>
 #include <vector>
-
-#include <exodusII.h>
 
 class ParaViewCatalystIossAdapterBase;
 

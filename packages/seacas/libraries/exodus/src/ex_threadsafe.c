@@ -1,8 +1,10 @@
 #define _GNU_SOURCE
+#include "exodusII.h"
+#if defined(EXODUS_THREADSAFE)
 #include <pthread.h>
 
-#include "exodusII.h"
 #include "exodusII_int.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -85,3 +87,6 @@ EX_errval_t *exerrval_get(void)
 
   return ex_errval;
 }
+#else
+void ex_dummy() {}
+#endif
