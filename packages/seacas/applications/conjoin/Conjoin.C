@@ -1646,17 +1646,17 @@ namespace {
       char **output_name_list =
           get_name_array(vars.count(Excn::OUT), Excn::ExodusFile::max_name_length());
 
-      int num_vars = vars.index_.size();
-      int extra = vars.addStatus ? 1 : 0;
+      int num_vars       = vars.index_.size();
+      int extra          = vars.addStatus ? 1 : 0;
       int num_input_vars = num_vars - extra;
-      
+
       char **input_name_list = get_name_array(num_vars, Excn::ExodusFile::max_name_length());
       if (num_input_vars > 0) {
-	int error = ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
-	if (error != EX_NOERR) {
-	  std::cerr << "ERROR: Cannot get " << vars.label() << " variable names\n";
-	  exit(EXIT_FAILURE);
-	}
+        int error = ex_get_variable_names(id, vars.type(), num_input_vars, input_name_list);
+        if (error != EX_NOERR) {
+          std::cerr << "ERROR: Cannot get " << vars.label() << " variable names\n";
+          exit(EXIT_FAILURE);
+        }
       }
 
       std::string status;
@@ -2362,7 +2362,7 @@ namespace {
   {
     // Allocate space for variable names...
     char **name_list = get_name_array(var_count, Excn::ExodusFile::max_name_length());
-    int error = ex_get_variable_names(id, elType, var_count, name_list);
+    int    error     = ex_get_variable_names(id, elType, var_count, name_list);
     if (error != EX_NOERR) {
       std::cerr << "ERROR: Cannot get variable names\n";
       exit(EXIT_FAILURE);
