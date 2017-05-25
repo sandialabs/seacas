@@ -31,8 +31,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_Utils.h>
 #include <Ioss_MeshCopyOptions.h>
+#include <Ioss_Utils.h>
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -150,7 +150,7 @@ namespace {
   void transfer_qa_info(Ioss::Region &in, Ioss::Region &out);
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                    const std::string &       field_name,
+                                    const std::string &          field_name,
                                     const Ioss::MeshCopyOptions &options);
 
   template <typename INT>
@@ -1028,7 +1028,8 @@ void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
   }
 }
 
-void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region, Ioss::MeshCopyOptions &options)
+void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
+                                Ioss::MeshCopyOptions &options)
 {
 #ifdef SEACAS_HAVE_KOKKOS
   data_view_char                 = Kokkos::View<char *>("view_char", 0);
@@ -1060,153 +1061,153 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
   if (!appending) {
 
-  if (options.debug && rank == 0)
-    std::cerr << "DEFINING MODEL ... \n";
+    if (options.debug && rank == 0)
+      std::cerr << "DEFINING MODEL ... \n";
 
-  if (memory_stats) {
-    dbi->util().progress("DEFINING MODEL");
-  }
-  if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
-    if (options.verbose && rank == 0)
-      std::cerr << "ERROR: Could not put output region into define model state\n";
-    std::exit(EXIT_FAILURE);
-  }
+    if (memory_stats) {
+      dbi->util().progress("DEFINING MODEL");
+    }
+    if (!output_region.begin_mode(Ioss::STATE_DEFINE_MODEL)) {
+      if (options.verbose && rank == 0)
+        std::cerr << "ERROR: Could not put output region into define model state\n";
+      std::exit(EXIT_FAILURE);
+    }
 
-  // Get all properties of input database...
-  transfer_properties(&region, &output_region);
-  transfer_qa_info(region, output_region);
+    // Get all properties of input database...
+    transfer_properties(&region, &output_region);
+    transfer_qa_info(region, output_region);
 
-  transfer_nodeblock(region, output_region, options.debug, options.verbose, rank);
+    transfer_nodeblock(region, output_region, options.debug, options.verbose, rank);
 
 #ifdef HAVE_MPI
-  // This also assumes that the node order and count is the same for input
-  // and output regions... (This is checked during nodeset output)
-  if (output_region.get_database()->needs_shared_node_information()) {
-    if (options.ints_64_bit)
-      set_owned_node_count(region, rank, (int64_t)0);
-    else
-      set_owned_node_count(region, rank, (int)0);
-  }
+    // This also assumes that the node order and count is the same for input
+    // and output regions... (This is checked during nodeset output)
+    if (output_region.get_database()->needs_shared_node_information()) {
+      if (options.ints_64_bit)
+        set_owned_node_count(region, rank, (int64_t)0);
+      else
+        set_owned_node_count(region, rank, (int)0);
+    }
 #endif
 
-  transfer_edgeblocks(region, output_region, options.debug, options.verbose, rank);
-  transfer_faceblocks(region, output_region, options.debug, options.verbose, rank);
-  transfer_elementblocks(region, output_region, options.debug, options.verbose, rank);
+    transfer_edgeblocks(region, output_region, options.debug, options.verbose, rank);
+    transfer_faceblocks(region, output_region, options.debug, options.verbose, rank);
+    transfer_elementblocks(region, output_region, options.debug, options.verbose, rank);
 
-  transfer_nodesets(region, output_region, options.debug, options.verbose, rank);
-  transfer_edgesets(region, output_region, options.debug, options.verbose, rank);
-  transfer_facesets(region, output_region, options.debug, options.verbose, rank);
-  transfer_elemsets(region, output_region, options.debug, options.verbose, rank);
+    transfer_nodesets(region, output_region, options.debug, options.verbose, rank);
+    transfer_edgesets(region, output_region, options.debug, options.verbose, rank);
+    transfer_facesets(region, output_region, options.debug, options.verbose, rank);
+    transfer_elemsets(region, output_region, options.debug, options.verbose, rank);
 
-  transfer_sidesets(region, output_region, options.debug, options.verbose, rank);
-  transfer_commsets(region, output_region, options.debug, options.verbose, rank);
+    transfer_sidesets(region, output_region, options.debug, options.verbose, rank);
+    transfer_commsets(region, output_region, options.debug, options.verbose, rank);
 
-  transfer_coordinate_frames(region, output_region, options.debug, options.verbose, rank);
+    transfer_coordinate_frames(region, output_region, options.debug, options.verbose, rank);
 
-  if (options.debug && rank == 0) {
-    std::cerr << "END STATE_DEFINE_MODEL... " << '\n';
-  }
-  if (memory_stats) {
-    dbi->util().progress("END STATE_DEFINE_MODEL");
-  }
+    if (options.debug && rank == 0) {
+      std::cerr << "END STATE_DEFINE_MODEL... " << '\n';
+    }
+    if (memory_stats) {
+      dbi->util().progress("END STATE_DEFINE_MODEL");
+    }
 
-  output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
+    output_region.end_mode(Ioss::STATE_DEFINE_MODEL);
 
-  if (options.verbose && rank == 0)
-    std::cerr << "Maximum Field size = " << max_field_size << " bytes.\n";
-  data.resize(max_field_size);
-  if (options.verbose && rank == 0)
-    std::cerr << "Resize finished...\n";
+    if (options.verbose && rank == 0)
+      std::cerr << "Maximum Field size = " << max_field_size << " bytes.\n";
+    data.resize(max_field_size);
+    if (options.verbose && rank == 0)
+      std::cerr << "Resize finished...\n";
 
-  if (options.debug && rank == 0) {
-    std::cerr << "TRANSFERRING MESH FIELD DATA ... " << '\n';
-  }
-  if (memory_stats) {
-    dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
-  }
+    if (options.debug && rank == 0) {
+      std::cerr << "TRANSFERRING MESH FIELD DATA ... " << '\n';
+    }
+    if (memory_stats) {
+      dbi->util().progress("TRANSFERRING MESH FIELD DATA ... ");
+    }
 
-  // Model defined, now fill in the model data...
-  output_region.begin_mode(Ioss::STATE_MODEL);
+    // Model defined, now fill in the model data...
+    output_region.begin_mode(Ioss::STATE_MODEL);
 
-  // Transfer MESH field_data from input to output...
-  transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE, options);
+    // Transfer MESH field_data from input to output...
+    transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_node_blocks(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_edge_blocks(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_face_blocks(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
-                      options);
+    transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_element_blocks(), output_region, Ioss::Field::ATTRIBUTE,
+                        options);
 
-  transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_nodesets(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_edgesets(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_edgesets(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_edgesets(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_edgesets(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_facesets(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_facesets(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_facesets(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_facesets(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_elementsets(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_elementsets(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_elementsets(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_elementsets(), output_region, Ioss::Field::ATTRIBUTE, options);
 
-  transfer_field_data(region.get_commsets(), output_region, Ioss::Field::MESH, options);
-  transfer_field_data(region.get_commsets(), output_region, Ioss::Field::ATTRIBUTE, options);
-  transfer_field_data(region.get_commsets(), output_region, Ioss::Field::COMMUNICATION, options);
+    transfer_field_data(region.get_commsets(), output_region, Ioss::Field::MESH, options);
+    transfer_field_data(region.get_commsets(), output_region, Ioss::Field::ATTRIBUTE, options);
+    transfer_field_data(region.get_commsets(), output_region, Ioss::Field::COMMUNICATION, options);
 
-  // Side Sets
-  {
-    const auto &fss = region.get_sidesets();
-    for (const auto &ifs : fss) {
-      std::string name = ifs->name();
-      if (options.debug && rank == 0) {
-        std::cerr << name << ", ";
-      }
-      // Find matching output sideset
-      Ioss::SideSet *ofs = output_region.get_sideset(name);
+    // Side Sets
+    {
+      const auto &fss = region.get_sidesets();
+      for (const auto &ifs : fss) {
+        std::string name = ifs->name();
+        if (options.debug && rank == 0) {
+          std::cerr << name << ", ";
+        }
+        // Find matching output sideset
+        Ioss::SideSet *ofs = output_region.get_sideset(name);
 
-      if (ofs != nullptr) {
-        transfer_field_data(ifs, ofs, Ioss::Field::MESH, options);
-        transfer_field_data(ifs, ofs, Ioss::Field::ATTRIBUTE, options);
+        if (ofs != nullptr) {
+          transfer_field_data(ifs, ofs, Ioss::Field::MESH, options);
+          transfer_field_data(ifs, ofs, Ioss::Field::ATTRIBUTE, options);
 
-        const auto &fbs = ifs->get_side_blocks();
-        for (const auto &ifb : fbs) {
+          const auto &fbs = ifs->get_side_blocks();
+          for (const auto &ifb : fbs) {
 
-          // Find matching output sideblock
-          std::string fbname = ifb->name();
-          if (options.debug && rank == 0) {
-            std::cerr << fbname << ", ";
-          }
-          Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
+            // Find matching output sideblock
+            std::string fbname = ifb->name();
+            if (options.debug && rank == 0) {
+              std::cerr << fbname << ", ";
+            }
+            Ioss::SideBlock *ofb = ofs->get_side_block(fbname);
 
-          if (ofb != nullptr) {
-            transfer_field_data(ifb, ofb, Ioss::Field::MESH, options);
-            transfer_field_data(ifb, ofb, Ioss::Field::ATTRIBUTE, options);
+            if (ofb != nullptr) {
+              transfer_field_data(ifb, ofb, Ioss::Field::MESH, options);
+              transfer_field_data(ifb, ofb, Ioss::Field::ATTRIBUTE, options);
+            }
           }
         }
       }
+      if (options.debug && rank == 0) {
+        std::cerr << '\n';
+      }
     }
     if (options.debug && rank == 0) {
-      std::cerr << '\n';
+      std::cerr << "END STATE_MODEL... " << '\n';
     }
-  }
-  if (options.debug && rank == 0) {
-    std::cerr << "END STATE_MODEL... " << '\n';
-  }
-  if (memory_stats) {
-    dbi->util().progress("END STATE_MODEL... ");
-  }
-  output_region.end_mode(Ioss::STATE_MODEL);
+    if (memory_stats) {
+      dbi->util().progress("END STATE_MODEL... ");
+    }
+    output_region.end_mode(Ioss::STATE_MODEL);
 
-  if (options.delete_timesteps) {
-    data.resize(0);
-    data.shrink_to_fit();
-    return;
-  }
+    if (options.delete_timesteps) {
+      data.resize(0);
+      data.shrink_to_fit();
+      return;
+    }
   } // appending
 
   if (options.debug && rank == 0) {
@@ -1215,7 +1216,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
   if (memory_stats) {
     dbi->util().progress("DEFINING TRANSIENT FIELDS ... ");
   }
-  
+
   if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
     if (options.verbose && rank == 0) {
       std::cerr << "\n Number of time steps on database     =" << std::setw(12)
@@ -1231,7 +1232,8 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     transfer_fields(region.get_node_blocks(), output_region, Ioss::Field::TRANSIENT, options, rank);
     transfer_fields(region.get_edge_blocks(), output_region, Ioss::Field::TRANSIENT, options, rank);
     transfer_fields(region.get_face_blocks(), output_region, Ioss::Field::TRANSIENT, options, rank);
-    transfer_fields(region.get_element_blocks(), output_region, Ioss::Field::TRANSIENT, options, rank);
+    transfer_fields(region.get_element_blocks(), output_region, Ioss::Field::TRANSIENT, options,
+                    rank);
 
     transfer_fields(region.get_nodesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
     transfer_fields(region.get_edgesets(), output_region, Ioss::Field::TRANSIENT, options, rank);
@@ -1280,7 +1282,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     output_region.end_mode(Ioss::STATE_DEFINE_TRANSIENT);
   }
-  
+
   if (options.debug && rank == 0) {
     std::cerr << "TRANSFERRING TRANSIENT FIELDS ... " << '\n';
   }
@@ -1693,7 +1695,7 @@ namespace {
   }
 
   void transfer_field_data_internal(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge,
-                                    const std::string &       field_name,
+                                    const std::string &          field_name,
                                     const Ioss::MeshCopyOptions &options)
   {
 

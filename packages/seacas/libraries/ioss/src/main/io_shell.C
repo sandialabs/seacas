@@ -71,7 +71,7 @@ namespace {
   std::string codename;
   std::string version = "4.7";
 
-  bool    mem_stats  = false;
+  bool mem_stats = false;
 
   void file_copy(IOShell::Interface &interface, int rank);
 
@@ -129,12 +129,12 @@ int main(int argc, char *argv[])
   double end = Ioss::Utils::timer();
 
   if (rank == 0) {
-    std::cerr << "\n\tTotal Execution time = " << end-begin << " seconds.\n";
+    std::cerr << "\n\tTotal Execution time = " << end - begin << " seconds.\n";
   }
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
 #ifdef HAVE_MPI
-    int64_t min, max, avg;
+    int64_t             min, max, avg;
     Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
     if (rank == 0)
@@ -171,7 +171,7 @@ namespace {
   void file_copy(IOShell::Interface &interface, int rank)
   {
     Ioss::PropertyManager properties = set_properties(interface);
-    
+
     bool first = true;
     for (const auto &inpfile : interface.inputFile) {
 
@@ -240,12 +240,12 @@ namespace {
       bool append = false;
       if (interface.append_step < std::numeric_limits<int>::max()) {
         properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_STEP", interface.append_step));
-	append = true;
+        append = true;
       }
 
       if (interface.append_time < std::numeric_limits<double>::max()) {
         properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_TIME", interface.append_time));
-	append = true;
+        append = true;
       }
 
       if (append) {
@@ -281,22 +281,22 @@ namespace {
 
       Ioss::MeshCopyOptions options;
       options.memory_statistics = interface.memory_statistics;
-      options.debug = interface.debug;
-      options.verbose = true;
-      options.ints_64_bit = interface.ints_64_bit;
-      options.delete_timesteps = interface.delete_timesteps;
-      options.minimum_time = interface.minimum_time;
-      options.maximum_time = interface.maximum_time;
+      options.debug             = interface.debug;
+      options.verbose           = true;
+      options.ints_64_bit       = interface.ints_64_bit;
+      options.delete_timesteps  = interface.delete_timesteps;
+      options.minimum_time      = interface.minimum_time;
+      options.maximum_time      = interface.maximum_time;
       options.data_storage_type = interface.data_storage_type;
-      
+
       // Actually do the work...
       Ioss::Utils::copy_database(region, output_region, options);
 
       if (mem_stats) {
-	dbi->util().progress("Prior to Memory Released... ");
-	dbi->release_memory();
-	dbo->release_memory();
-	dbi->util().progress("Memory Released... ");
+        dbi->util().progress("Prior to Memory Released... ");
+        dbi->release_memory();
+        dbo->release_memory();
+        dbi->util().progress("Memory Released... ");
       }
     } // loop over input files
   }
@@ -304,7 +304,7 @@ namespace {
   Ioss::PropertyManager set_properties(IOShell::Interface &interface)
   {
     Ioss::PropertyManager properties;
-    
+
     if (interface.ints_64_bit) {
       properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
       properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
