@@ -268,18 +268,18 @@ namespace Ioex {
     if (exodusFilePtr != -1) {
       bool do_timer = false;
       if (isParallel) {
-	Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
+        Ioss::Utils::check_set_bool_property(properties, "IOSS_TIME_FILE_OPEN_CLOSE", do_timer);
       }
       double t_begin = (do_timer ? Ioss::Utils::timer() : 0);
 
       ex_close(exodusFilePtr);
 
       if (do_timer && isParallel) {
-	double t_end = Ioss::Utils::timer();
-	double duration = util().global_minmax(t_end-t_begin, Ioss::ParallelUtils::DO_MAX);
-	if (myProcessor == 0) {
-	  std::cerr << "File Close Time = " << duration << "\n";
-	}
+        double t_end    = Ioss::Utils::timer();
+        double duration = util().global_minmax(t_end - t_begin, Ioss::ParallelUtils::DO_MAX);
+        if (myProcessor == 0) {
+          std::cerr << "File Close Time = " << duration << "\n";
+        }
       }
     }
     exodusFilePtr = -1;
@@ -504,7 +504,7 @@ namespace Ioex {
 
   // common
   void DatabaseIO::get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                         std::vector<std::string> &block_adjacency) const
+                                           std::vector<std::string> &block_adjacency) const
   {
     if (!blockAdjacenciesCalculated) {
       compute_block_adjacencies();
@@ -529,7 +529,7 @@ namespace Ioex {
 
   // common
   void DatabaseIO::compute_block_membership__(Ioss::SideBlock *         efblock,
-                                            std::vector<std::string> &block_membership) const
+                                              std::vector<std::string> &block_membership) const
   {
     Ioss::Int64Vector block_ids(m_groupCount[EX_ELEM_BLOCK]);
     if (m_groupCount[EX_ELEM_BLOCK] == 1) {
@@ -1395,7 +1395,7 @@ namespace Ioex {
       }
     }
     if (do_flush) {
-      flush_database();
+      flush_database__();
     }
   }
 

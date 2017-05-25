@@ -263,6 +263,16 @@ namespace Ioss {
                                     size_t data_size) const override;
 
   private:
+    // Add the name 'alias' as an alias for the database entity with the
+    // name 'db_name'. Returns true if alias added; false if problems
+    // adding alias. Not protected by mutex -- call internally only.
+    bool add_alias__(const std::string &db_name, const std::string &alias);
+    bool add_alias__(const GroupingEntity *ge);
+    std::string get_alias__(const std::string &alias) const;
+
+    bool begin_mode__(State new_state);
+    bool end_mode__(State current_state);
+
     void delete_database() override;
 
     AliasMap aliases_; ///< Stores alias mappings
@@ -313,6 +323,7 @@ inline int64_t Ioss::Region::node_global_to_local(int64_t global, bool must_exis
  */
 inline const std::vector<std::string> &Ioss::Region::get_information_records() const
 {
+  IOSS_FUNC_ENTER(m_);
   return get_database()->get_information_records();
 }
 
@@ -322,6 +333,7 @@ inline const std::vector<std::string> &Ioss::Region::get_information_records() c
  */
 inline void Ioss::Region::add_information_records(const std::vector<std::string> &info)
 {
+  IOSS_FUNC_ENTER(m_);
   return get_database()->add_information_records(info);
 }
 
@@ -331,6 +343,7 @@ inline void Ioss::Region::add_information_records(const std::vector<std::string>
  */ inline void
 Ioss::Region::add_information_record(const std::string &info)
 {
+  IOSS_FUNC_ENTER(m_);
   return get_database()->add_information_record(info);
 }
 
@@ -347,6 +360,7 @@ Ioss::Region::add_information_record(const std::string &info)
 inline void Ioss::Region::add_qa_record(const std::string &code, const std::string &code_qa,
                                         const std::string &date, const std::string &time)
 {
+  IOSS_FUNC_ENTER(m_);
   return get_database()->add_qa_record(code, code_qa, date, time);
 }
 
@@ -367,6 +381,7 @@ inline void Ioss::Region::add_qa_record(const std::string &code, const std::stri
  */
 inline const std::vector<std::string> &Ioss::Region::get_qa_records() const
 {
+  IOSS_FUNC_ENTER(m_);
   return get_database()->get_qa_records();
 }
 

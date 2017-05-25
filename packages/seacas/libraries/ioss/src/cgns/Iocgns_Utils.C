@@ -336,7 +336,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     // There are some BC that are applied on an edge or a vertex;
     // Don't want those (yet?), so filter them out at this time...
     int same_count = (range[0] == range[3] ? 1 : 0) + (range[1] == range[4] ? 1 : 0) +
-      (range[2] == range[5] ? 1 : 0);
+                     (range[2] == range[5] ? 1 : 0);
     if (same_count != 1) {
       std::cerr << "WARNING: CGNS: Skipping Boundary Condition '" << boconame << "' on block '"
                 << block->name() << "'. It is applied to "
@@ -354,11 +354,11 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     }
 
     assert(sset != nullptr);
-    Ioss::IJK_t range_beg{{std::min(range[0], range[3]), std::min(range[1], range[4]),
-	  std::min(range[2], range[5])}};
+    Ioss::IJK_t range_beg{
+        {std::min(range[0], range[3]), std::min(range[1], range[4]), std::min(range[2], range[5])}};
 
-    Ioss::IJK_t range_end{{std::max(range[0], range[3]), std::max(range[1], range[4]),
-	  std::max(range[2], range[5])}};
+    Ioss::IJK_t range_end{
+        {std::max(range[0], range[3]), std::max(range[1], range[4]), std::max(range[2], range[5])}};
 
     // Determine overlap of surface with block (in parallel, a block may
     // be split among multiple processors and the block face this is applied
@@ -370,7 +370,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
       auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
-				    block->m_boundaryConditions.back().get_face_count());
+                                    block->m_boundaryConditions.back().get_face_count());
       sb->set_parent_block(block);
       sset->add(sb);
       sb->property_add(Ioss::Property("base", base));
@@ -395,10 +395,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // Check that the 'bocotype' value matches the value of the property.
       auto old_bocotype = sset->get_property("bc_type").get_int();
       if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
-	IOSS_WARNING << "On sideset " << sset->name()
-		     << ", the boundary condition type was previously set to " << old_bocotype
-		     << " which does not match the current value of " << bocotype
-		     << ". It will keep the old value.\n";
+        IOSS_WARNING << "On sideset " << sset->name()
+                     << ", the boundary condition type was previously set to " << old_bocotype
+                     << " which does not match the current value of " << bocotype
+                     << ". It will keep the old value.\n";
       }
     }
     else {
