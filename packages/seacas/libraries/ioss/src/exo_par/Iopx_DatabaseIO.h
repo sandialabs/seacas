@@ -92,23 +92,25 @@ namespace Iopx {
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
     ~DatabaseIO();
 
-    void release_memory() override;
     bool needs_shared_node_information() const override { return true; }
+
+  private:
     void compute_node_status() const;
 
-    void compute_block_adjacencies() const override;
+    void release_memory__() override;
 
     // Check to see if database state is ok...
     // If 'write_message' true, then output a warning message indicating the problem.
     // If 'error_message' non-null, then put the warning message into the string and return it.
     // If 'bad_count' non-null, it counts the number of processors where the file does not exist.
     //    if ok returns false, but *bad_count==0, then the routine does not support this argument.
-    bool ok(bool write_message = false, std::string *error_message = nullptr,
-            int *bad_count = nullptr) const override;
+    bool ok__(bool write_message = false, std::string *error_message = nullptr,
+              int *bad_count = nullptr) const override;
 
-    void get_step_times() override;
+    void get_step_times__() override;
 
-  private:
+    void compute_block_adjacencies() const override;
+
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                          bool abort_if_error) const;
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
@@ -191,7 +193,7 @@ namespace Iopx {
     void output_node_map() const;
 
     // Metadata-related functions.
-    void read_meta_data() override;
+    void read_meta_data__() override;
 
     int64_t read_transient_field(ex_entity_type type, const Ioex::VariableNameMap &variables,
                                  const Ioss::Field &field, const Ioss::GroupingEntity *ge,
@@ -241,12 +243,12 @@ namespace Iopx {
                              int64_t file_count, ex_entity_type entity_type,
                              ex_inquiry inquiry_type) const;
 
-    int64_t node_global_to_local(int64_t global, bool must_exist) const override
+    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
     {
       return nodeMap.global_to_local(global, must_exist);
     }
 
-    int64_t element_global_to_local(int64_t global) const override
+    int64_t element_global_to_local__(int64_t global) const override
     {
       return elemMap.global_to_local(global);
     }
