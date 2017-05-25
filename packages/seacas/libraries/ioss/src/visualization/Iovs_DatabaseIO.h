@@ -45,14 +45,17 @@ namespace Iovs {
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const
+    unsigned entity_field_support() const override
     {
       return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::NODESET | Ioss::SIDESET | Ioss::SIDEBLOCK;
     }
 
+    static int parseCatalystFile(const std::string &filepath, std::string &json_result);
+
+  private:
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
-    void release_memory();
+    void release_memory__() override;
 
     /*!
      * Determine the local position of the node with the global id
@@ -78,9 +81,6 @@ namespace Iovs {
 
     void read_meta_data__() override;
 
-    static int parseCatalystFile(const std::string &filepath, std::string &json_result);
-
-  private:
     // For the time being, treat vis as write only. Consider glue pipelines.
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const

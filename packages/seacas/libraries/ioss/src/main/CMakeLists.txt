@@ -77,6 +77,38 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES skinner.C skinner_interface.C
   )
 
+IF (SEACASIoss_ENABLE_THREADSAFE)
+  TRIBITS_ADD_EXECUTABLE(
+    io_shell_ts
+    NOEXEPREFIX
+    NOEXESUFFIX
+    SOURCES io_shell_ts.C shell_interface.C
+    )
+
+  SET(IOSHELL_ARG --in_type generated 10x10x10+shell:xXyYzZ+sideset:xXyY+times:2+variables:element,2,nodal,3,sideset,4)
+IF ($(TPL_ENABLE_MPI))
+  TRIBITS_ADD_ADVANCED_TEST(
+    io_shell_ts
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell_ts ARGS ${IOSHELL_ARG} gen-shell-ts.g
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell    ARGS ${IOSHELL_ARG} gen-shell.g
+    TEST_2 CMND ../../../../applications/epu/epu ARGS -auto gen-shell-ts.g.4.0
+    TEST_3 CMND ../../../../applications/epu/epu ARGS -auto gen-shell.g.4.0
+    TEST_4 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic gen-shell-ts.g gen-shell.g
+    COMM mpi serial
+    FINAL_PASS_REGULAR_EXPRESSION 
+  )
+ELSE()
+  TRIBITS_ADD_ADVANCED_TEST(
+    io_shell_ts
+    TEST_0 NOEXEPREFIX NOEXESUFFIX EXEC io_shell_ts ARGS ${IOSHELL_ARG} gen-shell-ts.g
+    TEST_1 NOEXEPREFIX NOEXESUFFIX EXEC io_shell    ARGS ${IOSHELL_ARG} gen-shell.g
+    TEST_4 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic gen-shell-ts.g gen-shell.g
+    COMM mpi serial
+    FINAL_PASS_REGULAR_EXPRESSION 
+  )
+ENDIF()
+ENDIF()
+
 
 install_executable(cth_pressure_map)
 install_executable(struc_to_unstruc)

@@ -280,13 +280,11 @@ bool Ioss::VariableType::match(const std::vector<Ioss::Suffix> &suffices) const
 std::string Ioss::VariableType::label_name(const std::string &base, int which,
                                            const char suffix_sep) const
 {
-  static char tmp_sep[2];
   std::string my_name = base;
   std::string suffix  = label(which, suffix_sep);
   if (!suffix.empty()) {
     if (suffix_sep != 0) {
-      tmp_sep[0] = suffix_sep;
-      my_name += tmp_sep;
+      my_name += suffix_sep;
     }
     my_name += suffix;
   }

@@ -95,7 +95,7 @@ namespace Ioss {
   public:
     friend class Property;
 
-    GroupingEntity();
+    GroupingEntity() = default;
     GroupingEntity(DatabaseIO *io_database, const std::string &my_name, int64_t entity_count);
     GroupingEntity(const GroupingEntity &) = delete;
     GroupingEntity &operator=(const GroupingEntity &) = delete;
@@ -277,18 +277,22 @@ namespace Ioss {
     virtual int64_t internal_put_field_data(const Field &field, void *data,
                                             size_t data_size = 0) const = 0;
 
-    int64_t entityCount;
+    int64_t entityCount = 0;
+
+#if defined(IOSS_THREADSAFE)
+    mutable std::mutex m_;
+#endif
 
   private:
     void verify_field_exists(const std::string &field_name, const std::string &inout) const;
 
     std::string entityName;
 
-    DatabaseIO *database_;
+    DatabaseIO *database_ = nullptr;
 
-    State           entityState;
-    mutable int64_t attributeCount;
-    unsigned int    hash_;
+    State           entityState    = STATE_CLOSED;
+    mutable int64_t attributeCount = 0;
+    unsigned int    hash_          = 0;
   };
 }
 

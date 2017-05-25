@@ -96,6 +96,19 @@ namespace Iogn {
 
     ~DatabaseIO() override;
 
+    // Check capabilities of input/output database...  Returns an
+    // unsigned int with the supported Ioss::EntityTypes or'ed
+    // together. If "return_value & Ioss::EntityType" is set, then the
+    // database supports that type (e.g. return_value & Ioss::FACESET)
+    unsigned entity_field_support() const override;
+
+    const GeneratedMesh *get_generated_mesh() const { return m_generatedMesh; }
+
+    void setGeneratedMesh(Iogn::GeneratedMesh *generatedMesh) { m_generatedMesh = generatedMesh; }
+
+    const std::vector<std::string> &get_sideset_names() const { return m_sideset_names; }
+
+  private:
     int64_t node_global_to_local__(int64_t global, bool must_exist) const override
     {
       return nodeMap.global_to_local(global, must_exist);
@@ -105,12 +118,6 @@ namespace Iogn {
     {
       return elemMap.global_to_local(global);
     }
-
-    // Check capabilities of input/output database...  Returns an
-    // unsigned int with the supported Ioss::EntityTypes or'ed
-    // together. If "return_value & Ioss::EntityType" is set, then the
-    // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const override;
 
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...
@@ -124,13 +131,6 @@ namespace Iogn {
     bool begin_state__(Ioss::Region *region, int state, double time) override;
     bool end_state__(Ioss::Region *region, int state, double time) override;
 
-    const GeneratedMesh *get_generated_mesh() const { return m_generatedMesh; }
-
-    void setGeneratedMesh(Iogn::GeneratedMesh *generatedMesh) { m_generatedMesh = generatedMesh; }
-
-    const std::vector<std::string> &get_sideset_names() const { return m_sideset_names; }
-
-  private:
     void get_step_times__() override;
     void get_nodeblocks();
     void get_elemblocks();
