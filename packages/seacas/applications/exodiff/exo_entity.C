@@ -46,12 +46,6 @@
 #include <vector>           // for vector
 
 namespace {
-  template <class T> static std::string to_string(const T &t)
-  {
-    std::ostringstream os;
-    os << t;
-    return os.str();
-  }
   size_t get_index(int file_id, EXOTYPE exo_type, size_t id, const char *label);
   size_t get_num_entities(int file_id, EXOTYPE exo_type);
   size_t get_num_variables(int file_id, EXOTYPE exo_type, const char *label);
@@ -379,7 +373,7 @@ void Exo_Entity::internal_load_params()
     else {
       name_ = short_label();
       name_ += "_";
-      name_ += to_string(id_);
+      name_ += std::to_string(id_);
     }
   }
   numVars = get_num_variables(fileId, exodus_type(), label());
@@ -405,7 +399,7 @@ void Exo_Entity::internal_load_params()
     for (int vg = 0; vg < numAttr; ++vg) {
       SMART_ASSERT(names[vg] != nullptr);
       if (std::strlen(names[vg]) == 0) {
-        std::string name = "attribute_" + to_string(vg + 1);
+        std::string name = "attribute_" + std::to_string(vg + 1);
         attributeNames.push_back(name);
       }
       else if ((int)std::strlen(names[vg]) > name_size) {

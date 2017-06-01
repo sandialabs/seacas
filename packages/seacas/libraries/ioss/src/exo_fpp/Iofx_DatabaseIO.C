@@ -1271,13 +1271,13 @@ namespace Iofx {
       // X -> Node is always defined.
       // X -> Face?
       if (faces_per_X > 0 && rank_offset < 1) {
-        std::string storage = "Real[" + Ioss::Utils::to_string(faces_per_X) + "]";
+        std::string storage = "Real[" + std::to_string(faces_per_X) + "]";
         block->field_add(Ioss::Field("connectivity_face", block->field_int_type(), storage,
                                      Ioss::Field::MESH, local_X_count[iblk]));
       }
       // X -> Edge?
       if (edges_per_X > 0 && rank_offset < 2) {
-        std::string storage = "Real[" + Ioss::Utils::to_string(edges_per_X) + "]";
+        std::string storage = "Real[" + std::to_string(edges_per_X) + "]";
         block->field_add(Ioss::Field("connectivity_edge", block->field_int_type(), storage,
                                      Ioss::Field::MESH, local_X_count[iblk]));
       }
@@ -2063,7 +2063,7 @@ namespace Iofx {
 
             if (split_type != Ioss::SPLIT_BY_DONT_SPLIT && side_set_name != "universal_sideset") {
               std::string storage = "Real[";
-              storage += Ioss::Utils::to_string(side_topo->number_nodes());
+              storage += std::to_string(side_topo->number_nodes());
               storage += "]";
               side_block->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
                                                 Ioss::Field::MESH, my_side_count));

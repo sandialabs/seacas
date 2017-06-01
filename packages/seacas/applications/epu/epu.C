@@ -54,7 +54,6 @@
 #include <cstdlib>
 
 #include "smart_assert.h"
-#include "to_string.h"
 
 #include <cctype>
 #include <cstring>
@@ -115,7 +114,7 @@ namespace {
     case Excn::SSET: return EX_SIDE_SET;
     case Excn::NSET: return EX_NODE_SET;
     default:
-      throw std::runtime_error("Invalid Object Type in exodus_object_type: " + to_string(epu_type));
+      throw std::runtime_error("Invalid Object Type in exodus_object_type: " + std::to_string(epu_type));
     }
   }
 

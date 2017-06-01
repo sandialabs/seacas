@@ -64,8 +64,6 @@
 typedef int idx_t;
 #endif
 
-#include <to_string.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -106,7 +104,7 @@ namespace {
   void proc_progress(int p, int proc_count)
   {
     if ((debug_level & 4) && ((p + 1) % (proc_count / 20) == 0)) {
-      progress("\t\tProcessor " + Ioss::Utils::to_string(p + 1));
+      progress("\t\tProcessor " + std::to_string(p + 1));
     }
   }
 
@@ -599,7 +597,7 @@ namespace {
 
     for (size_t s = 0; s < set_count; s++) {
       if (debug_level & 4) {
-        progress("\tSideset " + Ioss::Utils::to_string(s + 1));
+        progress("\tSideset " + std::to_string(s + 1));
       }
       Ioss::SideSet *gss     = ss[s];
       auto &         ss_name = gss->name();
@@ -812,7 +810,7 @@ namespace {
 
     for (size_t s = 0; s < set_count; s++) {
       if (debug_level & 4) {
-        progress("\tNodeSet " + Ioss::Utils::to_string(s + 1));
+        progress("\tNodeSet " + std::to_string(s + 1));
       }
       std::vector<INT> pns(proc_count);
       Ioss::NodeSet *  gns = ns[s];
@@ -949,7 +947,7 @@ namespace {
     size_t offset = 0;
     for (size_t b = 0; b < block_count; b++) {
       if (debug_level & 4) {
-        progress("\tBlock " + Ioss::Utils::to_string(b + 1));
+        progress("\tBlock " + std::to_string(b + 1));
       }
 #if 0
       std::vector<INT> ids;
@@ -1050,8 +1048,8 @@ namespace {
 
         ex_get_partial_coord(exoid, beg, count, TOPTR(glob_coord_x), TOPTR(glob_coord_y),
                              TOPTR(glob_coord_z));
-        progress("\tpartial_coord: " + Ioss::Utils::to_string(beg) + " " +
-                 Ioss::Utils::to_string(count));
+        progress("\tpartial_coord: " + std::to_string(beg) + " " +
+                 std::to_string(count));
 
         for (size_t i = 0; i < count; i++) {
           size_t ii    = beg + i - 1;
@@ -1150,8 +1148,8 @@ namespace {
 
           ex_get_partial_conn(exoid, EX_ELEM_BLOCK, block_id, beg, count, TOPTR(glob_conn), nullptr,
                               nullptr);
-          progress("\tpartial_conn: " + Ioss::Utils::to_string(beg) + " " +
-                   Ioss::Utils::to_string(count));
+          progress("\tpartial_conn: " + std::to_string(beg) + " " +
+                   std::to_string(count));
 
           size_t el = 0;
           for (size_t j = 0; j < count; j++) {
@@ -1544,7 +1542,7 @@ namespace {
       // Found the characters...  Replace with the processor count...
       size_t      num_proc = interface.processor_count();
       std::string tmp(filename, 0, pos);
-      tmp += Ioss::Utils::to_string(num_proc);
+      tmp += std::to_string(num_proc);
       tmp += filename.substr(pos + 2);
       filename = tmp;
     }

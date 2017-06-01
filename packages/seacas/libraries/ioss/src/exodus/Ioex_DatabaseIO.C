@@ -1525,7 +1525,7 @@ namespace Ioex {
             att_name = "nodal_thickness";
 
             std::string storage = "Real[";
-            storage += Ioss::Utils::to_string(attribute_count);
+            storage += std::to_string(attribute_count);
             storage += "]";
 
             block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage,
@@ -1629,9 +1629,9 @@ namespace Ioex {
 
         if (unknown_attributes > 0) {
           att_name = "extra_attribute_";
-          att_name += Ioss::Utils::to_string(unknown_attributes);
+          att_name += std::to_string(unknown_attributes);
           std::string storage = "Real[";
-          storage += Ioss::Utils::to_string(unknown_attributes);
+          storage += std::to_string(unknown_attributes);
           storage += "]";
           size_t index = attribute_count - unknown_attributes + 1;
           block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
@@ -1643,7 +1643,7 @@ namespace Ioex {
       // for all attributes on the mesh
       std::string att_name = "attribute"; // Default
       std::string storage  = "Real[";
-      storage += Ioss::Utils::to_string(attribute_count);
+      storage += std::to_string(attribute_count);
       storage += "]";
 
       block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, storage, Ioss::Field::ATTRIBUTE,
