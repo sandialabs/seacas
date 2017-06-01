@@ -961,7 +961,7 @@ namespace Ioxf {
 
       std::string FinalName(hdfname.tailname());
       FinalName += ":/NodeData/Iteration ";
-      FinalName += Ioss::Utils::to_string(step);
+      FinalName += std::to_string(step);
       FinalName += "/";
       FinalName += var_name;
       WriteHdfDataset(FinalName, ScalarArray, __LINE__);
@@ -1052,7 +1052,7 @@ namespace Ioxf {
 
         std::string FinalName(hdfname.tailname().c_str());
         FinalName +=
-            ":/" + block_name + "/Iteration " + Ioss::Utils::to_string(step) + "/" + var_name;
+            ":/" + block_name + "/Iteration " + std::to_string(step) + "/" + var_name;
         XdmfArray *ScalarArray = new XdmfArray();
         if (sizeof(double) == 8)
           ScalarArray->SetNumberType(XDMF_FLOAT64_TYPE);
@@ -1076,8 +1076,8 @@ namespace Ioxf {
         ScalarArray->SetDataPointer(&temp[0]);
 
         std::string FinalName(hdfname.tailname().c_str());
-        FinalName += ":/NodeSets/" + Ioss::Utils::to_string(id) + "/Iteration " +
-                     Ioss::Utils::to_string(step) + "/" + var_name;
+        FinalName += ":/NodeSets/" + std::to_string(id) + "/Iteration " +
+                     std::to_string(step) + "/" + var_name;
 
         WriteHdfDataset(FinalName, ScalarArray, __LINE__);
         delete ScalarArray;
@@ -1092,8 +1092,8 @@ namespace Ioxf {
         ScalarArray->SetDataPointer(&temp[0]);
 
         std::string FinalName(hdfname.tailname().c_str());
-        FinalName += ":/SideSets/" + Ioss::Utils::to_string(id) + "/Iteration " +
-                     Ioss::Utils::to_string(step) + "/" + var_name;
+        FinalName += ":/SideSets/" + std::to_string(id) + "/Iteration " +
+                     std::to_string(step) + "/" + var_name;
         WriteHdfDataset(FinalName, ScalarArray, __LINE__);
         delete ScalarArray;
       }
@@ -1206,7 +1206,7 @@ namespace Ioxf {
             ScalarArray->SetDataPointer(data);
 
             std::string FinalName(hdfname.tailname());
-            FinalName += ":/NodeSets/" + Ioss::Utils::to_string(id) + "/Node";
+            FinalName += ":/NodeSets/" + std::to_string(id) + "/Node";
             WriteHdfDataset(FinalName, ScalarArray, __LINE__);
             delete ScalarArray;
           }
@@ -1221,7 +1221,7 @@ namespace Ioxf {
             ScalarArray->SetDataPointer(data);
 
             std::string FinalName(hdfname.tailname());
-            FinalName += ":/NodeSets/" + Ioss::Utils::to_string(id) + "/DistributionFactor";
+            FinalName += ":/NodeSets/" + std::to_string(id) + "/DistributionFactor";
             WriteHdfDataset(FinalName, ScalarArray, __LINE__);
             delete ScalarArray;
           }
@@ -1484,7 +1484,7 @@ namespace Ioxf {
           int df_to_get  = node_count * num_to_get;
 
           std::string FinalName(hdfname.tailname());
-          FinalName += ":/SideSets/" + Ioss::Utils::to_string(id) + "/DistributionFactor";
+          FinalName += ":/SideSets/" + std::to_string(id) + "/DistributionFactor";
 
           XdmfArray *ScalarArray = new XdmfArray();
           if (sizeof(double) == 8)
@@ -1535,7 +1535,7 @@ namespace Ioxf {
 
           {
             std::string FinalName(hdfname.tailname());
-            FinalName += ":/SideSets/" + Ioss::Utils::to_string(id) + "/Side";
+            FinalName += ":/SideSets/" + std::to_string(id) + "/Side";
             WriteHdfDataset(FinalName, ScalarArray, __LINE__);
           }
 
@@ -1553,7 +1553,7 @@ namespace Ioxf {
             ScalarArray->SetShape(2, Dimensions); // Rank, Dimensions
 
             std::string FinalName(hdfname.tailname());
-            FinalName += ":/SideSets/" + Ioss::Utils::to_string(id) + "/Element";
+            FinalName += ":/SideSets/" + std::to_string(id) + "/Element";
             WriteHdfDataset(FinalName, ScalarArray, __LINE__);
             delete ScalarArray;
             // delete Hdf;
@@ -1595,7 +1595,7 @@ namespace Ioxf {
 
           {
             std::string FinalName(hdfname.tailname());
-            FinalName += ":/SideSets/" + Ioss::Utils::to_string(id) + "/Side";
+            FinalName += ":/SideSets/" + std::to_string(id) + "/Side";
             WriteHdfDataset(FinalName, ScalarArray, __LINE__);
           }
 
@@ -1613,7 +1613,7 @@ namespace Ioxf {
             ScalarArray->SetShape(2, Dimensions); // Rank, Dimensions
 
             std::string FinalName(hdfname.tailname());
-            FinalName += ":/SideSets/" + Ioss::Utils::to_string(id) + "/Element";
+            FinalName += ":/SideSets/" + std::to_string(id) + "/Element";
             WriteHdfDataset(FinalName, ScalarArray, __LINE__);
             delete ScalarArray;
             // delete Hdf;
@@ -2010,8 +2010,8 @@ namespace Ioxf {
 
       *XML << "\t<Grid Name=\"" << block_name;
       if (isParallel) {
-        *XML << " from Processor " << Ioss::Utils::to_string(myProcessor) << " of "
-             << Ioss::Utils::to_string(util().parallel_size()) << "\"";
+        *XML << " from Processor " << std::to_string(myProcessor) << " of "
+             << std::to_string(util().parallel_size()) << "\"";
         *XML << " Collection=\"" << block_name;
       }
       *XML << "\">\n";
@@ -2205,11 +2205,11 @@ namespace Ioxf {
       // Examples: basename.8.1, basename.64.03, basename.128.001
 
       // Create a std::string containing the total number of processors
-      std::string num_proc   = Ioss::Utils::to_string(num_processors);
+      std::string num_proc   = std::to_string(num_processors);
       int         proc_width = num_proc.length();
 
       // Create a std::string containing the current processor number
-      std::string cur_proc  = Ioss::Utils::to_string(processor);
+      std::string cur_proc  = std::to_string(processor);
       int         cur_width = cur_proc.length();
 
       // Build the filename

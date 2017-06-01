@@ -484,7 +484,7 @@ namespace Ioss {
           size_t old_df_count = sbold->get_property("distribution_factor_count").get_int();
           if (old_df_count > 0) {
             std::string storage = "Real[";
-            storage += Utils::to_string(sbnew->topology()->number_nodes());
+            storage += std::to_string(sbnew->topology()->number_nodes());
             storage += "]";
             sbnew->field_add(
                 Field("distribution_factors", Field::REAL, storage, Field::MESH, side_count));
