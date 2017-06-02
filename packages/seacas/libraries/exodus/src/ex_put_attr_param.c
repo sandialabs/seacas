@@ -76,7 +76,9 @@ int ex_put_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   int         numobjentdim;
   int         obj_id_ndx;
   int         numattrdim;
-  int         fill = NC_FILL_CHAR;
+#if NC_HAS_HDF5
+  int fill = NC_FILL_CHAR;
+#endif
 
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid);

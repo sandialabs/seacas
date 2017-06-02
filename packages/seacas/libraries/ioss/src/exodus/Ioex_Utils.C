@@ -543,8 +543,7 @@ namespace Ioex {
     suffix[0] = suffix_separator;
     suffix[1] = 0;
 
-    std::vector<std::string> tokens =
-      Ioss::tokenize(names[which_names.back()], suffix);
+    std::vector<std::string> tokens = Ioss::tokenize(names[which_names.back()], suffix);
 
     if (tokens.size() <= 2) {
       return nullptr;
