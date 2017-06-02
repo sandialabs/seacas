@@ -62,7 +62,7 @@ namespace Ioss {
     // To set implicit property
     Property(const GroupingEntity *ge, std::string name, const BasicType type);
 
-    Property(const Property & /*from*/);
+    Property(const Property &from);
 
     bool operator<(const Property &other) const;
 

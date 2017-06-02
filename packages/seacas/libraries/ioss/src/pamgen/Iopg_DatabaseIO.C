@@ -554,7 +554,7 @@ namespace Iopg {
       // the 'nodes_per_element'.
       if (!isdigit(*(type.rbegin()))) {
         if (my_node_count[iblk] > 1) {
-          type += Ioss::Utils::to_string(my_node_count[iblk]);
+          type += std::to_string(my_node_count[iblk]);
         }
       }
 
@@ -952,7 +952,7 @@ namespace Iopg {
 
             if (split_type != Ioss::SPLIT_BY_DONT_SPLIT && side_set_name != "universal_sideset") {
               std::string storage = "Real[";
-              storage += Ioss::Utils::to_string(side_topo->number_nodes());
+              storage += std::to_string(side_topo->number_nodes());
               storage += "]";
               side_block->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
                                                 Ioss::Field::MESH, my_side_count));

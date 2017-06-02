@@ -39,10 +39,9 @@ namespace {
 }
 
 SystemInterface::SystemInterface()
-  : decompMethod_("linear"), partialReadCount_(1000000000),
-    processorCount_(1), debugLevel_(0), screenWidth_(0), stepMin_(1),
-    stepMax_(INT_MAX), stepInterval_(1), omitNodesets_(false), omitSidesets_(false),
-    disableFieldRecognition_(false), contig_(false)
+    : decompMethod_("linear"), partialReadCount_(1000000000), processorCount_(1), debugLevel_(0),
+      screenWidth_(0), stepMin_(1), stepMax_(INT_MAX), stepInterval_(1), omitNodesets_(false),
+      omitSidesets_(false), disableFieldRecognition_(false), contig_(false)
 {
   enroll_options();
 }
@@ -92,9 +91,9 @@ void SystemInterface::enroll_options()
                   NULL);
 
   options_.enroll("Partial_read_count", GetLongOption::MandatoryValue,
-		  "Split the coordinate and connetivity reads into a maximum of this many"
-		  " nodes or elements at a time to reduce memory.",
-		  "1000000000");
+                  "Split the coordinate and connetivity reads into a maximum of this many"
+                  " nodes or elements at a time to reduce memory.",
+                  "1000000000");
 
 #if 0
   options_.enroll("omit_blocks", GetLongOption::MandatoryValue,
@@ -225,7 +224,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 
   {
-    const char *temp = options_.retrieve("Partial_read_count");
+    const char *temp  = options_.retrieve("Partial_read_count");
     partialReadCount_ = strtoul(temp, NULL, 0);
   }
 

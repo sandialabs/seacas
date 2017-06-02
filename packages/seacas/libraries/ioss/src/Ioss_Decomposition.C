@@ -806,12 +806,12 @@ namespace Ioss {
   {
     show_progress(__func__);
     // Set Zoltan parameters
-    std::string num_proc = Ioss::Utils::to_string(m_processorCount);
+    std::string num_proc = std::to_string(m_processorCount);
     zz.Set_Param("DEBUG_LEVEL", "0");
     zz.Set_Param("NUM_GLOBAL_PARTS", num_proc);
 
     int num_global = sizeof(INT) / sizeof(int);
-    zz.Set_Param("NUM_GID_ENTRIES", Ioss::Utils::to_string(num_global));
+    zz.Set_Param("NUM_GID_ENTRIES", std::to_string(num_global));
     zz.Set_Param("NUM_LID_ENTRIES", "0");
     zz.Set_Param("LB_METHOD", m_method);
     zz.Set_Param("REMAP", "0");
