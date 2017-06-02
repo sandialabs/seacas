@@ -1095,14 +1095,14 @@ namespace Iopx {
         // X -> Node is always defined.
         // X -> Face?
         if (block.num_faces_per_entry > 0 && rank_offset < 1) {
-          std::string storage = "Real["+Ioss::Utils::to_string(block.num_faces_per_entry)+"]";
+          std::string storage = "Real["+std::to_string(block.num_faces_per_entry)+"]";
           io_block->field_add(Ioss::Field("connectivity_face",
                                           io_block->field_int_type(), storage, Ioss::Field::MESH,
                                           block.num_entry));
         }
         // X -> Edge?
         if (block.num_edges_per_entry > 0 && rank_offset < 2) {
-          std::string storage = "Real["+Ioss::Utils::to_string(block.num_edges_per_entry)+"]";
+          std::string storage = "Real["+std::to_string(block.num_edges_per_entry)+"]";
           io_block->field_add(Ioss::Field("connectivity_edge",
                                           io_block->field_int_type(), storage, Ioss::Field::MESH,
                                           block.num_entry));
@@ -1841,7 +1841,7 @@ namespace Iopx {
 
             if (split_type != Ioss::SPLIT_BY_DONT_SPLIT && side_set_name != "universal_sideset") {
               std::string storage = "Real[";
-              storage += Ioss::Utils::to_string(side_topo->number_nodes());
+              storage += std::to_string(side_topo->number_nodes());
               storage += "]";
               side_block->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
                                                 Ioss::Field::MESH, my_side_count));
@@ -3235,14 +3235,14 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
              << " distribution factors.\n";
       IOSS_ERROR(errmsg);
     }
-    std::string storage = "Real[" + Ioss::Utils::to_string(nfnodes) + "]";
+    std::string storage = "Real[" + std::to_string(nfnodes) + "]";
     Ioss::Field dist("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH,
                      number_sides);
     decomp->get_set_mesh_double(get_file_pointer(), EX_SIDE_SET, id, dist, dist_fact);
     return 0;
   }
 
-  std::string storage = "Real[" + Ioss::Utils::to_string(nfnodes) + "]";
+  std::string storage = "Real[" + std::to_string(nfnodes) + "]";
   Ioss::Field field("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH,
                     number_distribution_factors / nfnodes);
   std::vector<double> dist(number_distribution_factors);

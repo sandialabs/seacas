@@ -218,12 +218,7 @@ namespace Ioss {
     static void input_file(const std::string &file_name, std::vector<std::string> *lines,
                            size_t max_line_length = 0);
 
-    template <class T> static std::string to_string(const T &t)
-    {
-      std::ostringstream os;
-      os << t;
-      return os.str();
-    }
+    template <class T> static std::string to_string(const T &t) { return std::to_string(t); }
 
     // Many databases have a maximum length for variable names which can
     // cause a problem with variable name length.

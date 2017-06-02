@@ -831,7 +831,7 @@ namespace Iogn {
         ef_block->property_add(Ioss::Property("id", ifs + 1));
 
         std::string storage = "Real[";
-        storage += Ioss::Utils::to_string(4);
+        storage += std::to_string(4);
         storage += "]";
         ef_block->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
                                         Ioss::Field::MESH, number_faces));
@@ -843,7 +843,7 @@ namespace Iogn {
       else {
         for (auto &touching_block : touching_blocks) {
           std::string ef_block_name =
-              "surface_" + touching_block + "_edge2_" + Ioss::Utils::to_string(ifs + 1);
+              "surface_" + touching_block + "_edge2_" + std::to_string(ifs + 1);
           std::string side_topo_name = "quad4";
           std::string elem_topo_name = "unknown";
           int64_t     number_faces   = m_generatedMesh->sideset_side_count_proc(ifs + 1);
@@ -854,7 +854,7 @@ namespace Iogn {
           ef_block->property_add(Ioss::Property("id", ifs + 1));
 
           std::string storage = "Real[";
-          storage += Ioss::Utils::to_string(4);
+          storage += std::to_string(4);
           storage += "]";
           ef_block->field_add(Ioss::Field("distribution_factors", Ioss::Field::REAL, storage,
                                           Ioss::Field::MESH, number_faces));
@@ -891,7 +891,7 @@ namespace Iogn {
     size_t           entity_count = entity->get_property("entity_count").get_int();
     size_t           var_count    = m_generatedMesh->get_variable_count(type);
     for (size_t i = 0; i < var_count; i++) {
-      std::string var_name = entity->type_string() + "_" + Ioss::Utils::to_string(i + 1);
+      std::string var_name = entity->type_string() + "_" + std::to_string(i + 1);
       entity->field_add(
           Ioss::Field(var_name, Ioss::Field::REAL, "scalar", Ioss::Field::TRANSIENT, entity_count));
     }

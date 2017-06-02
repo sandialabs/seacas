@@ -200,11 +200,11 @@ std::string Ioss::Utils::decode_filename(const std::string &filename, int proces
   // Examples: basename.8.1, basename.64.03, basename.128.001
 
   // Create a std::string containing the total number of processors
-  std::string num_proc   = to_string(num_processors);
+  std::string num_proc   = std::to_string(num_processors);
   size_t      proc_width = num_proc.length();
 
   // Create a std::string containing the current processor number
-  std::string cur_proc  = to_string(processor);
+  std::string cur_proc  = std::to_string(processor);
   size_t      cur_width = cur_proc.length();
 
   // Build the filename
@@ -250,7 +250,7 @@ std::string Ioss::Utils::encode_entity_name(const std::string &entity_type, int6
   // Sierra   stores these as std::strings. The string is created by
   // concatenating the type, the character '_' and the id.
 
-  std::string id_string   = to_string(id);
+  std::string id_string   = std::to_string(id);
   std::string entity_name = entity_type;
   entity_name += "_";
   entity_name += id_string;
@@ -283,7 +283,7 @@ std::string Ioss::Utils::fixup_type(const std::string &base, int nodes_per_eleme
   // the 'nodes_per_element'.
   if (isdigit(*(type.rbegin())) == 0) {
     if (nodes_per_element > 1) {
-      type += Ioss::Utils::to_string(nodes_per_element);
+      type += std::to_string(nodes_per_element);
     }
   }
 
@@ -334,7 +334,7 @@ std::string Ioss::Utils::fixup_type(const std::string &base, int nodes_per_eleme
     // allows the "omit volume" command to be used in the Sierra
     // applications to skip creating a corresponding element block
     // in the application.
-    type = "super" + Ioss::Utils::to_string(nodes_per_element);
+    type = "super" + std::to_string(nodes_per_element);
   }
   return type;
 }
