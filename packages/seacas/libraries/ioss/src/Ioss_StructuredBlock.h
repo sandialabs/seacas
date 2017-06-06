@@ -41,7 +41,6 @@
 #include <array>
 #include <cassert>
 #include <string>
-#include <smart_assert.h>
 namespace Ioss {
   class Region;
 
@@ -296,7 +295,7 @@ namespace Ioss {
       auto i = ii - m_offsetI;
       auto j = jj - m_offsetJ;
       auto k = kk - m_offsetK;
-      SMART_ASSERT(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1)(i)(j)(k)(m_ni)(m_nj)(m_nk);
+      assert(i > 0 && i <= m_ni + 1 && j > 0 && j <= m_nj + 1 && k > 0 && k <= m_nk + 1);
       return static_cast<size_t>(k - 1) * (m_ni + 1) * (m_nj + 1) +
              static_cast<size_t>(j - 1) * (m_ni + 1) + i - 1;
     }
