@@ -39,11 +39,11 @@
 #include <Ioss_IOFactory.h>  // for IOFactory
 #include <Ioss_Map.h>        // for Map
 #include <Ioss_State.h>      // for State
+#include <cstddef>           // for size_t
+#include <cstdint>           // for int64_t
 #include <iostream>          // for ostream
-#include <stddef.h>          // for nullptr
-#include <stddef.h>          // for size_t
-#include <stdint.h>          // for int64_t
-#include <string>            // for string
+#include <map>
+#include <string> // for string
 
 #include <cgnslib.h>
 
@@ -110,7 +110,7 @@ namespace Iocgns {
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
     size_t finalize_structured_blocks();
     void   finalize_database() override;
-    void   get_step_times() override;
+    void   get_step_times__() override;
 
     void create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
                                    size_t &num_elem);

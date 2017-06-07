@@ -447,7 +447,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    get_step_times();
+    get_step_times__();
 
     // ========================================================================
     // Get the number of families in the mesh...
@@ -513,7 +513,7 @@ namespace Iocgns {
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }
 
-  void DatabaseIO::get_step_times()
+  void DatabaseIO::get_step_times__()
   {
     Utils::get_step_times(cgnsFilePtr, m_timesteps, get_region(), timeScaleFactor, myProcessor);
   }
@@ -541,8 +541,8 @@ namespace Iocgns {
 
       // Flag all nodes used by this block...
       std::vector<size_t> I_nodes(node_count);
-      for (size_t i = 0; i < I_map->map.size() - 1; i++) {
-        auto global     = I_map->map[i + 1] - 1;
+      for (size_t i = 0; i < I_map->map().size() - 1; i++) {
+        auto global     = I_map->map()[i + 1] - 1;
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
@@ -550,8 +550,8 @@ namespace Iocgns {
         const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
         std::vector<cgsize_t> point_list;
         std::vector<cgsize_t> point_list_donor;
-        for (size_t i = 0; i < J_map->map.size() - 1; i++) {
-          auto global = J_map->map[i + 1] - 1;
+        for (size_t i = 0; i < J_map->map().size() - 1; i++) {
+          auto global = J_map->map()[i + 1] - 1;
           if (I_nodes[global] > 0) {
             // Have a match between nodes used by two different blocks,
             // They are adjacent...
@@ -1345,7 +1345,7 @@ namespace Iocgns {
           // Now we have a valid zone so can update some data structures...
           m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
           m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
-          m_globalToBlockLocalNodeMap[zone]->map.swap(nodes);
+          m_globalToBlockLocalNodeMap[zone]->map().swap(nodes);
           m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
 
           // Need to map global nodes to block-local node connectivity
@@ -1448,12 +1448,12 @@ namespace Iocgns {
             // else.
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
-            std::vector<double> x(block_map->map.size() - 1);
-            std::vector<double> y(block_map->map.size() - 1);
-            std::vector<double> z(block_map->map.size() - 1);
+            std::vector<double> x(block_map->map().size() - 1);
+            std::vector<double> y(block_map->map().size() - 1);
+            std::vector<double> z(block_map->map().size() - 1);
 
-            for (size_t i = 0; i < block_map->map.size() - 1; i++) {
-              auto global = block_map->map[i + 1] - 1;
+            for (size_t i = 0; i < block_map->map().size() - 1; i++) {
+              auto global = block_map->map()[i + 1] - 1;
               x[i]        = rdata[global * spatial_dim + 0];
               if (spatial_dim > 1) {
                 y[i] = rdata[global * spatial_dim + 1];
@@ -1488,10 +1488,10 @@ namespace Iocgns {
             // else.
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
-            std::vector<double> xyz(block_map->map.size() - 1);
+            std::vector<double> xyz(block_map->map().size() - 1);
 
-            for (size_t i = 0; i < block_map->map.size() - 1; i++) {
-              auto global = block_map->map[i + 1] - 1;
+            for (size_t i = 0; i < block_map->map().size() - 1; i++) {
+              auto global = block_map->map()[i + 1] - 1;
               xyz[i]      = rdata[global];
             }
 
@@ -1527,14 +1527,14 @@ namespace Iocgns {
         // First entry is for something else.  'block_map' is
         // 1-based.
         const auto &        block_map = block.second;
-        std::vector<double> blk_data(block_map->map.size() - 1);
+        std::vector<double> blk_data(block_map->map().size() - 1);
 
         auto var_type   = field.transformed_storage();
         int  comp_count = var_type->component_count();
 
         if (comp_count == 1) {
-          for (size_t j = 0; j < block_map->map.size() - 1; j++) {
-            auto global = block_map->map[j + 1] - 1;
+          for (size_t j = 0; j < block_map->map().size() - 1; j++) {
+            auto global = block_map->map()[j + 1] - 1;
             blk_data[j] = rdata[global];
           }
           CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
@@ -1546,8 +1546,8 @@ namespace Iocgns {
           char field_suffix_separator = get_field_separator();
 
           for (int i = 0; i < comp_count; i++) {
-            for (size_t j = 0; j < block_map->map.size() - 1; j++) {
-              auto global = block_map->map[j + 1] - 1;
+            for (size_t j = 0; j < block_map->map().size() - 1; j++) {
+              auto global = block_map->map()[j + 1] - 1;
               blk_data[j] = rdata[comp_count * global + i];
             }
             std::string var_name =
