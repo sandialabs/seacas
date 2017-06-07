@@ -442,15 +442,15 @@ namespace {
       // nodeblock at this time since it is used to determine
       // per-processor sizes of nodeblocks and nodesets.
       if (nbs[0]->field_exists("owning_processor")) {
-	std::vector<int> data;
-	nbs[0]->get_field_data("ids", data);
-	nb->put_field_data("ids", data);
+        std::vector<int> data;
+        nbs[0]->get_field_data("ids", data);
+        nb->put_field_data("ids", data);
 
-	nbs[0]->get_field_data("owning_processor", data);
-	nb->put_field_data("owning_processor", data);
+        nbs[0]->get_field_data("owning_processor", data);
+        nb->put_field_data("owning_processor", data);
       }
     }
-    
+
     std::cout << "P[" << rank << "] Number of coordinates per node =" << std::setw(12) << degree
               << "\n";
     std::cout << "P[" << rank << "] Number of nodes                =" << std::setw(12) << num_nodes

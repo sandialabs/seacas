@@ -218,7 +218,7 @@ namespace {
       Ioss::Region region(dbi, "region_1");
 
       if (region.mesh_type() == Ioss::MeshType::HYBRID) {
-	std::cerr
+        std::cerr
             << "\nERROR: io_shell does not support '" << region.mesh_type_string()
             << "' meshes.  Only 'Unstructured' or 'Structured' mesh is supported at this time.\n";
         return;

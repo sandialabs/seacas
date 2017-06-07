@@ -936,10 +936,10 @@ namespace Iopx {
         if (error >= 0) {
           if (entity_type == EX_NODE_MAP) {
             decomp->communicate_node_data(TOPTR(file_data), &entity_map.map()[1], 1);
-	  }
+          }
           else if (entity_type == EX_ELEM_MAP) {
             decomp->communicate_element_data(TOPTR(file_data), &entity_map.map()[1], 1);
-	  }
+          }
         }
         else {
           // Clear out the vector...

@@ -681,7 +681,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
 void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
 {
   // Determine which nodes are shared across processor boundaries.
-  // Only need to check on block boundaries.. 
+  // Only need to check on block boundaries..
 
   // We need to iterate all of the blocks and then each blocks zgc to determine
   // which nodes are shared between processors. For all shared nodes, the node in the lowest
@@ -706,18 +706,20 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
   for (auto &owner_block : blocks) {
     auto owner_ids = owner_block->get_cell_node_ids(true);
     for (const auto &zgc : owner_block->m_zoneConnectivity) {
-      if (zgc.m_isActive && (zgc.m_donorProcessor != my_processor || zgc.m_ownerProcessor != my_processor)) { // Due to processor decomposition.
+      if (zgc.m_isActive &&
+          (zgc.m_donorProcessor != my_processor ||
+           zgc.m_ownerProcessor != my_processor)) { // Due to processor decomposition.
         // NOTE: In parallel, the donor block should exist, but may not have
         // any cells on this processor.  We can access its global i,j,k, but
         // don't store or access any "bulk" data on it.
         auto donor_block = region.get_structured_block(zgc.m_donorName);
         assert(donor_block != nullptr);
 
-	auto donor_ids = donor_block->get_cell_node_ids(true);
-	
+        auto donor_ids = donor_block->get_cell_node_ids(true);
+
         std::vector<int> i_range = zgc.get_range(1);
         std::vector<int> j_range = zgc.get_range(2);
-	std::vector<int> k_range = zgc.get_range(3);
+        std::vector<int> k_range = zgc.get_range(3);
         for (auto &k : k_range) {
           for (auto &j : j_range) {
             for (auto &i : i_range) {
@@ -727,21 +729,24 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
               // The nodes as 'index' and 'owner' are contiguous and
               // should refer to the same node.
 
-	      if (my_processor == zgc.m_ownerProcessor) {
-		ssize_t owner_offset = owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
-		owner_block->m_sharedNode.emplace_back(owner_offset, zgc.m_donorProcessor);
-	      }
-	      else {
-		ssize_t donor_offset = donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
-		donor_block->m_sharedNode.emplace_back(donor_offset, zgc.m_ownerProcessor);
-	      }
+              if (my_processor == zgc.m_ownerProcessor) {
+                ssize_t owner_offset =
+                    owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
+                owner_block->m_sharedNode.emplace_back(owner_offset, zgc.m_donorProcessor);
+              }
+              else {
+                ssize_t donor_offset =
+                    donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
+                donor_block->m_sharedNode.emplace_back(donor_offset, zgc.m_ownerProcessor);
+              }
             }
           }
         }
       }
     }
 #if defined(IOSS_DEBUG_OUTPUT)
-    std::cerr << "P" << my_processor << ", Block " << owner_block->name() << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
+    std::cerr << "P" << my_processor << ", Block " << owner_block->name()
+              << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
 #endif
   }
 }
@@ -814,29 +819,29 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       sb->property_add(Ioss::Property("section", ibc + 1));
       sb->property_add(Ioss::Property("id", (int)block->m_boundaryConditions.size() - 1));
 
-    // Set a property on the sideset specifying the boundary condition type (bocotype)
-    // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
-    if (sset->property_exists("bc_type")) {
-      // Check that the 'bocotype' value matches the value of the property.
-      auto old_bocotype = sset->get_property("bc_type").get_int();
-      if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
-        IOSS_WARNING << "On sideset " << sset->name()
-                     << ", the boundary condition type was previously set to " << old_bocotype
-                     << " which does not match the current value of " << bocotype
-                     << ". It will keep the old value.\n";
+      // Set a property on the sideset specifying the boundary condition type (bocotype)
+      // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
+      if (sset->property_exists("bc_type")) {
+        // Check that the 'bocotype' value matches the value of the property.
+        auto old_bocotype = sset->get_property("bc_type").get_int();
+        if (old_bocotype != bocotype && bocotype != CG_FamilySpecified) {
+          IOSS_WARNING << "On sideset " << sset->name()
+                       << ", the boundary condition type was previously set to " << old_bocotype
+                       << " which does not match the current value of " << bocotype
+                       << ". It will keep the old value.\n";
+        }
+      }
+      else {
+        sset->property_add(Ioss::Property("bc_type", (int)bocotype));
       }
     }
-    else {
-      sset->property_add(Ioss::Property("bc_type", (int)bocotype));
-    }
-  }
     else {
       std::ostringstream errmsg;
       errmsg << "ERROR: CGNS: StructuredBlock '" << block->name()
              << "' Did not find matching sideset with name '" << boconame << "'";
       IOSS_ERROR(errmsg);
     }
-}
+  }
 }
 
 void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double> &timesteps,
