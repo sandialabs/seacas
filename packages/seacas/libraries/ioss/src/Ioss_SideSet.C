@@ -37,7 +37,7 @@
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <algorithm>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 

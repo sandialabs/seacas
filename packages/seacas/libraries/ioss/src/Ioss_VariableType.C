@@ -37,12 +37,12 @@
 #include <Ioss_VariableType.h>
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <map>
 #include <sstream>
-#include <stddef.h>
 #include <string>
 #include <utility>
 #include <vector>

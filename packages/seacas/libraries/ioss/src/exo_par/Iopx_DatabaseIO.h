@@ -122,9 +122,9 @@ namespace Iopx {
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::EdgeBlock *nb, const Ioss::Field &field, void *data,
+    int64_t get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t get_field_internal(const Ioss::FaceBlock *nb, const Ioss::Field &field, void *data,
+    int64_t get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t get_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -152,9 +152,9 @@ namespace Iopx {
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::EdgeBlock *nb, const Ioss::Field &field, void *data,
+    int64_t put_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
-    int64_t put_field_internal(const Ioss::FaceBlock *nb, const Ioss::Field &field, void *data,
+    int64_t put_field_internal(const Ioss::FaceBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
     int64_t put_field_internal(const Ioss::ElementBlock *eb, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -200,10 +200,10 @@ namespace Iopx {
                                  void *data) const;
 
     int64_t read_attribute_field(ex_entity_type type, const Ioss::Field &field,
-                                 const Ioss::GroupingEntity *ge, void *variables) const;
+                                 const Ioss::GroupingEntity *ge, void *data) const;
 
     int64_t write_attribute_field(ex_entity_type type, const Ioss::Field &field,
-                                  const Ioss::GroupingEntity *ge, void *variables) const;
+                                  const Ioss::GroupingEntity *ge, void *data) const;
 
     // Handles subsetting of side blocks.
     int64_t read_ss_transient_field(const Ioss::Field &field, int64_t id, void *variables,
@@ -211,7 +211,7 @@ namespace Iopx {
 
     // Should be made more generic again so can rejoin with write_element_transient field
     void write_nodal_transient_field(ex_entity_type type, const Ioss::Field &field,
-                                     const Ioss::NodeBlock *ge, int64_t count,
+                                     const Ioss::NodeBlock *nb, int64_t count,
                                      void *variables) const;
     // Should be made more generic again so can rejoin with write_nodal_transient field
     void write_entity_transient_field(ex_entity_type type, const Ioss::Field &field,
@@ -224,7 +224,7 @@ namespace Iopx {
     void get_edgeblocks();
     void get_faceblocks();
     void get_elemblocks();
-    void get_blocks(ex_entity_type type, int rank_offset, const std::string &basename);
+    void get_blocks(ex_entity_type entity_type, int rank_offset, const std::string &basename);
 
     void get_sidesets();
 
@@ -262,7 +262,7 @@ namespace Iopx {
 
     int64_t get_side_connectivity(const Ioss::SideBlock *fb, int64_t id, int64_t side_count,
                                   void *fconnect, bool map_ids) const;
-    int64_t get_side_distributions(const Ioss::SideBlock *fb, int64_t id, int64_t side_count,
+    int64_t get_side_distributions(const Ioss::SideBlock *fb, int64_t id, int64_t my_side_count,
                                    double *dist_fact, size_t data_size) const;
 
     int64_t get_side_field(const Ioss::SideBlock *ef_blk, const Ioss::Field &field, void *data,

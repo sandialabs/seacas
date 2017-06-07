@@ -88,7 +88,9 @@ namespace Iocgns {
     int64_t node_global_to_local__(int64_t global, bool must_exist) const override;
     int64_t element_global_to_local__(int64_t global) const override;
 
-    ~DatabaseIO() override = default;
+    ~DatabaseIO() override;
+
+    bool node_major() const override { return false; }
 
     void openDatabase__() const override;
     void closeDatabase__() const override;
@@ -101,12 +103,18 @@ namespace Iocgns {
 
     // Metadata-related functions.
     void read_meta_data__() override;
+    void write_meta_data();
+    void write_results_meta_data();
 
   private:
     void create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node, size_t &num_cell);
     size_t finalize_structured_blocks();
+    void   finalize_database() override;
+    void   get_step_times() override;
+
     void create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
                                    size_t &num_elem);
+    void write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -184,9 +192,16 @@ namespace Iocgns {
     size_t      nodeCount;
     size_t      elementCount;
 
-    std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
+    int m_currentVertexSolutionIndex     = 0;
+    int m_currentCellCenterSolutionIndex = 0;
+
+    mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
+    mutable std::vector<size_t>
+                                       m_bcOffset; // The BC Section element offsets in unstructured output.
+    mutable std::vector<double>        m_timesteps;
     std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
-    std::map<std::string, int> m_zoneNameMap;
+    std::map<std::string, int>         m_zoneNameMap;
+    mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
   };
 }
 #endif

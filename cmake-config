@@ -8,6 +8,15 @@ MPI=OFF
 BUILD_TYPE=Release
 #BUILD_TYPE=Debug
 
+### Define to YES to *disable* all exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then you will need
+### to add the line below.  It will disable blot and fastq
+#-D TPL_ENABLE_X11=OFF \
+
+
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
 ACCESS=$(cd ..; pwd)

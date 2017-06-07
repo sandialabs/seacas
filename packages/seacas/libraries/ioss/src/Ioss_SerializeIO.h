@@ -36,7 +36,7 @@
 
 namespace Ioss {
   class DatabaseIO;
-}
+} // namespace Ioss
 
 namespace Ioss {
 

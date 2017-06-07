@@ -9,49 +9,22 @@
 #include <tokenize.h>
 
 namespace {
-  bool is_separator(const char separator, const char value) { return separator == value; }
-
-  // Split 'str' into 'tokens' based on the 'separator' character.
-  // If 'str' starts with 1 or more 'separator', they are part of the
-  // first token and not used for splitting.  If there are multiple
-  // 'separator' characters in a row, then the first is used to split
-  // and the subsequent 'separator' characters are put as leading
-  // characters of the next token.
-  // __this___is_a_string__for_tokens will split to 6 tokens:
-  // __this __is a string _for tokens
-  void field_tokenize(const std::string &str, const char separator,
-                      std::vector<std::string> &tokens)
+  size_t match(const char *name1, const char *name2)
   {
-    std::string curr_token;
-    // Skip leading separators...
-    size_t i = 0;
-    while (i < str.length() && is_separator(separator, str[i])) {
-      curr_token += str[i++];
-    }
-    for (; i < str.length(); ++i) {
-      char curr_char = str[i];
-
-      // determine if current character is a separator
-      bool is_sep = is_separator(separator, curr_char);
-      if (is_sep && curr_token != "") {
-        // we just completed a token
-        tokens.push_back(curr_token);
-        curr_token.clear();
-        while (i++ < str.length() && is_separator(separator, str[i])) {
-          curr_token += str[i];
+    size_t l1  = std::strlen(name1);
+    size_t l2  = std::strlen(name2);
+    size_t len = l1 < l2 ? l1 : l2;
+    for (size_t i = 0; i < len; i++) {
+      if (name1[i] != name2[i]) {
+        while (i > 0 && (isdigit(name1[i - 1]) != 0) && (isdigit(name2[i - 1]) != 0)) {
+          i--;
+          // Back up to first non-digit so to handle "evar0000, evar0001, ..., evar 1123"
         }
-        i--;
-      }
-      else if (!is_sep) {
-        curr_token += curr_char;
+        return i;
       }
     }
-    if (curr_token != "") {
-      tokens.push_back(curr_token);
-    }
+    return len;
   }
-
-  const std::string SCALAR() { return std::string("scalar"); }
 
   template <typename INT>
   void internal_write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames,
@@ -106,32 +79,6 @@ namespace {
     }
   }
 
-  size_t match(const char *name1, const char *name2)
-  {
-    size_t l1  = std::strlen(name1);
-    size_t l2  = std::strlen(name2);
-    size_t len = l1 < l2 ? l1 : l2;
-    for (size_t i = 0; i < len; i++) {
-      if (name1[i] != name2[i]) {
-        while (i > 0 && (isdigit(name1[i - 1]) != 0) && (isdigit(name2[i - 1]) != 0)) {
-          i--;
-          // Back up to first non-digit so to handle "evar0000, evar0001, ..., evar 1123"
-        }
-        return i;
-      }
-    }
-    return len;
-  }
-
-  size_t get_number(const std::string &suffix)
-  {
-    int  N       = 0;
-    bool all_dig = suffix.find_first_not_of("0123456789") == std::string::npos;
-    if (all_dig) {
-      N = std::strtol(suffix.c_str(), nullptr, 10);
-    }
-    return N;
-  }
 } // namespace
 
 namespace Ioex {
@@ -487,24 +434,6 @@ namespace Ioex {
     }
     db_has_name = false;
     return Ioss::Utils::encode_entity_name(basename, id);
-  }
-
-  char **get_exodus_names(size_t count, int size)
-  {
-    auto names = new char *[count];
-    for (size_t i = 0; i < count; i++) {
-      names[i] = new char[size + 1];
-      std::memset(names[i], '\0', size + 1);
-    }
-    return names;
-  }
-
-  void delete_exodus_names(char **names, int count)
-  {
-    for (int i = 0; i < count; i++) {
-      delete[] names[i];
-    }
-    delete[] names;
   }
 
   void exodus_error(int exoid, int lineno, const char *function, const char *filename)
@@ -931,7 +860,7 @@ namespace Ioex {
     }
 
     // Get the names of the maps...
-    char **names = Ioex::get_exodus_names(map_count, name_length);
+    char **names = Ioss::Utils::get_name_array(map_count, name_length);
     int    ierr  = ex_get_names(exoid, EX_ELEM_MAP, names);
     if (ierr < 0) {
       Ioex::exodus_error(exoid, __LINE__, __func__, __FILE__);
@@ -951,7 +880,7 @@ namespace Ioex {
       block->field_add(Ioss::Field("skin", block->field_int_type(), "Real[2]", Ioss::Field::MESH,
                                    my_element_count));
     }
-    Ioex::delete_exodus_names(names, map_count);
+    Ioss::Utils::delete_name_array(names, map_count);
     return map_count;
   }
 

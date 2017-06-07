@@ -33,9 +33,9 @@
 #include "Ioss_DBUsage.h" // for DatabaseUsage
 #include <Ioss_IOFactory.h>
 #include <Ioss_Utils.h> // for IOSS_ERROR
+#include <cstddef>      // for nullptr
 #include <map>          // for _Rb_tree_iterator, etc
 #include <ostream>      // for operator<<, basic_ostream, etc
-#include <stddef.h>     // for nullptr
 #include <string>       // for char_traits, string, etc
 #include <utility>      // for pair
 namespace {
@@ -58,7 +58,7 @@ namespace {
 namespace Ioss {
   class DatabaseIO;
   class PropertyManager;
-  typedef IOFactoryMap::value_type IOFactoryValuePair;
+  using IOFactoryValuePair = IOFactoryMap::value_type;
 } // namespace Ioss
 
 /** \brief Create an IO database.

@@ -33,8 +33,8 @@
 #include <Ioss_Field.h>
 #include <Ioss_FieldManager.h>
 #include <cassert>
+#include <cstddef>
 #include <map>
-#include <stddef.h>
 #include <string>
 #include <utility>
 
