@@ -33,9 +33,9 @@
 #include <Ioss_Property.h>
 #include <Ioss_PropertyManager.h>
 #include <Ioss_Utils.h>
+#include <cstddef>
 #include <map>
 #include <ostream>
-#include <stddef.h>
 #include <string>
 #include <utility>
 

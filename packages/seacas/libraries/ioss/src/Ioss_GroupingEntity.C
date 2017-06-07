@@ -37,8 +37,8 @@
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
 #include <cassert>
+#include <cstddef>
 #include <iostream>
-#include <stddef.h>
 #include <string>
 #include <vector>
 
@@ -295,5 +295,20 @@ void Ioss::GroupingEntity::verify_field_exists(const std::string &field_name,
            << "' does not exist for " << inout << " on " << type_string() << " " << name()
            << "\n\n";
     IOSS_ERROR(errmsg);
+  }
+}
+
+void Ioss::GroupingEntity::property_update(const std::string &property, int64_t value) const
+{
+  if (property_exists(property)) {
+    if (get_property(property).get_int() != value) {
+      auto *nge = const_cast<Ioss::GroupingEntity *>(this);
+      nge->property_erase(property);
+      nge->property_add(Ioss::Property(property, value));
+    }
+  }
+  else {
+    auto *nge = const_cast<Ioss::GroupingEntity *>(this);
+    nge->property_add(Ioss::Property(property, value));
   }
 }

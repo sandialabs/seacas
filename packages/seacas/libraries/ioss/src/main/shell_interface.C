@@ -181,7 +181,7 @@ void IOShell::Interface::enroll_options()
 
   options_.enroll("surface_split_scheme", Ioss::GetLongOption::MandatoryValue,
                   "Method used to split sidesets into homogenous blocks\n"
-                  "\t\tOptions are: TOPOLOGY, BLOCK, NOSPLIT",
+                  "\t\tOptions are: TOPOLOGY, BLOCK, NO_SPLIT",
                   "TOPOLOGY");
 
 #ifdef SEACAS_HAVE_KOKKOS
@@ -397,6 +397,9 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
         surface_split_type = 1;
       }
       else if (std::strcmp(temp, "ELEMENT_BLOCK") == 0) {
+        surface_split_type = 2;
+      }
+      else if (std::strcmp(temp, "BLOCK") == 0) {
         surface_split_type = 2;
       }
       else if (std::strcmp(temp, "NO_SPLIT") == 0) {
