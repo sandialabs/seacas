@@ -180,7 +180,7 @@ namespace Ioss {
   {
     MPI_Comm_rank(m_comm, &m_processor);
     MPI_Comm_size(m_comm, &m_processorCount);
-    m_method = get_decomposition_method(props, m_processor, m_processorCount);
+    m_method = get_decomposition_method(props, m_processor);
 
     Utils::check_set_bool_property(props, "RETAIN_FREE_NODES", m_retainFreeNodes);
     Utils::check_set_bool_property(props, "DECOMP_SHOW_PROGRESS", m_showProgress);
