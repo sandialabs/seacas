@@ -204,7 +204,7 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    get_step_times();
+    get_step_times__();
 
     m_zoneType = Utils::check_zone_type(cgnsFilePtr);
 
@@ -588,7 +588,7 @@ namespace Iocgns {
     Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
   }
 
-  void ParallelDatabaseIO::get_step_times()
+  void ParallelDatabaseIO::get_step_times__()
   {
     Utils::get_step_times(cgnsFilePtr, m_timesteps, get_region(), timeScaleFactor, myProcessor);
   }
@@ -617,8 +617,8 @@ namespace Iocgns {
 
       // Flag all nodes used by this block...
       std::vector<size_t> I_nodes(node_count);
-      for (size_t i = 0; i < I_map->map.size() - 1; i++) {
-        auto global     = I_map->map[i + 1] - 1;
+      for (size_t i = 0; i < I_map->map().size() - 1; i++) {
+        auto global     = I_map->map()[i + 1] - 1;
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
@@ -626,8 +626,8 @@ namespace Iocgns {
         const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
         CGNSIntVector point_list;
         CGNSIntVector point_list_donor;
-        for (size_t i = 0; i < J_map->map.size() - 1; i++) {
-          auto global = J_map->map[i + 1] - 1;
+        for (size_t i = 0; i < J_map->map().size() - 1; i++) {
+          auto global = J_map->map()[i + 1] - 1;
           if (I_nodes[global] > 0) {
             // Have a match between nodes used by two different blocks,
             // They are adjacent...
@@ -1299,7 +1299,7 @@ namespace Iocgns {
         for (const auto &block : m_globalToBlockLocalNodeMap) {
           auto        zone      = block.first;
           const auto &block_map = block.second;
-          node_count[zone - 1]  = block_map->map.size() - 1;
+          node_count[zone - 1]  = block_map->map().size() - 1;
         }
         MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
                    MPI_SUM, util().communicator());
@@ -1315,12 +1315,12 @@ namespace Iocgns {
             // else.
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
-            std::vector<double> x(block_map->map.size() - 1);
-            std::vector<double> y(block_map->map.size() - 1);
-            std::vector<double> z(block_map->map.size() - 1);
+            std::vector<double> x(block_map->map().size() - 1);
+            std::vector<double> y(block_map->map().size() - 1);
+            std::vector<double> z(block_map->map().size() - 1);
 
-            for (size_t i = 0; i < block_map->map.size() - 1; i++) {
-              auto global = block_map->map[i + 1];
+            for (size_t i = 0; i < block_map->map().size() - 1; i++) {
+              auto global = block_map->map()[i + 1];
               auto local  = nodeMap.global_to_local(global) - 1;
               assert(local >= 0 && local < (int64_t)num_to_get);
 
@@ -1367,10 +1367,10 @@ namespace Iocgns {
             // else.
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
-            std::vector<double> xyz(block_map->map.size() - 1);
+            std::vector<double> xyz(block_map->map().size() - 1);
 
-            for (size_t i = 0; i < block_map->map.size() - 1; i++) {
-              auto global = block_map->map[i + 1];
+            for (size_t i = 0; i < block_map->map().size() - 1; i++) {
+              auto global = block_map->map()[i + 1];
               auto local  = nodeMap.global_to_local(global) - 1;
               xyz[i]      = rdata[local];
             }
@@ -1415,7 +1415,7 @@ namespace Iocgns {
       for (const auto &block : m_globalToBlockLocalNodeMap) {
         auto        zone      = block.first;
         const auto &block_map = block.second;
-        node_count[zone - 1]  = block_map->map.size() - 1;
+        node_count[zone - 1]  = block_map->map().size() - 1;
       }
       MPI_Exscan(TOPTR(node_count), TOPTR(node_offset), num_zones, Ioss::mpi_type(node_count[0]),
                  MPI_SUM, util().communicator());
@@ -1431,7 +1431,7 @@ namespace Iocgns {
         // First entry is for something else.  'block_map' is
         // 1-based.
         const auto &        block_map = block.second;
-        std::vector<double> blk_data(block_map->map.size() - 1);
+        std::vector<double> blk_data(block_map->map().size() - 1);
 
         cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
         cgsize_t range_max[1] = {range_min[0] + node_count[zone - 1] - 1};
@@ -1441,8 +1441,8 @@ namespace Iocgns {
           char field_suffix_separator = get_field_separator();
 
           for (size_t i = 0; i < comp_count; i++) {
-            for (size_t j = 0; j < block_map->map.size() - 1; j++) {
-              auto global = block_map->map[j + 1] - 1;
+            for (size_t j = 0; j < block_map->map().size() - 1; j++) {
+              auto global = block_map->map()[j + 1] - 1;
               blk_data[j] = rdata[comp_count * global + i];
             }
             std::string var_name =
@@ -1596,10 +1596,10 @@ namespace Iocgns {
         // Now we have a valid zone so can update some data structures...
         m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
         m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
-        m_globalToBlockLocalNodeMap[zone]->map.reserve(nodes.size() + 1);
-        m_globalToBlockLocalNodeMap[zone]->map.push_back(1); // Non one-to-one map
+        m_globalToBlockLocalNodeMap[zone]->map().reserve(nodes.size() + 1);
+        m_globalToBlockLocalNodeMap[zone]->map().push_back(1); // Non one-to-one map
         for (auto i : nodes) {
-          m_globalToBlockLocalNodeMap[zone]->map.push_back(i);
+          m_globalToBlockLocalNodeMap[zone]->map().push_back(i);
         }
       }
       else {
@@ -1984,13 +1984,13 @@ namespace Iocgns {
      * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
      *       should be in the orginal order...
      */
-    if (!nodeMap.defined) {
-      if (nodeMap.map.empty()) {
-        nodeMap.map.resize(num_to_get + 1);
-        nodeMap.map[0] = -1;
+    if (!nodeMap.defined()) {
+      if (nodeMap.map().empty()) {
+        nodeMap.map().resize(num_to_get + 1);
+        nodeMap.map()[0] = -1;
       }
 
-      if (nodeMap.map[0] == -1) {
+      if (nodeMap.map()[0] == -1) {
         if (int_byte_size_api() == 4) {
           nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
         }
@@ -2005,7 +2005,7 @@ namespace Iocgns {
       // Only a single nodeblock and all set
       assert(nodeMap.map[0] == -1 || nodeMap.reverse.size() == (size_t)num_to_get);
       assert(get_region()->get_property("node_block_count").get_int() == 1);
-      nodeMap.defined = true;
+      nodeMap.set_defined(true);
     }
     return num_to_get;
   }
