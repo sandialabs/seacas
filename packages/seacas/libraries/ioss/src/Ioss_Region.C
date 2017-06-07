@@ -253,7 +253,6 @@ namespace Ioss {
 
   MeshType Region::mesh_type() const
   {
-    IOSS_FUNC_ENTER(m_);
     if (elementBlocks.empty() && structuredBlocks.empty()) {
       return MeshType::UNSTRUCTURED;
     }
