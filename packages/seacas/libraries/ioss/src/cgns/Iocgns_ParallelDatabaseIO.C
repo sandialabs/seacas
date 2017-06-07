@@ -2003,7 +2003,7 @@ namespace Iocgns {
       nodeMap.build_reorder_map(0, num_to_get);
 
       // Only a single nodeblock and all set
-      assert(nodeMap.map[0] == -1 || nodeMap.reverse.size() == (size_t)num_to_get);
+      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)num_to_get);
       assert(get_region()->get_property("node_block_count").get_int() == 1);
       nodeMap.set_defined(true);
     }
