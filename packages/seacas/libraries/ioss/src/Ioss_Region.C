@@ -190,6 +190,9 @@ namespace Ioss {
 
   Region::~Region()
   {
+    // Do anything to the database to make it consistent prior to closing and desctructing...
+    get_database()->finalize_database();
+
     // Region owns all sub-grouping entities it contains...
     try {
       IOSS_FUNC_ENTER(m_);
@@ -245,6 +248,8 @@ namespace Ioss {
   }
 
   void Region::delete_database() { GroupingEntity::really_delete_database(); }
+
+  bool Region::node_major() const { return get_database()->node_major(); }
 
   MeshType Region::mesh_type() const
   {

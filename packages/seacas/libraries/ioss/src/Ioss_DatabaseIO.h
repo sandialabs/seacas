@@ -33,7 +33,7 @@
 #ifndef IOSS_Ioss_DatabaseIO_h
 #define IOSS_Ioss_DatabaseIO_h
 
-#include <Ioss_BoundingBox.h> // for AxisAlignedBoundingBox
+#include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_DBUsage.h>         // for DatabaseUsage, etc
 #include <Ioss_DataSize.h>        // for DataSize
@@ -42,9 +42,9 @@
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State, State::STATE_INVALID
 #include <Ioss_SurfaceSplit.h>    // for SurfaceSplitType
+#include <cstddef>                // for size_t, nullptr
+#include <cstdint>                // for int64_t
 #include <map>                    // for map
-#include <stddef.h>               // for size_t, nullptr
-#include <stdint.h>               // for int64_t
 #include <string>                 // for string
 #include <utility>                // for pair
 #include <vector>                 // for vector
@@ -65,7 +65,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 namespace Ioss {
   class EntityBlock;
@@ -123,6 +123,13 @@ namespace Ioss {
       return element_global_to_local__(global);
     }
 
+    /** If there is a single block of nodes in the model, then it is
+     *	considered a node_major() database.  If instead the nodes are
+     * local to each element block or structured block, then it is
+     *	 not a node_major database.  Exodus is node major, CGNS is not.
+     */
+    virtual bool node_major() const { return true; }
+
     virtual ~DatabaseIO();
 
     // Eliminate as much memory as possible, but still retain meta data information
@@ -132,6 +139,10 @@ namespace Ioss {
       IOSS_FUNC_ENTER(m_);
       release_memory__();
     }
+
+    // Do anything that might be needed to the database prior to it
+    // being closed and destructed.
+    virtual void finalize_database() {}
 
     /** \brief Get the file name associated with the database.
      *
@@ -365,7 +376,7 @@ namespace Ioss {
     set_maximum_symbol_length(int /* requested_symbol_size */){}; // Default does nothing...
 
     char get_field_separator() const;
-    void set_field_separator(const char separator);
+    void set_field_separator(char separator);
     void set_lower_case_variable_names(bool true_false) const
     {
       lowerCaseVariableNames = true_false;
@@ -637,8 +648,8 @@ namespace Ioss {
                                        size_t data_size) const = 0;
     virtual int64_t get_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
-    virtual int64_t get_field_internal(const StructuredBlock *sb, const Field &field, void *data,
-                                       size_t data_size) const
+    virtual int64_t get_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
+                                       void * /*data*/, size_t /*data_size*/) const
     {
       return 0;
     }
@@ -667,8 +678,8 @@ namespace Ioss {
                                        size_t data_size) const = 0;
     virtual int64_t put_field_internal(const CommSet *cs, const Field &field, void *data,
                                        size_t data_size) const = 0;
-    virtual int64_t put_field_internal(const StructuredBlock *sb, const Field &field, void *data,
-                                       size_t data_size) const
+    virtual int64_t put_field_internal(const StructuredBlock * /*sb*/, const Field & /*field*/,
+                                       void * /*data*/, size_t /*data_size*/) const
     {
       return 0;
     }
@@ -701,5 +712,5 @@ namespace Ioss {
     bool ignoreDatabaseNames; // True if "block_{id}" used as canonical name; ignore any names on
                               // database.
   };
-}
+} // namespace Ioss
 #endif

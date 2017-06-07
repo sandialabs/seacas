@@ -36,9 +36,9 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Field.h> // for Field, Field::RoleType
 #include <Ioss_Utils.h> // for Utils
+#include <cstddef>      // for size_t
 #include <functional>   // for binary_function
 #include <map>          // for map, map<>::value_compare
-#include <stddef.h>     // for size_t
 #include <string>       // for string
 #include <vector>       // for vector
 
@@ -48,14 +48,14 @@ namespace Ioss {
   class StringCmp : public std::binary_function<std::string, std::string, bool>
   {
   public:
-    StringCmp() {}
+    StringCmp() = default;
     bool operator()(const std::string &s1, const std::string &s2) const
     {
       return Utils::case_strcmp(s1, s2) < 0;
     }
   };
   typedef std::map<std::string, Field, StringCmp> FieldMapType;
-  typedef FieldMapType::value_type FieldValuePair;
+  using FieldValuePair = FieldMapType::value_type;
 
   /** \brief A collection of Ioss::Field objects.
    */
@@ -95,5 +95,5 @@ namespace Ioss {
     mutable std::mutex m_;
 #endif
   };
-}
+} // namespace Ioss
 #endif

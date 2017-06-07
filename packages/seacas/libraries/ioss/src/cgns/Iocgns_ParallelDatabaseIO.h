@@ -51,54 +51,26 @@
 
 namespace Ioss {
   class CommSet;
-}
-namespace Ioss {
   class EdgeBlock;
-}
-namespace Ioss {
   class EdgeSet;
-}
-namespace Ioss {
   class ElementBlock;
-}
-namespace Ioss {
   class ElementSet;
-}
-namespace Ioss {
   class ElementTopology;
-}
-namespace Ioss {
   class FaceBlock;
-}
-namespace Ioss {
   class FaceSet;
-}
-namespace Ioss {
   class Field;
-}
-namespace Ioss {
   class GroupingEntity;
-}
-namespace Ioss {
   class NodeBlock;
-}
-namespace Ioss {
   class NodeSet;
-}
-namespace Ioss {
   class Region;
-}
-namespace Ioss {
   class SideBlock;
-}
-namespace Ioss {
   class SideSet;
-}
-namespace Ioss {
   class EntityBlock;
 }
 
 namespace Iocgns {
+
+  using CGNSIntVector = std::vector<cgsize_t>;
 
   class ParallelDatabaseIO : public Ioss::DatabaseIO
   {
@@ -124,6 +96,7 @@ namespace Iocgns {
 
     void openDatabase__() const override;
     void closeDatabase__() const override;
+    bool node_major() const override { return false; }
 
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
@@ -133,11 +106,17 @@ namespace Iocgns {
 
     // Metadata-related functions.
     void read_meta_data__() override;
+    void write_meta_data();
+    void write_results_meta_data();
 
   private:
-    void   handle_structured_blocks();
-    void   handle_unstructured_blocks();
-    size_t finalize_structured_blocks();
+    void    handle_structured_blocks();
+    void    handle_unstructured_blocks();
+    size_t  finalize_structured_blocks();
+    int64_t handle_node_ids(void *ids, int64_t num_to_get) const;
+    void finalize_database() override;
+    void get_step_times() override;
+    void write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -199,6 +178,8 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
     // Bulk Data
+    void resolve_zone_shared_nodes(const CGNSIntVector &nodes, CGNSIntVector &connectivity_map,
+                                   size_t &owned_node_count, size_t &owned_node_offset) const;
 
     // MAPS -- Used to convert from local exodusII ids/names to Sierra
     // database global ids/names
@@ -218,9 +199,20 @@ namespace Iocgns {
 
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 
-    std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
-    std::vector<std::vector<cgsize_t>> m_blockLocalNodeMap;
-    std::map<std::string, int> m_zoneNameMap;
+    int m_currentVertexSolutionIndex     = 0;
+    int m_currentCellCenterSolutionIndex = 0;
+
+    mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
+
+    // Of the cells/elements in this zone, this proc handles those starting at m_zoneProcOffset+1 to
+    // m_zoneProcOffset+num_entity.
+    mutable std::vector<size_t> m_zoneProcOffset;
+    mutable std::vector<size_t>
+                                m_bcOffset; // The BC Section element offsets in unstructured output.
+    mutable std::vector<double> m_timesteps;
+    std::vector<CGNSIntVector>  m_blockLocalNodeMap;
+    std::map<std::string, int>         m_zoneNameMap;
+    mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
   };
 }
 #endif
