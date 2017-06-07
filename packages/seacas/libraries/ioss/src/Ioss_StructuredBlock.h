@@ -54,8 +54,8 @@ namespace Ioss {
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_ownerProcessor(-1), m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
-          m_intraBlock(intra_block), m_isActive(true)
+          m_ownerProcessor(-1), m_donorProcessor(-1), m_sameRange(false),
+          m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block), m_isActive(true)
     {
       if (!m_intraBlock) {
         m_ownerRange[0] = m_rangeBeg[0];
@@ -113,7 +113,7 @@ namespace Ioss {
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int  m_ownerZone;      // "id" of zone that owns this connection
     int  m_donorZone;      // "id" of zone that is donor of this connection
-    int  m_ownerProcessor;  // processor that owns the owner zone
+    int  m_ownerProcessor; // processor that owns the owner zone
     int  m_donorProcessor; // processor that owns the donor zone
     bool m_sameRange; // True if owner and donor range should always match...(special use during
                       // decomp)
@@ -317,7 +317,7 @@ namespace Ioss {
 
     std::vector<int> get_cell_node_ids(bool add_offset) const
     {
-      size_t node_count = get_property("node_count").get_int();
+      size_t           node_count = get_property("node_count").get_int();
       std::vector<int> ids(node_count);
       get_cell_node_ids(ids.data(), add_offset);
       return ids;

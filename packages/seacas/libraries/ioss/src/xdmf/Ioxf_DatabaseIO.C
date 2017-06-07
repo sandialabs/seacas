@@ -1051,8 +1051,7 @@ namespace Ioxf {
         std::string block_name = ge->name();
 
         std::string FinalName(hdfname.tailname().c_str());
-        FinalName +=
-            ":/" + block_name + "/Iteration " + std::to_string(step) + "/" + var_name;
+        FinalName += ":/" + block_name + "/Iteration " + std::to_string(step) + "/" + var_name;
         XdmfArray *ScalarArray = new XdmfArray();
         if (sizeof(double) == 8)
           ScalarArray->SetNumberType(XDMF_FLOAT64_TYPE);
@@ -1076,8 +1075,8 @@ namespace Ioxf {
         ScalarArray->SetDataPointer(&temp[0]);
 
         std::string FinalName(hdfname.tailname().c_str());
-        FinalName += ":/NodeSets/" + std::to_string(id) + "/Iteration " +
-                     std::to_string(step) + "/" + var_name;
+        FinalName += ":/NodeSets/" + std::to_string(id) + "/Iteration " + std::to_string(step) +
+                     "/" + var_name;
 
         WriteHdfDataset(FinalName, ScalarArray, __LINE__);
         delete ScalarArray;
@@ -1092,8 +1091,8 @@ namespace Ioxf {
         ScalarArray->SetDataPointer(&temp[0]);
 
         std::string FinalName(hdfname.tailname().c_str());
-        FinalName += ":/SideSets/" + std::to_string(id) + "/Iteration " +
-                     std::to_string(step) + "/" + var_name;
+        FinalName += ":/SideSets/" + std::to_string(id) + "/Iteration " + std::to_string(step) +
+                     "/" + var_name;
         WriteHdfDataset(FinalName, ScalarArray, __LINE__);
         delete ScalarArray;
       }
