@@ -256,7 +256,7 @@ namespace Ioss {
     if (elementBlocks.empty() && structuredBlocks.empty()) {
       return MeshType::UNSTRUCTURED;
     }
-    else if (!elementBlocks.empty() && !structuredBlocks.empty()) {
+    if (!elementBlocks.empty() && !structuredBlocks.empty()) {
       return MeshType::HYBRID;
     }
     else if (!structuredBlocks.empty()) {
@@ -1323,7 +1323,7 @@ namespace Ioss {
     if (io_type == EDGEBLOCK) {
       return get_edge_block(my_name);
     }
-    else if (io_type == SIDESET) {
+    if (io_type == SIDESET) {
       return get_sideset(my_name);
     }
     else if (io_type == NODESET) {
@@ -1717,7 +1717,7 @@ namespace Ioss {
       }
       return true;
     }
-    else if (((io_type & STRUCTUREDBLOCK) != 0u) && get_structured_block(my_name) != nullptr) {
+    if (((io_type & STRUCTUREDBLOCK) != 0u) && get_structured_block(my_name) != nullptr) {
       if (my_type != nullptr) {
         *my_type = "STRUCTURED_BLOCK";
       }

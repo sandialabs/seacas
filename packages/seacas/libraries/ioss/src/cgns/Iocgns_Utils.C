@@ -218,13 +218,11 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
   else if (index & CG_CELL_CENTER_FIELD_ID) {
     return true;
   }
-  if (field.get_name() == "mesh_model_coordinates" ||
-      field.get_name() == "mesh_model_coordinates_x" ||
-      field.get_name() == "mesh_model_coordinates_y" ||
-      field.get_name() == "mesh_model_coordinates_z" || field.get_name() == "cell_node_ids") {
-    return false;
-  }
-  return true; // Default to cell field...
+  return !(field.get_name() == "mesh_model_coordinates" ||
+           field.get_name() == "mesh_model_coordinates_x" ||
+           field.get_name() == "mesh_model_coordinates_y" ||
+           field.get_name() == "mesh_model_coordinates_z" ||
+           field.get_name() == "cell_node_ids"); // Default to cell field...
 }
 
 void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
@@ -501,10 +499,9 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
             cg_free(db_step);
             return i + 1;
           }
-          else {
-            cg_free(db_step);
-            break; // Found "step" descriptor, but wasn't correct step...
-          }
+
+          cg_free(db_step);
+          break; // Found "step" descriptor, but wasn't correct step...
         }
       }
       if (!found_step_descriptor) {
@@ -792,10 +789,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       auto *db = block->get_database();
       sset     = new Ioss::SideSet(db, boconame);
       if (sset == nullptr) {
-	std::ostringstream errmsg;
-	errmsg << "ERROR: CGNS: Could not create sideset named '" << boconame
-	       << "' on block '" << block->name() << "'.\n";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Could not create sideset named '" << boconame << "' on block '"
+               << block->name() << "'.\n";
+        IOSS_ERROR(errmsg);
       }
       sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...
       db->get_region()->add(sset);
@@ -1021,12 +1018,13 @@ int Iocgns::Utils::get_step_times(int cgnsFilePtr, std::vector<double> &timestep
   if (ierr == CG_NODE_NOT_FOUND) {
     return num_timesteps;
   }
-  else if (ierr == CG_ERROR) {
+  if (ierr == CG_ERROR) {
     Utils::cgns_error(cgnsFilePtr, __FILE__, __func__, __LINE__, myProcessor);
   }
 
-  if (num_timesteps <= 0)
+  if (num_timesteps <= 0) {
     return num_timesteps;
+  }
 
   // Read the timestep time values.
   CGCHECK(cg_goto(cgnsFilePtr, base, "BaseIterativeData_t", 1, "end"));

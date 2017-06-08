@@ -1286,8 +1286,9 @@ namespace Iocgns {
 
           CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex,
                                  CG_RealDouble, var_name.c_str(), cgns_data.data(), &cgns_field));
-          if (i == 0)
+          if (i == 0) {
             Utils::set_field_index(field, cgns_field, CG_CellCenter);
+          }
         }
       }
     }
@@ -1389,8 +1390,9 @@ namespace Iocgns {
 
             CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex,
                                    CG_RealDouble, var_name.c_str(), cgns_data.data(), &cgns_field));
-            if (i == 0)
+            if (i == 0) {
               Utils::set_field_index(field, cgns_field, CG_CellCenter);
+            }
           }
         }
       }
@@ -1554,8 +1556,9 @@ namespace Iocgns {
                 var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
             CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
                                    CG_RealDouble, var_name.c_str(), blk_data.data(), &cgns_field));
-            if (i == 0)
+            if (i == 0) {
               Utils::set_field_index(field, cgns_field, CG_Vertex);
+            }
           }
         }
       }
@@ -1654,9 +1657,8 @@ namespace Iocgns {
         CGCHECK(cg_parent_data_write(cgnsFilePtr, base, zone, sect, TOPTR(parent)));
         return num_to_get;
       }
-      else {
-        num_to_get = Ioss::Utils::field_warning(sb, field, "output");
-      }
+
+      num_to_get = Ioss::Utils::field_warning(sb, field, "output");
     }
     else {
       num_to_get = Ioss::Utils::field_warning(sb, field, "output");
