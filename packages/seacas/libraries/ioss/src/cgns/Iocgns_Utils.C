@@ -265,9 +265,9 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
 
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
     CGERR(cg_goto(file_ptr, base, "Family_t", fam, NULL));
-    CGERR(cg_descriptor_write("FamBC_TypeId", Ioss::Utils::to_string(bocotype).c_str()));
+    CGERR(cg_descriptor_write("FamBC_TypeId", std::to_string(bocotype).c_str()));
     CGERR(cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]));
-    CGERR(cg_descriptor_write("FamBC_UserId", Ioss::Utils::to_string(id).c_str()));
+    CGERR(cg_descriptor_write("FamBC_UserId", std::to_string(id).c_str()));
     CGERR(cg_descriptor_write("FamBC_UserName", ss->name().c_str()));
   }
 
@@ -430,7 +430,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
 {
   std::string c_name = "CellCenterSolutionAtStep";
   std::string v_name = "VertexSolutionAtStep";
-  std::string step   = Ioss::Utils::to_string(state);
+  std::string step   = std::to_string(state);
   c_name += step;
   v_name += step;
 
@@ -474,7 +474,7 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
 int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int step,
                                        CG_GridLocation_t location)
 {
-  auto str_step = Ioss::Utils::to_string(step);
+  auto str_step = std::to_string(step);
   int  nsols    = 0;
   CGCHECKNP(cg_nsols(cgnsFilePtr, base, zone, &nsols));
   bool location_matches = false;
@@ -872,7 +872,7 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
   std::vector<char> names(32 * timesteps.size(), ' ');
   for (size_t state = 0; state < timesteps.size(); state++) {
     // This name is the "postfix" or common portion of all FlowSolution names...
-    std::string name = "SolutionAtStep" + Ioss::Utils::to_string(state + 1);
+    std::string name = "SolutionAtStep" + std::to_string(state + 1);
     std::strncpy(&names[state * 32], name.c_str(), 32);
     for (size_t i = name.size(); i < 32; i++) {
       names[state * 32 + i] = ' ';
