@@ -115,7 +115,7 @@ namespace Iocgns {
     size_t  finalize_structured_blocks();
     int64_t handle_node_ids(void *ids, int64_t num_to_get) const;
     void finalize_database() override;
-    void get_step_times() override;
+    void get_step_times__() override;
     void write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,

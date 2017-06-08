@@ -791,6 +791,12 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       // Need to create a new sideset since didn't see this earlier.
       auto *db = block->get_database();
       sset     = new Ioss::SideSet(db, boconame);
+      if (sset == nullptr) {
+	std::ostringstream errmsg;
+	errmsg << "ERROR: CGNS: Could not create sideset named '" << boconame
+	       << "' on block '" << block->name() << "'.\n";
+	IOSS_ERROR(errmsg);
+      }
       sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...
       db->get_region()->add(sset);
     }
