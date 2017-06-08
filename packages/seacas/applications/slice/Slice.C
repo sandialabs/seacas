@@ -93,7 +93,7 @@ namespace {
   {
     static auto start = std::chrono::high_resolution_clock::now();
 
-    if (debug_level & 1) {
+    if ((debug_level & 1) != 0) {
       auto                          now  = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = now - start;
       std::cerr << " [" << std::fixed << std::setprecision(2) << diff.count() << " - "
@@ -103,7 +103,7 @@ namespace {
 
   void proc_progress(int p, int proc_count)
   {
-    if ((debug_level & 4) && ((p + 1) % (proc_count / 20) == 0)) {
+    if (((debug_level & 4) != 0) && ((p + 1) % (proc_count / 20) == 0)) {
       progress("\t\tProcessor " + std::to_string(p + 1));
     }
   }
@@ -129,8 +129,9 @@ namespace {
   {
     progress(__func__);
     for (size_t i = 0; i < map.size(); i++) {
-      if (map[i] != i + 1)
+      if (map[i] != i + 1) {
         return false;
+}
     }
     return true;
   }
@@ -175,8 +176,8 @@ namespace {
   struct my_numpunct : std::numpunct<char>
   {
   protected:
-    char        do_thousands_sep() const { return ','; }
-    std::string do_grouping() const { return "\3"; }
+    char        do_thousands_sep() const override { return ','; }
+    std::string do_grouping() const override { return "\3"; }
   };
 }
 // ========================================================================
@@ -225,9 +226,10 @@ int main(int argc, char *argv[])
     // filename and if so, extract the basename.
     Ioss::FileInfo nemesis(nem_file);
     std::string    sep = "/";
-    if (path[path.length() - 1] == '/')
+    if (path[path.length() - 1] == '/') {
       sep    = "";
-    nem_file = path + sep + nemesis.tailname();
+    
+}nem_file = path + sep + nemesis.tailname();
   }
 
   OUTPUT << "Input:    '" << interface.inputFile_ << '\n';
@@ -247,7 +249,7 @@ int main(int argc, char *argv[])
   //========================================================================
   Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(interface.inputFormat_, interface.inputFile_,
                                                   Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-  if (dbi == NULL || !dbi->ok(true)) {
+  if (dbi == nullptr || !dbi->ok(true)) {
     std::exit(EXIT_FAILURE);
   }
 
@@ -353,8 +355,9 @@ namespace {
       size_t proc = 0;
       for (size_t elem = 0; elem < element_count; elem++) {
         elem_to_proc.push_back(proc++);
-        if (proc >= interface.processor_count())
+        if (proc >= interface.processor_count()) {
           proc = 0;
+}
       }
     }
 
@@ -456,7 +459,7 @@ namespace {
       // 2 elements (1, 102) on processor 0 and 100 elements (2..101)
       // on processor 1.
 
-      std::string filename = interface.decomposition_file();
+      const std::string& filename = interface.decomposition_file();
       if (filename.empty()) {
         OUTPUT << "\nERROR: No element decomposition file specified.\n";
         exit(EXIT_FAILURE);
@@ -483,13 +486,13 @@ namespace {
         }
         else if (tokens.size() == 1) {
           // Just a processor specification for the next element...
-          proc = strtoul(tokens[0].c_str(), NULL, 0);
+          proc = strtoul(tokens[0].c_str(), nullptr, 0);
           elem_to_proc.push_back(proc);
         }
         else {
           // Count and processor specified.
-          count = strtoul(tokens[0].c_str(), NULL, 0);
-          proc  = strtoul(tokens[1].c_str(), NULL, 0);
+          count = strtoul(tokens[0].c_str(), nullptr, 0);
+          proc  = strtoul(tokens[1].c_str(), nullptr, 0);
         }
         if (proc > interface.processor_count()) {
           OUTPUT << "\nERROR: Invalid processor " << proc << " specified on line " << line_num
@@ -557,9 +560,7 @@ namespace {
       }
 
       auto &side_blocks = gss->get_side_blocks();
-      for (size_t b = 0; b < side_blocks.size(); b++) {
-        Ioss::SideBlock *gsb = side_blocks[b];
-
+      for (auto gsb : side_blocks) {
         std::vector<INT> ss_elems;
         gsb->get_field_data("element_side_raw", ss_elems);
 
@@ -575,7 +576,7 @@ namespace {
         auto &elem_type = gsb->parent_element_topology()->name();
 
         for (size_t p = 0; p < proc_count; p++) {
-          Ioss::SideBlock *side_block = new Ioss::SideBlock(proc_region[p]->get_database(), name,
+          auto *side_block = new Ioss::SideBlock(proc_region[p]->get_database(), name,
                                                             side_type, elem_type, pss[p]);
           sset[p]->add(side_block);
         }
@@ -608,8 +609,7 @@ namespace {
       }
 
       auto &side_blocks = gss->get_side_blocks();
-      for (size_t b = 0; b < side_blocks.size(); b++) {
-        Ioss::SideBlock *gsb     = side_blocks[b];
+      for (auto gsb : side_blocks) {
         auto &           sb_name = gsb->name();
 
         std::vector<Ioss::SideBlock *> proc_sb(proc_count);
@@ -635,15 +635,17 @@ namespace {
         for (size_t p = 0; p < proc_count; p++) {
           Ioss::SideBlock *psb = proc_sb[p];
           psb->put_field_data("element_side", psb_elems[p]);
-          if (minimize_open_files)
+          if (minimize_open_files) {
             proc_region[p]->get_database()->closeDatabase();
+}
           proc_progress(p, proc_count);
         }
       }
     }
-    if (set_count > 0)
+    if (set_count > 0) {
       OUTPUT << "WARNING: Sideset distribution factors not yet handled correctly.\n";
-  }
+  
+}}
 
   template <typename INT>
   void output_communication_map(std::vector<Ioss::Region *> &  proc_region,
@@ -656,8 +658,9 @@ namespace {
       commset->put_field_data("entity_processor", border_node_proc_map[p]);
       border_node_proc_map[p].resize(0);
       border_node_proc_map[p].shrink_to_fit();
-      if (minimize_open_files)
+      if (minimize_open_files) {
         proc_region[p]->get_database()->closeDatabase();
+}
       proc_progress(p, proc_count);
     }
     border_node_proc_map.resize(0);
@@ -705,8 +708,9 @@ namespace {
           size_t node = i + 1;
           size_t proc = node_to_proc[j];
           for (size_t k = beg; k < end; k++) {
-            if (j == k)
+            if (j == k) {
               continue;
+}
             size_t p = node_to_proc[k];
             border_node_proc_map[p].push_back(node);
             border_node_proc_map[p].push_back(proc);
@@ -741,14 +745,15 @@ namespace {
       //
       // For each node on this processor that isn't an interior node,
       // create the <node,proc> pair...
-      Ioss::CommSet *commset = new Ioss::CommSet(region->get_database(), "commset_node", "node",
+      auto *commset = new Ioss::CommSet(region->get_database(), "commset_node", "node",
                                                  border_node_proc_map[p].size() / 2);
       commset->property_add(Ioss::Property("id", 1));
       region->add(commset);
-      if (debug_level & 2)
+      if (debug_level & 2) {
         OUTPUT << "Commset for processor " << p << " has " << border_node_proc_map[p].size() / 2
                << " entries.\n";
-    }
+    
+}}
   }
 
   template <typename INT>
@@ -782,17 +787,20 @@ namespace {
       }
 
       auto &name = ns[s]->name();
-      if (debug_level & 2)
+      if (debug_level & 2) {
         OUTPUT << "\tNodeset " << name << "-- ";
-      for (size_t p = 0; p < proc_count; p++) {
-        Ioss::NodeSet *node_set = new Ioss::NodeSet(proc_region[p]->get_database(), name, pns[p]);
+      
+}for (size_t p = 0; p < proc_count; p++) {
+        auto *node_set = new Ioss::NodeSet(proc_region[p]->get_database(), name, pns[p]);
         proc_region[p]->add(node_set);
-        if (debug_level & 2)
+        if (debug_level & 2) {
           OUTPUT << p << ":" << pns[p] << ", ";
-      }
-      if (debug_level & 2)
+      
+}}
+      if (debug_level & 2) {
         OUTPUT << "\n";
-    }
+    
+}}
   }
 
   template <typename INT>
@@ -845,8 +853,9 @@ namespace {
         Ioss::NodeSet *proc_ns = proc_region[p]->get_nodesets()[s];
         proc_ns->put_field_data("ids", pns_nodes[p]);
         proc_ns->put_field_data("distribution_factors", pns_df[p]);
-        if (minimize_open_files)
+        if (minimize_open_files) {
           proc_region[p]->get_database()->closeDatabase();
+}
         proc_progress(p, proc_count);
       }
     }
@@ -881,8 +890,9 @@ namespace {
     for (size_t p = 0; p < proc_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("ids", proc_map[p]);
-      if (minimize_open_files)
+      if (minimize_open_files) {
         proc_region[p]->get_database()->closeDatabase();
+}
       proc_progress(p, proc_count);
     }
   }
@@ -927,8 +937,9 @@ namespace {
     for (size_t p = 0; p < proc_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
       nb->put_field_data("ids", proc_map[p]);
-      if (minimize_open_files)
+      if (minimize_open_files) {
         proc_region[p]->get_database()->closeDatabase();
+}
       proc_progress(p, proc_count);
     }
   }
@@ -976,8 +987,9 @@ namespace {
       for (size_t p = 0; p < proc_count; p++) {
         auto &proc_ebs = proc_region[p]->get_element_blocks();
         proc_ebs[b]->put_field_data("ids", map[p]);
-        if (minimize_open_files)
+        if (minimize_open_files) {
           proc_region[p]->get_database()->closeDatabase();
+}
         proc_progress(p, proc_count);
       }
     }
@@ -997,8 +1009,9 @@ namespace {
       for (size_t b = 0; b < block_count; b++) {
         Ioss::ElementBlock *eb = proc_ebs[b];
         eb->put_field_data("connectivity", connectivity[p][b]);
-        if (minimize_open_files)
+        if (minimize_open_files) {
           proc_region[p]->get_database()->closeDatabase();
+}
       }
       proc_progress(p, proc_count);
     }
@@ -1094,8 +1107,9 @@ namespace {
       nb->put_field_data("mesh_model_coordinates_x", coordinates_x[p]);
       nb->put_field_data("mesh_model_coordinates_y", coordinates_y[p]);
       nb->put_field_data("mesh_model_coordinates_z", coordinates_z[p]);
-      if (minimize_open_files)
+      if (minimize_open_files) {
         proc_region[p]->get_database()->closeDatabase();
+}
       proc_progress(p, processor_count);
     }
     progress("\tOutput processor coordinate vectors");
@@ -1200,9 +1214,10 @@ namespace {
         sum += proc_elem_block_cnt[j][i];
       }
       proc_elem_block_cnt[block_count][i] = sum;
-      if (debug_level & 2)
+      if (debug_level & 2) {
         OUTPUT << "\tProcessor " << i << " has " << sum << " elements.\n";
-    }
+    
+}}
   }
 
   template <typename INT>
@@ -1255,9 +1270,10 @@ namespace {
       Ioss::NodeBlock *nb =
           new Ioss::NodeBlock(proc_region[p]->get_database(), "node_block1", on_proc_count, 3);
       proc_region[p]->add(nb);
-      if (debug_level & 2)
+      if (debug_level & 2) {
         OUTPUT << "\tProcessor " << p << " has " << on_proc_count << " nodes.\n";
-      sum_on_proc_count += on_proc_count;
+      
+}sum_on_proc_count += on_proc_count;
     }
     progress("\tProc_node populated");
 
@@ -1324,8 +1340,9 @@ namespace {
       std::string outfile = Ioss::Utils::decode_filename(nemfile, i, interface.processor_count());
       Ioss::DatabaseIO *dbo =
           Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD);
-      if (ints64)
+      if (ints64) {
         dbo->set_int_byte_size_api(Ioss::USE_INT64_API);
+}
 
       proc_region[i] = new Ioss::Region(dbo);
       proc_region[i]->begin_mode(Ioss::STATE_DEFINE_MODEL);
@@ -1356,7 +1373,7 @@ namespace {
       size_t bc  = ebs.size();
       for (size_t b = 0; b < bc; b++) {
         std::string         type = ebs[b]->get_property("topology_type").get_string();
-        Ioss::ElementBlock *eb   = new Ioss::ElementBlock(
+        auto *eb   = new Ioss::ElementBlock(
             proc_region[p]->get_database(), ebs[b]->name(), type, proc_elem_block_cnt[b][p]);
         proc_region[p]->add(eb);
       }
@@ -1430,8 +1447,9 @@ namespace {
       proc_region[p]->synchronize_id_and_name(&region);
       proc_region[p]->end_mode(Ioss::STATE_DEFINE_MODEL);
       proc_region[p]->begin_mode(Ioss::STATE_MODEL);
-      if (minimize_open_files)
+      if (minimize_open_files) {
         proc_region[p]->get_database()->closeDatabase();
+}
       proc_progress(p, proc_count);
     }
     end = seacas_timer();
@@ -1551,7 +1569,7 @@ namespace {
     pos = filename.find("%M");
     if (pos != std::string::npos) {
       // Found the characters...  Replace with the input file basename...
-      std::string method_name = interface.decomposition_method();
+      const std::string& method_name = interface.decomposition_method();
       std::string tmp(filename, 0, pos);
       tmp += method_name;
       tmp += filename.substr(pos + 2);

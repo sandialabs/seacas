@@ -24,10 +24,12 @@ namespace {
     const char *c1 = s1.c_str();
     const char *c2 = s2.c_str();
     for (;; c1++, c2++) {
-      if (std::tolower(*c1) != std::tolower(*c2))
+      if (std::tolower(*c1) != std::tolower(*c2)) {
         return (std::tolower(*c1) - std::tolower(*c2));
-      if (*c1 == '\0')
+}
+      if (*c1 == '\0') {
         return 0;
+}
     }
   }
 #if 0
@@ -46,15 +48,15 @@ SystemInterface::SystemInterface()
   enroll_options();
 }
 
-SystemInterface::~SystemInterface() {}
+SystemInterface::~SystemInterface() = default;
 
 void SystemInterface::enroll_options()
 {
   options_.usage("[options] list_of_files_to_join");
 
-  options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", 0);
+  options_.enroll("help", GetLongOption::NoValue, "Print this summary and exit", nullptr);
 
-  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", NULL);
+  options_.enroll("version", GetLongOption::NoValue, "Print version and exit", nullptr);
 
   options_.enroll("processors", GetLongOption::MandatoryValue,
                   "Number of processors to decompose the mesh for", "1");
@@ -81,14 +83,14 @@ void SystemInterface::enroll_options()
                   "\t\tIf a single integer, it is the processor for the current element\n"
                   "\t\tIf two integers (count proc), they specify that the next\n"
                   "\t\t\t'count' elements are on processor 'proc'",
-                  NULL);
+                  nullptr);
 
   options_.enroll("output_path", GetLongOption::MandatoryValue,
                   "Path to where decomposed files will be written.\n"
                   "\t\tThe string %P will be replaced with the processor count\n"
                   "\t\tThe string %M will be replaced with the decomposition method.\n"
                   "\t\tDefault is the location of the input mesh",
-                  NULL);
+                  nullptr);
 
   options_.enroll("Partial_read_count", GetLongOption::MandatoryValue,
                   "Split the coordinate and connetivity reads into a maximum of this many"
@@ -131,9 +133,9 @@ void SystemInterface::enroll_options()
 
 #endif
   options_.enroll("contiguous_decomposition", GetLongOption::NoValue,
-                  "If the input mesh is contiguous, create contiguous decompositions", NULL);
+                  "If the input mesh is contiguous, create contiguous decompositions", nullptr);
 
-  options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", NULL);
+  options_.enroll("copyright", GetLongOption::NoValue, "Show copyright and license data.", nullptr);
 }
 
 bool SystemInterface::parse_options(int argc, char **argv)
@@ -143,22 +145,23 @@ bool SystemInterface::parse_options(int argc, char **argv)
 #endif
 
   int option_index = options_.parse(argc, argv);
-  if (option_index < 1)
+  if (option_index < 1) {
     return false;
+}
 
-  if (options_.retrieve("help")) {
+  if (options_.retrieve("help") != nullptr) {
     options_.usage();
     std::cerr << "\n\tCan also set options via SLICE_OPTIONS environment variable.\n";
     std::cerr << "\n\t->->-> Send email to gdsjaar@sandia.gov for slice support.<-<-<-\n";
     exit(EXIT_SUCCESS);
   }
 
-  if (options_.retrieve("version")) {
+  if (options_.retrieve("version") != nullptr) {
     // Version is printed up front, just exit...
     exit(0);
   }
 
-  if (options_.retrieve("copyright")) {
+  if (options_.retrieve("copyright") != nullptr) {
     std::cerr << "\n"
               << "Copyright(C) 2010 Sandia Corporation.\n"
               << "\n"
@@ -211,7 +214,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   // Get options from environment variable also...
   char *options = getenv("SLICE_OPTIONS");
-  if (options != NULL) {
+  if (options != nullptr) {
     std::cerr
         << "\nThe following options were specified via the SLICE_OPTIONS environment variable:\n"
         << "\t" << options << "\n\n";
@@ -220,17 +223,17 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("processors");
-    processorCount_  = strtoul(temp, NULL, 0);
+    processorCount_  = strtoul(temp, nullptr, 0);
   }
 
   {
     const char *temp  = options_.retrieve("Partial_read_count");
-    partialReadCount_ = strtoul(temp, NULL, 0);
+    partialReadCount_ = strtoul(temp, nullptr, 0);
   }
 
   {
     const char *temp = options_.retrieve("debug");
-    debugLevel_      = strtoul(temp, NULL, 0);
+    debugLevel_      = strtoul(temp, nullptr, 0);
   }
 
   {
@@ -246,7 +249,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     if (decompMethod_ == "file") {
       const char *temp = options_.retrieve("decomposition_file");
-      if (temp) {
+      if (temp != nullptr) {
         decompFile_ = temp;
       }
       else {
@@ -259,7 +262,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   {
     const char *temp = options_.retrieve("output_path");
-    if (temp != NULL) {
+    if (temp != nullptr) {
       outputPath_ = temp;
     }
   }
@@ -309,7 +312,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   }
 #endif
 
-  if (options_.retrieve("contiguous_decomposition")) {
+  if (options_.retrieve("contiguous_decomposition") != nullptr) {
     contig_ = true;
   }
   else {
@@ -337,8 +340,8 @@ void SystemInterface::parse_step_option(const char *tokens)
 
   // Default is given in constructor above...
 
-  if (tokens != NULL) {
-    if (strchr(tokens, ':') != NULL) {
+  if (tokens != nullptr) {
+    if (strchr(tokens, ':') != nullptr) {
       // The string contains a separator
 
       int vals[3];
@@ -347,7 +350,7 @@ void SystemInterface::parse_step_option(const char *tokens)
       vals[2] = stepInterval_;
 
       int j = 0;
-      for (int i = 0; i < 3; i++) {
+      for (int & val : vals) {
         // Parse 'i'th field
         char tmp_str[128];
         ;
@@ -358,8 +361,9 @@ void SystemInterface::parse_step_option(const char *tokens)
         }
 
         tmp_str[k] = '\0';
-        if (strlen(tmp_str) > 0)
-          vals[i] = strtoul(tmp_str, NULL, 0);
+        if (strlen(tmp_str) > 0) {
+          val = strtoul(tmp_str, nullptr, 0);
+}
 
         if (tokens[j++] == '\0') {
           break; // Reached end of string
@@ -374,11 +378,11 @@ void SystemInterface::parse_step_option(const char *tokens)
     }
     else {
       // Does not contain a separator, min == max
-      stepMin_ = stepMax_ = strtol(tokens, NULL, 0);
+      stepMin_ = stepMax_ = strtol(tokens, nullptr, 0);
     }
   }
 }
-void SystemInterface::dump(std::ostream &) const {}
+void SystemInterface::dump(std::ostream & /*unused*/) const {}
 
 void SystemInterface::show_version()
 {

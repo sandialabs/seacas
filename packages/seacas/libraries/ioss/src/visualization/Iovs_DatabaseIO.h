@@ -38,7 +38,7 @@ namespace Iovs {
   {
   public:
     DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
-               MPI_Comm communicator, const Ioss::PropertyManager &properties);
+               MPI_Comm communicator, const Ioss::PropertyManager &props);
     ~DatabaseIO();
 
     // Check capabilities of input/output database...  Returns an
