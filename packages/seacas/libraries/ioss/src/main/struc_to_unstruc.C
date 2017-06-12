@@ -162,7 +162,7 @@ namespace {
     //========================================================================
     // OUTPUT ...
     //========================================================================
-    properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+    //    properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
     Ioss::DatabaseIO *dbo =
         Ioss::IOFactory::create("exodus", outfile, Ioss::WRITE_RESTART, MPI_COMM_WORLD, properties);
     if (dbo == nullptr || !dbo->ok(true)) {
@@ -436,6 +436,7 @@ namespace {
     auto nb = new Ioss::NodeBlock(output_region.get_database(), nbs[0]->name(), num_nodes, degree);
     output_region.add(nb);
 
+#if 0
     if (output_region.get_database()->needs_shared_node_information()) {
       // If the "owning_processor" field exists on the input
       // nodeblock, transfer it and the "ids" field to the output
@@ -450,6 +451,7 @@ namespace {
         nb->put_field_data("owning_processor", data);
       }
     }
+#endif
 
     std::cout << "P[" << rank << "] Number of coordinates per node =" << std::setw(12) << degree
               << "\n";

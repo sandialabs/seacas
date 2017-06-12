@@ -331,7 +331,7 @@ namespace Iocgns {
       }
     }
 
-    size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor);
+    size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor, true);
 
     Utils::resolve_shared_nodes(*get_region(), myProcessor);
 
