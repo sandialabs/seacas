@@ -173,7 +173,7 @@ namespace Iocgns {
     static CG_ZoneType_t check_zone_type(int cgnsFilePtr);
     static void common_write_meta_data(int file_ptr, const Ioss::Region &region,
                                        std::vector<size_t> &zone_offset);
-    static size_t resolve_nodes(Ioss::Region &region, int my_processor);
+    static size_t resolve_nodes(Ioss::Region &region, int my_processor, bool is_parallel);
     static void resolve_shared_nodes(Ioss::Region &region, int my_processor);
 
     static CG_ElementType_t map_topology_to_cgns(const std::string &name);

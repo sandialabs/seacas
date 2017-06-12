@@ -257,11 +257,11 @@ namespace Ioxf {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
 
-    if (nodeMap.map.empty()) {
+    if (nodeMap.map().empty()) {
       // Cast away the 'const'.  Conceptually, this is a const operation
       // since it doesn't change the clients view of the database.
       DatabaseIO *new_this = const_cast<DatabaseIO *>(this);
-      new_this->nodeMap.map.resize(nodeCount + 1);
+      new_this->nodeMap.map().resize(nodeCount + 1);
 
       if (is_input()) {
         output_only();
@@ -269,10 +269,10 @@ namespace Ioxf {
       else {
         // Output database; nodeMap not set yet... Build a default map.
         for (int i = 1; i < nodeCount + 1; i++) {
-          new_this->nodeMap.map[i] = i;
+          new_this->nodeMap.map()[i] = i;
         }
         // Sequential map
-        new_this->nodeMap.map[0] = -1;
+        new_this->nodeMap.map()[0] = -1;
       }
     }
     return nodeMap;
@@ -282,11 +282,11 @@ namespace Ioxf {
   {
     // Allocate space for elemente number map and read it in...
     // Can be called multiple times, allocate 1 time only
-    if (elemMap.map.empty()) {
+    if (elemMap.map().empty()) {
       // Cast away the 'const'.  Conceptually, this is a const operation
       // since it doesn't change the clients view of the database.
       DatabaseIO *new_this = const_cast<DatabaseIO *>(this);
-      new_this->elemMap.map.resize(elementCount + 1);
+      new_this->elemMap.map().resize(elementCount + 1);
 
       if (is_input()) {
         output_only();
@@ -294,10 +294,10 @@ namespace Ioxf {
       else {
         // Output database; elemMap.map not set yet... Build a default map.
         for (int i = 1; i < elementCount + 1; i++) {
-          new_this->elemMap.map[i] = i;
+          new_this->elemMap.map()[i] = i;
         }
         // Sequential map
-        new_this->elemMap.map[0] = -1;
+        new_this->elemMap.map()[0] = -1;
       }
     }
     return elemMap;
@@ -727,12 +727,12 @@ namespace Ioxf {
     assert(num_to_get == nodeCount);
 
     if (dbState == Ioss::STATE_MODEL) {
-      if (nodeMap.map.empty()) {
-        nodeMap.map.resize(nodeCount + 1);
-        nodeMap.map[0] = -1;
+      if (nodeMap.map().empty()) {
+        nodeMap.map().resize(nodeCount + 1);
+        nodeMap.map()[0] = -1;
       }
 
-      if (nodeMap.map[0] == -1) {
+      if (nodeMap.map()[0] == -1) {
         nodeMap.set_map(ids, num_to_get, 0);
       }
 
@@ -740,7 +740,7 @@ namespace Ioxf {
 
       // Only a single nodeblock and all set
       if (num_to_get == nodeCount) {
-        assert(nodeMap.map[0] == -1 || nodeMap.reverse.size() == (size_t)nodeCount);
+        assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
       }
       assert(get_region()->get_property("node_block_count").get_int() == 1);
 
@@ -818,12 +818,12 @@ namespace Ioxf {
     // 'eb_offset+offset' and ending at
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+element_count'
-    if (elemMap.map.empty()) {
-      elemMap.map.resize(elementCount + 1);
-      elemMap.map[0] = -1;
+    if (elemMap.map().empty()) {
+      elemMap.map().resize(elementCount + 1);
+      elemMap.map()[0] = -1;
     }
 
-    assert(static_cast<int>(elemMap.map.size()) == elementCount + 1);
+    assert(static_cast<int>(elemMap.map().size()) == elementCount + 1);
 
     int eb_offset = eb->get_offset();
     elemMap.set_map(ids, num_to_get, eb_offset);

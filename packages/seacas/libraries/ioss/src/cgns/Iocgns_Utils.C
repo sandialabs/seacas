@@ -554,7 +554,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
   }
 }
 
-size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
+size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool is_parallel)
 {
   // Each structured block has its own set of "cell_nodes"
   // At block boundaries, there are duplicate nodes which need to be resolved for the
@@ -608,14 +608,12 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor)
                   owner_block->get_global_node_offset(owner[0], owner[1], owner[2]);
 
               if (global_offset > owner_global_offset) {
-                assert(zgc.m_donorProcessor != -1);
-                assert(zgc.m_ownerProcessor != -1);
-                if (zgc.m_donorProcessor != my_processor) {
+                if (is_parallel && (zgc.m_donorProcessor != my_processor)) {
                   size_t block_local_offset =
                       block->get_block_local_node_offset(index[0], index[1], index[2]);
                   block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
                 }
-                else {
+		else if (!is_parallel || (zgc.m_ownerProcessor != my_processor)) {
                   size_t  local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
                   ssize_t owner_local_offset =
                       owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);
@@ -731,7 +729,7 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
                     owner_block->get_block_local_node_offset(index[0], index[1], index[2]);
                 owner_block->m_sharedNode.emplace_back(owner_offset, zgc.m_donorProcessor);
               }
-              else {
+              else if (my_processor == zgc.m_donorProcessor) {
                 ssize_t donor_offset =
                     donor_block->get_block_local_node_offset(owner[0], owner[1], owner[2]);
                 donor_block->m_sharedNode.emplace_back(donor_offset, zgc.m_ownerProcessor);
