@@ -104,28 +104,28 @@ struct NodeInfo
   {
     if (id < other.id) {
       return true;
-}
+    }
     if (id > other.id) {
       return false;
-}
+    }
     SMART_ASSERT(id == other.id);
     if (!approx_equal(x, other.x) && x < other.x) {
       return true;
-}
+    }
     if (!approx_equal(x, other.x) && x > other.x) {
       return false;
-}
+    }
     SMART_ASSERT(approx_equal(x, other.x));
     if (!approx_equal(y, other.y) && y < other.y) {
       return true;
-}
+    }
     if (!approx_equal(y, other.y) && y > other.y) {
       return false;
-}
+    }
     SMART_ASSERT(approx_equal(y, other.y));
     if (!approx_equal(z, other.z) && z < other.z) {
       return true;
-}
+    }
     return false;
   }
 };
@@ -247,9 +247,8 @@ namespace {
 
   void get_variable_params(int id, Excn::Variables &vars, const StringIdVector &variable_list);
 
-  void get_put_variable_names(int id, int out, Excn::Variables &vars,
-                              Excn::SystemInterface &si,
-                              int *                  combined_status_variable_index = nullptr);
+  void get_put_variable_names(int id, int out, Excn::Variables &vars, Excn::SystemInterface &si,
+                              int *combined_status_variable_index = nullptr);
 
   template <typename INT>
   void build_reverse_node_map(std::vector<Excn::Mesh<INT>> &local_mesh, Excn::Mesh<INT> *global,
@@ -362,9 +361,10 @@ int main(int argc, char *argv[])
 
     if ((debug_level & 64) != 0u) {
       ex_opts(EX_VERBOSE | EX_DEBUG);
-    } else {
+    }
+    else {
       ex_opts(0);
-}
+    }
 
     int error = 0;
 
@@ -381,16 +381,18 @@ int main(int argc, char *argv[])
     if (Excn::ExodusFile::io_word_size() == 4) {
       if (int_byte_size == 4) {
         error = conjoin(interface, (float)0.0, (int)0);
-      } else {
+      }
+      else {
         error = conjoin(interface, (float)0.0, (int64_t)0);
-}
+      }
     }
     else {
       if (int_byte_size == 4) {
         error = conjoin(interface, (double)0.0, (int)0);
-      } else {
+      }
+      else {
         error = conjoin(interface, (double)0.0, (int64_t)0);
-}
+      }
     }
 
     Excn::ExodusFile::close_all();
@@ -426,7 +428,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
   if (debug_level & 1) {
     std::cerr << time_stamp(tsFormat);
-}
+  }
 
   std::string title0;
 
@@ -534,7 +536,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
 
     // ****************************************************************************
     // 5. Get Block information including element attributes
@@ -552,7 +554,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     if (!interface.omit_sidesets()) {
       if (debug_level & 1) {
         std::cerr << time_stamp(tsFormat);
-}
+      }
       get_sideset_metadata(local_mesh, sidesets, glob_ssets);
       if (global.count(Excn::SSET) != glob_ssets.size()) {
         global.sidesetCount = glob_ssets.size();
@@ -564,7 +566,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     if (!interface.omit_nodesets()) {
       if (debug_level & 1) {
         std::cerr << time_stamp(tsFormat);
-}
+      }
       get_nodesets(global.count(Excn::NODE), local_mesh, nodesets, glob_nsets);
       if (global.count(Excn::NSET) != glob_nsets.size()) {
         global.nodesetCount = glob_nsets.size();
@@ -576,7 +578,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
     Excn::CommunicationMetaData comm_data;
 
     // Create the output file...
@@ -596,7 +598,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     // c.2.  Write Global Node Number Map
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
     {
       std::vector<INT> global_map(global.count(Excn::NODE));
       for (size_t i = 0; i < global.count(Excn::NODE); i++) {
@@ -607,7 +609,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
     if (!global_element_map.empty()) {
       std::vector<INT> global_map(global.count(Excn::ELEM));
       for (size_t i = 0; i < global.count(Excn::ELEM); i++) {
@@ -625,13 +627,13 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   {
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
 
     error += get_put_coordinates(global, part_count, local_mesh, (T)0);
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
     std::cerr << "Wrote coordinate information...\n";
   }
   // ####################TRANSIENT DATA SECTION###########################
@@ -640,7 +642,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
   if (debug_level & 1) {
     std::cerr << time_stamp(tsFormat);
-}
+  }
 
   //  I. read number of variables for each type. Note that exodusII does not
   //     provide for history variables
@@ -722,7 +724,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
   if (debug_level & 1) {
     std::cerr << time_stamp(tsFormat);
-}
+  }
 
   std::vector<T> global_values(global_vars.count(Excn::IN));
   std::vector<T> output_global_values(global_vars.count(Excn::OUT));
@@ -753,7 +755,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   for (auto &global_time : global_times) {
     if (loc_step_width < global_time.localStepNumber + 1) {
       loc_step_width = global_time.localStepNumber + 1;
-}
+    }
   }
   loc_step_width = get_width(loc_step_width);
 
@@ -774,8 +776,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     if (global_vars.count(Excn::OUT) > 0) {
       if (debug_level & 1) {
         std::cerr << time_stamp(tsFormat) << "Global Variables...\n";
-      
-}error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_GLOBAL, 0, 0,
+      }
+      error += ex_get_var(id, global_times[time_step].localStepNumber + 1, EX_GLOBAL, 0, 0,
                           global_vars.count(), (void *)&global_values[0]);
       // Map ...
       for (int ig = 0; ig < global_vars.count(Excn::IN); ig++) {
@@ -842,9 +844,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     // Extracting element transient variable data
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat) << "Element Variables...\n";
-
-    
-}if (element_vars.count(Excn::IN) > 0) {
+    }
+    if (element_vars.count(Excn::IN) > 0) {
       read_write_master_values(element_vars, global, glob_blocks, local_mesh, blocks, values, p,
                                global_times[time_step].localStepNumber, time_step_out);
     }
@@ -862,9 +863,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     // Extracting sideset transient variable data
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat) << "Sideset Variables...\n";
-
-    
-}if (sideset_vars.count(Excn::IN) > 0) {
+    }
+    if (sideset_vars.count(Excn::IN) > 0) {
       read_write_master_values(sideset_vars, global, glob_ssets, local_mesh, sidesets, values, p,
                                global_times[time_step].localStepNumber, time_step_out);
     }
@@ -873,9 +873,8 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
     // Extracting nodeset transient variable data
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat) << "Nodeset Variables...\n";
-
-    
-}if (nodeset_vars.count(Excn::IN) > 0) {
+    }
+    if (nodeset_vars.count(Excn::IN) > 0) {
       read_write_master_values(nodeset_vars, global, glob_nsets, local_mesh, nodesets, values, p,
                                global_times[time_step].localStepNumber, time_step_out);
     }
@@ -885,7 +884,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
 
     std::ios::fmtflags f(std::cerr.flags());
     std::cerr << "Step " << std::setw(step_width) << time_step + 1 << "/" << num_time_steps
@@ -913,7 +912,7 @@ int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */
   // EXIT program
   if (debug_level & 1) {
     std::cerr << time_stamp(tsFormat);
-}
+  }
   std::cerr << "******* END *******\n";
   return (error);
 }
@@ -975,7 +974,7 @@ namespace {
     }
     if (num_qa_records) {
       error += ex_get_qa(id, qaRecord[0].qa_record);
-}
+    }
 
     char buffer[MAX_STR_LENGTH + 1];
 
@@ -1139,7 +1138,7 @@ namespace {
     size_t part_count = local_mesh.size();
     for (size_t ip = 0; ip < part_count; ip++) {
       blocks[ip].resize(local_mesh[ip].count(Excn::EBLK));
-}
+    }
 
     std::vector<INT> block_id(global.count(Excn::EBLK));
 
@@ -1157,12 +1156,11 @@ namespace {
 
       if (debug_level & 4) {
         std::cerr << "\nGetting element block info for part " << p << "..." << '\n';
-
-      
-}for (size_t b = 0; b < global.count(Excn::EBLK); b++) {
+      }
+      for (size_t b = 0; b < global.count(Excn::EBLK); b++) {
         if (debug_level & 4) {
           std::cerr << "Block " << b << ", Id = " << glob_blocks[b].id;
-}
+        }
 
         ex_block block_param;
         block_param.id   = glob_blocks[b].id;
@@ -1201,11 +1199,11 @@ namespace {
 
           if (glob_blocks[b].nodesPerElement == 0) {
             glob_blocks[b].nodesPerElement = block_param.num_nodes_per_entry;
-}
+          }
 
           if (glob_blocks[b].attributeCount == 0) {
             glob_blocks[b].attributeCount = block_param.num_attribute;
-}
+          }
 
           glob_blocks[b].position_ = b;
           strncpy(glob_blocks[b].elType, block_param.topology, MAX_STR_LENGTH);
@@ -1254,7 +1252,7 @@ namespace {
 
     if (debug_level & 1) {
       std::cerr << time_stamp(tsFormat);
-}
+    }
     std::cerr << "\nReading and Writing element connectivity & attributes\n";
 
     for (int b = 0; b < global_num_blocks; b++) {
@@ -1270,7 +1268,7 @@ namespace {
 
       if (debug_level & 4) {
         std::cerr << "B" << b << ":\t" << std::flush;
-}
+      }
 
       size_t max_nodes = glob_blocks[b].entity_count();
       max_nodes *= glob_blocks[b].nodesPerElement;
@@ -1292,7 +1290,7 @@ namespace {
 
           if (debug_level & 4) {
             std::cerr << "#" << std::flush;
-}
+          }
           size_t maximum_nodes = blocks[p][b].entity_count();
           maximum_nodes *= blocks[p][b].nodesPerElement;
           std::vector<INT> local_linkage(maximum_nodes);
@@ -1350,13 +1348,13 @@ namespace {
         } // end if blocks[p][b].entity_count() (non-zero length block)
         else if (debug_level & 4) {
           std::cerr << ".";
-      
-}} // end for p=0..part_count-1
+        }
+      } // end for p=0..part_count-1
 
       // Verify that connectivity has been set for all elements...
       for (size_t i = 0; i < block_linkage.size(); i++) {
         SMART_ASSERT(block_linkage[i] > 0)(block_linkage[i])(i)(b)(glob_blocks[b].id);
-}
+      }
 
       // Write out block info
       int id_out = Excn::ExodusFile::output(); // output file identifier
@@ -1372,8 +1370,8 @@ namespace {
       } // end for b=0..global_num_blocks-1
       if (debug_level & 4) {
         std::cerr << '\n';
-    
-}}
+      }
+    }
     std::cerr << '\n';
   }
 
@@ -1430,7 +1428,7 @@ namespace {
         for (; lb < blocks[0].size(); lb++) {
           if (glob_block.id == blocks[p][lb].id) {
             break;
-}
+          }
         }
         SMART_ASSERT(glob_block.id == blocks[p][lb].id);
         block_size += blocks[p][lb].entity_count();
@@ -1445,7 +1443,7 @@ namespace {
         for (; lb < blocks[0].size(); lb++) {
           if (glob_block.id == blocks[p][lb].id) {
             break;
-}
+          }
         }
         SMART_ASSERT(glob_block.id == blocks[p][lb].id);
 
@@ -1516,7 +1514,7 @@ namespace {
         for (; lb < blocks[0].size(); lb++) {
           if (glob_block.id == blocks[p][lb].id) {
             break;
-}
+          }
         }
         SMART_ASSERT(glob_block.id == blocks[p][lb].id);
 
@@ -1707,13 +1705,13 @@ namespace {
           status = si.element_status_variable();
           if (status != "NONE") {
             strcpy(input_name_list[num_vars - 1], status.c_str());
-}
+          }
         }
         else if (vars.type() == EX_NODAL) {
           status = si.nodal_status_variable();
           if (status != "NONE") {
             strcpy(input_name_list[num_vars - 1], status.c_str());
-}
+          }
         }
       }
 
@@ -1750,7 +1748,7 @@ namespace {
       int nfield = (width - 8) / maxlen;
       if (nfield < 1) {
         nfield = 1;
-}
+      }
 
       std::cerr << "Found " << vars.count(Excn::OUT) << " " << vars.label() << " variables.\n";
       {
@@ -1775,7 +1773,7 @@ namespace {
       // the only place we have the list of output variable names...
       if (vars.type() == EX_ELEM_BLOCK && (combined_status_variable_index != nullptr)) {
         *combined_status_variable_index = 0;
-        const std::string& comb_stat           = si.combined_mesh_status_variable();
+        const std::string &comb_stat    = si.combined_mesh_status_variable();
         if (!comb_stat.empty()) {
           for (int i = 0; i < vars.count(Excn::OUT); i++) {
             if (case_compare(comb_stat, output_name_list[i]) == 0) {
@@ -1820,7 +1818,7 @@ namespace {
     // ...Except for the status variable (if any)
     if (extra == 1) {
       vars.index_[num_vars] = 1;
-}
+    }
 
     // If 'variable_list' is empty or specified 'ALL', then all
     // variables are to be output
@@ -1860,7 +1858,7 @@ namespace {
       for (auto &elem : variable_list) {
         if (var_name == elem.first) {
           continue;
-}
+        }
         var_name   = elem.first;
         bool found = false;
         for (size_t j = 0; j < exo_names.size() && !found; j++) {
@@ -1879,7 +1877,7 @@ namespace {
       for (auto &elem : vars.index_) {
         if (elem > 0) {
           nz_count++;
-}
+        }
       }
       SMART_ASSERT(nz_count == var_count + extra)(nz_count)(var_count);
 
@@ -1950,7 +1948,7 @@ namespace {
 
     if (set_ids.empty()) {
       return;
-}
+    }
 
     // set_ids now contains the union of all nodeset ids...
     glob_sets.resize(set_ids.size());
@@ -2111,9 +2109,8 @@ namespace {
 
     if (debug_level & 32) {
       std::cerr << "\nOutput NodeSets:\n";
-
-    
-}for (auto &glob_set : glob_sets) {
+    }
+    for (auto &glob_set : glob_sets) {
       ex_put_set(exoid, EX_NODE_SET, glob_set.id, &glob_set.nodeSetNodes[0], nullptr);
       //    ex_put_node_set_dist_fact(exoid, glob_sets[ns].id, &glob_sets[ns].distFactors[0]);
       // Done with the memory; clear out the vector containing the bulk data nodes and distFactors.
@@ -2168,7 +2165,7 @@ namespace {
 
     if (set_ids.empty()) {
       return;
-}
+    }
 
     // set_ids now contains the union of all sideset ids...
     glob_ssets.resize(set_ids.size());
@@ -2439,7 +2436,7 @@ namespace {
     // users request.
     if (variable_names.empty()) {
       return;
-}
+    }
 
     // Check for a non-zero id entry in the variable_names list which
     // will signify a user-specified element block.
@@ -2447,11 +2444,11 @@ namespace {
     for (size_t i = 0; i < variable_names.size() && !found_it; i++) {
       if (variable_names[i].second > 0) {
         found_it = true;
-}
+      }
     }
     if (!found_it) {
       return;
-}
+    }
 
     // At this point, know that there is at least one block-restricted
     // variable output specification. For each one, modify the global
@@ -2535,13 +2532,13 @@ namespace {
           for (; gb < global.count(object_type); gb++) {
             if (glob_blocks[gb].id == blocks[p][b].id) {
               break;
-}
+            }
           }
           SMART_ASSERT(glob_blocks[gb].id == blocks[p][b].id);
 
           if (p == 0) {
             glob_blocks[gb].truthTable.resize(vars.count(Excn::OUT));
-}
+          }
 
           if (vars.count(Excn::IN) > 0) {
             blocks[p][b].truthTable.resize(vars.count(Excn::IN));
@@ -2566,7 +2563,7 @@ namespace {
         for (int j = 0; j < vars.count(Excn::OUT); j++) {
           if (glob_blocks[b].truthTable[j] > 0) {
             glob_blocks[b].truthTable[j] = 1;
-}
+          }
         }
       }
 
@@ -2640,20 +2637,22 @@ namespace {
     // Don't process an empty string.
     if (str == nullptr) {
       return;
-}
+    }
 
     // Skip leading...
     while (*ibuf != 0 && is_whitespace(*ibuf)) {
       ++ibuf;
-}
+    }
 
     while (*ibuf != 0) {
       if (is_whitespace(*ibuf) && cnt > 0) {
         ibuf++;
-      } else {
+      }
+      else {
         if (!is_whitespace(*ibuf)) {
           cnt = 0;
-        } else {
+        }
+        else {
           *ibuf = ' ';
           cnt   = 1;
         }
@@ -2665,30 +2664,28 @@ namespace {
     // Skip trailing whitespace
     while (i > 0 && is_whitespace(obuf[i])) {
       obuf[i--] = '\0';
-  
-}}
+    }
+  }
 
   std::string time_stamp(const std::string &format)
   {
     if (format == "") {
       return std::string("");
     }
-    
-      const int   length = 256;
-      static char time_string[length];
 
-      time_t     calendar_time = time(nullptr);
-      struct tm *local_time    = localtime(&calendar_time);
+    const int   length = 256;
+    static char time_string[length];
 
-      int error = strftime(time_string, length, format.c_str(), local_time);
-      if (error != 0) {
-        time_string[length - 1] = '\0';
-        return std::string(time_string);
-      }
-      
-        return std::string("[ERROR]");
-      
-    
+    time_t     calendar_time = time(nullptr);
+    struct tm *local_time    = localtime(&calendar_time);
+
+    int error = strftime(time_string, length, format.c_str(), local_time);
+    if (error != 0) {
+      time_string[length - 1] = '\0';
+      return std::string(time_string);
+    }
+
+    return std::string("[ERROR]");
   }
 
   std::string format_time(double seconds)
@@ -2725,7 +2722,7 @@ namespace {
     int width = 0;
     if (max_value >= 10) {
       width = int(log10((double)max_value));
-}
+    }
     return width + 1;
   }
 
@@ -2742,7 +2739,8 @@ namespace {
   }
 
   template <typename T, typename U>
-  void map_sideset_vars(U & /*unused*/, size_t /*unused*/, size_t /*unused*/, std::vector<T> & /*unused*/, std::vector<T> & /*unused*/)
+  void map_sideset_vars(U & /*unused*/, size_t /*unused*/, size_t /*unused*/,
+                        std::vector<T> & /*unused*/, std::vector<T> & /*unused*/)
   {
     throw std::runtime_error("Internal Error.");
   }
@@ -2776,7 +2774,8 @@ namespace {
   }
 
   template <typename T, typename U>
-  void map_nodeset_vars(U & /*unused*/, size_t /*unused*/, size_t /*unused*/, std::vector<T> & /*unused*/, std::vector<T> & /*unused*/)
+  void map_nodeset_vars(U & /*unused*/, size_t /*unused*/, size_t /*unused*/,
+                        std::vector<T> & /*unused*/, std::vector<T> & /*unused*/)
   {
     throw std::runtime_error("Internal Error.");
   }
@@ -2825,7 +2824,7 @@ namespace {
     for (size_t b = 0; b < global.count(vars.objectType); b++) {
       if (max_size < global_sets[b].entity_count()) {
         max_size = global_sets[b].entity_count();
-}
+      }
     }
     std::vector<T> master_values(max_size);
 
@@ -2841,7 +2840,7 @@ namespace {
           for (; lb < global.count(vars.objectType); lb++) {
             if (global_sets[b].id == local_sets[p][lb].id) {
               break;
-}
+            }
           }
           SMART_ASSERT(global_sets[b].id == local_sets[p][lb].id);
 
@@ -2906,14 +2905,14 @@ namespace {
     for (size_t p = 1; p < part_count; p++) {
       if ((size_t)local_mesh[p].count(Excn::NODE) > max_ent) {
         max_ent = local_mesh[p].count(Excn::NODE);
-}
+      }
     }
 
     for (size_t p = 0; p < part_count; p++) {
       for (size_t b = 0; b < global.count(Excn::EBLK); b++) {
         if (blocks[p][b].entity_count() > max_ent) {
           max_ent = blocks[p][b].entity_count();
-}
+        }
       }
     }
 
@@ -2922,7 +2921,7 @@ namespace {
       for (size_t b = 0; b < global.count(Excn::NSET); b++) {
         if (nodesets[p][b].entity_count() > max_ent) {
           max_ent = nodesets[p][b].entity_count();
-}
+        }
       }
     }
 
@@ -2931,7 +2930,7 @@ namespace {
       for (size_t b = 0; b < global.count(Excn::SSET); b++) {
         if (sidesets[p][b].entity_count() > max_ent) {
           max_ent = sidesets[p][b].entity_count();
-}
+        }
       }
     }
     return max_ent;

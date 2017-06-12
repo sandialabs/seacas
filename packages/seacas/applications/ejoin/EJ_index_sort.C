@@ -69,13 +69,13 @@ namespace {
 
     if (v[iv[left]] > v[iv[center]]) {
       ex_swap(iv, left, center);
-}
+    }
     if (v[iv[left]] > v[iv[right]]) {
       ex_swap(iv, left, right);
-}
+    }
     if (v[iv[center]] > v[iv[right]]) {
       ex_swap(iv, center, right);
-}
+    }
 
     ex_swap(iv, center, right - 1);
     return iv[right - 1];
@@ -94,10 +94,10 @@ namespace {
       for (;;) {
         while (v[iv[++i]] < v[pivot]) {
           ;
-}
+        }
         while (v[iv[--j]] > v[pivot]) {
           ;
-}
+        }
         if (i < j) {
           ex_swap(iv, i, j);
         }
@@ -119,7 +119,7 @@ namespace {
 
     if (N == 0) {
       return;
-}
+    }
 
     double small = v[iv[0]];
     for (size_t i = 1; i < N; i++) {
@@ -144,7 +144,7 @@ namespace {
   {
     if (N <= 1) {
       return;
-}
+    }
 
     ex_int_iqsort(v, iv, 0, N - 1);
     ex_int_iisort(v, iv, N);
@@ -166,8 +166,8 @@ void index_coord_sort(const std::vector<double> &xyz, std::vector<INT> &index, i
   std::vector<double> comp(xyz.size() / 3);
   size_t              j = 0;
   for (size_t i = axis; i < xyz.size(); i += 3) {
-    comp[j++]   = xyz[i];
-}
+    comp[j++] = xyz[i];
+  }
   ex_iqsort(&comp[0], &index[0], index.size());
 }
 
@@ -175,8 +175,8 @@ template <typename INT> void index_sort(const std::vector<INT> &ids, std::vector
 {
   index.resize(ids.size());
   for (size_t i = 0; i < index.size(); i++) {
-    index[i]    = i;
-}
+    index[i] = i;
+  }
 
   ex_iqsort(&ids[0], &index[0], index.size());
 }

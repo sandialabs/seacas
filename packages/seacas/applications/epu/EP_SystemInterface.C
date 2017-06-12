@@ -55,10 +55,10 @@ namespace {
     for (;; c1++, c2++) {
       if (std::tolower(*c1) != std::tolower(*c2)) {
         return (std::tolower(*c1) - std::tolower(*c2));
-}
+      }
       if (*c1 == '\0') {
         return 0;
-}
+      }
     }
   }
   void parse_variable_names(const char *tokens, Excn::StringIdVector *variable_list);
@@ -236,7 +236,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
-}
+  }
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
@@ -520,9 +520,8 @@ std::string Excn::SystemInterface::output_suffix() const
   if (outExtension_ == "") {
     return inExtension_;
   }
-  
-    return outExtension_;
-  
+
+  return outExtension_;
 }
 
 void Excn::SystemInterface::show_version()
@@ -573,7 +572,7 @@ void Excn::SystemInterface::parse_step_option(const char *tokens)
         tmp_str[k] = '\0';
         if (strlen(tmp_str) > 0) {
           val = strtoul(tmp_str, nullptr, 0);
-}
+        }
 
         if (tokens[j++] == '\0') {
           break; // Reached end of string
@@ -609,14 +608,14 @@ bool Excn::SystemInterface::decompose_filename(const std::string &cs)
   size_t ind = s.find_last_of(".", std::string::npos); // last '.'
   if (ind == std::string::npos) {
     return false;
-}
+  }
   s.erase(ind);
 
   // Now find the processor count...
   ind = s.find_last_of(".", std::string::npos);
   if (ind == std::string::npos) {
     return false;
-}
+  }
 
   std::string tmp = s.substr(ind + 1); // Skip the '.'
   processorCount_ = strtol(tmp.c_str(), nullptr, 10);

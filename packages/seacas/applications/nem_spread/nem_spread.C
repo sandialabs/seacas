@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
 
   if (optind >= argc) {
     salsa_cmd_file = "nem_spread.inp";
-  } else {
+  }
+  else {
     salsa_cmd_file = argv[optind];
   }
 
@@ -245,9 +246,10 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
   /* If debug is on the turn on netCDF/Exodus information as well */
   if (Debug_Flag > 0) {
     ex_opts(EX_VERBOSE | EX_DEBUG);
-  } else {
+  }
+  else {
     ex_opts(EX_VERBOSE);
-}
+  }
 
   /*
    * Read initial information from the mesh file.
@@ -286,14 +288,14 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
    */
   if (spreader.Proc_Info[4] < 0) {
     spreader.Proc_Info[4] = 0;
-}
+  }
   if (spreader.Proc_Info[5] <= 0) {
     spreader.Proc_Info[5] = spreader.Proc_Info[0];
-}
+  }
 
   if (spreader.Proc_Info[4] + spreader.Proc_Info[5] > spreader.Proc_Info[0]) {
     spreader.Proc_Info[5] = spreader.Proc_Info[0] - spreader.Proc_Info[4];
-}
+  }
 
   if (spreader.Proc_Info[4] != 0 || spreader.Proc_Info[5] != spreader.Proc_Info[0]) {
     printf(
@@ -348,10 +350,10 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
     safe_free((void **)&spreader.globals.GNodes[i]);
     if (spreader.globals.Elem_Type != nullptr) {
       safe_free((void **)&spreader.globals.Elem_Type[i]);
-}
+    }
     if (spreader.globals.Proc_Global_Node_Id_Map != nullptr) {
       safe_free((void **)&spreader.globals.Proc_Global_Node_Id_Map[i]);
-}
+    }
     safe_free((void **)&spreader.globals.Proc_SS_Ids[i]);
     safe_free((void **)&spreader.globals.Proc_SS_GEMap_List[i]);
     safe_free((void **)&spreader.globals.Proc_NS_Ids[i]);

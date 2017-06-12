@@ -22,10 +22,10 @@ namespace {
     for (;; c1++, c2++) {
       if (std::tolower(*c1) != std::tolower(*c2)) {
         return (std::tolower(*c1) - std::tolower(*c2));
-}
+      }
       if (*c1 == '\0') {
         return 0;
-}
+      }
     }
   }
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
@@ -168,7 +168,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
-}
+  }
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
@@ -260,7 +260,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("tolerance");
     if (temp != nullptr) {
       tolerance_ = strtod(temp, nullptr);
-}
+    }
   }
 
   {
@@ -296,9 +296,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (temp != nullptr) {
       if (case_strcmp("ALL", temp) == 0) {
         omitNodesets_ = true;
-      } else {
+      }
+      else {
         parse_omissions(temp, &nsetOmissions_, "nodelist", false);
-}
+      }
     }
     else {
       omitNodesets_ = false;
@@ -310,9 +311,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
     if (temp != nullptr) {
       if (case_strcmp("ALL", temp) == 0) {
         omitSidesets_ = true;
-      } else {
+      }
+      else {
         parse_omissions(temp, &ssetOmissions_, "surface", false);
-}
+      }
     }
     else {
       omitSidesets_ = false;
@@ -397,7 +399,8 @@ bool SystemInterface::convert_nodes_to_nodesets(int part_number) const
   }
   else if (nodesetConvertParts_[0] == 0) {
     return true;
-  } else {
+  }
+  else {
     return std::find(nodesetConvertParts_.begin(), nodesetConvertParts_.end(), part_number) !=
            nodesetConvertParts_.end();
   }
@@ -445,7 +448,7 @@ void SystemInterface::parse_step_option(const char *tokens)
         tmp_str[k] = '\0';
         if (strlen(tmp_str) > 0) {
           val = strtoul(tmp_str, nullptr, 0);
-}
+        }
 
         if (tokens[j++] == '\0') {
           break; // Reached end of string
@@ -622,7 +625,7 @@ namespace {
 
     if (tokens == nullptr) {
       return;
-}
+    }
 
     std::string  token_string(tokens);
     StringVector part_block_list = SLIB::tokenize(token_string, ",");

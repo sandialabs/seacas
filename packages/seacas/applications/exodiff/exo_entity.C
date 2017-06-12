@@ -83,13 +83,13 @@ Exo_Entity::~Exo_Entity()
   if (numVars > 0) {
     for (int i = 0; i < numVars; ++i) {
       delete[] results_[i];
-}
+    }
     delete[] results_;
   }
   if (numAttr > 0) {
     for (int i = 0; i < numAttr; ++i) {
       delete[] attributes_[i];
-}
+    }
   }
 }
 
@@ -129,11 +129,11 @@ std::string Exo_Entity::Load_Results(int time_step, int var_index)
 
   if (fileId < 0) {
     return "exodiff: ERROR:  Invalid file id!";
-  
-}if (id_ == EX_INVALID_ID) {
+  }
+  if (id_ == EX_INVALID_ID) {
     return "exodiff: ERROR:  Must initialize block parameters first!";
-  
-}if (var_index < 0 || var_index >= numVars) {
+  }
+  if (var_index < 0 || var_index >= numVars) {
     ERROR("Exo_Entity::Load_Results(): var_index is invalid. Aborting...\n");
     exit(1);
   }
@@ -172,7 +172,7 @@ std::string Exo_Entity::Load_Results(int time_step, int var_index)
     }
     else {
       return std::string("WARNING:  No items in this ") + label();
-}
+    }
   }
   else {
     return std::string("WARNING: Variable not stored in this ") + label();
@@ -188,11 +188,11 @@ std::string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_
 
   if (fileId < 0) {
     return "exodiff: ERROR:  Invalid file id!";
-  
-}if (id_ == EX_INVALID_ID) {
+  }
+  if (id_ == EX_INVALID_ID) {
     return "exodiff: ERROR:  Must initialize block parameters first!";
-  
-}SMART_ASSERT(var_index >= 0 && var_index < numVars);
+  }
+  SMART_ASSERT(var_index >= 0 && var_index < numVars);
   SMART_ASSERT(t1 >= 1 && t1 <= (int)get_num_timesteps(fileId));
   SMART_ASSERT(t2 >= 1 && t2 <= (int)get_num_timesteps(fileId));
 
@@ -245,7 +245,7 @@ std::string Exo_Entity::Load_Results(int t1, int t2, double proportion, int var_
     }
     else {
       return std::string("WARNING:  No items in this ") + label();
-}
+    }
   }
   else {
     return std::string("WARNING: Variable not stored in this ") + label();
@@ -258,14 +258,13 @@ const double *Exo_Entity::Get_Results(int var_index) const
   SMART_ASSERT(Check_State());
   if (currentStep == 0) {
     return nullptr;
-}
+  }
   SMART_ASSERT(var_index >= 0 && var_index < numVars);
   if (var_index >= 0 && var_index < numVars) {
     return results_[var_index];
   }
-  
-    return nullptr;
-  
+
+  return nullptr;
 }
 
 void Exo_Entity::Free_Results()
@@ -286,10 +285,10 @@ void Exo_Entity::get_truth_table() const
     SMART_ASSERT(truth_ != nullptr);
     // initialize to true for the case of no objects in the block (some older
     // versions of ex_get_object_truth_vector do not set the values at all)
-    for (int i  = 0; i < numVars; ++i) {
+    for (int i = 0; i < numVars; ++i) {
       truth_[i] = 1;
-}
-    int err     = ex_get_object_truth_vector(fileId, exodus_type(), id_, numVars, truth_);
+    }
+    int err = ex_get_object_truth_vector(fileId, exodus_type(), id_, numVars, truth_);
     if (err < 0) {
       ERROR("Exo_Entity::get_truth_table(): ex_get_object_truth_vector returned error.\n");
     }
@@ -302,11 +301,11 @@ std::string Exo_Entity::Load_Attributes(int attr_index)
 
   if (fileId < 0) {
     return "exodiff: ERROR:  Invalid file id!";
-  
-}if (id_ == EX_INVALID_ID) {
+  }
+  if (id_ == EX_INVALID_ID) {
     return "exodiff: ERROR:  Must initialize block parameters first!";
-  
-}SMART_ASSERT(attr_index >= 0 && attr_index < numAttr);
+  }
+  SMART_ASSERT(attr_index >= 0 && attr_index < numAttr);
 
   if ((attributes_[attr_index] == nullptr) && (numEntity != 0u)) {
     attributes_[attr_index] = new double[numEntity];
@@ -331,7 +330,7 @@ std::string Exo_Entity::Load_Attributes(int attr_index)
   }
   else {
     return std::string("WARNING:  No items in this ") + label();
-}
+  }
 
   return "";
 }
@@ -393,9 +392,9 @@ void Exo_Entity::internal_load_params()
   if (numVars != 0) {
     results_ = new double *[numVars];
     SMART_ASSERT(results_ != nullptr);
-    for (int i    = 0; i < numVars; ++i) {
+    for (int i = 0; i < numVars; ++i) {
       results_[i] = nullptr;
-}
+    }
   }
 
   numAttr = get_num_attributes(fileId, exodus_type(), id_, label());
@@ -425,8 +424,8 @@ void Exo_Entity::internal_load_params()
                   << " a call to ex_get_attr_names(...):\n";
         for (int k = 1; k <= numAttr; ++k) {
           std::cerr << "\t\t" << k << ") \"" << names[k - 1] << "\"\n";
-        
-}std::cerr << "                 Aborting...\n" << trmclr::normal;
+        }
+        std::cerr << "                 Aborting...\n" << trmclr::normal;
         exit(1);
       }
       else {
@@ -451,7 +450,7 @@ namespace {
       for (size_t i = 0; i < count; i++) {
         if ((size_t)ids[i] == id) {
           return i;
-}
+        }
       }
     }
     else {
@@ -461,7 +460,7 @@ namespace {
       for (size_t i = 0; i < count; i++) {
         if ((size_t)ids[i] == id) {
           return i;
-}
+        }
       }
     }
 

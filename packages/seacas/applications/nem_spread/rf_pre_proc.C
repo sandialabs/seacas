@@ -64,7 +64,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::create_elem_types()
       int ielem_type = globals.Proc_Elem_Blk_Types[iproc][i];
       for (int j = 0; j < globals.Proc_Num_Elem_In_Blk[iproc][i]; j++) {
         globals.Elem_Type[iproc][ielem_count++] = ielem_type;
-}
+      }
     }
   }
 }

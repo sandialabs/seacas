@@ -60,7 +60,7 @@ int read_mesh_file_name(const char *filename)
   /* Open the file */
   if ((file_cmd = fopen(filename, "r")) == nullptr) {
     return -1;
-}
+  }
   ON_BLOCK_EXIT(fclose, file_cmd);
 
   /* Begin parsing the input file */
@@ -113,7 +113,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
   /* Open the file */
   if ((file_cmd = fopen(filename, "r")) == nullptr) {
     return -1;
-}
+  }
   ON_BLOCK_EXIT(fclose, file_cmd);
 
   /* Begin parsing the input file */
@@ -189,9 +189,10 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           if (Gen_Flag < 0) {
             if (token_compare(cptr, "yes")) {
               Gen_Flag = 1;
-            } else {
+            }
+            else {
               Gen_Flag = 0;
-}
+            }
           }
         }
       }
@@ -225,11 +226,11 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
           for (i = 0; i < icnt; i++) {
             if (*cptr2 == '}') {
               break;
-}
+            }
             if (*cptr2 == ',') {
               *cptr2 = ' ';
-            
-}cptr2++;
+            }
+            cptr2++;
           }
         }
 
@@ -298,7 +299,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
 
               if (icnt >= 0) {
                 (spreader.Restart_Info.Num_Times)++;
-}
+              }
 
               if (spreader.Restart_Info.Num_Times >= tlist_alloc) {
                 tlist_alloc += TLIST_CNT;
@@ -310,7 +311,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
                 /* find the next non-blank space */
                 while (*cptr3 == ' ') {
                   cptr3++;
-}
+                }
               }
               cptr2 = cptr3;
             }
@@ -424,20 +425,19 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
                           "\"number\"\n");
           return 0;
         }
-        
-          cptr2 = strchr(cptr, '=');
-          if (cptr2 == nullptr) {
-            fprintf(stderr, "Error: integer value must be specified for"
-                            " reserve space.\n");
-            return 0;
-          }
-          cptr2++;
-          icnt = sscanf(cptr2, "%d", &(PIO_Info.Num_Dsk_Ctrlrs));
-          if ((icnt <= 0) || (PIO_Info.Num_Dsk_Ctrlrs <= 0)) {
-            fprintf(stderr, "Error: Invalid value for # of raid controllers\n");
-            return 0;
-          }
-        
+
+        cptr2 = strchr(cptr, '=');
+        if (cptr2 == nullptr) {
+          fprintf(stderr, "Error: integer value must be specified for"
+                          " reserve space.\n");
+          return 0;
+        }
+        cptr2++;
+        icnt = sscanf(cptr2, "%d", &(PIO_Info.Num_Dsk_Ctrlrs));
+        if ((icnt <= 0) || (PIO_Info.Num_Dsk_Ctrlrs <= 0)) {
+          fprintf(stderr, "Error: Invalid value for # of raid controllers\n");
+          return 0;
+        }
 
         cptr = strtok(nullptr, ",");
         while (cptr != nullptr) {
@@ -540,7 +540,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
             PIO_Info.Par_Dsk_SubDirec[MAX_FNL - 1] = '\0';
             if (PIO_Info.Par_Dsk_SubDirec[strlen(PIO_Info.Par_Dsk_SubDirec) - 1] != '/') {
               strcat(PIO_Info.Par_Dsk_SubDirec, "/");
-}
+            }
           }
 
           cptr = strtok(nullptr, ",");

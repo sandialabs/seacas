@@ -124,7 +124,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
-}
+  }
 
   // Get options from environment variable also...
   char *options = getenv("exomatlab");
@@ -199,14 +199,14 @@ bool SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("minimum_time");
     if (temp != nullptr) {
       minimumTime_ = strtod(temp, nullptr);
-}
+    }
   }
 
   {
     const char *temp = options_.retrieve("maximum_time");
     if (temp != nullptr) {
       maximumTime_ = strtod(temp, nullptr);
-}
+    }
   }
 
   if (options_.retrieve("copyright") != nullptr) {

@@ -53,10 +53,10 @@ namespace {
     double max = x;
     if (y > max) {
       max = y;
-}
+    }
     if (z > max) {
       max = z;
-}
+    }
     return max;
   }
 
@@ -68,23 +68,23 @@ namespace {
       for (size_t i = 3; i < coord.size(); i += 3) {
         if (min.x > coord[i + 0]) {
           min.x = coord[i + 0];
-}
+        }
         if (min.y > coord[i + 1]) {
           min.y = coord[i + 1];
-}
+        }
         if (min.z > coord[i + 2]) {
           min.z = coord[i + 2];
-}
+        }
 
         if (max.x < coord[i + 0]) {
           max.x = coord[i + 0];
-}
+        }
         if (max.y < coord[i + 1]) {
           max.y = coord[i + 1];
-}
+        }
         if (max.z < coord[i + 2]) {
           max.z = coord[i + 2];
-}
+        }
       }
     }
     else {
@@ -136,7 +136,7 @@ void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> 
     for (size_t i = 0; i < local_node_map.size(); i++) {
       if (local_node_map[i] >= 0) {
         local_node_map[i] = i;
-}
+      }
     }
   }
 
@@ -179,12 +179,12 @@ void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> 
       delta[XYZ] = max.x - min.x;
       delta[Y]   = max.y - min.y;
       if (delta[Y] > delta[XYZ]) {
-        XYZ    = Y;
-}
+        XYZ = Y;
+      }
       delta[Z] = max.z - min.z;
       if (delta[Z] > delta[XYZ]) {
         XYZ = Z;
-}
+      }
 
       double epsilon = (delta[X] + delta[Y] + delta[Z]) / 1.0e3;
       if (epsilon < 0.0) {
@@ -197,7 +197,7 @@ void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> 
 
       if (tolerance >= 0.0) {
         epsilon = tolerance;
-}
+      }
 
       std::vector<INT> j_inrange;
       std::vector<INT> i_inrange;
@@ -257,7 +257,7 @@ namespace {
 
       if (local_node_map[ii + i_offset] < 0) {
         continue;
-}
+      }
 
       double dismin    = FLT_MAX;
       double dmin      = FLT_MAX;
@@ -268,7 +268,7 @@ namespace {
         INT jj = j_inrange[j];
         if (jj < 0 || local_node_map[jj + j_offset] < 0) {
           continue;
-}
+        }
 
         if (i_coord[3 * ii + XYZ] - epsilon > j_coord[3 * jj + XYZ]) {
           j2beg = j;
@@ -279,7 +279,7 @@ namespace {
         //    if set 'j' X|Y|Z greater than set 'i' X|Y|Z+eps, go to next 'i' X1|Y1|Z1 coord.
         if (j_coord[3 * jj + XYZ] - epsilon > i_coord[3 * ii + XYZ]) {
           break;
-}
+        }
 
         double distance = max3(std::fabs(j_coord[3 * jj + 0] - i_coord[3 * ii + 0]),
                                std::fabs(j_coord[3 * jj + 1] - i_coord[3 * ii + 1]),
@@ -294,11 +294,11 @@ namespace {
         else {
           if (distance < dismin) {
             dismin = distance;
-}
+          }
         }
         if (distance == 0.0) {
           break;
-}
+        }
       }
 
       if (dmin <= epsilon && node_dmin >= 0) {
@@ -307,19 +307,20 @@ namespace {
         match++;
         if (dmin > dismax) {
           dismax = dmin;
-}
+        }
         j_inrange[node_dmin] *= -1;
         SMART_ASSERT(jnod < (INT)local_node_map.size());
         if (inod < jnod) {
           local_node_map[jnod] = inod;
-        } else {
+        }
+        else {
           local_node_map[inod] = jnod;
-}
+        }
       }
       else {
         if (dismin < g_dismin) {
           g_dismin = dismin;
-}
+        }
       }
     }
     std::cout << "\nNumber of nodes matched                   = " << match << "\n";
@@ -327,10 +328,10 @@ namespace {
     std::cout << "Tolerance used for matching               = " << epsilon << "\n";
     if (dismax > -FLT_MAX) {
       std::cout << "Maximum distance between matched nodes    = " << dismax << "\n";
-    
-}if (g_dismin < FLT_MAX) {
+    }
+    if (g_dismin < FLT_MAX) {
       std::cout << "Minimum distance between nonmatched nodes = " << g_dismin << "\n";
-    
-}std::cout << "\n";
+    }
+    std::cout << "\n";
   }
 }

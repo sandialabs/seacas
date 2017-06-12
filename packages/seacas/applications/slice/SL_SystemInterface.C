@@ -26,10 +26,10 @@ namespace {
     for (;; c1++, c2++) {
       if (std::tolower(*c1) != std::tolower(*c2)) {
         return (std::tolower(*c1) - std::tolower(*c2));
-}
+      }
       if (*c1 == '\0') {
         return 0;
-}
+      }
     }
   }
 #if 0
@@ -147,7 +147,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
-}
+  }
 
   if (options_.retrieve("help") != nullptr) {
     options_.usage();
@@ -350,7 +350,7 @@ void SystemInterface::parse_step_option(const char *tokens)
       vals[2] = stepInterval_;
 
       int j = 0;
-      for (int & val : vals) {
+      for (int &val : vals) {
         // Parse 'i'th field
         char tmp_str[128];
         ;
@@ -363,7 +363,7 @@ void SystemInterface::parse_step_option(const char *tokens)
         tmp_str[k] = '\0';
         if (strlen(tmp_str) > 0) {
           val = strtoul(tmp_str, nullptr, 0);
-}
+        }
 
         if (tokens[j++] == '\0') {
           break; // Reached end of string
