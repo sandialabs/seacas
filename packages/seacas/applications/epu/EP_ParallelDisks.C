@@ -111,7 +111,7 @@ void Excn::ParallelDisks::create_disk_names()
 
   if (number_of_raids == 0) {
     return;
-}
+  }
 
   disk_names.resize(number_of_raids);
   for (int i = 0; i < number_of_raids; i++) {

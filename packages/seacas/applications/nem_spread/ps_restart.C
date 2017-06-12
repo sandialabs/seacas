@@ -120,7 +120,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_params(
               yo);
       exit(1);
     }
-}
+  }
 
   /* get the time, and the variable names */
   if (read_var_param(exoid, max_name_length) < 0) {
@@ -185,9 +185,10 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
   int cpu_ws;
   if (io_ws < (int)sizeof(float)) {
     cpu_ws = sizeof(float);
-  } else {
+  }
+  else {
     cpu_ws = io_ws;
-}
+  }
 
   /* Open the ExodusII file */
   {
@@ -274,7 +275,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
         for (ilocal = ifound; ilocal < globals.Proc_Num_Elem_Blk[iproc]; ilocal++) {
           if (globals.Proc_Elem_Blk_Ids[iproc][ilocal] == eb_ids_global[cnt]) {
             break;
-}
+          }
         }
 
         if (ilocal < globals.Proc_Num_Elem_Blk[iproc]) {
@@ -412,9 +413,10 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
 
   if (strlen(PIO_Info.Exo_Extension) == 0) {
     cTemp += ".par";
-  } else {
+  }
+  else {
     cTemp += PIO_Info.Exo_Extension;
-}
+  }
 
   int open_file_count = get_free_descriptor_count();
   if (open_file_count > Proc_Info[5]) {
@@ -480,9 +482,10 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
 
       if (iproc % 10 == 0 || iproc == Proc_Info[2] - 1) {
         printf("%d", iproc);
-      } else {
+      }
+      else {
         printf(".");
-}
+      }
 
       if (open_file_count < Proc_Info[5]) {
         if (ex_close(par_exoid[iproc]) == -1) {
@@ -538,9 +541,9 @@ int NemSpread<T, INT>::read_var_param(int exoid, int max_name_length)
       /* allocate array space */
       Restart_Info.Time_Idx.resize(Restart_Info.Num_Times);
 
-      for (int cnt                 = 0; cnt < Restart_Info.Num_Times; cnt++) {
+      for (int cnt = 0; cnt < Restart_Info.Num_Times; cnt++) {
         Restart_Info.Time_Idx[cnt] = cnt + 1;
-}
+      }
     }
   }
   else {
@@ -550,7 +553,7 @@ int NemSpread<T, INT>::read_var_param(int exoid, int max_name_length)
       /* if the user wants the last time, then set it */
       if (Restart_Info.Time_Idx[cnt] == 0) {
         Restart_Info.Time_Idx[cnt] = ret_int;
-}
+      }
 
       if (Restart_Info.Time_Idx[cnt] > ret_int) {
         fprintf(stderr, "%s: Requested time index, %d, out of range.\n", yo,
@@ -785,7 +788,7 @@ int NemSpread<T, INT>::read_elem_vars(int exoid, int index, INT *eb_ids, INT *eb
     /* need to set up local offsets for next block */
     for (int iproc = 0; iproc < Proc_Info[2]; iproc++) {
       local_offset[iproc] += eb_cnts_local[iproc][iblk];
-}
+    }
 
   } /* End "for (iblk = 0; iblk < globals.Num_Elem_Blk; iblk++)" */
 
@@ -994,17 +997,22 @@ template <typename T, typename INT> int NemSpread<T, INT>::compare_mesh_param(in
   /* now check that the parameters match those retrieved from the mesh file */
   if (info.num_dim != globals.Num_Dim) {
     ret = 0;
-  } else if ((size_t)info.num_nodes != globals.Num_Node) {
+  }
+  else if ((size_t)info.num_nodes != globals.Num_Node) {
     ret = 0;
-  } else if ((size_t)info.num_elem != globals.Num_Elem) {
+  }
+  else if ((size_t)info.num_elem != globals.Num_Elem) {
     ret = 0;
-  } else if (info.num_elem_blk != globals.Num_Elem_Blk) {
+  }
+  else if (info.num_elem_blk != globals.Num_Elem_Blk) {
     ret = 0;
-  } else if (info.num_node_sets != globals.Num_Node_Set) {
+  }
+  else if (info.num_node_sets != globals.Num_Node_Set) {
     ret = 0;
-  } else if (info.num_side_sets != globals.Num_Side_Set) {
+  }
+  else if (info.num_side_sets != globals.Num_Side_Set) {
     ret = 0;
-}
+  }
 
   return (ret);
 }
@@ -1024,9 +1032,9 @@ namespace {
     size_t count = 0;
 
     /* Initialize the intersect vector */
-    for (size_t i1  = 0; i1 < num_g_nodes; i1++) {
+    for (size_t i1 = 0; i1 < num_g_nodes; i1++) {
       intersect[i1] = -1;
-}
+    }
 
     /* Check for the possibility of an intersection */
     size_t min_set1 = glob_vec[0];
@@ -1041,7 +1049,7 @@ namespace {
         for (size_t i1 = 0, i2 = 0; i1 < num_g_nodes; i1++) {
           while ((i2 < (num_int_nodes - 1)) && (glob_vec[i1] > loc_vec[i2])) {
             i2++;
-}
+          }
           if (glob_vec[i1] == loc_vec[i2]) {
             intersect[i1] = i2;
             count++;
@@ -1061,7 +1069,7 @@ namespace {
         for (size_t i1 = 0, i2 = 0; i1 < num_g_nodes; i1++) {
           while ((i2 < (num_bor_nodes - 1)) && (glob_vec[i1] > loc_vec[offset + i2])) {
             i2++;
-}
+          }
 
           if (glob_vec[i1] == loc_vec[offset + i2]) {
             intersect[i1] = offset + i2;
@@ -1082,7 +1090,7 @@ namespace {
         for (size_t i1 = 0, i2 = 0; i1 < num_g_nodes; i1++) {
           while ((i2 < (num_ext_nodes - 1)) && (glob_vec[i1] > loc_vec[offset + i2])) {
             i2++;
-}
+          }
 
           if (glob_vec[i1] == loc_vec[offset + i2]) {
             intersect[i1] = offset + i2;

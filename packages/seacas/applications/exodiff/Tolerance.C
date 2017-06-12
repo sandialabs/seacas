@@ -96,23 +96,23 @@ bool Tolerance::Diff(double v1, double v2) const
 {
   if (type == IGNORE) {
     return false;
-}
+  }
 
   if (use_old_floor) {
     if (fabs(v1 - v2) < floor) {
       return false;
-}
+    }
   }
   else {
     if (fabs(v1) <= floor && fabs(v2) <= floor) {
       return false;
-}
+    }
   }
 
   if (type == RELATIVE) {
     if (v1 == 0.0 && v2 == 0.0) {
       return false;
-}
+    }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return fabs(v1 - v2) > value * max;
   }
@@ -145,7 +145,7 @@ bool Tolerance::Diff(double v1, double v2) const
   else if (type == EIGEN_REL) {
     if (v1 == 0.0 && v2 == 0.0) {
       return false;
-}
+    }
     double max = fabs(v1) < fabs(v2) ? fabs(v2) : fabs(v1);
     return fabs(fabs(v1) - fabs(v2)) > value * max;
   }
@@ -175,45 +175,60 @@ const char *Tolerance::typestr() const
   }
   else if (type == ABSOLUTE) {
     return "absolute";
-  } else if (type == COMBINED) {
+  }
+  else if (type == COMBINED) {
     return "combined";
-  } else if (type == ULPS_FLOAT) {
+  }
+  else if (type == ULPS_FLOAT) {
     return "ulps_float";
-  } else if (type == ULPS_DOUBLE) {
+  }
+  else if (type == ULPS_DOUBLE) {
     return "ulps_double";
-  } else if (type == EIGEN_REL) {
+  }
+  else if (type == EIGEN_REL) {
     return "eigenrel";
-  } else if (type == EIGEN_ABS) {
+  }
+  else if (type == EIGEN_ABS) {
     return "eigenabs";
-  } else if (type == EIGEN_COM) {
+  }
+  else if (type == EIGEN_COM) {
     return "eigencom";
-  } else {
+  }
+  else {
     return "ignore";
-
-}}
+  }
+}
 
 const char *Tolerance::abrstr() const
 {
   if (type == RELATIVE) {
     return "rel";
-  } else if (type == ABSOLUTE) {
+  }
+  else if (type == ABSOLUTE) {
     return "abs";
-  } else if (type == COMBINED) {
+  }
+  else if (type == COMBINED) {
     return "com";
-  } else if (type == ULPS_FLOAT) {
+  }
+  else if (type == ULPS_FLOAT) {
     return "upf";
-  } else if (type == ULPS_DOUBLE) {
+  }
+  else if (type == ULPS_DOUBLE) {
     return "upd";
-  } else if (type == EIGEN_REL) {
+  }
+  else if (type == EIGEN_REL) {
     return "ere";
-  } else if (type == EIGEN_ABS) {
+  }
+  else if (type == EIGEN_ABS) {
     return "eab";
-  } else if (type == EIGEN_COM) {
+  }
+  else if (type == EIGEN_COM) {
     return "eco";
-  } else {
+  }
+  else {
     return "ign";
-
-}}
+  }
+}
 
 double Tolerance::UlpsDiffFloat(double A, double B) const
 {
@@ -225,7 +240,7 @@ double Tolerance::UlpsDiffFloat(double A, double B) const
     // Check for equality to make sure +0==-0
     if (A == B) {
       return 0.0;
-}
+    }
     return 2 << 28;
   }
 
@@ -243,7 +258,7 @@ double Tolerance::UlpsDiffDouble(double A, double B) const
     // Check for equality to make sure +0==-0
     if (A == B) {
       return 0.0;
-}
+    }
     return 2 << 28;
   }
 

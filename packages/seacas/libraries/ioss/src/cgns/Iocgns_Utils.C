@@ -613,7 +613,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
                       block->get_block_local_node_offset(index[0], index[1], index[2]);
                   block->m_globalIdMap.emplace_back(block_local_offset, owner_global_offset + 1);
                 }
-		else if (!is_parallel || (zgc.m_ownerProcessor != my_processor)) {
+                else if (!is_parallel || (zgc.m_ownerProcessor != my_processor)) {
                   size_t  local_offset = block->get_local_node_offset(index[0], index[1], index[2]);
                   ssize_t owner_local_offset =
                       owner_block->get_local_node_offset(owner[0], owner[1], owner[2]);

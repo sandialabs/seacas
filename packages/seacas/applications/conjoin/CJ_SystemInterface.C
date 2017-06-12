@@ -114,7 +114,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
     return false;
-}
+  }
 
   // Get options from environment variable also...
   char *options = getenv("CONJOIN_OPTIONS");

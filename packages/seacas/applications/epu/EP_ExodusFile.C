@@ -149,8 +149,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     keepOpen_ = true;
     if ((si.debug() & 1) != 0) {
       std::cout << "Files kept open... (Max open = " << max_files << ")\n\n";
-  
-}}
+    }
+  }
   else {
     keepOpen_ = false;
     std::cout << "Single file mode... (Max open = " << max_files << ")\n"
@@ -206,13 +206,13 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
       int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
       if (max_name_length > maximumNameLength_) {
         maximumNameLength_ = max_name_length;
-}
+      }
 
       ex_close(exoid);
 
       if (io_word_size_var < (int)sizeof(float)) {
         io_word_size_var = sizeof(float);
-}
+      }
 
       ioWordSize_  = io_word_size_var;
       cpuWordSize_ = io_word_size_var;
@@ -237,8 +237,8 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
       std::cout << "Input(" << p << "): '" << name.c_str() << "'" << '\n';
       if (((si.debug() & 64) == 0) && p == 0) {
         std::cout << "..." << '\n';
-    
-}}
+      }
+    }
   }
 
   if ((mode64bit_ & EX_ALL_INT64_DB) != 0) {
@@ -317,7 +317,7 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
 
   if (maximumNameLength_ < 16) {
     maximumNameLength_ = 16;
-}
+  }
   ex_set_option(outputId_, EX_OPT_MAX_NAME_LENGTH, maximumNameLength_);
 
   int int_size = si.int64() ? 8 : 4;

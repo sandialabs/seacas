@@ -48,7 +48,7 @@ namespace {
     bool omitted = false;
     if (block->property_exists("omitted")) {
       omitted = (block->get_property("omitted").get_int() == 1);
-}
+    }
     return omitted;
   }
 
@@ -311,7 +311,7 @@ void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local
           INT gpos = local_element_map[offset + j];
           if (gpos >= 0) {
             global_element_map[gpos] = part_ids[j];
-}
+          }
         }
       }
       offset += num_elem;

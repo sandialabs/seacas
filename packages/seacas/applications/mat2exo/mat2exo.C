@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
     matGetDbl("x0", num_nodes, 1, x);
     if (num_axes > 1) {
       matGetDbl("y0", num_nodes, 1, y);
-}
+    }
     if (num_axes > 2) {
       matGetDbl("z0", num_nodes, 1, z);
     }
@@ -402,13 +402,13 @@ int matGetStr(const char *name, char *data)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == nullptr) {
     return -1;
-}
+  }
 
   int strlen = matvar->nbytes;
 
   if (matvar->dims[0] != 1) {
     printf("Error: Multiline string copy attempted\n");
-}
+  }
 
   memcpy(data, matvar->data, strlen);
 
@@ -422,7 +422,7 @@ int matGetDbl(const char *name, size_t n1, size_t n2, std::vector<double> &data)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == nullptr) {
     return -1;
-}
+  }
 
   assert(matvar->dims[0] == n1);
   assert(matvar->dims[1] == n2);
@@ -440,7 +440,7 @@ int matGetInt(const char *name, size_t n1, size_t n2, std::vector<int> &data)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == nullptr) {
     return -1;
-}
+  }
 
   assert(matvar->dims[0] == n1);
   assert(matvar->dims[1] == n2);
@@ -458,7 +458,7 @@ int matGetInt(const char *name)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == nullptr) {
     return -1;
-}
+  }
 
   assert(matvar->dims[0] == 1);
   assert(matvar->dims[1] == 1);
@@ -475,7 +475,7 @@ int matArrNRow(const char *name)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == nullptr) {
     return -1;
-}
+  }
 
   int nrow = matvar->dims[0];
   Mat_VarFree(matvar);
@@ -488,7 +488,7 @@ int matArrNCol(const char *name)
   matvar_t *matvar = Mat_VarRead(mat_file, name);
   if (matvar == nullptr) {
     return -1;
-}
+  }
 
   int ncol = matvar->dims[1];
   Mat_VarFree(matvar);

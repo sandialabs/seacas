@@ -555,8 +555,8 @@ std::vector<int> handle_element_blocks(int exo_file, int num_blocks, bool use_ce
       int num_elem = 0;
       int num_node = 0;
       int num_attr = 0;
-      ex_get_block(exo_file, EX_ELEM_BLOCK, ids[i], TOPTR(type), &num_elem, &num_node, nullptr, nullptr,
-                   &num_attr);
+      ex_get_block(exo_file, EX_ELEM_BLOCK, ids[i], TOPTR(type), &num_elem, &num_node, nullptr,
+                   nullptr, &num_attr);
       types += type.data();
       types += "\n";
       num_elem_in_block[i] = num_elem;
@@ -624,9 +624,10 @@ std::vector<int> handle_node_sets(int exo_file, int num_sets, bool use_cell_arra
     // 4) distribution factors
     if (use_cell_arrays) {
       size_t dims[2];
-      dims[0]              = 4;
-      dims[1]              = num_sets;
-      matvar_t *cell_array = Mat_VarCreate("node_sets", MAT_C_CELL, MAT_T_CELL, 2, dims, nullptr, 0);
+      dims[0] = 4;
+      dims[1] = num_sets;
+      matvar_t *cell_array =
+          Mat_VarCreate("node_sets", MAT_C_CELL, MAT_T_CELL, 2, dims, nullptr, 0);
       assert(cell_array);
 
       std::vector<matvar_t *> cell_element(num_sets * 4);
@@ -649,11 +650,11 @@ std::vector<int> handle_node_sets(int exo_file, int num_sets, bool use_cell_arra
             Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, (void *)name.data(), 0);
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
-        dims[0] = 1;
-        dims[1] = 1;
-        index   = 4 * i + 1;
-        cell_element[index] =
-            Mat_VarCreate(nullptr, MAT_C_INT32, MAT_T_INT32, 2, dims, &ids[i], MAT_F_DONT_COPY_DATA);
+        dims[0]             = 1;
+        dims[1]             = 1;
+        index               = 4 * i + 1;
+        cell_element[index] = Mat_VarCreate(nullptr, MAT_C_INT32, MAT_T_INT32, 2, dims, &ids[i],
+                                            MAT_F_DONT_COPY_DATA);
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
         dims[0] = num_nodes[i];
@@ -728,9 +729,10 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
 
     if (use_cell_arrays) {
       size_t dims[2];
-      dims[0]              = 7;
-      dims[1]              = num_sets;
-      matvar_t *cell_array = Mat_VarCreate("side_sets", MAT_C_CELL, MAT_T_CELL, 2, dims, nullptr, 0);
+      dims[0] = 7;
+      dims[1] = num_sets;
+      matvar_t *cell_array =
+          Mat_VarCreate("side_sets", MAT_C_CELL, MAT_T_CELL, 2, dims, nullptr, 0);
       assert(cell_array);
 
       std::vector<matvar_t *> cell_element(num_sets * 7);
@@ -761,11 +763,11 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
             Mat_VarCreate(nullptr, MAT_C_CHAR, MAT_T_UINT8, 2, dims, (void *)name.data(), 0);
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
-        dims[0] = 1;
-        dims[1] = 1;
-        index   = 7 * i + 1;
-        cell_element[index] =
-            Mat_VarCreate(nullptr, MAT_C_INT32, MAT_T_INT32, 2, dims, &ids[i], MAT_F_DONT_COPY_DATA);
+        dims[0]             = 1;
+        dims[1]             = 1;
+        index               = 7 * i + 1;
+        cell_element[index] = Mat_VarCreate(nullptr, MAT_C_INT32, MAT_T_INT32, 2, dims, &ids[i],
+                                            MAT_F_DONT_COPY_DATA);
         Mat_VarSetCell(cell_array, index, cell_element[index]);
 
         int n1, n2;

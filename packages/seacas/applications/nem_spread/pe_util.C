@@ -94,7 +94,7 @@ void gen_disk_map(struct Parallel_IO *pio_info, int proc_info[], int proc, int n
     proc_id = iproc;
     while (proc_id >= nproc) {
       proc_id -= nproc;
-}
+    }
 
     pio_info->RDsk_List[iproc][1] = proc_id;
   }
@@ -173,7 +173,7 @@ std::string gen_par_filename(const char *scalar_fname, int proc_for, int nprocs)
    */
   for (i1 = 0; i1 < iMaxDigit - iMyDigit; i1++) {
     par_filename += std::string("0");
-}
+  }
 
   /*
    * Generate the name of the directory on which the parallel disk
@@ -210,7 +210,7 @@ std::string gen_par_filename(const char *scalar_fname, int proc_for, int nprocs)
   }
   if (Debug_Flag >= 4) {
     printf("Parallel file name: %s\n", par_filename.c_str());
-}
+  }
 
   return par_filename;
 }

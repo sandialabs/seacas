@@ -71,7 +71,7 @@ FileInfo::FileInfo(const std::string &dirpath, const std::string &my_filename) :
     filename_ = dirpath;
     if (filename_.at(filename_.size() - 1) != '/') {
       filename_ += SLASH;
-}
+    }
   }
   filename_ += my_filename;
   readable_ = internal_access(filename_, R_OK);
@@ -115,7 +115,7 @@ bool FileInfo::is_dir() const
   }
   else {
     return false;
-}
+  }
 }
 
 //: Returns TRUE if we are pointing to a symbolic link
@@ -124,9 +124,10 @@ bool FileInfo::is_symlink() const
   struct stat s;
   if (lstat(filename_.c_str(), &s) == 0) {
     return S_ISLNK(s.st_mode);
-  } else {
+  }
+  else {
     return false;
-}
+  }
 }
 
 //: Time of last data modification. See 'man stat(2)'
@@ -135,9 +136,10 @@ time_t FileInfo::modified() const
   struct stat s;
   if (do_stat(filename_, &s)) {
     return s.st_mtime;
-  } else {
+  }
+  else {
     return 0;
-}
+  }
 }
 
 //: Time of last access
@@ -146,9 +148,10 @@ time_t FileInfo::accessed() const
   struct stat s;
   if (do_stat(filename_, &s)) {
     return s.st_atime;
-  } else {
+  }
+  else {
     return 0;
-}
+  }
 }
 
 //: Time of last status change. (creation, chmod, ...)
@@ -157,9 +160,10 @@ time_t FileInfo::created() const
   struct stat s;
   if (do_stat(filename_, &s)) {
     return s.st_ctime;
-  }else {
+  }
+  else {
     return 0;
-}
+  }
 }
 
 //: File size in bytes. Only if is_file() == true
@@ -168,9 +172,10 @@ off_t FileInfo::size() const
   struct stat s;
   if (do_stat(filename_, &s)) {
     return s.st_size;
-  }else {
+  }
+  else {
     return 0;
-}
+  }
 }
 
 //: Returns the filename
@@ -203,9 +208,10 @@ const std::string FileInfo::extension() const
   // Protect against './filename' returning /filename as extension
   if (ind != std::string::npos && (inds == std::string::npos || inds < ind)) {
     return filename_.substr(ind + 1, filename_.size());
-  } else {
+  }
+  else {
     return std::string();
-}
+  }
 }
 
 const std::string FileInfo::pathname() const
@@ -213,9 +219,10 @@ const std::string FileInfo::pathname() const
   size_t ind = filename_.find_last_of("/", filename_.size());
   if (ind != std::string::npos) {
     return filename_.substr(0, ind);
-  }else {
+  }
+  else {
     return std::string();
-}
+  }
 }
 
 const std::string FileInfo::tailname() const
@@ -223,9 +230,10 @@ const std::string FileInfo::tailname() const
   size_t ind = filename_.find_last_of("/", filename_.size());
   if (ind != std::string::npos) {
     return filename_.substr(ind + 1, filename_.size());
-  }else {
+  }
+  else {
     return filename_; // No path, just return the filename
-}
+  }
 }
 
 const std::string FileInfo::basename() const
@@ -236,9 +244,10 @@ const std::string FileInfo::basename() const
   size_t ind = tail.find_last_of('.', tail.size());
   if (ind != std::string::npos) {
     return tail.substr(0, ind);
-  }else {
+  }
+  else {
     return tail;
-}
+  }
 }
 
 const std::string FileInfo::realpath() const
@@ -249,9 +258,9 @@ const std::string FileInfo::realpath() const
     free(path);
     return temp;
   }
-   {
+  {
     return filename_;
-}
+  }
 }
 
 bool FileInfo::remove_file()
@@ -265,10 +274,10 @@ namespace {
   {
     if (name.empty()) {
       return false;
-}
+    }
     if (::access(name.c_str(), mode) != 0) {
       return false;
-}
+    }
     return true;
   }
 
