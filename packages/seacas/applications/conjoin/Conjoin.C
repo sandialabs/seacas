@@ -332,8 +332,7 @@ namespace {
   {
     std::sort(map.begin(), map.end());
     map.erase(std::unique(map.begin(), map.end()), map.end());
-    // shrink-to-fit...
-    std::vector<T>(map).swap(map);
+    map.shrink_to_fit();
   }
 }
 

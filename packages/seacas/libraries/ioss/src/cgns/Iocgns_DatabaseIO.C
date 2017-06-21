@@ -1327,9 +1327,7 @@ namespace Iocgns {
           }
           auto it = nodes.begin();
           it++;
-          std::sort(it, nodes.end());
-          nodes.erase(std::unique(it, nodes.end()), nodes.end());
-          nodes.shrink_to_fit();
+	  Ioss::Utils::uniquify(nodes, true);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;

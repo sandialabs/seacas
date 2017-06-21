@@ -1497,9 +1497,7 @@ namespace Iocgns {
         for (size_t i = 0; i < element_nodes * num_to_get; i++) {
           nodes.push_back(idata[i]);
         }
-        std::sort(nodes.begin(), nodes.end());
-        nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
-        nodes.shrink_to_fit();
+	Ioss::Utils::uniquify(nodes);
 
         // Resolve zone-shared nodes (nodes used in this zone, but are
         // shared on processor boundaries).
@@ -1586,8 +1584,7 @@ namespace Iocgns {
           connectivity_map.clear();
           connectivity_map.shrink_to_fit();
 
-          std::sort(nodes.begin(), nodes.end());
-          nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
+	  Ioss::Utils::uniquify(nodes);
           if (nodes.back() == std::numeric_limits<cgsize_t>::max()) {
             nodes.pop_back();
           }
