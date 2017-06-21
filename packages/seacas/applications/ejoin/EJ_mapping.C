@@ -51,14 +51,6 @@ namespace {
     }
     return omitted;
   }
-
-  template <typename T> void uniqify(std::vector<T> &map)
-  {
-    std::sort(map.begin(), map.end());
-    map.erase(std::unique(map.begin(), map.end()), map.end());
-    // shrink-to-fit...
-    std::vector<T>(map).swap(map);
-  }
 }
 
 template <typename INT>
@@ -157,7 +149,7 @@ void build_reverse_node_map(Ioss::Region &global, RegionVector &part_mesh,
   }
 
   // Now, sort the global_node_map array and remove duplicates...
-  uniqify(global_node_map);
+  Ioss::Utils::uniquify(global_node_map);
 
   // If any omitted nodes, remove them from the global_node_map.
   // The id will be 0
