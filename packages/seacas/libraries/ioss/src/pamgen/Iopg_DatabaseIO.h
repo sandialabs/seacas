@@ -67,8 +67,6 @@ namespace Ioss {
 /** \brief A namespace for the pamgen database format.
  */
 namespace Iopg {
-  typedef std::vector<int> IntVector;
-
   class IOFactory : public Ioss::IOFactory
   {
   public:
@@ -257,12 +255,12 @@ namespace Iopg {
     int sidesetCount;
 
     // Communication Set Data
-    IntVector nodeCmapIds;
-    IntVector nodeCmapNodeCnts;
-    IntVector elemCmapIds;
-    IntVector elemCmapElemCnts;
-    int       commsetNodeCount;
-    int       commsetElemCount;
+    Ioss::IntVector nodeCmapIds;
+    Ioss::IntVector nodeCmapNodeCnts;
+    Ioss::IntVector elemCmapIds;
+    Ioss::IntVector elemCmapElemCnts;
+    int             commsetNodeCount;
+    int             commsetElemCount;
 
     // MAPS -- Used to convert from local exodusII ids/names to Sierra
     // database global ids/names
