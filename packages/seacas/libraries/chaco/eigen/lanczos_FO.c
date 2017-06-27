@@ -308,7 +308,7 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
     if (version == 1) {
       splarax(Aq, A, n, q[j], vwsqrt, workn);
     }
-    else {
+    else if (version == 2) {
       symmlq_(&long_n, &(q[j][1]), &wv1[1], &wv2[1], &wv3[1], &wv4[1], &Aq[1], &wv5[1], &wv6[1],
               &checka, &goodb, &precon, &shift, &nout, &intlim, &rtol, &istop, &itn, &anorm, &acond,
               &rnorm, &ynorm, (double *)A, vwsqrt, (double *)orthlist2, &macheps, &normxlim,
