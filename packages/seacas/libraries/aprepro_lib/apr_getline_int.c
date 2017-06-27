@@ -1628,7 +1628,7 @@ static void gl_display_matches(int nused)
       for (cp1 = buf + sizeof(buf); *--cp1 == ' ';)
         ;
       ++cp1;
-      if (cp1 != buf + sizeof(buf))
+      if (cp1 < buf + sizeof(buf))
         *cp1 = '\0';
       gl_puts(buf);
       gl_putc('\n');
