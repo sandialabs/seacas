@@ -358,18 +358,39 @@ namespace Iocgns {
     OUTPUT << "Pre-Splitting:\n";
 #endif
     // Split all blocks where block->work() > avg_work * m_loadBalanceThreshold
+    bool single_zone = m_structuredZones.size() == 1;
     do {
       auto zone_new(m_structuredZones);
       split = false;
       for (auto zone : m_structuredZones) {
         if (zone->is_active() && zone->work() > avg_work * m_loadBalanceThreshold) {
-          auto children = zone->split(new_zone_id, zone->work() / avg_work);
+	  // The ratio seems to be a good idea, but it needs some more intelligence
+	  // at times.  For example, if splitting a 4x4x1 across 4 processors, it will
+	  // correctly split it into 1x4x1 and 3x4x1 the first split, but then the
+	  // next split will split ordinal 1 into 3x1x1 and 3x3x1.  
+	  // Would be good to be able to do subsequent splits along same ordinal as
+	  // first split if it made sense, ...
+	  // For now, if only single zone in model, use equal splits; else use ratio splits.
+	  // TODO: Add control via property?
+	  //
+	  
+	  double ratio = zone->work() / avg_work;
+	  if (single_zone) {
+	    ratio = 0.5;
+	  }
+	  auto children = zone->split(new_zone_id, ratio);
+
           if (children.first != nullptr && children.second != nullptr) {
             zone_new.push_back(children.first);
             zone_new.push_back(children.second);
             split = true;
             new_zone_id += 2;
           }
+	  num_active++; // Add 2 children; parent goes inactive
+	  if (single_zone && num_active >= (size_t)m_decomposition.m_processorCount) {
+	    split = false;
+	    break;
+	  }
         }
       }
       std::swap(zone_new, m_structuredZones);
@@ -433,6 +454,13 @@ namespace Iocgns {
 #ifdef IOSS_DEBUG_OUTPUT
       OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
 #endif
+      if (single_zone) {
+	auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
+				    [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
+	if (active >= m_decomposition.m_processorCount) {
+	  px = 0;
+	}
+      }
       num_split = 0;
       if (px > 0) {
         for (auto zone : m_structuredZones) {
