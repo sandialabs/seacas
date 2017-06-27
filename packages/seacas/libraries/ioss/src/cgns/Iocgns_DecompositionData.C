@@ -315,6 +315,7 @@ namespace Iocgns {
 
   template <typename INT> void DecompositionData<INT>::decompose_structured(int filePtr)
   {
+    m_decomposition.show_progress(__func__);
     create_zone_data(filePtr, m_structuredZones);
     if (m_structuredZones.empty()) {
       return;
@@ -505,6 +506,8 @@ namespace Iocgns {
 
   template <typename INT> void DecompositionData<INT>::decompose_unstructured(int filePtr)
   {
+    m_decomposition.show_progress(__func__);
+    
     // Initial decomposition is linear where processor #p contains
     // elements from (#p * #element/#proc) to (#p+1 * #element/#proc)
 
