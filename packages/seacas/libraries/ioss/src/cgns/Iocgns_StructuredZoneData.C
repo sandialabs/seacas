@@ -151,7 +151,7 @@ namespace {
                      int ordinal)
   {
 #ifdef IOSS_DEBUG_OUTPUT
-    OUTPUT << "Propogating ZGC from " << parent->m_name << " to " << child->m_name << "\n";
+    OUTPUT << "\t\tPropogating ZGC from " << parent->m_name << " to " << child->m_name << "\n";
 #endif
     for (auto zgc : parent->m_zoneConnectivity) {
       if (!zgc.m_intraBlock || zgc_overlaps(child, zgc)) {

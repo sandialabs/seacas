@@ -2286,6 +2286,15 @@ namespace {
     if (field_name == "ids" && ige->type() == Ioss::SIDEBLOCK) {
       return;
     }
+    if (field_name == "ids" && ige->type() == Ioss::STRUCTUREDBLOCK) {
+      return;
+    }
+    if (field_name == "cell_ids" && ige->type() == Ioss::STRUCTUREDBLOCK) {
+      return;
+    }
+    if (field_name == "cell_node_ids" && ige->type() == Ioss::STRUCTUREDBLOCK) {
+      return;
+    }
 
     if (options.data_storage_type >= 1 || options.data_storage_type <= 2) {
       if (data.size() < isize) {
