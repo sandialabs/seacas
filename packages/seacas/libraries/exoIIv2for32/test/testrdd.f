@@ -105,7 +105,7 @@ c
       num_props = exinqi (exoid, EXNEBP)
       mxalnmlen = exinqi (exoid, EXDBMXALNM)
       mxusnmlen = exinqi (exoid, EXDBMXUSNM)
-      write (iout, '("  Maximum Allowed/Used DB Name Size ",i2,i2)')
+      write (iout, '("  Maximum Allowed/Used DB Name Size ",i4,i4)')
      *  mxalnmlen, mxusnmlen
       
 c
