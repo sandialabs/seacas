@@ -37,14 +37,15 @@
 #include "SL_tokenize.h"
 #include <algorithm>
 
-std::vector<std::string> SLIB::tokenize(const std::string &str, const std::string &separators)
+std::vector<std::string> SLIB::tokenize(const std::string &str, const std::string &separators,
+					bool allow_empty_token)
 {
   std::vector<std::string> tokens;
   auto                     first = std::begin(str);
   while (first != std::end(str)) {
     const auto second =
         std::find_first_of(first, std::end(str), std::begin(separators), std::end(separators));
-    if (first != second) {
+    if (first != second || allow_empty_token) {
       tokens.emplace_back(first, second);
     }
     if (second == std::end(str))
