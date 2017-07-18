@@ -227,7 +227,9 @@ int main(int argc, char *argv[])
 
       sprintf(name, "ssfac%02d", i + 1);
       matGetDbl(name, nssdfac[i], 1, dist_fact);
-      ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
+      if (nssdfac[i] > 0) {
+	ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
+      }
     }
 
     get_put_user_names(exo_file, EX_SIDE_SET, num_side_sets, "ssusernames");
@@ -240,23 +242,25 @@ int main(int argc, char *argv[])
     std::vector<int> ids;
     matGetInt("nsids", num_node_sets, 1, ids);
     matGetInt("nnsnodes", num_node_sets, 1, num_nodeset_nodes);
-    std::vector<int> nnsdfac;
-    matGetInt("nnsdfac", num_node_sets, 1, nnsdfac);
+    std::vector<int> ndfac;
+    matGetInt("nnsdfac", num_node_sets, 1, ndfac);
 
     std::vector<double> dist_fact;
     std::vector<int>    node_list;
     for (int i = 0; i < num_node_sets; i++) {
       char name[32];
 
-      ex_put_set_param(exo_file, EX_NODE_SET, ids[i], num_nodeset_nodes[i], nnsdfac[i]);
+      ex_put_set_param(exo_file, EX_NODE_SET, ids[i], num_nodeset_nodes[i], ndfac[i]);
 
       sprintf(name, "nsnod%02d", i + 1);
       matGetInt(name, num_nodeset_nodes[i], 1, node_list);
       ex_put_set(exo_file, EX_NODE_SET, ids[i], TOPTR(node_list), nullptr);
 
       sprintf(name, "nsfac%02d", i + 1);
-      matGetDbl(name, nnsdfac[i], 1, dist_fact);
-      ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
+      matGetDbl(name, ndfac[i], 1, dist_fact);
+      if (ndfac[i] > 0) {
+	ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
+      }
     }
 
     get_put_user_names(exo_file, EX_NODE_SET, num_node_sets, "nsusernames");
