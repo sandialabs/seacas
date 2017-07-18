@@ -276,21 +276,21 @@ echo "begin test_ts_files" >> test.output
 ${PREFIX} ${BINDIR}/test_ts_files${SUFFIX} >> test.output
 echo "end test_ts_files" >> test.output
 mv test0.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files0.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files0.res
 mv test1.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files1.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files1.res
 mv test2.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files2.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files2.res
 mv test3.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files3.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files3.res
 mv test4.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files4.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files4.res
 mv test5.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files5.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files5.res
 mv test6.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files6.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files6.res
 mv test7.exo test.exo
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files7.res
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee test_ts_files7.res
 echo "test_ts_errval - multiple threads calling ex_err and ex_get_err..."
 echo "begin test_ts_errval" >> test.output
 ${PREFIX} ${BINDIR}/test_ts_errval${SUFFIX} >> test.output
