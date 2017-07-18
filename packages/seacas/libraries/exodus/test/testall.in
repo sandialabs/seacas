@@ -57,7 +57,8 @@ echo "testwt - single precision write test..."
 echo "begin testwt" > test.output
 ${PREFIX} ${BINDIR}/testwt${SUFFIX} >> test.output
 echo "end testwt" >> test.output
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee testwt.res
+# Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue |grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee testwt.res
 
 echo "testrd - single precision read test..."
 echo "begin testrd" >> test.output
@@ -161,7 +162,8 @@ echo "testwt_nc - write x y z components of coordinates separately..."
 echo "begin testwt_nc" >> test.output
 ${PREFIX} ${BINDIR}/testwt_nc${SUFFIX} >> test.output
 echo "end testwt_nc" >> test.output
-${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/test.dmp | tee testwt_nc.res
+# Filter out the "maximum_name_length" attribute. Moves around in ncdump output for nc4 vs nc3
+${NCDUMP} -d5,5 test.exo | grep -v version | grep -v _FillValue | grep -v maximum_name_length | ${DIFF} - ${SRCDIR}/test.dmp | tee testwt_nc.res
 
 echo "testrd_nc - read x y z components of coordinates separately..."
 echo "begin testrd_nc" >> test.output

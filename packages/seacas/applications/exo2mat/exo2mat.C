@@ -84,7 +84,7 @@ mat_t *mat_file = nullptr; /* file for binary .mat output */
 bool   debug    = false;
 
 static const char *qainfo[] = {
-    "exo2mat", "2017/03/31", "4.02",
+    "exo2mat", "2017/07/18", "4.03",
 };
 
 std::string time_stamp(const std::string &format)
@@ -314,6 +314,7 @@ void get_put_user_names(int exo_file, ex_entity_type type, int num_blocks, const
 {
   int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
   max_name_length     = max_name_length < 32 ? 32 : max_name_length;
+  ex_set_max_name_length(exo_file, max_name_length);
   char **names        = get_exodus_names(num_blocks, max_name_length + 1);
   ex_get_names(exo_file, type, names);
 
