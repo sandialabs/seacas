@@ -798,7 +798,8 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
 
         bool has_ss_dfac = (n2 != 0);
         if (n2 == 0 || n1 == n2) {
-          std::cerr << "WARNING: Exodus file does not contain distribution factors.\n";
+          std::cerr << "WARNING: Sideset with id " << ids[i]
+		    << " does not contain distribution factors.\n";
           num_sideset_dfac[i] = num_sideset_nodes[i];
         }
 
@@ -857,7 +858,8 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
 
         bool has_ss_dfac = (n2 != 0);
         if (n2 == 0 || n1 == n2) {
-          std::cerr << "WARNING: Exodus file does not contain distribution factors.\n";
+          std::cerr << "WARNING: Sideset with id " << ids[i]
+		    << " does not contain distribution factors.\n";
           ex_get_side_set_node_list_len(exo_file, ids[i], &n2);
         }
 
