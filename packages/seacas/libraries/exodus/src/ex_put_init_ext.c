@@ -279,12 +279,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   /* create name string length dimension */
   if (nc_inq_dimid(rootid, DIM_STR_NAME, &dim_str_name) != NC_NOERR) {
-    int max_name = ex_inquire_int(exoid, EX_INQ_MAX_READ_NAME_LENGTH);
-    if (max_name < ex_default_max_name_length) {
-      max_name = ex_default_max_name_length;
-    }
-
-    if ((status = nc_def_dim(rootid, DIM_STR_NAME, max_name + 1, &dim_str_name)) != NC_NOERR) {
+    if ((status = nc_def_dim(rootid, DIM_STR_NAME, NC_MAX_NAME, &dim_str_name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define name string length in file id %d",
                rootid);
       ex_err("ex_put_init_ext", errmsg, status);
