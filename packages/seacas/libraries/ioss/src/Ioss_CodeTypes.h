@@ -102,3 +102,5 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #define IOSS_FUNC_ENTER(m)
 #endif
 #endif
+
+#define IOSS_DEBUG_OUTPUT 0

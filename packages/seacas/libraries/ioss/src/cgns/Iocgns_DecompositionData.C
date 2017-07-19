@@ -16,7 +16,6 @@
 
 #include <assert.h>
 
-#define IOSS_DEBUG_OUTPUT 0
 namespace {
   int rank = 0;
 #define OUTPUT                                                                                     \
@@ -148,7 +147,7 @@ namespace {
         Ioss::IJK_t donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
         Ioss::IJK_t donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
 
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
                << "\n";
 #endif
@@ -353,7 +352,7 @@ namespace Iocgns {
       std::exit(EXIT_FAILURE);
     }
 
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "========================================================================\n";
     OUTPUT << "Pre-Splitting:\n";
 #endif
@@ -395,7 +394,7 @@ namespace Iocgns {
       }
       std::swap(zone_new, m_structuredZones);
     } while (split);
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "========================================================================\n";
 #endif
     do {
@@ -430,7 +429,7 @@ namespace Iocgns {
 
           zone->m_proc = proc;
           work_vector[proc] += zone->work();
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
           OUTPUT << "Assigning zone " << zone->m_zone << " with work " << zone->work()
                  << " to processor " << proc << "\n";
 #endif
@@ -442,7 +441,7 @@ namespace Iocgns {
       std::vector<bool> exceeds(m_decomposition.m_processorCount);
       for (size_t i = 0; i < work_vector.size(); i++) {
         double workload_ratio = double(work_vector[i]) / double(avg_work);
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
         OUTPUT << "Processor " << i << " work: " << work_vector[i]
                << ", workload ratio: " << workload_ratio << "\n";
 #endif
@@ -451,7 +450,7 @@ namespace Iocgns {
           px++;
         }
       }
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
       OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
 #endif
       if (single_zone) {
@@ -488,7 +487,7 @@ namespace Iocgns {
       }
       auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
       OUTPUT << "Number of active zones = " << active << ", average work = " << avg_work << "\n";
       OUTPUT << "========================================================================\n";
 #endif
@@ -509,7 +508,7 @@ namespace Iocgns {
     for (auto &zone : m_structuredZones) {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
         OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
                << ", Adam zone = " << zone->m_adam->m_zone << "\n";
         auto zgcs = zone->m_zoneConnectivity;
@@ -526,7 +525,7 @@ namespace Iocgns {
       }
     }
 
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     MPI_Barrier(m_decomposition.m_comm);
     OUTPUT << Ioss::trmclr::green << "Returning from decomposition\n" << Ioss::trmclr::normal;
 #endif
@@ -721,7 +720,7 @@ namespace Iocgns {
         }
 
         if (dz != zone) {
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
           std::cerr << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
                     << "\n";
 #endif
@@ -1050,7 +1049,7 @@ namespace Iocgns {
         start  = 0;
         finish = 0;
       }
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
       OUTPUT << m_decomposition.m_processor << ": reading " << count << " nodes from zone " << zone
              << " starting at " << start << " with an offset of " << offset << " ending at "
              << finish << "\n";
