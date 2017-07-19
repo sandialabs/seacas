@@ -1677,6 +1677,10 @@ namespace Iocgns {
 
   void DatabaseIO::write_results_meta_data() {}
 
-  unsigned DatabaseIO::entity_field_support() const { return Ioss::REGION; }
+  unsigned DatabaseIO::entity_field_support() const
+  {
+    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK |
+      Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
+  }
 
 } // namespace Iocgns

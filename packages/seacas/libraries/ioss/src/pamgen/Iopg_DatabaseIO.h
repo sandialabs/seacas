@@ -91,6 +91,11 @@ namespace Iopg {
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
+    unsigned DatabaseIO::entity_field_support() const
+    {
+      return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
+    }
+
     unsigned entity_field_support() const { return 0; }
 
     std::string title() const { return databaseTitle; }
