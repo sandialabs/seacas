@@ -1942,7 +1942,11 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::write_results_meta_data() {}
 
-  unsigned ParallelDatabaseIO::entity_field_support() const { return Ioss::REGION; }
+  unsigned ParallelDatabaseIO::entity_field_support() const
+  {
+    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK |
+      Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
+  }
 
   int64_t ParallelDatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
   {
