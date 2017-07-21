@@ -89,12 +89,10 @@ def getExodusVersion():
       return int(fields[2])
   return 0
 
-NETCDF_SO = "@NetCDF_C_LIBRARY@"
 if os.uname()[0] == 'Darwin':
   EXODUS_SO = "@ACCESSDIR@/lib/libexodus.dylib"
 else:
   EXODUS_SO = "@ACCESSDIR@/lib/libexodus.so"
-NETCDF_LIB = cdll.LoadLibrary(NETCDF_SO)
 EXODUS_LIB = cdll.LoadLibrary(EXODUS_SO)
 
 EX_API_VERSION_NODOT = getExodusVersion()
