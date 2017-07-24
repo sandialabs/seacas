@@ -93,7 +93,7 @@ namespace {
 
 Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_name)
     : Ioss::GroupingEntity(nullptr, my_name, 1), fileName(std::move(filename)), numDOF(0),
-      num_nodes(0), numEIG(0), num_dim(0), filePtr(-1)
+      num_nodes(0), numEIG(0), numRBM(0), num_dim(0), filePtr(-1)
 {
 
   // For now, we will open the raw netcdf file here and parse the
@@ -120,6 +120,8 @@ Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_nam
 
   nc_get_dimension(filePtr, "NumEig", "number of eigenvalues", &numEIG);
 
+  nc_get_dimension(filePtr, "NumRbm", "number of rigid body modes", &numRBM);
+
   nc_get_dimension(filePtr, "num_dim", "number of dimensions", &num_dim);
 
   size_t num_constraints = 0;
@@ -132,6 +134,8 @@ Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_nam
     properties.add(Ioss::Property(this, "num_nodes", Ioss::Property::INTEGER));
   }
   properties.add(Ioss::Property(this, "numEIG", Ioss::Property::INTEGER));
+
+  properties.add(Ioss::Property(this, "numRBM", Ioss::Property::INTEGER));
 
   properties.add(Ioss::Property(this, "numDIM", Ioss::Property::INTEGER));
 
@@ -152,8 +156,12 @@ Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_nam
 
   fields.add(Ioss::Field("Mr", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, numDOF * numDOF));
 
+  if (numRBM > 0) {
+    fields.add(Ioss::Field("InertiaTensor", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, numDOF * numRBM));
+  }
+
   // There are additional properties and fields on the netcdf file,
-  // but for now we only need "Kr" and "Mr"
+  // but for now we only need "Kr", "Mr", and "InertiaTensor"
 }
 
 int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, void *data,
@@ -227,6 +235,15 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     if (status != 0) {
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load mass matrix field 'Mr' from file '" << fileName << "'.";
+      IOSS_ERROR(errmsg);
+    }
+  }
+  else if (field.get_name() == "InertiaTensor") {
+    assert(num_to_get == numDOF * numRBM);
+    int status = nc_get_array(filePtr, "InertiaTensor", reinterpret_cast<double *>(data));
+    if (status != 0) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: Could not load inertia matrix field 'InertiaTensor' from file '" << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }
