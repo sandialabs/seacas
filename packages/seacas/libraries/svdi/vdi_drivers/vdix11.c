@@ -392,19 +392,11 @@
 
 #include <stdio.h>
 
-#ifdef VMS
-#include <decw$include/Xatom.h>
-#include <decw$include/Xlib.h>
-#include <decw$include/Xresource.h>
-#include <decw$include/Xutil.h>
-#include <decw$include/keysym.h>
-#else
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
-#endif
 
 /* svdi state */
 /* attributes
@@ -724,15 +716,10 @@ int *justif;
     XSetFont(display, gc, font_id);
   }
   font_height = font_info->max_bounds.ascent + font_info->max_bounds.descent;
-  font_width  = font_info->max_bounds.rbearing -
-#if defined(VMS)
-               font_info->max_bounds.lbearing;
-#else
-               font_info->min_bounds.lbearing;
-/* this gives bounding box width, which seems like what
-   we want ... but for whatever reason, this computation
-   doesn't seem to give correct results on VMS */
-#endif
+  font_width  = font_info->max_bounds.rbearing - font_info->min_bounds.lbearing;
+  /* this gives bounding box width, which seems like what
+     we want ... but for whatever reason, this computation
+     doesn't seem to give correct results on VMS */
 
   /* setup input event stuff */
   /* specify what kinds of input events to accept */

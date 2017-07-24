@@ -47,16 +47,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef vms
-#define EXIT_SUCCESS 1
-#define EXIT_FAILURE 0
-#else
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #endif
 #ifndef EXIT_FAILURE
 #define EXIT_FAILURE 1
-#endif
 #endif
 
 #define NOT_NETCDF 2
