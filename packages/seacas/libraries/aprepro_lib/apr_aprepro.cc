@@ -238,9 +238,15 @@ namespace SEAMS {
   void Aprepro::set_error_streams(std::ostream *c_error, std::ostream *c_warning,
                                   std::ostream *c_info)
   {
-    errorStream   = c_error;
-    warningStream = c_warning;
-    infoStream    = c_info;
+    if (c_erorr) {
+      errorStream = c_error;
+    }
+    if (c_warning) {
+      warningStream = c_warning;
+    }
+    if (c_info) {
+      infoStream = c_info;
+    }
   }
 
   /* Two methods for opening files:
