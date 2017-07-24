@@ -194,7 +194,10 @@ fi
 abspath ${FOR011}
 
 # Run the code
-${ACCESS}/bin/${codename}${sep}${device} ${ps_option} ${nomap_option} ${caption} -basename ${filename} ${FOR011}
+if ${ACCESS}/bin/${codename}${sep}${device} ${ps_option} ${nomap_option} ${caption} -basename ${filename} ${FOR011}
+then
+  echo "${txtgrn}BLOT Successful Execution${txtrst}"
+fi
 
 if [ ! -z ${filename} ] && [ "${device}" != "dual" ] && [ "${device}" != "xcps" ]
 then
@@ -207,4 +210,3 @@ fi
 # Remove temporary files
 if [ -e Blot.90.$$ ] ; then rm -f Blot.90.$$ ; fi
 
-echo "${txtgrn}BLOT Successful Execution${txtrst}"

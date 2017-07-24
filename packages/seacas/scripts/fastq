@@ -209,7 +209,10 @@ then
 fi
 
 # Run the code, --
-${ACCESSBIN}/${codename}_${device} -basename ${filename} 
+if ${ACCESSBIN}/${codename}_${device} -basename ${filename}
+then
+  echo "${txtgrn}BLOT Successful Execution${txtrst}"
+fi
 
 if [ ! -z ${filename} ] && [ "${device}" != "dual" ] && [ "${device}" != "xcps" ]
 then
@@ -223,4 +226,3 @@ if [ "${aprepro}" == "file" ] ; then
     rm -f ${FOR001}
 fi
 
-echo "${txtgrn}FASTQ Successful Execution${txtrst}"
