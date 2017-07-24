@@ -238,7 +238,7 @@ namespace SEAMS {
   void Aprepro::set_error_streams(std::ostream *c_error, std::ostream *c_warning,
                                   std::ostream *c_info)
   {
-    if (c_erorr) {
+    if (c_error) {
       errorStream = c_error;
     }
     if (c_warning) {
