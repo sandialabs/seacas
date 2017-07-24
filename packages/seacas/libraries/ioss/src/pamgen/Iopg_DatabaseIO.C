@@ -58,7 +58,6 @@
 namespace Iopg {
   using SideSetSet = std::set<std::string>;
   using SideSetMap = std::map<std::string, const std::string, std::less<const std::string>>;
-  using TopologyMap = std::map<std::pair<std::string, const Ioss::ElementTopology *>, int, TopologyMapCompare>;
 
   struct TopologyMapCompare
   {
@@ -72,6 +71,7 @@ namespace Iopg {
     }
   };
 
+  using TopologyMap = std::map<std::pair<std::string, const Ioss::ElementTopology *>, int, TopologyMapCompare>;
 }
 
 namespace {
