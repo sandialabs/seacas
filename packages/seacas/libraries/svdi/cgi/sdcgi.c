@@ -1614,8 +1614,8 @@ void cqfl_(f_integer *vstat, f_integer *npdefb, f_integer *nsetb, f_integer *max
 /*      cqc - inquire colour capabilities                                     */
 /*                                                                            */
 /******************************************************************************/
-void cqc_(f_integer *vstat, f_integer *nsimul, f_integer *navail, f_integer *nint,
-          f_integer *cmode, f_integer *dynmod, f_integer *overit, f_integer *monoc)
+void cqc_(f_integer *vstat, f_integer *nsimul, f_integer *navail, f_integer *nint, f_integer *cmode,
+          f_integer *dynmod, f_integer *overit, f_integer *monoc)
 {
   short     dev;       /* which device to look at now */
   short     dev_found; /* which device was it found on */
