@@ -132,15 +132,7 @@ namespace Ioex {
     bool end_state__(Ioss::Region *region, int state, double time) override;
     virtual void get_step_times__() override = 0;
 
-    int     spatial_dimension() const { return spatialDimension; }
-    int64_t node_count() const { return nodeCount; }
-    int64_t side_count() const { return 0; }
-    int64_t element_count() const { return elementCount; }
-    int     node_block_count() const { return m_groupCount[EX_NODE_BLOCK]; }
-    int     element_block_count() const { return m_groupCount[EX_ELEM_BLOCK]; }
-    int     sideset_count() const { return m_groupCount[EX_SIDE_SET]; }
-    int     nodeset_count() const { return m_groupCount[EX_NODE_SET]; }
-    int     maximum_symbol_length() const override { return maximumNameLength; }
+    int maximum_symbol_length() const override { return maximumNameLength; }
 
     // NOTE: If this is called after write_meta_data, it will have no affect.
     //       Also, it only affects output databases, not input.
