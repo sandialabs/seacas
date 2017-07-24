@@ -83,10 +83,9 @@ void exname_(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
 void exname(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
 #endif
 {
-  char         string[3];
-  char         symbol[7];
-  int          ExtSymbol;
-  unsigned int DargLen;
+  char string[3];
+  char symbol[7];
+  int  ExtSymbol;
 
   char *darg;
 
@@ -106,11 +105,7 @@ void exname(FTNINT *iunit, char *name, FTNINT *ln, long int nlen)
   }
 
   if ((darg = (char *)getenv(symbol)) != (char *)NULL) {
-    /* Then under UN*X, I've found an ENVIRONMENT variable which points
-     * to a file.  Under VMS it's a logical though I think in this
-     * latter case it's redundant.
-     */
-    DargLen = strlen(darg);
+    unsigned int DargLen = strlen(darg);
     /* We need this to give us the length of the ENVIRONMENT
      * variable while calling strlen() only once.
      */
