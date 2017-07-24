@@ -536,7 +536,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
     cgsize_t    num_geo = 0;
     CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
 
-#if defined(IOSS_DEBUG_OUTPUT)
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
               << num_geo << " geometry references\n";
 #endif
@@ -621,7 +621,7 @@ size_t Iocgns::Utils::resolve_nodes(Ioss::Region &region, int my_processor, bool
                   if (cell_node_map[local_offset] == ss_max) {
                     cell_node_map[local_offset] = owner_local_offset;
                   }
-#if defined(IOSS_DEBUG_OUTPUT)
+#if IOSS_DEBUG_OUTPUT
                   else {
                     if (cell_node_map[local_offset] != owner_local_offset) {
                       std::cerr << "DUPLICATE?: " << local_offset << " " << owner_local_offset
@@ -739,7 +739,7 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
         }
       }
     }
-#if defined(IOSS_DEBUG_OUTPUT)
+#if IOSS_DEBUG_OUTPUT
     std::cerr << "P" << my_processor << ", Block " << owner_block->name()
               << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
 #endif

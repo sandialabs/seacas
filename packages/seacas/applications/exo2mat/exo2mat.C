@@ -84,7 +84,7 @@ mat_t *mat_file = nullptr; /* file for binary .mat output */
 bool   debug    = false;
 
 static const char *qainfo[] = {
-    "exo2mat", "2017/03/31", "4.02",
+    "exo2mat", "2017/07/18", "4.03",
 };
 
 std::string time_stamp(const std::string &format)
@@ -314,6 +314,7 @@ void get_put_user_names(int exo_file, ex_entity_type type, int num_blocks, const
 {
   int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
   max_name_length     = max_name_length < 32 ? 32 : max_name_length;
+  ex_set_max_name_length(exo_file, max_name_length);
   char **names        = get_exodus_names(num_blocks, max_name_length + 1);
   ex_get_names(exo_file, type, names);
 
@@ -797,7 +798,8 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
 
         bool has_ss_dfac = (n2 != 0);
         if (n2 == 0 || n1 == n2) {
-          std::cerr << "WARNING: Exodus file does not contain distribution factors.\n";
+          std::cerr << "WARNING: Sideset with id " << ids[i]
+		    << " does not contain distribution factors.\n";
           num_sideset_dfac[i] = num_sideset_nodes[i];
         }
 
@@ -856,7 +858,8 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
 
         bool has_ss_dfac = (n2 != 0);
         if (n2 == 0 || n1 == n2) {
-          std::cerr << "WARNING: Exodus file does not contain distribution factors.\n";
+          std::cerr << "WARNING: Sideset with id " << ids[i]
+		    << " does not contain distribution factors.\n";
           ex_get_side_set_node_list_len(exo_file, ids[i], &n2);
         }
 
