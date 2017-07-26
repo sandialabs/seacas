@@ -62,7 +62,7 @@
 int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_set_node_cnt_list)
 {
   int       status;
-  int       ii, i, j;
+  size_t    ii, i, j;
   int       num_side_sets, num_elem_blks, ndim;
   size_t    tot_num_ss_elem = 0;
   int64_t   side, elem;
