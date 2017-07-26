@@ -71,7 +71,7 @@
 int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
                                   void_int *side_set_node_list_len)
 {
-  size_t    i, j;
+  size_t    ii, i, j;
   int64_t   num_side_sets, num_elem_blks, num_df, ndim;
   size_t    list_len     = 0;
   int64_t   tot_num_elem = 0, tot_num_ss_elem = 0;
@@ -288,25 +288,35 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
   /* Walk through element list and keep a running count of the node length */
 
   list_len = 0;
-  for (i = 0; i < tot_num_ss_elem; i++) {
+  j = 0; /* The current element block... */
+  for (ii = 0; ii < tot_num_ss_elem; ii++) {
     size_t elem;
     size_t side;
     if (ex_int64_status(exoid) & EX_BULK_INT64_API) {
+      i    = ss_elem_ndx_64[ii];
       elem = ((int64_t *)side_set_elem_list)[i];
       side = ((int64_t *)side_set_side_list)[i];
     }
     else {
+      i    = ss_elem_ndx[ii];
       elem = ((int *)side_set_elem_list)[i];
       side = ((int *)side_set_side_list)[i];
     }
 
-    for (j = 0; j < num_elem_blks; j++) {
+    /*
+     * Since the elements are being accessed in sorted, order, the
+     * block that contains the elements must progress sequentially
+     * from block 0 to block[num_elem_blks-1]. Once we find an element
+     * not in this block, find a following block that contains it...
+     */
+    for (; j < num_elem_blks; j++) {
       if (elem_blk_parms[j].elem_type_val != EX_EL_NULL_ELEMENT) {
-        if (elem <= elem_blk_parms[j].elem_ctr) {
-          break; /* stop because we found the parameters for this element */
-        }
+	if (elem <= elem_blk_parms[j].elem_ctr) {
+	  break;
+	}
       }
     }
+
     if (j >= num_elem_blks) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: Invalid element number %" ST_ZU " found in side set %" PRId64 " in file %d",
