@@ -81,7 +81,7 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
 
   void_int *side_set_elem_list = NULL;
   void_int *side_set_side_list = NULL;
-  int       elem_ctr;
+  size_t    elem_ctr;
 
   int err_stat = EX_NOERR;
   int status;
@@ -288,7 +288,7 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
   /* Walk through element list and keep a running count of the node length */
 
   list_len = 0;
-  j = 0; /* The current element block... */
+  j        = 0; /* The current element block... */
   for (ii = 0; ii < tot_num_ss_elem; ii++) {
     size_t elem;
     size_t side;
@@ -311,9 +311,9 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
      */
     for (; j < num_elem_blks; j++) {
       if (elem_blk_parms[j].elem_type_val != EX_EL_NULL_ELEMENT) {
-	if (elem <= elem_blk_parms[j].elem_ctr) {
-	  break;
-	}
+        if (elem <= elem_blk_parms[j].elem_ctr) {
+          break;
+        }
       }
     }
 
@@ -321,7 +321,7 @@ int ex_get_side_set_node_list_len(int exoid, ex_entity_id side_set_id,
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: Invalid element number %" ST_ZU " found in side set %" PRId64 " in file %d",
                elem, side_set_id, exoid);
-      ex_err(__func__, errmsg, EX_MSG);
+      ex_err(__func__, errmsg, EX_BADPARAM);
       err_stat = EX_FATAL;
       goto cleanup;
     }
