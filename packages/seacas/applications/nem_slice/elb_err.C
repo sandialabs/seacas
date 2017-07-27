@@ -34,9 +34,9 @@
  */
 
 #include "elb_err.h"
-#include <cstdio>   // for fprintf, stderr
 #include <cstddef> // for size_t
-#include <vector>   // for vector
+#include <cstdio>  // for fprintf, stderr
+#include <vector>  // for vector
 
 const int MAX_ERR_MSG = 1024;
 int       error_lev   = 1;
@@ -53,9 +53,9 @@ static std::vector<error_message> error_info;
  *****************************************************************************/
 void error_add(int level, const std::string &message, const std::string &filename, int line_no)
 {
-  if (error_info.size() < (size_t)MAX_ERR_MSG)
+  if (error_info.size() < static_cast<size_t>(MAX_ERR_MSG)) {
     error_info.emplace_back(level, message, line_no, filename);
-  return;
+  }
 }
 
 /*****************************************************************************/
@@ -79,11 +79,13 @@ void error_report()
         }
 
         fprintf(stderr, "\t%s\n", error_info[i].err_mesg.c_str());
-        if (error_lev >= 2)
+        if (error_lev >= 2) {
           fprintf(stderr, "\t\tin file %s\n", error_info[i].filename.c_str());
+        }
 
-        if (error_lev >= 3)
+        if (error_lev >= 3) {
           fprintf(stderr, "\t\t\tat line %d\n", error_info[i].line_no);
+        }
       }
     }
   }

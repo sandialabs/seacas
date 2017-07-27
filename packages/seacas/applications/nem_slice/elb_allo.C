@@ -36,9 +36,9 @@
 #include "elb_allo.h"
 #include "elb_format.h" // for ST_ZU
 #include <cstdarg>      // for va_end, va_arg, va_list, etc
+#include <cstddef>      // for size_t
 #include <cstdio>       // for fprintf, stderr
 #include <cstdlib>      // for exit, malloc
-#include <cstddef>     // for size_t
 
 static void *smalloc(size_t n);
 

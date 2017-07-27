@@ -57,8 +57,9 @@ template <typename T, typename U> void siftDown(T *a, U *b, int64_t start, int64
       my_swap(b[child], b[root]);
       root = child;
     }
-    else
+    else {
       return;
+    }
   }
 }
 

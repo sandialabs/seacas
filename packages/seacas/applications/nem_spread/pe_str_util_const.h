@@ -49,8 +49,8 @@ extern void clean_string(char        inp_str[], /* The string to clean */
                          const char *tokens     /* The tokens to strip multiple copies of */
                          );
 
-extern void string_to_lower(char       inp_str[], /* The string to convert to lower case */
-                            const char cstop      /* Character where to stop */
+extern void string_to_lower(char inp_str[], /* The string to convert to lower case */
+                            char cstop      /* Character where to stop */
                             );
 
 #endif /* _PE_STR_UTIL_CONST_H_ */
