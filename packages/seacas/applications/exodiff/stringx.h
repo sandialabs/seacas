@@ -53,10 +53,10 @@ std::string &chop_whitespace(std::string &s);
 //! Separates the next token from the given string.  The next token is
 //! returned and the given string has the next token removed (so it is
 //! modified in place).
-std::string extract_token(std::string &s, const char *delimeters = " \t\n\r");
+std::string extract_token(std::string &s, const char *delimiters = " \t\n\r");
 
 //! Counts how many tokens are contained in the given string.
-int count_tokens(const std::string &s, const char *delimeters = " \t\n\r");
+int count_tokens(const std::string &s, const char *delimiters = " \t\n\r");
 
 //! Runs each string in the vector and returns the maximun size.
 int max_string_length(const std::vector<std::string> &names);
