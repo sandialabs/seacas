@@ -1,3 +1,6 @@
+#ifndef CHACO_INTERNAL_INTERNAL_H
+#define CHACO_INTERNAL_INTERNAL_H
+
 /*
  * Copyright (c) 2014, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
@@ -39,3 +42,5 @@ struct bidint
   struct bidint *prev;
   struct bidint *next;
 };
+
+#endif

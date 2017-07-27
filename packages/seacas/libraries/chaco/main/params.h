@@ -1,3 +1,6 @@
+#ifndef CHACO_MAIN_PARAMS_H
+#define CHACO_MAIN_PARAMS_H
+
 /*
  * Copyright (c) 2014, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
@@ -37,3 +40,5 @@
 
 #define MAXDIMS 3 /**< Most cuts allowed at one time */
 #define MAXSETS 8 /**< 2^MAXDIMS */
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef CHACO_MAIN_STRUCTS_H
+#define CHACO_MAIN_STRUCTS_H
+
 /*
  * Copyright (c) 2014, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
@@ -158,3 +161,5 @@ struct flists
   float *        list;
   struct flists *next;
 };
+
+#endif
