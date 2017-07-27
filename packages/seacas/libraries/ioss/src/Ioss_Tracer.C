@@ -1,5 +1,5 @@
 #include <Ioss_Tracer.h>
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 namespace Ioss {

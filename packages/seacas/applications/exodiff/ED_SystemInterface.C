@@ -8,7 +8,7 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <limits.h>
+#include <climits>
 
 #include "ED_Version.h"
 #include "stringx.h"

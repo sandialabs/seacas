@@ -1,7 +1,7 @@
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
 #include <GetLongOpt.h>
 #include <sstream>
-#include <string.h>
+#include <cstring>
 
 GetLongOption::GetLongOption(const char optmark)
     : table(nullptr), ustring(nullptr), pname(nullptr), last(nullptr), enroll_done(0),

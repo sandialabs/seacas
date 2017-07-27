@@ -34,7 +34,7 @@
  */
 #include <cctype>   // for isupper, tolower
 #include <cstring>  // for strlen
-#include <stddef.h> // for size_t
+#include <cstddef> // for size_t
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  * Author(s):   Gary L. Hennigan (SNL 9221)

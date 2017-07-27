@@ -47,7 +47,7 @@
 #include <cstring>          // for strlen
 #include <iostream>         // for operator<<, basic_ostream, etc
 #include <set>              // for set
-#include <stdint.h>         // for int64_t
+#include <cstdint>         // for int64_t
 #include <string>           // for string, char_traits, etc
 #include <vector>           // for vector
 

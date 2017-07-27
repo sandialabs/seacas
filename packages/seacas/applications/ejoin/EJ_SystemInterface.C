@@ -6,11 +6,11 @@
 #include <algorithm>     // for sort, find, transform
 #include <cstdlib>       // for exit, strtod, strtoul, abs, etc
 #include <cstring>       // for strchr, strlen
-#include <ctype.h>       // for tolower
+#include <cctype>       // for tolower
 #include <iosfwd>        // for ostream
 #include <iostream>      // for operator<<, basic_ostream, etc
-#include <limits.h>      // for INT_MAX
-#include <stddef.h>      // for size_t
+#include <climits>      // for INT_MAX
+#include <cstddef>      // for size_t
 #include <utility>       // for pair, make_pair
 #include <vector>        // for vector
 

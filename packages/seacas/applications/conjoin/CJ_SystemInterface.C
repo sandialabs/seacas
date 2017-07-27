@@ -3,10 +3,10 @@
 #include "CJ_Version.h"  // for qainfo
 #include "SL_tokenize.h" // for tokenize
 #include <algorithm>     // for sort, transform
-#include <ctype.h>       // for tolower
+#include <cctype>       // for tolower
 #include <iostream>      // for operator<<, basic_ostream, etc
-#include <stddef.h>      // for size_t
-#include <stdlib.h>      // for exit, strtol, EXIT_SUCCESS, etc
+#include <cstddef>      // for size_t
+#include <cstdlib>      // for exit, strtol, EXIT_SUCCESS, etc
 #include <utility>       // for pair, make_pair
 #include <vector>        // for vector
 

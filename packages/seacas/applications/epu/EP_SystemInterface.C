@@ -39,10 +39,10 @@
 #include <algorithm>     // for sort, transform
 #include <cstdlib>       // for strtol, abs, exit, strtoul, etc
 #include <cstring>       // for strchr, strlen
-#include <ctype.h>       // for tolower
+#include <cctype>       // for tolower
 #include <iostream>      // for operator<<, basic_ostream, etc
-#include <limits.h>      // for INT_MAX
-#include <stddef.h>      // for size_t
+#include <climits>      // for INT_MAX
+#include <cstddef>      // for size_t
 #include <string>        // for string, char_traits, etc
 #include <utility>       // for pair, make_pair
 #include <vector>        // for vector

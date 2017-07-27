@@ -48,7 +48,7 @@
 
 #include <cstring>
 #include <ctime>
-#include <ctype.h>
+#include <cctype>
 #include <sys/times.h>
 #include <sys/utsname.h>
 

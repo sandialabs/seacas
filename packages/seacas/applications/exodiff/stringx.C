@@ -34,7 +34,7 @@
 #include "smart_assert.h" // for SMART_ASSERT
 #include "stringx.h"
 #include <cstring> // for strspn, strcspn
-#include <ctype.h> // for tolower, isspace
+#include <cctype> // for tolower, isspace
 #include <string>  // for string, operator==
 #include <vector>  // for vector
 

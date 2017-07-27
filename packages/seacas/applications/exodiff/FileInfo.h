@@ -33,9 +33,9 @@
 #ifndef FileInfo_h
 #define FileInfo_h
 
+#include <ctime>       // for time_t
 #include <string>      // for string, operator!=, etc
 #include <sys/types.h> // for off_t
-#include <time.h>      // for time_t
 
 /*! \class FileInfo
  *  \author Greg Sjaardema

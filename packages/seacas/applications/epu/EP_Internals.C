@@ -34,7 +34,7 @@
  */
 
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 #ifndef PRId64
 #error "PRId64 not defined"
 #endif
@@ -45,10 +45,10 @@
 #include <algorithm>      // for sort
 #include <cstring>        // for strncpy, strlen, memset
 #include <smart_assert.h> // for SMART_ASSERT
-#include <stddef.h>       // for size_t
-#include <stdint.h>       // for int64_t
-#include <stdio.h>        // for sprintf
-#include <stdlib.h>       // for exit, EXIT_FAILURE
+#include <cstddef>       // for size_t
+#include <cstdint>       // for int64_t
+#include <cstdio>        // for sprintf
+#include <cstdlib>       // for exit, EXIT_FAILURE
 
 #include <iostream> // for operator<<, basic_ostream, etc
 #include <string>   // for string, basic_string

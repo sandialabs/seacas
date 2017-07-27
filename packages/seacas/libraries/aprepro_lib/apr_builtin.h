@@ -35,7 +35,7 @@
 #ifndef APR_BUILTIN_H
 #define APR_BUILTIN_H
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace SEAMS {
   struct array;

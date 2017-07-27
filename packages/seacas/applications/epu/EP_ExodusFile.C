@@ -38,11 +38,11 @@
 #include "EP_ParallelDisks.h"
 #include "EP_SystemInterface.h"
 #include "smart_assert.h"
-#include <limits.h>
-#include <stdlib.h>
+#include <climits>
+#include <cstdlib>
 
 #include <iostream>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 

@@ -34,7 +34,7 @@
 #include <algorithm>   // for move
 #include <cstdio>      // for remove
 #include <cstdlib>     // for free, realpath
-#include <stddef.h>    // for size_t
+#include <cstddef>    // for size_t
 #include <string>      // for string
 #include <sys/stat.h>  // for stat, lstat, S_ISDIR, etc
 #include <sys/types.h> // for off_t

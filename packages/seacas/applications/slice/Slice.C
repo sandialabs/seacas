@@ -38,7 +38,7 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
-#include <assert.h>
+#include <cassert>
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <init/Ionit_Initializer.h>
 
@@ -1513,7 +1513,7 @@ namespace {
 #if defined(__PUMAGON__)
 #include <stdio.h>
 #else
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 #endif
 

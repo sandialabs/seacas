@@ -41,11 +41,11 @@
 #include <Ioss_CodeTypes.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
+#include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <stddef.h>
-#include <stdlib.h>
 #include <string>
 #include <utility>
 #include <vector>

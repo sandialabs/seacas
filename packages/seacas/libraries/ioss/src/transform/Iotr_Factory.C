@@ -34,7 +34,7 @@
 #include <Ioss_Utils.h>
 #include <map>
 #include <ostream>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <utility>
 

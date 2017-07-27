@@ -32,7 +32,7 @@
 
 #include <cgns/Iocgns_DatabaseIO.h> // for DatabaseIO -- serial
 #include <cgns/Iocgns_IOFactory.h>
-#include <stddef.h> // for nullptr
+#include <cstddef> // for nullptr
 #ifdef HAVE_MPI
 #include <cgns/Iocgns_ParallelDatabaseIO.h> // for DatabaseIO -- parallel
 #endif

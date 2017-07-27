@@ -38,9 +38,9 @@
 #include "Ioss_Region.h"    // for Region, NodeBlockContainer
 #include "smart_assert.h"   // for SMART_ASSERT
 #include <algorithm>        // for max, min
-#include <float.h>          // for FLT_MAX
+#include <cfloat>          // for FLT_MAX
 #include <iostream>         // for operator<<, cout, ostream, etc
-#include <stddef.h>         // for size_t
+#include <cstddef>         // for size_t
 
 namespace {
   template <typename INT>

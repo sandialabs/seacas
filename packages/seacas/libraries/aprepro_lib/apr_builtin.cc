@@ -1,13 +1,13 @@
 #include "apr_builtin.h"
 
 #include <cctype>
+#include <cerrno>
 #include <cfenv>
 #include <cmath>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <errno.h>
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
@@ -21,7 +21,7 @@
 #include "apr_util.h"
 #include "aprepro.h"
 #include "aprepro_parser.h"
-#include <assert.h>
+#include <cassert>
 #include <cstring>
 
 #include <random>

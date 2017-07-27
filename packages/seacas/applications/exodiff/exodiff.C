@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 #ifndef PRId64
 #error "PRId64 not defined"
 #endif
@@ -50,10 +50,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <float.h>
+#include <cfloat>
 #include <fstream>
 #include <iostream>
-#include <time.h>
+#include <ctime>
 
 #include "ED_SystemInterface.h"
 #include "ED_Version.h"
@@ -209,7 +209,7 @@ void output_summary(ExoII_Read<INT> &file1, MinMaxData &mm_time, std::vector<Min
                     std::vector<MinMaxData> &mm_ns, std::vector<MinMaxData> &mm_ss,
                     const INT *node_id_map, const INT *elem_id_map);
 
-#include <signal.h>
+#include <csignal>
 // bit of a hack to get GNU's functions to enable floating point error trapping
 #ifdef LINUX
 #ifdef __USE_GNU

@@ -37,9 +37,9 @@
 
 #define NO_NETCDF_2
 #include "EP_ObjectType.h"
+#include <cstring>
 #include <exodusII.h>
 #include <iostream>
-#include <string.h>
 #include <string>
 #include <vector>
 

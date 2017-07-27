@@ -34,8 +34,8 @@
 #include "CJ_SystemInterface.h"
 #include "smart_assert.h"
 
-#include <limits.h>
-#include <stdlib.h>
+#include <climits>
+#include <cstdlib>
 
 #include <iomanip>
 #include <iostream>

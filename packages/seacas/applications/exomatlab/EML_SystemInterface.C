@@ -40,12 +40,12 @@
 #include "SL_tokenize.h"   // for tokenize
 #include <Ioss_FileInfo.h> // for FileInfo
 #include <algorithm>       // for sort, transform
-#include <ctype.h>         // for tolower
+#include <cctype>         // for tolower
 #include <iosfwd>          // for ostream
 #include <iostream>        // for operator<<, basic_ostream, etc
-#include <stddef.h>        // for size_t
-#include <stdlib.h>        // for exit, strtod, EXIT_SUCCESS, etc
-#include <string.h>        // for strcmp
+#include <cstddef>        // for size_t
+#include <cstdlib>        // for exit, strtod, EXIT_SUCCESS, etc
+#include <cstring>        // for strcmp
 #include <utility>         // for pair, make_pair
 #include <vector>          // for vector
 

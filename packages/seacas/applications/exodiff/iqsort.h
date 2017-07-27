@@ -32,7 +32,7 @@
 //
 #ifndef IQSORT_H
 #define IQSORT_H
-#include <stdlib.h>
+#include <cstdlib>
 
 template <typename T, typename INT> void index_qsort(const T v[], INT iv[], size_t N);
 #endif

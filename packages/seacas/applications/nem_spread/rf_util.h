@@ -34,7 +34,7 @@
  */
 #ifndef _RF_UTIL_H
 #define _RF_UTIL_H
-#include <limits.h>
+#include <climits>
 
 template <typename T> inline void my_swap(T &r, T &s)
 {

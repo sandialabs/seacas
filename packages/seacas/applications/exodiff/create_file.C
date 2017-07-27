@@ -40,7 +40,7 @@
 #include "util.h"         // for TOPTR
 #include <cstdio>         // for sprintf, nullptr
 #include <iostream>       // for operator<<, basic_ostream, etc
-#include <stddef.h>       // for size_t
+#include <cstddef>       // for size_t
 #include <string>         // for string, char_traits, etc
 #include <vector>         // for vector
 template <typename INT> class ExoII_Read;

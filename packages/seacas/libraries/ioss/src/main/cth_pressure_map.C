@@ -40,9 +40,9 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <stddef.h>
+#include <cstddef>
 #include <stdexcept>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <utility>
 #include <vector>
