@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <cstddef> // for size_t
+#include "apr_util.h" // for check_valid_var, new_string, etc
 
 namespace SEAMS {
   class Stats
@@ -40,7 +40,7 @@ namespace SEAMS {
   public:
     Stats();
 
-    void   newsample(int);
+    void   newsample(int /*n*/);
     double mean() const;
     double deviation() const;
     double variance() const;
@@ -50,4 +50,4 @@ namespace SEAMS {
     double Mean;
     double StdDev;
   };
-}
+} // namespace SEAMS  // namespace SEAMS

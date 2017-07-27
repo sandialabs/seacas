@@ -225,7 +225,7 @@ namespace SEAMS {
      * @param sname	stream name for error messages
      * @return		true if successfully parsed
      */
-    bool parse_stream(std::istream &in, const std::string &sname = "stream input");
+    bool parse_stream(std::istream &in, const std::string &in_name = "stream input");
 
     /** Invoke the scanner and parser on an input string.
      * @param input	input string
@@ -267,12 +267,12 @@ namespace SEAMS {
 
     std::stack<std::ostream *> outputStream;
 
-    SEAMS::symrec *getsym(const char *) const;
+    SEAMS::symrec *getsym(const char * /*sym_name*/) const;
     SEAMS::symrec *putsym(const std::string &sym_name, SYMBOL_TYPE sym_type, bool is_internal);
 
     void add_variable(const std::string &sym_name, const std::string &sym_value,
-                      bool is_immutable = false);
-    void add_variable(const std::string &sym_name, double sym_value, bool is_immutable = false);
+                      bool immutable = false);
+    void add_variable(const std::string &sym_name, double sym_value, bool immutable = false);
     std::vector<std::string> get_variable_names(bool doInternal = false);
     void remove_variable(const std::string &sym_name);
 
@@ -298,7 +298,7 @@ namespace SEAMS {
     // specified, use info(...) instead.
     std::ostream *infoStream;
 
-    void set_error_streams(std::ostream *error, std::ostream *warning, std::ostream *info);
+    void set_error_streams(std::ostream *c_error, std::ostream *c_warning, std::ostream *c_info);
 
     void dumpsym(const char *type, bool doInternal) const;
     void dumpsym(int type, bool doInternal) const;

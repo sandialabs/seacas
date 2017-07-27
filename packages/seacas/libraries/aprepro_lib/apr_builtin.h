@@ -93,7 +93,7 @@ namespace SEAMS {
   double do_lgamma(double val);
   double do_juldayhms(double mon, double day, double year, double h, double mi, double se);
   double do_julday(double mon, double day, double year);
-  double do_log1p(double mag);
+  double do_log1p(double x);
   double do_rows(const array *arr);
   double do_cols(const array *arr);
 
@@ -127,15 +127,15 @@ namespace SEAMS {
 
   const char *do_get_word(double n, char *string, char *delm);
   const char *do_extract(char *string, char *begin, char *end);
-  const char *do_print_array(const array *arr);
+  const char *do_print_array(const array *my_array_data);
 
   const char *do_execute(char *string);
-  const char *do_getenv(char *string);
+  const char *do_getenv(char *env);
   const char *do_tolower(char *string);
   const char *do_toupper(char *string);
   const char *do_tostring(double x);
-  const char *do_output(char *newfile);
-  const char *do_append(char *newfile);
+  const char *do_output(char *filename);
+  const char *do_append(char *filename);
   const char *do_error(char *error_string);
   const char *do_get_date(void);
   const char *do_get_iso_date(void);
@@ -143,7 +143,7 @@ namespace SEAMS {
   const char *do_get_word(double n, char *string, char *delm);
   const char *do_file_to_string(char *filename);
   const char *do_extract(char *string, char *begin, char *end);
-  const char *do_include_path(char *newpath);
+  const char *do_include_path(char *new_path);
   const char *do_intout(double intval);
   const char *do_print_array(array *my_array_data);
   const char *do_str_if(char *string);
@@ -151,12 +151,12 @@ namespace SEAMS {
   const char *do_str_elseif(char *string);
   const char *do_delete(char *string);
 
-  array *do_csv_array(const char *filename, double rows_to_skip);
+  array *do_csv_array(const char *filename, double skip);
   array *do_csv_array1(const char *filename);
-  array *do_csv_array2(const char *filename, const char *skip);
+  array *do_csv_array2(const char *filename, const char *comment);
   array *do_make_array(double rows, double cols);
   array *do_identity(double size);
-  array *do_transpose(const array *array);
-}
+  array *do_transpose(const array *a);
+} // namespace SEAMS  // namespace SEAMS
 
 #endif

@@ -43,5 +43,5 @@ namespace SEAMS {
   array *array_sub(const array *a, const array *b);
   array *array_scale(const array *a, double s);
   array *array_mult(const array *a, const array *b);
-}
+} // namespace SEAMS
 #endif

@@ -49,7 +49,7 @@
 #undef yyFlexLexer
 #endif
 
-#include "aprepro_parser.h"
+#include <iostream>
 
 namespace SEAMS {
 
@@ -66,12 +66,12 @@ namespace SEAMS {
     /** Create a new scanner object. The streams arg_yyin and arg_yyout default
      * to cin and cout, but that assignment is only made when initializing in
      * yylex(). */
-    Scanner(Aprepro &aprepro_yyarg, std::istream *arg_yyin = nullptr,
-            std::ostream *arg_yyout = nullptr);
+    explicit Scanner(Aprepro &aprepro_yyarg, std::istream *in = nullptr,
+                     std::ostream *out = nullptr);
     /** Required for virtual functions */
     virtual ~Scanner();
 
-    void add_include_file(const std::string &filename, bool file_must_exist);
+    void add_include_file(const std::string &filename, bool must_exist);
     int  yywrap() override;
     void yyerror(const char *s);
     void LexerOutput(const char *buf, int size) override;
