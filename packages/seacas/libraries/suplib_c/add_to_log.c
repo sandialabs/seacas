@@ -90,10 +90,12 @@ void add_to_log(const char *my_name, double elapsed)
           username = "UNKNOWN";
         }
 
-        if (codename == NULL)
+        if (codename == NULL) {
           codename = my_name;
-        else
+        }
+        else {
           codename++;
+        }
 
         {
           time_t     calendar_time = time(NULL);
