@@ -162,7 +162,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   }
 
   /* allocate space for stat array */
-  if (!(stat_vals = malloc((int)num_obj * sizeof(int)))) {
+  if (!(stat_vals = malloc(num_obj * sizeof(int)))) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate memory for %s status array for file id %d",
              ex_name_of_object(var_type), exoid);

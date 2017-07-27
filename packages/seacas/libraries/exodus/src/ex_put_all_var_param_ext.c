@@ -70,7 +70,7 @@ static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, i
       goto error_ret;                                                                              \
                                                                                                    \
     /* get element block IDs */                                                                    \
-    if (!(VIDS = malloc(DVAL * sizeof(int64_t)))) {                                                \
+    if (!(VIDS = malloc(sizeof(int64_t) * DVAL))) {                                                \
       snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
                "ERROR: failed to allocate memory for " TNAME " id array for file id %d", exoid);   \
       ex_err("ex_put_all_var_param_ext", errmsg, EX_MEMFAIL);                                      \
