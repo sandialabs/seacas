@@ -38,8 +38,8 @@
 /*--------------------------------------------------------------------------*/
 
 #include "nem_spread.h"
-#include "pe_str_util_const.h" // for strip_string, token_compare, etc
 #include "ps_pario_const.h"    // for PIO_Info, Parallel_IO, etc
+#include <rf_allo.h>
 #include "rf_allo.h"           // for array_alloc
 #include "rf_io_const.h"       // for MAX_INPUT_STR_LN, ExoFile, etc
 #include "scopeguard.h"
@@ -462,7 +462,7 @@ int read_pexoII_info(NemSpread<T, INT> &spreader, const char *filename)
 
             /* allocate memory for to hold the values */
             PIO_Info.Dsk_List =
-                (int *)array_alloc(__FILE__, __LINE__, 1, PIO_Info.Dsk_List_Cnt, sizeof(int));
+                reinterpret_cast<int *>(array_alloc(__FILE__, __LINE__, 1, PIO_Info.Dsk_List_Cnt, sizeof(int)));
             for (i = 0; i < (PIO_Info.Dsk_List_Cnt - 1); i++) {
               sscanf(cptr, "%d", &(PIO_Info.Dsk_List[i]));
               cptr = strtok(nullptr, ", \t;");

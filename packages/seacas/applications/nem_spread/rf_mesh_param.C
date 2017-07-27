@@ -34,7 +34,8 @@
  */
 
 #include "exodusII.h"   // for MAX_LINE_LENGTH, ex_close, etc
-#include "nem_spread.h" // for NemSpread, etc
+#include "nem_spread.h"
+#include "globals.h"
 #include "rf_format.h"
 #include "rf_io_const.h" // for Debug_Flag, ExoFile
 #include <cstdio>        // for printf, fprintf, stderr
@@ -99,7 +100,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_mesh_param()
 
   /* Read the initialization parameters */
   memset(GeomTitle, '\0', MAX_LINE_LENGTH * sizeof(char));
-  ex_init_params info;
+  ex_init_params info{};
   info.title[0] = '\0';
   error         = ex_get_init_ext(exoid, &info);
   check_exodus_error(error, "ex_get_init");

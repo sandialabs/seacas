@@ -48,8 +48,9 @@ template <typename INT> int check_monot(INT *vector, size_t length)
    */
   size_t i;
   for (i = 1; i < length; i++) {
-    if (vector[i] < vector[i - 1])
+    if (vector[i] < vector[i - 1]) {
       return (0);
+    }
   }
   return (1);
 }
