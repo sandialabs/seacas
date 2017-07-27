@@ -44,9 +44,9 @@
 #include <vector>
 
 namespace Excn {
-  typedef std::vector<int>     IntVector;
-  typedef std::vector<int64_t> Int64Vector;
-  typedef std::vector<char>    DistVector;
+  using IntVector   = std::vector<int>;
+  using Int64Vector = std::vector<int64_t>;
+  using DistVector  = std::vector<char>;
 
   class Mesh
   {

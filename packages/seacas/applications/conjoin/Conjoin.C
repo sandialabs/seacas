@@ -130,11 +130,11 @@ struct NodeInfo
   }
 };
 
-typedef std::vector<NodeInfo> GlobalMap;
-typedef GlobalMap::iterator   GMapIter;
+using GlobalMap = std::vector<NodeInfo>;
+using GMapIter = GlobalMap::iterator;
 
 typedef std::vector<std::pair<int, size_t>> GlobalElemMap;
-typedef GlobalElemMap::iterator GElemMapIter;
+using GElemMapIter = GlobalElemMap::iterator;
 
 #include "CJ_ExodusEntity.h"
 #include "CJ_ExodusFile.h"

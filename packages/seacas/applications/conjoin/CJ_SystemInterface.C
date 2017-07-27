@@ -297,7 +297,7 @@ namespace {
     return s;
   }
 
-  typedef std::vector<std::string> StringVector;
+  using StringVector = std::vector<std::string>;
   bool string_id_sort(const std::pair<std::string, int> &t1, const std::pair<std::string, int> &t2)
   {
     return t1.first < t2.first || (!(t2.first < t1.first) && t1.second < t2.second);

@@ -79,7 +79,7 @@ enum {
 */
 class assert_context
 {
-  typedef std::string string;
+  using string = std::string;
 
 public:
   assert_context() : line_(0), level_(lvl_debug) {}
@@ -98,7 +98,7 @@ public:
   const string &              get_expr() const { return expr_; }
 
   typedef std::pair<string, string> val_and_str;
-  typedef std::vector<val_and_str> vals_array;
+  using vals_array = std::vector<val_and_str>;
   // return values array as a vector of pairs:
   // [Value, corresponding string]
   const vals_array &get_vals_array() const { return vals_; }
@@ -135,7 +135,7 @@ private:
 
 namespace smart_assert {
 
-  typedef void (*assert_func)(const assert_context &context);
+  using assert_func = void (*)(const assert_context &);
 
   // helpers
   std::string get_typeof_level(int nLevel);
@@ -178,7 +178,7 @@ namespace Private {
 
 struct Assert
 {
-  typedef smart_assert::assert_func assert_func;
+  using assert_func = smart_assert::assert_func;
 
   // helpers, in order to be able to compile the code
   Assert &SMART_ASSERT_A;

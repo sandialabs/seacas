@@ -38,12 +38,12 @@
 #include <utility>
 #include <vector>
 
-typedef std::vector<int> IntVector;
-typedef std::vector<int> IdMap;
+using IntVector = std::vector<int>;
+using IdMap     = std::vector<int>;
 
-typedef std::vector<double> RealVector;
+using RealVector = std::vector<double>;
 typedef std::vector<std::pair<std::string, size_t>> StringIdVector;
-typedef std::vector<std::string>    StringVector;
-typedef std::vector<Ioss::Region *> RegionVector;
-typedef std::vector<StringVector>   Omissions;
+using StringVector = std::vector<std::string>;
+using RegionVector = std::vector<Ioss::Region *>;
+using Omissions    = std::vector<StringVector>;
 #endif

@@ -37,8 +37,8 @@
 #include <iosfwd>
 #include <string>
 #include <vector>
-typedef std::vector<std::string>  StringVector;
-typedef std::vector<StringVector> Omissions;
+using StringVector = std::vector<std::string>;
+using Omissions    = std::vector<StringVector>;
 typedef std::vector<std::pair<std::string, int>> StringIdVector;
 
 class SystemInterface

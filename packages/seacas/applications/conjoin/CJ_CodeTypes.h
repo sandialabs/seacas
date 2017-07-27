@@ -36,6 +36,6 @@
 #include <vector>
 
 typedef std::vector<std::pair<std::string, int>> StringIdVector;
-typedef std::vector<std::string> StringVector;
+using StringVector = std::vector<std::string>;
 
 #endif

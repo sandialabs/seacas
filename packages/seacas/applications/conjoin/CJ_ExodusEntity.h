@@ -41,8 +41,8 @@
 #include <vector>
 
 namespace Excn {
-  typedef std::vector<int>  IntVector;
-  typedef std::vector<char> DistVector;
+  using IntVector  = std::vector<int>;
+  using DistVector = std::vector<char>;
 
   template <typename INT> struct Mesh
   {
