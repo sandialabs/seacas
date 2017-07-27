@@ -47,7 +47,7 @@ void solistout(struct orthlink **solist, /* vector of pntrs to orthlnks */
   extern int DEBUG_EVECS; /* debugging output level for eigen computations */
 
   for (i = 1; i <= ngood; i++) {
-    if ((solist[i])->index <= (int)(j / 2)) {
+    if ((solist[i])->index <= (j / 2)) {
       printf(".");
     }
     else {
@@ -81,7 +81,7 @@ void solistout_float(struct orthlink_float **solist, /* vector of pntrs to orthl
   int i; /* index */
 
   for (i = 1; i <= ngood; i++) {
-    if ((solist[i])->index <= (int)(j / 2)) {
+    if ((solist[i])->index <= (j / 2)) {
       printf(".");
     }
     else {

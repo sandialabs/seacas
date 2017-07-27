@@ -44,10 +44,11 @@ void add2bilist(                      /* add val to unsorted list */
                 )
 {
   lptr->next = *list;
-  if (*list != NULL)
+  if (*list != NULL) {
     (*list)->prev = lptr;
-  lptr->prev      = NULL;
-  *list           = lptr;
+  }
+  lptr->prev = NULL;
+  *list      = lptr;
 }
 
 void removebilist(struct bilist * lptr, /* ptr to element to remove */
@@ -56,12 +57,15 @@ void removebilist(struct bilist * lptr, /* ptr to element to remove */
 
 /* Remove an element from a bidirectional list. */
 {
-  if (lptr->next != NULL)
+  if (lptr->next != NULL) {
     lptr->next->prev = lptr->prev;
-  if (lptr->prev != NULL)
+  }
+  if (lptr->prev != NULL) {
     lptr->prev->next = lptr->next;
-  else
+  }
+  else {
     *list = lptr->next;
+  }
 }
 
 void movebilist(struct bilist * lptr,    /* ptr to element to move */

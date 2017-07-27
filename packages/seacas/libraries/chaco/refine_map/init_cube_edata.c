@@ -42,7 +42,7 @@ void init_cube_edata(struct refine_edata *edata, /* desire data for current edge
                      )
 {
 
-  edata->node1 = (int)node1;
-  edata->node2 = (int)node1 ^ mask;
-  edata->dim   = (int)dim;
+  edata->node1 = node1;
+  edata->node2 = node1 ^ mask;
+  edata->dim   = dim;
 }

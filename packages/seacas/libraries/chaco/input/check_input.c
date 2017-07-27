@@ -81,13 +81,15 @@ int check_input(struct vtx_data **graph,         /* linked lists of vertex data 
   if (graph != NULL) {
     flag_graph = check_graph(graph, nvtxs, nedges);
     if (flag_graph) {
-      if (graphname != NULL)
+      if (graphname != NULL) {
         printf("ERRORS in graph input file %s.\n", graphname);
+      }
       if (Output_File != NULL) {
         fprintf(Output_File, "ERRORS in graph input file %s.\n", graphname);
       }
-      else
+      else {
         printf("ERRORS in graph.\n");
+      }
       if (Output_File != NULL) {
         fprintf(Output_File, "ERRORS in graph.\n");
       }

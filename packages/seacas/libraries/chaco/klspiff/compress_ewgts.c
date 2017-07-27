@@ -57,9 +57,9 @@ void compress_ewgts(struct vtx_data **graph,      /* list of graph info for each
   int           i, j;           /* loop counter */
 
   /* Check easy cases first. */
-  if (!using_ewgts)
+  if (!using_ewgts) {
     old_ewgts = NULL;
-
+  }
   else if (ewgt_max < EWGT_RATIO_MAX * nvtxs) {
     /* If not too heavy, leave it alone. */
     old_ewgts = NULL;
@@ -96,16 +96,15 @@ void restore_ewgts(struct vtx_data **graph, /* list of graph info for each verte
   int i; /* loop counter */
 
   /* Check easy case first. */
-  if (old_ewgts == NULL)
+  if (old_ewgts == NULL) {
     return;
-
+  }
   else { /* otherwise, compress edge weights. */
     sfree(graph[1]->ewgts);
     for (i = 1; i <= nvtxs; i++) {
       graph[i]->ewgts = old_ewgts;
       old_ewgts += graph[i]->nedges;
     }
-
     old_ewgts = NULL;
   }
 }

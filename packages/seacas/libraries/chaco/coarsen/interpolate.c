@@ -67,8 +67,9 @@ void ch_interpolate(double **         vecs,       /* approximate eigenvectors fo
   for (j = 1; j <= ndims; j++) {
     vec  = vecs[j];
     cvec = cvecs[j];
-    for (i   = 1; i <= nvtxs; i++)
+    for (i = 1; i <= nvtxs; i++) {
       vec[i] = cvec[v2cv[i]];
+    }
   }
 
   /* Now do a single pass of Gauss-Seidel to smooth eigenvectors. */

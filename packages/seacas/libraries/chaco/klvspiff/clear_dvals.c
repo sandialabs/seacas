@@ -56,8 +56,9 @@ void clear_dvals(struct vtx_data **graph,      /* data structure for graph */
   else { /* Do it more carefully */
     for (i = 0; i < list_length; i++) {
       vtx = bspace[i];
-      if (vtx < 0)
-        vtx       = -vtx;
+      if (vtx < 0) {
+        vtx = -vtx;
+      }
       ldvals[vtx] = rdvals[vtx] = 0;
       edges                     = graph[vtx]->edges;
       for (j = graph[vtx]->nedges - 1; j; j--) {

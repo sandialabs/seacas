@@ -69,24 +69,28 @@ void checkbp(struct vtx_data **graph, /* graph data structure for vertex weights
 
   for (i = 1; i <= nvtxs; i++) {
     /* Is vertex closest to the set it is assigned to? */
-    for (j     = 0; j < MAXDIMS; j++)
+    for (j = 0; j < MAXDIMS; j++) {
       signs[j] = -1;
-    bestval    = 0;
+    }
+    bestval = 0;
     for (j = 0; j < nsets; j++) {
       val = -dists[j];
       for (k = 1; k <= ndims; k++) {
         val += 2 * signs[k - 1] * xvecs[k][i];
       }
-      if (j == sets[i])
+      if (j == sets[i]) {
         setval = val;
+      }
       if (j == 0 || val < bestval) {
         bestval = val;
         bestset = j;
       }
-      if (signs[0] == 1 && signs[1] == 1)
+      if (signs[0] == 1 && signs[1] == 1) {
         signs[2] *= -1;
-      if (signs[0] == 1)
+      }
+      if (signs[0] == 1) {
         signs[1] *= -1;
+      }
       signs[0] *= -1;
     }
     if (fabs(setval - bestval) >= tol * (fabs(setval) + fabs(bestval))) {
@@ -99,10 +103,12 @@ void checkbp(struct vtx_data **graph, /* graph data structure for vertex weights
   }
 
   printf(" Sizes:");
-  for (i = 0; i < nsets; i++)
+  for (i = 0; i < nsets; i++) {
     printf(" %d(%d)", sizes[i], weights[i]);
+  }
   printf("\n");
 
-  if (error)
+  if (error) {
     checkpnt("ERROR in checkbp");
+  }
 }

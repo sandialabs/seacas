@@ -85,12 +85,15 @@ void compute_mesh_vdata(struct refine_vdata *vdata,        /* preference data fo
       neighb_loc = node / (mesh_dims[0] * mesh_dims[1]);
     }
 
-    if (neighb_loc < my_loc)
+    if (neighb_loc < my_loc) {
       below += ewgt;
-    else if (neighb_loc > my_loc)
+    }
+    else if (neighb_loc > my_loc) {
       above += ewgt;
-    else
+    }
+    else {
       same += ewgt;
+    }
   }
   vdata->below = below;
   vdata->above = above;

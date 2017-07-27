@@ -147,8 +147,9 @@ static void avg_dists_cube(int              ndims_tot, /* total number of hyperc
       if (ndims_left == set_info[set].ndims) {
         start = (myset ^ set) >> ndims_old;
         while (start) {
-          if (start & 1)
+          if (start & 1) {
             val++;
+          }
           start >>= 1;
         }
       }
@@ -167,8 +168,9 @@ static void avg_dists_cube(int              ndims_tot, /* total number of hyperc
         if (ndims_left == set_info[set].ndims) {
           start = (myset ^ set) >> ndims_old;
           while (start) {
-            if (start & 1)
+            if (start & 1) {
               val++;
+            }
             start >>= 1;
           }
         }

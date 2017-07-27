@@ -44,9 +44,11 @@ void makev2cv(
 
   j = 1;
   for (i = 1; i <= nvtxs; i++) {
-    if (mflag[i] == 0 || mflag[i] > i)
+    if (mflag[i] == 0 || mflag[i] > i) {
       v2cv[i] = j++;
-    else
+    }
+    else {
       v2cv[i] = v2cv[mflag[i]];
+    }
   }
 }

@@ -163,8 +163,9 @@ void eigensolve(struct vtx_data **graph,        /* graph data structure */
 
     twptr    = term_wgts[1];
     term_tot = 0;
-    for (i = 1; i <= nvtxs; i++)
+    for (i = 1; i <= nvtxs; i++) {
       term_tot += twptr[i];
+    }
     term_tot /= (w1 + w2);
     if (using_vwgts) {
       for (i = 1; i <= nvtxs; i++) {
@@ -188,8 +189,9 @@ void eigensolve(struct vtx_data **graph,        /* graph data structure */
     }
 
     sfree(g);
-    if (active != NULL)
+    if (active != NULL) {
       sfree(active);
+    }
     active = NULL;
 
     if (normal) {
@@ -338,13 +340,16 @@ void eigensolve(struct vtx_data **graph,        /* graph data structure */
   }
 
   /* Auto-reset (if necessary) some parameters for the eigen calculation */
-  if (autoset_maxitns)
+  if (autoset_maxitns) {
     LANCZOS_MAXITNS = prev_maxitns;
-  if (autoset_srestol)
+  }
+  if (autoset_srestol) {
     SRESTOL = prev_srestol;
+  }
 
-  if (active != NULL)
+  if (active != NULL) {
     sfree(active);
+  }
 
   if (DEBUG_TRACE > 1) {
     printf("<Leaving eigensolve>\n");

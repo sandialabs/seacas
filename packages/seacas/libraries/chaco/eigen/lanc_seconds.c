@@ -42,7 +42,6 @@ double lanc_seconds(void)
   if (LANCZOS_TIME) {
     return (seconds());
   }
-  else {
-    return (0);
-  }
+
+  return (0);
 }

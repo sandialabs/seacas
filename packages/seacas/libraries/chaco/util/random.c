@@ -38,13 +38,15 @@ long init_rand_port(long seed)
   extern long rand_num;
   int         i;
 
-  if (seed < 1 || seed > MAX_VALUE) /* if seed out of range */
-    seed = get_init_rand_port();    /* get seed */
+  if (seed < 1 || seed > MAX_VALUE) { /* if seed out of range */
+    seed = get_init_rand_port();      /* get seed */
+  }
 
   rand_num = seed;
-  for (i = 0; i < STARTUP_RANDS; i++)    /* and throw away */
-    rand_num = genr_rand_port(rand_num); /* some initial
-                                     ones */
+  for (i = 0; i < STARTUP_RANDS; i++) { /* and throw away */
+    rand_num = genr_rand_port(rand_num);
+  } /* some initial
+                                        ones */
 
   return seed;
 }
@@ -92,8 +94,9 @@ long genr_rand_port(long init_rand)
 
   k       = init_rand / Q;
   residue = MULT * (init_rand - Q * k) - R * k;
-  if (residue < 0)
+  if (residue < 0) {
     residue += MOD;
+  }
 
   assert(residue >= 1 && residue <= MAX_VALUE);
   return residue;

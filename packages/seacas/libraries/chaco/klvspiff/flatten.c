@@ -70,10 +70,9 @@ int flatten(struct vtx_data ** graph,       /* array of vtx data for graph */
     return (TRUE);
   }
 
-  else { /* Not worth bothering */
-    sfree(v2cv);
-    return (FALSE);
-  }
+  /* Not worth bothering */
+  sfree(v2cv);
+  return (FALSE);
 }
 
 void find_flat(struct vtx_data **graph,   /* data structure for storing graph */
@@ -150,8 +149,9 @@ int SameStructure(int node1, int node2,     /* two vertices which might have sam
   }
 
   for (i = 1; i < graph[node2]->nedges; i++) {
-    if (scatter[graph[node2]->edges[i]] != node1)
+    if (scatter[graph[node2]->edges[i]] != node1) {
       break;
+    }
   }
   same = (i == graph[node2]->nedges && scatter[node2] == node1);
 

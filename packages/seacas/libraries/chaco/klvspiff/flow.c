@@ -266,9 +266,8 @@ static int augment(int  node,     /* start node in augmenting path */
     }
     return (TRUE);
   }
-  else {
-    return (FALSE);
-  }
+
+  return (FALSE);
 }
 
 /* Mark everybody in my alternating path tree, and return vertex at */
@@ -302,35 +301,35 @@ static void touch(int node, int *pointers, /* start/stop of adjacency lists */
         resid[neighbor] -= flow2;
         resid[node] -= flow2;
         /* Perhaps better to compute these upfront once? */
-        for (k = pointers[neighbor]; k < pointers[neighbor + 1] && indices[k] != node; k++)
+        for (k = pointers[neighbor]; k < pointers[neighbor + 1] && indices[k] != node; k++) {
           ;
+        }
         flow[k] += flow2;
         *flow1 = flow2;
         return;
       }
-      else { /* Has no flow to spare. */
-        for (j = pointers[neighbor]; j < pointers[neighbor + 1]; j++) {
-          if (flow[j] && !touched[indices[j]]) {
-            flow2 = min(*flow1, flow[j]);
-            touch(indices[j], pointers, indices, resid, flow, touched, &flow2, seen, nseen);
-            if (flow2) { /* Found some flow to spare! */
-              /* Adjust flow & resid values. */
-              resid[indices[j]] += flow2;
-              resid[node] -= flow2;
-              flow[j] -= flow2;
-              for (k = pointers[neighbor]; k < pointers[neighbor + 1] && indices[k] != node; k++)
-                ;
-              flow[k] += flow2;
-              *flow1 = flow2;
-              return;
+      /* Has no flow to spare. */
+      for (j = pointers[neighbor]; j < pointers[neighbor + 1]; j++) {
+        if (flow[j] && !touched[indices[j]]) {
+          flow2 = min(*flow1, flow[j]);
+          touch(indices[j], pointers, indices, resid, flow, touched, &flow2, seen, nseen);
+          if (flow2) { /* Found some flow to spare! */
+            /* Adjust flow & resid values. */
+            resid[indices[j]] += flow2;
+            resid[node] -= flow2;
+            flow[j] -= flow2;
+            for (k = pointers[neighbor]; k < pointers[neighbor + 1] && indices[k] != node; k++) {
+              ;
             }
+            flow[k] += flow2;
+            *flow1 = flow2;
+            return;
           }
         }
       }
     }
   }
   *flow1 = 0;
-  return;
 }
 
 static void reachability(int  n_left,   /* number of vertices on left side */
@@ -345,13 +344,15 @@ static void reachability(int  n_left,   /* number of vertices on left side */
   int i; /* loop counter */
 
   /* Initialize all the vertices to be untouched */
-  for (i       = 0; i < n_left + n_right; i++)
+  for (i = 0; i < n_left + n_right; i++) {
     touched[i] = 0;
+  }
 
-  for (i = 0; i < n_left; i++)
+  for (i = 0; i < n_left; i++) {
     if (!touched[i] && resid[i]) {
       touch2(i, pointers, indices, flow, touched);
     }
+  }
 }
 
 /* Mark everybody in my alternating path tree, and return vertex at */

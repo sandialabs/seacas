@@ -35,11 +35,11 @@
 #define SWAP(type, r, s)                                                                           \
   do {                                                                                             \
     type t = r;                                                                                    \
-    r      = s;                                                                                    \
-    s      = t;                                                                                    \
+    (r)    = s;                                                                                    \
+    (s)    = t;                                                                                    \
   } while (0)
 
-static void siftDown(double *a, int start, int count);
+static void siftDown(double *a, int start, int end);
 
 void sort_double(int count, double ra[])
 {
@@ -69,8 +69,9 @@ static void siftDown(double *a, int start, int end)
       SWAP(double, a[child], a[root]);
       root = child;
     }
-    else
+    else {
       return;
+    }
   }
 }
 

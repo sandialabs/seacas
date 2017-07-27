@@ -1081,8 +1081,9 @@ void gradcon(double *coeffs2, /* coefficients for constraint eqn */
   cgrad[1] = gradcon1(coeffs2);
   cgrad[2] = gradcon2(coeffs2);
 
-  for (i    = 0; i < 3; i++)
+  for (i = 0; i < 3; i++) {
     grad[i] = 2 * cval * cgrad[i];
+  }
 }
 
 static double gradcon0(double *coeffs2)

@@ -63,8 +63,9 @@ static struct smalloc_debug_data
 void message(char *msg, size_t n, FILE *ofile)
 {
   fprintf(stderr, msg, n);
-  if (ofile != NULL)
+  if (ofile != NULL) {
     fprintf(ofile, msg, n);
+  }
 }
 
 void sfree(void *ptr);
@@ -184,30 +185,29 @@ void *srealloc(void *ptr, size_t n)
     if (n == 0) {
       return (NULL);
     }
-    else {
-      p = smalloc(n);
-    }
+
+    p = smalloc(n);
   }
   else {
     if (n == 0) {
       sfree(ptr);
       return (NULL);
     }
-    else {
-      p = realloc(ptr, n);
-      if (DEBUG_MEMORY > 1) {
-        for (dbptr = top; dbptr != NULL && dbptr->ptr != ptr; dbptr = dbptr->next)
-          ;
-        if (dbptr == NULL) {
-          fprintf(stderr, "Memory error: In srealloc, address not found in debug list (%p)\n", ptr);
-        }
-        else {
-          dbptr->size = n;
-          dbptr->ptr  = p;
-          bytes_used += n;
-          if (bytes_used > bytes_max) {
-            bytes_max = bytes_used;
-          }
+
+    p = realloc(ptr, n);
+    if (DEBUG_MEMORY > 1) {
+      for (dbptr = top; dbptr != NULL && dbptr->ptr != ptr; dbptr = dbptr->next) {
+        ;
+      }
+      if (dbptr == NULL) {
+        fprintf(stderr, "Memory error: In srealloc, address not found in debug list (%p)\n", ptr);
+      }
+      else {
+        dbptr->size = n;
+        dbptr->ptr  = p;
+        bytes_used += n;
+        if (bytes_used > bytes_max) {
+          bytes_max = bytes_used;
         }
       }
     }
@@ -233,31 +233,30 @@ void *srealloc_ret(void *ptr, size_t n)
     if (n == 0) {
       return (NULL);
     }
-    else {
-      p = smalloc(n);
-    }
+
+    p = smalloc(n);
   }
   else {
     if (n == 0) {
       sfree(ptr);
       return (NULL);
     }
-    else {
-      p = realloc(ptr, n);
-      if (DEBUG_MEMORY > 1) {
-        for (dbptr = top; dbptr != NULL && dbptr->ptr != ptr; dbptr = dbptr->next)
-          ;
-        if (dbptr == NULL) {
-          fprintf(stderr, "Memory error: In srealloc_ret, address not found in debug list (%p)\n",
-                  ptr);
-        }
-        else {
-          dbptr->size = n;
-          dbptr->ptr  = p;
-          bytes_used += n;
-          if (bytes_used > bytes_max) {
-            bytes_max = bytes_used;
-          }
+
+    p = realloc(ptr, n);
+    if (DEBUG_MEMORY > 1) {
+      for (dbptr = top; dbptr != NULL && dbptr->ptr != ptr; dbptr = dbptr->next) {
+        ;
+      }
+      if (dbptr == NULL) {
+        fprintf(stderr, "Memory error: In srealloc_ret, address not found in debug list (%p)\n",
+                ptr);
+      }
+      else {
+        dbptr->size = n;
+        dbptr->ptr  = p;
+        bytes_used += n;
+        if (bytes_used > bytes_max) {
+          bytes_max = bytes_used;
         }
       }
     }

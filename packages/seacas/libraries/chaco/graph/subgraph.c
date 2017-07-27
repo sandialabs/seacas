@@ -73,14 +73,16 @@ void make_subgraph(struct vtx_data **graph,      /* graph data structure */
     ewgtsum           = 0;
     /* Move all deactivated edges to the end of the list. */
     iptr = subgptr->edges + 1;
-    if (using_ewgts)
+    if (using_ewgts) {
       fptr = subgptr->ewgts + 1;
+    }
     for (j = 1; j < newnedges;) {
       neighbor = *iptr;
       if (assignment[neighbor] == set) { /* Keep vertex in edge list. */
         subgptr->edges[j] = glob2loc[neighbor];
-        if (using_ewgts)
+        if (using_ewgts) {
           ewgtsum += *fptr++;
+        }
         j++;
         iptr++;
       }
@@ -98,8 +100,9 @@ void make_subgraph(struct vtx_data **graph,      /* graph data structure */
     }
     subgptr->nedges = newnedges;
     subnedges += newnedges;
-    if (using_ewgts)
+    if (using_ewgts) {
       subgptr->ewgts[0] = -ewgtsum;
+    }
   }
   *psubnedges = (subnedges - subnvtxs) / 2;
 }
@@ -136,8 +139,9 @@ void remake_graph(struct vtx_data **subgraph,   /* subgraph data structure */
     if (using_ewgts) {
       ewgtsum = 0;
       fptr    = subgptr->ewgts;
-      for (j = degree[i] - 1; j; j--)
+      for (j = degree[i] - 1; j; j--) {
         ewgtsum += *(++fptr);
+      }
       subgptr->ewgts[0] = -ewgtsum;
     }
   }

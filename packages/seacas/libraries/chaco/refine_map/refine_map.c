@@ -61,14 +61,18 @@ void refine_map(struct vtx_data **graph,        /* graph data structure */
   void   free_graph(), strout();
   int    make_comm_graph(), refine_mesh(), refine_cube();
 
-  if (cube_or_mesh == 0)
+  if (cube_or_mesh == 0) {
     nsets_tot = 1 << ndims_tot;
-  else if (cube_or_mesh == 1)
+  }
+  else if (cube_or_mesh == 1) {
     nsets_tot = mesh_dims[0];
-  else if (cube_or_mesh == 2)
+  }
+  else if (cube_or_mesh == 2) {
     nsets_tot = mesh_dims[0] * mesh_dims[1];
-  else if (cube_or_mesh == 3)
+  }
+  else if (cube_or_mesh == 3) {
     nsets_tot = mesh_dims[0] * mesh_dims[1] * mesh_dims[2];
+  }
 
   node2vtx = vtx2node = NULL;
 
@@ -86,8 +90,8 @@ void refine_map(struct vtx_data **graph,        /* graph data structure */
     }
 
     for (i = 1; i <= nsets_tot; i++) {
-      vtx2node[i]     = (int)i - 1;
-      node2vtx[i - 1] = (int)i;
+      vtx2node[i]     = i - 1;
+      node2vtx[i - 1] = i;
     }
 
     if (cube_or_mesh > 0) {

@@ -105,11 +105,13 @@ void get_extval(double *alpha,   /* j-vector of Lanczos scalars (using elements 
       printf("%2i   %18.16f  %18.16f  %18.16f  %g\n", cnt++, lambda_low, lambda, lambda_high,
              norm_v);
     }
-    if (norm_v <= sigma)
+    if (norm_v <= sigma) {
       lambda_low = lambda;
-    if (norm_v >= sigma)
+    }
+    if (norm_v >= sigma) {
       lambda_high = lambda;
-    diff          = lambda_high - lambda_low;
+    }
+    diff = lambda_high - lambda_low;
   }
 
   /* Return the extended eigenvalue (eigvec is automatically returned) */

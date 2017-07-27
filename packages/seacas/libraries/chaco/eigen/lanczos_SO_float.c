@@ -210,7 +210,7 @@ void lanczos_SO_float(struct vtx_data **A,       /* sparse matrix in row linked 
   assigntol  = eigtol * n;
   Anorm      = 2 * maxdeg;                   /* Gershgorin estimate for ||A|| */
   goodtol    = Anorm * sqrt(DOUBLE_EPSILON); /* Parlett & Scott's bound, p.224 */
-  interval   = 2 + (int)min(LANCZOS_SO_INTERVAL - 2, n / (2 * LANCZOS_SO_INTERVAL));
+  interval   = 2 + min(LANCZOS_SO_INTERVAL - 2, n / (2 * LANCZOS_SO_INTERVAL));
   bis_safety = BISECTION_SAFETY;
 
   if (DEBUG_EVECS > 0) {
@@ -218,8 +218,9 @@ void lanczos_SO_float(struct vtx_data **A,       /* sparse matrix in row linked 
     printf("  goodtol %g\n", goodtol);
     printf("  interval %d\n", interval);
     printf("  maxj %d\n", maxj);
-    if (LANCZOS_CONVERGENCE_MODE == 1)
+    if (LANCZOS_CONVERGENCE_MODE == 1) {
       printf("  assigntol %d\n", assigntol);
+    }
   }
 
   /* Make a float copy of vwsqrt */
@@ -307,11 +308,13 @@ void lanczos_SO_float(struct vtx_data **A,       /* sparse matrix in row linked 
     pause_time += lanc_seconds() - time;
     if (pause) {
       nopauses = FALSE;
-      if (lastpause == 0)
+      if (lastpause == 0) {
         firstpause = TRUE;
-      else
+      }
+      else {
         firstpause = FALSE;
-      lastpause    = j;
+      }
+      lastpause = j;
 
       /* Compute limits for checking Ritz pair convergence. */
       if (version == 1) {
@@ -439,8 +442,9 @@ void lanczos_SO_float(struct vtx_data **A,       /* sparse matrix in row linked 
       if (LANCZOS_CONVERGENCE_MODE != 1 || d > 1) {
         /* check convergence of residual bound */
         converged = TRUE;
-        if (j < d)
+        if (j < d) {
           converged = FALSE;
+        }
         else {
           curlnk = scanlist;
           while (curlnk != NULL) {
@@ -455,8 +459,9 @@ void lanczos_SO_float(struct vtx_data **A,       /* sparse matrix in row linked 
         /* check change in partition */
         if (firstpause) {
           converged = TRUE;
-          if (j < d)
+          if (j < d) {
             converged = FALSE;
+          }
           else {
             curlnk = scanlist;
             while (curlnk != NULL) {
@@ -534,18 +539,21 @@ void lanczos_SO_float(struct vtx_data **A,       /* sparse matrix in row linked 
           assgn_pntr     = assignment;
           old_assgn_pntr = old_assignment;
           for (i = n + 1; i; i--) {
-            if (*old_assgn_pntr++ != *assgn_pntr++)
+            if (*old_assgn_pntr++ != *assgn_pntr++) {
               assigndiff++;
+            }
           }
           assigndiff = min(assigndiff, n - assigndiff);
           if (DEBUG_EVECS > 1) {
             printf("  j %d,  change from last assignment %d\n\n", j, assigndiff);
           }
 
-          if (assigndiff <= assigntol)
+          if (assigndiff <= assigntol) {
             converged = TRUE;
-          else
+          }
+          else {
             converged = FALSE;
+          }
         }
       }
       scan_time += lanc_seconds() - time;

@@ -44,8 +44,9 @@ void free_graph(struct vtx_data **graph)
 
   if (graph != NULL) {
     if (graph[1] != NULL) {
-      if (graph[1]->ewgts != NULL)
+      if (graph[1]->ewgts != NULL) {
         sfree(graph[1]->ewgts);
+      }
       if (graph[1]->edges != NULL) {
         sfree(graph[1]->edges);
       }

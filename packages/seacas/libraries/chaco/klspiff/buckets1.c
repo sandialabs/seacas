@@ -132,21 +132,25 @@ void bucketsort1(struct vtx_data **graph,       /* graph data structure */
     }
   }
   else {
-    for (j          = 0; j < nsets - 1; j++)
+    for (j = 0; j < nsets - 1; j++) {
       dvals[vtx][j] = 0;
+    }
   }
 
   /* First count the neighbors in each set. */
   edges = graph[vtx]->edges;
-  if (using_ewgts)
+  if (using_ewgts) {
     ewptr = graph[vtx]->ewgts;
+  }
   for (j = graph[vtx]->nedges - 1; j; j--) {
     set = sets[*(++edges)];
-    if (set < 0)
+    if (set < 0) {
       set = -set - 1;
-    if (using_ewgts)
+    }
+    if (using_ewgts) {
       weight = *(++ewptr) * cut_cost + .5;
-    myhop    = hops[myset][set];
+    }
+    myhop = hops[myset][set];
 
     l = 0;
     for (newset = 0; newset < nsets; newset++) {

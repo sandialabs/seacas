@@ -55,33 +55,38 @@ double find_maxdeg(struct vtx_data **graph,       /* graph data structure */
     if (pmax_ewgt != NULL) {
       max_ewgt = 0;
       for (i = 1; i <= nvtxs; i++) {
-        if (-graph[i]->ewgts[0] > maxdeg)
+        if (-graph[i]->ewgts[0] > maxdeg) {
           maxdeg = -graph[i]->ewgts[0];
+        }
 
         eptr = graph[i]->ewgts;
         for (j = graph[i]->nedges - 1; j; j--) {
           ewgt = *(++eptr);
-          if (ewgt > max_ewgt)
+          if (ewgt > max_ewgt) {
             max_ewgt = ewgt;
+          }
         }
       }
       *pmax_ewgt = max_ewgt;
     }
     else {
       for (i = 1; i <= nvtxs; i++) {
-        if (-graph[i]->ewgts[0] > maxdeg)
+        if (-graph[i]->ewgts[0] > maxdeg) {
           maxdeg = -graph[i]->ewgts[0];
+        }
       }
     }
   }
 
   else {
     for (i = 1; i <= nvtxs; i++) {
-      if (graph[i]->nedges > maxdeg)
+      if (graph[i]->nedges > maxdeg) {
         maxdeg = graph[i]->nedges - 1;
+      }
     }
-    if (pmax_ewgt != NULL)
+    if (pmax_ewgt != NULL) {
       *pmax_ewgt = 1;
+    }
   }
   return (maxdeg);
 }

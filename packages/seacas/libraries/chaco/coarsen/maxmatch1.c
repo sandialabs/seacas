@@ -84,8 +84,9 @@ int maxmatch1(struct vtx_data **graph,      /* array of vtx data for graph */
         }
       }
 
-      if (++vtx > nvtxs)
+      if (++vtx > nvtxs) {
         vtx = 1;
+      }
     }
   }
 
@@ -110,8 +111,9 @@ int maxmatch1(struct vtx_data **graph,      /* array of vtx data for graph */
         }
       }
 
-      if (++vtx > nvtxs)
+      if (++vtx > nvtxs) {
         vtx = 1;
+      }
     }
   }
 

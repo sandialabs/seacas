@@ -88,10 +88,12 @@ int maxmatch9(struct vtx_data **graph,      /* array of vtx data for graph */
         neighbors[neighbor] = i;
         if (mflag[neighbor] == 0) {
           /* Set flag for single possible neighbor. */
-          if (save == -1)
+          if (save == -1) {
             save = neighbor;
-          else
+          }
+          else {
             save = 0;
+          }
         }
         else {
           neighbors[mflag[neighbor]] = i;
@@ -129,8 +131,9 @@ int maxmatch9(struct vtx_data **graph,      /* array of vtx data for graph */
                       if (using_ewgts) {
                         best_same += graph[best]->ewgts[k];
                       }
-                      else
+                      else {
                         best_same += 1;
+                      }
                     }
                   }
                 }
@@ -141,8 +144,9 @@ int maxmatch9(struct vtx_data **graph,      /* array of vtx data for graph */
                     if (using_ewgts) {
                       same += graph[neighbor]->ewgts[k];
                     }
-                    else
+                    else {
                       same += 1;
+                    }
                   }
                 }
 

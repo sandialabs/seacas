@@ -72,15 +72,17 @@ void make_terms_ref(struct vtx_data **graph,       /* data structure for graph *
           dist0 = 0;
           x     = set ^ set0;
           while (x) {
-            if (x & 1)
+            if (x & 1) {
               ++dist0;
+            }
             x >>= 1;
           }
           dist1 = 0;
           x     = set ^ set1;
           while (x) {
-            if (x & 1)
+            if (x & 1) {
               ++dist1;
+            }
             x >>= 1;
           }
         }

@@ -124,8 +124,9 @@ void time_kernels(struct vtx_data **A,     /* matrix/graph being analyzed */
     }
   }
   loops = (target_time / time_dvec) * loops;
-  if (loops < 1)
+  if (loops < 1) {
     loops = 1;
+  }
 
   printf("                Kernel benchmarking\n");
   printf("Time (in seconds) for %d loops of each operation:\n\n", loops);

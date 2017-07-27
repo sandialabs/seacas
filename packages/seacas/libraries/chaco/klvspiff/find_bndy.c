@@ -69,7 +69,7 @@ int find_bndy(struct vtx_data **graph,      /* array of vtx data for graph */
   bndy_list[list_length] = 0;
 
   for (i = 0; i < list_length; i++) {
-    assignment[bndy_list[i]] = (int)new_val;
+    assignment[bndy_list[i]] = new_val;
   }
 
   /* Shrink out unnecessary space */
@@ -129,7 +129,7 @@ int find_side_bndy(struct vtx_data **graph,      /* array of vtx data for graph 
   bndy_list[list_length] = 0;
 
   for (i = 0; i < list_length; i++) {
-    assignment[bndy_list[i]] = (int)new_val;
+    assignment[bndy_list[i]] = new_val;
   }
 
   /* Shrink out unnecessary space */

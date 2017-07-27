@@ -53,10 +53,12 @@ void pbuckets(struct bilist ****buckets,   /* pointers to bucket lists */
     for (j = 0; j < nsets; j++) {
       if (i != j) {
         printf("For transition %d -> %d\n", i, j);
-        if (j > i)
+        if (j > i) {
           lptr = listspace[j - 1];
-        else
+        }
+        else {
           lptr = listspace[j];
+        }
         p1bucket(buckets[i][j], lptr, maxdeg);
         printf("\n");
       }

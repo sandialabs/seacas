@@ -83,7 +83,8 @@ void genvals3d(
   vals[3][4]              = temp[12];
 
   for (i = 0; i < nsets; i++) {
-    for (j       = i + 1; j < nsets; j++)
+    for (j = i + 1; j < nsets; j++) {
       vals[j][i] = vals[i][j];
+    }
   }
 }

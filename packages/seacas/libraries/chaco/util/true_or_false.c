@@ -35,8 +35,10 @@
 
 char *true_or_false(int flag)
 {
-  if (flag)
+  if (flag) {
     return ("True");
-  else
+  }
+  else {
     return ("False");
+  }
 }

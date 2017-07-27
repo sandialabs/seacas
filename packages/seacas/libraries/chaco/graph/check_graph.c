@@ -81,19 +81,22 @@ int check_graph(struct vtx_data **graph, /* graph data structure */
     }
 
     if (graph[i]->vwgt <= 0) {
-      if (!bad_vwgt_count)
+      if (!bad_vwgt_count) {
         printf("Vertex %d has bad vertex weight %d.\n", i, graph[i]->vwgt);
+      }
       ++bad_vwgt_count;
       flag = TRUE;
     }
 
-    if (using_ewgts)
+    if (using_ewgts) {
       wgt_sum = graph[i]->ewgts[0];
+    }
 
     for (j = 1; j < graph[i]->nedges; j++) {
       neighbor = graph[i]->edges[j];
-      if (using_ewgts)
+      if (using_ewgts) {
         wgt_sum += graph[i]->ewgts[j];
+      }
 
       /* Move it to the end and delete instead? */
       if (neighbor == i) {
@@ -136,8 +139,9 @@ int check_graph(struct vtx_data **graph, /* graph data structure */
     }
   }
 
-  if (bad_vwgt_count > 1)
+  if (bad_vwgt_count > 1) {
     printf("%d vertices have bad vertex weights\n", bad_vwgt_count);
+  }
 
   if (narcs != 2 * nedges) {
     printf(" twice nedges = %d, but I count %d\n", 2 * nedges, narcs);
@@ -155,10 +159,12 @@ int is_an_edge(struct vtx_data *vertex, /* data for a vertex */
 
   for (i = 1; i < vertex->nedges; i++) {
     if (vertex->edges[i] == v2) {
-      if (vertex->ewgts != NULL)
+      if (vertex->ewgts != NULL) {
         *weight2 = vertex->ewgts[i];
-      else
+      }
+      else {
         *weight2 = 1;
+      }
       return (TRUE);
     }
   }

@@ -58,8 +58,9 @@ void inertial1d(struct vtx_data **graph,        /* graph data structure */
   value = smalloc((nvtxs + 1) * sizeof(double));
 
   /* Copy values into double precision array. */
-  for (i     = 1; i <= nvtxs; i++)
+  for (i = 1; i <= nvtxs; i++) {
     value[i] = x[i];
+  }
 
   /* Now find the median value and partition based upon it. */
   space = smalloc(nvtxs * sizeof(int));

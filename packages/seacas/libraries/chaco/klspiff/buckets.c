@@ -90,8 +90,9 @@ void bucketsorts(struct vtx_data **graph,       /* graph data structure */
     /* Empty all the buckets. */
     /* Last clause catches case where lists weren't undone. */
     bptr = buckets[0][1];
-    for (i = nsets * (nsets - 1) * (2 * maxdval + 1); i; i--)
+    for (i = nsets * (nsets - 1) * (2 * maxdval + 1); i; i--) {
       *bptr++ = NULL;
+    }
   }
 
   /* Randomize the order of the vertices */
@@ -99,15 +100,20 @@ void bucketsorts(struct vtx_data **graph,       /* graph data structure */
   if ((KL_UNDO_LIST && list_length == nvtxs) || !KL_UNDO_LIST) {
     bsptr       = bspace;
     list_length = nvtxs;
-    if (parity)
-      for (i = 1; i <= nvtxs; i++)
+    if (parity) {
+      for (i = 1; i <= nvtxs; i++) {
         *bsptr++ = i;
-    else
-      for (i = nvtxs; i; i--)
+      }
+    }
+    else {
+      for (i = nvtxs; i; i--) {
         *bsptr++ = i;
+      }
+    }
   }
-  if (KL_RANDOM)
+  if (KL_RANDOM) {
     randomize(bspace - 1, list_length);
+  }
 
   /* Now compute d-vals by seeing which sets neighbors belong to. */
   cut_cost = hop_cost = 1;
@@ -169,21 +175,25 @@ void bucketsorts(struct vtx_data **graph,       /* graph data structure */
       }
     }
     else {
-      for (j          = 0; j < nsets - 1; j++)
+      for (j = 0; j < nsets - 1; j++) {
         dvals[vtx][j] = 0;
+      }
     }
 
     /* First count the neighbors in each set. */
     edges = graph[vtx]->edges;
-    if (using_ewgts)
+    if (using_ewgts) {
       ewptr = graph[vtx]->ewgts;
+    }
     for (j = graph[vtx]->nedges - 1; j; j--) {
       set = sets[*(++edges)];
-      if (set < 0)
+      if (set < 0) {
         set = -set - 1;
-      if (using_ewgts)
+      }
+      if (using_ewgts) {
         weight = *(++ewptr) * cut_cost + .5;
-      myhop    = hops[myset][set];
+      }
+      myhop = hops[myset][set];
 
       l = 0;
       for (newset = 0; newset < nsets; newset++) {

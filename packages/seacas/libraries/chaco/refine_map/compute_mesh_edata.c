@@ -58,8 +58,9 @@ double compute_mesh_edata(struct refine_edata *edata,        /* desire data for 
            (vdata[off + vtx2].below - vdata[off + vtx2].above - vdata[off + vtx2].same);
 
   /* Subtract off potential doubly counted edge. */
-  if (is_an_edge(comm_graph[vtx1], vtx2, &ewgt))
+  if (is_an_edge(comm_graph[vtx1], vtx2, &ewgt)) {
     desire -= 2 * ewgt;
+  }
 
   return (desire);
 }

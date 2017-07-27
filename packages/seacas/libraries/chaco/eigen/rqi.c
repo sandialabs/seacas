@@ -142,10 +142,12 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
   factor       = 10;
   minfactor    = factor / 2;
   first        = TRUE;
-  if (res < tol)
+  if (res < tol) {
     converged = TRUE;
-  else
+  }
+  else {
     converged = FALSE;
+  }
   while (!converged) {
     if (res / tol < 1.2) {
       factor = max(factor / 2, minfactor);
@@ -175,8 +177,9 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
     }
     rqisteps++;
 
-    if (res < tol)
+    if (res < tol) {
       converged = TRUE;
+    }
 
     if (RQI_CONVERGENCE_MODE == 1 && !converged && ndims == 1) {
       if (first) {
@@ -203,12 +206,14 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
         assgn_pntr     = assignment;
         old_assgn_pntr = old_assignment;
         for (i = n + 1; i; i--) {
-          if (*old_assgn_pntr++ != *assgn_pntr++)
+          if (*old_assgn_pntr++ != *assgn_pntr++) {
             assigndiff++;
+          }
         }
         assigndiff = min(assigndiff, n - assigndiff);
-        if (assigndiff <= assigntol)
+        if (assigndiff <= assigntol) {
           converged = TRUE;
+        }
       }
     }
 
@@ -219,10 +224,12 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
       printf("     %3ld", itn);
       printf("          %ld", istop);
       printf("      %g", factor);
-      if (RQI_CONVERGENCE_MODE == 1)
+      if (RQI_CONVERGENCE_MODE == 1) {
         printf("     %d\n", assigndiff);
-      else
+      }
+      else {
         printf("\n");
+      }
     }
   }
   *evalest = shift;

@@ -189,8 +189,9 @@ void warnings(double *          workn,    /* work vector (1..n) */
     if (hosed) {
       fprintf(outfile, "ERROR: Sorry, out-of-bounds eigenvalue indicates serious breakdown.\n");
       fprintf(outfile, "       Try different parameters or another eigensolver.\n");
-      if (pass == 2)
+      if (pass == 2) {
         bail(NULL, 1);
+      }
     }
 
   } /* Pass loop */

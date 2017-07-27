@@ -51,10 +51,12 @@ double *mkvec_ret(int nl, int nh)
   double *v;
 
   v = smalloc_ret((nh - nl + 1) * sizeof(double));
-  if (v == NULL)
+  if (v == NULL) {
     return (NULL);
-  else
+  }
+  else {
     return (v - nl);
+  }
 }
 
 /* Free a double vector with range [nl..nh]. */
@@ -80,10 +82,12 @@ float *mkvec_ret_float(int nl, int nh)
   float *v;
 
   v = smalloc_ret((nh - nl + 1) * sizeof(float));
-  if (v == NULL)
+  if (v == NULL) {
     return (NULL);
-  else
+  }
+  else {
     return (v - nl);
+  }
 }
 
 /* Free a float vector with range [nl..nh]. */

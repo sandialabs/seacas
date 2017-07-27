@@ -66,21 +66,24 @@ void update_cube_edata(int                   vertex,     /* graph vertex being w
 
   if (new_desire != old_desire) { /* Update linked list if necessary. */
     eguy->swap_desire = new_desire;
-    if (new_desire > *best_desire)
+    if (new_desire > *best_desire) {
       *best_desire = new_desire;
+    }
 
     /* Remove eguy from it's current place in list. */
     if (eguy->prev == NULL) {
       /* Round up for index into desire_ptr. */
       if (old_desire >= 0) {
         k = old_desire;
-        if (k != old_desire)
+        if (k != old_desire) {
           k++;
+        }
       }
       else {
         k = -old_desire;
-        if (k != -old_desire)
+        if (k != -old_desire) {
           k++;
+        }
         k = -k;
       }
       k += imax;
@@ -89,27 +92,31 @@ void update_cube_edata(int                   vertex,     /* graph vertex being w
     else {
       eguy->prev->next = eguy->next;
     }
-    if (eguy->next != NULL)
+    if (eguy->next != NULL) {
       eguy->next->prev = eguy->prev;
+    }
 
     /* Now add eguy to it's new desire bucket. */
     if (new_desire >= 0) {
       k = new_desire;
-      if (k != new_desire)
+      if (k != new_desire) {
         k++;
+      }
     }
     else {
       k = -new_desire;
-      if (k != -new_desire)
+      if (k != -new_desire) {
         k++;
+      }
       k = -k;
     }
     k += imax;
 
     eguy->prev = NULL;
     eguy->next = desire_ptr[k];
-    if (desire_ptr[k] != NULL)
+    if (desire_ptr[k] != NULL) {
       desire_ptr[k]->prev = eguy;
-    desire_ptr[k]         = eguy;
+    }
+    desire_ptr[k] = eguy;
   }
 }

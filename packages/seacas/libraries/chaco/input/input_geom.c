@@ -123,7 +123,7 @@ int input_geom(FILE *  fingeom,                /* geometry input file */
       fclose(fingeom);
       return (1);
     }
-    else if (i != ndims) {
+    if (i != ndims) {
       printf("Wrong number of values in line %d of geometry file `%s'\n", line_num, geomname);
       fclose(fingeom);
       return (1);
@@ -135,8 +135,9 @@ int input_geom(FILE *  fingeom,                /* geometry input file */
   end_flag = 0;
   while (!flag && end_flag != -1) {
     read_val(fingeom, &end_flag);
-    if (!end_flag)
+    if (!end_flag) {
       flag = TRUE;
+    }
   }
   if (flag && CHECK_INPUT) {
     printf("Warning: possible error in geometry file `%s'\n", geomname);

@@ -45,10 +45,12 @@ int make_sep_list(int *bspace,      /* list of vtxs to be moved */
   k = 0;
   for (i = 0; i < list_length; i++) {
     vtx = bspace[i];
-    if (vtx < 0)
+    if (vtx < 0) {
       vtx = -vtx;
-    if (sets[vtx] == 2)
+    }
+    if (sets[vtx] == 2) {
       bspace[k++] = vtx;
+    }
   }
 
   bspace[k] = 0;

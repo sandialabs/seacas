@@ -82,15 +82,16 @@ void inertial(struct vtx_data **graph,        /* graph data structure */
     --igeom;
   }
 
-  if (igeom == 1)
+  if (igeom == 1) {
     inertial1d(graph, nvtxs, cube_or_mesh, nsets, inert_coords[0], sets, goal, using_vwgts);
-
-  else if (igeom == 2)
+  }
+  else if (igeom == 2) {
     inertial2d(graph, nvtxs, cube_or_mesh, nsets, inert_coords[0], inert_coords[1], sets, goal,
                using_vwgts);
-
-  else if (igeom == 3)
+  }
+  else if (igeom == 3) {
     inertial3d(graph, nvtxs, cube_or_mesh, nsets, inert_coords[0], inert_coords[1], inert_coords[2],
                sets, goal, using_vwgts);
+  }
   inertial_time += seconds() - time;
 }

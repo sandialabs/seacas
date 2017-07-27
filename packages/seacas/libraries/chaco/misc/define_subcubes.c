@@ -63,14 +63,14 @@ int define_subcubes(int              nsets_real, /* actual number of sets being 
 
     setnum                 = set->setnum | (k << (ndims_tot - set->ndims));
     set_info[setnum].ndims = set->ndims - ndims;
-    subsets[k]             = (int)setnum;
+    subsets[k]             = setnum;
   }
 
   *pstriping = (inert && nsets_real > 2);
 
   if (*pstriping) { /* Gray code for better mapping. */
     for (k = 0; k < nsets; k++) {
-      subsets[k] = (int)gray((int)subsets[k]);
+      subsets[k] = gray(subsets[k]);
     }
 
     if (KL_METRIC == 2) {
@@ -79,7 +79,7 @@ int define_subcubes(int              nsets_real, /* actual number of sets being 
         hop_mtx_special[i][i] = 0;
         for (j = 0; j < i; j++) {
           hop_mtx_special[i][j] = 0;
-          bits                  = ((int)subsets[i]) ^ ((int)subsets[j]);
+          bits                  = (subsets[i]) ^ (subsets[j]);
           while (bits) {
             if (bits & 1) {
               ++hop_mtx_special[i][j];
