@@ -122,7 +122,7 @@ bool Ioss::VariableType::add_field_type_mapping(const std::string &raw_field,
 }
 
 bool Ioss::VariableType::create_named_suffix_field_type(const std::string &       type_name,
-                                                        std::vector<std::string> &suffices)
+                                                        const std::vector<std::string> &suffices)
 {
   size_t count = suffices.size();
   if (count < 1) {
@@ -240,7 +240,7 @@ const Ioss::VariableType *Ioss::VariableType::factory(const std::vector<Ioss::Su
 
     for (size_t i = 0; i < size; i++) {
       std::sprintf(digits, format, i + 1);
-      if (std::strcmp(&suffices[i].data[0], &digits[0]) != 0) {
+      if (std::strcmp(&suffices[i].m_data[0], &digits[0]) != 0) {
         match = false;
         break;
       }
