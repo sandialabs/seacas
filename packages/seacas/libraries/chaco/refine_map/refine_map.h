@@ -1,3 +1,6 @@
+#ifndef CHACO_REFINE_MAP_REFINE_MAP_H
+#define CHACO_REFINE_MAP_REFINE_MAP_H
+
 /*
  * Copyright (c) 2014, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
@@ -47,3 +50,5 @@ struct refine_edata
   struct refine_edata *prev;         /* pointer to previous guy in list */
   struct refine_edata *next;         /* pointer to next guy in list */
 };
+
+#endif

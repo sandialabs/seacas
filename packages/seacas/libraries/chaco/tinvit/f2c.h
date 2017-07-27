@@ -38,8 +38,8 @@
 
         - From The Shogakukan DICTIONARY OF NEW ENGLISH (Second edition) */
 
-#ifndef F2C_INCLUDE
-#define F2C_INCLUDE
+#ifndef CHACO_TINVIT_F2C_H
+#define CHACO_TINVIT_F2C_H
 
 typedef long int  integer;
 typedef char *    address;

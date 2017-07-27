@@ -1,3 +1,6 @@
+#ifndef CHACO_UTIL_SMALLOC_H
+#define CHACO_UTIL_SMALLOC_H
+
 /*
  * Copyright (c) 2014, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
@@ -50,3 +53,5 @@ extern void *srealloc_ret(void *ptr, size_t n);
 
 /* Safe version of free. */
 extern void sfree(void *ptr);
+
+#endif

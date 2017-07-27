@@ -1,3 +1,6 @@
+#ifndef CHACO_MAIN_DEFS_H
+#define CHACO_MAIN_DEFS_H
+
 /*
  * Copyright (c) 2014, Sandia Corporation.
  * Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
@@ -43,3 +46,5 @@
 #define PI 3.141592653589793
 #define TWOPI 6.283185307179586
 #define HALFPI 1.570796326794896
+
+#endif
