@@ -34,7 +34,7 @@
  */
 /* mdcgi - multiple simultaneous devices routines for cgi  */
 #include "mdcgi.h"
-#include "cgi.h"    // for device_struct, MAX_DEVICES, etc
+#include "stdtyp.h"
 #include "stdtyp.h" // for anything
 #include <stdio.h>  // for fprintf, stderr, NULL
 /******************************************************************************/
@@ -169,8 +169,9 @@ void xcact_(void (*device_fn)(), anything **p_surface_id)
   devices[which_device].statelist[which_surface] = temp_surface[0];
 
   /* if new surface is the oldest surface, make it the solicitation surface */
-  if (num_oldest == 0)
+  if (num_oldest == 0) {
     sol_surf = temp_surface[0];
+  }
 
   /* put this surface as newest surf on oldest_surfs list */
   oldest_surfs[num_oldest] = temp_surface[0];

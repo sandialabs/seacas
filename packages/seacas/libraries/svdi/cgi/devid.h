@@ -71,12 +71,13 @@ static char *get_devid_char(float number)
 {
   int i;
 
-  for (i = 0; i < MAX_DEVID; i++)
-    if (device_values[i].devid_num == number)
+  for (i = 0; i < MAX_DEVID; i++) {
+    if (device_values[i].devid_num == number) {
       return (device_values[i].devid_char);
+    }
+  }
 
   /*  return a null pointer if there is no floating point number match     */
-
   return (0);
 }
 #endif

@@ -745,7 +745,7 @@ C                   indicates the lower left corner of the first
 C                   character box.  Only printable characters (32-126 
 C                   decimal) and backspace and linefeed are allowed.
 C                   All values in this range must produce "reasonable"
-C                   output; mapping lower case to upper case letters is
+C                   output; mapping lower; case to upper case letters is
 C                   considered reasonable.  Attributes foreground color,
 C                   background color, intensity, and  character size
 C                   apply.
