@@ -55,7 +55,7 @@ namespace {
   void scandescriptor(const char *d, INT *blkids, int n, int nblks, Problem_Description *prob);
   template <typename INT>
   void chgrp(int grp_id, size_t blk, INT *blkids, int nblks, Problem_Description *prob);
-}
+} // namespace
 extern int ilog2i(size_t n);
 
 /*****************************************************************************/
@@ -114,16 +114,20 @@ int parse_groups(INT *el_blk_ids, INT *el_blk_cnts, Mesh_Description<INT> *mesh,
   }
 
   /* convert any comma's to blank spaces in the designator string */
-  for (size_t i = 0; i < strlen(prob->groups); i++)
-    if (prob->groups[i] == ',')
+  for (size_t i = 0; i < strlen(prob->groups); i++) {
+    if (prob->groups[i] == ',') {
       prob->groups[i] = ' ';
 
   /* fill in the group identifier for each block */
+  
+    }
+  }
   id       = prob->groups;
   size_t i = 0;
   do {
-    if (*id == '/')
+    if (*id == '/') {
       id++;
+}
     scandescriptor(id, el_blk_ids, i, mesh->num_el_blks, prob);
     id = strchr(id, '/');
     i++;
@@ -132,14 +136,16 @@ int parse_groups(INT *el_blk_ids, INT *el_blk_cnts, Mesh_Description<INT> *mesh,
 
   /* set any remaining blocks to new group */
   found = 0;
-  for (i = 0; i < mesh->num_el_blks; i++)
+  for (i = 0; i < mesh->num_el_blks; i++) {
     if (prob->group_no[i] < 0) {
       prob->group_no[i] = last;
       found             = 1;
     }
+}
 
-  if (found)
+  if (found) {
     last++;
+}
 
   prob->num_groups = last;
 
@@ -229,22 +235,25 @@ int get_group_info(Machine_Description *machine, Problem_Description *prob,
 
     nelemg[prob->group_no[iblk]]++;
 
-    if (prob->alloc_graph == ELB_TRUE)
+    if (prob->alloc_graph == ELB_TRUE) {
       nadj_per_grp[prob->group_no[iblk]] += graph->start[i + 1] - graph->start[i];
+    }
   }
 
   /*
    * calculate how many processors to use for each group
    *   using method from the materials group, haven't really checked it
    */
-  if (machine->type == MESH)
+  if (machine->type == MESH) {
     nproc = machine->procs_per_box;
-  else if (machine->type == HCUBE)
+  } else if (machine->type == HCUBE) {
     nproc = ilog2i(machine->procs_per_box);
+  }
   for (int i = 0; i < prob->num_groups; i++) {
-    nprocg[i] = int((nproc * (nelemg[i] + .5)) / (float)prob->num_vertices);
-    if (nelemg[i] && !nprocg[i])
+    nprocg[i] = int((nproc * (nelemg[i] + .5)) / static_cast<float>(prob->num_vertices));
+    if (nelemg[i] && !nprocg[i]) {
       nprocg[i] = 1;
+    }
   }
 
   /*
@@ -263,13 +272,15 @@ int get_group_info(Machine_Description *machine, Problem_Description *prob,
     }
 
     /* determine how large to make temporary arrays */
-    if ((size_t)nelemg[i] > *max_vtx)
+    if (static_cast<size_t>(nelemg[i]) > *max_vtx) {
       *max_vtx = nelemg[i];
-    if (prob->alloc_graph == ELB_TRUE)
-      if ((size_t)nadj_per_grp[i] > *max_adj)
+    }
+    if (prob->alloc_graph == ELB_TRUE) {
+      if (static_cast<size_t>(nadj_per_grp[i]) > *max_adj) {
         *max_adj = nadj_per_grp[i];
+      }
+    }
   }
-
   if (sum != nproc) {
     /* correct group with most processors (j determined above) */
     nprocg[j] -= (sum - nproc);
@@ -278,15 +289,15 @@ int get_group_info(Machine_Description *machine, Problem_Description *prob,
       return 0;
     }
   }
-
   printf("Load balance information\n");
-  for (int i = 0; i < prob->num_groups; i++)
+  for (int i = 0; i < prob->num_groups; i++) {
     printf("group[%d]  #elements=%-10d  #proc=%d\n", i, nelemg[i], nprocg[i]);
+  }
 
   return 1;
 }
 
-/**********************************************************************/
+  /**********************************************************************/
 namespace {
   template <typename INT>
   void scandescriptor(const char *d, INT *blkids, int n, int nblks, Problem_Description *prob)
@@ -306,61 +317,69 @@ namespace {
     while (*p != '/' && *p != 0) {
       q = sscanf(p, "%ld%n", &i, &qn);
       if (q == 0 || i < 0) {
-        if (p[qn - 1] == '/' || *p == 0)
-          return;
-        else if (i < 0) {
-          stop = -i;
-          for (c = last; c <= stop; c++)
-            chgrp(n, c, blkids, nblks, prob);
-        }
-        else if (p[qn - 1] == '-') {
-          p += qn;
-          sscanf(p, "%d%n", &stop, &qn);
-          for (c = last; c <= stop; c++)
-            chgrp(n, c, blkids, nblks, prob);
-        }
-        else {
-          /* check for minus sign */
-          for (c = 0; c < qn; c++)
-            if (p[c] == '-')
-              break;
-          if (c < qn) {
-            p += qn;
-            sscanf(p, "%d%n", &stop, &qn);
-            for (c = last; c <= stop; c++)
-              chgrp(n, c, blkids, nblks, prob);
-          }
-          else {
-            printf("Error reading descriptor '%s'\n", d);
-            printf("                          ");
-            for (c = 0; c < qn; c++)
-              printf(" ");
-            printf("^\n");
-            return;
-          }
-        }
+	if (p[qn - 1] == '/' || *p == 0) {
+	  return;
+	}
+	else if (i < 0) {
+	  stop = -i;
+	  for (c = last; c <= stop; c++) {
+	    chgrp(n, c, blkids, nblks, prob);
+	  }
+	}
+	else if (p[qn - 1] == '-') {
+	  p += qn;
+	  sscanf(p, "%d%n", &stop, &qn);
+	  for (c = last; c <= stop; c++) {
+	    chgrp(n, c, blkids, nblks, prob);
+	  }
+	}
+	else {
+	  /* check for minus sign */
+	  for (c = 0; c < qn; c++) {
+	    if (p[c] == '-') {
+	      break;
+	    }
+	    if (c < qn) {
+	      p += qn;
+	      sscanf(p, "%d%n", &stop, &qn);
+	      for (c = last; c <= stop; c++) {
+		chgrp(n, c, blkids, nblks, prob);
+	      }
+	    }
+	    else {
+	      printf("Error reading descriptor '%s'\n", d);
+	      printf("                          ");
+	      for (c = 0; c < qn; c++) {
+		printf(" ");
+	      }
+	      printf("^\n");
+	      return;
+	    }
+	  }
+	}
+	else {
+	  last = i;
+	}
+	chgrp(n, i, blkids, nblks, prob);
+	p += qn;
       }
-      else
-        last = i;
-      chgrp(n, i, blkids, nblks, prob);
-      p += qn;
     }
-  }
 
-  /**********************************************************************/
-  /* changes the grp[] entry corresponding to block=blk to the value grp_id
-   * It uses the extern variables "nblks", "grp" and "blkid". only grp
-   * is altered.
-   *
-   * Not very efficient. To find the blk, it loops through all blks.
-   */
-  template <typename INT>
-  void chgrp(int grp_id, size_t blk, INT *blkids, int nblks, Problem_Description *prob)
-  {
-    for (int j = 0; j < nblks; j++)
-      if (blkids[j] == (INT)blk) {
-        prob->group_no[j] = grp_id;
-        return;
+    /**********************************************************************/
+    /* changes the grp[] entry corresponding to block=blk to the value grp_id
+     * It uses the extern variables "nblks", "grp" and "blkid". only grp
+     * is altered.
+     *
+     * Not very efficient. To find the blk, it loops through all blks.
+     */
+    template <typename INT>
+      void chgrp(int grp_id, size_t blk, INT *blkids, int nblks, Problem_Description *prob)
+      {
+	for (int j = 0; j < nblks; j++) {
+	  if (blkids[j] == (INT)blk) {
+	    prob->group_no[j] = grp_id;
+	    return;
+	  }
+	}
       }
-  }
-}
+  } // namespace
