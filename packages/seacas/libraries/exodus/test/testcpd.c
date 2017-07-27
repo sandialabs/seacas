@@ -79,8 +79,9 @@ int main(int argc, char **argv)
                   &version);      /* ExodusII library version */
 
   printf("\nafter ex_open\n");
-  if (exoid < 0)
+  if (exoid < 0) {
     exit(1);
+  }
 
   printf("test.exo is an EXODUSII file; version %4.2f\n", version);
   printf("         CPU word size %1d\n", CPU_word_size);
@@ -99,8 +100,9 @@ int main(int argc, char **argv)
                      &IO_word_size); /* I/O float word size in bytes */
 
   printf("\nafter ex_create, exoid = %3d\n", exoid);
-  if (exoid1 < 0)
+  if (exoid1 < 0) {
     exit(1);
+  }
 
   printf("         CPU word size %1d\n", CPU_word_size);
   printf("         I/O word size %1d\n", IO_word_size);

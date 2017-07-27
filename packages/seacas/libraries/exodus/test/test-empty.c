@@ -33,9 +33,11 @@ int main()
     int  error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk,
                             &num_node_sets, &num_side_sets);
     printf("after ex_get_init, error = %3d\n", error);
-    if (error)
+    if (error) {
       exit(-1);
-    else
+    }
+    else {
       exit(0);
+    }
   }
 }

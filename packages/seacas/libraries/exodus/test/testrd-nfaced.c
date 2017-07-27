@@ -81,8 +81,9 @@ int main(int argc, char **argv)
                   &version);         /* ExodusII library version */
 
   printf("\nafter ex_open\n");
-  if (exoid < 0)
+  if (exoid < 0) {
     exit(1);
+  }
 
   printf("test.exo is an EXODUSII file; version %4.2f\n", version);
   printf("         I/O word size %1d\n", IO_word_size);
@@ -144,8 +145,9 @@ int main(int argc, char **argv)
   printf("y coord name = '%s'\n", coord_names[1]);
   printf("z coord name = '%s'\n", coord_names[2]);
 
-  for (i = 0; i < num_dim; i++)
+  for (i = 0; i < num_dim; i++) {
     free(coord_names[i]);
+  }
 
   /* read element block parameters */
   if (num_elem_blk > 0) {

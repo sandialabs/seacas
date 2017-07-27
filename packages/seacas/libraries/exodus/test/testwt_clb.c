@@ -900,20 +900,24 @@ int main(int argc, char **argv)
   k = 0;
   for (i = 0; i < num_node_sets; i++) {
     for (j = 0; j < num_nset_vars; j++) {
-      if (k % 2 == 0)
+      if (k % 2 == 0) {
         nset_tab[k++] = 1;
-      else
+      }
+      else {
         nset_tab[k++] = 0;
+      }
     }
   }
 
   k = 0;
   for (i = 0; i < num_side_sets; i++) {
     for (j = 0; j < num_sset_vars; j++) {
-      if (k % 2 == 0)
+      if (k % 2 == 0) {
         sset_tab[k++] = 0;
-      else
+      }
+      else {
         sset_tab[k++] = 1;
+      }
     }
   }
 

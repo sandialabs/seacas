@@ -277,8 +277,9 @@ int main(int argc, char **argv)
                   &version);      /* ExodusII library version */
 
   assert(exoid >= 0);
-  if (exoid < 0)
+  if (exoid < 0) {
     exit(1);
+  }
 
   error = ex_get_init(exoid, title, &num_dim, &num_nodes, &num_elem, &num_elem_blk, &num_node_sets,
                       &num_side_sets);
