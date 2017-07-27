@@ -67,7 +67,7 @@ namespace SEAMS {
 
     array(int r, int c) : rows(r), cols(c) { data.resize(r * c); }
     array() : rows(0), cols(0) {}
-    ~array() {}
+    ~array() = default;
   };
 
   struct symrec

@@ -399,7 +399,7 @@ namespace Iovs {
     Ioss::ElementBlockContainer element_blocks = this->get_region()->get_element_blocks();
     Ioss::ElementBlockContainer::const_iterator I;
     std::vector<std::string>                    component_names;
-    component_names.push_back("GlobalElementId");
+    component_names.emplace_back("GlobalElementId");
     for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
       int     bid       = get_id((*I), &ids_);
       int64_t eb_offset = (*I)->get_offset();
@@ -410,7 +410,7 @@ namespace Iovs {
     }
 
     component_names.clear();
-    component_names.push_back("GlobalNodeId");
+    component_names.emplace_back("GlobalNodeId");
     if (this->pvcsa != nullptr) {
       this->pvcsa->CreateNodalVariable(component_names, &this->nodeMap.map()[1],
                                        this->DBFilename.c_str());

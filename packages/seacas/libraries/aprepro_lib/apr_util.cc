@@ -231,7 +231,7 @@ namespace SEAMS {
     if (ok == 0)
       return S_ISDIR(s.st_mode);
     else
-      return 0;
+      return false;
   }
 
   bool check_valid_var(const char *var)

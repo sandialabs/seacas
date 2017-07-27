@@ -339,14 +339,14 @@ const char *do_Units(char *type)
     /* Found a match */
     for (j = 0; systems[i].label[j].vname != nullptr; j++) {
       if ((ptr = aprepro->getsym(systems[i].label[j].vname)) == nullptr) {
-	ptr = aprepro->putsym(systems[i].label[j].vname, SEAMS::Aprepro::STRING_VARIABLE, 1);
+	ptr = aprepro->putsym(systems[i].label[j].vname, SEAMS::Aprepro::STRING_VARIABLE, true);
       }
       ptr->value.svar = systems[i].label[j].value;
     }
 
     for (j = 0; systems[i].base[j].vname != nullptr; j++) {
       if ((ptr = aprepro->getsym(systems[i].base[j].vname)) == nullptr) {
-	ptr = aprepro->putsym(systems[i].base[j].vname, SEAMS::Aprepro::VARIABLE, 1);
+	ptr = aprepro->putsym(systems[i].base[j].vname, SEAMS::Aprepro::VARIABLE, true);
       }
       ptr->value.var = systems[i].base[j].value;
     }
