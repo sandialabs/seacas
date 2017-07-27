@@ -1216,7 +1216,7 @@ namespace {
 
           ex_get_attr_names(id, EX_ELEM_BLOCK, block_id[b], names);
           for (int i = 0; i < block_param.num_attribute; i++) {
-            glob_blocks[b].attributeNames.push_back(std::string(names[i]));
+            glob_blocks[b].attributeNames.emplace_back(names[i]);
           }
           free_name_array(names, block_param.num_attribute);
         }

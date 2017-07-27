@@ -2148,7 +2148,7 @@ namespace {
 
     /* Start over with list_ptr correctly allocated */
     list_ptr.resize(components);
-    std::vector<int>(list_ptr).swap(list_ptr);
+    list_ptr.shrink_to_fit();
     for (i    = 0; i < nrow; i++)
       mask[i] = 1;
 

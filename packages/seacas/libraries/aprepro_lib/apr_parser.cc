@@ -197,7 +197,7 @@ namespace SEAMS {
   {
   }
 
-  Parser::~Parser() {}
+  Parser::~Parser() = default;
 
   /*---------------.
   | Symbol types.  |
@@ -245,7 +245,7 @@ namespace SEAMS {
   // by_type.
   inline Parser::by_type::by_type() : type(empty_symbol) {}
 
-  inline Parser::by_type::by_type(const by_type &other) : type(other.type) {}
+  inline Parser::by_type::by_type(const by_type &other) = default;
 
   inline Parser::by_type::by_type(token_type t) : type(yytranslate_(t)) {}
 
@@ -262,7 +262,7 @@ namespace SEAMS {
   // by_state.
   inline Parser::by_state::by_state() : state(empty_state) {}
 
-  inline Parser::by_state::by_state(const by_state &other) : state(other.state) {}
+  inline Parser::by_state::by_state(const by_state &other) = default;
 
   inline void Parser::by_state::clear() { state = empty_state; }
 

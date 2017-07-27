@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
       }
     }
     else {
-      input_files.push_back(argv[ai]);
+      input_files.emplace_back(argv[ai]);
     }
   }
 

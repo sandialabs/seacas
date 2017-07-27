@@ -54,7 +54,7 @@ static std::vector<error_message> error_info;
 void error_add(int level, const std::string &message, const std::string &filename, int line_no)
 {
   if (error_info.size() < (size_t)MAX_ERR_MSG)
-    error_info.push_back(error_message(level, message, line_no, filename));
+    error_info.emplace_back(level, message, line_no, filename);
   return;
 }
 

@@ -267,7 +267,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   // Parse remaining options as directory paths.
   if (option_index < argc) {
     while (option_index < argc) {
-      inputFiles_.push_back(argv[option_index++]);
+      inputFiles_.emplace_back(argv[option_index++]);
     }
   }
   else {

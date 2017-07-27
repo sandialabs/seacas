@@ -1280,7 +1280,7 @@ YY_DECL
     yy_load_buffer_state();
   }
 
-  while (1) /* loops until end-of-file is reached */
+  while (true) /* loops until end-of-file is reached */
   {
     /* %% [8.0] yymore()-related code goes here */
     yy_cp = (yy_c_buf_p);
@@ -1998,7 +1998,7 @@ YY_DECL
         symrec *s;
         s = aprepro.getsym(yytext);
         if (s == nullptr)
-          s          = aprepro.putsym(yytext, SEAMS::Aprepro::UNDEFINED_VARIABLE, 0);
+          s          = aprepro.putsym(yytext, SEAMS::Aprepro::UNDEFINED_VARIABLE, false);
         yylval->tptr = s;
         return ((token::yytokentype)s->type);
       }
@@ -3261,7 +3261,7 @@ namespace SEAMS {
     aprepro.outputStream.push(out);
   }
 
-  Scanner::~Scanner() {}
+  Scanner::~Scanner() = default;
 
   void Scanner::add_include_file(const std::string &filename, bool must_exist)
   {
@@ -3523,7 +3523,7 @@ namespace SEAMS {
       if_state[if_lvl] = IF_SKIP;
     }
     else {
-      suppress_nl         = 1;
+      suppress_nl         = true;
       if_state[if_lvl]    = INITIAL;
       if_case_run[if_lvl] = true;
     }

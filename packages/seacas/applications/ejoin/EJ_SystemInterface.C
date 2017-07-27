@@ -224,7 +224,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (option_index < argc) {
     while (option_index < argc) {
-      inputFiles_.push_back(argv[option_index++]);
+      inputFiles_.emplace_back(argv[option_index++]);
     }
   }
   else {
@@ -510,13 +510,13 @@ namespace {
         StringVector name_id  = SLIB::tokenize(*I, ":");
         std::string  var_name = LowerCase(name_id[0]);
         if (name_id.size() == 1) {
-          (*variable_list).push_back(std::make_pair(var_name, 0));
+          (*variable_list).emplace_back(std::make_pair(var_name, 0));
         }
         else {
           for (size_t i = 1; i < name_id.size(); i++) {
             // Convert string to integer...
             int id = strtoul(name_id[i].c_str(), nullptr, 0);
-            (*variable_list).push_back(std::make_pair(var_name, id));
+            (*variable_list).emplace_back(std::make_pair(var_name, id));
           }
         }
         ++I;
@@ -659,7 +659,7 @@ namespace {
       // this part.  Since don't know how many entities there are,
       // store the id as '0' to signify all.
       if (part_block.size() == 1) {
-        (*omissions)[part_num].push_back("ALL");
+        (*omissions)[part_num].emplace_back("ALL");
       }
       else {
         // Get the list of blocks to omit for this part...

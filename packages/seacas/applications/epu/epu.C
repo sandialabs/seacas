@@ -1608,7 +1608,7 @@ namespace {
             exodus_error(__LINE__);
           }
           for (int i = 0; i < temp_block.num_attribute; i++) {
-            glob_blocks[b].attributeNames.push_back(std::string(names[i]));
+            glob_blocks[b].attributeNames.emplace_back(names[i]);
           }
           free_name_array(names, temp_block.num_attribute);
         }

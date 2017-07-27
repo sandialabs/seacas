@@ -762,19 +762,19 @@ namespace SEAMS {
 
   const char *do_dumpsym()
   {
-    aprepro->dumpsym(SEAMS::Parser::token::VAR, 0);
+    aprepro->dumpsym(SEAMS::Parser::token::VAR, false);
     return (nullptr);
   }
 
   const char *do_dumpfunc()
   {
-    aprepro->dumpsym(SEAMS::Parser::token::FNCT, 1);
+    aprepro->dumpsym(SEAMS::Parser::token::FNCT, true);
     return (nullptr);
   }
 
   const char *do_dumpvar()
   {
-    aprepro->dumpsym(SEAMS::Parser::token::VAR, 1);
+    aprepro->dumpsym(SEAMS::Parser::token::VAR, true);
     return (nullptr);
   }
 

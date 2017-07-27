@@ -497,9 +497,9 @@ namespace {
         file2.Close_File();
         std::cout << "\nexodiff: Files are different\n";
         if (interface.exit_status_switch)
-          return 2;
+          return true;
         else
-          return 0;
+          return false;
       }
     }
 

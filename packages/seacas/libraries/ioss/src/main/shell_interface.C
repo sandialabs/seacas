@@ -510,7 +510,7 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   // Parse remaining options as directory paths.
   if (option_index < argc - 1) {
     while (option_index < argc - 1) {
-      inputFile.push_back(argv[option_index++]);
+      inputFile.emplace_back(argv[option_index++]);
     }
     outputFile = argv[option_index];
   }
