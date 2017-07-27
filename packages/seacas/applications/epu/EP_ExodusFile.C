@@ -41,8 +41,8 @@
 #include <climits>
 #include <cstdlib>
 
-#include <iostream>
 #include <cstddef>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -63,7 +63,7 @@ int                      Excn::ExodusFile::maximumNameLength_ = 32;
 
 namespace {
   int get_free_descriptor_count();
-}
+} // namespace
 
 Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
 {
@@ -210,7 +210,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
 
       ex_close(exoid);
 
-      if (io_word_size_var < (int)sizeof(float)) {
+      if (io_word_size_var < static_cast<int>(sizeof(float))) {
         io_word_size_var = sizeof(float);
       }
 
@@ -365,4 +365,4 @@ namespace {
     // returned -- take that as 1 more than the current count of open files.
     //
   }
-}
+} // namespace

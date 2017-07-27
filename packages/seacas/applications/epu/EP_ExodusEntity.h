@@ -104,7 +104,7 @@ namespace Excn {
 
     size_t entity_count() const { return elementCount; }
 
-    char                     elType[MAX_STR_LENGTH + 1];
+    char                     elType[MAX_STR_LENGTH + 1]{};
     std::string              name_;
     std::vector<std::string> attributeNames;
     int64_t                  id;
@@ -227,5 +227,5 @@ namespace Excn {
   private:
     CommunicationMetaData(const CommunicationMetaData &);
   };
-}
+} // namespace Excn  // namespace Excn
 #endif /* SEACAS_ExodusEntity_H */

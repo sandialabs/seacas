@@ -35,7 +35,7 @@
 #define NODE_SET_H
 
 #include "exo_entity.h"
-#include <iostream>
+#include "side_set.h" // for Side_Set
 
 template <typename INT> class ExoII_Read;
 
@@ -55,7 +55,7 @@ public:
   const double *Distribution_Factors() const;
   void          Free_Distribution_Factors() const;
 
-  void Display(std::ostream & = std::cout);
+  void Display(std::ostream & /*s*/ = std::cout);
   int  Check_State() const;
 
 private:

@@ -33,8 +33,8 @@
 
 #include "smart_assert.h" // for SMART_ASSERT
 #include "stringx.h"
+#include <cctype>  // for tolower, isspace
 #include <cstring> // for strspn, strcspn
-#include <cctype> // for tolower, isspace
 #include <string>  // for string, operator==
 #include <vector>  // for vector
 
@@ -42,28 +42,33 @@ bool abbreviation(const std::string &s, const std::string &master, unsigned min_
 {
   SMART_ASSERT(min_length > 0);
 
-  if (s.size() > master.size())
+  if (s.size() > master.size()) {
     return false;
+  }
 
-  if (s.size() < min_length)
+  if (s.size() < min_length) {
     return false;
+  }
 
-  for (unsigned i = 0; i < s.size(); ++i)
-    if (s[i] != master[i])
+  for (unsigned i = 0; i < s.size(); ++i) {
+    if (s[i] != master[i]) {
       return false;
-
+    }
+  }
   return true;
 }
 
 bool no_case_equals(const std::string &s1, const std::string &s2)
 {
-  if (s1.size() != s2.size())
+  if (s1.size() != s2.size()) {
     return false;
+  }
 
-  for (unsigned i = 0; i < s1.size(); ++i)
-    if (tolower(s1[i]) != tolower(s2[i]))
+  for (unsigned i = 0; i < s1.size(); ++i) {
+    if (tolower(s1[i]) != tolower(s2[i])) {
       return false;
-
+    }
+  }
   return true;
 }
 
@@ -71,13 +76,14 @@ std::string &chop_whitespace(std::string &s)
 {
   if (!s.empty()) {
     int i = s.size() - 1;
-    for (; i >= 0; --i)
-      if (!isspace((int)(s[i])))
+    for (; i >= 0; --i) {
+      if (isspace(static_cast<int>(s[i])) == 0) {
         break;
+      }
 
-    s.resize(i + 1);
+      s.resize(i + 1);
+    }
   }
-
   return s;
 }
 
@@ -115,8 +121,9 @@ std::string extract_token(std::string &s, const char *delimeters)
       // no second token
       s = "";
     }
-    else
+    else {
       s.erase(0, r);
+    }
 
     return tok;
   }
@@ -147,8 +154,9 @@ int count_tokens(const std::string &s, const char *delimeters)
 
 int max_string_length(const std::vector<std::string> &names)
 {
-  if (names.empty())
+  if (names.empty()) {
     return 0;
+  }
   unsigned len = names[0].size();
   for (unsigned i = 1; i < names.size(); i++) {
     if (names[i].size() > len) {
@@ -160,31 +168,36 @@ int max_string_length(const std::vector<std::string> &names)
 
 void to_lower(std::string &s)
 {
-  for (auto &elem : s)
+  for (auto &elem : s) {
     elem = tolower(elem);
+  }
 }
 
 char first_character(const std::string &s)
 {
-  for (auto &elem : s)
-    if (!isspace((int)(elem)))
+  for (auto &elem : s) {
+    if (isspace(static_cast<int>(elem)) == 0) {
       return elem;
-
+    }
+  }
   return 0;
 }
 
 int find_string(const std::vector<std::string> &lst, const std::string &s, bool nocase)
 {
   if (nocase) {
-    for (unsigned i = 0; i < lst.size(); ++i)
-      if (no_case_equals(lst[i], s))
+    for (unsigned i = 0; i < lst.size(); ++i) {
+      if (no_case_equals(lst[i], s)) {
         return i;
+      }
+    }
   }
   else {
-    for (unsigned i = 0; i < lst.size(); ++i)
-      if (lst[i] == s)
+    for (unsigned i = 0; i < lst.size(); ++i) {
+      if (lst[i] == s) {
         return i;
+      }
+    }
   }
-
   return -1;
 }

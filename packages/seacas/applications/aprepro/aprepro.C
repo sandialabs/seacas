@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
       std::string val = ai + 1 < argc ? argv[ai + 1] : "";
       ai += aprepro.set_option(arg, val);
     }
-    else if (arg.find("=") != std::string::npos) { // Parse var=value option.
+    else if (arg.find('=') != std::string::npos) { // Parse var=value option.
       size_t      index = arg.find_first_of('=');
       std::string var   = arg.substr(0, index);
       std::string value = arg.substr(index + 1);

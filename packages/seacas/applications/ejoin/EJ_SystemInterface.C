@@ -4,13 +4,13 @@
 #include "EJ_vector3d.h" // for vector3d
 #include <SL_tokenize.h> // for tokenize
 #include <algorithm>     // for sort, find, transform
-#include <cstdlib>       // for exit, strtod, strtoul, abs, etc
-#include <cstring>       // for strchr, strlen
 #include <cctype>       // for tolower
-#include <iosfwd>        // for ostream
-#include <iostream>      // for operator<<, basic_ostream, etc
 #include <climits>      // for INT_MAX
 #include <cstddef>      // for size_t
+#include <cstdlib>       // for exit, strtod, strtoul, abs, etc
+#include <cstring>       // for strchr, strlen
+#include <iosfwd>        // for ostream
+#include <iostream>      // for operator<<, basic_ostream, etc
 #include <utility>       // for pair, make_pair
 #include <vector>        // for vector
 
@@ -35,7 +35,7 @@ namespace {
   void parse_part_list(const char *tokens, std::vector<int> *list);
   void parse_omissions(const char *tokens, Omissions *omissions, const std::string &basename,
                        bool require_ids);
-}
+}  // namespace
 
 SystemInterface::SystemInterface()
     : outputName_(), debugLevel_(0), stepMin_(1), stepMax_(INT_MAX), stepInterval_(1),
@@ -397,7 +397,7 @@ bool SystemInterface::convert_nodes_to_nodesets(int part_number) const
   if (nodesetConvertParts_.empty()) {
     return false;
   }
-  else if (nodesetConvertParts_[0] == 0) {
+  if (nodesetConvertParts_[0] == 0) {
     return true;
   }
   else {
@@ -675,4 +675,4 @@ namespace {
       ++I;
     }
   }
-}
+}  // namespace

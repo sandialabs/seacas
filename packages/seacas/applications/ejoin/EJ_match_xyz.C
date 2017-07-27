@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "EJ_index_sort.h" // for index_coord_sort
 #include "EJ_mapping.h"    // for eliminate_omitted_nodes
-#include "EJ_match_xyz.h"
+#include "EJ_CodeTypes.h"
 #include "EJ_vector3d.h"    // for vector3d
 #include "Ioss_NodeBlock.h" // for NodeBlock
 #include "Ioss_Property.h"  // for Property
@@ -39,8 +39,8 @@
 #include "smart_assert.h"   // for SMART_ASSERT
 #include <algorithm>        // for max, min
 #include <cfloat>          // for FLT_MAX
-#include <iostream>         // for operator<<, cout, ostream, etc
 #include <cstddef>         // for size_t
+#include <iostream>         // for operator<<, cout, ostream, etc
 
 namespace {
   template <typename INT>
@@ -106,7 +106,7 @@ namespace {
       }
     }
   }
-}
+} // namespace
 
 template <typename INT>
 void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,
@@ -334,4 +334,4 @@ namespace {
     }
     std::cout << "\n";
   }
-}
+}  // namespace

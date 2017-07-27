@@ -32,7 +32,7 @@
 #ifndef MATCY_XYZ_H
 #define MATCY_XYZ_H
 
-#include "EJ_CodeTypes.h"
+#include "EJ_match_xyz.h"
 
 template <typename INT>
 void match_node_xyz(RegionVector &part_mesh, double tolerance, std::vector<INT> &global_node_map,

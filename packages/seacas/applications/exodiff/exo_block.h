@@ -70,8 +70,8 @@ public:
 
   int Check_State() const;
 
-  void Display_Stats(std::ostream & = std::cout) const;
-  void Display(std::ostream & = std::cout) const;
+  void Display_Stats(std::ostream & /*s*/ = std::cout) const;
+  void Display(std::ostream & /*s*/ = std::cout) const;
 
 private:
   Exo_Block(const Exo_Block &);                  // Not written.

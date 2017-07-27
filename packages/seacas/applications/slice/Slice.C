@@ -74,7 +74,7 @@ using idx_t = int;
 #define OUTPUT std::cerr
 
 // ========================================================================
-// TODO:
+// TODO(gdsjaar): 
 //  * Sideset distribution factors
 //  * Variables
 //  * All entity types
@@ -179,7 +179,7 @@ namespace {
     char        do_thousands_sep() const override { return ','; }
     std::string do_grouping() const override { return "\3"; }
   };
-}
+}  // namespace
 // ========================================================================
 
 int main(int argc, char *argv[])
@@ -262,11 +262,11 @@ int main(int argc, char *argv[])
 
   if (dbi->int_byte_size_api() == 4) {
     progress("4-byte slice");
-    slice(region, nem_file, interface, (int)1);
+    slice(region, nem_file, interface, 1);
   }
   else {
     progress("8-byte slice");
-    slice(region, nem_file, interface, (int64_t)1);
+    slice(region, nem_file, interface, static_cast<int64_t>(1));
   }
 
 #ifdef HAVE_MPI
@@ -280,8 +280,7 @@ int main(int argc, char *argv[])
 namespace {
 
   template <typename INT>
-  void create_adjacency_list(const Ioss::Region &region, SystemInterface &interface,
-                             std::vector<idx_t> &pointer, std::vector<idx_t> &adjacency,
+  void create_adjacency_list(const Ioss::Region &region, std::vector<idx_t> &pointer, std::vector<idx_t> &adjacency,
                              INT /*dummy*/)
   {
     progress(__func__);
@@ -322,9 +321,8 @@ namespace {
     assert(adjacency.size() == sum);
   }
 
-  template <typename INT>
   void decompose_elements(const Ioss::Region &region, SystemInterface &interface,
-                          std::vector<int> &elem_to_proc, INT dummy)
+                          std::vector<int> &elem_to_proc)
   {
     progress(__func__);
     // Populate the 'elem_to_proc' vector with a mapping from element to processor.
@@ -341,7 +339,7 @@ namespace {
     if (interface.decomposition_method() == "linear") {
       size_t elem_beg = 0;
       for (size_t proc = 0; proc < interface.processor_count(); proc++) {
-        size_t add      = ((size_t)proc < extra) ? 1 : 0;
+        size_t add      = (proc < extra) ? 1 : 0;
         size_t elem_end = elem_beg + elem_per_proc + add;
 
         for (size_t elem = elem_beg; elem < elem_end; elem++) {
@@ -677,7 +675,7 @@ namespace {
     progress(__func__);
     // This routine categorizes the nodes on a processor as interior
     // or border.
-    // TODO: Categorize elements also. For now, all treated as
+    // TODO(gdsjaar): Categorize elements also. For now, all treated as
     // interior which works for sierra-based applications
 
     // The node_to_proc_pointer has information about the number of
@@ -732,8 +730,8 @@ namespace {
 
       region->property_add(Ioss::Property("global_node_count", global_node_count));
       region->property_add(Ioss::Property("global_element_count", global_element_count));
-      region->property_add(Ioss::Property("processor_count", (int)proc_count));
-      region->property_add(Ioss::Property("my_processor", (int)p));
+      region->property_add(Ioss::Property("processor_count", static_cast<int>(proc_count)));
+      region->property_add(Ioss::Property("my_processor", static_cast<int>(p)));
 
       region->property_add(Ioss::Property("internal_node_count", interior_nodes[p]));
       region->property_add(Ioss::Property("border_node_count", border_nodes));
@@ -1259,7 +1257,7 @@ namespace {
         size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
         for (size_t i = 0; i < element_count * element_nodes; i++) {
           INT node = connectivity[p][b][i] - 1;
-          if (proc_node[node].empty() || proc_node[node][proc_node[node].size() - 1] != (int)p) {
+          if (proc_node[node].empty() || proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
             proc_node[node].push_back(p);
             on_proc_count++;
           }
@@ -1348,7 +1346,7 @@ namespace {
 
     double           start = seacas_timer();
     std::vector<int> elem_to_proc;
-    decompose_elements(region, interface, elem_to_proc, INT(0));
+    decompose_elements(region, interface, elem_to_proc);
     double end = seacas_timer();
     OUTPUT << "Decompose elements = " << end - start << "\n";
 
@@ -1574,4 +1572,4 @@ namespace {
       filename = tmp;
     }
   }
-}
+}  // namespace

@@ -34,8 +34,8 @@
 
 #include "GetLongOpt.h" // for GetLongOption
 #include "Tolerance.h"  // for Tolerance, etc
-#include "map.h"        // for MAP_TYPE_enum
 #include "terminal_color.h"
+#include <cmath>
 #include <string>  // for string
 #include <utility> // for pair
 #include <vector>  // for vector

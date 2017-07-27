@@ -88,7 +88,7 @@ namespace Excn {
                                                     const std::vector<NodeSet<int64_t>> &nodesets,
                                                     const std::vector<SideSet<int64_t>> &sidesets,
                                                     const CommunicationMetaData &        comm);
-}
+}  // namespace Excn
 
 namespace {
   bool lessOffset(const Excn::Block &b1, const Excn::Block &b2) { return b1.offset_ < b2.offset_; }
@@ -98,9 +98,9 @@ namespace {
     if ((ex_int64_status(exoid) & type) != 0u) {
       return NC_INT64;
     }
-    else {
+    
       return NC_INT;
-    }
+    
   }
 
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
@@ -113,7 +113,7 @@ namespace {
 
   int define_coordinate_vars(int exodusFilePtr, int64_t nodes, int node_dim, int dimension,
                              int dim_dim, int str_dim);
-}
+}  // namespace
 
 bool Excn::is_path_absolute(const std::string &path)
 {
@@ -343,7 +343,7 @@ bool Excn::Internals<INT>::check_meta_data(const Mesh &mesh, const std::vector<B
                                            const std::vector<SideSet<INT>> & /*unused*/,
                                            const CommunicationMetaData & /*unused*/)
 {
-  ex_init_params init_data;
+  ex_init_params init_data{};
   ex_get_init_ext(exodusFilePtr, &init_data);
 
   bool matches = true;
@@ -714,7 +714,7 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
 
     // store element type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                             (int)std::strlen(blocks[iblk].elType) + 1, blocks[iblk].elType);
+                             static_cast<int>(std::strlen(blocks[iblk].elType)) + 1, blocks[iblk].elType);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg, "Error: failed to store element type name %s in file id %d",
@@ -1141,7 +1141,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
+      status = nc_put_var_longlong(exoid, var_id, const_cast<long long int *>(&ids[0]));
     }
     else {
       // Have ex_entity_id (long long), need ints...
@@ -1303,4 +1303,4 @@ namespace {
     }
     return EX_NOERR;
   }
-}
+}  // namespace

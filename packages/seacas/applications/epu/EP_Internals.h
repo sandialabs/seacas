@@ -39,29 +39,29 @@
 #include <vector> // for vector
 namespace Excn {
   class Block;
-}
+} // namespace Excn
 namespace Excn {
   class CommunicationMetaData;
-}
+} // namespace Excn
 namespace Excn {
   class Mesh;
-}
+} // namespace Excn
 namespace Excn {
   template <typename INT> class NodeSet;
-}
+} // namespace Excn
 namespace Excn {
   template <typename INT> class SideSet;
-}
+} // namespace Excn
 namespace Excn {
-}
+} // namespace Excn
 namespace Excn {
-}
+} // namespace Excn
 namespace Excn {
-}
+} // namespace Excn
 namespace Excn {
-}
+} // namespace Excn
 namespace Excn {
-}
+} // namespace Excn
 
 /*!
  * This set of classes provides a thin wrapper around the exodusII
@@ -147,5 +147,5 @@ namespace Excn {
     int elemCommIndexVar;
     int maximumNameLength;
   };
-}
+} // namespace Excn
 #endif /* SEACAS_Internals_h */

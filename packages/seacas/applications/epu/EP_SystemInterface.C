@@ -37,12 +37,12 @@
 #include "GetLongOpt.h"  // for GetLongOption, etc
 #include "SL_tokenize.h" // for tokenize
 #include <algorithm>     // for sort, transform
-#include <cstdlib>       // for strtol, abs, exit, strtoul, etc
-#include <cstring>       // for strchr, strlen
 #include <cctype>       // for tolower
-#include <iostream>      // for operator<<, basic_ostream, etc
 #include <climits>      // for INT_MAX
 #include <cstddef>      // for size_t
+#include <cstdlib>       // for strtol, abs, exit, strtoul, etc
+#include <cstring>       // for strchr, strlen
+#include <iostream>      // for operator<<, basic_ostream, etc
 #include <string>        // for string, char_traits, etc
 #include <utility>       // for pair, make_pair
 #include <vector>        // for vector
@@ -62,7 +62,7 @@ namespace {
     }
   }
   void parse_variable_names(const char *tokens, Excn::StringIdVector *variable_list);
-}
+} // namespace
 
 Excn::SystemInterface::SystemInterface()
     : inExtension_(""), outExtension_(""), cwd_(""), rootDirectory_(), subDirectory_(""),
@@ -605,14 +605,14 @@ bool Excn::SystemInterface::decompose_filename(const std::string &cs)
   // to handle leading and embedded '..' which tokenize threw away...
 
   // Get rid of the 'nn' which is not used at this time...
-  size_t ind = s.find_last_of(".", std::string::npos); // last '.'
+  size_t ind = s.find_last_of('.', std::string::npos); // last '.'
   if (ind == std::string::npos) {
     return false;
   }
   s.erase(ind);
 
   // Now find the processor count...
-  ind = s.find_last_of(".", std::string::npos);
+  ind = s.find_last_of('.', std::string::npos);
   if (ind == std::string::npos) {
     return false;
   }
@@ -627,7 +627,7 @@ bool Excn::SystemInterface::decompose_filename(const std::string &cs)
   s.erase(ind);
 
   // Should now be an extension...
-  ind = s.find_last_of(".", std::string::npos);
+  ind = s.find_last_of('.', std::string::npos);
   if (ind == std::string::npos) {
     inExtension_ = "";
   }
@@ -640,7 +640,7 @@ bool Excn::SystemInterface::decompose_filename(const std::string &cs)
   // If there is no '/', then it is all basename_; otherwise the
   // basename_ is the portion following the '/' and the rootDirectory_
   // is the portion preceding the '/'
-  ind = s.find_last_of("/", std::string::npos);
+  ind = s.find_last_of('/', std::string::npos);
   if (ind != std::string::npos) {
     basename_      = s.substr(ind + 1, std::string::npos);
     rootDirectory_ = s.substr(0, ind);
@@ -710,4 +710,4 @@ namespace {
       std::sort(variable_list->begin(), variable_list->end(), string_id_sort);
     }
   }
-}
+} // namespace

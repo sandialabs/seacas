@@ -65,7 +65,7 @@ public:
   explicit FileInfo(const char *my_filename);
 
   //! Copy constructor
-  FileInfo(const FileInfo &);
+  FileInfo(const FileInfo & /*copy_from*/);
 
   //! Constructor
   //! \param dirpath Directory Path
@@ -107,7 +107,7 @@ public:
 
 private:
   std::string filename_;
-  bool        exists_;   //<! this is used frequently, check on creation
-  bool        readable_; //<! this is used frequently, check on creation
+  bool        exists_{};   //<! this is used frequently, check on creation
+  bool        readable_{}; //<! this is used frequently, check on creation
 };
 #endif

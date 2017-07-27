@@ -112,7 +112,7 @@ namespace Excn {
     size_t                   attributeCount;
     size_t                   offset_;
     size_t                   position_;
-    char                     elType[MAX_STR_LENGTH + 1];
+    char                     elType[MAX_STR_LENGTH + 1]{};
 
     Block &operator=(const Block &other)
     {
@@ -229,5 +229,5 @@ namespace Excn {
   private:
     CommunicationMetaData(const CommunicationMetaData &);
   };
-}
+} // namespace Excn  // namespace Excn
 #endif /* SEACAS_ExodusEntity_H */

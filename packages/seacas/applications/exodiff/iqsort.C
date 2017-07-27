@@ -162,7 +162,7 @@ namespace {
     }
 #endif
   }
-}
+} // namespace
 
 template void index_qsort(const int v[], int iv[], size_t N);
 template void index_qsort(const double v[], int iv[], size_t N);
