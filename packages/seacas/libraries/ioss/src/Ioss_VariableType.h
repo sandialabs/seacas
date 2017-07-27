@@ -69,23 +69,23 @@ namespace Ioss {
   {
     explicit Suffix(const char new_data[MAX_SUFFIX])
     {
-      std::strncpy(data, new_data, MAX_SUFFIX);
-      data[MAX_SUFFIX] = '\0';
+      std::strncpy(m_data, new_data, MAX_SUFFIX);
+      m_data[MAX_SUFFIX] = '\0';
     }
     explicit Suffix(const std::string &new_data)
     {
-      std::strncpy(data, new_data.c_str(), MAX_SUFFIX);
-      data[MAX_SUFFIX] = '\0';
+      std::strncpy(m_data, new_data.c_str(), MAX_SUFFIX);
+      m_data[MAX_SUFFIX] = '\0';
     }
     bool operator==(const std::string &str) const
     {
-      return std::strncmp(data, str.c_str(), MAX_SUFFIX) == 0;
+      return std::strncmp(m_data, str.c_str(), MAX_SUFFIX) == 0;
     }
     bool operator!=(const std::string &str) const
     {
-      return std::strncmp(data, str.c_str(), MAX_SUFFIX) != 0;
+      return std::strncmp(m_data, str.c_str(), MAX_SUFFIX) != 0;
     }
-    char data[MAX_SUFFIX + 1];
+    char m_data[MAX_SUFFIX + 1];
   };
 
   /** \brief A generic variable type
@@ -95,8 +95,8 @@ namespace Ioss {
   public:
     static void alias(const std::string &base, const std::string &syn);
     static int describe(NameList *names);
-    static bool create_named_suffix_field_type(const std::string &       type_name,
-                                               std::vector<std::string> &suffices);
+    static bool create_named_suffix_field_type(const std::string &             type_name,
+                                               const std::vector<std::string> &suffices);
     static bool get_field_type_mapping(const std::string &field, std::string *type);
     static bool add_field_type_mapping(const std::string &raw_field, const std::string &raw_type);
 
