@@ -38,7 +38,7 @@ C
 c
 c       This wrapper module handles two kinds of interface problems:
 c       the routines starting with 'v' arbitrate between Fortran caller
-c       and C callee; the routines starting with 'c' arbitrate between
+c       and C callee; the routines; starting with 'c' arbitrate between
 c       C caller and Fortran callee.  The only exception is cgtxx1,
 c       which arbitrates between Fortran caller and C callee.
 c

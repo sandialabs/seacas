@@ -731,7 +731,7 @@ C                   indicates the lower left corner of the first
 C                   character box.  Only printable characters (32-126 
 C                   decimal) and backspace and linefeed are allowed.
 C                   All values in this range must produce "reasonable"
-C                   output; mapping lower case to upper case letters is
+C                   output; mapping lower; case to upper case letters is
 C                   considered reasonable.  Attributes foreground color,
 C                   background color, intensity, and  character size
 C                   apply.
@@ -1524,7 +1524,7 @@ C        1. synchronous only - program requests input, then the user
 C           supplies it.
 C        2. synchronous and asynchronous - synchronous is the same
 C           as in (1) above.  Asynchronous means the user can provide
-C           input at any time; this input is then saved by the system
+C           input at any time; this input; is then saved by the system
 C           in an event queue until the program calls for it.
 C    14. Input Timing
 C        0. no timeout supported 
@@ -1627,7 +1627,7 @@ C
       REAL VALUE
 C ESCAPE FLAGS
 C PATNO AND BORDER USED BY VIPOLY FOR FILL PATTERN AND BORDER ON/OFF;
-C DEFAULT COMPLETE FILL WITH BORDER. PLC.
+C DEFAULT; COMPLETE FILL WITH BORDER. PLC.
       COMMON /WPST06/ PGFORM,PATNO,BORDER
       INTEGER PGFORM,PATNO,BORDER
 C
@@ -1763,7 +1763,7 @@ C
       REAL DEV(33)
 C ESCAPE FLAGS
 C PATNO AND BORDER USED BY VIPOLY FOR FILL PATTERN AND BORDER ON/OFF;
-C DEFAULT COMPLETE FILL WITH BORDER. PLC.
+C DEFAULT; COMPLETE FILL WITH BORDER. PLC.
       COMMON /WPST06/ PGFORM,PATNO,BORDER
       INTEGER PGFORM,PATNO,BORDER
       CHARACTER XCOORD*5,YCOORD*5
@@ -2375,7 +2375,7 @@ C                    indicates the lower left corner of the first
 C                    character box.  Only printable characters (32-126
 C                    decimal) and backspace and linefeed are allowed.
 C                    All values in this range must produce "reasonable"
-C                    output; mapping lower case to upper case letters is
+C                    output; mapping lower; case to upper case letters is
 C                    considered reasonable.  Attributes foreground color,
 C                    background color, intensity, and character size
 C                    apply.
@@ -2571,7 +2571,7 @@ c        actual xscale is xscale*.1; linewidth=1 => .01 in NDC
 c        a linewidth of zero isn't good with postscript
          IF(LW.LT.1.) LW=1.
 c
-c     from here on, set up patterns that depend on the linewidth and 
+c     from here on, set; up patterns that depend on the linewidth and 
 c          the extra length added to the line segment
 c          by the hemispherical end cap
 c
@@ -2753,7 +2753,7 @@ C
 C CONVERT LINE-WIDTH TO NDC
       LW=LINWTH*.01
 C
-C CONVERT WIDTH TO DEVICE COORDINATES AND ADD A DIGIT; NEED IT TO HUNDRETHS
+C CONVERT WIDTH TO DEVICE COORDINATES AND ADD A DIGIT; NEED IT; TO HUNDRETHS
       ILW=NINT(XSCALE*LW*10.)
 C     A LINEWIDTH OF ZERO WORKS ONLY PART OF THE TIME
       IF(ILW.LT.10) ILW=10
