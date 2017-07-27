@@ -60,14 +60,14 @@
 #include "matio.h"         // for matvar_t, Mat_VarFree, etc
 #include "matio_pubconf.h" // for MATIO_VERSION
 #include <SL_tokenize.h>   // for tokenize
-#include <assert.h>        // for assert
+#include <cassert>        // for assert
 #include <exodusII.h>      // for ex_put_variable_param, etc
 #include <iostream>        // for operator<<, basic_ostream, etc
 #include <numeric>         // for accumulate
-#include <stddef.h>        // for size_t
-#include <stdio.h>         // for sprintf, printf, fprintf, etc
-#include <stdlib.h>        // for calloc, free, exit
-#include <string.h>        // for strtok, memcpy, strlen, etc
+#include <cstddef>        // for size_t
+#include <cstdio>         // for sprintf, printf, fprintf, etc
+#include <cstdlib>        // for calloc, free, exit
+#include <cstring>        // for strtok, memcpy, strlen, etc
 #include <string>          // for char_traits, string
 #include <vector>          // for vector
 

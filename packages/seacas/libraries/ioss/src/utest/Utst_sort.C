@@ -1,6 +1,6 @@
 #include <Ioss_Sort.h>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 #include <random>
 

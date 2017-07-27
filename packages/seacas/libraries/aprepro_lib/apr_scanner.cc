@@ -117,10 +117,10 @@ typedef unsigned int       flex_uint32_t;
 
 /* %if-c++-only */
 /* begin standard C++ headers. */
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <errno.h>
 #include <iostream>
 /* end standard C++ headers. */
 /* %endif */
@@ -1009,13 +1009,13 @@ static yyconst flex_int16_t yy_rule_linenum[102] = {
 /* -*- Mode: c++ -*- */
 #line 39 "/scratch/gdsjaar/seacas/packages/seacas/libraries/aprepro_lib/aprepro.ll"
 
+#include <cstdio>
+#include <cstring>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stack>
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "apr_getline_int.h"

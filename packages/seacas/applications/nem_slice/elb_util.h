@@ -36,7 +36,7 @@
 #ifndef _ELB_UTIL_CONST_H_
 #define _ELB_UTIL_CONST_H_
 
-#include <stddef.h>    // for size_t
+#include <cstddef>     // for size_t
 #include <sys/types.h> // for ssize_t
 #include <vector>      // for vector
 

@@ -19,11 +19,11 @@
 #include <Ioss_Utils.h>
 
 #include <algorithm>
+#include <ctime>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
-#include <time.h>
 #include <vector>
 
 class ParaViewCatalystIossAdapterBase;

@@ -45,8 +45,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <stddef.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdlib>
 #include <string>
 #include <sys/times.h>
 #include <unistd.h>

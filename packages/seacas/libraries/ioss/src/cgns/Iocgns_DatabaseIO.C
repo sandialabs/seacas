@@ -48,7 +48,7 @@
 #include <numeric>
 #include <string>
 #include <sys/select.h>
-#include <time.h>
+#include <ctime>
 #include <vector>
 
 #if !defined(CGNSLIB_H)

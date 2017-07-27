@@ -35,7 +35,7 @@
 #ifndef RF_IO_CONST_H
 #define RF_IO_CONST_H
 
-#include <stdio.h> /* For maximum filename length */
+#include <cstdio> /* For maximum filename length */
 #include <vector>
 
 /*********** rf_io_const.h -- constants for external IO purposes**************/

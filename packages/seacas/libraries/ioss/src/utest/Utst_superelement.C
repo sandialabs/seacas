@@ -44,7 +44,7 @@
 #define OUTPUT std::cerr
 #undef NDEBUG
 #include <Ioss_ConcreteVariableType.h>
-#include <assert.h>
+#include <cassert>
 #include <exodus/Ioex_SuperElement.h>
 
 int main(int argc, char *argv[])

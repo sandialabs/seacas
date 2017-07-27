@@ -32,7 +32,7 @@
 #include <dlfcn.h>
 #endif
 
-#include <assert.h>
+#include <cassert>
 
 #if defined(__APPLE__)
 const char *CATALYST_PLUGIN_DYNAMIC_LIBRARY = "libParaViewCatalystIossAdapter.dylib";

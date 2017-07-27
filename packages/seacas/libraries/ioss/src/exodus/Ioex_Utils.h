@@ -5,7 +5,7 @@
 #include <Ioss_ElementTopology.h>
 #include <Ioss_Utils.h>
 
-#include <assert.h>
+#include <cassert>
 #include <exodusII.h>
 #include <set>
 #include <string>

@@ -40,7 +40,7 @@
 #include <iostream>
 #include <string>
 #include <sys/select.h>
-#include <time.h>
+#include <ctime>
 #include <vector>
 
 #include "Ioss_DBUsage.h"

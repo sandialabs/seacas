@@ -7,7 +7,7 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <limits.h>
+#include <climits>
 
 #include "SL_Version.h"
 #include <SL_tokenize.h>

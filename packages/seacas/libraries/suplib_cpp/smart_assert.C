@@ -36,7 +36,7 @@
 #include <set>
 #include <sstream>
 #include <stdexcept>
-#include <stdlib.h>
+#include <cstdlib>
 
 void break_into_debugger() { std::cerr << "Not Implemented.\n"; }
 

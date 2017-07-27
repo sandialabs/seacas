@@ -44,9 +44,9 @@
 #include <cfenv>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <stdlib.h>
 
 namespace {
   void reset_error()

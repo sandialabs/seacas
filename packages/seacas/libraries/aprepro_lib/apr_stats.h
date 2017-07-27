@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <stddef.h> // for size_t
+#include <cstddef> // for size_t
 
 namespace SEAMS {
   class Stats

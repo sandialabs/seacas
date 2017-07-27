@@ -38,9 +38,9 @@
 #include <Ioss_DBUsage.h>    // for DatabaseUsage
 #include <Ioss_DatabaseIO.h> // for DatabaseIO
 #include <Ioss_IOFactory.h>  // for IOFactory
+#include <cstddef>           // for size_t
+#include <cstdint>           // for int64_t
 #include <iostream>          // for ostream
-#include <stddef.h>          // for size_t
-#include <stdint.h>          // for int64_t
 #include <string>            // for string
 namespace Iohb {
   class Layout;

@@ -62,10 +62,10 @@
 #include "add_to_log.h" // for add_to_log
 #include "exodusII.h"   // for ex_get_variable_param, etc
 #include "matio.h"      // for Mat_VarCreate, Mat_VarFree, etc
-#include <assert.h>     // for assert
-#include <stddef.h>     // for size_t
-#include <stdio.h>      // for fprintf, printf, sprintf, etc
-#include <stdlib.h>     // for free, calloc, exit, malloc
+#include <cassert>     // for assert
+#include <cstddef>     // for size_t
+#include <cstdio>      // for fprintf, printf, sprintf, etc
+#include <cstdlib>     // for free, calloc, exit, malloc
 #if MATIO_VERSION < 151
 #error "MatIO Version 1.5.1 or greater is required"
 #endif

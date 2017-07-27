@@ -43,12 +43,12 @@
 #include <exodusII.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <ctime>
 #include <map>
 #include <set>
 #include <sstream>
-#include <stdint.h>
 #include <string>
-#include <time.h>
 #include <vector>
 
 namespace Ioss {

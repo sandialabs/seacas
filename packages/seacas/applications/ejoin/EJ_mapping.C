@@ -39,7 +39,7 @@
 #include <algorithm>             // for sort, unique
 #include <iostream>              // for operator<<, basic_ostream, etc
 #include <smart_assert.h>        // for SMART_ASSERT
-#include <stddef.h>              // for size_t
+#include <cstddef>              // for size_t
 #include <utility>               // for make_pair, pair
 
 namespace {

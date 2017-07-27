@@ -35,8 +35,8 @@
 #include "Ioss_EntityType.h"     // for EntityType, etc
 #include "Ioss_Property.h"       // for Property
 #include <Ioss_GroupingEntity.h> // for GroupingEntity
-#include <stddef.h>              // for size_t
-#include <stdint.h>              // for int64_t
+#include <cstddef>               // for size_t
+#include <cstdint>               // for int64_t
 #include <string>                // for string
 namespace Ioss {
   class Field;

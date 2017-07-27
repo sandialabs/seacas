@@ -33,11 +33,11 @@
 #ifndef IOSS_Ioss_Map_h
 #define IOSS_Ioss_Map_h
 
-#include <stddef.h> // for size_t
-#include <stdint.h> // for int64_t
-#include <string>   // for string
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <cstddef> // for size_t
+#include <cstdint> // for int64_t
+#include <string>  // for string
+#include <utility> // for pair
+#include <vector>  // for vector
 namespace Ioss {
   class Field;
 }

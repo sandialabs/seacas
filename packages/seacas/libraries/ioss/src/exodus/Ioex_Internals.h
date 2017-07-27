@@ -36,9 +36,9 @@
 #define IOSS_Ioex_Internals_h
 
 #include "Ioss_ParallelUtils.h" // for ParallelUtils
+#include <cstdint>              // for int64_t
 #include <cstring>              // for strcpy, strncpy
 #include <exodusII.h>           // for MAX_LINE_LENGTH, etc
-#include <stdint.h>             // for int64_t
 #include <string>               // for string
 #include <vector>               // for vector
 namespace Ioss {

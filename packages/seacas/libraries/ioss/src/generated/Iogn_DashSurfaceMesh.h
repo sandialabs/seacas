@@ -33,10 +33,10 @@
 #ifndef IOSS_Iogn_DashSurfaceMesh_h
 #define IOSS_Iogn_DashSurfaceMesh_h
 
+#include <cstddef>                        // for size_t
+#include <cstdint>                        // for int64_t
 #include <exception>                      // for exception
 #include <generated/Iogn_GeneratedMesh.h> // for GeneratedMesh
-#include <stddef.h>                       // for size_t
-#include <stdint.h>                       // for int64_t
 #include <string>                         // for string
 #include <utility>                        // for pair
 #include <vector>                         // for vector

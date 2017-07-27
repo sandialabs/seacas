@@ -35,8 +35,8 @@
 
 #include <algorithm>
 #include <array>
-#include <assert.h>
-#include <stddef.h> // for size_t
+#include <cassert>
+#include <cstddef> // for size_t
 #include <unordered_set>
 #include <utility>
 

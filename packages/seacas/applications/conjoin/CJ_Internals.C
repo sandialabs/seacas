@@ -35,7 +35,7 @@
 
 // This must appear before exodusII_int.h include.
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 #ifndef PRId64
 #error "PRId64 not defined"
 #endif

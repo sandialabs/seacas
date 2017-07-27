@@ -49,7 +49,7 @@ extern "C" {
 #include <cstdlib>  // for exit, EXIT_FAILURE
 #include <netcdf.h> // for NC_NOERR, nc_def_var, etc
 #include <ostream>  // for operator<<, etc
-#include <string.h> // for strlen, strncpy, strcpy, etc
+#include <cstring> // for strlen, strncpy, strcpy, etc
 #include <string>   // for string, operator==, etc
 #include <vector>   // for vector
 
