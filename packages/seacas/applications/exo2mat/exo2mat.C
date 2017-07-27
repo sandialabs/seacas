@@ -92,7 +92,7 @@ std::string time_stamp(const std::string &format)
   if (format == "") {
     return std::string("");
   }
-  else {
+  
     const int   length = 256;
     static char time_string[length];
 
@@ -104,10 +104,10 @@ std::string time_stamp(const std::string &format)
       time_string[length - 1] = '\0';
       return std::string(time_string);
     }
-    else {
+    
       return std::string("[ERROR]");
-    }
-  }
+    
+  
 }
 
 void logger(const char *message)
@@ -136,9 +136,9 @@ void usage()
 void mPutStr(const char *name, const char *str)
 {
   assert(m_file != nullptr);
-  if (strchr(str, '\n') == nullptr)
+  if (strchr(str, '\n') == nullptr) {
     fprintf(m_file, "%s='%s';\n", name, str);
-  else {
+  } else {
     fprintf(m_file, "%s=[", name);
     size_t i;
     size_t j;
@@ -163,9 +163,11 @@ void mPutDbl(const char *name, int n1, int n2, double *pd)
     return;
   }
   fprintf(m_file, "%s=zeros(%d,%d);\n", name, n1, n2);
-  for (int i = 0; i < n1; i++)
-    for (int j = 0; j < n2; j++)
+  for (int i = 0; i < n1; i++) {
+    for (int j = 0; j < n2; j++) {
       fprintf(m_file, "%s(%d,%d)=%15.8e;\n", name, i + 1, j + 1, pd[i * n2 + j]);
+    }
+  }
 }
 
 /* put integer array in m file */
@@ -173,7 +175,6 @@ void mPutInt(const char *name, int pd)
 {
   assert(m_file != nullptr);
   fprintf(m_file, "%s=%d;\n", name, pd);
-  return;
 }
 
 /* put integer array in m file */
@@ -185,9 +186,11 @@ void mPutInt(const char *name, int n1, int n2, int *pd)
     return;
   }
   fprintf(m_file, "%s=zeros(%d,%d);\n", name, n1, n2);
-  for (int i = 0; i < n1; i++)
-    for (int j = 0; j < n2; j++)
+  for (int i = 0; i < n1; i++) {
+    for (int j = 0; j < n2; j++) {
       fprintf(m_file, "%s(%d,%d)=%d;\n", name, i + 1, j + 1, pd[i * n2 + j]);
+    }
+  }
 }
 
 /* put string in mat file*/
@@ -256,39 +259,43 @@ int matPutInt(const char *name, int n1, int n2, int *pd)
 /* wrappers for the output routine types */
 void PutStr(const char *name, const char *str)
 {
-  if (textfile)
+  if (textfile != 0) {
     mPutStr(name, str);
-  else
-    matPutStr(name, (char *)str);
+  } else {
+    matPutStr(name, const_cast<char *>(str));
+}
 }
 
 int PutInt(const char *name, int pd)
 {
   int error = 0;
-  if (textfile)
+  if (textfile != 0) {
     mPutInt(name, pd);
-  else
+  } else {
     error = matPutInt(name, 1, 1, &pd);
+}
   return error;
 }
 
 int PutInt(const char *name, int n1, int n2, int *pd)
 {
   int error = 0;
-  if (textfile)
+  if (textfile != 0) {
     mPutInt(name, n1, n2, pd);
-  else
+  } else {
     error = matPutInt(name, n1, n2, pd);
+}
   return error;
 }
 
 int PutDbl(const char *name, int n1, int n2, double *pd)
 {
   int error = 0;
-  if (textfile)
+  if (textfile != 0) {
     mPutDbl(name, n1, n2, pd);
-  else
+  } else {
     error = matPutDbl(name, n1, n2, pd);
+}
   return error;
 }
 
@@ -333,8 +340,9 @@ void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *
   max_name_length     = max_name_length < 32 ? 32 : max_name_length;
   char **names        = get_exodus_names(num_vars, max_name_length + 1);
 
-  if (debug)
+  if (debug) {
     logger("\tReading variable names");
+}
   ex_get_variable_names(exo_file, type, num_vars, names);
 
   std::string mat;
@@ -342,8 +350,9 @@ void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *
     mat += names[i];
     mat += "\n";
   }
-  if (debug)
+  if (debug) {
     logger("\tWriting variable names");
+}
   PutStr(mname, mat.c_str());
 
   delete_exodus_names(names, num_vars);
@@ -355,8 +364,9 @@ std::vector<std::string> get_names(int exo_file, ex_entity_type type, int num_va
   max_name_length     = max_name_length < 32 ? 32 : max_name_length;
   char **names        = get_exodus_names(num_vars, max_name_length + 1);
 
-  if (debug)
+  if (debug) {
     logger("\tReading variable names");
+}
   ex_get_variable_names(exo_file, type, num_vars, names);
 
   std::vector<std::string> mat(num_vars);
@@ -373,8 +383,9 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
 
 {
   /* truth table */
-  if (debug)
+  if (debug) {
     logger("\tTruth Table");
+}
   std::vector<int> truth_table(num_vars * num_blocks);
   ex_get_truth_table(exo_file, type, num_blocks, num_vars, TOPTR(truth_table));
 
@@ -441,8 +452,9 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
     std::string format = prefix + "var%02d";
     char        str[32];
     for (int i = 0; i < num_vars; i++) {
-      if (debug)
+      if (debug) {
         logger("\tReading");
+}
       std::fill(scr.begin(), scr.end(), 0.0);
       size_t n = 0;
       sprintf(str, format.c_str(), i + 1);
@@ -454,8 +466,9 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
           n = n + num_per_block[k];
         }
       }
-      if (debug)
+      if (debug) {
         logger("\tWriting");
+}
       PutDbl(str, num_entity, num_time_steps, TOPTR(scr));
     }
   }
@@ -914,10 +927,12 @@ void handle_coordinates(int exo_file, size_t num_nodes, int num_axes)
   }
   std::vector<double> x, y, z;
   x.resize(num_nodes);
-  if (num_axes >= 2)
+  if (num_axes >= 2) {
     y.resize(num_nodes);
-  if (num_axes == 3)
+}
+  if (num_axes == 3) {
     z.resize(num_nodes);
+}
   ex_get_coord(exo_file, TOPTR(x), TOPTR(y), TOPTR(z));
   PutDbl("x0", num_nodes, 1, TOPTR(x));
   if (num_axes >= 2) {
@@ -932,8 +947,9 @@ void handle_coordinates(int exo_file, size_t num_nodes, int num_axes)
 /* remove an argument from the list */
 void del_arg(int *argc, char *argv[], int j)
 {
-  for (int jj    = j + 1; jj < *argc; jj++)
+  for (int jj    = j + 1; jj < *argc; jj++) {
     argv[jj - 1] = argv[jj];
+}
   (*argc)--;
   argv[*argc] = nullptr;
 }
@@ -1000,8 +1016,8 @@ int main(int argc, char *argv[])
     }
     if (strcmp(argv[j], "-o") == 0) { /* specify output file name */
       del_arg(&argc, argv, j);
-      if (argv[j]) {
-        oname = (char *)calloc(std::strlen(argv[j]) + 10, sizeof(char));
+      if (argv[j] != nullptr) {
+        oname = reinterpret_cast<char *>(calloc(std::strlen(argv[j]) + 10, sizeof(char)));
         strcpy(oname, argv[j]);
         del_arg(&argc, argv, j);
         std::cout << "output file: " << oname << "\n";
@@ -1026,24 +1042,26 @@ int main(int argc, char *argv[])
   }
 
   /* open output file */
-  if (textfile)
+  if (textfile != 0) {
     ext = ".m";
 
-  if (!oname) {
-    filename = (char *)malloc(std::strlen(argv[1]) + 10);
+  
+}if (oname == nullptr) {
+    filename = reinterpret_cast<char *>(malloc(std::strlen(argv[1]) + 10));
     strcpy(filename, argv[1]);
     dot = strrchr(filename, '.');
-    if (dot)
+    if (dot != nullptr) {
       *dot = '\0';
-    strcat(filename, ext);
+    
+}strcat(filename, ext);
   }
   else {
     filename = oname;
   }
 
-  if (textfile) {
+  if (textfile != 0) {
     m_file = fopen(filename, "w");
-    if (!m_file) {
+    if (m_file == nullptr) {
       std::cerr << "ERROR: Unable to open " << filename << "\n";
       exit(1);
     }
@@ -1080,7 +1098,7 @@ int main(int argc, char *argv[])
   std::cout << "\ttranslating " << argv[1] << " to " << filename << "...\n";
 
   /* read database paramters */
-  char *line = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
+  char *line = reinterpret_cast<char *>(calloc((MAX_LINE_LENGTH + 1), sizeof(char)));
   ex_get_init(exo_file, line, &num_axes, &num_nodes, &num_elements, &num_blocks, &num_node_sets,
               &num_side_sets);
   num_info_lines = ex_inquire_int(exo_file, EX_INQ_INFO);
@@ -1330,9 +1348,9 @@ int main(int argc, char *argv[])
   }
   ex_close(exo_file);
 
-  if (textfile)
+  if (textfile != 0) {
     fclose(m_file);
-  else {
+  } else {
     Mat_Close(mat_file);
   }
   free(filename);

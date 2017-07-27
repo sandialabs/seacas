@@ -48,7 +48,7 @@ public:
     if (order == 1) {
       return l1_norm_d;
     }
-    else if (order == 2) {
+    if (order == 2) {
       return std::sqrt(l2_norm_d);
     }
     else {
@@ -61,7 +61,7 @@ public:
     if (order == 1) {
       return l1_norm_1;
     }
-    else if (order == 2) {
+    if (order == 2) {
       return std::sqrt(l2_norm_1);
     }
     else {
@@ -74,7 +74,7 @@ public:
     if (order == 1) {
       return l1_norm_2;
     }
-    else if (order == 2) {
+    if (order == 2) {
       return std::sqrt(l2_norm_2);
     }
     else {

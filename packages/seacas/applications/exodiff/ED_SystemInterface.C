@@ -6,9 +6,9 @@
 #include <iostream>
 #include <vector>
 
+#include <climits>
 #include <cstdlib>
 #include <cstring>
-#include <climits>
 
 #include "ED_Version.h"
 #include "stringx.h"
@@ -251,7 +251,7 @@ namespace {
       }
     }
   }
-}
+} // namespace
 
 SystemInterface::SystemInterface()
     : quiet_flag(false), show_all_diffs(false), output_type(ABSOLUTE), map_flag(USE_FILE_IDS),
@@ -1832,4 +1832,4 @@ namespace {
         << "         - The pedantic compare option, \"-pedantic\", can be turned on with the \n"
         << "           PEDANTIC keyword.\n\n";
   }
-}
+} // namespace

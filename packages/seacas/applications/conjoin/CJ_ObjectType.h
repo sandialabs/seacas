@@ -35,6 +35,6 @@
 namespace Excn {
   // Note that these are used as indices into truth table for ELBK, NSET, SSET...
   enum ObjectType { EBLK = 0, NSET = 1, SSET = 2, NODE, ELEM, GLOBAL, TIME, DIM };
-}
+} // namespace Excn
 
 #endif

@@ -32,10 +32,10 @@
 #ifndef Sierra_SystemInterface_h
 #define Sierra_SystemInterface_h
 
-#include "CJ_CodeTypes.h" // for StringIdVector, etc
-#include "GetLongOpt.h"   // for GetLongOption
-#include <iosfwd>         // for ostream
-#include <string>         // for string
+#include "CJ_CodeTypes.h"
+#include "GetLongOpt.h" // for GetLongOption
+#include <iosfwd>       // for ostream
+#include <string>       // for string
 
 namespace Excn {
   class SystemInterface
@@ -100,5 +100,5 @@ namespace Excn {
     StringIdVector nsetVarNames_;
     StringIdVector ssetVarNames_;
   };
-}
+} // namespace Excn
 #endif

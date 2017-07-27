@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
   /* Possibly overestimates size, but that is ok */
   const char *ext       = ".exo";
   size_t      line_size = strlen(argv[1]) + strlen(ext) + 1;
-  char *      line      = (char *)calloc(line_size, sizeof(char));
+  char *      line      = reinterpret_cast<char *>(calloc(line_size, sizeof(char)));
   strcpy(line, argv[1]);
   strtok(line, ".");
   strcat(line, ext);
@@ -409,7 +409,7 @@ std::vector<std::string> matGetStr(const char *name)
     printf("Error: Multiline string copy attempted\n");
   }
 
-  std::string mat_names((char*)matvar->data, matvar->nbytes);
+  std::string mat_names(reinterpret_cast<char*>(matvar->data), matvar->nbytes);
   auto names = SLIB::tokenize(mat_names, "\n", true);
   Mat_VarFree(matvar);
 
@@ -510,11 +510,11 @@ void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std:
 {
   auto names = matGetStr(name.c_str());
   assert(names.size() == (size_t)num_vars);
-  const char **str2 = (const char **)calloc(num_vars, sizeof(char *));
+  const char **str2 = reinterpret_cast<const char **>(calloc(num_vars, sizeof(char *)));
   for (int i = 0; i < num_vars; i++) {
     str2[i] = names[i].c_str();
   }
-  ex_put_variable_names(exo_file, entity, num_vars, (char**)str2);
+  ex_put_variable_names(exo_file, entity, num_vars, const_cast<char**>(str2));
   free(str2);
 }
 
@@ -522,11 +522,11 @@ void get_put_user_names(int exo_file, ex_entity_type entity, int num_entity, con
 {
   auto names = matGetStr(mname);
   assert(names.size() == (size_t)num_entity);
-  const char **str2 = (const char **)calloc(num_entity, sizeof(char *));
+  const char **str2 = reinterpret_cast<const char **>(calloc(num_entity, sizeof(char *)));
   for (int i = 0; i < num_entity; i++) {
     str2[i] = names[i].c_str();
   }
-  ex_put_names(exo_file, entity, (char**)str2);
+  ex_put_names(exo_file, entity, const_cast<char**>(str2));
   free(str2);
 }
 
@@ -537,11 +537,11 @@ void get_put_attr_names(int exo_file, int seq, int id, int num_attr)
 
   auto names = matGetStr(str);
   assert(names.size() == (size_t)num_attr);
-  const char **str2 = (const char **)calloc(num_attr, sizeof(char *));
+  const char **str2 = reinterpret_cast<const char **>(calloc(num_attr, sizeof(char *)));
   for (int i = 0; i < num_attr; i++) {
     str2[i] = names[i].c_str();
   }
-  ex_put_attr_names(exo_file, EX_ELEM_BLOCK, id, (char**)str2);
+  ex_put_attr_names(exo_file, EX_ELEM_BLOCK, id, const_cast<char**>(str2));
   free(str2);
 }
 

@@ -4,15 +4,15 @@
 #include "SL_tokenize.h" // for tokenize
 #include <algorithm>     // for sort, transform
 #include <cctype>       // for tolower
-#include <iostream>      // for operator<<, basic_ostream, etc
 #include <cstddef>      // for size_t
 #include <cstdlib>      // for exit, strtol, EXIT_SUCCESS, etc
+#include <iostream>      // for operator<<, basic_ostream, etc
 #include <utility>       // for pair, make_pair
 #include <vector>        // for vector
 
 namespace {
   void parse_variable_names(const char *tokens, StringIdVector *variable_list);
-}
+} // namespace
 
 Excn::SystemInterface::SystemInterface()
     : outputName_(), debugLevel_(0), screenWidth_(0), omitNodesets_(false), omitSidesets_(false),
@@ -336,4 +336,4 @@ namespace {
       std::sort(variable_list->begin(), variable_list->end(), string_id_sort);
     }
   }
-}
+}  // namespace

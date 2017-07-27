@@ -33,6 +33,7 @@
 #ifndef TOLERANCE_H
 #define TOLERANCE_H
 
+#include "map.h" // for MAP_TYPE_enum
 #include <cmath>
 
 // See http://realtimecollisiondetection.net/blog/?p=89 for a
@@ -91,8 +92,9 @@ private:
 
 inline double Tolerance::Delta(double v1, double v2) const
 {
-  if (type == IGNORE)
+  if (type == IGNORE) {
     return 0.0;
+  }
 
   double fabv1 = std::fabs(v1);
   double fabv2 = std::fabs(v2);
@@ -110,20 +112,23 @@ inline double Tolerance::Delta(double v1, double v2) const
 
   if (diff) {
     if (type == RELATIVE) {
-      if (v1 == 0.0 && v2 == 0.0)
+      if (v1 == 0.0 && v2 == 0.0) {
         return 0.0;
+      }
       double max = fabv1 < fabv2 ? fabv2 : fabv1;
       return std::fabs(v1 - v2) / max;
     }
-    else if (type == ABSOLUTE) {
+    if (type == ABSOLUTE) {
       return std::fabs(v1 - v2);
     }
     else if (type == COMBINED) {
       double max = fabv1 < fabv2 ? fabv2 : fabv1;
-      if (max > 1.0)
+      if (max > 1.0) {
         return std::fabs(v1 - v2) / max;
-      else
+      }
+      else {
         return std::fabs(v1 - v2);
+      }
     }
     else if (type == ULPS_FLOAT) {
       return UlpsDiffFloat(v1, v2);
@@ -132,8 +137,9 @@ inline double Tolerance::Delta(double v1, double v2) const
       return UlpsDiffDouble(v1, v2);
     }
     else if (type == EIGEN_REL) {
-      if (v1 == 0.0 && v2 == 0.0)
+      if (v1 == 0.0 && v2 == 0.0) {
         return 0.0;
+      }
       double max = fabv1 < fabv2 ? fabv2 : fabv1;
       return std::fabs(fabv1 - fabv2) / max;
     }
@@ -142,10 +148,12 @@ inline double Tolerance::Delta(double v1, double v2) const
     }
     else if (type == EIGEN_COM) {
       double max = fabv1 < fabv2 ? fabv2 : fabv1;
-      if (max > 1.0)
+      if (max > 1.0) {
         return std::fabs(fabv1 - fabv2) / max;
-      else
+      }
+      else {
         return std::fabs(fabv1 - fabv2);
+      }
     }
   }
   return 0.0;

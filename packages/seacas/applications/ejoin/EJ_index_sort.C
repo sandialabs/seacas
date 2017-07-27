@@ -65,7 +65,7 @@ namespace {
   template <typename T, typename INT> int ex_int_median3(T *v, INT iv[], size_t left, size_t right)
   {
     size_t center;
-    center = ((ssize_t)left + (ssize_t)right) / 2;
+    center = (static_cast<ssize_t>(left) + static_cast<ssize_t>(right)) / 2;
 
     if (v[iv[left]] > v[iv[center]]) {
       ex_swap(iv, left, center);
@@ -129,7 +129,7 @@ namespace {
       }
     }
     /* Put smallest value in slot 0 */
-    ex_swap(iv, (size_t)0, ndx);
+    ex_swap(iv, static_cast<size_t>(0), ndx);
 
     for (size_t i = 1; i < N; i++) {
       INT tmp = iv[i];
@@ -157,7 +157,7 @@ namespace {
     }
 #endif
   }
-}
+} // namespace
 
 template <typename INT>
 void index_coord_sort(const std::vector<double> &xyz, std::vector<INT> &index, int axis)

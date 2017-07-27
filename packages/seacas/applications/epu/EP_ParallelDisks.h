@@ -50,13 +50,13 @@ namespace Excn {
     ParallelDisks();
     ~ParallelDisks();
 
-    void Number_of_Raids(int);
-    void Raid_Offset(int);
+    void Number_of_Raids(int /*i*/);
+    void Raid_Offset(int /*i*/);
 
     int Number_of_Raids() const;
     int Raid_Offset() const;
 
-    static void Create_IO_Filename(std::string &, int processor, int num_processors);
+    static void Create_IO_Filename(std::string & /*name*/, int processor, int num_processors);
 
     void rename_file_for_mp(const std::string &rootdir, const std::string &subdir,
                             std::string &name, int node, int numproc) const;
@@ -73,5 +73,5 @@ namespace Excn {
     ParallelDisks(const ParallelDisks &);
     ParallelDisks &operator=(const ParallelDisks &);
   };
-}
+} // namespace Excn  // namespace Excn
 #endif

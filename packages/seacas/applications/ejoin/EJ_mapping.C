@@ -51,7 +51,7 @@ namespace {
     }
     return omitted;
   }
-}
+} // namespace
 
 template <typename INT>
 void eliminate_omitted_nodes(RegionVector &part_mesh, std::vector<INT> &global_node_map,
@@ -99,7 +99,7 @@ template void eliminate_omitted_nodes(RegionVector &        part_mesh,
                                       std::vector<int64_t> &local_node_map);
 
 template <typename INT>
-void build_reverse_node_map(Ioss::Region &global, RegionVector &part_mesh,
+void build_reverse_node_map(Ioss::Region & /*global*/, RegionVector &part_mesh,
                             std::vector<INT> &global_node_map, std::vector<INT> &local_node_map)
 {
   // Instead of using <set> and <map>, consider using a sorted vector...

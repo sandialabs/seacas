@@ -35,19 +35,19 @@
 #include <vector> // for vector
 namespace Excn {
   struct Block;
-}
+} // namespace Excn
 namespace Excn {
   struct CommunicationMetaData;
-}
+} // namespace Excn
 namespace Excn {
   template <typename INT> struct Mesh;
-}
+} // namespace Excn
 namespace Excn {
   template <typename INT> struct NodeSet;
-}
+} // namespace Excn
 namespace Excn {
   template <typename INT> struct SideSet;
-}
+} // namespace Excn
 
 /*!
  * This set of classes provides a thin wrapper around the exodusII
@@ -121,5 +121,5 @@ namespace Excn {
     int exodusFilePtr;
     int maximumNameLength;
   };
-}
+} // namespace Excn  // namespace Excn
 #endif /* SEACAS_Internals_h */

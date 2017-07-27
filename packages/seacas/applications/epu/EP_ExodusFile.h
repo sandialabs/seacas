@@ -75,5 +75,5 @@ namespace Excn {
     ExodusFile(const ExodusFile &);
     ExodusFile operator=(const ExodusFile &);
   };
-}
+} // namespace Excn
 #endif /* SEACAS_ExodusFil_H */

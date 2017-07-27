@@ -102,7 +102,6 @@ void Excn::ParallelDisks::rename_file_for_mp(const std::string &rootdir, const s
     }
   }
   name = prepend + name;
-  return;
 }
 
 /*****************************************************************************/

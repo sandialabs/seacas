@@ -30,6 +30,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "CJ_CodeTypes.h" // for StringIdVector, etc
 #include "CJ_ExodusFile.h"
 #include "CJ_SystemInterface.h"
 #include "smart_assert.h"
@@ -55,7 +56,7 @@ int                      Excn::ExodusFile::exodusMode_        = 0;
 
 namespace {
   int get_free_descriptor_count();
-}
+} // namespace
 
 Excn::ExodusFile::ExodusFile(size_t which) : myLocation_(which)
 {
@@ -156,7 +157,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si)
 
       ex_close(exoid);
 
-      if (io_wrd_size < (int)sizeof(float)) {
+      if (io_wrd_size < static_cast<int>(sizeof(float))) {
         io_wrd_size = sizeof(float);
       }
 
@@ -250,4 +251,4 @@ namespace {
     // returned -- take that as 1 more than the current count of open files.
     //
   }
-}
+}  // namespace

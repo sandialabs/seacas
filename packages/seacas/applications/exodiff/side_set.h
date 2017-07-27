@@ -58,7 +58,7 @@ public:
   void          Free_Distribution_Factors() const;
 
   void   Display_Stats(std::ostream & = std::cout) const;
-  void   Display(std::ostream & = std::cout) const;
+  void   Display(std::ostream & /*s*/ = std::cout) const;
   int    Check_State() const;
   size_t Distribution_Factor_Count() const { return num_dist_factors; }
 

@@ -61,9 +61,9 @@ namespace {
     if ((ex_int64_status(exoid) & type) != 0u) {
       return NC_INT64;
     }
-    else {
+    
       return NC_INT;
-    }
+    
   }
   bool lessOffset(const Excn::Block &b1, const Excn::Block &b2) { return b1.offset_ < b2.offset_; }
 
@@ -72,7 +72,7 @@ namespace {
 
   int define_coordinate_vars(int exodusFilePtr, int nodes, int node_dim, int dimension, int dim_dim,
                              int str_dim);
-}
+}  // namespace
 
 Excn::Redefine::Redefine(int exoid) : exodusFilePtr(exoid)
 {
@@ -760,7 +760,7 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
 
     // store element type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                             (int)std::strlen(blocks[iblk].elType) + 1, blocks[iblk].elType);
+                             static_cast<int>(std::strlen(blocks[iblk].elType)) + 1, blocks[iblk].elType);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg, "Error: failed to store element type name %s in file id %d",
@@ -844,7 +844,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Node
 
     //  NOTE: ex_inc_file_item is used to find the number of node sets
     // for a specific file and returns that value incremented.
-    int cur_num_node_sets = (int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_NODE_SET));
+    int cur_num_node_sets = ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_NODE_SET));
 
     if (nodesets[i].nodeCount == 0) {
       continue;
@@ -994,7 +994,7 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Side
 
     //  NOTE: ex_inc_file_item is used to find the number of side sets
     // for a specific file and returns that value incremented.
-    int cur_num_side_sets = (int)ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_SIDE_SET));
+    int cur_num_side_sets = ex_inc_file_item(exodusFilePtr, ex_get_counter_list(EX_SIDE_SET));
 
     if (sidesets[i].sideCount == 0) {
       continue;
@@ -1177,7 +1177,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
+      status = nc_put_var_longlong(exoid, var_id, const_cast<long long int *>(&ids[0]));
     }
     else {
       // Have entity_id (long long), need ints...
@@ -1276,7 +1276,7 @@ namespace {
     }
     return EX_NOERR;
   }
-}
+} // namespace
 
 template int Excn::Internals::write_meta_data(const Excn::Mesh<int> &                mesh,
                                               const std::vector<Excn::Block> &       blocks,

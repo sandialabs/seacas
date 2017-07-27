@@ -47,7 +47,7 @@ namespace Excn {
 
   struct Variables
   {
-    Variables(ObjectType otype) : objectType(otype), outputCount(0), addProcessorId(false)
+    explicit Variables(ObjectType otype) : objectType(otype), outputCount(0), addProcessorId(false)
     {
       SMART_ASSERT(otype == EBLK || otype == NSET || otype == SSET || otype == NODE ||
                    otype == GLOBAL);
@@ -95,6 +95,6 @@ namespace Excn {
     IntVector   index_;
     std::string type_;
   };
-}
+} // namespace Excn
 
 #endif

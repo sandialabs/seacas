@@ -5,9 +5,9 @@
 #include <iostream>
 #include <vector>
 
+#include <climits>
 #include <cstdlib>
 #include <cstring>
-#include <climits>
 
 #include "SL_Version.h"
 #include <SL_tokenize.h>
@@ -38,7 +38,7 @@ namespace {
   void parse_omissions(const char *tokens, Omissions *omissions,
 		       const std::string &basename, bool require_ids);
 #endif
-}
+} // namespace
 
 SystemInterface::SystemInterface()
     : decompMethod_("linear"), partialReadCount_(1000000000), processorCount_(1), debugLevel_(0),
@@ -534,4 +534,4 @@ namespace {
     }
   }
 #endif
-}
+}  // namespace
