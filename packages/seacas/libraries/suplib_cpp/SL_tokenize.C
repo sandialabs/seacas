@@ -48,8 +48,9 @@ std::vector<std::string> SLIB::tokenize(const std::string &str, const std::strin
     if (first != second || allow_empty_token) {
       tokens.emplace_back(first, second);
     }
-    if (second == std::end(str))
+    if (second == std::end(str)) {
       break;
+}
     first = std::next(second);
   }
   return tokens;
