@@ -314,10 +314,9 @@ private:
     if (found != handlers().end()) {
       return (*found).second;
     }
-    else {
-      // we always assume the debug handler has been set
-      return (*handlers().find(lvl_debug)).second;
-    }
+
+    // we always assume the debug handler has been set
+    return (*handlers().find(lvl_debug)).second;
   }
 
 private:

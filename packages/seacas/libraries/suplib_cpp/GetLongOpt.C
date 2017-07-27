@@ -117,7 +117,7 @@ int GetLongOption::parse(int argc, char *const *argv)
           int stat = setcell(t, tmptoken, *(argv + 1), pname);
           if (stat == -1) {
             return -1;
-          } else if (stat == 1) {
+          } if (stat == 1) {
             ++argv;
             --argc;
             ++my_optind;
@@ -151,7 +151,7 @@ int GetLongOption::parse(int argc, char *const *argv)
       int stat = setcell(pc, tmptoken, *(argv + 1), pname);
       if (stat == -1) {
         return -1;
-      } else if (stat == 1) {
+      } if (stat == 1) {
         ++argv;
         --argc;
         ++my_optind;
@@ -203,7 +203,7 @@ int GetLongOption::parse(char *const str, char *const p)
           int stat = setcell(t, tmptoken, ladtoken, name);
           if (stat == -1) {
             return -1;
-	  } else if (stat == 1) {
+	  } if (stat == 1) {
             ladtoken = 0;
           }
           matchStatus = ExactMatch;
@@ -222,7 +222,7 @@ int GetLongOption::parse(char *const str, char *const p)
       int stat = setcell(pc, tmptoken, ladtoken, name);
       if (stat == -1) {
         return -1;
-      } else if (stat == 1) {
+      } if (stat == 1) {
         ladtoken = 0;
       }
     }
