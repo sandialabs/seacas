@@ -44,12 +44,14 @@
  */
 namespace SLIB {
   /**
-   * If `allow_empty_token` is false, then multiple sequential delimiters will not produce an empty token,
+   * If `allow_empty_token` is false, then multiple sequential delimiters will not produce an empty
+   * token,
    * If it is true, then there is a token between each and every delimiter even if empty.
    * If | is delimiter, then when false: a|||b is two tokens `a` and `b`.
    * When true, a|||b is 4 tokens "a" "" "" "b"
    */
-  std::vector<std::string> tokenize(const std::string &str, const std::string &separators, bool allow_empty_token=false);
-}
+  std::vector<std::string> tokenize(const std::string &str, const std::string &separators,
+                                    bool allow_empty_token = false);
+} // namespace SLIB
 
 #endif

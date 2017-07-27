@@ -112,10 +112,12 @@ public:
   // get/set (user-friendly) message
   void set_level_msg(const char *strMsg)
   {
-    if (strMsg)
+    if (strMsg != nullptr) {
       msg_ = strMsg;
-    else
+    }
+    else {
       msg_.erase();
+    }
   }
   const string &get_level_msg() const { return msg_; }
 
@@ -161,7 +163,7 @@ namespace Private {
   // directly!!!
   template <class T> struct is_null_finder
   {
-    bool is(const T &) const { return false; }
+    bool is(const T & /*unused*/) const { return false; }
   };
 
   template <> struct is_null_finder<char *>
@@ -184,7 +186,8 @@ struct Assert
   Assert &SMART_ASSERT_A;
   Assert &SMART_ASSERT_B;
 
-  Assert(const char *expr) : SMART_ASSERT_A(*this), SMART_ASSERT_B(*this), needs_handling_(true)
+  explicit Assert(const char *expr)
+      : SMART_ASSERT_A(*this), SMART_ASSERT_B(*this), needs_handling_(true)
   {
     context_.set_expr(expr);
 
@@ -203,8 +206,9 @@ struct Assert
 
   ~Assert()
   {
-    if (needs_handling_)
+    if (needs_handling_) {
       handle_assert();
+    }
   }
 
   template <class type> Assert &print_current_val(const type &val, const char *my_msg)
@@ -213,11 +217,13 @@ struct Assert
 
     Private::is_null_finder<type> f;
     bool                          bIsNull = f.is(val);
-    if (!bIsNull)
+    if (!bIsNull) {
       out << val;
-    else
+    }
+    else {
       // null string
       out << "null";
+    }
     context_.add_val(out.str(), my_msg);
     return *this;
   }
@@ -305,11 +311,13 @@ private:
   static assert_func get_handler(int nLevel)
   {
     handlers_collection::const_iterator found = handlers().find(nLevel);
-    if (found != handlers().end())
+    if (found != handlers().end()) {
       return (*found).second;
-    else
+    }
+    else {
       // we always assume the debug handler has been set
       return (*handlers().find(lvl_debug)).second;
+    }
   }
 
 private:

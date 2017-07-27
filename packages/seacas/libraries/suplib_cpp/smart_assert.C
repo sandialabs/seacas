@@ -34,9 +34,9 @@
 
 #include <fstream>
 #include <set>
+#include <cstdlib>
 #include <sstream>
 #include <stdexcept>
-#include <cstdlib>
 
 void break_into_debugger() { std::cerr << "Not Implemented.\n"; }
 
@@ -47,8 +47,9 @@ namespace {
     stream_holder() : out_(nullptr), owns_(false) {}
     ~stream_holder()
     {
-      if (owns_)
+      if (owns_) {
         delete out_;
+}
       out_ = nullptr;
     }
     std::ostream *out_;
@@ -89,11 +90,12 @@ namespace smart_assert {
     out << "\n"
         << get_typeof_level(context.get_level()) << " in " << context.get_context_file() << ":"
         << context.get_context_line() << '\n';
-    if (!context.get_level_msg().empty())
+    if (!context.get_level_msg().empty()) {
       // we have a user-friendly message
       out << context.get_level_msg();
-    else
+    } else {
       out << "\nExpression: " << context.get_expr();
+}
     out << '\n';
   }
 
@@ -102,9 +104,10 @@ namespace smart_assert {
     out << "\n"
         << get_typeof_level(context.get_level()) << " in " << context.get_context_file() << ":"
         << context.get_context_line() << '\n';
-    if (!context.get_level_msg().empty())
+    if (!context.get_level_msg().empty()) {
       out << "User-friendly msg: '" << context.get_level_msg() << "'\n";
-    out << "\nExpression: '" << context.get_expr() << "'\n";
+    
+}out << "\nExpression: '" << context.get_expr() << "'\n";
 
     typedef assert_context::vals_array ac_vals_array;
     const ac_vals_array &              aVals = context.get_vals_array();
@@ -131,8 +134,9 @@ namespace smart_assert {
 
   void default_logger(const assert_context &context)
   {
-    if (default_logger_info.out_ == nullptr)
+    if (default_logger_info.out_ == nullptr) {
       return;
+}
     dump_context_detail(context, *(default_logger_info.out_));
   }
 
