@@ -859,7 +859,7 @@ namespace SEAMS {
 
   const char *do_notif(double x)
   {
-    aprepro->lexer->if_handler(static_cast<double>(!x) == 0.0);
+    aprepro->lexer->if_handler(!x);
     return nullptr;
   }
 
