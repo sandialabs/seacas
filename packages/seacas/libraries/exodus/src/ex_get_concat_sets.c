@@ -177,9 +177,8 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
         /* Now, use ExodusII call to get sets */
         int64_t *sets_entry_list = set_specs->sets_entry_list;
         int64_t *sets_extra_list = set_specs->sets_extra_list;
-        int64_t *sets_extra      = sets_extra_list
-                                  ? &((int64_t *)sets_extra_list)[((int64_t *)sets_entry_index)[i]]
-                                  : NULL;
+        int64_t *sets_extra =
+            sets_extra_list ? &(sets_extra_list)[((int64_t *)sets_entry_index)[i]] : NULL;
         status = ex_get_set(exoid, set_type, set_id,
                             &(sets_entry_list[((int64_t *)sets_entry_index)[i]]), sets_extra);
       }
@@ -206,9 +205,8 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
         /* Now, use ExodusII call to get sets */
         int *sets_entry_list = set_specs->sets_entry_list;
         int *sets_extra_list = set_specs->sets_extra_list;
-        int *sets_extra =
-            sets_extra_list ? &((int *)sets_extra_list)[((int *)sets_entry_index)[i]] : NULL;
-        status = ex_get_set(exoid, set_type, set_id,
+        int *sets_extra = sets_extra_list ? &(sets_extra_list)[((int *)sets_entry_index)[i]] : NULL;
+        status          = ex_get_set(exoid, set_type, set_id,
                             &(sets_entry_list[((int *)sets_entry_index)[i]]), sets_extra);
       }
     }

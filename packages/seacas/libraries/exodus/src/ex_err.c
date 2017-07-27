@@ -137,7 +137,7 @@ void ex_err(const char *module_name, const char *message, int err_num)
     EX_FUNC_VOID();
   }
 
-  else if (err_num == EX_NULLENTITY) {
+  if (err_num == EX_NULLENTITY) {
     if (exoptval & EX_NULLVERBOSE) {
       fprintf(stderr, "Exodus Library Warning: [%s]\n\t%s\n", module_name, message);
     }

@@ -98,8 +98,9 @@ int main(int argc, char **argv)
                   &version);      /* ExodusII library version */
 
   printf("\nafter ex_open\n");
-  if (exoid < 0)
+  if (exoid < 0) {
     exit(1);
+  }
 
   printf("test.exo is an EXODUSII file; version %4.2f\n", version);
   /*   printf ("         CPU word size %1d\n",CPU_word_size);  */
@@ -226,8 +227,9 @@ int main(int argc, char **argv)
         printf("%5.3f\n", dist_fact[j]);
       }
     }
-    else
+    else {
       printf("no dist factors for side set %2d\n", ids[i]);
+    }
 
     free(elem_list);
     free(side_list);
@@ -282,36 +284,44 @@ int main(int argc, char **argv)
   printf("concatenated side set info\n");
 
   printf("ids = \n");
-  for (i = 0; i < num_side_sets; i++)
+  for (i = 0; i < num_side_sets; i++) {
     printf("%3d\n", ids[i]);
+  }
 
   printf("num_elem_per_set = \n");
-  for (i = 0; i < num_side_sets; i++)
+  for (i = 0; i < num_side_sets; i++) {
     printf("%3d\n", num_elem_per_set[i]);
+  }
 
   printf("num_dist_per_set = \n");
-  for (i = 0; i < num_side_sets; i++)
+  for (i = 0; i < num_side_sets; i++) {
     printf("%3d\n", num_df_per_set[i]);
+  }
 
   printf("elem_ind = \n");
-  for (i = 0; i < num_side_sets; i++)
+  for (i = 0; i < num_side_sets; i++) {
     printf("%3d\n", elem_ind[i]);
+  }
 
   printf("dist_ind = \n");
-  for (i = 0; i < num_side_sets; i++)
+  for (i = 0; i < num_side_sets; i++) {
     printf("%3d\n", df_ind[i]);
+  }
 
   printf("elem_list = \n");
-  for (i = 0; i < elem_list_len; i++)
+  for (i = 0; i < elem_list_len; i++) {
     printf("%3d\n", elem_list[i]);
+  }
 
   printf("side_list = \n");
-  for (i = 0; i < elem_list_len; i++)
+  for (i = 0; i < elem_list_len; i++) {
     printf("%3d\n", side_list[i]);
+  }
 
   printf("dist_fact = \n");
-  for (i = 0; i < df_list_len; i++)
+  for (i = 0; i < df_list_len; i++) {
     printf("%5.3f\n", dist_fact[i]);
+  }
 
   free(ids);
   free(num_elem_per_set);

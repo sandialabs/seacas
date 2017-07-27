@@ -71,9 +71,8 @@ static int ex_get_dimension_value(int exoid, int64_t *var, int default_value,
 }
 
 static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set_name,
-                                 ex_entity_type set_type, const char *set_num_dim,
-                                 const char *set_stat_var, const char *set_size_root,
-                                 int missing_ok)
+                                 const char *set_num_dim, const char *set_stat_var,
+                                 const char *set_size_root, int missing_ok)
 {
   int    i;
   int    status;
@@ -379,8 +378,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_NS_NODE_LEN:
     /* returns the length of the concatenated node sets node list */
-    ex_get_concat_set_len(exoid, ret_int, "node", EX_NODE_SET, DIM_NUM_NS, VAR_NS_STAT,
-                          "num_nod_ns", 0);
+    ex_get_concat_set_len(exoid, ret_int, "node", DIM_NUM_NS, VAR_NS_STAT, "num_nod_ns", 0);
     break;
 
   case EX_INQ_NS_DF_LEN:
@@ -557,8 +555,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_SS_ELEM_LEN:
     /*     returns the length of the concatenated side sets element list */
-    ex_get_concat_set_len(exoid, ret_int, "side", EX_SIDE_SET, DIM_NUM_SS, VAR_SS_STAT,
-                          "num_side_ss", 0);
+    ex_get_concat_set_len(exoid, ret_int, "side", DIM_NUM_SS, VAR_SS_STAT, "num_side_ss", 0);
     break;
 
   case EX_INQ_SS_DF_LEN:
@@ -715,15 +712,13 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_ES_LEN:
     /* returns the length of the concatenated edge set edge list. */
-    ex_get_concat_set_len(exoid, ret_int, "edge", EX_EDGE_SET, DIM_NUM_ES, VAR_ES_STAT,
-                          "num_edge_es", 0);
+    ex_get_concat_set_len(exoid, ret_int, "edge", DIM_NUM_ES, VAR_ES_STAT, "num_edge_es", 0);
     break;
 
   case EX_INQ_ES_DF_LEN:
     /* returns the length of the concatenated edge set distribution factor list.
      */
-    ex_get_concat_set_len(exoid, ret_int, "edge", EX_EDGE_SET, DIM_NUM_ES, VAR_ES_STAT, "num_df_es",
-                          1);
+    ex_get_concat_set_len(exoid, ret_int, "edge", DIM_NUM_ES, VAR_ES_STAT, "num_df_es", 1);
     break;
 
   case EX_INQ_EDGE_PROP:
@@ -761,15 +756,13 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_FS_LEN:
     /* returns the length of the concatenated edge set edge list. */
-    ex_get_concat_set_len(exoid, ret_int, "face", EX_FACE_SET, DIM_NUM_FS, VAR_FS_STAT,
-                          "num_face_fs", 0);
+    ex_get_concat_set_len(exoid, ret_int, "face", DIM_NUM_FS, VAR_FS_STAT, "num_face_fs", 0);
     break;
 
   case EX_INQ_FS_DF_LEN:
     /* returns the length of the concatenated edge set distribution factor list.
      */
-    ex_get_concat_set_len(exoid, ret_int, "face", EX_FACE_SET, DIM_NUM_FS, VAR_FS_STAT, "num_df_fs",
-                          1);
+    ex_get_concat_set_len(exoid, ret_int, "face", DIM_NUM_FS, VAR_FS_STAT, "num_df_fs", 1);
     break;
 
   case EX_INQ_FACE_PROP:
@@ -793,15 +786,13 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_ELS_LEN:
     /* returns the length of the concatenated element set element list. */
-    ex_get_concat_set_len(exoid, ret_int, "element", EX_ELEM_SET, DIM_NUM_ELS, VAR_ELS_STAT,
-                          "num_ele_els", 0);
+    ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_ele_els", 0);
     break;
 
   case EX_INQ_ELS_DF_LEN:
     /* returns the length of the concatenated element set distribution factor
      * list. */
-    ex_get_concat_set_len(exoid, ret_int, "element", EX_ELEM_SET, DIM_NUM_ELS, VAR_ELS_STAT,
-                          "num_df_els", 1);
+    ex_get_concat_set_len(exoid, ret_int, "element", DIM_NUM_ELS, VAR_ELS_STAT, "num_df_els", 1);
     break;
 
   case EX_INQ_ELS_PROP:

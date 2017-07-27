@@ -162,9 +162,11 @@ double vals_fset_var1fs1[2][2] = {{1., 3.}, {9., 27.}};
 int ex_have_arg(int argc, char *argv[], const char *aname)
 {
   int i;
-  for (i = 0; i < argc; ++i)
-    if (!strcmp(argv[i], aname))
+  for (i = 0; i < argc; ++i) {
+    if (!strcmp(argv[i], aname)) {
       return 1;
+    }
+  }
   return 0;
 }
 

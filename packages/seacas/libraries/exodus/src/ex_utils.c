@@ -417,7 +417,7 @@ ex_entity_type ex_var_type_to_ex_entity_type(char var_type)
   if (var_lower == 'l') {
     return EX_EDGE_BLOCK;
   }
-  else if (var_lower == 'f') {
+  if (var_lower == 'f') {
     return EX_FACE_BLOCK;
   }
   else if (var_lower == 'e') {
@@ -681,7 +681,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         free(id_vals);
         return (EX_FATAL);
       }
-      status = nc_get_var_int(exoid, varid, (int *)id_vals_int);
+      status = nc_get_var_int(exoid, varid, id_vals_int);
       if (status == NC_NOERR) {
         for (i = 0; i < dim_len; i++) {
           id_vals[i] = (int64_t)id_vals_int[i];
@@ -1364,15 +1364,14 @@ int ex_large_model(int exoid)
 
     EX_FUNC_LEAVE(EXODUS_DEFAULT_SIZE); /* Specified in exodusII_int.h */
   }
-  else {
-    /* See if the ATT_FILESIZE attribute is defined in the file */
-    int file_size = 0;
-    if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FILESIZE, &file_size) != NC_NOERR) {
-      /* Variable not found; default is 0 */
-      file_size = 0;
-    }
-    EX_FUNC_LEAVE(file_size);
+
+  /* See if the ATT_FILESIZE attribute is defined in the file */
+  int file_size = 0;
+  if (nc_get_att_int(exoid, NC_GLOBAL, ATT_FILESIZE, &file_size) != NC_NOERR) {
+    /* Variable not found; default is 0 */
+    file_size = 0;
   }
+  EX_FUNC_LEAVE(file_size);
 }
 
 int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t *count, int *dimid,
