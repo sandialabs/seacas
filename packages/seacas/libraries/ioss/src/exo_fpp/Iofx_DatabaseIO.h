@@ -86,7 +86,7 @@ namespace Iofx {
                MPI_Comm communicator, const Ioss::PropertyManager &props);
     DatabaseIO(const DatabaseIO &from) = delete;
     DatabaseIO &operator=(const DatabaseIO &from) = delete;
-    ~DatabaseIO(){};
+    ~DatabaseIO() override{};
 
   private:
     const std::string &decoded_filename() const;

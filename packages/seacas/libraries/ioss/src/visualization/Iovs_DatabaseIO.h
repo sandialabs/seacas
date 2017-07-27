@@ -39,7 +39,7 @@ namespace Iovs {
   public:
     DatabaseIO(Ioss::Region *region, const std::string &filename, Ioss::DatabaseUsage db_usage,
                MPI_Comm communicator, const Ioss::PropertyManager &props);
-    ~DatabaseIO();
+    ~DatabaseIO() override;
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -143,8 +143,8 @@ namespace Iovs {
       return 0;
     }
 
-    virtual int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const override
+    int64_t get_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override
     {
       return 0;
     }
@@ -193,8 +193,8 @@ namespace Iovs {
     {
       return 0;
     }
-    virtual int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
-                                       void *data, size_t data_size) const override
+    int64_t put_field_internal(const Ioss::StructuredBlock *sb, const Ioss::Field &field,
+                               void *data, size_t data_size) const override
     {
       return 0;
     }
