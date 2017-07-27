@@ -68,7 +68,7 @@
 #include <sys/utsname.h>
 #endif
 
-typedef std::vector<std::string> StringVector;
+using StringVector = std::vector<std::string>;
 
 #include "EP_ExodusEntity.h"
 #include "EP_ExodusFile.h"
@@ -88,7 +88,7 @@ typedef std::vector<std::string> StringVector;
 #include "add_to_log.h"
 #endif
 
-typedef std::vector<ex_entity_id> ExodusIdVector;
+using ExodusIdVector = std::vector<ex_entity_id>;
 
 extern double seacas_timer();
 namespace {

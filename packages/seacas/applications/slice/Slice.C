@@ -61,7 +61,7 @@
 #if USE_METIS
 #include <metis.h>
 #else
-typedef int idx_t;
+using idx_t = int;
 #endif
 
 #include <sys/stat.h>
@@ -112,11 +112,11 @@ namespace {
 
   template <typename T> struct remove_pointer
   {
-    typedef T type;
+    using type = T;
   };
   template <typename T> struct remove_pointer<T *>
   {
-    typedef T type;
+    using type = T;
   };
 
   template <typename INT>

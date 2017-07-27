@@ -41,7 +41,7 @@
 
 #if defined(EX_API_VERS_NODOT)
 #if EX_API_VERS_NODOT > 467
-typedef ex_entity_type EXOTYPE;
+using EXOTYPE = ex_entity_type;
 #else
 typedef int EXOTYPE;
 #endif

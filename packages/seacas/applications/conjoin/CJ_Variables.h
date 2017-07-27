@@ -40,7 +40,7 @@
 namespace Excn {
   enum InOut { IN = 1, OUT = 2 };
 
-  typedef std::vector<int> IntVector;
+  using IntVector = std::vector<int>;
 
   struct Variables
   {

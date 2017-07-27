@@ -547,7 +547,7 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
    */
   for (size_t ecnt = 0; ecnt < mesh->num_el_blks; ecnt++) {
     if (ex_get_block(exid_inp, EX_ELEM_BLOCK, el_blk_ids[ecnt], elem_type[ecnt], &el_cnt_blk[ecnt],
-                     &node_pel_blk[ecnt], NULL, NULL, &nattr_el_blk[ecnt]) < 0) {
+                     &node_pel_blk[ecnt], nullptr, nullptr, &nattr_el_blk[ecnt]) < 0) {
       Gen_Error(0, "fatal: unable to get element block parameters");
       return 0;
     }
@@ -655,8 +655,8 @@ int write_vis(std::string &nemI_out_file, std::string &exoII_inp_file, Machine_D
       }
 
       /* Output the connectivity */
-      if (ex_put_conn(exid_vis, EX_ELEM_BLOCK, bcnt + 1, &tmp_connect[vis_el_blk_ptr[bcnt]], NULL,
-                      NULL) < 0) {
+      if (ex_put_conn(exid_vis, EX_ELEM_BLOCK, bcnt + 1, &tmp_connect[vis_el_blk_ptr[bcnt]], nullptr,
+                      nullptr) < 0) {
         Gen_Error(0, "fatal: unable to output element connectivity");
         return 0;
       }

@@ -53,7 +53,7 @@
 #include <cstring>
 #include <smart_assert.h>
 
-typedef int64_t entity_id;
+using entity_id = int64_t;
 
 namespace {
   nc_type get_type(int exoid, unsigned int type)

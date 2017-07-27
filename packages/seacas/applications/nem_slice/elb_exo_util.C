@@ -123,8 +123,8 @@ int read_exo_weights(Problem_Description *prob, Weight_Description<INT> *weight)
     /* Get the count of elements in each element block */
     for (int cnt = 0; cnt < neblks; cnt++) {
       INT dum1, dum2;
-      if (ex_get_block(exoid, EX_ELEM_BLOCK, eblk_ids[cnt], elem_type, &(eblk_ecnts[cnt]), &dum1, 0,
-                       0, &dum2) < 0) {
+      if (ex_get_block(exoid, EX_ELEM_BLOCK, eblk_ids[cnt], elem_type, &(eblk_ecnts[cnt]), &dum1, nullptr,
+                       nullptr, &dum2) < 0) {
         Gen_Error(0, "fatal: unable to get element block");
         ex_close(exoid);
         return 0;
@@ -246,7 +246,7 @@ int read_mesh_params(const std::string &exo_file, Problem_Description *problem,
     INT nodes_in_elem;
 
     if (ex_get_block(exoid, EX_ELEM_BLOCK, el_blk_ids[cnt], elem_type, &num_elems, &nodes_in_elem,
-                     NULL, NULL, NULL) < 0) {
+                     nullptr, nullptr, nullptr) < 0) {
       Gen_Error(0, "fatal: unable to get element block");
       ex_close(exoid);
       return 0;
@@ -355,7 +355,7 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
   for (size_t cnt = 0; cnt < mesh->num_el_blks; cnt++) {
     INT nodes_per_elem;
     if (ex_get_block(exoid, EX_ELEM_BLOCK, el_blk_ids[cnt], elem_type, &(el_blk_cnts[cnt]),
-                     &nodes_per_elem, NULL, NULL, NULL) < 0) {
+                     &nodes_per_elem, nullptr, nullptr, nullptr) < 0) {
       Gen_Error(0, "fatal: unable to read element block");
       return 0;
     }
@@ -371,7 +371,7 @@ int read_mesh(const std::string &exo_file, Problem_Description *problem,
     }
 
     /* Get the connectivity for this element block */
-    if (ex_get_conn(exoid, EX_ELEM_BLOCK, el_blk_ids[cnt], blk_connect, NULL, NULL) < 0) {
+    if (ex_get_conn(exoid, EX_ELEM_BLOCK, el_blk_ids[cnt], blk_connect, nullptr, nullptr) < 0) {
       Gen_Error(0, "fatal: failed to get element connectivity");
       return 0;
     }
