@@ -232,7 +232,7 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
       nc_mode |= NC_DISKLESS;
     }
 #endif
-    if ((status = nc_open(path, NC_WRITE | NC_SHARE, &exoid)) != NC_NOERR) {
+    if ((status = nc_open(path, nc_mode, &exoid)) != NC_NOERR) {
       /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only", path);
       ex_err("ex_open", errmsg, status);
