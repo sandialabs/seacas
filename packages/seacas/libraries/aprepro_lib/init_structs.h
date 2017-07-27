@@ -37,7 +37,7 @@
 
 namespace SEAMS {
   struct array;
-}
+} // namespace SEAMS
 
 struct init_d
 {

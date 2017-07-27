@@ -44,5 +44,5 @@ namespace SEAMS {
    * in separators as separators. Use tokens to return the result.
    */
   std::vector<std::string> tokenize(const std::string &str, const std::string &separators);
-}
+} // namespace SEAMS
 #endif

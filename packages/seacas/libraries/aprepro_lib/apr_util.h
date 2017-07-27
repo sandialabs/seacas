@@ -55,5 +55,5 @@ namespace SEAMS {
   void cleanup_memory();
   bool is_directory(const std::string &filepath);
   bool check_valid_var(const char *s);
-}
+} // namespace SEAMS  // namespace SEAMS
 #endif
