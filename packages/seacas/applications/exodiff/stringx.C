@@ -87,13 +87,13 @@ std::string &chop_whitespace(std::string &s)
   return s;
 }
 
-std::string extract_token(std::string &s, const char *delimeters)
+std::string extract_token(std::string &s, const char *delimiters)
 {
   if (!s.empty()) {
-    SMART_ASSERT(delimeters != nullptr && !std::string(delimeters).empty());
+    SMART_ASSERT(delimiters != nullptr && !std::string(delimiters).empty());
 
-    // Move through initial delimeters.
-    unsigned p = s.find_first_not_of(delimeters);
+    // Move through initial delimiters.
+    unsigned p = s.find_first_not_of(delimiters);
 
     if (p >= s.size()) {
       // no tokens
@@ -102,10 +102,10 @@ std::string extract_token(std::string &s, const char *delimeters)
     }
 
     // move to end of first token
-    unsigned q = s.find_first_of(delimeters, p);
+    unsigned q = s.find_first_of(delimiters, p);
 
     if (q >= s.size()) {
-      // no more delimeters
+      // no more delimiters
       std::string tok = s.substr(p);
       s               = "";
       return tok;
@@ -115,7 +115,7 @@ std::string extract_token(std::string &s, const char *delimeters)
     std::string tok = s.substr(p, q - p);
 
     // move to start of the second token
-    unsigned r = s.find_first_not_of(delimeters, q);
+    unsigned r = s.find_first_not_of(delimiters, q);
 
     if (r >= s.size()) {
       // no second token
@@ -131,19 +131,19 @@ std::string extract_token(std::string &s, const char *delimeters)
   return "";
 }
 
-int count_tokens(const std::string &s, const char *delimeters)
+int count_tokens(const std::string &s, const char *delimiters)
 {
   if (!s.empty()) {
     const char *str_ptr = s.c_str();
 
-    // Move through initial delimeters.
-    const char *p = &str_ptr[strspn(str_ptr, delimeters)];
+    // Move through initial delimiters.
+    const char *p = &str_ptr[strspn(str_ptr, delimiters)];
 
     int num_toks = 0;
     while (p[0] != '\0') {
       ++num_toks;
-      p = &p[strcspn(p, delimeters)]; // Move through token.
-      p = &p[strspn(p, delimeters)];  // Move through delimeters.
+      p = &p[strcspn(p, delimiters)]; // Move through token.
+      p = &p[strspn(p, delimiters)];  // Move through delimiters.
     }
 
     return num_toks;
