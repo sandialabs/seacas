@@ -86,10 +86,12 @@ static void assign_out_inv(int   nvtxs,  /* number of vertices to output */
   size    = smalloc((nsets + 1) * sizeof(int));
   inorder = smalloc(nvtxs * sizeof(int));
 
-  for (j    = 0; j < nsets; j++)
+  for (j = 0; j < nsets; j++) {
     size[j] = 0;
-  for (i = 1; i <= nvtxs; i++)
+  }
+  for (i = 1; i <= nvtxs; i++) {
     ++size[sets[i]];
+  }
 
   /* Modify size to become index into vertex list. */
   for (j = 1; j < nsets; j++) {

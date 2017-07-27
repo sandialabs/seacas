@@ -111,8 +111,9 @@ void bpm_improve(struct vtx_data **graph,      /* list of graph info for each ve
       printf("After big matching, sep_size = %d, sep_weight = %d,  Sizes = %g/%g\n", sep_size,
              sep_weight, weights[0], weights[1]);
     }
-    if (VERTEX_COVER == 1)
+    if (VERTEX_COVER == 1) {
       break;
+    }
 
     if (!change) {
       /* If balanced, try the other direction. */
@@ -244,7 +245,7 @@ static int bpm_improve1(struct vtx_data **graph,       /* list of graph info for
       /* First handle nodes numbered  less than separator nodes. */
       vtx = loc2glob[j];
       if (sets[vtx] == 2) {
-        sets[vtx] = (int)set_other;
+        sets[vtx] = set_other;
       }
     }
     for (i = 0; i < *sep_size; i++) {
@@ -256,7 +257,7 @@ static int bpm_improve1(struct vtx_data **graph,       /* list of graph info for
         for (j = new_bndy_list[i - 1] + 1; j < new_bndy_list[i]; j++) {
           vtx = loc2glob[j];
           if (sets[vtx] == 2) {
-            sets[vtx] = (int)set_other;
+            sets[vtx] = set_other;
           }
         }
       }
@@ -270,7 +271,7 @@ static int bpm_improve1(struct vtx_data **graph,       /* list of graph info for
     for (j = i; j < nleft + nright; j++) {
       vtx = loc2glob[j];
       if (sets[vtx] == 2) {
-        sets[vtx] = (int)set_other;
+        sets[vtx] = set_other;
       }
     }
 
@@ -307,10 +308,8 @@ static int bpm_improve1(struct vtx_data **graph,       /* list of graph info for
 
 /* Routine that can be modified to allow different cost functions. */
 
-static double sep_cost(double size1, double size2, /* vertex weight in two partitions */
-                       double size_sep,            /* vertex weight of separator */
-                       double max_dev              /* maximum allowed imbalance */
+static double sep_cost(double size_sep /* maximum allowed imbalance */
                        )
 {
-  return ((double)size_sep);
+  return (size_sep);
 }

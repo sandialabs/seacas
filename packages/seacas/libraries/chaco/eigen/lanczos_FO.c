@@ -383,8 +383,9 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
       scanmax(ritz, 1, j, &scanlist);
     }
     converged = TRUE;
-    if (j < d)
+    if (j < d) {
       converged = FALSE;
+    }
     else {
       curlnk = scanlist;
       while (curlnk != NULL) {

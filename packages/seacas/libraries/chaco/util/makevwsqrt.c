@@ -49,10 +49,12 @@ void makevwsqrt(double *vwsqrt, struct vtx_data **graph, int nvtxs)
 
   for (i = 1; i <= nvtxs; i++) {
     vwgt = graph[i]->vwgt;
-    if (vwgt <= NSQRTS)
+    if (vwgt <= NSQRTS) {
       vwsqrt[i] = SQRTS[vwgt];
-    else
+    }
+    else {
       vwsqrt[i] = sqrt((double)vwgt);
+    }
   }
 }
 

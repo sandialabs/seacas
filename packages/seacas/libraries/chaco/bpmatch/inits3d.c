@@ -93,8 +93,9 @@ void inits3d(struct vtx_data **graph,                /* graph data structure for
 
   /* Finally, determine the set sizes based on this splitter. */
 
-  for (i    = 0; i < nsets; i++)
+  for (i = 0; i < nsets; i++) {
     size[i] = 0;
+  }
 
   for (i = 1; i <= nvtxs; i++) {
     /* Which set is this vertex in? */
@@ -104,12 +105,14 @@ void inits3d(struct vtx_data **graph,                /* graph data structure for
       val = -dist[j] + 2 * (signx * xvecs[1][i] + signy * xvecs[2][i] + signz * xvecs[3][i]);
       if (j == 0 || val < bestval) {
         bestval = val;
-        bestset = (int)j;
+        bestset = j;
       }
-      if (signx == 1 && signy == 1)
+      if (signx == 1 && signy == 1) {
         signz *= -1;
-      if (signx == 1)
+      }
+      if (signx == 1) {
         signy *= -1;
+      }
       signx *= -1;
     }
     sets[i] = bestset;

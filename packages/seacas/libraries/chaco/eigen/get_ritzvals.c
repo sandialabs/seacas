@@ -90,8 +90,9 @@ int get_ritzvals(double *alpha,         /* vector of Lanczos scalars */
   bisect_flag = ql_flag = 0;
 
   if (5 * tot_pred_steps < 30 * j) {
-    if (DEBUG_EVECS > 2)
+    if (DEBUG_EVECS > 2) {
       printf("  tridiagonal solver: bisection\n");
+    }
 
     /* Set local_debug = TRUE for a table checking bisection against QL. */
     local_debug = FALSE;
@@ -109,13 +110,15 @@ int get_ritzvals(double *alpha,         /* vector of Lanczos scalars */
     bisect_flag = bisect(alpha, beta, j, Anorm, workj, ritz, nvals_left, nvals_right, bisection_tol,
                          ritz_sav, pred_steps + 10);
 
-    if (local_debug)
+    if (local_debug) {
       frvec(ritz_sav, 1);
+    }
   }
 
   else {
-    if (DEBUG_EVECS > 2)
+    if (DEBUG_EVECS > 2) {
       printf("  tridiagonal solver: ql\n");
+    }
     cpvec(ritz, 1, j, alpha);
     cpvec(workj, 0, j, beta);
     ql_flag = ql(ritz, workj, j);
@@ -127,10 +130,12 @@ int get_ritzvals(double *alpha,         /* vector of Lanczos scalars */
       strout("WARNING: Sturm bisection of T failed; switching to QL.\n");
     }
     if (DEBUG_EVECS > 1 || WARNING_EVECS > 1) {
-      if (bisect_flag == 1)
+      if (bisect_flag == 1) {
         strout("         - failure detected in sturmcnt().\n");
-      if (bisect_flag == 2)
+      }
+      if (bisect_flag == 2) {
         strout("         - maximum number of bisection steps reached.\n");
+      }
     }
     cpvec(ritz, 1, j, alpha);
     cpvec(workj, 0, j, beta);

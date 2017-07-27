@@ -85,8 +85,9 @@ int kl_refine(struct vtx_data **graph,      /* graph data structure */
   make_maps_ref(graph, set_list, vtx_elems, new_assign, sub_assign, set1, set2, glob2loc, loc2glob,
                 &subnvtxs, &vwgt_max, &vwgt_sum1, &vwgt_sum2);
 
-  for (i              = 1; i <= subnvtxs; i++)
+  for (i = 1; i <= subnvtxs; i++) {
     old_sub_assign[i] = sub_assign[i];
+  }
 
   /* Set up goals for this KL invocation. */
   ratio      = (vwgt_sum1 + vwgt_sum2) / (goal[set1] + goal[set2]);
@@ -118,8 +119,9 @@ int kl_refine(struct vtx_data **graph,      /* graph data structure */
   /* Figure out which modification leaves most vertices intact. */
   nsame = 0;
   for (i = 1; i <= subnvtxs; i++) {
-    if (old_sub_assign[i] == sub_assign[i])
+    if (old_sub_assign[i] == sub_assign[i]) {
       nsame++;
+    }
   }
   if (2 * nsame > subnvtxs) {
     setA = set1;
@@ -144,20 +146,22 @@ int kl_refine(struct vtx_data **graph,      /* graph data structure */
     }
 
     if (sub_assign[i] == 0) {
-      new_assign[vtx] = (int)setA;
+      new_assign[vtx] = setA;
       ++sizes[setA];
       ptr->next = set_list[setA].next;
-      if (ptr->next != NULL)
-        ptr->next->prev   = ptr;
+      if (ptr->next != NULL) {
+        ptr->next->prev = ptr;
+      }
       ptr->prev           = &(set_list[setA]);
       set_list[setA].next = ptr;
     }
     else {
-      new_assign[vtx] = (int)setB;
+      new_assign[vtx] = setB;
       ++sizes[setB];
       ptr->next = set_list[setB].next;
-      if (ptr->next != NULL)
-        ptr->next->prev   = ptr;
+      if (ptr->next != NULL) {
+        ptr->next->prev = ptr;
+      }
       ptr->prev           = &(set_list[setB]);
       set_list[setB].next = ptr;
     }

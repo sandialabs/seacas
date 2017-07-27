@@ -203,13 +203,12 @@ static int touch(int node, int *pointers, /* start/stop of adjacency lists */
         matching[node]     = neighbor;
         return (TRUE);
       }
-      else {
-        result = touch(matching[neighbor], pointers, indices, matching, touched, seen, nseen);
-        if (result) {
-          matching[neighbor] = node;
-          matching[node]     = neighbor;
-          return (TRUE);
-        }
+
+      result = touch(matching[neighbor], pointers, indices, matching, touched, seen, nseen);
+      if (result) {
+        matching[neighbor] = node;
+        matching[node]     = neighbor;
+        return (TRUE);
       }
     }
   }
@@ -227,12 +226,15 @@ static void reachability(int  n_left,   /* number of vertices on left side */
   int i; /* loop counter */
 
   /* Initialize all the vertices to be untouched */
-  for (i       = 0; i < n_left + n_right; i++)
+  for (i = 0; i < n_left + n_right; i++) {
     touched[i] = 0;
+  }
 
-  for (i = 0; i < n_left; i++)
-    if (!touched[i] && matching[i] == -1)
+  for (i = 0; i < n_left; i++) {
+    if (!touched[i] && matching[i] == -1) {
       touch2(i, pointers, indices, matching, touched);
+    }
+  }
 }
 
 /* Mark everybody in my alternating path tree, and return vertex at */
@@ -255,11 +257,10 @@ static int touch2(int node, int *pointers, /* start/stop of adjacency lists */
       if (matching[neighbor] == -1) {
         return (TRUE);
       }
-      else {
-        result = touch2(matching[neighbor], pointers, indices, matching, touched);
-        if (result) {
-          return (TRUE);
-        }
+
+      result = touch2(matching[neighbor], pointers, indices, matching, touched);
+      if (result) {
+        return (TRUE);
       }
     }
   }
@@ -322,8 +323,9 @@ int match_size(int *matching, int nleft)
 
   nmatch = 0;
   for (i = 0; i < nleft; i++) {
-    if (matching[i] != -1)
+    if (matching[i] != -1) {
       ++nmatch;
+    }
   }
   return (nmatch);
 }

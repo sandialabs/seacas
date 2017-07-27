@@ -47,8 +47,9 @@ void y2x(double **xvecs,   /* pointer to list of x-vectors */
   double *xptr; /* loops through elements of a xvec */
   int     i, j; /* loop counters */
 
-  if (wsqrt == NULL)
+  if (wsqrt == NULL) {
     return;
+  }
 
   for (i = 1; i <= ndims; i++) {
     xptr = xvecs[i];
@@ -71,8 +72,9 @@ void x2y(double **yvecs,   /* pointer to list of y-vectors */
   double *yptr; /* loops through elements of a yvec */
   int     i, j; /* loop counters */
 
-  if (wsqrt == NULL)
+  if (wsqrt == NULL) {
     return;
+  }
 
   for (i = 1; i <= ndims; i++) {
     yptr = yvecs[i];

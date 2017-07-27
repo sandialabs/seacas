@@ -56,8 +56,9 @@ void count(struct vtx_data **graph, /* graph data structure */
 
   nguys = smalloc(nsets * sizeof(int));
 
-  for (i     = 0; i < nsets; i++)
+  for (i = 0; i < nsets; i++) {
     nguys[i] = 0;
+  }
 
   ncross = nhops = 0;
   for (i = 1; i <= nvtxs; i++) {
@@ -84,20 +85,24 @@ void count(struct vtx_data **graph, /* graph data structure */
   nmax = nguys[0];
   nmin = nguys[0];
   for (i = 1; i < nsets; i++) {
-    if (nguys[i] > nmax)
+    if (nguys[i] > nmax) {
       nmax = nguys[i];
-    if (nguys[i] < nmin)
+    }
+    if (nguys[i] < nmin) {
       nmin = nguys[i];
+    }
   }
   printf("In subgraph: Cuts=%d, Hops=%d; Max=%d, Min=%d (nvtxs=%d).\n", ncross, nhops, nmax, nmin,
          nvtxs);
 
   if (dump) {
-    for (i = 0; i < nsets; i++)
+    for (i = 0; i < nsets; i++) {
       printf(" Size of %d = %d\n", i, nguys[i]);
+    }
 
-    for (i = 0; i < nvtxs; i++)
+    for (i = 0; i < nvtxs; i++) {
       printf("%d\n", sets[i]);
+    }
     printf("\n\n");
   }
 

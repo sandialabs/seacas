@@ -43,20 +43,25 @@ void vecout(double *vec, int beg, int end, char *tag, char *file_name)
   FILE *file;
   int   i;
 
-  if (file_name != NULL)
+  if (file_name != NULL) {
     file = fopen(file_name, "w");
-  else
+  }
+  else {
     file = stdout;
+  }
 
   fprintf(file, "%s:\n", tag);
   for (i = beg; i <= end; i++) {
-    if (fabs(vec[i]) >= 1.0e-16)
+    if (fabs(vec[i]) >= 1.0e-16) {
       fprintf(file, "%2d.   %24.16f\n", i, vec[i]);
-    else
+    }
+    else {
       fprintf(file, "%2d.         %g \n", i, vec[i]);
+    }
   }
-  if (file_name != NULL)
+  if (file_name != NULL) {
     fclose(file);
+  }
 }
 
 /* Scale the eigenvector such that the first element is non-negative.

@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define left(i) (2 * i)
+#define left(i) (2 * (i))
 #define right(i) (2 * (i) + 1)
 #define parent(i) ((int)((i) / 2))
 
@@ -60,13 +60,16 @@ void heapify(struct heap *heap,  /* array of vals/tag to make into heap */
   l = left(index);
   r = right(index);
 
-  if (l <= nvals && heap[l].val > heap[index].val)
+  if (l <= nvals && heap[l].val > heap[index].val) {
     largest = l;
-  else
+  }
+  else {
     largest = index;
+  }
 
-  if (r <= nvals && heap[r].val > heap[largest].val)
+  if (r <= nvals && heap[r].val > heap[largest].val) {
     largest = r;
+  }
 
   if (largest != index) { /* swap index with largest and recurse */
     swap_val = heap[index].val;
@@ -100,8 +103,9 @@ void heap_build(struct heap *heap,  /* array of vals/tag to make into heap */
   }
 
   if (map != NULL) {
-    for (i             = 1; i <= nvals; i++)
+    for (i = 1; i <= nvals; i++) {
       map[heap[i].tag] = i;
+    }
   }
 }
 

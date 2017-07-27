@@ -69,15 +69,16 @@ void simple_part(struct vtx_data **graph,       /* data structure for graph */
     if (DEBUG_TRACE > 0) {
       printf("Generating scattered partition, nvtxs = %d\n", nvtxs);
     }
-    for (j    = 0; j < nsets; j++)
+    for (j = 0; j < nsets; j++) {
       wgts[j] = 0;
+    }
     for (i = 1; i <= nvtxs; i++) {
       best_ratio = 2;
       for (j = 0; j < nsets; j++) {
         ratio = wgts[j] / goal[j];
         if (ratio < best_ratio) {
           best_ratio = ratio;
-          set        = (int)j;
+          set        = j;
         }
       }
       if (using_vwgts) {
@@ -97,8 +98,9 @@ void simple_part(struct vtx_data **graph,       /* data structure for graph */
     }
     /* Construct random order in which to step through graph. */
     order = smalloc((nvtxs + 1) * sizeof(int));
-    for (i     = 1; i <= nvtxs; i++)
+    for (i = 1; i <= nvtxs; i++) {
       order[i] = i;
+    }
     randomize(order, nvtxs);
 
     weight = 0;
@@ -107,8 +109,9 @@ void simple_part(struct vtx_data **graph,       /* data structure for graph */
     vwgt   = 1;
     sum    = 0;
     for (i = 1; i <= nvtxs; i++) {
-      if (using_vwgts)
+      if (using_vwgts) {
         vwgt = graph[order[i]]->vwgt;
+      }
 
       if (set < nsets - 1 &&
           (weight >= cutoff ||
@@ -136,8 +139,9 @@ void simple_part(struct vtx_data **graph,       /* data structure for graph */
     vwgt   = 1;
     sum    = 0;
     for (i = 1; i <= nvtxs; i++) {
-      if (using_vwgts)
+      if (using_vwgts) {
         vwgt = graph[i]->vwgt;
+      }
 
       if (set < nsets - 1 &&
           (weight >= cutoff ||

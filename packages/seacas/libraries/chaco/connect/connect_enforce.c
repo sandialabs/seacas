@@ -173,8 +173,9 @@ void connect_enforce(struct vtx_data **graph,       /* data structure for graph 
         for (j = 0; j < ncomps; j++) {
           if (j != comp_max_index) {
             change += comp_size[j];
-            if (comp_size[j] > max_change)
+            if (comp_size[j] > max_change) {
               max_change = comp_size[j];
+            }
           }
         }
         sfree(comp_size);
@@ -184,11 +185,13 @@ void connect_enforce(struct vtx_data **graph,       /* data structure for graph 
         clist_ptrs = smalloc(ncomps * sizeof(int));
         if (ncomps > nsets_tot) {
           subsets2 = smalloc(ncomps * sizeof(int));
-          for (j        = 0; j < ncomps; j++)
+          for (j = 0; j < ncomps; j++) {
             subsets2[j] = j;
+          }
         }
-        else
+        else {
           subsets2 = subsets;
+        }
         make_setlists(comp_lists, clist_ptrs, ncomps, subsets2, comp_flag, NULL, subnvtxs, TRUE);
         if (ncomps > nsets_tot) {
           sfree(subsets2);
@@ -196,7 +199,7 @@ void connect_enforce(struct vtx_data **graph,       /* data structure for graph 
 
         /* Move all but the largest component. */
         ewgt = 1;
-        for (j = 0; j < ncomps; j++)
+        for (j = 0; j < ncomps; j++) {
           if (j != comp_max_index) {
 
             /* Figure out to which other domain it is most connected. */
@@ -207,10 +210,12 @@ void connect_enforce(struct vtx_data **graph,       /* data structure for graph 
               for (l = 1; l <= graph[vtx]->nedges; l++) {
                 set = assignment[graph[vtx]->edges[l]];
                 if (set != domain) {
-                  if (bndy_size[set] == 0)
+                  if (bndy_size[set] == 0) {
                     bndy_list[nbndy++] = set;
-                  if (using_ewgts)
+                  }
+                  if (using_ewgts) {
                     ewgt = graph[vtx]->ewgts[l];
+                  }
                   bndy_size[set] += ewgt;
                 }
               }
@@ -236,8 +241,9 @@ void connect_enforce(struct vtx_data **graph,       /* data structure for graph 
             }
 
             /* Clear bndy_size array */
-            for (k                    = 0; k < nbndy; k++)
+            for (k = 0; k < nbndy; k++) {
               bndy_size[bndy_list[k]] = 0;
+            }
 
             k = clist_ptrs[j];
 
@@ -266,6 +272,7 @@ void connect_enforce(struct vtx_data **graph,       /* data structure for graph 
                               heap_map);
             }
           }
+        }
 
         sfree(clist_ptrs);
         sfree(comp_lists);

@@ -82,10 +82,12 @@ int maxmatch3(struct vtx_data **graph,      /* array of vtx data for graph */
           neighbor = graph[vtx]->edges[j];
           if (mflag[neighbor] == 0) {
             /* Set flag for single possible neighbor. */
-            if (prob_sum == 0)
+            if (prob_sum == 0) {
               save = neighbor;
-            else
+            }
+            else {
               save = 0;
+            }
             prob_sum += 1.0;
           }
         }
@@ -126,11 +128,13 @@ int maxmatch3(struct vtx_data **graph,      /* array of vtx data for graph */
           neighbor = graph[vtx]->edges[j];
           if (mflag[neighbor] == 0) {
             /* Set flag for single possible neighbor. */
-            if (prob_sum == 0)
+            if (prob_sum == 0) {
               save = neighbor;
-            else
+            }
+            else {
               save = 0;
-            ewgt   = graph[vtx]->ewgts[j];
+            }
+            ewgt = graph[vtx]->ewgts[j];
             prob_sum += ewgt;
           }
         }

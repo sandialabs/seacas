@@ -56,8 +56,9 @@ int ql(double d[], double e[], int n)
     do {
       for (m = l; m <= n - 1; m++) {
         dd = fabs(d[m]) + fabs(d[m + 1]);
-        if (fabs(e[m]) + dd == dd)
+        if (fabs(e[m]) + dd == dd) {
           break;
+        }
       }
       if (m != l) {
         if (iter++ == 50) {

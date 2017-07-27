@@ -69,8 +69,9 @@ int make_kl_list(struct vtx_data **graph,     /* data structure for graph */
   while (vptr != NULL) {
     vtx     = ((int)(vptr - listspace[0])) / size;
     *bptr++ = vtx;
-    if (sets[vtx] >= 0)
+    if (sets[vtx] >= 0) {
       sets[vtx] = -sets[vtx] - 1;
+    }
     ++list_length;
     vptr = vptr->next;
   }

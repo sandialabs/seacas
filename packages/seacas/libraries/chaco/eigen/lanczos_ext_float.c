@@ -208,7 +208,7 @@ int lanczos_ext_float(struct vtx_data **A,       /* sparse matrix in row linked 
   bji_tol        = eigtol;
   Anorm          = 2 * maxdeg;                   /* Gershgorin estimate for ||A|| */
   goodtol        = Anorm * sqrt(DOUBLE_EPSILON); /* Parlett & Scott's bound, p.224 */
-  interval       = 2 + (int)min(LANCZOS_SO_INTERVAL - 2, n / (2 * LANCZOS_SO_INTERVAL));
+  interval       = 2 + min(LANCZOS_SO_INTERVAL - 2, n / (2 * LANCZOS_SO_INTERVAL));
   bis_safety     = BISECTION_SAFETY;
   numerical_zero = 1.0e-6;
 
@@ -406,8 +406,9 @@ int lanczos_ext_float(struct vtx_data **A,       /* sparse matrix in row linked 
       /* check convergence of Ritz pairs */
       time      = lanc_seconds();
       converged = TRUE;
-      if (j < d)
+      if (j < d) {
         converged = FALSE;
+      }
       else {
         curlnk = scanlist;
         while (curlnk != NULL) {
@@ -543,13 +544,16 @@ int lanczos_ext_float(struct vtx_data **A,       /* sparse matrix in row linked 
   frvec(v, 1);
   frvec(work1, 1);
   frvec(work2, 1);
-  if (vwsqrt != NULL)
+  if (vwsqrt != NULL) {
     frvec_float(vwsqrt_float, 1);
+  }
 
   init_time += lanc_seconds() - time;
 
-  if (maxj == 0)
+  if (maxj == 0) {
     return (1); /* see note on beta[0] and maxj above */
-  else
+  }
+  else {
     return (0);
+  }
 }

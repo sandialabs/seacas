@@ -84,15 +84,17 @@ void klvspiff(struct vtx_data **graph,     /* list of graph info for each vertex
   /* Find largest possible change. */
   maxdval = 0;
   for (i = 1; i <= nvtxs; i++) {
-    if (graph[i]->vwgt > maxdval)
+    if (graph[i]->vwgt > maxdval) {
       maxdval = graph[i]->vwgt;
-    dval      = -graph[i]->vwgt;
-    edges     = graph[i]->edges;
+    }
+    dval  = -graph[i]->vwgt;
+    edges = graph[i]->edges;
     for (j = graph[i]->nedges - 1; j; j--) {
       dval += graph[*(++edges)]->vwgt;
     }
-    if (dval > maxdval)
+    if (dval > maxdval) {
       maxdval = dval;
+    }
   }
 
   /* Allocate a bunch of space for KLV. */

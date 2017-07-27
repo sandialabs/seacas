@@ -48,12 +48,15 @@ void countup_vtx_sep(struct vtx_data **graph, /* list of graph info for each ver
   sep_size = 0;
   j = k = 0;
   for (i = 1; i <= nvtxs; i++) {
-    if (sets[i] == 0)
+    if (sets[i] == 0) {
       j += graph[i]->vwgt;
-    if (sets[i] == 1)
+    }
+    if (sets[i] == 1) {
       k += graph[i]->vwgt;
-    if (sets[i] == 2)
+    }
+    if (sets[i] == 2) {
       sep_size += graph[i]->vwgt;
+    }
   }
   printf("Set sizes = %d/%d, Separator size = %d\n\n", j, k, sep_size);
 

@@ -200,8 +200,9 @@ void check_bpgraph(int n_left, int n_right, int *pointers, int *indices)
       }
       /* Check for counter-edge */
       for (k = pointers[neighbor]; k < pointers[neighbor + 1]; k++) {
-        if (indices[k] == i)
+        if (indices[k] == i) {
           break;
+        }
       }
       if (k == pointers[neighbor + 1]) {
         printf("Flip edge (%d, %d) not found\n", k, i);
@@ -217,8 +218,9 @@ void check_bpgraph(int n_left, int n_right, int *pointers, int *indices)
       }
       /* Check for counter-edge */
       for (k = pointers[neighbor]; k < pointers[neighbor + 1]; k++) {
-        if (indices[k] == i)
+        if (indices[k] == i) {
           break;
+        }
       }
       if (k == pointers[neighbor + 1]) {
         printf("Flip edge (%d, %d) not found\n", k, i);
@@ -240,8 +242,9 @@ void print_bpgraph(int nleft, int nright, int *pointers, int *indices, int *vwgt
   fprintf(file, "%d %d\n", nvtxs, nedges);
 
   for (i = 0; i < nvtxs; i++) {
-    if (vwgts != NULL)
+    if (vwgts != NULL) {
       fprintf(file, "%d     ", vwgts[i]);
+    }
     for (j = pointers[i]; j < pointers[i + 1]; j++) {
       fprintf(file, "%d ", indices[j]);
     }

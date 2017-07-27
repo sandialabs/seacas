@@ -57,13 +57,16 @@ int input_int(void)
     c = getchar();
     if (c >= 0 && c <= 127) {
       line[i] = (char)c;
-      if (isdigit(line[i]) || line[i] == '-')
+      if (isdigit(line[i]) || line[i] == '-') {
         i++;
-      else if (i != 0)
+      }
+      else if (i != 0) {
         done = TRUE;
+      }
     }
-    else
+    else {
       done = TRUE;
+    }
   }
 
   (void)sscanf(line, "%d", &val);

@@ -66,8 +66,9 @@ void perturb_init(int n /* graph size at this level */
 
     /* Find another vertex to define an edge. */
     j = 1 + (n * drandom());
-    while (j == i)
-      j            = 1 + (n * drandom());
+    while (j == i) {
+      j = 1 + (n * drandom());
+    }
     pedges[i].val2 = 1 + (n * drandom());
 
     pvals[i] = PERTURB_MAX * drandom();

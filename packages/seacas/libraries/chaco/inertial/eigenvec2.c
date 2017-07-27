@@ -53,14 +53,16 @@ void evals2(double  H[2][2], /* symmetric matrix for eigenvalues */
   xmax = 0.0;
   for (i = 0; i < 2; i++) {
     for (j = i; j < 2; j++) {
-      if (fabs(H[i][j]) > xmax)
+      if (fabs(H[i][j]) > xmax) {
         xmax = fabs(H[i][j]);
+      }
     }
   }
   if (xmax != 0) {
     for (i = 0; i < 2; i++) {
-      for (j    = 0; j < 2; j++)
+      for (j = 0; j < 2; j++) {
         M[i][j] = H[i][j] / xmax;
+      }
     }
   }
 
@@ -102,8 +104,9 @@ void eigenvec2(double  A[2][2], /* matrix */
     evec[1] = 0;
     norm    = 1;
   }
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; i++) {
     evec[i] /= norm;
+  }
   res1 = (A[0][0] - eval) * evec[0] + A[1][0] * evec[1];
   res2 = A[1][0] * evec[0] + (A[1][1] - eval) * evec[1];
   *res = sqrt(res1 * res1 + res2 * res2);

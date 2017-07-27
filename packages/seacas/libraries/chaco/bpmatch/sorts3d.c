@@ -88,7 +88,8 @@ void sorts3d(
   indices[3][4]                 = temp[12];
 
   for (i = 0; i < nsets; i++) {
-    for (j          = i + 1; j < nsets; j++)
+    for (j = i + 1; j < nsets; j++) {
       indices[j][i] = indices[i][j];
+    }
   }
 }

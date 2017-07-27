@@ -70,8 +70,9 @@ void add_edges(struct vtx_data **graph,      /* graph data structure */
       /* Copy old edge list to new edge list. */
       nedges   = graph[vtx]->nedges;
       new_list = smalloc((nedges + 1) * sizeof(int));
-      for (i           = 0; i < nedges; i++)
-        new_list[i]    = graph[vtx]->edges[i];
+      for (i = 0; i < nedges; i++) {
+        new_list[i] = graph[vtx]->edges[i];
+      }
       new_list[nedges] = vtx2;
 
       /* Save old edges. */
@@ -89,8 +90,9 @@ void add_edges(struct vtx_data **graph,      /* graph data structure */
       /* If using edge weights, I have to modify those too. */
       if (using_ewgts) {
         new_ewgts = smalloc((nedges + 1) * sizeof(float));
-        for (i            = 1; i < nedges; i++)
-          new_ewgts[i]    = graph[vtx]->ewgts[i];
+        for (i = 1; i < nedges; i++) {
+          new_ewgts[i] = graph[vtx]->ewgts[i];
+        }
         new_ewgts[nedges] = 1;
         new_ewgts[0]      = graph[vtx]->ewgts[0] - new_ewgts[nedges];
 

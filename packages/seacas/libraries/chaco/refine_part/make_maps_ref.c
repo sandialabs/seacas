@@ -81,7 +81,7 @@ void make_maps_ref(struct vtx_data **graph,         /* graph data structure */
       vwgt_max = graph[vtx]->vwgt;
     }
     vwgt_sum2 += graph[vtx]->vwgt;
-    assignment[vtx] = (int)set1;
+    assignment[vtx] = set1;
     j++;
   }
   *pvwgt_sum1 = vwgt_sum1;

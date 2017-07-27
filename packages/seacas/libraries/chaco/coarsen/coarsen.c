@@ -121,16 +121,18 @@ void coarsen(
       vwsqrt = smalloc((nvtxs + 1) * sizeof(double));
       makevwsqrt(vwsqrt, graph, nvtxs);
     }
-    else
+    else {
       vwsqrt = NULL;
-    maxdeg   = find_maxdeg(graph, nvtxs, using_ewgts, (float *)NULL);
+    }
+    maxdeg = find_maxdeg(graph, nvtxs, using_ewgts, (float *)NULL);
 
     if (using_vwgts) {
       vwgt_max   = 0;
       total_vwgt = 0;
       for (i = 1; i <= nvtxs; i++) {
-        if (graph[i]->vwgt > vwgt_max)
+        if (graph[i]->vwgt > vwgt_max) {
           vwgt_max = graph[i]->vwgt;
+        }
         total_vwgt += graph[i]->vwgt;
       }
     }
@@ -138,8 +140,9 @@ void coarsen(
       vwgt_max   = 1;
       total_vwgt = nvtxs;
     }
-    for (i    = 0; i < nsets; i++)
+    for (i = 0; i < nsets; i++) {
       goal[i] = total_vwgt / nsets;
+    }
 
     space = smalloc((nvtxs + 1) * sizeof(int));
 
@@ -156,12 +159,15 @@ void coarsen(
         twptr  = term_wgts[j];
         ctwptr = new_term_wgts[j];
         for (i = 1; i <= nvtxs; i++) {
-          if (twptr[i] > .5)
+          if (twptr[i] > .5) {
             ctwptr[i] = 1;
-          else if (twptr[i] < -.5)
+          }
+          else if (twptr[i] < -.5) {
             ctwptr[i] = -1;
-          else
+          }
+          else {
             ctwptr[i] = 0;
+          }
         }
       }
       real_term_wgts = new_term_wgts;
@@ -263,12 +269,15 @@ void coarsen(
       vwsqrt = smalloc((nvtxs + 1) * sizeof(double));
       makevwsqrt(vwsqrt, graph, nvtxs);
 
-      for (i = 1; i <= ndims; i++)
+      for (i = 1; i <= ndims; i++) {
         orthogvec(yvecs[i], 1, nvtxs, vwsqrt);
+      }
     }
-    else
-      for (i = 1; i <= ndims; i++)
+    else {
+      for (i = 1; i <= ndims; i++) {
         orthog1(yvecs[i], 1, nvtxs);
+      }
+    }
 
     /* Allocate space that will be needed in RQI. */
     r1   = smalloc(7 * (nvtxs + 1) * sizeof(double));
@@ -283,8 +292,9 @@ void coarsen(
       vwgt_max   = 0;
       total_vwgt = 0;
       for (i = 1; i <= nvtxs; i++) {
-        if (graph[i]->vwgt > vwgt_max)
+        if (graph[i]->vwgt > vwgt_max) {
           vwgt_max = graph[i]->vwgt;
+        }
         total_vwgt += graph[i]->vwgt;
       }
     }
@@ -292,8 +302,9 @@ void coarsen(
       vwgt_max   = 1;
       total_vwgt = nvtxs;
     }
-    for (i    = 0; i < nsets; i++)
+    for (i = 0; i < nsets; i++) {
       goal[i] = total_vwgt / nsets;
+    }
 
     space     = smalloc((nvtxs + 1) * sizeof(int));
     morespace = smalloc((nvtxs) * sizeof(int));
@@ -337,12 +348,15 @@ void coarsen(
           twptr  = term_wgts[j];
           ctwptr = new_term_wgts[j];
           for (i = 1; i <= nvtxs; i++) {
-            if (twptr[i] > .5)
+            if (twptr[i] > .5) {
               ctwptr[i] = 1;
-            else if (twptr[i] < -.5)
+            }
+            else if (twptr[i] < -.5) {
               ctwptr[i] = -1;
-            else
+            }
+            else {
               ctwptr[i] = 0;
+            }
           }
         }
         real_term_wgts = new_term_wgts;
@@ -357,8 +371,9 @@ void coarsen(
       w2       = goal[1];
       gvec     = smalloc((nvtxs + 1) * sizeof(double));
       term_tot = 0;
-      for (j = 1; j <= nvtxs; j++)
+      for (j = 1; j <= nvtxs; j++) {
         term_tot += (real_term_wgts[1])[j];
+      }
       term_tot /= (w1 + w2);
       if (using_vwgts) {
         for (j = 1; j <= nvtxs; j++) {
@@ -408,11 +423,13 @@ void coarsen(
 
   /* Free the space that was allocated. */
   if (ccoords != NULL) {
-    for (i = 0; i < igeom; i++)
+    for (i = 0; i < igeom; i++) {
       sfree(ccoords[i]);
+    }
     sfree(ccoords);
   }
-  for (i = ndims; i > 0; i--)
+  for (i = ndims; i > 0; i--) {
     sfree(cyvecs[i]);
+  }
   free_graph(cgraph);
 }

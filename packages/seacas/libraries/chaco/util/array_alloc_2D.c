@@ -60,7 +60,7 @@ void *array_alloc_2D_ret(size_t dim1, size_t dim2, size_t size)
 
   if (field != NULL) {
     ptr  = (char **)field;
-    data = (char *)field;
+    data = field;
     data += offset;
     for (j = 0; j < dim1; j++) {
       ptr[j] = data + j * size * dim2;

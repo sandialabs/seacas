@@ -35,9 +35,9 @@
 
 double determinant(double M[3][3], int ndims)
 {
-  if (ndims == 1)
+  if (ndims == 1) {
     return (M[0][0]);
-
+  }
   else if (ndims == 2) {
     return (M[0][0] * M[1][1] - M[0][1] * M[1][0]);
   }
@@ -48,6 +48,7 @@ double determinant(double M[3][3], int ndims)
             M[2][0] * (M[0][1] * M[1][2] - M[1][1] * M[0][2]));
   }
 
-  else
+  else {
     return (0.0);
+  }
 }

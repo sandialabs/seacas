@@ -125,10 +125,12 @@ int bisect(double *alpha,        /* vector of Lanczos scalars */
         cksturmcnt(ritz_sav, 1, j, x1, x2, &x1ck, &x2ck, &numck);
         printf("%4d %20.16f %20.16f   %3d   %3d  %3d   %3d   %3d   %3d   %g", ii++, x1, x2, x1cnt,
                x1ck, x2cnt, x2ck, numbracketed, numck, diff);
-        if (x1cnt != x1ck || x2cnt != x2ck || numbracketed != numck)
+        if (x1cnt != x1ck || x2cnt != x2ck || numbracketed != numck) {
           printf("**\n");
-        else
+        }
+        else {
           printf("\n");
+        }
       }
     }
     ritz[index] = 0.5 * (x1 + x2);
@@ -179,10 +181,12 @@ int bisect(double *alpha,        /* vector of Lanczos scalars */
         cksturmcnt(ritz_sav, 1, j, x1, x2, &x1ck, &x2ck, &numck);
         printf("%4d %20.16f %20.16f   %3d   %3d  %3d   %3d   %3d   %3d   %g", ii++, x1, x2, x1cnt,
                x1ck, x2cnt, x2ck, numbracketed, numck, diff);
-        if (x1cnt != x1ck || x2cnt != x2ck || numbracketed != numck)
+        if (x1cnt != x1ck || x2cnt != x2ck || numbracketed != numck) {
           printf("**\n");
-        else
+        }
+        else {
           printf("\n");
+        }
       }
     }
     ritz[index] = 0.5 * (x1 + x2);

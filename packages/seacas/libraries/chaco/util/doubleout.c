@@ -60,8 +60,9 @@ void doubleout_file(FILE *outfile, double number, int mode)
 {
   double fabs(double); /* intrinsic absolute value function */
 
-  if (outfile == NULL)
+  if (outfile == NULL) {
     return;
+  }
 
   if (mode == 1) {
     if (fabs(number) < 100) {

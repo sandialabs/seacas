@@ -65,9 +65,8 @@ int lanpause(int      j,         /* current step */
     if ((j - lastpause) == interval || beta < 1000 * DOUBLE_EPSILON) {
       return (TRUE);
     }
-    else {
-      return (FALSE);
-    }
+
+    return (FALSE);
   }
 
   /* Run until orthogonality with first Lanczos vector deteriorates, then switch
@@ -83,17 +82,15 @@ int lanpause(int      j,         /* current step */
         *pausemode = 2;
         return (TRUE);
       }
-      else {
-        return (FALSE);
-      }
+
+      return (FALSE);
     }
     if (*pausemode == 2) {
       if ((j - lastpause) == interval || beta < 1000 * DOUBLE_EPSILON) {
         return (TRUE);
       }
-      else {
-        return (FALSE);
-      }
+
+      return (FALSE);
     }
   }
 
@@ -129,9 +126,8 @@ int lanpause_float(int     j,         /* current step */
     if ((j - lastpause) == interval || beta < 1000 * DOUBLE_EPSILON) {
       return (TRUE);
     }
-    else {
-      return (FALSE);
-    }
+
+    return (FALSE);
   }
 
   /* Run until orthogonality with first Lanczos vector deteriorates, then switch
@@ -147,17 +143,15 @@ int lanpause_float(int     j,         /* current step */
         *pausemode = 2;
         return (TRUE);
       }
-      else {
-        return (FALSE);
-      }
+
+      return (FALSE);
     }
     if (*pausemode == 2) {
       if ((j - lastpause) == interval || beta < 1000 * DOUBLE_EPSILON) {
         return (TRUE);
       }
-      else {
-        return (FALSE);
-      }
+
+      return (FALSE);
     }
   }
 

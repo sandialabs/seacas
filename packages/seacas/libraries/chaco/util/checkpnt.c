@@ -42,8 +42,9 @@ void checkpnt(char *tag)
   int affirm(char *prompt);
   void bail(char *msg, int status);
 
-  if (tag != NULL && (int)strlen(tag) > 0)
+  if (tag != NULL && (int)strlen(tag) > 0) {
     printf("%s: ", tag);
+  }
   if (!affirm("continue")) {
     bail(NULL, 0);
   }

@@ -103,8 +103,9 @@ void make_unconnected(
   int               vtx;              /* vertex in an added edge */
   int               j;                /* loop counters */
 
-  if (*cdata == NULL)
+  if (*cdata == NULL) {
     return;
+  }
 
   old_edges = (*cdata)->old_edges;
   old_ewgts = (*cdata)->old_ewgts;
@@ -117,10 +118,12 @@ void make_unconnected(
     /* Restore edges and weights to original status. */
     (*nedges)--;
     for (j = 0; j < 2; j++) {
-      if (j == 0)
+      if (j == 0) {
         vtx = edges->vtx2;
-      else
+      }
+      else {
         vtx = edges->vtx1;
+      }
 
       sfree(graph[vtx]->edges);
       graph[vtx]->edges = old_edges->list;
@@ -149,8 +152,9 @@ void print_connected(struct connect_data *cdata /* space for connectivity data *
 {
   struct edgeslist *edges; /* loops through new edges */
 
-  if (cdata == NULL)
+  if (cdata == NULL) {
     printf("No phantom edges\n");
+  }
   else {
     printf("Phantom edges: ");
     edges = cdata->new_edges;

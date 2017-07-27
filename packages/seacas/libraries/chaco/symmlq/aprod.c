@@ -54,10 +54,12 @@ int aprod_(long *lnvtxs, double *x, double *y, double *dA, double *vwsqrt, doubl
   splarax(y - 1, A, nvtxs, x - 1, vwsqrt, work - 1);
 
   /* Now orthogonalize against lower eigenvectors. */
-  if (vwsqrt == NULL)
+  if (vwsqrt == NULL) {
     orthog1(y - 1, 1, nvtxs);
-  else
+  }
+  else {
     orthogvec(y - 1, 1, nvtxs, vwsqrt);
+  }
   orthogonalize(y - 1, nvtxs, orthlist);
 
   return (0);

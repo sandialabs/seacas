@@ -87,8 +87,9 @@ void splarax(double *          result, /* result of matrix vector multiplication
         *(++respntr) = sum; /* -sum if want -Ax */
       }
     }
-    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0)
+    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0) {
       perturb(result, vec);
+    }
   }
   else { /* Vertex weights */
     if (vwsqrt != NULL) {
@@ -126,8 +127,9 @@ void splarax(double *          result, /* result of matrix vector multiplication
         *(++respntr) = sum; /* -sum if want -Ax */
       }
     }
-    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0)
+    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0) {
       perturb(result, work);
+    }
 
     if (vwsqrt != NULL) {
       respntr  = result;
@@ -190,8 +192,9 @@ void splarax_float(float *           result, /* result of matrix vector multipli
         *(++respntr) = sum; /* -sum if want -Ax */
       }
     }
-    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0)
+    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0) {
       perturb_float(result, vec);
+    }
   }
   else { /* Vertex weights */
     if (vwsqrt != NULL) {
@@ -229,8 +232,9 @@ void splarax_float(float *           result, /* result of matrix vector multipli
         *(++respntr) = sum; /* -sum if want -Ax */
       }
     }
-    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0)
+    if (PERTURB && NPERTURB > 0 && PERTURB_MAX > 0.0) {
       perturb_float(result, work);
+    }
 
     if (vwsqrt != NULL) {
       respntr  = result;

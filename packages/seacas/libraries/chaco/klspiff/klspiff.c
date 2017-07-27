@@ -96,8 +96,9 @@ void klspiff(struct vtx_data **graph, /* list of graph info for each vertex */
   maxhop = 0;
   for (i = 0; i < nsets; i++) {
     for (j = 0; j < nsets; j++) {
-      if (hops[i][j] > maxhop)
+      if (hops[i][j] > maxhop) {
         maxhop = hops[i][j];
+      }
     }
   }
 
@@ -108,10 +109,12 @@ void klspiff(struct vtx_data **graph, /* list of graph info for each vertex */
       twptr = term_wgts[j];
       for (i = nvtxs; i; i--) {
         ++twptr;
-        if (*twptr > maxterm)
+        if (*twptr > maxterm) {
           maxterm = *twptr;
-        else if (-*twptr > maxterm)
+        }
+        else if (-*twptr > maxterm) {
           maxterm = -*twptr;
+        }
       }
     }
     if (CUT_TO_HOP_COST > 1) {

@@ -54,8 +54,9 @@ find_edge_mesh(int                  vertex,    /* vertex in comm_graph */
     dir = -1;
     dim = -(dim + 1);
   }
-  else
+  else {
     dir = 1;
+  }
 
   my_node   = vtx2node[vertex];
   my_loc[0] = my_node % mesh_dims[0];
@@ -68,8 +69,9 @@ find_edge_mesh(int                  vertex,    /* vertex in comm_graph */
 
   else { /* Figure out where edge is in data structure. */
     /* Note: indexing must match with that in init_mesh_edata. */
-    if (dir < 0)
+    if (dir < 0) {
       --my_loc[dim];
+    }
 
     if (dim == 0) { /* Edge in x-direction. */
       index = (mesh_dims[0] - 1) * mesh_dims[1] * my_loc[2] + (mesh_dims[0] - 1) * my_loc[1] +

@@ -120,14 +120,18 @@ void sequence(struct vtx_data **graph,       /* graph data structure */
 
     /* Find size of largest set. */
     setsize = smalloc(ncomps * sizeof(int));
-    for (comp       = 0; comp < ncomps; comp++)
+    for (comp = 0; comp < ncomps; comp++) {
       setsize[comp] = 0;
-    for (i = 1; i <= nvtxs; i++)
+    }
+    for (i = 1; i <= nvtxs; i++) {
       ++setsize[compnum[i]];
+    }
     maxsize = 0;
-    for (comp = 0; comp < ncomps; comp++)
-      if (setsize[comp] > maxsize)
+    for (comp = 0; comp < ncomps; comp++) {
+      if (setsize[comp] > maxsize) {
         maxsize = setsize[comp];
+      }
+    }
 
     glob2loc = smalloc((nvtxs + 1) * sizeof(int));
     loc2glob = smalloc((maxsize + 1) * sizeof(int));
@@ -165,8 +169,9 @@ void sequence(struct vtx_data **graph,       /* graph data structure */
       subvwgt_max = 0;
       total_vwgt  = 0;
       for (i = 1; i <= subnvtxs; i++) {
-        if (subgraph[i]->vwgt > subvwgt_max)
+        if (subgraph[i]->vwgt > subvwgt_max) {
           subvwgt_max = subgraph[i]->vwgt;
+        }
         total_vwgt += subgraph[i]->vwgt;
       }
     }
@@ -184,7 +189,7 @@ void sequence(struct vtx_data **graph,       /* graph data structure */
       maxdeg = find_maxdeg(subgraph, subnvtxs, using_ewgts, (float *)NULL);
 
       eigensolve(subgraph, subnvtxs, subnedges, maxdeg, subvwgt_max, subvwsqrt, using_vwgts,
-                 using_ewgts, term_wgts, 0, (float **)NULL, yvecs, evals, 0, (int *)space, goal,
+                 using_ewgts, term_wgts, 0, (float **)NULL, yvecs, evals, 0, space, goal,
                  solver_flag, rqi_flag, vmax, 1, 3, eigtol);
 
       /* Sort values in eigenvector */
@@ -237,8 +242,9 @@ void sequence(struct vtx_data **graph,       /* graph data structure */
     sfree(loc2glob);
     sfree(glob2loc);
     sfree(setsize);
-    if (using_vwgts)
+    if (using_vwgts) {
       sfree(subvwsqrt);
+    }
   }
 
   sfree(yvecs[1]);
