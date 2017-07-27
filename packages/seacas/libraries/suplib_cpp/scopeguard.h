@@ -11,7 +11,7 @@ template <class T> class RefHolder
   T &ref_;
 
 public:
-  RefHolder(T &ref) : ref_(ref) {}
+  explicit RefHolder(T &ref) : ref_(ref) {}
   operator T &() const { return ref_; }
 private:
   // Disable assignment - not implemented
@@ -32,12 +32,13 @@ protected:
   }
   template <typename J> static void SafeExecute(J &j) throw()
   {
-    if (!j.dismissed_)
+    if (!j.dismissed_) {
       try {
         j.Execute();
       }
       catch (...) {
       }
+    }
   }
 
   mutable bool dismissed_;
@@ -57,8 +58,8 @@ public:
   ~ScopeGuardImpl0() throw() { SafeExecute(*this); }
   void Execute() { fun_(); }
 protected:
-  ScopeGuardImpl0(F fun) : fun_(fun) {}
-  F                 fun_;
+  explicit ScopeGuardImpl0(F fun) : fun_(fun) {}
+  F                          fun_;
 };
 
 template <typename F> inline ScopeGuardImpl0<F> MakeGuard(F fun)
