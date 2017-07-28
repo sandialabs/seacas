@@ -12,4 +12,4 @@ namespace Ioss {
   }
 
   Tracer::~Tracer() { --level; }
-}
+} // namespace Ioss

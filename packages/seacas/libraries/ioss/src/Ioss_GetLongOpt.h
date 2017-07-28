@@ -69,5 +69,5 @@ namespace Ioss {
      */
     void usage(const char *str) { ustring = str; }
   };
-}
+} // namespace Ioss
 #endif /* _GetLongOption_h_ */

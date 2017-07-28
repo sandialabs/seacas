@@ -744,7 +744,7 @@ namespace {
     }
     return false; // Can't get here...  Quiet the compiler
   }
-}
+} // namespace
 // Read scalar fields off an input database and determine whether
 // they are components of a higher order type (vector, tensor, ...).
 // This routine is used if there is no field component separator.  E.g.,
@@ -2557,4 +2557,4 @@ namespace {
       }
     }
   }
-}
+} // namespace

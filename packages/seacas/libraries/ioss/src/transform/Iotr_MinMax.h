@@ -38,10 +38,10 @@
 #include <string>              // for string
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
-}
+} // namespace Ioss
 
 namespace Iotr {
 
@@ -72,6 +72,6 @@ namespace Iotr {
     bool doMin;
     bool doAbs;
   };
-}
+} // namespace Iotr
 
 #endif // IOSS_Iotr_MinMax_h

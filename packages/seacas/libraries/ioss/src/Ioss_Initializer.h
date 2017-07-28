@@ -38,4 +38,4 @@ namespace Ioss {
     // Assignment operator
     // Copy constructor
   };
-}
+} // namespace Ioss

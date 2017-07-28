@@ -40,7 +40,7 @@
 #include <vector>  // for vector
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
 
@@ -103,6 +103,6 @@ namespace Ioss {
     int                 m_myProcessor; // For error messages...
     bool m_defined; // For use by some clients; not all, so don't read too much into value...
   };
-}
+} // namespace Ioss
 
 #endif // IOSS_Ioss_Map_h

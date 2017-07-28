@@ -46,7 +46,7 @@
 
 namespace Iogn {
   class GeneratedMesh;
-}
+} // namespace Iogn
 namespace Ioss {
   class CommSet;
   class EdgeBlock;
@@ -64,11 +64,11 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 namespace Ioss {
   class EntityBlock;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the generated database format.
  */
@@ -226,5 +226,5 @@ namespace Iogn {
 
     bool m_useVariableDf;
   };
-}
+} // namespace Iogn
 #endif // IOSS_Iogn_DatabaseIO_h

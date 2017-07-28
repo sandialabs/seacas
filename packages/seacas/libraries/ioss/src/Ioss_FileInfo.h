@@ -120,5 +120,5 @@ namespace Ioss {
     bool        exists_{};   ///< this is used frequently, check on creation
     bool        readable_{}; ///< this is used frequently, check on creation
   };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_FileInfo_h

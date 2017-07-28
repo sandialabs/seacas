@@ -43,39 +43,39 @@
 #include <vector>               // for vector
 namespace Ioss {
   class EdgeBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class EdgeSet;
-}
+} // namespace Ioss
 namespace Ioss {
   class ElementBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class ElementSet;
-}
+} // namespace Ioss
 namespace Ioss {
   class FaceBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class FaceSet;
-}
+} // namespace Ioss
 namespace Ioss {
   class NodeBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class NodeSet;
-}
+} // namespace Ioss
 namespace Ioss {
   class SideBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class SideSet;
-}
+} // namespace Ioss
 
 using entity_id = int64_t;
 
 namespace Ioss {
-}
+} // namespace Ioss
 /*!
  * This set of classes provides a thin wrapper around the exodusII
  * internals.  It supplants several of the exodusII API calls in
@@ -495,5 +495,5 @@ namespace Ioex {
     int                 maximumNameLength;
     Ioss::ParallelUtils parallelUtil;
   };
-}
+} // namespace Ioex
 #endif /* IOSS_Ioex_Internals_h */

@@ -80,5 +80,5 @@ namespace Ioss {
 
     Shell9(const Shell9 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

@@ -77,5 +77,5 @@ namespace Ioss {
 
     Node(const Node &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

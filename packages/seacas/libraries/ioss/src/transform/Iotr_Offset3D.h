@@ -39,10 +39,10 @@
 #include <vector>              // for vector
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
-}
+} // namespace Ioss
 
 namespace Iotr {
 
@@ -76,6 +76,6 @@ namespace Iotr {
     int    intOffset[3];
     double realOffset[3];
   };
-}
+} // namespace Iotr
 
 #endif // IOSS_Iotr_Offset3D_h

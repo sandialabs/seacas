@@ -38,10 +38,10 @@
 #include <string>              // for string
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
-}
+} // namespace Ioss
 
 namespace Iotr {
 
@@ -75,6 +75,6 @@ namespace Iotr {
     int    intMultiplier;
     double realMultiplier;
   };
-}
+} // namespace Iotr
 
 #endif // IOSS_Iotr_Scale_h

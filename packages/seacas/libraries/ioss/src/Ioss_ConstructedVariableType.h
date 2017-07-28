@@ -47,5 +47,5 @@ namespace Ioss {
   private:
     ConstructedVariableType(const ConstructedVariableType &);
   };
-}
+} // namespace Ioss
 #endif

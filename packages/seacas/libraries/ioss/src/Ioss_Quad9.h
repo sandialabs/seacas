@@ -78,5 +78,5 @@ namespace Ioss {
 
     Quad9(const Quad9 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

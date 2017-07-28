@@ -15,7 +15,7 @@ namespace {
     }
     return true;
   }
-}
+} // namespace
 
 int main()
 {

@@ -118,7 +118,7 @@ namespace Ioxf {
     // unsigned int with the supported Ioss::EntityTypes or'ed
     // together. If "return_value & Ioss::EntityType" is set, then the
     // database supports that type (e.g. return_value & Ioss::FACESET)
-    unsigned entity_field_support() const
+    unsigned entity_field_support() const override
     {
       return Ioss::REGION | Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK;
     }

@@ -41,16 +41,16 @@
 
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 namespace Ioss {
   class VariableType;
-}
+} // namespace Ioss
 namespace Iotr {
   class Factory;
-}
+} // namespace Iotr
 
 namespace Ioss {
-}
+} // namespace Ioss
 namespace Ioss {
   class Transform
   {
@@ -71,7 +71,7 @@ namespace Ioss {
 
     virtual bool internal_execute(const Ioss::Field &field, void *data) = 0;
   };
-}
+} // namespace Ioss
 
 namespace Iotr {
   using FactoryMap = std::map<std::string, Factory *, std::less<std::string>>;
@@ -92,6 +92,6 @@ namespace Iotr {
   private:
     static FactoryMap *registry();
   };
-}
+} // namespace Iotr
 
 #endif // IOSS_Ioss_Transform_h

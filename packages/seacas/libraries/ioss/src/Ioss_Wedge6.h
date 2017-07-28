@@ -82,5 +82,5 @@ namespace Ioss {
   private:
     Wedge6(const Wedge6 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

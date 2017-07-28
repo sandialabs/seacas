@@ -1160,7 +1160,7 @@ namespace Iovs {
     }
     return num_to_get;
   }
-}
+} // namespace Iovs
 
 namespace {
 
@@ -1372,4 +1372,4 @@ namespace {
     plugin_python_path = sierra_ins_path + "/" + CATALYST_PLUGIN_PATH + "/" + sierra_system + "/" +
                          sierra_version + "/" + CATALYST_PLUGIN_PYTHON_MODULE;
   }
-}
+} // namespace

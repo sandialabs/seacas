@@ -262,6 +262,6 @@ namespace Iovs {
     mutable Ioss::Map nodeMap;
     mutable Ioss::Map elemMap;
   };
-}
+} // namespace Iovs
 
 #endif

@@ -80,5 +80,5 @@ namespace Ioss {
 
     Tet10(const Tet10 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

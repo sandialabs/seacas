@@ -40,11 +40,11 @@
 #include <string>                // for string
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
   class Property;
-}
+} // namespace Ioss
 
 namespace Ioex {
   class SuperElement : public Ioss::GroupingEntity
@@ -78,5 +78,5 @@ namespace Ioex {
     size_t      num_dim;
     int         filePtr;
   };
-}
+} // namespace Ioex
 #endif

@@ -267,6 +267,6 @@ namespace Iogn {
     const ExodusData &   mExodusData;
     std::vector<int64_t> mElementOffsetForBlock;
   };
-}
+} // namespace Iogn
 
 #endif

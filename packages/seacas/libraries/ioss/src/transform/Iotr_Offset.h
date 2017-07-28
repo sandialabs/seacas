@@ -38,10 +38,10 @@
 #include <transform/Iotr_Offset.h>
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
-}
+} // namespace Ioss
 
 namespace Iotr {
 
@@ -75,6 +75,6 @@ namespace Iotr {
     int    intOffset;
     double realOffset;
   };
-}
+} // namespace Iotr
 
 #endif // IOSS_Iotr_Offset_h

@@ -81,5 +81,5 @@ namespace Skinner {
     bool        ignoreFaceIds_;
     bool        noOutput_;
   };
-}
+} // namespace Skinner
 #endif

@@ -80,5 +80,5 @@ namespace Ioss {
   private:
     Pyramid18(const Pyramid18 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_Pyramid18_h

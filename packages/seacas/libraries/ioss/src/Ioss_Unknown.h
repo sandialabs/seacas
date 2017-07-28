@@ -78,5 +78,5 @@ namespace Ioss {
 
     Unknown(const Unknown &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

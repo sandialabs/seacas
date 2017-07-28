@@ -57,7 +57,7 @@ namespace {
 #if defined(IOSS_THREADSAFE)
   std::mutex m_;
 #endif
-}
+} // namespace
 
 namespace Ioss {
   namespace Init {

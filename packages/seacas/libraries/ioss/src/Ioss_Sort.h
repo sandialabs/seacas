@@ -149,7 +149,7 @@ namespace {
       v[j] = tmp;
     }
   }
-}
+} // namespace
 
 namespace Ioss {
   template <typename INT> void qsort(std::vector<INT> &v)
@@ -160,6 +160,6 @@ namespace Ioss {
     qsort_int(v.data(), 0, v.size() - 1);
     isort_int(v.data(), v.size());
   }
-}
+} // namespace Ioss
 
 #endif

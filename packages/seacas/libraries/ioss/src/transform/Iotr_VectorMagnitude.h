@@ -38,10 +38,10 @@
 #include <string>              // for string
 namespace Ioss {
   class Field;
-}
+} // namespace Ioss
 
 namespace Ioss {
-}
+} // namespace Ioss
 
 namespace Iotr {
 
@@ -68,6 +68,6 @@ namespace Iotr {
 
     bool internal_execute(const Ioss::Field &field, void *data) override;
   };
-}
+} // namespace Iotr
 
 #endif // IOSS_Iotr_VectorMagnitude_h
