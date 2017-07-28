@@ -3425,7 +3425,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, const_cast<long long int *>(&ids[0]));
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
     }
     else {
       // Have entity_id (long long), need ints...
