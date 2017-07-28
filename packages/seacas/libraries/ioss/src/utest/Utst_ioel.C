@@ -224,13 +224,13 @@ bool test_element(const std::string &type)
       }
       else if (face != nullptr) {
         unsigned int nnfi = element->number_nodes_face(i);
-        if (nnfi != (unsigned int)face->number_nodes()) {
+        if (nnfi != static_cast<unsigned int>(face->number_nodes())) {
           OUTPUT << "\n\tNode count mismatch on face " << i;
           result = false;
         }
         if (i != 0) {
           std::vector<int> conn = element->face_connectivity(i);
-          if ((unsigned int)nnfi != conn.size()) {
+          if (nnfi != conn.size()) {
             OUTPUT << "\n\tNode count and face connectivity size "
                       "mismatch on face "
                    << i;
@@ -254,13 +254,13 @@ bool test_element(const std::string &type)
       }
       else if (edge != nullptr) {
         unsigned int nnei = element->number_nodes_edge(i);
-        if (nnei != (unsigned int)edge->number_nodes()) {
+        if (nnei != static_cast<unsigned int>(edge->number_nodes())) {
           OUTPUT << "\n\tNode count mismatch on edge " << i;
           result = false;
         }
         if (i != 0) {
           std::vector<int> conn = element->edge_connectivity(i);
-          if ((unsigned int)nnei != conn.size()) {
+          if (nnei != conn.size()) {
             OUTPUT << "\n\tNode count and edge connectivity size "
                       "mismatch on edge "
                    << i;
@@ -323,7 +323,7 @@ bool test_element(const std::string &type)
 
       // Edges defining face...
       std::vector<int> face_edge_conn = element->face_edge_connectivity(i);
-      if ((unsigned int)num_edges_face != face_edge_conn.size()) {
+      if (num_edges_face != face_edge_conn.size()) {
         OUTPUT << "\n\tEdges per face mismatch for face " << i;
         result = false;
       }
@@ -346,7 +346,7 @@ bool test_element(const std::string &type)
               OUTPUT << "\n\tInvalid edge connectivity count.";
               result = false;
             }
-            if (face_conn.size() < (unsigned int)fncn + num_edges_face) {
+            if (face_conn.size() < fncn + num_edges_face) {
               OUTPUT << "\n\tInvalid face connectivity count.";
               result = false;
             }

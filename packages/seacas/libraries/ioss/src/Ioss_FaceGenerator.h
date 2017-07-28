@@ -94,7 +94,7 @@ namespace Ioss {
   class FaceGenerator
   {
   public:
-    FaceGenerator(Ioss::Region &region);
+    explicit FaceGenerator(Ioss::Region &region);
 
     template <typename INT> void generate_faces(INT /*dummy*/);
     FaceUnorderedSet &           faces() { return faces_; }
