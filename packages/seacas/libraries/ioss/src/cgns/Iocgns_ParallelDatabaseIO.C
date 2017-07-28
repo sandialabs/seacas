@@ -1497,7 +1497,7 @@ namespace Iocgns {
         for (size_t i = 0; i < element_nodes * num_to_get; i++) {
           nodes.push_back(idata[i]);
         }
-	Ioss::Utils::uniquify(nodes);
+        Ioss::Utils::uniquify(nodes);
 
         // Resolve zone-shared nodes (nodes used in this zone, but are
         // shared on processor boundaries).
@@ -1584,7 +1584,7 @@ namespace Iocgns {
           connectivity_map.clear();
           connectivity_map.shrink_to_fit();
 
-	  Ioss::Utils::uniquify(nodes);
+          Ioss::Utils::uniquify(nodes);
           if (nodes.back() == std::numeric_limits<cgsize_t>::max()) {
             nodes.pop_back();
           }
@@ -1944,8 +1944,8 @@ namespace Iocgns {
 
   unsigned ParallelDatabaseIO::entity_field_support() const
   {
-    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK |
-      Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
+    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK | Ioss::NODESET |
+           Ioss::SIDESET | Ioss::REGION;
   }
 
   int64_t ParallelDatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const

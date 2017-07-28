@@ -47,9 +47,9 @@ extern "C" {
 #include <cstddef>  // for size_t
 #include <cstdio>   // for sprintf, nullptr
 #include <cstdlib>  // for exit, EXIT_FAILURE
+#include <cstring>  // for strlen, strncpy, strcpy, etc
 #include <netcdf.h> // for NC_NOERR, nc_def_var, etc
 #include <ostream>  // for operator<<, etc
-#include <cstring> // for strlen, strncpy, strcpy, etc
 #include <string>   // for string, operator==, etc
 #include <vector>   // for vector
 

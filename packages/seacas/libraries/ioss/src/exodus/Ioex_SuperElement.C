@@ -157,7 +157,8 @@ Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_nam
   fields.add(Ioss::Field("Mr", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, numDOF * numDOF));
 
   if (numRBM > 0) {
-    fields.add(Ioss::Field("InertiaTensor", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, numDOF * numRBM));
+    fields.add(Ioss::Field("InertiaTensor", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH,
+                           numDOF * numRBM));
   }
 
   // There are additional properties and fields on the netcdf file,
@@ -243,7 +244,8 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
     int status = nc_get_array(filePtr, "InertiaTensor", reinterpret_cast<double *>(data));
     if (status != 0) {
       std::ostringstream errmsg;
-      errmsg << "ERROR: Could not load inertia matrix field 'InertiaTensor' from file '" << fileName << "'.";
+      errmsg << "ERROR: Could not load inertia matrix field 'InertiaTensor' from file '" << fileName
+             << "'.";
       IOSS_ERROR(errmsg);
     }
   }
@@ -285,7 +287,6 @@ Ioss::Property Ioex::SuperElement::get_implicit_property(const std::string &the_
   if (Ioss::Utils::case_strcmp(the_name, "numConstraints") == 0) {
     return Ioss::Property(the_name, static_cast<int>(numDOF) - static_cast<int>(numEIG));
   }
-  else {
-    return Ioss::GroupingEntity::get_implicit_property(the_name);
-  }
+
+  return Ioss::GroupingEntity::get_implicit_property(the_name);
 }

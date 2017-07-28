@@ -198,8 +198,8 @@ namespace Ioss {
                                       const std::string &working_directory);
 
     static void get_fields(int64_t entity_count, char **names, size_t num_names,
-                           Ioss::Field::RoleType fld_role, const char suffix_separator,
-                           int *local_truth, std::vector<Ioss::Field> &fields);
+                           Ioss::Field::RoleType fld_role, char suffix_separator, int *local_truth,
+                           std::vector<Ioss::Field> &fields);
 
     static int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                              const std::string &inout);

@@ -243,9 +243,8 @@ namespace Ioss {
       if (database_ == nullptr || get_database()->int_byte_size_api() == 4) {
         return Ioss::Field::INT32;
       }
-      else {
-        return Ioss::Field::INT64;
-      }
+
+      return Ioss::Field::INT64;
     }
 
     unsigned int hash() const { return hash_; }
@@ -481,10 +480,9 @@ int Ioss::GroupingEntity::put_field_data(const std::string &   field_name,
     field.transform(nc_data.data());
     return internal_put_field_data(field, nc_data.data(), data_size);
   }
-  else {
-    T *my_data = const_cast<T *>(data.data());
-    return internal_put_field_data(field, my_data, data_size);
-  }
+
+  T *my_data = const_cast<T *>(data.data());
+  return internal_put_field_data(field, my_data, data_size);
 }
 
 template <typename T>

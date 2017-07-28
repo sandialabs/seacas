@@ -49,7 +49,9 @@ namespace { // Internal helper functions
   enum class entity_type { NODAL, ELEM_BLOCK, NODE_SET, SIDE_SET };
   bool file_exists(const std::string &filepath)
   {
-    struct stat buffer{};
+    struct stat buffer
+    {
+    };
     return (stat(filepath.c_str(), &buffer) == 0);
   }
 
@@ -65,9 +67,9 @@ namespace { // Internal helper functions
 } // End anonymous namespace
 
 namespace Iovs {
-  void *      globalCatalystIossDlHandle           = nullptr;
-  int         DatabaseIO::useCount                 = 0;
-  std::string DatabaseIO::paraview_script_filename = "";
+  void *      globalCatalystIossDlHandle = nullptr;
+  int         DatabaseIO::useCount       = 0;
+  std::string DatabaseIO::paraview_script_filename;
   int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
                     const std::string &inout);
 
@@ -274,8 +276,8 @@ namespace Iovs {
       std::string separator(1, this->get_field_separator());
 
       // See if we are in a restart by looking for '.e-s' in the output filename
-      std::string            restart_tag = "";
-      std::string::size_type pos         = this->DBFilename.rfind(".e-s");
+      std::string            restart_tag;
+      std::string::size_type pos = this->DBFilename.rfind(".e-s");
       if (pos != std::string::npos) {
         if (pos + 3 <= this->DBFilename.length()) {
           restart_tag = this->DBFilename.substr(pos + 3, 5);

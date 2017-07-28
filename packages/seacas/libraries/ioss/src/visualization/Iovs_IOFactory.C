@@ -8,7 +8,7 @@
 
 #include "Ioss_DBUsage.h"                  // for DatabaseUsage
 #include "Ioss_IOFactory.h"                // for IOFactory
-#include <cstddef>                        // for nullptr
+#include <cstddef>                         // for nullptr
 #include <string>                          // for string
 #include <visualization/Iovs_DatabaseIO.h> // for DatabaseIO
 #include <visualization/Iovs_IOFactory.h>

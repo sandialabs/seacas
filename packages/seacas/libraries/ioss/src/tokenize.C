@@ -38,7 +38,7 @@ using TokenList = std::vector<std::string>;
 TokenList Ioss::tokenize(const std::string &str, const std::string &separators)
 {
   TokenList tokens;
-  auto                     first = std::begin(str);
+  auto      first = std::begin(str);
   while (first != std::end(str)) {
     const auto second =
         std::find_first_of(first, std::end(str), std::begin(separators), std::end(separators));

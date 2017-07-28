@@ -67,12 +67,11 @@ namespace Ioex {
   {
     // Check byte-size of integers stored on the database...
     int mode = ex_int64_status(exoid) & EX_ALL_INT64_API;
-    if (mode) {
+    if (mode != 0) {
       return 8;
     }
-    else {
-      return 4;
-    }
+
+    return 4;
   }
 
   template <typename T> bool check_block_order(const std::vector<T *> &blocks)
