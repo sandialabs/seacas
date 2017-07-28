@@ -121,5 +121,5 @@ namespace Excn {
     int exodusFilePtr;
     int maximumNameLength;
   };
-} // namespace Excn  // namespace Excn
+} // namespace Excn
 #endif /* SEACAS_Internals_h */

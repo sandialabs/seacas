@@ -227,5 +227,5 @@ namespace Excn {
   private:
     CommunicationMetaData(const CommunicationMetaData &);
   };
-} // namespace Excn  // namespace Excn
+} // namespace Excn
 #endif /* SEACAS_ExodusEntity_H */
