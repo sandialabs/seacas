@@ -920,7 +920,7 @@ size_t type_size(nc_type type)
   if (type == NC_INT64) {
     return sizeof(int64_t); /* OK */
   }
-  else if (type == NC_FLOAT) {
+  if (type == NC_FLOAT) {
     return sizeof(float); /* OK */
   }
   else if (type == NC_DOUBLE) {
