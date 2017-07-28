@@ -132,7 +132,7 @@ namespace Ioss {
       double                rval;
       int64_t               ival;
     };
-    Data data_;
+    Data data_{};
   };
 } // namespace Ioss
 #endif

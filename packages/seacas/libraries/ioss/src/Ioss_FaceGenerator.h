@@ -59,10 +59,10 @@ namespace Ioss {
     }
 
     size_t         id_;
-    mutable size_t element[2];
+    mutable size_t element[2]{};
     mutable int    elementCount_; // Should be max of 2 solid elements...
     mutable int    sharedWithProc_;
-    std::array<size_t, 4> connectivity_;
+    std::array<size_t, 4> connectivity_{};
   };
 
   struct FaceHash

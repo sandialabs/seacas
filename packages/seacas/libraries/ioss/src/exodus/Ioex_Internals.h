@@ -167,7 +167,7 @@ namespace Ioex {
     bool operator==(const EdgeBlock & /*other*/) const;
     bool operator!=(const EdgeBlock &other) const { return !(*this == other); }
 
-    char        elType[MAX_STR_LENGTH + 1];
+    char        elType[MAX_STR_LENGTH + 1]{};
     std::string name;
     entity_id   id;
     int64_t     entityCount;
@@ -204,7 +204,7 @@ namespace Ioex {
     bool operator==(const FaceBlock & /*other*/) const;
     bool operator!=(const FaceBlock &other) const { return !(*this == other); }
 
-    char        elType[MAX_STR_LENGTH + 1];
+    char        elType[MAX_STR_LENGTH + 1]{};
     std::string name;
     entity_id   id;
     int64_t     entityCount;
@@ -243,7 +243,7 @@ namespace Ioex {
     bool operator==(const ElemBlock & /*other*/) const;
     bool operator!=(const ElemBlock &other) const { return !(*this == other); }
 
-    char        elType[MAX_STR_LENGTH + 1];
+    char        elType[MAX_STR_LENGTH + 1]{};
     std::string name;
     entity_id   id;
     int64_t     entityCount;
@@ -272,7 +272,7 @@ namespace Ioex {
     entity_id   id;
     int64_t     entityCount;
     int64_t     localOwnedCount;
-    int64_t     attributeCount;
+    int64_t     attributeCount{};
     int64_t     dfCount;
     int64_t     procOffset;
   };
@@ -292,7 +292,7 @@ namespace Ioex {
     std::string name;
     entity_id   id;
     int64_t     entityCount;
-    int64_t     attributeCount;
+    int64_t     attributeCount{};
     int64_t     dfCount;
     int64_t     procOffset;
   };
@@ -312,7 +312,7 @@ namespace Ioex {
     std::string name;
     entity_id   id;
     int64_t     entityCount;
-    int64_t     attributeCount;
+    int64_t     attributeCount{};
     int64_t     dfCount;
     int64_t     procOffset;
   };
@@ -332,7 +332,7 @@ namespace Ioex {
     std::string name;
     entity_id   id;
     int64_t     entityCount;
-    int64_t     attributeCount;
+    int64_t     attributeCount{};
     int64_t     dfCount;
     int64_t     procOffset;
   };
@@ -420,7 +420,7 @@ namespace Ioex {
       title[MAX_LINE_LENGTH] = '\0';
     }
 
-    char title[MAX_LINE_LENGTH + 1];
+    char title[MAX_LINE_LENGTH + 1]{};
     int  dimensionality;
     bool file_per_processor;
 

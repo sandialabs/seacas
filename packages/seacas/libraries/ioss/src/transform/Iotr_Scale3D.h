@@ -73,8 +73,8 @@ namespace Iotr {
     bool internal_execute(const Ioss::Field &field, void *data) override;
 
   private:
-    int    intScale[3];
-    double realScale[3];
+    int    intScale[3]{};
+    double realScale[3]{};
   };
 } // namespace Iotr
 

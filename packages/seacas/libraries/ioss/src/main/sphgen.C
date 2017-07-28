@@ -64,7 +64,7 @@ namespace {
   struct Globals
   {
     std::string working_directory;
-    double      scale_factor;
+    double      scale_factor{};
   };
 
   void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates,

@@ -85,7 +85,7 @@ namespace Ioss {
     {
       return std::strncmp(m_data, str.c_str(), MAX_SUFFIX) != 0;
     }
-    char m_data[MAX_SUFFIX + 1];
+    char m_data[MAX_SUFFIX + 1]{};
   };
 
   /** \brief A generic variable type

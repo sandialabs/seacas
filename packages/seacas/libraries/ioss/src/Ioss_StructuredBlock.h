@@ -97,8 +97,8 @@ namespace Ioss {
     // The "original" owner and donor range -- that is, they have not been subsetted
     // due to block decompositions in a parallel run.  These should be the same on
     // all processors...  Primarily used to make parallel collective output easier...
-    std::array<int, 6> m_ownerRange;
-    std::array<int, 6> m_donorRange;
+    std::array<int, 6> m_ownerRange{};
+    std::array<int, 6> m_donorRange{};
 
     std::string m_connectionName;
     std::string m_donorName;
@@ -177,7 +177,7 @@ namespace Ioss {
     // The "original" owner range -- that is, is has not been subsetted
     // due to block decompositions in a parallel run.  It should be the same on
     // all processors...  Primarily used to make parallel collective output easier...
-    std::array<int, 6> m_ownerRange;
+    std::array<int, 6> m_ownerRange{};
 
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg;

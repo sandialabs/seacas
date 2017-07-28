@@ -70,10 +70,10 @@ namespace {
 
   struct Globals
   {
-    bool        debug;
-    bool        do_normals;
-    bool        reverse_normals;
-    double      thickness;
+    bool        debug{};
+    bool        do_normals{};
+    bool        reverse_normals{};
+    double      thickness{};
     std::string working_directory;
   };
 

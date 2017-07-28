@@ -113,11 +113,11 @@ namespace Iogn {
     const std::vector<int> &   surfaceAConnectivity;
     const std::vector<int> &   surfaceBConnectivity;
 
-    int globalNumberOfNodes;
-    int globalNumberOfElements;
+    int globalNumberOfNodes{};
+    int globalNumberOfElements{};
 
-    int globalNumberOfElementsSurface1;
-    int globalNumberOfElementsSurface2;
+    int globalNumberOfElementsSurface1{};
+    int globalNumberOfElementsSurface2{};
 
     std::vector<int> globalIdsOfLocalElements;
     std::vector<int> globalIdsOfLocalNodes;

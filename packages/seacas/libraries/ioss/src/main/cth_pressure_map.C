@@ -79,17 +79,17 @@ namespace {
   struct Globals
   {
     enum FinalPressureType { FINAL, INITIAL, ZERO, OFFSET };
-    bool              debug;
-    bool              do_normals;
-    bool              reverse_normals;
-    bool              add_sset;
-    bool              convert_gage;
+    bool              debug{};
+    bool              do_normals{};
+    bool              reverse_normals{};
+    bool              add_sset{};
+    bool              convert_gage{};
     FinalPressureType final_pressure;
-    double            delta_time;
-    double            maximum_time;
-    double            minimum_time;
-    double            offset_time;
-    double            offset_pressure;
+    double            delta_time{};
+    double            maximum_time{};
+    double            minimum_time{};
+    double            offset_time{};
+    double            offset_pressure{};
     std::string       working_directory;
   };
 
