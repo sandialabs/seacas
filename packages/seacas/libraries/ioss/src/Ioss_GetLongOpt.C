@@ -153,7 +153,7 @@ namespace Ioss {
       Cell *pc = nullptr; // pointer to the partially-matched cell
       for (t = table; t != nullptr; t = t->next) {
         if (strncmp(t->option, token, (tmptoken - token)) == 0) {
-          if ((int)strlen(t->option) == (tmptoken - token)) {
+          if (static_cast<int>(strlen(t->option)) == (tmptoken - token)) {
             /* an exact match found */
             int stat = setcell(t, tmptoken, *(argv + 1), pname);
             if (stat == -1) {
@@ -249,7 +249,7 @@ namespace Ioss {
       Cell *pc = nullptr; // pointer to the partially-matched cell
       for (t = table; t != nullptr; t = t->next) {
         if (strncmp(t->option, token, (tmptoken - token)) == 0) {
-          if ((int)strlen(t->option) == (tmptoken - token)) {
+          if (static_cast<int>(strlen(t->option)) == (tmptoken - token)) {
             /* an exact match found */
             ladtoken = strtok(nullptr, " \t");
             int stat = setcell(t, tmptoken, ladtoken, name);

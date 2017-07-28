@@ -4,7 +4,7 @@ namespace Ioss {
   class Tracer
   {
   public:
-    Tracer(const char *function);
+    explicit Tracer(const char *function);
     ~Tracer();
 
   private:

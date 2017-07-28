@@ -123,7 +123,7 @@ namespace Ioex {
     {
     }
 
-    NodeBlock(const Ioss::NodeBlock &other);
+    explicit NodeBlock(const Ioss::NodeBlock &other);
 
     NodeBlock &operator=(const NodeBlock &other);
 
@@ -158,7 +158,7 @@ namespace Ioex {
       std::strcpy(elType, other.elType);
     }
 
-    EdgeBlock(const Ioss::EdgeBlock &other);
+    explicit EdgeBlock(const Ioss::EdgeBlock &other);
 
     EdgeBlock &operator=(const EdgeBlock &other);
 
@@ -195,7 +195,7 @@ namespace Ioex {
       std::strcpy(elType, other.elType);
     }
 
-    FaceBlock(const Ioss::FaceBlock &other);
+    explicit FaceBlock(const Ioss::FaceBlock &other);
 
     FaceBlock &operator=(const FaceBlock &other);
 
@@ -234,7 +234,7 @@ namespace Ioex {
       std::strcpy(elType, other.elType);
     }
 
-    ElemBlock(const Ioss::ElementBlock &other);
+    explicit ElemBlock(const Ioss::ElementBlock &other);
 
     ElemBlock &operator=(const ElemBlock &other);
 
@@ -264,7 +264,7 @@ namespace Ioex {
           dfCount(other.dfCount), procOffset(other.procOffset)
     {
     }
-    NodeSet(const Ioss::NodeSet &other);
+    explicit NodeSet(const Ioss::NodeSet &other);
     bool operator==(const NodeSet & /*other*/) const;
     bool operator!=(const NodeSet &other) const { return !(*this == other); }
 
@@ -285,7 +285,7 @@ namespace Ioex {
           attributeCount(other.attributeCount), dfCount(other.dfCount), procOffset(other.procOffset)
     {
     }
-    EdgeSet(const Ioss::EdgeSet &other);
+    explicit EdgeSet(const Ioss::EdgeSet &other);
     bool operator==(const EdgeSet & /*other*/) const;
     bool operator!=(const EdgeSet &other) const { return !(*this == other); }
 
@@ -305,7 +305,7 @@ namespace Ioex {
           attributeCount(other.attributeCount), dfCount(other.dfCount), procOffset(other.procOffset)
     {
     }
-    FaceSet(const Ioss::FaceSet &other);
+    explicit FaceSet(const Ioss::FaceSet &other);
     bool operator==(const FaceSet & /*other*/) const;
     bool operator!=(const FaceSet &other) const { return !(*this == other); }
 
@@ -325,7 +325,7 @@ namespace Ioex {
           attributeCount(other.attributeCount), dfCount(other.dfCount), procOffset(other.procOffset)
     {
     }
-    ElemSet(const Ioss::ElementSet &other);
+    explicit ElemSet(const Ioss::ElementSet &other);
     bool operator==(const ElemSet & /*other*/) const;
     bool operator!=(const ElemSet &other) const { return !(*this == other); }
 
@@ -340,8 +340,8 @@ namespace Ioex {
   struct SideSet
   {
     SideSet() : name(""), id(0), entityCount(0), dfCount(0), procOffset(0), dfProcOffset(0) {}
-    SideSet(const Ioss::SideBlock &other);
-    SideSet(const Ioss::SideSet &other);
+    explicit SideSet(const Ioss::SideBlock &other);
+    explicit SideSet(const Ioss::SideSet &other);
     bool operator==(const SideSet & /*other*/) const;
     bool operator!=(const SideSet &other) const { return !(*this == other); }
 

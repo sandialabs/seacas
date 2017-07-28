@@ -902,7 +902,7 @@ size_t Ioss::Utils::get_memory_info()
 
   taskinfo.virtual_size = 0;
   outCount              = MACH_TASK_BASIC_INFO_COUNT;
-  error = task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&taskinfo, &outCount);
+  error = task_info(mach_task_self(), MACH_TASK_BASIC_INFO, reinterpret_cast<task_info_t>(&taskinfo), &outCount);
   if (error == KERN_SUCCESS) {
     // type is mach_vm_size_t
     if (original == 0) {
