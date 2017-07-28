@@ -73,5 +73,5 @@ namespace Excn {
     ParallelDisks(const ParallelDisks &);
     ParallelDisks &operator=(const ParallelDisks &);
   };
-} // namespace Excn  // namespace Excn
+} // namespace Excn
 #endif

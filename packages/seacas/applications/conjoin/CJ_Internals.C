@@ -61,9 +61,8 @@ namespace {
     if ((ex_int64_status(exoid) & type) != 0u) {
       return NC_INT64;
     }
-    
-      return NC_INT;
-    
+
+    return NC_INT;
   }
   bool lessOffset(const Excn::Block &b1, const Excn::Block &b2) { return b1.offset_ < b2.offset_; }
 
@@ -72,7 +71,7 @@ namespace {
 
   int define_coordinate_vars(int exodusFilePtr, int nodes, int node_dim, int dimension, int dim_dim,
                              int str_dim);
-}  // namespace
+} // namespace
 
 Excn::Redefine::Redefine(int exoid) : exodusFilePtr(exoid)
 {
@@ -760,7 +759,8 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
 
     // store element type as attribute of connectivity variable
     status = nc_put_att_text(exodusFilePtr, connid, ATT_NAME_ELB,
-                             static_cast<int>(std::strlen(blocks[iblk].elType)) + 1, blocks[iblk].elType);
+                             static_cast<int>(std::strlen(blocks[iblk].elType)) + 1,
+                             blocks[iblk].elType);
     if (status != NC_NOERR) {
       ex_opts(EX_VERBOSE);
       sprintf(errmsg, "Error: failed to store element type name %s in file id %d",
@@ -1177,7 +1177,7 @@ namespace {
     int id_type = get_type(exoid, EX_IDS_INT64_API);
 
     if (id_type == NC_INT64) {
-      status = nc_put_var_longlong(exoid, var_id, const_cast<long long int *>(&ids[0]));
+      status = nc_put_var_longlong(exoid, var_id, (long long int *)&ids[0]);
     }
     else {
       // Have entity_id (long long), need ints...

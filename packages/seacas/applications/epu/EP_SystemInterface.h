@@ -163,5 +163,5 @@ namespace Excn {
   {
     return partCount_ > 0 ? partCount_ : processorCount_;
   }
-} // namespace Excn  // namespace Excn
+} // namespace Excn
 #endif
