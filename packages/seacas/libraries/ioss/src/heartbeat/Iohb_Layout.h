@@ -72,6 +72,6 @@ namespace Iohb {
     bool showLabels;
     bool legendStarted;
   };
-}
+} // namespace Iohb
 
 #endif // IOSS_Iohb_Layout_h

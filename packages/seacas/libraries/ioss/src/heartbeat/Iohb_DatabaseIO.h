@@ -59,12 +59,12 @@ namespace Iohb {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Iohb
 
 namespace Ioss {
   class GroupingEntity;
   class EntityBlock;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the heartbeat database format.
  */
@@ -200,5 +200,5 @@ namespace Iohb {
     bool        streamNeedsDelete;
     enum Format fileFormat;
   };
-}
+} // namespace Iohb
 #endif // IOSS_Iohb_DatabaseIO_h

@@ -66,6 +66,6 @@ namespace Ioss {
     NamedSuffixVariableType(const NamedSuffixVariableType &);
     std::vector<std::string> suffixList;
   };
-}
+} // namespace Ioss
 
 #endif

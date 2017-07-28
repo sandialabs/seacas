@@ -79,5 +79,5 @@ namespace Ioss {
 
     TriShell6(const TriShell6 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_TriShell6_h

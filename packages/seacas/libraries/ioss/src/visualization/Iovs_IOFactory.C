@@ -14,7 +14,7 @@
 #include <visualization/Iovs_IOFactory.h>
 namespace Ioss {
   class PropertyManager;
-}
+} // namespace Ioss
 // #include <visualization/Iovs_Internals.h>
 
 namespace Iovs {
@@ -46,4 +46,4 @@ namespace Iovs {
   {
     // Internals::register_library_versions();
   }
-}
+} // namespace Iovs

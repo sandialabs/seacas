@@ -81,5 +81,5 @@ namespace Ioss {
   private:
     Wedge20(const Wedge20 &) = delete;
   };
-}
+} // namespace Ioss
 #endif

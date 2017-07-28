@@ -78,6 +78,6 @@ namespace Ioss {
 
     ShellLine2D3(const ShellLine2D3 &); // Do not implement
   };
-}
+} // namespace Ioss
 
 #endif // IOSS_Ioss_ShellLine2D3_h

@@ -43,5 +43,5 @@ namespace Iotr {
     // Copy constructor
     // Assignment operator
   };
-}
+} // namespace Iotr
 #endif // IOSS_Iotr_Initializer_h

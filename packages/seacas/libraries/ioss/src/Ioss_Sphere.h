@@ -78,5 +78,5 @@ namespace Ioss {
 
     Sphere(const Sphere &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_Sphere_h

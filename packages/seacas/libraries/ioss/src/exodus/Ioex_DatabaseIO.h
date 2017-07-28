@@ -69,7 +69,7 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the exodus database format.
  */
@@ -341,5 +341,5 @@ namespace Ioex {
     mutable bool nodeConnectivityStatusCalculated; // True if the lazy creation of
                                                    // nodeConnectivityStatus has been calculated.
   };
-}
+} // namespace Ioex
 #endif

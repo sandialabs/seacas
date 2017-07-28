@@ -77,5 +77,5 @@ namespace Ioss {
 
     Edge2D2(const Edge2D2 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_Edge2D2_h

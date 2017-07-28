@@ -79,5 +79,5 @@ namespace Ioss {
 
     Tri7(const Tri7 &) = delete;
   };
-}
+} // namespace Ioss
 #endif

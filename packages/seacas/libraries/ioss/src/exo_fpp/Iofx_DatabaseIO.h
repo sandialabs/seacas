@@ -69,11 +69,11 @@ namespace Ioss {
   class StructuredBlock;
   class CommSet;
   class ElementTopology;
-}
+} // namespace Ioss
 
 namespace Ioex {
   struct CommunicationMetaData;
-}
+} // namespace Ioex
 
 /** \brief A namespace for the file-per-process version of the
  *  parallel exodus database format.
@@ -270,5 +270,5 @@ namespace Iofx {
     mutable std::string decodedFilename; /// The actual processor-specific filename.
     mutable bool isSerialParallel; //!< true if application code is controlling the processor id.
   };
-}
+} // namespace Iofx
 #endif

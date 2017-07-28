@@ -10,4 +10,4 @@ namespace Ioss {
     double maximum_time{0.0};
     int    data_storage_type{0};
   };
-}
+} // namespace Ioss

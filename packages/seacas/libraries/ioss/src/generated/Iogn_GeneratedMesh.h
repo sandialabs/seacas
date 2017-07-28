@@ -508,5 +508,5 @@ namespace Iogn {
     bool doRotation;
     bool createTets;
   };
-}
+} // namespace Iogn
 #endif

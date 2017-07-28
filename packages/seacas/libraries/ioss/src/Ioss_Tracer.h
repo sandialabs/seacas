@@ -10,5 +10,5 @@ namespace Ioss {
   private:
     static int level;
   };
-}
+} // namespace Ioss
 #endif

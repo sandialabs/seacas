@@ -55,5 +55,5 @@ namespace Ioss {
     const VariableType *baseType;
     int                 copies_;
   };
-}
+} // namespace Ioss
 #endif

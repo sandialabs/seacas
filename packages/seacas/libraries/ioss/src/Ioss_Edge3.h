@@ -77,5 +77,5 @@ namespace Ioss {
 
     Edge3(const Edge3 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

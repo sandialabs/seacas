@@ -60,19 +60,19 @@
 #include <utility>                        // for pair
 namespace Ioss {
   class EdgeBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class EdgeSet;
-}
+} // namespace Ioss
 namespace Ioss {
   class ElementSet;
-}
+} // namespace Ioss
 namespace Ioss {
   class FaceBlock;
-}
+} // namespace Ioss
 namespace Ioss {
   class FaceSet;
-}
+} // namespace Ioss
 
 namespace {
   template <typename INT>

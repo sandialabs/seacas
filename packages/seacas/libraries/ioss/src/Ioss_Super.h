@@ -39,7 +39,7 @@
 #include <string>                 // for string
 namespace Ioss {
   class ElementVariableType;
-}
+} // namespace Ioss
 
 // STL Includes
 
@@ -87,5 +87,5 @@ namespace Ioss {
     Ioss::ElementVariableType *storageType;
     Super(const Super &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

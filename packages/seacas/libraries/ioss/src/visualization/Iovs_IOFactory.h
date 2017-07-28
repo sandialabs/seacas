@@ -16,7 +16,7 @@
 #include <string>           // for string
 namespace Ioss {
   class PropertyManager;
-}
+} // namespace Ioss
 
 namespace Iovs {
 
@@ -36,5 +36,5 @@ namespace Iovs {
      */
     void register_library_versions() const;
   };
-}
+} // namespace Iovs
 #endif // SIERRA_Iovs_IOFactory_h

@@ -40,7 +40,7 @@
 #include <string>           // for string
 namespace Ioss {
   class PropertyManager;
-}
+} // namespace Ioss
 
 namespace Ioex {
 
@@ -55,5 +55,5 @@ namespace Ioex {
                               MPI_Comm                     communicator,
                               const Ioss::PropertyManager &properties) const override;
   };
-}
+} // namespace Ioex
 #endif // IOSS_Ioex_IOFactory_h

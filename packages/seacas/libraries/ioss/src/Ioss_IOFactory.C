@@ -53,7 +53,7 @@ namespace {
     }
     return count;
   }
-}
+} // namespace
 
 namespace Ioss {
   class DatabaseIO;

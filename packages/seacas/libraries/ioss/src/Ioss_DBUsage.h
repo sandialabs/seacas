@@ -66,5 +66,5 @@ namespace Ioss {
   {
     return db_usage == Ioss::READ_MODEL || db_usage == Ioss::READ_RESTART;
   }
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_DBUsage_h

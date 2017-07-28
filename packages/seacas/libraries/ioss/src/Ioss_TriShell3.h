@@ -81,5 +81,5 @@ namespace Ioss {
 
     TriShell3(const TriShell3 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_TriShell3_h

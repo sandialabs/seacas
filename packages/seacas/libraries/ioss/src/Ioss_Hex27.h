@@ -80,5 +80,5 @@ namespace Ioss {
 
     Hex27(const Hex27 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

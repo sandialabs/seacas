@@ -102,6 +102,6 @@ namespace Ioss {
     Ioss::Region &   region_;
     FaceUnorderedSet faces_;
   };
-}
+} // namespace Ioss
 
 #endif

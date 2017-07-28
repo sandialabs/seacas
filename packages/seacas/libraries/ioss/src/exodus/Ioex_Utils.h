@@ -17,7 +17,7 @@
 namespace Ioss {
   class GroupingEntity;
   using CoordinateFrameContainer = std::vector<CoordinateFrame>;
-}
+} // namespace Ioss
 
 namespace Ioex {
   using EntityIdSet = std::set<std::pair<int64_t, int64_t>>;
@@ -126,5 +126,5 @@ namespace Ioex {
                                       Ioex::TopologyMap &    side_map,
                                       Ioss::SurfaceSplitType split_type,
                                       const std::string &    surface_name);
-}
+} // namespace Ioex
 #endif

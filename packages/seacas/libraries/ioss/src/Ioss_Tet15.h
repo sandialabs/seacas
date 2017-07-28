@@ -80,5 +80,5 @@ namespace Ioss {
 
     Tet15(const Tet15 &) = delete;
   };
-}
+} // namespace Ioss
 #endif

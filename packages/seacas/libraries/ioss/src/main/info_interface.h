@@ -89,5 +89,5 @@ namespace Info {
     std::string filename_;
     std::string groupname_;
   };
-}
+} // namespace Info
 #endif

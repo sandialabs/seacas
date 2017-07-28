@@ -95,6 +95,6 @@ namespace Ioss {
   // for external calls
   void io_info_set_db_properties(const Info::Interface &interface, Ioss::DatabaseIO *dbi);
   void io_info_file_info(const Info::Interface &interface, Ioss::Region &region);
-}
+} // namespace Ioss
 
 #endif

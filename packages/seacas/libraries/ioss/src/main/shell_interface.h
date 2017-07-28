@@ -88,5 +88,5 @@ namespace IOShell {
     bool                     delete_timesteps{false};
     char                     fieldSuffixSeparator{'_'};
   };
-}
+} // namespace IOShell
 #endif

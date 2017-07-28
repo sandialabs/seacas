@@ -38,5 +38,5 @@ namespace Ioss {
   /** \brief The number of bytes used to store an integer type.
    */
   enum DataSize { USE_INT32_API = 4, USE_INT64_API = 8 };
-}
+} // namespace Ioss
 #endif // IOSS_Ioss_DataSize_h

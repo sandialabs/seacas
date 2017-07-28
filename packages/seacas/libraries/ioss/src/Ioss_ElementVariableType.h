@@ -56,5 +56,5 @@ namespace Ioss {
       : Ioss::VariableType(type, comp_count, false)
   {
   }
-}
+} // namespace Ioss
 #endif

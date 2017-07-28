@@ -79,5 +79,5 @@ namespace Ioss {
 
     Tri6(const Tri6 &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

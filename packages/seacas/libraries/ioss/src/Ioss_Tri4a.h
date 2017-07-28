@@ -81,5 +81,5 @@ namespace Ioss {
 
     Tri4a(const Tri4a &); // Do not implement
   };
-}
+} // namespace Ioss
 #endif

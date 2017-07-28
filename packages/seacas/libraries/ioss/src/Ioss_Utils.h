@@ -53,7 +53,7 @@ namespace Ioss {
   class SideBlock;
   class PropertyManager;
   struct MeshCopyOptions;
-}
+} // namespace Ioss
 
 #if __cplusplus > 199711L
 #define TOPTR(x) x.data()

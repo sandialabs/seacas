@@ -78,6 +78,6 @@ namespace Ioss {
 
     Bar2(const Bar2 &); // Do not implement
   };
-}
+} // namespace Ioss
 
 #endif // IOSS_Ioss_Bar2_h

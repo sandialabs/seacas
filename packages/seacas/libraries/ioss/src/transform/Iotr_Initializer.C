@@ -50,4 +50,4 @@ namespace Iotr {
     Tensor_Factory::factory();
     VM_Factory::factory();
   }
-}
+} // namespace Iotr
