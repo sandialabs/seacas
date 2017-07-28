@@ -141,7 +141,7 @@ namespace Ioss {
         tmptoken = ++token;
       }
 
-      while (((*tmptoken != 0) != 0) && *tmptoken != '=') {
+      while ((static_cast<int>(*tmptoken != 0) != 0) && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option
@@ -238,7 +238,7 @@ namespace Ioss {
 
       char *ladtoken = nullptr; /* lookahead token */
       char *tmptoken = ++token;
-      while (((*tmptoken != 0) != 0) && *tmptoken != '=') {
+      while ((static_cast<int>(*tmptoken != 0) != 0) && *tmptoken != '=') {
         ++tmptoken;
       }
       /* (tmptoken - token) is now equal to the command line option

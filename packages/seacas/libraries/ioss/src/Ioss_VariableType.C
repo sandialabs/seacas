@@ -121,7 +121,7 @@ bool Ioss::VariableType::add_field_type_mapping(const std::string &raw_field,
   return registry().customFieldTypes.insert(std::make_pair(field, type)).second;
 }
 
-bool Ioss::VariableType::create_named_suffix_field_type(const std::string &       type_name,
+bool Ioss::VariableType::create_named_suffix_field_type(const std::string &             type_name,
                                                         const std::vector<std::string> &suffices)
 {
   size_t count = suffices.size();

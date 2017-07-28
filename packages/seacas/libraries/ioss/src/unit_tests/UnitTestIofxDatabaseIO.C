@@ -136,7 +136,7 @@ namespace {
     Ioss::NodeBlock *   nb = region.get_node_blocks()[0];
     std::vector<double> coordinates;
     nb->get_field_data("mesh_model_coordinates", coordinates);
-    int64_t num_nodes = nb->get_property("entity_count").get_int();
+    int64_t num_nodes   = nb->get_property("entity_count").get_int();
     int64_t spatial_dim = nb->get_property("component_degree").get_int();
 
     size_t num_coordinates = num_nodes * spatial_dim;
@@ -262,9 +262,9 @@ namespace {
 
     std::string NodeBlockName = "nodeblock_1";
 
-    auto nb = input_region.get_node_blocks()[0];
+    auto    nb          = input_region.get_node_blocks()[0];
     int64_t num_nodes   = nb->get_property("entity_count").get_int();
-    int     spatial_dim =  nb->get_property("component_degree").get_int();
+    int     spatial_dim = nb->get_property("component_degree").get_int();
 
     Ioss::NodeBlock *output_node_block =
         new Ioss::NodeBlock(db_out, NodeBlockName, num_nodes, spatial_dim);

@@ -62,9 +62,8 @@ namespace Ioss {
   class Invalid_Storage : public VariableType
   {
   public:
-    std::string label(int which, const char suffix_sep = '_') const override;
-    std::string label_name(const std::string &base, int /*which*/,
-                           const char         suffix_sep) const override;
+    std::string label(int which, char suffix_sep = '_') const override;
+    std::string label_name(const std::string &base, int /*which*/, char suffix_sep) const override;
     int         suffix_count() const override { return 0; }
     static void factory();
 
@@ -78,9 +77,8 @@ namespace Ioss {
   class Scalar : public VariableType
   {
   public:
-    std::string label(int which, const char suffix_sep = '_') const override;
-    std::string label_name(const std::string &base, int /*which*/,
-                           const char         suffix_sep) const override;
+    std::string label(int which, char suffix_sep = '_') const override;
+    std::string label_name(const std::string &base, int /*which*/, char suffix_sep) const override;
     int         suffix_count() const override { return 0; }
     static void factory();
 

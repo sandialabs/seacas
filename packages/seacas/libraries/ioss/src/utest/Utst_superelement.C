@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     return (EXIT_FAILURE);
   }
 
-  std::string cwd = "";
+  std::string cwd;
 
   input_file = Ioss::Utils::local_filename(input_file, "text", cwd);
 

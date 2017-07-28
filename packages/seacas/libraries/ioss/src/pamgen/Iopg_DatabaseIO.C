@@ -71,7 +71,8 @@ namespace Iopg {
     }
   };
 
-  using TopologyMap = std::map<std::pair<std::string, const Ioss::ElementTopology *>, int, TopologyMapCompare>;
+  using TopologyMap =
+      std::map<std::pair<std::string, const Ioss::ElementTopology *>, int, TopologyMapCompare>;
 }
 
 namespace {

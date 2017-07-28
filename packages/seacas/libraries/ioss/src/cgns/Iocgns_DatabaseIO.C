@@ -43,12 +43,12 @@
 #include <cgns/Iocgns_Utils.h>
 #include <cgnslib.h>
 #include <cstddef>
+#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <numeric>
 #include <string>
 #include <sys/select.h>
-#include <ctime>
 #include <vector>
 
 #if !defined(CGNSLIB_H)
@@ -1325,7 +1325,7 @@ namespace Iocgns {
           }
           auto it = nodes.begin();
           it++;
-	  Ioss::Utils::uniquify(nodes, true);
+          Ioss::Utils::uniquify(nodes, true);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;
@@ -1679,8 +1679,8 @@ namespace Iocgns {
 
   unsigned DatabaseIO::entity_field_support() const
   {
-    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK |
-      Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
+    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK | Ioss::NODESET |
+           Ioss::SIDESET | Ioss::REGION;
   }
 
 } // namespace Iocgns

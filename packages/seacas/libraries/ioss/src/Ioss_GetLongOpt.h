@@ -46,17 +46,17 @@ namespace Ioss {
     int setcell(Cell *c, char *valtoken, char *nexttoken, const char *name);
 
   public:
-    explicit GetLongOption(const char optmark = '-');
+    explicit GetLongOption(char optmark = '-');
     ~GetLongOption();
 
-    static char *basename(char *const pathname);
+    static char *basename(char *pathname);
 
     int parse(int argc, char *const *argv);
-    int parse(char *const str, char *const p);
+    int parse(char *str, char *p);
 
-    int enroll(const char *const opt, const OptType t, const char *const desc,
-               const char *const val, const char *const optval = nullptr);
-    const char *retrieve(const char *const opt) const;
+    int enroll(const char *opt, OptType t, const char *desc, const char *val,
+               const char *optval = nullptr);
+    const char *retrieve(const char *opt) const;
 
     void usage(std::ostream &outfile = std::cout) const;
 

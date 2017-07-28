@@ -40,7 +40,7 @@ namespace Ioss {
   class ConstructedVariableType : public VariableType
   {
   public:
-    std::string label(int which, const char suffix_sep = '_') const override;
+    std::string label(int which, char suffix_sep = '_') const override;
     ConstructedVariableType(const std::string &my_name, int number_components, bool delete_me);
     explicit ConstructedVariableType(int number_components, bool delete_me);
 
