@@ -898,7 +898,7 @@ size_t Ioss::Utils::get_memory_info()
   static size_t               original = 0;
   kern_return_t               error;
   mach_msg_type_number_t      outCount;
-  mach_task_basic_info_data_t taskinfo;
+  mach_task_basic_info_data_t taskinfo{};
 
   taskinfo.virtual_size = 0;
   outCount              = MACH_TASK_BASIC_INFO_COUNT;

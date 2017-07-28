@@ -287,7 +287,7 @@ namespace {
         }
       }
 
-      Ioss::MeshCopyOptions options;
+      Ioss::MeshCopyOptions options{};
       options.memory_statistics = interface.memory_statistics;
       options.debug             = interface.debug;
       options.verbose           = true;

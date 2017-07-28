@@ -49,7 +49,7 @@ namespace { // Internal helper functions
   enum class entity_type { NODAL, ELEM_BLOCK, NODE_SET, SIDE_SET };
   bool file_exists(const std::string &filepath)
   {
-    struct stat buffer;
+    struct stat buffer{};
     return (stat(filepath.c_str(), &buffer) == 0);
   }
 
