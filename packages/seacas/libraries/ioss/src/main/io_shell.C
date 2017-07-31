@@ -1,7 +1,6 @@
-// Copyright(C) 1999-2010
-// Sandia Corporation. Under the terms of Contract
-// DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
-// certain rights in this software.
+// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -14,7 +13,8 @@
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
 //       with the distribution.
-//     * Neither the name of Sandia Corporation nor the names of its
+//
+//     * Neither the name of NTESS nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
 //
@@ -152,222 +152,222 @@ int main(int argc, char *argv[])
       std::cerr << "\n\tCurrent Memory:    " << mem / MiB << "M\n"
                 << "\n\tHigh Water Memory: " << hwm / MiB << "M\n";
     }
-    #endif
+#endif
   }
   if (rank == 0) {
     std::cerr << "\n" << codename << " execution successful.\n";
   }
-  #ifdef SEACAS_HAVE_KOKKOS Kokkos::finalize();
+#ifdef SEACAS_HAVE_KOKKOS Kokkos::finalize();
 #endif
 
 #ifdef HAVE_MPI
-    MPI_Finalize();
+  MPI_Finalize();
 #endif
 
-    return EXIT_SUCCESS;
-  }
+  return EXIT_SUCCESS;
+}
 
-  namespace {
-    void file_copy(IOShell::Interface &interface, int rank)
-    {
-      Ioss::PropertyManager properties = set_properties(interface);
+namespace {
+  void file_copy(IOShell::Interface &interface, int rank)
+  {
+    Ioss::PropertyManager properties = set_properties(interface);
 
-      bool first = true;
-      for (const auto &inpfile : interface.inputFile) {
+    bool first = true;
+    for (const auto &inpfile : interface.inputFile) {
 
-        //========================================================================
-        // INPUT Database...
-        //========================================================================
-        Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-            interface.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
-        if (dbi == nullptr || !dbi->ok(true)) {
-          std::exit(EXIT_FAILURE);
-        }
+      //========================================================================
+      // INPUT Database...
+      //========================================================================
+      Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
+          interface.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
+      if (dbi == nullptr || !dbi->ok(true)) {
+        std::exit(EXIT_FAILURE);
+      }
 
-        if (mem_stats) {
-          dbi->util().progress("Database Creation");
-        }
-        if (!interface.lower_case_variable_names) {
-          dbi->set_lower_case_variable_names(false);
-        }
-        if (interface.outFiletype == "cgns") {
-          // CGNS stores BCs (SideSets) on the zones which
-          // correspond to element blocks.  If split input sideblocks
-          // by element block, then output is much easier.
-          dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
-        }
-        else {
-          dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
-        }
-        dbi->set_field_separator(interface.fieldSuffixSeparator);
-        if (interface.ints_64_bit) {
-          dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
-        }
+      if (mem_stats) {
+        dbi->util().progress("Database Creation");
+      }
+      if (!interface.lower_case_variable_names) {
+        dbi->set_lower_case_variable_names(false);
+      }
+      if (interface.outFiletype == "cgns") {
+        // CGNS stores BCs (SideSets) on the zones which
+        // correspond to element blocks.  If split input sideblocks
+        // by element block, then output is much easier.
+        dbi->set_surface_split_type(Ioss::SPLIT_BY_ELEMENT_BLOCK);
+      }
+      else {
+        dbi->set_surface_split_type(Ioss::int_to_surface_split(interface.surface_split_type));
+      }
+      dbi->set_field_separator(interface.fieldSuffixSeparator);
+      if (interface.ints_64_bit) {
+        dbi->set_int_byte_size_api(Ioss::USE_INT64_API);
+      }
 
-        if (!interface.groupName.empty()) {
-          bool success = dbi->open_group(interface.groupName);
-          if (!success) {
-            if (rank == 0) {
-              std::cerr << "ERROR: Unable to open group '" << interface.groupName << "' in file '"
-                        << inpfile << "\n";
-            }
-            return;
+      if (!interface.groupName.empty()) {
+        bool success = dbi->open_group(interface.groupName);
+        if (!success) {
+          if (rank == 0) {
+            std::cerr << "ERROR: Unable to open group '" << interface.groupName << "' in file '"
+                      << inpfile << "\n";
           }
-        }
-
-        // NOTE: 'region' owns 'db' pointer at this time...
-        Ioss::Region region(dbi, "region_1");
-
-        if (region.mesh_type() == Ioss::MeshType::HYBRID) {
-          std::cerr
-              << "\nERROR: io_shell does not support '" << region.mesh_type_string()
-              << "' meshes.  Only 'Unstructured' or 'Structured' mesh is supported at this time.\n";
           return;
         }
-
-        // Get length of longest name on input file...
-        int max_name_length = dbi->maximum_symbol_length();
-        if (max_name_length > 0) {
-          properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
-        }
-
-        // Get integer size being used on the input file and propgate
-        // to output file...
-        int int_byte_size_api = dbi->int_byte_size_api();
-        if (!properties.exists("INTEGER_SIZE_API")) {
-          if (interface.ints_32_bit) {
-            properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
-          }
-          properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
-        }
-        if (int_byte_size_api == 8) {
-          interface.ints_64_bit = true;
-        }
-        //========================================================================
-        // OUTPUT Database...
-        //========================================================================
-        bool append = false;
-        if (interface.append_step < std::numeric_limits<int>::max()) {
-          properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_STEP", interface.append_step));
-          append = true;
-        }
-
-        if (interface.append_time < std::numeric_limits<double>::max()) {
-          properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_TIME", interface.append_time));
-          append = true;
-        }
-
-        if (append) {
-          properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND));
-        }
-
-        Ioss::DatabaseIO *dbo =
-            Ioss::IOFactory::create(interface.outFiletype, interface.outputFile,
-                                    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
-        if (dbo == nullptr || !dbo->ok(true)) {
-          std::exit(EXIT_FAILURE);
-        }
-
-        // NOTE: 'output_region' owns 'dbo' pointer at this time
-        Ioss::Region output_region(dbo, "region_2");
-        // Set the qa information...
-        output_region.property_add(Ioss::Property(std::string("code_name"), codename));
-        output_region.property_add(Ioss::Property(std::string("code_version"), version));
-
-        if (interface.inputFile.size() > 1) {
-          properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
-
-          if (!first) {
-            // Putting each file into its own output group...
-            // The name of the group will be the basename portion of the filename...
-            Ioss::FileInfo file(inpfile);
-            dbo->create_subgroup(file.tailname());
-          }
-          else {
-            first = false;
-          }
-        }
-
-        Ioss::MeshCopyOptions options{};
-        options.memory_statistics = interface.memory_statistics;
-        options.debug             = interface.debug;
-        options.verbose           = true;
-        options.ints_64_bit       = interface.ints_64_bit;
-        options.delete_timesteps  = interface.delete_timesteps;
-        options.minimum_time      = interface.minimum_time;
-        options.maximum_time      = interface.maximum_time;
-        options.data_storage_type = interface.data_storage_type;
-
-        // Actually do the work...
-        Ioss::Utils::copy_database(region, output_region, options);
-
-        if (mem_stats) {
-          dbi->util().progress("Prior to Memory Released... ");
-          dbi->release_memory();
-          dbo->release_memory();
-          dbi->util().progress("Memory Released... ");
-        }
-      } // loop over input files
-    }
-
-    Ioss::PropertyManager set_properties(IOShell::Interface &interface)
-    {
-      Ioss::PropertyManager properties;
-
-      if (interface.ints_64_bit) {
-        properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
-        properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
       }
 
-      if (interface.ints_32_bit) {
-        properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+      // NOTE: 'region' owns 'db' pointer at this time...
+      Ioss::Region region(dbi, "region_1");
+
+      if (region.mesh_type() == Ioss::MeshType::HYBRID) {
+        std::cerr
+            << "\nERROR: io_shell does not support '" << region.mesh_type_string()
+            << "' meshes.  Only 'Unstructured' or 'Structured' mesh is supported at this time.\n";
+        return;
       }
 
-      if (interface.reals_32_bit) {
-        properties.add(Ioss::Property("REAL_SIZE_DB", 4));
+      // Get length of longest name on input file...
+      int max_name_length = dbi->maximum_symbol_length();
+      if (max_name_length > 0) {
+        properties.add(Ioss::Property("MAXIMUM_NAME_LENGTH", max_name_length));
       }
 
-      if (interface.in_memory_read) {
-        properties.add(Ioss::Property("MEMORY_READ", 1));
-      }
-
-      if (interface.in_memory_write) {
-        properties.add(Ioss::Property("MEMORY_WRITE", 1));
-      }
-
-      if (interface.compression_level > 0 || interface.shuffle) {
-        properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
-        properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level));
-        properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interface.shuffle)));
-      }
-
-      if (interface.compose_output != "none") {
-        properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
-        properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
-        if (interface.compose_output != "default") {
-          properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
+      // Get integer size being used on the input file and propgate
+      // to output file...
+      int int_byte_size_api = dbi->int_byte_size_api();
+      if (!properties.exists("INTEGER_SIZE_API")) {
+        if (interface.ints_32_bit) {
+          properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
         }
+        properties.add(Ioss::Property("INTEGER_SIZE_API", int_byte_size_api));
+      }
+      if (int_byte_size_api == 8) {
+        interface.ints_64_bit = true;
+      }
+      //========================================================================
+      // OUTPUT Database...
+      //========================================================================
+      bool append = false;
+      if (interface.append_step < std::numeric_limits<int>::max()) {
+        properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_STEP", interface.append_step));
+        append = true;
       }
 
-      if (interface.netcdf4) {
-        properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      if (interface.append_time < std::numeric_limits<double>::max()) {
+        properties.add(Ioss::Property("APPEND_OUTPUT_AFTER_TIME", interface.append_time));
+        append = true;
       }
+
+      if (append) {
+        properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND));
+      }
+
+      Ioss::DatabaseIO *dbo =
+          Ioss::IOFactory::create(interface.outFiletype, interface.outputFile, Ioss::WRITE_RESTART,
+                                  (MPI_Comm)MPI_COMM_WORLD, properties);
+      if (dbo == nullptr || !dbo->ok(true)) {
+        std::exit(EXIT_FAILURE);
+      }
+
+      // NOTE: 'output_region' owns 'dbo' pointer at this time
+      Ioss::Region output_region(dbo, "region_2");
+      // Set the qa information...
+      output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+      output_region.property_add(Ioss::Property(std::string("code_version"), version));
 
       if (interface.inputFile.size() > 1) {
-        properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
+        properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
+
+        if (!first) {
+          // Putting each file into its own output group...
+          // The name of the group will be the basename portion of the filename...
+          Ioss::FileInfo file(inpfile);
+          dbo->create_subgroup(file.tailname());
+        }
+        else {
+          first = false;
+        }
       }
 
-      if (interface.debug) {
-        properties.add(Ioss::Property("LOGGING", 1));
-      }
+      Ioss::MeshCopyOptions options{};
+      options.memory_statistics = interface.memory_statistics;
+      options.debug             = interface.debug;
+      options.verbose           = true;
+      options.ints_64_bit       = interface.ints_64_bit;
+      options.delete_timesteps  = interface.delete_timesteps;
+      options.minimum_time      = interface.minimum_time;
+      options.maximum_time      = interface.maximum_time;
+      options.data_storage_type = interface.data_storage_type;
 
-      if (interface.memory_statistics) {
-        properties.add(Ioss::Property("DECOMP_SHOW_PROGRESS", 1));
-      }
+      // Actually do the work...
+      Ioss::Utils::copy_database(region, output_region, options);
 
-      if (!interface.decomp_method.empty()) {
-        properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
+      if (mem_stats) {
+        dbi->util().progress("Prior to Memory Released... ");
+        dbi->release_memory();
+        dbo->release_memory();
+        dbi->util().progress("Memory Released... ");
       }
-      return properties;
+    } // loop over input files
+  }
+
+  Ioss::PropertyManager set_properties(IOShell::Interface &interface)
+  {
+    Ioss::PropertyManager properties;
+
+    if (interface.ints_64_bit) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
+      properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
     }
-  } // namespace
+
+    if (interface.ints_32_bit) {
+      properties.add(Ioss::Property("INTEGER_SIZE_DB", 4));
+    }
+
+    if (interface.reals_32_bit) {
+      properties.add(Ioss::Property("REAL_SIZE_DB", 4));
+    }
+
+    if (interface.in_memory_read) {
+      properties.add(Ioss::Property("MEMORY_READ", 1));
+    }
+
+    if (interface.in_memory_write) {
+      properties.add(Ioss::Property("MEMORY_WRITE", 1));
+    }
+
+    if (interface.compression_level > 0 || interface.shuffle) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+      properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level));
+      properties.add(Ioss::Property("COMPRESSION_SHUFFLE", static_cast<int>(interface.shuffle)));
+    }
+
+    if (interface.compose_output != "none") {
+      properties.add(Ioss::Property("COMPOSE_RESULTS", "YES"));
+      properties.add(Ioss::Property("COMPOSE_RESTART", "YES"));
+      if (interface.compose_output != "default") {
+        properties.add(Ioss::Property("PARALLEL_IO_MODE", interface.compose_output));
+      }
+    }
+
+    if (interface.netcdf4) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    }
+
+    if (interface.inputFile.size() > 1) {
+      properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
+    }
+
+    if (interface.debug) {
+      properties.add(Ioss::Property("LOGGING", 1));
+    }
+
+    if (interface.memory_statistics) {
+      properties.add(Ioss::Property("DECOMP_SHOW_PROGRESS", 1));
+    }
+
+    if (!interface.decomp_method.empty()) {
+      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method));
+    }
+    return properties;
+  }
+} // namespace

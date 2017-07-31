@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2009 Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- * certain rights in this software
+ * Copyright (C) 2009 National Technology & Engineering Solutions of
+ * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -15,7 +15,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  *
- *     * Neither the name of Sandia Corporation nor the names of its
+ *     * Neither the name of NTESS nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
  *
@@ -1083,8 +1083,7 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
     proc_local_ss = (INT *)array_alloc(__FILE__, __LINE__, 1,
                                        globals.Proc_SS_Elem_List_Length[iproc], sizeof(INT));
     reverse_map(&globals.Proc_SS_Elem_List[iproc][0], 0, globals.Proc_SS_Elem_List_Length[iproc],
-                &globals.GElems[iproc][0], (INT *)nullptr,
-                proc_local_ss);
+                &globals.GElems[iproc][0], (INT *)nullptr, proc_local_ss);
   }
 
   PIO_Time_Array[18] = 0.0;

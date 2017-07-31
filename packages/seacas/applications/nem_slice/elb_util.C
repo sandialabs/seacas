@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2009 Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- * certain rights in this software
+ * Copyright (C) 2009 National Technology & Engineering Solutions of
+ * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -15,7 +15,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  *
- *     * Neither the name of Sandia Corporation nor the names of its
+ *     * Neither the name of NTESS nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
  *
@@ -23,6 +23,14 @@
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
 * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
@@ -503,11 +511,11 @@ int roundfloat(float value)
  * and returns the number of values in the intersection.
  *****************************************************************************/
 template <typename INT>
-size_t find_inter(const INT    set1[],      /* the first set of integers */
-                  const INT    set2[],      /* the second set of integers */
-                  size_t length1,     /* the length of the first set */
-                  size_t length2,     /* the length of the second set */
-                  INT          inter_ptr[]) /* the values in the intersection */
+size_t find_inter(const INT set1[],      /* the first set of integers */
+                  const INT set2[],      /* the second set of integers */
+                  size_t    length1,     /* the length of the first set */
+                  size_t    length2,     /* the length of the second set */
+                  INT       inter_ptr[]) /* the values in the intersection */
 /*
  *
  *      Function which finds the intersection of two integer lists.
@@ -546,15 +554,16 @@ size_t find_inter(const INT    set1[],      /* the first set of integers */
   return counter;
 }
 
-template size_t find_inter(const int set1[], const int set2[], size_t length1,
-                           size_t length2, int inter_ptr[]);
+template size_t find_inter(const int set1[], const int set2[], size_t length1, size_t length2,
+                           int inter_ptr[]);
 template size_t find_inter(const int64_t set1[], const int64_t set2[], size_t length1,
                            size_t length2, int64_t inter_ptr[]);
 
 #define QSORT_CUTOFF 12
 
 namespace {
-  template <typename INT> int is_less_than4(INT ra1, INT rb1, INT rc1, INT rd1, INT ra2, INT rb2, INT rc2, INT rd2)
+  template <typename INT>
+  int is_less_than4(INT ra1, INT rb1, INT rc1, INT rd1, INT ra2, INT rb2, INT rc2, INT rd2)
   {
     if (ra1 < ra2) {
       return 1;
