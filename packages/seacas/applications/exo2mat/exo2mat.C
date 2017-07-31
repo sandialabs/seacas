@@ -1,7 +1,7 @@
 /*
- * Copyright(C) 2011 Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- * certain rights in this software
+ * Copyright(C) 2011 National Technology & Engineering Solutions
+ * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -15,7 +15,7 @@
  *   disclaimer in the documentation and/or other materials provided
  *   with the distribution.
  *
- * * Neither the name of Sandia Corporation nor the names of its
+ * * Neither the name of NTESS nor the names of its
  *   contributors may be used to endorse or promote products derived
  *   from this software without specific prior written permission.
  *
@@ -30,7 +30,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
 /* exodus II to matlab m file, copy of
    exo2mat.
@@ -62,10 +61,10 @@
 #include "add_to_log.h" // for add_to_log
 #include "exodusII.h"   // for ex_get_variable_param, etc
 #include "matio.h"      // for Mat_VarCreate, Mat_VarFree, etc
-#include <cassert>     // for assert
-#include <cstddef>     // for size_t
-#include <cstdio>      // for fprintf, printf, sprintf, etc
-#include <cstdlib>     // for free, calloc, exit, malloc
+#include <cassert>      // for assert
+#include <cstddef>      // for size_t
+#include <cstdio>       // for fprintf, printf, sprintf, etc
+#include <cstdlib>      // for free, calloc, exit, malloc
 #if MATIO_VERSION < 151
 #error "MatIO Version 1.5.1 or greater is required"
 #endif
@@ -92,22 +91,20 @@ std::string time_stamp(const std::string &format)
   if (format == "") {
     return std::string("");
   }
-  
-    const int   length = 256;
-    static char time_string[length];
 
-    time_t     calendar_time = time(nullptr);
-    struct tm *local_time    = localtime(&calendar_time);
+  const int   length = 256;
+  static char time_string[length];
 
-    int error = strftime(time_string, length, format.c_str(), local_time);
-    if (error != 0) {
-      time_string[length - 1] = '\0';
-      return std::string(time_string);
-    }
-    
-      return std::string("[ERROR]");
-    
-  
+  time_t     calendar_time = time(nullptr);
+  struct tm *local_time    = localtime(&calendar_time);
+
+  int error = strftime(time_string, length, format.c_str(), local_time);
+  if (error != 0) {
+    time_string[length - 1] = '\0';
+    return std::string(time_string);
+  }
+
+  return std::string("[ERROR]");
 }
 
 void logger(const char *message)
@@ -138,7 +135,8 @@ void mPutStr(const char *name, const char *str)
   assert(m_file != nullptr);
   if (strchr(str, '\n') == nullptr) {
     fprintf(m_file, "%s='%s';\n", name, str);
-  } else {
+  }
+  else {
     fprintf(m_file, "%s=[", name);
     size_t i;
     size_t j;
@@ -261,9 +259,10 @@ void PutStr(const char *name, const char *str)
 {
   if (textfile != 0) {
     mPutStr(name, str);
-  } else {
+  }
+  else {
     matPutStr(name, const_cast<char *>(str));
-}
+  }
 }
 
 int PutInt(const char *name, int pd)
@@ -271,9 +270,10 @@ int PutInt(const char *name, int pd)
   int error = 0;
   if (textfile != 0) {
     mPutInt(name, pd);
-  } else {
+  }
+  else {
     error = matPutInt(name, 1, 1, &pd);
-}
+  }
   return error;
 }
 
@@ -282,9 +282,10 @@ int PutInt(const char *name, int n1, int n2, int *pd)
   int error = 0;
   if (textfile != 0) {
     mPutInt(name, n1, n2, pd);
-  } else {
+  }
+  else {
     error = matPutInt(name, n1, n2, pd);
-}
+  }
   return error;
 }
 
@@ -293,9 +294,10 @@ int PutDbl(const char *name, int n1, int n2, double *pd)
   int error = 0;
   if (textfile != 0) {
     mPutDbl(name, n1, n2, pd);
-  } else {
+  }
+  else {
     error = matPutDbl(name, n1, n2, pd);
-}
+  }
   return error;
 }
 
@@ -322,7 +324,7 @@ void get_put_user_names(int exo_file, ex_entity_type type, int num_blocks, const
   int max_name_length = ex_inquire_int(exo_file, EX_INQ_DB_MAX_USED_NAME_LENGTH);
   max_name_length     = max_name_length < 32 ? 32 : max_name_length;
   ex_set_max_name_length(exo_file, max_name_length);
-  char **names        = get_exodus_names(num_blocks, max_name_length + 1);
+  char **names = get_exodus_names(num_blocks, max_name_length + 1);
   ex_get_names(exo_file, type, names);
 
   std::string user_names;
@@ -342,7 +344,7 @@ void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *
 
   if (debug) {
     logger("\tReading variable names");
-}
+  }
   ex_get_variable_names(exo_file, type, num_vars, names);
 
   std::string mat;
@@ -352,7 +354,7 @@ void get_put_names(int exo_file, ex_entity_type type, int num_vars, const char *
   }
   if (debug) {
     logger("\tWriting variable names");
-}
+  }
   PutStr(mname, mat.c_str());
 
   delete_exodus_names(names, num_vars);
@@ -366,7 +368,7 @@ std::vector<std::string> get_names(int exo_file, ex_entity_type type, int num_va
 
   if (debug) {
     logger("\tReading variable names");
-}
+  }
   ex_get_variable_names(exo_file, type, num_vars, names);
 
   std::vector<std::string> mat(num_vars);
@@ -385,7 +387,7 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
   /* truth table */
   if (debug) {
     logger("\tTruth Table");
-}
+  }
   std::vector<int> truth_table(num_vars * num_blocks);
   ex_get_truth_table(exo_file, type, num_blocks, num_vars, TOPTR(truth_table));
 
@@ -454,7 +456,7 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
     for (int i = 0; i < num_vars; i++) {
       if (debug) {
         logger("\tReading");
-}
+      }
       std::fill(scr.begin(), scr.end(), 0.0);
       size_t n = 0;
       sprintf(str, format.c_str(), i + 1);
@@ -468,7 +470,7 @@ void get_put_vars(int exo_file, ex_entity_type type, int num_blocks, int num_var
       }
       if (debug) {
         logger("\tWriting");
-}
+      }
       PutDbl(str, num_entity, num_time_steps, TOPTR(scr));
     }
   }
@@ -812,7 +814,7 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
         bool has_ss_dfac = (n2 != 0);
         if (n2 == 0 || n1 == n2) {
           std::cerr << "WARNING: Sideset with id " << ids[i]
-		    << " does not contain distribution factors.\n";
+                    << " does not contain distribution factors.\n";
           num_sideset_dfac[i] = num_sideset_nodes[i];
         }
 
@@ -872,7 +874,7 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
         bool has_ss_dfac = (n2 != 0);
         if (n2 == 0 || n1 == n2) {
           std::cerr << "WARNING: Sideset with id " << ids[i]
-		    << " does not contain distribution factors.\n";
+                    << " does not contain distribution factors.\n";
           ex_get_side_set_node_list_len(exo_file, ids[i], &n2);
         }
 
@@ -929,10 +931,10 @@ void handle_coordinates(int exo_file, size_t num_nodes, int num_axes)
   x.resize(num_nodes);
   if (num_axes >= 2) {
     y.resize(num_nodes);
-}
+  }
   if (num_axes == 3) {
     z.resize(num_nodes);
-}
+  }
   ex_get_coord(exo_file, TOPTR(x), TOPTR(y), TOPTR(z));
   PutDbl("x0", num_nodes, 1, TOPTR(x));
   if (num_axes >= 2) {
@@ -947,9 +949,9 @@ void handle_coordinates(int exo_file, size_t num_nodes, int num_axes)
 /* remove an argument from the list */
 void del_arg(int *argc, char *argv[], int j)
 {
-  for (int jj    = j + 1; jj < *argc; jj++) {
+  for (int jj = j + 1; jj < *argc; jj++) {
     argv[jj - 1] = argv[jj];
-}
+  }
   (*argc)--;
   argv[*argc] = nullptr;
 }
@@ -1044,16 +1046,15 @@ int main(int argc, char *argv[])
   /* open output file */
   if (textfile != 0) {
     ext = ".m";
-
-  
-}if (oname == nullptr) {
+  }
+  if (oname == nullptr) {
     filename = reinterpret_cast<char *>(malloc(std::strlen(argv[1]) + 10));
     strcpy(filename, argv[1]);
     dot = strrchr(filename, '.');
     if (dot != nullptr) {
       *dot = '\0';
-    
-}strcat(filename, ext);
+    }
+    strcat(filename, ext);
   }
   else {
     filename = oname;
@@ -1350,7 +1351,8 @@ int main(int argc, char *argv[])
 
   if (textfile != 0) {
     fclose(m_file);
-  } else {
+  }
+  else {
     Mat_Close(mat_file);
   }
   free(filename);

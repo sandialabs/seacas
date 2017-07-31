@@ -4,9 +4,9 @@
 #include "EJ_vector3d.h" // for vector3d
 #include <SL_tokenize.h> // for tokenize
 #include <algorithm>     // for sort, find, transform
-#include <cctype>       // for tolower
-#include <climits>      // for INT_MAX
-#include <cstddef>      // for size_t
+#include <cctype>        // for tolower
+#include <climits>       // for INT_MAX
+#include <cstddef>       // for size_t
 #include <cstdlib>       // for exit, strtod, strtoul, abs, etc
 #include <cstring>       // for strchr, strlen
 #include <iosfwd>        // for ostream
@@ -35,7 +35,7 @@ namespace {
   void parse_part_list(const char *tokens, std::vector<int> *list);
   void parse_omissions(const char *tokens, Omissions *omissions, const std::string &basename,
                        bool require_ids);
-}  // namespace
+} // namespace
 
 SystemInterface::SystemInterface()
     : outputName_(), debugLevel_(0), stepMin_(1), stepMax_(INT_MAX), stepInterval_(1),
@@ -184,38 +184,38 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("copyright") != nullptr) {
     std::cerr << "\n"
-              << "Copyright(C) 2010 Sandia Corporation.\n"
-              << "\n"
-              << "Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,\n"
-              << "the U.S. Government retains certain rights in this software.\n"
-              << "        \n"
-              << "Redistribution and use in source and binary forms, with or without\n"
-              << "modification, are permitted provided that the following conditions are\n"
-              << "met:\n"
-              << "\n"
-              << "    * Redistributions of source code must retain the above copyright\n"
-              << "      notice, this list of conditions and the following disclaimer.\n"
-              << "\n"
-              << "    * Redistributions in binary form must reproduce the above\n"
-              << "      copyright notice, this list of conditions and the following\n"
-              << "      disclaimer in the documentation and/or other materials provided\n"
-              << "      with the distribution.\n"
-              << "    * Neither the name of Sandia Corporation nor the names of its\n"
-              << "      contributors may be used to endorse or promote products derived\n"
-              << "      from this software without specific prior written permission.\n"
-              << "\n"
-              << "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
-              << "'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n"
-              << "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n"
-              << "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n"
-              << "OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n"
-              << "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n"
-              << "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n"
-              << "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n"
-              << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
-              << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
-              << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
-    exit(EXIT_SUCCESS);
+              << "Copyright(C) 2010 National Technology & Engineering Solutions
+              << "of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+              << "NTESS, the U.S. Government retains certain rights in this software.
+              << "
+              << "Redistribution and use in source and binary forms, with or without
+              << "modification, are permitted provided that the following conditions are
+              << "met:
+              << "
+              << "    * Redistributions of source code must retain the above copyright
+              << "      notice, this list of conditions and the following disclaimer.
+              << "
+              << "    * Redistributions in binary form must reproduce the above
+              << "      copyright notice, this list of conditions and the following
+              << "      disclaimer in the documentation and/or other materials provided
+              << "      with the distribution.
+              << "
+              << "    * Neither the name of NTESS nor the names of its
+              << "      contributors may be used to endorse or promote products derived
+              << "      from this software without specific prior written permission.
+              << "
+              << "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+              << "" AS IS " AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+              << "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+              << "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+              << "OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+              << "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+              << "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+              << "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+              << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+              << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+              << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        exit(EXIT_SUCCESS);
   }
 
   // Parse remaining options as directory paths.
@@ -675,4 +675,4 @@ namespace {
       ++I;
     }
   }
-}  // namespace
+} // namespace

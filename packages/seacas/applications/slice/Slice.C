@@ -1,22 +1,22 @@
-// Copyright(C) 2012
-// Sandia Corporation. Under the terms of Contract
-// DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
-// certain rights in this software.
+// Copyright(C) 2016 National Technology & Engineering Solutions of
+// Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
 //
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
+// * Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
 //
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//     * Neither the name of Sandia Corporation nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
+// * Redistributions in binary form must reproduce the above
+//   copyright notice, this list of conditions and the following
+//   disclaimer in the documentation and/or other materials provided
+//   with the distribution.
+//
+// * Neither the name of NTESS nor the names of its
+//   contributors may be used to endorse or promote products derived
+//   from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,6 +29,7 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #include <SL_SystemInterface.h>
 #include <SL_tokenize.h>
@@ -74,7 +75,7 @@ using idx_t = int;
 #define OUTPUT std::cerr
 
 // ========================================================================
-// TODO(gdsjaar): 
+// TODO(gdsjaar):
 //  * Sideset distribution factors
 //  * Variables
 //  * All entity types
@@ -179,7 +180,7 @@ namespace {
     char        do_thousands_sep() const override { return ','; }
     std::string do_grouping() const override { return "\3"; }
   };
-}  // namespace
+} // namespace
 // ========================================================================
 
 int main(int argc, char *argv[])
@@ -280,8 +281,8 @@ int main(int argc, char *argv[])
 namespace {
 
   template <typename INT>
-  void create_adjacency_list(const Ioss::Region &region, std::vector<idx_t> &pointer, std::vector<idx_t> &adjacency,
-                             INT /*dummy*/)
+  void create_adjacency_list(const Ioss::Region &region, std::vector<idx_t> &pointer,
+                             std::vector<idx_t> &adjacency, INT /*dummy*/)
   {
     progress(__func__);
     // Size of pointer list is element count + 1;
@@ -1257,7 +1258,8 @@ namespace {
         size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
         for (size_t i = 0; i < element_count * element_nodes; i++) {
           INT node = connectivity[p][b][i] - 1;
-          if (proc_node[node].empty() || proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
+          if (proc_node[node].empty() ||
+              proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
             proc_node[node].push_back(p);
             on_proc_count++;
           }
@@ -1572,4 +1574,4 @@ namespace {
       filename = tmp;
     }
   }
-}  // namespace
+} // namespace

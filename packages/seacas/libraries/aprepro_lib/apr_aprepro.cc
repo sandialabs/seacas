@@ -1,6 +1,6 @@
-// Copyright (c) 2014, Sandia Corporation.
-// Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-// the U.S. Government retains certain rights in this software.
+// Copyright (c) 2014 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -14,7 +14,7 @@
 //       disclaimer in the documentation and/or other materials provided
 //       with the distribution.
 //
-//     * Neither the name of Sandia Corporation nor the names of its
+//     * Neither the name of NTESS nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
 //
@@ -783,9 +783,9 @@ namespace SEAMS {
 namespace {
   void output_copyright()
   {
-    std::cerr << "\n\tCopyright (c) 2014 Sandia Corporation.\n"
-              << "\tUnder the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,\n"
-              << "\tthe U.S. Government retains certain rights in this software.\n"
+    std::cerr << "\n\tCopyright (c) 2014 National Technology & Engineering Solutions\n"
+              << "of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with\n"
+              << "NTESS, the U.S. Government retains certain rights in this software.\n"
               << "\n"
               << "\tRedistribution and use in source and binary forms, with or without\n"
               << "\tmodification, are permitted provided that the following conditions\n"
@@ -797,7 +797,7 @@ namespace {
               << "\t     copyright notice, this list of conditions and the following\n"
               << "\t     disclaimer in the documentation and/or other materials provided\n"
               << "\t     with the distribution.\n"
-              << "\t   * Neither the name of Sandia Corporation nor the names of its\n"
+              << "\t   * Neither the name of NTESS nor the names of its\n"
               << "\t     contributors may be used to endorse or promote products derived\n"
               << "\t     from this software without specific prior written permission.\n"
               << "\n"

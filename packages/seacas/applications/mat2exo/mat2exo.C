@@ -1,7 +1,7 @@
 /*
- * Copyright(C) 2012 Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- * certain rights in this software
+ * Copyright(C) 2012 National Technology & Engineering Solutions
+ * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -15,7 +15,7 @@
  *   disclaimer in the documentation and/or other materials provided
  *   with the distribution.
  *
- * * Neither the name of Sandia Corporation nor the names of its
+ * * Neither the name of NTESS nor the names of its
  *   contributors may be used to endorse or promote products derived
  *   from this software without specific prior written permission.
  *
@@ -30,7 +30,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
 /**********************************************************************/
 /* matlab mat file to exodus II.  This takes .mat files exactly as
@@ -60,14 +59,14 @@
 #include "matio.h"         // for matvar_t, Mat_VarFree, etc
 #include "matio_pubconf.h" // for MATIO_VERSION
 #include <SL_tokenize.h>   // for tokenize
-#include <cassert>        // for assert
+#include <cassert>         // for assert
+#include <cstddef>         // for size_t
+#include <cstdio>          // for sprintf, printf, fprintf, etc
+#include <cstdlib>         // for calloc, free, exit
+#include <cstring>         // for strtok, memcpy, strlen, etc
 #include <exodusII.h>      // for ex_put_variable_param, etc
 #include <iostream>        // for operator<<, basic_ostream, etc
 #include <numeric>         // for accumulate
-#include <cstddef>        // for size_t
-#include <cstdio>         // for sprintf, printf, fprintf, etc
-#include <cstdlib>        // for calloc, free, exit
-#include <cstring>        // for strtok, memcpy, strlen, etc
 #include <string>          // for char_traits, string
 #include <vector>          // for vector
 
@@ -228,7 +227,7 @@ int main(int argc, char *argv[])
       sprintf(name, "ssfac%02d", i + 1);
       matGetDbl(name, nssdfac[i], 1, dist_fact);
       if (nssdfac[i] > 0) {
-	ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
+        ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
       }
     }
 
@@ -259,7 +258,7 @@ int main(int argc, char *argv[])
       sprintf(name, "nsfac%02d", i + 1);
       matGetDbl(name, ndfac[i], 1, dist_fact);
       if (ndfac[i] > 0) {
-	ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
+        ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
       }
     }
 
@@ -409,8 +408,8 @@ std::vector<std::string> matGetStr(const char *name)
     printf("Error: Multiline string copy attempted\n");
   }
 
-  std::string mat_names(reinterpret_cast<char*>(matvar->data), matvar->nbytes);
-  auto names = SLIB::tokenize(mat_names, "\n", true);
+  std::string mat_names(reinterpret_cast<char *>(matvar->data), matvar->nbytes);
+  auto        names = SLIB::tokenize(mat_names, "\n", true);
   Mat_VarFree(matvar);
 
   return names;
@@ -514,7 +513,7 @@ void get_put_names(int exo_file, ex_entity_type entity, int num_vars, const std:
   for (int i = 0; i < num_vars; i++) {
     str2[i] = names[i].c_str();
   }
-  ex_put_variable_names(exo_file, entity, num_vars, const_cast<char**>(str2));
+  ex_put_variable_names(exo_file, entity, num_vars, const_cast<char **>(str2));
   free(str2);
 }
 
@@ -526,7 +525,7 @@ void get_put_user_names(int exo_file, ex_entity_type entity, int num_entity, con
   for (int i = 0; i < num_entity; i++) {
     str2[i] = names[i].c_str();
   }
-  ex_put_names(exo_file, entity, const_cast<char**>(str2));
+  ex_put_names(exo_file, entity, const_cast<char **>(str2));
   free(str2);
 }
 
@@ -541,7 +540,7 @@ void get_put_attr_names(int exo_file, int seq, int id, int num_attr)
   for (int i = 0; i < num_attr; i++) {
     str2[i] = names[i].c_str();
   }
-  ex_put_attr_names(exo_file, EX_ELEM_BLOCK, id, const_cast<char**>(str2));
+  ex_put_attr_names(exo_file, EX_ELEM_BLOCK, id, const_cast<char **>(str2));
   free(str2);
 }
 

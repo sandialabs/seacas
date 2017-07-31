@@ -1,7 +1,7 @@
 /*
- * Copyright(C) 2010 Sandia Corporation.  Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
- * certain rights in this software
+ * Copyright(C) 2010 National Technology & Engineering Solutions
+ * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+ * NTESS, the U.S. Government retains certain rights in this software.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -15,7 +15,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  *
- *     * Neither the name of Sandia Corporation nor the names of its
+ *     * Neither the name of NTESS nor the names of its
  *       contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
  *
@@ -375,7 +375,8 @@ int main(int argc, char *argv[])
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
         if (interface.int64()) {
-          error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0), static_cast<int64_t>(0));
+          error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0),
+                      static_cast<int64_t>(0));
         }
         else {
           error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0), 0);
@@ -414,7 +415,8 @@ int main(int argc, char *argv[])
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
         if (interface.int64()) {
-          error = epu(interface, start_part, part_count, 0, static_cast<float>(0.0), static_cast<int64_t>(0));
+          error = epu(interface, start_part, part_count, 0, static_cast<float>(0.0),
+                      static_cast<int64_t>(0));
         }
         else {
           error = epu(interface, start_part, part_count, 0, static_cast<float>(0.0), 0);
@@ -1678,8 +1680,8 @@ namespace {
 
       // Initialize attributes list, if it exists
       if (glob_blocks[b].attributeCount > 0) {
-        attributes[b] =
-            new T[static_cast<size_t>(glob_blocks[b].attributeCount) * glob_blocks[b].entity_count()];
+        attributes[b] = new T[static_cast<size_t>(glob_blocks[b].attributeCount) *
+                              glob_blocks[b].entity_count()];
       }
 
       int error = 0;
@@ -1725,7 +1727,7 @@ namespace {
 
           // Get attributes list,  if it exists
           if (blocks[p][b].attributeCount > 0) {
-            size_t max_attr = blocks[p][b].entity_count() * blocks[p][b].attributeCount;
+            size_t         max_attr = blocks[p][b].entity_count() * blocks[p][b].attributeCount;
             std::vector<T> local_attr(max_attr);
 
             error = ex_get_attr(id, EX_ELEM_BLOCK, blocks[p][b].id, TOPTR(local_attr));
@@ -3004,7 +3006,9 @@ namespace {
     strncpy(info_record, sinfo, size);
     info_record[size] = '\0';
 #else
-    struct utsname sys_info{};
+    struct utsname sys_info
+    {
+    };
     uname(&sys_info);
 
     std::string info = "EPU: ";
@@ -3388,4 +3392,4 @@ namespace {
     }
     return max_ent;
   }
-}  // namespace
+} // namespace
