@@ -80,8 +80,7 @@ C   --   LENSTR - (STRLIB) Find string length
       NCEN(LEN) = MAX (1, (80 - LEN + 1) / 2)
 
       write (banr, 100) year(:lenstr(year))
- 100  format (' Copyright ', a,
-     $     ' National Technology & Engineering Solutions of Sandia, LLC (NTESS)')
+ 100  format (' Copyright ', a, ' NTESS')
       CALL SQZSTR (BANR, LBANR)
       IF (NOUT .LE. 0) THEN
          WRITE (*, 10000) BLANK(:NCEN(LBANR+8)),
