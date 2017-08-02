@@ -1547,6 +1547,19 @@ int Internals::put_metadata(const std::vector<ElemBlock> &blocks)
       }
       ex_compress_variable(exodusFilePtr, varid, 2);
 
+#if defined(PARALLEL_AWARE_EXODUS)
+      // There is currently a bug in netcdf-4.5.1-devel and earlier
+      // for partial parallel output of strided arrays in collective
+      // mode for netcdf-4-based output.  If the number of attribues >
+      // 1 and in parallel mode, set the mode to independent.
+      if (blocks[iblk].attributeCount > 1) {
+        struct ex_file_item *file = ex_find_file_item(exodusFilePtr);
+        if (file->is_parallel && file->is_mpiio) {
+          nc_var_par_access(exodusFilePtr, varid, NC_INDEPENDENT);
+        }
+      }
+#endif
+
       // Attribute name array...
       dims[0] = numattrdim;
       dims[1] = namestrdim;
