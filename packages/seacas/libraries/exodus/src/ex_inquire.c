@@ -523,7 +523,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
           int64_t tmp_len = 0;
           id              = ((int64_t *)ids)[i];
           status          = ex_get_side_set_node_list_len(exoid, id, &tmp_len);
-          if (status == NC_NOERR) {
+          if (status != EX_FATAL) {
             *ret_int += tmp_len;
           }
         }
@@ -531,12 +531,12 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
           int tmp_len = 0;
           id          = ((int *)ids)[i];
           status      = ex_get_side_set_node_list_len(exoid, id, &tmp_len);
-          if (status == NC_NOERR) {
+          if (status != EX_FATAL) {
             *ret_int += tmp_len;
           }
         }
 
-        if (status != NC_NOERR) {
+        if (status == EX_FATAL) {
           *ret_int = 0;
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "ERROR: failed to side set %" PRId64 " node length in file id %d", id, exoid);
