@@ -157,7 +157,8 @@ int main(int argc, char *argv[])
   if (rank == 0) {
     std::cerr << "\n" << codename << " execution successful.\n";
   }
-#ifdef SEACAS_HAVE_KOKKOS Kokkos::finalize();
+#ifdef SEACAS_HAVE_KOKKOS
+  Kokkos::finalize();
 #endif
 
 #ifdef HAVE_MPI
