@@ -78,7 +78,7 @@ C   --   RCHECK - SCRATCH - size = NUMNP
       INTEGER MAPND(*)
       LOGICAL DIDHEAD, ALLSAM
       
-      CHARACTER*128 STRA
+      CHARACTER*1024 STRA
 
 C   --Check for unique identifier
 
@@ -161,6 +161,25 @@ C     problems with some analysis codes
         end do
       end do
 
+c ... Check that the distribution factor count matches the number of nodes
+C     in the sideset...
+      do iess = 1, numess
+        call exgsp(ndb, idess(iess), nsess, ndfss, ierr)
+        call exgssc(ndb, idess(iess), nscr, ierr)
+        numnod = 0
+        do i = 1, neess(iess)
+          numnod = numnod + nscr(i)
+        end do
+        if (ndfss .ne. numnod) then
+          write (stra, 10001) idess(iess), ndfss, numnod
+10001     FORMAT('SIDESET ERROR: In sideset ', I10,
+     *      ' the number of distribution factors (', I10,
+     *      ') does not match the sideset node count (', I10, ')')
+            call sqzstr(stra, lstra)
+            CALL PRTERR ('CMDSPEC', STRA(:lstra))
+        endif
+      end do
+      
 c ... Check for discontinuous sideset distribution factors on a sideset.
 C     That is, if node 42 on side 15 has a different df value than node 42 on side 11.
 C     This is allowed for in exodus, but most users want a c1 continuous field defined.

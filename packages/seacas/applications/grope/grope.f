@@ -156,6 +156,8 @@ C .. Get filename from command line.  If not specified, emit error message
          GOTO 120
       END IF
 
+      CALL EXOPTS(EXVRBS,IERR)
+      
 C ... By default, ultimately map both nodes and elements
 C     HOWEVER, in the transition time do not map either unless requested...
       mapel = .false.
