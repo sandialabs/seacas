@@ -35,7 +35,6 @@ addons:
       name: "gsjaardema/seacas"
       description: "Build submitted via Travis CI"
     notification_email: gsjaardema@gmail.com
-    build_command_prepend: "./cmake-travis.sh coverity pre"
-    build_command: "./cmake-travis.sh coverity analyze"
+    build_command: "./cmake-travis.sh coverity"
     branch_pattern: coverity_scan
 
