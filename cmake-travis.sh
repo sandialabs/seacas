@@ -5,7 +5,7 @@ PREBUILD=${2:-both}
 KOKKOS=${KOKKOS:-OFF}
 ACCESS=`pwd`
 
-if [ "$PREBUILD" == "both" || "$PREBUILD" == "prebuild" ]
+if [ "$PREBUILD" == "both" ] || [ "$PREBUILD" == "prebuild" ] ;
 then
 # =================== INSTALL PNETCDF and NETCDF (if mpi) ===============
 if [ "$MPI" == "ON" ]
@@ -46,7 +46,8 @@ cd $ACCESS
 pwd
 fi
 
-if [ "$PREBUILD" == "both" || "$PREBUILD" == "analyze" ]
+if [ "$PREBUILD" == "both" ] || [ "$PREBUILD" == "analyze" ] ;
+then
 # ==================== CONFIGURE SEACAS ====================
 mkdir $BUILDDIR && cd $BUILDDIR
 
