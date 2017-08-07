@@ -3,10 +3,9 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 2015, 2016
-// Sandia Corporation. Under the terms of Contract
-// DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
-// certain rights in this software.
+// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -19,7 +18,8 @@
 //       copyright notice, this list of conditions and the following
 //       disclaimer in the documentation and/or other materials provided
 //       with the distribution.
-//     * Neither the name of Sandia Corporation nor the names of its
+//
+//     * Neither the name of NTESS nor the names of its
 //       contributors may be used to endorse or promote products derived
 //       from this software without specific prior written permission.
 //
@@ -1497,7 +1497,7 @@ namespace Iocgns {
         for (size_t i = 0; i < element_nodes * num_to_get; i++) {
           nodes.push_back(idata[i]);
         }
-	Ioss::Utils::uniquify(nodes);
+        Ioss::Utils::uniquify(nodes);
 
         // Resolve zone-shared nodes (nodes used in this zone, but are
         // shared on processor boundaries).
@@ -1584,7 +1584,7 @@ namespace Iocgns {
           connectivity_map.clear();
           connectivity_map.shrink_to_fit();
 
-	  Ioss::Utils::uniquify(nodes);
+          Ioss::Utils::uniquify(nodes);
           if (nodes.back() == std::numeric_limits<cgsize_t>::max()) {
             nodes.pop_back();
           }
@@ -1944,8 +1944,8 @@ namespace Iocgns {
 
   unsigned ParallelDatabaseIO::entity_field_support() const
   {
-    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK |
-      Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
+    return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::STRUCTUREDBLOCK | Ioss::NODESET |
+           Ioss::SIDESET | Ioss::REGION;
   }
 
   int64_t ParallelDatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const

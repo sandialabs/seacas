@@ -1,6 +1,6 @@
-C    Copyright(C) 2008 Sandia Corporation.  Under the terms of Contract
-C    DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
-C    certain rights in this software
+C    Copyright(C) 2008 National Technology & Engineering Solutions of
+C    Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+C    NTESS, the U.S. Government retains certain rights in this software.
 C    
 C    Redistribution and use in source and binary forms, with or without
 C    modification, are permitted provided that the following conditions are
@@ -8,16 +8,16 @@ C    met:
 C    
 C    * Redistributions of source code must retain the above copyright
 C       notice, this list of conditions and the following disclaimer.
-C              
+C    
 C    * Redistributions in binary form must reproduce the above
 C      copyright notice, this list of conditions and the following
 C      disclaimer in the documentation and/or other materials provided
 C      with the distribution.
-C                            
-C    * Neither the name of Sandia Corporation nor the names of its
+C    
+C    * Neither the name of NTESS nor the names of its
 C      contributors may be used to endorse or promote products derived
 C      from this software without specific prior written permission.
-C                                                    
+C    
 C    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 C    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 C    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -48,7 +48,7 @@ C   --   INDX - SCRATCH - size = ICNT
       INTEGER INDX(*)
       CHARACTER*(*) TYPE
       
-      CHARACTER*132 STRA
+      CHARACTER*1024 STRA
 C   --Check that each node/element appears once and only once in the map
 C     The 'map(i)' values may be larger than icnt, so we can't do a
 C     simple check.  Instead, we do an indexed sort and check for no
@@ -59,14 +59,22 @@ C     duplicate adjacent values.
 
       CALL INDEXX (MAP, INDX, ICNT, .TRUE.)
 
+C ... There has been a request to show min and max ids to help with 
+C     debugging potential database corruption issues.  Do it here.
+
+      write (stra, 10001) type, map(indx(1)), map(indx(icnt))
+10001 FORMAT('INFO: ', A, ' global id range: ',I12, ' to ', I12)
+      call sqzstr(stra, lstra)
+      CALL PRTERR ('CMDSPEC', STRA(:lstra))
+
       ILAST = MAP(INDX(1))
       DO 100 IEL = 2, ICNT
         if (map(indx(iel)) .eq. ilast) then
            if (nerr .lt. maxerrs .or. maxerrs .le. 0) then
               write (stra, 10000) type, ilast, type,
      *             indx(iel-1), indx(iel)
-10000         FORMAT('MAP ERROR: ',A,' global  id ',I10,
-     *             ' assigned to ',A,'s', I10,' and ',I10,'.')
+10000         FORMAT('MAP ERROR: ',A,' global  id ',I12,
+     *             ' assigned to ',A,'s', I12,' and ',I12,'.')
               call sqzstr(stra, lstra)
               CALL PRTERR ('CMDSPEC', STRA(:lstra))
            else if (nerr .eq. maxerrs .and. maxerrs .gt. 0) then
@@ -79,7 +87,7 @@ C     duplicate adjacent values.
   100 CONTINUE
       if (nerr .gt. 0) then
          write (stra, 10010) nerr, type
-10010    FORMAT('MAP ERROR: Found ',I10,' errors in ',A,' map check.')
+10010    FORMAT('MAP ERROR: Found ',I12,' errors in ',A,' map check.')
          call sqzstr(stra, lstra)
          CALL PRTERR ('CMDSPEC', STRA(:lstra))
       end if

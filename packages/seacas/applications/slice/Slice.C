@@ -1,22 +1,22 @@
-// Copyright(C) 2012
-// Sandia Corporation. Under the terms of Contract
-// DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
-// certain rights in this software.
+// Copyright(C) 2016 National Technology & Engineering Solutions of
+// Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
 //
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
+// * Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
 //
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//     * Neither the name of Sandia Corporation nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
+// * Redistributions in binary form must reproduce the above
+//   copyright notice, this list of conditions and the following
+//   disclaimer in the documentation and/or other materials provided
+//   with the distribution.
+//
+// * Neither the name of NTESS nor the names of its
+//   contributors may be used to endorse or promote products derived
+//   from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,6 +29,7 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #include <SL_SystemInterface.h>
 #include <SL_tokenize.h>
@@ -38,7 +39,7 @@
 #include <Ioss_SubSystem.h>
 #include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
-#include <assert.h>
+#include <cassert>
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <init/Ionit_Initializer.h>
 
@@ -61,7 +62,7 @@
 #if USE_METIS
 #include <metis.h>
 #else
-typedef int idx_t;
+using idx_t = int;
 #endif
 
 #include <sys/stat.h>
@@ -74,7 +75,7 @@ typedef int idx_t;
 #define OUTPUT std::cerr
 
 // ========================================================================
-// TODO:
+// TODO(gdsjaar):
 //  * Sideset distribution factors
 //  * Variables
 //  * All entity types
@@ -112,11 +113,11 @@ namespace {
 
   template <typename T> struct remove_pointer
   {
-    typedef T type;
+    using type = T;
   };
   template <typename T> struct remove_pointer<T *>
   {
-    typedef T type;
+    using type = T;
   };
 
   template <typename INT>
@@ -179,7 +180,7 @@ namespace {
     char        do_thousands_sep() const override { return ','; }
     std::string do_grouping() const override { return "\3"; }
   };
-}
+} // namespace
 // ========================================================================
 
 int main(int argc, char *argv[])
@@ -262,11 +263,11 @@ int main(int argc, char *argv[])
 
   if (dbi->int_byte_size_api() == 4) {
     progress("4-byte slice");
-    slice(region, nem_file, interface, (int)1);
+    slice(region, nem_file, interface, 1);
   }
   else {
     progress("8-byte slice");
-    slice(region, nem_file, interface, (int64_t)1);
+    slice(region, nem_file, interface, static_cast<int64_t>(1));
   }
 
 #ifdef HAVE_MPI
@@ -280,9 +281,8 @@ int main(int argc, char *argv[])
 namespace {
 
   template <typename INT>
-  void create_adjacency_list(const Ioss::Region &region, SystemInterface &interface,
-                             std::vector<idx_t> &pointer, std::vector<idx_t> &adjacency,
-                             INT /*dummy*/)
+  void create_adjacency_list(const Ioss::Region &region, std::vector<idx_t> &pointer,
+                             std::vector<idx_t> &adjacency, INT /*dummy*/)
   {
     progress(__func__);
     // Size of pointer list is element count + 1;
@@ -322,9 +322,8 @@ namespace {
     assert(adjacency.size() == sum);
   }
 
-  template <typename INT>
   void decompose_elements(const Ioss::Region &region, SystemInterface &interface,
-                          std::vector<int> &elem_to_proc, INT dummy)
+                          std::vector<int> &elem_to_proc)
   {
     progress(__func__);
     // Populate the 'elem_to_proc' vector with a mapping from element to processor.
@@ -341,7 +340,7 @@ namespace {
     if (interface.decomposition_method() == "linear") {
       size_t elem_beg = 0;
       for (size_t proc = 0; proc < interface.processor_count(); proc++) {
-        size_t add      = ((size_t)proc < extra) ? 1 : 0;
+        size_t add      = (proc < extra) ? 1 : 0;
         size_t elem_end = elem_beg + elem_per_proc + add;
 
         for (size_t elem = elem_beg; elem < elem_end; elem++) {
@@ -677,7 +676,7 @@ namespace {
     progress(__func__);
     // This routine categorizes the nodes on a processor as interior
     // or border.
-    // TODO: Categorize elements also. For now, all treated as
+    // TODO(gdsjaar): Categorize elements also. For now, all treated as
     // interior which works for sierra-based applications
 
     // The node_to_proc_pointer has information about the number of
@@ -732,8 +731,8 @@ namespace {
 
       region->property_add(Ioss::Property("global_node_count", global_node_count));
       region->property_add(Ioss::Property("global_element_count", global_element_count));
-      region->property_add(Ioss::Property("processor_count", (int)proc_count));
-      region->property_add(Ioss::Property("my_processor", (int)p));
+      region->property_add(Ioss::Property("processor_count", static_cast<int>(proc_count)));
+      region->property_add(Ioss::Property("my_processor", static_cast<int>(p)));
 
       region->property_add(Ioss::Property("internal_node_count", interior_nodes[p]));
       region->property_add(Ioss::Property("border_node_count", border_nodes));
@@ -1259,7 +1258,8 @@ namespace {
         size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
         for (size_t i = 0; i < element_count * element_nodes; i++) {
           INT node = connectivity[p][b][i] - 1;
-          if (proc_node[node].empty() || proc_node[node][proc_node[node].size() - 1] != (int)p) {
+          if (proc_node[node].empty() ||
+              proc_node[node][proc_node[node].size() - 1] != static_cast<int>(p)) {
             proc_node[node].push_back(p);
             on_proc_count++;
           }
@@ -1348,7 +1348,7 @@ namespace {
 
     double           start = seacas_timer();
     std::vector<int> elem_to_proc;
-    decompose_elements(region, interface, elem_to_proc, INT(0));
+    decompose_elements(region, interface, elem_to_proc);
     double end = seacas_timer();
     OUTPUT << "Decompose elements = " << end - start << "\n";
 
@@ -1513,7 +1513,7 @@ namespace {
 #if defined(__PUMAGON__)
 #include <stdio.h>
 #else
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 #endif
 
@@ -1574,4 +1574,4 @@ namespace {
       filename = tmp;
     }
   }
-}
+} // namespace
