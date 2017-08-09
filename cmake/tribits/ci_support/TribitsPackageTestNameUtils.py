@@ -37,47 +37,50 @@
 # ************************************************************************
 # @HEADER
 
-IF (MESSAGE_WRAPPER_INCLUDED)
-  RETURN()
-ENDIF()
-SET(MESSAGE_WRAPPER_INCLUDED TRUE)
-
-INCLUDE(PrintVar)
-INCLUDE(GlobalSet)
 
 #
-# @FUNCTION: MESSAGE_WRAPPER()
+# General scripting support
 #
-# Function that wraps the standard CMake/CTest ``MESSAGE()`` function call in
-# order to allow unit testing to intercept the output.
+# NOTE: Included first to check the version of python!
 #
-# Usage::
+
+from TribitsDependencies import getProjectDependenciesFromXmlFile
+from GeneralScriptSupport import *
+
+
+def getPackageNameFromTestName(trilinosDependencies, testName):
+  return trilinosDependencies.getPackageNameFromTestName(testName)
+
+
+def getTestNameFromLastTestsFailedLine(trilinosDependencies, line):
+  lineArray = line.split(':')
+  assert len(lineArray) == 2, "Error, the line '"+line+"' not formatted correctly!"
+  testName = lineArray[1]
+  assert testName != "", "Error, test name '"+testName+"' can't be empty!"
+  return testName
+
+
 #
-#   MESSAGE_WRAPPER(...)
+# Given the lines from a LastTestsFail*.log file, return an array of the
+# matching parent package names.
 #
-# This function takes exactly the same arguments as built-in ``MESSAGE()``
-# function.  However, when the variable ``MESSAGE_WRAPPER_UNIT_TEST_MODE`` is
-# set to ``TRUE``, then this function will not call ``MESSAGE(...)`` but
-# instead will prepend set to the global variable ``MESSAGE_WRAPPER_INPUT``
-# the input argument that would have gone to ``MESSAGE()``.  To capture just
-# this call's input, first call::
+# This will return the list of matching packages only once per package.
 #
-#   GLOBAL_NULL_SET(MESSAGE_WRAPPER_INPUT)
-#
-# before calling this function (or the functions/macros that call this
-# function).
-#
-# This function allows one to unit test other user-defined CMake macros and
-# functions that call this function to catch error conditions without stopping
-# the CMake program.  Otherwise, this is used to capture print messages to
-# verify that they say the right thing.
-#
-FUNCTION(MESSAGE_WRAPPER)
-  #MESSAGE("MESSAGE_WRAPPER: ${ARGN}")
-  IF (MESSAGE_WRAPPER_UNIT_TEST_MODE)
-    GLOBAL_SET(MESSAGE_WRAPPER_INPUT "${MESSAGE_WRAPPER_INPUT}" ${ARGN})
-  ELSE()
-    MESSAGE(${ARGN})
-  ENDIF()
-ENDFUNCTION()
+
+def getPackageNamesFromLastTestsFailedLines(trilinosDependencies, \
+  lastTestsFailedLines \
+  ):
+  #print ("\nlastTestsFailedLine:\n"+str(lastTestsFailedLines))
+  packageNames = []
+  for lastTestsFailedLine in lastTestsFailedLines:
+    #print ("\nlastTestsFailedLine = '"+lastTestsFailedLine+"'")
+    testName = \
+      getTestNameFromLastTestsFailedLine(trilinosDependencies, lastTestsFailedLine)
+    #print ("\ntestName = '"+testName+"'")
+    packageName = getPackageNameFromTestName(trilinosDependencies, testName)
+    #print("\npackageName = '"+packageName+"'")
+    if findInSequence(packageNames, packageName) == -1 and packageName:
+      #print ("\nAppend '"+packageName+"'")
+      packageNames.append(packageName)
+  return packageNames
 
