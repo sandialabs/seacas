@@ -206,8 +206,9 @@ TRIBITS_ADD_OPTION_AND_DEFINE(
 # If the argument of DESTINATION is a relative path, CMake computes it
 # as relative to ${CMAKE_INSTALL_PATH}.
 
+if (TPL_ENABLE_CUDA) 
 INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/bin/nvcc_wrapper DESTINATION bin)
-
+endif()
 
 #------------------------------------------------------------------------------
 #
