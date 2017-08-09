@@ -1,13 +1,13 @@
 /*
 //@HEADER
 // ************************************************************************
-// 
+//
 //                        Kokkos v. 2.0
 //              Copyright (2014) Sandia Corporation
-// 
+//
 // Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 // the U.S. Government retains certain rights in this software.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
@@ -36,54 +36,175 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // Questions? Contact  H. Carter Edwards (hcedwar@sandia.gov)
-// 
+//
 // ************************************************************************
 //@HEADER
 */
 
 #include <Kokkos_Macros.hpp>
-#include <impl/Kokkos_spinwait.hpp>
+#if defined( KOKKOS_ACTIVE_EXECUTION_MEMORY_SPACE_HOST )
 
-/*--------------------------------------------------------------------------*/
+#include <Kokkos_Atomic.hpp>
+#include <impl/Kokkos_Spinwait.hpp>
+#include <impl/Kokkos_BitOps.hpp>
 
-#if ( KOKKOS_ENABLE_ASM )
-  #if defined( __arm__ ) || defined( __aarch64__ )
-    /* No-operation instruction to idle the thread. */
-    #define YIELD   asm volatile("nop")
-  #else
-    /* Pause instruction to prevent excess processor bus usage */
-    #define YIELD   asm volatile("pause\n":::"memory")
-  #endif
-#elif defined ( KOKKOS_HAVE_WINTHREAD )
+#if defined( KOKKOS_ENABLE_STDTHREAD )
+  #include <thread>
+#elif !defined( _WIN32 )
+  #include <sched.h>
+  #include <time.h>
+#else
   #include <process.h>
-  #define YIELD  Sleep(0)
-#elif defined ( _WIN32)  && defined (_MSC_VER)
-  /* Windows w/ Visual Studio */
-  #define NOMINMAX
   #include <winsock2.h>
   #include <windows.h>
-#define YIELD YieldProcessor();
-#elif defined ( _WIN32 )
-  /* Windows w/ Intel*/
-  #define YIELD __asm__ __volatile__("pause\n":::"memory")
-#else
-  #include <sched.h>
-  #define YIELD  sched_yield()
 #endif
 
 /*--------------------------------------------------------------------------*/
 
 namespace Kokkos {
 namespace Impl {
-#if defined( KOKKOS_ACTIVE_EXECUTION_MEMORY_SPACE_HOST )
-void spinwait( volatile int & flag , const int value )
+namespace {
+
+void host_thread_yield( const uint32_t i , const int force_yield )
 {
-  while ( value == flag ) {
-    YIELD ;
+  static constexpr uint32_t sleep_limit = 1 << 13 ;
+  static constexpr uint32_t yield_limit = 1 << 12 ;
+
+  const int c = Kokkos::Impl::bit_scan_reverse(i);
+
+  if ( sleep_limit < i ) {
+
+    // Attempt to put the thread to sleep for 'c' milliseconds
+
+    #if defined( KOKKOS_ENABLE_STDTHREAD )
+      std::this_thread::sleep_for( std::chrono::nanoseconds( c * 1000 ) )
+    #elif !defined( _WIN32 )
+      timespec req ;
+      req.tv_sec  = 0 ;
+      req.tv_nsec = 1000 * c ;
+      nanosleep( &req, nullptr );
+    #else /* defined( _WIN32 ) IS Microsoft Windows */
+      Sleep(c);
+    #endif
   }
+
+  else if ( force_yield || yield_limit < i ) {
+
+    // Attempt to yield thread resources to runtime
+
+    #if defined( KOKKOS_ENABLE_STDTHREAD )
+      std::this_thread::yield();
+    #elif !defined( _WIN32 )
+      sched_yield();
+    #else /* defined( _WIN32 ) IS Microsoft Windows */
+      YieldProcessor();
+    #endif
+  }
+
+  #if defined( KOKKOS_ENABLE_ASM )
+
+  else if ( (1u<<4) < i ) {
+
+    // Insert a few no-ops to quiet the thread:
+
+    for ( int k = 0 ; k < c ; ++k ) {
+      #if defined( __amd64 ) || defined( __amd64__ ) || \
+       	    defined( __x86_64 ) || defined( __x86_64__ )
+    	#if !defined( _WIN32 ) /* IS NOT Microsoft Windows */
+          asm volatile( "nop\n" );
+	#else
+          __asm__ __volatile__( "nop\n" );
+        #endif
+      #elif defined(__PPC64__)
+          asm volatile( "nop\n" );
+      #endif
+    }
+  }
+
+  {
+    // Insert memory pause
+      #if defined( __amd64 ) || defined( __amd64__ ) || \
+       	    defined( __x86_64 ) || defined( __x86_64__ )
+    	#if !defined( _WIN32 ) /* IS NOT Microsoft Windows */
+          asm volatile( "pause\n":::"memory" );
+	#else
+          __asm__ __volatile__( "pause\n":::"memory" );
+        #endif
+      #elif defined(__PPC64__)
+	asm volatile( "or 27, 27, 27" ::: "memory" );
+      #endif
+  }
+
+  #endif /* defined( KOKKOS_ENABLE_ASM ) */
 }
-#endif
+
+}}} // namespace Kokkos::Impl::{anonymous}
+
+/*--------------------------------------------------------------------------*/
+
+namespace Kokkos {
+namespace Impl {
+
+void spinwait_while_equal( volatile int32_t & flag , const int32_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value == flag ) host_thread_yield(++i,0);
+  Kokkos::load_fence();
+}
+
+void spinwait_until_equal( volatile int32_t & flag , const int32_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value != flag ) host_thread_yield(++i,0);
+  Kokkos::load_fence();
+}
+
+void spinwait_while_equal( volatile int64_t & flag , const int64_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value == flag ) host_thread_yield(++i,0);
+  Kokkos::load_fence();
+}
+
+void spinwait_until_equal( volatile int64_t & flag , const int64_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value != flag ) host_thread_yield(++i,0);
+  Kokkos::load_fence();
+}
+
+void yield_while_equal( volatile int32_t & flag , const int32_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value == flag ) host_thread_yield(++i,1);
+  Kokkos::load_fence();
+}
+
+void yield_until_equal( volatile int32_t & flag , const int32_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value != flag ) host_thread_yield(++i,1);
+  Kokkos::load_fence();
+}
+
+void yield_while_equal( volatile int64_t & flag , const int64_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value == flag ) host_thread_yield(++i,1);
+  Kokkos::load_fence();
+}
+
+void yield_until_equal( volatile int64_t & flag , const int64_t value )
+{
+  Kokkos::store_fence();
+  uint32_t i = 0 ; while( value != flag ) host_thread_yield(++i,1);
+  Kokkos::load_fence();
+}
 
 } /* namespace Impl */
 } /* namespace Kokkos */
+
+#else
+void KOKKOS_CORE_SRC_IMPL_SPINWAIT_PREVENT_LINK_ERROR() {}
+#endif
 
