@@ -64,6 +64,30 @@ namespace Ioss {
 #define IOSS_ERROR(errmsg) throw std::runtime_error(errmsg.str())
 #define IOSS_WARNING std::cerr
 
+namespace {
+  // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
+  template <typename T> size_t unique(std::vector<T> &out, bool skip_first)
+  {
+    if (out.empty())
+      return 0;
+    size_t i    = 1;
+    size_t pos  = 1;
+    T      oldv = out[0];
+    if (skip_first) {
+      i    = 2;
+      pos  = 2;
+      oldv = out[1];
+    }
+    for (; i < out.size(); ++i) {
+      T newv   = out[i];
+      out[pos] = newv;
+      pos += (newv != oldv);
+      oldv = newv;
+    }
+    return pos;
+  }
+} // namespace
+
 namespace Ioss {
 
   /* \brief Utility methods.
@@ -92,7 +116,7 @@ namespace Ioss {
         it++;
       }
       std::sort(it, vec.end());
-      vec.erase(std::unique(it, vec.end()), vec.end());
+      vec.resize(unique(vec, skip_first));
       vec.shrink_to_fit();
     }
 
