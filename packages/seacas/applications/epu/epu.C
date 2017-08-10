@@ -150,6 +150,22 @@ namespace {
     }
     return true;
   }
+
+  // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
+  template <typename T> size_t unique(std::vector<T> &out)
+  {
+    if (out.empty())
+      return 0;
+    size_t pos  = 1;
+    T      oldv = out[0];
+    for (size_t i = 1; i < out.size(); ++i) {
+      T newv   = out[i];
+      out[pos] = newv;
+      pos += (newv != oldv);
+      oldv = newv;
+    }
+    return pos;
+  }
 } // namespace
 
 std::string tsFormat = "[%H:%M:%S] ";
@@ -1998,8 +2014,8 @@ namespace {
 
     // Now, sort the global_node_map array and remove duplicates...
     std::sort(global_node_map.begin(), global_node_map.end());
-    global_node_map.erase(std::unique(global_node_map.begin(), global_node_map.end()),
-                          global_node_map.end());
+    global_node_map.resize(unique(global_node_map));
+    global_node_map.shrink_to_fit();
 
     size_t total_num_nodes = global_node_map.size();
     global->nodeCount      = total_num_nodes;
