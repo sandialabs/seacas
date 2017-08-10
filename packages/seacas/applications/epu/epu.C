@@ -7,7 +7,7 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     * Redistributions of source code must retain the above copyright
+ *     * Redistributions of source code must retain the above copyri30ght
  *       notice, this list of conditions and the following disclaimer.
  *
  *     * Redistributions in binary form must reproduce the above
@@ -526,8 +526,12 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     else {
       SMART_ASSERT(global.dimensionality == local_mesh[p].dimensionality);
       SMART_ASSERT(global.count(EBLK) == local_mesh[p].count(EBLK));
-      SMART_ASSERT(global.count(NSET) == local_mesh[p].count(NSET));
-      SMART_ASSERT(global.count(SSET) == local_mesh[p].count(SSET));
+      if (!interface.omit_nodesets()) {
+        SMART_ASSERT(global.count(NSET) == local_mesh[p].count(NSET));
+      }
+      if (!interface.omit_sidesets()) {
+        SMART_ASSERT(global.count(SSET) == local_mesh[p].count(SSET));
+      }
     }
 
     local_node_to_global[p].resize(local_mesh[p].nodeCount);
