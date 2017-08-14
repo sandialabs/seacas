@@ -43,6 +43,7 @@
 #include <ctime>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
@@ -986,7 +987,7 @@ namespace SEAMS {
   {
     /* Print error message (to stderr) and exit */
     yyerror(*aprepro, error_string);
-    exit(EXIT_FAILURE);
+    throw std::runtime_error(std::string(error_string));
     /* NOTREACHED */
     return (nullptr);
   }
