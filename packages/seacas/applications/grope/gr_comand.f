@@ -940,8 +940,8 @@ C     didn't, need to rewrite frefld to return mixed case.
         CALL MDSTAT (NERR, MEM)
         IF (NERR .GT. 0) GOTO 240
 
+        CALL CKMAP (NUMNP, DBMAPND, IA(KICHECK), 'Node   ')
         CALL CKMAP (NUMEL, DBMAPEL, IA(KICHECK), 'Element')
-        CALL CKMAP (NUMNP, DBMAPND, IA(KICHECK), 'Node')
         CALL CKELB (NELBLK, NUMEL, NUMNP, EBTYPE, 
      &    IDELB, NUMELB, NUMLNK, NUMATR, LINK, ATRIB, ATNAME, 
      &       IA(KICHECK), MAPND)

@@ -128,9 +128,11 @@ C   --   NVARSS - IN - the number of sideset variables (if OPTION)
             END IF
          ELSE
             IF (NOUT .GT. 0) THEN
-               WRITE (NOUT, 10050, IOSTAT=IDUM) NUMESS, LESSEL, LESSDF
+               WRITE (NOUT, 10050, IOSTAT=IDUM) NUMESS, LESSEL, LESSNL,
+     $              LESSDF
             ELSE
-               WRITE (*, 10050, IOSTAT=IDUM) NUMESS, LESSEL, LESSDF
+               WRITE (*, 10050, IOSTAT=IDUM) NUMESS, LESSEL, LESSNL,
+     $              LESSDF
             END IF
          END IF
       END IF
@@ -175,6 +177,7 @@ C   --   NVARSS - IN - the number of sideset variables (if OPTION)
 10050  FORMAT
      &   (  1X, 'Number of element side sets          =', I10, :
      &   /, 1X, '   Length of element list            =', I10
+     &   /, 1X, '   Length of node list               =', I10
      &   /, 1X, '   Length of distribution list       =', I10
      &   )
 10055  FORMAT (
