@@ -1893,10 +1893,10 @@ namespace {
       size_t num_nodes = inb->get_property("entity_count").get_int();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (verbose && rank == 0) {
-        std::cerr << " Number of coordinates per node       =" << std::setw(12) << degree << "\n";
+        std::cerr << " Number of  Coordinates per Node        =" << std::setw(12) << degree << "\n";
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of nodes                      =" << std::setw(12) << num_nodes
+        std::cerr << " Number of             Nodes            =" << std::setw(12) << num_nodes
                   << "\n";
       }
       auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
@@ -1989,7 +1989,7 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
+        std::cerr << " Number of " <<  std::setw(16) << (*blocks.begin())->type_string()
                   << "s            =" << std::setw(12) << blocks.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2020,7 +2020,7 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
+        std::cerr << " Number of " <<  std::setw(16) << (*blocks.begin())->type_string()
                   << "s            =" << std::setw(12) << blocks.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2087,7 +2087,7 @@ namespace {
       output_region.add(surf);
     }
     if (verbose && rank == 0) {
-      std::cerr << " Number of        SideSets            =" << std::setw(12) << fss.size() << "\t"
+      std::cerr << " Number of          SideSets            =" << std::setw(12) << fss.size() << "\t"
                 << "Number of element sides =" << std::setw(12) << total_sides << "\n";
     }
     if (debug && rank == 0) {
@@ -2116,7 +2116,7 @@ namespace {
       }
 
       if (verbose && rank == 0) {
-        std::cerr << " Number of " << std::setw(14) << (*sets.begin())->type_string()
+        std::cerr << " Number of " <<  std::setw(16) << (*sets.begin())->type_string()
                   << "s            =" << std::setw(12) << sets.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
