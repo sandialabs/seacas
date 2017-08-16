@@ -44,9 +44,9 @@
 #include <Ioss_TerminalColor.h>
 
 #include <algorithm>
+#include <cassert>
+#include <iomanip>
 #include <numeric>
-
-#include <assert.h>
 
 namespace {
   int rank = 0;
@@ -550,6 +550,31 @@ namespace Iocgns {
           OUTPUT << zgc << "\n";
         }
 #endif
+      }
+    }
+
+    // Output the processor assignments in form similar to 'split' file
+    if (rank == 0) {
+      int z = 1;
+      std::cerr << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax\n";
+      auto tmp_zone(m_structuredZones);
+      std::sort(tmp_zone.begin(), tmp_zone.end(),
+                [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+                  return a->m_proc < b->m_proc;
+                });
+      
+      for (auto &zone : tmp_zone) {
+	if (zone->is_active()) {
+	  std::cerr << std::setw(6) << z++
+		    << std::setw(8) << zone->m_proc
+		    << std::setw(8) << zone->m_adam->m_zone 
+		    << std::setw(8) << zone->m_offset[0] + 1
+		    << std::setw(8) << zone->m_ordinal[0]+zone->m_offset[0] + 1
+		    << std::setw(8) << zone->m_offset[1] + 1
+		    << std::setw(8) << zone->m_ordinal[1]+zone->m_offset[1] + 1
+		    << std::setw(8) << zone->m_offset[2] + 1
+		    << std::setw(8) << zone->m_ordinal[2]+zone->m_offset[2] + 1 << "\n";
+	}
       }
     }
 
