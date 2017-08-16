@@ -260,10 +260,10 @@ namespace Iocgns {
     if (m_preferentialOrdinal == ordinal) {
       ordinal = 1;
     }
-    if (m_ordinal[1] > m_ordinal[ordinal]) {
+    if (m_ordinal[1] > m_ordinal[ordinal] && m_preferentialOrdinal != 1) {
       ordinal = 1;
     }
-    if (m_ordinal[2] > m_ordinal[ordinal]) {
+    if (m_ordinal[2] > m_ordinal[ordinal] && m_preferentialOrdinal != 2) {
       ordinal = 2;
     }
 
