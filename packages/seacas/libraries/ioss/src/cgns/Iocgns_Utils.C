@@ -850,7 +850,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       sb->property_add(Ioss::Property("base", base));
       sb->property_add(Ioss::Property("zone", zone));
       sb->property_add(Ioss::Property("section", ibc + 1));
-      sb->property_add(Ioss::Property("id", (int)block->m_boundaryConditions.size() - 1));
+      sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
 
       // Set a property on the sideset specifying the boundary condition type (bocotype)
       // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
