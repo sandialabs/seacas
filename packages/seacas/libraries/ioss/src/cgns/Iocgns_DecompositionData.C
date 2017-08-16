@@ -370,13 +370,15 @@ namespace Iocgns {
     size_t num_split   = 0;
     bool   split       = false;
     double avg_work    = (double)work / m_decomposition.m_processorCount;
+    auto num_active    = m_structuredZones.size();
 
-    auto num_active = m_structuredZones.size();
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "Decomposing structured mesh with " << num_active << " zones for "
            << m_decomposition.m_processorCount << " processors.\nAverage workload is " << avg_work
            << ", Load Balance Threshold is " << m_loadBalanceThreshold << ", Work range "
            << avg_work / m_loadBalanceThreshold << " to " << avg_work * m_loadBalanceThreshold
            << "\n";
+#endif
 
     if (avg_work < 1.0) {
       OUTPUT << "ERROR: Model size too small to distribute over "
@@ -517,9 +519,9 @@ namespace Iocgns {
         }
         std::swap(zone_new, m_structuredZones);
       }
+#if IOSS_DEBUG_OUTPUT
       auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
-#if IOSS_DEBUG_OUTPUT
       OUTPUT << "Number of active zones = " << active << ", average work = " << avg_work << "\n";
       OUTPUT << "========================================================================\n";
 #endif
