@@ -1523,8 +1523,7 @@ namespace Iopx {
       // communicate with a comp count of set.distributionFactorValsPerEntity.
       std::vector<T> file_data;
       if (m_processor == set.root_) {
-        assert(set.distributionFactorValsPerEntity * set.fileCount == set.distributionFactorCount);
-        file_data.resize(set.distributionFactorCount);
+        file_data.resize(set.distributionFactorValsPerEntity * set.fileCount);
 
         ex_set set_param[1];
         set_param[0].id                       = id;
