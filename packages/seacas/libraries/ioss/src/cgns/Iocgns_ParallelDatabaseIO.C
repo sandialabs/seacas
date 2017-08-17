@@ -612,8 +612,8 @@ namespace Iocgns {
 
     const auto &blocks = get_region()->get_element_blocks();
     for (auto I = blocks.begin(); I != blocks.end(); I++) {
-      cgsize_t base = (*I)->get_property("base").get_int();
-      cgsize_t zone = (*I)->get_property("zone").get_int();
+      int base = (*I)->get_property("base").get_int();
+      int zone = (*I)->get_property("zone").get_int();
 
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
@@ -1075,8 +1075,8 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    cgsize_t base       = eb->get_property("base").get_int();
-    cgsize_t zone       = eb->get_property("zone").get_int();
+    int base       = eb->get_property("base").get_int();
+    int zone       = eb->get_property("zone").get_int();
     size_t   num_to_get = field.verify(data_size);
     auto     role       = field.get_role();
 
@@ -1609,8 +1609,8 @@ namespace Iocgns {
       double *                  rdata    = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
       const Ioss::VariableType *var_type = field.raw_storage();
 
-      cgsize_t base = eb->get_property("base").get_int();
-      cgsize_t zone = eb->get_property("zone").get_int();
+      int base = eb->get_property("base").get_int();
+      int zone = eb->get_property("zone").get_int();
 
       cgsize_t start        = eb->get_property("proc_offset").get_int();
       cgsize_t range_min[1] = {start + 1};
@@ -1850,8 +1850,8 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    cgsize_t base       = parent_block->get_property("base").get_int();
-    cgsize_t zone       = parent_block->get_property("zone").get_int();
+    int base       = parent_block->get_property("base").get_int();
+    int zone       = parent_block->get_property("zone").get_int();
     ssize_t  num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
