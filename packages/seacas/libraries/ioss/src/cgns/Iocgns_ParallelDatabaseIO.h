@@ -98,7 +98,9 @@ namespace Iocgns {
     void closeDatabase__() const override;
     bool node_major() const override { return false; }
 
-    int int_byte_size_db() const override { return CG_SIZEOF_INT; }
+    // This isn't quite true since a CGNS library with cgsize_t == 64-bits can read
+    // a file with 32-bit ints. However,...
+    int int_byte_size_db() const override { return CG_SIZEOF_SIZE; }
 
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
