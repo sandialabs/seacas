@@ -175,8 +175,7 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
-                                           size_t &num_cell)
+  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell)
   {
     cgsize_t size[9];
     char     zone_name[33];
@@ -191,7 +190,7 @@ namespace Iocgns {
     assert(size[7] == 0);
     assert(size[8] == 0);
 
-    cgsize_t index_dim = 0;
+    int index_dim = 0;
     CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
     // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
     Ioss::StructuredBlock *block =
@@ -229,10 +228,10 @@ namespace Iocgns {
       if (donor_iter != m_zoneNameMap.end()) {
         donor_zone = (*donor_iter).second;
       }
-      Ioss::IJK_t range_beg{{range[0], range[1], range[2]}};
-      Ioss::IJK_t range_end{{range[3], range[4], range[5]}};
-      Ioss::IJK_t donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
-      Ioss::IJK_t donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
+      Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
+      Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
+      Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
+      Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 
       bool owns_nodes = zone < donor_zone || donor_zone == -1;
       block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
@@ -267,7 +266,7 @@ namespace Iocgns {
     return num_nodes;
   }
 
-  void DatabaseIO::create_unstructured_block(cgsize_t base, cgsize_t zone, size_t &num_node,
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node,
                                              size_t &num_elem)
   {
     cgsize_t size[9];
@@ -353,7 +352,7 @@ namespace Iocgns {
     num_node = offset;
 
     m_zoneOffset[zone]      = m_zoneOffset[zone - 1] + num_elem;
-    cgsize_t total_elements = size[1];
+    size_t total_elements = size[1];
     num_elem += total_elements;
 
     // NOTE: A Zone will have a single set of nodes, but can have
@@ -361,7 +360,7 @@ namespace Iocgns {
     //       Keep treating sections as element blocks until we
     //       have handled 'size[1]' number of elements; the remaining
     //       sections are then the boundary faces (?)
-    cgsize_t num_sections = 0;
+    int num_sections = 0;
     CGCHECK(cg_nsections(cgnsFilePtr, base, zone, &num_sections));
 
     // ========================================================================
@@ -369,13 +368,13 @@ namespace Iocgns {
     // define elements.  Some define boundary conditions...
     Ioss::ElementBlock *eblock = nullptr;
 
-    for (cgsize_t is = 1; is <= num_sections; is++) {
+    for (int is = 1; is <= num_sections; is++) {
       char             section_name[33];
       CG_ElementType_t e_type;
       cgsize_t         el_start    = 0;
       cgsize_t         el_end      = 0;
-      cgsize_t         num_bndry   = 0;
-      cgsize_t         parent_flag = 0;
+      int        num_bndry   = 0;
+      int        parent_flag = 0;
 
       // Get the type of elements in this section...
       CGCHECK(cg_section_read(cgnsFilePtr, base, zone, is, section_name, &e_type, &el_start,
@@ -439,7 +438,7 @@ namespace Iocgns {
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
-    cgsize_t n_bases = 0;
+    int n_bases = 0;
     CGCHECK(cg_nbases(cgnsFilePtr, &n_bases));
     if (n_bases != 1) {
       std::ostringstream errmsg;
@@ -468,7 +467,7 @@ namespace Iocgns {
     size_t        num_cell         = 0;
     CG_ZoneType_t common_zone_type = Utils::check_zone_type(cgnsFilePtr);
 
-    for (cgsize_t zone = 1; zone <= num_zones; zone++) {
+    for (int zone = 1; zone <= num_zones; zone++) {
       if (common_zone_type == CG_Structured) {
         create_structured_block(base, zone, num_node, num_cell);
       }
@@ -489,8 +488,8 @@ namespace Iocgns {
     }
 
     char     basename[33];
-    cgsize_t cell_dimension = 0;
-    cgsize_t phys_dimension = 0;
+    int cell_dimension = 0;
+    int phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 #if IOSS_DEBUG_OUTPUT
     std::cout << "Physical dimension = " << phys_dimension << "\n";
@@ -534,8 +533,8 @@ namespace Iocgns {
 
     const auto &blocks = get_region()->get_element_blocks();
     for (auto I = blocks.begin(); I != blocks.end(); I++) {
-      cgsize_t base = (*I)->get_property("base").get_int();
-      cgsize_t zone = (*I)->get_property("zone").get_int();
+      int base = (*I)->get_property("base").get_int();
+      int zone = (*I)->get_property("zone").get_int();
 
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
@@ -546,7 +545,7 @@ namespace Iocgns {
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
-        cgsize_t              dzone = (*J)->get_property("zone").get_int();
+        int              dzone = (*J)->get_property("zone").get_int();
         const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
         std::vector<cgsize_t> point_list;
         std::vector<cgsize_t> point_list_donor;
@@ -650,8 +649,8 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role       = field.get_role();
-    cgsize_t              base       = nb->get_property("base").get_int();
-    cgsize_t              num_to_get = field.verify(data_size);
+    int              base       = nb->get_property("base").get_int();
+    size_t              num_to_get = field.verify(data_size);
     cgsize_t              first      = 1;
 
     char basename[33];
@@ -690,8 +689,8 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        cgsize_t cell_dimension = 0;
-        cgsize_t phys_dimension = 0;
+        int cell_dimension = 0;
+        int phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
         double *rdata = static_cast<double *>(data);
@@ -814,9 +813,9 @@ namespace Iocgns {
     size_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
 
-      cgsize_t              base             = eb->get_property("base").get_int();
-      cgsize_t              zone             = eb->get_property("zone").get_int();
-      cgsize_t              sect             = eb->get_property("section").get_int();
+      int              base             = eb->get_property("base").get_int();
+      int              zone             = eb->get_property("zone").get_int();
+      int              sect             = eb->get_property("section").get_int();
       cgsize_t              my_element_count = eb->get_property("entity_count").get_int();
       Ioss::Field::RoleType role             = field.get_role();
 
@@ -921,8 +920,8 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role = field.get_role();
-    cgsize_t              base = sb->get_property("base").get_int();
-    cgsize_t              zone = sb->get_property("zone").get_int();
+    int              base = sb->get_property("base").get_int();
+    int              zone = sb->get_property("zone").get_int();
 
     cgsize_t num_to_get = field.verify(data_size);
 
@@ -978,8 +977,8 @@ namespace Iocgns {
 
       else if (field.get_name() == "mesh_model_coordinates") {
         char     basename[33];
-        cgsize_t cell_dimension = 0;
-        cgsize_t phys_dimension = 0;
+        int cell_dimension = 0;
+        int phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
         // Data required by upper classes store x0, y0, z0, ... xn,
@@ -1101,9 +1100,9 @@ namespace Iocgns {
   int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *sb, const Ioss::Field &field,
                                          void *data, size_t data_size) const
   {
-    cgsize_t base = sb->get_property("base").get_int();
-    cgsize_t zone = sb->get_property("zone").get_int();
-    cgsize_t sect = sb->get_property("section").get_int();
+    int base = sb->get_property("base").get_int();
+    int zone = sb->get_property("zone").get_int();
+    int sect = sb->get_property("section").get_int();
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
@@ -1190,8 +1189,8 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role = field.get_role();
-    cgsize_t              base = sb->get_property("base").get_int();
-    cgsize_t              zone = sb->get_property("zone").get_int();
+    int              base = sb->get_property("base").get_int();
+    int              zone = sb->get_property("zone").get_int();
 
     cgsize_t num_to_get = field.verify(data_size);
 
@@ -1365,8 +1364,8 @@ namespace Iocgns {
         }
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        cgsize_t base                   = eb->get_property("base").get_int();
-        cgsize_t zone                   = eb->get_property("zone").get_int();
+        int base                   = eb->get_property("base").get_int();
+        int zone                   = eb->get_property("zone").get_int();
         double * rdata                  = static_cast<double *>(data);
         int      cgns_field             = 0;
         auto     var_type               = field.transformed_storage();
@@ -1430,7 +1429,7 @@ namespace Iocgns {
     }
 
     Ioss::Field::RoleType role       = field.get_role();
-    cgsize_t              base       = 1;
+    int              base       = 1;
     cgsize_t              num_to_get = field.verify(data_size);
 
     if (role == Ioss::Field::MESH) {
@@ -1598,8 +1597,8 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    cgsize_t base       = parent_block->get_property("base").get_int();
-    cgsize_t zone       = parent_block->get_property("zone").get_int();
+    int base       = parent_block->get_property("base").get_int();
+    int zone       = parent_block->get_property("zone").get_int();
     ssize_t  num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
@@ -1612,10 +1611,10 @@ namespace Iocgns {
         auto &name = sb->owner()->name();
 
         CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
-        cgsize_t         sect = 0;
+        int         sect = 0;
 
-        int cg_start = m_bcOffset[zone] + 1;
-        int cg_end   = m_bcOffset[zone] + num_to_get;
+        cgsize_t cg_start = m_bcOffset[zone] + 1;
+        cgsize_t cg_end   = m_bcOffset[zone] + num_to_get;
         m_bcOffset[zone] += num_to_get;
 
         // NOTE: Currently not writing the "ElementConnectivity" data for the
