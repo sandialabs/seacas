@@ -96,6 +96,8 @@ namespace Iopg {
       return Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK | Ioss::NODESET | Ioss::SIDESET | Ioss::REGION;
     }
 
+    int int_byte_size_db() const override { return 4; }
+
     std::string title() const { return databaseTitle; }
     int         maximum_symbol_length() const override { return 32; }
 

@@ -98,6 +98,8 @@ namespace Iocgns {
     void closeDatabase__() const override;
     bool node_major() const override { return false; }
 
+    int int_byte_size_db() const override { return CG_SIZEOF_INT; }
+
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 

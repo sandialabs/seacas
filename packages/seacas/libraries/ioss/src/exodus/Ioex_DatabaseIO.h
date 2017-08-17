@@ -149,6 +149,7 @@ namespace Ioex {
     void compute_block_membership__(Ioss::SideBlock *         efblock,
                                     std::vector<std::string> &block_membership) const override;
 
+    int  int_byte_size_db() const override;
     void set_int_byte_size_api(Ioss::DataSize size) const override;
 
   protected:

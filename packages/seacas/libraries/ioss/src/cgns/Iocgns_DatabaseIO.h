@@ -90,6 +90,8 @@ namespace Iocgns {
 
     ~DatabaseIO() override;
 
+    int int_byte_size_db() const override { return CG_SIZEOF_INT; }
+
     bool node_major() const override { return false; }
 
     void openDatabase__() const override;

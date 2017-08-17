@@ -235,6 +235,18 @@ namespace Ioex {
     dbIntSizeAPI = size; // mutable
   }
 
+  // Returns byte size of integers stored on the database...
+  int DatabaseIO::int_byte_size_db() const
+  {
+    int status = ex_int64_status(get_file_pointer());
+    if (status & EX_MAPS_INT64_DB || status & EX_IDS_INT64_DB || status & EX_BULK_INT64_DB) {
+      return 8;
+    }
+    else {
+      return 4;
+    }
+  }
+
   // common
   DatabaseIO::~DatabaseIO()
   {
