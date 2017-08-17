@@ -133,6 +133,16 @@ namespace Iocgns {
         strcpy(hdf5_access, "NATIVE");
       }
 
+      if (properties.exists("INTEGER_SIZE_API")) {
+        int isize = properties.get("INTEGER_SIZE_API").get_int();
+        if (isize == 8) {
+          set_int_byte_size_api(Ioss::USE_INT64_API);
+        }
+        if (isize == 4) {
+          set_int_byte_size_api(Ioss::USE_INT32_API);
+        }
+      }
+
 #if 0
       // This isn't currently working since CGNS currently has chunking
       // disabled for HDF5 files and compression requires chunking.
@@ -266,8 +276,7 @@ namespace Iocgns {
     return num_nodes;
   }
 
-  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node,
-                                             size_t &num_elem)
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node, size_t &num_elem)
   {
     cgsize_t size[9];
     char     zone_name[33];
@@ -351,7 +360,7 @@ namespace Iocgns {
     }
     num_node = offset;
 
-    m_zoneOffset[zone]      = m_zoneOffset[zone - 1] + num_elem;
+    m_zoneOffset[zone]    = m_zoneOffset[zone - 1] + num_elem;
     size_t total_elements = size[1];
     num_elem += total_elements;
 
@@ -373,8 +382,8 @@ namespace Iocgns {
       CG_ElementType_t e_type;
       cgsize_t         el_start    = 0;
       cgsize_t         el_end      = 0;
-      int        num_bndry   = 0;
-      int        parent_flag = 0;
+      int              num_bndry   = 0;
+      int              parent_flag = 0;
 
       // Get the type of elements in this section...
       CGCHECK(cg_section_read(cgnsFilePtr, base, zone, is, section_name, &e_type, &el_start,
@@ -487,9 +496,9 @@ namespace Iocgns {
       num_node = finalize_structured_blocks();
     }
 
-    char     basename[33];
-    int cell_dimension = 0;
-    int phys_dimension = 0;
+    char basename[33];
+    int  cell_dimension = 0;
+    int  phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 #if IOSS_DEBUG_OUTPUT
     std::cout << "Physical dimension = " << phys_dimension << "\n";
@@ -545,7 +554,7 @@ namespace Iocgns {
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
-        int              dzone = (*J)->get_property("zone").get_int();
+        int                   dzone = (*J)->get_property("zone").get_int();
         const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
         std::vector<cgsize_t> point_list;
         std::vector<cgsize_t> point_list_donor;
@@ -649,8 +658,8 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role       = field.get_role();
-    int              base       = nb->get_property("base").get_int();
-    size_t              num_to_get = field.verify(data_size);
+    int                   base       = nb->get_property("base").get_int();
+    size_t                num_to_get = field.verify(data_size);
     cgsize_t              first      = 1;
 
     char basename[33];
@@ -813,9 +822,9 @@ namespace Iocgns {
     size_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
 
-      int              base             = eb->get_property("base").get_int();
-      int              zone             = eb->get_property("zone").get_int();
-      int              sect             = eb->get_property("section").get_int();
+      int                   base             = eb->get_property("base").get_int();
+      int                   zone             = eb->get_property("zone").get_int();
+      int                   sect             = eb->get_property("section").get_int();
       cgsize_t              my_element_count = eb->get_property("entity_count").get_int();
       Ioss::Field::RoleType role             = field.get_role();
 
@@ -823,28 +832,52 @@ namespace Iocgns {
         // Handle the MESH fields required for a CGNS file model.
         // (The 'genesis' portion)
 
-        if (field.get_name() == "connectivity") {
+        if (field.get_name() == "connectivity" || field.get_name() == "connectivity_raw") {
           // TODO(gdsjaar): Need to map local to global...
-          cgsize_t *idata         = reinterpret_cast<cgsize_t *>(data);
-          int       element_nodes = eb->topology()->number_nodes();
+          int element_nodes = eb->topology()->number_nodes();
           assert(field.raw_storage()->component_count() == element_nodes);
 
           if (my_element_count > 0) {
-            CGCHECK(cg_elements_read(cgnsFilePtr, base, zone, sect, idata, nullptr));
+            int field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;
+            if (field_byte_size == CG_SIZEOF_SIZE) {
+              cgsize_t *idata = reinterpret_cast<cgsize_t *>(data);
+              CGCHECK(cg_elements_read(cgnsFilePtr, base, zone, sect, idata, nullptr));
+            }
+            else {
+              std::vector<cgsize_t> connect(element_nodes * num_to_get);
+              CGCHECK(cg_elements_read(cgnsFilePtr, base, zone, sect, connect.data(), nullptr));
+              if (field.get_type() == Ioss::Field::INT32) {
+                auto * idata = reinterpret_cast<int *>(data);
+                size_t i     = 0;
+                for (auto node : connect) {
+                  idata[i++] = node;
+                }
+              }
+              else {
+                auto * idata = reinterpret_cast<int64_t *>(data);
+                size_t i     = 0;
+                for (auto node : connect) {
+                  idata[i++] = node;
+                }
+              }
+            }
           }
 
-          // Now need to map block-local node connectivity to global nodes...
-          const auto &block_map = m_blockLocalNodeMap[zone];
-          for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-            idata[i] = block_map[idata[i] - 1] + 1;
-          }
-        }
-        else if (field.get_name() == "connectivity_raw") {
-          assert(field.raw_storage()->component_count() == eb->topology()->number_nodes());
-
-          if (my_element_count > 0) {
-            CGCHECK(cg_elements_read(cgnsFilePtr, base, zone, sect,
-                                     reinterpret_cast<cgsize_t *>(data), nullptr));
+          if (field.get_name() == "connectivity") {
+            // Now need to map block-local node connectivity to global nodes...
+            const auto &block_map = m_blockLocalNodeMap[zone];
+            if (field.get_type() == Ioss::Field::INT32) {
+              int *idata = static_cast<int *>(data);
+              for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+                idata[i] = block_map[idata[i] - 1] + 1;
+              }
+            }
+            else {
+              int64_t *idata = static_cast<int64_t *>(data);
+              for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+                idata[i] = block_map[idata[i] - 1] + 1;
+              }
+            }
           }
         }
         else if (field.get_name() == "ids") {
@@ -920,8 +953,8 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role = field.get_role();
-    int              base = sb->get_property("base").get_int();
-    int              zone = sb->get_property("zone").get_int();
+    int                   base = sb->get_property("base").get_int();
+    int                   zone = sb->get_property("zone").get_int();
 
     cgsize_t num_to_get = field.verify(data_size);
 
@@ -976,9 +1009,9 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        char     basename[33];
-        int cell_dimension = 0;
-        int phys_dimension = 0;
+        char basename[33];
+        int  cell_dimension = 0;
+        int  phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
         // Data required by upper classes store x0, y0, z0, ... xn,
@@ -1189,8 +1222,8 @@ namespace Iocgns {
                                          void *data, size_t data_size) const
   {
     Ioss::Field::RoleType role = field.get_role();
-    int              base = sb->get_property("base").get_int();
-    int              zone = sb->get_property("zone").get_int();
+    int                   base = sb->get_property("base").get_int();
+    int                   zone = sb->get_property("zone").get_int();
 
     cgsize_t num_to_get = field.verify(data_size);
 
@@ -1312,15 +1345,24 @@ namespace Iocgns {
         if (field.get_name() == "connectivity") {
           // This blocks zone has not been defined.
           // Get the "node block" for this element block...
-          cgsize_t *idata         = reinterpret_cast<cgsize_t *>(data);
-          int       element_nodes = eb->topology()->number_nodes();
+          int element_nodes = eb->topology()->number_nodes();
           assert(field.raw_storage()->component_count() == element_nodes);
 
           Ioss::MapContainer nodes;
           nodes.reserve(element_nodes * num_to_get + 1);
           nodes.push_back(1); // Non-one-to-one map
-          for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-            nodes.push_back(idata[i]);
+
+          if (field.get_type() == Ioss::Field::INT32) {
+            auto *idata = reinterpret_cast<int *>(data);
+            for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+              nodes.push_back(idata[i]);
+            }
+          }
+          else {
+            auto *idata = reinterpret_cast<int64_t *>(data);
+            for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+              nodes.push_back(idata[i]);
+            }
           }
           auto it = nodes.begin();
           it++;
@@ -1348,13 +1390,39 @@ namespace Iocgns {
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];
-          block_map->reverse_map_data(idata, field, num_to_get * element_nodes);
+          if (field.get_type() == Ioss::Field::INT32) {
+            block_map->reverse_map_data((int *)data, field, num_to_get * element_nodes);
+          }
+          else {
+            block_map->reverse_map_data((int64_t *)data, field, num_to_get * element_nodes);
+          }
 
           if (eb->get_property("entity_count").get_int() > 0) {
-            CG_ElementType_t type = Utils::map_topology_to_cgns(eb->topology()->name());
-            int              sect = 0;
-            CGCHECK(cg_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, num_to_get, 0,
-                                     idata, &sect));
+            CG_ElementType_t type            = Utils::map_topology_to_cgns(eb->topology()->name());
+            int              sect            = 0;
+            int              field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;
+            if (field_byte_size == CG_SIZEOF_SIZE) {
+              CGCHECK(cg_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, num_to_get,
+                                       0, (cgsize_t *)data, &sect));
+            }
+            else {
+              std::vector<cgsize_t> connect;
+              connect.reserve(element_nodes * num_to_get);
+              if (field.get_type() == Ioss::Field::INT32) {
+                auto *idata = reinterpret_cast<int *>(data);
+                for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+                  connect.push_back(idata[i]);
+                }
+              }
+              else {
+                auto *idata = reinterpret_cast<int64_t *>(data);
+                for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+                  connect.push_back(idata[i]);
+                }
+              }
+              CGCHECK(cg_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, num_to_get,
+                                       0, connect.data(), &sect));
+            }
             m_bcOffset[zone] += num_to_get;
             eb->property_update("section", sect);
           }
@@ -1364,13 +1432,13 @@ namespace Iocgns {
         }
       }
       else if (role == Ioss::Field::TRANSIENT) {
-        int base                   = eb->get_property("base").get_int();
-        int zone                   = eb->get_property("zone").get_int();
-        double * rdata                  = static_cast<double *>(data);
-        int      cgns_field             = 0;
-        auto     var_type               = field.transformed_storage();
-        int      comp_count             = var_type->component_count();
-        char     field_suffix_separator = get_field_separator();
+        int     base                   = eb->get_property("base").get_int();
+        int     zone                   = eb->get_property("zone").get_int();
+        double *rdata                  = static_cast<double *>(data);
+        int     cgns_field             = 0;
+        auto    var_type               = field.transformed_storage();
+        int     comp_count             = var_type->component_count();
+        char    field_suffix_separator = get_field_separator();
         if (comp_count == 1) {
           CGCHECK(cg_field_write(cgnsFilePtr, base, zone, m_currentCellCenterSolutionIndex,
                                  CG_RealDouble, field.get_name().c_str(), rdata, &cgns_field));
@@ -1429,7 +1497,7 @@ namespace Iocgns {
     }
 
     Ioss::Field::RoleType role       = field.get_role();
-    int              base       = 1;
+    int                   base       = 1;
     cgsize_t              num_to_get = field.verify(data_size);
 
     if (role == Ioss::Field::MESH) {
@@ -1597,9 +1665,9 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    int base       = parent_block->get_property("base").get_int();
-    int zone       = parent_block->get_property("zone").get_int();
-    ssize_t  num_to_get = field.verify(data_size);
+    int     base       = parent_block->get_property("base").get_int();
+    int     zone       = parent_block->get_property("zone").get_int();
+    ssize_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
 
@@ -1611,7 +1679,7 @@ namespace Iocgns {
         auto &name = sb->owner()->name();
 
         CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
-        int         sect = 0;
+        int              sect = 0;
 
         cgsize_t cg_start = m_bcOffset[zone] + 1;
         cgsize_t cg_end   = m_bcOffset[zone] + num_to_get;

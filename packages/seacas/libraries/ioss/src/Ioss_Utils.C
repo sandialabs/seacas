@@ -2249,9 +2249,8 @@ namespace {
   {
 
     size_t isize = ige->get_field(field_name).get_size();
-    if (isize != oge->get_field(field_name).get_size()) {
-      assert(isize == oge->get_field(field_name).get_size());
-    }
+    assert(isize == oge->get_field(field_name).get_size());
+
     int basic_type = ige->get_field(field_name).get_type();
 
     if (field_name == "mesh_model_coordinates_x") {

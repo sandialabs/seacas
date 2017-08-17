@@ -1075,10 +1075,10 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    int base       = eb->get_property("base").get_int();
-    int zone       = eb->get_property("zone").get_int();
-    size_t   num_to_get = field.verify(data_size);
-    auto     role       = field.get_role();
+    int    base       = eb->get_property("base").get_int();
+    int    zone       = eb->get_property("zone").get_int();
+    size_t num_to_get = field.verify(data_size);
+    auto   role       = field.get_role();
 
     if (role == Ioss::Field::MESH) {
       // Handle the MESH fields required for a CGNS file model.
@@ -1850,9 +1850,9 @@ namespace Iocgns {
       IOSS_ERROR(errmsg);
     }
 
-    int base       = parent_block->get_property("base").get_int();
-    int zone       = parent_block->get_property("zone").get_int();
-    ssize_t  num_to_get = field.verify(data_size);
+    int     base       = parent_block->get_property("base").get_int();
+    int     zone       = parent_block->get_property("zone").get_int();
+    ssize_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
 
