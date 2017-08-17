@@ -783,7 +783,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 {
   int base = block->get_property("base").get_int();
   int zone = block->get_property("zone").get_int();
-  int      num_bcs;
+  int num_bcs;
   CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
 
   cgsize_t range[6];
@@ -830,10 +830,10 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
     if (sset != nullptr) {
       Ioss::IJK_t range_beg{{(int)std::min(range[0], range[3]), (int)std::min(range[1], range[4]),
-	                     (int)std::min(range[2], range[5])}};
+                             (int)std::min(range[2], range[5])}};
 
       Ioss::IJK_t range_end{{(int)std::max(range[0], range[3]), (int)std::max(range[1], range[4]),
-	                     (int)std::max(range[2], range[5])}};
+                             (int)std::max(range[2], range[5])}};
 
       // Determine overlap of surface with block (in parallel, a block may
       // be split among multiple processors and the block face this is applied
@@ -909,7 +909,7 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
   auto ziter = [=](Ioss::GroupingEntity *block) {
-    int         zone = block->get_property("zone").get_int();
+    int              zone = block->get_property("zone").get_int();
     std::vector<int> indices(timesteps.size());
     bool             has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
     if (has_cell_center_fields || has_nodal_fields) {
