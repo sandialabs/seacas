@@ -79,6 +79,14 @@
 #include "Ioss_VariableType.h"
 
 namespace {
+  MPI_Datatype cgns_mpi_type() 
+  {
+#if CG_SIZEOF_SIZE == 8
+    return MPI_LONG_LONG_INT;
+#else
+    return MPI_LONG_LONG_INT;
+#endif
+  }
 }
 
 namespace Iocgns {
@@ -198,7 +206,7 @@ namespace Iocgns {
 
     // Determine the number of bases in the grid.
     // Currently only handle 1.
-    cgsize_t n_bases = 0;
+    int n_bases = 0;
     CGCHECK(cg_nbases(cgnsFilePtr, &n_bases));
     if (n_bases != 1) {
       std::ostringstream errmsg;
@@ -347,8 +355,8 @@ namespace Iocgns {
     Utils::add_sidesets(cgnsFilePtr, this);
 
     char     basename[33];
-    cgsize_t cell_dimension = 0;
-    cgsize_t phys_dimension = 0;
+    int cell_dimension = 0;
+    int phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
     // Iterate all structured blocks and set the intervals to zero
@@ -975,8 +983,8 @@ namespace Iocgns {
 
       else if (field.get_name() == "mesh_model_coordinates") {
         char     basename[33];
-        cgsize_t cell_dimension = 0;
-        cgsize_t phys_dimension = 0;
+        int cell_dimension = 0;
+        int phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
         // Data required by upper classes store x0, y0, z0, ... xn,
@@ -1411,8 +1419,8 @@ namespace Iocgns {
       // so for cgns unstructured mesh, we need to output ElementBlock connectivity
       // prior to outputting nodal coordinates.
       size_t                num_zones = m_globalToBlockLocalNodeMap.size();
-      std::vector<cgsize_t> node_count(num_zones);
-      std::vector<cgsize_t> node_offset(num_zones);
+      std::vector<int64_t> node_count(num_zones);
+      std::vector<int64_t> node_offset(num_zones);
 
       for (const auto &block : m_globalToBlockLocalNodeMap) {
         auto        zone      = block.first;
@@ -1478,7 +1486,7 @@ namespace Iocgns {
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
   {
-    cgsize_t num_to_get = field.verify(data_size);
+    size_t num_to_get = field.verify(data_size);
 
     Ioss::Field::RoleType role = field.get_role();
 
@@ -1524,7 +1532,7 @@ namespace Iocgns {
         size[0]          = owned_node_count;
         size[1]          = eb->get_property("entity_count").get_int();
 
-        MPI_Allreduce(MPI_IN_PLACE, size, 3, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
+        MPI_Allreduce(MPI_IN_PLACE, size, 3, cgns_mpi_type(), MPI_SUM,
                       util().communicator());
 
         // Now, we have the node count and cell count so we can create a zone...
@@ -1543,8 +1551,8 @@ namespace Iocgns {
           CGCHECK(cgp_section_write(cgnsFilePtr, base, zone, "HexElements", type, 1, size[1], 0,
                                     &sect));
 
-          cgsize_t start = 0;
-          MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
+          int64_t start = 0;
+          MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(start), MPI_SUM,
                      util().communicator());
           // Of the cells/elements in this zone, this proc handles
           // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
@@ -1562,8 +1570,8 @@ namespace Iocgns {
           CGCHECK(cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start + 1,
                                           start + num_to_get, idata));
 
-          cgsize_t eb_size = num_to_get;
-          MPI_Allreduce(MPI_IN_PLACE, &eb_size, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
+          int64_t eb_size = num_to_get;
+          MPI_Allreduce(MPI_IN_PLACE, &eb_size, 1, Ioss::mpi_type(eb_size), MPI_SUM,
                         util().communicator());
 
           m_bcOffset[zone] += eb_size;
@@ -1614,7 +1622,7 @@ namespace Iocgns {
 
       cgsize_t start        = eb->get_property("proc_offset").get_int();
       cgsize_t range_min[1] = {start + 1};
-      cgsize_t range_max[1] = {start + num_to_get};
+      cgsize_t range_max[1] = {(cgsize_t)start + (cgsize_t)num_to_get};
 
       // get number of components, cycle through each component
       size_t comp_count = var_type->component_count();
@@ -1630,7 +1638,7 @@ namespace Iocgns {
         char                field_suffix_separator = get_field_separator();
         std::vector<double> cgns_data(num_to_get);
         for (size_t i = 0; i < comp_count; i++) {
-          for (cgsize_t j = 0; j < num_to_get; j++) {
+          for (size_t j = 0; j < num_to_get; j++) {
             cgns_data[j] = rdata[comp_count * j + i];
           }
           std::string var_name =
@@ -1864,10 +1872,10 @@ namespace Iocgns {
         auto &name = sb->owner()->name();
 
         CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
-        cgsize_t         sect = 0;
+        int         sect = 0;
 
-        cgsize_t size = num_to_get;
-        MPI_Allreduce(MPI_IN_PLACE, &size, 1, Ioss::mpi_type(cgsize_t(0)), MPI_SUM,
+        int64_t size = num_to_get;
+        MPI_Allreduce(MPI_IN_PLACE, &size, 1, Ioss::mpi_type(size), MPI_SUM,
                       util().communicator());
 
         int cg_start = m_bcOffset[zone] + 1;

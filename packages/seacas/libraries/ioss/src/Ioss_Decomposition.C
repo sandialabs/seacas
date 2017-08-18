@@ -1532,11 +1532,23 @@ namespace Ioss {
     }
   }
 
+  template void Decomposition<int64_t>::communicate_block_data(long *file_data, long long *ioss_data,
+                                                               const BlockDecompositionData &block,
+                                                               size_t comp_count) const;
+  template void Decomposition<int64_t>::communicate_block_data(long *file_data, int *ioss_data,
+                                                               const BlockDecompositionData &block,
+                                                               size_t comp_count) const;
   template void Decomposition<int64_t>::communicate_block_data(int *file_data, int64_t *ioss_data,
                                                                const BlockDecompositionData &block,
                                                                size_t comp_count) const;
   template void Decomposition<int64_t>::communicate_block_data(int64_t *file_data,
                                                                int64_t *ioss_data,
+                                                               const BlockDecompositionData &block,
+                                                               size_t comp_count) const;
+  template void Decomposition<int>::communicate_block_data(long *file_data, long long *ioss_data,
+                                                               const BlockDecompositionData &block,
+                                                               size_t comp_count) const;
+  template void Decomposition<int>::communicate_block_data(long *file_data, int *ioss_data,
                                                                const BlockDecompositionData &block,
                                                                size_t comp_count) const;
   template void Decomposition<int>::communicate_block_data(int *file_data, int *ioss_data,
