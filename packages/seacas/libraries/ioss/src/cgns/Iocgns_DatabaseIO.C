@@ -283,7 +283,7 @@ namespace Iocgns {
     CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
     m_zoneNameMap[zone_name] = zone;
 
-    cgsize_t total_block_nodes = size[0];
+    size_t total_block_nodes = size[0];
     m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
 
     // Determine number of "shared" nodes (shared with other zones)
@@ -353,7 +353,7 @@ namespace Iocgns {
 
     auto & block_map = m_blockLocalNodeMap[zone];
     size_t offset    = num_node;
-    for (cgsize_t i = 0; i < total_block_nodes; i++) {
+    for (size_t i = 0; i < total_block_nodes; i++) {
       if (block_map[i] == -1) {
         block_map[i] = offset++;
       }
@@ -404,7 +404,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("id", zone));
         eblock->property_add(Ioss::Property("section", is));
-        eblock->property_add(Ioss::Property("node_count", total_block_nodes));
+        eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
 
         assert(is == 1); // For now, assume each zone has only a single element block.
         bool added = get_region()->add(eblock);
