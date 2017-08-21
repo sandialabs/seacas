@@ -84,7 +84,7 @@ namespace {
 #if CG_SIZEOF_SIZE == 8
     return MPI_LONG_LONG_INT;
 #else
-    return MPI_LONG_LONG_INT;
+    return MPI_INT;
 #endif
   }
 }
