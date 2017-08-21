@@ -96,10 +96,6 @@ namespace Iocgns {
 #if IOSS_DEBUG_OUTPUT
     std::cout << "CGNS DatabaseIO using " << CG_SIZEOF_SIZE << "-bit integers.\n";
 #endif
-    if (CG_SIZEOF_SIZE == 64) {
-      set_int_byte_size_api(Ioss::USE_INT64_API);
-    }
-
     openDatabase__();
   }
 
@@ -142,6 +138,10 @@ namespace Iocgns {
           set_int_byte_size_api(Ioss::USE_INT32_API);
         }
       }
+      else if (CG_SIZEOF_SIZE == 64) {
+	set_int_byte_size_api(Ioss::USE_INT64_API);
+      }
+
 
 #if 0
       // This isn't currently working since CGNS currently has chunking
