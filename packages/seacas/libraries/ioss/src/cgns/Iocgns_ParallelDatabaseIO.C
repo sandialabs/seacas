@@ -106,10 +106,6 @@ namespace Iocgns {
                 << "                        using the parallel CGNS library and API.\n";
     }
 #endif
-    if (CG_SIZEOF_SIZE == 64) {
-      set_int_byte_size_api(Ioss::USE_INT64_API);
-    }
-
     openDatabase();
   }
 
@@ -142,6 +138,20 @@ namespace Iocgns {
                << "CGNS Error: '" << cg_get_error() << "'";
         IOSS_ERROR(errmsg);
       }
+
+      if (properties.exists("INTEGER_SIZE_API")) {
+        int isize = properties.get("INTEGER_SIZE_API").get_int();
+        if (isize == 8) {
+          set_int_byte_size_api(Ioss::USE_INT64_API);
+        }
+        if (isize == 4) {
+          set_int_byte_size_api(Ioss::USE_INT32_API);
+        }
+      }
+      else if (CG_SIZEOF_SIZE == 64) {
+	set_int_byte_size_api(Ioss::USE_INT64_API);
+      }
+
 #if 0
       // This isn't currently working since CGNS currently has chunking
       // disabled for HDF5 files and compression requires chunking.
@@ -1496,15 +1506,24 @@ namespace Iocgns {
       if (field.get_name() == "connectivity") {
         // This blocks zone has not been defined.
         // Get the "node block" for this element block...
-        cgsize_t *idata         = num_to_get > 0 ? reinterpret_cast<cgsize_t *>(data) : nullptr;
         size_t    element_nodes = eb->topology()->number_nodes();
         assert((size_t)field.raw_storage()->component_count() == element_nodes);
 
         CGNSIntVector nodes;
         nodes.reserve(element_nodes * num_to_get);
-        for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-          nodes.push_back(idata[i]);
-        }
+
+        if (field.get_type() == Ioss::Field::INT32) {
+	  int *idata         = num_to_get > 0 ? reinterpret_cast<int*>(data) : nullptr;
+	  for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+	    nodes.push_back(idata[i]);
+	  }
+	}
+	else {
+	  int64_t *idata         = num_to_get > 0 ? reinterpret_cast<int64_t*>(data) : nullptr;
+	  for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+	    nodes.push_back(idata[i]);
+	  }
+	}
         Ioss::Utils::uniquify(nodes);
 
         // Resolve zone-shared nodes (nodes used in this zone, but are
@@ -1559,16 +1578,32 @@ namespace Iocgns {
           eb->property_update("proc_offset", start);
 
           // Map connectivity global ids to zone-local 1-based ids.
-          for (size_t i = 0; i < num_to_get * element_nodes; i++) {
-            auto id   = idata[i];
-            auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
-            assert(iter != nodes.end());
-            auto cur_pos = iter - nodes.begin();
-            idata[i]     = connectivity_map[cur_pos];
-          }
+	  CGNSIntVector connect;
+	  connect.reserve(num_to_get * element_nodes);
+	  
+	  if (field.get_type() == Ioss::Field::INT32) {
+	    int *idata         = num_to_get > 0 ? reinterpret_cast<int*>(data) : nullptr;
+	    for (size_t i = 0; i < num_to_get * element_nodes; i++) {
+	      auto id   = idata[i];
+	      auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+	      assert(iter != nodes.end());
+	      auto cur_pos = iter - nodes.begin();
+	      connect.push_back(connectivity_map[cur_pos]);
+	    }
+	  }
+	  else {
+	    int64_t *idata         = num_to_get > 0 ? reinterpret_cast<int64_t*>(data) : nullptr;
+	    for (size_t i = 0; i < num_to_get * element_nodes; i++) {
+	      auto id   = idata[i];
+	      auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+	      assert(iter != nodes.end());
+	      auto cur_pos = iter - nodes.begin();
+	      connect.push_back(connectivity_map[cur_pos]);
+	    }
+	  }
 
           CGCHECK(cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start + 1,
-                                          start + num_to_get, idata));
+                                          start + num_to_get, connect.data()));
 
           int64_t eb_size = num_to_get;
           MPI_Allreduce(MPI_IN_PLACE, &eb_size, 1, Ioss::mpi_type(eb_size), MPI_SUM,
