@@ -173,6 +173,11 @@ void IOShell::Interface::enroll_options()
   options_.enroll("append_after_step", Ioss::GetLongOption::MandatoryValue,
                   "add steps on input database after specified step on output database", nullptr);
 
+  options_.enroll(
+      "delay", Ioss::GetLongOption::MandatoryValue,
+      "Sleep for <$val> seconds between timestep output to simulate application calculation time",
+      nullptr);
+
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separator",
@@ -460,6 +465,13 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("append_after_time");
     if (temp != nullptr) {
       append_time = std::strtod(temp, nullptr);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("delay");
+    if (temp != nullptr) {
+      timestep_delay = std::strtod(temp, nullptr);
     }
   }
 
