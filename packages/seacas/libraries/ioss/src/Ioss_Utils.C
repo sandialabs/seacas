@@ -45,6 +45,7 @@
 #include <sstream>
 #include <string>
 #include <sys/select.h>
+#include <thread>
 #include <tokenize.h>
 #include <vector>
 
@@ -1867,6 +1868,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     region.end_state(istep);
     output_region.end_state(ostep);
+    if (options.delay > 0.0) {
+      std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000 * options.delay)));
+    }
   }
   if (options.debug && rank == 0) {
     std::cerr << "END STATE_TRANSIENT... " << '\n';
@@ -1989,7 +1993,7 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of " <<  std::setw(16) << (*blocks.begin())->type_string()
+        std::cerr << " Number of " << std::setw(16) << (*blocks.begin())->type_string()
                   << "s            =" << std::setw(12) << blocks.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2020,7 +2024,7 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of " <<  std::setw(16) << (*blocks.begin())->type_string()
+        std::cerr << " Number of " << std::setw(16) << (*blocks.begin())->type_string()
                   << "s            =" << std::setw(12) << blocks.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2087,7 +2091,8 @@ namespace {
       output_region.add(surf);
     }
     if (verbose && rank == 0) {
-      std::cerr << " Number of          SideSets            =" << std::setw(12) << fss.size() << "\t"
+      std::cerr << " Number of          SideSets            =" << std::setw(12) << fss.size()
+                << "\t"
                 << "Number of element sides =" << std::setw(12) << total_sides << "\n";
     }
     if (debug && rank == 0) {
@@ -2116,7 +2121,7 @@ namespace {
       }
 
       if (verbose && rank == 0) {
-        std::cerr << " Number of " <<  std::setw(16) << (*sets.begin())->type_string()
+        std::cerr << " Number of " << std::setw(16) << (*sets.begin())->type_string()
                   << "s            =" << std::setw(12) << sets.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }

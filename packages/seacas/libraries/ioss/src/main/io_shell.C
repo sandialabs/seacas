@@ -298,6 +298,7 @@ namespace {
       options.minimum_time      = interface.minimum_time;
       options.maximum_time      = interface.maximum_time;
       options.data_storage_type = interface.data_storage_type;
+      options.delay             = interface.timestep_delay;
 
       // Actually do the work...
       Ioss::Utils::copy_database(region, output_region, options);
