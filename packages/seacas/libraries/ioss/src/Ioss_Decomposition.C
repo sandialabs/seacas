@@ -822,7 +822,9 @@ namespace Ioss {
     zz.Set_Param("DEBUG_LEVEL", "0");
     zz.Set_Param("NUM_GLOBAL_PARTS", num_proc);
 
-    int num_global = sizeof(INT) / sizeof(int);
+    int num_global = sizeof(INT) / sizeof(ZOLTAN_ID_TYPE);
+    num_global = num_global < 1 ? 1 : num_global;
+
     zz.Set_Param("NUM_GID_ENTRIES", std::to_string(num_global));
     zz.Set_Param("NUM_LID_ENTRIES", "0");
     zz.Set_Param("LB_METHOD", m_method);
