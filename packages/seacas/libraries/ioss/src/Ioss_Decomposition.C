@@ -41,6 +41,10 @@
 #include <cassert>
 #include <numeric>
 
+#if !defined(NO_ZOLTAN_SUPPORT)
+extern "C" int Zoltan_get_global_id_type(char **name);
+#endif
+
 #if !defined(NO_CGNS_SUPPORT)
 #include <cgns/Iocgns_IOFactory.h>
 #endif
@@ -823,7 +827,17 @@ namespace Ioss {
     zz.Set_Param("NUM_GLOBAL_PARTS", num_proc);
 
     int num_global = sizeof(INT) / sizeof(ZOLTAN_ID_TYPE);
-    num_global = num_global < 1 ? 1 : num_global;
+    num_global     = num_global < 1 ? 1 : num_global;
+
+    int lib_global_id_type_size = Zoltan_get_global_id_type(nullptr);
+    if (lib_global_id_type_size != sizeof(ZOLTAN_ID_TYPE)) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: The compile-time ZOLTAN_ID_TYPE size (" << sizeof(ZOLTAN_ID_TYPE)
+             << ") does not match the run-time ZOLTAN_ID_TYPE size (" << lib_global_id_type_size
+             << "). There is an error in the build/link procedure for this application.\n";
+      std::cerr << errmsg.str();
+      exit(EXIT_FAILURE);
+    }
 
     zz.Set_Param("NUM_GID_ENTRIES", std::to_string(num_global));
     zz.Set_Param("NUM_LID_ENTRIES", "0");
@@ -1534,7 +1548,8 @@ namespace Ioss {
     }
   }
 
-  template void Decomposition<int64_t>::communicate_block_data(long *file_data, long long *ioss_data,
+  template void Decomposition<int64_t>::communicate_block_data(long *     file_data,
+                                                               long long *ioss_data,
                                                                const BlockDecompositionData &block,
                                                                size_t comp_count) const;
   template void Decomposition<int64_t>::communicate_block_data(long *file_data, int *ioss_data,
@@ -1548,11 +1563,11 @@ namespace Ioss {
                                                                const BlockDecompositionData &block,
                                                                size_t comp_count) const;
   template void Decomposition<int>::communicate_block_data(long *file_data, long long *ioss_data,
-                                                               const BlockDecompositionData &block,
-                                                               size_t comp_count) const;
+                                                           const BlockDecompositionData &block,
+                                                           size_t comp_count) const;
   template void Decomposition<int>::communicate_block_data(long *file_data, int *ioss_data,
-                                                               const BlockDecompositionData &block,
-                                                               size_t comp_count) const;
+                                                           const BlockDecompositionData &block,
+                                                           size_t comp_count) const;
   template void Decomposition<int>::communicate_block_data(int *file_data, int *ioss_data,
                                                            const BlockDecompositionData &block,
                                                            size_t comp_count) const;
