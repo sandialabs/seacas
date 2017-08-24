@@ -103,6 +103,13 @@ namespace {
     exit(EXIT_FAILURE);
   }
 
+  template <typename T> void clear(std::vector<T> &vec)
+  {
+    vec.clear();
+    vec.shrink_to_fit();
+    SMART_ASSERT(vec.capacity() == 0);
+  }
+
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
   int get_width(int max_value);
@@ -2517,11 +2524,8 @@ namespace {
       }
 
       // Done with the memory; clear out the vector containing the bulk data nodes and distFactors.
-      std::vector<INT>().swap(glob_set.nodeSetNodes);
-      DistVector().swap(glob_set.distFactors);
-
-      SMART_ASSERT(glob_set.nodeSetNodes.empty());
-      SMART_ASSERT(glob_set.distFactors.empty());
+      clear(glob_set.nodeSetNodes);
+      clear(glob_set.distFactors);
 
       if (debug_level & 32) {
         glob_set.dump();
@@ -2750,12 +2754,9 @@ namespace {
     }
 
     for (auto &glob_sset : glob_ssets) {
-      std::vector<INT>().swap(glob_sset.elems);
-      std::vector<INT>().swap(glob_sset.sides);
-      DistVector().swap(glob_sset.distFactors);
-      SMART_ASSERT(glob_sset.elems.empty());
-      SMART_ASSERT(glob_sset.sides.empty());
-      SMART_ASSERT(glob_sset.distFactors.empty());
+      clear(glob_sset.elems);
+      clear(glob_sset.sides);
+      clear(glob_sset.distFactors);
     }
   }
 

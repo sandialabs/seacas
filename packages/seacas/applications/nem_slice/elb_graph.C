@@ -153,8 +153,7 @@ namespace {
     size_t total   = vv_size + mesh->num_nodes * v_size + sur_elem_total_size * sizeof(INT);
     std::cerr << "\ttotal size of reverse connectivity array: " << sur_elem_total_size
               << " entries (" << total << " bytes).\n";
-    last_element.resize(0);
-    last_element.shrink_to_fit();
+    vec_free(last_element);
 
     // Attempt to reserve an array with this size...
     double time1 = get_time();
