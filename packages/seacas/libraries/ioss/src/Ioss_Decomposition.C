@@ -364,14 +364,10 @@ namespace Ioss {
     show_progress("\tprior to releasing some temporary decomposition memory");
 
     // Release some memory...
-    m_adjacency.resize(0);
-    m_adjacency.shrink_to_fit();
-    m_pointer.resize(0);
-    m_pointer.shrink_to_fit();
-    m_elementDist.resize(0);
-    m_elementDist.shrink_to_fit();
-    m_nodeDist.resize(0);
-    m_nodeDist.shrink_to_fit();
+    Ioss::Utils::clear(m_adjacency);
+    Ioss::Utils::clear(m_pointer);
+    Ioss::Utils::clear(m_elementDist);
+    Ioss::Utils::clear(m_nodeDist);
     show_progress("\tIoss::decompose model finished");
   }
 
@@ -453,8 +449,7 @@ namespace Ioss {
     Ioss::MY_Alltoallv(node_comm_recv, recv_count, recv_disp, node_comm_send, send_count, send_disp,
                        m_comm);
 
-    node_comm_recv.resize(0);
-    node_comm_recv.shrink_to_fit();
+    Ioss::Utils::clear(node_comm_recv);
 
 // At this point, 'node_comm_send' contains the list of nodes that I
 // need to provide coordinate data for.
@@ -495,7 +490,7 @@ namespace Ioss {
                        m_comm);
 
     // Don't need coord_send data anymore ... clean out the vector.
-    std::vector<double>().swap(coord_send);
+    Ioss::Utils::clear(coord_send);
 
     // Should have all needed coordinate data at this time.
     // Some in x,y,z vectors and some in coord_recv vector.
@@ -703,7 +698,7 @@ namespace Ioss {
         }
       }
     }
-    std::vector<idx_t>().swap(elem_partition);
+    Ioss::Utils::clear(elem_partition);
 
     size_t imp_size = std::accumulate(importElementCount.begin(), importElementCount.end(), 0);
     importElementMap.resize(imp_size);
@@ -878,7 +873,7 @@ namespace Ioss {
 #endif
 
     // Don't need centroid data anymore... Free up space
-    std::vector<double>().swap(m_centroids);
+    Ioss::Utils::clear(m_centroids);
 
     // Find all elements that remain locally owned...
     get_local_element_list(export_global_ids, num_export);
@@ -1084,7 +1079,7 @@ namespace Ioss {
       show_progress("\tCommunication 2 finished");
 
       // Done with export_conn...
-      std::vector<INT>().swap(export_conn);
+      Ioss::Utils::clear(export_conn);
 
       // Find list of unique nodes used by the elements on this
       // processor... adjacency list contains connectivity for local
@@ -1166,8 +1161,7 @@ namespace Ioss {
 
     Ioss::MY_Alltoallv(import_nodes, importNodeCount, importNodeIndex, exportNodeMap,
                        exportNodeCount, exportNodeIndex, m_comm);
-    import_nodes.resize(0);
-    import_nodes.shrink_to_fit();
+    Ioss::Utils::clear(import_nodes);
     show_progress("\tCommunication 4 finished");
 
     if (m_retainFreeNodes) {
@@ -1336,8 +1330,7 @@ namespace Ioss {
                          recv_comm_map_count[m_processorCount - 1]);
     Ioss::MY_Alltoallv(send_comm_map, send_comm_map_count, send_comm_map_disp, m_nodeCommMap,
                        recv_comm_map_count, recv_comm_map_disp, m_comm);
-    send_comm_map.resize(0);
-    send_comm_map.shrink_to_fit();
+    Ioss::Utils::clear(send_comm_map);
     show_progress("\tCommuniation 2 finished");
 
     // Map global 0-based index to local 1-based index.

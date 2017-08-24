@@ -827,7 +827,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
           }
 
           // Cleanout the suffices vector.
-          std::vector<Ioss::Suffix>().swap(suffices);
+          clear(suffices);
 
           // Reset for the next time through the while loop...
           nmatch = 1;
@@ -845,7 +845,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
       if (local_truth == nullptr || local_truth[ibeg] == 1) {
         bool multi_component =
             define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields);
-        std::vector<Ioss::Suffix>().swap(suffices);
+        clear(suffices);
         if (nmatch > 1 && !multi_component) {
           ibeg++;
           goto top;
@@ -1709,8 +1709,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     output_region.end_mode(Ioss::STATE_MODEL);
 
     if (options.delete_timesteps) {
-      data.resize(0);
-      data.shrink_to_fit();
+      Ioss::Utils::clear(data);
       return;
     }
   } // appending
@@ -1879,8 +1878,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     dbi->util().progress("END STATE_TRANSIENT ... ");
   }
   output_region.end_mode(Ioss::STATE_TRANSIENT);
-  data.resize(0);
-  data.shrink_to_fit();
+  Ioss::Utils::clear(data);
 }
 
 namespace {

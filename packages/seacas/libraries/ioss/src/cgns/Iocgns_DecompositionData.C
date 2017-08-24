@@ -370,7 +370,7 @@ namespace Iocgns {
     size_t num_split   = 0;
     bool   split       = false;
     double avg_work    = (double)work / m_decomposition.m_processorCount;
-    auto num_active    = m_structuredZones.size();
+    auto   num_active  = m_structuredZones.size();
 
 #if IOSS_DEBUG_OUTPUT
     OUTPUT << "Decomposing structured mesh with " << num_active << " zones for "
@@ -562,19 +562,17 @@ namespace Iocgns {
                 [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
                   return a->m_proc < b->m_proc;
                 });
-      
+
       for (auto &zone : tmp_zone) {
-	if (zone->is_active()) {
-	  std::cerr << std::setw(6) << z++
-		    << std::setw(8) << zone->m_proc
-		    << std::setw(8) << zone->m_adam->m_zone 
-		    << std::setw(8) << zone->m_offset[0] + 1
-		    << std::setw(8) << zone->m_ordinal[0]+zone->m_offset[0] + 1
-		    << std::setw(8) << zone->m_offset[1] + 1
-		    << std::setw(8) << zone->m_ordinal[1]+zone->m_offset[1] + 1
-		    << std::setw(8) << zone->m_offset[2] + 1
-		    << std::setw(8) << zone->m_ordinal[2]+zone->m_offset[2] + 1 << "\n";
-	}
+        if (zone->is_active()) {
+          std::cerr << std::setw(6) << z++ << std::setw(8) << zone->m_proc << std::setw(8)
+                    << zone->m_adam->m_zone << std::setw(8) << zone->m_offset[0] + 1 << std::setw(8)
+                    << zone->m_ordinal[0] + zone->m_offset[0] + 1 << std::setw(8)
+                    << zone->m_offset[1] + 1 << std::setw(8)
+                    << zone->m_ordinal[1] + zone->m_offset[1] + 1 << std::setw(8)
+                    << zone->m_offset[2] + 1 << std::setw(8)
+                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << "\n";
+        }
       }
     }
 
@@ -603,9 +601,9 @@ namespace Iocgns {
     int base      = 1; // Only single base supported so far.
 
     {
-      int cell_dimension = 0;
-      int phys_dimension = 0;
-      char     base_name[33];
+      int  cell_dimension = 0;
+      int  phys_dimension = 0;
+      char base_name[33];
       CGCHECK2(cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension));
       m_decomposition.m_spatialDimension = phys_dimension;
     }
@@ -1240,8 +1238,7 @@ namespace Iocgns {
     CGCHECK2(
         cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent)));
     // Get rid of 'nodes' list -- not used.
-    nodes.resize(0);
-    nodes.shrink_to_fit();
+    Ioss::Utils::clear(nodes);
 
     // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
     element_side.reserve(sset.file_count() * 2);

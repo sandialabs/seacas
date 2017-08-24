@@ -164,6 +164,13 @@ namespace Ioss {
 #endif
     }
 
+    template <typename T> static void clear(std::vector<T> &vec)
+    {
+      vec.clear();
+      vec.shrink_to_fit();
+      assert(vec.capacity() == 0);
+    }
+
     static char **get_name_array(size_t count, int size);
     static void delete_name_array(char **names, int count);
 

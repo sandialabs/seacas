@@ -673,7 +673,7 @@ namespace Iopx {
                 break;
               }
             }
-            std::vector<double>().swap(df);
+            Ioss::Utils::clear(df);
             if (df_valcon[3 * i + 1] == 1.0) { // df are constant.
               df_valcon[3 * i + 2] = 0.0;
             }

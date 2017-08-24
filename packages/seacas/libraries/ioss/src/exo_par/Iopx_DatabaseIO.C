@@ -108,13 +108,6 @@ namespace {
 
   const char *complex_suffix[] = {".re", ".im"};
 
-  template <typename T> void clear(std::vector<T> &vec)
-  {
-    vec.resize(0);
-    vec.shrink_to_fit();
-    assert(vec.capacity() == 0);
-  }
-
   int get_parallel_io_mode(const Ioss::PropertyManager &properties)
   {
     static int par_mode         = 0;
@@ -292,10 +285,10 @@ namespace Iopx {
     edgeMap.release_memory();
     faceMap.release_memory();
     elemMap.release_memory();
-    clear(nodeOwningProcessor);
-    clear(nodeGlobalImplicitMap);
-    clear(elemGlobalImplicitMap);
-    nodesetOwnedNodes.clear();
+    Ioss::Utils::clear(nodeOwningProcessor);
+    Ioss::Utils::clear(nodeGlobalImplicitMap);
+    Ioss::Utils::clear(elemGlobalImplicitMap);
+    Ioss::Utils::clear(nodesetOwnedNodes);
     try {
       decomp.reset();
     }

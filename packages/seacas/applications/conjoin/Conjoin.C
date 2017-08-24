@@ -69,6 +69,13 @@
 #endif
 
 namespace {
+  template <typename T> void clear(std::vector<T> &vec)
+  {
+    vec.clear();
+    vec.shrink_to_fit();
+    SMART_ASSERT(vec.capacity() == 0);
+  }
+
   template <typename T> bool approx_equal(T v1, T v2)
   {
 #if 0
@@ -2124,11 +2131,8 @@ namespace {
       ex_put_set(exoid, EX_NODE_SET, glob_set.id, &glob_set.nodeSetNodes[0], nullptr);
       //    ex_put_node_set_dist_fact(exoid, glob_sets[ns].id, &glob_sets[ns].distFactors[0]);
       // Done with the memory; clear out the vector containing the bulk data nodes and distFactors.
-      std::vector<INT>().swap(glob_set.nodeSetNodes);
-      Excn::DistVector().swap(glob_set.distFactors);
-
-      SMART_ASSERT(glob_set.nodeSetNodes.empty());
-      SMART_ASSERT(glob_set.distFactors.empty());
+      clear(glob_set.nodeSetNodes);
+      clear(glob_set.distFactors);
 
       if (debug_level & 32) {
         glob_set.dump();
@@ -2334,12 +2338,9 @@ namespace {
       // (Could move up into sideset loop above)
       for (size_t p = 0; p < part_count; p++) {
         for (auto &elem : sets[p]) {
-          std::vector<INT>().swap(elem.elems);
-          std::vector<INT>().swap(elem.sides);
-          Excn::DistVector().swap(elem.distFactors);
-          SMART_ASSERT(elem.elems.empty());
-          SMART_ASSERT(elem.sides.empty());
-          SMART_ASSERT(elem.distFactors.empty());
+          clear(elem.elems);
+          clear(elem.sides);
+          clear(elem.distFactors);
         }
       }
     }
@@ -2358,12 +2359,9 @@ namespace {
     }
 
     for (auto &glob_sset : glob_ssets) {
-      std::vector<INT>().swap(glob_sset.elems);
-      std::vector<INT>().swap(glob_sset.sides);
-      Excn::DistVector().swap(glob_sset.distFactors);
-      SMART_ASSERT(glob_sset.elems.empty());
-      SMART_ASSERT(glob_sset.sides.empty());
-      SMART_ASSERT(glob_sset.distFactors.empty());
+      clear(glob_sset.elems);
+      clear(glob_sset.sides);
+      clear(glob_sset.distFactors);
     }
   }
 
