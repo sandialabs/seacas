@@ -288,7 +288,7 @@ namespace Iopx {
     Ioss::Utils::clear(nodeOwningProcessor);
     Ioss::Utils::clear(nodeGlobalImplicitMap);
     Ioss::Utils::clear(elemGlobalImplicitMap);
-    Ioss::Utils::clear(nodesetOwnedNodes);
+    nodesetOwnedNodes.clear();
     try {
       decomp.reset();
     }
