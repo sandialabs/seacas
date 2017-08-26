@@ -1930,7 +1930,7 @@ namespace {
   void check_variable_consistency(const ex_var_params &exo_params, int my_processor,
                                   const std::string &filename, const Ioss::ParallelUtils &util)
   {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     const int        num_types = 10;
     std::vector<int> var_counts(num_types);
     var_counts[0] = exo_params.num_glob;

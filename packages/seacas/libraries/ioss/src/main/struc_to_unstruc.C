@@ -113,7 +113,7 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
   OUTPUT << "\n\tElapsed time = " << end - begin << " seconds.\n";
 
   OUTPUT << "\n" << codename << " execution successful.\n";
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
   return EXIT_SUCCESS;

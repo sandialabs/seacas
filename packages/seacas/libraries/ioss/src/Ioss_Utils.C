@@ -1139,7 +1139,7 @@ unsigned int Ioss::Utils::hash(const std::string &name)
 
 double Ioss::Utils::timer()
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   return MPI_Wtime();
 #else
   static auto begin = std::chrono::high_resolution_clock::now();
@@ -1565,7 +1565,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     transfer_nodeblock(region, output_region, options.debug, options.verbose, rank);
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     // This also assumes that the node order and count is the same for input
     // and output regions... (This is checked during nodeset output)
     if (output_region.get_database()->needs_shared_node_information()) {
