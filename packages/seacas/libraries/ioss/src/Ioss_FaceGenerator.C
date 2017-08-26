@@ -95,7 +95,7 @@ namespace {
   void resolve_parallel_faces(Ioss::Region &region, Ioss::FaceUnorderedSet &faces,
                               const std::vector<size_t> &hash_ids, INT /*dummy*/)
   {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     size_t proc_count = region.get_database()->util().parallel_size();
 
     if (proc_count > 1) {
@@ -355,7 +355,7 @@ namespace Ioss {
     std::cout << "Face generation time:\t"
               << std::chrono::duration<double, std::milli>(difff).count() << " ms\t"
               << faces_.size() / std::chrono::duration<double>(difff).count() << " faces/second.\n";
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     auto   diffp      = endp - endf;
     size_t proc_count = region_.get_database()->util().parallel_size();
 

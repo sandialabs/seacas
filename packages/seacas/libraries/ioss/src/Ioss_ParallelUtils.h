@@ -139,7 +139,7 @@ namespace Ioss {
     return pow2;
   }
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
   inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }
   inline MPI_Datatype mpi_type(int /*dummy*/) { return MPI_INT; }

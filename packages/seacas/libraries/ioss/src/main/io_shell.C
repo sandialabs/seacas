@@ -81,7 +81,7 @@ namespace {
 int main(int argc, char *argv[])
 {
   int rank = 0;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
   }
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     int64_t             min, max, avg;
     Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
   Kokkos::finalize();
 #endif
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
 

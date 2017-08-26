@@ -1,6 +1,6 @@
-#if !defined(HAVE_MPI)
+#if !defined(SEACAS_HAVE_MPI)
 #if !defined(NO_MPI)
-#cmakedefine HAVE_MPI
+#cmakedefine SEACAS_HAVE_MPI
 #endif
 #endif
 

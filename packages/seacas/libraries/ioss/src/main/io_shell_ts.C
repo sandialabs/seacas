@@ -56,7 +56,7 @@
 
 #include "shell_interface.h"
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
 
@@ -171,7 +171,7 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 
   if (mem_stats) {
     int64_t MiB = 1024 * 1024;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     int64_t             min, max, avg;
     Ioss::ParallelUtils parallel(MPI_COMM_WORLD);
     parallel.memory_stats(min, max, avg);
@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
   Kokkos::finalize();
 #endif
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
 
@@ -429,7 +429,7 @@ namespace {
 
       transfer_nodeblock(region, output_region, interface.debug);
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
       // This also assumes that the node order and count is the same for input
       // and output regions... (This is checked during nodeset output)
       if (output_region.get_database()->needs_shared_node_information()) {

@@ -33,7 +33,7 @@
 #include <cgns/Iocgns_DatabaseIO.h> // for DatabaseIO -- serial
 #include <cgns/Iocgns_IOFactory.h>
 #include <cstddef> // for nullptr
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <cgns/Iocgns_ParallelDatabaseIO.h> // for DatabaseIO -- parallel
 #endif
 #include "Ioss_DBUsage.h"   // for DatabaseUsage
@@ -53,7 +53,7 @@ namespace Iocgns {
 
   IOFactory::IOFactory() : Ioss::IOFactory("cgns")
   {
-#if defined(HAVE_MPI)
+#if defined(SEACAS_HAVE_MPI)
     Ioss::IOFactory::alias("cgns", "dof_cgns");
     Ioss::IOFactory::alias("cgns", "par_cgns");
 #endif
@@ -66,7 +66,7 @@ namespace Iocgns {
 // The "cgns" and "parallel_cgns" databases can both be accessed
 // from this factory.  The "parallel_cgns" is returned if being run
 // on more than 1 processor.
-#if defined(HAVE_MPI)
+#if defined(SEACAS_HAVE_MPI)
     int proc_count = 1;
     if (communicator != MPI_COMM_NULL) {
       MPI_Comm_size(communicator, &proc_count);

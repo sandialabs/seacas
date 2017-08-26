@@ -68,7 +68,7 @@ using idx_t = int;
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
 
@@ -185,7 +185,7 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
 
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
     slice(region, nem_file, interface, static_cast<int64_t>(1));
   }
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
   OUTPUT << "Total execution time = " << seacas_timer() - begin << "\n";

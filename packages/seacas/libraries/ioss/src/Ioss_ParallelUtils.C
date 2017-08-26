@@ -41,7 +41,7 @@
 #include <string>
 #include <vector>
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <Ioss_SerializeIO.h>
 #include <cassert>
 #include <cstring>
@@ -52,7 +52,7 @@ Ioss::ParallelUtils::ParallelUtils(MPI_Comm the_communicator) : communicator_(th
 bool Ioss::ParallelUtils::get_environment(const std::string &name, std::string &value,
                                           bool sync_parallel) const
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   char *            result_string = nullptr;
   std::vector<char> broadcast_string;
   ;
@@ -118,7 +118,7 @@ bool Ioss::ParallelUtils::get_environment(const std::string &name, bool sync_par
 {
 // Return true if 'name' defined, no matter what the value.
 // Return false if 'name' not defined.
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   char *result_string = nullptr;
   int   string_length = 0;
 
@@ -158,7 +158,7 @@ std::string Ioss::ParallelUtils::decode_filename(const std::string &filename,
 int Ioss::ParallelUtils::parallel_size() const
 {
   int my_size = 1;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (communicator_ != MPI_COMM_NULL) {
     MPI_Comm_size(communicator_, &my_size);
   }
@@ -169,7 +169,7 @@ int Ioss::ParallelUtils::parallel_size() const
 int Ioss::ParallelUtils::parallel_rank() const
 {
   int my_rank = 0;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (communicator_ != MPI_COMM_NULL) {
     MPI_Comm_rank(communicator_, &my_rank);
   }
@@ -181,7 +181,7 @@ void Ioss::ParallelUtils::memory_stats(int64_t &min, int64_t &max, int64_t &avg)
 {
   int64_t my_memory = Ioss::Utils::get_memory_info();
   min = max = avg = my_memory;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
     min = global_minmax(my_memory, DO_MIN);
     max = global_minmax(my_memory, DO_MAX);
@@ -195,7 +195,7 @@ void Ioss::ParallelUtils::hwm_memory_stats(int64_t &min, int64_t &max, int64_t &
 {
   int64_t my_memory = Ioss::Utils::get_hwm_memory_info();
   min = max = avg = my_memory;
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
     min = global_minmax(my_memory, DO_MIN);
     max = global_minmax(my_memory, DO_MAX);
@@ -207,7 +207,7 @@ void Ioss::ParallelUtils::hwm_memory_stats(int64_t &min, int64_t &max, int64_t &
 
 void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) const
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (1 < parallel_size()) {
     static_assert(sizeof(char) == 1, "");
 
@@ -233,7 +233,7 @@ void Ioss::ParallelUtils::global_count(const IntVector &local_counts,
   // contains the total number of objects on all processors.
   // Assumes that ordering is the same on all processors
   global_counts.resize(local_counts.size());
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (!local_counts.empty() && parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       std::ostringstream errmsg;
@@ -266,7 +266,7 @@ void Ioss::ParallelUtils::global_count(const Int64Vector &local_counts,
   // contains the total number of objects on all processors.
   // Assumes that ordering is the same on all processors
   global_counts.resize(local_counts.size());
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (!local_counts.empty() && parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       std::ostringstream errmsg;
@@ -303,7 +303,7 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
 {
   T minmax = local_minmax;
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       std::ostringstream errmsg;
@@ -341,7 +341,7 @@ template <typename T>
 void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,
                                               Ioss::ParallelUtils::MinMax which) const
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1 && count > 0) {
     if (Ioss::SerializeIO::isEnabled() && Ioss::SerializeIO::inBarrier()) {
       std::ostringstream errmsg;
@@ -399,7 +399,7 @@ template <typename T> void Ioss::ParallelUtils::gather(T my_value, std::vector<T
   if (parallel_rank() == 0) {
     result.resize(parallel_size());
   }
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
     const int success = MPI_Gather((void *)&my_value, 1, mpi_type(T(1)), (void *)&result[0], 1,
                                    mpi_type(T(1)), 0, communicator_);
@@ -420,7 +420,7 @@ template <typename T> void Ioss::ParallelUtils::gather(T my_value, std::vector<T
 template <typename T> void Ioss::ParallelUtils::all_gather(T my_value, std::vector<T> &result) const
 {
   result.resize(parallel_size());
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
     const int success = MPI_Allgather((void *)&my_value, 1, mpi_type(T(1)), (void *)&result[0], 1,
                                       mpi_type(T(1)), communicator_);
@@ -468,7 +468,7 @@ void Ioss::ParallelUtils::gather(std::vector<T> &my_values, std::vector<T> &resu
   if (parallel_rank() == 0) {
     result.resize(count * parallel_size());
   }
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   if (parallel_size() > 1) {
     const int success = MPI_Gather((void *)TOPTR(my_values), count, mpi_type(T(1)),
                                    (void *)TOPTR(result), count, mpi_type(T(1)), 0, communicator_);
