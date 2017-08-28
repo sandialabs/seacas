@@ -102,6 +102,8 @@ namespace Iogn {
     // database supports that type (e.g. return_value & Ioss::FACESET)
     unsigned entity_field_support() const override;
 
+    int int_byte_size_db() const override { return int_byte_size_api(); }
+
     const GeneratedMesh *get_generated_mesh() const { return m_generatedMesh; }
 
     void setGeneratedMesh(Iogn::GeneratedMesh *generatedMesh) { m_generatedMesh = generatedMesh; }

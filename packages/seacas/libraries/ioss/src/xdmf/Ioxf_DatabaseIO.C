@@ -60,7 +60,7 @@
 #include "libxml/tree.h"          // for xmlNode, xmlFreeDoc, etc
 #include "libxml/xmlstring.h"     // for xmlChar, xmlStrcmp
 #include "xdmf/Ioxf_Internals.h"  // for SideSet, NodeSet, Block, etc
-#include <Ioss_CodeTypes.h>       // for HAVE_MPI
+#include <Ioss_CodeTypes.h>       // for SEACAS_HAVE_MPI
 #include <Ioss_ElementTopology.h> // for NameList
 #include <Ioss_ParallelUtils.h>   // for ParallelUtils, etc
 #include <Ioss_SerializeIO.h>     // for SerializeIO
@@ -2233,7 +2233,7 @@ namespace Ioxf {
     Ioss::FileInfo filename(get_filename() + ".xmf");
 // std::ostringstream *XML = nullptr;
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     MPI_Barrier(util().communicator());
 #endif
     if ((myProcessor == 0) && isParallel) {

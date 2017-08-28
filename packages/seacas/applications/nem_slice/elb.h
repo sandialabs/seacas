@@ -70,7 +70,11 @@
 
 #define MAX_INP_LINE 10240
 
-template <typename INT> void vec_free(std::vector<INT> &V) { std::vector<INT>().swap(V); }
+template <typename INT> void vec_free(std::vector<INT> &V)
+{
+  V.clear();
+  V.shrink_to_fit();
+}
 
 /* Prototype for timing function */
 extern double get_time();

@@ -209,7 +209,7 @@ CG_ZoneType_t Iocgns::Utils::check_zone_type(int cgnsFilePtr)
 
   CG_ZoneType_t common_zone_type = CG_ZoneTypeNull;
 
-  for (cgsize_t zone = 1; zone <= num_zones; zone++) {
+  for (int zone = 1; zone <= num_zones; zone++) {
     CG_ZoneType_t zone_type;
     CGCHECKNP(cg_zone_type(cgnsFilePtr, base, zone, &zone_type));
 
@@ -329,7 +329,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
 
     // Transfer boundary condition nodes...
     for (const auto &bc : sb->m_boundaryConditions) {
-      cgsize_t bc_idx = 0;
+      int bc_idx = 0;
       CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
                           CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx));
       CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0,
@@ -347,7 +347,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
       // In parallel decomposition, can have multiple copies of a zgc; only output the first
       // instance
       if (defined.insert(zgc.m_connectionName).second) {
-        cgsize_t zgc_idx = 0;
+        int zgc_idx = 0;
         CGERR(cg_1to1_write(file_ptr, base, zone, zgc.m_connectionName.c_str(),
                             zgc.m_donorName.c_str(), &zgc.m_ownerRange[0], &zgc.m_donorRange[0],
                             &zgc.m_transform[0], &zgc_idx));
@@ -471,8 +471,8 @@ void Iocgns::Utils::write_flow_solution_metadata(int file_ptr, Ioss::Region *reg
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
   auto sol_lambda = [=](Ioss::GroupingEntity *block) {
-    cgsize_t base = block->get_property("base").get_int();
-    cgsize_t zone = block->get_property("zone").get_int();
+    int base = block->get_property("base").get_int();
+    int zone = block->get_property("zone").get_int();
     if (has_nodal_fields) {
       CGERR(cg_sol_write(file_ptr, base, zone, v_name.c_str(), CG_Vertex, vertex_solution_index));
       CGERR(
@@ -557,15 +557,15 @@ int Iocgns::Utils::find_solution_index(int cgnsFilePtr, int base, int zone, int 
 
 void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 {
-  cgsize_t base         = 1;
-  cgsize_t num_families = 0;
+  int base         = 1;
+  int num_families = 0;
   CGCHECKNP(cg_nfamilies(cgnsFilePtr, base, &num_families));
 
-  for (cgsize_t family = 1; family <= num_families; family++) {
+  for (int family = 1; family <= num_families; family++) {
     char        name[33];
     CG_BCType_t bocotype;
-    cgsize_t    num_bc  = 0;
-    cgsize_t    num_geo = 0;
+    int         num_bc  = 0;
+    int         num_geo = 0;
     CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
 
 #if IOSS_DEBUG_OUTPUT
@@ -781,9 +781,9 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
 void Iocgns::Utils::add_structured_boundary_conditions(int                    cgnsFilePtr,
                                                        Ioss::StructuredBlock *block)
 {
-  cgsize_t base = block->get_property("base").get_int();
-  cgsize_t zone = block->get_property("zone").get_int();
-  int      num_bcs;
+  int base = block->get_property("base").get_int();
+  int zone = block->get_property("zone").get_int();
+  int num_bcs;
   CGCHECKNP(cg_nbocos(cgnsFilePtr, base, zone, &num_bcs));
 
   cgsize_t range[6];
@@ -829,11 +829,11 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
     }
 
     if (sset != nullptr) {
-      Ioss::IJK_t range_beg{{std::min(range[0], range[3]), std::min(range[1], range[4]),
-                             std::min(range[2], range[5])}};
+      Ioss::IJK_t range_beg{{(int)std::min(range[0], range[3]), (int)std::min(range[1], range[4]),
+                             (int)std::min(range[2], range[5])}};
 
-      Ioss::IJK_t range_end{{std::max(range[0], range[3]), std::max(range[1], range[4]),
-                             std::max(range[2], range[5])}};
+      Ioss::IJK_t range_end{{(int)std::max(range[0], range[3]), (int)std::max(range[1], range[4]),
+                             (int)std::max(range[2], range[5])}};
 
       // Determine overlap of surface with block (in parallel, a block may
       // be split among multiple processors and the block face this is applied
@@ -850,7 +850,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       sb->property_add(Ioss::Property("base", base));
       sb->property_add(Ioss::Property("zone", zone));
       sb->property_add(Ioss::Property("section", ibc + 1));
-      sb->property_add(Ioss::Property("id", (int)block->m_boundaryConditions.size() - 1));
+      sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
 
       // Set a property on the sideset specifying the boundary condition type (bocotype)
       // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
@@ -909,7 +909,7 @@ void Iocgns::Utils::finalize_database(int cgnsFilePtr, const std::vector<double>
   // Create a lambda to avoid code duplication for similar treatment
   // of structured blocks and element blocks.
   auto ziter = [=](Ioss::GroupingEntity *block) {
-    cgsize_t         zone = block->get_property("zone").get_int();
+    int              zone = block->get_property("zone").get_int();
     std::vector<int> indices(timesteps.size());
     bool             has_cell_center_fields = block->field_count(Ioss::Field::TRANSIENT) > 0;
     if (has_cell_center_fields || has_nodal_fields) {
@@ -966,8 +966,8 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
   // Assuming that the fields on all steps are the same, but can vary
   // from zone to zone.
   auto sol_iter = [=](Ioss::GroupingEntity *block) {
-    cgsize_t b = block->get_property("base").get_int();
-    cgsize_t z = block->get_property("zone").get_int();
+    int b = block->get_property("base").get_int();
+    int z = block->get_property("zone").get_int();
 
     int sol_count = 0;
     CGCHECK(cg_nsols(cgnsFilePtr, b, z, &sol_count));

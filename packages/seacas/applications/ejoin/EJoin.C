@@ -68,7 +68,7 @@
 #include "EJ_match_xyz.h"
 #include "EJ_vector3d.h"
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
 
@@ -166,7 +166,7 @@ unsigned int debug_level = 0;
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
 
@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
     time_t end_time = time(nullptr);
     add_to_log(argv[0], static_cast<int>(end_time - begin_time));
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
 #endif
 

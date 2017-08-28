@@ -773,7 +773,7 @@ namespace {
       }
     }
     else {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
       if (!single_proc_only) {
         MPI_Barrier(util.communicator());
       }
