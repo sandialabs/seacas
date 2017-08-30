@@ -6,3 +6,5 @@
 #cmakedefine SEACAS_HAVE_KOKKOS
 
 #cmakedefine SEACAS_HAVE_CGNS
+
+#cmakedefine PARALLEL_AWARE_EXODUS
