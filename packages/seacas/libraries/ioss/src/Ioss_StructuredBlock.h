@@ -42,7 +42,7 @@
 #include <cassert>
 #include <string>
 
-#if !defined(NO_CGNS_SUPPORT)
+#if defined(SEACAS_HAVE_CGNS)
 #include <cgnstypes.h>
 using INT = cgsize_t;
 #else
