@@ -44,7 +44,7 @@
 #include <pamgen/Iopg_DatabaseIO.h>
 #endif
 
-#if !defined(NO_CGNS_SUPPORT)
+#if defined(SEACAS_HAVE_CGNS)
 #include <cgns/Iocgns_IOFactory.h>
 #endif
 
@@ -83,7 +83,7 @@ namespace Ioss {
 #if !defined(NO_PAMGEN_SUPPORT)
       Iopg::IOFactory::factory(); // Pamgen
 #endif
-#if !defined(NO_CGNS_SUPPORT)
+#if defined(SEACAS_HAVE_CGNS)
       Iocgns::IOFactory::factory();
 #endif
 
