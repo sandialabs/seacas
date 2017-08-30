@@ -47,6 +47,10 @@ namespace Ioss {
 
 #if defined(SIERRA_PARALLEL_MPI)
 #define SEACAS_HAVE_MPI
+/* #undef IOSS_THREADSAFE */
+/* #undef SEACAS_HAVE_KOKKOS */
+#define SEACAS_HAVE_CGNS
+#define PARALLEL_AWARE_EXODUS
 #else
 #include <SEACASIoss_config.h>
 #endif

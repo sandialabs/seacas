@@ -42,7 +42,7 @@
 #include <cassert>
 #include <string>
 
-#if defined(SEACAS_HAVE_CGNS)
+#if defined(SEACAS_HAVE_CGNS) && !defined(SIERRA_PARALLEL_MPI)
 #include <cgnstypes.h>
 using INT = cgsize_t;
 #else
