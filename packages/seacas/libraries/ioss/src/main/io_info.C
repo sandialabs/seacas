@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "io_info.h"
-#if !defined(NO_CGNS_SUPPORT)
+#if defined(SEACAS_HAVE_CGNS)
 #include <cgnslib.h>
 #endif
 
@@ -411,7 +411,7 @@ namespace {
       if (!summary) {
         OUTPUT << '\n' << name(fs) << " id: " << std::setw(6) << id(fs);
         if (fs->property_exists("bc_type")) {
-#if !defined(NO_CGNS_SUPPORT)
+#if defined(SEACAS_HAVE_CGNS)
           auto bc_type = fs->get_property("bc_type").get_int();
           OUTPUT << ", boundary condition type: " << BCTypeName[bc_type] << " (" << bc_type << ")";
 #else

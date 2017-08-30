@@ -45,7 +45,7 @@
 extern "C" int Zoltan_get_global_id_type(char **name);
 #endif
 
-#if !defined(NO_CGNS_SUPPORT)
+#if defined(SEACAS_HAVE_CGNS)
 #include <cgns/Iocgns_IOFactory.h>
 #endif
 
