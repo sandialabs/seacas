@@ -1,8 +1,4 @@
-#if !defined(SEACAS_HAVE_MPI)
-#if !defined(NO_MPI)
 #cmakedefine SEACAS_HAVE_MPI
-#endif
-#endif
 
 #cmakedefine IOSS_THREADSAFE
 
