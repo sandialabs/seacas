@@ -33,6 +33,8 @@ matrix:
       env: KOKKOS=ON
     - compiler: gcc
       env: KOKKOS=ON MPI=ON
+    - compiler: gcc
+      env: CGNS=OFF MPI=ON
 
 before_install:
   - sudo apt-get update
