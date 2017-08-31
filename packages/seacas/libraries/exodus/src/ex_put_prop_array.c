@@ -115,7 +115,7 @@ int ex_put_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* check if property has already been created */
 

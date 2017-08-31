@@ -94,7 +94,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
   ex_inquiry    ex_inq_val;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   int_size = sizeof(int);
   if (ex_int64_status(exoid) & EX_BULK_INT64_API) {

@@ -134,7 +134,7 @@ int ex_set_max_name_length(int exoid, int length)
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
   if (length <= 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Max name length must be positive.");
     ex_err("ex_set_max_name_length", errmsg, NC_EMAXNAME);
@@ -159,7 +159,7 @@ void ex_update_max_name_length(int exoid, int length)
   int rootid    = exoid & EX_FILE_ID_MASK;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Get current value of the maximum_name_length attribute... */
   if ((status = nc_get_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
@@ -192,7 +192,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
   int    found_name = 0;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
   /* inquire previously defined dimensions  */
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
 
@@ -243,7 +243,7 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
   char   errmsg[MAX_ERR_LENGTH];
   size_t name_length;
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions  */
   name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH) + 1;
