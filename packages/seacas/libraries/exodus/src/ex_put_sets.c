@@ -72,7 +72,7 @@ int ex_put_sets(int exoid, size_t set_count, const struct ex_set *sets)
 
   EX_FUNC_ENTER();
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   sets_to_define = malloc(set_count * sizeof(int));
 

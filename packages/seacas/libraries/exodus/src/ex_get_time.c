@@ -87,7 +87,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
   char   errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined variable */
   if ((status = nc_inq_varid(exoid, VAR_WHOLE_TIME, &varid)) != NC_NOERR) {

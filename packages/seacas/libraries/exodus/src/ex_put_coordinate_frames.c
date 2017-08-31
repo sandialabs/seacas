@@ -91,7 +91,7 @@ int ex_put_coordinate_frames(int exoid, int nframes, const void_int *cf_ids, voi
   assert(pt_coordinates != 0);
   assert(tags != 0);
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* make the definitions */
   /* go into define mode. define num_frames, num_frames9 */

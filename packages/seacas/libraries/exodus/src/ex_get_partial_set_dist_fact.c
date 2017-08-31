@@ -56,7 +56,7 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_i
   char * factptr = NULL;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* first check if any sets are specified */
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) != NC_NOERR) {

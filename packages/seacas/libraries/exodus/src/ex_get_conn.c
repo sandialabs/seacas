@@ -85,7 +85,7 @@ int ex_get_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, void_in
   const char *vfaceconn  = NULL;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Should we warn if edgeconn or faceconn are non-NULL?
    * No, fail silently so the same code can be used to read any type of block

@@ -90,7 +90,7 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
 #endif
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   blocks_to_define = malloc(block_count * sizeof(int));
 

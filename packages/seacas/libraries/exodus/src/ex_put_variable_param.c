@@ -158,7 +158,7 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
   int  status;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* if no variables are to be stored, return with warning */
   if (num_vars == 0) {

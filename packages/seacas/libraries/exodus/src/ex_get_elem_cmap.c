@@ -76,7 +76,7 @@ int ex_get_elem_cmap(int exoid, ex_entity_id map_id, void_int *elem_ids, void_in
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* get the cmap information variables index */
   if (ex_get_idx(exoid, VAR_E_COMM_INFO_IDX, varidx, processor) == -1) {

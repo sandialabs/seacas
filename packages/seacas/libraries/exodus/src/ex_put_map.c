@@ -93,7 +93,7 @@ int ex_put_map(int exoid, const void_int *elem_map)
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire id's of previously defined dimensions  */
 

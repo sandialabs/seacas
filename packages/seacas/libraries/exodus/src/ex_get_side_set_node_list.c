@@ -242,7 +242,7 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* first check if any side sets are specified */
   /* inquire how many side sets have been stored */

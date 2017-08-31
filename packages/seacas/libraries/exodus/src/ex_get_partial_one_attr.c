@@ -91,7 +91,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   const char *vattrbname;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   if (num_ent == 0) {
     EX_FUNC_LEAVE(EX_NOERR);

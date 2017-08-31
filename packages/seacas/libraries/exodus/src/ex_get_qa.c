@@ -93,7 +93,7 @@ int ex_get_qa(int exoid, char *qa_record[][4])
   int rootid = exoid & EX_FILE_ID_MASK;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions and variables  */
   if ((status = nc_inq_dimid(rootid, DIM_NUM_QA, &dimid)) != NC_NOERR) {

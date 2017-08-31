@@ -116,7 +116,7 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
     elem_id_int = param->elem_blk_id;
   }
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions  */
   if ((status = nc_inq_dimid(exoid, DIM_STR_NAME, &strdim)) != NC_NOERR) {

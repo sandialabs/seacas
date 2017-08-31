@@ -88,7 +88,7 @@ int ex_put_cmap_params(int exoid, void_int *node_cmap_ids, void_int *node_cmap_n
   int format;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   nc_inq_format(exoid, &format);
   if ((ex_int64_status(exoid) & EX_BULK_INT64_DB) || (format == NC_FORMAT_NETCDF4)) {

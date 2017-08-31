@@ -84,7 +84,7 @@ int ex_close(int exoid)
 
   EX_FUNC_ENTER();
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
 /*
  * NOTE: If using netcdf-4, exoid must refer to the root group.
