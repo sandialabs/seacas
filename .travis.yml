@@ -35,6 +35,8 @@ matrix:
       env: KOKKOS=ON MPI=ON
     - compiler: gcc
       env: CGNS=OFF MPI=ON
+    - compiler: gcc
+      env: FORTRAN=OFF
 
 before_install:
   - sudo apt-get update
