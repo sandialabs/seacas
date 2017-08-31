@@ -25,7 +25,7 @@ matrix:
       env: MPI=ON
     - compiler: clang
       env: THREAD_SAFE=ON
-    - compiler: cgcc
+    - compiler: gcc
       env: MPI=ON THREAD_SAFE=ON
     - compiler: clang
       env: MPI=ON THREAD_SAFE=ON
