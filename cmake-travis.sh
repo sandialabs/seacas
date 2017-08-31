@@ -2,6 +2,7 @@
 
 BUILDDIR=${1:-build}
 KOKKOS=${KOKKOS:-OFF}
+CGNS=${CGNS:-ON}
 ACCESS=`pwd`
 
 # =================== INSTALL PNETCDF and NETCDF (if mpi) ===============
@@ -30,6 +31,9 @@ pwd
 fi
 
 # ==================== INSTALL CGNS ====================
+if [ "$CGNS" == "ON" ]
+then
+    
 cd TPL/cgns
 git clone https://github.com/cgns/CGNS
 cd CGNS
@@ -41,6 +45,8 @@ make && sudo make install
 
 cd $ACCESS
 pwd
+
+fi
 
 # ==================== CONFIGURE SEACAS ====================
 mkdir $BUILDDIR && cd $BUILDDIR
@@ -94,7 +100,7 @@ cmake \
   -DSEACASProj_USE_GNUINSTALLDIRS:BOOL=ON \
   ${KOKKOS_SYMBOLS} \
   ${TS_SYMBOLS} \
-  -DTPL_ENABLE_CGNS:BOOL=ON \
+  -DTPL_ENABLE_CGNS:BOOL=${CGNS} \
   -DTPL_ENABLE_Matio:BOOL=ON \
   -DTPL_ENABLE_METIS:BOOL=OFF \
   -DTPL_ENABLE_ParMETIS:BOOL=OFF \
