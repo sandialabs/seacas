@@ -125,6 +125,9 @@ Type is set to:
     else if (magic[3] == '\002') {
       *type = 2;
     }
+    else if(magic[3] == '\005') {
+      *type = 4; /* cdf5 (including pnetcdf) file */
+    }
   }
   EX_FUNC_LEAVE(EX_NOERR);
 }
