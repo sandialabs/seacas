@@ -166,7 +166,7 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   int       status;
   char      tmp_title[2048];
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   if (ret_char) {
     *ret_char = '\0'; /* Only needs to be non-null for TITLE and some GROUP NAME inquiries */

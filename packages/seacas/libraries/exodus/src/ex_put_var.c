@@ -231,7 +231,7 @@ int ex_put_var(int exoid, int time_step, ex_entity_type var_type, int var_index,
 
   EX_FUNC_ENTER();
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (var_type) {
   case EX_GLOBAL:

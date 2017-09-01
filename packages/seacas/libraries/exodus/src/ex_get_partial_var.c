@@ -91,7 +91,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     EX_FUNC_LEAVE(status);
   }
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Determine index of obj_id in VAR_ID_EL_BLK array */
   obj_id_ndx = ex_id_lkup(exoid, var_type, obj_id);

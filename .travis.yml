@@ -25,7 +25,7 @@ matrix:
       env: MPI=ON
     - compiler: clang
       env: THREAD_SAFE=ON
-    - compiler: cgcc
+    - compiler: gcc
       env: MPI=ON THREAD_SAFE=ON
     - compiler: clang
       env: MPI=ON THREAD_SAFE=ON
@@ -33,6 +33,10 @@ matrix:
       env: KOKKOS=ON
     - compiler: gcc
       env: KOKKOS=ON MPI=ON
+    - compiler: gcc
+      env: CGNS=OFF MPI=ON
+    - compiler: gcc
+      env: FORTRAN=OFF
 
 before_install:
   - sudo apt-get update

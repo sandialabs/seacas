@@ -68,7 +68,7 @@ int ex_get_names(int exoid, ex_entity_type obj_type, char **names)
   const char *routine = "ex_get_names";
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions and variables  */
 

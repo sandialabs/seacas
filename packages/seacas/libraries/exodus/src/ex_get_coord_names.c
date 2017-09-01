@@ -81,7 +81,7 @@ int ex_get_coord_names(int exoid, char **coord_names)
   char   errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions and variables  */
 

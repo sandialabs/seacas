@@ -140,7 +140,7 @@ int ex_put_prop_names(int exoid, ex_entity_type obj_type, int num_props, char **
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   if (ex_int64_status(exoid) & EX_IDS_INT64_DB) {
     int_type = NC_INT64;

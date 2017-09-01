@@ -106,7 +106,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     ex_err("ex_put_partial_conn", errmsg, EX_BADPARAM);
   }
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Locate index of element block id in VAR_ID_EL_BLK array */
 

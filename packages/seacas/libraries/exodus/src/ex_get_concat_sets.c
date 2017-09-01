@@ -77,7 +77,7 @@ int ex_get_concat_sets(int exoid, ex_entity_type set_type, struct ex_set_specs *
   ex_inquiry ex_inq_val;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* setup pointers based on set_type
      NOTE: there is another block that sets more stuff later ... */

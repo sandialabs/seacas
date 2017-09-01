@@ -77,7 +77,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   const char *vobj;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
   case EX_EDGE_BLOCK: vobj = VAR_NAME_ED_BLK; break;
