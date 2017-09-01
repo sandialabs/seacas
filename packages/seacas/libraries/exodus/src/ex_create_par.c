@@ -92,6 +92,14 @@ alias.
 
 \arg EX_NORMAL_MODEL Create a standard model.
 
+\arg EX_64BIT_DATA	To create a model using the CDF5 format which uses the
+                        classic model but has 64-bit dimensions and sizes.
+                        This type will also be created if the
+                        environment variable EXODUS_NETCDF5 is defined in the
+                        users environment. A message will be printed to standard
+                        output if
+                        this environment variable is found.
+
 \arg EX_NETCDF4	To create a model using the HDF5-based NetCDF-4
                         output. An HDF5-based NetCDF-4 file will also be created
 if the
@@ -164,6 +172,12 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   char  errmsg[MAX_ERR_LENGTH];
   char *mode_name;
   int   nc_mode = 0;
+#if NC_HAS_HDF5
+  static int netcdf4_mode = -1;
+#endif /* NC_NETCDF4 */
+#if defined(NC_64BIT_DATA)
+  static int netcdf5_mode = -1;
+#endif
 
   int         int64_status;
   const char *routine    = "ex_create_par";
@@ -349,10 +363,48 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   if (my_mode & EX_NETCDF4) {
     nc_mode |= NC_NETCDF4;
   }
+  else {
+    if (netcdf4_mode == -1) {
+      char *option = getenv("EXODUS_NETCDF4");
+      if (option != NULL) {
+        netcdf4_mode = NC_NETCDF4;
+        if (option[0] != 'q') {
+          fprintf(stderr, "EXODUS: Using netcdf version 4 selected via "
+                          "EXODUS_NETCDF4 environment variable\n");
+        }
+      }
+      else {
+        netcdf4_mode = 0;
+      }
+    }
+    nc_mode |= netcdf4_mode;
+  }
 
   if (!(my_mode & EX_NOCLASSIC)) {
     nc_mode |= NC_CLASSIC_MODEL;
   }
+
+#if defined(NC_64BIT_DATA)
+  if (my_mode & EX_64BIT_DATA) {
+    nc_mode |= (NC_64BIT_DATA);
+  }
+  else {
+    if (netcdf5_mode == -1) {
+      char *option = getenv("EXODUS_NETCDF5");
+      if (option != NULL) {
+        netcdf5_mode = NC_64BIT_DATA;
+        if (option[0] != 'q') {
+          fprintf(stderr, "EXODUS: Using netcdf version 5 (CDF5) selected via "
+                          "EXODUS_NETCDF5 environment variable\n");
+        }
+      }
+      else {
+        netcdf5_mode = 0;
+      }
+    }
+    nc_mode |= netcdf5_mode;
+  }
+#endif
 
   /*
    * See if "large file" mode was specified in a ex_create my_mode. If

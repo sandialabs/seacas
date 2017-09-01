@@ -170,6 +170,9 @@ namespace Ioex {
       if (type == "netcdf4" || type == "netcdf-4" || type == "hdf5") {
         exodusMode |= EX_NETCDF4;
       }
+      else if (type == "netcdf5" || type == "netcdf-5" || type == "cdf5") {
+        exodusMode |= EX_64BIT_DATA;
+      }
     }
 
     if (properties.exists("ENABLE_FILE_GROUPS")) {

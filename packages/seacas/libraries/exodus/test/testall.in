@@ -40,6 +40,9 @@
 if [ "$1" == "netcdf4" ]; then
    export EXODUS_NETCDF4=quiet
 fi
+if [ "$1" == "netcdf5" ]; then
+   export EXODUS_NETCDF5=quiet
+fi
 
 
 #set PREFIX = "valgrind --tool=memcheck"

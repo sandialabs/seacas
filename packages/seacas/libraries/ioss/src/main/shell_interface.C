@@ -84,6 +84,11 @@ void IOShell::Interface::enroll_options()
                                                            "classical netcdf file format",
                   nullptr);
 
+  options_.enroll("netcdf5", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf5 (CDF5) "
+                  "file instead of the classical netcdf file format",
+                  nullptr);
+
   options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
                   nullptr);
@@ -266,6 +271,12 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("netcdf4") != nullptr) {
     netcdf4 = true;
+    netcdf5 = false;
+  }
+
+  if (options_.retrieve("netcdf5") != nullptr) {
+    netcdf5 = true;
+    netcdf4 = false;
   }
 
   if (options_.retrieve("shuffle") != nullptr) {
