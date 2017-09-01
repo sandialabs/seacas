@@ -355,6 +355,10 @@ namespace {
       properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
     }
 
+    if (interface.netcdf5) {
+      properties.add(Ioss::Property("FILE_TYPE", "netcdf5"));
+    }
+
     if (interface.inputFile.size() > 1) {
       properties.add(Ioss::Property("ENABLE_FILE_GROUPS", 1));
     }
