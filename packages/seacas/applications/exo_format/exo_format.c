@@ -164,8 +164,11 @@ int main(int argc, char *argv[])
   if (nc_format == NC_FORMAT_CLASSIC) {
     fprintf(stderr, "\t\tNetCDF Variant is 'classic'\n");
   }
-  else if (nc_format == NC_FORMAT_64BIT) {
+  else if (nc_format == NC_FORMAT_64BIT_OFFSET) {
     fprintf(stderr, "\t\tNetCDF Variant is '64-bit offset'\n");
+  }
+  else if (nc_format == NC_FORMAT_64BIT_DATA) {
+    fprintf(stderr, "\t\tNetCDF Variant is '64-bit data (CDF5)'\n");
   }
   else if (nc_format == NC_FORMAT_NETCDF4) {
     fprintf(stderr, "\t\tNetCDF Variant is 'netCDF-4'\n");
