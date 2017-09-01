@@ -93,7 +93,7 @@ int ex_put_cmap_params_cc(int exoid, void_int *node_cmap_ids, void_int *node_cma
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* See if using NC_FORMAT_NETCDF4 format... */
   nc_inq_format(exoid, &format);

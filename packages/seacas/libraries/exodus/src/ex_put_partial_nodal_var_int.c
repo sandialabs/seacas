@@ -83,7 +83,7 @@ int ex_put_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
   char   errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   if (ex_large_model(exoid) == 0) {
     /* write values of the nodal variable */

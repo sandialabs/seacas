@@ -74,7 +74,7 @@ int ex_put_variable_name(int exoid, ex_entity_type obj_type, int var_num, const 
 
   EX_FUNC_ENTER();
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined variables  */
   switch (obj_type) {

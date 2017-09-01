@@ -75,7 +75,7 @@ int ex_put_node_cmap(int exoid, ex_entity_id map_id, void_int *node_ids, void_in
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* get the index for the comm map information variables */
   if (ex_get_idx(exoid, VAR_N_COMM_INFO_IDX, varidx, processor) == -1) {

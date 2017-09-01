@@ -131,7 +131,7 @@ int ex_put_all_var_param_ext(int exoid, const ex_var_params *vp)
   const char *routine = "ex_put_all_var_param_ext";
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined dimensions  */
 

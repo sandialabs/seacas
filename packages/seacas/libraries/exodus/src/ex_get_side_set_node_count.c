@@ -78,7 +78,7 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
   int  err_stat = EX_NOERR;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* first check if any side sets are specified */
   /* inquire how many side sets have been stored */
