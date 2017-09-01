@@ -186,7 +186,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
     if (info != NULL) {
       /* write out information records */
       for (i = 0; i < num_info; i++) {
-        int length = strlen(info[i]);
+        int length = strlen(info[i])+1;
         start[0]   = i;
         start[1]   = 0;
 
