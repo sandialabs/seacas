@@ -175,7 +175,7 @@ IF ( NETCDF_NCDUMP_BINARY )
     )
   endif()
 
-  if ( TPL_Netcdf_Enables_Netcdf5 )  
+#  if ( TPL_Netcdf_Enables_Netcdf5 )  
     TRIBITS_ADD_ADVANCED_TEST(
      exodus_unit_tests_nc5_env
      TEST_0 CMND /bin/bash ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall netcdf5
@@ -186,7 +186,7 @@ IF ( NETCDF_NCDUMP_BINARY )
      COMM mpi serial
      FINAL_PASS_REGULAR_EXPRESSION 
     )
-  endif()
+#  endif()
 ELSE()
   MESSAGE(STATUS
       "WARNING: ${PACKAGE_NAME}: Exodus unit tests will not be run due to failure finding ncdump executable.")
