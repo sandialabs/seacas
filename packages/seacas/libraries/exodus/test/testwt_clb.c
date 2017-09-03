@@ -119,6 +119,42 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
+  /* write QA records; test empty and just blank-filled records */
+  num_qa_rec = 2;
+
+  qa_record[0][0] = "TESTWT";
+  qa_record[0][1] = "testwt";
+  qa_record[0][2] = "07/07/93";
+  qa_record[0][3] = "15:41:33";
+  qa_record[1][0] = "";
+  qa_record[1][1] = "                            ";
+  qa_record[1][2] = "";
+  qa_record[1][3] = "                        ";
+
+  error = ex_put_qa(exoid, num_qa_rec, qa_record);
+  printf("after ex_put_qa, error = %d\n", error);
+
+  if (error) {
+    ex_close(exoid);
+    exit(-1);
+  }
+
+  /* write information records; test empty and just blank-filled records */
+
+  num_info = 3;
+
+  info[0] = "This is the first information record.";
+  info[1] = "";
+  info[2] = "                                     ";
+
+  error = ex_put_info(exoid, num_info, info);
+  printf("after ex_put_info, error = %d\n", error);
+
+  if (error) {
+    ex_close(exoid);
+    exit(-1);
+  }
+
   /* write nodal coordinates values and names to database */
 
   /* Quad #1 */
@@ -842,43 +878,6 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
-  /* write QA records; test empty and just blank-filled records */
-
-  num_qa_rec = 2;
-
-  qa_record[0][0] = "TESTWT";
-  qa_record[0][1] = "testwt";
-  qa_record[0][2] = "07/07/93";
-  qa_record[0][3] = "15:41:33";
-  qa_record[1][0] = "";
-  qa_record[1][1] = "                            ";
-  qa_record[1][2] = "";
-  qa_record[1][3] = "                        ";
-
-  error = ex_put_qa(exoid, num_qa_rec, qa_record);
-  printf("after ex_put_qa, error = %d\n", error);
-
-  if (error) {
-    ex_close(exoid);
-    exit(-1);
-  }
-
-  /* write information records; test empty and just blank-filled records */
-
-  num_info = 3;
-
-  info[0] = "This is the first information record.";
-  info[1] = "";
-  info[2] = "                                     ";
-
-  error = ex_put_info(exoid, num_info, info);
-  printf("after ex_put_info, error = %d\n", error);
-
-  if (error) {
-    ex_close(exoid);
-    exit(-1);
-  }
-
   /* write results variables parameters and names */
   num_glo_vars  = 1;
   num_nod_vars  = 2;
@@ -924,7 +923,6 @@ int main(int argc, char **argv)
   ex_put_all_var_param(exoid, num_glo_vars, num_nod_vars, num_ele_vars, truth_tab, num_nset_vars,
                        nset_tab, num_sset_vars, sset_tab);
   printf("after ex_put_all_var_param, error = %d\n", error);
-
   if (error) {
     ex_close(exoid);
     exit(-1);
