@@ -40,51 +40,46 @@
 
 namespace Iodw {
 
-    namespace Utils {
+  namespace Utils {
 
+    struct Property
+    {
+      kelpie::Key KeyType;
+    };
 
+    struct Field
+    {
+      kelpie::Key KeyType;
+    };
 
-        struct Property {
-            kelpie::Key KeyType;
-        };
+    struct ElemBlock
+    {
+    };
 
-        struct Field {
-            kelpie::Key KeyType;
-        };
+    struct RegionKeys
+    {
+      using Keys = std::vector<kelpie::Key>;
 
+      Keys edge_blocks;
+      Keys elem_blocks;
+      Keys face_blocks;
+      Keys node_blocks;
 
+      Keys edge_sets;
+      Keys elem_sets;
+      Keys face_sets;
+      Keys node_sets;
 
-        struct ElemBlock {
+      // TODO: serialize
+    };
 
-        };
+    class IossToDW
+    {
+    public:
+      void operator()(Ioss::DatabaseIO *dbi);
+    };
 
-
-
-
-
-        struct RegionKeys {
-            using Keys = std::vector<kelpie::Key>;
-
-            Keys edge_blocks;
-            Keys elem_blocks;
-            Keys face_blocks;
-            Keys node_blocks;
-
-            Keys edge_sets;
-            Keys elem_sets;
-            Keys face_sets;
-            Keys node_sets;
-
-            // TODO: serialize
-
-        };
-
-        class IossToDW {
-            public:
-                void operator()(Ioss::DatabaseIO *dbi);
-        };
-
-    } // namespace Utils
+  } // namespace Utils
 }
 
 #endif

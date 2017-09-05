@@ -131,17 +131,17 @@ The Data Warehouse is a collection of data management tools that Sandia is curre
 The repository [data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/data-warehouse-release) is a superbuild for the Data Warehouse tools and was created to make the build process as easy as possible. It includes the files INSTALL.md and INSTALL_TPL.md which contain instructions for building Data Warehouse and it's TPLs: Boost, googletest, libfabric, and libhio (optional). These builds are straightforward so a "runconfigure.sh" script is left to the end-user. Note that it's possible to supply your own build of these tools. Following the SEACAS pattern for building TPLs:
 
 
-    * mkdir SEACAS/TPL
+    * cd TPL
     * git clone git@gitlab.sandia.gov:nessie-dev/data-warehouse-release.git
     * follow the instructions in INSTALL_TPL.md and then INSTALL.md
     * consider installing data-warehouse-release and it's TPLs to the directory set in  the $ACCESS env. var.
 
 
-To build SEACAS with an installation of data-warehouse-release and it's TPLs, add the following lines to the list of cmake command arguments as found in the top-level _cmake-config_ file. Where DataWarehouse_PATH in environment variable that contains the path to the top-level install directory for the Data Warehouse, and HAVE_DATAWAREHOUSE={ON|OFF} is a variable defined in _cmake-config_.
+To build SEACAS with an installation of data-warehouse-release and it's TPLs, add the following lines to the list of cmake command arguments as found in the top-level _cmake-config_ file. Where DataWarehouse_PATH in environment variable that contains the path to the top-level install directory for the Data Warehouse, and HAVE_DATA_WAREHOUSE={ON|OFF} is a variable defined in _cmake-config_.
 
 
-    -DSEACASIoss_ENABLE_DataWarehouse=${HAVE_DATAWAREHOUSE}         \
-    -DTPL_ENABLE_DataWarehouse:BOOL=${HAVE_DATAWAREHOUSE}           \
+    -DSEACASIoss_ENABLE_DataWarehouse=${HAVE_DATA_WAREHOUSE}         \
+    -DTPL_ENABLE_DataWarehouse:BOOL=${HAVE_DATA_WAREHOUSE}           \
     -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
     -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
 

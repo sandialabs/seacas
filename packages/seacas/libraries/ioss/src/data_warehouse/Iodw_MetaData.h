@@ -33,15 +33,13 @@
 #ifndef Iodw_MetaData_h
 #define Iodw_MetaData_h
 
-
 #include <map>
 #include <string>
 #include <vector>
 
-
 namespace Iodw {
 
-namespace meta {
+  namespace meta {
 
     struct Property
     {
@@ -53,8 +51,8 @@ namespace meta {
 
     struct GroupingEntity
     {
-        std::vector<Property> properties;
-        std::vector<Field>    fields;
+      std::vector<Property> properties;
+      std::vector<Field>    fields;
     };
 
     struct EntityBlock : public GroupingEntity
@@ -65,38 +63,55 @@ namespace meta {
     {
     };
 
-
-    struct NodeBlock    : public EntityBlock {};
-    struct SideBlock    : public EntityBlock {};
-    struct ElementBlock : public EntityBlock {};
-    struct EdgeBlock    : public EntityBlock {};
-    struct FaceBlock    : public EntityBlock {};
-
-    struct NodeSet      : public EntitySet   {};
-    struct SideSet      : public EntitySet   {};
-    struct ElementSet   : public EntitySet   {};
-    struct EdgeSet      : public EntitySet   {};
-    struct FaceSet      : public EntitySet   {};
-
-    struct Region {
-        using Name       = std::string;
-        using Key        = std::string;
-        using NameKeyMap = std::map<Name, Key>;
-
-        NameKeyMap name_key_map;
-
-        std::vector<ElementBlock> element_blocks;
-        std::vector<NodeBlock>    node_blocks;
-
-        std::vector<ElementSet> element_sets;
-        std::vector<NodeSet>    node_sets;
+    struct NodeBlock : public EntityBlock
+    {
+    };
+    struct SideBlock : public EntityBlock
+    {
+    };
+    struct ElementBlock : public EntityBlock
+    {
+    };
+    struct EdgeBlock : public EntityBlock
+    {
+    };
+    struct FaceBlock : public EntityBlock
+    {
     };
 
+    struct NodeSet : public EntitySet
+    {
+    };
+    struct SideSet : public EntitySet
+    {
+    };
+    struct ElementSet : public EntitySet
+    {
+    };
+    struct EdgeSet : public EntitySet
+    {
+    };
+    struct FaceSet : public EntitySet
+    {
+    };
 
-} // namespace meta
+    struct Region
+    {
+      using Name       = std::string;
+      using Key        = std::string;
+      using NameKeyMap = std::map<Name, Key>;
+
+      NameKeyMap name_key_map;
+
+      std::vector<ElementBlock> element_blocks;
+      std::vector<NodeBlock>    node_blocks;
+
+      std::vector<ElementSet> element_sets;
+      std::vector<NodeSet>    node_sets;
+    };
+
+  } // namespace meta
 
 } // namespace Iodw
-
-
 
 #endif // Iodw_MetaData_h

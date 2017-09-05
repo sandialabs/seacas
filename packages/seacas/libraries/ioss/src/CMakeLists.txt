@@ -73,7 +73,7 @@ IF (${PACKAGE_NAME}_ENABLE_Pamgen)
   ADD_SUBDIRECTORY(pamgen)
 ENDIF()
 
-IF (${PACKAGE_NAME}_ENABLE_DataWarehouse)
+IF (TPL_ENABLE_DataWarehouse)
   ADD_SUBDIRECTORY(data_warehouse)
 ENDIF()
 
