@@ -72,7 +72,7 @@ int ex_put_processor_node_maps(int exoid, void_int *node_mapi, void_int *node_ma
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Get the file type */
   if (ex_get_file_type(exoid, ftype) != EX_NOERR) {

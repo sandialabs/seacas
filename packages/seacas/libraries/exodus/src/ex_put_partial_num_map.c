@@ -78,7 +78,7 @@ int ex_put_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   const char *vmap;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (map_type) {
   case EX_NODE_MAP:

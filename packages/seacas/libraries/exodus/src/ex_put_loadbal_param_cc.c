@@ -111,7 +111,7 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
 
   /*-----------------------------Execution begins-----------------------------*/
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   if (ex_int64_status(exoid) & EX_MAPS_INT64_DB) {
     map_type = NC_INT64;

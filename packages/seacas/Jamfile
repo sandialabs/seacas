@@ -739,7 +739,7 @@ lib exodus
         [ glob $(seacas-root)/libraries/exodus/src/deprecated/*.c ]
     ]
     /tpl/netcdf//netcdf
-  :
+  : <define>EXODUS_IN_SIERRA
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
@@ -753,7 +753,7 @@ lib exodus
         <file>$(sierra-root)/seacas/lib/libexodus.a
     ]
   :
-  :
+  : <define>EXODUS_IN_SIERRA
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.

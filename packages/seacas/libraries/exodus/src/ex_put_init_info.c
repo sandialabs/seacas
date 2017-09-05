@@ -70,7 +70,7 @@ int ex_put_init_info(int exoid, int num_proc, int num_proc_in_f, char *ftype)
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Check the file type */
   if (!ftype) {

@@ -107,7 +107,7 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
   size_t start[3], count[3];
   char   errmsg[MAX_ERR_LENGTH];
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined variable */
 

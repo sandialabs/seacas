@@ -67,7 +67,7 @@ int ex_get_init_info(int exoid, int *num_proc, int *num_proc_in_f, char *ftype)
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Get the file type */
   if (ex_get_file_type(exoid, ftype) != EX_NOERR) {

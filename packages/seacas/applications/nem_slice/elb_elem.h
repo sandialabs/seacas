@@ -129,4 +129,10 @@ int get_ss_mirror(const E_Type etype,             /* The element type */
  */
 #define MAX_ELEM_SIDES 6
 
+int is_hex(E_Type etype);
+int is_tet(E_Type etype);
+int is_wedge(E_Type etype);
+int is_pyramid(E_Type etype);
+int is_3d_element(E_Type etype);
+
 #endif /* _ELB_ELM_CONST_H */

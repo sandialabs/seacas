@@ -69,7 +69,7 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num, char *
   const char *vname = NULL;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire previously defined variables  */
 

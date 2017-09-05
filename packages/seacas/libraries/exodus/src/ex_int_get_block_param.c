@@ -65,7 +65,7 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
   block.id   = id;
   block.type = EX_ELEM_BLOCK;
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* read in an element block parameter */
   if ((ex_get_block_param(exoid, &block)) != EX_NOERR) {

@@ -82,6 +82,7 @@ namespace IOShell {
     bool                     ints_32_bit{false};
     bool                     reals_32_bit{false};
     bool                     netcdf4{false};
+    bool                     netcdf5{false};
     bool                     in_memory_read{false};
     bool                     in_memory_write{false};
     bool                     lower_case_variable_names{true};
