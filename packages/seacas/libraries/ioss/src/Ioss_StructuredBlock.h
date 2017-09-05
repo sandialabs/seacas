@@ -41,6 +41,17 @@
 #include <array>
 #include <cassert>
 #include <string>
+
+#if defined(SEACAS_HAVE_CGNS)
+#include <cgnstypes.h>
+using INT = cgsize_t;
+#else
+// If this is not being built with CGNS, then default to using 32-bit integers.
+// Currently there is no way to input/output a structured mesh without CGNS,
+// so this block is simply to get things to compile and probably has no use.
+using INT = int;
+#endif
+
 namespace Ioss {
   class Region;
 
@@ -88,7 +99,7 @@ namespace Ioss {
 
     bool owns_shared_nodes() const { return m_ownsSharedNodes; }
 
-    std::array<int, 9> transform_matrix() const;
+    std::array<INT, 9> transform_matrix() const;
     Ioss::IJK_t transform(const Ioss::IJK_t &index_1) const;
     Ioss::IJK_t inverse_transform(const Ioss::IJK_t &index_1) const;
 
@@ -97,8 +108,8 @@ namespace Ioss {
     // The "original" owner and donor range -- that is, they have not been subsetted
     // due to block decompositions in a parallel run.  These should be the same on
     // all processors...  Primarily used to make parallel collective output easier...
-    std::array<int, 6> m_ownerRange{};
-    std::array<int, 6> m_donorRange{};
+    std::array<INT, 6> m_ownerRange{};
+    std::array<INT, 6> m_donorRange{};
 
     std::string m_connectionName;
     std::string m_donorName;
@@ -177,7 +188,7 @@ namespace Ioss {
     // The "original" owner range -- that is, is has not been subsetted
     // due to block decompositions in a parallel run.  It should be the same on
     // all processors...  Primarily used to make parallel collective output easier...
-    std::array<int, 6> m_ownerRange{};
+    std::array<INT, 6> m_ownerRange{};
 
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg;
@@ -315,15 +326,15 @@ namespace Ioss {
       return get_global_node_offset(i, j, k) + 1;
     }
 
-    std::vector<int> get_cell_node_ids(bool add_offset) const
+    std::vector<INT> get_cell_node_ids(bool add_offset) const
     {
       size_t           node_count = get_property("node_count").get_int();
-      std::vector<int> ids(node_count);
+      std::vector<INT> ids(node_count);
       get_cell_node_ids(ids.data(), add_offset);
       return ids;
     }
 
-    template <typename INT> size_t get_cell_node_ids(INT *idata, bool add_offset) const
+    template <typename INT_t> size_t get_cell_node_ids(INT_t *idata, bool add_offset) const
     {
       // Fill 'idata' with the cell node ids which are the
       // 1-based location of each node in this zone
@@ -363,7 +374,7 @@ namespace Ioss {
       return index;
     }
 
-    template <typename INT> size_t get_cell_ids(INT *idata, bool add_offset) const
+    template <typename INT_t> size_t get_cell_ids(INT_t *idata, bool add_offset) const
     {
       // Fill 'idata' with the cell ids which are the
       // 1-based location of each cell in this zone

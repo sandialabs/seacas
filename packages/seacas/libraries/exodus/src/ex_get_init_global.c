@@ -75,7 +75,7 @@ int ex_get_init_global(int exoid, void_int *num_nodes_g, void_int *num_elems_g,
   /*-----------------------------Execution begins-----------------------------*/
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* Check the file version information */
   if ((dimid = ne_check_file_version(exoid)) != EX_NOERR) {

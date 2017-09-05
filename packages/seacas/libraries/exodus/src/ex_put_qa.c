@@ -101,7 +101,7 @@ int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
   EX_FUNC_ENTER();
   int rootid = exoid & EX_FILE_ID_MASK;
 
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* only do this if there are records */
 

@@ -10,6 +10,10 @@ INCLUDE_DIRECTORIES(
 
 FILE(GLOB SOURCES src/ex_*.c)
 
+if (${TPL_Netcdf_PARALLEL})
+   SET(PARALLEL_AWARE_EXODUS ON)
+endif()
+
 if (${SEACAS_HIDE_DEPRECATED_CODE})
 else()
   FILE(GLOB DEP_SOURCES src/deprecated/ex_*.c)
@@ -33,10 +37,6 @@ TRIBITS_ADD_LIBRARY(
   HEADERS ${HEADERS}
   SOURCES ${SOURCES} ${DEP_SOURCES}
 )
-
-if (${TPL_Netcdf_PARALLEL})
-   add_definitions(-DPARALLEL_AWARE_EXODUS)
-endif()
 
 if (${CMAKE_PROJECT_NAME} STREQUAL "SEACASProj")
    # Many users of the SEACAS installations still want a static exodus library...

@@ -1410,7 +1410,7 @@ namespace Iofx {
       }
     }
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     if (isParallel) {
       // Get contributions from other processors...
       // Get the communication map...
@@ -1570,7 +1570,7 @@ namespace Iofx {
       }
     }
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     if (isParallel) {
       // Sync across all processors...
       size_t word_size = sizeof(int) * 8;

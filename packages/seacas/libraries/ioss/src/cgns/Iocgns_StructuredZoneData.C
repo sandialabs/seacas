@@ -31,9 +31,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <algorithm>
+#include <Ioss_CodeTypes.h>
 #include <cgns/Iocgns_StructuredZoneData.h>
 
-#define IOSS_DEBUG_OUTPUT 0
 #define OUTPUT std::cerr
 
 namespace {
@@ -182,7 +182,7 @@ namespace {
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
                      int ordinal)
   {
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "\t\tPropogating ZGC from " << parent->m_name << " to " << child->m_name << "\n";
 #endif
     for (auto zgc : parent->m_zoneConnectivity) {
@@ -193,7 +193,7 @@ namespace {
         child->m_zoneConnectivity.push_back(zgc);
       }
       else {
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
         OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
                << " does not overlap."
                << "\n";
@@ -260,10 +260,10 @@ namespace Iocgns {
     if (m_preferentialOrdinal == ordinal) {
       ordinal = 1;
     }
-    if (m_ordinal[1] > m_ordinal[ordinal]) {
+    if (m_ordinal[1] > m_ordinal[ordinal] && m_preferentialOrdinal != 1) {
       ordinal = 1;
     }
-    if (m_ordinal[2] > m_ordinal[ordinal]) {
+    if (m_ordinal[2] > m_ordinal[ordinal] && m_preferentialOrdinal != 2) {
       ordinal = 2;
     }
 
@@ -305,7 +305,7 @@ namespace Iocgns {
     m_child2->m_splitOrdinal        = ordinal;
     m_child2->m_sibling             = m_child1;
 
-#ifdef IOSS_DEBUG_OUTPUT
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
            << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work() << " with offset "
            << m_offset[0] << " " << m_offset[1] << " " << m_offset[2] << " split along ordinal "

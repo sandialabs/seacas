@@ -103,6 +103,13 @@ namespace {
     exit(EXIT_FAILURE);
   }
 
+  template <typename T> void clear(std::vector<T> &vec)
+  {
+    vec.clear();
+    vec.shrink_to_fit();
+    SMART_ASSERT(vec.capacity() == 0);
+  }
+
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
   int get_width(int max_value);
@@ -149,6 +156,22 @@ namespace {
       }
     }
     return true;
+  }
+
+  // SEE: http://lemire.me/blog/2017/04/10/removing-duplicates-from-lists-quickly
+  template <typename T> size_t unique(std::vector<T> &out)
+  {
+    if (out.empty())
+      return 0;
+    size_t pos  = 1;
+    T      oldv = out[0];
+    for (size_t i = 1; i < out.size(); ++i) {
+      T newv   = out[i];
+      out[pos] = newv;
+      pos += (newv != oldv);
+      oldv = newv;
+    }
+    return pos;
   }
 } // namespace
 
@@ -526,8 +549,12 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     else {
       SMART_ASSERT(global.dimensionality == local_mesh[p].dimensionality);
       SMART_ASSERT(global.count(EBLK) == local_mesh[p].count(EBLK));
-      SMART_ASSERT(global.count(NSET) == local_mesh[p].count(NSET));
-      SMART_ASSERT(global.count(SSET) == local_mesh[p].count(SSET));
+      if (!interface.omit_nodesets()) {
+        SMART_ASSERT(global.count(NSET) == local_mesh[p].count(NSET));
+      }
+      if (!interface.omit_sidesets()) {
+        SMART_ASSERT(global.count(SSET) == local_mesh[p].count(SSET));
+      }
     }
 
     local_node_to_global[p].resize(local_mesh[p].nodeCount);
@@ -1994,8 +2021,8 @@ namespace {
 
     // Now, sort the global_node_map array and remove duplicates...
     std::sort(global_node_map.begin(), global_node_map.end());
-    global_node_map.erase(std::unique(global_node_map.begin(), global_node_map.end()),
-                          global_node_map.end());
+    global_node_map.resize(unique(global_node_map));
+    global_node_map.shrink_to_fit();
 
     size_t total_num_nodes = global_node_map.size();
     global->nodeCount      = total_num_nodes;
@@ -2497,11 +2524,8 @@ namespace {
       }
 
       // Done with the memory; clear out the vector containing the bulk data nodes and distFactors.
-      std::vector<INT>().swap(glob_set.nodeSetNodes);
-      DistVector().swap(glob_set.distFactors);
-
-      SMART_ASSERT(glob_set.nodeSetNodes.empty());
-      SMART_ASSERT(glob_set.distFactors.empty());
+      clear(glob_set.nodeSetNodes);
+      clear(glob_set.distFactors);
 
       if (debug_level & 32) {
         glob_set.dump();
@@ -2730,12 +2754,9 @@ namespace {
     }
 
     for (auto &glob_sset : glob_ssets) {
-      std::vector<INT>().swap(glob_sset.elems);
-      std::vector<INT>().swap(glob_sset.sides);
-      DistVector().swap(glob_sset.distFactors);
-      SMART_ASSERT(glob_sset.elems.empty());
-      SMART_ASSERT(glob_sset.sides.empty());
-      SMART_ASSERT(glob_sset.distFactors.empty());
+      clear(glob_sset.elems);
+      clear(glob_sset.sides);
+      clear(glob_sset.distFactors);
     }
   }
 

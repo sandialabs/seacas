@@ -170,6 +170,9 @@ namespace Ioex {
       if (type == "netcdf4" || type == "netcdf-4" || type == "hdf5") {
         exodusMode |= EX_NETCDF4;
       }
+      else if (type == "netcdf5" || type == "netcdf-5" || type == "cdf5") {
+        exodusMode |= EX_64BIT_DATA;
+      }
     }
 
     if (properties.exists("ENABLE_FILE_GROUPS")) {
@@ -233,6 +236,18 @@ namespace Ioex {
       }
     }
     dbIntSizeAPI = size; // mutable
+  }
+
+  // Returns byte size of integers stored on the database...
+  int DatabaseIO::int_byte_size_db() const
+  {
+    int status = ex_int64_status(get_file_pointer());
+    if (status & EX_MAPS_INT64_DB || status & EX_IDS_INT64_DB || status & EX_BULK_INT64_DB) {
+      return 8;
+    }
+    else {
+      return 4;
+    }
   }
 
   // common
@@ -1918,7 +1933,7 @@ namespace {
   void check_variable_consistency(const ex_var_params &exo_params, int my_processor,
                                   const std::string &filename, const Ioss::ParallelUtils &util)
   {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     const int        num_types = 10;
     std::vector<int> var_counts(num_types);
     var_counts[0] = exo_params.num_glob;

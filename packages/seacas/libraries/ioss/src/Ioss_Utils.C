@@ -45,6 +45,14 @@
 #include <sstream>
 #include <string>
 #include <sys/select.h>
+#if defined(__INTEL_COMPILER)
+#if (__INTEL_COMPILER < 1500)
+#if !defined(_GLIBCXX_USE_NANOSLEEP)
+#define _GLIBCXX_USE_NANOSLEEP
+#endif
+#endif
+#endif
+#include <thread>
 #include <tokenize.h>
 #include <vector>
 
@@ -826,7 +834,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
           }
 
           // Cleanout the suffices vector.
-          std::vector<Ioss::Suffix>().swap(suffices);
+          clear(suffices);
 
           // Reset for the next time through the while loop...
           nmatch = 1;
@@ -844,7 +852,7 @@ void Ioss::Utils::get_fields(int64_t entity_count, // The number of objects in t
       if (local_truth == nullptr || local_truth[ibeg] == 1) {
         bool multi_component =
             define_field(nmatch, pmat, &names[ibeg], suffices, entity_count, fld_role, fields);
-        std::vector<Ioss::Suffix>().swap(suffices);
+        clear(suffices);
         if (nmatch > 1 && !multi_component) {
           ibeg++;
           goto top;
@@ -1138,7 +1146,7 @@ unsigned int Ioss::Utils::hash(const std::string &name)
 
 double Ioss::Utils::timer()
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   return MPI_Wtime();
 #else
   static auto begin = std::chrono::high_resolution_clock::now();
@@ -1564,7 +1572,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
 
     transfer_nodeblock(region, output_region, options.debug, options.verbose, rank);
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
     // This also assumes that the node order and count is the same for input
     // and output regions... (This is checked during nodeset output)
     if (output_region.get_database()->needs_shared_node_information()) {
@@ -1708,8 +1716,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     output_region.end_mode(Ioss::STATE_MODEL);
 
     if (options.delete_timesteps) {
-      data.resize(0);
-      data.shrink_to_fit();
+      Ioss::Utils::clear(data);
       return;
     }
   } // appending
@@ -1867,6 +1874,9 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     }
     region.end_state(istep);
     output_region.end_state(ostep);
+    if (options.delay > 0.0) {
+      std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000 * options.delay)));
+    }
   }
   if (options.debug && rank == 0) {
     std::cerr << "END STATE_TRANSIENT... " << '\n';
@@ -1875,8 +1885,7 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     dbi->util().progress("END STATE_TRANSIENT ... ");
   }
   output_region.end_mode(Ioss::STATE_TRANSIENT);
-  data.resize(0);
-  data.shrink_to_fit();
+  Ioss::Utils::clear(data);
 }
 
 namespace {
@@ -1893,10 +1902,10 @@ namespace {
       size_t num_nodes = inb->get_property("entity_count").get_int();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (verbose && rank == 0) {
-        std::cerr << " Number of coordinates per node       =" << std::setw(12) << degree << "\n";
+        std::cerr << " Number of  Coordinates per Node        =" << std::setw(12) << degree << "\n";
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of nodes                      =" << std::setw(12) << num_nodes
+        std::cerr << " Number of             Nodes            =" << std::setw(12) << num_nodes
                   << "\n";
       }
       auto nb = new Ioss::NodeBlock(output_region.get_database(), name, num_nodes, degree);
@@ -1989,7 +1998,7 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
+        std::cerr << " Number of " << std::setw(16) << (*blocks.begin())->type_string()
                   << "s            =" << std::setw(12) << blocks.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2020,7 +2029,7 @@ namespace {
         transfer_fields(iblock, block, Ioss::Field::ATTRIBUTE);
       }
       if (verbose && rank == 0) {
-        std::cerr << " Number of " << std::setw(14) << (*blocks.begin())->type_string()
+        std::cerr << " Number of " << std::setw(16) << (*blocks.begin())->type_string()
                   << "s            =" << std::setw(12) << blocks.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2087,7 +2096,8 @@ namespace {
       output_region.add(surf);
     }
     if (verbose && rank == 0) {
-      std::cerr << " Number of        SideSets            =" << std::setw(12) << fss.size() << "\t"
+      std::cerr << " Number of          SideSets            =" << std::setw(12) << fss.size()
+                << "\t"
                 << "Number of element sides =" << std::setw(12) << total_sides << "\n";
     }
     if (debug && rank == 0) {
@@ -2116,7 +2126,7 @@ namespace {
       }
 
       if (verbose && rank == 0) {
-        std::cerr << " Number of " << std::setw(14) << (*sets.begin())->type_string()
+        std::cerr << " Number of " << std::setw(16) << (*sets.begin())->type_string()
                   << "s            =" << std::setw(12) << sets.size() << "\t"
                   << "Length of entity list   =" << std::setw(12) << total_entities << "\n";
       }
@@ -2249,9 +2259,8 @@ namespace {
   {
 
     size_t isize = ige->get_field(field_name).get_size();
-    if (isize != oge->get_field(field_name).get_size()) {
-      assert(isize == oge->get_field(field_name).get_size());
-    }
+    assert(isize == oge->get_field(field_name).get_size());
+
     int basic_type = ige->get_field(field_name).get_type();
 
     if (field_name == "mesh_model_coordinates_x") {

@@ -60,7 +60,7 @@ int ex_get_entity_count_per_polyhedra(int exoid, ex_entity_type blk_type, ex_ent
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   blk_id_ndx = ex_id_lkup(exoid, blk_type, blk_id);
   if (blk_id_ndx <= 0) {

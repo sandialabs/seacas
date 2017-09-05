@@ -593,11 +593,11 @@ Other usage tips:
    there are even 100s of git repos.
 
  - As an exception to the last item, a few different types of git commands
-    tend to be run on all the git repos like 'gitdist pull', 'gitdist
-    checkout', and 'gitdist tag'.
+   tend to be run on all the git repos like 'gitdist pull', 'gitdist
+   checkout', and 'gitdist tag'.
 
-  - If one is not sure whether to run 'gitdist' or 'gitdist-mod', then just
-    run 'gitdist' to be safe.
+ - If one is not sure whether to run 'gitdist' or 'gitdist-mod', then just
+   run 'gitdist' to be safe.
 """
 helpTopicsDict.update( { 'usage-tips' : usageTipsHelp } )
 
@@ -756,7 +756,7 @@ def getUsageHelpStr(helpTopicArg):
 
 def filterWarningsGen(lines): 
   for line in lines:
-    if not line.startswith(b('warning')) and not line.startswith(b('error')): yield line
+    if not line.startswith(s('warning')) and not line.startswith(s('error')): yield line
 
 
 # Filter warning and error lines from output
@@ -774,8 +774,8 @@ def getCmndOutput(cmnd, rtnCode=False):
   output = child.stdout.read()
   child.wait()
   if rtnCode:
-    return (output, child.returncode)
-  return output
+    return (s(output), child.returncode)
+  return s(output)
 
 
 # Run a command and syncronize the output
@@ -785,11 +785,8 @@ def runCmnd(options, cmnd):
   if options.noOpt:
     print(cmnd)
   else:
-    child = subprocess.Popen(cmnd, stdout=subprocess.PIPE).stdout
-    output = child.read()
-    sys.stdout.flush()
-    print(output)
-    sys.stdout.flush()
+    subprocess.Popen(cmnd, stdout=sys.stdout, stderr=sys.stderr).communicate()
+    print("")
 
 
 # Determine if a command exists:
@@ -1030,7 +1027,50 @@ def getCommandlineOps():
     sys.exit(1)
 
   #
-  # E) Get the list of extra repos
+  # E) Change to top-level git directory (in case of nested git repos)
+  #
+
+  moveToBaseDir = os.environ.get("GITDIST_MOVE_TO_BASE_DIR")
+  if (moveToBaseDir == None) or (moveToBaseDir == ""):
+    # Run gitdist in the current directory
+    None
+  elif moveToBaseDir == "EXTREME_BASE":
+    # Run gitdist in the most base dir where .gitdist[.default] exists
+    drive, currentPath = os.path.splitdrive(os.getcwd())
+    pathList = []
+    while 1:
+      currentPath, currentDir = os.path.split(currentPath)
+      if currentDir != "":
+        pathList.append(currentDir)
+      else:
+        if currentPath != "":
+          pathList.append(currentPath)
+        break
+    pathList.reverse()
+    newPath = drive+pathList[0]
+    for directory in pathList:
+      newPath = os.path.join(newPath, directory)
+      if ((os.path.isfile(os.path.join(newPath, ".gitdist"))) or
+        (os.path.isfile(os.path.join(newPath, ".gitdist.default")))):
+        break
+    os.chdir(newPath)
+  elif moveToBaseDir == "IMMEDIATE_BASE":
+    # Run gitdist in the immediate base dir where .gitdist[.default] exists
+    currentPath = os.getcwd()
+    while 1:
+      if ((os.path.isfile(os.path.join(currentPath, ".gitdist"))) or
+        (os.path.isfile(os.path.join(currentPath, ".gitdist.default")))):
+        break
+      currentPath, currentDir = os.path.split(currentPath)
+    os.chdir(currentPath)
+  else:
+    print(
+      "Error, env var GITDIST_MOVE_TO_BASE_DIR='"+moveToBaseDir+"' is invalid!"
+      + "  Valid choices include empty '', IMMEDIATE_BASE, and EXTREME_BASE")
+    sys.exit(1)
+
+  #
+  # F) Get the list of extra repos
   #
 
   if options.repos:
@@ -1055,7 +1095,7 @@ def getCommandlineOps():
     notReposFullList = []
 
   #
-  # F) Return
+  # G) Return
   #
 
   return (options, nativeCmnd, otherArgs, reposFullList,
@@ -1262,19 +1302,19 @@ def getNumModifiedAndUntracked(options, getCmndOutputFunc):
     numModified = 0
     numUntracked = 0
     for line in rawStatusOutput.splitlines():
-      if matchFieldOneOrTwo(line.find(b("M"))):
+      if matchFieldOneOrTwo(line.find(s("M"))):
         numModified += 1
-      elif matchFieldOneOrTwo(line.find(b("A"))):
+      elif matchFieldOneOrTwo(line.find(s("A"))):
         numModified += 1
-      elif matchFieldOneOrTwo(line.find(b("D"))):
+      elif matchFieldOneOrTwo(line.find(s("D"))):
         numModified += 1
-      elif matchFieldOneOrTwo(line.find(b("T"))):
+      elif matchFieldOneOrTwo(line.find(s("T"))):
         numModified += 1
-      elif matchFieldOneOrTwo(line.find(b("U"))):
+      elif matchFieldOneOrTwo(line.find(s("U"))):
         numModified += 1
-      elif matchFieldOneOrTwo(line.find(b("R"))):
+      elif matchFieldOneOrTwo(line.find(s("R"))):
         numModified += 1
-      elif line.find(b("??")) == 0:
+      elif line.find(s("??")) == 0:
         numUntracked += 1
     return (str(numModified), str(numUntracked))
   return ("", "")

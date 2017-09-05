@@ -42,7 +42,7 @@ build SEACAS.
  * [DataWarehouse](#data_warehouse) -- optional
 
 #### Zoltan
-A snapshot of [zoltan_distrib_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
+A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 #### HDF5
 If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
@@ -52,7 +52,7 @@ turn is used by exodus.  The netcdf4 capability is typically used for
 large models (>150 million elements); if you are not planning to
 create or read models of this size, you do not have to build hdf5. 
 
-   * Download HDF5 from http://www.hdfgroup.org/HDF5/release/obtain5.html and put it inside `seacas/TPL/hdf5`
+   * Download HDF5 from <http://www.hdfgroup.org/HDF5/release/obtain5.html> and put it inside `seacas/TPL/hdf5`
    * untar it
    * `cd` to that directory and enter the command:
     ```
@@ -63,7 +63,7 @@ create or read models of this size, you do not have to build hdf5.
 #### NetCDF
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
- * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp and put it inside `seacas/TPL/netcdf`
+ * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
  * `tar zxvf netcdf-4.4.1.1.tar.gz`
  * Modify the following defines in seacas/TPL/netcdf/netcdf-4.4.1.1/include/netcdf.h.
@@ -104,13 +104,13 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
 
 GNU Parallel is a shell tool for executing jobs in parallel using one or more computers. A job is typically a single command or a small script that has to be run for each of the lines in the input. The typical input is a list of files, a list of hosts, a list of users, or a list of tables.  In SEACAS, this is only used by epup which runs multiple epu jobs concurrently.  To build:
 
- * Download the most recent version of the library from ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2.
+ * Download the most recent version of the library from <ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2>.
 
     ```
     cd TPL/parallel
     tar jxvf /path/to/parallel-latest.tar.bz2
     cd parallel-20150522
-	sh ../runconfigure.sh
+	 sh ../runconfigure.sh
     ```
 
  *  `make && make install`
@@ -183,7 +183,7 @@ If you only want the exodus library, then follow most of the above instructions 
   * You can either clone entire source tree as above, or you can
 	download a zip file containing only the exodus source (and
 	build-related files).  The url for the zip file is
-	https://github.com/gsjaardema/seacas/archive/exodus.zip. 
+	<https://github.com/gsjaardema/seacas/archive/exodus.zip>. 
   * You only need the netcdf and optionally hdf5 libraries
   * Use the `cmake-exodus` file instead of `cmake-config`.
   * This will build, by default, a shared exodus library and also install the exodus.py Python interface.
@@ -191,6 +191,19 @@ If you only want the exodus library, then follow most of the above instructions 
 ## License
 
 SEACAS is licensed under the Modified BSD License.  See the LICENSE  file for details.
+
+The following externally-developed software routines are used in some of the SEACAS applications and are under 
+a separate license:
+
+| Routine | Where Used  | License |
+|---------|-------------|:-------:|
+| getline | `packages/seacas/libraries/aprepro_lib/apr_getline_int.c`  | [MIT](https://opensource.org/licenses/MIT) |
+| getline | `packages/seacas/libraries/suplib_c/getline.c`             | [BSD](https://opensource.org/licenses/BSD-3-Clause) |
+| [GetLongOpt](https://searchcode.com/codesearch/view/64130032/) | `packages/seacas/libraries/suplib_cpp/GetLongOpt.C` | public domain |
+| [adler hash](https://en.wikipedia.org/wiki/Adler-32)	| `packages/seacas/libraries/suplib_c/adler.c` | [zlib](https://opensource.org/licenses/zlib) |
+| [MurmurHash](https://github.com/aappleby/smhasher) | `packages/seacas/libraries/ioss/src/Ioss_FaceGenerator.C` | public domain |
+| [json include file](http://jsoncpp.sourceforge.net) | `packages/seacas/libraries/ioss/src/visualization/` | [MIT](https://opensource.org/licenses/MIT) |
+| [terminal_color](https://github.com/matovitch/trmclr) | `packages/seacas/libraries/suplib_cpp` | [zlib](https://opensource.org/licenses/zlib) |
 
 ## Ubuntu
 There is a [PPA](https://launchpad.net/~nschloe/+archive/ubuntu/seacas-nightly/) available for SEACAS that is updated nightly from SEACAS `master`. Anyone using Ubuntu can now just add the PPA and do
@@ -206,5 +219,5 @@ to get the SEACAS binaries. You can also install 'libseacas-dev' or 'libseacas0'
 
 ## Contact information
 
- Greg Sjaardema  (gsjaardema@gmail.com, gdsjaar@sandia.gov)
+ Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
       

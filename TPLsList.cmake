@@ -64,5 +64,6 @@ SET( SEACASProj_TPLS_FINDMODS_CLASSIFICATIONS
   Pamgen          "cmake/TPLs/"    SS
   Matio           "cmake/TPLs/"    SS
   X11             "cmake/TPLs/"    SS
+  DLlib           "cmake/TPLs/"    ST
   CUDA            "cmake/TPLs/"    SS
   )

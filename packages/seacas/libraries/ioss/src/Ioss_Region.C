@@ -625,7 +625,7 @@ namespace Ioss {
     // case the database is being read and written at the same time.
     // This is rare, but is a supported use case.
     stateCount = 0;
-    std::vector<double>().swap(stateTimes);
+    Ioss::Utils::clear(stateTimes);
     DatabaseIO *db = get_database();
     db->get_step_times();
 
@@ -658,7 +658,7 @@ namespace Ioss {
     // case the database is being read and written at the same time.
     // This is rare, but is a supported use case.
     stateCount = 0;
-    std::vector<double>().swap(stateTimes);
+    Ioss::Utils::clear(stateTimes);
     DatabaseIO *db = get_database();
     db->get_step_times();
 

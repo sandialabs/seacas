@@ -84,6 +84,11 @@ void IOShell::Interface::enroll_options()
                                                            "classical netcdf file format",
                   nullptr);
 
+  options_.enroll("netcdf5", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf5 (CDF5) "
+                  "file instead of the classical netcdf file format",
+                  nullptr);
+
   options_.enroll("shuffle", Ioss::GetLongOption::NoValue,
                   "Use a netcdf4 hdf5-based file and use hdf5s shuffle mode with compression.",
                   nullptr);
@@ -173,6 +178,11 @@ void IOShell::Interface::enroll_options()
   options_.enroll("append_after_step", Ioss::GetLongOption::MandatoryValue,
                   "add steps on input database after specified step on output database", nullptr);
 
+  options_.enroll(
+      "delay", Ioss::GetLongOption::MandatoryValue,
+      "Sleep for <$val> seconds between timestep output to simulate application calculation time",
+      nullptr);
+
   options_.enroll("field_suffix_separator", Ioss::GetLongOption::MandatoryValue,
                   "Character used to separate a field suffix from the field basename\n"
                   "\t\t when recognizing vector, tensor fields. Enter '0' for no separator",
@@ -261,6 +271,12 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("netcdf4") != nullptr) {
     netcdf4 = true;
+    netcdf5 = false;
+  }
+
+  if (options_.retrieve("netcdf5") != nullptr) {
+    netcdf5 = true;
+    netcdf4 = false;
   }
 
   if (options_.retrieve("shuffle") != nullptr) {
@@ -460,6 +476,13 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("append_after_time");
     if (temp != nullptr) {
       append_time = std::strtod(temp, nullptr);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("delay");
+    if (temp != nullptr) {
+      timestep_delay = std::strtod(temp, nullptr);
     }
   }
 

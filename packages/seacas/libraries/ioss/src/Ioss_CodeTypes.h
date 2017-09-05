@@ -45,21 +45,23 @@ namespace Ioss {
   using IJK_t       = std::array<int, 3>;
 } // namespace Ioss
 
-#if defined(PARALLEL_AWARE_EXODUS)
-#define HAVE_MPI
-#endif
-
 #if defined(SIERRA_PARALLEL_MPI)
-#define HAVE_MPI
+#define SEACAS_HAVE_MPI
 #else
 #include <SEACASIoss_config.h>
+#endif
+
+#if defined(PARALLEL_AWARE_EXODUS)
+#ifndef SEACAS_HAVE_MPI
+#define SEACAS_HAVE_MPI
+#endif
 #endif
 
 #if defined(IOSS_THREADSAFE)
 #include <mutex>
 #endif
 
-#if defined(HAVE_MPI)
+#if defined(SEACAS_HAVE_MPI)
 #include <mpi.h>
 #else
 #ifndef MPI_COMM_WORLD

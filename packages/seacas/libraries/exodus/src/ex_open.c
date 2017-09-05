@@ -220,6 +220,30 @@ int ex_open_int(const char *path, int mode, int *comp_ws, int *io_ws, float *ver
 
 #endif
       }
+      else if (type == 4) {
+#if defined(NC_64BIT_DATA)
+        fprintf(stderr, "EXODUS: ERROR: Attempting to open the CDF5 "
+                        "file:\n\t'%s'\n\t failed. The netcdf library supports "
+                        "CDF5-type files so there must be a filesystem or some other "
+                        "issue \n",
+                path);
+#else
+        /* This is an cdf5 (64BIT_DATA) file. If NC_64BIT_DATA is not defined,
+           then we either don't have cdf5 support in this netcdf version,
+           OR this is an older netcdf version that doesn't provide that define.
+
+           In either case, we don't have enough information, so we
+           assume that the netcdf doesn't have cdf5 capabilities
+           enabled.  Tell the user...
+        */
+        fprintf(stderr, "EXODUS: ERROR: Attempting to open the CDF5 "
+                        "file:\n\t'%s'\n\t. Either the netcdf library does not "
+                        "support CDF5 or there is a filesystem or some "
+                        "other issue \n",
+                path);
+
+#endif
+      }
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s read only", path);
       ex_err("ex_open", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);

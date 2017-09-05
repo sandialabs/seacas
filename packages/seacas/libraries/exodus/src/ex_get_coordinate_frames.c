@@ -140,7 +140,7 @@ int ex_get_coordinate_frames(int exoid, int *nframes, void_int *cf_ids, void *pt
   size_t count = 0; /* number vars to put in varput   */
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* get the dimensions */
   assert(nframes != NULL);

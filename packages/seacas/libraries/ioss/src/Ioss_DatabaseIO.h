@@ -408,7 +408,8 @@ namespace Ioss {
     AxisAlignedBoundingBox get_bounding_box(const Ioss::ElementBlock *eb) const;
     AxisAlignedBoundingBox get_bounding_box(const Ioss::StructuredBlock *sb) const;
 
-    int          int_byte_size_api() const; //! Returns 4 or 8
+    virtual int  int_byte_size_db() const = 0; //! Returns 4 or 8
+    int          int_byte_size_api() const;    //! Returns 4 or 8
     virtual void set_int_byte_size_api(Ioss::DataSize size) const;
 
     /*!

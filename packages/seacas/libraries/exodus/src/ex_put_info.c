@@ -111,7 +111,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
   int rootid = exoid & EX_FILE_ID_MASK;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* only do this if there are records */
   if (num_info > 0) {
@@ -186,7 +186,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
     if (info != NULL) {
       /* write out information records */
       for (i = 0; i < num_info; i++) {
-        int length = strlen(info[i]);
+        int length = strlen(info[i])+1;
         start[0]   = i;
         start[1]   = 0;
 

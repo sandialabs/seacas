@@ -82,7 +82,7 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   const char *var_name = NULL;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
   case EX_EDGE_BLOCK:

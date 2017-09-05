@@ -42,6 +42,8 @@
 #ifndef EXODUS_II_HDR
 #define EXODUS_II_HDR
 
+#include "exodus_config.h"
+
 #include "netcdf.h"
 
 #if defined(NC_HAVE_META_H)
@@ -56,8 +58,6 @@
 #if defined(PARALLEL_AWARE_EXODUS)
 #include "netcdf_par.h"
 #endif
-
-#include "exodus_config.h"
 
 #include <stddef.h>
 #include <stdint.h>
