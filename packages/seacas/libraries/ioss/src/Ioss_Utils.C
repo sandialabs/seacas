@@ -45,6 +45,13 @@
 #include <sstream>
 #include <string>
 #include <sys/select.h>
+#if defined(__INTEL_COMPILER)
+#if (__INTEL_COMPILER < 1500)
+#if !defined(_GLIBCXX_USE_NANOSLEEP)
+#define _GLIBCXX_USE_NANOSLEEP
+#endif
+#endif
+#endif
 #include <thread>
 #include <tokenize.h>
 #include <vector>

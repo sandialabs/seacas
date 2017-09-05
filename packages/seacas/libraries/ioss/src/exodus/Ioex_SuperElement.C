@@ -159,6 +159,8 @@ Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_nam
   if (numRBM > 0) {
     fields.add(Ioss::Field("InertiaTensor", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH,
                            numDOF * numRBM));
+    fields.add(Ioss::Field("MassInertia", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH,
+                           numDOF * numRBM));
   }
 
   // There are additional properties and fields on the netcdf file,
@@ -246,6 +248,16 @@ int64_t Ioex::SuperElement::internal_get_field_data(const Ioss::Field &field, vo
       std::ostringstream errmsg;
       errmsg << "ERROR: Could not load inertia matrix field 'InertiaTensor' from file '" << fileName
              << "'.";
+      IOSS_ERROR(errmsg);
+    }
+  }
+  else if (field.get_name() == "MassInertia") {
+    assert(num_to_get == numDOF * numRBM);
+    int status = nc_get_array(filePtr, "MassInertia", reinterpret_cast<double *>(data));
+    if (status != 0) {
+      std::ostringstream errmsg;
+      errmsg << "ERROR: Could not load mass inertia matrix field 'MassInertia' from file '"
+             << fileName << "'.";
       IOSS_ERROR(errmsg);
     }
   }

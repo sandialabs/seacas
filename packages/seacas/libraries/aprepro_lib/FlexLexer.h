@@ -59,7 +59,7 @@ class FlexLexer
 {
 public:
   FlexLexer() : yytext(nullptr), yyleng(0), yylineno(0), yy_flex_debug(0) {}
-  virtual ~FlexLexer() = default;
+  virtual ~FlexLexer(){};
 
   const char *YYText() const { return yytext; }
   int         YYLeng() const { return yyleng; }
