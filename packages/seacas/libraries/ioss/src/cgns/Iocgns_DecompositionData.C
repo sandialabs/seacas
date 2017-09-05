@@ -44,9 +44,9 @@
 #include <Ioss_TerminalColor.h>
 
 #include <algorithm>
+#include <cassert>
+#include <iomanip>
 #include <numeric>
-
-#include <assert.h>
 
 namespace {
   int rank = 0;
@@ -147,7 +147,7 @@ namespace {
       assert(size[7] == 0);
       assert(size[8] == 0);
 
-      cgsize_t index_dim = 0;
+      int index_dim = 0;
       CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
 
       auto *zone_data = new Iocgns::StructuredZoneData(zone_name, zone, size[3], size[4], size[5]);
@@ -174,10 +174,10 @@ namespace {
         if (donor_iter != zone_name_map.end()) {
           donor_zone = (*donor_iter).second;
         }
-        Ioss::IJK_t range_beg{{range[0], range[1], range[2]}};
-        Ioss::IJK_t range_end{{range[3], range[4], range[5]}};
-        Ioss::IJK_t donor_beg{{donor_range[0], donor_range[1], donor_range[2]}};
-        Ioss::IJK_t donor_end{{donor_range[3], donor_range[4], donor_range[5]}};
+        Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
+        Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
+        Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
+        Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
 
 #if IOSS_DEBUG_OUTPUT
         OUTPUT << "Adding zgc " << connectname << " to " << zone_name << " donor: " << donorname
@@ -370,13 +370,15 @@ namespace Iocgns {
     size_t num_split   = 0;
     bool   split       = false;
     double avg_work    = (double)work / m_decomposition.m_processorCount;
+    auto   num_active  = m_structuredZones.size();
 
-    auto num_active = m_structuredZones.size();
+#if IOSS_DEBUG_OUTPUT
     OUTPUT << "Decomposing structured mesh with " << num_active << " zones for "
            << m_decomposition.m_processorCount << " processors.\nAverage workload is " << avg_work
            << ", Load Balance Threshold is " << m_loadBalanceThreshold << ", Work range "
            << avg_work / m_loadBalanceThreshold << " to " << avg_work * m_loadBalanceThreshold
            << "\n";
+#endif
 
     if (avg_work < 1.0) {
       OUTPUT << "ERROR: Model size too small to distribute over "
@@ -517,9 +519,9 @@ namespace Iocgns {
         }
         std::swap(zone_new, m_structuredZones);
       }
+#if IOSS_DEBUG_OUTPUT
       auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
                                   [](Iocgns::StructuredZoneData *a) { return a->is_active(); });
-#if IOSS_DEBUG_OUTPUT
       OUTPUT << "Number of active zones = " << active << ", average work = " << avg_work << "\n";
       OUTPUT << "========================================================================\n";
 #endif
@@ -551,6 +553,29 @@ namespace Iocgns {
       }
     }
 
+    // Output the processor assignments in form similar to 'split' file
+    if (rank == 0) {
+      int z = 1;
+      std::cerr << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax\n";
+      auto tmp_zone(m_structuredZones);
+      std::sort(tmp_zone.begin(), tmp_zone.end(),
+                [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
+                  return a->m_proc < b->m_proc;
+                });
+
+      for (auto &zone : tmp_zone) {
+        if (zone->is_active()) {
+          std::cerr << std::setw(6) << z++ << std::setw(8) << zone->m_proc << std::setw(8)
+                    << zone->m_adam->m_zone << std::setw(8) << zone->m_offset[0] + 1 << std::setw(8)
+                    << zone->m_ordinal[0] + zone->m_offset[0] + 1 << std::setw(8)
+                    << zone->m_offset[1] + 1 << std::setw(8)
+                    << zone->m_ordinal[1] + zone->m_offset[1] + 1 << std::setw(8)
+                    << zone->m_offset[2] + 1 << std::setw(8)
+                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << "\n";
+        }
+      }
+    }
+
     for (auto &zone : m_structuredZones) {
       if (!zone->is_active()) {
         zone->m_proc = -1;
@@ -576,9 +601,9 @@ namespace Iocgns {
     int base      = 1; // Only single base supported so far.
 
     {
-      cgsize_t cell_dimension = 0;
-      cgsize_t phys_dimension = 0;
-      char     base_name[33];
+      int  cell_dimension = 0;
+      int  phys_dimension = 0;
+      char base_name[33];
       CGCHECK2(cg_base_read(filePtr, base, base_name, &cell_dimension, &phys_dimension));
       m_decomposition.m_spatialDimension = phys_dimension;
     }
@@ -1213,8 +1238,7 @@ namespace Iocgns {
     CGCHECK2(
         cg_elements_read(filePtr, base, sset.zone(), sset.section(), TOPTR(nodes), TOPTR(parent)));
     // Get rid of 'nodes' list -- not used.
-    nodes.resize(0);
-    nodes.shrink_to_fit();
+    Ioss::Utils::clear(nodes);
 
     // Move from 'parent' to 'element_side' and interleave. element, side, element, side, ...
     element_side.reserve(sset.file_count() * 2);
@@ -1258,7 +1282,7 @@ namespace Iocgns {
       }
     }
 
-    communicate_block_data(TOPTR(file_conn), data, blk, blk.nodesPerEntity);
+    communicate_block_data(TOPTR(file_conn), data, blk, (size_t)blk.nodesPerEntity);
   }
 
   template void DecompositionData<int>::get_element_field(int filePtr, int solution_index,
@@ -1281,7 +1305,7 @@ namespace Iocgns {
     CGCHECK2(cgp_field_read_data(filePtr, base, blk.zone(), solution_index, field_index, range_min,
                                  range_max, cgns_data.data()));
 
-    communicate_block_data(cgns_data.data(), data, blk, 1);
+    communicate_block_data(cgns_data.data(), data, blk, (size_t)1);
   }
 
   DecompositionDataBase::~DecompositionDataBase()

@@ -87,7 +87,7 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   const char *varobstat;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (var_type) {
   case EX_GLOBAL:

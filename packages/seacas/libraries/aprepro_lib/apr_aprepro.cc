@@ -37,19 +37,19 @@
 #include "aprepro_parser.h" // for Parser, Parser::token, etc
 #include <climits>          // for INT_MAX
 #include <cstddef>          // for size_t
+#include <cstdlib>          // for exit, EXIT_SUCCESS, etc
 #include <cstring>          // for memset, strcmp
 #include <fstream>          // for operator<<, basic_ostream, etc
 #include <iomanip>          // for operator<<, setw, etc
 #include <iostream>         // for left, cerr, cout, streampos
 #include <stack>            // for stack
-#include <stddef.h>         // for size_t
-#include <stdlib.h>         // for exit, EXIT_SUCCESS, etc
-#include <string>           // for string, operator==, etc
-#include <vector>           // for allocator, vector
+#include <stdexcept>
+#include <string> // for string, operator==, etc
+#include <vector> // for allocator, vector
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "4.34 (2017/04/06)";
+  const char *       version_string = "4.35 (2017/08/14)";
 
   unsigned hash_symbol(const char *symbol)
   {
@@ -283,9 +283,10 @@ namespace SEAMS {
 
     /* If pointer still null, print error message */
     if (pointer == nullptr || pointer->bad() || !pointer->good()) {
-      error("Can't open " + file, false);
+      std::string err = "Can't open " + file;
+      error(err, false);
       if (!stringInteractive) {
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(err);
       }
     }
 
@@ -347,8 +348,9 @@ namespace SEAMS {
       symrec *ptr = getsym(sym_name.c_str());
       if (ptr != nullptr) {
         if (ptr->type != parser_type) {
-          error("Overloaded function " + sym_name + "does not return same type", false);
-          exit(EXIT_FAILURE);
+          std::string err = "Overloaded function " + sym_name + "does not return same type";
+          error(err, false);
+          throw std::runtime_error(err);
         }
         // Function with this name already exists; return that
         // pointer.

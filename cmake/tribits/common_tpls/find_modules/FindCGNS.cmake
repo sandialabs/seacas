@@ -254,19 +254,7 @@ else(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
     endif()
 endif(CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS )    
 
-# Send useful message if everything is found
-find_package_handle_standard_args(CGNS DEFAULT_MSG
-                                        CGNS_LIBRARIES
-                                        CGNS_INCLUDE_DIRS)
-
-# find_package)handle)standard_args should set CGNS_FOUND but it does not!
-if ( CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
-    set(CGNS_FOUND TRUE)
-else()
-    set(CGNS_FOUND FALSE)
-endif()
-
-# --- Search for CGNS tools
+# Search for CGNS tools
 set(_cgns_TOOLS cgnscheck cgnsdiff cgnslist cgnscompress cgnsconvert cgnsnames cgnsupdate)
 set(CGNS_TOOLS_FOUND)
 foreach( tool ${_cgns_TOOLS})
@@ -280,6 +268,18 @@ foreach( tool ${_cgns_TOOLS})
     list(APPEND CGNS_TOOLS_FOUND ${tool})
   endif()
 endforeach()
+
+# Send useful message if everything is found
+find_package_handle_standard_args(CGNS DEFAULT_MSG
+                                        CGNS_LIBRARIES
+                                        CGNS_INCLUDE_DIRS)
+
+# find_package)handle)standard_args should set CGNS_FOUND but it does not!
+if ( CGNS_LIBRARIES AND CGNS_INCLUDE_DIRS)
+    set(CGNS_FOUND TRUE)
+else()
+    set(CGNS_FOUND FALSE)
+endif()
 
 # --- Provide a summary of what the module found
 if ( NOT CGNS_FIND_QUIETLY )

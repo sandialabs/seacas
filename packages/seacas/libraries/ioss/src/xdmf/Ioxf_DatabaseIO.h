@@ -123,6 +123,8 @@ namespace Ioxf {
       return Ioss::REGION | Ioss::NODEBLOCK | Ioss::ELEMENTBLOCK;
     }
 
+    int int_byte_size_db() const override { return 4; }
+
     /*!
      * Determine the local position of the node with the global id
      * 'global'.  If 'must_exist' is false, then the global id possibly

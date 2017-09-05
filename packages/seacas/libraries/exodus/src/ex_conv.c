@@ -82,17 +82,22 @@ struct ex_file_item *ex_find_file_item(int exoid)
   return (ptr);
 }
 
-void ex_check_valid_file_id(int exoid)
+void ex_check_valid_file_id(int exoid, const char *func)
 {
+#if !defined           EXODUS_IN_SIERRA
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   if (!file) {
     ex_opts(EX_ABORT | EX_VERBOSE);
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: invalid file id %d. Does not refer to an open exodus file.", exoid);
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: In \"%s\", the file id %d was not obtained via a call "
+                                     "to \"ex_open\" or \"ex_create\".\n\t\tIt does not refer to a "
+                                     "valid open exodus file.\n\t\tAborting to avoid file "
+                                     "corruption or data loss or other potential problems.",
+             func, exoid);
     ex_err("ex_check_valid_file_id", errmsg, EX_BADFILEID);
   }
+#endif
 }
 
 int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,

@@ -125,7 +125,7 @@ int ex_put_coord(int exoid, const void *x_coor, const void *y_coor, const void *
   char   errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   /* inquire id's of previously defined dimensions  */
 

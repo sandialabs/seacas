@@ -85,6 +85,8 @@ namespace Iovs {
 
     static int parseCatalystFile(const std::string &filepath, std::string &json_result);
 
+    int int_byte_size_db() const override { return int_byte_size_api(); }
+
   private:
     // Eliminate as much memory as possible, but still retain meta data information
     // Typically, eliminate the maps...

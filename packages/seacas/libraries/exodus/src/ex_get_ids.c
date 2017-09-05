@@ -53,7 +53,7 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
   const char *varidobj;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
   case EX_EDGE_BLOCK: varidobj = VAR_ID_ED_BLK; break;

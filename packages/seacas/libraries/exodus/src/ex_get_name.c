@@ -68,7 +68,7 @@ int ex_get_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, char
   const char *routine = "ex_get_name";
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
   case EX_ELEM_BLOCK: vobj = VAR_NAME_EL_BLK; break;

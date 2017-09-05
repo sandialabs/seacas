@@ -134,8 +134,8 @@ int ex_copy(int in_exoid, int out_exoid)
   char         errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(in_exoid);
-  ex_check_valid_file_id(out_exoid);
+  ex_check_valid_file_id(in_exoid, __func__);
+  ex_check_valid_file_id(out_exoid, __func__);
 
   /*
    * Get exodus_large_model setting on both input and output

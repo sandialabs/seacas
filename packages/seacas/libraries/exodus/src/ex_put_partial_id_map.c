@@ -79,7 +79,7 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
   const char *vmap;
 
   EX_FUNC_ENTER();
-  ex_check_valid_file_id(exoid);
+  ex_check_valid_file_id(exoid, __func__);
 
   if (num_entities == 0 && !ex_is_parallel(exoid)) {
     EX_FUNC_LEAVE(EX_NOERR);

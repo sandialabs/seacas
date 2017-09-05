@@ -54,7 +54,7 @@
 
 #include "add_to_log.h"
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
 
@@ -87,7 +87,7 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
   time_t      begin_time = time(nullptr);
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
   }
   time_t end_time = time(nullptr);
   add_to_log(codename.c_str(), (int)(end_time - begin_time));
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
   return ok ? EXIT_SUCCESS : EXIT_FAILURE;

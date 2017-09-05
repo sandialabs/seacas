@@ -68,7 +68,7 @@ using idx_t = int;
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
 #include <mpi.h>
 #endif
 
@@ -185,7 +185,7 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
 
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
     slice(region, nem_file, interface, static_cast<int64_t>(1));
   }
 
-#ifdef HAVE_MPI
+#ifdef SEACAS_HAVE_MPI
   MPI_Finalize();
 #endif
   OUTPUT << "Total execution time = " << seacas_timer() - begin << "\n";
@@ -404,8 +404,7 @@ namespace {
                            &common, &proc_count, NULL, &options[0], &obj_val, &elem_partition[0],
                            &node_partition[0]);
 
-        node_partition.resize(0);
-        node_partition.shrink_to_fit();
+        Ioss::Utils::clear(node_partition);
         elem_to_proc.reserve(element_count);
         std::copy(elem_partition.begin(), elem_partition.end(), std::back_inserter(elem_to_proc));
 
@@ -526,14 +525,11 @@ namespace {
     for (size_t p = 0; p < processor_count; p++) {
       size_t block_count = connectivity[p].size();
       for (size_t b = 0; b < block_count; b++) {
-        connectivity[p][b].resize(0);
-        connectivity[p][b].shrink_to_fit();
+        Ioss::Utils::clear(connectivity[p][b]);
       }
-      connectivity[p].resize(0);
-      connectivity[p].shrink_to_fit();
+      Ioss::Utils::clear(connectivity[p]);
     }
-    connectivity.resize(0);
-    connectivity.shrink_to_fit();
+    Ioss::Utils::clear(connectivity);
   }
 
   template <typename INT>
@@ -655,15 +651,13 @@ namespace {
     for (size_t p = 0; p < proc_count; p++) {
       auto &commset = proc_region[p]->get_commsets()[0];
       commset->put_field_data("entity_processor", border_node_proc_map[p]);
-      border_node_proc_map[p].resize(0);
-      border_node_proc_map[p].shrink_to_fit();
+      Ioss::Utils::clear(border_node_proc_map[p]);
       if (minimize_open_files) {
         proc_region[p]->get_database()->closeDatabase();
       }
       proc_progress(p, proc_count);
     }
-    border_node_proc_map.resize(0);
-    border_node_proc_map.shrink_to_fit();
+    Ioss::Utils::clear(border_node_proc_map);
   }
 
   template <typename INT>
@@ -1093,12 +1087,9 @@ namespace {
       }
     }
     progress("\tPopulate processor coordinate vectors");
-    glob_coord_x.resize(0);
-    glob_coord_x.shrink_to_fit();
-    glob_coord_y.resize(0);
-    glob_coord_y.shrink_to_fit();
-    glob_coord_z.resize(0);
-    glob_coord_z.shrink_to_fit();
+    Ioss::Utils::clear(glob_coord_x);
+    Ioss::Utils::clear(glob_coord_y);
+    Ioss::Utils::clear(glob_coord_z);
 
     for (size_t p = 0; p < processor_count; p++) {
       Ioss::NodeBlock *nb = proc_region[p]->get_node_blocks()[0];
