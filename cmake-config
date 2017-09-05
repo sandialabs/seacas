@@ -5,8 +5,8 @@ EXTRA_ARGS=$@
 MPI=OFF
 
 ### Switch for Debug or Release build:
-BUILD_TYPE=Release
-#BUILD_TYPE=Debug
+#BUILD_TYPE=Release
+BUILD_TYPE=Debug
 
 ### Define to YES to *disable* all exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -32,7 +32,8 @@ INSTALL_PATH=${ACCESS}
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
 HAVE_NETCDF=ON
 HAVE_MATIO=ON
-HAVE_CGNS=ON
+HAVE_CGNS=OFF
+HAVE_DATA_WAREHOUSE=OFF
 
 NETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
@@ -49,8 +50,8 @@ KOKKOS=OFF
 CUDA=OFF
 
 ### Change this to point to the compilers you want to use
-COMPILER="gnu"
-#COMPILER="clang"
+#COMPILER="gnu"
+COMPILER="clang"
 if [ "$MPI" == "ON" ]
 then
   MPI_EXEC=`which mpiexec`
@@ -75,7 +76,7 @@ else
   else
       CXX=clang++
       CC=clang
-      FC=gfortran
+      FC=gfortran-mp-4.9
   fi
 fi
 
@@ -95,6 +96,14 @@ else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
 
+if [ "HAVE_DATA_WAREHOUSE" == "ON" ]
+then
+    DW_SYMBOLS="-DSEACASIoss_ENABLE_DataWarehouse=${HAVE_DATAWAREHOUSE} \
+                -DTPL_ENABLE_DataWarehouse:BOOL=${HAVE_DATAWAREHOUSE}   \
+                -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
+                -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
+fi
+    
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
@@ -103,7 +112,7 @@ cmake  \
 -D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
--D BUILD_SHARED_LIBS:BOOL=ON \
+-D BUILD_SHARED_LIBS:BOOL=OFF \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
@@ -121,12 +130,15 @@ cmake  \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D 
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
 ${KOKKOS_SYMBOLS} \
+${DW_SYMBOLS} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \

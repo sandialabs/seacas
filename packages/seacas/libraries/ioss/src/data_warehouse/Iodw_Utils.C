@@ -45,108 +45,115 @@
 
 #include <Ioss_DatabaseIO.h>
 
-#include <string>
 #include <iomanip>
+#include <string>
 
 namespace Iodw {
-namespace Utils {
+  namespace Utils {
 
     void msg(std::string m) { std::cout << m << std::endl; };
-    void msg(int         m) { std::cout << m << std::endl; };
-    void msg(int64_t     m) { std::cout << m << std::endl; };
-    void msg(double      m) { std::cout << m << std::endl; };
-    void msg(float       m) { std::cout << m << std::endl; };
+    void msg(int m) { std::cout << m << std::endl; };
+    void msg(int64_t m) { std::cout << m << std::endl; };
+    void msg(double m) { std::cout << m << std::endl; };
+    void msg(float m) { std::cout << m << std::endl; };
 
     auto print_Property = [](Ioss::Property p) {
-        auto type = p.get_type();
-        if(      type == Ioss::Property::BasicType::STRING  ) { msg(p.get_string());    }
-        else if( type == Ioss::Property::BasicType::INTEGER ) { msg(p.get_int());       }
-        else if( type == Ioss::Property::BasicType::REAL    ) { msg(p.get_real());      }
-        //else if( type == Ioss::Property::BasicType::POINTER ) { msg(p.get_pointer()); }
-        else if( type == Ioss::Property::BasicType::POINTER ) { msg("pointer");         }
-        else if( type == Ioss::Property::BasicType::INVALID ) { msg("INVALID");         }
-        else                                                  { msg("UNKOWN type");     }
+      auto type = p.get_type();
+      if (type == Ioss::Property::BasicType::STRING) {
+        msg(p.get_string());
+      }
+      else if (type == Ioss::Property::BasicType::INTEGER) {
+        msg(p.get_int());
+      }
+      else if (type == Ioss::Property::BasicType::REAL) {
+        msg(p.get_real());
+      }
+      // else if( type == Ioss::Property::BasicType::POINTER ) { msg(p.get_pointer()); }
+      else if (type == Ioss::Property::BasicType::POINTER) {
+        msg("pointer");
+      }
+      else if (type == Ioss::Property::BasicType::INVALID) {
+        msg("INVALID");
+      }
+      else {
+        msg("UNKOWN type");
+      }
     };
 
     auto print_Field = [](Ioss::Field f) {
-        size_t size = f.get_size();
-        std::cout << f.raw_count() << std::endl;
+      size_t size = f.get_size();
+      std::cout << f.raw_count() << std::endl;
     };
 
-void
-IossToDW::operator()(Ioss::DatabaseIO *dbi)
-{
-    auto process_GroupingEntity = [](Ioss::Region * r, Ioss::GroupingEntity * entity) {
+    void IossToDW::operator()(Ioss::DatabaseIO *dbi)
+    {
+      auto process_GroupingEntity = [](Ioss::Region *r, Ioss::GroupingEntity *entity) {
         msg("process GroupingEntity");
-        std::cout << "\t" << entity->type_string() << ", " <<  entity->name() << std::endl;
+        std::cout << "\t" << entity->type_string() << ", " << entity->name() << std::endl;
         {
-            std::vector<std::string> descr;
-            entity->property_describe(&descr);
-            msg("\t\tproperties:");
-            for(auto name : descr) {
-                std::cout << "\t\t\t" << r->name() << " * " << entity->name() << " * " << name << std::endl;
-                //print_Property(entity->get_property(name));
-            }
+          std::vector<std::string> descr;
+          entity->property_describe(&descr);
+          msg("\t\tproperties:");
+          for (auto name : descr) {
+            std::cout << "\t\t\t" << r->name() << " * " << entity->name() << " * " << name
+                      << std::endl;
+            // print_Property(entity->get_property(name));
+          }
         }
         {
-            std::vector<std::string> descr;
-            entity->field_describe(&descr);
-            entity->field_describe(&descr);
-            msg("\t\tfields:");
-            for(auto name : descr) {
-                std::cout << "\t\t\t" << r->name() << " * " << entity->name() << " * " << name << std::endl;
-                //print_Field(entity->get_field(name));
-            }
+          std::vector<std::string> descr;
+          entity->field_describe(&descr);
+          entity->field_describe(&descr);
+          msg("\t\tfields:");
+          for (auto name : descr) {
+            std::cout << "\t\t\t" << r->name() << " * " << entity->name() << " * " << name
+                      << std::endl;
+            // print_Field(entity->get_field(name));
+          }
         }
-    };
+      };
 
-    auto process_EntityBlock = [process_GroupingEntity](Ioss::Region * r, Ioss::EntityBlock * entity) {
+      auto process_EntityBlock = [process_GroupingEntity](Ioss::Region *     r,
+                                                          Ioss::EntityBlock *entity) {
         msg("process_block");
         process_GroupingEntity(r, entity);
-    };
+      };
 
-    auto process_EntitySet = [process_GroupingEntity](Ioss::Region * r, Ioss::EntitySet * entity) {
+      auto process_EntitySet = [process_GroupingEntity](Ioss::Region *r, Ioss::EntitySet *entity) {
         msg("process_set");
         process_GroupingEntity(r, entity);
-    };
+      };
 
+      RegionKeys keys;
 
+      std::cout << "IossToDW::operator(): " << dbi->get_filename() << std::endl;
+      std::string   region_name("region");
+      Ioss::Region *region = new Ioss::Region(dbi, region_name);
 
-
-
-    RegionKeys keys;
-
-    std::cout << "IossToDW::operator(): " << dbi->get_filename() << std::endl;
-    std::string region_name("region");
-    Ioss::Region * region = new Ioss::Region(dbi, region_name);
-
-    for(auto entity : region->get_edge_blocks())
+      for (auto entity : region->get_edge_blocks())
         process_EntityBlock(region, entity);
 
-    for(auto entity : region->get_element_blocks())
+      for (auto entity : region->get_element_blocks())
         process_EntityBlock(region, entity);
 
-    for(auto entity : region->get_face_blocks())
+      for (auto entity : region->get_face_blocks())
         process_EntityBlock(region, entity);
 
-    for(auto entity : region->get_node_blocks())
+      for (auto entity : region->get_node_blocks())
         process_EntityBlock(region, entity);
 
-
-    for(auto entity : region->get_edgesets())
+      for (auto entity : region->get_edgesets())
         process_EntitySet(region, entity);
 
-    for(auto entity : region->get_elementsets())
+      for (auto entity : region->get_elementsets())
         process_EntitySet(region, entity);
 
-    for(auto entity : region->get_facesets())
+      for (auto entity : region->get_facesets())
         process_EntitySet(region, entity);
 
-    for(auto entity : region->get_nodesets())
+      for (auto entity : region->get_nodesets())
         process_EntitySet(region, entity);
+    }
 
-
-}
-
-} // namespace Utils
+  } // namespace Utils
 } // namespace Iodw
