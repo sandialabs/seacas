@@ -568,9 +568,11 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
     int         num_geo = 0;
     CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
 
-#if IOSS_DEBUG_OUTPUT
-    std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-              << num_geo << " geometry references\n";
+#if IOSS_DEBUG_OUTPUT 
+    if (db->parallel_rank() == 0) {
+      std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
+		<< num_geo << " geometry references\n";
+    }
 #endif
     if (num_bc > 0) {
       // Create a sideset...
@@ -771,7 +773,7 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
         }
       }
     }
-#if IOSS_DEBUG_OUTPUT
+#if 0 && IOSS_DEBUG_OUTPUT
     std::cerr << "P" << my_processor << ", Block " << owner_block->name()
               << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
 #endif
