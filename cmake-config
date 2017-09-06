@@ -33,12 +33,13 @@ INSTALL_PATH=${ACCESS}
 HAVE_NETCDF=ON
 HAVE_MATIO=ON
 HAVE_CGNS=OFF
-HAVE_DATA_WAREHOUSE=OFF
+HAVE_DATAWAREHOUSE=OFF
 
 NETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
+DATAWAREHOUSE_PATH=${ACCESS}
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -86,22 +87,26 @@ then
   then
     export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
     export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
-    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON -D TPL_ENABLE_CUDA:Bool=ON -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} -D Kokkos_ENABLE_Pthread:BOOL=OFF"
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D TPL_ENABLE_CUDA:Bool=ON \
+                    -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
     export OMPI_CXX=`which gcc`
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
-    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON -D SEACASProj_ENABLE_OpenMP:Bool=ON -D Kokkos_ENABLE_Pthread:BOOL=OFF"
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   fi
 else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
 
-if [ "HAVE_DATA_WAREHOUSE" == "ON" ]
+if [ "HAVE_DATAWAREHOUSE" == "ON" ]
 then
-    DW_SYMBOLS="-DSEACASIoss_ENABLE_DataWarehouse=${HAVE_DATAWAREHOUSE} \
-                -DTPL_ENABLE_DataWarehouse:BOOL=${HAVE_DATAWAREHOUSE}   \
-                -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
-                -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include"
+    DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
+                -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
+                -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
 rm -f CMakeCache.txt

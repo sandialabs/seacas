@@ -146,8 +146,7 @@ The repository [data-warehouse-release](https://gitlab.sandia.gov/nessie-dev/dat
 To build SEACAS with an installation of data-warehouse-release and it's TPLs, add the following lines to the list of cmake command arguments as found in the top-level _cmake-config_ file. Where DataWarehouse_PATH in environment variable that contains the path to the top-level install directory for the Data Warehouse, and HAVE_DATA_WAREHOUSE={ON|OFF} is a variable defined in _cmake-config_.
 
 
-    -DSEACASIoss_ENABLE_DataWarehouse=${HAVE_DATA_WAREHOUSE}         \
-    -DTPL_ENABLE_DataWarehouse:BOOL=${HAVE_DATA_WAREHOUSE}           \
+    -DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATA_WAREHOUSE}           \
     -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
     -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
 
