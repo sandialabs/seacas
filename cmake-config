@@ -101,7 +101,7 @@ then
     DW_SYMBOLS="-DSEACASIoss_ENABLE_DataWarehouse=${HAVE_DATAWAREHOUSE} \
                 -DTPL_ENABLE_DataWarehouse:BOOL=${HAVE_DATAWAREHOUSE}   \
                 -DDataWarehouse_LIBRARY_DIRS:PATH=${DataWarehouse_PATH}/lib     \
-                -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include \
+                -DDataWarehouse_INCLUDE_DIRS:PATH=${DataWarehouse_PATH}/include"
 fi
     
 rm -f CMakeCache.txt
