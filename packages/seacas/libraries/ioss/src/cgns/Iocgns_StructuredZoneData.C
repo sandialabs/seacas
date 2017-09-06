@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <algorithm>
 #include <Ioss_CodeTypes.h>
+#include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
 
 #define OUTPUT std::cerr
