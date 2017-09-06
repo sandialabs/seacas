@@ -1,37 +1,115 @@
+#!/bin/sh
 EXTRA_ARGS=$@
-
-### The following assumes you are building in a subdirectory of ACCESS Root
-ACCESS=$(cd ..; pwd)
-
-### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
-INSTALL_PATH=${ACCESS}
-
-### Make sure these point to the locations to find the libraries and includes in lib and include
-### subdirectories of the specified paths.
-### For example, netcdf.h should be in ${NETCDF_PATH}/include
-NETCDF_PATH=${ACCESS}
-MATIO_PATH=${ACCESS}
-HDF5_PATH=${ACCESS}
-CGNS_PATH=${ACCESS}
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 MPI=OFF
 
+### Switch for Debug or Release build:
+#BUILD_TYPE=Release
+BUILD_TYPE=Debug
+
+### Define to YES to *disable* all exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
+### The following assumes you are building in a subdirectory of ACCESS Root
+### If not, then define "ACCESS" to point to the root of the SEACAS source code.
+ACCESS=$(cd ..; pwd)
+
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then change the "ON"
+### below to "OFF". It will disable blot and fastq
+HAVE_X11=ON
+
+### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
+THREADSAFE_IO_LIBS=OFF
+
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${ACCESS}
+
+### TPLs -- 
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+HAVE_NETCDF=ON
+HAVE_MATIO=ON
+HAVE_CGNS=OFF
+HAVE_DATAWAREHOUSE=OFF
+
+NETCDF_PATH=${ACCESS}
+MATIO_PATH=${ACCESS}
+HDF5_PATH=${ACCESS}
+CGNS_PATH=${ACCESS}
+DATAWAREHOUSE_PATH=${ACCESS}
+
+### Define to NO to *enable* exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
+### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
+KOKKOS=OFF
+
+### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
+CUDA=OFF
+
 ### Change this to point to the compilers you want to use
+#COMPILER="gnu"
+COMPILER="clang"
 if [ "$MPI" == "ON" ]
 then
-  CXX=mpicxx
-  CC=mpicc
-  FC=mpif77
+  MPI_EXEC=`which mpiexec`
+  MPI_BIN=`dirname $MPI_EXEC`
+
+  if [ "$COMPILER" == "gnu" ]
+  then
+      CXX=mpicxx
+      CC=mpicc
+      FC=mpif77
+  else
+      CXX=mpicxx-openmpi-clang38
+      CC=mpicc-openmpi-clang38
+      FC=mpif77-openmpi-clang38
+  fi
 else
-  CXX=clang++
-  CC=clang
-  FC=gfortran
+  if [ "$COMPILER" == "gnu" ]
+  then
+      CXX=g++
+      CC=gcc
+      FC=gfortran
+  else
+      CXX=clang++
+      CC=clang
+      FC=gfortran-mp-4.9
+  fi
 fi
 
-### Switch for Debug or Release build:
-BUILD_TYPE=Release
-#BUILD_TYPE=Debug
+if [ "$KOKKOS" == "ON" ]
+then
+  if [ "$CUDA" == "ON" ]
+  then
+    export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
+    export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D TPL_ENABLE_CUDA:Bool=ON \
+                    -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
+  else
+    export OMPI_CXX=`which gcc`
+    unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
+  fi
+else
+  KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
+fi
+
+if [ "HAVE_DATAWAREHOUSE" == "ON" ]
+then
+    DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
+                -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
+                -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
+fi
+    
+rm -f CMakeCache.txt
 
 ### To use the clang sanitizers:
 #sanitizer=address     #: AddressSanitizer, a memory error detector.
@@ -46,13 +124,6 @@ sanitizer=undefined   #: Fast and compatible undefined behavior checker.
 #-D CMAKE_C_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
 #-D CMAKE_Fortran_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
 
-### If you do not have the X11 developer package on your system
-### which provides X11/Xlib.h and the libX11, then you will need
-### to add the line below.  It will disable blot and fastq
-#-D TPL_ENABLE_X11=OFF \
-
-rm -f CMakeCache.txt
-
 ### You can add these below if you want more verbosity...
 #-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 #-D SEACASProj_VERBOSE_CONFIGURE=ON \
@@ -63,13 +134,13 @@ rm -f CMakeCache.txt
 #-D GENERATE_FLEX_FILES=ON \
 #-D GENERATE_BISON_FILES=ON \
 
-
 ###------------------------------------------------------------------------
 cmake  \
--D BUILD_SHARED_LIBS:BOOL=ON \
--D SEACASProj_ENABLE_SEACASSVDI=ON \
--D GENERATE_FLEX_FILES=OFF \
--D GENERATE_BISON_FILES=OFF \
+-D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_MACOSX_RPATH:BOOL=ON \
+-D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
+-D BUILD_SHARED_LIBS:BOOL=OFF \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
 -D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
 -D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
@@ -80,13 +151,25 @@ cmake  \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+-D SEACASProj_ENABLE_STRONG_C_COMPILE_WARNINGS=ON \
+-D SEACASProj_ENABLE_STRONG_CXX_COMPILE_WARNINGS=ON \
+-D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
--D TPL_ENABLE_Netcdf:BOOL=ON \
--D TPL_ENABLE_Matio:BOOL=ON \
--D TPL_ENABLE_MPI=${MPI} \
--D TPL_ENABLE_Pamgen=OFF \
--D TPL_ENABLE_CGNS:BOOL=OFF \
+-D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
+-D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
+-D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
+-D TPL_ENABLE_MPI:BOOL=${MPI} \
+-D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include \
+-D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
+${KOKKOS_SYMBOLS} \
+${DW_SYMBOLS} \
+\
+-D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
@@ -96,6 +179,3 @@ cmake  \
 \
 $EXTRA_ARGS \
 ..
-
-
-
