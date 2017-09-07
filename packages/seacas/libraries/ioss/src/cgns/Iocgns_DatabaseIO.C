@@ -184,6 +184,42 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
+  void DatabaseIO::resolve_shared_nodes_structured(int base, int zone, Ioss::StructuredBlock *block)
+  {
+    // Handle zone-grid-connectivity...
+    int nconn = 0;
+    CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
+    for (int i = 0; i < nconn; i++) {
+      char connectname[33];
+      char donorname[33];
+      std::array<cgsize_t, 6> range;
+      std::array<cgsize_t, 6> donor_range;
+      Ioss::IJK_t transform;
+
+      CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                           donor_range.data(), transform.data()));
+
+      // Get number of nodes shared with other "previous" zones...
+      // A "previous" zone will have a lower zone number this this zone...
+      int  donor_zone = -1;
+      auto donor_iter = m_zoneNameMap.find(donorname);
+      if (donor_iter != m_zoneNameMap.end()) {
+        donor_zone = (*donor_iter).second;
+      }
+      Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
+      Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
+      Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
+      Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
+
+      bool owns_nodes = zone < donor_zone || donor_zone == -1;
+      block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
+                                             range_beg, range_end, donor_beg, donor_end,
+                                             owns_nodes);
+      block->m_zoneConnectivity.back().m_donorProcessor = 0;
+      block->m_zoneConnectivity.back().m_ownerProcessor = 0;
+    }
+  }
+  
   void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell)
   {
     cgsize_t size[9];
@@ -217,38 +253,7 @@ namespace Iocgns {
     num_node += block->get_property("node_count").get_int();
     num_cell += block->get_property("cell_count").get_int();
 
-    // Handle zone-grid-connectivity...
-    int nconn = 0;
-    CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
-    for (int i = 0; i < nconn; i++) {
-      char connectname[33];
-      char donorname[33];
-      std::array<cgsize_t, 6> range;
-      std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t transform;
-
-      CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
-                           donor_range.data(), transform.data()));
-
-      // Get number of nodes shared with other "previous" zones...
-      // A "previous" zone will have a lower zone number this this zone...
-      int  donor_zone = -1;
-      auto donor_iter = m_zoneNameMap.find(donorname);
-      if (donor_iter != m_zoneNameMap.end()) {
-        donor_zone = (*donor_iter).second;
-      }
-      Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
-      Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
-      Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
-      Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
-
-      bool owns_nodes = zone < donor_zone || donor_zone == -1;
-      block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
-                                             range_beg, range_end, donor_beg, donor_end,
-                                             owns_nodes);
-      block->m_zoneConnectivity.back().m_donorProcessor = 0;
-      block->m_zoneConnectivity.back().m_ownerProcessor = 0;
-    }
+    resolve_shared_nodes_structured(base, zone, block);
 
     // Handle boundary conditions...
     Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
@@ -275,16 +280,8 @@ namespace Iocgns {
     return num_nodes;
   }
 
-  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node, size_t &num_elem)
+  void DatabaseIO::resolve_shared_nodes_unstructured(int base, int zone)
   {
-    cgsize_t size[9];
-    char     zone_name[33];
-    CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
-    m_zoneNameMap[zone_name] = zone;
-
-    size_t total_block_nodes = size[0];
-    m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
-
     // Determine number of "shared" nodes (shared with other zones)
     if (zone > 1) { // Donor zone is always lower numbered, so zone 1 has no donor zone.
       int nconn = 0;
@@ -306,8 +303,7 @@ namespace Iocgns {
                              &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
                              &donor_datatype, &ndata_donor));
 
-        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
-            donor_ptset_type != CG_PointListDonor) {
+        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList) {
           std::ostringstream errmsg;
           errmsg << "ERROR: CGNS: Zone " << zone << " adjacency data for " << connectname
                  << " is not correct type. Require Abutting1to1 and PointList.\t" << connect_type
@@ -325,30 +321,48 @@ namespace Iocgns {
 
         // Get number of nodes shared with other "previous" zones...
         // A "previous" zone will have a lower zone number this this zone...
-        auto donor_iter = m_zoneNameMap.find(donorname);
-        if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
-          num_shared += npnts;
+	if (donor_ptset_type == CG_PointListDonor) {
+	  auto donor_iter = m_zoneNameMap.find(donorname);
+	  if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
+	    num_shared += npnts;
 #if IOSS_DEBUG_OUTPUT
-          std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
-                    << "\n";
+	    std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
+		      << "\n";
 #endif
-          std::vector<cgsize_t> points(npnts);
-          std::vector<cgsize_t> donors(npnts);
+	    std::vector<cgsize_t> points(npnts);
+	    std::vector<cgsize_t> donors(npnts);
 
-          CGCHECK(cg_conn_read(cgnsFilePtr, base, zone, i + 1, TOPTR(points), donor_datatype,
-                               TOPTR(donors)));
+	    CGCHECK(cg_conn_read(cgnsFilePtr, base, zone, i + 1, TOPTR(points), donor_datatype,
+				 TOPTR(donors)));
 
-          // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-          auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-          auto &block_map = m_blockLocalNodeMap[zone];
-          for (int j = 0; j < npnts; j++) {
-            cgsize_t point       = points[j];
-            cgsize_t donor       = donors[j];
-            block_map[point - 1] = donor_map[donor - 1];
-          }
+	    // Fill in entries in m_blockLocalNodeMap for the shared nodes...
+	    auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+	    auto &block_map = m_blockLocalNodeMap[zone];
+	    for (int j = 0; j < npnts; j++) {
+	      cgsize_t point       = points[j];
+	      cgsize_t donor       = donors[j];
+	      block_map[point - 1] = donor_map[donor - 1];
+	    }
+	  }
         }
+	else {
+	  // TODO: Do something
+	}
       }
     }
+  }
+  
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node, size_t &num_elem)
+  {
+    cgsize_t size[9];
+    char     zone_name[33];
+    CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
+    m_zoneNameMap[zone_name] = zone;
+
+    size_t total_block_nodes = size[0];
+    m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
+
+    resolve_shared_nodes_unstructured(base, zone);
 
     auto & block_map = m_blockLocalNodeMap[zone];
     size_t offset    = num_node;
@@ -470,7 +484,8 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1);        // Let's use 1-based zones...
 
     // ========================================================================
-    size_t num_node = 0;
+    size_t num_struc_node = 0;
+    size_t num_unstruc_node = 0;
     size_t num_elem = 0;
     size_t num_cell = 0;
 
@@ -482,11 +497,11 @@ namespace Iocgns {
 
       if (zone_type == CG_Structured) {
         has_structured = true;
-        create_structured_block(base, zone, num_node, num_cell);
+        create_structured_block(base, zone, num_struc_node, num_cell);
       }
       else if (zone_type == CG_Unstructured) {
         has_unstructured = true;
-        create_unstructured_block(base, zone, num_node, num_elem);
+        create_unstructured_block(base, zone, num_unstruc_node, num_elem);
       }
       else {
         // This should be handled already in check_zone_type...
@@ -498,9 +513,11 @@ namespace Iocgns {
     }
 
     if (has_structured) {
-      num_node = finalize_structured_blocks();
+      num_struc_node = finalize_structured_blocks();
     }
 
+    size_t num_node = num_struc_node + num_unstruc_node;
+    
     char basename[33];
     int  cell_dimension = 0;
     int  phys_dimension = 0;

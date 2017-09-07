@@ -116,6 +116,9 @@ namespace Iocgns {
     void   finalize_database() override;
     void   get_step_times__() override;
 
+    void resolve_shared_nodes_structured(int base, int zone, Ioss::StructuredBlock *block);
+    void resolve_shared_nodes_unstructured(int base, int zone);
+    
     void create_unstructured_block(int base, int zone, size_t &num_node, size_t &num_elem);
     void write_adjacency_data();
 
