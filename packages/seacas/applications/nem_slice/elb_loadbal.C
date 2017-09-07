@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -57,8 +57,8 @@
 #include "elb_graph.h"  // for generate_graph
 #include "elb_groups.h" // for get_group_info
 #include "elb_loadbal.h"
-#include "fix_column_partitions.h"
 #include "elb_util.h" // for find_inter, etc
+#include "fix_column_partitions.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327
@@ -925,8 +925,8 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     // the mesh and tweak the partitioning so that elements of a
     // column are not on multiple processors
     if (problem->fix_columns) {
-      Gen_Error(1, "INFO: Attempting to discover columns and fix their partitioning"); 
-      int nmoved = fix_column_partitions(lb, mesh, graph);
+      Gen_Error(1, "INFO: Attempting to discover columns and fix their partitioning");
+      int  nmoved = fix_column_partitions(lb, mesh, graph);
       char mesg[256];
       sprintf(mesg, "INFO: Reassigned partitions of %d elements", nmoved);
       Gen_Error(1, mesg);

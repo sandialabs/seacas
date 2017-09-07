@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -192,21 +192,21 @@ namespace {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
         child->m_zoneConnectivity.push_back(zgc);
-	if (rank == 0) {
+        if (rank == 0) {
 #if 0 && IOSS_DEBUG_OUTPUT
         OUTPUT << "\t\tAdding: Donor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
                << "\n";
 #endif
-	}
+        }
       }
       else {
-	if (rank == 0) {
+        if (rank == 0) {
 #if 0 && IOSS_DEBUG_OUTPUT
         OUTPUT << "\t\tDonor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
                << " does not overlap."
                << "\n";
 #endif
-	}
+        }
       }
     }
   }
@@ -256,8 +256,8 @@ namespace Iocgns {
   // ========================================================================
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
-  std::pair<StructuredZoneData *, StructuredZoneData *> StructuredZoneData::split(int zone_id,
-                                                                                  double ratio, int rank)
+  std::pair<StructuredZoneData *, StructuredZoneData *>
+  StructuredZoneData::split(int zone_id, double ratio, int rank)
   {
     assert(is_active());
     if (ratio > 1.0) {
@@ -316,20 +316,23 @@ namespace Iocgns {
 
     if (rank == 0) {
 #if IOSS_DEBUG_OUTPUT
-    OUTPUT << "\nSplit Zone " << m_name << " (" << m_zone << ") Adam " << m_adam->m_name << " (" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
-           << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work() << " with offset "
-           << m_offset[0] << " " << m_offset[1] << " " << m_offset[2] << " along ordinal "
-           << ordinal << " with ratio " << ratio << "\n"
-           << "\tChild 1: Zone " << m_child1->m_name << " (" << m_child1->m_zone << ") Adam " << m_child1->m_adam->m_name << " (" << m_child1->m_adam->m_zone
-           << ") with intervals " << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1] << " "
-           << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "
-           << m_child1->m_offset[0] << " " << m_child1->m_offset[1] << " " << m_child1->m_offset[2]
-           << "\n"
-           << "\tChild 2: Zone " << m_child2->m_name << " (" << m_child2->m_zone << ") Adam " << m_child2->m_adam->m_name << " (" << m_child2->m_adam->m_zone
-           << ") with intervals " << m_child2->m_ordinal[0] << " " << m_child2->m_ordinal[1] << " "
-           << m_child2->m_ordinal[2] << " work = " << m_child2->work() << " with offset "
-           << m_child2->m_offset[0] << " " << m_child2->m_offset[1] << " " << m_child2->m_offset[2]
-           << "\n";
+      OUTPUT << "\nSplit Zone " << m_name << " (" << m_zone << ") Adam " << m_adam->m_name << " ("
+             << m_adam->m_zone << ") with intervals " << m_ordinal[0] << " " << m_ordinal[1] << " "
+             << m_ordinal[2] << " work = " << work() << " with offset " << m_offset[0] << " "
+             << m_offset[1] << " " << m_offset[2] << " along ordinal " << ordinal << " with ratio "
+             << ratio << "\n"
+             << "\tChild 1: Zone " << m_child1->m_name << " (" << m_child1->m_zone << ") Adam "
+             << m_child1->m_adam->m_name << " (" << m_child1->m_adam->m_zone << ") with intervals "
+             << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1] << " "
+             << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "
+             << m_child1->m_offset[0] << " " << m_child1->m_offset[1] << " "
+             << m_child1->m_offset[2] << "\n"
+             << "\tChild 2: Zone " << m_child2->m_name << " (" << m_child2->m_zone << ") Adam "
+             << m_child2->m_adam->m_name << " (" << m_child2->m_adam->m_zone << ") with intervals "
+             << m_child2->m_ordinal[0] << " " << m_child2->m_ordinal[1] << " "
+             << m_child2->m_ordinal[2] << " work = " << m_child2->work() << " with offset "
+             << m_child2->m_offset[0] << " " << m_child2->m_offset[1] << " "
+             << m_child2->m_offset[2] << "\n";
 #endif
     }
 

@@ -1,4 +1,4 @@
-/* Copyright 2017 Los Alamos National Security, LLC */
+/* Copyright 2017 Los Alamos-2017 National Security, LLC */
 
 #include "elb.h" // for LB_Description<INT>, etc
 #include "elb_elem.h"
