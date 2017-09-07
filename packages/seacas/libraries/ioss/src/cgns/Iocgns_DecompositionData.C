@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -464,8 +464,8 @@ namespace Iocgns {
           zone->m_proc = proc;
           work_vector[proc] += zone->work();
 #if IOSS_DEBUG_OUTPUT
-          OUTPUT << "Assigning " << zone->m_name << " (Z" << zone->m_zone << ") with work " << zone->work()
-                 << " to processor " << proc << "\n";
+          OUTPUT << "Assigning " << zone->m_name << " (Z" << zone->m_zone << ") with work "
+                 << zone->work() << " to processor " << proc << "\n";
 #endif
         }
       }
@@ -543,8 +543,8 @@ namespace Iocgns {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
 #if IOSS_DEBUG_OUTPUT
-        OUTPUT << "Zone " << zone->m_name << "(" << zone->m_zone << ") assigned to processor " << zone->m_proc
-               << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+        OUTPUT << "Zone " << zone->m_name << "(" << zone->m_zone << ") assigned to processor "
+               << zone->m_proc << ", Adam zone = " << zone->m_adam->m_zone << "\n";
         auto zgcs = zone->m_zoneConnectivity;
         for (auto &zgc : zgcs) {
           OUTPUT << zgc << "\n";

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -568,10 +568,10 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
     int         num_geo = 0;
     CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
 
-#if IOSS_DEBUG_OUTPUT 
+#if IOSS_DEBUG_OUTPUT
     if (db->parallel_rank() == 0) {
       std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-		<< num_geo << " geometry references\n";
+                << num_geo << " geometry references\n";
     }
 #endif
     if (num_bc > 0) {
