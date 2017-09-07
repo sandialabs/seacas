@@ -309,9 +309,9 @@ namespace Iocgns {
         if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList ||
             donor_ptset_type != CG_PointListDonor) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: CGNS: Zone " << zone
-                 << " adjacency data is not correct type. Require Abutting1to1 and PointList."
-                 << connect_type << "\t" << ptset_type << "\t" << donor_ptset_type;
+          errmsg << "ERROR: CGNS: Zone " << zone << " adjacency data for " << connectname
+                 << " is not correct type. Require Abutting1to1 and PointList.\t" << connect_type
+                 << "\t" << ptset_type << "\t" << donor_ptset_type;
           IOSS_ERROR(errmsg);
         }
 
@@ -470,16 +470,22 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1);        // Let's use 1-based zones...
 
     // ========================================================================
-    size_t        num_node         = 0;
-    size_t        num_elem         = 0;
-    size_t        num_cell         = 0;
-    CG_ZoneType_t common_zone_type = Utils::check_zone_type(cgnsFilePtr);
+    size_t num_node = 0;
+    size_t num_elem = 0;
+    size_t num_cell = 0;
 
+    bool has_structured   = false;
+    bool has_unstructured = false;
     for (int zone = 1; zone <= num_zones; zone++) {
-      if (common_zone_type == CG_Structured) {
+      CG_ZoneType_t zone_type;
+      CGCHECK(cg_zone_type(cgnsFilePtr, base, zone, &zone_type));
+
+      if (zone_type == CG_Structured) {
+        has_structured = true;
         create_structured_block(base, zone, num_node, num_cell);
       }
-      else if (common_zone_type == CG_Unstructured) {
+      else if (zone_type == CG_Unstructured) {
+        has_unstructured = true;
         create_unstructured_block(base, zone, num_node, num_elem);
       }
       else {
@@ -491,7 +497,7 @@ namespace Iocgns {
       }
     }
 
-    if (common_zone_type == CG_Structured) {
+    if (has_structured) {
       num_node = finalize_structured_blocks();
     }
 
