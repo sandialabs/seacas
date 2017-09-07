@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
       std::cerr << "Aprepro terminated due to exception: " << e.what() << '\n';
     }
   }
-  if (aprepro.ap_options.debugging) {
+  if (aprepro.ap_options.debugging || aprepro.ap_options.dumpvars) {
     aprepro.dumpsym("variable", false);
   }
 }

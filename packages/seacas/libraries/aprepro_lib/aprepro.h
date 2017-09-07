@@ -148,13 +148,14 @@ namespace SEAMS {
     bool        warning_msg;
     bool        info_msg;
     bool        debugging;
+    bool        dumpvars;
     bool        interactive;
     bool        immutable;
     bool        trace_parsing; // enable debug output in the bison parser
     bool        one_based_index;
     bool        keep_history; // Flag to keep a history of Aprepro substitutions
     aprepro_options()
-        : end_on_exit(false), warning_msg(true), info_msg(false), debugging(false),
+        : end_on_exit(false), warning_msg(true), info_msg(false), debugging(false), dumpvars(false),
           interactive(false), immutable(false), trace_parsing(false), one_based_index(false),
           keep_history(false)
     {
