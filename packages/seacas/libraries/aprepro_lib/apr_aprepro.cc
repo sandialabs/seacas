@@ -49,7 +49,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "4.35 (2017/08/14)";
+  const char *       version_string = "4.36 (2017/09/06)";
 
   unsigned hash_symbol(const char *symbol)
   {
@@ -386,6 +386,9 @@ namespace SEAMS {
     if (option == "--debug" || option == "-d") {
       ap_options.debugging = true;
     }
+    if (option == "--dumpvars" || option == "-D") {
+      ap_options.dumpvars = true;
+    }
     else if (option == "--version" || option == "-v") {
       std::cerr << "Algebraic Preprocessor (Aprepro) version " << version() << "\n";
       exit(EXIT_SUCCESS);
@@ -468,6 +471,7 @@ namespace SEAMS {
           << "\nAprepro version " << version() << "\n"
           << "\nUsage: aprepro [options] [-I path] [-c char] [var=val] [filein] [fileout]\n"
           << "          --debug or -d: Dump all variables, debug loops/if/endif\n"
+          << "       --dumpvars or -D: Dump all variables at end of run        \n"
           << "        --version or -v: Print version number to stderr          \n"
           << "      --immutable or -X: All variables are immutable--cannot be modified\n"
           << "--one_based_index or -1: Array indexing is one-based (default = zero-based)\n"
@@ -641,12 +645,26 @@ namespace SEAMS {
                             << '\n';
             }
             else if (ptr->type == Parser::token::SVAR) {
-              (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
-                            << "\t= \"" << ptr->value.svar << "\"}" << '\n';
+              if (index(ptr->value.svar, '\n') != nullptr ||
+                  index(ptr->value.svar, '"') != nullptr) {
+                (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
+                              << "\t= '" << ptr->value.svar << "'}" << '\n';
+              }
+              else {
+                (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
+                              << "\t= \"" << ptr->value.svar << "\"}" << '\n';
+              }
             }
             else if (ptr->type == Parser::token::IMMSVAR) {
-              (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
-                            << "\t= \"" << ptr->value.svar << "\"}\t(immutable)" << '\n';
+              if (index(ptr->value.svar, '\n') != nullptr ||
+                  index(ptr->value.svar, '"') != nullptr) {
+                (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
+                              << "\t= '" << ptr->value.svar << "'}\t(immutable)" << '\n';
+              }
+              else {
+                (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
+                              << "\t= \"" << ptr->value.svar << "\"}\t(immutable)" << '\n';
+              }
             }
             else if (ptr->type == Parser::token::AVAR) {
               array *arr = ptr->value.avar;
