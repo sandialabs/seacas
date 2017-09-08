@@ -33,27 +33,27 @@
  *
  */
 /*****************************************************************************
-*
-* exgini - ex_get_init
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*       char*   title                   title of file
-*       int*    num_dim                 number of dimensions (per node)
-*       int*    num_nodes               number of nodes
-*       int*    num_elem                number of elements
-*       int*    num_elem_blk            number of element blocks
-*       int*    num_node_sets           number of node sets
-*       int*    num_side_sets           numver of side sets
-*
-* revision history -
-*          David Thompson  - Moved to exginix.c (exgini.c now a special case)
-*
-*
-*****************************************************************************/
+ *
+ * exgini - ex_get_init
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *       char*   title                   title of file
+ *       int*    num_dim                 number of dimensions (per node)
+ *       int*    num_nodes               number of nodes
+ *       int*    num_elem                number of elements
+ *       int*    num_elem_blk            number of element blocks
+ *       int*    num_node_sets           number of node sets
+ *       int*    num_side_sets           numver of side sets
+ *
+ * revision history -
+ *          David Thompson  - Moved to exginix.c (exgini.c now a special case)
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_init_params, void_int, etc
 #include "exodusII_int.h"

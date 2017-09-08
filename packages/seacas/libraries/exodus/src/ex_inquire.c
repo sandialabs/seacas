@@ -94,8 +94,9 @@ static int ex_get_concat_set_len(int exoid, int64_t *set_length, const char *set
 
     /* Allocate space for stat array */
     if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for %s set status "
-                                       "array for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate memory for %s set status "
+               "array for file id %d",
                set_name, exoid);
       ex_err("ex_inquire", errmsg, EX_MEMFAIL);
       return (EX_FATAL);
@@ -191,8 +192,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_API_VERS:
     /* returns the EXODUS API version number */
     if (!ret_float) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: float argument is NULL for EX_INQ_API_VERS "
-                                       "which is not allowed.");
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "Warning: float argument is NULL for EX_INQ_API_VERS "
+               "which is not allowed.");
       ex_err("ex_inquire", errmsg, EX_BADPARAM);
       return (EX_FATAL);
     }
@@ -213,8 +215,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
   case EX_INQ_DB_VERS:
     /* returns the EXODUS database version number */
     if (!ret_float) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: float argument is NULL for EX_INQ_DB_VERS "
-                                       "which is not allowed.");
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "Warning: float argument is NULL for EX_INQ_DB_VERS "
+               "which is not allowed.");
       ex_err("ex_inquire", errmsg, EX_BADPARAM);
       return (EX_FATAL);
     }
@@ -305,8 +308,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
 
   case EX_INQ_TITLE:
     if (!ret_char) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Requested title, but character pointer was null "
-                                       "for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Requested title, but character pointer was null "
+               "for file id %d",
                rootid);
       ex_err("ex_inquire", errmsg, EX_BADPARAM);
       return (EX_FATAL);
@@ -422,8 +426,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
         else {
           if ((status = nc_inq_dimid(exoid, DIM_NUM_NOD_NS(i + 1), &dimid)) != NC_NOERR) {
             *ret_int = 0;
-            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of nodes in %" ST_ZU
-                                             "'th node set in file id %d",
+            snprintf(errmsg, MAX_ERR_LENGTH,
+                     "ERROR: failed to locate number of nodes in %" ST_ZU
+                     "'th node set in file id %d",
                      i, exoid);
             ex_err("ex_inquire", errmsg, status);
             return (EX_FATAL);
@@ -485,8 +490,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
       /* allocate space for stat array */
       if (!(stat_vals = malloc((int)num_sets * sizeof(int)))) {
         free(ids);
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for side set status "
-                                         "array for file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to allocate memory for side set status "
+                 "array for file id %d",
                  exoid);
         ex_err("ex_inquire", errmsg, EX_MEMFAIL);
         return (EX_FATAL);
@@ -860,8 +866,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
     /* return name of group exoid. "/" returned for root group */
     /* Assumes that ret_char is large enough to hold name. */
     if (!ret_char) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Requested group name, but character pointer was "
-                                       "null for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Requested group name, but character pointer was "
+               "null for file id %d",
                exoid);
       ex_err("ex_inquire", errmsg, EX_BADPARAM);
       return (EX_FATAL);
@@ -891,8 +898,9 @@ static int ex_inquire_internal(int exoid, int req_info, int64_t *ret_int, float 
      * Assumes that ret_char is large enough to hold full path name.
      */
     if (!ret_char) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Requested group name, but character pointer was "
-                                       "null for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Requested group name, but character pointer was "
+               "null for file id %d",
                exoid);
       ex_err("ex_inquire", errmsg, EX_BADPARAM);
       return (EX_FATAL);

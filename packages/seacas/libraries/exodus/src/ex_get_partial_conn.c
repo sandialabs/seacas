@@ -33,27 +33,27 @@
  *
  */
 /*****************************************************************************
-*
-* exgnconn - exodusII read partial edge/face/element block connectivity
-*
-* entry conditions -
-*   expelb must be called first to establish element block parameters.
-*   input parameters:
-*       int     exoid           exodus file id
-*       int     blk_type        block type (edge, face, element)
-*       int     blk_id          block id
-*       int     start_num       The starting index (1-based) of entities to read
-*       int     num_ent         The number of entities to read connectivity info
-* for.
-*
-* exit conditions -
-*       int*    nodeconn        nodal connectivity array
-*       int*    edgeconn        edge connectivity array (where applicable)
-*       int*    faceconn        face connectivity array (where applicable)
-*
-* revision history -
-*
-*/
+ *
+ * exgnconn - exodusII read partial edge/face/element block connectivity
+ *
+ * entry conditions -
+ *   expelb must be called first to establish element block parameters.
+ *   input parameters:
+ *       int     exoid           exodus file id
+ *       int     blk_type        block type (edge, face, element)
+ *       int     blk_id          block id
+ *       int     start_num       The starting index (1-based) of entities to read
+ *       int     num_ent         The number of entities to read connectivity info
+ * for.
+ *
+ * exit conditions -
+ *       int*    nodeconn        nodal connectivity array
+ *       int*    edgeconn        edge connectivity array (where applicable)
+ *       int*    faceconn        face connectivity array (where applicable)
+ *
+ * revision history -
+ *
+ */
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
 #include "exodusII_int.h" // for ex_check_valid_file_id, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_vara_int, etc
@@ -99,8 +99,9 @@ int ex_get_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
    * connectivity.  Print a warning if edgeconn or faceconn is non-NULL
    */
   if (edgeconn != NULL || faceconn != NULL) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: ex_get_partial_conn only supports nodal "
-                                     "connectivity at this time. %s %" PRId64 " in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "Warning: ex_get_partial_conn only supports nodal "
+             "connectivity at this time. %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
     ex_err("ex_get_partial_conn", errmsg, EX_BADPARAM);
   }

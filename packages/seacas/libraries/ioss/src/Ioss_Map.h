@@ -88,7 +88,7 @@ namespace Ioss {
     MapContainer &             map() { return m_map; }
     const ReverseMapContainer &reverse() const { return m_reverse; }
     bool                       defined() const { return m_defined; }
-    void set_defined(bool yes_no) { m_defined = yes_no; }
+    void                       set_defined(bool yes_no) { m_defined = yes_no; }
 
   private:
     int64_t global_to_local__(int64_t global, bool must_exist = true) const;

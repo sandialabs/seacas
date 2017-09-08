@@ -33,19 +33,19 @@
  *
  */
 /*****************************************************************************
-*
-* exgeat - ex_get_elem_attr_names
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     elem_blk_id             element block id
-*
-* exit conditions -
-*       char*   names[]                 ptr array of attribute names
-*
-*
-*****************************************************************************/
+ *
+ * exgeat - ex_get_elem_attr_names
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     elem_blk_id             element block id
+ *
+ * exit conditions -
+ *       char*   names[]                 ptr array of attribute names
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_attr_names, etc
 

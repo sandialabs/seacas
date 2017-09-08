@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exggv - ex_get_glob_vars
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               time step number
-*       int     num_glob_vars           number of global vars in file
-*
-* exit conditions -
-*       float*  glob_var_vals           array of global variable values
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exggv - ex_get_glob_vars
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               time step number
+ *       int     num_glob_vars           number of global vars in file
+ *
+ * exit conditions -
+ *       float*  glob_var_vals           array of global variable values
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_var, etc
 

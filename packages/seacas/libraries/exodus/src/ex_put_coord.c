@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* expcor - ex_put_coord
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       float*  x_coord                 X coord array
-*       float*  y_coord                 y coord array
-*       float*  z_coord                 z coord array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expcor - ex_put_coord
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       float*  x_coord                 X coord array
+ *       float*  y_coord                 y coord array
+ *       float*  z_coord                 z coord array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc

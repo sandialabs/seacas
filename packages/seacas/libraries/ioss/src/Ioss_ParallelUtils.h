@@ -166,8 +166,9 @@ namespace Ioss {
         std::ostringstream errmsg;
         errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
                << "       processor " << my_processor << " to processor " << i << " is "
-               << sendcounts[i] << "\n       which exceeds the storage capacity of the integers "
-                                   "used by MPI functions.\n";
+               << sendcounts[i]
+               << "\n       which exceeds the storage capacity of the integers "
+                  "used by MPI functions.\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }

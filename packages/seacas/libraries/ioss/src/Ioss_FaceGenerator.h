@@ -58,10 +58,10 @@ namespace Ioss {
       element[elementCount_++] = element_id;
     }
 
-    size_t         id_;
-    mutable size_t element[2]{};
-    mutable int    elementCount_; // Should be max of 2 solid elements...
-    mutable int    sharedWithProc_;
+    size_t                id_;
+    mutable size_t        element[2]{};
+    mutable int           elementCount_; // Should be max of 2 solid elements...
+    mutable int           sharedWithProc_;
     std::array<size_t, 4> connectivity_{};
   };
 
@@ -98,6 +98,7 @@ namespace Ioss {
 
     template <typename INT> void generate_faces(INT /*dummy*/);
     FaceUnorderedSet &           faces() { return faces_; }
+
   private:
     Ioss::Region &   region_;
     FaceUnorderedSet faces_;

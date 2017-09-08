@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* expem - ex_put_num_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     map_type                type of map (node,edge,face,elem)
-*       int     map_id                  id to associate with new map
-*       int     *map_data               map set value array
-*
-* exit conditions -
-*
-* revision history -
-*
-*****************************************************************************/
+ *
+ * expem - ex_put_num_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     map_type                type of map (node,edge,face,elem)
+ *       int     map_id                  id to associate with new map
+ *       int     *map_data               map set value array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc

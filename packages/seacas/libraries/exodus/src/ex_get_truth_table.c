@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* exgvtt - ex_get_truth_table
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid              exodus file id
-*       int     num_blk            number of blocks
-*       int     num_var            number of variables
-*
-* exit conditions -
-*       int*    var_tab            element variable truth table array
-*
-*
-*****************************************************************************/
+ *
+ * exgvtt - ex_get_truth_table
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid              exodus file id
+ *       int     num_blk            number of blocks
+ *       int     num_var            number of variables
+ *
+ * exit conditions -
+ *       int*    var_tab            element variable truth table array
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_dimension, EX_FATAL, etc
@@ -107,35 +107,35 @@ int ex_get_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
     ent_type = "eb";
     break;
   case EX_NODE_SET:
-    status = ex_get_dimension(exoid, DIM_NUM_NSET_VAR, "nodeset variables", &num_var_db, &varid,
+    status   = ex_get_dimension(exoid, DIM_NUM_NSET_VAR, "nodeset variables", &num_var_db, &varid,
                               routine);
     status1  = nc_inq_varid(exoid, VAR_NSET_TAB, &tabid);
     var_name = "vals_nset_var";
     ent_type = "ns";
     break;
   case EX_EDGE_SET:
-    status = ex_get_dimension(exoid, DIM_NUM_ESET_VAR, "edgeset variables", &num_var_db, &varid,
+    status   = ex_get_dimension(exoid, DIM_NUM_ESET_VAR, "edgeset variables", &num_var_db, &varid,
                               routine);
     status1  = nc_inq_varid(exoid, VAR_ESET_TAB, &tabid);
     var_name = "vals_eset_var";
     ent_type = "es";
     break;
   case EX_FACE_SET:
-    status = ex_get_dimension(exoid, DIM_NUM_FSET_VAR, "faceset variables", &num_var_db, &varid,
+    status   = ex_get_dimension(exoid, DIM_NUM_FSET_VAR, "faceset variables", &num_var_db, &varid,
                               routine);
     status1  = nc_inq_varid(exoid, VAR_FSET_TAB, &tabid);
     var_name = "vals_fset_var";
     ent_type = "fs";
     break;
   case EX_SIDE_SET:
-    status = ex_get_dimension(exoid, DIM_NUM_SSET_VAR, "sideset variables", &num_var_db, &varid,
+    status   = ex_get_dimension(exoid, DIM_NUM_SSET_VAR, "sideset variables", &num_var_db, &varid,
                               routine);
     status1  = nc_inq_varid(exoid, VAR_SSET_TAB, &tabid);
     var_name = "vals_sset_var";
     ent_type = "ss";
     break;
   case EX_ELEM_SET:
-    status = ex_get_dimension(exoid, DIM_NUM_ELSET_VAR, "elemset variables", &num_var_db, &varid,
+    status   = ex_get_dimension(exoid, DIM_NUM_ELSET_VAR, "elemset variables", &num_var_db, &varid,
                               routine);
     status1  = nc_inq_varid(exoid, VAR_ELSET_TAB, &tabid);
     var_name = "vals_elset_var";

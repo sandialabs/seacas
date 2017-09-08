@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* expelb - ex_put_elem_block: write element block parameters
-*
-* entry conditions -
-*   input parameters:
-*       int     idexo                   exodus file id
-*       int     elem_blk_id             block identifier
-*       char*   elem_type               element type string
-*       int     num_elem_this_blk       number of elements in the element blk
-*       int     num_nodes_per_elem      number of nodes per element block
-*       int     num_attr_per_elem       number of attributes per element
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * expelb - ex_put_elem_block: write element block parameters
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     idexo                   exodus file id
+ *       int     elem_blk_id             block identifier
+ *       char*   elem_type               element type string
+ *       int     num_elem_this_blk       number of elements in the element blk
+ *       int     num_nodes_per_elem      number of nodes per element block
+ *       int     num_attr_per_elem       number of attributes per element
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_block, ex_entity_id, etc
 #include <stdint.h>   // for int64_t

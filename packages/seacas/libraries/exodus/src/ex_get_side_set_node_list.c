@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* exgssn - ex_get_side_set_node_list
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     side_set_id             side set id
-*
-* exit conditions -
-*       int     *side_set_node_cnt_list returned array of number of nodes for
-*                                       side or face
-*       int     *side_set_node_list     array of nodes
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgssn - ex_get_side_set_node_list
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     side_set_id             side set id
+ *
+ * exit conditions -
+ *       int     *side_set_node_cnt_list returned array of number of nodes for
+ *                                       side or face
+ *       int     *side_set_node_list     array of nodes
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, ex_block, etc
 #include "exodusII_int.h" // for elem_blk_parm, EX_FATAL, etc
@@ -337,8 +337,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   /* Allocate space for the side set element list */
   if (!(side_set_elem_list = malloc(tot_num_ss_elem * int_size))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set element list "
-                                     "for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for side set element list "
+             "for file id %d",
              exoid);
     ex_err(__func__, errmsg, EX_MEMFAIL);
     EX_FUNC_LEAVE(EX_FATAL);
@@ -363,8 +364,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   /* Allocate space for the ss element index array */
   if (!(ss_elem_ndx = malloc(tot_num_ss_elem * int_size))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem sort "
-                                     "array for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for side set elem sort "
+             "array for file id %d",
              exoid);
     ex_err(__func__, errmsg, EX_MEMFAIL);
     err_stat = EX_FATAL;
@@ -407,8 +409,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   /* Allocate space for the element block params */
   if (!(elem_blk_parms = malloc(num_elem_blks * sizeof(struct elem_blk_parm)))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for element block params "
-                                     "for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for element block params "
+             "for file id %d",
              exoid);
     ex_err(__func__, errmsg, EX_MEMFAIL);
     err_stat = EX_FATAL;
@@ -436,8 +439,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   /* Allocate space for the ss element to element block parameter index array */
   if (!(ss_parm_ndx = malloc(tot_num_ss_elem * int_size))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem parms "
-                                     "index for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for side set elem parms "
+             "index for file id %d",
              exoid);
     ex_err(__func__, errmsg, EX_MEMFAIL);
     err_stat = EX_FATAL;
@@ -446,8 +450,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
 
   /* Allocate space for the ss element to node list index array */
   if (!(ss_elem_node_ndx = malloc(tot_num_ss_elem * int_size))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem to node "
-                                     "index for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for side set elem to node "
+             "index for file id %d",
              exoid);
     ex_err(__func__, errmsg, EX_MEMFAIL);
 
@@ -549,8 +554,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       /* Allocate space for the connectivity array for new element block */
       if (!(connect = malloc(elem_blk_parms[parm_ndx].num_elem_in_blk *
                              elem_blk_parms[parm_ndx].num_nodes_per_elem * int_size))) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for connectivity "
-                                         "array for file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to allocate space for connectivity "
+                 "array for file id %d",
                  exoid);
         ex_err(__func__, errmsg, EX_MEMFAIL);
         err_stat = EX_FATAL;
@@ -560,8 +566,9 @@ int ex_get_side_set_node_list(int exoid, ex_entity_id side_set_id, void_int *sid
       /* get connectivity array */
       if (ex_get_conn(exoid, EX_ELEM_BLOCK, elem_blk_parms[parm_ndx].elem_blk_id, connect, NULL,
                       NULL) == -1) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for connectivity "
-                                         "array for file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to allocate space for connectivity "
+                 "array for file id %d",
                  exoid);
         ex_err(__func__, errmsg, EX_LASTERR);
         err_stat = EX_FATAL;

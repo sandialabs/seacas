@@ -33,17 +33,17 @@
  *
  */
 /*****************************************************************************
-*
-* exutils - exodus utilities
-*
-* entry conditions -
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exutils - exodus utilities
+ *
+ * entry conditions -
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_file_item, EX_FATAL, etc
@@ -84,16 +84,17 @@ struct ex_file_item *ex_find_file_item(int exoid)
 
 void ex_check_valid_file_id(int exoid, const char *func)
 {
-#if !defined           EXODUS_IN_SIERRA
+#if !defined EXODUS_IN_SIERRA
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   if (!file) {
     ex_opts(EX_ABORT | EX_VERBOSE);
     char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: In \"%s\", the file id %d was not obtained via a call "
-                                     "to \"ex_open\" or \"ex_create\".\n\t\tIt does not refer to a "
-                                     "valid open exodus file.\n\t\tAborting to avoid file "
-                                     "corruption or data loss or other potential problems.",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: In \"%s\", the file id %d was not obtained via a call "
+             "to \"ex_open\" or \"ex_create\".\n\t\tIt does not refer to a "
+             "valid open exodus file.\n\t\tAborting to avoid file "
+             "corruption or data loss or other potential problems.",
              func, exoid);
     ex_err("ex_check_valid_file_id", errmsg, EX_BADFILEID);
   }
@@ -168,8 +169,9 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
 
   else if (file_wordsize && *io_wordsize != file_wordsize) {
     *io_wordsize = file_wordsize;
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: invalid I/O word size specified for existing file id: "
-                                     "%d, Requested I/O word size overridden.",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: invalid I/O word size specified for existing file id: "
+             "%d, Requested I/O word size overridden.",
              exoid);
     ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
   }
@@ -186,8 +188,9 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   {
     int valid_int64 = EX_ALL_INT64_API | EX_ALL_INT64_DB;
     if ((int64_status & valid_int64) != int64_status) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid int64_status flag (%d) specified for "
-                                       "existing file id: %d. Ignoring invalids",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "Warning: invalid int64_status flag (%d) specified for "
+               "existing file id: %d. Ignoring invalids",
                int64_status, exoid);
       ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
     }
@@ -204,8 +207,9 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   nc_inq_format(exoid, &filetype);
 
   if (!(new_file = malloc(sizeof(struct ex_file_item)))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for internal file "
-                                     "structure storage file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate memory for internal file "
+             "structure storage file id %d",
              exoid);
     ex_err("ex_inquire", errmsg, EX_MEMFAIL);
     EX_FUNC_LEAVE(EX_FATAL);

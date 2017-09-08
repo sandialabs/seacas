@@ -34,22 +34,22 @@
  */
 
 /*!
-*
-* expfrm - ex_put_coordinate_frames: write coordinate frames
-*
-* \param exoid          exodus file id
-* \param nframes        number of coordinate frames in model
-* \param cf_ids         coordinate ids
-* \param pt_coordinates pointer to coordinates. 9 values per coordinate frame
-* \param tags           character tag for each frame. 'r' - rectangular, 'c' -
-*cylindrical, 's' - spherical
-*
-* returns -
-*      EX_NOERR         for no error
-*      EX_FATAL         for fatal errors
-*      1                number frames < 0
-*
-*****************************************************************************/
+ *
+ * expfrm - ex_put_coordinate_frames: write coordinate frames
+ *
+ * \param exoid          exodus file id
+ * \param nframes        number of coordinate frames in model
+ * \param cf_ids         coordinate ids
+ * \param pt_coordinates pointer to coordinates. 9 values per coordinate frame
+ * \param tags           character tag for each frame. 'r' - rectangular, 'c' -
+ *cylindrical, 's' - spherical
+ *
+ * returns -
+ *      EX_NOERR         for no error
+ *      EX_FATAL         for fatal errors
+ *      1                number frames < 0
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, EXERRVAL, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc

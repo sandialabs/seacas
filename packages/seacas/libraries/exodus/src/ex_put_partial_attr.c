@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* expatt - ex_put_partial_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     blk_type                block type
-*       int     blk_id                  block id
-*       float*  attrib                  array of attributes
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expatt - ex_put_partial_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     blk_type                block type
+ *       int     blk_id                  block id
+ *       float*  attrib                  array of attributes
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
 #include "exodusII_int.h" // for ex_check_valid_file_id, etc
@@ -103,12 +103,12 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
   }
 
   switch (blk_type) {
-  case EX_SIDE_SET: status   = nc_inq_varid(exoid, VAR_SSATTRIB(blk_id_ndx), &attrid); break;
-  case EX_NODE_SET: status   = nc_inq_varid(exoid, VAR_NSATTRIB(blk_id_ndx), &attrid); break;
-  case EX_EDGE_SET: status   = nc_inq_varid(exoid, VAR_ESATTRIB(blk_id_ndx), &attrid); break;
-  case EX_FACE_SET: status   = nc_inq_varid(exoid, VAR_FSATTRIB(blk_id_ndx), &attrid); break;
-  case EX_ELEM_SET: status   = nc_inq_varid(exoid, VAR_ELSATTRIB(blk_id_ndx), &attrid); break;
-  case EX_NODAL: status      = nc_inq_varid(exoid, VAR_NATTRIB, &attrid); break;
+  case EX_SIDE_SET: status = nc_inq_varid(exoid, VAR_SSATTRIB(blk_id_ndx), &attrid); break;
+  case EX_NODE_SET: status = nc_inq_varid(exoid, VAR_NSATTRIB(blk_id_ndx), &attrid); break;
+  case EX_EDGE_SET: status = nc_inq_varid(exoid, VAR_ESATTRIB(blk_id_ndx), &attrid); break;
+  case EX_FACE_SET: status = nc_inq_varid(exoid, VAR_FSATTRIB(blk_id_ndx), &attrid); break;
+  case EX_ELEM_SET: status = nc_inq_varid(exoid, VAR_ELSATTRIB(blk_id_ndx), &attrid); break;
+  case EX_NODAL: status = nc_inq_varid(exoid, VAR_NATTRIB, &attrid); break;
   case EX_EDGE_BLOCK: status = nc_inq_varid(exoid, VAR_EATTRIB(blk_id_ndx), &attrid); break;
   case EX_FACE_BLOCK: status = nc_inq_varid(exoid, VAR_FATTRIB(blk_id_ndx), &attrid); break;
   case EX_ELEM_BLOCK: status = nc_inq_varid(exoid, VAR_ATTRIB(blk_id_ndx), &attrid); break;

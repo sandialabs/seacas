@@ -133,8 +133,8 @@ namespace Ioss {
 
     template <typename T> static T find_index_location(T node, const std::vector<T> &index)
     {
-// 0-based node numbering
-// index[p] = first node (0-based) on processor p
+    // 0-based node numbering
+    // index[p] = first node (0-based) on processor p
 
 #if 1
       // Assume data coherence.  I.e., a new search will be close to the
@@ -172,7 +172,7 @@ namespace Ioss {
     }
 
     static char **get_name_array(size_t count, int size);
-    static void delete_name_array(char **names, int count);
+    static void   delete_name_array(char **names, int count);
 
     // Fill time_string and date_string with current time and date
     // formatted as "HH:MM:SS" for time and "yy/mm/dd" or "yyyy/mm/dd"
@@ -181,7 +181,7 @@ namespace Ioss {
 
     static std::string decode_filename(const std::string &filename, int processor,
                                        int num_processors);
-    static int decode_entity_name(const std::string &entity_name);
+    static int         decode_entity_name(const std::string &entity_name);
     static std::string encode_entity_name(const std::string &entity_type, int64_t id);
 
     // Convert 'name' to lowercase and convert spaces to '_'

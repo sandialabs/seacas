@@ -33,26 +33,26 @@
  *
  */
 /*****************************************************************************
-*
-* expev - ex_put_sset_var
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               time step number
-*       int     sset_var_index          sideset variable index
-*       int     sset_id                 sideset id
-*       int     num_faces_this_sset     number of faces in this sideset
-*
-* exit conditions -
-*
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expev - ex_put_sset_var
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               time step number
+ *       int     sset_var_index          sideset variable index
+ *       int     sset_id                 sideset id
+ *       int     num_faces_this_sset     number of faces in this sideset
+ *
+ * exit conditions -
+ *
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_var, ex_entity_id, etc
 #include <stdint.h>   // for int64_t

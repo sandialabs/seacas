@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* expoea - ex_put_one_elem_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     elem_blk_id             element block id
-*       int     attrib_index            index of attribute to write
-*       float*  attrib                  array of attributes
-*
-* exit conditions -
-*
-* revision history -
-*   20061003 - David Thompson - moved to ex_put_one_attr
-*
-*
-*****************************************************************************/
+ *
+ * expoea - ex_put_one_elem_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     elem_blk_id             element block id
+ *       int     attrib_index            index of attribute to write
+ *       float*  attrib                  array of attributes
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *   20061003 - David Thompson - moved to ex_put_one_attr
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_one_attr, etc
 

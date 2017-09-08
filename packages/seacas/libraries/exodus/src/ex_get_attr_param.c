@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* expmp - ex_get_attr_param
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid           exodus file id
-*       int     obj_type        block/set type (node, edge, face, elem)
-*       int     obj_id          block/set id (ignored for NODAL)
-*       int     num_attrs       number of attributes
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * expmp - ex_get_attr_param
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid           exodus file id
+ *       int     obj_type        block/set type (node, edge, face, elem)
+ *       int     obj_id          block/set id (ignored for NODAL)
+ *       int     num_attrs       number of attributes
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
@@ -97,12 +97,12 @@ int ex_get_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
   }
 
   switch (obj_type) {
-  case EX_SIDE_SET: dnumobjatt   = DIM_NUM_ATT_IN_SS(obj_id_ndx); break;
-  case EX_NODE_SET: dnumobjatt   = DIM_NUM_ATT_IN_NS(obj_id_ndx); break;
-  case EX_EDGE_SET: dnumobjatt   = DIM_NUM_ATT_IN_ES(obj_id_ndx); break;
-  case EX_FACE_SET: dnumobjatt   = DIM_NUM_ATT_IN_FS(obj_id_ndx); break;
-  case EX_ELEM_SET: dnumobjatt   = DIM_NUM_ATT_IN_ELS(obj_id_ndx); break;
-  case EX_NODAL: dnumobjatt      = DIM_NUM_ATT_IN_NBLK; break;
+  case EX_SIDE_SET: dnumobjatt = DIM_NUM_ATT_IN_SS(obj_id_ndx); break;
+  case EX_NODE_SET: dnumobjatt = DIM_NUM_ATT_IN_NS(obj_id_ndx); break;
+  case EX_EDGE_SET: dnumobjatt = DIM_NUM_ATT_IN_ES(obj_id_ndx); break;
+  case EX_FACE_SET: dnumobjatt = DIM_NUM_ATT_IN_FS(obj_id_ndx); break;
+  case EX_ELEM_SET: dnumobjatt = DIM_NUM_ATT_IN_ELS(obj_id_ndx); break;
+  case EX_NODAL: dnumobjatt = DIM_NUM_ATT_IN_NBLK; break;
   case EX_EDGE_BLOCK: dnumobjatt = DIM_NUM_ATT_IN_EBLK(obj_id_ndx); break;
   case EX_FACE_BLOCK: dnumobjatt = DIM_NUM_ATT_IN_FBLK(obj_id_ndx); break;
   case EX_ELEM_BLOCK: dnumobjatt = DIM_NUM_ATT_IN_BLK(obj_id_ndx); break;

@@ -69,8 +69,9 @@ int ex_create_group(int parent_id, const char *group_name)
   EX_FUNC_LEAVE(exoid);
 #else
   EX_FUNC_ENTER();
-  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Group capabilities are not available in this netcdf "
-                                   "version--not netcdf4");
+  snprintf(errmsg, MAX_ERR_LENGTH,
+           "ERROR: Group capabilities are not available in this netcdf "
+           "version--not netcdf4");
   ex_err("ex_create_group", errmsg, NC_ENOTNC4);
   EX_FUNC_LEAVE(EX_FATAL);
 #endif

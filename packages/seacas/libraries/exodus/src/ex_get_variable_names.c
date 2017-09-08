@@ -103,16 +103,16 @@ int ex_get_variable_names(int exoid, ex_entity_type obj_type, int num_vars, char
   ex_check_valid_file_id(exoid, __func__);
 
   switch (obj_type) {
-  case EX_NODAL: vvarname      = VAR_NAME_NOD_VAR; break;
+  case EX_NODAL: vvarname = VAR_NAME_NOD_VAR; break;
   case EX_EDGE_BLOCK: vvarname = VAR_NAME_EDG_VAR; break;
   case EX_FACE_BLOCK: vvarname = VAR_NAME_FAC_VAR; break;
   case EX_ELEM_BLOCK: vvarname = VAR_NAME_ELE_VAR; break;
-  case EX_NODE_SET: vvarname   = VAR_NAME_NSET_VAR; break;
-  case EX_EDGE_SET: vvarname   = VAR_NAME_ESET_VAR; break;
-  case EX_FACE_SET: vvarname   = VAR_NAME_FSET_VAR; break;
-  case EX_SIDE_SET: vvarname   = VAR_NAME_SSET_VAR; break;
-  case EX_ELEM_SET: vvarname   = VAR_NAME_ELSET_VAR; break;
-  case EX_GLOBAL: vvarname     = VAR_NAME_GLO_VAR; break;
+  case EX_NODE_SET: vvarname = VAR_NAME_NSET_VAR; break;
+  case EX_EDGE_SET: vvarname = VAR_NAME_ESET_VAR; break;
+  case EX_FACE_SET: vvarname = VAR_NAME_FSET_VAR; break;
+  case EX_SIDE_SET: vvarname = VAR_NAME_SSET_VAR; break;
+  case EX_ELEM_SET: vvarname = VAR_NAME_ELSET_VAR; break;
+  case EX_GLOBAL: vvarname = VAR_NAME_GLO_VAR; break;
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: invalid variable type %d requested from file id %d",
              obj_type, exoid);

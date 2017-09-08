@@ -33,19 +33,19 @@
  *
  */
 /*****************************************************************************
-*
-* exgenm - ex_get_elem_num_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*       int*    elem_map                element number map array
-*
-* revision history -
-*
-*****************************************************************************/
+ *
+ * exgenm - ex_get_elem_num_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *       int*    elem_map                element number map array
+ *
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 

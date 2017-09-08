@@ -33,24 +33,24 @@
  *
  */
 /*****************************************************************************
-*
-* ne_pennm - ex_put_n_elem_num_map
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*	int	exoid			exodus file id
-*	int	start_ent		first entry in elem_map
-*	int	num_ents		number of entries in node_map
-*       int*    elem_map                element numbering map array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * ne_pennm - ex_put_n_elem_num_map
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *	int	exoid			exodus file id
+ *	int	start_ent		first entry in elem_map
+ *	int	num_ents		number of entries in node_map
+ *       int*    elem_map                element numbering map array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_partial_id_map, etc
 #include <stdint.h>   // for int64_t

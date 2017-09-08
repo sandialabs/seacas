@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgeat - ex_get_attr_names
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     obj_type                object type (edge/face/elem block)
-*       int     obj_id                  object id (edge/face/elem block id)
-*
-* exit conditions -
-*       char*   names[]                 ptr array of attribute names
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgeat - ex_get_attr_names
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     obj_type                object type (edge/face/elem block)
+ *       int     obj_id                  object id (edge/face/elem block id)
+ *
+ * exit conditions -
+ *       char*   names[]                 ptr array of attribute names
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc

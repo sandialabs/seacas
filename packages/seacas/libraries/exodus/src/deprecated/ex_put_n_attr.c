@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* expatt - ex_put_n_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     blk_type                block type
-*       int     blk_id                  block id
-*       float*  attrib                  array of attributes
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expatt - ex_put_n_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     blk_type                block type
+ *       int     blk_id                  block id
+ *       float*  attrib                  array of attributes
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_partial_attr, etc
 #include <stdint.h>   // for int64_t

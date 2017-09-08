@@ -33,19 +33,19 @@
  *
  */
 /*****************************************************************************
-*
-* exclos - ex_close
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exclos - ex_close
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_counter_list, etc
@@ -86,11 +86,11 @@ int ex_close(int exoid)
 
   ex_check_valid_file_id(exoid, __func__);
 
-/*
- * NOTE: If using netcdf-4, exoid must refer to the root group.
- * Need to determine whether there are any groups and if so,
- * call ex_rm_file_item and ex_rm_stat_ptr on each group.
- */
+  /*
+   * NOTE: If using netcdf-4, exoid must refer to the root group.
+   * Need to determine whether there are any groups and if so,
+   * call ex_rm_file_item and ex_rm_stat_ptr on each group.
+   */
 
 #if NC_HAS_HDF5
   /* nc_inq_grp_parent() will return NC_ENOGRP error if exoid

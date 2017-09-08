@@ -109,8 +109,9 @@ int ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne
     /* Get the dimension IDs for this variable */
     if ((status = nc_inq_var(exoid, varid, (char *)0, &var_type, &ndims, dimid, (int *)0)) !=
         NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to find dimension ID for variable \"%s\" "
-                                       "in file ID %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to find dimension ID for variable \"%s\" "
+               "in file ID %d",
                ne_var_name, exoid);
       ex_err(func_name, errmsg, status);
       return (-1);

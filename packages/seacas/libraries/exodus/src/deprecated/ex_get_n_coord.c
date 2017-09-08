@@ -33,25 +33,25 @@
  *
  */
 /*****************************************************************************
-*
-* exgcor - ex_get_n_coord
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     start_node_num          starting index of coordinates to be
-*returned.
-*       int     num_nodes               number of nodes to read coordinates for.
-*
-* exit conditions -
-*       float*  x_coord                 X coord array
-*       float*  y_coord                 y coord array
-*       float*  z_coord                 z coord array
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgcor - ex_get_n_coord
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     start_node_num          starting index of coordinates to be
+ *returned.
+ *       int     num_nodes               number of nodes to read coordinates for.
+ *
+ * exit conditions -
+ *       float*  x_coord                 X coord array
+ *       float*  y_coord                 y coord array
+ *       float*  z_coord                 z coord array
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_partial_coord
 #include <stdint.h>   // for int64_t

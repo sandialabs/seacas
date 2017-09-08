@@ -473,10 +473,10 @@ namespace Ioss {
       if (set != nullptr) {
         SideBlockContainer side_blocks = set->get_side_blocks();
         for (auto &sbold : side_blocks) {
-          size_t side_count = sbold->get_property("entity_count").get_int();
-          auto   sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
+          size_t  side_count = sbold->get_property("entity_count").get_int();
+          auto    sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
                                      sbold->parent_element_topology()->name(), side_count);
-          int64_t id = sbold->get_property("id").get_int();
+          int64_t id         = sbold->get_property("id").get_int();
           sbnew->property_add(Property("set_offset", entity_count));
           sbnew->property_add(Property("set_df_offset", df_count));
           sbnew->property_add(Property("id", id));

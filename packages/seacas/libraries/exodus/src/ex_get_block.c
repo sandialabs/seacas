@@ -33,25 +33,25 @@
  *
  */
 /*!
-*
-* \undoc exgblk - read block parameters
-*
-* entry conditions -
-*   input parameters:
-*       int     idexo                   exodus file id
-*       int     blk_type                block type (edge,face,element)
-*       int     blk_id                  block id
-*
-* exit conditions -
-*       char*   elem_type               element type name
-*       int*    num_entries_this_blk    number of elements in this element block
-*       int*    num_nodes_per_entry     number of nodes per element block
-*       int*    num_attr_per_entry      number of attributes
-*
-* revision history -
-*
-*
-*/
+ *
+ * \undoc exgblk - read block parameters
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     idexo                   exodus file id
+ *       int     blk_type                block type (edge,face,element)
+ *       int     blk_id                  block id
+ *
+ * exit conditions -
+ *       char*   elem_type               element type name
+ *       int*    num_entries_this_blk    number of elements in this element block
+ *       int*    num_nodes_per_entry     number of nodes per element block
+ *       int*    num_attr_per_entry      number of attributes
+ *
+ * revision history -
+ *
+ *
+ */
 
 #include "exodusII.h" // for ex_block, void_int, etc
 #include "exodusII_int.h"

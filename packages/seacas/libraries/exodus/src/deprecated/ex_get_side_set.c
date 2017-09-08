@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgss - ex_get_side_set
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     side_set_id             side set id
-*
-* exit conditions -
-*       int*    side_set_elem_list      array of elements in side set
-*       int*    side_set_side_list      array of sides in side set
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgss - ex_get_side_set
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     side_set_id             side set id
+ *
+ * exit conditions -
+ *       int*    side_set_elem_list      array of elements in side set
+ *       int*    side_set_side_list      array of sides in side set
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_set, void_int, etc
 

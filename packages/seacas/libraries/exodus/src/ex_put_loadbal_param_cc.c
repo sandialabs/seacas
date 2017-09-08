@@ -804,8 +804,9 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       status = nc_put_var1_int(exoid, varid_idx[5], start, &num_n_cmaps);
 #endif
       if (status != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output node communication map index "
-                                         "in file ID %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to output node communication map index "
+                 "in file ID %d",
                  exoid);
         ex_err(func_name, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
@@ -821,8 +822,9 @@ int ex_put_loadbal_param_cc(int exoid, void_int *num_int_nodes, void_int *num_bo
       status = nc_put_var1_int(exoid, varid_idx[6], start, &num_e_cmaps);
 #endif
       if (status != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output elem communication map index "
-                                         "in file ID %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to output elem communication map index "
+                 "in file ID %d",
                  exoid);
         ex_err(func_name, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
