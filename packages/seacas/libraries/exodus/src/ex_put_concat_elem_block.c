@@ -33,19 +33,19 @@
  *
  */
 /*****************************************************************************
-*
-* expclb - ex_put_concat_elem_block: write element block parameters
-*
-* entry conditions -
-*   input parameters:
-*       int     idexo                   exodus file id
-*       char**  elem_type               element type string
-*       int*    num_elem_this_blk       number of elements in the element blk
-*       int*    num_nodes_per_elem      number of nodes per element block
-*       int*    num_attr_this_blk       number of attributes
-*       int     define_maps             if != 0, write maps, else don't
-*
-*****************************************************************************/
+ *
+ * expclb - ex_put_concat_elem_block: write element block parameters
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     idexo                   exodus file id
+ *       char**  elem_type               element type string
+ *       int*    num_elem_this_blk       number of elements in the element blk
+ *       int*    num_nodes_per_elem      number of nodes per element block
+ *       int*    num_attr_this_blk       number of attributes
+ *       int     define_maps             if != 0, write maps, else don't
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
@@ -105,8 +105,9 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
 
   /* Fill out the element block status array */
   if (!(eb_array = malloc(num_elem_blk * sizeof(int)))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for element block status "
-                                     "array in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for element block status "
+             "array in file id %d",
              exoid);
     ex_err("ex_put_concat_elem_block", errmsg, EX_MEMFAIL);
     EX_FUNC_LEAVE(EX_FATAL);
@@ -238,8 +239,9 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
                  "ERROR: element block %" PRId64 " already defined in file id %d", eb_id, exoid);
       }
       else {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of elements/block for "
-                                         "block %" PRId64 " file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of elements/block for "
+                 "block %" PRId64 " file id %d",
                  eb_id, exoid);
       }
       ex_err("ex_put_concat_elem_block", errmsg, status);
@@ -296,8 +298,9 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
 
       if ((status = nc_def_var(exoid, VAR_NAME_ATTRIB(cur_num_elem_blk + 1), NC_CHAR, 2, dims,
                                &temp)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define element attribute name array "
-                                         "in file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define element attribute name array "
+                 "in file id %d",
                  exoid);
         ex_err("ex_put_concat_elem_block", errmsg, status);
         goto error_ret; /* exit define mode and return */
@@ -360,8 +363,9 @@ int ex_put_concat_elem_block(int exoid, const void_int *elem_blk_id, char *elem_
                      "ERROR: node numbering map already exists in file id %d", exoid);
           }
           else {
-            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to create node numbering map array "
-                                             "in file id %d",
+            snprintf(errmsg, MAX_ERR_LENGTH,
+                     "ERROR: failed to create node numbering map array "
+                     "in file id %d",
                      exoid);
           }
           ex_err("ex_put_concat_elem_block", errmsg, status);

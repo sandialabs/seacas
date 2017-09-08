@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* exgvp - ex_get_var_param
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       char*   var_type                variable type G,N, or E
-*
-* exit conditions -
-*       int*    num_vars                number of variables in database
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgvp - ex_get_var_param
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       char*   var_type                variable type G,N, or E
+ *
+ * exit conditions -
+ *       int*    num_vars                number of variables in database
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_variable_param, etc
 

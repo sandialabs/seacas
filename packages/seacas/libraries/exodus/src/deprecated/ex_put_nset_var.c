@@ -33,26 +33,26 @@
  *
  */
 /*****************************************************************************
-*
-* expmv - ex_put_nset_var
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               time step number
-*       int     nset_var_index          nodeset variable index
-*       int     nset_id                 nodeset id
-*       int     num_nodes_this_nset     number of nodes in this nodeset
-*
-* exit conditions -
-*
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expmv - ex_put_nset_var
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               time step number
+ *       int     nset_var_index          nodeset variable index
+ *       int     nset_id                 nodeset id
+ *       int     num_nodes_this_nset     number of nodes in this nodeset
+ *
+ * exit conditions -
+ *
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_var, ex_entity_id, etc
 #include <stdint.h>   // for int64_t

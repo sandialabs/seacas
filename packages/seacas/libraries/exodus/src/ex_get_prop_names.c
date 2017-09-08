@@ -129,15 +129,15 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
     case EX_ELEM_BLOCK: var_name = VAR_EB_PROP(i + 1); break;
     case EX_FACE_BLOCK: var_name = VAR_FA_PROP(i + 1); break;
     case EX_EDGE_BLOCK: var_name = VAR_ED_PROP(i + 1); break;
-    case EX_NODE_SET: var_name   = VAR_NS_PROP(i + 1); break;
-    case EX_SIDE_SET: var_name   = VAR_SS_PROP(i + 1); break;
-    case EX_EDGE_SET: var_name   = VAR_ES_PROP(i + 1); break;
-    case EX_FACE_SET: var_name   = VAR_FS_PROP(i + 1); break;
-    case EX_ELEM_SET: var_name   = VAR_ELS_PROP(i + 1); break;
-    case EX_ELEM_MAP: var_name   = VAR_EM_PROP(i + 1); break;
-    case EX_FACE_MAP: var_name   = VAR_FAM_PROP(i + 1); break;
-    case EX_EDGE_MAP: var_name   = VAR_EDM_PROP(i + 1); break;
-    case EX_NODE_MAP: var_name   = VAR_NM_PROP(i + 1); break;
+    case EX_NODE_SET: var_name = VAR_NS_PROP(i + 1); break;
+    case EX_SIDE_SET: var_name = VAR_SS_PROP(i + 1); break;
+    case EX_EDGE_SET: var_name = VAR_ES_PROP(i + 1); break;
+    case EX_FACE_SET: var_name = VAR_FS_PROP(i + 1); break;
+    case EX_ELEM_SET: var_name = VAR_ELS_PROP(i + 1); break;
+    case EX_ELEM_MAP: var_name = VAR_EM_PROP(i + 1); break;
+    case EX_FACE_MAP: var_name = VAR_FAM_PROP(i + 1); break;
+    case EX_EDGE_MAP: var_name = VAR_EDM_PROP(i + 1); break;
+    case EX_NODE_MAP: var_name = VAR_NM_PROP(i + 1); break;
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
@@ -171,8 +171,9 @@ int ex_get_prop_names(int exoid, ex_entity_type obj_type, char **prop_names)
     }
     else {
       /* FIXME */
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: property name length exceeds space available to "
-                                       "store it in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: property name length exceeds space available to "
+               "store it in file id %d",
                exoid);
       ex_err("ex_get_prop_names", errmsg, NC_ESTS);
       EX_FUNC_LEAVE(EX_FATAL);

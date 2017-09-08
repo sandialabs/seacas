@@ -34,19 +34,19 @@
  */
 
 /*****************************************************************************
-*
-* exgcssc - ex_get_concat_side_set_node_count
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*       int     *side_set_node_cnt_list returned array of number of nodes for
-*                                       side or face for all sidesets
-* revision history -
-*
-*****************************************************************************/
+ *
+ * exgcssc - ex_get_concat_side_set_node_count
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *       int     *side_set_node_cnt_list returned array of number of nodes for
+ *                                       side or face for all sidesets
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, EX_MSG, etc
 #include "exodusII_int.h" // for elem_blk_parm, EX_FATAL, etc
@@ -151,8 +151,9 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
 
   /* Allocate space for the element block params */
   if (!(elem_blk_parms = malloc(num_elem_blks * sizeof(struct elem_blk_parm)))) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for element block params "
-                                     "for file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to allocate space for element block params "
+             "for file id %d",
              exoid);
     ex_err("ex_get_concat_side_set_node_count", errmsg, EX_MEMFAIL);
     goto error_ret;
@@ -228,8 +229,9 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
 
     /* Allocate space for the side set element list */
     if (!(side_set_elem_list = malloc(tot_num_ss_elem * int_size))) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set element "
-                                       "list for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate space for side set element "
+               "list for file id %d",
                exoid);
       ex_err("ex_get_concat_side_set_node_count", errmsg, EX_MEMFAIL);
       goto error_ret;
@@ -237,8 +239,9 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
 
     /* Allocate space for the side set side list */
     if (!(side_set_side_list = malloc(tot_num_ss_elem * int_size))) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set side list "
-                                       "for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate space for side set side list "
+               "for file id %d",
                exoid);
       ex_err("ex_get_concat_side_set_node_count", errmsg, EX_MEMFAIL);
       goto error_ret;
@@ -254,8 +257,9 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
 
     /* Allocate space for the ss element index array */
     if (!(ss_elem_ndx = malloc(tot_num_ss_elem * int_size))) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate space for side set elem sort "
-                                       "array for file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: failed to allocate space for side set elem sort "
+               "array for file id %d",
                exoid);
       ex_err("ex_get_concat_side_set_node_count", errmsg, EX_MEMFAIL);
       goto error_ret;
@@ -311,8 +315,9 @@ int ex_get_concat_side_set_node_count(int exoid, int *side_set_node_cnt_list)
         side_set_node_cnt_list[elem_ndx + ioff] = elem_blk_parms[j].num_nodes_per_side[side];
       }
       else {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid element number  %" PRId64
-                                         " found in side set  %" PRId64 " in file %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: Invalid element number  %" PRId64 " found in side set  %" PRId64
+                 " in file %d",
                  elem, side_set_id, exoid);
         ex_err("ex_get_concat_side_set_node_count", errmsg, EX_BADPARAM);
         goto error_ret;

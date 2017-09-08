@@ -33,24 +33,24 @@
  *
  */
 /*****************************************************************************
-*
-* exgsetp - ex_get_set_param
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     set_type                the type of set
-*       int     set_id                  set id
-*
-* exit conditions -
-*       int*    num_entries_in_set      number of entries in the set
-*       int*    num_dist_fact_in_set    number of distribution factors in the
-*                                       set
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgsetp - ex_get_set_param
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     set_type                the type of set
+ *       int     set_id                  set id
+ *
+ * exit conditions -
+ *       int*    num_entries_in_set      number of entries in the set
+ *       int*    num_dist_fact_in_set    number of distribution factors in the
+ *                                       set
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc

@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* exgnam - ex_get_names
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid          exodus file id
-*       int    obj_type,
-*
-* exit conditions -
-*       char*   names[]           ptr array of names
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgnam - ex_get_names
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid          exodus file id
+ *       int    obj_type,
+ *
+ * exit conditions -
+ *       char*   names[]           ptr array of names
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_dimension, EX_NOERR, etc

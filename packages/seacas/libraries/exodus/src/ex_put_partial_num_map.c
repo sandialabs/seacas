@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* exppem - ex_put_partial_num_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     map_id                  element map id
-*       int     ent_start               first entry in map
-*       int     ent_count               number of entries in map
-*       int     *map                    map
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exppem - ex_put_partial_num_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     map_id                  element map id
+ *       int     ent_start               first entry in map
+ *       int     ent_count               number of entries in map
+ *       int     *map                    map
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc

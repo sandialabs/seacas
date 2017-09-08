@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgvan - ex_get_var_names
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       char*   var_type                variable type: G,N, or E
-*       int     num_vars                # of variables to read
-*
-* exit conditions -
-*       char*   var_names               ptr array of variable names
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgvan - ex_get_var_names
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       char*   var_type                variable type: G,N, or E
+ *       int     num_vars                # of variables to read
+ *
+ * exit conditions -
+ *       char*   var_names               ptr array of variable names
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_variable_names, etc
 

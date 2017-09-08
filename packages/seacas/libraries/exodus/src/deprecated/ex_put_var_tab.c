@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* expvtt - ex_put_var_tab
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       char*   type                    'e', 'm', 's' element, nodeset, sideset
-*       int     num_blk            number of blocks
-*       int     num_var            number of variables
-*       int*    var_tab            variable truth table array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expvtt - ex_put_var_tab
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       char*   type                    'e', 'm', 's' element, nodeset, sideset
+ *       int     num_blk            number of blocks
+ *       int     num_var            number of variables
+ *       int*    var_tab            variable truth table array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_truth_table, etc
 

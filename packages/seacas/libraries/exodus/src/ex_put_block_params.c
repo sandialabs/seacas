@@ -447,8 +447,9 @@ int ex_put_block_params(int exoid, size_t block_count, const struct ex_block *bl
       dims[0] = numblkdim;
 
       if ((status = nc_def_var(exoid, vnpecnt, conn_int_type, 1, dims, &npeid)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to create face- or node- per-entity "
-                                         "count array for %s %" PRId64 " in file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to create face- or node- per-entity "
+                 "count array for %s %" PRId64 " in file id %d",
                  ex_name_of_object(blocks[i].type), blocks[i].id, exoid);
         ex_err("ex_put_block_params", errmsg, status);
         goto error_ret; /* exit define mode and return */

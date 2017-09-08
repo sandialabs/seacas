@@ -48,6 +48,7 @@ namespace Ioss {
       return base;
     }
     int suffix_count() const override { return 0; }
+
   protected:
     ElementVariableType(const std::string &type, int comp_count);
   };

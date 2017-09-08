@@ -33,19 +33,19 @@
  *
  */
 /*****************************************************************************
-*
-* expmp - ex_put_map_param
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     num_node_maps           number of node maps
-*       int     num_elem_maps           number of element maps
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * expmp - ex_put_map_param
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     num_node_maps           number of node maps
+ *       int     num_elem_maps           number of element maps
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
@@ -264,8 +264,9 @@ int ex_put_map_param(int exoid, int num_node_maps, int num_elem_maps)
       int  maxset      = num_node_maps > num_elem_maps ? num_node_maps : num_elem_maps;
       int *invalid_ids = malloc(maxset * sizeof(int));
       if (invalid_ids == NULL) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for invalid id "
-                                         "storage in file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to allocate memory for invalid id "
+                 "storage in file id %d",
                  exoid);
         ex_err("ex_put_map_param", errmsg, EX_MEMFAIL);
         EX_FUNC_LEAVE(EX_FATAL);

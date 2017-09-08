@@ -104,8 +104,8 @@ namespace Ioss {
 
     State get_state() const;
 
-    DatabaseIO *get_database() const;
-    void set_database(DatabaseIO *io_database);
+    DatabaseIO * get_database() const;
+    void         set_database(DatabaseIO *io_database);
     virtual void delete_database();
 
     /** \brief Get name of entity.
@@ -173,12 +173,12 @@ namespace Ioss {
     // ========================================================================
     // Property-related information....
     // Just forward it through to the property manager...
-    void property_add(const Property &new_prop);
-    void property_erase(const std::string &property_name);
-    bool property_exists(const std::string &property_name) const;
+    void     property_add(const Property &new_prop);
+    void     property_erase(const std::string &property_name);
+    bool     property_exists(const std::string &property_name) const;
     Property get_property(const std::string &property_name) const;
-    int property_describe(NameList *names) const;
-    size_t property_count() const;
+    int      property_describe(NameList *names) const;
+    size_t   property_count() const;
     /** Add a property, or change its value if it already exists with
         a different value */
     void property_update(const std::string &property, int64_t value) const;
@@ -187,15 +187,15 @@ namespace Ioss {
     //                                FIELDS
     // ========================================================================
     // Just forward these through to the field manager...
-    void field_add(const Field &new_field);
-    void field_erase(const std::string &field_name);
-    bool field_exists(const std::string &field_name) const;
-    Field get_field(const std::string &field_name) const;
+    void         field_add(const Field &new_field);
+    void         field_erase(const std::string &field_name);
+    bool         field_exists(const std::string &field_name) const;
+    Field        get_field(const std::string &field_name) const;
     const Field &get_fieldref(const std::string &field_name) const;
-    int field_describe(NameList *names) const;
-    int field_describe(Field::RoleType role, NameList *names) const;
-    size_t field_count() const;
-    size_t field_count(Field::RoleType role) const;
+    int          field_describe(NameList *names) const;
+    int          field_describe(Field::RoleType role, NameList *names) const;
+    size_t       field_count() const;
+    size_t       field_count(Field::RoleType role) const;
 
     // Put this fields data into 'data'.
     // Returns number of entities for which the field was read.
@@ -513,7 +513,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name, std::vec
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &         field_name,
                                          Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
@@ -558,7 +558,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
+int Ioss::GroupingEntity::get_field_data(const std::string &          field_name,
                                          Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;
@@ -620,7 +620,7 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &         field_name,
                                          Kokkos::View<T *, Args...> &data) const
 {
   typedef Kokkos::View<T *, Args...> ViewType;
@@ -658,7 +658,7 @@ int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
  *
  */
 template <typename T, typename... Args>
-int Ioss::GroupingEntity::put_field_data(const std::string &field_name,
+int Ioss::GroupingEntity::put_field_data(const std::string &          field_name,
                                          Kokkos::View<T **, Args...> &data) const
 {
   typedef Kokkos::View<T **, Args...> ViewType;

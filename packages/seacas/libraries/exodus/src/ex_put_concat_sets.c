@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* expcss - ex_put_concat_sets
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     set_type                type of set
-*       struct ex_set_specs* set_specs  set specs structure
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expcss - ex_put_concat_sets
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     set_type                type of set
+ *       struct ex_set_specs* set_specs  set specs structure
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc

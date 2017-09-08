@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgvnm - ex_get_variable_name
-*
-* entry conditions -
-*   input parameters:
-*       int   exoid                   exodus file id
-*       int   obj_type                variable type
-*       int   var_num                 variable index to read 1..num_var
-*
-* exit conditions -
-*       char*   var_name                ptr to variable name
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgvnm - ex_get_variable_name
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int   exoid                   exodus file id
+ *       int   obj_type                variable type
+ *       int   var_num                 variable index to read 1..num_var
+ *
+ * exit conditions -
+ *       char*   var_name                ptr to variable name
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
@@ -74,16 +74,16 @@ int ex_get_variable_name(int exoid, ex_entity_type obj_type, int var_num, char *
   /* inquire previously defined variables  */
 
   switch (obj_type) {
-  case EX_GLOBAL: vname     = VAR_NAME_GLO_VAR; break;
-  case EX_NODAL: vname      = VAR_NAME_NOD_VAR; break;
+  case EX_GLOBAL: vname = VAR_NAME_GLO_VAR; break;
+  case EX_NODAL: vname = VAR_NAME_NOD_VAR; break;
   case EX_EDGE_BLOCK: vname = VAR_NAME_EDG_VAR; break;
   case EX_FACE_BLOCK: vname = VAR_NAME_FAC_VAR; break;
   case EX_ELEM_BLOCK: vname = VAR_NAME_ELE_VAR; break;
-  case EX_NODE_SET: vname   = VAR_NAME_NSET_VAR; break;
-  case EX_EDGE_SET: vname   = VAR_NAME_ESET_VAR; break;
-  case EX_FACE_SET: vname   = VAR_NAME_FSET_VAR; break;
-  case EX_SIDE_SET: vname   = VAR_NAME_SSET_VAR; break;
-  case EX_ELEM_SET: vname   = VAR_NAME_ELSET_VAR; break;
+  case EX_NODE_SET: vname = VAR_NAME_NSET_VAR; break;
+  case EX_EDGE_SET: vname = VAR_NAME_ESET_VAR; break;
+  case EX_FACE_SET: vname = VAR_NAME_FSET_VAR; break;
+  case EX_SIDE_SET: vname = VAR_NAME_SSET_VAR; break;
+  case EX_ELEM_SET: vname = VAR_NAME_ELSET_VAR; break;
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type (%d) given for file id %d",
              obj_type, exoid);

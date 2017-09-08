@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* expnstt - ex_put_nset_var_tab
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     num_nset                number of nodesets
-*       int     num_nset_var            number of nodeset variables
-*       int*    nset_var_tab            nodeset variable truth table array
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * expnstt - ex_put_nset_var_tab
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     num_nset                number of nodesets
+ *       int     num_nset_var            number of nodeset variables
+ *       int*    nset_var_tab            nodeset variable truth table array
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_truth_table, etc
 

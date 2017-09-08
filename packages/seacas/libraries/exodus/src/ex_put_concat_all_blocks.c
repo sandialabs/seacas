@@ -33,15 +33,15 @@
  *
  */
 /*****************************************************************************
-*
-* expclb - ex_put_concat_all_blocks: write elem, edge, & face block parameters
-*
-* entry conditions -
-*   input parameters:
-*       int                    exoid          exodus file id
-*       const ex_block_params* bparam         block parameters structure
-*
-*****************************************************************************/
+ *
+ * expclb - ex_put_concat_all_blocks: write elem, edge, & face block parameters
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int                    exoid          exodus file id
+ *       const ex_block_params* bparam         block parameters structure
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
@@ -90,10 +90,16 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
   int ids_int64 = ex_int64_status(exoid) & EX_IDS_INT64_API;
 
   static const char *dim_num_maps[] = {
-      DIM_NUM_NM, DIM_NUM_EDM, DIM_NUM_FAM, DIM_NUM_EM,
+      DIM_NUM_NM,
+      DIM_NUM_EDM,
+      DIM_NUM_FAM,
+      DIM_NUM_EM,
   };
   static const char *dim_size_maps[] = {
-      DIM_NUM_NODES, DIM_NUM_EDGE, DIM_NUM_FACE, DIM_NUM_ELEM,
+      DIM_NUM_NODES,
+      DIM_NUM_EDGE,
+      DIM_NUM_FACE,
+      DIM_NUM_ELEM,
   };
   static const ex_entity_type map_enums[] = {EX_NODE_MAP, EX_EDGE_MAP, EX_FACE_MAP, EX_ELEM_MAP};
 
@@ -244,8 +250,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
 #define EX_PREPARE_ATTRIB_ARRAY(TNAME, CURBLK, DNAME, DVAL, ID, VANAME, VADIM0, VADIM1, VANNAME)   \
   if (DVAL[iblk] > 0) {                                                                            \
     if ((status = nc_def_dim(exoid, DNAME(CURBLK + 1), DVAL[iblk], &VADIM1)) != NC_NOERR) {        \
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of attributes in " TNAME    \
-                                       " block %" PRId64 " in file id %d",                         \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR: failed to define number of attributes in " TNAME " block %" PRId64          \
+               " in file id %d",                                                                   \
                ID, exoid);                                                                         \
       ex_err("ex_put_concat_all_blocks", errmsg, status);                                          \
       goto error_ret; /* exit define mode and return */                                            \
@@ -256,8 +263,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                                                                                                    \
     if ((status = nc_def_var(exoid, VANAME(CURBLK + 1), nc_flt_code(exoid), 2, dims, &temp)) !=    \
         NC_NOERR) {                                                                                \
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR:  failed to define attributes for " TNAME            \
-                                       " block %" PRId64 " in file id %d",                         \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR:  failed to define attributes for " TNAME " block %" PRId64                  \
+               " in file id %d",                                                                   \
                ID, exoid);                                                                         \
       ex_err("ex_put_concat_all_blocks", errmsg, status);                                          \
       goto error_ret; /* exit define mode and return */                                            \
@@ -280,8 +288,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
 #define EX_PREPARE_ATTRIB_ARRAY(TNAME, CURBLK, DNAME, DVAL, ID, VANAME, VADIM0, VADIM1, VANNAME)   \
   if (DVAL[iblk] > 0) {                                                                            \
     if ((status = nc_def_dim(exoid, DNAME(CURBLK + 1), DVAL[iblk], &VADIM1)) != NC_NOERR) {        \
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of attributes in " TNAME    \
-                                       " block %" PRId64 " in file id %d",                         \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR: failed to define number of attributes in " TNAME " block %" PRId64          \
+               " in file id %d",                                                                   \
                ID, exoid);                                                                         \
       ex_err("ex_put_concat_all_blocks", errmsg, status);                                          \
       goto error_ret; /* exit define mode and return */                                            \
@@ -292,8 +301,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                                                                                                    \
     if ((status = nc_def_var(exoid, VANAME(CURBLK + 1), nc_flt_code(exoid), 2, dims, &temp)) !=    \
         NC_NOERR) {                                                                                \
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR:  failed to define attributes for " TNAME            \
-                                       " block %" PRId64 " in file id %d",                         \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR:  failed to define attributes for " TNAME " block %" PRId64                  \
+               " in file id %d",                                                                   \
                ID, exoid);                                                                         \
       ex_err("ex_put_concat_all_blocks", errmsg, status);                                          \
       goto error_ret; /* exit define mode and return */                                            \
@@ -324,8 +334,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                                                                                                    \
     if ((status = nc_def_var(exoid, VNAME(BLK + 1), conn_int_type, 2, dims, &connid)) !=           \
         NC_NOERR) {                                                                                \
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to create " TNAME                            \
-                                       " connectivity array for block %" PRId64 " in file id %d",  \
+      snprintf(errmsg, MAX_ERR_LENGTH,                                                             \
+               "ERROR: failed to create " TNAME " connectivity array for block %" PRId64           \
+               " in file id %d",                                                                   \
                BLKID, exoid);                                                                      \
       ex_err("ex_put_concat_all_blocks", errmsg, status);                                          \
       goto error_ret; /* exit define mode and return */                                            \
@@ -481,8 +492,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
 
     cur_num_elem_blk = ex_get_file_item(exoid, ex_get_counter_list(EX_ELEM_BLOCK));
     if (cur_num_elem_blk >= (int)num_elem_blk) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: exceeded number of element blocks (%ld) defined "
-                                       "in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: exceeded number of element blocks (%ld) defined "
+               "in file id %d",
                (long)num_elem_blk, exoid);
       ex_err("ex_put_concat_all_blocks", errmsg, EX_BADPARAM);
       goto error_ret;
@@ -504,8 +516,9 @@ int ex_put_concat_all_blocks(int exoid, const ex_block_params *param)
                  "ERROR: element block %" PRId64 " already defined in file id %d", eb_id, exoid);
       }
       else {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define number of elements/block for "
-                                         "block %" PRId64 " file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define number of elements/block for "
+                 "block %" PRId64 " file id %d",
                  eb_id, exoid);
       }
       ex_err("ex_put_concat_all_blocks", errmsg, status);

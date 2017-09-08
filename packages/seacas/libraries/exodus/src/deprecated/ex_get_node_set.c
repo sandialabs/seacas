@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* exgns - ex_get_node_set
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     node_set_id             node set id
-*
-* exit conditions -
-*       int*    node_set_node_list      node list array for the node set
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgns - ex_get_node_set
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     node_set_id             node set id
+ *
+ * exit conditions -
+ *       int*    node_set_node_list      node list array for the node set
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_set, ex_entity_id, etc
 #include <stdlib.h>   // for NULL

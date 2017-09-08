@@ -33,17 +33,17 @@
  *
  */
 /*****************************************************************************
-*
-* exupda - ex_update
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * exupda - ex_update
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR

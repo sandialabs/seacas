@@ -77,7 +77,7 @@ namespace Ioss {
     // Checks if a field with 'field_name' exists in the database.
     bool exists(const std::string &field_name) const;
 
-    Field get(const std::string &field_name) const;
+    Field        get(const std::string &field_name) const;
     const Field &getref(const std::string &field_name) const;
 
     // Returns the names of all fields

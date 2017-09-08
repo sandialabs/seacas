@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* expenm - ex_put_id_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       ex_entity_type obj_type
-*       int*    elem_map                element numbering map array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expenm - ex_put_id_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       ex_entity_type obj_type
+ *       int*    elem_map                element numbering map array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc

@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* expvtt - ex_put_truth_table
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid              exodus file id
-*       int     obj_type           object type
-*       int     num_blk            number of blocks
-*       int     num_var            number of variables
-*       int*    variable_table            variable truth table array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expvtt - ex_put_truth_table
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid              exodus file id
+ *       int     obj_type           object type
+ *       int     num_blk            number of blocks
+ *       int     num_var            number of variables
+ *       int*    variable_table            variable truth table array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_dimension, EX_FATAL, etc
@@ -268,8 +268,9 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
           /* Determine number of entities in block */
           if ((status = nc_inq_dimid(exoid, ex_catstr(ent_size, (i + 1)), &dims[1])) != NC_NOERR) {
             free(stat_vals);
-            snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of entities in "
-                                             "%d'th %s in file id %d",
+            snprintf(errmsg, MAX_ERR_LENGTH,
+                     "ERROR: failed to locate number of entities in "
+                     "%d'th %s in file id %d",
                      i + 1, ex_name_of_object(obj_type), exoid);
             ex_err(routine, errmsg, status);
             goto error_ret; /* exit define mode and return */

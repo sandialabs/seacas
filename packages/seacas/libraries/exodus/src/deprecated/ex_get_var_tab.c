@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* exgvtt - ex_get_var_tab
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid              exodus file id
-*       int     num_blk            number of blocks
-*       int     num_var            number of variables
-*
-* exit conditions -
-*       int*    var_tab            element variable truth table array
-*
-*
-*****************************************************************************/
+ *
+ * exgvtt - ex_get_var_tab
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid              exodus file id
+ *       int     num_blk            number of blocks
+ *       int     num_var            number of variables
+ *
+ * exit conditions -
+ *       int*    var_tab            element variable truth table array
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_truth_table, etc
 

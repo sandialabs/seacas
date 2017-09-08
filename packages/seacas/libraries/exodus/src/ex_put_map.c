@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* expmap - ex_put_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int*    elem_map                element order map array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expmap - ex_put_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int*    elem_map                element order map array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
