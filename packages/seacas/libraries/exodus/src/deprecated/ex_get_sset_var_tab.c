@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* exgvtt - ex_get_sset_var_tab
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     num_sidesets            number of sidesets
-*       int     num_sset_var            number of sideset variables
-*
-* exit conditions -
-*       int*    sset_var_tab            sideset variable truth table array
-*
-*
-*****************************************************************************/
+ *
+ * exgvtt - ex_get_sset_var_tab
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     num_sidesets            number of sidesets
+ *       int     num_sset_var            number of sideset variables
+ *
+ * exit conditions -
+ *       int*    sset_var_tab            sideset variable truth table array
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_truth_table, etc
 

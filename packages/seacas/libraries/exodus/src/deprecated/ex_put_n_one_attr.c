@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* expoea - ex_put_n_one_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     obj_type                object type (edge, face, elem block)
-*       int     obj_id                  object id (edge, face, elem block ID)
-*       int     attrib_index            index of attribute to write
-*       float*  attrib                  array of attributes
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * expoea - ex_put_n_one_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     obj_type                object type (edge, face, elem block)
+ *       int     obj_id                  object id (edge, face, elem block ID)
+ *       int     attrib_index            index of attribute to write
+ *       float*  attrib                  array of attributes
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_partial_one_attr, etc
 #include <stdint.h>   // for int64_t

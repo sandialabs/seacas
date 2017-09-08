@@ -33,41 +33,41 @@
  *
  */
 /*****************************************************************************
-*
-* exgfrm - ex_get_coordinate_frames: read coordinate frames
-*
-* entry conditions -
-*   input parameters:
-*       int         exoid               exodus file id
-*
-* NOTE:
-*    cf_ids, pt_coordinates and tags may all be NULL, otherwise, they
-*    must have sufficient memory to store the output data. Two calls
-*    to this routine are anticipated (one to get nframes, the second
-*    to fill the data. i.e.
-*      ex_get_coordinate_frames(exoid,&nframes,0,0,0);
-*        ... allocate memory ...
-*      ex_get_coordinate_frames(exoid,&nframe,id,coords,tags);
-*
-*
-* output conditions -
-*       int*         nframes             number of coordinate frames in model
-*       const int*   cf_ids             coordinate ids
-*                                       dimension int[nframes]
-*       const void*  pt_coordinates     pointer to coordinates. 9 values per
-*                                       coordinate frame
-*                                       dimension float[9*nframes]
-*       const char*  tags               character tag for each frame.
-*                                        'r' - rectangular
-*                                        'c' - cylindrical
-*                                        's' - spherical
-*                                        dimension char[nframes]
-*
-* returns -
-*      EX_NOERR         for no error
-*      EX_FATAL         for fatal errors
-*
-*****************************************************************************/
+ *
+ * exgfrm - ex_get_coordinate_frames: read coordinate frames
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int         exoid               exodus file id
+ *
+ * NOTE:
+ *    cf_ids, pt_coordinates and tags may all be NULL, otherwise, they
+ *    must have sufficient memory to store the output data. Two calls
+ *    to this routine are anticipated (one to get nframes, the second
+ *    to fill the data. i.e.
+ *      ex_get_coordinate_frames(exoid,&nframes,0,0,0);
+ *        ... allocate memory ...
+ *      ex_get_coordinate_frames(exoid,&nframe,id,coords,tags);
+ *
+ *
+ * output conditions -
+ *       int*         nframes             number of coordinate frames in model
+ *       const int*   cf_ids             coordinate ids
+ *                                       dimension int[nframes]
+ *       const void*  pt_coordinates     pointer to coordinates. 9 values per
+ *                                       coordinate frame
+ *                                       dimension float[9*nframes]
+ *       const char*  tags               character tag for each frame.
+ *                                        'r' - rectangular
+ *                                        'c' - cylindrical
+ *                                        's' - spherical
+ *                                        dimension char[nframes]
+ *
+ * returns -
+ *      EX_NOERR         for no error
+ *      EX_FATAL         for fatal errors
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc

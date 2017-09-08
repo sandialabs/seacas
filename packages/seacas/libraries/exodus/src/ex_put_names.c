@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* expnam - ex_put_names
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid       exodus file id
-*       int     obj_type    object type
-*       char*   names       ptr array of entity names
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expnam - ex_put_names
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid       exodus file id
+ *       int     obj_type    object type
+ *       char*   names       ptr array of entity names
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc

@@ -102,7 +102,7 @@ namespace {
         && method != "KWAY" && method != "GEOM_KWAY" && method != "KWAY_GEOM" &&
         method != "METIS_SFC"
 #endif
-        ) {
+    ) {
       if (my_processor == 0) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Invalid decomposition method specified: '" << method << "'\n"
@@ -213,7 +213,7 @@ namespace Ioss {
 
     m_elementDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalElementCount,
                                          &m_elementOffset, &m_elementCount);
-    m_nodeDist = get_entity_dist<INT>(m_processorCount, m_processor, m_globalNodeCount,
+    m_nodeDist    = get_entity_dist<INT>(m_processorCount, m_processor, m_globalNodeCount,
                                       &m_nodeOffset, &m_nodeCount);
   }
 

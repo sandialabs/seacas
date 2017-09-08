@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* expvnm - ex_put_var_name
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       char*   var_type                variable type: G,N, or E
-*       int     var_num                 variable number name to write 1..num_var
-*       char*   var_name                ptr of variable name
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expvnm - ex_put_var_name
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       char*   var_type                variable type: G,N, or E
+ *       int     var_num                 variable number name to write 1..num_var
+ *       char*   var_name                ptr of variable name
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_variable_name, etc
 

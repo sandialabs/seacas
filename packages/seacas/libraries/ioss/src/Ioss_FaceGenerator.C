@@ -31,7 +31,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_CodeTypes.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
@@ -148,7 +147,7 @@ namespace {
           // On 'boundary' -- try to determine whether on processor or exterior
           // boundary
           std::map<int, int> shared_nodes;
-          int face_node_count = 0;
+          int                face_node_count = 0;
           for (auto &gnode : face.connectivity_) {
             if (gnode > 0) {
               auto node = region.get_database()->node_global_to_local(gnode, true) - 1;
@@ -181,7 +180,7 @@ namespace {
           // On 'boundary' -- try to determine whether on processor or exterior
           // boundary
           std::map<int, int> shared_nodes;
-          int face_node_count = 0;
+          int                face_node_count = 0;
           for (auto &gnode : face.connectivity_) {
             if (gnode > 0) {
               auto node = region.get_database()->node_global_to_local(gnode, true) - 1;
@@ -245,7 +244,7 @@ namespace {
       // of this processors faces...  If so, then mark as shared and
       // add the element...
       for (size_t i = 0; i < check_faces.size(); i += values_per_face) {
-        size_t id = check_faces[i + 0];
+        size_t                id = check_faces[i + 0];
         std::array<size_t, 4> conn{};
         conn[0]            = check_faces[i + 1];
         conn[1]            = check_faces[i + 2];

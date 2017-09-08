@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgssd - ex_get_set_dist_fact
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     set_type                type of set
-*       int     set_id                  set id
-*
-* exit conditions -
-*       float*  set_dist_fact           array of dist factors for set
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgssd - ex_get_set_dist_fact
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     set_type                type of set
+ *       int     set_id                  set id
+ *
+ * exit conditions -
+ *       float*  set_dist_fact           array of dist factors for set
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, ex_name_of_object, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc

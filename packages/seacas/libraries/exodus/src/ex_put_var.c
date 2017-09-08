@@ -33,28 +33,28 @@
  *
  */
 /*****************************************************************************
-*
-* expvar - ex_put_var
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               time step number
-*       int     var_type                type (edge block, face block, edge set,
-*... )
-*       int     var_index               element variable index
-*       int     obj_id                  element block id
-*       int     num_entries_this_obj    number of entries in this block/set
-*
-* exit conditions -
-*
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expvar - ex_put_var
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               time step number
+ *       int     var_type                type (edge block, face block, edge set,
+ *... )
+ *       int     var_index               element variable index
+ *       int     obj_id                  element block id
+ *       int     num_entries_this_obj    number of entries in this block/set
+ *
+ * exit conditions -
+ *
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, etc
@@ -121,8 +121,9 @@ static int ex_look_up_var(int exoid, ex_entity_type var_type, int var_index, ex_
         }
 
         if (!(obj_var_truth_tab = malloc(num_obj * num_obj_var * sizeof(int)))) {
-          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for %s variable "
-                                           "truth table in file id %d",
+          snprintf(errmsg, MAX_ERR_LENGTH,
+                   "ERROR: failed to allocate memory for %s variable "
+                   "truth table in file id %d",
                    ex_name_of_object(var_type), exoid);
           ex_err("ex_put_var", errmsg, EX_MEMFAIL);
           return (EX_FATAL);

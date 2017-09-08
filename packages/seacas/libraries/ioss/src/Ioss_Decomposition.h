@@ -356,8 +356,8 @@ namespace Ioss {
     std::vector<INT> m_nodeDist;
 
     // Note that nodeGTL is a sorted vector.
-    std::vector<INT> nodeGTL;   // Convert from global index to local index (1-based)
+    std::vector<INT>   nodeGTL; // Convert from global index to local index (1-based)
     std::map<INT, INT> elemGTL; // Convert from global index to local index (1-based)
   };
-}
+} // namespace Ioss
 #endif

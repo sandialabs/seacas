@@ -33,17 +33,17 @@
  *
  */
 /*****************************************************************************
-*
-* expvp - ex_put_all_var_param_ext
-*
-* entry conditions -
-*   input parameters:
-*       int                  exoid    exodus file id
-*       const ex_var_params* vp       pointer to variable parameter info
-*
-* exit conditions -
-*
-*****************************************************************************/
+ *
+ * expvp - ex_put_all_var_param_ext
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int                  exoid    exodus file id
+ *       const ex_var_params* vp       pointer to variable parameter info
+ *
+ * exit conditions -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_get_dimension, etc
@@ -54,14 +54,14 @@
 #include <stdlib.h>    // for malloc, NULL, free
 #include <sys/types.h> // for int64_t
 
-static int define_dimension(int exoid, const char *DIMENSION, int count, const char *label,
-                            int *dimid);
-static int define_variable_name_variable(int exoid, const char *VARIABLE, int dimension,
-                                         const char *label);
+static int  define_dimension(int exoid, const char *DIMENSION, int count, const char *label,
+                             int *dimid);
+static int  define_variable_name_variable(int exoid, const char *VARIABLE, int dimension,
+                                          const char *label);
 static int *get_status_array(int exoid, int var_count, const char *VARIABLE, const char *label);
-static int put_truth_table(int exoid, int varid, int *table, const char *label);
-static int define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, int num_var,
-                              int *var_tab, int *status_tab, void_int *ids, const char *label);
+static int  put_truth_table(int exoid, int varid, int *table, const char *label);
+static int  define_truth_table(ex_entity_type obj_type, int exoid, int num_ent, int num_var,
+                               int *var_tab, int *status_tab, void_int *ids, const char *label);
 
 #define EX_GET_IDS_STATUS(TNAME, NUMVAR, DNAME, DID, DVAL, VIDS, EIDS, VSTAT, VSTATVAL)            \
   if (NUMVAR > 0) {                                                                                \
@@ -408,8 +408,9 @@ static int define_dimension(int exoid, const char *DIMENSION, int count, const c
   int  status;
   if ((status = nc_def_dim(exoid, DIMENSION, count, dimid)) != NC_NOERR) {
     if (status == NC_ENAMEINUSE) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s variable name parameters are already defined "
-                                       "in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: %s variable name parameters are already defined "
+               "in file id %d",
                label, exoid);
       ex_err("ex_put_all_var_param_ext", errmsg, status);
     }

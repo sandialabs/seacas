@@ -33,23 +33,23 @@
  *
  */
 /*****************************************************************************
-*
-* ne_gennm - ex_get_partial_elem_num_map
-*
-* environment - UNIX
-*
-* entry conditions -
-*   input parameters:
-*	int	exoid			exodus file id
-*	int	start_ent		starting location for read
-*	int	num_ents		number of elemental points
-*
-* exit conditions -
-*	int*	elem_map		element number map array
-*
-* revision history -
-*
-*****************************************************************************/
+ *
+ * ne_gennm - ex_get_partial_elem_num_map
+ *
+ * environment - UNIX
+ *
+ * entry conditions -
+ *   input parameters:
+ *	int	exoid			exodus file id
+ *	int	start_ent		starting location for read
+ *	int	num_ents		number of elemental points
+ *
+ * exit conditions -
+ *	int*	elem_map		element number map array
+ *
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_partial_id_map, etc
 #include <stdint.h>   // for int64_t

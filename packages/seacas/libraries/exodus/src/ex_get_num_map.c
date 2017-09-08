@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgnm - ex_get_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     map_type                type of map (node, edge, face, element)
-*       int     map_id                  map id
-*
-* exit conditions -
-*       int*    map                     map
-*
-* revision history -
-*   20060930 - David Thompson - Adapted from ex_get_node_map
-*
-*****************************************************************************/
+ *
+ * exgnm - ex_get_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     map_type                type of map (node, edge, face, element)
+ *       int     map_id                  map id
+ *
+ * exit conditions -
+ *       int*    map                     map
+ *
+ * revision history -
+ *   20060930 - David Thompson - Adapted from ex_get_node_map
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc

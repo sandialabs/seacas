@@ -115,8 +115,9 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
           EX_FUNC_LEAVE(status);                                                                   \
                                                                                                    \
         if (!(obj_var_truth_tab = malloc(num_obj * num_obj_var * sizeof(int)))) {                  \
-          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for %s variable "     \
-                                           "truth table in file id %d",                            \
+          snprintf(errmsg, MAX_ERR_LENGTH,                                                         \
+                   "ERROR: failed to allocate memory for %s variable "                             \
+                   "truth table in file id %d",                                                    \
                    ex_name_of_object(var_type), exoid);                                            \
           ex_err("ex_put_partial_var", errmsg, EX_MEMFAIL);                                        \
           EX_FUNC_LEAVE(EX_FATAL);                                                                 \
@@ -176,8 +177,9 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
       /*    leave define mode  */                                                                  \
                                                                                                    \
       if ((status = nc_enddef(exoid)) != NC_NOERR) {                                               \
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete %s variable %s definition "    \
-                                         "to file id %d",                                          \
+        snprintf(errmsg, MAX_ERR_LENGTH,                                                           \
+                 "ERROR: failed to complete %s variable %s definition "                            \
+                 "to file id %d",                                                                  \
                  ex_name_of_object(var_type), VVAR(var_index, obj_id_ndx), exoid);                 \
         ex_err("ex_put_partial_var", errmsg, status);                                              \
         EX_FUNC_LEAVE(EX_FATAL);                                                                   \

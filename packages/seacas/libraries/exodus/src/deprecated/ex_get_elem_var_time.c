@@ -33,24 +33,24 @@
  *
  */
 /*****************************************************************************
-*
-* exgevt - ex_get_elem_var_time
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     elem_var_index          element variable index
-*       int     elem_number             element number
-*       int     beg_time_step           time step number
-*       int     end_time_step           time step number
-*
-* exit conditions -
-*       float*  elem_var_vals           array of element variable values
-*
-* revision history -
-*   20061002 - David Thompson - Moved to ex_get_var_time.
-*
-*****************************************************************************/
+ *
+ * exgevt - ex_get_elem_var_time
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     elem_var_index          element variable index
+ *       int     elem_number             element number
+ *       int     beg_time_step           time step number
+ *       int     end_time_step           time step number
+ *
+ * exit conditions -
+ *       float*  elem_var_vals           array of element variable values
+ *
+ * revision history -
+ *   20061002 - David Thompson - Moved to ex_get_var_time.
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_var_time, etc
 #include <stdint.h>   // for int64_t

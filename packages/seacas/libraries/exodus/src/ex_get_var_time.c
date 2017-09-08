@@ -33,28 +33,28 @@
  *
  */
 /*****************************************************************************
-*
-* exgvart - ex_get_var_time
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     var_type                variable type global, nodal,
-*                                         edge/face/elem block,
-*                                         node/edge/face/side/elem set
-*       int     var_index               element variable index
-*       int     id                      entry number
-*       int     beg_time_step           time step number
-*       int     end_time_step           time step number
-*
-* exit conditions -
-*       float*  var_vals                array of element variable values
-*
-* revision history -
-*   20061002 - David Thompson - Adapted from ex_get_var_time
-*
-*
-*****************************************************************************/
+ *
+ * exgvart - ex_get_var_time
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     var_type                variable type global, nodal,
+ *                                         edge/face/elem block,
+ *                                         node/edge/face/side/elem set
+ *       int     var_index               element variable index
+ *       int     id                      entry number
+ *       int     beg_time_step           time step number
+ *       int     end_time_step           time step number
+ *
+ * exit conditions -
+ *       float*  var_vals                array of element variable values
+ *
+ * revision history -
+ *   20061002 - David Thompson - Adapted from ex_get_var_time
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ST_ZU, etc
@@ -263,8 +263,9 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (beg_time_step <= 0 || beg_time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: beginning time_step is out-of-range. Value = %d, "
-                                       "valid range is 1 to %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: beginning time_step is out-of-range. Value = %d, "
+               "valid range is 1 to %d in file id %d",
                beg_time_step, num_time_steps, exoid);
       ex_err("ex_get_var_time", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
@@ -278,8 +279,9 @@ int ex_get_var_time(int exoid, ex_entity_type var_type, int var_index, int64_t i
       end_time_step = ex_inquire_int(exoid, EX_INQ_TIME);
     }
     else if (end_time_step < beg_time_step || end_time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: end time_step is out-of-range. Value = %d, valid "
-                                       "range is %d to %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: end time_step is out-of-range. Value = %d, valid "
+               "range is %d to %d in file id %d",
                beg_time_step, end_time_step, num_time_steps, exoid);
       ex_err("ex_get_var_time", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);

@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* expmp - ex_put_attr_param
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid           exodus file id
-*       int     obj_type        block/set type (node, edge, face, elem)
-*       int     obj_id          block/set id (ignored for NODAL)
-*       int     num_attrs       number of attributes
-*
-* exit conditions -
-*
-*
-*****************************************************************************/
+ *
+ * expmp - ex_put_attr_param
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid           exodus file id
+ *       int     obj_type        block/set type (node, edge, face, elem)
+ *       int     obj_id          block/set id (ignored for NODAL)
+ *       int     num_attrs       number of attributes
+ *
+ * exit conditions -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
@@ -230,8 +230,9 @@ int ex_put_attr_param(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, i
 
   /* leave define mode  */
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete %s attribute parameter "
-                                     "definition in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to complete %s attribute parameter "
+             "definition in file id %d",
              ex_name_of_object(obj_type), exoid);
     ex_err("ex_put_attr_param", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);

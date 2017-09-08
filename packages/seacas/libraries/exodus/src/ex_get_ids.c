@@ -59,15 +59,15 @@ int ex_get_ids(int exoid, ex_entity_type obj_type, void_int *ids)
   case EX_EDGE_BLOCK: varidobj = VAR_ID_ED_BLK; break;
   case EX_FACE_BLOCK: varidobj = VAR_ID_FA_BLK; break;
   case EX_ELEM_BLOCK: varidobj = VAR_ID_EL_BLK; break;
-  case EX_NODE_SET: varidobj   = VAR_NS_IDS; break;
-  case EX_EDGE_SET: varidobj   = VAR_ES_IDS; break;
-  case EX_FACE_SET: varidobj   = VAR_FS_IDS; break;
-  case EX_SIDE_SET: varidobj   = VAR_SS_IDS; break;
-  case EX_ELEM_SET: varidobj   = VAR_ELS_IDS; break;
-  case EX_NODE_MAP: varidobj   = VAR_NM_PROP(1); break;
-  case EX_EDGE_MAP: varidobj   = VAR_EDM_PROP(1); break;
-  case EX_FACE_MAP: varidobj   = VAR_FAM_PROP(1); break;
-  case EX_ELEM_MAP: varidobj   = VAR_EM_PROP(1); break;
+  case EX_NODE_SET: varidobj = VAR_NS_IDS; break;
+  case EX_EDGE_SET: varidobj = VAR_ES_IDS; break;
+  case EX_FACE_SET: varidobj = VAR_FS_IDS; break;
+  case EX_SIDE_SET: varidobj = VAR_SS_IDS; break;
+  case EX_ELEM_SET: varidobj = VAR_ELS_IDS; break;
+  case EX_NODE_MAP: varidobj = VAR_NM_PROP(1); break;
+  case EX_EDGE_MAP: varidobj = VAR_EDM_PROP(1); break;
+  case EX_FACE_MAP: varidobj = VAR_FAM_PROP(1); break;
+  case EX_ELEM_MAP: varidobj = VAR_EM_PROP(1); break;
   default: /* invalid variable type */
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
     ex_err("ex_get_ids", errmsg, EX_BADPARAM);

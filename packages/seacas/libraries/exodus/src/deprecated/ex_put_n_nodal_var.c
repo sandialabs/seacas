@@ -33,24 +33,24 @@
  *
  */
 /*****************************************************************************
-*
-* expnv - ex_put_n_nodal_var
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               whole time step number
-*       int     nodel_var_index         index of desired nodal variable
-*       int     start_node              index (1-based) of first node to put
-*       int     num_nodes               number of nodal points
-*       float*  nodal_var_vals          array of nodal variable values
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expnv - ex_put_n_nodal_var
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               whole time step number
+ *       int     nodel_var_index         index of desired nodal variable
+ *       int     start_node              index (1-based) of first node to put
+ *       int     num_nodes               number of nodal points
+ *       float*  nodal_var_vals          array of nodal variable values
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_partial_var, etc
 #include <stdint.h>   // for int64_t

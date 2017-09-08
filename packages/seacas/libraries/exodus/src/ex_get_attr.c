@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgatt - ex_get_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     obj_type                object type (edge/face/element block)
-*       int     obj_id                  object id (edge id, face id, elem id)
-*
-* exit conditions -
-*       float*  attrib                  array of attributes
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgatt - ex_get_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     obj_type                object type (edge/face/element block)
+ *       int     obj_id                  object id (edge id, face id, elem id)
+ *
+ * exit conditions -
+ *       float*  attrib                  array of attributes
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_WARN, etc
@@ -98,12 +98,12 @@ int ex_get_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, void *a
   }
 
   switch (obj_type) {
-  case EX_SIDE_SET: vattrbname   = VAR_SSATTRIB(obj_id_ndx); break;
-  case EX_NODE_SET: vattrbname   = VAR_NSATTRIB(obj_id_ndx); break;
-  case EX_EDGE_SET: vattrbname   = VAR_ESATTRIB(obj_id_ndx); break;
-  case EX_FACE_SET: vattrbname   = VAR_FSATTRIB(obj_id_ndx); break;
-  case EX_ELEM_SET: vattrbname   = VAR_ELSATTRIB(obj_id_ndx); break;
-  case EX_NODAL: vattrbname      = VAR_NATTRIB; break;
+  case EX_SIDE_SET: vattrbname = VAR_SSATTRIB(obj_id_ndx); break;
+  case EX_NODE_SET: vattrbname = VAR_NSATTRIB(obj_id_ndx); break;
+  case EX_EDGE_SET: vattrbname = VAR_ESATTRIB(obj_id_ndx); break;
+  case EX_FACE_SET: vattrbname = VAR_FSATTRIB(obj_id_ndx); break;
+  case EX_ELEM_SET: vattrbname = VAR_ELSATTRIB(obj_id_ndx); break;
+  case EX_NODAL: vattrbname = VAR_NATTRIB; break;
   case EX_EDGE_BLOCK: vattrbname = VAR_EATTRIB(obj_id_ndx); break;
   case EX_FACE_BLOCK: vattrbname = VAR_FATTRIB(obj_id_ndx); break;
   case EX_ELEM_BLOCK: vattrbname = VAR_ATTRIB(obj_id_ndx); break;

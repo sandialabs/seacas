@@ -33,10 +33,10 @@
  *
  */
 /*****************************************************************************
-*
-* exgecpp - ex_get_entity_count_per_polyhedra
-*
-*****************************************************************************/
+ *
+ * exgecpp - ex_get_entity_count_per_polyhedra
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc

@@ -33,26 +33,26 @@
  *
  */
 /*****************************************************************************
-*
-* exgeat - ex_get_partial_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     obj_type                object type (edge, face, elem block)
-*       int     obj_id                  object id (edge face, elem block ID)
-*       int     start_num               starting index of attributes to be
-*returned.
-*       int     num_ent                 number of entities to read attributes
-*for.
-*
-* exit conditions -
-*       float*  attrib                  array of attributes
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgeat - ex_get_partial_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     obj_type                object type (edge, face, elem block)
+ *       int     obj_id                  object id (edge face, elem block ID)
+ *       int     start_num               starting index of attributes to be
+ *returned.
+ *       int     num_ent                 number of entities to read attributes
+ *for.
+ *
+ * exit conditions -
+ *       float*  attrib                  array of attributes
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_get_dimension, etc
