@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -30,8 +30,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <algorithm>
 #include <Ioss_CodeTypes.h>
+#include <algorithm>
 #include <cgns/Iocgns_StructuredZoneData.h>
 
 #define OUTPUT std::cerr
@@ -180,24 +180,33 @@ namespace {
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
-                     int ordinal)
+                     int ordinal, int rank)
   {
-#if IOSS_DEBUG_OUTPUT
+    if (rank == 0) {
+#if 0 && IOSS_DEBUG_OUTPUT
     OUTPUT << "\t\tPropogating ZGC from " << parent->m_name << " to " << child->m_name << "\n";
 #endif
+    }
     for (auto zgc : parent->m_zoneConnectivity) {
       if (!zgc.m_intraBlock || zgc_overlaps(child, zgc)) {
         // Modify source and donor range to subset it to new block ranges.
         zgc_subset_ranges(child, zgc);
-
         child->m_zoneConnectivity.push_back(zgc);
+        if (rank == 0) {
+#if 0 && IOSS_DEBUG_OUTPUT
+        OUTPUT << "\t\tAdding: Donor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
+               << "\n";
+#endif
+        }
       }
       else {
-#if IOSS_DEBUG_OUTPUT
-        OUTPUT << "\t\t" << zgc.m_donorName << ":\tName '" << zgc.m_connectionName
+        if (rank == 0) {
+#if 0 && IOSS_DEBUG_OUTPUT
+        OUTPUT << "\t\tDonor Zone " << zgc.m_donorName << ":\tConnection Name '" << zgc.m_connectionName
                << " does not overlap."
                << "\n";
 #endif
+        }
       }
     }
   }
@@ -225,19 +234,19 @@ namespace {
     auto c1_base = std::to_string(c1->m_adam->m_zone) + "_" + std::to_string(c1->m_zone);
     auto c2_base = std::to_string(c2->m_adam->m_zone) + "_" + std::to_string(c2->m_zone);
 
-    // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
     const auto &adam_name = parent->m_adam->m_name;
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
                                         donor_range_end, c1->m_zone < c2->m_zone, true);
     c1->m_zoneConnectivity.back().m_sameRange = true;
+    // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
     // OUTPUT << c1->m_zoneConnectivity.back() << "\n";
 
-    // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
                                         range_end, c2->m_zone < c1->m_zone, true);
     c2->m_zoneConnectivity.back().m_sameRange = true;
+    // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
 }
@@ -247,8 +256,8 @@ namespace Iocgns {
   // ========================================================================
   // Split this StructuredZone along the largest ordinal
   // into two children and return the created zones.
-  std::pair<StructuredZoneData *, StructuredZoneData *> StructuredZoneData::split(int zone_id,
-                                                                                  double ratio)
+  std::pair<StructuredZoneData *, StructuredZoneData *>
+  StructuredZoneData::split(int zone_id, double ratio, int rank)
   {
     assert(is_active());
     if (ratio > 1.0) {
@@ -305,30 +314,35 @@ namespace Iocgns {
     m_child2->m_splitOrdinal        = ordinal;
     m_child2->m_sibling             = m_child1;
 
+    if (rank == 0) {
 #if IOSS_DEBUG_OUTPUT
-    OUTPUT << "Zone " << m_zone << "(" << m_adam->m_zone << ") with intervals " << m_ordinal[0]
-           << " " << m_ordinal[1] << " " << m_ordinal[2] << " work = " << work() << " with offset "
-           << m_offset[0] << " " << m_offset[1] << " " << m_offset[2] << " split along ordinal "
-           << ordinal << " with ratio " << ratio << "\n"
-           << "\tChild 1: Zone " << m_child1->m_zone << "(" << m_child1->m_adam->m_zone
-           << ") with intervals " << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1] << " "
-           << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "
-           << m_child1->m_offset[0] << " " << m_child1->m_offset[1] << " " << m_child1->m_offset[2]
-           << "\n"
-           << "\tChild 2: Zone " << m_child2->m_zone << "(" << m_child1->m_adam->m_zone
-           << ") with intervals " << m_child2->m_ordinal[0] << " " << m_child2->m_ordinal[1] << " "
-           << m_child2->m_ordinal[2] << " work = " << m_child2->work() << " with offset "
-           << m_child2->m_offset[0] << " " << m_child2->m_offset[1] << " " << m_child2->m_offset[2]
-           << "\n";
+      OUTPUT << "\nSplit Zone " << m_name << " (" << m_zone << ") Adam " << m_adam->m_name << " ("
+             << m_adam->m_zone << ") with intervals " << m_ordinal[0] << " " << m_ordinal[1] << " "
+             << m_ordinal[2] << " work = " << work() << " with offset " << m_offset[0] << " "
+             << m_offset[1] << " " << m_offset[2] << " along ordinal " << ordinal << " with ratio "
+             << ratio << "\n"
+             << "\tChild 1: Zone " << m_child1->m_name << " (" << m_child1->m_zone << ") Adam "
+             << m_child1->m_adam->m_name << " (" << m_child1->m_adam->m_zone << ") with intervals "
+             << m_child1->m_ordinal[0] << " " << m_child1->m_ordinal[1] << " "
+             << m_child1->m_ordinal[2] << " work = " << m_child1->work() << " with offset "
+             << m_child1->m_offset[0] << " " << m_child1->m_offset[1] << " "
+             << m_child1->m_offset[2] << "\n"
+             << "\tChild 2: Zone " << m_child2->m_name << " (" << m_child2->m_zone << ") Adam "
+             << m_child2->m_adam->m_name << " (" << m_child2->m_adam->m_zone << ") with intervals "
+             << m_child2->m_ordinal[0] << " " << m_child2->m_ordinal[1] << " "
+             << m_child2->m_ordinal[2] << " work = " << m_child2->work() << " with offset "
+             << m_child2->m_offset[0] << " " << m_child2->m_offset[1] << " "
+             << m_child2->m_offset[2] << "\n";
 #endif
+    }
 
     // Add ZoneGridConnectivity instance to account for split...
     add_split_zgc(this, m_child1, m_child2, ordinal);
 
     // Propogate parent ZoneGridConnectivities to appropriate children.
     // Split if needed...
-    propogate_zgc(this, m_child1, ordinal);
-    propogate_zgc(this, m_child2, ordinal);
+    propogate_zgc(this, m_child1, ordinal, rank);
+    propogate_zgc(this, m_child2, ordinal, rank);
 
     return std::make_pair(m_child1, m_child2);
   }

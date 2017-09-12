@@ -3,7 +3,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -79,7 +79,7 @@
 #include "Ioss_VariableType.h"
 
 namespace {
-  MPI_Datatype cgns_mpi_type() 
+  MPI_Datatype cgns_mpi_type()
   {
 #if CG_SIZEOF_SIZE == 8
     return MPI_LONG_LONG_INT;
@@ -149,7 +149,7 @@ namespace Iocgns {
         }
       }
       else if (CG_SIZEOF_SIZE == 64) {
-	set_int_byte_size_api(Ioss::USE_INT64_API);
+        set_int_byte_size_api(Ioss::USE_INT64_API);
       }
 
 #if 0
@@ -364,9 +364,9 @@ namespace Iocgns {
 
     Utils::add_sidesets(cgnsFilePtr, this);
 
-    char     basename[33];
-    int cell_dimension = 0;
-    int phys_dimension = 0;
+    char basename[33];
+    int  cell_dimension = 0;
+    int  phys_dimension = 0;
     CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
     // Iterate all structured blocks and set the intervals to zero
@@ -992,9 +992,9 @@ namespace Iocgns {
       }
 
       else if (field.get_name() == "mesh_model_coordinates") {
-        char     basename[33];
-        int cell_dimension = 0;
-        int phys_dimension = 0;
+        char basename[33];
+        int  cell_dimension = 0;
+        int  phys_dimension = 0;
         CGCHECK(cg_base_read(cgnsFilePtr, base, basename, &cell_dimension, &phys_dimension));
 
         // Data required by upper classes store x0, y0, z0, ... xn,
@@ -1428,7 +1428,7 @@ namespace Iocgns {
       // This map is built during the output of block connectivity,
       // so for cgns unstructured mesh, we need to output ElementBlock connectivity
       // prior to outputting nodal coordinates.
-      size_t                num_zones = m_globalToBlockLocalNodeMap.size();
+      size_t               num_zones = m_globalToBlockLocalNodeMap.size();
       std::vector<int64_t> node_count(num_zones);
       std::vector<int64_t> node_offset(num_zones);
 
@@ -1506,24 +1506,24 @@ namespace Iocgns {
       if (field.get_name() == "connectivity") {
         // This blocks zone has not been defined.
         // Get the "node block" for this element block...
-        size_t    element_nodes = eb->topology()->number_nodes();
+        size_t element_nodes = eb->topology()->number_nodes();
         assert((size_t)field.raw_storage()->component_count() == element_nodes);
 
         CGNSIntVector nodes;
         nodes.reserve(element_nodes * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {
-	  int *idata         = num_to_get > 0 ? reinterpret_cast<int*>(data) : nullptr;
-	  for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-	    nodes.push_back(idata[i]);
-	  }
-	}
-	else {
-	  int64_t *idata         = num_to_get > 0 ? reinterpret_cast<int64_t*>(data) : nullptr;
-	  for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-	    nodes.push_back(idata[i]);
-	  }
-	}
+          int *idata = num_to_get > 0 ? reinterpret_cast<int *>(data) : nullptr;
+          for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+            nodes.push_back(idata[i]);
+          }
+        }
+        else {
+          int64_t *idata = num_to_get > 0 ? reinterpret_cast<int64_t *>(data) : nullptr;
+          for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+            nodes.push_back(idata[i]);
+          }
+        }
         Ioss::Utils::uniquify(nodes);
 
         // Resolve zone-shared nodes (nodes used in this zone, but are
@@ -1551,8 +1551,7 @@ namespace Iocgns {
         size[0]          = owned_node_count;
         size[1]          = eb->get_property("entity_count").get_int();
 
-        MPI_Allreduce(MPI_IN_PLACE, size, 3, cgns_mpi_type(), MPI_SUM,
-                      util().communicator());
+        MPI_Allreduce(MPI_IN_PLACE, size, 3, cgns_mpi_type(), MPI_SUM, util().communicator());
 
         // Now, we have the node count and cell count so we can create a zone...
         int base = 1;
@@ -1571,36 +1570,35 @@ namespace Iocgns {
                                     &sect));
 
           int64_t start = 0;
-          MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(start), MPI_SUM,
-                     util().communicator());
+          MPI_Exscan(&num_to_get, &start, 1, Ioss::mpi_type(start), MPI_SUM, util().communicator());
           // Of the cells/elements in this zone, this proc handles
           // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
           eb->property_update("proc_offset", start);
 
           // Map connectivity global ids to zone-local 1-based ids.
-	  CGNSIntVector connect;
-	  connect.reserve(num_to_get * element_nodes);
-	  
-	  if (field.get_type() == Ioss::Field::INT32) {
-	    int *idata         = num_to_get > 0 ? reinterpret_cast<int*>(data) : nullptr;
-	    for (size_t i = 0; i < num_to_get * element_nodes; i++) {
-	      auto id   = idata[i];
-	      auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
-	      assert(iter != nodes.end());
-	      auto cur_pos = iter - nodes.begin();
-	      connect.push_back(connectivity_map[cur_pos]);
-	    }
-	  }
-	  else {
-	    int64_t *idata         = num_to_get > 0 ? reinterpret_cast<int64_t*>(data) : nullptr;
-	    for (size_t i = 0; i < num_to_get * element_nodes; i++) {
-	      auto id   = idata[i];
-	      auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
-	      assert(iter != nodes.end());
-	      auto cur_pos = iter - nodes.begin();
-	      connect.push_back(connectivity_map[cur_pos]);
-	    }
-	  }
+          CGNSIntVector connect;
+          connect.reserve(num_to_get * element_nodes);
+
+          if (field.get_type() == Ioss::Field::INT32) {
+            int *idata = num_to_get > 0 ? reinterpret_cast<int *>(data) : nullptr;
+            for (size_t i = 0; i < num_to_get * element_nodes; i++) {
+              auto id   = idata[i];
+              auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+              assert(iter != nodes.end());
+              auto cur_pos = iter - nodes.begin();
+              connect.push_back(connectivity_map[cur_pos]);
+            }
+          }
+          else {
+            int64_t *idata = num_to_get > 0 ? reinterpret_cast<int64_t *>(data) : nullptr;
+            for (size_t i = 0; i < num_to_get * element_nodes; i++) {
+              auto id   = idata[i];
+              auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+              assert(iter != nodes.end());
+              auto cur_pos = iter - nodes.begin();
+              connect.push_back(connectivity_map[cur_pos]);
+            }
+          }
 
           CGCHECK(cgp_elements_write_data(cgnsFilePtr, base, zone, sect, start + 1,
                                           start + num_to_get, connect.data()));
@@ -1907,11 +1905,10 @@ namespace Iocgns {
         auto &name = sb->owner()->name();
 
         CG_ElementType_t type = Utils::map_topology_to_cgns(sb->topology()->name());
-        int         sect = 0;
+        int              sect = 0;
 
         int64_t size = num_to_get;
-        MPI_Allreduce(MPI_IN_PLACE, &size, 1, Ioss::mpi_type(size), MPI_SUM,
-                      util().communicator());
+        MPI_Allreduce(MPI_IN_PLACE, &size, 1, Ioss::mpi_type(size), MPI_SUM, util().communicator());
 
         int cg_start = m_bcOffset[zone] + 1;
         int cg_end   = m_bcOffset[zone] + size;

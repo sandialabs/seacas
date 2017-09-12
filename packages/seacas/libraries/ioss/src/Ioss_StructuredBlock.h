@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -104,6 +104,7 @@ namespace Ioss {
     Ioss::IJK_t inverse_transform(const Ioss::IJK_t &index_1) const;
 
     std::vector<int> get_range(int ordinal) const;
+    friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     // The "original" owner and donor range -- that is, they have not been subsetted
     // due to block decompositions in a parallel run.  These should be the same on
@@ -111,27 +112,33 @@ namespace Ioss {
     std::array<INT, 6> m_ownerRange{};
     std::array<INT, 6> m_donorRange{};
 
-    std::string m_connectionName;
-    std::string m_donorName;
-    Ioss::IJK_t m_transform;
-    Ioss::IJK_t m_rangeBeg;
-    Ioss::IJK_t m_rangeEnd;
-    Ioss::IJK_t m_donorRangeBeg;
-    Ioss::IJK_t m_donorRangeEnd;
+    std::string m_connectionName; // Name of the connection; either generated or from file
+    std::string m_donorName; // Name of the zone (m_donorZone) to which this zone is connected via
+                             // this connection.
+    Ioss::IJK_t m_transform; // The transform.  In the same form as defined by CGNS
 
-    friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
+    // The following are all subsetted down to the portion that is actually on this zone
+    // This can be different thant m_ownerRange and m_donorRange in a parallel run if the
+    // decomposition splits the connection.  In a serial run, they are the same.
+    //
+    // 1 of ijk should be the same for rangeBeg and rangeEnd defining a surface.
+    Ioss::IJK_t m_rangeBeg;      // ijk triplet defining beginning of range on this zone
+    Ioss::IJK_t m_rangeEnd;      // ijk triplet defining end of range on this zone
+    Ioss::IJK_t m_donorRangeBeg; // ijk triplet defining beginning of range on the connected zone
+    Ioss::IJK_t m_donorRangeEnd; // ijk triplet defining end of range on the connected zone
 
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int  m_ownerZone;      // "id" of zone that owns this connection
-    int  m_donorZone;      // "id" of zone that is donor of this connection
+    int  m_donorZone;      // "id" of zone that is donor (or other side) of this connection
     int  m_ownerProcessor; // processor that owns the owner zone
     int  m_donorProcessor; // processor that owns the donor zone
     bool m_sameRange; // True if owner and donor range should always match...(special use during
                       // decomp)
-    bool m_ownsSharedNodes;
+    bool m_ownsSharedNodes; // True if it is the "lower" zone id in the connection. Uses adam unless
+                            // both have same adam.
     bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel
                        // run.
-    bool m_isActive;   // True if non-zero range...
+    bool m_isActive;   // True if non-zero range. That is, it has at least one face
   };
 
   struct BoundaryCondition

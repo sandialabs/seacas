@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -411,7 +411,7 @@ namespace Iocgns {
           if (single_zone) {
             ratio = 0.5;
           }
-          auto children = zone->split(new_zone_id, ratio);
+          auto children = zone->split(new_zone_id, ratio, rank);
 
           if (children.first != nullptr && children.second != nullptr) {
             zone_new.push_back(children.first);
@@ -464,8 +464,8 @@ namespace Iocgns {
           zone->m_proc = proc;
           work_vector[proc] += zone->work();
 #if IOSS_DEBUG_OUTPUT
-          OUTPUT << "Assigning zone " << zone->m_zone << " with work " << zone->work()
-                 << " to processor " << proc << "\n";
+          OUTPUT << "Assigning " << zone->m_name << " (Z" << zone->m_zone << ") with work "
+                 << zone->work() << " to processor " << proc << "\n";
 #endif
         }
       }
@@ -485,7 +485,7 @@ namespace Iocgns {
         }
       }
 #if IOSS_DEBUG_OUTPUT
-      OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
+      OUTPUT << "\nWorkload threshold exceeded on " << px << " processors.\n";
 #endif
       if (single_zone) {
         auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
@@ -503,7 +503,7 @@ namespace Iocgns {
             // is on a proc where the threshold was exceeded.
             // if so, split the block and set exceeds[proc] to false;
             // Exit the loop when num_split >= px.
-            auto children = zone->split(new_zone_id);
+            auto children = zone->split(new_zone_id, 0.5, rank);
             if (children.first != nullptr && children.second != nullptr) {
               zone_new.push_back(children.first);
               zone_new.push_back(children.second);
@@ -543,8 +543,8 @@ namespace Iocgns {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
 #if IOSS_DEBUG_OUTPUT
-        OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
-               << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+        OUTPUT << "Zone " << zone->m_name << "(" << zone->m_zone << ") assigned to processor "
+               << zone->m_proc << ", Adam zone = " << zone->m_adam->m_zone << "\n";
         auto zgcs = zone->m_zoneConnectivity;
         for (auto &zgc : zgcs) {
           OUTPUT << zgc << "\n";
