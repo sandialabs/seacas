@@ -995,7 +995,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
       std::vector<Ioss::Field> fields;
       if (grid_loc == CG_CellCenter) {
-        size_t entity_count = block->get_property("entity_count").get_int();
+        size_t entity_count = block->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
                                 nullptr, fields);
         size_t index = 1;
@@ -1012,7 +1012,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
                 ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
                 : region->get_node_blocks()[0];
         Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
-        size_t           entity_count = nb->get_property("entity_count").get_int();
+        size_t           entity_count = nb->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
                                 nullptr, fields);
         size_t index = 1;

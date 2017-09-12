@@ -824,7 +824,7 @@ namespace Iocgns {
       int                   base             = eb->get_property("base").get_int();
       int                   zone             = eb->get_property("zone").get_int();
       int                   sect             = eb->get_property("section").get_int();
-      cgsize_t              my_element_count = eb->get_property("entity_count").get_int();
+      cgsize_t              my_element_count = eb->entity_count();
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
@@ -1138,7 +1138,7 @@ namespace Iocgns {
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
-      int64_t entity_count = sb->get_property("entity_count").get_int();
+      int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Partial field input not yet implemented for side blocks";
@@ -1371,7 +1371,7 @@ namespace Iocgns {
           int      base    = 1;
           int      zone    = 0;
           cgsize_t size[3] = {0, 0, 0};
-          size[1]          = eb->get_property("entity_count").get_int();
+          size[1]          = eb->entity_count();
           size[0]          = nodes.size() - 1;
 
           CGCHECK(
@@ -1396,7 +1396,7 @@ namespace Iocgns {
             block_map->reverse_map_data((int64_t *)data, field, num_to_get * element_nodes);
           }
 
-          if (eb->get_property("entity_count").get_int() > 0) {
+          if (eb->entity_count() > 0) {
             CG_ElementType_t type            = Utils::map_topology_to_cgns(eb->topology()->name());
             int              sect            = 0;
             int              field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;

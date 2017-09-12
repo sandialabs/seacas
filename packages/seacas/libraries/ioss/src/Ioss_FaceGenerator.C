@@ -324,7 +324,7 @@ namespace Ioss {
       }
 
       int    num_node_per_elem = topo->number_nodes();
-      size_t num_elem          = eb->get_property("entity_count").get_int();
+      size_t num_elem          = eb->entity_count();
 
       for (size_t elem = 0, offset = 0; elem < num_elem; elem++, offset += num_node_per_elem) {
         for (int face = 0; face < num_face_per_elem; face++) {

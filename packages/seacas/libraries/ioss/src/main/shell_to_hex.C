@@ -323,7 +323,7 @@ namespace {
       if (debug) {
         std::cerr << name << ", ";
       }
-      int num_nodes = (*i)->get_property("entity_count").get_int();
+      int num_nodes = (*i)->entity_count();
       int degree    = (*i)->get_property("component_degree").get_int();
       if (!debug) {
         std::cerr << " Number of coordinates per node       =" << std::setw(9) << degree << "\n";
@@ -350,7 +350,7 @@ namespace {
       if (debug) {
         std::cerr << name << ", ";
       }
-      int num_elem = (*i)->get_property("entity_count").get_int();
+      int num_elem = (*i)->entity_count();
       total_elements += num_elem;
 
       std::string type;
@@ -397,7 +397,7 @@ namespace {
     Ioss::NodeBlock *nbo = (*output_region.get_node_blocks().begin());
 
     // Get the nodal coordinates...
-    int num_nodes = nb->get_property("entity_count").get_int();
+    int num_nodes = nb->entity_count();
 
     {
       std::vector<int> ids(2 * num_nodes);
@@ -430,7 +430,7 @@ namespace {
       ++out_ib;
       std::string name = (*eb).name();
 
-      int num_elem          = eb->get_property("entity_count").get_int();
+      int num_elem          = eb->entity_count();
       int num_node_per_elem = eb->topology()->number_nodes();
 
       // Get the connectivity array...

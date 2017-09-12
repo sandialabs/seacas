@@ -248,6 +248,9 @@ namespace Ioss {
     }
 
     unsigned int hash() const { return hash_; }
+
+    int64_t entity_count() const {return get_property("entity_count").get_int();}
+
   protected:
     void count_attributes() const;
 
@@ -292,8 +295,8 @@ namespace Ioss {
 
     DatabaseIO *database_ = nullptr;
 
-    State           entityState    = STATE_CLOSED;
     mutable int64_t attributeCount = 0;
+    State           entityState    = STATE_CLOSED;
     unsigned int    hash_          = 0;
   };
 } // namespace Ioss

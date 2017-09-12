@@ -1114,7 +1114,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
 
     int                   ierr             = 0;
     int                   id               = eb->get_property("id").get_int();
-    int                   my_element_count = eb->get_property("entity_count").get_int();
+    int                   my_element_count = eb->entity_count();
     Ioss::Field::RoleType role             = field.get_role();
 
     if (role == Ioss::Field::MESH) {
@@ -1168,7 +1168,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::CommSet *cs, const Ioss::Fiel
     size_t num_to_get = field.verify(data_size);
 
     if (num_to_get > 0) {
-      int entity_count = cs->get_property("entity_count").get_int();
+      int entity_count = cs->entity_count();
 
       // Return the <entity (node or side), processor> pair
       if (field.get_name() == "entity_processor" || field.get_name() == "entity_processor_raw") {
@@ -1270,7 +1270,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
   if (num_to_get > 0) {
 
     int    id           = fb->get_property("id").get_int();
-    size_t entity_count = fb->get_property("entity_count").get_int();
+    size_t entity_count = fb->entity_count();
     if (num_to_get != entity_count) {
       std::ostringstream errmsg;
       errmsg << "Partial field input not yet implemented for side blocks";
@@ -1647,7 +1647,7 @@ void DatabaseIO::compute_block_adjacencies() const
     int                 blk_position     = eb->get_property("original_block_order").get_int();
     int                 id               = eb->get_property("id").get_int();
     int                 element_nodes    = eb->get_property("topology_node_count").get_int();
-    int                 my_element_count = eb->get_property("entity_count").get_int();
+    int                 my_element_count = eb->entity_count();
     if (my_element_count > 0) {
       std::vector<int> conn(my_element_count * element_nodes);
       im_ex_get_elem_conn(get_file_pointer(), id, &conn[0]);
@@ -1964,7 +1964,7 @@ int DatabaseIO::get_side_connectivity(const Ioss::SideBlock *fb, int id, int, in
       assert(block->topology() != nullptr);
 
       if (conn_block != block) {
-        int nelem = block->get_property("entity_count").get_int();
+        int nelem = block->entity_count();
         nelnode   = block->topology()->number_nodes();
         // Used to map element number into position in connectivity array.
         // E.g., element 97 is the (97-offset)th element in this block and

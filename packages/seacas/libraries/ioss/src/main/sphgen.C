@@ -265,10 +265,10 @@ namespace {
       ++I;
       std::string type = eb->get_property("topology_type").get_string();
       if (type == "hex8") {
-        sph_node_count += eb->get_property("entity_count").get_int();
+        sph_node_count += eb->entity_count();
 
         // Add the element block...
-        int                 num_elem = eb->get_property("entity_count").get_int();
+        int                 num_elem = eb->entity_count();
         std::string         name     = eb->name();
         Ioss::ElementBlock *ebn =
             new Ioss::ElementBlock(output_region.get_database(), name, "sphere", num_elem);
@@ -340,7 +340,7 @@ namespace {
         }
 
         // Connectivity for the sphere element blocks is just their local element location
-        size_t           num_elem = output_eb->get_property("entity_count").get_int();
+        size_t           num_elem = output_eb->entity_count();
         std::vector<int> connectivity(num_elem);
         for (size_t i = 0; i < num_elem; i++) {
           connectivity[i] = offset + 1 + i;
@@ -352,7 +352,7 @@ namespace {
 
         output_ns->put_field_data("ids", connectivity);
 
-        offset += output_eb->get_property("entity_count").get_int();
+        offset += output_eb->entity_count();
       }
       ++I;
     }
@@ -503,7 +503,7 @@ namespace {
                   double scale_factor)
   {
     const double     one12th = 1.0 / 12.0;
-    size_t           nelem   = block->get_property("entity_count").get_int();
+    size_t           nelem   = block->entity_count();
     std::vector<int> connectivity;
     block->get_field_data("connectivity_raw", connectivity);
 

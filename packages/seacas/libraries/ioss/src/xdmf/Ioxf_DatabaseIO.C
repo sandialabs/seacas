@@ -568,7 +568,7 @@ namespace Ioxf {
 
         // Get the element block id and element count
         get_id(eb, 'E', &ids_);
-        int                   element_count = eb->get_property("entity_count").get_int();
+        int                   element_count = eb->entity_count();
         Ioss::Field::RoleType role          = field.get_role();
 
         if (role == Ioss::Field::MESH) {
@@ -1185,7 +1185,7 @@ namespace Ioxf {
     {
       Ioss::SerializeIO serializeIO__(this);
 
-      int entity_count = ns->get_property("entity_count").get_int();
+      int entity_count = ns->entity_count();
       int num_to_get   = field.verify(data_size);
       if (num_to_get > 0) {
 
@@ -1285,7 +1285,7 @@ namespace Ioxf {
                                          void *data, size_t data_size) const
   {
     int num_to_get   = field.verify(data_size);
-    int entity_count = cs->get_property("entity_count").get_int();
+    int entity_count = cs->entity_count();
 
     assert(num_to_get == entity_count);
     if (num_to_get == 0)
@@ -1466,7 +1466,7 @@ namespace Ioxf {
 
       int id = get_id(fb, 'S', &ids_);
 
-      int                   entity_count = fb->get_property("entity_count").get_int();
+      int                   entity_count = fb->entity_count();
       Ioss::Field::RoleType role         = field.get_role();
 
       if (role == Ioss::Field::MESH) {
@@ -1727,7 +1727,7 @@ namespace Ioxf {
         Ioss::NodeBlockContainer node_blocks = region->get_node_blocks();
         assert(node_blocks.size() == 1);
         spatialDimension = node_blocks[0]->get_property("component_degree").get_int();
-        nodeCount        = node_blocks[0]->get_property("entity_count").get_int();
+        nodeCount        = node_blocks[0]->entity_count();
       }
 
       // Element Blocks --
@@ -1742,7 +1742,7 @@ namespace Ioxf {
 
         elementCount = 0;
         for (I = element_blocks.begin(); I != element_blocks.end(); ++I) {
-          elementCount += (*I)->get_property("entity_count").get_int();
+          elementCount += (*I)->entity_count();
           // Set ids of all entities that do not have "id" property...
           get_id(*I, 'E', &ids_);
           Ioxf::Block T(*(*I));
@@ -1766,7 +1766,7 @@ namespace Ioxf {
       Ioss::SideBlockContainer::const_iterator J;
 
       for (J = side_blocks.begin(); J != side_blocks.end(); ++J) {
-        int count = (*J)->get_property("entity_count").get_int();
+        int count = (*J)->entity_count();
         sset_entity_count.push_back(count);
       }
     }
@@ -2328,7 +2328,7 @@ namespace Ioxf {
         Ioss::CommSet *cs = *I;
 
         std::string type  = cs->get_property("entity_type").get_string();
-        int         count = cs->get_property("entity_count").get_int();
+        int         count = cs->entity_count();
         int         id    = get_id(cs, 'C', &ids_);
 
         if (type == "node") {
@@ -2577,7 +2577,7 @@ namespace Ioxf {
       (*I)->field_describe(Ioss::Field::REDUCTION, &results_fields);
 
       std::string block_name = (*I)->name();
-      int         count      = (*I)->get_property("entity_count").get_int();
+      int         count      = (*I)->entity_count();
 
       std::ostringstream *XML        = nullptr;
       int                 BlockIndex = get_xml_stream(block_name);

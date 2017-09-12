@@ -291,7 +291,7 @@ namespace {
     size_t count = 0;
     auto & ebs   = region.get_element_blocks();
     for (const auto &eb : ebs) {
-      size_t element_count = eb->get_property("entity_count").get_int();
+      size_t element_count = eb->entity_count();
       size_t element_nodes = eb->get_property("topology_node_count").get_int();
       sum += element_count * element_nodes;
       count += element_count;
@@ -305,7 +305,7 @@ namespace {
     std::vector<INT> connectivity;
     for (const auto &eb : ebs) {
       eb->get_field_data("connectivity_raw", connectivity);
-      size_t element_count = eb->get_property("entity_count").get_int();
+      size_t element_count = eb->entity_count();
       size_t element_nodes = eb->get_property("topology_node_count").get_int();
 
       size_t el = 0;
@@ -612,7 +612,7 @@ namespace {
         std::vector<std::vector<INT>>  psb_sides(proc_count);
         for (size_t p = 0; p < proc_count; p++) {
           proc_sb[p]        = proc_ss[p]->get_side_block(sb_name);
-          size_t elem_count = proc_sb[p]->get_property("entity_count").get_int();
+          size_t elem_count = proc_sb[p]->entity_count();
           psb_elems[p].reserve(elem_count * 2);
         }
 
@@ -826,7 +826,7 @@ namespace {
       std::vector<std::vector<double>> pns_df(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
         size_t node_count =
-            proc_region[p]->get_nodesets()[s]->get_property("entity_count").get_int();
+            proc_region[p]->get_nodesets()[s]->entity_count();
         pns_nodes[p].reserve(node_count);
         pns_df[p].reserve(node_count);
       }
@@ -961,11 +961,11 @@ namespace {
       std::vector<std::vector<INT>> map(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
         auto & proc_ebs           = proc_region[p]->get_element_blocks();
-        size_t proc_element_count = proc_ebs[b]->get_property("entity_count").get_int();
+        size_t proc_element_count = proc_ebs[b]->entity_count();
         map[p].reserve(proc_element_count);
       }
 
-      size_t element_count = ebs[b]->get_property("entity_count").get_int();
+      size_t element_count = ebs[b]->entity_count();
 
       for (size_t j = 0; j < element_count; j++) {
         size_t p = elem_to_proc[offset + j];
@@ -1120,7 +1120,7 @@ namespace {
       connectivity[p].resize(block_count);
       const auto &pebs = proc_region[p]->get_element_blocks();
       for (size_t b = 0; b < block_count; b++) {
-        size_t element_count = pebs[b]->get_property("entity_count").get_int();
+        size_t element_count = pebs[b]->entity_count();
         size_t element_nodes = pebs[b]->get_property("topology_node_count").get_int();
         connectivity[p][b].reserve(element_count * element_nodes); // Use reserve, not resize
       }
@@ -1134,7 +1134,7 @@ namespace {
     size_t           offset = 0;
 
     for (size_t b = 0; b < block_count; b++) {
-      size_t element_count = ebs[b]->get_property("entity_count").get_int();
+      size_t element_count = ebs[b]->entity_count();
       size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
       size_t block_id      = ebs[b]->get_property("id").get_int();
 
@@ -1187,7 +1187,7 @@ namespace {
     size_t block_count = ebs.size();
     size_t begin       = 0;
     for (size_t i = 0; i < block_count; i++) {
-      size_t end = begin + ebs[i]->get_property("entity_count").get_int();
+      size_t end = begin + ebs[i]->entity_count();
       for (size_t j = begin; j < end; j++) {
         size_t processor = elem_to_proc[j];
         proc_elem_block_cnt[i][processor]++;
@@ -1245,7 +1245,7 @@ namespace {
       size_t block_count   = ebs.size();
 
       for (size_t b = 0; b < block_count; b++) {
-        size_t element_count = ebs[b]->get_property("entity_count").get_int();
+        size_t element_count = ebs[b]->entity_count();
         size_t element_nodes = ebs[b]->get_property("topology_node_count").get_int();
         for (size_t i = 0; i < element_count * element_nodes; i++) {
           INT node = connectivity[p][b][i] - 1;

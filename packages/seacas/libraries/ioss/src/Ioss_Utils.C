@@ -1899,7 +1899,7 @@ namespace {
       if (debug && rank == 0) {
         std::cerr << name << ", ";
       }
-      size_t num_nodes = inb->get_property("entity_count").get_int();
+      size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (verbose && rank == 0) {
         std::cerr << " Number of  Coordinates per Node        =" << std::setw(12) << degree << "\n";
@@ -1988,7 +1988,7 @@ namespace {
           std::cerr << name << ", ";
         }
         std::string type  = iblock->get_property("topology_type").get_string();
-        size_t      count = iblock->get_property("entity_count").get_int();
+        size_t      count = iblock->entity_count();
         total_entities += count;
 
         auto block = new T(output_region.get_database(), name, type, count);
@@ -2019,7 +2019,7 @@ namespace {
         if (debug && rank == 0) {
           std::cerr << name << ", ";
         }
-        size_t count = iblock->get_property("entity_count").get_int();
+        size_t count = iblock->entity_count();
         total_entities += count;
 
         auto block = iblock->clone(output_region.get_database());
@@ -2080,7 +2080,7 @@ namespace {
         }
         std::string fbtype   = fb->get_property("topology_type").get_string();
         std::string partype  = fb->get_property("parent_topology_type").get_string();
-        size_t      num_side = fb->get_property("entity_count").get_int();
+        size_t      num_side = fb->entity_count();
         total_sides += num_side;
 
         auto block =
@@ -2116,7 +2116,7 @@ namespace {
         if (debug && rank == 0) {
           std::cerr << name << ", ";
         }
-        size_t count = set->get_property("entity_count").get_int();
+        size_t count = set->entity_count();
         total_entities += count;
         auto o_set = new T(output_region.get_database(), name, count);
         output_region.add(o_set);
@@ -2174,7 +2174,7 @@ namespace {
         std::cerr << name << ", ";
       }
       std::string type  = ics->get_property("entity_type").get_string();
-      size_t      count = ics->get_property("entity_count").get_int();
+      size_t      count = ics->entity_count();
       auto        cs    = new Ioss::CommSet(output_region.get_database(), name, type, count);
       output_region.add(cs);
       transfer_properties(ics, cs);
