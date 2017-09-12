@@ -1,4 +1,4 @@
-// Copyright(C) 2015 National Technology & Engineering Solutions of
+// Copyright(C) 2015-2017 National Technology & Engineering Solutions of
 // Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
       std::cerr << "Aprepro terminated due to exception: " << e.what() << '\n';
     }
   }
-  if (aprepro.ap_options.debugging) {
+  if (aprepro.ap_options.debugging || aprepro.ap_options.dumpvars) {
     aprepro.dumpsym("variable", false);
   }
 }

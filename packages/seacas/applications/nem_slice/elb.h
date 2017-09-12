@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -153,7 +153,7 @@ struct Problem_Description
   int   mech_add_procs;   /* adds processors in cases of mechanisms       */
   int   dsd_add_procs;    /* adds processors in cases of disconnected subdomains */
   int   no_sph;
-  int   fix_columns;      /* detect, fix vertical column partitioning */
+  int   fix_columns; /* detect, fix vertical column partitioning */
   char *groups;
   int * group_no;
   int   num_groups;

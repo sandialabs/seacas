@@ -1,4 +1,4 @@
-C Copyright(C) 2009 National Technology & Engineering Solutions of
+C Copyright(C) 2009-2017 National Technology & Engineering Solutions of
 C Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 C NTESS, the U.S. Government retains certain rights in this software.
 C 
@@ -98,7 +98,7 @@ C   --   o A GROPE listing file on unit 21.
 * that its use would not infringe privately owned rights.             *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-C   --Developed at Sandia National Laboratories.
+C   --Developed at Sandia-2017 National Laboratories.
 C   --
 C   --Current author and code sponsor: John Glick
 C   --
