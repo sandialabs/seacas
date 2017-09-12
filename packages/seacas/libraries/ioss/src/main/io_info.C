@@ -215,7 +215,7 @@ namespace {
     Ioss::StructuredBlockContainer sbs = region.get_structured_blocks();
     for (int proc = 0; proc < parallel_size; proc++) {
       if (proc == region.get_database()->parallel_rank()) {
-        if (parallel) {
+        if (parallel && !summary) {
           OUTPUT << "\nProcessor " << proc;
         }
         for (auto sb : sbs) {
