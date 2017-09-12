@@ -471,21 +471,21 @@ namespace Ioss {
           int64_t offset = 0;
           for (auto eb : elementBlocks) {
             eb->set_offset(offset);
-            offset += eb->get_property("entity_count").get_int();
+            offset += eb->entity_count();
           }
         }
         {
           int64_t offset = 0;
           for (auto fb : faceBlocks) {
             fb->set_offset(offset);
-            offset += fb->get_property("entity_count").get_int();
+            offset += fb->entity_count();
           }
         }
         {
           int64_t offset = 0;
           for (auto eb : edgeBlocks) {
             eb->set_offset(offset);
-            offset += eb->get_property("entity_count").get_int();
+            offset += eb->entity_count();
           }
         }
       }
@@ -833,7 +833,7 @@ namespace Ioss {
         int64_t offset  = 0;
         if (nblocks > 0) {
           offset = elementBlocks[nblocks - 1]->get_offset() +
-                   elementBlocks[nblocks - 1]->get_property("entity_count").get_int();
+                   elementBlocks[nblocks - 1]->entity_count();
         }
         assert(offset >= 0);
         element_block->set_offset(offset);
@@ -886,7 +886,7 @@ namespace Ioss {
         int64_t offset  = 0;
         if (nblocks > 0) {
           offset = faceBlocks[nblocks - 1]->get_offset() +
-                   faceBlocks[nblocks - 1]->get_property("entity_count").get_int();
+                   faceBlocks[nblocks - 1]->entity_count();
         }
         face_block->set_offset(offset);
       }
@@ -938,7 +938,7 @@ namespace Ioss {
         int64_t offset  = 0;
         if (nblocks > 0) {
           offset = edgeBlocks[nblocks - 1]->get_offset() +
-                   edgeBlocks[nblocks - 1]->get_property("entity_count").get_int();
+                   edgeBlocks[nblocks - 1]->entity_count();
         }
         edge_block->set_offset(offset);
       }
@@ -1878,7 +1878,7 @@ namespace Ioss {
     if (my_name == "element_count") {
       int64_t count = 0;
       for (auto eb : elementBlocks) {
-        count += eb->get_property("entity_count").get_int();
+        count += eb->entity_count();
       }
       return Property(my_name, count);
     }
@@ -1894,7 +1894,7 @@ namespace Ioss {
     if (my_name == "face_count") {
       int64_t count = 0;
       for (auto fb : faceBlocks) {
-        count += fb->get_property("entity_count").get_int();
+        count += fb->entity_count();
       }
       return Property(my_name, count);
     }
@@ -1902,7 +1902,7 @@ namespace Ioss {
     if (my_name == "edge_count") {
       int64_t count = 0;
       for (auto eb : edgeBlocks) {
-        count += eb->get_property("entity_count").get_int();
+        count += eb->entity_count();
       }
       return Property(my_name, count);
     }
@@ -1910,7 +1910,7 @@ namespace Ioss {
     if (my_name == "node_count") {
       int64_t count = 0;
       for (auto nb : nodeBlocks) {
-        count += nb->get_property("entity_count").get_int();
+        count += nb->entity_count();
       }
       return Property(my_name, count);
     }
@@ -2074,7 +2074,7 @@ namespace Ioss {
             // to the new entity in order to maintain the same order
             // since some codes access attributes by implicit order and
             // not name... (typically, element blocks only)
-            size_t entity_count = this_ge->get_property("entity_count").get_int();
+            size_t count = this_ge->entity_count();
 
             Ioss::NameList attr_fields;
             ge->field_describe(Ioss::Field::ATTRIBUTE, &attr_fields);
@@ -2090,9 +2090,9 @@ namespace Ioss {
               else {
                 // If the field does not already exist, add it to the
                 // output node block
-                if (field.raw_count() != entity_count) {
+                if (field.raw_count() != count) {
                   Ioss::Field new_field(field);
-                  new_field.reset_count(entity_count);
+                  new_field.reset_count(count);
                   this_ge->field_add(new_field);
                 }
                 else {

@@ -473,7 +473,7 @@ namespace Ioss {
       if (set != nullptr) {
         SideBlockContainer side_blocks = set->get_side_blocks();
         for (auto &sbold : side_blocks) {
-          size_t side_count = sbold->get_property("entity_count").get_int();
+          size_t side_count = sbold->entity_count();
           auto   sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
                                      sbold->parent_element_topology()->name(), side_count);
           int64_t id = sbold->get_property("id").get_int();
@@ -514,7 +514,7 @@ namespace Ioss {
     bool                  first          = true;
     ElementBlockContainer element_blocks = get_region()->get_element_blocks();
     for (auto block : element_blocks) {
-      size_t element_count = block->get_property("entity_count").get_int();
+      size_t element_count = block->entity_count();
 
       // Check face types.
       if (element_count > 0) {
@@ -646,7 +646,7 @@ namespace Ioss {
       std::vector<double> coordinates;
       Ioss::NodeBlock *   nb = get_region()->get_node_blocks()[0];
       nb->get_field_data("mesh_model_coordinates", coordinates);
-      ssize_t nnode = nb->get_property("entity_count").get_int();
+      ssize_t nnode = nb->entity_count();
       ssize_t ndim  = nb->get_property("component_degree").get_int();
 
       Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();

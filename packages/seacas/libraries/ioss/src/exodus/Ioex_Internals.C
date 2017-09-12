@@ -142,7 +142,7 @@ NodeBlock::NodeBlock(const Ioss::NodeBlock &other)
   else {
     id = 1;
   }
-  entityCount = other.get_property("entity_count").get_int();
+  entityCount = other.entity_count();
   if (other.property_exists("locally_owned_count")) {
     localOwnedCount = other.get_property("locally_owned_count").get_int();
   }
@@ -173,7 +173,7 @@ EdgeBlock::EdgeBlock(const Ioss::EdgeBlock &other)
   }
 
   id             = other.get_property("id").get_int();
-  entityCount    = other.get_property("entity_count").get_int();
+  entityCount    = other.entity_count();
   nodesPerEntity = other.get_property("topology_node_count").get_int();
   attributeCount = other.get_property("attribute_count").get_int();
 
@@ -216,7 +216,7 @@ FaceBlock::FaceBlock(const Ioss::FaceBlock &other)
   }
 
   id             = other.get_property("id").get_int();
-  entityCount    = other.get_property("entity_count").get_int();
+  entityCount    = other.entity_count();
   nodesPerEntity = other.get_property("topology_node_count").get_int();
   if (other.field_exists("connectivty_edge")) {
     edgesPerEntity = other.get_field("connectivity_edge").raw_storage()->component_count();
@@ -266,7 +266,7 @@ ElemBlock::ElemBlock(const Ioss::ElementBlock &other)
   }
 
   id             = other.get_property("id").get_int();
-  entityCount    = other.get_property("entity_count").get_int();
+  entityCount    = other.entity_count();
   nodesPerEntity = other.get_property("topology_node_count").get_int();
 
   if (other.field_exists("connectivity_edge")) {
@@ -337,7 +337,7 @@ NodeSet::NodeSet(const Ioss::NodeSet &other)
   }
 
   id          = other.get_property("id").get_int();
-  entityCount = other.get_property("entity_count").get_int();
+  entityCount = other.entity_count();
   if (other.property_exists("locally_owned_count")) {
     localOwnedCount = other.get_property("locally_owned_count").get_int();
   }
@@ -368,7 +368,7 @@ EdgeSet::EdgeSet(const Ioss::EdgeSet &other)
   }
 
   id             = other.get_property("id").get_int();
-  entityCount    = other.get_property("entity_count").get_int();
+  entityCount    = other.entity_count();
   attributeCount = other.get_property("attribute_count").get_int();
   dfCount        = other.get_property("distribution_factor_count").get_int();
   procOffset     = 0;
@@ -390,7 +390,7 @@ FaceSet::FaceSet(const Ioss::FaceSet &other)
   }
 
   id             = other.get_property("id").get_int();
-  entityCount    = other.get_property("entity_count").get_int();
+  entityCount    = other.entity_count();
   attributeCount = other.get_property("attribute_count").get_int();
   dfCount        = other.get_property("distribution_factor_count").get_int();
   procOffset     = 0;
@@ -412,7 +412,7 @@ ElemSet::ElemSet(const Ioss::ElementSet &other)
   }
 
   id             = other.get_property("id").get_int();
-  entityCount    = other.get_property("entity_count").get_int();
+  entityCount    = other.entity_count();
   attributeCount = other.get_property("attribute_count").get_int();
   dfCount        = other.get_property("distribution_factor_count").get_int();
   procOffset     = 0;
@@ -434,7 +434,7 @@ SideSet::SideSet(const Ioss::SideBlock &other)
   }
 
   id                         = other.get_property("id").get_int();
-  entityCount                = other.get_property("entity_count").get_int();
+  entityCount                = other.entity_count();
   dfCount                    = other.get_property("distribution_factor_count").get_int();
   const std::string &io_name = other.name();
 
@@ -456,7 +456,7 @@ SideSet::SideSet(const Ioss::SideSet &other)
   }
 
   id                         = other.get_property("id").get_int();
-  entityCount                = other.get_property("entity_count").get_int();
+  entityCount                = other.entity_count();
   dfCount                    = other.get_property("distribution_factor_count").get_int();
   const std::string &io_name = other.name();
 

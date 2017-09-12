@@ -295,7 +295,7 @@ namespace Iogn {
     size_t num_to_get = field.verify(data_size);
 
     int64_t               id            = eb->get_property("id").get_int();
-    int64_t               element_count = eb->get_property("entity_count").get_int();
+    int64_t               element_count = eb->entity_count();
     Ioss::Field::RoleType role          = field.get_role();
 
     if (role == Ioss::Field::MESH) {
@@ -364,7 +364,7 @@ namespace Iogn {
     size_t num_to_get = field.verify(data_size);
 
     int64_t id           = ef_blk->get_property("id").get_int();
-    size_t  entity_count = ef_blk->get_property("entity_count").get_int();
+    size_t  entity_count = ef_blk->entity_count();
     if (num_to_get != entity_count) {
       std::ostringstream errmsg;
       errmsg << "Partial field input not implemented for side blocks";
@@ -540,7 +540,7 @@ namespace Iogn {
   {
     size_t num_to_get = field.verify(data_size);
 
-    size_t entity_count = cs->get_property("entity_count").get_int();
+    size_t entity_count = cs->entity_count();
 
     // Return the <entity (node or face), processor> pair
     if (field.get_name() == "entity_processor" || field.get_name() == "entity_processor_raw") {
@@ -888,7 +888,7 @@ namespace Iogn {
   void DatabaseIO::add_transient_fields(Ioss::GroupingEntity *entity)
   {
     Ioss::EntityType type         = entity->type();
-    size_t           entity_count = entity->get_property("entity_count").get_int();
+    size_t           entity_count = entity->entity_count();
     size_t           var_count    = m_generatedMesh->get_variable_count(type);
     for (size_t i = 0; i < var_count; i++) {
       std::string var_name = entity->type_string() + "_" + std::to_string(i + 1);

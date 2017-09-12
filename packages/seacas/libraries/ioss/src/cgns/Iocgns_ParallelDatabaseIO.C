@@ -1130,7 +1130,7 @@ namespace Iocgns {
 
       // Read into a double variable
       // TODO: Support other field types...
-      size_t              num_entity = eb->get_property("entity_count").get_int();
+      size_t              num_entity = eb->entity_count();
       std::vector<double> temp(num_entity);
 
       // get number of components, cycle through each component
@@ -1188,7 +1188,7 @@ namespace Iocgns {
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
-      int64_t entity_count = sb->get_property("entity_count").get_int();
+      int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Partial field input not yet implemented for side blocks";
@@ -1549,7 +1549,7 @@ namespace Iocgns {
         // accounted for...
         cgsize_t size[3] = {0, 0, 0};
         size[0]          = owned_node_count;
-        size[1]          = eb->get_property("entity_count").get_int();
+        size[1]          = eb->entity_count();
 
         MPI_Allreduce(MPI_IN_PLACE, size, 3, cgns_mpi_type(), MPI_SUM, util().communicator());
 

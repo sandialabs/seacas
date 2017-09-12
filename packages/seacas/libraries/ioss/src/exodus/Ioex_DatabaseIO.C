@@ -1028,7 +1028,7 @@ namespace Ioex {
         }
 
         std::vector<Ioss::Field> fields;
-        int64_t                  count = entity->get_property("entity_count").get_int();
+        int64_t                  count = entity->entity_count();
         Ioss::Utils::get_fields(count, names, nvar, Ioss::Field::TRANSIENT, get_field_separator(),
                                 local_truth, fields);
 
@@ -1448,7 +1448,7 @@ namespace Ioex {
     assert(block != nullptr);
     if (attribute_count > 0) {
       std::string block_name       = block->name();
-      size_t      my_element_count = block->get_property("entity_count").get_int();
+      size_t      my_element_count = block->entity_count();
 
       // Get the attribute names. May not exist or may be blank...
       char ** names = Ioss::Utils::get_name_array(attribute_count, maximumNameLength);
@@ -1478,7 +1478,7 @@ namespace Ioex {
         // Use attribute names if they exist.
         {
           Ioss::SerializeIO serializeIO__(this);
-          if (block->get_property("entity_count").get_int() != 0) {
+          if (block->entity_count() != 0) {
             int ierr = ex_get_attr_names(get_file_pointer(), entity_type, id, &names[0]);
             if (ierr < 0) {
               Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
@@ -1489,7 +1489,7 @@ namespace Ioex {
         // Sync names across processors...
         if (isParallel) {
           std::vector<char> cname(attribute_count * (maximumNameLength + 1));
-          if (block->get_property("entity_count").get_int() != 0) {
+          if (block->entity_count() != 0) {
             for (int i = 0; i < attribute_count; i++) {
               std::memcpy(&cname[i * (maximumNameLength + 1)], names[i], maximumNameLength + 1);
             }

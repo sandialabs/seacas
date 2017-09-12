@@ -161,7 +161,7 @@ namespace {
     if (summary) {
       int64_t degree = 0;
       for (auto nb : nbs) {
-        int64_t num_nodes = nb->get_property("entity_count").get_int();
+        int64_t num_nodes = nb->entity_count();
         total_num_nodes += num_nodes;
         degree = nb->get_property("component_degree").get_int();
       }
@@ -171,7 +171,7 @@ namespace {
     }
     else {
       for (auto nb : nbs) {
-        int64_t num_nodes  = nb->get_property("entity_count").get_int();
+        int64_t num_nodes  = nb->entity_count();
         int64_t num_attrib = nb->get_property("attribute_count").get_int();
         OUTPUT << '\n'
                << name(nb) << std::setw(12) << num_nodes << " nodes, " << std::setw(3) << num_attrib
@@ -287,7 +287,7 @@ namespace {
     Ioss::ElementBlockContainer ebs            = region.get_element_blocks();
     int64_t                     total_elements = 0;
     for (auto eb : ebs) {
-      int64_t num_elem = eb->get_property("entity_count").get_int();
+      int64_t num_elem = eb->entity_count();
       total_elements += num_elem;
 
       if (!summary) {
@@ -334,7 +334,7 @@ namespace {
     Ioss::EdgeBlockContainer ebs         = region.get_edge_blocks();
     int64_t                  total_edges = 0;
     for (auto eb : ebs) {
-      int64_t num_edge = eb->get_property("entity_count").get_int();
+      int64_t num_edge = eb->entity_count();
       total_edges += num_edge;
 
       if (!summary) {
@@ -371,7 +371,7 @@ namespace {
     Ioss::FaceBlockContainer ebs         = region.get_face_blocks();
     int64_t                  total_faces = 0;
     for (auto eb : ebs) {
-      int64_t num_face = eb->get_property("entity_count").get_int();
+      int64_t num_face = eb->entity_count();
       total_faces += num_face;
 
       if (!summary) {
@@ -435,7 +435,7 @@ namespace {
 
       Ioss::SideBlockContainer fbs = fs->get_side_blocks();
       for (auto fb : fbs) {
-        int64_t num_side = fb->get_property("entity_count").get_int();
+        int64_t num_side = fb->entity_count();
         if (!summary) {
           std::string fbtype  = fb->get_property("topology_type").get_string();
           std::string partype = fb->get_property("parent_topology_type").get_string();
@@ -475,7 +475,7 @@ namespace {
     Ioss::NodeSetContainer nss         = region.get_nodesets();
     int64_t                total_nodes = 0;
     for (auto ns : nss) {
-      int64_t count      = ns->get_property("entity_count").get_int();
+      int64_t count      = ns->entity_count();
       int64_t num_attrib = ns->get_property("attribute_count").get_int();
       int64_t num_dist   = ns->get_property("distribution_factor_count").get_int();
       if (!summary) {
@@ -500,7 +500,7 @@ namespace {
     Ioss::EdgeSetContainer nss         = region.get_edgesets();
     int64_t                total_edges = 0;
     for (auto ns : nss) {
-      int64_t count      = ns->get_property("entity_count").get_int();
+      int64_t count      = ns->entity_count();
       int64_t num_attrib = ns->get_property("attribute_count").get_int();
       if (!summary) {
         OUTPUT << '\n'
@@ -523,7 +523,7 @@ namespace {
     Ioss::FaceSetContainer fss         = region.get_facesets();
     int64_t                total_faces = 0;
     for (auto fs : fss) {
-      int64_t count      = fs->get_property("entity_count").get_int();
+      int64_t count      = fs->entity_count();
       int64_t num_attrib = fs->get_property("attribute_count").get_int();
       if (!summary) {
         OUTPUT << '\n'
@@ -546,7 +546,7 @@ namespace {
     Ioss::ElementSetContainer ess            = region.get_elementsets();
     int64_t                   total_elements = 0;
     for (auto es : ess) {
-      int64_t count = es->get_property("entity_count").get_int();
+      int64_t count = es->entity_count();
       if (!summary) {
         OUTPUT << '\n'
                << name(es) << " id: " << std::setw(6) << id(es) << ", " << std::setw(8) << count
