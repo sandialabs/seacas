@@ -347,18 +347,22 @@ namespace Iocgns {
   // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
-    const auto &blocks = get_region()->get_structured_blocks();
+    size_t pow2 = Ioss::log_power_2(util().parallel_size());
 
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
     // definition...
+    const auto &blocks = get_region()->get_structured_blocks();
     for (auto &block : blocks) {
+      int64_t guid = block->get_property("guid").get_int();
       for (auto &conn : block->m_zoneConnectivity) {
         if (conn.m_donorZone < 0) {
           auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
+	conn.m_donorGUID = generate_guid(conn.m_donorZone, conn.m_donorProcessor, pow2);
+	conn.m_ownerGUID = guid;
       }
     }
 
@@ -397,7 +401,6 @@ namespace Iocgns {
         // this m_adam on this processor.  If exists, then create
         // a StructuredBlock; otherwise, create an empty block.
         auto block_name = zone->m_name;
-	int64_t guid = generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
 
         Ioss::StructuredBlock *block = nullptr;
         Ioss::IJK_t            zeros{{0, 0, 0}};
@@ -415,8 +418,6 @@ namespace Iocgns {
 	      assert(oz->m_zone == zgc.m_ownerZone);
 	      zgc.m_donorZone = dz->m_adam->m_zone;
 	      zgc.m_ownerZone = oz->m_adam->m_zone;
-	      zgc.m_donorGUID = generate_guid(dz->m_adam->m_zone, zgc.m_donorProcessor, pow2);
-	      zgc.m_ownerGUID = guid;
               block->m_zoneConnectivity.push_back(zgc);
             }
             break;
@@ -438,6 +439,7 @@ namespace Iocgns {
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
+	int64_t guid = generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
 	block->property_add(Ioss::Property("guid", guid));
 
         block->set_node_offset(node_offset);
