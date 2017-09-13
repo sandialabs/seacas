@@ -268,6 +268,8 @@ namespace Iocgns {
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
     Utils::add_sidesets(cgnsFilePtr, this);
 
+    size_t pow2 = Ioss::power_2(util().parallel_size());
+
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int base = 1;
@@ -282,6 +284,8 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
       eblock->property_add(Ioss::Property("id", block.zone()));
+      int64_t guid = ((int64_t)block.zone() << pow2) + util().parallel_rank(); // globally-unique id
+      eblock->property_add(Ioss::Property("guid", guid));
       eblock->property_add(Ioss::Property("section", block.section()));
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
@@ -377,6 +381,7 @@ namespace Iocgns {
     size_t cell_offset        = 0;
     size_t global_node_offset = 0;
     size_t global_cell_offset = 0;
+    size_t pow2 = Ioss::power_2(util().parallel_size());
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
@@ -416,6 +421,8 @@ namespace Iocgns {
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
+	int64_t guid = (zone->m_adam->m_zone << pow2) + util().parallel_rank(); // globally-unique id
+	block->property_add(Ioss::Property("guid", guid));
 
         block->set_node_offset(node_offset);
         block->set_cell_offset(cell_offset);
