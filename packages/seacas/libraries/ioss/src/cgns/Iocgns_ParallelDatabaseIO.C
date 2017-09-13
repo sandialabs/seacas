@@ -275,7 +275,7 @@ namespace Iocgns {
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
     Utils::add_sidesets(cgnsFilePtr, this);
 
-    size_t pow2 = Ioss::log_power_2(util().parallel_size());
+    size_t pow2 = Ioss::Utils::log_power_2(util().parallel_size());
 
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
@@ -348,7 +348,7 @@ namespace Iocgns {
   // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
-    size_t pow2 = Ioss::log_power_2(util().parallel_size());
+    size_t pow2 = Ioss::Utils::log_power_2(util().parallel_size());
 
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
@@ -393,7 +393,7 @@ namespace Iocgns {
     size_t cell_offset        = 0;
     size_t global_node_offset = 0;
     size_t global_cell_offset = 0;
-    size_t pow2               = Ioss::log_power_2(util().parallel_size());
+    size_t pow2               = Ioss::Utils::log_power_2(util().parallel_size());
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
