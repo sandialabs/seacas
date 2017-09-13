@@ -186,17 +186,17 @@ namespace Iocgns {
 
   void DatabaseIO::resolve_shared_nodes_structured(int base, int zone, Ioss::StructuredBlock *block)
   {
-    // Handle zone-grid-connectivity...
-    int nconn = 0;
-    CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
-    for (int i = 0; i < nconn; i++) {
-      char connectname[33];
-      char donorname[33];
+    int nconn_1to1 = 0;
+    CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn_1to1));
+    for (int iconn = 1; iconn <= nconn_1to1; iconn++) {
+
+      char                    connectname[33];
+      char                    donorname[33];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t transform;
+      Ioss::IJK_t             transform;
 
-      CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+      CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, iconn, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
 
       // Get number of nodes shared with other "previous" zones...
@@ -222,74 +222,109 @@ namespace Iocgns {
 
   void DatabaseIO::resolve_shared_nodes_unstructured(int base, int zone)
   {
-    // Determine number of "shared" nodes (shared with other zones)
-    if (zone > 1) { // Donor zone is always lower numbered, so zone 1 has no donor zone.
-      int nconn = 0;
-      CGCHECK(cg_nconns(cgnsFilePtr, base, zone, &nconn));
-      cgsize_t num_shared = 0;
-      for (int i = 0; i < nconn; i++) {
-        char                      connectname[33];
-        CG_GridLocation_t         location;
-        CG_GridConnectivityType_t connect_type;
-        CG_PointSetType_t         ptset_type;
-        cgsize_t                  npnts = 0;
-        char                      donorname[33];
-        CG_ZoneType_t             donor_zonetype;
-        CG_PointSetType_t         donor_ptset_type;
-        CG_DataType_t             donor_datatype;
-        cgsize_t                  ndata_donor;
+    if (zone == 1) {
+      return;
+    }
 
-        CGCHECK(cg_conn_info(cgnsFilePtr, base, zone, i + 1, connectname, &location, &connect_type,
-                             &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
-                             &donor_datatype, &ndata_donor));
+    int nconn_gen = 0;
+    CGCHECK(cg_nconns(cgnsFilePtr, base, zone, &nconn_gen));
+    for (int iconn = 1; iconn <= nconn_gen; iconn++) {
+      // Determine number of "shared" nodes (shared with other zones)
+      char                      connectname[33];
+      char                      donorname[33];
+      CG_GridLocation_t         location;
+      CG_GridConnectivityType_t connect_type;
+      CG_PointSetType_t         ptset_type;
+      cgsize_t                  npnts = 0;
+      CG_ZoneType_t             donor_zonetype;
+      CG_PointSetType_t         donor_ptset_type;
+      CG_DataType_t             donor_datatype;
+      cgsize_t                  ndata_donor;
 
-        if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList) {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: CGNS: Zone " << zone << " adjacency data for " << connectname
-                 << " is not correct type. Require Abutting1to1 and PointList.\t" << connect_type
-                 << "\t" << ptset_type << "\t" << donor_ptset_type;
-          IOSS_ERROR(errmsg);
-        }
+      CGCHECK(cg_conn_info(cgnsFilePtr, base, zone, iconn, connectname, &location, &connect_type,
+                           &ptset_type, &npnts, donorname, &donor_zonetype, &donor_ptset_type,
+                           &donor_datatype, &ndata_donor));
 
-        // Verify data consistency...
-        if (npnts != ndata_donor) {
-          std::ostringstream errmsg;
-          errmsg << "ERROR: CGNS: Zone " << zone << " point count (" << npnts
-                 << ") does not match donor point count (" << ndata_donor << ").";
-          IOSS_ERROR(errmsg);
-        }
+      if (connect_type != CG_Abutting1to1 || ptset_type != CG_PointList) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " adjacency data for " << connectname
+               << " is not correct type. Require Abutting1to1 and PointList.\t" << connect_type
+               << "\t" << ptset_type << "\t" << donor_ptset_type;
+        IOSS_ERROR(errmsg);
+      }
 
+      if (donor_zonetype != CG_Unstructured) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " adjacency data for " << connectname
+               << " is connected to zone " << donorname << " which is of type Structured. "
+               << "Can currently only handle structured-structured or unstructured-unstructured "
+                  "connections.";
+        IOSS_ERROR(errmsg);
+      }
+
+      // Verify data consistency...
+      if (npnts != ndata_donor) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: CGNS: Zone " << zone << " point count (" << npnts
+               << ") does not match donor point count (" << ndata_donor << ").";
+        IOSS_ERROR(errmsg);
+      }
+
+      if (donor_ptset_type == CG_PointListDonor) {
+        // Get number of nodes shared with other "previous" zones...
+        // A "previous" zone will have a lower zone number this this zone...
         if (donor_ptset_type == CG_PointListDonor) {
-          // Get number of nodes shared with other "previous" zones...
-          // A "previous" zone will have a lower zone number this this zone...
-          if (donor_ptset_type == CG_PointListDonor) {
-            auto donor_iter = m_zoneNameMap.find(donorname);
-            if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
-              num_shared += npnts;
+          auto donor_iter = m_zoneNameMap.find(donorname);
+          if (donor_iter != m_zoneNameMap.end() && (*donor_iter).second < zone) {
 #if IOSS_DEBUG_OUTPUT
-              std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
-                        << "\n";
+            std::cout << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
+                      << "\n";
 #endif
-              std::vector<cgsize_t> points(npnts);
-              std::vector<cgsize_t> donors(npnts);
+            std::vector<cgsize_t> points(npnts);
+            std::vector<cgsize_t> donors(npnts);
 
-              CGCHECK(cg_conn_read(cgnsFilePtr, base, zone, i + 1, TOPTR(points), donor_datatype,
-                                   TOPTR(donors)));
+            CGCHECK(cg_conn_read(cgnsFilePtr, base, zone, iconn, TOPTR(points), donor_datatype,
+                                 TOPTR(donors)));
 
-              // Fill in entries in m_blockLocalNodeMap for the shared nodes...
-              auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
-              auto &block_map = m_blockLocalNodeMap[zone];
-              for (int j = 0; j < npnts; j++) {
-                cgsize_t point       = points[j];
-                cgsize_t donor       = donors[j];
-                block_map[point - 1] = donor_map[donor - 1];
-              }
+            // Fill in entries in m_blockLocalNodeMap for the shared nodes...
+            auto &donor_map = m_blockLocalNodeMap[(*donor_iter).second];
+            auto &block_map = m_blockLocalNodeMap[zone];
+            for (int j = 0; j < npnts; j++) {
+              cgsize_t point       = points[j];
+              cgsize_t donor       = donors[j];
+              block_map[point - 1] = donor_map[donor - 1];
             }
           }
-          else {
-            // TODO: Do something
-          }
         }
+        else {
+          // TODO: Do something
+        }
+      }
+    }
+  }
+
+  void DatabaseIO::resolve_shared_nodes(int base, int zone, Ioss::EntityBlock *block)
+  {
+    CG_ZoneType_t owner_type = CG_ZoneTypeNull;
+    if (block == nullptr || block->type() == Ioss::ELEMENTBLOCK) {
+      owner_type = CG_Unstructured;
+    }
+    else if (block->type() == Ioss::STRUCTUREDBLOCK) {
+      owner_type = CG_Structured;
+    }
+
+    if (owner_type == CG_Unstructured) {
+      std::cout << "Working -- Zone " << zone << "\n";
+      resolve_shared_nodes_unstructured(base, zone);
+    }
+    else if (owner_type == CG_Structured) {
+      auto sblock = dynamic_cast<Ioss::StructuredBlock *>(block);
+      if (sblock != nullptr) {
+        resolve_shared_nodes_structured(base, zone, sblock);
+      }
+      else {
+        assert(1 == 0);
+        // ERROR...
       }
     }
   }
@@ -327,7 +362,7 @@ namespace Iocgns {
     num_node += block->get_property("node_count").get_int();
     num_cell += block->get_property("cell_count").get_int();
 
-    resolve_shared_nodes_structured(base, zone, block);
+    resolve_shared_nodes(base, zone, block);
 
     // Handle boundary conditions...
     Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
@@ -364,7 +399,7 @@ namespace Iocgns {
     size_t total_block_nodes = size[0];
     m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
 
-    resolve_shared_nodes_unstructured(base, zone);
+    resolve_shared_nodes(base, zone, nullptr);
 
     auto & block_map = m_blockLocalNodeMap[zone];
     size_t offset    = num_node;
@@ -508,8 +543,9 @@ namespace Iocgns {
       else {
         // This should be handled already in check_zone_type...
         std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
-                                                  "which are the only types currently supported";
+        errmsg << "ERROR: CGNS: Zone " << zone
+               << " is not of type Unstructured or Structured "
+                  "which are the only types currently supported";
         IOSS_ERROR(errmsg);
       }
     }
