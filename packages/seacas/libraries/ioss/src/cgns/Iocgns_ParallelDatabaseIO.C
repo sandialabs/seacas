@@ -94,7 +94,7 @@ namespace {
     assert(proc >= 0);
     return (zone << lpow2) + proc;
   }
-}
+} // namespace
 
 namespace Iocgns {
 
@@ -294,7 +294,8 @@ namespace Iocgns {
       get_region()->add(eblock);
 #if IOSS_DEBUG_OUTPUT
       std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
-                << "' with " << block.ioss_count() << " elements.  GUID = " << guid << "   " << pow2 << "\n";
+                << "' with " << block.ioss_count() << " elements.  GUID = " << guid << "   " << pow2
+                << "\n";
 #endif
     }
 
@@ -361,8 +362,8 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
-	conn.m_donorGUID = generate_guid(conn.m_donorZone, conn.m_donorProcessor, pow2);
-	conn.m_ownerGUID = guid;
+        conn.m_donorGUID = generate_guid(conn.m_donorZone, conn.m_donorProcessor, pow2);
+        conn.m_ownerGUID = guid;
       }
     }
 
@@ -392,7 +393,7 @@ namespace Iocgns {
     size_t cell_offset        = 0;
     size_t global_node_offset = 0;
     size_t global_cell_offset = 0;
-    size_t pow2 = Ioss::log_power_2(util().parallel_size());
+    size_t pow2               = Ioss::log_power_2(util().parallel_size());
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
@@ -411,13 +412,13 @@ namespace Iocgns {
                                               pzone->m_offset, pzone->m_adam->m_ordinal);
 
             for (auto &zgc : pzone->m_zoneConnectivity) {
-	      // Update donor_zone to point to adam zone instead of child.
-	      auto dz = zones[zgc.m_donorZone-1];
-	      assert(dz->m_zone == zgc.m_donorZone);
-	      auto oz = zones[zgc.m_ownerZone-1];
-	      assert(oz->m_zone == zgc.m_ownerZone);
-	      zgc.m_donorZone = dz->m_adam->m_zone;
-	      zgc.m_ownerZone = oz->m_adam->m_zone;
+              // Update donor_zone to point to adam zone instead of child.
+              auto dz = zones[zgc.m_donorZone - 1];
+              assert(dz->m_zone == zgc.m_donorZone);
+              auto oz = zones[zgc.m_ownerZone - 1];
+              assert(oz->m_zone == zgc.m_ownerZone);
+              zgc.m_donorZone = dz->m_adam->m_zone;
+              zgc.m_ownerZone = oz->m_adam->m_zone;
               block->m_zoneConnectivity.push_back(zgc);
             }
             break;
@@ -439,8 +440,9 @@ namespace Iocgns {
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
-	int64_t guid = generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
-	block->property_add(Ioss::Property("guid", guid));
+        int64_t guid =
+            generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
+        block->property_add(Ioss::Property("guid", guid));
 
         block->set_node_offset(node_offset);
         block->set_cell_offset(cell_offset);
@@ -452,9 +454,10 @@ namespace Iocgns {
         global_node_offset += block->get_property("global_node_count").get_int();
         global_cell_offset += block->get_property("global_cell_count").get_int();
 #if IOSS_DEBUG_OUTPUT
-	std::cout << "Added block " << block_name << ":, Structured with ID = " << zone->m_adam->m_zone << ", GUID = " << guid <<  "\n";
+        std::cout << "Added block " << block_name
+                  << ":, Structured with ID = " << zone->m_adam->m_zone << ", GUID = " << guid
+                  << "\n";
 #endif
-
       }
     }
 
@@ -1001,9 +1004,8 @@ namespace Iocgns {
       }
     }
 
-    assert(num_to_get == 0 ||
-           num_to_get ==
-               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    assert(num_to_get == 0 || num_to_get == (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) *
+                                                (rmax[2] - rmin[2] + 1));
     double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
@@ -1762,9 +1764,8 @@ namespace Iocgns {
       }
     }
 
-    assert(num_to_get == 0 ||
-           num_to_get ==
-               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    assert(num_to_get == 0 || num_to_get == (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) *
+                                                (rmax[2] - rmin[2] + 1));
     double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
@@ -2081,4 +2082,4 @@ namespace Iocgns {
     }
     return num_to_get;
   }
-}
+} // namespace Iocgns

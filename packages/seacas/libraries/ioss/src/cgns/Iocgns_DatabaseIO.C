@@ -222,11 +222,11 @@ namespace Iocgns {
     int nconn = 0;
     CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
     for (int i = 0; i < nconn; i++) {
-      char connectname[33];
-      char donorname[33];
+      char                    connectname[33];
+      char                    donorname[33];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t transform;
+      Ioss::IJK_t             transform;
 
       CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
@@ -269,8 +269,8 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
-	conn.m_donorGUID = conn.m_donorZone;
-	conn.m_ownerGUID = conn.m_ownerZone;
+        conn.m_donorGUID = conn.m_donorZone;
+        conn.m_ownerGUID = conn.m_ownerZone;
       }
     }
 
@@ -405,7 +405,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("id", zone));
-	eblock->property_add(Ioss::Property("guid", zone));
+        eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
 
@@ -489,8 +489,9 @@ namespace Iocgns {
       else {
         // This should be handled already in check_zone_type...
         std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
-                                                  "which are the only types currently supported";
+        errmsg << "ERROR: CGNS: Zone " << zone
+               << " is not of type Unstructured or Structured "
+                  "which are the only types currently supported";
         IOSS_ERROR(errmsg);
       }
     }

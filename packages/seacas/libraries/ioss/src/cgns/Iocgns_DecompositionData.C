@@ -54,7 +54,7 @@ namespace {
   if (rank == 0)                                                                                   \
   std::cerr
 
-// ZOLTAN Callback functions...
+  // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
@@ -158,11 +158,11 @@ namespace {
       int nconn = 0;
       CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
       for (int i = 0; i < nconn; i++) {
-        char connectname[33];
-        char donorname[33];
+        char                    connectname[33];
+        char                    donorname[33];
         std::array<cgsize_t, 6> range;
         std::array<cgsize_t, 6> donor_range;
-        Ioss::IJK_t transform;
+        Ioss::IJK_t             transform;
 
         CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                              donor_range.data(), transform.data()));
@@ -297,7 +297,7 @@ namespace {
     }
     return min_proc;
   }
-}
+} // namespace
 
 namespace Iocgns {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,
@@ -556,7 +556,8 @@ namespace Iocgns {
     // Output the processor assignments in form similar to 'split' file
     if (rank == 0) {
       int z = 1;
-      std::cerr << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n";
+      std::cerr
+          << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n";
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
                 [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
@@ -571,8 +572,8 @@ namespace Iocgns {
                     << zone->m_offset[1] + 1 << std::setw(8)
                     << zone->m_ordinal[1] + zone->m_offset[1] + 1 << std::setw(8)
                     << zone->m_offset[2] + 1 << std::setw(8)
-                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << std::setw(8)
-		    << zone->work() << "\n";
+                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << std::setw(8) << zone->work()
+                    << "\n";
         }
       }
     }
@@ -1446,4 +1447,4 @@ namespace Iocgns {
       this64->get_sideset_element_side(filePtr, sset, (int64_t *)data);
     }
   }
-}
+} // namespace Iocgns

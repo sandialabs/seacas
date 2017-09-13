@@ -177,7 +177,7 @@ namespace {
     }
     return nstep;
   }
-}
+} // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                                int processor)
@@ -360,25 +360,25 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
 {
   std::string topology = "unknown";
   switch (type) {
-  case CG_NODE: topology     = Ioss::Node::name; break;
-  case CG_BAR_2: topology    = Ioss::Bar2::name; break;
-  case CG_BAR_3: topology    = Ioss::Bar3::name; break;
-  case CG_TRI_3: topology    = Ioss::Tri3::name; break;
-  case CG_TRI_6: topology    = Ioss::Tri6::name; break;
-  case CG_QUAD_4: topology   = Ioss::Quad4::name; break;
-  case CG_QUAD_8: topology   = Ioss::Quad8::name; break;
-  case CG_QUAD_9: topology   = Ioss::Quad9::name; break;
-  case CG_TETRA_4: topology  = Ioss::Tet4::name; break;
+  case CG_NODE: topology = Ioss::Node::name; break;
+  case CG_BAR_2: topology = Ioss::Bar2::name; break;
+  case CG_BAR_3: topology = Ioss::Bar3::name; break;
+  case CG_TRI_3: topology = Ioss::Tri3::name; break;
+  case CG_TRI_6: topology = Ioss::Tri6::name; break;
+  case CG_QUAD_4: topology = Ioss::Quad4::name; break;
+  case CG_QUAD_8: topology = Ioss::Quad8::name; break;
+  case CG_QUAD_9: topology = Ioss::Quad9::name; break;
+  case CG_TETRA_4: topology = Ioss::Tet4::name; break;
   case CG_TETRA_10: topology = Ioss::Tet10::name; break;
-  case CG_PYRA_5: topology   = Ioss::Pyramid5::name; break;
-  case CG_PYRA_13: topology  = Ioss::Pyramid13::name; break;
-  case CG_PYRA_14: topology  = Ioss::Pyramid14::name; break;
-  case CG_PENTA_6: topology  = Ioss::Wedge6::name; break;
+  case CG_PYRA_5: topology = Ioss::Pyramid5::name; break;
+  case CG_PYRA_13: topology = Ioss::Pyramid13::name; break;
+  case CG_PYRA_14: topology = Ioss::Pyramid14::name; break;
+  case CG_PENTA_6: topology = Ioss::Wedge6::name; break;
   case CG_PENTA_15: topology = Ioss::Wedge15::name; break;
   case CG_PENTA_18: topology = Ioss::Wedge18::name; break;
-  case CG_HEXA_8: topology   = Ioss::Hex8::name; break;
-  case CG_HEXA_20: topology  = Ioss::Hex20::name; break;
-  case CG_HEXA_27: topology  = Ioss::Hex27::name; break;
+  case CG_HEXA_8: topology = Ioss::Hex8::name; break;
+  case CG_HEXA_20: topology = Ioss::Hex20::name; break;
+  case CG_HEXA_27: topology = Ioss::Hex27::name; break;
   default:
     std::cerr << "WARNING: Found topology of type " << cg_ElementTypeName(type)
               << " which is not currently supported.\n";
