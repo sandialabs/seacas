@@ -208,6 +208,7 @@ namespace Iocgns {
     block->property_add(Ioss::Property("base", base));
     block->property_add(Ioss::Property("zone", zone));
     block->property_add(Ioss::Property("id", zone));
+    block->property_add(Ioss::Property("guid", zone));
     get_region()->add(block);
 
     block->set_node_offset(num_node);
@@ -402,6 +403,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("id", zone));
+	eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
 
