@@ -45,8 +45,16 @@ namespace Ioss {
   using IJK_t       = std::array<int, 3>;
 } // namespace Ioss
 
+inline const std::string SCALAR() { return std::string("scalar"); }
+inline const std::string VECTOR_2D() { return std::string("vector_2d"); }
+inline const std::string VECTOR_3D() { return std::string("vector_3d"); }
+
 #if defined(SIERRA_PARALLEL_MPI)
 #define SEACAS_HAVE_MPI
+/* #undef IOSS_THREADSAFE */
+/* #undef SEACAS_HAVE_KOKKOS */
+#define SEACAS_HAVE_CGNS
+#define PARALLEL_AWARE_EXODUS
 #else
 #include <SEACASIoss_config.h>
 #endif

@@ -87,8 +87,6 @@ namespace {
     }
     return status;
   }
-
-  const std::string SCALAR() { return std::string("scalar"); }
 } // namespace
 
 Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_name)

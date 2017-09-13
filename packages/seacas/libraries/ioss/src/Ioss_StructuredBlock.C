@@ -43,10 +43,6 @@
 #include <vector> // for vector
 
 namespace {
-  const std::string SCALAR() { return std::string("scalar"); }
-  const std::string VECTOR_2D() { return std::string("vector_2d"); }
-  const std::string VECTOR_3D() { return std::string("vector_3d"); }
-
   int sign(int value) { return value < 0 ? -1 : 1; }
 
   int del(int v1, int v2) { return static_cast<int>(std::abs(v1) == std::abs(v2)); }

@@ -1453,8 +1453,8 @@ namespace Iocgns {
         const auto &        block_map = block.second;
         std::vector<double> blk_data(block_map->map().size() - 1);
 
-        cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
-        cgsize_t range_max[1] = {range_min[0] + node_count[zone - 1] - 1};
+        cgsize_t range_min[1] = {(cgsize_t)node_offset[zone - 1] + 1};
+        cgsize_t range_max[1] = {range_min[0] + (cgsize_t)node_count[zone - 1] - 1};
         int      cgns_field   = 0;
 
         if (comp_count > 1) {
