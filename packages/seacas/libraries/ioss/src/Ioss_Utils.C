@@ -237,9 +237,6 @@ namespace {
     }
     return N;
   }
-
-  const std::string SCALAR() { return std::string("scalar"); }
-
 } // namespace
 
 /** \brief Get formatted time and date strings.

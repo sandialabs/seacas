@@ -85,7 +85,6 @@ namespace {
 
   const size_t      max_string_length = MAX_STR_LENGTH;
   const size_t      max_line_length   = MAX_LINE_LENGTH;
-  const std::string SCALAR() { return std::string("scalar"); }
 
   void separate_surface_element_sides(Ioss::IntVector &element, Ioss::IntVector &sides,
                                       Ioss::Region *region, Iopg::TopologyMap &topo_map,

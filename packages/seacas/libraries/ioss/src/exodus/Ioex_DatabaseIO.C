@@ -89,8 +89,6 @@
 namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
-  const std::string SCALAR() { return std::string("scalar"); }
-  const std::string VECTOR3D() { return std::string("vector_3d"); }
   const std::string SYM_TENSOR() { return std::string("sym_tensor_33"); }
 
   const char *complex_suffix[] = {".re", ".im"};
@@ -1580,7 +1578,7 @@ namespace Ioex {
             offset += 6;
 
             // Next three attributes are offset from node to CG
-            block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR3D(),
+            block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR_3D(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, offset));
           }
         }
@@ -1624,13 +1622,13 @@ namespace Ioex {
                                          my_element_count, index++));
             block->field_add(Ioss::Field("j", Ioss::Field::REAL, SCALAR(), Ioss::Field::ATTRIBUTE,
                                          my_element_count, index++));
-            block->field_add(Ioss::Field("reference_axis", Ioss::Field::REAL, VECTOR3D(),
+            block->field_add(Ioss::Field("reference_axis", Ioss::Field::REAL, VECTOR_3D(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, index));
             index += 3;
             if (attribute_count >= 10) {
               // Next three attributes would (hopefully) be offset vector...
               // This is typically from a NASGEN model.
-              block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR3D(),
+              block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR_3D(),
                                            Ioss::Field::ATTRIBUTE, my_element_count, index));
               index += 3;
             }

@@ -61,8 +61,6 @@ namespace {
     std::abort();
   }
 
-  const std::string SCALAR() { return std::string("scalar"); }
-
   int get_file_pointer() { return 0; }
 
   const char *Version() { return "Iodw_DatabaseIO.C 2010/09/22"; }
