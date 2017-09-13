@@ -128,17 +128,19 @@ namespace Ioss {
     Ioss::IJK_t m_donorRangeEnd; // ijk triplet defining end of range on the connected zone
 
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
-    int  m_ownerZone;      // "id" of zone that owns this connection
-    int  m_donorZone;      // "id" of zone that is donor (or other side) of this connection
-    int  m_ownerProcessor; // processor that owns the owner zone
-    int  m_donorProcessor; // processor that owns the donor zone
-    bool m_sameRange; // True if owner and donor range should always match...(special use during
+    int  m_ownerZone{};      // "id" of zone that owns this connection
+    int  m_donorZone{};      // "id" of zone that is donor (or other side) of this connection
+    size_t m_ownerGUID{};    // globally-unique id of owner
+    size_t m_donorGUID{};    // globally-unique id of donor
+    int  m_ownerProcessor{-1}; // processor that owns the owner zone
+    int  m_donorProcessor{-1}; // processor that owns the donor zone
+    bool m_sameRange{false}; // True if owner and donor range should always match...(special use during
                       // decomp)
-    bool m_ownsSharedNodes; // True if it is the "lower" zone id in the connection. Uses adam unless
+    bool m_ownsSharedNodes{false}; // True if it is the "lower" zone id in the connection. Uses adam unless
                             // both have same adam.
-    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel
+    bool m_intraBlock{false}; // True if this zc is created due to processor decompositions in a parallel
                        // run.
-    bool m_isActive;   // True if non-zero range. That is, it has at least one face
+    bool m_isActive{true};   // True if non-zero range. That is, it has at least one face
   };
 
   struct BoundaryCondition
