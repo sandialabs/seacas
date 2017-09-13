@@ -139,6 +139,23 @@ namespace Ioss {
     return pow2;
   }
 
+  inline int log_power_2(int count)
+  {
+    // Return the base 2 log of the power of two which is equal to or greater than 'count'
+    // count = 15 -> returns 4 (2^4 >= 15 > 2^3)
+    // count = 16 -> returns 4 (2^4 >= 16 > 2^3)
+    // count = 17 -> returns 5 (2^5 >= 17 > 2^4)
+
+    // Use brute force...
+    int log2 = 0;
+    int pow2 = 1;
+    while (pow2 < count) {
+      pow2 *= 2;
+      log2++;
+    }
+    return log2;
+  }
+
 #ifdef SEACAS_HAVE_MPI
   inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
   inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }

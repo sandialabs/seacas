@@ -268,7 +268,7 @@ namespace Iocgns {
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
     Utils::add_sidesets(cgnsFilePtr, this);
 
-    size_t pow2 = Ioss::power_2(util().parallel_size());
+    size_t pow2 = Ioss::log_power_2(util().parallel_size());
 
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
@@ -276,10 +276,6 @@ namespace Iocgns {
     int i    = 0;
     for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
-#if IOSS_DEBUG_OUTPUT
-      std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
-                << "' with " << block.ioss_count() << " elements\n";
-#endif
       auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
@@ -289,6 +285,10 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("section", block.section()));
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
+#if IOSS_DEBUG_OUTPUT
+      std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
+                << "' with " << block.ioss_count() << " elements.  GUID = " << guid << "   " << pow2 << "\n";
+#endif
     }
 
     // ========================================================================
@@ -381,7 +381,7 @@ namespace Iocgns {
     size_t cell_offset        = 0;
     size_t global_node_offset = 0;
     size_t global_cell_offset = 0;
-    size_t pow2 = Ioss::power_2(util().parallel_size());
+    size_t pow2 = Ioss::log_power_2(util().parallel_size());
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
@@ -433,6 +433,10 @@ namespace Iocgns {
         block->set_cell_global_offset(global_cell_offset);
         global_node_offset += block->get_property("global_node_count").get_int();
         global_cell_offset += block->get_property("global_cell_count").get_int();
+#if IOSS_DEBUG_OUTPUT
+	std::cout << "Added block " << block_name << ":, Structured with ID = " << zone->m_adam->m_zone << ", GUID = " << guid <<  "\n";
+#endif
+
       }
     }
 
