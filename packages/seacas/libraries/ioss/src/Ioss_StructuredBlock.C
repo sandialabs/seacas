@@ -194,7 +194,7 @@ namespace Ioss {
 
   Property StructuredBlock::get_implicit_property(const std::string &my_name) const
   {
-    return GroupingEntity::get_implicit_property(my_name);
+    return EntityBlock::get_implicit_property(my_name);
   }
 
   int64_t StructuredBlock::internal_get_field_data(const Field &field, void *data,

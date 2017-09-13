@@ -87,6 +87,13 @@ namespace {
     return MPI_INT;
 #endif
   }
+
+  size_t generate_guid(size_t zone, size_t proc, size_t lpow2)
+  {
+    assert(zone > 0);
+    assert(proc >= 0);
+    return (zone << lpow2) + proc;
+  }
 }
 
 namespace Iocgns {
@@ -280,7 +287,7 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
       eblock->property_add(Ioss::Property("id", block.zone()));
-      int64_t guid = ((int64_t)block.zone() << pow2) + util().parallel_rank(); // globally-unique id
+      int64_t guid = generate_guid(block.zone(), util().parallel_rank(), pow2);
       eblock->property_add(Ioss::Property("guid", guid));
       eblock->property_add(Ioss::Property("section", block.section()));
       eblock->property_add(Ioss::Property("original_block_order", i++));
@@ -390,6 +397,7 @@ namespace Iocgns {
         // this m_adam on this processor.  If exists, then create
         // a StructuredBlock; otherwise, create an empty block.
         auto block_name = zone->m_name;
+	int64_t guid = generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
 
         Ioss::StructuredBlock *block = nullptr;
         Ioss::IJK_t            zeros{{0, 0, 0}};
@@ -400,6 +408,15 @@ namespace Iocgns {
                                               pzone->m_offset, pzone->m_adam->m_ordinal);
 
             for (auto &zgc : pzone->m_zoneConnectivity) {
+	      // Update donor_zone to point to adam zone instead of child.
+	      auto dz = zones[zgc.m_donorZone-1];
+	      assert(dz->m_zone == zgc.m_donorZone);
+	      auto oz = zones[zgc.m_ownerZone-1];
+	      assert(oz->m_zone == zgc.m_ownerZone);
+	      zgc.m_donorZone = dz->m_adam->m_zone;
+	      zgc.m_ownerZone = oz->m_adam->m_zone;
+	      zgc.m_donorGUID = generate_guid(dz->m_adam->m_zone, zgc.m_donorProcessor, pow2);
+	      zgc.m_ownerGUID = guid;
               block->m_zoneConnectivity.push_back(zgc);
             }
             break;
@@ -421,7 +438,6 @@ namespace Iocgns {
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
-	int64_t guid = (zone->m_adam->m_zone << pow2) + util().parallel_rank(); // globally-unique id
 	block->property_add(Ioss::Property("guid", guid));
 
         block->set_node_offset(node_offset);
