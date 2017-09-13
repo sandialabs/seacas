@@ -42,12 +42,6 @@
 #include "Ioss_FieldManager.h"
 #include "Ioss_PropertyManager.h"
 
-namespace {
-  const std::string SCALAR() { return std::string("scalar"); }
-  const std::string VECTOR_2D() { return std::string("vector_2d"); }
-  const std::string VECTOR_3D() { return std::string("vector_3d"); }
-} // namespace
-
 /** \brief Create a node block.
  *
  *  \param[in] io_database The database associated with the region containing the node block.
