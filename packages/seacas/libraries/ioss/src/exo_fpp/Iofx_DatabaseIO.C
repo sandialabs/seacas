@@ -97,8 +97,6 @@ namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
   const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const std::string SCALAR() { return std::string("scalar"); }
-
   const char *complex_suffix[] = {".re", ".im"};
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,

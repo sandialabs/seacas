@@ -104,8 +104,6 @@ namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
   const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const std::string SCALAR() { return std::string("scalar"); }
-
   const char *complex_suffix[] = {".re", ".im"};
 
   int get_parallel_io_mode(const Ioss::PropertyManager &properties)
