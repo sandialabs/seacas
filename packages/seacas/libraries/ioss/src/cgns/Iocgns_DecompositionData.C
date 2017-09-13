@@ -556,7 +556,7 @@ namespace Iocgns {
     // Output the processor assignments in form similar to 'split' file
     if (rank == 0) {
       int z = 1;
-      std::cerr << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax\n";
+      std::cerr << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n";
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
                 [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
@@ -571,7 +571,8 @@ namespace Iocgns {
                     << zone->m_offset[1] + 1 << std::setw(8)
                     << zone->m_ordinal[1] + zone->m_offset[1] + 1 << std::setw(8)
                     << zone->m_offset[2] + 1 << std::setw(8)
-                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << "\n";
+                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << std::setw(8)
+		    << zone->work() << "\n";
         }
       }
     }
