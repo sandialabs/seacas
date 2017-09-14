@@ -48,7 +48,7 @@ before_install:
   - if [ -z "$MPI" ]; then sudo apt-get -y install netcdf-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
-  - if [ -n "CGNS" ]; ./cgns-travis.sh
+  - if [ -n "CGNS" ]; ./cgns-travis.sh; fi
 
 before_script:
 
