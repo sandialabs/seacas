@@ -65,8 +65,7 @@ namespace Ioss {
           m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_ownerProcessor(-1), m_donorProcessor(-1), m_sameRange(false),
-          m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block), m_isActive(true)
+          m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block)
     {
       if (!m_intraBlock) {
         m_ownerRange[0] = m_rangeBeg[0];
@@ -100,10 +99,10 @@ namespace Ioss {
     bool owns_shared_nodes() const { return m_ownsSharedNodes; }
 
     std::array<INT, 9> transform_matrix() const;
-    Ioss::IJK_t transform(const Ioss::IJK_t &index_1) const;
-    Ioss::IJK_t inverse_transform(const Ioss::IJK_t &index_1) const;
+    Ioss::IJK_t        transform(const Ioss::IJK_t &index_1) const;
+    Ioss::IJK_t        inverse_transform(const Ioss::IJK_t &index_1) const;
 
-    std::vector<int> get_range(int ordinal) const;
+    std::vector<int>     get_range(int ordinal) const;
     friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
 
     // The "original" owner and donor range -- that is, they have not been subsetted
@@ -128,19 +127,22 @@ namespace Ioss {
     Ioss::IJK_t m_donorRangeEnd; // ijk triplet defining end of range on the connected zone
 
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
-    int  m_ownerZone{};      // "id" of zone that owns this connection
-    int  m_donorZone{};      // "id" of zone that is donor (or other side) of this connection
-    size_t m_ownerGUID{};    // globally-unique id of owner
-    size_t m_donorGUID{};    // globally-unique id of donor
-    int  m_ownerProcessor{-1}; // processor that owns the owner zone
-    int  m_donorProcessor{-1}; // processor that owns the donor zone
-    bool m_sameRange{false}; // True if owner and donor range should always match...(special use during
-                      // decomp)
-    bool m_ownsSharedNodes{false}; // True if it is the "lower" zone id in the connection. Uses adam unless
-                            // both have same adam.
-    bool m_intraBlock{false}; // True if this zc is created due to processor decompositions in a parallel
-                       // run.
-    bool m_isActive{true};   // True if non-zero range. That is, it has at least one face
+    int    m_ownerZone{};        // "id" of zone that owns this connection
+    int    m_donorZone{};        // "id" of zone that is donor (or other side) of this connection
+    size_t m_ownerGUID{};        // globally-unique id of owner
+    size_t m_donorGUID{};        // globally-unique id of donor
+    int    m_ownerProcessor{-1}; // processor that owns the owner zone
+    int    m_donorProcessor{-1}; // processor that owns the donor zone
+    bool   m_sameRange{
+        false}; // True if owner and donor range should always match...(special use during
+                  // decomp)
+    bool m_ownsSharedNodes{
+        false}; // True if it is the "lower" zone id in the connection. Uses adam unless
+                // both have same adam.
+    bool m_intraBlock{
+        false}; // True if this zc is created due to processor decompositions in a parallel
+                // run.
+    bool m_isActive{true}; // True if non-zero range. That is, it has at least one face
   };
 
   struct BoundaryCondition
@@ -434,30 +436,30 @@ namespace Ioss {
   private:
     void add_properties_and_fields(int index_dim);
 
-    int m_ni;
-    int m_nj;
-    int m_nk;
+    int m_ni{};
+    int m_nj{};
+    int m_nk{};
 
-    int m_offsetI; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
-    int m_offsetJ;
-    int m_offsetK;
+    int m_offsetI{}; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
+    int m_offsetJ{};
+    int m_offsetK{};
 
-    int m_niGlobal; // The ni,nj,nk of the master block this is a subset of.
-    int m_njGlobal;
-    int m_nkGlobal;
+    int m_niGlobal{}; // The ni,nj,nk of the master block this is a subset of.
+    int m_njGlobal{};
+    int m_nkGlobal{};
 
-    size_t m_nodeOffset;
-    size_t m_cellOffset;
+    size_t m_nodeOffset{};
+    size_t m_cellOffset{};
 
-    size_t m_nodeGlobalOffset;
-    size_t m_cellGlobalOffset;
+    size_t m_nodeGlobalOffset{};
+    size_t m_cellGlobalOffset{};
 
     Ioss::NodeBlock m_nodeBlock;
 
   public:
-    std::vector<ZoneConnectivity>  m_zoneConnectivity;
-    std::vector<BoundaryCondition> m_boundaryConditions;
-    std::vector<size_t>            m_blockLocalNodeIndex;
+    std::vector<ZoneConnectivity>          m_zoneConnectivity;
+    std::vector<BoundaryCondition>         m_boundaryConditions;
+    std::vector<size_t>                    m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
     std::vector<std::pair<size_t, size_t>> m_sharedNode;
   };
