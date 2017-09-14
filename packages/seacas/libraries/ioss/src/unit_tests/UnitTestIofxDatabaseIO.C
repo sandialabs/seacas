@@ -103,7 +103,7 @@ namespace {
     EXPECT_EQ(2u, element_blocks.size());
 
     std::vector<std::string>      gold_strings{"block_2", "block_1"};
-    std::vector<std::string>      gold_top_names{"hex8", "shell4"};
+    std::vector<std::string>      gold_top_names{Ioss::Hex8::name, Ioss::Shell4::name};
     std::vector<int>              parametric_dim{3, 2};
     std::vector<int>              num_vertices{8, 4};
     std::vector<int>              number_nodes{8, 4};

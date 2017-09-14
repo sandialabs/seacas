@@ -845,7 +845,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
-      auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
+      auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
                                     block->m_boundaryConditions.back().get_face_count());
       sb->set_parent_block(block);
       sset->add(sb);
