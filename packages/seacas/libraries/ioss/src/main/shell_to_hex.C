@@ -33,6 +33,8 @@
 #include <Ioss_CodeTypes.h>
 
 #include <Ionit_Initializer.h>
+#include <Ioss_Hex8.h>
+#include <Ioss_Wedge6.h>
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -356,10 +358,10 @@ namespace {
       std::string type;
       int         num_node_per_elem = (*i)->topology()->number_nodes();
       if (num_node_per_elem == 4) {
-        type = "hex";
+        type = Ioss::Hex8::name;
       }
       else {
-        type = "wedge";
+        type = Ioss::Wedge6::name;
       }
       auto eb = new Ioss::ElementBlock(output_region.get_database(), name, type, num_elem);
       output_region.add(eb);

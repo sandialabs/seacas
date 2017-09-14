@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "io_info.h"
+#include <Ioss_Hex8.h>
 #if defined(SEACAS_HAVE_CGNS)
 #include <cgnslib.h>
 #endif
@@ -93,7 +94,7 @@ namespace {
 
     Ioss::ElementBlockContainer ebs = region.get_element_blocks();
     for (auto eb : ebs) {
-      if (eb->get_property("topology_type").get_string() == "hex8") {
+      if (eb->get_property("topology_type").get_string() == Ioss::Hex8::name) {
         hex_volume(eb, coordinates);
       }
     }

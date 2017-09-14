@@ -32,6 +32,8 @@
 
 #include <Ionit_Initializer.h>
 #include <Ioss_CodeTypes.h>
+#include <Ioss_Hex8.h>
+#include <Ioss_Wedge6.h>
 #include <Ioss_Utils.h>
 #include <cmath>
 #include <cstddef>
@@ -264,7 +266,7 @@ namespace {
       Ioss::ElementBlock *eb = *I;
       ++I;
       std::string type = eb->get_property("topology_type").get_string();
-      if (type == "hex8") {
+      if (type == Ioss::Hex8::name) {
         sph_node_count += eb->entity_count();
 
         // Add the element block...
@@ -318,7 +320,7 @@ namespace {
     I             = ebs.begin();
     size_t offset = 0;
     while (I != ebs.end()) {
-      if ((*I)->get_property("topology_type").get_string() == "hex8") {
+      if ((*I)->get_property("topology_type").get_string() == Ioss::Hex8::name) {
 
         std::vector<double> volume;
         std::vector<double> radius;
