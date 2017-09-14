@@ -317,12 +317,12 @@ namespace Ioss {
 
       const int mode = 0777; // Users umask will be applied to this.
 
-      auto iter = path.begin();
-      while (iter != path.end() && !error_found) {
-        iter                  = std::find(iter, path.end(), '/');
-        std::string path_root = std::string(path.begin(), iter);
+      auto iter = path.cbegin();
+      while (iter != path.cend() && !error_found) {
+        iter                  = std::find(iter, path.cend(), '/');
+        std::string path_root = std::string(path.cbegin(), iter);
 
-        if (iter != path.end()) {
+        if (iter != path.cend()) {
           ++iter; // Skip past the '/'
         }
 
@@ -540,7 +540,7 @@ namespace Ioss {
   void DatabaseIO::add_information_records(const std::vector<std::string> &info)
   {
     informationRecords.reserve(informationRecords.size() + info.size());
-    informationRecords.insert(informationRecords.end(), info.begin(), info.end());
+    informationRecords.insert(informationRecords.cend(), info.cbegin(), info.cend());
   }
 
   /** \brief Add an information record (an informative string) to the database.
@@ -573,7 +573,7 @@ namespace Ioss {
 
   void DatabaseIO::set_block_omissions(const std::vector<std::string> &omissions)
   {
-    blockOmissions.assign(omissions.begin(), omissions.end());
+    blockOmissions.assign(omissions.cbegin(), omissions.cend());
     std::sort(blockOmissions.begin(), blockOmissions.end());
   }
 
@@ -626,7 +626,7 @@ namespace Ioss {
           side_topo.insert(std::make_pair(ftopo, ftopo));
         }
         else {
-          const ElementBlock *block = *element_blocks.begin();
+          const ElementBlock *block = *element_blocks.cbegin();
           side_topo.insert(std::make_pair(block->topology(), ftopo));
         }
       }
@@ -634,7 +634,7 @@ namespace Ioss {
       assert(sideTopology.empty());
       // Copy into the sideTopology container...
       DatabaseIO *new_this = const_cast<DatabaseIO *>(this);
-      std::copy(side_topo.begin(), side_topo.end(), std::back_inserter(new_this->sideTopology));
+      std::copy(side_topo.cbegin(), side_topo.cend(), std::back_inserter(new_this->sideTopology));
     }
     assert(!sideTopology.empty());
   }
@@ -700,18 +700,18 @@ namespace Ioss {
 
     std::vector<double> coordinates;
     sb->get_field_data("mesh_model_coordinates_x", coordinates);
-    auto x = std::minmax_element(coordinates.begin(), coordinates.end());
+    auto x = std::minmax_element(coordinates.cbegin(), coordinates.cend());
     xx     = std::make_pair(*(x.first), *(x.second));
 
     if (ndim > 1) {
       sb->get_field_data("mesh_model_coordinates_y", coordinates);
-      auto y = std::minmax_element(coordinates.begin(), coordinates.end());
+      auto y = std::minmax_element(coordinates.cbegin(), coordinates.cend());
       yy     = std::make_pair(*(y.first), *(y.second));
     }
 
     if (ndim > 2) {
       sb->get_field_data("mesh_model_coordinates_z", coordinates);
-      auto z = std::minmax_element(coordinates.begin(), coordinates.end());
+      auto z = std::minmax_element(coordinates.cbegin(), coordinates.cend());
       zz     = std::make_pair(*(z.first), *(z.second));
     }
 
@@ -756,7 +756,7 @@ namespace {
         }
         // Now append each processors size onto the stream...
         if (util.parallel_size() > 4) {
-          auto min_max = std::minmax_element(all_sizes.begin(), all_sizes.end());
+          auto min_max = std::minmax_element(all_sizes.cbegin(), all_sizes.cend());
           strm << " m:" << std::setw(8) << *min_max.first << " M:" << std::setw(8)
                << *min_max.second << " A:" << std::setw(8) << total / all_sizes.size();
         }

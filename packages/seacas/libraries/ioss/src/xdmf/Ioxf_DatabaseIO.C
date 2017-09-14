@@ -1746,7 +1746,7 @@ namespace Ioxf {
           // Set ids of all entities that do not have "id" property...
           get_id(*I, 'E', &ids_);
           Ioxf::Block T(*(*I));
-          if (std::find(blocks.begin(), blocks.end(), T) == blocks.end()) {
+          if (std::find(blocks.cbegin(), blocks.cend(), T) == blocks.cend()) {
             blocks.push_back(T);
           }
         }
@@ -1824,7 +1824,7 @@ namespace Ioxf {
         if (count > 0) {
           get_id((*J), 'S', &ids_);
           Ioxf::SideSet T(*(*J));
-          if (std::find(ssets.begin(), ssets.end(), T) == ssets.end()) {
+          if (std::find(ssets.cbegin(), ssets.cend(), T) == ssets.cend()) {
             ssets.push_back(T);
           }
         }
@@ -1850,7 +1850,7 @@ namespace Ioxf {
       for (IN = nodesets.begin(); IN != nodesets.end(); ++IN) {
         get_id(*IN, 'N', &ids_);
         const Ioxf::NodeSet T(*(*IN));
-        if (std::find(nsets.begin(), nsets.end(), T) == nsets.end()) {
+        if (std::find(nsets.cbegin(), nsets.cend(), T) == nsets.cend()) {
           nsets.push_back(T);
         }
       }

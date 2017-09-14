@@ -305,7 +305,7 @@ namespace Iocgns {
     for (auto &sset : decomp->m_sideSets) {
       // See if there is an Ioss::SideSet with a matching name...
       Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
-      if (ioss_sset != NULL) {
+      if (ioss_sset != nullptr) {
         auto        zone = decomp->m_zones[sset.zone()];
         std::string block_name(zone.m_name);
         block_name += "/";
@@ -325,7 +325,7 @@ namespace Iocgns {
         sblk->property_add(Ioss::Property("zone", sset.zone()));
         sblk->property_add(Ioss::Property("section", sset.section()));
         Ioss::ElementBlock *eblock = get_region()->get_element_block(block.name());
-        if (eblock != NULL) {
+        if (eblock != nullptr) {
           sblk->set_parent_element_block(eblock);
         }
         ioss_sset->add(sblk);
@@ -574,7 +574,7 @@ namespace Iocgns {
 
       // Count non-zero entries in u_nodes...
       int64_t local_node_count =
-          std::count_if(u_nodes.begin(), u_nodes.end(), [](int64_t i) { return i > 0; });
+          std::count_if(u_nodes.cbegin(), u_nodes.cend(), [](int64_t i) { return i > 0; });
       owned_node_count = local_node_count; // Calling code wants to know this
 
       // Determine offset into the zone node block for each processors "chunk"
@@ -661,7 +661,7 @@ namespace Iocgns {
     size_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
-    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
 
@@ -1614,9 +1614,9 @@ namespace Iocgns {
             int *idata = num_to_get > 0 ? reinterpret_cast<int *>(data) : nullptr;
             for (size_t i = 0; i < num_to_get * element_nodes; i++) {
               auto id   = idata[i];
-              auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+              auto iter = std::lower_bound(nodes.cbegin(), nodes.cend(), id);
               assert(iter != nodes.end());
-              auto cur_pos = iter - nodes.begin();
+              auto cur_pos = iter - nodes.cbegin();
               connect.push_back(connectivity_map[cur_pos]);
             }
           }
@@ -1624,9 +1624,9 @@ namespace Iocgns {
             int64_t *idata = num_to_get > 0 ? reinterpret_cast<int64_t *>(data) : nullptr;
             for (size_t i = 0; i < num_to_get * element_nodes; i++) {
               auto id   = idata[i];
-              auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
-              assert(iter != nodes.end());
-              auto cur_pos = iter - nodes.begin();
+              auto iter = std::lower_bound(nodes.cbegin(), nodes.cend(), id);
+              assert(iter != nodes.cend());
+              auto cur_pos = iter - nodes.cbegin();
               connect.push_back(connectivity_map[cur_pos]);
             }
           }

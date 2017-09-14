@@ -294,7 +294,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     }
 
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
-    CGERR(cg_goto(file_ptr, base, "Family_t", fam, NULL));
+    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
     CGERR(cg_descriptor_write("FamBC_TypeId", std::to_string(bocotype).c_str()));
     CGERR(cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]));
     CGERR(cg_descriptor_write("FamBC_UserId", std::to_string(id).c_str()));
