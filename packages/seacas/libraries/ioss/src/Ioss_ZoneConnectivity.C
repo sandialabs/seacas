@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_ZoneConnectivity.h>
+#include <cassert>
 #include <cstddef> // for size_t
 #include <numeric>
 #include <string> // for string
@@ -151,4 +152,4 @@ namespace Ioss {
     return index;
   }
 
-}; // namespace Ioss
+} // namespace Ioss
