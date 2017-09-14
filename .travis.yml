@@ -19,10 +19,7 @@ before_install:
 
 before_script:
 
-begore_install:
-  
-install:
-  - ./cmake-travis.sh
+install: true
 
 script: true
 
