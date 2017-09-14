@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -186,7 +186,7 @@ int ex_put_info(int exoid, int num_info, char *info[])
     if (info != NULL) {
       /* write out information records */
       for (i = 0; i < num_info; i++) {
-        int length = strlen(info[i])+1;
+        int length = strlen(info[i]) + 1;
         start[0]   = i;
         start[1]   = 0;
 

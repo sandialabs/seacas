@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -937,7 +937,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
   if (((partial_adj == 1) && (num < nsnodes - 1) && (num >= 2)) ||
       ((partial_adj != 1) && (num != nsnodes))) {
     if (skip_check) {
-      if (skip_check == 1)  /* print only if skip_check is 1 (not > 1) */
+      if (skip_check == 1) /* print only if skip_check is 1 (not > 1) */
         Gen_Error(0, "warning: not all side nodes in connect table for element");
     }
     else {

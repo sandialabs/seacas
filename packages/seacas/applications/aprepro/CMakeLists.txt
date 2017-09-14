@@ -90,6 +90,25 @@ TRIBITS_ADD_ADVANCED_TEST(
  FINAL_PASS_REGULAR_EXPRESSION 
 )
 
+TRIBITS_ADD_ADVANCED_TEST(
+ aprepro_test_dump_reread
+ TEST_0 CMND ${CMAKE_CURRENT_BINARY_DIR}/aprepro
+        ARGS -D ${CMAKE_CURRENT_SOURCE_DIR}/test.inp_app test.output
+  OUTPUT_FILE test.dump
+  PASS_ANY
+ TEST_1 CMND grep ARGS -v Aprepro: test.dump 
+  OUTPUT_FILE test-filter.dump
+  PASS_ANY
+ TEST_2 CMND ${CMAKE_CURRENT_BINARY_DIR}/aprepro
+        ARGS -D test-filter.dump test.output
+  OUTPUT_FILE test-reread.dump
+  PASS_ANY
+ TEST_3 CMND diff ARGS -w test-filter.dump test-reread.dump
+ COMM mpi serial		      
+ OVERALL_NUM_MPI_PROCS 1
+ FINAL_PASS_REGULAR_EXPRESSION 
+)
+
 endif()
 
 TRIBITS_SUBPACKAGE_POSTPROCESS()

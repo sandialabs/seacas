@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -598,7 +598,7 @@ namespace Ioex {
 
       if (Ioss::Utils::block_is_omitted(block)) {
         ssize_t min_id = block->get_offset() + 1;
-        ssize_t max_id = min_id + block->get_property("entity_count").get_int() - 1;
+        ssize_t max_id = min_id + block->entity_count() - 1;
         for (size_t i = 0; i < elements.size(); i++) {
           if (min_id <= elements[i] && elements[i] <= max_id) {
             omitted     = true;

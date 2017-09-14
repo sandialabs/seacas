@@ -52,18 +52,20 @@ name begins with an underscore, no warning is output when the variable
 is redefined.\footnote{Warnings can be turned off with the \cmd{-W} or
 \cmd{--warning} option.}.
 
-\item[Immutable Variables]\label{immutable} An immutable variable is a variable whose
-value cannot be changed. An immutable variable name is follows the
-same rules as a regular variable except that the name cannot begin
-with an underscore.  Immutable variables are created inside an
-\cmd{IMMUTABLE(ON)} block (See Section~\ref{sec:immutable}) or when
-\aprepro{} is executed with the \cmd{--immutable} or \cmd{-X} command
-line options (See Chapter~\ref{ch:execution}). If the value of an
-immutable variable is attempted to be modified, an error message of
-the form:
-\cmd[Aprepro: (IMMUTABLE) Variable 'variable' is immutable and cannot be modified (file, line line\#)]
-will be output to the standard error stream and the expression
-containing the assignment to the immutable variable will return nothing.
+\item[Immutable Variables]\label{immutable} An immutable variable is a
+  variable whose value cannot be changed. An immutable variable name
+  is follows the same rules as a regular variable except that the name
+  cannot begin with an underscore.  Immutable variables are created
+  inside an \cmd{IMMUTABLE(ON)} block (See
+  Section~\ref{sec:immutable}) or when \aprepro{} is executed with the
+  \cmd{--immutable} or \cmd{-X} command line options (See
+  Chapter~\ref{ch:execution}). A value defined on the command line is
+  immutable ()(See Chapter~\ref{ch:execution}). If the value of an
+  immutable variable is attempted to be modified, an error message of
+  the form: \cmd[Aprepro: (IMMUTABLE) Variable 'variable' is immutable
+    and cannot be modified (file, line line\#)] will be output to the
+  standard error stream and the expression containing the assignment
+  to the immutable variable will return nothing.
 
 \item[Numbers] Numbers can be integers like \cmd{1234}, decimal numbers 
 like \cmd{1.234}, or in scientific notation like \cmd{1.234E-26}. All numbers 

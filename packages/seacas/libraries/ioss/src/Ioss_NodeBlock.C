@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -41,12 +41,6 @@
 #include "Ioss_EntityBlock.h"
 #include "Ioss_FieldManager.h"
 #include "Ioss_PropertyManager.h"
-
-namespace {
-  const std::string SCALAR() { return std::string("scalar"); }
-  const std::string VECTOR_2D() { return std::string("vector_2d"); }
-  const std::string VECTOR_3D() { return std::string("vector_3d"); }
-} // namespace
 
 /** \brief Create a node block.
  *

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -54,7 +54,7 @@ namespace {
   if (rank == 0)                                                                                   \
   std::cerr
 
-// ZOLTAN Callback functions...
+  // ZOLTAN Callback functions...
 
 #if !defined(NO_ZOLTAN_SUPPORT)
   int zoltan_num_dim(void *data, int *ierr)
@@ -158,11 +158,11 @@ namespace {
       int nconn = 0;
       CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
       for (int i = 0; i < nconn; i++) {
-        char connectname[33];
-        char donorname[33];
+        char                    connectname[33];
+        char                    donorname[33];
         std::array<cgsize_t, 6> range;
         std::array<cgsize_t, 6> donor_range;
-        Ioss::IJK_t transform;
+        Ioss::IJK_t             transform;
 
         CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                              donor_range.data(), transform.data()));
@@ -297,7 +297,7 @@ namespace {
     }
     return min_proc;
   }
-}
+} // namespace
 
 namespace Iocgns {
   template DecompositionData<int>::DecompositionData(const Ioss::PropertyManager &props,
@@ -411,7 +411,7 @@ namespace Iocgns {
           if (single_zone) {
             ratio = 0.5;
           }
-          auto children = zone->split(new_zone_id, ratio);
+          auto children = zone->split(new_zone_id, ratio, rank);
 
           if (children.first != nullptr && children.second != nullptr) {
             zone_new.push_back(children.first);
@@ -464,8 +464,8 @@ namespace Iocgns {
           zone->m_proc = proc;
           work_vector[proc] += zone->work();
 #if IOSS_DEBUG_OUTPUT
-          OUTPUT << "Assigning zone " << zone->m_zone << " with work " << zone->work()
-                 << " to processor " << proc << "\n";
+          OUTPUT << "Assigning " << zone->m_name << " (Z" << zone->m_zone << ") with work "
+                 << zone->work() << " to processor " << proc << "\n";
 #endif
         }
       }
@@ -485,7 +485,7 @@ namespace Iocgns {
         }
       }
 #if IOSS_DEBUG_OUTPUT
-      OUTPUT << "Workload threshold exceeded on " << px << " processors.\n";
+      OUTPUT << "\nWorkload threshold exceeded on " << px << " processors.\n";
 #endif
       if (single_zone) {
         auto active = std::count_if(m_structuredZones.begin(), m_structuredZones.end(),
@@ -503,7 +503,7 @@ namespace Iocgns {
             // is on a proc where the threshold was exceeded.
             // if so, split the block and set exceeds[proc] to false;
             // Exit the loop when num_split >= px.
-            auto children = zone->split(new_zone_id);
+            auto children = zone->split(new_zone_id, 0.5, rank);
             if (children.first != nullptr && children.second != nullptr) {
               zone_new.push_back(children.first);
               zone_new.push_back(children.second);
@@ -543,8 +543,8 @@ namespace Iocgns {
       if (zone->is_active()) {
         zone->update_zgc_processor(m_structuredZones);
 #if IOSS_DEBUG_OUTPUT
-        OUTPUT << "Zone " << zone->m_zone << " assigned to processor " << zone->m_proc
-               << ", Adam zone = " << zone->m_adam->m_zone << "\n";
+        OUTPUT << "Zone " << zone->m_name << "(" << zone->m_zone << ") assigned to processor "
+               << zone->m_proc << ", Adam zone = " << zone->m_adam->m_zone << "\n";
         auto zgcs = zone->m_zoneConnectivity;
         for (auto &zgc : zgcs) {
           OUTPUT << zgc << "\n";
@@ -556,7 +556,8 @@ namespace Iocgns {
     // Output the processor assignments in form similar to 'split' file
     if (rank == 0) {
       int z = 1;
-      std::cerr << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax\n";
+      std::cerr
+          << "     n    proc  parent    imin    imax    jmin    jmax    kmin     kmax     work\n";
       auto tmp_zone(m_structuredZones);
       std::sort(tmp_zone.begin(), tmp_zone.end(),
                 [](Iocgns::StructuredZoneData *a, Iocgns::StructuredZoneData *b) {
@@ -571,7 +572,8 @@ namespace Iocgns {
                     << zone->m_offset[1] + 1 << std::setw(8)
                     << zone->m_ordinal[1] + zone->m_offset[1] + 1 << std::setw(8)
                     << zone->m_offset[2] + 1 << std::setw(8)
-                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << "\n";
+                    << zone->m_ordinal[2] + zone->m_offset[2] + 1 << std::setw(8) << zone->work()
+                    << "\n";
         }
       }
     }
@@ -1445,4 +1447,4 @@ namespace Iocgns {
       this64->get_sideset_element_side(filePtr, sset, (int64_t *)data);
     }
   }
-}
+} // namespace Iocgns

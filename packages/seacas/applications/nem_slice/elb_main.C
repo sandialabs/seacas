@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 National Technology & Engineering Solutions of
+ * Copyright (C) 2009-2017 National Technology & Engineering Solutions of
  * Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -341,7 +341,7 @@ template <typename INT> int internal_main(int argc, char *argv[], INT /* dummy *
   if (problem.fix_columns) {
     if (problem.alloc_graph == ELB_FALSE) {
       problem.alloc_graph = ELB_TRUE;
-      problem.face_adj = ELB_TRUE;
+      problem.face_adj    = ELB_TRUE;
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 National Technology & Engineering Solutions
+ * Copyright (c) 2005-2017 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
  * NTESS, the U.S. Government retains certain rights in this software.
  *
@@ -125,7 +125,7 @@ Type is set to:
     else if (magic[3] == '\002') {
       *type = 2;
     }
-    else if(magic[3] == '\005') {
+    else if (magic[3] == '\005') {
       *type = 4; /* cdf5 (including pnetcdf) file */
     }
   }

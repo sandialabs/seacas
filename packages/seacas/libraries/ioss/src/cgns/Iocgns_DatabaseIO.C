@@ -4,7 +4,7 @@
 // * Single Base.
 // * ZoneGridConnectivity is 1to1 with point lists for unstructured
 
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -139,9 +139,8 @@ namespace Iocgns {
         }
       }
       else if (CG_SIZEOF_SIZE == 64) {
-	set_int_byte_size_api(Ioss::USE_INT64_API);
+        set_int_byte_size_api(Ioss::USE_INT64_API);
       }
-
 
 #if 0
       // This isn't currently working since CGNS currently has chunking
@@ -209,6 +208,7 @@ namespace Iocgns {
     block->property_add(Ioss::Property("base", base));
     block->property_add(Ioss::Property("zone", zone));
     block->property_add(Ioss::Property("id", zone));
+    block->property_add(Ioss::Property("guid", zone));
     get_region()->add(block);
 
     block->set_node_offset(num_node);
@@ -222,11 +222,11 @@ namespace Iocgns {
     int nconn = 0;
     CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
     for (int i = 0; i < nconn; i++) {
-      char connectname[33];
-      char donorname[33];
+      char                    connectname[33];
+      char                    donorname[33];
       std::array<cgsize_t, 6> range;
       std::array<cgsize_t, 6> donor_range;
-      Ioss::IJK_t transform;
+      Ioss::IJK_t             transform;
 
       CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
                            donor_range.data(), transform.data()));
@@ -269,6 +269,8 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
+        conn.m_donorGUID = conn.m_donorZone;
+        conn.m_ownerGUID = conn.m_ownerZone;
       }
     }
 
@@ -403,6 +405,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("id", zone));
+        eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
 
@@ -486,8 +489,9 @@ namespace Iocgns {
       else {
         // This should be handled already in check_zone_type...
         std::ostringstream errmsg;
-        errmsg << "ERROR: CGNS: Zone " << zone << " is not of type Unstructured or Structured "
-                                                  "which are the only types currently supported";
+        errmsg << "ERROR: CGNS: Zone " << zone
+               << " is not of type Unstructured or Structured "
+                  "which are the only types currently supported";
         IOSS_ERROR(errmsg);
       }
     }
@@ -541,7 +545,7 @@ namespace Iocgns {
     size_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
-    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
 
@@ -825,7 +829,7 @@ namespace Iocgns {
       int                   base             = eb->get_property("base").get_int();
       int                   zone             = eb->get_property("zone").get_int();
       int                   sect             = eb->get_property("section").get_int();
-      cgsize_t              my_element_count = eb->get_property("entity_count").get_int();
+      cgsize_t              my_element_count = eb->entity_count();
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
@@ -1139,7 +1143,7 @@ namespace Iocgns {
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
-      int64_t entity_count = sb->get_property("entity_count").get_int();
+      int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Partial field input not yet implemented for side blocks";
@@ -1364,15 +1368,14 @@ namespace Iocgns {
               nodes.push_back(idata[i]);
             }
           }
-          auto it = nodes.begin();
-          it++;
           Ioss::Utils::uniquify(nodes, true);
+	  assert(nodes[0] == 1);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;
           int      zone    = 0;
           cgsize_t size[3] = {0, 0, 0};
-          size[1]          = eb->get_property("entity_count").get_int();
+          size[1]          = eb->entity_count();
           size[0]          = nodes.size() - 1;
 
           CGCHECK(
@@ -1397,7 +1400,7 @@ namespace Iocgns {
             block_map->reverse_map_data((int64_t *)data, field, num_to_get * element_nodes);
           }
 
-          if (eb->get_property("entity_count").get_int() > 0) {
+          if (eb->entity_count() > 0) {
             CG_ElementType_t type            = Utils::map_topology_to_cgns(eb->topology()->name());
             int              sect            = 0;
             int              field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;

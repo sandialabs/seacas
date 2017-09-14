@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -38,11 +38,12 @@
 #include <Ioss_EntityBlock.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
+#include <Ioss_ZoneConnectivity.h>
 #include <array>
 #include <cassert>
 #include <string>
 
-#if defined(SEACAS_HAVE_CGNS)
+#if defined(SEACAS_HAVE_CGNS) && !defined(SIERRA_PARALLEL_MPI)
 #include <cgnstypes.h>
 using INT = cgsize_t;
 #else
@@ -54,85 +55,6 @@ using INT = int;
 
 namespace Ioss {
   class Region;
-
-  struct ZoneConnectivity
-  {
-    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
-                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
-                     const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
-        : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
-          m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
-          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_ownerProcessor(-1), m_donorProcessor(-1), m_sameRange(false),
-          m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block), m_isActive(true)
-    {
-      if (!m_intraBlock) {
-        m_ownerRange[0] = m_rangeBeg[0];
-        m_ownerRange[1] = m_rangeBeg[1];
-        m_ownerRange[2] = m_rangeBeg[2];
-        m_ownerRange[3] = m_rangeEnd[0];
-        m_ownerRange[4] = m_rangeEnd[1];
-        m_ownerRange[5] = m_rangeEnd[2];
-
-        m_donorRange[0] = m_donorRangeBeg[0];
-        m_donorRange[1] = m_donorRangeBeg[1];
-        m_donorRange[2] = m_donorRangeBeg[2];
-        m_donorRange[3] = m_donorRangeEnd[0];
-        m_donorRange[4] = m_donorRangeEnd[1];
-        m_donorRange[5] = m_donorRangeEnd[2];
-      }
-    }
-
-    ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
-
-    // Return number of nodes in the connection shared with the donor zone.
-    size_t get_shared_node_count() const
-    {
-      size_t snc = 1;
-      for (int i = 0; i < 3; i++) {
-        snc *= (std::abs(m_rangeEnd[i] - m_rangeBeg[i]) + 1);
-      }
-      return snc;
-    }
-
-    bool owns_shared_nodes() const { return m_ownsSharedNodes; }
-
-    std::array<INT, 9> transform_matrix() const;
-    Ioss::IJK_t transform(const Ioss::IJK_t &index_1) const;
-    Ioss::IJK_t inverse_transform(const Ioss::IJK_t &index_1) const;
-
-    std::vector<int> get_range(int ordinal) const;
-
-    // The "original" owner and donor range -- that is, they have not been subsetted
-    // due to block decompositions in a parallel run.  These should be the same on
-    // all processors...  Primarily used to make parallel collective output easier...
-    std::array<INT, 6> m_ownerRange{};
-    std::array<INT, 6> m_donorRange{};
-
-    std::string m_connectionName;
-    std::string m_donorName;
-    Ioss::IJK_t m_transform;
-    Ioss::IJK_t m_rangeBeg;
-    Ioss::IJK_t m_rangeEnd;
-    Ioss::IJK_t m_donorRangeBeg;
-    Ioss::IJK_t m_donorRangeEnd;
-
-    friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
-
-    // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
-    int  m_ownerZone;      // "id" of zone that owns this connection
-    int  m_donorZone;      // "id" of zone that is donor of this connection
-    int  m_ownerProcessor; // processor that owns the owner zone
-    int  m_donorProcessor; // processor that owns the donor zone
-    bool m_sameRange; // True if owner and donor range should always match...(special use during
-                      // decomp)
-    bool m_ownsSharedNodes;
-    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel
-                       // run.
-    bool m_isActive;   // True if non-zero range...
-  };
 
   struct BoundaryCondition
   {
@@ -425,30 +347,30 @@ namespace Ioss {
   private:
     void add_properties_and_fields(int index_dim);
 
-    int m_ni;
-    int m_nj;
-    int m_nk;
+    int m_ni{};
+    int m_nj{};
+    int m_nk{};
 
-    int m_offsetI; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
-    int m_offsetJ;
-    int m_offsetK;
+    int m_offsetI{}; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
+    int m_offsetJ{};
+    int m_offsetK{};
 
-    int m_niGlobal; // The ni,nj,nk of the master block this is a subset of.
-    int m_njGlobal;
-    int m_nkGlobal;
+    int m_niGlobal{}; // The ni,nj,nk of the master block this is a subset of.
+    int m_njGlobal{};
+    int m_nkGlobal{};
 
-    size_t m_nodeOffset;
-    size_t m_cellOffset;
+    size_t m_nodeOffset{};
+    size_t m_cellOffset{};
 
-    size_t m_nodeGlobalOffset;
-    size_t m_cellGlobalOffset;
+    size_t m_nodeGlobalOffset{};
+    size_t m_cellGlobalOffset{};
 
     Ioss::NodeBlock m_nodeBlock;
 
   public:
-    std::vector<ZoneConnectivity>  m_zoneConnectivity;
-    std::vector<BoundaryCondition> m_boundaryConditions;
-    std::vector<size_t>            m_blockLocalNodeIndex;
+    std::vector<ZoneConnectivity>          m_zoneConnectivity;
+    std::vector<BoundaryCondition>         m_boundaryConditions;
+    std::vector<size_t>                    m_blockLocalNodeIndex;
     std::vector<std::pair<size_t, size_t>> m_globalIdMap;
     std::vector<std::pair<size_t, size_t>> m_sharedNode;
   };

@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -124,21 +124,6 @@ namespace Ioss {
     MPI_Comm communicator_;
   };
 
-  inline int power_2(int count)
-  {
-    // Return the power of two which is equal to or greater than 'count'
-    // count = 15 -> returns 16
-    // count = 16 -> returns 16
-    // count = 17 -> returns 32
-
-    // Use brute force...
-    int pow2 = 1;
-    while (pow2 < count) {
-      pow2 *= 2;
-    }
-    return pow2;
-  }
-
 #ifdef SEACAS_HAVE_MPI
   inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
   inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }
@@ -166,14 +151,15 @@ namespace Ioss {
         std::ostringstream errmsg;
         errmsg << "ERROR: The number of items that must be communicated via MPI calls from\n"
                << "       processor " << my_processor << " to processor " << i << " is "
-               << sendcounts[i] << "\n       which exceeds the storage capacity of the integers "
-                                   "used by MPI functions.\n";
+               << sendcounts[i]
+               << "\n       which exceeds the storage capacity of the integers "
+                  "used by MPI functions.\n";
         std::cerr << errmsg.str();
         exit(EXIT_FAILURE);
       }
     }
 
-    size_t pow_2 = power_2(processor_count);
+    size_t pow_2 = Ioss::Utils::power_2(processor_count);
 
     for (size_t i = 1; i < pow_2; i++) {
       MPI_Status status{};

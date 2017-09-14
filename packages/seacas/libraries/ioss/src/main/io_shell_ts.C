@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -746,7 +746,7 @@ namespace {
       if (debug) {
         OUTPUT << name << ", ";
       }
-      size_t num_nodes = inb->get_property("entity_count").get_int();
+      size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (!debug) {
         OUTPUT << " Number of coordinates per node       =" << std::setw(12) << degree << "\n";
@@ -858,12 +858,12 @@ namespace {
       params[t].output_region = &output_region;
       params[t].interface     = &interface;
       params[t].role          = role;
-      pthread_create(&threads[t], NULL, transfer_fields_ts, (void *)(params.data() + t));
+      pthread_create(&threads[t], nullptr, transfer_fields_ts, (void *)(params.data() + t));
       t++;
     }
 
     for (t = 0; t < (int)threads.size(); t++) {
-      pthread_join(threads[t], NULL);
+      pthread_join(threads[t], nullptr);
     }
   }
 
@@ -901,12 +901,12 @@ namespace {
       params[t].output_region = &output_region;
       params[t].interface     = &interface;
       params[t].role          = role;
-      pthread_create(&threads[t], NULL, transfer_field_data_ts, (void *)(params.data() + t));
+      pthread_create(&threads[t], nullptr, transfer_field_data_ts, (void *)(params.data() + t));
       t++;
     }
 
     for (t = 0; t < (int)threads.size(); t++) {
-      pthread_join(threads[t], NULL);
+      pthread_join(threads[t], nullptr);
     }
   }
 
@@ -921,7 +921,7 @@ namespace {
           OUTPUT << name << ", ";
         }
         std::string type  = iblock->get_property("topology_type").get_string();
-        size_t      count = iblock->get_property("entity_count").get_int();
+        size_t      count = iblock->entity_count();
         total_entities += count;
 
         auto block = new T(output_region.get_database(), name, type, count);
@@ -978,7 +978,7 @@ namespace {
         }
         std::string fbtype   = fb->get_property("topology_type").get_string();
         std::string partype  = fb->get_property("parent_topology_type").get_string();
-        size_t      num_side = fb->get_property("entity_count").get_int();
+        size_t      num_side = fb->entity_count();
         total_sides += num_side;
 
         auto block =
@@ -1012,7 +1012,7 @@ namespace {
         if (debug) {
           OUTPUT << name << ", ";
         }
-        size_t count = set->get_property("entity_count").get_int();
+        size_t count = set->entity_count();
         total_entities += count;
         auto o_set = new T(output_region.get_database(), name, count);
         output_region.add(o_set);
@@ -1065,7 +1065,7 @@ namespace {
         OUTPUT << name << ", ";
       }
       std::string type  = ics->get_property("entity_type").get_string();
-      size_t      count = ics->get_property("entity_count").get_int();
+      size_t      count = ics->entity_count();
       auto        cs    = new Ioss::CommSet(output_region.get_database(), name, type, count);
       output_region.add(cs);
       transfer_properties(ics, cs);

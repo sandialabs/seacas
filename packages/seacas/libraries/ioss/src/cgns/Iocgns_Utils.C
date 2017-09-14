@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -177,7 +177,7 @@ namespace {
     }
     return nstep;
   }
-}
+} // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                                int processor)
@@ -294,7 +294,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     }
 
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
-    CGERR(cg_goto(file_ptr, base, "Family_t", fam, NULL));
+    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
     CGERR(cg_descriptor_write("FamBC_TypeId", std::to_string(bocotype).c_str()));
     CGERR(cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]));
     CGERR(cg_descriptor_write("FamBC_UserId", std::to_string(id).c_str()));
@@ -360,25 +360,25 @@ std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
 {
   std::string topology = "unknown";
   switch (type) {
-  case CG_NODE: topology     = Ioss::Node::name; break;
-  case CG_BAR_2: topology    = Ioss::Bar2::name; break;
-  case CG_BAR_3: topology    = Ioss::Bar3::name; break;
-  case CG_TRI_3: topology    = Ioss::Tri3::name; break;
-  case CG_TRI_6: topology    = Ioss::Tri6::name; break;
-  case CG_QUAD_4: topology   = Ioss::Quad4::name; break;
-  case CG_QUAD_8: topology   = Ioss::Quad8::name; break;
-  case CG_QUAD_9: topology   = Ioss::Quad9::name; break;
-  case CG_TETRA_4: topology  = Ioss::Tet4::name; break;
+  case CG_NODE: topology = Ioss::Node::name; break;
+  case CG_BAR_2: topology = Ioss::Bar2::name; break;
+  case CG_BAR_3: topology = Ioss::Bar3::name; break;
+  case CG_TRI_3: topology = Ioss::Tri3::name; break;
+  case CG_TRI_6: topology = Ioss::Tri6::name; break;
+  case CG_QUAD_4: topology = Ioss::Quad4::name; break;
+  case CG_QUAD_8: topology = Ioss::Quad8::name; break;
+  case CG_QUAD_9: topology = Ioss::Quad9::name; break;
+  case CG_TETRA_4: topology = Ioss::Tet4::name; break;
   case CG_TETRA_10: topology = Ioss::Tet10::name; break;
-  case CG_PYRA_5: topology   = Ioss::Pyramid5::name; break;
-  case CG_PYRA_13: topology  = Ioss::Pyramid13::name; break;
-  case CG_PYRA_14: topology  = Ioss::Pyramid14::name; break;
-  case CG_PENTA_6: topology  = Ioss::Wedge6::name; break;
+  case CG_PYRA_5: topology = Ioss::Pyramid5::name; break;
+  case CG_PYRA_13: topology = Ioss::Pyramid13::name; break;
+  case CG_PYRA_14: topology = Ioss::Pyramid14::name; break;
+  case CG_PENTA_6: topology = Ioss::Wedge6::name; break;
   case CG_PENTA_15: topology = Ioss::Wedge15::name; break;
   case CG_PENTA_18: topology = Ioss::Wedge18::name; break;
-  case CG_HEXA_8: topology   = Ioss::Hex8::name; break;
-  case CG_HEXA_20: topology  = Ioss::Hex20::name; break;
-  case CG_HEXA_27: topology  = Ioss::Hex27::name; break;
+  case CG_HEXA_8: topology = Ioss::Hex8::name; break;
+  case CG_HEXA_20: topology = Ioss::Hex20::name; break;
+  case CG_HEXA_27: topology = Ioss::Hex27::name; break;
   default:
     std::cerr << "WARNING: Found topology of type " << cg_ElementTypeName(type)
               << " which is not currently supported.\n";
@@ -569,8 +569,10 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
     CGCHECKNP(cg_family_read(cgnsFilePtr, base, family, name, &num_bc, &num_geo));
 
 #if IOSS_DEBUG_OUTPUT
-    std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
-              << num_geo << " geometry references\n";
+    if (db->parallel_rank() == 0) {
+      std::cerr << "Family " << family << " named " << name << " has " << num_bc << " BC, and "
+                << num_geo << " geometry references\n";
+    }
 #endif
     if (num_bc > 0) {
       // Create a sideset...
@@ -771,7 +773,7 @@ void Iocgns::Utils::resolve_shared_nodes(Ioss::Region &region, int my_processor)
         }
       }
     }
-#if IOSS_DEBUG_OUTPUT
+#if 0 && IOSS_DEBUG_OUTPUT
     std::cerr << "P" << my_processor << ", Block " << owner_block->name()
               << " Shared Nodes: " << owner_block->m_sharedNode.size() << "\n";
 #endif
@@ -843,7 +845,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
-      auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
+      auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
                                     block->m_boundaryConditions.back().get_face_count());
       sb->set_parent_block(block);
       sset->add(sb);
@@ -993,7 +995,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
       std::vector<Ioss::Field> fields;
       if (grid_loc == CG_CellCenter) {
-        size_t entity_count = block->get_property("entity_count").get_int();
+        size_t entity_count = block->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
                                 nullptr, fields);
         size_t index = 1;
@@ -1010,7 +1012,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
                 ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
                 : region->get_node_blocks()[0];
         Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
-        size_t           entity_count = nb->get_property("entity_count").get_int();
+        size_t           entity_count = nb->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
                                 nullptr, fields);
         size_t index = 1;

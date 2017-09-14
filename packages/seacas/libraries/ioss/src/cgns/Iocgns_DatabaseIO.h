@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -65,7 +65,7 @@ namespace Ioss {
   class SideSet;
   class EntityBlock;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the CGNS database format.
  */
@@ -111,7 +111,7 @@ namespace Iocgns {
     void write_results_meta_data();
 
   private:
-    void create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell);
+    void   create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell);
     size_t finalize_structured_blocks();
     void   finalize_database() override;
     void   get_step_times__() override;
@@ -206,5 +206,5 @@ namespace Iocgns {
     std::map<std::string, int>         m_zoneNameMap;
     mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
   };
-}
+} // namespace Iocgns
 #endif

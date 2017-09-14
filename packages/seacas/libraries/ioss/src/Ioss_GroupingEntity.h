@@ -1,4 +1,4 @@
-// Copyright(C) 1999-2010 National Technology & Engineering Solutions
+// Copyright(C) 1999-2017 National Technology & Engineering Solutions
 // of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
 // NTESS, the U.S. Government retains certain rights in this software.
 //
@@ -248,6 +248,9 @@ namespace Ioss {
     }
 
     unsigned int hash() const { return hash_; }
+
+    int64_t entity_count() const {return get_property("entity_count").get_int();}
+
   protected:
     void count_attributes() const;
 
@@ -292,8 +295,8 @@ namespace Ioss {
 
     DatabaseIO *database_ = nullptr;
 
-    State           entityState    = STATE_CLOSED;
     mutable int64_t attributeCount = 0;
+    State           entityState    = STATE_CLOSED;
     unsigned int    hash_          = 0;
   };
 } // namespace Ioss
