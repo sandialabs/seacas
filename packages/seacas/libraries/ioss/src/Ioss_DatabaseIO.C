@@ -540,7 +540,7 @@ namespace Ioss {
   void DatabaseIO::add_information_records(const std::vector<std::string> &info)
   {
     informationRecords.reserve(informationRecords.size() + info.size());
-    informationRecords.insert(informationRecords.cend(), info.cbegin(), info.cend());
+    informationRecords.insert(informationRecords.end(), info.begin(), info.end());
   }
 
   /** \brief Add an information record (an informative string) to the database.
