@@ -69,7 +69,7 @@ namespace {
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
 
     Iofx::DatabaseIO *db_io =
-        new Iofx::DatabaseIO(NULL, filename, db_usage, communicator, properties);
+        new Iofx::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
     return db_io;
   }
 
@@ -86,7 +86,7 @@ namespace {
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
 
     Iofx::DatabaseIO *db_io =
-        new Iofx::DatabaseIO(NULL, filename, db_usage, communicator, properties);
+        new Iofx::DatabaseIO(nullptr, filename, db_usage, communicator, properties);
     return db_io;
   }
 

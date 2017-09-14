@@ -401,8 +401,8 @@ bool SystemInterface::convert_nodes_to_nodesets(int part_number) const
     return true;
   }
   else {
-    return std::find(nodesetConvertParts_.begin(), nodesetConvertParts_.end(), part_number) !=
-           nodesetConvertParts_.end();
+    return std::find(nodesetConvertParts_.cbegin(), nodesetConvertParts_.cend(), part_number) !=
+           nodesetConvertParts_.cend();
   }
 }
 

@@ -1139,13 +1139,13 @@ namespace Iopx {
         // This only affects the generation of surfaces...
         if (!blockOmissions.empty()) {
           std::vector<std::string>::const_iterator I =
-              std::find(blockOmissions.begin(), blockOmissions.end(), block_name);
+              std::find(blockOmissions.cbegin(), blockOmissions.cend(), block_name);
           if (I != blockOmissions.end()) {
             io_block->property_add(Ioss::Property(std::string("omitted"), 1));
           }
           else {
             // Try again with the alias...
-            I = std::find(blockOmissions.begin(), blockOmissions.end(), alias);
+            I = std::find(blockOmissions.cbegin(), blockOmissions.cend(), alias);
             if (I != blockOmissions.end()) {
               io_block->property_add(Ioss::Property(std::string("omitted"), 1));
             }

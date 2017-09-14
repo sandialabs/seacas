@@ -545,7 +545,7 @@ namespace Iocgns {
     size_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
-    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
 
@@ -1368,9 +1368,8 @@ namespace Iocgns {
               nodes.push_back(idata[i]);
             }
           }
-          auto it = nodes.begin();
-          it++;
           Ioss::Utils::uniquify(nodes, true);
+	  assert(nodes[0] == 1);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;

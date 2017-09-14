@@ -858,12 +858,12 @@ namespace {
       params[t].output_region = &output_region;
       params[t].interface     = &interface;
       params[t].role          = role;
-      pthread_create(&threads[t], NULL, transfer_fields_ts, (void *)(params.data() + t));
+      pthread_create(&threads[t], nullptr, transfer_fields_ts, (void *)(params.data() + t));
       t++;
     }
 
     for (t = 0; t < (int)threads.size(); t++) {
-      pthread_join(threads[t], NULL);
+      pthread_join(threads[t], nullptr);
     }
   }
 
@@ -901,12 +901,12 @@ namespace {
       params[t].output_region = &output_region;
       params[t].interface     = &interface;
       params[t].role          = role;
-      pthread_create(&threads[t], NULL, transfer_field_data_ts, (void *)(params.data() + t));
+      pthread_create(&threads[t], nullptr, transfer_field_data_ts, (void *)(params.data() + t));
       t++;
     }
 
     for (t = 0; t < (int)threads.size(); t++) {
-      pthread_join(threads[t], NULL);
+      pthread_join(threads[t], nullptr);
     }
   }
 
