@@ -38,6 +38,7 @@
 #include <Ioss_EntityBlock.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_Property.h>
+#include <Ioss_ZoneConnectivity.h>
 #include <array>
 #include <cassert>
 #include <string>
@@ -54,96 +55,6 @@ using INT = int;
 
 namespace Ioss {
   class Region;
-
-  struct ZoneConnectivity
-  {
-    ZoneConnectivity(const std::string name, int owner_zone, const std::string donor_name,
-                     int donor_zone, const Ioss::IJK_t p_transform, const Ioss::IJK_t range_beg,
-                     const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
-                     const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
-        : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
-          m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
-          m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
-          m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block)
-    {
-      if (!m_intraBlock) {
-        m_ownerRange[0] = m_rangeBeg[0];
-        m_ownerRange[1] = m_rangeBeg[1];
-        m_ownerRange[2] = m_rangeBeg[2];
-        m_ownerRange[3] = m_rangeEnd[0];
-        m_ownerRange[4] = m_rangeEnd[1];
-        m_ownerRange[5] = m_rangeEnd[2];
-
-        m_donorRange[0] = m_donorRangeBeg[0];
-        m_donorRange[1] = m_donorRangeBeg[1];
-        m_donorRange[2] = m_donorRangeBeg[2];
-        m_donorRange[3] = m_donorRangeEnd[0];
-        m_donorRange[4] = m_donorRangeEnd[1];
-        m_donorRange[5] = m_donorRangeEnd[2];
-      }
-    }
-
-    ZoneConnectivity(const ZoneConnectivity &copy_from) = default;
-
-    // Return number of nodes in the connection shared with the donor zone.
-    size_t get_shared_node_count() const
-    {
-      size_t snc = 1;
-      for (int i = 0; i < 3; i++) {
-        snc *= (std::abs(m_rangeEnd[i] - m_rangeBeg[i]) + 1);
-      }
-      return snc;
-    }
-
-    bool owns_shared_nodes() const { return m_ownsSharedNodes; }
-
-    std::array<INT, 9> transform_matrix() const;
-    Ioss::IJK_t        transform(const Ioss::IJK_t &index_1) const;
-    Ioss::IJK_t        inverse_transform(const Ioss::IJK_t &index_1) const;
-
-    std::vector<int>     get_range(int ordinal) const;
-    friend std::ostream &operator<<(std::ostream &os, const ZoneConnectivity &zgc);
-
-    // The "original" owner and donor range -- that is, they have not been subsetted
-    // due to block decompositions in a parallel run.  These should be the same on
-    // all processors...  Primarily used to make parallel collective output easier...
-    std::array<INT, 6> m_ownerRange{};
-    std::array<INT, 6> m_donorRange{};
-
-    std::string m_connectionName; // Name of the connection; either generated or from file
-    std::string m_donorName; // Name of the zone (m_donorZone) to which this zone is connected via
-                             // this connection.
-    Ioss::IJK_t m_transform; // The transform.  In the same form as defined by CGNS
-
-    // The following are all subsetted down to the portion that is actually on this zone
-    // This can be different thant m_ownerRange and m_donorRange in a parallel run if the
-    // decomposition splits the connection.  In a serial run, they are the same.
-    //
-    // 1 of ijk should be the same for rangeBeg and rangeEnd defining a surface.
-    Ioss::IJK_t m_rangeBeg;      // ijk triplet defining beginning of range on this zone
-    Ioss::IJK_t m_rangeEnd;      // ijk triplet defining end of range on this zone
-    Ioss::IJK_t m_donorRangeBeg; // ijk triplet defining beginning of range on the connected zone
-    Ioss::IJK_t m_donorRangeEnd; // ijk triplet defining end of range on the connected zone
-
-    // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
-    int    m_ownerZone{};        // "id" of zone that owns this connection
-    int    m_donorZone{};        // "id" of zone that is donor (or other side) of this connection
-    size_t m_ownerGUID{};        // globally-unique id of owner
-    size_t m_donorGUID{};        // globally-unique id of donor
-    int    m_ownerProcessor{-1}; // processor that owns the owner zone
-    int    m_donorProcessor{-1}; // processor that owns the donor zone
-    bool   m_sameRange{
-        false}; // True if owner and donor range should always match...(special use during
-                  // decomp)
-    bool m_ownsSharedNodes{
-        false}; // True if it is the "lower" zone id in the connection. Uses adam unless
-                // both have same adam.
-    bool m_intraBlock{
-        false}; // True if this zc is created due to processor decompositions in a parallel
-                // run.
-    bool m_isActive{true}; // True if non-zero range. That is, it has at least one face
-  };
 
   struct BoundaryCondition
   {
