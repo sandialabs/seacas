@@ -35,7 +35,7 @@ namespace {
     // Get nodes of this side (face) of the element
 
     int nsnodes = is_hex(etype) ? 4 : 3;
-    INT side_nodes[8];
+    INT side_nodes[9]; // SHELL9 has 9 nodes on a face.
 
     INT *elnodes = mesh->connect[cur_elem];
     ss_to_node_list(etype, elnodes, side_id, side_nodes);
@@ -43,7 +43,7 @@ namespace {
     // How would these side's nodes be if they were viewed from the
     // adjacent element
 
-    INT side_nodes_flipped[4];
+    INT side_nodes_flipped[9]; // Realistically: 4, max possible: 9
     get_ss_mirror(etype, side_nodes, side_id, side_nodes_flipped);
 
     for (int i = 0; i < nadj; i++) {
@@ -130,7 +130,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
     int count = 0;
     for (int j = 0; j < nelfaces; j++) {
-      INT fnodes[8]; // Should only need 4, but ss_to_node_list can potentially access 8.
+      INT fnodes[9]; // Should only need 4, but ss_to_node_list can potentially access 9 (SHELL9).
 
       int nfn = 4;
       if (is_wedge(etype)) {
