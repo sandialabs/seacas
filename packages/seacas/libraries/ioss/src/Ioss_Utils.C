@@ -2328,7 +2328,7 @@ namespace {
       return;
     }
 
-    if (options.data_storage_type >= 1 || options.data_storage_type <= 2) {
+    if (options.data_storage_type == 1 || options.data_storage_type == 2) {
       if (data.size() < isize) {
         data.resize(isize);
       }
@@ -2344,7 +2344,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data(field_name, data);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data(field_name, data_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2364,7 +2364,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data<char>(field_name, data_view_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data<int>(field_name, data_view_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2384,7 +2384,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data<char>(field_name, data_view_2D_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data<int>(field_name, data_view_2D_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2405,7 +2405,7 @@ namespace {
         ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_char_layout_space);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_int_layout_space);
       }
@@ -2438,7 +2438,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data(field_name, data);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data(field_name, data_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2458,7 +2458,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data<char>(field_name, data_view_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data<int>(field_name, data_view_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2478,7 +2478,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data<char>(field_name, data_view_2D_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data<int>(field_name, data_view_2D_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2499,7 +2499,7 @@ namespace {
         oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_char_layout_space);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_int_layout_space);
       }

@@ -33,10 +33,10 @@
  *
  */
 /*****************************************************************************
-*
-* exutils - utility routines
-*
-*****************************************************************************/
+ *
+ * exutils - utility routines
+ *
+ *****************************************************************************/
 
 #if defined(DEBUG_QSORT)
 #include <assert.h>
@@ -67,17 +67,17 @@ struct obj_stats *exoII_fam = 0;
 struct obj_stats *exoII_nm  = 0;
 
 /*****************************************************************************
-*
-* utility routines for string conversions
-* ex_catstr  - concatenate  string/number (where number is converted to ASCII)
-* ex_catstr2 - concatenate  string1/number1/string2/number2   "
-*
-* NOTE: these routines reuse the same storage over and over to build
-*        concatenated strings, because the strings are just passed to netCDF
-*        routines as names used to look up variables.  if the strings returned
-*        by these routines are needed for any other purpose, they should
-*        immediately be copied into other storage.
-*****************************************************************************/
+ *
+ * utility routines for string conversions
+ * ex_catstr  - concatenate  string/number (where number is converted to ASCII)
+ * ex_catstr2 - concatenate  string1/number1/string2/number2   "
+ *
+ * NOTE: these routines reuse the same storage over and over to build
+ *        concatenated strings, because the strings are just passed to netCDF
+ *        routines as names used to look up variables.  if the strings returned
+ *        by these routines are needed for any other purpose, they should
+ *        immediately be copied into other storage.
+ *****************************************************************************/
 
 static char  ret_string[10 * (MAX_VAR_NAME_LENGTH + 1)];
 static char *cur_string = &ret_string[0];
@@ -208,8 +208,9 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
       int_names[idx + name_length - 1] = '\0';
       length                           = strlen(names[i]) + 1;
       if (length > name_length) {
-        fprintf(stderr, "Warning: The %s %s name '%s' is too long.\n\tIt will "
-                        "be truncated from %d to %d characters\n",
+        fprintf(stderr,
+                "Warning: The %s %s name '%s' is too long.\n\tIt will "
+                "be truncated from %d to %d characters\n",
                 ex_name_of_object(obj_type), subtype, names[i], (int)length - 1,
                 (int)name_length - 1);
         length = name_length;
@@ -260,8 +261,9 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
     count[1] = strlen(name) + 1;
 
     if (count[1] > name_length) {
-      fprintf(stderr, "Warning: The %s %s name '%s' is too long.\n\tIt will be "
-                      "truncated from %d to %d characters\n",
+      fprintf(stderr,
+              "Warning: The %s %s name '%s' is too long.\n\tIt will be "
+              "truncated from %d to %d characters\n",
               ex_name_of_object(obj_type), subtype, name, (int)strlen(name), (int)name_length - 1);
       count[1] = name_length;
       too_long = 1;
@@ -677,8 +679,9 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     else {
       int *id_vals_int;
       if (!(id_vals_int = malloc(dim_len * sizeof(int)))) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to allocate memory for temporary array "
-                                         "id_vals_int for file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to allocate memory for temporary array "
+                 "id_vals_int for file id %d",
                  exoid);
         ex_err("ex_id_lkup", errmsg, EX_MEMFAIL);
         free(id_vals);
@@ -798,10 +801,10 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
 }
 
 /******************************************************************************
-*
-* ex_get_stat_ptr - returns a pointer to a structure of object ids
-*
-*****************************************************************************/
+ *
+ * ex_get_stat_ptr - returns a pointer to a structure of object ids
+ *
+ *****************************************************************************/
 
 /*! this routine returns a pointer to a structure containing the ids of
  * element blocks, node sets, or side sets according to exoid;  if there
@@ -836,10 +839,10 @@ struct obj_stats *ex_get_stat_ptr(int exoid, struct obj_stats **obj_ptr)
 }
 
 /******************************************************************************
-*
-* ex_rm_stat_ptr - removes a pointer to a structure of object ids
-*
-*****************************************************************************/
+ *
+ * ex_rm_stat_ptr - removes a pointer to a structure of object ids
+ *
+ *****************************************************************************/
 
 /*! this routine removes a pointer to a structure containing the ids of
  * element blocks, node sets, or side sets according to exoid;  this
@@ -912,10 +915,10 @@ struct list_item **ex_get_counter_list(ex_entity_type obj_type)
 }
 
 /******************************************************************************
-*
-* ex_inc_file_item - increment file item
-*
-*****************************************************************************/
+ *
+ * ex_inc_file_item - increment file item
+ *
+ *****************************************************************************/
 
 /*! this routine sets up a structure to track and increment a counter for
  * each open exodus file.  it is designed to be used by the routines
@@ -960,10 +963,10 @@ int ex_inc_file_item(int                exoid,    /* file id */
 }
 
 /*****************************************************************************
-*
-* ex_get_file_item - increment file item
-*
-*****************************************************************************/
+ *
+ * ex_get_file_item - increment file item
+ *
+ *****************************************************************************/
 
 /*! this routine accesses a structure to track and increment a counter for
  * each open exodus file.  it is designed to be used by the routines
@@ -1009,10 +1012,10 @@ int ex_get_file_item(int                exoid,    /* file id */
 }
 
 /*****************************************************************************
-*
-* ex_rm_file_item - remove file item
-*
-*****************************************************************************/
+ *
+ * ex_rm_file_item - remove file item
+ *
+ *****************************************************************************/
 
 /*! this routine removes a structure to track and increment a counter for
  * each open exodus file.
@@ -1056,10 +1059,10 @@ void ex_rm_file_item(int                exoid,    /* file id */
 }
 
 /*****************************************************************************
-*
-* ex_get_num_props - get number of properties
-*
-*****************************************************************************/
+ *
+ * ex_get_num_props - get number of properties
+ *
+ *****************************************************************************/
 int ex_get_num_props(int exoid, ex_entity_type obj_type)
 {
   int   cntr, varid;
@@ -1076,15 +1079,15 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     case EX_ELEM_BLOCK: var_name = VAR_EB_PROP(cntr + 1); break;
     case EX_EDGE_BLOCK: var_name = VAR_ED_PROP(cntr + 1); break;
     case EX_FACE_BLOCK: var_name = VAR_FA_PROP(cntr + 1); break;
-    case EX_NODE_SET: var_name   = VAR_NS_PROP(cntr + 1); break;
-    case EX_EDGE_SET: var_name   = VAR_ES_PROP(cntr + 1); break;
-    case EX_FACE_SET: var_name   = VAR_FS_PROP(cntr + 1); break;
-    case EX_SIDE_SET: var_name   = VAR_SS_PROP(cntr + 1); break;
-    case EX_ELEM_SET: var_name   = VAR_ELS_PROP(cntr + 1); break;
-    case EX_ELEM_MAP: var_name   = VAR_EM_PROP(cntr + 1); break;
-    case EX_FACE_MAP: var_name   = VAR_FAM_PROP(cntr + 1); break;
-    case EX_EDGE_MAP: var_name   = VAR_EDM_PROP(cntr + 1); break;
-    case EX_NODE_MAP: var_name   = VAR_NM_PROP(cntr + 1); break;
+    case EX_NODE_SET: var_name = VAR_NS_PROP(cntr + 1); break;
+    case EX_EDGE_SET: var_name = VAR_ES_PROP(cntr + 1); break;
+    case EX_FACE_SET: var_name = VAR_FS_PROP(cntr + 1); break;
+    case EX_SIDE_SET: var_name = VAR_SS_PROP(cntr + 1); break;
+    case EX_ELEM_SET: var_name = VAR_ELS_PROP(cntr + 1); break;
+    case EX_ELEM_MAP: var_name = VAR_EM_PROP(cntr + 1); break;
+    case EX_FACE_MAP: var_name = VAR_FAM_PROP(cntr + 1); break;
+    case EX_EDGE_MAP: var_name = VAR_EDM_PROP(cntr + 1); break;
+    case EX_NODE_MAP: var_name = VAR_NM_PROP(cntr + 1); break;
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
@@ -1104,7 +1107,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
 int ex_get_cpu_ws(void) { return (sizeof(float)); }
 
 /* swap - interchange v[i] and v[j] */
-static void ex_swap(int v[], int i, int j)
+static void ex_swap(int v[], int64_t i, int64_t j)
 {
   /* Thread-safe, reentrant */
   int temp;
@@ -1124,23 +1127,23 @@ static void ex_swap64(int64_t v[], int64_t i, int64_t j)
   v[j] = temp;
 }
 
-/*!
- * The following 'indexed qsort' routine is modified from Sedgewicks
- * algorithm It selects the pivot based on the median of the left,
- * right, and center values to try to avoid degenerate cases ocurring
- * when a single value is chosen.  It performs a quicksort on
- * intervals down to the EX_QSORT_CUTOFF size and then performs a final
- * insertion sort on the almost sorted final array.  Based on data in
- * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
- *
- * See Sedgewick for further details
- * Define DEBUG_QSORT at the top of this file and recompile to compile
- * in code that verifies that the array is sorted.
- *
- * NOTE: The 'int' implementation below assumes that *both* the items
- *       being sorted and the *number* of items being sorted are both
- *       representable as 'int'.
- */
+  /*!
+   * The following 'indexed qsort' routine is modified from Sedgewicks
+   * algorithm It selects the pivot based on the median of the left,
+   * right, and center values to try to avoid degenerate cases ocurring
+   * when a single value is chosen.  It performs a quicksort on
+   * intervals down to the EX_QSORT_CUTOFF size and then performs a final
+   * insertion sort on the almost sorted final array.  Based on data in
+   * Sedgewick, the EX_QSORT_CUTOFF value should be between 5 and 20.
+   *
+   * See Sedgewick for further details
+   * Define DEBUG_QSORT at the top of this file and recompile to compile
+   * in code that verifies that the array is sorted.
+   *
+   * NOTE: The 'int' implementation below assumes that *both* the items
+   *       being sorted and the *number* of items being sorted are both
+   *       representable as 'int'.
+   */
 
 #define EX_QSORT_CUTOFF 12
 

@@ -66,9 +66,9 @@
  * \param   set_id                  set id
  * \param   offset                  index of first entry in set to access (1-based)
  * \param   num_to_get              number of entries to output.
- * \param  *set_entry_list          array of entries in set. Set to NULL to not
+ * \param   set_entry_list          array of entries in set. Set to NULL to not
  * read.
- * \param  *set_extra_list          array of extras in set. Set to NULL to not
+ * \param   set_extra_list          array of extras in set. Set to NULL to not
  * read.
  */
 

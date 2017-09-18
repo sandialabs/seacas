@@ -33,25 +33,25 @@
  *
  */
 /*!
-*
-* \undoc exgblk - read block parameters
-*
-* entry conditions -
-*   input parameters:
-*       int     idexo                   exodus file id
-*       int     blk_type                block type (edge,face,element)
-*       int     blk_id                  block id
-*
-* exit conditions -
-*       char*   elem_type               element type name
-*       int*    num_entries_this_blk    number of elements in this element block
-*       int*    num_nodes_per_entry     number of nodes per element block
-*       int*    num_attr_per_entry      number of attributes
-*
-* revision history -
-*
-*
-*/
+ *
+ * \undoc exgblk - read block parameters
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     idexo                   exodus file id
+ *       int     blk_type                block type (edge,face,element)
+ *       int     blk_id                  block id
+ *
+ * exit conditions -
+ *       char*   elem_type               element type name
+ *       int*    num_entries_this_blk    number of elements in this element block
+ *       int*    num_nodes_per_entry     number of nodes per element block
+ *       int*    num_attr_per_entry      number of attributes
+ *
+ * revision history -
+ *
+ *
+ */
 
 #include "exodusII.h"     // for ex_block, ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ATT_NAME_ELB, etc
@@ -85,7 +85,6 @@ int ex_get_block_param(int exoid, ex_block *block)
 
   file = ex_find_file_item(exoid);
   if (!file) {
-    char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d in ex_get_block_param().", exoid);
     ex_err("ex_get_block_param", errmsg, EX_BADFILEID);
     EX_FUNC_LEAVE(EX_FATAL);
