@@ -51,8 +51,8 @@ KOKKOS=OFF
 CUDA=OFF
 
 ### Change this to point to the compilers you want to use
-#COMPILER="gnu"
-COMPILER="clang"
+COMPILER="gnu"
+#COMPILER="clang"
 if [ "$MPI" == "ON" ]
 then
   MPI_EXEC=`which mpiexec`
@@ -64,9 +64,9 @@ then
       CC=mpicc
       FC=mpif77
   else
-      CXX=mpicxx-openmpi-clang38
-      CC=mpicc-openmpi-clang38
-      FC=mpif77-openmpi-clang38
+      CXX=mpicxx
+      CC=mpicc
+      FC=mpif77
   fi
 else
   if [ "$COMPILER" == "gnu" ]
@@ -134,10 +134,23 @@ sanitizer=undefined   #: Fast and compatible undefined behavior checker.
 #-D GENERATE_FLEX_FILES=ON \
 #-D GENERATE_BISON_FILES=ON \
 
+### Additional gcc warnings:
+CPP_WARNING_FLAGS="\
+ -Wduplicated-cond\
+ -Wlogical-op\
+ -Wnull-dereference\
+ -Wold-style-cast\
+ -Wuseless-cast\
+ -Wjump-misses-init\
+ -Wdouble-promotion\
+ -Wshadow\
+ -Wformat=2\
+"
+
 ###------------------------------------------------------------------------
 cmake  \
--D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
--D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic ${CPP_WARNING_FLAGS}" \
+-D CMAKE_C_FLAGS="-Wall -Wunused -pedantic ${CPP_WARNING_FLAGS}" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=OFF \
