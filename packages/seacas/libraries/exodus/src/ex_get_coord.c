@@ -140,9 +140,9 @@ int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)
     }
 
     for (i = 0; i < num_dim; i++) {
-      char *which;
-      start[0] = i;
-      start[1] = 0;
+      char *which = NULL;
+      start[0]    = i;
+      start[1]    = 0;
 
       count[0] = 1;
       count[1] = num_nod;

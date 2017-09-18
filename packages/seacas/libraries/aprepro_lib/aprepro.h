@@ -223,7 +223,7 @@ namespace SEAMS {
 
     /** Invoke the scanner and parser for a stream.
      * @param in	input stream
-     * @param sname	stream name for error messages
+     * @param in_name	stream name for error messages
      * @return		true if successfully parsed
      */
     bool parse_stream(std::istream &in, const std::string &in_name = "stream input");
@@ -275,7 +275,7 @@ namespace SEAMS {
                       bool immutable = false);
     void add_variable(const std::string &sym_name, double sym_value, bool immutable = false);
     std::vector<std::string> get_variable_names(bool doInternal = false);
-    void remove_variable(const std::string &sym_name);
+    void                     remove_variable(const std::string &sym_name);
 
     int set_option(const std::string &option, const std::string &optional_value = std::string(""));
 
@@ -305,7 +305,7 @@ namespace SEAMS {
     void dumpsym(int type, bool doInternal) const;
 
   private:
-    void init_table(const char *comment);
+    void                  init_table(const char *comment);
     std::vector<symrec *> sym_table;
     std::ostringstream    parsingResults;
 

@@ -76,11 +76,11 @@
 #endif
 
 #define EXT ".mat"
-int textfile = 0;
+static int textfile = 0;
 
-FILE * m_file   = nullptr; /* file for m file output */
-mat_t *mat_file = nullptr; /* file for binary .mat output */
-bool   debug    = false;
+static FILE * m_file   = nullptr; /* file for m file output */
+static mat_t *mat_file = nullptr; /* file for binary .mat output */
+static bool   debug    = false;
 
 static const char *qainfo[] = {
     "exo2mat", "2017/07/18", "4.03",
