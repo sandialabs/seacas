@@ -111,16 +111,17 @@ namespace Iocgns {
     void write_results_meta_data();
 
   private:
-    void   create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell);
-    size_t finalize_structured_blocks();
+    size_t create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell);
+    size_t create_unstructured_block(int base, int zone);
+    void   finalize_structured_blocks();
+    void   resolve_nodes(size_t &num_struc_node, size_t &num_unstruc_node);
     void   finalize_database() override;
     void   get_step_times__() override;
 
     void resolve_shared_nodes(int base, int zone, Ioss::EntityBlock *block);
-    void resolve_shared_nodes_structured(int base, int zone, Ioss::StructuredBlock *block);
-    void resolve_shared_nodes_unstructured(int base, int zone);
+    void resolve_1to1_connection(int base, int zone, int iconn, Ioss::StructuredBlock *block);
+    void resolve_generalized_connection(int base, int zone, int iconn);
 
-    void create_unstructured_block(int base, int zone, size_t &num_node, size_t &num_elem);
     void write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
