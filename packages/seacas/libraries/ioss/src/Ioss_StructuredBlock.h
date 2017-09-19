@@ -127,9 +127,16 @@ namespace Ioss {
   {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
-                    int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
+                    int nj, int nk, int off_i, int off_j, int off_k, int glo_ni, int glo_nj,
+                    int glo_nk);
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
                     Ioss::IJK_t &ordinal, Ioss::IJK_t &offset, Ioss::IJK_t &global_ordinal);
+
+    // Useful for serial
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
+                    int nj, int nk);
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
+                    Ioss::IJK_t &ordinal);
 
     StructuredBlock *clone(DatabaseIO *database) const;
 
