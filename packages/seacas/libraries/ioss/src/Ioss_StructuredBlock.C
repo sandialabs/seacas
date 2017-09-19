@@ -59,13 +59,26 @@ namespace Ioss {
   // Serial
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
                                    int index_dim, int ni, int nj, int nk)
-      : EntityBlock(io_database, my_name, Ioss::Hex8::name,
-                    ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-        m_ni(ni), m_nj(nj), m_nk(nk), m_niGlobal(m_ni), m_njGlobal(m_nj),
-        m_nkGlobal(m_nk), m_nodeBlock(io_database, my_name + "_nodes",
-                                     (m_ni + 1) * (m_nj + 1) * (m_nk + 1), index_dim)
+      : StructuredBlock(io_database, my_name, index_dim, ni, nj, nk, 0, 0, 0, ni, nj, nk)
   {
-    add_properties_and_fields(index_dim);
+  }
+
+  // Parallel
+  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
+                                   int index_dim, Ioss::IJK_t &ordinal, Ioss::IJK_t &offset,
+                                   Ioss::IJK_t &global_ordinal)
+      : StructuredBlock(io_database, my_name, index_dim, ordinal[0], ordinal[1], ordinal[2],
+                        offset[0], offset[1], offset[2], global_ordinal[0], global_ordinal[1],
+                        global_ordinal[2])
+  {
+  }
+
+  // Serial
+  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
+                                   int index_dim, Ioss::IJK_t &ordinal)
+      : StructuredBlock(io_database, my_name, index_dim, ordinal[0], ordinal[1], ordinal[2], 0, 0,
+                        0, ordinal[0], ordinal[1], ordinal[2])
+  {
   }
 
   // Parallel
@@ -77,32 +90,6 @@ namespace Ioss {
         m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
         m_niGlobal(glo_ni == 0 ? m_ni : glo_ni), m_njGlobal(glo_nj == 0 ? m_nj : glo_nj),
         m_nkGlobal(glo_nk == 0 ? m_nk : glo_nk),
-        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-                    index_dim)
-  {
-    add_properties_and_fields(index_dim);
-  }
-
-  // Parallel
-  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim, Ioss::IJK_t &ordinal, Ioss::IJK_t &offset,
-                                   Ioss::IJK_t &global_ordinal)
-      : EntityBlock(io_database, my_name, Ioss::Hex8::name, ordinal[0] * ordinal[1] * ordinal[2]),
-        m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
-        m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
-        m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]),
-        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-                    index_dim)
-  {
-    add_properties_and_fields(index_dim);
-  }
-
-  // Serial
-  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim, Ioss::IJK_t &ordinal)
-      : EntityBlock(io_database, my_name, Ioss::Hex8::name, ordinal[0] * ordinal[1] * ordinal[2]),
-        m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_niGlobal(ordinal[0]),
-        m_njGlobal(ordinal[1]), m_nkGlobal(ordinal[2]),
         m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
                     index_dim)
   {
