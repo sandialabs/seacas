@@ -762,10 +762,32 @@ namespace Ioss {
 
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
+      // Add node and cell offsets based on the node_count and
+      // cell_count of the previous block.  Only add if there is more
+      // than one block; use default for first block (or user-defined
+      // values)
+      if (!structuredBlocks.empty()) {
+        auto   prev_block = structuredBlocks.back();
+        size_t num_node   = prev_block->get_property("node_count").get_int();
+        size_t num_cell   = prev_block->get_property("cell_count").get_int();
+        num_node += prev_block->get_node_offset();
+        num_cell += prev_block->get_cell_offset();
+
+        structured_block->set_node_offset(num_node);
+        structured_block->set_cell_offset(num_cell);
+
+        size_t global_num_node = prev_block->get_property("global_node_count").get_int();
+        size_t global_num_cell = prev_block->get_property("global_cell_count").get_int();
+        global_num_node += prev_block->get_node_global_offset();
+        global_num_cell += prev_block->get_cell_global_offset();
+
+        structured_block->set_node_global_offset(global_num_node);
+        structured_block->set_cell_global_offset(global_num_cell);
+      }
+
       structuredBlocks.push_back(structured_block);
       // Add name as alias to itself to simplify later uses...
       add_alias__(structured_block);
-
       return true;
     }
     return false;
