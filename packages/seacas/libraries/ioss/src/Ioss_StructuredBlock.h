@@ -352,8 +352,6 @@ namespace Ioss {
                                     size_t data_size) const override;
 
   private:
-    void add_properties_and_fields(int index_dim);
-
     int m_ni{};
     int m_nj{};
     int m_nk{};

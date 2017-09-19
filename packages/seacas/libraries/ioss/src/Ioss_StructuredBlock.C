@@ -30,14 +30,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Ioss_BoundingBox.h"  // for AxisAlignedBoundingBox
-#include "Ioss_FieldManager.h" // for FieldManager
+#include <Ioss_BoundingBox.h>  // for AxisAlignedBoundingBox
+#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_DatabaseIO.h>   // for DatabaseIO
 #include <Ioss_Field.h>        // for Field, etc
 #include <Ioss_Hex8.h>
 #include <Ioss_Property.h>     // for Property
 #include <Ioss_Region.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
+
 #include <cstddef> // for size_t
 #include <numeric>
 #include <string> // for string
@@ -93,12 +95,7 @@ namespace Ioss {
         m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
                     index_dim)
   {
-    add_properties_and_fields(index_dim);
-  }
-
-  void StructuredBlock::add_properties_and_fields(int index_dim)
-  {
-    assert(index_dim == 1 || index_dim == 2 || index_dim == 3);
+    SMART_ASSERT(index_dim == 1 || index_dim == 2 || index_dim == 3)(index_dim);
 
     int64_t cell_count        = 0;
     int64_t node_count        = 0;
@@ -129,6 +126,12 @@ namespace Ioss {
                                                  : static_cast<int64_t>(m_niGlobal + 1) *
                                                        (m_njGlobal + 1) * (m_nkGlobal + 1);
     }
+
+    SMART_ASSERT(global_cell_count >= cell_count)(global_cell_count)(cell_count);
+    SMART_ASSERT(global_node_count >= node_count)(global_node_count)(node_count);
+    SMART_ASSERT(m_niGlobal >= m_ni)(m_niGlobal)(m_ni);
+    SMART_ASSERT(m_njGlobal >= m_nj)(m_njGlobal)(m_nj);
+    SMART_ASSERT(m_nkGlobal >= m_nk)(m_nkGlobal)(m_nk);
 
     properties.add(Property("component_degree", index_dim));
     properties.add(Property("node_count", node_count));
