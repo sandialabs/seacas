@@ -184,7 +184,7 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell)
+  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
     char     zone_name[33];
@@ -211,12 +211,7 @@ namespace Iocgns {
     block->property_add(Ioss::Property("guid", zone));
     get_region()->add(block);
 
-    block->set_node_offset(num_node);
-    block->set_cell_offset(num_cell);
-    block->set_node_global_offset(num_node);
-    block->set_cell_global_offset(num_cell);
     num_node += block->get_property("node_count").get_int();
-    num_cell += block->get_property("cell_count").get_int();
 
     // Handle zone-grid-connectivity...
     int nconn = 0;
@@ -474,12 +469,11 @@ namespace Iocgns {
 
     // ========================================================================
     size_t        num_node         = 0;
-    size_t        num_cell         = 0;
     CG_ZoneType_t common_zone_type = Utils::check_zone_type(cgnsFilePtr);
 
     for (int zone = 1; zone <= num_zones; zone++) {
       if (common_zone_type == CG_Structured) {
-        create_structured_block(base, zone, num_node, num_cell);
+        create_structured_block(base, zone, num_node);
       }
       else if (common_zone_type == CG_Unstructured) {
         create_unstructured_block(base, zone, num_node);

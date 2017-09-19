@@ -389,10 +389,6 @@ namespace Iocgns {
     // if the m_proc field does not match current processor...
     const auto &zones = decomp->m_structuredZones;
 
-    size_t node_offset        = 0;
-    size_t cell_offset        = 0;
-    size_t global_node_offset = 0;
-    size_t global_cell_offset = 0;
     size_t pow2               = Ioss::Utils::log_power_2(util().parallel_size());
 
     for (auto &zone : zones) {
@@ -444,15 +440,6 @@ namespace Iocgns {
             generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
         block->property_add(Ioss::Property("guid", guid));
 
-        block->set_node_offset(node_offset);
-        block->set_cell_offset(cell_offset);
-        node_offset += block->get_property("node_count").get_int();
-        cell_offset += block->get_property("cell_count").get_int();
-
-        block->set_node_global_offset(global_node_offset);
-        block->set_cell_global_offset(global_cell_offset);
-        global_node_offset += block->get_property("global_node_count").get_int();
-        global_cell_offset += block->get_property("global_cell_count").get_int();
 #if IOSS_DEBUG_OUTPUT
         std::cout << "Added block " << block_name
                   << ":, Structured with ID = " << zone->m_adam->m_zone << ", GUID = " << guid
