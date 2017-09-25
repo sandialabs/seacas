@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* expinix - ex_put_init_ext
-*
-* entry conditions -
-*   input parameters:
-*       int                   exoid     exodus file id
-*       const ex_init_params* params    finite element model parameters
-*
-* exit conditions -
-*
-* revision history -
-*          David Thompson  - Added edge/face blocks/sets
-*
-*
-*****************************************************************************/
+ *
+ * expinix - ex_put_init_ext
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int                   exoid     exodus file id
+ *       const ex_init_params* params    finite element model parameters
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *          David Thompson  - Added edge/face blocks/sets
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_init_params, ex_err, etc
 #include "exodusII_int.h" // for nc_flt_code, etc
@@ -328,8 +328,9 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   if (model->num_elem > 0) {
     if (model->num_nodes <= 0) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot have non-zero element count if node count "
-                                       "is zero.in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Cannot have non-zero element count if node count "
+               "is zero.in file id %d",
                exoid);
       ex_err("ex_put_init_ext", errmsg, EX_BADPARAM);
       goto error_ret; /* exit define mode and return */
@@ -345,8 +346,9 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   if (model->num_edge > 0) {
     if (model->num_nodes <= 0) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot have non-zero edge count if node count is "
-                                       "zero.in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Cannot have non-zero edge count if node count is "
+               "zero.in file id %d",
                exoid);
       ex_err("ex_put_init_ext", errmsg, EX_BADPARAM);
       goto error_ret; /* exit define mode and return */
@@ -362,8 +364,9 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   if (model->num_face > 0) {
     if (model->num_nodes <= 0) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Cannot have non-zero face count if node count is "
-                                       "zero.in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: Cannot have non-zero face count if node count is "
+               "zero.in file id %d",
                exoid);
       ex_err("ex_put_init_ext", errmsg, EX_BADPARAM);
       goto error_ret; /* exit define mode and return */

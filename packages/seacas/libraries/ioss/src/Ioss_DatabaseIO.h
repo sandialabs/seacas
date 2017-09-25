@@ -297,8 +297,8 @@ namespace Ioss {
      *  \returns The informative strings.
      */
     const std::vector<std::string> &get_information_records() const { return informationRecords; }
-    void add_information_records(const std::vector<std::string> &info);
-    void add_information_record(const std::string &info);
+    void                            add_information_records(const std::vector<std::string> &info);
+    void                            add_information_record(const std::string &info);
 
     // QA Records:
 
@@ -371,9 +371,9 @@ namespace Ioss {
      *
      *  \returns The length, or 0 for unlimited.
      */
-    virtual int maximum_symbol_length() const { return 0; } // Default is unlimited...
-    virtual void
-    set_maximum_symbol_length(int /* requested_symbol_size */){}; // Default does nothing...
+    virtual int  maximum_symbol_length() const { return 0; } // Default is unlimited...
+    virtual void set_maximum_symbol_length(int /* requested_symbol_size */) {
+    } // Default does nothing...
 
     char get_field_separator() const;
     void set_field_separator(char separator);
@@ -596,7 +596,7 @@ namespace Ioss {
     }
 
     virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const = 0;
-    virtual int64_t element_global_to_local__(int64_t global) const = 0;
+    virtual int64_t element_global_to_local__(int64_t global) const               = 0;
 
     virtual void release_memory__() {}
     virtual void openDatabase__() const {}

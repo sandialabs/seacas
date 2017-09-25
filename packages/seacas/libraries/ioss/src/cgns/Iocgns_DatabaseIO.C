@@ -184,7 +184,7 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
-  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell)
+  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
     char     zone_name[33];
@@ -211,12 +211,7 @@ namespace Iocgns {
     block->property_add(Ioss::Property("guid", zone));
     get_region()->add(block);
 
-    block->set_node_offset(num_node);
-    block->set_cell_offset(num_cell);
-    block->set_node_global_offset(num_node);
-    block->set_cell_global_offset(num_cell);
     num_node += block->get_property("node_count").get_int();
-    num_cell += block->get_property("cell_count").get_int();
 
     // Handle zone-grid-connectivity...
     int nconn = 0;
@@ -278,7 +273,7 @@ namespace Iocgns {
     return num_nodes;
   }
 
-  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node, size_t &num_elem)
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node)
   {
     cgsize_t size[9];
     char     zone_name[33];
@@ -362,9 +357,8 @@ namespace Iocgns {
     }
     num_node = offset;
 
+    size_t num_elem = size[1];
     m_zoneOffset[zone]    = m_zoneOffset[zone - 1] + num_elem;
-    size_t total_elements = size[1];
-    num_elem += total_elements;
 
     // NOTE: A Zone will have a single set of nodes, but can have
     //       multiple sections each with their own element type...
@@ -393,8 +387,8 @@ namespace Iocgns {
 
       cgsize_t num_entity = el_end - el_start + 1;
 
-      if (parent_flag == 0 && total_elements > 0) {
-        total_elements -= num_entity;
+      if (parent_flag == 0 && num_elem > 0) {
+        num_elem -= num_entity;
         std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
 #if IOSS_DEBUG_OUTPUT
         std::cout << "Added block " << zone_name << ": CGNS topology = '"
@@ -475,16 +469,14 @@ namespace Iocgns {
 
     // ========================================================================
     size_t        num_node         = 0;
-    size_t        num_elem         = 0;
-    size_t        num_cell         = 0;
     CG_ZoneType_t common_zone_type = Utils::check_zone_type(cgnsFilePtr);
 
     for (int zone = 1; zone <= num_zones; zone++) {
       if (common_zone_type == CG_Structured) {
-        create_structured_block(base, zone, num_node, num_cell);
+        create_structured_block(base, zone, num_node);
       }
       else if (common_zone_type == CG_Unstructured) {
-        create_unstructured_block(base, zone, num_node, num_elem);
+        create_unstructured_block(base, zone, num_node);
       }
       else {
         // This should be handled already in check_zone_type...

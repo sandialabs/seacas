@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exggv - ex_get_glob_vars
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               time step number
-*       int     num_glob_vars           number of global vars in file
-*
-* exit conditions -
-*       float*  glob_var_vals           array of global variable values
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exggv - ex_get_glob_vars
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               time step number
+ *       int     num_glob_vars           number of global vars in file
+ *
+ * exit conditions -
+ *       float*  glob_var_vals           array of global variable values
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for ex_comp_ws, EX_FATAL, etc
@@ -82,8 +82,9 @@ int ex_get_glob_vars_int(int exoid, int time_step, int num_glob_vars, void *glob
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (time_step <= 0 || time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: time_step is out-of-range. Value = %d, valid "
-                                       "range is 1 to %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: time_step is out-of-range. Value = %d, valid "
+               "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
       ex_err("ex_get_glob_vars", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);

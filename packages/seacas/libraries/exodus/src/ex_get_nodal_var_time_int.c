@@ -124,8 +124,9 @@ int ex_get_nodal_var_time_int(int exoid, int nodal_var_index, int64_t node_numbe
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (beg_time_step <= 0 || beg_time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: beginning time_step is out-of-range. Value = %d, "
-                                       "valid range is 1 to %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: beginning time_step is out-of-range. Value = %d, "
+               "valid range is 1 to %d in file id %d",
                beg_time_step, num_time_steps, exoid);
       ex_err("ex_get_nodal_var_time", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
@@ -139,8 +140,9 @@ int ex_get_nodal_var_time_int(int exoid, int nodal_var_index, int64_t node_numbe
       end_time_step = num_time_steps;
     }
     else if (end_time_step < beg_time_step || end_time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: end time_step is out-of-range. Value = %d, valid "
-                                       "range is %d to %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: end time_step is out-of-range. Value = %d, valid "
+               "range is %d to %d in file id %d",
                beg_time_step, end_time_step, num_time_steps, exoid);
       ex_err("ex_get_nodal_var_time", errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);

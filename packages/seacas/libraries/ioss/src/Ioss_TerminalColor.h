@@ -180,6 +180,6 @@ namespace Ioss {
       return os;
     }
 
-  } // end trmclr namespace
-} // end Ioss namespace
+  } // namespace trmclr
+} // namespace Ioss
 #endif // end __TRMCLR_H__

@@ -194,9 +194,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 
 #if !NC_HAS_PARALLEL
   /* Library does NOT support parallel output via netcdf-4 or pnetcdf */
-  snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: Parallel output requires the netcdf-4 and/or "
-                                   "pnetcdf library format, but this netcdf library does not "
-                                   "support either.\n");
+  snprintf(errmsg, MAX_ERR_LENGTH,
+           "EXODUS: ERROR: Parallel output requires the netcdf-4 and/or "
+           "pnetcdf library format, but this netcdf library does not "
+           "support either.\n");
   ex_err(routine, errmsg, EX_BADPARAM);
   EX_FUNC_LEAVE(EX_FATAL);
 #endif
@@ -206,10 +207,11 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     int run_version_minor = run_version % 100;
     int lib_version_major = EX_API_VERS_NODOT / 100;
     int lib_version_minor = EX_API_VERS_NODOT % 100;
-    fprintf(stderr, "EXODUS: Warning: This code was compiled with exodusII "
-                    "version %d.%02d,\n          but was linked with exodusII "
-                    "library version %d.%02d\n          This is probably an "
-                    "error in the build process of this code.\n",
+    fprintf(stderr,
+            "EXODUS: Warning: This code was compiled with exodusII "
+            "version %d.%02d,\n          but was linked with exodusII "
+            "library version %d.%02d\n          This is probably an "
+            "error in the build process of this code.\n",
             run_version_major, run_version_minor, lib_version_major, lib_version_minor);
     warning_output = 1;
   }
@@ -220,9 +222,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
  */
 #if !NC_HAS_HDF5
   if (my_mode & EX_NETCDF4) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: File format specified as netcdf-4, but the "
-                                     "NetCDF library being used was not configured to enable "
-                                     "this format\n");
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "EXODUS: ERROR: File format specified as netcdf-4, but the "
+             "NetCDF library being used was not configured to enable "
+             "this format\n");
     ex_err(routine, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -230,9 +233,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
 
 #if !defined(NC_64BIT_DATA)
   if (my_mode & EX_64BIT_DATA) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: File format specified as 64bit_data, but "
-                                     "the NetCDF library being used does not support this "
-                                     "format\n");
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "EXODUS: ERROR: File format specified as 64bit_data, but "
+             "the NetCDF library being used does not support this "
+             "format\n");
     ex_err(routine, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
@@ -249,11 +253,12 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
       /* Checks that only a single bit is set */
       set_modes = set_modes && !(set_modes & (set_modes - 1));
       if (!set_modes) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: More than 1 file format "
-                                         "(EX_NORMAL_MODEL, EX_LARGE_MODEL, EX_64BIT_OFFSET, "
-                                         "EX_64BIT_DATA, or EX_NETCDF4)\nwas specified in the "
-                                         "mode argument of the ex_create call. Only a single "
-                                         "format can be specified.\n");
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "EXODUS: ERROR: More than 1 file format "
+                 "(EX_NORMAL_MODEL, EX_LARGE_MODEL, EX_64BIT_OFFSET, "
+                 "EX_64BIT_DATA, or EX_NETCDF4)\nwas specified in the "
+                 "mode argument of the ex_create call. Only a single "
+                 "format can be specified.\n");
         ex_err(routine, errmsg, EX_BADPARAM);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -299,9 +304,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     }
 #else
     /* Library does NOT support netcdf4 or cdf5 */
-    snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: 64-bit integer storage requested, but the "
-                                     "netcdf library does not support the required netcdf-4 or "
-                                     "64BIT_DATA extensions.\n");
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "EXODUS: ERROR: 64-bit integer storage requested, but the "
+             "netcdf library does not support the required netcdf-4 or "
+             "64BIT_DATA extensions.\n");
     ex_err(routine, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
 #endif
@@ -316,9 +322,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
       pariomode = NC_MPIPOSIX;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
-      snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: EX_MPIPOSIX parallel output requested "
-                                       "which requires NetCDF-4 support, but the library does "
-                                       "not have that option enabled.\n");
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "EXODUS: ERROR: EX_MPIPOSIX parallel output requested "
+               "which requires NetCDF-4 support, but the library does "
+               "not have that option enabled.\n");
       ex_err(routine, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
@@ -328,9 +335,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
       is_mpiio  = 1;
       tmp_mode  = EX_NETCDF4;
 #if !NC_HAS_HDF5
-      snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: EX_MPIIO parallel output requested which "
-                                       "requires NetCDF-4 support, but the library does not "
-                                       "have that option enabled.\n");
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "EXODUS: ERROR: EX_MPIIO parallel output requested which "
+               "requires NetCDF-4 support, but the library does not "
+               "have that option enabled.\n");
       ex_err(routine, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
@@ -346,9 +354,10 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
         tmp_mode = EX_64BIT_OFFSET;
       }
 #if !NC_HAS_PNETCDF
-      snprintf(errmsg, MAX_ERR_LENGTH, "EXODUS: ERROR: EX_PNETCDF parallel output requested "
-                                       "which requires PNetCDF support, but the library does "
-                                       "not have that option enabled.\n");
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "EXODUS: ERROR: EX_PNETCDF parallel output requested "
+               "which requires PNetCDF support, but the library does "
+               "not have that option enabled.\n");
       ex_err(routine, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
 #endif
@@ -470,8 +479,9 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s, mode: %s", path, mode_name);
 #else
     if (my_mode & EX_NETCDF4) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file create failed for %s in NETCDF4 and %s "
-                                       "mode.\n\tThis library does not support netcdf-4 files.",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: file create failed for %s in NETCDF4 and %s "
+               "mode.\n\tThis library does not support netcdf-4 files.",
                path, mode_name);
     }
     else {
@@ -500,11 +510,11 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
      this exoid
   */
   if (ex_find_file_item(exoid) != NULL) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: There is an existing file already using the file "
-                                     "id %d which was also assigned to file %s.\n\tWas "
-                                     "nc_close() called instead of ex_close() on an open Exodus "
-                                     "file?\n",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: There is an existing file already using the file "
+             "id %d which was also assigned to file %s.\n\tWas "
+             "nc_close() called instead of ex_close() on an open Exodus "
+             "file?\n",
              exoid, path);
     ex_err(routine, errmsg, EX_BADFILEID);
     nc_close(exoid);
@@ -548,8 +558,9 @@ int ex_create_par_int(const char *path, int cmode, int *comp_ws, int *io_ws, MPI
   lio_ws = (int)(*io_ws);
   if ((status = nc_put_att_int(exoid, NC_GLOBAL, ATT_FLT_WORDSIZE, NC_INT, 1, &lio_ws)) !=
       NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store Exodus II file float word size "
-                                     "attribute in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: failed to store Exodus II file float word size "
+             "attribute in file id %d",
              exoid);
     ex_err(routine, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);

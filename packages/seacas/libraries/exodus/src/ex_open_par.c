@@ -33,24 +33,24 @@
  *
  */
 /*****************************************************************************
-*
-* exopen - ex_open
-*
-* entry conditions -
-*   input parameters:
-*       char*   path                    exodus filename path
-*       int     mode                    access mode w/r
-*
-* exit conditions -
-*       int     exoid                   exodus file id
-*       int*    comp_ws                 computer word size
-*       int*    io_ws                   storage word size
-*       float*  version                 EXODUSII interface version number
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exopen - ex_open
+ *
+ * entry conditions -
+ *   input parameters:
+ *       char*   path                    exodus filename path
+ *       int     mode                    access mode w/r
+ *
+ * exit conditions -
+ *       int     exoid                   exodus file id
+ *       int*    comp_ws                 computer word size
+ *       int*    io_ws                   storage word size
+ *       float*  version                 EXODUSII interface version number
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 /* Determine whether compiling against a parallel netcdf... */
 #include "exodusII.h"
 #if defined(PARALLEL_AWARE_EXODUS)
@@ -156,10 +156,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     int run_version_minor = run_version % 100;
     int lib_version_major = EX_API_VERS_NODOT / 100;
     int lib_version_minor = EX_API_VERS_NODOT % 100;
-    fprintf(stderr, "EXODUS: Warning: This code was compiled with exodus "
-                    "version %d.%02d,\n          but was linked with exodus "
-                    "library version %d.%02d\n          This is probably an "
-                    "error in the build process of this code.\n",
+    fprintf(stderr,
+            "EXODUS: Warning: This code was compiled with exodus "
+            "version %d.%02d,\n          but was linked with exodus "
+            "library version %d.%02d\n          This is probably an "
+            "error in the build process of this code.\n",
             run_version_major, run_version_minor, lib_version_major, lib_version_minor);
     warning_output = 1;
   }
@@ -211,10 +212,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
 
       if (type == 5) {
 #if NC_HAS_HDF5
-        fprintf(stderr, "EXODUS: ERROR: Attempting to open the netcdf-4 "
-                        "file:\n\t'%s'\n\t failed. The netcdf library supports "
-                        "netcdf-4 so there must be a filesystem or some other "
-                        "issue \n",
+        fprintf(stderr,
+                "EXODUS: ERROR: Attempting to open the netcdf-4 "
+                "file:\n\t'%s'\n\t failed. The netcdf library supports "
+                "netcdf-4 so there must be a filesystem or some other "
+                "issue \n",
                 path);
 #else
         /* This is an hdf5 (netcdf4) file. If NC_HAS_HDF5 is not defined,
@@ -225,19 +227,21 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
            assume that the netcdf doesn't have netcdf4 capabilities
            enabled.  Tell the user...
         */
-        fprintf(stderr, "EXODUS: ERROR: Attempting to open the netcdf-4 "
-                        "file:\n\t'%s'\n\t. Either the netcdf library does not "
-                        "support netcdf-4 or there is a filesystem or some "
-                        "other issue \n",
+        fprintf(stderr,
+                "EXODUS: ERROR: Attempting to open the netcdf-4 "
+                "file:\n\t'%s'\n\t. Either the netcdf library does not "
+                "support netcdf-4 or there is a filesystem or some "
+                "other issue \n",
                 path);
 #endif
       }
       else if (type == 4) {
 #if defined(NC_64BIT_DATA)
-        fprintf(stderr, "EXODUS: ERROR: Attempting to open the CDF5 "
-                        "file:\n\t'%s'\n\t failed. The netcdf library supports "
-                        "CDF5-type files so there must be a filesystem or some other "
-                        "issue \n",
+        fprintf(stderr,
+                "EXODUS: ERROR: Attempting to open the CDF5 "
+                "file:\n\t'%s'\n\t failed. The netcdf library supports "
+                "CDF5-type files so there must be a filesystem or some other "
+                "issue \n",
                 path);
 #else
         /* This is an cdf5 (64BIT_DATA) file. If NC_64BIT_DATA is not defined,
@@ -248,10 +252,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
            assume that the netcdf doesn't have cdf5 capabilities
            enabled.  Tell the user...
         */
-        fprintf(stderr, "EXODUS: ERROR: Attempting to open the CDF5 "
-                        "file:\n\t'%s'\n\t. Either the netcdf library does not "
-                        "support CDF5 or there is a filesystem or some "
-                        "other issue \n",
+        fprintf(stderr,
+                "EXODUS: ERROR: Attempting to open the CDF5 "
+                "file:\n\t'%s'\n\t. Either the netcdf library does not "
+                "support CDF5 or there is a filesystem or some "
+                "other issue \n",
                 path);
 
 #endif
@@ -268,8 +273,9 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         NC_NOERR) {
 #if defined(NC_HAVE_META_H)
 #if (NC_HAS_PARALLEL == 0) && (NC_HAS_PNETCDF == 0)
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: The underyling netcdf library was not compiled "
-                                       "with parallel support!\n");
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: The underyling netcdf library was not compiled "
+               "with parallel support!\n");
 #endif
 #endif
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only", path);
@@ -364,11 +370,11 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
      this exoid
   */
   if (ex_find_file_item(exoid) != NULL) {
-    char errmsg[MAX_ERR_LENGTH];
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: There is an existing file already using the file "
-                                     "id %d which was also assigned to file %s.\n\tWas "
-                                     "nc_close() called instead of ex_close() on an open Exodus "
-                                     "file?\n",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: There is an existing file already using the file "
+             "id %d which was also assigned to file %s.\n\tWas "
+             "nc_close() called instead of ex_close() on an open Exodus "
+             "file?\n",
              exoid, path);
     ex_err("ex_open_par", errmsg, EX_BADFILEID);
     nc_close(exoid);

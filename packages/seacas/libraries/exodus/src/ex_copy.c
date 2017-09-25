@@ -90,14 +90,14 @@ struct ncatt
 };
 
 static size_t type_size(nc_type type);
-static int cpy_att(int /*in_id*/, int /*out_id*/, int /*var_in_id*/, int /*var_out_id*/);
-static int cpy_var_def(int /*in_id*/, int /*out_id*/, int /*rec_dim_id*/, char * /*var_nm*/);
-static int cpy_var_val(int /*in_id*/, int /*out_id*/, char * /*var_nm*/);
-static int cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large,
-                         int out_large);
-static int cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_large);
-static void update_internal_structs(int /*out_exoid*/, ex_inquiry /*inqcode*/,
-                                    struct list_item ** /*ctr_list*/);
+static int    cpy_att(int /*in_id*/, int /*out_id*/, int /*var_in_id*/, int /*var_out_id*/);
+static int    cpy_var_def(int /*in_id*/, int /*out_id*/, int /*rec_dim_id*/, char * /*var_nm*/);
+static int    cpy_var_val(int /*in_id*/, int /*out_id*/, char * /*var_nm*/);
+static int    cpy_coord_def(int in_id, int out_id, int rec_dim_id, char *var_nm, int in_large,
+                            int out_large);
+static int    cpy_coord_val(int in_id, int out_id, char *var_nm, int in_large, int out_large);
+static void   update_internal_structs(int /*out_exoid*/, ex_inquiry /*inqcode*/,
+                                      struct list_item ** /*ctr_list*/);
 /*! \endcond */
 
 /*!

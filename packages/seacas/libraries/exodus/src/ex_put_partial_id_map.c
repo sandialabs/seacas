@@ -33,21 +33,21 @@
  *
  */
 /*****************************************************************************
-*
-* expenm - ex_put_partial_id_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       ex_entity_type obj_type
-*       int*    elem_map                element numbering map array
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expenm - ex_put_partial_id_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       ex_entity_type obj_type
+ *       int*    elem_map                element numbering map array
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, EX_NOERR, etc
@@ -127,8 +127,9 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
       EX_FUNC_LEAVE(EX_NOERR);
     }
 
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: The %s count is %" PRId64
-                                     ", but the %s dimension is not defined on file id %d.",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: The %s count is %" PRId64
+             ", but the %s dimension is not defined on file id %d.",
              tname, num_entities, dnumentries, exoid);
     ex_err("ex_put_partial_id_map", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);

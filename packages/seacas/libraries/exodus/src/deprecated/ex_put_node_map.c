@@ -33,18 +33,18 @@
  *
  */
 /*****************************************************************************
-*
-* expnm - ex_put_node_map
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     map_id                  node map id
-*       int     *node_map               node map
-*
-* exit conditions -
-*
-*****************************************************************************/
+ *
+ * expnm - ex_put_node_map
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     map_id                  node map id
+ *       int     *node_map               node map
+ *
+ * exit conditions -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"
 

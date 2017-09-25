@@ -139,12 +139,12 @@ int ex_put_attr_names(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, c
   }
 
   switch (blk_type) {
-  case EX_SIDE_SET: status   = nc_inq_varid(exoid, VAR_NAME_SSATTRIB(blk_id_ndx), &varid); break;
-  case EX_NODE_SET: status   = nc_inq_varid(exoid, VAR_NAME_NSATTRIB(blk_id_ndx), &varid); break;
-  case EX_EDGE_SET: status   = nc_inq_varid(exoid, VAR_NAME_ESATTRIB(blk_id_ndx), &varid); break;
-  case EX_FACE_SET: status   = nc_inq_varid(exoid, VAR_NAME_FSATTRIB(blk_id_ndx), &varid); break;
-  case EX_ELEM_SET: status   = nc_inq_varid(exoid, VAR_NAME_ELSATTRIB(blk_id_ndx), &varid); break;
-  case EX_NODAL: status      = nc_inq_varid(exoid, VAR_NAME_NATTRIB, &varid); break;
+  case EX_SIDE_SET: status = nc_inq_varid(exoid, VAR_NAME_SSATTRIB(blk_id_ndx), &varid); break;
+  case EX_NODE_SET: status = nc_inq_varid(exoid, VAR_NAME_NSATTRIB(blk_id_ndx), &varid); break;
+  case EX_EDGE_SET: status = nc_inq_varid(exoid, VAR_NAME_ESATTRIB(blk_id_ndx), &varid); break;
+  case EX_FACE_SET: status = nc_inq_varid(exoid, VAR_NAME_FSATTRIB(blk_id_ndx), &varid); break;
+  case EX_ELEM_SET: status = nc_inq_varid(exoid, VAR_NAME_ELSATTRIB(blk_id_ndx), &varid); break;
+  case EX_NODAL: status = nc_inq_varid(exoid, VAR_NAME_NATTRIB, &varid); break;
   case EX_EDGE_BLOCK: status = nc_inq_varid(exoid, VAR_NAME_EATTRIB(blk_id_ndx), &varid); break;
   case EX_FACE_BLOCK: status = nc_inq_varid(exoid, VAR_NAME_FATTRIB(blk_id_ndx), &varid); break;
   case EX_ELEM_BLOCK: status = nc_inq_varid(exoid, VAR_NAME_ATTRIB(blk_id_ndx), &varid); break;

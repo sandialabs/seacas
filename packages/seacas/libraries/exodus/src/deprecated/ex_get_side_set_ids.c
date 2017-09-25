@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* exgssi - ex_get_side_set_ids
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*       int*    size_set_ids            array of side set IDs
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgssi - ex_get_side_set_ids
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *       int*    size_set_ids            array of side set IDs
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_get_ids, etc
 

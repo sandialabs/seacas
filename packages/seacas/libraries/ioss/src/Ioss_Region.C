@@ -30,9 +30,32 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_DatabaseIO.h>
 #include <Ioss_Region.h>
+#include <Ioss_CommSet.h>
+#include <Ioss_CoordinateFrame.h>
+#include <Ioss_DBUsage.h>
+#include <Ioss_DatabaseIO.h>
+#include <Ioss_EdgeBlock.h>
+#include <Ioss_EdgeSet.h>
+#include <Ioss_ElementBlock.h>
+#include <Ioss_ElementSet.h>
+#include <Ioss_ElementTopology.h>
+#include <Ioss_EntityBlock.h>
+#include <Ioss_EntityType.h>
+#include <Ioss_FaceBlock.h>
+#include <Ioss_FaceSet.h>
+#include <Ioss_Field.h>
+#include <Ioss_GroupingEntity.h>
+#include <Ioss_NodeBlock.h>
+#include <Ioss_NodeSet.h>
+#include <Ioss_Property.h>
+#include <Ioss_PropertyManager.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_State.h>
+#include <Ioss_StructuredBlock.h>
 #include <Ioss_Utils.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -46,43 +69,11 @@
 #include <utility>
 #include <vector>
 
-#include "Ioss_CommSet.h"
-#include "Ioss_CoordinateFrame.h"
-#include "Ioss_DBUsage.h"
-#include "Ioss_EdgeBlock.h"
-#include "Ioss_EdgeSet.h"
-#include "Ioss_ElementBlock.h"
-#include "Ioss_ElementSet.h"
-#include "Ioss_ElementTopology.h"
-#include "Ioss_EntityBlock.h"
-#include "Ioss_EntityType.h"
-#include "Ioss_FaceBlock.h"
-#include "Ioss_FaceSet.h"
-#include "Ioss_Field.h"
-#include "Ioss_GroupingEntity.h"
-#include "Ioss_NodeBlock.h"
-#include "Ioss_NodeSet.h"
-#include "Ioss_Property.h"
-#include "Ioss_PropertyManager.h"
-#include "Ioss_SideBlock.h"
-#include "Ioss_SideSet.h"
-#include "Ioss_State.h"
-#include "Ioss_StructuredBlock.h"
-
 namespace {
   const std::string id_str() { return std::string("id"); }
   const std::string db_name_str() { return std::string("db_name"); }
   const std::string orig_topo_str() { return std::string("original_topology_type"); }
   const std::string orig_block_order() { return std::string("original_block_order"); }
-
-  bool lessOffset(const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2)
-  {
-    assert(b1->property_exists(orig_block_order()));
-    assert(b2->property_exists(orig_block_order()));
-    int64_t b1_orderInt = b1->get_property(orig_block_order()).get_int();
-    int64_t b2_orderInt = b2->get_property(orig_block_order()).get_int();
-    return ((b1_orderInt == b2_orderInt) ? (b1->name() < b2->name()) : (b1_orderInt < b2_orderInt));
-  }
 
   std::string uppercase(const std::string &my_name);
 
@@ -459,9 +450,18 @@ namespace Ioss {
     }
 
     if (current_state == STATE_DEFINE_MODEL) {
-      // Sort the element blocks based on the idOffset field, followed by
-      // name...
       if (!is_input_or_appending_output(get_database())) {
+	// Sort the element blocks based on the idOffset field, followed by
+	// name...
+	auto lessOffset = [](const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2)
+	  {
+	    assert(b1->property_exists(orig_block_order()));
+	    assert(b2->property_exists(orig_block_order()));
+	    int64_t b1_orderInt = b1->get_property(orig_block_order()).get_int();
+	    int64_t b2_orderInt = b2->get_property(orig_block_order()).get_int();
+	    return ((b1_orderInt == b2_orderInt) ? (b1->name() < b2->name()) : (b1_orderInt < b2_orderInt));
+	  };
+
         std::sort(elementBlocks.begin(), elementBlocks.end(), lessOffset);
         std::sort(faceBlocks.begin(), faceBlocks.end(), lessOffset);
         std::sort(edgeBlocks.begin(), edgeBlocks.end(), lessOffset);
@@ -762,10 +762,32 @@ namespace Ioss {
 
     // Check that region is in correct state for adding entities
     if (get_state() == STATE_DEFINE_MODEL) {
+      // Add node and cell offsets based on the node_count and
+      // cell_count of the previous block.  Only add if there is more
+      // than one block; use default for first block (or user-defined
+      // values)
+      if (!structuredBlocks.empty()) {
+        auto   prev_block = structuredBlocks.back();
+        size_t num_node   = prev_block->get_property("node_count").get_int();
+        size_t num_cell   = prev_block->get_property("cell_count").get_int();
+        num_node += prev_block->get_node_offset();
+        num_cell += prev_block->get_cell_offset();
+
+        structured_block->set_node_offset(num_node);
+        structured_block->set_cell_offset(num_cell);
+
+        size_t global_num_node = prev_block->get_property("global_node_count").get_int();
+        size_t global_num_cell = prev_block->get_property("global_cell_count").get_int();
+        global_num_node += prev_block->get_node_global_offset();
+        global_num_cell += prev_block->get_cell_global_offset();
+
+        structured_block->set_node_global_offset(global_num_node);
+        structured_block->set_cell_global_offset(global_num_cell);
+      }
+
       structuredBlocks.push_back(structured_block);
       // Add name as alias to itself to simplify later uses...
       add_alias__(structured_block);
-
       return true;
     }
     return false;

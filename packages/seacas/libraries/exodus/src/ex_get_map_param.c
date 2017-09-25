@@ -33,20 +33,20 @@
  *
  */
 /*****************************************************************************
-*
-* exgmp - ex_get_map_param
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*
-* exit conditions -
-*       int*    num_node_maps           number of node maps
-*       int*    num_elem_maps           number of element maps
-*
-* revision history -
-*
-*****************************************************************************/
+ *
+ * exgmp - ex_get_map_param
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *
+ * exit conditions -
+ *       int*    num_node_maps           number of node maps
+ *       int*    num_elem_maps           number of element maps
+ *
+ * revision history -
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, DIM_NUM_EM, etc

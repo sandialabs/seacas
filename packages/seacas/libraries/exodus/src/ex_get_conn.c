@@ -33,23 +33,23 @@
  *
  */
 /*!
-*
-* \undoc exgconn - exodusII read edge/face/element block connectivity
-*
-* entry conditions -
-*   expelb must be called first to establish element block parameters.
-*   input parameters:
-*       int     exoid           exodus file id
-*       int     blk_type        block type (edge, face, element)
-*       int     blk_id          block id
-*
-* exit conditions -
-*       int*    nodeconn        nodal connectivity array
-*       int*    edgeconn        edge connectivity array (where applicable)
-*       int*    faceconn        face connectivity array (where applicable)
-*
-*
-*/
+ *
+ * \undoc exgconn - exodusII read edge/face/element block connectivity
+ *
+ * entry conditions -
+ *   expelb must be called first to establish element block parameters.
+ *   input parameters:
+ *       int     exoid           exodus file id
+ *       int     blk_type        block type (edge, face, element)
+ *       int     blk_id          block id
+ *
+ * exit conditions -
+ *       int*    nodeconn        nodal connectivity array
+ *       int*    edgeconn        edge connectivity array (where applicable)
+ *       int*    faceconn        face connectivity array (where applicable)
+ *
+ *
+ */
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_id_lkup, etc
 #include "netcdf.h"       // for NC_NOERR, nc_get_var_int, etc

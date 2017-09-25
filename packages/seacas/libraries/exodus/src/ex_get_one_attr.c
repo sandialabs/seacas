@@ -33,22 +33,22 @@
  *
  */
 /*****************************************************************************
-*
-* exgeat - ex_get_one_attr
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     obj_type                object type (edge, face, elem block)
-*       int     obj_id                  object id (edge face, elem block ID)
-*
-* exit conditions -
-*       float*  attrib                  array of attributes
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * exgeat - ex_get_one_attr
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     obj_type                object type (edge, face, elem block)
+ *       int     obj_id                  object id (edge face, elem block ID)
+ *
+ * exit conditions -
+ *       float*  attrib                  array of attributes
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_get_dimension, etc
@@ -167,8 +167,9 @@ int ex_get_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int
   }
 
   if (attrib_index < 1 || attrib_index > (int)num_attr) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid attribute index specified: %d.  Valid "
-                                     "range is 1 to %d for %s %" PRId64 " in file id %d",
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Invalid attribute index specified: %d.  Valid "
+             "range is 1 to %d for %s %" PRId64 " in file id %d",
              attrib_index, (int)num_attr, ex_name_of_object(obj_type), obj_id, exoid);
     ex_err("ex_get_one_attr", errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);

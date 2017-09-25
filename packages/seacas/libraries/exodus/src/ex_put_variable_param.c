@@ -55,8 +55,9 @@ static int ex_prepare_result_var(int exoid, int num_vars, char *type_name, char 
 
   if ((status = nc_def_dim(exoid, dim_name, num_vars, &dimid)) != NC_NOERR) {
     if (status == NC_ENAMEINUSE) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s variable name parameters are already defined "
-                                       "in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: %s variable name parameters are already defined "
+               "in file id %d",
                type_name, exoid);
       ex_err("ex_put_variable_param", errmsg, status);
     }
@@ -248,8 +249,9 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
      */
     if ((status = nc_def_dim(exoid, DIM_NUM_NOD_VAR, num_vars, &dimid)) != NC_NOERR) {
       if (status == NC_ENAMEINUSE) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: nodal variable name parameters are already "
-                                         "defined in file id %d",
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: nodal variable name parameters are already "
+                 "defined in file id %d",
                  exoid);
         ex_err("ex_put_variable_param", errmsg, status);
       }

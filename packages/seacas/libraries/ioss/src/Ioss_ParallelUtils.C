@@ -294,7 +294,7 @@ void Ioss::ParallelUtils::global_count(const Int64Vector &local_counts,
 template int Ioss::ParallelUtils::global_minmax(int, Ioss::ParallelUtils::MinMax which) const;
 template unsigned int Ioss::ParallelUtils::global_minmax(unsigned int,
                                                          Ioss::ParallelUtils::MinMax which) const;
-template int64_t Ioss::ParallelUtils::global_minmax(int64_t,
+template int64_t      Ioss::ParallelUtils::global_minmax(int64_t,
                                                     Ioss::ParallelUtils::MinMax which) const;
 template double Ioss::ParallelUtils::global_minmax(double, Ioss::ParallelUtils::MinMax which) const;
 

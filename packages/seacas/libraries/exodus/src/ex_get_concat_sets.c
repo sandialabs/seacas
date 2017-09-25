@@ -33,25 +33,25 @@
  *
  */
 /*!
-*
-* \undoc exgcss - ex_get_concat_sets
-*
-* reads the set ID's, set entry count array, set entry pointers
-* array, set entry list, set extra list, and set distribution factors
-* for all sets of the specified type.
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       ex_entity_type set_type                type of set
-*
-* exit conditions -
-*       struct ex_set_specs* set_specs  set specs structure
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * \undoc exgcss - ex_get_concat_sets
+ *
+ * reads the set ID's, set entry count array, set entry pointers
+ * array, set entry list, set extra list, and set distribution factors
+ * for all sets of the specified type.
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       ex_entity_type set_type                type of set
+ *
+ * exit conditions -
+ *       struct ex_set_specs* set_specs  set specs structure
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h"     // for ex_set_specs, ex_err, etc
 #include "exodusII_int.h" // for ex_check_valid_file_id, etc

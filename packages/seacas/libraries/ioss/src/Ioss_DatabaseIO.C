@@ -476,7 +476,7 @@ namespace Ioss {
           size_t side_count = sbold->entity_count();
           auto   sbnew      = new SideBlock(this, sbold->name(), sbold->topology()->name(),
                                      sbold->parent_element_topology()->name(), side_count);
-          int64_t id = sbold->get_property("id").get_int();
+          int64_t id         = sbold->get_property("id").get_int();
           sbnew->property_add(Property("set_offset", entity_count));
           sbnew->property_add(Property("set_df_offset", df_count));
           sbnew->property_add(Property("id", id));

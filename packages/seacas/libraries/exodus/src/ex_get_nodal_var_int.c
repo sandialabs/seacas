@@ -120,8 +120,9 @@ int ex_get_nodal_var_int(int exoid, int time_step, int nodal_var_index, int64_t 
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
     if (time_step <= 0 || time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: time_step is out-of-range. Value = %d, valid "
-                                       "range is 1 to %d in file id %d",
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: time_step is out-of-range. Value = %d, valid "
+               "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
       ex_err("ex_get_nodal_var", errmsg, EX_BADPARAM);
       return (EX_FATAL);

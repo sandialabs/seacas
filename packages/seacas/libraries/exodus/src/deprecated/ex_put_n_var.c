@@ -33,31 +33,31 @@
  *
  */
 /*****************************************************************************
-*
-* expvar - ex_put_var
-*
-* entry conditions -
-*   input parameters:
-*       int     exoid                   exodus file id
-*       int     time_step               time step number
-*       int     var_type                type (edge block, face block, edge set,
-*... )
-*       int     var_index               element variable index
-*       int     obj_id                  element block id
-*       int     start_num               starting index of the variables to be
-*written
-*       int     num_ent                 number of entities to write variables
-*for.
-*
-* exit conditions -
-*
-*
-* exit conditions -
-*
-* revision history -
-*
-*
-*****************************************************************************/
+ *
+ * expvar - ex_put_var
+ *
+ * entry conditions -
+ *   input parameters:
+ *       int     exoid                   exodus file id
+ *       int     time_step               time step number
+ *       int     var_type                type (edge block, face block, edge set,
+ *... )
+ *       int     var_index               element variable index
+ *       int     obj_id                  element block id
+ *       int     start_num               starting index of the variables to be
+ *written
+ *       int     num_ent                 number of entities to write variables
+ *for.
+ *
+ * exit conditions -
+ *
+ *
+ * exit conditions -
+ *
+ * revision history -
+ *
+ *
+ *****************************************************************************/
 
 #include "exodusII.h" // for ex_put_partial_var, etc
 #include <stdint.h>   // for int64_t

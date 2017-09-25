@@ -133,15 +133,15 @@ int ex_put_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
     case EX_ELEM_BLOCK: name = VAR_EB_PROP(i); break;
     case EX_FACE_BLOCK: name = VAR_FA_PROP(i); break;
     case EX_EDGE_BLOCK: name = VAR_ED_PROP(i); break;
-    case EX_NODE_SET: name   = VAR_NS_PROP(i); break;
-    case EX_EDGE_SET: name   = VAR_ES_PROP(i); break;
-    case EX_FACE_SET: name   = VAR_FS_PROP(i); break;
-    case EX_ELEM_SET: name   = VAR_ELS_PROP(i); break;
-    case EX_SIDE_SET: name   = VAR_SS_PROP(i); break;
-    case EX_ELEM_MAP: name   = VAR_EM_PROP(i); break;
-    case EX_FACE_MAP: name   = VAR_FAM_PROP(i); break;
-    case EX_EDGE_MAP: name   = VAR_EDM_PROP(i); break;
-    case EX_NODE_MAP: name   = VAR_NM_PROP(i); break;
+    case EX_NODE_SET: name = VAR_NS_PROP(i); break;
+    case EX_EDGE_SET: name = VAR_ES_PROP(i); break;
+    case EX_FACE_SET: name = VAR_FS_PROP(i); break;
+    case EX_ELEM_SET: name = VAR_ELS_PROP(i); break;
+    case EX_SIDE_SET: name = VAR_SS_PROP(i); break;
+    case EX_ELEM_MAP: name = VAR_EM_PROP(i); break;
+    case EX_FACE_MAP: name = VAR_FAM_PROP(i); break;
+    case EX_EDGE_MAP: name = VAR_EDM_PROP(i); break;
+    case EX_NODE_MAP: name = VAR_NM_PROP(i); break;
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
@@ -186,15 +186,15 @@ int ex_put_prop_array(int exoid, ex_entity_type obj_type, const char *prop_name,
     case EX_ELEM_BLOCK: name = VAR_EB_PROP(num_props + 1); break;
     case EX_FACE_BLOCK: name = VAR_FA_PROP(num_props + 1); break;
     case EX_EDGE_BLOCK: name = VAR_ED_PROP(num_props + 1); break;
-    case EX_NODE_SET: name   = VAR_NS_PROP(num_props + 1); break;
-    case EX_EDGE_SET: name   = VAR_ES_PROP(num_props + 1); break;
-    case EX_FACE_SET: name   = VAR_FS_PROP(num_props + 1); break;
-    case EX_ELEM_SET: name   = VAR_ELS_PROP(num_props + 1); break;
-    case EX_SIDE_SET: name   = VAR_SS_PROP(num_props + 1); break;
-    case EX_ELEM_MAP: name   = VAR_EM_PROP(num_props + 1); break;
-    case EX_FACE_MAP: name   = VAR_FAM_PROP(num_props + 1); break;
-    case EX_EDGE_MAP: name   = VAR_EDM_PROP(num_props + 1); break;
-    case EX_NODE_MAP: name   = VAR_NM_PROP(num_props + 1); break;
+    case EX_NODE_SET: name = VAR_NS_PROP(num_props + 1); break;
+    case EX_EDGE_SET: name = VAR_ES_PROP(num_props + 1); break;
+    case EX_FACE_SET: name = VAR_FS_PROP(num_props + 1); break;
+    case EX_ELEM_SET: name = VAR_ELS_PROP(num_props + 1); break;
+    case EX_SIDE_SET: name = VAR_SS_PROP(num_props + 1); break;
+    case EX_ELEM_MAP: name = VAR_EM_PROP(num_props + 1); break;
+    case EX_FACE_MAP: name = VAR_FAM_PROP(num_props + 1); break;
+    case EX_EDGE_MAP: name = VAR_EDM_PROP(num_props + 1); break;
+    case EX_NODE_MAP: name = VAR_NM_PROP(num_props + 1); break;
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
