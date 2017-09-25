@@ -825,6 +825,10 @@ namespace SEAMS {
     else if (aprepro.string_interactive() && loop_lvl) {
       return (1);
     }
+    else if (aprepro.isCollectingLoop) {
+      yyerror("End-of-file detected inside loop. Check loop syntax. {endloop} must be on line by itself.");
+      return (1);
+    }
     else {
       /* We are in an included or looping file */
       if (aprepro.ap_file_list.top().tmp_file) {
