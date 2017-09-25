@@ -157,6 +157,6 @@ namespace SEAMS {
   array *do_make_array(double rows, double cols);
   array *do_identity(double size);
   array *do_transpose(const array *a);
-} // namespace SEAMS  // namespace SEAMS
+} // namespace SEAMS
 
 #endif
