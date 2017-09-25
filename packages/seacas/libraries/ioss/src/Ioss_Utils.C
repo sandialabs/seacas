@@ -41,18 +41,11 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <sys/select.h>
-#if defined(__INTEL_COMPILER)
-#if (__INTEL_COMPILER < 1500)
-#if !defined(_GLIBCXX_USE_NANOSLEEP)
-#define _GLIBCXX_USE_NANOSLEEP
-#endif
-#endif
-#endif
-#include <thread>
 #include <tokenize.h>
 #include <vector>
 
@@ -1897,7 +1890,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     region.end_state(istep);
     output_region.end_state(ostep);
     if (options.delay > 0.0) {
-      std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000 * options.delay)));
+      struct timespec delay;
+      delay.tv_sec = (int)options.delay;
+      delay.tv_nsec = (options.delay-delay.tv_sec)*1000000000L;
+      nanosleep(&delay, nullptr);
     }
   }
   if (options.debug && rank == 0) {
