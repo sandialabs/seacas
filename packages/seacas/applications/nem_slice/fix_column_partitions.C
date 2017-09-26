@@ -191,7 +191,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       }
       if (fabs(normal[2]) > 1.0e-12) { // non-zero
         if (normal[2] > 0.0)
-          top_side0 = j + 1;  // side id counting starts from 1
+          top_side0 = j + 1; // side id counting starts from 1
         else
           bot_side0 = j + 1;
         count++;
@@ -218,10 +218,10 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     std::vector<INT> above_list;
     std::vector<INT> below_list;
 
-    INT cur_elem       = i;
-    INT adj_elem       = -1;
-    int adj_side       = -1;
-    int bot_side       = bot_side0;
+    INT  cur_elem      = i;
+    INT  adj_elem      = -1;
+    int  adj_side      = -1;
+    int  bot_side      = bot_side0;
     int top_side       = top_side0;
     bool upsearch_done = false;
     while (!upsearch_done) {
