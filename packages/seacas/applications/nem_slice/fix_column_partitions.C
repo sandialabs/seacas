@@ -122,7 +122,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       for (int d      = 0; d < 3; d++)
         elcoord[j][d] = mesh->coords[elnodes[j] + d * nnod];
 
-    int top_side = 0, bot_side = 0;
+    int top_side0 = 0, bot_side0 = 0;
     int nelfaces = get_elem_info(NSIDES, etype);
 
     // Find top and bottom faces by eliminating lateral faces under
@@ -191,9 +191,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       }
       if (fabs(normal[2]) > 1.0e-12) { // non-zero
         if (normal[2] > 0.0)
-          top_side = j + 1; // side id counting starts from 1
+          top_side0 = j + 1;  // side id counting starts from 1
         else
-          bot_side = j + 1;
+          bot_side0 = j + 1;
         count++;
       }
     } // for (j = 0; j < nelfaces; j++)
@@ -218,9 +218,11 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     std::vector<INT> above_list;
     std::vector<INT> below_list;
 
-    INT  cur_elem      = i;
-    INT  adj_elem      = -1;
-    int  adj_side      = -1;
+    INT cur_elem       = i;
+    INT adj_elem       = -1;
+    int adj_side       = -1;
+    int bot_side       = bot_side0;
+    int top_side       = top_side0;
     bool upsearch_done = false;
     while (!upsearch_done) {
 
@@ -244,12 +246,18 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
           }
           top_side = (bot_side == 4) ? 5 : 4;
         }
+        if (processed_flag[adj_elem]) {
+          Gen_Error(0, "FATAL: repeated column elements");
+          return 0;
+        }
         processed_flag[adj_elem] = true;
       }
     } // while (!upsearch_done)
     int nabove = above_list.size();
 
     cur_elem             = i;
+    bot_side             = bot_side0;
+    top_side             = top_side0;
     bool downsearch_done = false;
     while (!downsearch_done) {
 
@@ -271,7 +279,11 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
             Gen_Error(0, "FATAL: Expected top side in wedge to be side 4 or 5");
             return 0;
           }
-          bot_side = (bot_side == 4) ? 5 : 4;
+          bot_side = (top_side == 4) ? 5 : 4;
+        }
+        if (processed_flag[adj_elem]) {
+          Gen_Error(0, "FATAL: repeated column elements");
+          return 0;
         }
         processed_flag[adj_elem] = true;
       }
