@@ -222,7 +222,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     INT  adj_elem      = -1;
     int  adj_side      = -1;
     int  bot_side      = bot_side0;
-    int top_side       = top_side0;
+    int  top_side      = top_side0;
     bool upsearch_done = false;
     while (!upsearch_done) {
 
