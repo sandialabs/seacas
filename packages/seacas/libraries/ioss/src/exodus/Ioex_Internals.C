@@ -864,6 +864,11 @@ int Internals::put_metadata(const Mesh &mesh, const CommunicationMetaData &comm)
     ex_err(routine, errmsg, status);
     return (EX_FATAL);
   }
+  {
+    struct ex_file_item *file = ex_find_file_item(exodusFilePtr);
+    file->time_varid = varid;
+  }
+
   ex_compress_variable(exodusFilePtr, varid, 2);
 
   if (mesh.nodeblocks[0].entityCount > 0) {
