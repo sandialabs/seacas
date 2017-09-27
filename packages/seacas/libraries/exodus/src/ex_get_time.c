@@ -81,19 +81,26 @@ error = ex_get_time (exoid, n, &time_value);
 
 int ex_get_time(int exoid, int time_step, void *time_value)
 {
-  int    status;
-  int    varid;
-  size_t start[1];
-  char   errmsg[MAX_ERR_LENGTH];
+  int                  status;
+  int                  varid;
+  size_t               start[1];
+  char                 errmsg[MAX_ERR_LENGTH];
+  struct ex_file_item *file = NULL;
 
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid, __func__);
 
-  /* inquire previously defined variable */
-  if ((status = nc_inq_varid(exoid, VAR_WHOLE_TIME, &varid)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable in file id %d", exoid);
-    ex_err("ex_get_time", errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
+  file  = ex_find_file_item(exoid);
+  varid = file->time_varid;
+  if (varid < 0) {
+    /* inquire previously defined variable */
+    if ((status = nc_inq_varid(exoid, VAR_WHOLE_TIME, &varid)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable in file id %d",
+               exoid);
+      ex_err(__func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+    file->time_varid = varid;
   }
 
   /* Verify that time_step is within bounds */

@@ -300,6 +300,10 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     ex_err("ex_put_init_ext", errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
+  {
+    struct ex_file_item *file = ex_find_file_item(exoid);
+    file->time_varid          = temp;
+  }
   ex_compress_variable(exoid, temp, 2);
 
   if ((status = nc_def_dim(exoid, DIM_NUM_DIM, model->num_dim, &numdimdim)) != NC_NOERR) {

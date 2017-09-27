@@ -143,7 +143,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
 
   EX_FUNC_ENTER();
 
-  /* check to make sure machine word sizes aren't weird */
+  /* check to make sure machine word sizes are sane */
   if ((sizeof(float) != 4 && sizeof(float) != 8) || (sizeof(double) != 4 && sizeof(double) != 8)) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported compute word size for file id: %d", exoid);
     ex_err("ex_conv_ini", errmsg, EX_BADPARAM);
@@ -218,6 +218,7 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
   new_file->user_compute_wordsize = *comp_wordsize == 4 ? 0 : 1;
   new_file->int64_status          = int64_status;
   new_file->maximum_name_length   = ex_default_max_name_length;
+  new_file->time_varid            = -1;
   new_file->compression_level     = 0;
   new_file->shuffle               = 0;
   new_file->file_type             = filetype - 1;
