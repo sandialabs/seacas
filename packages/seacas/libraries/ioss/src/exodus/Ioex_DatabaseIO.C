@@ -472,7 +472,7 @@ namespace Ioex {
   // common
   int DatabaseIO::get_current_state() const
   {
-    int step = get_region()->get_property("current_state").get_int();
+    int step = get_region()->get_current_state();
 
     if (step <= 0) {
       std::ostringstream errmsg;
