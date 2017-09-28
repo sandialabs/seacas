@@ -451,54 +451,38 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
    */
 
   if (model->num_nodes > 0) {
-    if (ex_large_model(exoid) == 1) {
-      /* node coordinate arrays -- separate storage... */
-
-      dim[0] = numnoddim;
-      if (model->num_dim > 0) {
-        if ((status = nc_def_var(exoid, VAR_COORD_X, nc_flt_code(exoid), 1, dim, &temp)) !=
-            NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to define node x coordinate array in file id %d", exoid);
-          ex_err("ex_put_init_ext", errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
-        ex_compress_variable(exoid, temp, 2);
-      }
-
-      if (model->num_dim > 1) {
-        if ((status = nc_def_var(exoid, VAR_COORD_Y, nc_flt_code(exoid), 1, dim, &temp)) !=
-            NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to define node y coordinate array in file id %d", exoid);
-          ex_err("ex_put_init_ext", errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
-        ex_compress_variable(exoid, temp, 2);
-      }
-
-      if (model->num_dim > 2) {
-        if ((status = nc_def_var(exoid, VAR_COORD_Z, nc_flt_code(exoid), 1, dim, &temp)) !=
-            NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to define node z coordinate array in file id %d", exoid);
-          ex_err("ex_put_init_ext", errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
-        ex_compress_variable(exoid, temp, 2);
-      }
-    }
-    else {
-      /* node coordinate arrays: -- all stored together (old method) */
-
-      dim[0] = numdimdim;
-      dim[1] = numnoddim;
-      if ((status = nc_def_var(exoid, VAR_COORD, nc_flt_code(exoid), 2, dim, &temp)) != NC_NOERR) {
+    dim[0] = numnoddim;
+    if (model->num_dim > 0) {
+      if ((status = nc_def_var(exoid, VAR_COORD_X, nc_flt_code(exoid), 1, dim, &temp)) !=
+          NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to define node coordinate array in file id %d", exoid);
+                 "ERROR: failed to define node x coordinate array in file id %d", exoid);
         ex_err("ex_put_init_ext", errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
+      ex_compress_variable(exoid, temp, 2);
+    }
+
+    if (model->num_dim > 1) {
+      if ((status = nc_def_var(exoid, VAR_COORD_Y, nc_flt_code(exoid), 1, dim, &temp)) !=
+          NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define node y coordinate array in file id %d", exoid);
+        ex_err("ex_put_init_ext", errmsg, status);
+        goto error_ret; /* exit define mode and return */
+      }
+      ex_compress_variable(exoid, temp, 2);
+    }
+
+    if (model->num_dim > 2) {
+      if ((status = nc_def_var(exoid, VAR_COORD_Z, nc_flt_code(exoid), 1, dim, &temp)) !=
+          NC_NOERR) {
+        snprintf(errmsg, MAX_ERR_LENGTH,
+                 "ERROR: failed to define node z coordinate array in file id %d", exoid);
+        ex_err("ex_put_init_ext", errmsg, status);
+        goto error_ret; /* exit define mode and return */
+      }
+      ex_compress_variable(exoid, temp, 2);
     }
   }
 
