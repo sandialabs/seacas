@@ -79,7 +79,6 @@ IF ( NETCDF_NCDUMP_BINARY )
     testrd_ss
     testrdwt
     testcp
-    testcp_ln
     testcp_nl
     testcpd
     testwt_clb
