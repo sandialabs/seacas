@@ -161,7 +161,7 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   int   dimid;
   int   old_fill;
   int   lio_ws;
-  int   filesiz;
+  int   filesiz = 1;
   float vers;
   char  errmsg[MAX_ERR_LENGTH];
   char *mode_name;
@@ -340,27 +340,9 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
 #endif
 
   /*
-   * See if "large file" mode was specified in a ex_create my_mode. If
-   * so, then pass the NC_64BIT_OFFSET flag down to netcdf.
-   * If netcdf4 mode specified, don't use NC_64BIT_OFFSET mode.
+   * Hardwire filesiz to 1 for all created files. Reduce complexity in nodal output routines.
+   * has been default for a decade or so, but still support it on read...
    */
-  if (my_mode & EX_NORMAL_MODEL) {
-    filesiz = 0;
-#if NC_HAS_HDF5
-  }
-  else if (nc_mode & NC_NETCDF4) {
-    filesiz = 1;
-#endif
-#if defined(NC_64BIT_DATA)
-  }
-  else if (nc_mode & NC_64BIT_DATA) {
-    filesiz = 1;
-#endif
-  }
-  else {
-    filesiz = ((my_mode & EX_64BIT_OFFSET) || (ex_large_model(-1) == 1));
-  }
-
   if (
 #if NC_HAS_HDF5
       !(nc_mode & NC_NETCDF4) &&

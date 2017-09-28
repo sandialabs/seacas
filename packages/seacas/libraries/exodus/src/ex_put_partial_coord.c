@@ -134,52 +134,69 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
   --start_node_num;
 
   /* write out the coordinates  */
-  if (ex_large_model(exoid) == 0) {
-    if ((status = nc_inq_varid(exoid, VAR_COORD, &coordid)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate nodal coordinates in file id %d",
+  if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate x nodal coordinates in file id %d",
+             exoid);
+    ex_err("ex_put_partial_coord", errmsg, status);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+
+  if (num_dim > 1) {
+    if ((status = nc_inq_varid(exoid, VAR_COORD_Y, &coordidy)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate y nodal coordinates in file id %d",
                exoid);
       ex_err("ex_put_partial_coord", errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
+  }
+  else {
+    coordidy = 0;
+  }
+  if (num_dim > 2) {
+    if ((status = nc_inq_varid(exoid, VAR_COORD_Z, &coordidz)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate z nodal coordinates in file id %d",
+               exoid);
+      ex_err("ex_put_partial_coord", errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+  }
+  else {
+    coordidz = 0;
+  }
 
-    for (i = 0; i < num_dim; i++) {
-      char *which = 0;
-      start[0]    = i;
-      start[1]    = start_node_num;
+  /* write out the coordinates  */
+  for (i = 0; i < num_dim; i++) {
+    const void *coor  = NULL;
+    char *      which = NULL;
 
-      count[0] = 1;
-      count[1] = num_nodes;
+    start[0] = start_node_num;
+    count[0] = num_nodes;
+    if (count[0] == 0) {
+      start[0] = 0;
+    }
 
-      if (count[1] == 0) {
-        start[1] = 0;
+    if (i == 0) {
+      coor    = x_coor;
+      which   = "X";
+      coordid = coordidx;
+    }
+    else if (i == 1) {
+      coor    = y_coor;
+      which   = "Y";
+      coordid = coordidy;
+    }
+    else if (i == 2) {
+      coor    = z_coor;
+      which   = "Z";
+      coordid = coordidz;
+    }
+
+    if (coor != NULL && coordid != 0) {
+      if (ex_comp_ws(exoid) == 4) {
+        status = nc_put_vara_float(exoid, coordid, start, count, coor);
       }
-
-      if (i == 0 && x_coor != NULL) {
-        which = "X";
-        if (ex_comp_ws(exoid) == 4) {
-          status = nc_put_vara_float(exoid, coordid, start, count, x_coor);
-        }
-        else {
-          status = nc_put_vara_double(exoid, coordid, start, count, x_coor);
-        }
-      }
-      else if (i == 1 && y_coor != NULL) {
-        which = "Y";
-        if (ex_comp_ws(exoid) == 4) {
-          status = nc_put_vara_float(exoid, coordid, start, count, y_coor);
-        }
-        else {
-          status = nc_put_vara_double(exoid, coordid, start, count, y_coor);
-        }
-      }
-      else if (i == 2 && z_coor != NULL) {
-        which = "Z";
-        if (ex_comp_ws(exoid) == 4) {
-          status = nc_put_vara_float(exoid, coordid, start, count, z_coor);
-        }
-        else {
-          status = nc_put_vara_double(exoid, coordid, start, count, z_coor);
-        }
+      else {
+        status = nc_put_vara_double(exoid, coordid, start, count, coor);
       }
 
       if (status != NC_NOERR) {
@@ -187,81 +204,6 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
                  exoid);
         ex_err("ex_put_partial_coord", errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
-      }
-    }
-  }
-  else {
-    if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate x nodal coordinates in file id %d",
-               exoid);
-      ex_err("ex_put_partial_coord", errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-
-    if (num_dim > 1) {
-      if ((status = nc_inq_varid(exoid, VAR_COORD_Y, &coordidy)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to locate y nodal coordinates in file id %d", exoid);
-        ex_err("ex_put_partial_coord", errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-    }
-    else {
-      coordidy = 0;
-    }
-    if (num_dim > 2) {
-      if ((status = nc_inq_varid(exoid, VAR_COORD_Z, &coordidz)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to locate z nodal coordinates in file id %d", exoid);
-        ex_err("ex_put_partial_coord", errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-    }
-    else {
-      coordidz = 0;
-    }
-
-    /* write out the coordinates  */
-    for (i = 0; i < num_dim; i++) {
-      const void *coor  = NULL;
-      char *      which = NULL;
-
-      start[0] = start_node_num;
-      count[0] = num_nodes;
-      if (count[0] == 0) {
-        start[0] = 0;
-      }
-
-      if (i == 0) {
-        coor    = x_coor;
-        which   = "X";
-        coordid = coordidx;
-      }
-      else if (i == 1) {
-        coor    = y_coor;
-        which   = "Y";
-        coordid = coordidy;
-      }
-      else if (i == 2) {
-        coor    = z_coor;
-        which   = "Z";
-        coordid = coordidz;
-      }
-
-      if (coor != NULL && coordid != 0) {
-        if (ex_comp_ws(exoid) == 4) {
-          status = nc_put_vara_float(exoid, coordid, start, count, coor);
-        }
-        else {
-          status = nc_put_vara_double(exoid, coordid, start, count, coor);
-        }
-
-        if (status != NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put %s coord array in file id %d",
-                   which, exoid);
-          ex_err("ex_put_partial_coord", errmsg, status);
-          EX_FUNC_LEAVE(EX_FATAL);
-        }
       }
     }
   }

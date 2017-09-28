@@ -263,33 +263,18 @@ int ex_put_variable_param(int exoid, ex_entity_type obj_type, int num_vars)
       goto error_ret; /* exit define mode and return */
     }
 
-    if (ex_large_model(exoid) == 0) { /* Old way */
+    int i;
+    for (i = 1; i <= num_vars; i++) {
       dims[0] = time_dim;
-      dims[1] = dimid;
-      dims[2] = num_nod_dim;
-      if ((status = nc_def_var(exoid, VAR_NOD_VAR, nc_flt_code(exoid), 3, dims, &varid)) !=
+      dims[1] = num_nod_dim;
+      if ((status = nc_def_var(exoid, VAR_NOD_VAR_NEW(i), nc_flt_code(exoid), 2, dims, &varid)) !=
           NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define nodal variables in file id %d",
-                 exoid);
+        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define nodal variable %d in file id %d",
+                 i, exoid);
         ex_err("ex_put_variable_param", errmsg, status);
         goto error_ret; /* exit define mode and return */
       }
       ex_compress_variable(exoid, varid, 2);
-    }
-    else { /* New way */
-      int i;
-      for (i = 1; i <= num_vars; i++) {
-        dims[0] = time_dim;
-        dims[1] = num_nod_dim;
-        if ((status = nc_def_var(exoid, VAR_NOD_VAR_NEW(i), nc_flt_code(exoid), 2, dims, &varid)) !=
-            NC_NOERR) {
-          snprintf(errmsg, MAX_ERR_LENGTH,
-                   "ERROR: failed to define nodal variable %d in file id %d", i, exoid);
-          ex_err("ex_put_variable_param", errmsg, status);
-          goto error_ret; /* exit define mode and return */
-        }
-        ex_compress_variable(exoid, varid, 2);
-      }
     }
 
     /* Now define nodal variable name variable */

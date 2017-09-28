@@ -85,40 +85,20 @@ int ex_put_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid, __func__);
 
-  if (ex_large_model(exoid) == 0) {
-    /* write values of the nodal variable */
-    if ((status = nc_inq_varid(exoid, VAR_NOD_VAR, &varid)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variables in file id %d",
-               exoid);
-      ex_err("ex_put_partial_nodal_var", errmsg, status);
-      EX_FUNC_LEAVE(EX_WARN);
-    }
-    start[0] = --time_step;
-    start[1] = --nodal_var_index;
-    start[2] = --start_node;
-
-    count[0] = 1;
-    count[1] = 1;
-    count[2] = num_nodes;
+  if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index), &varid)) != NC_NOERR) {
+    snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
+             nodal_var_index, exoid);
+    ex_err("ex_put_partial_nodal_var", errmsg, status);
+    EX_FUNC_LEAVE(EX_WARN);
   }
-  else {
-    /* nodal variables stored separately, find variable for this variable
-       index */
-    if ((status = nc_inq_varid(exoid, VAR_NOD_VAR_NEW(nodal_var_index), &varid)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "Warning: could not find nodal variable %d in file id %d",
-               nodal_var_index, exoid);
-      ex_err("ex_put_partial_nodal_var", errmsg, status);
-      EX_FUNC_LEAVE(EX_WARN);
-    }
 
-    start[0] = --time_step;
-    start[1] = --start_node;
+  start[0] = --time_step;
+  start[1] = --start_node;
 
-    count[0] = 1;
-    count[1] = num_nodes;
-    if (num_nodes == 0) {
-      start[1] = 0;
-    }
+  count[0] = 1;
+  count[1] = num_nodes;
+  if (num_nodes == 0) {
+    start[1] = 0;
   }
 
   if (ex_comp_ws(exoid) == 4) {
