@@ -939,13 +939,13 @@ namespace Iofx {
 
     // Possibly, the following 4 fields should be nodesets and element
     // sets instead of fields on the region...
-    region->field_add(Ioss::Field("internal_nodes", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("internal_nodes", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_internal_nodes));
-    region->field_add(Ioss::Field("border_nodes", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("border_nodes", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_border_nodes));
-    region->field_add(Ioss::Field("internal_elements", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("internal_elements", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_internal_elems));
-    region->field_add(Ioss::Field("border_elements", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("border_elements", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_border_elems));
 
     assert(nodeCount == num_internal_nodes + num_border_nodes);

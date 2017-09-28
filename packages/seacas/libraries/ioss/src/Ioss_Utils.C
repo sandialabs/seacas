@@ -584,7 +584,7 @@ namespace {
 
     if (!found_valid) {
       // Return an invalid field...
-      return Ioss::Field("", Ioss::Field::INVALID, SCALAR(), fld_role, 1);
+      return Ioss::Field("", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1);
     }
 
     // At this point, name[index] should be a valid potential field
@@ -611,7 +611,7 @@ namespace {
     if (num_tokens == 1 || invalid) {
       // It is not a (Sierra-generated) name for a non-SCALAR variable
       // Return a SCALAR field
-      Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
+      Ioss::Field field(name, Ioss::Field::REAL, IOSS_SCALAR(), fld_role, count);
       field.set_index(index);
       names[index][0] = '\0';
       return field;
@@ -692,7 +692,7 @@ namespace {
         return field;
       }
       if (suffix_size == 1) {
-        Ioss::Field field(name, Ioss::Field::REAL, SCALAR(), fld_role, count);
+        Ioss::Field field(name, Ioss::Field::REAL, IOSS_SCALAR(), fld_role, count);
         field.set_index(index);
         names[index][0] = '\0';
         return field;
@@ -700,7 +700,7 @@ namespace {
 
       suffix_size--;
     }
-    return Ioss::Field("", Ioss::Field::INVALID, SCALAR(), fld_role, 1);
+    return Ioss::Field("", Ioss::Field::INVALID, IOSS_SCALAR(), fld_role, 1);
   }
 
   // common
@@ -733,7 +733,7 @@ namespace {
     // NOTE: nmatch could be reset inside previous if block.
     // This is not an 'else' block, it is a new if block.
     if (nmatch == 1) {
-      Ioss::Field field(names[0], Ioss::Field::REAL, SCALAR(), fld_role, entity_count);
+      Ioss::Field field(names[0], Ioss::Field::REAL, IOSS_SCALAR(), fld_role, entity_count);
       if (field.is_valid()) {
         fields.push_back(field);
       }

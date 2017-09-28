@@ -745,7 +745,6 @@ lib exodus
     # builds only and will not be present for user builds.
         <include>$(seacas-root)/libraries/exodus/include
         <include>$(seacas-root)/libraries/exodus/sierra
-	<define>PARALLEL_AWARE_EXODUS
     ]
     [ ifuserbuild
     # Any parameters within this 'ifuserbuild' block apply to user
@@ -759,13 +758,11 @@ lib exodus
     # builds only and will not be present for user builds.
         <include>$(seacas-root)/libraries/exodus/include
         <include>$(seacas-root)/libraries/exodus/sierra
-	<define>PARALLEL_AWARE_EXODUS
     ]
     [ ifuserbuild
     # Any parameters within this 'ifuserbuild' block apply to user
     # builds only and will not be present for developer builds.
         <include>$(sierra-root)/seacas/include/exodus
-	<define>PARALLEL_AWARE_EXODUS
     ]
   ;
 

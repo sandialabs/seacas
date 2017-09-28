@@ -89,8 +89,6 @@
 namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
-  const std::string SYM_TENSOR() { return std::string("sym_tensor_33"); }
-
   const char *complex_suffix[] = {".re", ".im"};
 
   void check_variable_consistency(const ex_var_params &exo_params, int my_processor,
@@ -1546,7 +1544,7 @@ namespace Ioex {
           }
           else {
             att_name = "thickness";
-            block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, SCALAR(),
+            block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, IOSS_SCALAR(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, 1));
             unknown_attributes = attribute_count - 1;
           }
@@ -1568,17 +1566,17 @@ namespace Ioex {
           else {
             // First attribute is concentrated mass...
             size_t offset = 1;
-            block->field_add(Ioss::Field("mass", Ioss::Field::REAL, SCALAR(),
+            block->field_add(Ioss::Field("mass", Ioss::Field::REAL, IOSS_SCALAR(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, offset));
             offset += 1;
 
             // Next six attributes are moment of inertia -- symmetric tensor
-            block->field_add(Ioss::Field("inertia", Ioss::Field::REAL, SYM_TENSOR(),
+            block->field_add(Ioss::Field("inertia", Ioss::Field::REAL, IOSS_SYM_TENSOR(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, offset));
             offset += 6;
 
             // Next three attributes are offset from node to CG
-            block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR_3D(),
+            block->field_add(Ioss::Field("offset", Ioss::Field::REAL, IOSS_VECTOR_3D(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, offset));
           }
         }
@@ -1586,14 +1584,14 @@ namespace Ioex {
         else if (type_match(type, "circle") || type_match(type, "sphere")) {
           att_name      = "radius";
           size_t offset = 1;
-          block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, SCALAR(),
+          block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, IOSS_SCALAR(),
                                        Ioss::Field::ATTRIBUTE, my_element_count, offset++));
           if (attribute_count > 1) {
             // Default second attribute (from sphgen3d) is "volume"
             // which is the volume of the cube which would surround a
             // sphere of the given radius.
             att_name = "volume";
-            block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, SCALAR(),
+            block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, IOSS_SCALAR(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, offset++));
           }
           unknown_attributes = attribute_count - 2;
@@ -1606,29 +1604,29 @@ namespace Ioex {
           // same and put "beam-type" attributes on bars...
           int index = 1;
           att_name  = "area";
-          block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, SCALAR(),
+          block->field_add(Ioss::Field(att_name, Ioss::Field::REAL, IOSS_SCALAR(),
                                        Ioss::Field::ATTRIBUTE, my_element_count, index++));
 
           if (spatialDimension == 2 && attribute_count >= 3) {
-            block->field_add(Ioss::Field("i", Ioss::Field::REAL, SCALAR(), Ioss::Field::ATTRIBUTE,
+            block->field_add(Ioss::Field("i", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
                                          my_element_count, index++));
-            block->field_add(Ioss::Field("j", Ioss::Field::REAL, SCALAR(), Ioss::Field::ATTRIBUTE,
+            block->field_add(Ioss::Field("j", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
                                          my_element_count, index++));
           }
           else if (spatialDimension == 3 && attribute_count >= 7) {
-            block->field_add(Ioss::Field("i1", Ioss::Field::REAL, SCALAR(), Ioss::Field::ATTRIBUTE,
+            block->field_add(Ioss::Field("i1", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
                                          my_element_count, index++));
-            block->field_add(Ioss::Field("i2", Ioss::Field::REAL, SCALAR(), Ioss::Field::ATTRIBUTE,
+            block->field_add(Ioss::Field("i2", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
                                          my_element_count, index++));
-            block->field_add(Ioss::Field("j", Ioss::Field::REAL, SCALAR(), Ioss::Field::ATTRIBUTE,
+            block->field_add(Ioss::Field("j", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
                                          my_element_count, index++));
-            block->field_add(Ioss::Field("reference_axis", Ioss::Field::REAL, VECTOR_3D(),
+            block->field_add(Ioss::Field("reference_axis", Ioss::Field::REAL, IOSS_VECTOR_3D(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, index));
             index += 3;
             if (attribute_count >= 10) {
               // Next three attributes would (hopefully) be offset vector...
               // This is typically from a NASGEN model.
-              block->field_add(Ioss::Field("offset", Ioss::Field::REAL, VECTOR_3D(),
+              block->field_add(Ioss::Field("offset", Ioss::Field::REAL, IOSS_VECTOR_3D(),
                                            Ioss::Field::ATTRIBUTE, my_element_count, index));
               index += 3;
             }
