@@ -141,23 +141,23 @@ Ioex::SuperElement::SuperElement(std::string filename, const std::string &my_nam
 
   // Add the standard fields...
   if (num_nodes > 0) {
-    fields.add(Ioss::Field("coordx", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, num_nodes));
-    fields.add(Ioss::Field("coordy", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, num_nodes));
-    fields.add(Ioss::Field("coordz", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, num_nodes));
+    fields.add(Ioss::Field("coordx", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH, num_nodes));
+    fields.add(Ioss::Field("coordy", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH, num_nodes));
+    fields.add(Ioss::Field("coordz", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH, num_nodes));
     fields.add(
-        Ioss::Field("node_num_map", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, num_nodes));
-    fields.add(Ioss::Field("cbmap", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH,
+        Ioss::Field("node_num_map", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH, num_nodes));
+    fields.add(Ioss::Field("cbmap", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH,
                            2 * num_nodes * num_dim));
   }
 
-  fields.add(Ioss::Field("Kr", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, numDOF * numDOF));
+  fields.add(Ioss::Field("Kr", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH, numDOF * numDOF));
 
-  fields.add(Ioss::Field("Mr", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH, numDOF * numDOF));
+  fields.add(Ioss::Field("Mr", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH, numDOF * numDOF));
 
   if (numRBM > 0) {
-    fields.add(Ioss::Field("InertiaTensor", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH,
+    fields.add(Ioss::Field("InertiaTensor", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH,
                            numDOF * numRBM));
-    fields.add(Ioss::Field("MassInertia", Ioss::Field::REAL, SCALAR(), Ioss::Field::MESH,
+    fields.add(Ioss::Field("MassInertia", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH,
                            numDOF * numRBM));
   }
 
