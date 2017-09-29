@@ -1215,11 +1215,10 @@ int Ioss::Utils::case_strcmp(const std::string &s1, const std::string &s2)
  *  \param[in] name The string to convert.
  *  \returns The converted string.
  */
-std::string Ioss::Utils::uppercase(const std::string &name)
+std::string Ioss::Utils::uppercase(std::string name)
 {
-  std::string s(name);
-  std::transform(s.begin(), s.end(), s.begin(), to_upper);
-  return s;
+  std::transform(name.begin(), name.end(), name.begin(), to_upper);
+  return name;
 }
 
 /** \brief Convert a string to lower case.
@@ -1227,11 +1226,10 @@ std::string Ioss::Utils::uppercase(const std::string &name)
  *  \param[in] name The string to convert.
  *  \returns The converted string.
  */
-std::string Ioss::Utils::lowercase(const std::string &name)
+std::string Ioss::Utils::lowercase(std::string name)
 {
-  std::string s(name);
-  std::transform(s.begin(), s.end(), s.begin(), to_lower);
-  return s;
+  std::transform(name.begin(), name.end(), name.begin(), to_lower);
+  return name;
 }
 
 /** \brief Check whether property 'prop_name' exists and if so, set 'prop_value'
