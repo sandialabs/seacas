@@ -78,15 +78,14 @@
 
 int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var, int *var_tab)
 {
-  int         numelblkdim, numelvardim, timedim, dims[2], varid;
-  char *      sta_type, *tab_type;
-  size_t      num_entity = 0;
-  size_t      num_var_db = 0;
-  int *       stat_vals;
-  int         i, j, k;
-  int         status;
-  char        errmsg[MAX_ERR_LENGTH];
-  const char *routine = "ex_put_truth_table";
+  int    numelblkdim, numelvardim, timedim, dims[2], varid;
+  char * sta_type, *tab_type;
+  size_t num_entity = 0;
+  size_t num_var_db = 0;
+  int *  stat_vals;
+  int    i, j, k;
+  int    status;
+  char   errmsg[MAX_ERR_LENGTH];
 
   /*
    * The ent_type and the var_name are used to build the netcdf
@@ -102,11 +101,11 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   ex_check_valid_file_id(exoid, __func__);
 
   ex_get_dimension(exoid, ex_dim_num_objects(obj_type), ex_name_of_object(obj_type), &num_entity,
-                   &numelblkdim, routine);
+                   &numelblkdim, __func__);
 
   if (obj_type == EX_ELEM_BLOCK) {
     ex_get_dimension(exoid, DIM_NUM_ELE_VAR, "element variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_elem_var";
     ent_type = "eb";
     ent_size = "num_el_in_blk";
@@ -115,7 +114,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_EDGE_BLOCK) {
     ex_get_dimension(exoid, DIM_NUM_EDG_VAR, "edge block variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_edge_var";
     ent_type = "eb";
     ent_size = "num_ed_in_blk";
@@ -124,7 +123,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_FACE_BLOCK) {
     ex_get_dimension(exoid, DIM_NUM_FAC_VAR, "face block variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_face_var";
     ent_type = "fb";
     ent_size = "num_fa_in_blk";
@@ -133,7 +132,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_SIDE_SET) {
     ex_get_dimension(exoid, DIM_NUM_SSET_VAR, "sideset variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_sset_var";
     ent_type = "ss";
     ent_size = "num_side_ss";
@@ -142,7 +141,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_NODE_SET) {
     ex_get_dimension(exoid, DIM_NUM_NSET_VAR, "nodeset variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_nset_var";
     ent_type = "ns";
     ent_size = "num_nod_ns";
@@ -151,7 +150,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_EDGE_SET) {
     ex_get_dimension(exoid, DIM_NUM_ESET_VAR, "edge set variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_eset_var";
     ent_type = "es";
     ent_size = "num_edge_es";
@@ -160,7 +159,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_FACE_SET) {
     ex_get_dimension(exoid, DIM_NUM_FSET_VAR, "face set variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_fset_var";
     ent_type = "fs";
     ent_size = "num_face_fs";
@@ -169,7 +168,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   }
   else if (obj_type == EX_ELEM_SET) {
     ex_get_dimension(exoid, DIM_NUM_ELSET_VAR, "element set variables", &num_var_db, &numelvardim,
-                     routine);
+                     __func__);
     var_name = "vals_elset_var";
     ent_type = "es";
     ent_size = "num_ele_els";
@@ -180,14 +179,14 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   else { /* invalid variable type */
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type %d specified in file id %d",
              obj_type, exoid);
-    ex_err(routine, errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
   if ((int)num_entity != num_blk) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: # of %s doesn't match those defined in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -195,7 +194,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: # of %s variables doesn't match those defined in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -204,7 +203,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to allocate memory for %s status array for file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, EX_MEMFAIL);
+    ex_err(__func__, errmsg, EX_MEMFAIL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -219,7 +218,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
       free(stat_vals);
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s status array from file id %d",
                ex_name_of_object(obj_type), exoid);
-      ex_err(routine, errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -234,7 +233,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   if ((status = nc_redef(exoid)) != NC_NOERR) {
     free(stat_vals);
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -242,7 +241,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   if ((status = nc_inq_dimid(exoid, DIM_TIME, &timedim)) != NC_NOERR) {
     free(stat_vals);
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate time variable in file id %d", exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     goto error_ret; /* exit define mode and return */
   }
 
@@ -272,7 +271,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
                      "ERROR: failed to locate number of entities in "
                      "%d'th %s in file id %d",
                      i + 1, ex_name_of_object(obj_type), exoid);
-            ex_err(routine, errmsg, status);
+            ex_err(__func__, errmsg, status);
             goto error_ret; /* exit define mode and return */
           }
 
@@ -290,7 +289,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
               snprintf(errmsg, MAX_ERR_LENGTH,
                        "ERROR: failed to define variable for %d'th %s in file id %d", i + 1,
                        ex_name_of_object(obj_type), exoid);
-              ex_err(routine, errmsg, status);
+              ex_err(__func__, errmsg, status);
               goto error_ret; /* exit define mode and return */
             }
             ex_compress_variable(exoid, varid, 2);
@@ -314,14 +313,14 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to define %s variable truth table in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     goto error_ret; /* exit define mode and return */
   }
 
   /* leave define mode  */
   if ((status = nc_enddef(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definitions in file id %d", exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -331,7 +330,7 @@ int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store variable truth table in file id %d",
              exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -342,7 +341,7 @@ error_ret:
   if ((status = nc_enddef(exoid)) != NC_NOERR) /* exit define mode */
   {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition for file id %d", exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
   }
   EX_FUNC_LEAVE(EX_FATAL);
 }
