@@ -73,7 +73,6 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   int         status;
   int         varid, ent_ndx;
   char        errmsg[MAX_ERR_LENGTH];
-  const char *routine = "ex_put_name";
   const char *vobj;
 
   EX_FUNC_ENTER();
@@ -94,14 +93,14 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   case EX_ELEM_MAP: vobj = VAR_NAME_EM; break;
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid type specified in file id %d", exoid);
-    ex_err(routine, errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
   if ((status = nc_inq_varid(exoid, vobj, &varid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s names in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -115,14 +114,14 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   }
 
   /* If this is a null entity, then 'ent_ndx' will be negative.
-   * We don't care in this routine, so make it positive and continue...
+   * We don't care in this __func__, so make it positive and continue...
    */
   if (ent_ndx < 0) {
     ent_ndx = -ent_ndx;
   }
 
   /* write EXODUS entityname */
-  status = ex_put_name_internal(exoid, varid, ent_ndx - 1, name, obj_type, "", routine);
+  status = ex_put_name_internal(exoid, varid, ent_ndx - 1, name, obj_type, "", __func__);
 
   EX_FUNC_LEAVE(status);
 }
