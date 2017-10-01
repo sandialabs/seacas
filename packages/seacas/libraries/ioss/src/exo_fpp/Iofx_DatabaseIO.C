@@ -4747,13 +4747,14 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
     for (int i = 0; i < comp_count; i++) {
       std::string var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
 
-      if (m_variables[EX_NODE_BLOCK].find(var_name) == m_variables[EX_NODE_BLOCK].end()) {
+      auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
+      if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Could not find nodal variable '" << var_name << "'\n";
         IOSS_ERROR(errmsg);
       }
 
-      var_index = m_variables[EX_NODE_BLOCK].find(var_name)->second;
+      var_index = var_iter->second;
 
       size_t  begin_offset = (re_im * i) + complex_comp;
       size_t  stride       = re_im * comp_count;
