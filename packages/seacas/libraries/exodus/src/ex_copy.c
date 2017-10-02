@@ -149,7 +149,7 @@ int ex_copy(int in_exoid, int out_exoid)
   if (ex_int64_status(in_exoid) != ex_int64_status(out_exoid)) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: integer sizes do not match for input and output databases.");
-    ex_err("ex_copy", errmsg, EX_WRONGFILETYPE);
+    ex_err(__func__, errmsg, EX_WRONGFILETYPE);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -220,7 +220,7 @@ int ex_copy(int in_exoid, int out_exoid)
         if (status != NC_NOERR) {
           snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s dimension in file id %d",
                    dim_nm, out_exoid);
-          ex_err("ex_copy", errmsg, status);
+          ex_err(__func__, errmsg, status);
           EX_FUNC_LEAVE(EX_FATAL);
         }
       } /* end if */
@@ -245,7 +245,7 @@ int ex_copy(int in_exoid, int out_exoid)
       if ((status = nc_def_dim(out_exoid, DIM_STR_NAME, 33, &dim_out_id)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to define string name dimension in file id %d", out_exoid);
-        ex_err("ex_copy", errmsg, status);
+        ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -305,7 +305,7 @@ int ex_copy(int in_exoid, int out_exoid)
   if ((status = nc_enddef(out_exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
              out_exoid);
-    ex_err("ex_copy", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -563,7 +563,7 @@ int cpy_var_def(int in_id, int out_id, int rec_dim_id, char *var_nm)
         NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define %s variable in file id %d", var_nm,
                out_id);
-      ex_err("ex_copy", errmsg, status);
+      ex_err(__func__, errmsg, status);
       return (EX_FATAL);
     }
     ex_compress_variable(out_id, var_out_id, 1);

@@ -196,7 +196,7 @@ int ex_put_concat_sets(int exoid, ex_entity_type set_type, const struct ex_set_s
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s status array to file id %d",
              ex_name_of_object(set_type), exoid);
-    ex_err("ex_put_concat_set", errmsg, status);
+    ex_err(__func__, errmsg, status);
     free(set_stat);
     EX_FUNC_LEAVE(EX_FATAL);
   }

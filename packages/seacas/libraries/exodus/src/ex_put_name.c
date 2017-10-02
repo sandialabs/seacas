@@ -109,7 +109,7 @@ int ex_put_name(int exoid, ex_entity_type obj_type, ex_entity_id entity_id, cons
   if (ent_ndx == -EX_LOOKUPFAIL) { /* could not find the element block id */
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: %s id %" PRId64 " not found in file id %d",
              ex_name_of_object(obj_type), entity_id, exoid);
-    ex_err("ex_put_name", errmsg, EX_LOOKUPFAIL);
+    ex_err(__func__, errmsg, EX_LOOKUPFAIL);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 

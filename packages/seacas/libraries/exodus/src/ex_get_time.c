@@ -111,7 +111,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
                "ERROR: time_step is out-of-range. Value = %d, valid "
                "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
-      ex_err("ex_get_time", errmsg, EX_BADPARAM);
+      ex_err(__func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -128,7 +128,7 @@ int ex_get_time(int exoid, int time_step, void *time_value)
 
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get time value in file id %d", exoid);
-    ex_err("ex_get_time", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
