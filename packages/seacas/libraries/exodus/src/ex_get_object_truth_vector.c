@@ -165,7 +165,7 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
   if ((int)num_var_db != num_var) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: # of variables doesn't match those defined in file id %d", exoid);
-    ex_err("ex_get_object_truth_vector", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -198,7 +198,7 @@ int ex_get_object_truth_vector(int exoid, ex_entity_type obj_type, ex_entity_id 
 
     if (status != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get truth vector from file id %d", exoid);
-      ex_err("ex_get_object_truth_vector", errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }

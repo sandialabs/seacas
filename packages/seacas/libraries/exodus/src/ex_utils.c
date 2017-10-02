@@ -140,13 +140,13 @@ int ex_set_max_name_length(int exoid, int length)
   ex_check_valid_file_id(exoid, __func__);
   if (length <= 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Max name length must be positive.");
-    ex_err("ex_set_max_name_length", errmsg, NC_EMAXNAME);
+    ex_err(__func__, errmsg, NC_EMAXNAME);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (length > NC_MAX_NAME) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: Max name length (%d) exceeds netcdf max name size (%d).", length, NC_MAX_NAME);
-    ex_err("ex_set_max_name_length", errmsg, NC_EMAXNAME);
+    ex_err(__func__, errmsg, NC_EMAXNAME);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -169,7 +169,7 @@ void ex_update_max_name_length(int exoid, int length)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to update 'max_name_length' attribute in file id %d", exoid);
-    ex_err("ex_update_max_name_length", errmsg, status);
+    ex_err(__func__, errmsg, status);
   }
 
   if (length > db_length) {
@@ -471,7 +471,7 @@ char *ex_dim_num_objects(ex_entity_type obj_type)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: object type %d not supported in call to ex_dim_num_objects", obj_type);
-    ex_err("ex_dim_num_objects", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     return (NULL);
   }
   }
@@ -1091,7 +1091,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
-      ex_err("ex_get_prop_names", errmsg, EX_BADPARAM);
+      ex_err(__func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -1429,7 +1429,7 @@ void ex_compress_variable(int exoid, int varid, int type)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_compress_variable().",
              exoid);
-    ex_err("ex_compress_variable", errmsg, EX_BADFILEID);
+    ex_err(__func__, errmsg, EX_BADFILEID);
   }
   else {
     int deflate_level = file->compression_level;
