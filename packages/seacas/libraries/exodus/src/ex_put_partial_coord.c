@@ -134,13 +134,17 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
   --start_node_num;
 
   /* write out the coordinates  */
-  if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate x nodal coordinates in file id %d",
-             exoid);
-    ex_err(__func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
+  if (num_dim > 0) {
+    if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate x nodal coordinates in file id %d",
+               exoid);
+      ex_err(__func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
   }
-
+  else {
+    coordidx = 0;
+  }
   if (num_dim > 1) {
     if ((status = nc_inq_varid(exoid, VAR_COORD_Y, &coordidy)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate y nodal coordinates in file id %d",

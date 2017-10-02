@@ -434,21 +434,6 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     goto error_ret;
   }
 
-  /*
-   * To reduce the maximum dataset sizes, the storage of the nodal
-   * coordinates and the nodal variables was changed from a single
-   * dataset to a dataset per component or variable.  However, we
-   * want to maintain some form of compatability with the old
-   * exodusII version.  It is easy to do this on read; however, we
-   * also want to be able to store in the old format using the new
-   * library.
-   *
-   * The mode is set in the ex_create call. The setting can be checked
-   * via the ATT_FILESIZE attribute in the file (1=large,
-   * 0=normal). Also handle old files that do not contain this
-   * attribute.
-   */
-
   if (model->num_nodes > 0) {
     dim[0] = numnoddim;
     if (model->num_dim > 0) {
