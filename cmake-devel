@@ -112,17 +112,15 @@ fi
 rm -f CMakeCache.txt
 
 ### To use the clang sanitizers:
-#sanitizer=address     #: AddressSanitizer, a memory error detector.
+sanitizer=address     #: AddressSanitizer, a memory error detector.
 #sanitizer=integer     #: Enables checks for undefined or suspicious integer behavior.
 #sanitizer=thread      #: ThreadSanitizer, a data race detector.
 #sanitizer=memory      #: MemorySanitizer, experimental detector of uninitialized reads.
-sanitizer=undefined   #: Fast and compatible undefined behavior checker. 
+#sanitizer=undefined   #: Fast and compatible undefined behavior checker. 
 #sanitizer=dataflow    #: DataFlowSanitizer, a general data flow analysis.
 #sanitizer=cfi         #: control flow integrity checks. Requires -flto.
 #sanitizer=safe-stack  #: safe stack protection against stack-based memory corruption errors.
-#-D CMAKE_CXX_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer -fPIC" \
-#-D CMAKE_C_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
-#-D CMAKE_Fortran_FLAGS="-g -O0 -fsanitize=${sanitizer} -fno-omit-frame-pointer" \
+SANITIZER="-fsanitize=${sanitizer} -fno-omit-frame-pointer -fPIC"
 
 ### You can add these below if you want more verbosity...
 #-D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -159,8 +157,9 @@ else
 fi
 ###------------------------------------------------------------------------
 cmake  \
--D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic ${CXX_WARNING_FLAGS}" \
--D CMAKE_C_FLAGS="-Wall -Wunused -pedantic ${C_WARNING_FLAGS}" \
+-D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic ${CXX_WARNING_FLAGS} ${SANITIZER}" \
+-D CMAKE_C_FLAGS="-Wall -Wunused -pedantic ${C_WARNING_FLAGS} ${SANITIZER}" \
+-D CMAKE_Fortran_FLAGS="-Wall ${SANITIZER}" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=OFF \
