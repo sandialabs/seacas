@@ -64,7 +64,6 @@
  */
 
 #define NC_FLOAT_WORDSIZE 4
-#define NC_DOUBLE_WORDSIZE 8
 
 static struct ex_file_item *file_list = NULL;
 
@@ -246,18 +245,18 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
 /*............................................................................*/
 /*............................................................................*/
 
+/*! ex_conv_exit() takes the structure identified by "exoid" out of the linked
+ * list which describes the files that ex_conv_array() knows how to convert.
+ *
+ * \note it is absolutely necessary for ex_conv_exit() to be called after
+ *       ncclose(), if the parameter used as "exoid" is the id returned from
+ *       an ncopen() or nccreate() call, as netCDF reuses file ids!
+ *       the best place to do this is ex_close(), which is where I did it.
+ *
+ * \param exoid  integer which uniquely identifies the file of interest.
+ */
 void ex_conv_exit(int exoid)
 {
-  /*! ex_conv_exit() takes the structure identified by "exoid" out of the linked
-   * list which describes the files that ex_conv_array() knows how to convert.
-   *
-   * \note it is absolutely necessary for ex_conv_exit() to be called after
-   *       ncclose(), if the parameter used as "exoid" is the id returned from
-   *       an ncopen() or nccreate() call, as netCDF reuses file ids!
-   *       the best place to do this is ex_close(), which is where I did it.
-   *
-   * \param exoid  integer which uniquely identifies the file of interest.
-   */
 
   char                 errmsg[MAX_ERR_LENGTH];
   struct ex_file_item *file = file_list;
@@ -427,14 +426,14 @@ int ex_set_option(int exoid, ex_option_type option, int option_value)
   EX_FUNC_LEAVE(EX_NOERR);
 }
 
+/*!
+ * ex_comp_ws() returns 4 (i.e. sizeof(float)) or 8 (i.e. sizeof(double)),
+ * depending on the value of floating point word size used to initialize
+ * the conversion facility for this file id (exoid).
+ * \param exoid  integer which uniquely identifies the file of interest.
+ */
 int ex_comp_ws(int exoid)
 {
-  /*!
-   * ex_comp_ws() returns 4 (i.e. sizeof(float)) or 8 (i.e. sizeof(double)),
-   * depending on the value of floating point word size used to initialize
-   * the conversion facility for this file id (exoid).
-   * \param exoid  integer which uniquely identifies the file of interest.
-   */
   struct ex_file_item *file = ex_find_file_item(exoid);
 
   if (!file) {
@@ -447,13 +446,14 @@ int ex_comp_ws(int exoid)
   return ((file->user_compute_wordsize + 1) * 4);
 }
 
+/*! ex_is_parallel() returns 1 (true) or 0 (false) depending on whether
+ * the file was opened in parallel or serial/file-per-processor mode.
+ * Note that in this case parallel assumes the output of a single file,
+ * not a parallel run using file-per-processor.
+ * \param exoid  integer which uniquely identifies the file of interest.
+ */
 int ex_is_parallel(int exoid)
 {
-  /*! ex_is_parallel() returns 1 (true) or 0 (false) depending on whether
-   * the file was opened in parallel or serial/file-per-processor mode.
-   * Note that in this case parallel assumes the output of a single file,
-   * not a parallel run using file-per-processor.
-   */
   EX_FUNC_ENTER();
   struct ex_file_item *file = ex_find_file_item(exoid);
 

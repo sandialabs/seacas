@@ -31,6 +31,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_EntityType.h> // for EntityType, etc
+#include <Ioss_Hex8.h>
+#include <Ioss_Shell4.h>
 #include <algorithm>
 #include <cassert> // for assert
 #include <cmath>   // for atan2, cos, sin
@@ -608,9 +610,9 @@ namespace Iogn {
     }
 
     if (block_number == 1) {
-      return std::make_pair(std::string("hex8"), 8);
+      return std::make_pair(std::string(Ioss::Hex8::name), 8);
     }
-    return std::make_pair(std::string("shell4"), 4);
+    return std::make_pair(std::string(Ioss::Shell4::name), 4);
   }
 
   void GeneratedMesh::node_map(Ioss::Int64Vector &map) const

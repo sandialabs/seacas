@@ -293,7 +293,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     }
 
     CGERR(cg_fambc_write(file_ptr, base, fam, "FamBC", bocotype, &bc_index));
-    CGERR(cg_goto(file_ptr, base, "Family_t", fam, NULL));
+    CGERR(cg_goto(file_ptr, base, "Family_t", fam, nullptr));
     CGERR(cg_descriptor_write("FamBC_TypeId", std::to_string(bocotype).c_str()));
     CGERR(cg_descriptor_write("FamBC_TypeName", BCTypeName[bocotype]));
     CGERR(cg_descriptor_write("FamBC_UserId", std::to_string(id).c_str()));
@@ -861,7 +861,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
-      auto sb = new Ioss::SideBlock(block->get_database(), name, "Quad4", "Hex8",
+      auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
                                     block->m_boundaryConditions.back().get_face_count());
       sb->set_parent_block(block);
       sset->add(sb);
@@ -1011,7 +1011,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
       // Convert raw field names into composite fields (a_x, a_y, a_z ==> 3D vector 'a')
       std::vector<Ioss::Field> fields;
       if (grid_loc == CG_CellCenter) {
-        size_t entity_count = block->get_property("entity_count").get_int();
+        size_t entity_count = block->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
                                 nullptr, fields);
         size_t index = 1;
@@ -1028,7 +1028,7 @@ void Iocgns::Utils::add_transient_variables(int cgnsFilePtr, const std::vector<d
                 ? &(dynamic_cast<Ioss::StructuredBlock *>(block)->get_node_block())
                 : region->get_node_blocks()[0];
         Ioss::NodeBlock *nb           = const_cast<Ioss::NodeBlock *>(cnb);
-        size_t           entity_count = nb->get_property("entity_count").get_int();
+        size_t           entity_count = nb->entity_count();
         Ioss::Utils::get_fields(entity_count, field_names, field_count, Ioss::Field::TRANSIENT, '_',
                                 nullptr, fields);
         size_t index = 1;

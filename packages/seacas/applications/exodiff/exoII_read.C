@@ -1368,16 +1368,18 @@ namespace {
         SMART_ASSERT(varnames[vg] != nullptr);
         if (std::strlen(varnames[vg]) == 0 ||
             static_cast<int>(std::strlen(varnames[vg])) > name_size) {
-          std::cerr << trmclr::red << "exodiff: ERROR: " << type
+	  std::ostringstream out;
+          out << "exodiff: ERROR: " << type
                     << " variable names appear corrupt\n"
                     << "                A length is 0 or greater than "
                     << "name_size(" << name_size << ")\n"
                     << "                Here are the names that I received from"
                     << " a call to ex_get_var_names(...):\n";
           for (int k = 1; k <= num_vars; ++k) {
-            std::cerr << "\t\t" << k << ") \"" << varnames[k - 1] << "\"\n";
+            out << "\t\t" << k << ") \"" << varnames[k - 1] << "\"\n";
           }
-          std::cerr << "                 Aborting...\n" << trmclr::normal;
+          out << "                 Aborting...\n";
+	  DIFF_OUT(out);
           exit(1);
         }
 

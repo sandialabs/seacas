@@ -43,7 +43,7 @@
 #include <cassert>
 #include <string>
 
-#if defined(SEACAS_HAVE_CGNS)
+#if defined(SEACAS_HAVE_CGNS) && !defined(SIERRA_PARALLEL_MPI)
 #include <cgnstypes.h>
 using INT = cgsize_t;
 #else
@@ -127,9 +127,16 @@ namespace Ioss {
   {
   public:
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
-                    int nj = 0, int nk = 0, int off_i = 0, int off_j = 0, int off_k = 0);
+                    int nj, int nk, int off_i, int off_j, int off_k, int glo_ni, int glo_nj,
+                    int glo_nk);
     StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
                     Ioss::IJK_t &ordinal, Ioss::IJK_t &offset, Ioss::IJK_t &global_ordinal);
+
+    // Useful for serial
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim, int ni,
+                    int nj, int nk);
+    StructuredBlock(DatabaseIO *io_database, const std::string &my_name, int index_dim,
+                    Ioss::IJK_t &ordinal);
 
     StructuredBlock *clone(DatabaseIO *database) const;
 
@@ -345,25 +352,23 @@ namespace Ioss {
                                     size_t data_size) const override;
 
   private:
-    void add_properties_and_fields(int index_dim);
+    int m_ni{};
+    int m_nj{};
+    int m_nk{};
 
-    int m_ni;
-    int m_nj;
-    int m_nk;
+    int m_offsetI{}; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
+    int m_offsetJ{};
+    int m_offsetK{};
 
-    int m_offsetI; // Valid 'i' ordinal runs from m_offsetI+1 to m_offsetI+m_ni
-    int m_offsetJ;
-    int m_offsetK;
+    int m_niGlobal{}; // The ni,nj,nk of the master block this is a subset of.
+    int m_njGlobal{};
+    int m_nkGlobal{};
 
-    int m_niGlobal; // The ni,nj,nk of the master block this is a subset of.
-    int m_njGlobal;
-    int m_nkGlobal;
+    size_t m_nodeOffset{};
+    size_t m_cellOffset{};
 
-    size_t m_nodeOffset;
-    size_t m_cellOffset;
-
-    size_t m_nodeGlobalOffset;
-    size_t m_cellGlobalOffset;
+    size_t m_nodeGlobalOffset{};
+    size_t m_cellGlobalOffset{};
 
     Ioss::NodeBlock m_nodeBlock;
 

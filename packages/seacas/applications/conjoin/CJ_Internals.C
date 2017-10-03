@@ -67,7 +67,7 @@ namespace {
   int put_int_array(int exoid, const char *var_type, const std::vector<int> &array);
   int put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids);
 
-  int define_coordinate_vars(int exodusFilePtr, int nodes, int node_dim, int dimension, int dim_dim,
+  int define_coordinate_vars(int exodusFilePtr, size_t nodes, int node_dim, int dimension, int dim_dim,
                              int str_dim);
 } // namespace
 
@@ -1193,7 +1193,7 @@ namespace {
     return (EX_NOERR);
   }
 
-  int define_coordinate_vars(int exodusFilePtr, int nodes, int node_dim, int dimension, int dim_dim,
+  int define_coordinate_vars(int exodusFilePtr, size_t nodes, int node_dim, int dimension, int dim_dim,
                              int str_dim)
   {
     const char *routine = "Ioex_Internals.C, define_coordinate_vars";

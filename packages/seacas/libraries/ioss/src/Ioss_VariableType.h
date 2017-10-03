@@ -125,8 +125,8 @@ namespace Ioss {
     const std::string name_;
     int               componentCount;
 
-    VariableType(const VariableType &);            // Do not implement...
-    VariableType &operator=(const VariableType &); // Do not implement...
+    VariableType(const VariableType &) = delete;
+    VariableType &operator=(const VariableType &) = delete;
 
     static bool build_variable_type(const std::string &raw_type);
   };

@@ -87,7 +87,14 @@ namespace {
     return MPI_INT;
 #endif
   }
-}
+
+  size_t generate_guid(size_t zone, size_t proc, size_t lpow2)
+  {
+    assert(zone > 0);
+    assert(proc >= 0);
+    return (zone << lpow2) + proc;
+  }
+} // namespace
 
 namespace Iocgns {
 
@@ -268,23 +275,28 @@ namespace Iocgns {
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
     Utils::add_sidesets(cgnsFilePtr, this);
 
+    size_t pow2 = Ioss::Utils::log_power_2(util().parallel_size());
+
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int base = 1;
     int i    = 0;
     for (auto &block : decomp->m_elementBlocks) {
       std::string element_topo = block.topologyType;
-#if IOSS_DEBUG_OUTPUT
-      std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
-                << "' with " << block.ioss_count() << " elements\n";
-#endif
       auto *eblock = new Ioss::ElementBlock(this, block.name(), element_topo, block.ioss_count());
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
       eblock->property_add(Ioss::Property("id", block.zone()));
+      int64_t guid = generate_guid(block.zone(), util().parallel_rank(), pow2);
+      eblock->property_add(Ioss::Property("guid", guid));
       eblock->property_add(Ioss::Property("section", block.section()));
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
+#if IOSS_DEBUG_OUTPUT
+      std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
+                << "' with " << block.ioss_count() << " elements.  GUID = " << guid << "   " << pow2
+                << "\n";
+#endif
     }
 
     // ========================================================================
@@ -293,7 +305,7 @@ namespace Iocgns {
     for (auto &sset : decomp->m_sideSets) {
       // See if there is an Ioss::SideSet with a matching name...
       Ioss::SideSet *ioss_sset = get_region()->get_sideset(sset.name());
-      if (ioss_sset != NULL) {
+      if (ioss_sset != nullptr) {
         auto        zone = decomp->m_zones[sset.zone()];
         std::string block_name(zone.m_name);
         block_name += "/";
@@ -313,7 +325,7 @@ namespace Iocgns {
         sblk->property_add(Ioss::Property("zone", sset.zone()));
         sblk->property_add(Ioss::Property("section", sset.section()));
         Ioss::ElementBlock *eblock = get_region()->get_element_block(block.name());
-        if (eblock != NULL) {
+        if (eblock != nullptr) {
           sblk->set_parent_element_block(eblock);
         }
         ioss_sset->add(sblk);
@@ -336,18 +348,22 @@ namespace Iocgns {
   // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
-    const auto &blocks = get_region()->get_structured_blocks();
+    size_t pow2 = Ioss::Utils::log_power_2(util().parallel_size());
 
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
     // definition...
+    const auto &blocks = get_region()->get_structured_blocks();
     for (auto &block : blocks) {
+      int64_t guid = block->get_property("guid").get_int();
       for (auto &conn : block->m_zoneConnectivity) {
         if (conn.m_donorZone < 0) {
           auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
+        conn.m_donorGUID = generate_guid(conn.m_donorZone, conn.m_donorProcessor, pow2);
+        conn.m_ownerGUID = guid;
       }
     }
 
@@ -373,10 +389,7 @@ namespace Iocgns {
     // if the m_proc field does not match current processor...
     const auto &zones = decomp->m_structuredZones;
 
-    size_t node_offset        = 0;
-    size_t cell_offset        = 0;
-    size_t global_node_offset = 0;
-    size_t global_cell_offset = 0;
+    size_t pow2               = Ioss::Utils::log_power_2(util().parallel_size());
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
@@ -395,6 +408,13 @@ namespace Iocgns {
                                               pzone->m_offset, pzone->m_adam->m_ordinal);
 
             for (auto &zgc : pzone->m_zoneConnectivity) {
+              // Update donor_zone to point to adam zone instead of child.
+              auto dz = zones[zgc.m_donorZone - 1];
+              assert(dz->m_zone == zgc.m_donorZone);
+              auto oz = zones[zgc.m_ownerZone - 1];
+              assert(oz->m_zone == zgc.m_ownerZone);
+              zgc.m_donorZone = dz->m_adam->m_zone;
+              zgc.m_ownerZone = oz->m_adam->m_zone;
               block->m_zoneConnectivity.push_back(zgc);
             }
             break;
@@ -416,16 +436,15 @@ namespace Iocgns {
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
+        int64_t guid =
+            generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
+        block->property_add(Ioss::Property("guid", guid));
 
-        block->set_node_offset(node_offset);
-        block->set_cell_offset(cell_offset);
-        node_offset += block->get_property("node_count").get_int();
-        cell_offset += block->get_property("cell_count").get_int();
-
-        block->set_node_global_offset(global_node_offset);
-        block->set_cell_global_offset(global_cell_offset);
-        global_node_offset += block->get_property("global_node_count").get_int();
-        global_cell_offset += block->get_property("global_cell_count").get_int();
+#if IOSS_DEBUG_OUTPUT
+        std::cout << "Added block " << block_name
+                  << ":, Structured with ID = " << zone->m_adam->m_zone << ", GUID = " << guid
+                  << "\n";
+#endif
       }
     }
 
@@ -542,7 +561,7 @@ namespace Iocgns {
 
       // Count non-zero entries in u_nodes...
       int64_t local_node_count =
-          std::count_if(u_nodes.begin(), u_nodes.end(), [](int64_t i) { return i > 0; });
+          std::count_if(u_nodes.cbegin(), u_nodes.cend(), [](int64_t i) { return i > 0; });
       owned_node_count = local_node_count; // Calling code wants to know this
 
       // Determine offset into the zone node block for each processors "chunk"
@@ -629,7 +648,7 @@ namespace Iocgns {
     size_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
-    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
 
@@ -972,9 +991,8 @@ namespace Iocgns {
       }
     }
 
-    assert(num_to_get == 0 ||
-           num_to_get ==
-               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    assert(num_to_get == 0 || num_to_get == (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) *
+                                                (rmax[2] - rmin[2] + 1));
     double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
@@ -1130,7 +1148,7 @@ namespace Iocgns {
 
       // Read into a double variable
       // TODO: Support other field types...
-      size_t              num_entity = eb->get_property("entity_count").get_int();
+      size_t              num_entity = eb->entity_count();
       std::vector<double> temp(num_entity);
 
       // get number of components, cycle through each component
@@ -1188,7 +1206,7 @@ namespace Iocgns {
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
-      int64_t entity_count = sb->get_property("entity_count").get_int();
+      int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Partial field input not yet implemented for side blocks";
@@ -1453,8 +1471,8 @@ namespace Iocgns {
         const auto &        block_map = block.second;
         std::vector<double> blk_data(block_map->map().size() - 1);
 
-        cgsize_t range_min[1] = {node_offset[zone - 1] + 1};
-        cgsize_t range_max[1] = {range_min[0] + node_count[zone - 1] - 1};
+        cgsize_t range_min[1] = {(cgsize_t)node_offset[zone - 1] + 1};
+        cgsize_t range_max[1] = {range_min[0] + (cgsize_t)node_count[zone - 1] - 1};
         int      cgns_field   = 0;
 
         if (comp_count > 1) {
@@ -1549,7 +1567,7 @@ namespace Iocgns {
         // accounted for...
         cgsize_t size[3] = {0, 0, 0};
         size[0]          = owned_node_count;
-        size[1]          = eb->get_property("entity_count").get_int();
+        size[1]          = eb->entity_count();
 
         MPI_Allreduce(MPI_IN_PLACE, size, 3, cgns_mpi_type(), MPI_SUM, util().communicator());
 
@@ -1583,9 +1601,9 @@ namespace Iocgns {
             int *idata = num_to_get > 0 ? reinterpret_cast<int *>(data) : nullptr;
             for (size_t i = 0; i < num_to_get * element_nodes; i++) {
               auto id   = idata[i];
-              auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
+              auto iter = std::lower_bound(nodes.cbegin(), nodes.cend(), id);
               assert(iter != nodes.end());
-              auto cur_pos = iter - nodes.begin();
+              auto cur_pos = iter - nodes.cbegin();
               connect.push_back(connectivity_map[cur_pos]);
             }
           }
@@ -1593,9 +1611,9 @@ namespace Iocgns {
             int64_t *idata = num_to_get > 0 ? reinterpret_cast<int64_t *>(data) : nullptr;
             for (size_t i = 0; i < num_to_get * element_nodes; i++) {
               auto id   = idata[i];
-              auto iter = std::lower_bound(nodes.begin(), nodes.end(), id);
-              assert(iter != nodes.end());
-              auto cur_pos = iter - nodes.begin();
+              auto iter = std::lower_bound(nodes.cbegin(), nodes.cend(), id);
+              assert(iter != nodes.cend());
+              auto cur_pos = iter - nodes.cbegin();
               connect.push_back(connectivity_map[cur_pos]);
             }
           }
@@ -1733,9 +1751,8 @@ namespace Iocgns {
       }
     }
 
-    assert(num_to_get == 0 ||
-           num_to_get ==
-               (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) * (rmax[2] - rmin[2] + 1));
+    assert(num_to_get == 0 || num_to_get == (rmax[0] - rmin[0] + 1) * (rmax[1] - rmin[1] + 1) *
+                                                (rmax[2] - rmin[2] + 1));
     double *rdata = num_to_get > 0 ? static_cast<double *>(data) : nullptr;
 
     if (role == Ioss::Field::MESH) {
@@ -2052,4 +2069,4 @@ namespace Iocgns {
     }
     return num_to_get;
   }
-}
+} // namespace Iocgns

@@ -51,8 +51,8 @@ KOKKOS=OFF
 CUDA=OFF
 
 ### Change this to point to the compilers you want to use
-#COMPILER="gnu"
-COMPILER="clang"
+COMPILER="gnu"
+#COMPILER="clang"
 if [ "$MPI" == "ON" ]
 then
   MPI_EXEC=`which mpiexec`
@@ -64,9 +64,9 @@ then
       CC=mpicc
       FC=mpif77
   else
-      CXX=mpicxx-openmpi-clang38
-      CC=mpicc-openmpi-clang38
-      FC=mpif77-openmpi-clang38
+      CXX=mpicxx
+      CC=mpicc
+      FC=mpif77
   fi
 else
   if [ "$COMPILER" == "gnu" ]

@@ -30,24 +30,30 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Ioss_BoundingBox.h"  // for AxisAlignedBoundingBox
-#include "Ioss_FieldManager.h" // for FieldManager
+#include <Ioss_BoundingBox.h>  // for AxisAlignedBoundingBox
+#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_DatabaseIO.h>   // for DatabaseIO
 #include <Ioss_Field.h>        // for Field, etc
+#include <Ioss_Hex8.h>
 #include <Ioss_Property.h>     // for Property
 #include <Ioss_Region.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
+
 #include <cstddef> // for size_t
 #include <numeric>
 #include <string> // for string
 #include <vector> // for vector
 
+<<<<<<< HEAD
 namespace {
   const std::string SCALAR() { return std::string("scalar"); }
   const std::string VECTOR_2D() { return std::string("vector_2d"); }
   const std::string VECTOR_3D() { return std::string("vector_3d"); }
 } // namespace
 
+=======
+>>>>>>> master
 namespace Ioss {
   class Field;
 
@@ -61,36 +67,44 @@ namespace Ioss {
    *  \param[in] nj The number of intervals in the (j) direction. Zero if 1D
    *  \param[in] nk The number of intervals in the (k) direction. Zero if 2D
    */
+  // Serial
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
-                                   int index_dim, int ni, int nj, int nk, int off_i, int off_j,
-                                   int off_k)
-      : EntityBlock(io_database, my_name, "Hex8", ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
-        m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
-        m_niGlobal(m_ni), m_njGlobal(m_nj), m_nkGlobal(m_nk), m_nodeOffset(0), m_cellOffset(0),
-        m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
-        m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
-                    index_dim)
+                                   int index_dim, int ni, int nj, int nk)
+      : StructuredBlock(io_database, my_name, index_dim, ni, nj, nk, 0, 0, 0, ni, nj, nk)
   {
-    add_properties_and_fields(index_dim);
   }
 
+  // Parallel
   StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
                                    int index_dim, Ioss::IJK_t &ordinal, Ioss::IJK_t &offset,
                                    Ioss::IJK_t &global_ordinal)
-      : EntityBlock(io_database, my_name, "Hex8", ordinal[0] * ordinal[1] * ordinal[2]),
-        m_ni(ordinal[0]), m_nj(ordinal[1]), m_nk(ordinal[2]), m_offsetI(offset[0]),
-        m_offsetJ(offset[1]), m_offsetK(offset[2]), m_niGlobal(global_ordinal[0]),
-        m_njGlobal(global_ordinal[1]), m_nkGlobal(global_ordinal[2]), m_nodeOffset(0),
-        m_cellOffset(0), m_nodeGlobalOffset(0), m_cellGlobalOffset(0),
+      : StructuredBlock(io_database, my_name, index_dim, ordinal[0], ordinal[1], ordinal[2],
+                        offset[0], offset[1], offset[2], global_ordinal[0], global_ordinal[1],
+                        global_ordinal[2])
+  {
+  }
+
+  // Serial
+  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
+                                   int index_dim, Ioss::IJK_t &ordinal)
+      : StructuredBlock(io_database, my_name, index_dim, ordinal[0], ordinal[1], ordinal[2], 0, 0,
+                        0, ordinal[0], ordinal[1], ordinal[2])
+  {
+  }
+
+  // Parallel
+  StructuredBlock::StructuredBlock(DatabaseIO *io_database, const std::string &my_name,
+                                   int index_dim, int ni, int nj, int nk, int off_i, int off_j,
+                                   int off_k, int glo_ni, int glo_nj, int glo_nk)
+      : EntityBlock(io_database, my_name, Ioss::Hex8::name,
+                    ni * (nj > 0 ? nj : 1) * (nk > 0 ? nk : 1)),
+        m_ni(ni), m_nj(nj), m_nk(nk), m_offsetI(off_i), m_offsetJ(off_j), m_offsetK(off_k),
+        m_niGlobal(glo_ni == 0 ? m_ni : glo_ni), m_njGlobal(glo_nj == 0 ? m_nj : glo_nj),
+        m_nkGlobal(glo_nk == 0 ? m_nk : glo_nk),
         m_nodeBlock(io_database, my_name + "_nodes", (m_ni + 1) * (m_nj + 1) * (m_nk + 1),
                     index_dim)
   {
-    add_properties_and_fields(index_dim);
-  }
-
-  void StructuredBlock::add_properties_and_fields(int index_dim)
-  {
-    assert(index_dim == 1 || index_dim == 2 || index_dim == 3);
+    SMART_ASSERT(index_dim == 1 || index_dim == 2 || index_dim == 3)(index_dim);
 
     int64_t cell_count        = 0;
     int64_t node_count        = 0;
@@ -121,6 +135,12 @@ namespace Ioss {
                                                  : static_cast<int64_t>(m_niGlobal + 1) *
                                                        (m_njGlobal + 1) * (m_nkGlobal + 1);
     }
+
+    SMART_ASSERT(global_cell_count >= cell_count)(global_cell_count)(cell_count);
+    SMART_ASSERT(global_node_count >= node_count)(global_node_count)(node_count);
+    SMART_ASSERT(m_niGlobal >= m_ni)(m_niGlobal)(m_ni);
+    SMART_ASSERT(m_njGlobal >= m_nj)(m_njGlobal)(m_nj);
+    SMART_ASSERT(m_nkGlobal >= m_nk)(m_nkGlobal)(m_nk);
 
     properties.add(Property("component_degree", index_dim));
     properties.add(Property("node_count", node_count));
@@ -193,7 +213,7 @@ namespace Ioss {
 
   Property StructuredBlock::get_implicit_property(const std::string &my_name) const
   {
-    return GroupingEntity::get_implicit_property(my_name);
+    return EntityBlock::get_implicit_property(my_name);
   }
 
   int64_t StructuredBlock::internal_get_field_data(const Field &field, void *data,

@@ -80,8 +80,8 @@ namespace Ioss {
       // Hash (id_) is equal
       // Check whether same vertices (can be in different order)
       for (auto lvert : left.connectivity_) {
-        if (std::find(right.connectivity_.begin(), right.connectivity_.end(), lvert) ==
-            right.connectivity_.end()) {
+        if (std::find(right.connectivity_.cbegin(), right.connectivity_.cend(), lvert) ==
+            right.connectivity_.cend()) {
           // Not found, therefore not the same.
           return false;
         }

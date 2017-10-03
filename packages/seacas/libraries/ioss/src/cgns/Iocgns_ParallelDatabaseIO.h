@@ -66,7 +66,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class EntityBlock;
-}
+} // namespace Ioss
 
 namespace Iocgns {
 
@@ -118,9 +118,9 @@ namespace Iocgns {
     void    handle_unstructured_blocks();
     size_t  finalize_structured_blocks();
     int64_t handle_node_ids(void *ids, int64_t num_to_get) const;
-    void finalize_database() override;
-    void get_step_times__() override;
-    void write_adjacency_data();
+    void    finalize_database() override;
+    void    get_step_times__() override;
+    void    write_adjacency_data();
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -212,11 +212,11 @@ namespace Iocgns {
     // m_zoneProcOffset+num_entity.
     mutable std::vector<size_t> m_zoneProcOffset;
     mutable std::vector<size_t>
-                                m_bcOffset; // The BC Section element offsets in unstructured output.
-    mutable std::vector<double> m_timesteps;
-    std::vector<CGNSIntVector>  m_blockLocalNodeMap;
+                                       m_bcOffset; // The BC Section element offsets in unstructured output.
+    mutable std::vector<double>        m_timesteps;
+    std::vector<CGNSIntVector>         m_blockLocalNodeMap;
     std::map<std::string, int>         m_zoneNameMap;
     mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
   };
-}
+} // namespace Iocgns
 #endif

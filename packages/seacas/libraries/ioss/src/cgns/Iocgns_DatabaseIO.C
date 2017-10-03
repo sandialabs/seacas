@@ -184,6 +184,7 @@ namespace Iocgns {
 
   int64_t DatabaseIO::element_global_to_local__(int64_t global) const { return global; }
 
+<<<<<<< HEAD
   void DatabaseIO::resolve_1to1_connection(int base, int zone, int iconn,
                                            Ioss::StructuredBlock *block)
   {
@@ -202,6 +203,68 @@ namespace Iocgns {
     auto donor_iter = m_zoneNameMap.find(donorname);
     if (donor_iter != m_zoneNameMap.end()) {
       donor_zone = (*donor_iter).second;
+=======
+  void DatabaseIO::create_structured_block(int base, int zone, size_t &num_node)
+  {
+    cgsize_t size[9];
+    char     zone_name[33];
+    CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
+    m_zoneNameMap[zone_name] = zone;
+
+    assert(size[0] - 1 == size[3]);
+    assert(size[1] - 1 == size[4]);
+    assert(size[2] - 1 == size[5]);
+
+    assert(size[6] == 0);
+    assert(size[7] == 0);
+    assert(size[8] == 0);
+
+    int index_dim = 0;
+    CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
+    // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
+    Ioss::StructuredBlock *block =
+        new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
+
+    block->property_add(Ioss::Property("base", base));
+    block->property_add(Ioss::Property("zone", zone));
+    block->property_add(Ioss::Property("id", zone));
+    block->property_add(Ioss::Property("guid", zone));
+    get_region()->add(block);
+
+    num_node += block->get_property("node_count").get_int();
+
+    // Handle zone-grid-connectivity...
+    int nconn = 0;
+    CGCHECK(cg_n1to1(cgnsFilePtr, base, zone, &nconn));
+    for (int i = 0; i < nconn; i++) {
+      char                    connectname[33];
+      char                    donorname[33];
+      std::array<cgsize_t, 6> range;
+      std::array<cgsize_t, 6> donor_range;
+      Ioss::IJK_t             transform;
+
+      CGCHECK(cg_1to1_read(cgnsFilePtr, base, zone, i + 1, connectname, donorname, range.data(),
+                           donor_range.data(), transform.data()));
+
+      // Get number of nodes shared with other "previous" zones...
+      // A "previous" zone will have a lower zone number this this zone...
+      int  donor_zone = -1;
+      auto donor_iter = m_zoneNameMap.find(donorname);
+      if (donor_iter != m_zoneNameMap.end()) {
+        donor_zone = (*donor_iter).second;
+      }
+      Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
+      Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
+      Ioss::IJK_t donor_beg{{(int)donor_range[0], (int)donor_range[1], (int)donor_range[2]}};
+      Ioss::IJK_t donor_end{{(int)donor_range[3], (int)donor_range[4], (int)donor_range[5]}};
+
+      bool owns_nodes = zone < donor_zone || donor_zone == -1;
+      block->m_zoneConnectivity.emplace_back(connectname, zone, donorname, donor_zone, transform,
+                                             range_beg, range_end, donor_beg, donor_end,
+                                             owns_nodes);
+      block->m_zoneConnectivity.back().m_donorProcessor = 0;
+      block->m_zoneConnectivity.back().m_ownerProcessor = 0;
+>>>>>>> master
     }
     Ioss::IJK_t range_beg{{(int)range[0], (int)range[1], (int)range[2]}};
     Ioss::IJK_t range_end{{(int)range[3], (int)range[4], (int)range[5]}};
@@ -217,10 +280,44 @@ namespace Iocgns {
 
   void DatabaseIO::resolve_generalized_connection(int base, int zone, int iconn)
   {
+<<<<<<< HEAD
     if (zone == 1) {
       return;
     }
 
+=======
+    const auto &blocks = get_region()->get_structured_blocks();
+
+    // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
+    // and update the donor_zone id for zones that had not yet been processed at the time of
+    // definition...
+    for (auto &block : blocks) {
+      for (auto &conn : block->m_zoneConnectivity) {
+        if (conn.m_donorZone < 0) {
+          auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
+          assert(donor_iter != m_zoneNameMap.end());
+          conn.m_donorZone = (*donor_iter).second;
+        }
+        conn.m_donorGUID = conn.m_donorZone;
+        conn.m_ownerGUID = conn.m_ownerZone;
+      }
+    }
+
+    size_t num_nodes = Utils::resolve_nodes(*get_region(), myProcessor, false);
+    return num_nodes;
+  }
+
+  void DatabaseIO::create_unstructured_block(int base, int zone, size_t &num_node)
+  {
+    cgsize_t size[9];
+    char     zone_name[33];
+    CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
+    m_zoneNameMap[zone_name] = zone;
+
+    size_t total_block_nodes = size[0];
+    m_blockLocalNodeMap[zone].resize(total_block_nodes, -1);
+
+>>>>>>> master
     // Determine number of "shared" nodes (shared with other zones)
     char                      connectname[33];
     char                      donorname[33];
@@ -329,6 +426,7 @@ namespace Iocgns {
       }
     }
 
+<<<<<<< HEAD
     // Process generalized...
     for (int i = 1; i <= nconn_gen; i++) {
       resolve_generalized_connection(base, zone, i);
@@ -344,6 +442,10 @@ namespace Iocgns {
 
     size_t total_elements    = size[1];
     size_t total_block_nodes = size[0];
+=======
+    size_t num_elem = size[1];
+    m_zoneOffset[zone]    = m_zoneOffset[zone - 1] + num_elem;
+>>>>>>> master
 
     // NOTE: A Zone will have a single set of nodes, but can have
     //       multiple sections each with their own element type...
@@ -374,11 +476,16 @@ namespace Iocgns {
 
       cgsize_t num_entity = el_end - el_start + 1;
 
+<<<<<<< HEAD
       if (parent_flag == 0 && elements_to_be_processed > 0) {
         elements_to_be_processed -= num_entity;
         if (elements_to_be_processed > 0) {
           multiple_sections = true;
         }
+=======
+      if (parent_flag == 0 && num_elem > 0) {
+        num_elem -= num_entity;
+>>>>>>> master
         std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
         std::string block_name{zone_name};
         if (multiple_sections) {
@@ -393,6 +500,7 @@ namespace Iocgns {
         eblock->property_add(Ioss::Property("base", base));
         eblock->property_add(Ioss::Property("zone", zone));
         eblock->property_add(Ioss::Property("id", zone));
+        eblock->property_add(Ioss::Property("guid", zone));
         eblock->property_add(Ioss::Property("section", is));
         eblock->property_add(Ioss::Property("node_count", (int64_t)total_block_nodes));
 
@@ -565,12 +673,18 @@ namespace Iocgns {
     m_zoneOffset.resize(num_zones + 1);        // Let's use 1-based zones...
 
     // ========================================================================
+<<<<<<< HEAD
     size_t num_struc_node   = 0;
     size_t num_unstruc_node = 0;
+=======
+    size_t        num_node         = 0;
+    CG_ZoneType_t common_zone_type = Utils::check_zone_type(cgnsFilePtr);
+>>>>>>> master
 
     bool has_structured   = false;
     bool has_unstructured = false;
     for (int zone = 1; zone <= num_zones; zone++) {
+<<<<<<< HEAD
       size_t        num_elem_cell = 0;
       CG_ZoneType_t zone_type;
       CGCHECK(cg_zone_type(cgnsFilePtr, base, zone, &zone_type));
@@ -582,6 +696,13 @@ namespace Iocgns {
       else if (zone_type == CG_Unstructured) {
         has_unstructured = true;
         num_elem_cell    = create_unstructured_block(base, zone);
+=======
+      if (common_zone_type == CG_Structured) {
+        create_structured_block(base, zone, num_node);
+      }
+      else if (common_zone_type == CG_Unstructured) {
+        create_unstructured_block(base, zone, num_node);
+>>>>>>> master
       }
       else {
         // This should be handled already in check_zone_type...
@@ -663,7 +784,7 @@ namespace Iocgns {
     size_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
-    for (auto I = blocks.begin(); I != blocks.end(); I++) {
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
 
@@ -947,7 +1068,7 @@ namespace Iocgns {
       int                   base             = eb->get_property("base").get_int();
       int                   zone             = eb->get_property("zone").get_int();
       int                   sect             = eb->get_property("section").get_int();
-      cgsize_t              my_element_count = eb->get_property("entity_count").get_int();
+      cgsize_t              my_element_count = eb->entity_count();
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
@@ -1261,7 +1382,7 @@ namespace Iocgns {
 
     ssize_t num_to_get = field.verify(data_size);
     if (num_to_get > 0) {
-      int64_t entity_count = sb->get_property("entity_count").get_int();
+      int64_t entity_count = sb->entity_count();
       if (num_to_get != entity_count) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Partial field input not yet implemented for side blocks";
@@ -1486,15 +1607,14 @@ namespace Iocgns {
               nodes.push_back(idata[i]);
             }
           }
-          auto it = nodes.begin();
-          it++;
           Ioss::Utils::uniquify(nodes, true);
+	  assert(nodes[0] == 1);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;
           int      zone    = 0;
           cgsize_t size[3] = {0, 0, 0};
-          size[1]          = eb->get_property("entity_count").get_int();
+          size[1]          = eb->entity_count();
           size[0]          = nodes.size() - 1;
 
           CGCHECK(
@@ -1518,7 +1638,7 @@ namespace Iocgns {
             block_map->reverse_map_data((int64_t *)data, field, num_to_get * element_nodes);
           }
 
-          if (eb->get_property("entity_count").get_int() > 0) {
+          if (eb->entity_count() > 0) {
             CG_ElementType_t type            = Utils::map_topology_to_cgns(eb->topology()->name());
             int              sect            = 0;
             int              field_byte_size = (field.get_type() == Ioss::Field::INT32) ? 32 : 64;

@@ -85,7 +85,6 @@ int ex_get_block_param(int exoid, ex_block *block)
 
   file = ex_find_file_item(exoid);
   if (!file) {
-    char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d in ex_get_block_param().", exoid);
     ex_err("ex_get_block_param", errmsg, EX_BADFILEID);
     EX_FUNC_LEAVE(EX_FATAL);

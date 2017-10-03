@@ -95,7 +95,7 @@ Ioss::Property Ioss::SideBlock::get_implicit_property(const std::string &my_name
   if (my_name == "distribution_factor_count") {
     if (field_exists("distribution_factors")) {
       int64_t nnodes = topology()->number_nodes();
-      int64_t nside  = get_property("entity_count").get_int();
+      int64_t nside  = entity_count();
       return Ioss::Property(my_name, nnodes * nside);
     }
     return Ioss::Property(my_name, 0);

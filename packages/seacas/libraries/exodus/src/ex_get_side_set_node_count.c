@@ -223,7 +223,7 @@ int ex_get_side_set_node_count(int exoid, ex_entity_id side_set_id, int *side_se
 
   /* Allocate space for the element block ids */
   {
-    int int_size = sizeof(int);
+    int_size = sizeof(int);
     if (ex_int64_status(exoid) & EX_IDS_INT64_API) {
       int_size = sizeof(int64_t);
     }

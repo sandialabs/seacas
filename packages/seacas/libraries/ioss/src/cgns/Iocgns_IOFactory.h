@@ -57,5 +57,5 @@ namespace Iocgns {
                               MPI_Comm                     communicator,
                               const Ioss::PropertyManager &properties) const override;
   };
-}
+} // namespace Iocgns
 #endif // IOSS_Iocgns_IOFactory_h

@@ -124,21 +124,6 @@ namespace Ioss {
     MPI_Comm communicator_;
   };
 
-  inline int power_2(int count)
-  {
-    // Return the power of two which is equal to or greater than 'count'
-    // count = 15 -> returns 16
-    // count = 16 -> returns 16
-    // count = 17 -> returns 32
-
-    // Use brute force...
-    int pow2 = 1;
-    while (pow2 < count) {
-      pow2 *= 2;
-    }
-    return pow2;
-  }
-
 #ifdef SEACAS_HAVE_MPI
   inline MPI_Datatype mpi_type(double /*dummy*/) { return MPI_DOUBLE; }
   inline MPI_Datatype mpi_type(float /*dummy*/) { return MPI_FLOAT; }
@@ -174,7 +159,7 @@ namespace Ioss {
       }
     }
 
-    size_t pow_2 = power_2(processor_count);
+    size_t pow_2 = Ioss::Utils::power_2(processor_count);
 
     for (size_t i = 1; i < pow_2; i++) {
       MPI_Status status{};

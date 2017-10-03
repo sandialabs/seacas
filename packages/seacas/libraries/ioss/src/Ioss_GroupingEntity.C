@@ -57,13 +57,13 @@
  *
  */
 Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database, const std::string &my_name,
-                                     int64_t entity_count)
-    : entityCount(entity_count), entityName(my_name), database_(io_database),
+                                     int64_t entity_cnt)
+    : entityCount(entity_cnt), entityName(my_name), database_(io_database),
       hash_(Ioss::Utils::hash(my_name))
 {
   properties.add(Ioss::Property("name", my_name));
 
-  properties.add(Ioss::Property("entity_count", entity_count));
+  properties.add(Ioss::Property("entity_count", entity_cnt));
 
   properties.add(Ioss::Property(this, "attribute_count", Ioss::Property::INTEGER));
 
@@ -72,7 +72,7 @@ Ioss::GroupingEntity::GroupingEntity(Ioss::DatabaseIO *io_database, const std::s
     if (io_database != nullptr) {
       int_type = field_int_type();
     }
-    fields.add(Ioss::Field("ids", int_type, "scalar", Ioss::Field::MESH, entity_count));
+    fields.add(Ioss::Field("ids", int_type, "scalar", Ioss::Field::MESH, entity_cnt));
   }
 }
 
@@ -188,7 +188,7 @@ Ioss::Property Ioss::GroupingEntity::get_implicit_property(const std::string &my
  */
 void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
 {
-  size_t entity_size = get_property("entity_count").get_int();
+  size_t entity_size = entity_count();
   size_t field_size  = new_field.raw_count();
   if (entity_size != field_size && type() != REGION) {
     std::string        filename = get_database()->get_filename();

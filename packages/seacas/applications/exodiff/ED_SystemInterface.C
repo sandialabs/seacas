@@ -604,14 +604,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
       }
       else {
         // Check for additional unknown arguments...
-        std::cerr << trmclr::red << "\nexodiff: ERROR: Too many file arguments specified."
-                  << "\n         Probably caused by options following filenames which is no longer "
-                     "allowed."
-                  << "\n         Unknown options are: ";
+	std::ostringstream out;
+        out << "\nexodiff: ERROR: Too many file arguments specified."
+	    << "\n         Probably caused by options following filenames which is no longer "
+	  "allowed."
+	    << "\n         Unknown options are: ";
         while (option_index < argc) {
-          std::cerr << "'" << argv[option_index++] << "' ";
+          out << "'" << argv[option_index++] << "' ";
         }
-        std::cerr << "\n\n" << trmclr::normal;
+        out << "\n\n";
+	ERR_OUT(out);
         return false;
       }
     }

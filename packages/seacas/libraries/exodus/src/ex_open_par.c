@@ -370,7 +370,6 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
      this exoid
   */
   if (ex_find_file_item(exoid) != NULL) {
-    char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: There is an existing file already using the file "
              "id %d which was also assigned to file %s.\n\tWas "

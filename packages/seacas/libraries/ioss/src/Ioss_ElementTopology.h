@@ -75,6 +75,9 @@ namespace Ioss {
     void alias(const std::string &base, const std::string &syn);
     bool is_alias(const std::string &my_alias) const;
 
+    ElementTopology(const ElementTopology &) = delete;
+    ElementTopology &operator=(const ElementTopology &) = delete;
+
     virtual ~ElementTopology();
 
     const std::string &name() const { return name_; }
@@ -140,9 +143,6 @@ namespace Ioss {
     ElementTopology(std::string type, std::string master_elem_name, bool delete_me = false);
 
   private:
-    ElementTopology(const ElementTopology &);            // Do not implement...
-    ElementTopology &operator=(const ElementTopology &); // Do not implement...
-
     const std::string name_;
     const std::string masterElementName_;
 

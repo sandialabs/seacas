@@ -50,4 +50,4 @@ namespace SEAMS {
     double Mean;
     double StdDev;
   };
-} // namespace SEAMS  // namespace SEAMS
+} // namespace SEAMS

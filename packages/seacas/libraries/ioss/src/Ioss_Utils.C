@@ -41,18 +41,11 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <sys/select.h>
-#if defined(__INTEL_COMPILER)
-#if (__INTEL_COMPILER < 1500)
-#if !defined(_GLIBCXX_USE_NANOSLEEP)
-#define _GLIBCXX_USE_NANOSLEEP
-#endif
-#endif
-#endif
-#include <thread>
 #include <tokenize.h>
 #include <vector>
 
@@ -237,9 +230,6 @@ namespace {
     }
     return N;
   }
-
-  const std::string SCALAR() { return std::string("scalar"); }
-
 } // namespace
 
 /** \brief Get formatted time and date strings.
@@ -1520,6 +1510,31 @@ void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
   }
 }
 
+namespace {
+const int tab64[64] = {
+    63,  0, 58,  1, 59, 47, 53,  2,
+    60, 39, 48, 27, 54, 33, 42,  3,
+    61, 51, 37, 40, 49, 18, 28, 20,
+    55, 30, 34, 11, 43, 14, 22,  4,
+    62, 57, 46, 52, 38, 26, 32, 41,
+    50, 36, 17, 19, 29, 10, 13, 21,
+    56, 45, 25, 31, 35, 16,  9, 12,
+    44, 24, 15,  8, 23,  7,  6,  5};
+}
+
+int Ioss::Utils::log_power_2(uint64_t value)
+{
+  assert(value > 0);
+    value = (value << 1) - 1;
+    value |= value >> 1;
+    value |= value >> 2;
+    value |= value >> 4;
+    value |= value >> 8;
+    value |= value >> 16;
+    value |= value >> 32;
+    return tab64[((uint64_t)((value - (value >> 1))*0x07EDD5E59A4E28C2)) >> 58];
+}
+
 void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_region,
                                 Ioss::MeshCopyOptions &options)
 {
@@ -1875,7 +1890,10 @@ void Ioss::Utils::copy_database(Ioss::Region &region, Ioss::Region &output_regio
     region.end_state(istep);
     output_region.end_state(ostep);
     if (options.delay > 0.0) {
-      std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000 * options.delay)));
+      struct timespec delay;
+      delay.tv_sec = (int)options.delay;
+      delay.tv_nsec = (options.delay-delay.tv_sec)*1000000000L;
+      nanosleep(&delay, nullptr);
     }
   }
   if (options.debug && rank == 0) {
@@ -1899,7 +1917,7 @@ namespace {
       if (debug && rank == 0) {
         std::cerr << name << ", ";
       }
-      size_t num_nodes = inb->get_property("entity_count").get_int();
+      size_t num_nodes = inb->entity_count();
       size_t degree    = inb->get_property("component_degree").get_int();
       if (verbose && rank == 0) {
         std::cerr << " Number of  Coordinates per Node        =" << std::setw(12) << degree << "\n";
@@ -1988,7 +2006,7 @@ namespace {
           std::cerr << name << ", ";
         }
         std::string type  = iblock->get_property("topology_type").get_string();
-        size_t      count = iblock->get_property("entity_count").get_int();
+        size_t      count = iblock->entity_count();
         total_entities += count;
 
         auto block = new T(output_region.get_database(), name, type, count);
@@ -2019,7 +2037,7 @@ namespace {
         if (debug && rank == 0) {
           std::cerr << name << ", ";
         }
-        size_t count = iblock->get_property("entity_count").get_int();
+        size_t count = iblock->entity_count();
         total_entities += count;
 
         auto block = iblock->clone(output_region.get_database());
@@ -2080,7 +2098,7 @@ namespace {
         }
         std::string fbtype   = fb->get_property("topology_type").get_string();
         std::string partype  = fb->get_property("parent_topology_type").get_string();
-        size_t      num_side = fb->get_property("entity_count").get_int();
+        size_t      num_side = fb->entity_count();
         total_sides += num_side;
 
         auto block =
@@ -2116,7 +2134,7 @@ namespace {
         if (debug && rank == 0) {
           std::cerr << name << ", ";
         }
-        size_t count = set->get_property("entity_count").get_int();
+        size_t count = set->entity_count();
         total_entities += count;
         auto o_set = new T(output_region.get_database(), name, count);
         output_region.add(o_set);
@@ -2174,7 +2192,7 @@ namespace {
         std::cerr << name << ", ";
       }
       std::string type  = ics->get_property("entity_type").get_string();
-      size_t      count = ics->get_property("entity_count").get_int();
+      size_t      count = ics->entity_count();
       auto        cs    = new Ioss::CommSet(output_region.get_database(), name, type, count);
       output_region.add(cs);
       transfer_properties(ics, cs);
@@ -2306,7 +2324,7 @@ namespace {
       return;
     }
 
-    if (options.data_storage_type >= 1 || options.data_storage_type <= 2) {
+    if (options.data_storage_type == 1 || options.data_storage_type == 2) {
       if (data.size() < isize) {
         data.resize(isize);
       }
@@ -2322,7 +2340,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data(field_name, data);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data(field_name, data_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2342,7 +2360,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data<char>(field_name, data_view_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data<int>(field_name, data_view_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2362,7 +2380,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         ige->get_field_data<char>(field_name, data_view_2D_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data<int>(field_name, data_view_2D_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2383,7 +2401,7 @@ namespace {
         ige->get_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_char_layout_space);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         ige->get_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_int_layout_space);
       }
@@ -2416,7 +2434,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data(field_name, data);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data(field_name, data_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2436,7 +2454,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data<char>(field_name, data_view_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data<int>(field_name, data_view_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2456,7 +2474,7 @@ namespace {
       if ((basic_type == Ioss::Field::CHARACTER) || (basic_type == Ioss::Field::STRING)) {
         oge->put_field_data<char>(field_name, data_view_2D_char);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data<int>(field_name, data_view_2D_int);
       }
       else if (basic_type == Ioss::Field::INT64) {
@@ -2477,7 +2495,7 @@ namespace {
         oge->put_field_data<char, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_char_layout_space);
       }
-      else if ((basic_type == Ioss::Field::INTEGER) || (basic_type == Ioss::Field::INT32)) {
+      else if (basic_type == Ioss::Field::INT32) {
         oge->put_field_data<int, Kokkos::LayoutRight, Kokkos::HostSpace>(
             field_name, data_view_2D_int_layout_space);
       }

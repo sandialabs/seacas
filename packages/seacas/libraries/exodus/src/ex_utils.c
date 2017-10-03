@@ -1107,7 +1107,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
 int ex_get_cpu_ws(void) { return (sizeof(float)); }
 
 /* swap - interchange v[i] and v[j] */
-static void ex_swap(int v[], int i, int j)
+static void ex_swap(int v[], int64_t i, int64_t j)
 {
   /* Thread-safe, reentrant */
   int temp;

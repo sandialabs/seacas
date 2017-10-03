@@ -171,6 +171,23 @@ namespace Ioss {
       assert(vec.capacity() == 0);
     }
 
+    inline static int power_2(int count)
+    {
+      // Return the power of two which is equal to or greater than 'count'
+      // count = 15 -> returns 16
+      // count = 16 -> returns 16
+      // count = 17 -> returns 32
+
+      // Use brute force...
+      int pow2 = 1;
+      while (pow2 < count) {
+        pow2 *= 2;
+      }
+      return pow2;
+    }
+
+    static int log_power_2(uint64_t value);
+
     static char **get_name_array(size_t count, int size);
     static void   delete_name_array(char **names, int count);
 

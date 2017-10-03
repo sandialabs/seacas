@@ -249,7 +249,7 @@ namespace {
     // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
-}
+} // namespace
 
 namespace Iocgns {
 
@@ -406,4 +406,4 @@ namespace Iocgns {
       zgc.m_ownerProcessor = owner_zone->m_proc;
     }
   }
-}
+} // namespace Iocgns
