@@ -31,11 +31,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_BoundingBox.h>  // for AxisAlignedBoundingBox
-#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_DatabaseIO.h>   // for DatabaseIO
 #include <Ioss_Field.h>        // for Field, etc
+#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_Hex8.h>
-#include <Ioss_Property.h>     // for Property
+#include <Ioss_Property.h> // for Property
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
@@ -45,15 +45,6 @@
 #include <string> // for string
 #include <vector> // for vector
 
-<<<<<<< HEAD
-namespace {
-  const std::string SCALAR() { return std::string("scalar"); }
-  const std::string VECTOR_2D() { return std::string("vector_2d"); }
-  const std::string VECTOR_3D() { return std::string("vector_3d"); }
-} // namespace
-
-=======
->>>>>>> master
 namespace Ioss {
   class Field;
 
