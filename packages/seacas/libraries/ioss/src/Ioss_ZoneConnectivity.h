@@ -56,9 +56,8 @@ namespace Ioss {
     ZoneConnectivityBase(const std::string name, int owner_zone, const std::string donor_name,
                          int donor_zone, bool owns_nodes, bool intra_block = false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_ownerZone(owner_zone), m_donorZone(donor_zone), m_ownerProcessor(-1),
-          m_donorProcessor(-1), m_sameRange(false), m_ownsSharedNodes(owns_nodes),
-          m_intraBlock(intra_block), m_isActive(true)
+          m_ownerZone(owner_zone), m_donorZone(donor_zone), m_ownsSharedNodes(owns_nodes),
+          m_intraBlock(intra_block)
     {
     }
 
@@ -74,17 +73,22 @@ namespace Ioss {
                              // this connection.
 
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
-    int  m_ownerZone;      // "id" of zone that owns this connection
-    int  m_donorZone;      // "id" of zone that is donor (or other side) of this connection
-    int  m_ownerProcessor; // processor that owns the owner zone
-    int  m_donorProcessor; // processor that owns the donor zone
-    bool m_sameRange; // True if owner and donor range should always match...(special use during
-                      // decomp)
-    bool m_ownsSharedNodes; // True if it is the "lower" zone id in the connection. Uses adam unless
-                            // both have same adam.
-    bool m_intraBlock; // True if this zc is created due to processor decompositions in a parallel
-                       // run.
-    bool m_isActive;   // True if non-zero range. That is, it has at least one face
+    int    m_ownerZone{};        // "id" of zone that owns this connection
+    int    m_donorZone{};        // "id" of zone that is donor (or other side) of this connection
+    size_t m_ownerGUID{};        // globally-unique id of owner
+    size_t m_donorGUID{};        // globally-unique id of donor
+    int    m_ownerProcessor{-1}; // processor that owns the owner zone
+    int    m_donorProcessor{-1}; // processor that owns the donor zone
+    bool   m_sameRange{
+        false}; // True if owner and donor range should always match...(special use during
+                  // decomp)
+    bool m_ownsSharedNodes{
+        false}; // True if it is the "lower" zone id in the connection. Uses adam unless
+                // both have same adam.
+    bool m_intraBlock{
+        false}; // True if this zc is created due to processor decompositions in a parallel
+                // run.
+    bool m_isActive{true}; // True if non-zero range. That is, it has at least one face
   };
 
   struct ZoneConnectivity : public ZoneConnectivityBase
@@ -94,17 +98,17 @@ namespace Ioss {
                      const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
                      const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
         : ZoneConnectivityBase(name, owner_zone, donor_name, donor_zone, owns_nodes, intra_block),
-          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
-          m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
+          m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
+          m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end))
     {
       if (!m_intraBlock) {
-        m_ownerRange[0] = m_rangeBeg[0];
-        m_ownerRange[1] = m_rangeBeg[1];
-        m_ownerRange[2] = m_rangeBeg[2];
-        m_ownerRange[3] = m_rangeEnd[0];
-        m_ownerRange[4] = m_rangeEnd[1];
-        m_ownerRange[5] = m_rangeEnd[2];
+        m_ownerRange[0] = m_ownerRangeBeg[0];
+        m_ownerRange[1] = m_ownerRangeBeg[1];
+        m_ownerRange[2] = m_ownerRangeBeg[2];
+        m_ownerRange[3] = m_ownerRangeEnd[0];
+        m_ownerRange[4] = m_ownerRangeEnd[1];
+        m_ownerRange[5] = m_ownerRangeEnd[2];
 
         m_donorRange[0] = m_donorRangeBeg[0];
         m_donorRange[1] = m_donorRangeBeg[1];
@@ -122,7 +126,7 @@ namespace Ioss {
     {
       size_t snc = 1;
       for (int i = 0; i < 3; i++) {
-        snc *= (std::abs(m_rangeEnd[i] - m_rangeBeg[i]) + 1);
+        snc *= (std::abs(m_ownerRangeEnd[i] - m_ownerRangeBeg[i]) + 1);
       }
       return snc;
     }
@@ -140,17 +144,21 @@ namespace Ioss {
     std::array<INT, 6> m_ownerRange{};
     std::array<INT, 6> m_donorRange{};
 
-    Ioss::IJK_t m_transform; // The transform.  In the same form as defined by CGNS
+    Ioss::IJK_t m_transform{}; // The transform.  In the same form as defined by CGNS
 
     // The following are all subsetted down to the portion that is actually on this zone
     // This can be different thant m_ownerRange and m_donorRange in a parallel run if the
     // decomposition splits the connection.  In a serial run, they are the same.
     //
     // One of ijk should be the same for rangeBeg and rangeEnd defining a surface.
-    Ioss::IJK_t m_rangeBeg;      // ijk triplet defining beginning of range on this zone
-    Ioss::IJK_t m_rangeEnd;      // ijk triplet defining end of range on this zone
-    Ioss::IJK_t m_donorRangeBeg; // ijk triplet defining beginning of range on the connected zone
-    Ioss::IJK_t m_donorRangeEnd; // ijk triplet defining end of range on the connected zone
+    Ioss::IJK_t m_ownerRangeBeg{}; // ijk triplet defining beginning of range on this zone
+    Ioss::IJK_t m_ownerRangeEnd{}; // ijk triplet defining end of range on this zone
+    Ioss::IJK_t m_ownerOffset{};   // ijk triplet with offset of this zone.  Used to convert
+                                   // rangeBeg and rangeEnd global indices to local indices
+    Ioss::IJK_t m_donorRangeBeg{}; // ijk triplet defining beginning of range on the connected zone
+    Ioss::IJK_t m_donorRangeEnd{}; // ijk triplet defining end of range on the connected zone
+    Ioss::IJK_t m_donorOffset{};   // ijk triplet with offset of the donor zone.  Used to convert
+                                   // donorRangeBeg and End global indices to local indices
   };
 } // namespace Ioss
 #endif
