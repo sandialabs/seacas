@@ -65,11 +65,24 @@ namespace Ioss {
     os << "\t\t" << zgc.m_donorName << "[P" << zgc.m_donorProcessor << "]:\tDZ " << zgc.m_donorZone
        << "\tName '" << zgc.m_connectionName << "' shares " << zgc.get_shared_node_count()
        << " nodes. (Owned = " << (zgc.owns_shared_nodes() ? "true" : "false") << ")."
-       << "\n\t\t\t\tRange: [" << zgc.m_rangeBeg[0] << ".." << zgc.m_rangeEnd[0] << ", "
-       << zgc.m_rangeBeg[1] << ".." << zgc.m_rangeEnd[1] << ", " << zgc.m_rangeBeg[2] << ".."
-       << zgc.m_rangeEnd[2] << "]\tDonor Range: [" << zgc.m_donorRangeBeg[0] << ".."
+       << "\n\t\t\t\t      Range: [" << zgc.m_ownerRangeBeg[0] << ".." << zgc.m_ownerRangeEnd[0] << ", "
+       << zgc.m_ownerRangeBeg[1] << ".." << zgc.m_ownerRangeEnd[1] << ", " << zgc.m_ownerRangeBeg[2] << ".."
+       << zgc.m_ownerRangeEnd[2] << "]\t      Donor Range: [" << zgc.m_donorRangeBeg[0] << ".."
        << zgc.m_donorRangeEnd[0] << ", " << zgc.m_donorRangeBeg[1] << ".." << zgc.m_donorRangeEnd[1]
-       << ", " << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]";
+       << ", " << zgc.m_donorRangeBeg[2] << ".." << zgc.m_donorRangeEnd[2] << "]"
+       << "\n\t\t\t\tLocal Range: ["
+       << zgc.m_ownerRangeBeg[0]-zgc.m_ownerOffset[0] << ".."
+       << zgc.m_ownerRangeEnd[0]-zgc.m_ownerOffset[0] << ", "
+       << zgc.m_ownerRangeBeg[1]-zgc.m_ownerOffset[1] << ".."
+       << zgc.m_ownerRangeEnd[1]-zgc.m_ownerOffset[1] << ", "
+       << zgc.m_ownerRangeBeg[2]-zgc.m_ownerOffset[2] << ".."
+       << zgc.m_ownerRangeEnd[2]-zgc.m_ownerOffset[2] << "]\tDonor Local Range: ["
+       << zgc.m_donorRangeBeg[0]-zgc.m_donorOffset[0] << ".."
+       << zgc.m_donorRangeEnd[0]-zgc.m_donorOffset[0] << ", "
+       << zgc.m_donorRangeBeg[1]-zgc.m_donorOffset[1] << ".."
+       << zgc.m_donorRangeEnd[1]-zgc.m_donorOffset[1] << ", "
+       << zgc.m_donorRangeBeg[2]-zgc.m_donorOffset[2] << ".."
+       << zgc.m_donorRangeEnd[2]-zgc.m_donorOffset[2] << "]";
     return os;
   }
 
@@ -78,13 +91,13 @@ namespace Ioss {
     // Return the integer values for the specified range for the specified ordinal (1,2,3) ->
     // (i,j,k)
     ordinal--;
-    int size  = std::abs(m_rangeBeg[ordinal] - m_rangeEnd[ordinal]) + 1;
-    int delta = sign(m_rangeEnd[ordinal] - m_rangeBeg[ordinal]);
+    int size  = std::abs(m_ownerRangeBeg[ordinal] - m_ownerRangeEnd[ordinal]) + 1;
+    int delta = sign(m_ownerRangeEnd[ordinal] - m_ownerRangeBeg[ordinal]);
     assert(delta == 1 || delta == -1);
 
     std::vector<int> range(size);
     for (int i = 0; i < size; i++) {
-      range[i] = m_rangeBeg[ordinal] + i * delta;
+      range[i] = m_ownerRangeBeg[ordinal] + i * delta;
     }
     return range;
   }
@@ -107,9 +120,9 @@ namespace Ioss {
     Ioss::IJK_t diff{};
     Ioss::IJK_t donor{};
 
-    diff[0] = index_1[0] - m_rangeBeg[0];
-    diff[1] = index_1[1] - m_rangeBeg[1];
-    diff[2] = index_1[2] - m_rangeBeg[2];
+    diff[0] = index_1[0] - m_ownerRangeBeg[0];
+    diff[1] = index_1[1] - m_ownerRangeBeg[1];
+    diff[2] = index_1[2] - m_ownerRangeBeg[2];
 
     donor[0] =
         t_matrix[0] * diff[0] + t_matrix[1] * diff[1] + t_matrix[2] * diff[2] + m_donorRangeBeg[0];
@@ -141,11 +154,11 @@ namespace Ioss {
     diff[2] = index_1[2] - m_donorRangeBeg[2];
 
     index[0] =
-        t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_rangeBeg[0];
+        t_matrix[0] * diff[0] + t_matrix[3] * diff[1] + t_matrix[6] * diff[2] + m_ownerRangeBeg[0];
     index[1] =
-        t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_rangeBeg[1];
+        t_matrix[1] * diff[0] + t_matrix[4] * diff[1] + t_matrix[7] * diff[2] + m_ownerRangeBeg[1];
     index[2] =
-        t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_rangeBeg[2];
+        t_matrix[2] * diff[0] + t_matrix[5] * diff[1] + t_matrix[8] * diff[2] + m_ownerRangeBeg[2];
 
     return index;
   }
