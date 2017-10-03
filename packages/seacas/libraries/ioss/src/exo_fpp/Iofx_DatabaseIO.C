@@ -939,13 +939,13 @@ namespace Iofx {
 
     // Possibly, the following 4 fields should be nodesets and element
     // sets instead of fields on the region...
-    region->field_add(Ioss::Field("internal_nodes", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("internal_nodes", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_internal_nodes));
-    region->field_add(Ioss::Field("border_nodes", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("border_nodes", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_border_nodes));
-    region->field_add(Ioss::Field("internal_elements", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("internal_elements", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_internal_elems));
-    region->field_add(Ioss::Field("border_elements", region->field_int_type(), SCALAR(),
+    region->field_add(Ioss::Field("border_elements", region->field_int_type(), IOSS_SCALAR(),
                                   Ioss::Field::COMMUNICATION, num_border_elems));
 
     assert(nodeCount == num_internal_nodes + num_border_nodes);
@@ -4747,13 +4747,14 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
     for (int i = 0; i < comp_count; i++) {
       std::string var_name = var_type->label_name(field_name, i + 1, field_suffix_separator);
 
-      if (m_variables[EX_NODE_BLOCK].find(var_name) == m_variables[EX_NODE_BLOCK].end()) {
+      auto var_iter = m_variables[EX_NODE_BLOCK].find(var_name);
+      if (var_iter == m_variables[EX_NODE_BLOCK].end()) {
         std::ostringstream errmsg;
         errmsg << "ERROR: Could not find nodal variable '" << var_name << "'\n";
         IOSS_ERROR(errmsg);
       }
 
-      var_index = m_variables[EX_NODE_BLOCK].find(var_name)->second;
+      var_index = var_iter->second;
 
       size_t  begin_offset = (re_im * i) + complex_comp;
       size_t  stride       = re_im * comp_count;

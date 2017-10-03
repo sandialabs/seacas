@@ -34,6 +34,8 @@
 #include <Ioss_DBUsage.h>
 #include <Ioss_PropertyManager.h>
 #include <Ioss_Region.h>
+#include <Ioss_Shell4.h>
+#include <Ioss_Hex8.h>
 #include <exo_fpp/Iofx_DatabaseIO.h>
 #include <gtest/gtest.h>
 #include <mpi.h>

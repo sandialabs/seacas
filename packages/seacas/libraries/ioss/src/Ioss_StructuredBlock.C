@@ -153,33 +153,33 @@ namespace Ioss {
 
     std::string vector_name;
     if (index_dim == 1) {
-      vector_name = SCALAR();
+      vector_name = IOSS_SCALAR();
     }
     else if (index_dim == 2) {
-      vector_name = VECTOR_2D();
+      vector_name = IOSS_VECTOR_2D();
     }
     else if (index_dim == 3) {
-      vector_name = VECTOR_3D();
+      vector_name = IOSS_VECTOR_3D();
     }
     fields.add(
-        Ioss::Field("cell_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH, cell_count));
+        Ioss::Field("cell_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH, cell_count));
 
-    fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
+    fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
                            node_count));
 
     fields.add(Ioss::Field("mesh_model_coordinates", Ioss::Field::REAL, vector_name,
                            Ioss::Field::MESH, node_count));
 
     // Permit access 1-coordinate at a time
-    fields.add(Ioss::Field("mesh_model_coordinates_x", Ioss::Field::REAL, SCALAR(),
+    fields.add(Ioss::Field("mesh_model_coordinates_x", Ioss::Field::REAL, IOSS_SCALAR(),
                            Ioss::Field::MESH, node_count));
     if (index_dim > 1) {
-      fields.add(Ioss::Field("mesh_model_coordinates_y", Ioss::Field::REAL, SCALAR(),
+      fields.add(Ioss::Field("mesh_model_coordinates_y", Ioss::Field::REAL, IOSS_SCALAR(),
                              Ioss::Field::MESH, node_count));
     }
 
     if (index_dim > 2) {
-      fields.add(Ioss::Field("mesh_model_coordinates_z", Ioss::Field::REAL, SCALAR(),
+      fields.add(Ioss::Field("mesh_model_coordinates_z", Ioss::Field::REAL, IOSS_SCALAR(),
                              Ioss::Field::MESH, node_count));
     }
   }

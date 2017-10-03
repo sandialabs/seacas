@@ -45,12 +45,15 @@ namespace Ioss {
   using IJK_t       = std::array<int, 3>;
 } // namespace Ioss
 
-inline const std::string SCALAR() { return std::string("scalar"); }
-inline const std::string VECTOR_2D() { return std::string("vector_2d"); }
-inline const std::string VECTOR_3D() { return std::string("vector_3d"); }
+inline const std::string IOSS_SCALAR() { return std::string("scalar"); }
+inline const std::string IOSS_VECTOR_2D() { return std::string("vector_2d"); }
+inline const std::string IOSS_VECTOR_3D() { return std::string("vector_3d"); }
+inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33"); }
+
 
 #if defined(SIERRA_PARALLEL_MPI)
 #define SEACAS_HAVE_MPI
+#define NO_DATAWAREHOUSE_SUPPORT
 /* #undef IOSS_THREADSAFE */
 /* #undef SEACAS_HAVE_KOKKOS */
 #define SEACAS_HAVE_CGNS

@@ -98,14 +98,14 @@ int ex_close(int exoid)
    */
   if ((status = nc_inq_grp_parent(exoid, &parent_id)) != NC_ENOGRP) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: file id %d does not refer to root group.", exoid);
-    ex_err("ex_close", errmsg, EX_NOTROOTID);
+    ex_err(__func__, errmsg, EX_NOTROOTID);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 #endif
 
   if ((status = nc_sync(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to update file id %d", exoid);
-    ex_err("ex_close", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if ((status = nc_close(exoid)) == NC_NOERR) {
@@ -139,7 +139,7 @@ int ex_close(int exoid)
   }
   else {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to close file id %d", exoid);
-    ex_err("ex_close", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);
