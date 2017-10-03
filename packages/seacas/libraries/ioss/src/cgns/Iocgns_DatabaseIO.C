@@ -251,7 +251,7 @@ namespace Iocgns {
              << " is connected to zone " << donorname << " which is of type Structured. "
              << "Can currently only handle structured-structured or unstructured-unstructured "
                 "connections.";
-#if 0
+#if 1
       std::cerr << errmsg.str() << "\n";
 #else
       IOSS_ERROR(errmsg);
@@ -335,93 +335,6 @@ namespace Iocgns {
     }
   }
 
-  size_t DatabaseIO::create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell)
-  {
-    cgsize_t size[9];
-    char     zone_name[33];
-    CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
-    m_zoneNameMap[zone_name] = zone;
-
-    assert(size[0] - 1 == size[3]);
-    assert(size[1] - 1 == size[4]);
-    assert(size[2] - 1 == size[5]);
-
-    assert(size[6] == 0);
-    assert(size[7] == 0);
-    assert(size[8] == 0);
-
-    int index_dim = 0;
-    CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
-    // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
-    Ioss::StructuredBlock *block =
-        new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
-#if IOSS_DEBUG_OUTPUT
-    std::cout << "Added Structured block " << zone_name << " with "
-              << block->get_property("cell_count").get_int() << " cells\n";
-#endif
-
-    block->property_add(Ioss::Property("base", base));
-    block->property_add(Ioss::Property("zone", zone));
-    block->property_add(Ioss::Property("id", zone));
-    get_region()->add(block);
-
-    block->set_node_offset(num_node);
-    block->set_cell_offset(num_cell);
-    block->set_node_global_offset(num_node);
-    block->set_cell_global_offset(num_cell);
-    num_node += block->get_property("node_count").get_int();
-    num_cell += block->get_property("cell_count").get_int();
-
-    resolve_shared_nodes(base, zone, block);
-
-    // Handle boundary conditions...
-    Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
-
-    return block->get_property("cell_count").get_int();
-  }
-
-  void DatabaseIO::finalize_structured_blocks()
-  {
-    const auto &blocks = get_region()->get_structured_blocks();
-
-    // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
-    // and update the donor_zone id for zones that had not yet been processed at the time of
-    // definition...
-    for (auto &block : blocks) {
-      for (auto &conn : block->m_zoneConnectivity) {
-        if (conn.m_donorZone < 0) {
-          auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
-          assert(donor_iter != m_zoneNameMap.end());
-          conn.m_donorZone = (*donor_iter).second;
-        }
-      }
-    }
-  }
-
-  void DatabaseIO::resolve_nodes(size_t &num_struc_node, size_t &num_unstruc_node)
-  {
-    const auto &eblocks = get_region()->get_element_blocks();
-    for (auto &block : eblocks) {
-      int    base              = block->get_property("base").get_int();
-      int    zone              = block->get_property("zone").get_int();
-      size_t total_block_nodes = block->get_property("node_count").get_int();
-
-      auto &block_map = m_blockLocalNodeMap[zone];
-      block_map.resize(total_block_nodes, -1);
-      resolve_shared_nodes(base, zone, nullptr);
-
-      size_t offset = num_unstruc_node;
-      for (size_t i = 0; i < total_block_nodes; i++) {
-        if (block_map[i] == -1) {
-          block_map[i] = offset++;
-        }
-      }
-      num_unstruc_node = offset;
-    }
-
-    num_struc_node = Utils::resolve_nodes(*get_region(), myProcessor, false);
-  }
-
   size_t DatabaseIO::create_unstructured_block(int base, int zone)
   {
     cgsize_t size[9];
@@ -445,7 +358,8 @@ namespace Iocgns {
     // define elements.  Some define boundary conditions...
     Ioss::ElementBlock *eblock = nullptr;
 
-    bool multiple_sections = false;
+    bool   multiple_sections        = false;
+    size_t elements_to_be_processed = total_elements;
     for (int is = 1; is <= num_sections; is++) {
       char             section_name[33];
       CG_ElementType_t e_type;
@@ -460,9 +374,9 @@ namespace Iocgns {
 
       cgsize_t num_entity = el_end - el_start + 1;
 
-      if (parent_flag == 0 && total_elements > 0) {
-        total_elements -= num_entity;
-        if (total_elements > 0) {
+      if (parent_flag == 0 && elements_to_be_processed > 0) {
+        elements_to_be_processed -= num_entity;
+        if (elements_to_be_processed > 0) {
           multiple_sections = true;
         }
         std::string element_topo = Utils::map_cgns_to_topology_type(e_type);
@@ -517,6 +431,110 @@ namespace Iocgns {
     return total_elements;
   }
 
+  size_t DatabaseIO::create_structured_block(int base, int zone)
+  {
+    cgsize_t size[9];
+    char     zone_name[33];
+    CGCHECK(cg_zone_read(cgnsFilePtr, base, zone, zone_name, size));
+    m_zoneNameMap[zone_name] = zone;
+
+    assert(size[0] - 1 == size[3]);
+    assert(size[1] - 1 == size[4]);
+    assert(size[2] - 1 == size[5]);
+
+    assert(size[6] == 0);
+    assert(size[7] == 0);
+    assert(size[8] == 0);
+
+    int index_dim = 0;
+    CGCHECK(cg_index_dim(cgnsFilePtr, base, zone, &index_dim));
+    // An Ioss::StructuredBlock corresponds to a CG_Structured zone...
+    Ioss::StructuredBlock *block =
+        new Ioss::StructuredBlock(this, zone_name, index_dim, size[3], size[4], size[5]);
+#if IOSS_DEBUG_OUTPUT
+    std::cout << "Added Structured block " << zone_name << " with "
+              << block->get_property("cell_count").get_int() << " cells\n";
+#endif
+
+    block->property_add(Ioss::Property("base", base));
+    block->property_add(Ioss::Property("zone", zone));
+    block->property_add(Ioss::Property("id", zone));
+    get_region()->add(block);
+
+    // Handle boundary conditions...
+    Utils::add_structured_boundary_conditions(cgnsFilePtr, block);
+
+    return block->get_property("cell_count").get_int();
+  }
+
+  void DatabaseIO::finalize_unstructured_blocks()
+  {
+    // Doesn't do anything yet...
+  }
+
+  void DatabaseIO::finalize_structured_blocks()
+  {
+    const auto &blocks = get_region()->get_structured_blocks();
+
+    // Set node and cell offsets based on order in 'blocks'
+    // Since this is in the serial databaseio, local == global
+    size_t cell_off = 0;
+    size_t node_off = 0;
+    for (auto &block : blocks) {
+      block->set_node_offset(node_off);
+      block->set_cell_offset(cell_off);
+      block->set_node_global_offset(node_off);
+      block->set_cell_global_offset(cell_off);
+
+      node_off += block->get_property("node_count").get_int();
+      cell_off += block->get_property("cell_count").get_int();
+    }
+
+    // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
+    // and update the donor_zone id for zones that had not yet been processed at the time of
+    // definition...
+    for (auto &block : blocks) {
+      for (auto &conn : block->m_zoneConnectivity) {
+        if (conn.m_donorZone < 0) {
+          auto donor_iter = m_zoneNameMap.find(conn.m_donorName);
+          assert(donor_iter != m_zoneNameMap.end());
+          conn.m_donorZone = (*donor_iter).second;
+        }
+      }
+    }
+  }
+
+  void DatabaseIO::resolve_nodes(size_t &num_struc_node, size_t &num_unstruc_node)
+  {
+    const auto &eblocks = get_region()->get_element_blocks();
+    for (auto &block : eblocks) {
+      int    base              = block->get_property("base").get_int();
+      int    zone              = block->get_property("zone").get_int();
+      size_t total_block_nodes = block->get_property("node_count").get_int();
+
+      auto &block_map = m_blockLocalNodeMap[zone];
+      block_map.resize(total_block_nodes, -1);
+      resolve_shared_nodes(base, zone, nullptr);
+
+      size_t offset = num_unstruc_node;
+      for (size_t i = 0; i < total_block_nodes; i++) {
+        if (block_map[i] == -1) {
+          block_map[i] = offset++;
+        }
+      }
+      num_unstruc_node = offset;
+    }
+
+    const auto &sblocks = get_region()->get_structured_blocks();
+    for (auto &block : sblocks) {
+      int base = block->get_property("base").get_int();
+      int zone = block->get_property("zone").get_int();
+      resolve_shared_nodes(base, zone, block);
+    }
+
+    num_struc_node = Utils::resolve_nodes(*get_region(), myProcessor, false);
+  }
+
   void DatabaseIO::read_meta_data__()
   {
     openDatabase__();
@@ -549,7 +567,6 @@ namespace Iocgns {
     // ========================================================================
     size_t num_struc_node   = 0;
     size_t num_unstruc_node = 0;
-    size_t num_cell         = 0;
 
     bool has_structured   = false;
     bool has_unstructured = false;
@@ -560,7 +577,7 @@ namespace Iocgns {
 
       if (zone_type == CG_Structured) {
         has_structured = true;
-        num_elem_cell  = create_structured_block(base, zone, num_struc_node, num_cell);
+        num_elem_cell  = create_structured_block(base, zone);
       }
       else if (zone_type == CG_Unstructured) {
         has_unstructured = true;
@@ -574,22 +591,30 @@ namespace Iocgns {
                   "which are the only types currently supported";
         IOSS_ERROR(errmsg);
       }
-      m_zoneOffset[zone] = num_elem_cell;
+      m_zoneOffset[zone] = num_elem_cell; // raw count now; changed to offset below.
     }
 
-    size_t num_elem_cell  = 0;
-    size_t num_total_cell = 0;
+    // Convert raw counts to true offset...
+    size_t num_elem_cell = 0;
     for (int zone = 1; zone <= num_zones; zone++) {
       num_elem_cell      = m_zoneOffset[zone];
-      m_zoneOffset[zone] = num_total_cell;
-      num_total_cell += num_elem_cell;
+      m_zoneOffset[zone] = m_zoneOffset[zone - 1] + num_elem_cell;
     }
 
     if (has_structured) {
       finalize_structured_blocks();
     }
+    if (has_unstructured) {
+      finalize_unstructured_blocks();
+    }
 
+      // This is needed to map the zone-specific nodes into an overall
+      // global set of nodes which is needed by some applications.
+      // TODO: Should there be an option to skip this if application doesn't need global set of
+      // nodes?
+#if 1
     resolve_nodes(num_struc_node, num_unstruc_node);
+#endif
 
     size_t num_node = num_struc_node + num_unstruc_node;
 
@@ -1480,7 +1505,6 @@ namespace Iocgns {
           eb->property_update("base", base);
 
           // Now we have a valid zone so can update some data structures...
-          m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
           m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
           m_globalToBlockLocalNodeMap[zone]->map().swap(nodes);
           m_globalToBlockLocalNodeMap[zone]->build_reverse_map();

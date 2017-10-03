@@ -177,7 +177,7 @@ namespace {
     }
     return nstep;
   }
-}
+} // namespace
 
 void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *function, int lineno,
                                int processor)
@@ -276,7 +276,6 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
   CGERR(cg_descriptor_write("Information", "IOSS: CGNS Writer version -1"));
 
   // Output the sidesets as Family_t nodes
-
   const auto &sidesets = region.get_sidesets();
   for (const auto &ss : sidesets) {
     int fam = 0;
@@ -305,8 +304,8 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
   // generate the node count based on connectivity traversal...
 
   const auto &structured_blocks = region.get_structured_blocks();
+  int         zone              = 0;
   for (const auto &sb : structured_blocks) {
-    int      zone    = 0;
     cgsize_t size[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     size[3]          = sb->get_property("ni_global").get_int();
     size[4]          = sb->get_property("nj_global").get_int();
@@ -321,7 +320,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     sb->property_update("base", base);
 
     assert(zone > 0);
-    zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("cell_count").get_int();
+    zone_offset[zone] = zone_offset[zone - 1] + sb->get_property("entity_count").get_int();
 
     // Add GridCoordinates Node...
     int grid_idx = 0;
@@ -354,31 +353,48 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
       }
     }
   }
+
+  assert(zone == (int)structured_blocks.size());
+
+  const auto &element_blocks = region.get_element_blocks();
+  for (const auto &eb : element_blocks) {
+    // We cannot write the element blocks here since we need to
+    // calculate the number of unique nodes in the element block zone
+    // and we need the connectivity field to do that. For that reason,
+    // the zone_write for these zones is deferred to the
+    // put_field_internal call.  However, if we assume (verified
+    // later) that the zone numbers increase monotonically and that
+    // the application is processing element blocks in the order
+    // returned by get_element_blocks(), then we can assume the zone
+    // numbering and set the zone_offset correctly here.
+    zone++;
+    zone_offset[zone] = zone_offset[zone - 1] + eb->get_property("entity_count").get_int();
+  }
 }
 
 std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
 {
   std::string topology = "unknown";
   switch (type) {
-  case CG_NODE: topology     = Ioss::Node::name; break;
-  case CG_BAR_2: topology    = Ioss::Bar2::name; break;
-  case CG_BAR_3: topology    = Ioss::Bar3::name; break;
-  case CG_TRI_3: topology    = Ioss::Tri3::name; break;
-  case CG_TRI_6: topology    = Ioss::Tri6::name; break;
-  case CG_QUAD_4: topology   = Ioss::Quad4::name; break;
-  case CG_QUAD_8: topology   = Ioss::Quad8::name; break;
-  case CG_QUAD_9: topology   = Ioss::Quad9::name; break;
-  case CG_TETRA_4: topology  = Ioss::Tet4::name; break;
+  case CG_NODE: topology = Ioss::Node::name; break;
+  case CG_BAR_2: topology = Ioss::Bar2::name; break;
+  case CG_BAR_3: topology = Ioss::Bar3::name; break;
+  case CG_TRI_3: topology = Ioss::Tri3::name; break;
+  case CG_TRI_6: topology = Ioss::Tri6::name; break;
+  case CG_QUAD_4: topology = Ioss::Quad4::name; break;
+  case CG_QUAD_8: topology = Ioss::Quad8::name; break;
+  case CG_QUAD_9: topology = Ioss::Quad9::name; break;
+  case CG_TETRA_4: topology = Ioss::Tet4::name; break;
   case CG_TETRA_10: topology = Ioss::Tet10::name; break;
-  case CG_PYRA_5: topology   = Ioss::Pyramid5::name; break;
-  case CG_PYRA_13: topology  = Ioss::Pyramid13::name; break;
-  case CG_PYRA_14: topology  = Ioss::Pyramid14::name; break;
-  case CG_PENTA_6: topology  = Ioss::Wedge6::name; break;
+  case CG_PYRA_5: topology = Ioss::Pyramid5::name; break;
+  case CG_PYRA_13: topology = Ioss::Pyramid13::name; break;
+  case CG_PYRA_14: topology = Ioss::Pyramid14::name; break;
+  case CG_PENTA_6: topology = Ioss::Wedge6::name; break;
   case CG_PENTA_15: topology = Ioss::Wedge15::name; break;
   case CG_PENTA_18: topology = Ioss::Wedge18::name; break;
-  case CG_HEXA_8: topology   = Ioss::Hex8::name; break;
-  case CG_HEXA_20: topology  = Ioss::Hex20::name; break;
-  case CG_HEXA_27: topology  = Ioss::Hex27::name; break;
+  case CG_HEXA_8: topology = Ioss::Hex8::name; break;
+  case CG_HEXA_20: topology = Ioss::Hex20::name; break;
+  case CG_HEXA_27: topology = Ioss::Hex27::name; break;
   default:
     std::cerr << "WARNING: Found topology of type " << cg_ElementTypeName(type)
               << " which is not currently supported.\n";

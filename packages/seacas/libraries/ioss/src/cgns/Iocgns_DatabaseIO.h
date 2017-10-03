@@ -111,9 +111,10 @@ namespace Iocgns {
     void write_results_meta_data();
 
   private:
-    size_t create_structured_block(int base, int zone, size_t &num_node, size_t &num_cell);
+    size_t create_structured_block(int base, int zone);
     size_t create_unstructured_block(int base, int zone);
     void   finalize_structured_blocks();
+    void   finalize_unstructured_blocks();
     void   resolve_nodes(size_t &num_struc_node, size_t &num_unstruc_node);
     void   finalize_database() override;
     void   get_step_times__() override;
@@ -203,7 +204,11 @@ namespace Iocgns {
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;
 
-    mutable std::vector<size_t> m_zoneOffset; // Offset for local zone/block element ids to global.
+    // Offset for local zone/block element ids to global.
+    // On zone "i", The "global" cell/element ids range from m_zoneOffset[i-1] to m_zoneOffset[i]
+    // There should be m_zoneOffset[i] - m_zoneOffset[i-1] cells/elements in zone "i"
+    // Note that zone runs from 1 .. num_zone, so zone-1 is always valid index.
+    mutable std::vector<size_t> m_zoneOffset;
     mutable std::vector<size_t>
                                        m_bcOffset; // The BC Section element offsets in unstructured output.
     mutable std::vector<double>        m_timesteps;
