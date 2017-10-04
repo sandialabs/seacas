@@ -348,6 +348,7 @@ int cReadEdgeFace(int argc, char **argv)
           for (j = 0; j < num_entries; ++j) {
             fprintf(stdout, " %d", map[j]);
           }
+	  free(map);
         }
         else {
           fprintf(stdout, "Entries: none");
