@@ -17,6 +17,8 @@ matrix:
   allow_failures:
     - os: osx
   include:
+    - compiler: clang
+      env: SANITIZER="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -fPIC"
     - compiler: gcc
       env: MPI=ON
     - compiler: gcc
