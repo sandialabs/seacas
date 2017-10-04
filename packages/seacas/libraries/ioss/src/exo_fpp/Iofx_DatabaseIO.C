@@ -31,7 +31,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_CodeTypes.h>
-#include <Ioss_CodeTypes.h>
 #include <Ioss_FileInfo.h>
 #include <Ioss_ParallelUtils.h>
 #include <Ioss_SerializeIO.h>
@@ -97,7 +96,7 @@ namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
   const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const char *complex_suffix[] = {".re", ".im"};
+  const char *      complex_suffix[] = {".re", ".im"};
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
                              int position)
@@ -827,14 +826,9 @@ namespace Iofx {
     int64_t num_border_elems   = 0;
 
     bool nemesis_file = true;
-    // If someone changed to EX_VERBOSE, temporarily change to default
-    // so this call does not report an error in the serial case.
-    // (See Trac 10774)
-    int old_val = ex_opts(EX_DEFAULT);
-    int error   = ex_get_init_info(get_file_pointer(), &num_proc, &num_proc_in_file, &file_type[0]);
-    ex_opts(old_val); // Reset back to what it was.
+    int  error = ex_get_init_info(get_file_pointer(), &num_proc, &num_proc_in_file, &file_type[0]);
 
-    if (error < 0) {
+    if (num_proc == 1 && num_proc_in_file == 1) {
       // Not a nemesis file
       nemesis_file = false;
       if (isParallel && util().parallel_size() > 1) {
@@ -842,9 +836,7 @@ namespace Iofx {
         errmsg << "ERROR: Exodus file does not contain nemesis information.\n";
         IOSS_ERROR(errmsg);
       }
-      num_proc         = 1;
-      num_proc_in_file = 1;
-      file_type[0]     = 'p';
+      file_type[0] = 'p';
     }
     else {
       if (!isParallel) {
@@ -2088,7 +2080,7 @@ namespace Iofx {
       }
     }
   }
-}
+} // namespace Iofx
 
 template <typename T>
 void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string &base,

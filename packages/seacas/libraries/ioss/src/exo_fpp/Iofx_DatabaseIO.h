@@ -180,7 +180,7 @@ namespace Iofx {
     int get_file_pointer() const override; // Open file and set exodusFilePtr.
   private:
     int64_t read_nodal_coordinates();
-    void read_elements(const Ioss::ElementBlock &block);
+    void    read_elements(const Ioss::ElementBlock &block);
 
     void compute_block_adjacencies() const override;
     void compute_node_status() const;
