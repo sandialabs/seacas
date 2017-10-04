@@ -505,7 +505,7 @@ namespace SEAMS {
     symrec *ptr     = putsym("_C_", STRING_VARIABLE, true);
     ptr->value.svar = comment;
 
-    {
+    if (aprepro) {
       std::strncpy(vers_string, aprepro->version().c_str(), 32);
       vers_string[31] = '\0';
       ptr             = putsym("VERSION", STRING_VARIABLE, true);
