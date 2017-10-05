@@ -67,6 +67,7 @@ namespace Excn {
     int subcycle() const { return subcycle_; }
     int cycle() const { return cycle_; }
 
+    void subcycle_join(bool tf) { subcycleJoin_ = tf; }
     void subcycle(int cycles) { subcycle_ = cycles; }
     void processor_count(int count) { processorCount_ = count; }
     void step_min(int my_step_min) { stepMin_ = my_step_min; }
@@ -83,18 +84,25 @@ namespace Excn {
     std::string root_dir() const { return rootDirectory_; }
     std::string sub_dir() const { return subDirectory_; }
 
-    bool           add_processor_id_field() const { return addProcessorId_; }
-    bool           sum_shared_nodes() const { return sumSharedNodes_; }
-    bool           use_netcdf4() const { return useNetcdf4_; }
-    bool           append() const { return append_; }
-    bool           map_element_ids() const { return mapIds_; }
-    bool           omit_nodesets() const { return omitNodesets_; }
-    bool           omit_sidesets() const { return omitSidesets_; }
-    bool           int64() const { return intIs64Bit_; }
-    void           set_int64() const { intIs64Bit_ = true; }
-    int            compress_data() const { return compressData_; }
-    bool           subcycle_join() const { return subcycleJoin_; }
-    bool           output_shared_nodes() const { return outputSharedNodes_; }
+    bool add_processor_id_field() const { return addProcessorId_; }
+    bool sum_shared_nodes() const { return sumSharedNodes_; }
+    bool use_netcdf4() const { return useNetcdf4_; }
+    bool append() const { return append_; }
+    bool map_element_ids() const { return mapIds_; }
+    bool omit_nodesets() const { return omitNodesets_; }
+    bool omit_sidesets() const { return omitSidesets_; }
+    bool int64() const { return intIs64Bit_; }
+    void set_int64() const { intIs64Bit_ = true; }
+    int  compress_data() const { return compressData_; }
+    bool subcycle_join() const { return subcycleJoin_; }
+    bool output_shared_nodes() const { return outputSharedNodes_; }
+    bool is_auto() const { return auto_; }
+    bool keep_temporary() const { return keepTemporary_; }
+    int  max_open_files() const
+    {
+      return maxOpenFiles_;
+    } // Used to test auto-subcyling without thousands of files...
+
     StringIdVector global_var_names() const { return globalVarNames_; }
     StringIdVector node_var_names() const { return nodeVarNames_; }
     StringIdVector elem_var_names() const { return elemVarNames_; }
@@ -148,6 +156,7 @@ namespace Excn {
     int          subcycle_{-1};
     int          cycle_{-1};
     int          compressData_{0};
+    int          maxOpenFiles_{0};
     bool         sumSharedNodes_{false};
     bool         addProcessorId_{false};
     bool         mapIds_{true};
@@ -158,6 +167,8 @@ namespace Excn {
     mutable bool intIs64Bit_{false};
     bool         subcycleJoin_{false};
     bool         outputSharedNodes_{false};
+    bool         auto_{false};
+    bool         keepTemporary_{false};
 
     StringIdVector globalVarNames_;
     StringIdVector nodeVarNames_;
