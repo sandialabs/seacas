@@ -47,13 +47,14 @@ namespace Excn {
     explicit ExodusFile(int processor);
     ~ExodusFile();
 
-    static bool initialize(const SystemInterface &si, int start_part, int part_count);
+    static bool initialize(const SystemInterface &si, int start_part, int part_count,
+                           bool joining_subcycle);
     static bool create_output(const SystemInterface &si, int cycle);
     static void close_all();
 
     static int output();
     static int io_word_size() { return ioWordSize_; }
-    operator int() const;
+               operator int() const;
     static int max_name_length() { return maximumNameLength_; }
 
   private:

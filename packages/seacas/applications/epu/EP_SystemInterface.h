@@ -36,6 +36,7 @@
 #define Sierra_SystemInterface_h
 
 #include "GetLongOpt.h" // for GetLongOption
+#include <climits>      // for INT_MAX
 #include <iosfwd>       // for ostream
 #include <string>       // for string
 #include <utility>      // for pair
@@ -71,6 +72,8 @@ namespace Excn {
     void step_min(int my_step_min) { stepMin_ = my_step_min; }
     void step_max(int my_step_max) { stepMax_ = my_step_max; }
     void step_interval(int interval) { stepInterval_ = interval; }
+    void set_output_filename(const std::string &filename) const { outputFilename_ = filename; }
+    std::string output_filename() const { return outputFilename_; }
 
     std::string cwd() const { return cwd_; }
     std::string basename() const { return basename_; }
@@ -121,36 +124,40 @@ namespace Excn {
 
     GetLongOption options_; //!< Options parsing
 
-    std::string inExtension_;
-    std::string outExtension_;
-    std::string cwd_;
-    std::string rootDirectory_;
-    std::string subDirectory_;
-    std::string basename_;
+    std::string inExtension_{};
+    std::string outExtension_{};
+    std::string cwd_{};
+    std::string rootDirectory_{};
+    std::string subDirectory_{};
+    std::string basename_{};
 
-    int          raidOffset_;
-    int          raidCount_;
-    int          processorCount_;
-    int          startPart_;
-    int          partCount_;
-    int          debugLevel_;
-    int          screenWidth_;
-    int          stepMin_;
-    int          stepMax_;
-    int          stepInterval_;
-    int          subcycle_;
-    int          cycle_;
-    int          compressData_;
-    bool         sumSharedNodes_;
-    bool         addProcessorId_;
-    bool         mapIds_;
-    bool         omitNodesets_;
-    bool         omitSidesets_;
-    bool         useNetcdf4_;
-    bool         append_;
-    mutable bool intIs64Bit_;
-    bool         subcycleJoin_;
-    bool         outputSharedNodes_;
+    // Used for a storage area only.  Needed for subcyle and auto-join option
+    // Not directly settable through the user-interface (maybe should be?)
+    mutable std::string outputFilename_{};
+
+    int          raidOffset_{};
+    int          raidCount_{};
+    int          processorCount_{1};
+    int          startPart_{};
+    int          partCount_{-1};
+    int          debugLevel_{};
+    int          screenWidth_{};
+    int          stepMin_{1};
+    int          stepMax_{INT_MAX};
+    int          stepInterval_{1};
+    int          subcycle_{-1};
+    int          cycle_{-1};
+    int          compressData_{0};
+    bool         sumSharedNodes_{false};
+    bool         addProcessorId_{false};
+    bool         mapIds_{true};
+    bool         omitNodesets_{false};
+    bool         omitSidesets_{false};
+    bool         useNetcdf4_{false};
+    bool         append_{false};
+    mutable bool intIs64Bit_{false};
+    bool         subcycleJoin_{false};
+    bool         outputSharedNodes_{false};
 
     StringIdVector globalVarNames_;
     StringIdVector nodeVarNames_;

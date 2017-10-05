@@ -38,7 +38,6 @@
 #include "SL_tokenize.h" // for tokenize
 #include <algorithm>     // for sort, transform
 #include <cctype>        // for tolower
-#include <climits>       // for INT_MAX
 #include <cstddef>       // for size_t
 #include <cstdlib>       // for strtol, abs, exit, strtoul, etc
 #include <cstring>       // for strchr, strlen
@@ -64,17 +63,7 @@ namespace {
   void parse_variable_names(const char *tokens, Excn::StringIdVector *variable_list);
 } // namespace
 
-Excn::SystemInterface::SystemInterface()
-    : inExtension_(""), outExtension_(""), cwd_(""), rootDirectory_(), subDirectory_(""),
-      basename_(""), raidOffset_(0), raidCount_(0), processorCount_(1), startPart_(0),
-      partCount_(-1), debugLevel_(0), screenWidth_(0), stepMin_(1), stepMax_(INT_MAX),
-      stepInterval_(1), subcycle_(-1), cycle_(-1), compressData_(0), sumSharedNodes_(false),
-      addProcessorId_(false), mapIds_(true), omitNodesets_(false), omitSidesets_(false),
-      useNetcdf4_(false), append_(false), intIs64Bit_(false), subcycleJoin_(false),
-      outputSharedNodes_(false)
-{
-  enroll_options();
-}
+Excn::SystemInterface::SystemInterface() { enroll_options(); }
 
 Excn::SystemInterface::~SystemInterface() = default;
 
@@ -120,9 +109,10 @@ void Excn::SystemInterface::enroll_options()
   options_.enroll("add_processor_id", GetLongOption::NoValue,
                   "Add 'processor_id' element variable to the output file", nullptr);
 
-  options_.enroll("netcdf4", GetLongOption::NoValue, "Create output database using the HDF5-based "
-                                                     "netcdf which allows for up to 2.1 GB "
-                                                     "nodes/elements",
+  options_.enroll("netcdf4", GetLongOption::NoValue,
+                  "Create output database using the HDF5-based "
+                  "netcdf which allows for up to 2.1 GB "
+                  "nodes/elements",
                   nullptr);
 
   options_.enroll("large_model", GetLongOption::NoValue,
