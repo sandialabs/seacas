@@ -127,7 +127,8 @@ void Excn::ExodusFile::close_all()
   }
 }
 
-bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int part_count)
+bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int part_count,
+                                  bool joining_subcycle)
 {
   processorCount_ = si.processor_count(); // Total number processors
   partCount_      = part_count;           // Total parts we are processing
@@ -181,7 +182,13 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     }
 
     int proc = p + startPart_;
-    disks.rename_file_for_mp(root_dir, sub_dir, name, proc, processorCount_);
+    if (joining_subcycle) {
+      name = si.output_filename();
+      disks.rename_file_for_mp("", "", name, proc, processorCount_);
+    }
+    else {
+      disks.rename_file_for_mp(root_dir, sub_dir, name, proc, processorCount_);
+    }
     filenames_[p] = name;
 
     if (p == 0) {
@@ -264,6 +271,8 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   if ((curdir.length() != 0u) && !Excn::is_path_absolute(outputFilename_)) {
     outputFilename_ = curdir + "/" + outputFilename_;
   }
+
+  si.set_output_filename(outputFilename_);
 
   if (si.subcycle() > 1) {
     Excn::ParallelDisks::Create_IO_Filename(outputFilename_, cycle, si.subcycle());

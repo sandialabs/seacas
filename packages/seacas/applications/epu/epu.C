@@ -112,7 +112,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int get_width(int max_value);
+  int         get_width(int max_value);
 
   ex_entity_type exodus_object_type(Excn::ObjectType &epu_type)
   {
@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
       SMART_ASSERT(part_count > 0);
       SMART_ASSERT(start_part + part_count <= processor_count);
 
-      if (!ExodusFile::initialize(interface, start_part, part_count)) {
+      if (!ExodusFile::initialize(interface, start_part, part_count, false)) {
         std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
         exit(EXIT_FAILURE);
       }
@@ -431,7 +431,7 @@ int main(int argc, char *argv[])
       interface.step_max(INT_MAX);
       interface.step_interval(1);
 
-      if (!ExodusFile::initialize(interface, start_part, part_count)) {
+      if (!ExodusFile::initialize(interface, start_part, part_count, true)) {
         std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
         exit(EXIT_FAILURE);
       }
@@ -2993,10 +2993,10 @@ namespace {
 
   void add_info_record(char *info_record, int size)
   {
-// Add 'uname' output to the passed in character string.
-// Maximum size of string is 'size' (not including terminating nullptr)
-// This is used as information data in the concatenated results file
-// to help in tracking when/where/... the file was created
+  // Add 'uname' output to the passed in character string.
+  // Maximum size of string is 'size' (not including terminating nullptr)
+  // This is used as information data in the concatenated results file
+  // to help in tracking when/where/... the file was created
 
 #ifdef _WIN32
     std::string info                                      = "EPU: ";
