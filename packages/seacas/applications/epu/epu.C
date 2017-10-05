@@ -353,6 +353,33 @@ int main(int argc, char *argv[])
       exit(EXIT_SUCCESS);
     }
 
+    int max_open_file = ExodusFile::get_free_descriptor_count();
+
+    // Only used to test the auto subcycle without requiring thousands of files...
+    if (interface.max_open_files() > 0) {
+      max_open_file = interface.max_open_files();
+    }
+
+    if (interface.is_auto() && interface.subcycle() < 0 && processor_count > max_open_file &&
+        part_count == processor_count && interface.cycle() == -1) {
+      // Rule of thumb -- number of subcycles = cube_root(processor_count);
+      // if that value > max_open_file, then use square root.
+      // if that is still too large, just do no subcycles... and implement
+      // a recursive subcycling capabilty at some point...
+      int sub_cycle_count = (int)(std::pow(processor_count, 1.0 / 3) + 0.5);
+      if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) > max_open_file) {
+        sub_cycle_count = (int)std::sqrt(processor_count);
+      }
+
+      if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
+        interface.subcycle(sub_cycle_count);
+        std::cout << "Automatically activating subcyle mode since number of processors ("
+                  << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
+                  << "Using a -subcycle size of " << sub_cycle_count << "\n\n";
+        interface.subcycle_join(true);
+      }
+    }
+
     int cycle = interface.cycle();
     if (interface.subcycle() >= 0) {
       start_part = 0;
@@ -452,6 +479,10 @@ int main(int argc, char *argv[])
         else {
           error = epu(interface, start_part, part_count, 0, 0.0, 0);
         }
+      }
+
+      if (error == 0 && !interface.keep_temporary()) {
+        ExodusFile::unlink_temporary_files();
       }
     }
 

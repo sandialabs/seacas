@@ -162,6 +162,12 @@ void Excn::SystemInterface::enroll_options()
                   "\t\trun epu one more time and join the subcycle files into a single file.",
                   nullptr);
 
+  options_.enroll("keep_temporary", GetLongOption::NoValue,
+                  "If -join_subcycles is specified, then after joining the subcycle files, they "
+                  "are automatically\n"
+                  "\t\tdeleted unless -keep_temporary is specified.",
+                  nullptr);
+
   options_.enroll("sum_shared_nodes", GetLongOption::NoValue,
                   "The nodal results data on all shared nodes (nodes on processor boundaries)\n"
                   "\t\twill be the sum of the individual nodal results data on each shared node.\n"
@@ -196,6 +202,10 @@ void Excn::SystemInterface::enroll_options()
 
   options_.enroll("output_shared_nodes", GetLongOption::NoValue,
                   "Output list of shared nodes and the processors they are shared with.", nullptr);
+
+  options_.enroll("max_open_files", GetLongOption::MandatoryValue,
+                  "For testing auto subcycle only.  Sets file limit that triggers auto subcycling.",
+                  "0");
 
   options_.enroll("debug", GetLongOption::MandatoryValue,
                   "debug level (values are or'd)\n"
@@ -289,6 +299,13 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     const char *temp = options_.retrieve("start_part");
     if (temp != nullptr) {
       startPart_ = strtol(temp, nullptr, 10);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("max_open_files");
+    if (temp != nullptr) {
+      maxOpenFiles_ = strtol(temp, nullptr, 10);
     }
   }
 
@@ -416,6 +433,10 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
     subcycleJoin_ = true;
   }
 
+  if (options_.retrieve("keep_temporary") != nullptr) {
+    keepTemporary_ = true;
+  }
+
   if (options_.retrieve("map") != nullptr) {
     mapIds_ = true;
   }
@@ -495,6 +516,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
             << "       The entered basename does not contain an extension or processor count.\n";
         return false;
       }
+      auto_ = true;
     }
   }
   else {

@@ -46,6 +46,10 @@
 #include <string>
 #include <vector>
 
+#if !defined(_WIN32)
+#include <unistd.h>
+#endif
+
 #include <exodusII.h>
 
 std::vector<int>         Excn::ExodusFile::fileids_;
@@ -60,10 +64,6 @@ int                      Excn::ExodusFile::mode64bit_      = 0;
 std::string              Excn::ExodusFile::outputFilename_;
 bool                     Excn::ExodusFile::keepOpen_          = false;
 int                      Excn::ExodusFile::maximumNameLength_ = 32;
-
-namespace {
-  int get_free_descriptor_count();
-} // namespace
 
 Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
 {
@@ -118,6 +118,21 @@ void Excn::ExodusFile::close_all()
   for (int p = 0; p < partCount_; p++) {
     if (fileids_[p] >= 0) {
       ex_close(fileids_[p]);
+      fileids_[p] = -1;
+    }
+  }
+  if (outputId_ >= 0) {
+    ex_close(outputId_);
+    outputId_ = -1;
+  }
+}
+
+void Excn::ExodusFile::unlink_temporary_files()
+{
+  for (int p = 0; p < partCount_; p++) {
+    if (fileids_[p] >= 0) {
+      ex_close(fileids_[p]);
+      unlink(filenames_[p].c_str());
       fileids_[p] = -1;
     }
   }
@@ -335,43 +350,35 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   return true;
 }
 
-#if defined(__PUMAGON__)
-#include <stdio.h>
-#elif !defined(_WIN32)
-#include <unistd.h>
-#endif
-
-namespace {
-  int get_free_descriptor_count()
-  {
+int Excn::ExodusFile::get_free_descriptor_count()
+{
 // Returns maximum number of files that one process can have open
 // at one time. (POSIX)
 #if defined(__PUMAGON__)
-    int fdmax = FOPEN_MAX;
+  int fdmax = FOPEN_MAX;
 #elif defined(_WIN32)
-    int fdmax = _getmaxstdio();
+  int fdmax = _getmaxstdio();
 #else
-    int fdmax = sysconf(_SC_OPEN_MAX);
-    if (fdmax == -1) {
-      // POSIX indication that there is no limit on open files...
-      fdmax = INT_MAX;
-    }
-#endif
-    // File descriptors are assigned in order (0,1,2,3,...) on a per-process
-    // basis.
-
-    // Assume that we have stdin, stdout, stderr, and output exodus
-    // file (4 total).
-
-    return fdmax - 4;
-
-    // Could iterate from 0..fdmax and check for the first
-    // EBADF (bad file descriptor) error return from fcntl, but that takes
-    // too long and may cause other problems.  There is a isastream(filedes)
-    // call on Solaris that can be used for system-dependent code.
-    //
-    // Another possibility is to do an open and see which descriptor is
-    // returned -- take that as 1 more than the current count of open files.
-    //
+  int fdmax = sysconf(_SC_OPEN_MAX);
+  if (fdmax == -1) {
+    // POSIX indication that there is no limit on open files...
+    fdmax = INT_MAX;
   }
-} // namespace
+#endif
+  // File descriptors are assigned in order (0,1,2,3,...) on a per-process
+  // basis.
+
+  // Assume that we have stdin, stdout, stderr, and output exodus
+  // file (4 total).
+
+  return fdmax - 4;
+
+  // Could iterate from 0..fdmax and check for the first
+  // EBADF (bad file descriptor) error return from fcntl, but that takes
+  // too long and may cause other problems.  There is a isastream(filedes)
+  // call on Solaris that can be used for system-dependent code.
+  //
+  // Another possibility is to do an open and see which descriptor is
+  // returned -- take that as 1 more than the current count of open files.
+  //
+}
