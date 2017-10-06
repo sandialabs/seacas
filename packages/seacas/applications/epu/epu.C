@@ -373,9 +373,9 @@ int main(int argc, char *argv[])
 
       if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
         interface.subcycle(sub_cycle_count);
-        std::cout << "Automatically activating subcyle mode since number of processors ("
+        std::cout << "\tAutomatically activating subcyle mode\n\tNumber of processors ("
                   << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
-                  << "Using a -subcycle size of " << sub_cycle_count << "\n\n";
+                  << "\tUsing --subcycle=" << sub_cycle_count << "\n\n";
         interface.subcycle_join(true);
       }
     }
