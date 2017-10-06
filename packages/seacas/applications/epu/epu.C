@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
       // if that value > max_open_file, then use square root.
       // if that is still too large, just do no subcycles... and implement
       // a recursive subcycling capabilty at some point...
-      int sub_cycle_count = (int)(std::pow(processor_count, 1.0 / 3) + 0.5);
+      int sub_cycle_count = (int)(std::pow(processor_count, 1.0 / 3) + 0.9);
       if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) > max_open_file) {
         sub_cycle_count = (int)std::sqrt(processor_count);
       }
