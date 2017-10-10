@@ -29,7 +29,7 @@
  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE P!OSSIBILITY OF SUCH DAMAGE.
  *
  */
 /*****************************************************************************
@@ -91,12 +91,12 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
           snprintf(errmsg, MAX_ERR_LENGTH,
                    "Warning: no attributes allowed for NULL %s %" PRId64 " in file id %d",
                    ex_name_of_object(blk_type), blk_id, exoid);
-          ex_err("ex_put_partial_attr", errmsg, EX_NULLENTITY);
+          ex_err(__func__, errmsg, EX_NULLENTITY);
           EX_FUNC_LEAVE(EX_WARN); /* no attributes for this block */
         }
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %s id %" PRId64 " in in file id %d",
                  ex_name_of_object(blk_type), blk_id, exoid);
-        ex_err("ex_put_partial_attr", errmsg, status);
+        ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
     }
@@ -116,7 +116,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Internal ERROR: unrecognized object type in switch: %d in file id %d", blk_type,
              exoid);
-    ex_err("ex_put_partial_attr", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
 
@@ -124,7 +124,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate attribute variable for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -157,7 +157,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: number of attributes not defined for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL); /* number of attributes not defined */
   }
 
@@ -165,7 +165,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get number of attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -190,7 +190,7 @@ int ex_put_partial_attr(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to put attributes for %s %" PRId64 " in file id %d",
              ex_name_of_object(blk_type), blk_id, exoid);
-    ex_err("ex_put_partial_attr", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

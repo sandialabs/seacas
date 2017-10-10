@@ -193,6 +193,7 @@ int main(int argc, char *argv[])
 
   /* Determine number of dims and vars -- useful in debugging incorrect NC_MAX_DIMS|VARS in netcdf.h
    */
+#if NC_HAS_NC4
   {
     int ndims = 0;
     int nvars = 0;
@@ -201,6 +202,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "\t\tNumber of dims = %d\n", ndims);
     fprintf(stderr, "\t\tNumber of vars = %d\n", nvars);
   }
+#endif
 
   if (ex_close(exoid) == -1) {
     printf("ex_close failed");

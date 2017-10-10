@@ -140,13 +140,13 @@ int ex_set_max_name_length(int exoid, int length)
   ex_check_valid_file_id(exoid, __func__);
   if (length <= 0) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Max name length must be positive.");
-    ex_err("ex_set_max_name_length", errmsg, NC_EMAXNAME);
+    ex_err(__func__, errmsg, NC_EMAXNAME);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   if (length > NC_MAX_NAME) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: Max name length (%d) exceeds netcdf max name size (%d).", length, NC_MAX_NAME);
-    ex_err("ex_set_max_name_length", errmsg, NC_EMAXNAME);
+    ex_err(__func__, errmsg, NC_EMAXNAME);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -169,7 +169,7 @@ void ex_update_max_name_length(int exoid, int length)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to update 'max_name_length' attribute in file id %d", exoid);
-    ex_err("ex_update_max_name_length", errmsg, status);
+    ex_err(__func__, errmsg, status);
   }
 
   if (length > db_length) {
@@ -227,7 +227,7 @@ int ex_put_names_internal(int exoid, int varid, size_t num_entity, char **names,
     if ((status = nc_put_var_text(exoid, varid, int_names)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s names in file id %d",
                ex_name_of_object(obj_type), exoid);
-      ex_err(routine, errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -272,7 +272,7 @@ int ex_put_name_internal(int exoid, int varid, size_t index, const char *name,
     if ((status = nc_put_vara_text(exoid, varid, start, count, name)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to store %s name in file id %d",
                ex_name_of_object(obj_type), exoid);
-      ex_err(routine, errmsg, status);
+      ex_err(__func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -330,7 +330,7 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int nam
   if (status != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s name at index %d from file id %d",
              ex_name_of_object(obj_type), (int)index, exoid);
-    ex_err(routine, errmsg, status);
+    ex_err(__func__, errmsg, status);
     return (EX_FATAL);
   }
 
@@ -471,7 +471,7 @@ char *ex_dim_num_objects(ex_entity_type obj_type)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: object type %d not supported in call to ex_dim_num_objects", obj_type);
-    ex_err("ex_dim_num_objects", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     return (NULL);
   }
   }
@@ -630,7 +630,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unsupported id array type %d for file id %d", id_type,
              exoid);
-    ex_err("ex_id_lkup", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     return (EX_FATAL);
   }
 
@@ -644,7 +644,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if ((status = nc_inq_dimid(exoid, id_dim, &dimid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate id array dimension in file id %d",
                exoid);
-      ex_err("ex_id_lkup", errmsg, status);
+      ex_err(__func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -652,7 +652,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if ((status = nc_inq_dimlen(exoid, dimid, &dim_len)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s array length in file id %d",
                id_table, exoid);
-      ex_err("ex_id_lkup", errmsg, status);
+      ex_err(__func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -660,7 +660,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if ((status = nc_inq_varid(exoid, id_table, &varid)) != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s array in file id %d", id_table,
                exoid);
-      ex_err("ex_id_lkup", errmsg, status);
+      ex_err(__func__, errmsg, status);
       return (EX_FATAL);
     }
 
@@ -669,7 +669,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if (!(id_vals = calloc(dim_len, sizeof(int64_t)))) {
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
-      ex_err("ex_id_lkup", errmsg, EX_MEMFAIL);
+      ex_err(__func__, errmsg, EX_MEMFAIL);
       return (EX_FATAL);
     }
 
@@ -683,7 +683,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
                  "ERROR: failed to allocate memory for temporary array "
                  "id_vals_int for file id %d",
                  exoid);
-        ex_err("ex_id_lkup", errmsg, EX_MEMFAIL);
+        ex_err(__func__, errmsg, EX_MEMFAIL);
         free(id_vals);
         return (EX_FATAL);
       }
@@ -699,7 +699,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     if (status != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s array from file id %d", id_table,
                exoid);
-      ex_err("ex_id_lkup", errmsg, status);
+      ex_err(__func__, errmsg, status);
       free(id_vals);
       return (EX_FATAL);
     }
@@ -739,7 +739,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate id %" PRId64 " for file id %d", num,
              exoid);
-    ex_set_err("ex_id_lkup", errmsg, EX_LOOKUPFAIL);
+    ex_set_err(__func__, errmsg, EX_LOOKUPFAIL);
     return (-EX_LOOKUPFAIL); /*if we got here, the id array value doesn't exist */
   }
 
@@ -759,7 +759,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         free(id_vals);
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "ERROR: failed to allocate memory for %s array for file id %d", id_table, exoid);
-        ex_err("ex_id_lkup", errmsg, EX_MEMFAIL);
+        ex_err(__func__, errmsg, EX_MEMFAIL);
         return (EX_FATAL);
       }
 
@@ -768,7 +768,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
         free(stat_vals);
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get %s array from file id %d",
                  stat_table, exoid);
-        ex_err("ex_id_lkup", errmsg, status);
+        ex_err(__func__, errmsg, status);
         return (EX_FATAL);
       }
 
@@ -783,7 +783,7 @@ int ex_id_lkup(int exoid, ex_entity_type id_type, ex_entity_id num)
     }
 
     if (stat_vals[i] == 0) /* is this object null? */ {
-      ex_err("ex_id_lkup", "", EX_NULLENTITY);
+      ex_err(__func__, "", EX_NULLENTITY);
       if (!(tmp_stats->valid_stat)) {
         free(stat_vals);
       }
@@ -1091,7 +1091,7 @@ int ex_get_num_props(int exoid, ex_entity_type obj_type)
     default:
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: object type %d not supported; file id %d", obj_type,
                exoid);
-      ex_err("ex_get_prop_names", errmsg, EX_BADPARAM);
+      ex_err(__func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -1393,12 +1393,12 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
     if (routine != NULL) {
       if (status == NC_EBADDIM) {
         snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s defined in file id %d", label, exoid);
-        ex_err(routine, errmsg, status);
+        ex_err(__func__, errmsg, status);
       }
       else {
         snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate number of %s in file id %d",
                  label, exoid);
-        ex_err(routine, errmsg, status);
+        ex_err(__func__, errmsg, status);
       }
     }
     return (status);
@@ -1408,7 +1408,7 @@ int ex_get_dimension(int exoid, const char *DIMENSION, const char *label, size_t
     if (routine != NULL) {
       snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to get number of %s in file id %d", label,
                exoid);
-      ex_err(routine, errmsg, status);
+      ex_err(__func__, errmsg, status);
       return -1;
     }
   }
@@ -1429,7 +1429,7 @@ void ex_compress_variable(int exoid, int varid, int type)
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: unknown file id %d for ex_compress_variable().",
              exoid);
-    ex_err("ex_compress_variable", errmsg, EX_BADFILEID);
+    ex_err(__func__, errmsg, EX_BADFILEID);
   }
   else {
     int deflate_level = file->compression_level;

@@ -80,12 +80,6 @@ ${PREFIX} ${BINDIR}/testcpd${SUFFIX} >> test.output
 echo "end testcp_sd" >> test.output
 ${NCDUMP} -d5,5 testcpd.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/testcp_sd.dmp | tee testcp_sd.res
 
-echo "testcp_ln - large model to normal model single precision copy test..."
-echo "begin testcp_ln" >> test.output
-${PREFIX} ${BINDIR}/testcp_ln${SUFFIX} >> test.output
-echo "end testcp_ln" >> test.output
-${NCDUMP} -d5,5 testcp.exo | grep -v version | grep -v _FillValue | ${DIFF} - ${SRCDIR}/testcp_ln.dmp | tee testcp_ln.res
-
 echo "testcp_nl - normal_model to large_model single precision copy test..."
 echo "begin testcp_nl" >> test.output
 ${PREFIX} ${BINDIR}/testcp_nl${SUFFIX} >> test.output

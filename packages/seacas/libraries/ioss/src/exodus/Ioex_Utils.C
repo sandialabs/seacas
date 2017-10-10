@@ -119,7 +119,6 @@ namespace Ioex {
   void update_last_time_attribute(int exodusFilePtr, double value)
   {
     char        errmsg[MAX_ERR_LENGTH];
-    const char *routine = "Ioex::Utils::update_last_time_attribute()";
 
     double tmp    = 0.0;
     int    rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
@@ -131,7 +130,7 @@ namespace Ioex {
         ex_opts(EX_VERBOSE);
         sprintf(errmsg, "Error: failed to define 'last_written_time' attribute to file id %d",
                 exodusFilePtr);
-        ex_err(routine, errmsg, status);
+        ex_err(__func__, errmsg, status);
       }
     }
   }
@@ -157,11 +156,10 @@ namespace Ioex {
       }
       else {
         char        errmsg[MAX_ERR_LENGTH];
-        const char *routine = "Ioex::Utils::read_last_time_attribute()";
         ex_opts(EX_VERBOSE);
         sprintf(errmsg, "Error: failed to read last_written_time attribute from file id %d",
                 exodusFilePtr);
-        ex_err(routine, errmsg, status);
+        ex_err(__func__, errmsg, status);
         found = false;
       }
     }
@@ -205,11 +203,10 @@ namespace Ioex {
       }
       else {
         char        errmsg[MAX_ERR_LENGTH];
-        const char *routine = "Internals::check_processor_info()";
         ex_opts(EX_VERBOSE);
         sprintf(errmsg, "Error: failed to read processor info attribute from file id %d",
                 exodusFilePtr);
-        ex_err(routine, errmsg, status);
+        ex_err(__func__, errmsg, status);
         return (EX_FATAL) != 0;
       }
     }

@@ -68,13 +68,13 @@ slice: slicea sliceb slicec
 slicea: baseline.g
 	$(DECOMP) -p $(NPROCA) --subdir mesh baseline.g
 	ls -l mesh/baseline.g.$(NPROCA).*
-	$(EPU) -output_extension e -auto mesh/baseline.g.$(NPROCA).00 
+	$(EPU) --max_open_files 10 -output_extension e -auto mesh/baseline.g.$(NPROCA).00 
 	$(EXODIFF) -stat baseline.g baseline.e
 
 sliceb: baseline.g
 	$(DECOMP) -p $(NPROCB) --subdir mesh baseline.g
 	ls -l mesh/baseline.g.$(NPROCB).*
-	$(EPU) -output_extension e -auto mesh/baseline.g.$(NPROCB).00 
+	$(EPU) --max_open_files 8 -output_extension e -auto mesh/baseline.g.$(NPROCB).00 
 	$(EXODIFF) -stat baseline.g baseline.e
 
 slicec: baseline.g

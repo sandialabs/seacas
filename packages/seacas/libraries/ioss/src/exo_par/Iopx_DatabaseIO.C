@@ -1603,9 +1603,9 @@ namespace Iopx {
           // Easier below here if the element and sides are a known 64-bit size...
           // Kluge here to do that...
           if (int_byte_size_api() == 4) {
-            Ioss::Field side_field("sides", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
+            Ioss::Field side_field("sides", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
-            Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, SCALAR(), Ioss::Field::MESH,
+            Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
 
             Ioss::IntVector e32(number_sides);
@@ -1615,9 +1615,9 @@ namespace Iopx {
             std::copy(e32.begin(), e32.end(), element.begin());
           }
           else {
-            Ioss::Field side_field("sides", Ioss::Field::INT64, SCALAR(), Ioss::Field::MESH,
+            Ioss::Field side_field("sides", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
-            Ioss::Field elem_field("ids_raw", Ioss::Field::INT64, SCALAR(), Ioss::Field::MESH,
+            Ioss::Field elem_field("ids_raw", Ioss::Field::INT64, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
             decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(sides));
             decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, elem_field,

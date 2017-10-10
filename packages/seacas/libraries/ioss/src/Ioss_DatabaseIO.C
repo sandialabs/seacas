@@ -203,6 +203,11 @@ namespace Ioss {
       }
     }
 
+    if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
+      std::string tmp = properties.get("FIELD_SUFFIX_SEPARATOR").get_string();
+      fieldSeparator = tmp[0];
+    }
+
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
       if (isize == 8) {
@@ -271,16 +276,6 @@ namespace Ioss {
     dbIntSizeAPI = size; // mutable
   }
 
-  char DatabaseIO::get_field_separator() const
-  {
-    char suffix = '_'; // Default
-    if (properties.exists("FIELD_SUFFIX_SEPARATOR")) {
-      std::string tmp = properties.get("FIELD_SUFFIX_SEPARATOR").get_string();
-      suffix          = tmp[0];
-    }
-    return suffix;
-  }
-
   /** \brief Set the character used to separate a field suffix from the field basename
    *         when recognizing vector, tensor fields.
    *
@@ -295,6 +290,7 @@ namespace Ioss {
     tmp[0] = separator;
     tmp[1] = 0;
     properties.add(Property("FIELD_SUFFIX_SEPARATOR", tmp));
+    fieldSeparator = separator;
   }
 
   IfDatabaseExistsBehavior DatabaseIO::open_create_behavior() const

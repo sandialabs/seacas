@@ -223,8 +223,8 @@ namespace Ioss {
     // does some other transformations to remove some exodusII ambiguity.
     static std::string fixup_type(const std::string &base, int nodes_per_element, int spatial);
 
-    static std::string uppercase(const std::string &name);
-    static std::string lowercase(const std::string &name);
+    static std::string uppercase(std::string name);
+    static std::string lowercase(std::string name);
 
     static int case_strcmp(const std::string &s1, const std::string &s2);
 

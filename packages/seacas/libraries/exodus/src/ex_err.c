@@ -92,7 +92,7 @@ if (exoid = ex_open ("test.exo", EX_READ, &CPU_word_size,
                      &IO_word_size, &version)) {
    errval = 999;
    snprintf(errmsg, MAX_ERR_LENGTH,"ERROR: cannot open file test.exo");
-   ex_err("prog_name", errmsg, errval);
+   ex_err(__func__, errmsg, errval);
 }
 ~~~
 

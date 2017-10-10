@@ -56,7 +56,7 @@ namespace {
 }
 
 namespace SEAMS {
-   extern int echo;
+   extern bool echo;
  }
 
  %}

@@ -43,18 +43,7 @@
 #include <vector>       // for vector
 
 namespace Ioss {
-  // This performs a case-insensitive string comparison which will make
-  // the FieldMapType do case-insensitive comparisons between field names.
-  class StringCmp : public std::binary_function<std::string, std::string, bool>
-  {
-  public:
-    StringCmp() = default;
-    bool operator()(const std::string &s1, const std::string &s2) const
-    {
-      return Utils::case_strcmp(s1, s2) < 0;
-    }
-  };
-  using FieldMapType   = std::map<std::string, Field, StringCmp>;
+  using FieldMapType   = std::map<std::string, Field>;
   using FieldValuePair = FieldMapType::value_type;
 
   /** \brief A collection of Ioss::Field objects.
