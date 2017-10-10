@@ -47,8 +47,8 @@ namespace Excn {
     explicit ExodusFile(int processor);
     ~ExodusFile();
 
-    static bool initialize(const SystemInterface &si, int start_part, int part_count,
-                           int cycle, bool joining_subcycle);
+    static bool initialize(const SystemInterface &si, int start_part, int part_count, int cycle,
+                           bool joining_subcycle);
     static bool create_output(const SystemInterface &si, int cycle);
     static void close_all();
 
