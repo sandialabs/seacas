@@ -57,7 +57,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated use ex_get_partial_attr()
+ * \deprecated use ex_get_partial_attr()(exoid, EX_ELEM_BLOCK, elem_blk_id, start_elem_num,
+ * num_elems, attrib)
  */
 
 /*

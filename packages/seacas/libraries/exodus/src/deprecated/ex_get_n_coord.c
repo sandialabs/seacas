@@ -57,15 +57,12 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- *       \deprecated Use ex_get_partial_coord() instead
- * reads the coordinates of the nodes.
- * Memory must be allocated for the coordinate arrays (x_coor, y_coor,
- * and z_coor) before this call is made. The length of each of these
- * arrays is the number of nodes in the mesh.  Because the coordinates
- * are floating point values, the application code must declare the
- * arrays passed to be the appropriate type "float" or "double"
- * to match the compute word size passed in ex_create() or ex_open()
- * \param      exoid  exodus file id
+ *       \deprecated Use ex_get_partial_coord()(exoid, start_node_num, num_nodes, x_coor, y_coor,
+ * z_coor) instead reads the coordinates of the nodes. Memory must be allocated for the coordinate
+ * arrays (x_coor, y_coor, and z_coor) before this call is made. The length of each of these arrays
+ * is the number of nodes in the mesh.  Because the coordinates are floating point values, the
+ * application code must declare the arrays passed to be the appropriate type "float" or "double" to
+ * match the compute word size passed in ex_create() or ex_open() \param      exoid  exodus file id
  * \param      start_node_num  the starting index of the coordinates to be
  * returned.
  * \param      num_nodes  the number of nodes to read coordinates for.

@@ -57,7 +57,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated use ex_get_partial_set()
+ * \deprecated use ex_get_partial_set()(exoid, EX_SIDE_SET, side_set_id, start_side_num, num_sides,
+                            side_set_elem_list, side_set_side_list)
  */
 
 /*

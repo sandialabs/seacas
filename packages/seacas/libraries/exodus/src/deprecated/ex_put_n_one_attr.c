@@ -53,15 +53,13 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_put_partial_one_attr() instead.
- * writes the specified attribute for a block
- * \param      exoid         exodus file id
- * \param      obj_type      object type (edge, face, elem block)
- * \param      obj_id        object id (edge, face, elem block ID)
- * \param      start_num     the starting index of the attributes to be written
- * \param      num_ent       the number of entities to write attributes for.
- * \param      attrib_index  index of attribute to write
- * \param      attrib        array of attributes
+ * \deprecated Use ex_put_partial_one_attr()(exoid, obj_type, obj_id, start_num, num_ent,
+ * attrib_index, attrib) writes the specified attribute for a block \param      exoid         exodus
+ * file id \param      obj_type      object type (edge, face, elem block) \param      obj_id
+ * object id (edge, face, elem block ID) \param      start_num     the starting index of the
+ * attributes to be written \param      num_ent       the number of entities to write attributes
+ * for. \param      attrib_index  index of attribute to write \param      attrib        array of
+ * attributes
  */
 
 int ex_put_n_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj_id, int64_t start_num,
