@@ -164,16 +164,16 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
   if (partCount_ <= max_files) {
     keepOpen_ = true;
     if (cycle == 0) {
-    if ((si.debug() & 1) != 0) {
-      std::cout << "Files kept open... (Max open = " << max_files << ")\n\n";
-    }
+      if ((si.debug() & 1) != 0) {
+        std::cout << "Files kept open... (Max open = " << max_files << ")\n\n";
+      }
     }
   }
   else {
     keepOpen_ = false;
     if (cycle == 0) {
-    std::cout << "Single file mode... (Max open = " << max_files << ")\n"
-              << "Consider using the -subcycle option for faster execution...\n\n";
+      std::cout << "Single file mode... (Max open = " << max_files << ")\n"
+                << "Consider using the -subcycle option for faster execution...\n\n";
     }
   }
 
@@ -269,7 +269,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
 
   if ((mode64bit_ & EX_ALL_INT64_DB) != 0) {
     if (cycle == 0) {
-    std::cout << "Input files contain 8-byte integers.\n";
+      std::cout << "Input files contain 8-byte integers.\n";
     }
     si.set_int64();
   }
@@ -352,8 +352,8 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
 
   int int_size = si.int64() ? 8 : 4;
   if (cycle == 0) {
-  std::cout << "IO Word sizes: " << ioWordSize_ << " bytes floating point and " << int_size
-            << " bytes integer.\n";
+    std::cout << "IO Word sizes: " << ioWordSize_ << " bytes floating point and " << int_size
+              << " bytes integer.\n";
   }
   return true;
 }

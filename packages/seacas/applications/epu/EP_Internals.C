@@ -397,7 +397,7 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
 
   int map_type = get_type(exodusFilePtr, EX_MAPS_INT64_DB);
 
-  char        errmsg[MAX_ERR_LENGTH];
+  char errmsg[MAX_ERR_LENGTH];
 
   // define some attributes...
   int status = nc_put_att_text(exodusFilePtr, NC_GLOBAL, ATT_TITLE, strlen(mesh.title.c_str()) + 1,
@@ -566,8 +566,8 @@ int Excn::Internals<INT>::put_metadata(const Mesh &mesh, const CommunicationMeta
 
 template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector<Block> &blocks)
 {
-  char        errmsg[MAX_ERR_LENGTH];
-  int         dims[2];
+  char errmsg[MAX_ERR_LENGTH];
+  int  dims[2];
 
   int bulk_type = get_type(exodusFilePtr, EX_BULK_INT64_DB);
 
@@ -685,8 +685,9 @@ template <typename INT> int Excn::Internals<INT>::put_metadata(const std::vector
       status = nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
-        sprintf(errmsg, "Error: failed to define attribute name array for element block %" PRId64
-                        " in file id %d",
+        sprintf(errmsg,
+                "Error: failed to define attribute name array for element block %" PRId64
+                " in file id %d",
                 blocks[iblk].id, exodusFilePtr);
         ex_err(__func__, errmsg, status);
         return (EX_FATAL);
@@ -849,8 +850,9 @@ int Excn::Internals<INT>::put_metadata(const std::vector<NodeSet<INT>> &nodesets
       if (nodesets[i].dfCount != nodesets[i].nodeCount) {
         status = EX_FATAL;
         ex_opts(EX_VERBOSE);
-        sprintf(errmsg, "Error: # dist fact (%" PRId64 ") not equal to # nodes (%" PRId64 ") "
-                        "in node set %" PRId64 " file id %d",
+        sprintf(errmsg,
+                "Error: # dist fact (%" PRId64 ") not equal to # nodes (%" PRId64 ") "
+                "in node set %" PRId64 " file id %d",
                 nodesets[i].dfCount, nodesets[i].nodeCount, nodesets[i].id, exodusFilePtr);
         ex_err(__func__, errmsg, status);
         return (EX_FATAL);
@@ -1091,9 +1093,9 @@ namespace {
   template <typename INT>
   int put_array(int exoid, const char *var_type, const std::vector<INT> &array)
   {
-    char        errmsg[MAX_ERR_LENGTH];
-    int         var_id;
-    int         status;
+    char errmsg[MAX_ERR_LENGTH];
+    int  var_id;
+    int  status;
 
     status = nc_inq_varid(exoid, var_type, &var_id);
     if (status != NC_NOERR) {
@@ -1121,8 +1123,8 @@ namespace {
 
   int put_id_array(int exoid, const char *var_type, const std::vector<ex_entity_id> &ids)
   {
-    char        errmsg[MAX_ERR_LENGTH];
-    int         var_id;
+    char errmsg[MAX_ERR_LENGTH];
+    int  var_id;
 
     int status = nc_inq_varid(exoid, var_type, &var_id);
     if (status != NC_NOERR) {
@@ -1156,10 +1158,10 @@ namespace {
   int define_coordinate_vars(int exodusFilePtr, int64_t nodes, int node_dim, int dimension,
                              int dim_dim, int str_dim)
   {
-    char        errmsg[MAX_ERR_LENGTH];
-    int         status;
-    int         dim[2];
-    int         varid;
+    char errmsg[MAX_ERR_LENGTH];
+    int  status;
+    int  dim[2];
+    int  varid;
 
     if (nodes > 0) {
       if (ex_large_model(exodusFilePtr) == 1) {
@@ -1237,11 +1239,11 @@ namespace {
   int define_netcdf_vars(int exoid, const char *type, size_t count, const char *dim_num,
                          const char *stat_var, const char *id_var, const char *name_var)
   {
-    int         dimid = 0;
-    int         varid = 0;
-    int         dim[2];
-    int         namestrdim = 0;
-    char        errmsg[MAX_ERR_LENGTH];
+    int  dimid = 0;
+    int  varid = 0;
+    int  dim[2];
+    int  namestrdim = 0;
+    char errmsg[MAX_ERR_LENGTH];
 
     int status = nc_inq_dimid(exoid, DIM_STR_NAME, &namestrdim);
 

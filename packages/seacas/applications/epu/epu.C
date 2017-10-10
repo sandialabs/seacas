@@ -116,7 +116,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int get_width(int max_value);
+  int         get_width(int max_value);
 
   ex_entity_type exodus_object_type(Excn::ObjectType &epu_type)
   {
@@ -311,7 +311,7 @@ namespace {
 
 unsigned int debug_level = 0;
 const float  FILL_VALUE  = FLT_MAX;
-int rank           = 0;
+int          rank        = 0;
 
 using namespace Excn;
 
@@ -433,11 +433,11 @@ int main(int argc, char *argv[])
 
         if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
           interface.subcycle(sub_cycle_count);
-	  if (rank == 0) {
-          std::cout << "\tAutomatically activating subcyle mode\n\tNumber of processors ("
-                    << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
-                    << "\tUsing --subcycle=" << sub_cycle_count << "\n\n";
-	  }
+          if (rank == 0) {
+            std::cout << "\tAutomatically activating subcyle mode\n\tNumber of processors ("
+                      << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
+                      << "\tUsing --subcycle=" << sub_cycle_count << "\n\n";
+          }
           interface.subcycle_join(true);
         }
       }
@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
         // Sanity check...
         if (part_count < 1) {
           std::cerr << "ERROR: (EPU) The subcycle specification results in less than 1 part per "
-	    "cycle which is not allowd.\n";
+                       "cycle which is not allowd.\n";
           exit(EXIT_FAILURE);
         }
         interface.subcycle((processor_count + part_count - 1) / part_count);
@@ -572,8 +572,8 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
 
   if (rank == 0) {
-  std::cout << "\nIO Word sizes: " << sizeof(T) << " bytes floating point and " << sizeof(INT)
-            << " bytes integer.\n";
+    std::cout << "\nIO Word sizes: " << sizeof(T) << " bytes floating point and " << sizeof(INT)
+              << " bytes integer.\n";
   }
   int p; // file counter p=0..part_count-1
 
@@ -599,7 +599,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     std::cout << time_stamp(tsFormat);
   }
   if (rank == 0) {
-  std::cout << "\n**** READ LOCAL (GLOBAL) INFO ****" << '\n';
+    std::cout << "\n**** READ LOCAL (GLOBAL) INFO ****" << '\n';
   }
   std::string title0;
 
@@ -699,9 +699,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
-  if (rank == 0) {
-    std::cout << "Finished reading/writing Global Info\n";
-  }
+    if (rank == 0) {
+      std::cout << "Finished reading/writing Global Info\n";
+    }
     if (interface.output_shared_nodes()) {
       // Get list of all shared nodes...
       std::vector<std::vector<INT>> shared(part_count);
@@ -720,20 +720,20 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         }
       }
 
-  if (rank == 0) {
-      std::cout << "Node Sharing information: (Part:Local Node Id)\n";
-      for (size_t i = 0; i < global_node_map.size(); i++) {
-        if (num_shared[i] > 1) {
-          std::cout << "Global Node " << i + 1 << ": ";
-          for (int pc = 0; pc < part_count; pc++) {
-            if (shared[pc][i] >= 1) {
-              std::cout << "\t" << pc << ":" << shared[pc][i];
+      if (rank == 0) {
+        std::cout << "Node Sharing information: (Part:Local Node Id)\n";
+        for (size_t i = 0; i < global_node_map.size(); i++) {
+          if (num_shared[i] > 1) {
+            std::cout << "Global Node " << i + 1 << ": ";
+            for (int pc = 0; pc < part_count; pc++) {
+              if (shared[pc][i] >= 1) {
+                std::cout << "\t" << pc << ":" << shared[pc][i];
+              }
             }
+            std::cout << "\n";
           }
-          std::cout << "\n";
         }
       }
-  }
     }
 
     // ****************************************************************************
@@ -754,7 +754,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         std::cout << time_stamp(tsFormat);
       }
       if (rank == 0) {
-      std::cout << "\n**** GET SIDE SETS *****\n";
+        std::cout << "\n**** GET SIDE SETS *****\n";
       }
       get_sideset_metadata(part_count, sidesets, glob_ssets);
       if (global.count(SSET) != glob_ssets.size()) {
@@ -770,7 +770,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         std::cout << time_stamp(tsFormat);
       }
       if (rank == 0) {
-      std::cout << "\n**** GET NODE SETS *****\n";
+        std::cout << "\n**** GET NODE SETS *****\n";
       }
       get_nodesets(part_count, global.nodeCount, local_node_to_global, nodesets, glob_nsets,
                    float_or_double);
@@ -786,9 +786,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
-      if (rank == 0) {
-    std::cout << "\n**** BEGIN WRITING OUTPUT FILE *****\n";
-      }
+    if (rank == 0) {
+      std::cout << "\n**** BEGIN WRITING OUTPUT FILE *****\n";
+    }
     CommunicationMetaData comm_data;
 
     // Create the output file...
@@ -835,9 +835,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         if (debug_level & 1) {
           std::cout << time_stamp(tsFormat);
         }
-      if (rank == 0) {
-        std::cout << "Writing global node number map...\n";
-      }
+        if (rank == 0) {
+          std::cout << "Writing global node number map...\n";
+        }
         error = ex_put_id_map(ExodusFile::output(), EX_NODE_MAP, TOPTR(global_node_map));
         if (error < 0) {
           exodus_error(__LINE__);
@@ -848,9 +848,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         if (debug_level & 1) {
           std::cout << time_stamp(tsFormat);
         }
-      if (rank == 0) {
-        std::cout << "Writing out master global elements information...\n";
-      }
+        if (rank == 0) {
+          std::cout << "Writing out master global elements information...\n";
+        }
         if (!global_element_map.empty()) {
           error = ex_put_id_map(ExodusFile::output(), EX_ELEM_MAP, TOPTR(global_element_map));
           if (error < 0) {
@@ -874,17 +874,17 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
-      if (rank == 0) {
-    std::cout << "\n\n**** GET COORDINATE INFO ****\n";
-      }
+    if (rank == 0) {
+      std::cout << "\n\n**** GET COORDINATE INFO ****\n";
+    }
     get_put_coordinates(global, part_count, local_mesh, local_node_to_global, (T)0.0);
 
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
-      if (rank == 0) {
-    std::cout << "Wrote coordinate information...\n";
-      }
+    if (rank == 0) {
+      std::cout << "Wrote coordinate information...\n";
+    }
   }
   // ####################TRANSIENT DATA SECTION###########################
   // ***********************************************************************
@@ -893,9 +893,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
-      if (rank == 0) {
-  std::cout << "\n**** GET VARIABLE INFORMATION AND NAMES ****" << '\n';
-      }
+  if (rank == 0) {
+    std::cout << "\n**** GET VARIABLE INFORMATION AND NAMES ****" << '\n';
+  }
   //  I. read number of variables for each type.
   //  NOTE: it is assumed that every processor has the same global, nodal,
   //        and element lists
@@ -946,7 +946,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   // order. After this call, we can use the original ordering, so just
   // need a temporary vector here...
   if (global_vars.count(OUT) + nodal_vars.count(OUT) + element_vars.count(OUT) +
-      nodeset_vars.count(OUT) + sideset_vars.count(OUT) >
+          nodeset_vars.count(OUT) + sideset_vars.count(OUT) >
       0) {
 
     std::vector<int> elem_truth_table(global.truthTable[EBLK].size());
@@ -954,9 +954,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
     if (!interface.append()) {
       error = ex_put_all_var_param(
-				   ExodusFile::output(), global_vars.count(OUT), nodal_vars.count(OUT),
-				   element_vars.count(OUT), TOPTR(elem_truth_table), nodeset_vars.count(OUT),
-				   TOPTR(global.truthTable[NSET]), sideset_vars.count(OUT), TOPTR(global.truthTable[SSET]));
+          ExodusFile::output(), global_vars.count(OUT), nodal_vars.count(OUT),
+          element_vars.count(OUT), TOPTR(elem_truth_table), nodeset_vars.count(OUT),
+          TOPTR(global.truthTable[NSET]), sideset_vars.count(OUT), TOPTR(global.truthTable[SSET]));
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -990,9 +990,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
-      if (rank == 0) {
-  std::cout << "\n**** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****\n";
-      }
+  if (rank == 0) {
+    std::cout << "\n**** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****\n";
+  }
   // Stage I: Get the number_of_time_steps information
 
   bool differ = false;
@@ -1015,9 +1015,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
               << "         Using minimum count of " << num_time_steps << "\n\n";
   }
   else {
-      if (rank == 0) {
-    std::cout << "\nNumber of time steps on input databases = " << num_time_steps << "\n\n";
-      }
+    if (rank == 0) {
+      std::cout << "\nNumber of time steps on input databases = " << num_time_steps << "\n\n";
+    }
   }
 
   std::vector<T> global_values(global_vars.count(IN));
@@ -1040,7 +1040,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
   // Determine maximum number of entities on any processor...
   size_t max_ent =
-    find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
+      find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
   std::vector<T> values(max_ent);
 
   // Stage II.  Extracting transient variable data.
@@ -1094,10 +1094,10 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
-      if (rank == 0) {
-    std::cout << "\tTransferring step " << ts_min << " to step " << ts_max << " by " << ts_step
-              << '\n';
-      }
+    if (rank == 0) {
+      std::cout << "\tTransferring step " << ts_min << " to step " << ts_max << " by " << ts_step
+                << '\n';
+    }
   }
 
   // Determine how many steps will be written...
@@ -1123,10 +1123,10 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       }
 
       if (min_time_to_write != -DBL_MAX) {
-      if (rank == 0) {
-        std::cout << "\tAppend Mode: Skipping " << time_step - (ts_min - 1)
-                  << " input steps to align times with already written steps on output file.\n\n";
-      }
+        if (rank == 0) {
+          std::cout << "\tAppend Mode: Skipping " << time_step - (ts_min - 1)
+                    << " input steps to align times with already written steps on output file.\n\n";
+        }
         min_time_to_write = -DBL_MAX;
       }
 
@@ -1159,9 +1159,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       // information
       if (global_vars.count(OUT) > 0) {
         if (debug_level & 1) {
-      if (rank == 0) {
-          std::cout << time_stamp(tsFormat) << "Global Variables...\n";
-      }
+          if (rank == 0) {
+            std::cout << time_stamp(tsFormat) << "Global Variables...\n";
+          }
         }
         error = ex_get_var(id, time_step + 1, EX_GLOBAL, 0, 0, global_vars.count(),
                            TOPTR(global_values));
@@ -1215,7 +1215,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     // Nodal Values...
     if (debug_level & 1) {
       if (rank == 0) {
-      std::cout << time_stamp(tsFormat) << "Nodal Variables...\n";
+        std::cout << time_stamp(tsFormat) << "Nodal Variables...\n";
       }
     }
     if (debug_level & 2) {
@@ -1287,7 +1287,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     // Extracting element transient variable data
     if (debug_level & 1) {
       if (rank == 0) {
-      std::cout << time_stamp(tsFormat) << "Element Variables...\n";
+        std::cout << time_stamp(tsFormat) << "Element Variables...\n";
       }
     }
     if (debug_level & 4) {
@@ -1314,9 +1314,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     // Extracting sideset transient variable data
     if (!interface.omit_nodesets()) {
       if (debug_level & 1) {
-      if (rank == 0) {
-        std::cout << time_stamp(tsFormat) << "Sideset Variables...\n";
-      }
+        if (rank == 0) {
+          std::cout << time_stamp(tsFormat) << "Sideset Variables...\n";
+        }
       }
       if (debug_level & 16) {
         clear_master_values(sideset_vars, global, glob_ssets, master_sideset_values);
@@ -1336,9 +1336,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       // ========================================================================
       // Extracting nodeset transient variable data
       if (debug_level & 1) {
-      if (rank == 0) {
-        std::cout << time_stamp(tsFormat) << "Nodeset Variables...\n";
-      }
+        if (rank == 0) {
+          std::cout << time_stamp(tsFormat) << "Nodeset Variables...\n";
+        }
       }
       if (debug_level & 32) {
         clear_master_values(nodeset_vars, global, glob_nsets, master_nodeset_values);
@@ -1362,7 +1362,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
     if (subcycles > 2) {
       if (rank == 0) {
-      std::cout << cycle + 1 << "/" << subcycles << " ";
+        std::cout << cycle + 1 << "/" << subcycles << " ";
       }
     }
 
@@ -1399,13 +1399,13 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   }
   if (subcycles > 2) {
     if (rank == 0) {
-    std::cout << cycle + 1 << "/" << subcycles << " ";
+      std::cout << cycle + 1 << "/" << subcycles << " ";
     }
   }
 
-    if (rank == 0) {
-  std::cout << "******* END *******\n";
-    }
+  if (rank == 0) {
+    std::cout << "******* END *******\n";
+  }
   return (0);
 }
 
@@ -1422,14 +1422,14 @@ namespace {
     std::vector<char> tags(num_frames);
 
     int error =
-      ex_get_coordinate_frames(id, &num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
+        ex_get_coordinate_frames(id, &num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
     if (error < 0) {
       exodus_error(__LINE__);
     }
 
     // Now output to the combined file...
     error =
-      ex_put_coordinate_frames(id_out, num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
+        ex_put_coordinate_frames(id_out, num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
     if (error < 0) {
       exodus_error(__LINE__);
     }
@@ -2003,7 +2003,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_element_map.size() == global_element_map.size();
     bool is_contiguous = global_element_map.empty() ||
-      ((size_t)global_element_map.back() == global_element_map.size());
+                         ((size_t)global_element_map.back() == global_element_map.size());
     std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
 
     // Create the map that maps from a local processor element to the
@@ -2172,7 +2172,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
     bool is_contiguous =
-      global_node_map.empty() || ((size_t)global_node_map.back() == global_node_map.size());
+        global_node_map.empty() || ((size_t)global_node_map.back() == global_node_map.size());
     std::cout << "Node map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
 
     // Create the map the maps from a local processor node to the
@@ -2584,7 +2584,7 @@ namespace {
         // output nodeset
         // NOTE: global_node above is 1-based.
         glob_sets[ns].nodeCount =
-	  std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), (INT)0);
+            std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), (INT)0);
         glob_sets[ns].nodeSetNodes.resize(glob_sets[ns].entity_count());
         glob_sets[ns].dfCount = glob_sets[ns].nodeCount;
 
@@ -2652,7 +2652,7 @@ namespace {
     }
     for (auto &glob_set : glob_sets) {
       int error =
-	ex_put_set(exoid, EX_NODE_SET, glob_set.id, TOPTR(glob_set.nodeSetNodes), nullptr);
+          ex_put_set(exoid, EX_NODE_SET, glob_set.id, TOPTR(glob_set.nodeSetNodes), nullptr);
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -2706,8 +2706,8 @@ namespace {
 
     if (bad_ss != 0) {
       std::cerr
-	<< "ERROR: (EPU) There were " << bad_ss
-	<< " sidesets (counting all files) which had an id equal to 0 which is not allowed.\n";
+          << "ERROR: (EPU) There were " << bad_ss
+          << " sidesets (counting all files) which had an id equal to 0 which is not allowed.\n";
     }
 
     if (set_ids.empty()) {
@@ -2836,7 +2836,7 @@ namespace {
         if (size > 0) {
           size_t off   = offset[ss];
           int    error = ex_get_set(id, EX_SIDE_SET, sets[p][ss].id, &glob_ssets[ss].elems[off],
-				    &glob_ssets[ss].sides[off]);
+                                 &glob_ssets[ss].sides[off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -2855,7 +2855,7 @@ namespace {
         if (df_size > 0) {
           size_t df_off = df_offset[ss] * ExodusFile::io_word_size();
           int    error  = ex_get_set_dist_fact(id, EX_SIDE_SET, sets[p][ss].id,
-					       &glob_ssets[ss].distFactors[df_off]);
+                                           &glob_ssets[ss].distFactors[df_off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -2878,8 +2878,8 @@ namespace {
       int exoid = ExodusFile::output(); // output file identifier
       for (auto &glob_sset : glob_ssets) {
         int error =
-	  ex_put_set(exoid, EX_SIDE_SET, glob_sset.id, const_cast<INT *>(&glob_sset.elems[0]),
-		     const_cast<INT *>(&glob_sset.sides[0]));
+            ex_put_set(exoid, EX_SIDE_SET, glob_sset.id, const_cast<INT *>(&glob_sset.elems[0]),
+                       const_cast<INT *>(&glob_sset.sides[0]));
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -3133,10 +3133,10 @@ namespace {
 
   void add_info_record(char *info_record, int size)
   {
-    // Add 'uname' output to the passed in character string.
-    // Maximum size of string is 'size' (not including terminating nullptr)
-    // This is used as information data in the concatenated results file
-    // to help in tracking when/where/... the file was created
+  // Add 'uname' output to the passed in character string.
+  // Maximum size of string is 'size' (not including terminating nullptr)
+  // This is used as information data in the concatenated results file
+  // to help in tracking when/where/... the file was created
 
 #ifdef _WIN32
     std::string info                                      = "EPU: ";

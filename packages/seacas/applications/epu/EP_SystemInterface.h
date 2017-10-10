@@ -48,7 +48,7 @@ namespace Excn {
   class SystemInterface
   {
   public:
-    SystemInterface(int rank=0);
+    SystemInterface(int rank = 0);
     ~SystemInterface();
 
     bool parse_options(int argc, char **argv);
@@ -112,7 +112,7 @@ namespace Excn {
     //! Dumps representation of data in this class to cerr
     void dump(std::ostream &str) const;
 
-    static void show_version(int rank=0);
+    static void show_version(int rank = 0);
 
   private:
     void enroll_options();
