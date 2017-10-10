@@ -67,8 +67,8 @@ namespace {
   int put_int_array(int exoid, const char *var_type, const std::vector<int> &array);
   int put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids);
 
-  int define_coordinate_vars(int exodusFilePtr, size_t nodes, int node_dim, int dimension, int dim_dim,
-                             int str_dim);
+  int define_coordinate_vars(int exodusFilePtr, size_t nodes, int node_dim, int dimension,
+                             int dim_dim, int str_dim);
 } // namespace
 
 Excn::Redefine::Redefine(int exoid) : exodusFilePtr(exoid)
@@ -306,7 +306,7 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
   int map_type = get_type(exodusFilePtr, EX_MAPS_INT64_DB);
   int ids_type = get_type(exodusFilePtr, EX_IDS_INT64_DB);
 
-  char        errmsg[MAX_ERR_LENGTH];
+  char errmsg[MAX_ERR_LENGTH];
 
   // define some attributes...
   int status = nc_put_att_text(exodusFilePtr, NC_GLOBAL, ATT_TITLE, strlen(mesh.title.c_str()) + 1,
@@ -611,8 +611,8 @@ int Excn::Internals::put_metadata(const Mesh<INT> &mesh, const CommunicationMeta
 
 int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
 {
-  char        errmsg[MAX_ERR_LENGTH];
-  int         dims[2];
+  char errmsg[MAX_ERR_LENGTH];
+  int  dims[2];
 
   int status = 0; // clear error code
 
@@ -728,8 +728,9 @@ int Excn::Internals::put_metadata(const std::vector<Block> &blocks)
       status = nc_def_var(exodusFilePtr, VAR_NAME_ATTRIB(iblk + 1), NC_CHAR, 2, dims, &varid);
       if (status != NC_NOERR) {
         ex_opts(EX_VERBOSE);
-        sprintf(errmsg, "Error: failed to define attribute name array for element block %" PRId64
-                        " in file id %d",
+        sprintf(errmsg,
+                "Error: failed to define attribute name array for element block %" PRId64
+                " in file id %d",
                 blocks[iblk].id, exodusFilePtr);
         ex_err(__func__, errmsg, status);
         return (EX_FATAL);
@@ -890,8 +891,9 @@ template <typename INT> int Excn::Internals::put_metadata(const std::vector<Node
       if (nodesets[i].dfCount != nodesets[i].nodeCount) {
         status = EX_FATAL;
         ex_opts(EX_VERBOSE);
-        sprintf(errmsg, "Error: # dist fact (%" PRId64 ") not equal to # nodes (%" PRId64 ") "
-                        "in node set %" PRId64 " file id %d",
+        sprintf(errmsg,
+                "Error: # dist fact (%" PRId64 ") not equal to # nodes (%" PRId64 ") "
+                "in node set %" PRId64 " file id %d",
                 (int64_t)nodesets[i].dfCount, (int64_t)nodesets[i].nodeCount, nodesets[i].id,
                 exodusFilePtr);
         ex_err(__func__, errmsg, status);
@@ -1131,9 +1133,9 @@ int Excn::Internals::put_non_define_data(const std::vector<SideSet<INT>> &sidese
 namespace {
   int put_int_array(int exoid, const char *var_type, const std::vector<int> &array)
   {
-    char        errmsg[MAX_ERR_LENGTH];
-    int         var_id;
-    int         status;
+    char errmsg[MAX_ERR_LENGTH];
+    int  var_id;
+    int  status;
 
     status = nc_inq_varid(exoid, var_type, &var_id);
     if (status != NC_NOERR) {
@@ -1155,8 +1157,8 @@ namespace {
 
   int put_id_array(int exoid, const char *var_type, const std::vector<entity_id> &ids)
   {
-    char        errmsg[MAX_ERR_LENGTH];
-    int         var_id;
+    char errmsg[MAX_ERR_LENGTH];
+    int  var_id;
 
     int status = nc_inq_varid(exoid, var_type, &var_id);
     if (status != NC_NOERR) {
@@ -1187,13 +1189,13 @@ namespace {
     return (EX_NOERR);
   }
 
-  int define_coordinate_vars(int exodusFilePtr, size_t nodes, int node_dim, int dimension, int dim_dim,
-                             int str_dim)
+  int define_coordinate_vars(int exodusFilePtr, size_t nodes, int node_dim, int dimension,
+                             int dim_dim, int str_dim)
   {
-    char        errmsg[MAX_ERR_LENGTH];
-    int         status;
-    int         dim[2];
-    int         varid;
+    char errmsg[MAX_ERR_LENGTH];
+    int  status;
+    int  dim[2];
+    int  varid;
 
     if (nodes > 0) {
       if (ex_large_model(exodusFilePtr) == 1) {

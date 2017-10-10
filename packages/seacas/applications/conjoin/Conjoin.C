@@ -166,7 +166,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int get_width(size_t max_value);
+  int         get_width(size_t max_value);
 
   ex_entity_type exodus_object_type(Excn::ObjectType &conjoin_type)
   {
@@ -212,14 +212,14 @@ template <typename T, typename INT>
 int conjoin(Excn::SystemInterface &interface, T /* dummy */, INT /* dummy int */);
 
 namespace {
-  void compress_white_space(char *str);
-  void add_info_record(char *info_record, int size);
+  void                         compress_white_space(char *str);
+  void                         add_info_record(char *info_record, int size);
   template <typename INT> void put_mesh_summary(const Excn::Mesh<INT> &mesh);
 
   template <typename T>
   void get_put_qa(int id, int id_out, const std::vector<TimeStepMap<T>> &global_times,
                   Excn::SystemInterface &interface);
-  int get_put_coordinate_names(int in, int out, int dimensionality);
+  int  get_put_coordinate_names(int in, int out, int dimensionality);
 
   template <typename T, typename INT>
   int get_put_coordinates(Excn::Mesh<INT> &global, size_t part_count,
@@ -284,9 +284,9 @@ namespace {
   template <typename INT> void put_nodesets(std::vector<Excn::NodeSet<INT>> &glob_sets);
 
   template <typename INT>
-  void get_sideset_metadata(std::vector<Excn::Mesh<INT>> &                local_mesh,
-                            std::vector<std::vector<Excn::SideSet<INT>>> &sets,
-                            std::vector<Excn::SideSet<INT>> &             glob_ssets);
+  void                         get_sideset_metadata(std::vector<Excn::Mesh<INT>> &                local_mesh,
+                                                    std::vector<std::vector<Excn::SideSet<INT>>> &sets,
+                                                    std::vector<Excn::SideSet<INT>> &             glob_ssets);
   template <typename INT> void get_put_sidesets(std::vector<Excn::SideSet<INT>> &glob_ssets);
 
   template <typename T, typename INT>
@@ -1587,8 +1587,9 @@ namespace {
           }
         }
         if (repeat_found > 0) {
-          std::cerr << repeat_found << " duplicate element ids were found. Their ids have been "
-                                       "renumbered to remove duplicates.\n";
+          std::cerr << repeat_found
+                    << " duplicate element ids were found. Their ids have been "
+                       "renumbered to remove duplicates.\n";
         }
       }
     }
@@ -2264,9 +2265,9 @@ namespace {
       for (size_t ss = 0; ss < set_ids.size(); ss++) {
         // This is maximum possible size; will probably be reduced by duplicate elimination...
         typedef std::vector<std::pair<INT, INT>> ElemSideMap;
-        ElemSideMap elem_side(glob_ssets[ss].sideCount);
-        int         ss_id  = glob_ssets[ss].id;
-        size_t      offset = 0;
+        ElemSideMap                              elem_side(glob_ssets[ss].sideCount);
+        int                                      ss_id  = glob_ssets[ss].id;
+        size_t                                   offset = 0;
 
         size_t lss = glob_ssets[ss].position_;
         for (size_t p = 0; p < part_count; p++) {
