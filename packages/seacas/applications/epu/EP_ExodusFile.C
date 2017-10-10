@@ -143,7 +143,7 @@ void Excn::ExodusFile::unlink_temporary_files()
 }
 
 bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int part_count,
-                                  bool joining_subcycle)
+                                  int cycle, bool joining_subcycle)
 {
   processorCount_ = si.processor_count(); // Total number processors
   partCount_      = part_count;           // Total parts we are processing
@@ -163,14 +163,18 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
   int max_files = get_free_descriptor_count();
   if (partCount_ <= max_files) {
     keepOpen_ = true;
+    if (cycle == 0) {
     if ((si.debug() & 1) != 0) {
       std::cout << "Files kept open... (Max open = " << max_files << ")\n\n";
+    }
     }
   }
   else {
     keepOpen_ = false;
+    if (cycle == 0) {
     std::cout << "Single file mode... (Max open = " << max_files << ")\n"
               << "Consider using the -subcycle option for faster execution...\n\n";
+    }
   }
 
   fileids_.resize(processorCount_);
@@ -256,7 +260,7 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
     }
 
     if (((si.debug() & 64) != 0) || p == 0 || p == partCount_ - 1) {
-      std::cout << "Input(" << p << "): '" << name.c_str() << "'" << '\n';
+      std::cout << "[" << cycle << "] Input(" << p << "): '" << name.c_str() << "'" << '\n';
       if (((si.debug() & 64) == 0) && p == 0) {
         std::cout << "..." << '\n';
       }
@@ -264,7 +268,9 @@ bool Excn::ExodusFile::initialize(const SystemInterface &si, int start_part, int
   }
 
   if ((mode64bit_ & EX_ALL_INT64_DB) != 0) {
+    if (cycle == 0) {
     std::cout << "Input files contain 8-byte integers.\n";
+    }
     si.set_int64();
   }
 
@@ -316,14 +322,14 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   }
 
   if (si.append()) {
-    std::cout << "Output:   '" << outputFilename_ << "' (appending)" << '\n';
+    std::cout << "[" << cycle << "] Output:   '" << outputFilename_ << "' (appending)" << '\n';
     float version = 0.0;
     mode |= EX_WRITE;
     outputId_ = ex_open(outputFilename_.c_str(), mode, &cpuWordSize_, &ioWordSize_, &version);
   }
   else {
     mode |= EX_CLOBBER;
-    std::cout << "Output:   '" << outputFilename_ << "'" << '\n';
+    std::cout << "[" << cycle << "] Output:   '" << outputFilename_ << "'" << '\n';
     outputId_ = ex_create(outputFilename_.c_str(), mode, &cpuWordSize_, &ioWordSize_);
   }
   if (outputId_ < 0) {
@@ -345,8 +351,10 @@ bool Excn::ExodusFile::create_output(const SystemInterface &si, int cycle)
   ex_set_option(outputId_, EX_OPT_MAX_NAME_LENGTH, maximumNameLength_);
 
   int int_size = si.int64() ? 8 : 4;
+  if (cycle == 0) {
   std::cout << "IO Word sizes: " << ioWordSize_ << " bytes floating point and " << int_size
             << " bytes integer.\n";
+  }
   return true;
 }
 

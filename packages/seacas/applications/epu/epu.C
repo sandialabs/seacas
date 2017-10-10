@@ -311,12 +311,12 @@ namespace {
 
 unsigned int debug_level = 0;
 const float  FILL_VALUE  = FLT_MAX;
+int rank           = 0;
 
 using namespace Excn;
 
 int main(int argc, char *argv[])
 {
-  int rank           = 0;
   int epu_proc_count = 1;
 #ifdef PARALLEL_AWARE_EXODUS
   MPI_Init(&argc, &argv);
@@ -330,9 +330,9 @@ int main(int argc, char *argv[])
 
   try {
     time_t begin_time = time(nullptr);
-    SystemInterface::show_version();
+    SystemInterface::show_version(rank);
 
-    SystemInterface interface;
+    SystemInterface interface(rank);
     bool            ok = interface.parse_options(argc, argv);
 
     if (!ok) {
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
 
       SMART_ASSERT(start_part + part_count <= processor_count);
 
-      if (!ExodusFile::initialize(interface, start_part, part_count, false)) {
+      if (!ExodusFile::initialize(interface, start_part, part_count, rank, false)) {
         std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
         exit(EXIT_FAILURE);
       }
@@ -433,9 +433,11 @@ int main(int argc, char *argv[])
 
         if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
           interface.subcycle(sub_cycle_count);
+	  if (rank == 0) {
           std::cout << "\tAutomatically activating subcyle mode\n\tNumber of processors ("
                     << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
                     << "\tUsing --subcycle=" << sub_cycle_count << "\n\n";
+	  }
           interface.subcycle_join(true);
         }
       }
@@ -477,7 +479,7 @@ int main(int argc, char *argv[])
         SMART_ASSERT(part_count > 0);
         SMART_ASSERT(start_part + part_count <= processor_count);
 
-        if (!ExodusFile::initialize(interface, start_part, part_count, false)) {
+        if (!ExodusFile::initialize(interface, start_part, part_count, cycle, false)) {
           std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
           exit(EXIT_FAILURE);
         }
@@ -519,7 +521,7 @@ int main(int argc, char *argv[])
       interface.step_max(INT_MAX);
       interface.step_interval(1);
 
-      if (!ExodusFile::initialize(interface, start_part, part_count, true)) {
+      if (!ExodusFile::initialize(interface, start_part, part_count, 0, true)) {
         std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
         exit(EXIT_FAILURE);
       }
@@ -569,9 +571,10 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 {
   SMART_ASSERT(sizeof(T) == ExodusFile::io_word_size());
 
+  if (rank == 0) {
   std::cout << "\nIO Word sizes: " << sizeof(T) << " bytes floating point and " << sizeof(INT)
             << " bytes integer.\n";
-
+  }
   int p; // file counter p=0..part_count-1
 
   auto mytitle = new char[MAX_LINE_LENGTH + 1];
@@ -595,8 +598,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
+  if (rank == 0) {
   std::cout << "\n**** READ LOCAL (GLOBAL) INFO ****" << '\n';
-
+  }
   std::string title0;
 
   // EPU assumes IDS are always passed through the API as 64-bit ints.
@@ -695,8 +699,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
+  if (rank == 0) {
     std::cout << "Finished reading/writing Global Info\n";
-
+  }
     if (interface.output_shared_nodes()) {
       // Get list of all shared nodes...
       std::vector<std::vector<INT>> shared(part_count);
@@ -715,6 +720,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         }
       }
 
+  if (rank == 0) {
       std::cout << "Node Sharing information: (Part:Local Node Id)\n";
       for (size_t i = 0; i < global_node_map.size(); i++) {
         if (num_shared[i] > 1) {
@@ -727,6 +733,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
           std::cout << "\n";
         }
       }
+  }
     }
 
     // ****************************************************************************
@@ -746,7 +753,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       if (debug_level & 1) {
         std::cout << time_stamp(tsFormat);
       }
+      if (rank == 0) {
       std::cout << "\n**** GET SIDE SETS *****\n";
+      }
       get_sideset_metadata(part_count, sidesets, glob_ssets);
       if (global.count(SSET) != glob_ssets.size()) {
         std::cerr << "\nWARNING: Invalid sidesets will not be written to output database.\n";
@@ -760,7 +769,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       if (debug_level & 1) {
         std::cout << time_stamp(tsFormat);
       }
+      if (rank == 0) {
       std::cout << "\n**** GET NODE SETS *****\n";
+      }
       get_nodesets(part_count, global.nodeCount, local_node_to_global, nodesets, glob_nsets,
                    float_or_double);
       if (global.count(NSET) != glob_nsets.size()) {
@@ -775,7 +786,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
+      if (rank == 0) {
     std::cout << "\n**** BEGIN WRITING OUTPUT FILE *****\n";
+      }
     CommunicationMetaData comm_data;
 
     // Create the output file...
@@ -822,7 +835,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         if (debug_level & 1) {
           std::cout << time_stamp(tsFormat);
         }
+      if (rank == 0) {
         std::cout << "Writing global node number map...\n";
+      }
         error = ex_put_id_map(ExodusFile::output(), EX_NODE_MAP, TOPTR(global_node_map));
         if (error < 0) {
           exodus_error(__LINE__);
@@ -833,7 +848,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         if (debug_level & 1) {
           std::cout << time_stamp(tsFormat);
         }
+      if (rank == 0) {
         std::cout << "Writing out master global elements information...\n";
+      }
         if (!global_element_map.empty()) {
           error = ex_put_id_map(ExodusFile::output(), EX_ELEM_MAP, TOPTR(global_element_map));
           if (error < 0) {
@@ -857,14 +874,17 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
+      if (rank == 0) {
     std::cout << "\n\n**** GET COORDINATE INFO ****\n";
-
+      }
     get_put_coordinates(global, part_count, local_mesh, local_node_to_global, (T)0.0);
 
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
+      if (rank == 0) {
     std::cout << "Wrote coordinate information...\n";
+      }
   }
   // ####################TRANSIENT DATA SECTION###########################
   // ***********************************************************************
@@ -873,8 +893,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
+      if (rank == 0) {
   std::cout << "\n**** GET VARIABLE INFORMATION AND NAMES ****" << '\n';
-
+      }
   //  I. read number of variables for each type.
   //  NOTE: it is assumed that every processor has the same global, nodal,
   //        and element lists
@@ -969,8 +990,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
+      if (rank == 0) {
   std::cout << "\n**** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****\n";
-
+      }
   // Stage I: Get the number_of_time_steps information
 
   bool differ = false;
@@ -993,7 +1015,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
               << "         Using minimum count of " << num_time_steps << "\n\n";
   }
   else {
+      if (rank == 0) {
     std::cout << "\nNumber of time steps on input databases = " << num_time_steps << "\n\n";
+      }
   }
 
   std::vector<T> global_values(global_vars.count(IN));
@@ -1070,8 +1094,10 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
     }
+      if (rank == 0) {
     std::cout << "\tTransferring step " << ts_min << " to step " << ts_max << " by " << ts_step
               << '\n';
+      }
   }
 
   // Determine how many steps will be written...
@@ -1097,8 +1123,10 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       }
 
       if (min_time_to_write != -DBL_MAX) {
+      if (rank == 0) {
         std::cout << "\tAppend Mode: Skipping " << time_step - (ts_min - 1)
                   << " input steps to align times with already written steps on output file.\n\n";
+      }
         min_time_to_write = -DBL_MAX;
       }
 
@@ -1131,7 +1159,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       // information
       if (global_vars.count(OUT) > 0) {
         if (debug_level & 1) {
+      if (rank == 0) {
           std::cout << time_stamp(tsFormat) << "Global Variables...\n";
+      }
         }
         error = ex_get_var(id, time_step + 1, EX_GLOBAL, 0, 0, global_vars.count(),
                            TOPTR(global_values));
@@ -1184,7 +1214,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     // ========================================================================
     // Nodal Values...
     if (debug_level & 1) {
+      if (rank == 0) {
       std::cout << time_stamp(tsFormat) << "Nodal Variables...\n";
+      }
     }
     if (debug_level & 2) {
       for (int i = 0; i < nodal_vars.count(OUT); i++) {
@@ -1254,7 +1286,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     // ========================================================================
     // Extracting element transient variable data
     if (debug_level & 1) {
+      if (rank == 0) {
       std::cout << time_stamp(tsFormat) << "Element Variables...\n";
+      }
     }
     if (debug_level & 4) {
       clear_master_values(element_vars, global, glob_blocks, master_element_values);
@@ -1280,7 +1314,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     // Extracting sideset transient variable data
     if (!interface.omit_nodesets()) {
       if (debug_level & 1) {
+      if (rank == 0) {
         std::cout << time_stamp(tsFormat) << "Sideset Variables...\n";
+      }
       }
       if (debug_level & 16) {
         clear_master_values(sideset_vars, global, glob_ssets, master_sideset_values);
@@ -1300,7 +1336,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       // ========================================================================
       // Extracting nodeset transient variable data
       if (debug_level & 1) {
+      if (rank == 0) {
         std::cout << time_stamp(tsFormat) << "Nodeset Variables...\n";
+      }
       }
       if (debug_level & 32) {
         clear_master_values(nodeset_vars, global, glob_nsets, master_nodeset_values);
@@ -1323,13 +1361,14 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     }
 
     if (subcycles > 2) {
+      if (rank == 0) {
       std::cout << cycle + 1 << "/" << subcycles << " ";
+      }
     }
 
     std::ios::fmtflags f(std::cout.flags());
     std::cout << "Wrote step " << std::setw(2) << time_step + 1 << ", time " << std::scientific
               << std::setprecision(4) << time_val;
-
     double cur_time            = seacas_timer();
     double elapsed             = cur_time - start_time;
     double time_per_step       = elapsed / time_step_out;
@@ -1359,10 +1398,14 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     std::cout << time_stamp(tsFormat);
   }
   if (subcycles > 2) {
+    if (rank == 0) {
     std::cout << cycle + 1 << "/" << subcycles << " ";
+    }
   }
 
+    if (rank == 0) {
   std::cout << "******* END *******\n";
+    }
   return (0);
 }
 

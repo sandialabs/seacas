@@ -48,7 +48,7 @@ namespace Excn {
   class SystemInterface
   {
   public:
-    SystemInterface();
+    SystemInterface(int rank=0);
     ~SystemInterface();
 
     bool parse_options(int argc, char **argv);
@@ -112,7 +112,7 @@ namespace Excn {
     //! Dumps representation of data in this class to cerr
     void dump(std::ostream &str) const;
 
-    static void show_version();
+    static void show_version(int rank=0);
 
   private:
     void enroll_options();
@@ -143,6 +143,7 @@ namespace Excn {
     // Not directly settable through the user-interface (maybe should be?)
     mutable std::string outputFilename_{};
 
+    int          myRank_{0};
     int          raidOffset_{};
     int          raidCount_{};
     int          processorCount_{1};
