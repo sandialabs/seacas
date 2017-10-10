@@ -63,7 +63,8 @@ namespace {
   void parse_variable_names(const char *tokens, Excn::StringIdVector *variable_list);
 } // namespace
 
-Excn::SystemInterface::SystemInterface() { enroll_options(); }
+Excn::SystemInterface::SystemInterface(int rank) : myRank_(rank)
+{ enroll_options(); }
 
 Excn::SystemInterface::~SystemInterface() = default;
 
@@ -227,9 +228,11 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   // Get options from environment variable also...
   char *options = getenv("EPU_OPTIONS");
   if (options != nullptr) {
-    std::cout
+    if (myRank_ == 0) {
+      std::cout
         << "\nThe following options were specified via the EPU_OPTIONS environment variable:\n"
         << "\t" << options << "\n\n";
+    }
     options_.parse(options, options_.basename(*argv));
   }
 
@@ -239,12 +242,14 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("help") != nullptr) {
+    if (myRank_ == 0) {
     options_.usage();
-    std::cout << "\n\tCan also set options via EPU_OPTIONS environment variable.\n\n"
-              << "\tWrites: current_directory/basename.suf\n"
-              << "\tReads:  root#o/sub/basename.suf.#p.0 to\n"
-              << "\t\troot(#o+#p)%#r/sub/basename.suf.#p.#p\n";
-    std::cout << "\n\t->->-> Send email to gdsjaar@sandia.gov for epu support.<-<-<-\n";
+      std::cout << "\n\tCan also set options via EPU_OPTIONS environment variable.\n\n"
+		<< "\tWrites: current_directory/basename.suf\n"
+		<< "\tReads:  root#o/sub/basename.suf.#p.0 to\n"
+		<< "\t\troot(#o+#p)%#r/sub/basename.suf.#p.#p\n";
+      std::cout << "\n\t->->-> Send email to gdsjaar@sandia.gov for epu support.<-<-<-\n";
+    }
     exit(EXIT_SUCCESS);
   }
 
@@ -464,6 +469,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
   }
 
   if (options_.retrieve("copyright") != nullptr) {
+    if (myRank_ == 0) {
     std::cout << "\n"
               << "Copyright(C) 2010-2017 National Technology & Engineering Solutions of Sandia, "
                  "LLC (NTESS).\n"
@@ -497,6 +503,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
               << "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
               << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
               << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
+    }
     exit(EXIT_SUCCESS);
   }
 
@@ -537,12 +544,14 @@ std::string Excn::SystemInterface::output_suffix() const
   return outExtension_;
 }
 
-void Excn::SystemInterface::show_version()
+void Excn::SystemInterface::show_version(int rank)
 {
-  std::cout << qainfo[0] << "\n"
-            << "\t(Out of Many One -- see http://www.greatseal.com/mottoes/unum.html)\n"
-            << "\tExodusII Parallel Unification Program\n"
-            << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  if (rank == 0) {
+    std::cout << qainfo[0] << "\n"
+	      << "\t(Out of Many One -- see http://www.greatseal.com/mottoes/unum.html)\n"
+	      << "\tExodusII Parallel Unification Program\n"
+	      << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
+  }
 }
 
 void Excn::SystemInterface::parse_step_option(const char *tokens)
@@ -662,12 +671,13 @@ bool Excn::SystemInterface::decompose_filename(const std::string &cs)
     basename_ = s;
   }
 
+    if (myRank_ == 0) {
   std::cout << "\nThe following options were determined automatically:\n"
             << "\t basename = '" << basename_ << "'\n"
             << "\t-processor_count " << processorCount_ << "\n"
             << "\t-extension " << inExtension_ << "\n"
             << "\t-Root_directory " << rootDirectory_ << "\n\n";
-
+    }
   return true;
 }
 

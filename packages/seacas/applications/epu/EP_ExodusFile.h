@@ -48,7 +48,7 @@ namespace Excn {
     ~ExodusFile();
 
     static bool initialize(const SystemInterface &si, int start_part, int part_count,
-                           bool joining_subcycle);
+                           int cycle, bool joining_subcycle);
     static bool create_output(const SystemInterface &si, int cycle);
     static void close_all();
 
