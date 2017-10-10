@@ -59,6 +59,10 @@
 #include <utility>
 #include <vector>
 
+#ifdef PARALLEL_AWARE_EXODUS
+#include <mpi.h>
+#endif
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -112,7 +116,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int         get_width(int max_value);
+  int get_width(int max_value);
 
   ex_entity_type exodus_object_type(Excn::ObjectType &epu_type)
   {
@@ -312,9 +316,18 @@ using namespace Excn;
 
 int main(int argc, char *argv[])
 {
+  int rank           = 0;
+  int epu_proc_count = 1;
+#ifdef PARALLEL_AWARE_EXODUS
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &epu_proc_count);
+#endif
+
 #if defined(__LIBCATAMOUNT__)
   setlinebuf(stderr);
 #endif
+
   try {
     time_t begin_time = time(nullptr);
     SystemInterface::show_version();
@@ -353,69 +366,22 @@ int main(int argc, char *argv[])
       exit(EXIT_SUCCESS);
     }
 
-    int max_open_file = ExodusFile::get_free_descriptor_count();
-
-    // Only used to test the auto subcycle without requiring thousands of files...
-    if (interface.max_open_files() > 0) {
-      max_open_file = interface.max_open_files();
-    }
-
-    if (interface.is_auto() && interface.subcycle() < 0 && processor_count > max_open_file &&
-        part_count == processor_count && interface.cycle() == -1) {
-      // Rule of thumb -- number of subcycles = cube_root(processor_count);
-      // if that value > max_open_file, then use square root.
-      // if that is still too large, just do no subcycles... and implement
-      // a recursive subcycling capabilty at some point...
-      int sub_cycle_count = (int)(std::pow(processor_count, 1.0 / 3) + 0.9);
-      if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) > max_open_file) {
-        sub_cycle_count = (int)std::sqrt(processor_count);
-      }
-
-      if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
-        interface.subcycle(sub_cycle_count);
-        std::cout << "\tAutomatically activating subcyle mode\n\tNumber of processors ("
-                  << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
-                  << "\tUsing --subcycle=" << sub_cycle_count << "\n\n";
-        interface.subcycle_join(true);
-      }
-    }
-
-    int cycle = interface.cycle();
-    if (interface.subcycle() >= 0) {
-      start_part = 0;
-      int cycles = interface.subcycle();
-      if (cycles > 0) {
-        // use the specified number of cycles...
-        part_count = (processor_count + cycles - 1) / cycles;
-        if (cycle >= 0) {
-          start_part = cycle * part_count;
-        }
-      }
-
-      // Sanity check...
-      if (part_count < 1) {
-        std::cerr << "ERROR: (EPU) The subcycle specification results in less than 1 part per "
-                     "cycle which is not allowd.\n";
-        exit(EXIT_FAILURE);
-      }
-      interface.subcycle((processor_count + part_count - 1) / part_count);
-
-      if (start_part + part_count > processor_count) {
-        part_count = processor_count - start_part;
-      }
-    }
-
     int error = 0;
-    if (cycle < 0) {
-      cycle = 0;
-    }
-    while (start_part < processor_count) {
+    if (epu_proc_count > 1) {
+      interface.subcycle(epu_proc_count);
 
-      if (start_part + part_count > processor_count) {
-        part_count = processor_count - start_part;
+      int per_proc = processor_count / epu_proc_count;
+      int extra    = processor_count % epu_proc_count;
+
+      part_count = per_proc + (rank < extra ? 1 : 0);
+
+      if (rank < extra) {
+        start_part = (per_proc + 1) * rank;
+      }
+      else {
+        start_part = (per_proc + 1) * extra + per_proc * (rank - extra);
       }
 
-      SMART_ASSERT(part_count > 0);
       SMART_ASSERT(start_part + part_count <= processor_count);
 
       if (!ExodusFile::initialize(interface, start_part, part_count, false)) {
@@ -425,30 +391,125 @@ int main(int argc, char *argv[])
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
         if (interface.int64()) {
-          error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0),
+          error = epu(interface, start_part, part_count, rank, static_cast<float>(0.0),
                       static_cast<int64_t>(0));
         }
         else {
-          error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0), 0);
+          error = epu(interface, start_part, part_count, rank, static_cast<float>(0.0), 0);
         }
       }
       else { // Reals are doubles
         if (interface.int64()) {
-          error = epu(interface, start_part, part_count, cycle++, 0.0, static_cast<int64_t>(0));
+          error = epu(interface, start_part, part_count, rank, 0.0, static_cast<int64_t>(0));
         }
         else {
-          error = epu(interface, start_part, part_count, cycle++, 0.0, 0);
+          error = epu(interface, start_part, part_count, rank, 0.0, 0);
         }
       }
 
-      start_part += part_count;
       ExodusFile::close_all();
-      if (interface.subcycle() < 0 || (interface.subcycle() > 0 && interface.cycle() >= 0)) {
-        break;
+#ifdef PARALLEL_AWARE_EXODUS
+      MPI_Barrier(MPI_COMM_WORLD);
+#endif
+    }
+    else {
+      int max_open_file = ExodusFile::get_free_descriptor_count();
+
+      // Only used to test the auto subcycle without requiring thousands of files...
+      if (interface.max_open_files() > 0) {
+        max_open_file = interface.max_open_files();
+      }
+
+      if (interface.is_auto() && interface.subcycle() < 0 && processor_count > max_open_file &&
+          part_count == processor_count && interface.cycle() == -1) {
+        // Rule of thumb -- number of subcycles = cube_root(processor_count);
+        // if that value > max_open_file, then use square root.
+        // if that is still too large, just do no subcycles... and implement
+        // a recursive subcycling capabilty at some point...
+        int sub_cycle_count = (int)(std::pow(processor_count, 1.0 / 3) + 0.9);
+        if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) > max_open_file) {
+          sub_cycle_count = (int)std::sqrt(processor_count);
+        }
+
+        if (((processor_count + sub_cycle_count - 1) / sub_cycle_count) < max_open_file) {
+          interface.subcycle(sub_cycle_count);
+          std::cout << "\tAutomatically activating subcyle mode\n\tNumber of processors ("
+                    << processor_count << ") exceeds open file limit (" << max_open_file << ").\n"
+                    << "\tUsing --subcycle=" << sub_cycle_count << "\n\n";
+          interface.subcycle_join(true);
+        }
+      }
+
+      int cycle = interface.cycle();
+      if (interface.subcycle() >= 0) {
+        start_part = 0;
+        int cycles = interface.subcycle();
+        if (cycles > 0) {
+          // use the specified number of cycles...
+          part_count = (processor_count + cycles - 1) / cycles;
+          if (cycle >= 0) {
+            start_part = cycle * part_count;
+          }
+        }
+
+        // Sanity check...
+        if (part_count < 1) {
+          std::cerr << "ERROR: (EPU) The subcycle specification results in less than 1 part per "
+	    "cycle which is not allowd.\n";
+          exit(EXIT_FAILURE);
+        }
+        interface.subcycle((processor_count + part_count - 1) / part_count);
+
+        if (start_part + part_count > processor_count) {
+          part_count = processor_count - start_part;
+        }
+      }
+
+      if (cycle < 0) {
+        cycle = 0;
+      }
+      while (start_part < processor_count) {
+
+        if (start_part + part_count > processor_count) {
+          part_count = processor_count - start_part;
+        }
+
+        SMART_ASSERT(part_count > 0);
+        SMART_ASSERT(start_part + part_count <= processor_count);
+
+        if (!ExodusFile::initialize(interface, start_part, part_count, false)) {
+          std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
+          exit(EXIT_FAILURE);
+        }
+
+        if (ExodusFile::io_word_size() == 4) { // Reals are floats
+          if (interface.int64()) {
+            error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0),
+                        static_cast<int64_t>(0));
+          }
+          else {
+            error = epu(interface, start_part, part_count, cycle++, static_cast<float>(0.0), 0);
+          }
+        }
+        else { // Reals are doubles
+          if (interface.int64()) {
+            error = epu(interface, start_part, part_count, cycle++, 0.0, static_cast<int64_t>(0));
+          }
+          else {
+            error = epu(interface, start_part, part_count, cycle++, 0.0, 0);
+          }
+        }
+
+        start_part += part_count;
+        ExodusFile::close_all();
+        if (interface.subcycle() < 0 || (interface.subcycle() > 0 && interface.cycle() >= 0)) {
+          break;
+        }
       }
     }
 
-    if (interface.subcycle() > 0 && interface.cycle() < 0 && interface.subcycle_join()) {
+    if (interface.subcycle() > 0 && interface.cycle() < 0 && interface.subcycle_join() &&
+        rank == 0) {
       // Now, join the subcycled parts into a single file...
       start_part = 0;
       part_count = interface.subcycle();
@@ -488,7 +549,12 @@ int main(int argc, char *argv[])
 
 #ifndef _WIN32
     time_t end_time = time(nullptr);
-    add_to_log(argv[0], static_cast<int>(end_time - begin_time));
+    if (rank == 0) {
+      add_to_log(argv[0], static_cast<int>(end_time - begin_time));
+    }
+#endif
+#ifdef PARALLEL_AWARE_EXODUS
+    MPI_Finalize();
 #endif
     return (error);
   }
@@ -859,7 +925,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   // order. After this call, we can use the original ordering, so just
   // need a temporary vector here...
   if (global_vars.count(OUT) + nodal_vars.count(OUT) + element_vars.count(OUT) +
-          nodeset_vars.count(OUT) + sideset_vars.count(OUT) >
+      nodeset_vars.count(OUT) + sideset_vars.count(OUT) >
       0) {
 
     std::vector<int> elem_truth_table(global.truthTable[EBLK].size());
@@ -867,9 +933,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
     if (!interface.append()) {
       error = ex_put_all_var_param(
-          ExodusFile::output(), global_vars.count(OUT), nodal_vars.count(OUT),
-          element_vars.count(OUT), TOPTR(elem_truth_table), nodeset_vars.count(OUT),
-          TOPTR(global.truthTable[NSET]), sideset_vars.count(OUT), TOPTR(global.truthTable[SSET]));
+				   ExodusFile::output(), global_vars.count(OUT), nodal_vars.count(OUT),
+				   element_vars.count(OUT), TOPTR(elem_truth_table), nodeset_vars.count(OUT),
+				   TOPTR(global.truthTable[NSET]), sideset_vars.count(OUT), TOPTR(global.truthTable[SSET]));
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -950,7 +1016,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
   // Determine maximum number of entities on any processor...
   size_t max_ent =
-      find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
+    find_max_entity_count(part_count, local_mesh, global, blocks, nodesets, sidesets);
   std::vector<T> values(max_ent);
 
   // Stage II.  Extracting transient variable data.
@@ -1313,14 +1379,14 @@ namespace {
     std::vector<char> tags(num_frames);
 
     int error =
-        ex_get_coordinate_frames(id, &num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
+      ex_get_coordinate_frames(id, &num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
     if (error < 0) {
       exodus_error(__LINE__);
     }
 
     // Now output to the combined file...
     error =
-        ex_put_coordinate_frames(id_out, num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
+      ex_put_coordinate_frames(id_out, num_frames, TOPTR(ids), TOPTR(coordinates), TOPTR(tags));
     if (error < 0) {
       exodus_error(__LINE__);
     }
@@ -1894,16 +1960,16 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_element_map.size() == global_element_map.size();
     bool is_contiguous = global_element_map.empty() ||
-                         ((size_t)global_element_map.back() == global_element_map.size());
+      ((size_t)global_element_map.back() == global_element_map.size());
     std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
 
-  // Create the map that maps from a local processor element to the
-  // global map. This combines the mapping local processor element to
-  // 'global id' and then 'global id' to global position. The
-  // mapping is now a direct lookup instead of a lookup followed by
-  // a reverse map.
-  //
-  // If the map is contiguous, then the global_id to global_position map is 1->1
+    // Create the map that maps from a local processor element to the
+    // global map. This combines the mapping local processor element to
+    // 'global id' and then 'global id' to global position. The
+    // mapping is now a direct lookup instead of a lookup followed by
+    // a reverse map.
+    //
+    // If the map is contiguous, then the global_id to global_position map is 1->1
   REMAP:
     if (is_contiguous && map_ids) {
       auto   cur_pos = global_element_map.begin();
@@ -2063,7 +2129,7 @@ namespace {
     // sorted and there are no duplicates, we just need to see if the id
     // at global_node_map.size() == global_node_map.size();
     bool is_contiguous =
-        global_node_map.empty() || ((size_t)global_node_map.back() == global_node_map.size());
+      global_node_map.empty() || ((size_t)global_node_map.back() == global_node_map.size());
     std::cout << "Node map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
 
     // Create the map the maps from a local processor node to the
@@ -2475,7 +2541,7 @@ namespace {
         // output nodeset
         // NOTE: global_node above is 1-based.
         glob_sets[ns].nodeCount =
-            std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), (INT)0);
+	  std::accumulate(glob_ns_nodes.begin(), glob_ns_nodes.end(), (INT)0);
         glob_sets[ns].nodeSetNodes.resize(glob_sets[ns].entity_count());
         glob_sets[ns].dfCount = glob_sets[ns].nodeCount;
 
@@ -2543,7 +2609,7 @@ namespace {
     }
     for (auto &glob_set : glob_sets) {
       int error =
-          ex_put_set(exoid, EX_NODE_SET, glob_set.id, TOPTR(glob_set.nodeSetNodes), nullptr);
+	ex_put_set(exoid, EX_NODE_SET, glob_set.id, TOPTR(glob_set.nodeSetNodes), nullptr);
       if (error < 0) {
         exodus_error(__LINE__);
       }
@@ -2597,8 +2663,8 @@ namespace {
 
     if (bad_ss != 0) {
       std::cerr
-          << "ERROR: (EPU) There were " << bad_ss
-          << " sidesets (counting all files) which had an id equal to 0 which is not allowed.\n";
+	<< "ERROR: (EPU) There were " << bad_ss
+	<< " sidesets (counting all files) which had an id equal to 0 which is not allowed.\n";
     }
 
     if (set_ids.empty()) {
@@ -2727,7 +2793,7 @@ namespace {
         if (size > 0) {
           size_t off   = offset[ss];
           int    error = ex_get_set(id, EX_SIDE_SET, sets[p][ss].id, &glob_ssets[ss].elems[off],
-                                 &glob_ssets[ss].sides[off]);
+				    &glob_ssets[ss].sides[off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -2746,7 +2812,7 @@ namespace {
         if (df_size > 0) {
           size_t df_off = df_offset[ss] * ExodusFile::io_word_size();
           int    error  = ex_get_set_dist_fact(id, EX_SIDE_SET, sets[p][ss].id,
-                                           &glob_ssets[ss].distFactors[df_off]);
+					       &glob_ssets[ss].distFactors[df_off]);
           if (error < 0) {
             exodus_error(__LINE__);
           }
@@ -2769,8 +2835,8 @@ namespace {
       int exoid = ExodusFile::output(); // output file identifier
       for (auto &glob_sset : glob_ssets) {
         int error =
-            ex_put_set(exoid, EX_SIDE_SET, glob_sset.id, const_cast<INT *>(&glob_sset.elems[0]),
-                       const_cast<INT *>(&glob_sset.sides[0]));
+	  ex_put_set(exoid, EX_SIDE_SET, glob_sset.id, const_cast<INT *>(&glob_sset.elems[0]),
+		     const_cast<INT *>(&glob_sset.sides[0]));
         if (error < 0) {
           exodus_error(__LINE__);
         }
@@ -3024,10 +3090,10 @@ namespace {
 
   void add_info_record(char *info_record, int size)
   {
-  // Add 'uname' output to the passed in character string.
-  // Maximum size of string is 'size' (not including terminating nullptr)
-  // This is used as information data in the concatenated results file
-  // to help in tracking when/where/... the file was created
+    // Add 'uname' output to the passed in character string.
+    // Maximum size of string is 'size' (not including terminating nullptr)
+    // This is used as information data in the concatenated results file
+    // to help in tracking when/where/... the file was created
 
 #ifdef _WIN32
     std::string info                                      = "EPU: ";
