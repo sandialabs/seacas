@@ -52,11 +52,11 @@
  *
  *****************************************************************************/
 
-#include "exodusII.h" // for ex_put_truth_table, etc
+#include "exodusII.h"
 
 /*!
-\deprecated Use ex_put_truth_table()(exoid, EX_ELEM_BLOCK, num_elem_blk,
-num_elem_var, elem_var_tab)
+ * \deprecated Use ex_put_truth_table()(exoid, EX_ELEM_BLOCK, num_elem_blk,
+ * num_elem_var, elem_var_tab)
 
 The function ex_put_elem_var_tab() writes the exodus element variable
 truth table to the database. The element variable truth table

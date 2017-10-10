@@ -65,7 +65,8 @@
 /*!
 \ingroup ResultsData
 
- * \deprecated use ex_put_partial_var() instead
+ * \deprecated use ex_put_partial_var()(exoid, time_step, var_type, var_index, obj_id, start_index,
+                            num_entities, var_vals)
  * writes the values of a single variable for a partial block at one time
  * step to the database; assume the first time step and variable index
  * are 1

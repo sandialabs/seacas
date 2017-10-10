@@ -58,7 +58,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_put_partial_conn() instead.
+ * \deprecated Use ex_put_partial_conn()(exoid, EX_ELEM_BLOCK, elem_blk_id, start_elem_num,
+ num_elems, connect, NULL, NULL)
  */
 
 int ex_put_n_elem_conn(int exoid, ex_entity_id elem_blk_id, int64_t start_elem_num,

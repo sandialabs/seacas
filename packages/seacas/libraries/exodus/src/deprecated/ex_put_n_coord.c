@@ -58,15 +58,11 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_put_partial_coord() instead.
- * writes the coordinates of some of the nodes in the model
- * Only writes the 'non-null' arrays.
- * \param   exoid           exodus file id
- * \param   start_node_num  the starting index (1-based) of the coordinates to
- * be written
- * \param   num_nodes       the number of nodes to write coordinates for.
- * \param   x_coor          x coord array
- * \param   y_coor          y coord array
+ * \deprecated Use ex_put_partial_coord()(exoid, start_node_num, num_nodes, x_coor, y_coor, z_coor)
+ * instead. writes the coordinates of some of the nodes in the model Only writes the 'non-null'
+ * arrays. \param   exoid           exodus file id \param   start_node_num  the starting index
+ * (1-based) of the coordinates to be written \param   num_nodes       the number of nodes to write
+ * coordinates for. \param   x_coor          x coord array \param   y_coor          y coord array
  * \param   z_coor          z coord array
  */
 
