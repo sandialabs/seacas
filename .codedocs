@@ -33,12 +33,12 @@ TAGLINKS =
 # options. To request support for more options, contact support@codedocs.xyz.
 #
 # ABBREVIATE_BRIEF =
-ALIASES                = "func{1}=<b>\1</b>" \
-                         "fparam{1}=<em>\1</em>" \
-                         "file{1}=<tt>\1</tt>" \
-                         "comment{1}=/* \1 */" \
-                         "co{1}=/* \1 */" \
-                         "undoc=\xrefitem undoc \"Undocumented\" \"Undocumented\""
+#ALIASES                = "func{1}=<b>\1</b>" \
+#                         "fparam{1}=<em>\1</em>" \
+#                         "file{1}=<tt>\1</tt>" \
+#                         "comment{1}=/* \1 */" \
+#                         "co{1}=/* \1 */" \
+#                         "undoc=\xrefitem undoc \"Undocumented\" \"Undocumented\""
 # ALPHABETICAL_INDEX =
 # ALWAYS_DETAILED_SEC =
 # CASE_SENSE_NAMES =
