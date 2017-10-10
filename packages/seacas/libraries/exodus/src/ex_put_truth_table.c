@@ -74,6 +74,25 @@
  * \param       num_blk            number of blocks or sets
  * \param       num_var            number of variables
  * \param      *var_tab            variable truth table array
+ *
+The following coding will create, populate, and write an element
+variable truth table to an opened exodus file (NOTE: all element
+variables are valid for all element blocks in this example.):
+
+~~~{.c}
+int *truth_tab, num_elem_blk, num_ele_vars, error, exoid;
+
+\comment{write element variable truth table}
+truth_tab = (int *)calloc((num_elem_blk*num_ele_vars), sizeof(int));
+
+for (i=0, k=0; i < num_elem_blk; i++) {
+   for (j=0; j < num_ele_vars; j++) {
+      truth_tab[k++] = 1;
+   }
+}
+error = ex_put_truth_table(exoid, EX_ELEM_BLOCK, num_elem_blk, num_ele_vars,
+                            truth_tab);
+~~~
  */
 
 int ex_put_truth_table(int exoid, ex_entity_type obj_type, int num_blk, int num_var, int *var_tab)

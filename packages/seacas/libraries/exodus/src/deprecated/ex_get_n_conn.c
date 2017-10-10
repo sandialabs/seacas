@@ -37,7 +37,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_get_partial_conn() instead.
+ * \deprecated Use ex_get_partial_conn()(exoid, blk_type, blk_id, start_num, num_ent, nodeconn,
+ * edgeconn, faceconn) instead.
  */
 
 int ex_get_n_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id, int64_t start_num,

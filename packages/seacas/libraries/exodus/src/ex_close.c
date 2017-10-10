@@ -107,12 +107,12 @@ int ex_close(int exoid)
 
   if ((status1 = nc_sync(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to update file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err(__func__, errmsg, status1);
   }
 
   if ((status2 = nc_close(exoid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to close file id %d", exoid);
-    ex_err(__func__, errmsg, status);
+    ex_err(__func__, errmsg, status2);
   }
 
   /* Even if we have failures above due to nc_sync() or nc_close(), we still need to clean up our
