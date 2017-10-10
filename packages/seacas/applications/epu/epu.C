@@ -96,6 +96,25 @@ using ExodusIdVector = std::vector<ex_entity_id>;
 
 extern double seacas_timer();
 namespace {
+  unsigned int debug_level = 0;
+  const float  FILL_VALUE  = FLT_MAX;
+  int          rank        = 0;
+  std::string  tsFormat    = "[%H:%M:%S] ";
+
+  std::string time_stamp(const std::string &format);
+  std::string format_time(double seconds);
+  int         get_width(int max_value);
+
+  void LOG(const std::string message) 
+  {
+    if (debug_level & 1) {
+      std::cout << time_stamp(tsFormat);
+    }
+    if (rank == 0) {
+      std::cout << message;
+    }
+  }
+
   void exodus_error(int lineno)
   {
     std::ostringstream errmsg;
@@ -114,9 +133,6 @@ namespace {
     SMART_ASSERT(vec.capacity() == 0);
   }
 
-  std::string time_stamp(const std::string &format);
-  std::string format_time(double seconds);
-  int         get_width(int max_value);
 
   ex_entity_type exodus_object_type(Excn::ObjectType &epu_type)
   {
@@ -178,8 +194,6 @@ namespace {
     return pos;
   }
 } // namespace
-
-std::string tsFormat = "[%H:%M:%S] ";
 
 // prototypes
 
@@ -308,10 +322,6 @@ namespace {
 
   int case_compare(const std::string &s1, const std::string &s2);
 } // namespace
-
-unsigned int debug_level = 0;
-const float  FILL_VALUE  = FLT_MAX;
-int          rank        = 0;
 
 using namespace Excn;
 
@@ -595,12 +605,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
   int error = 0;
 
-  if (debug_level & 1) {
-    std::cout << time_stamp(tsFormat);
-  }
-  if (rank == 0) {
-    std::cout << "\n**** READ LOCAL (GLOBAL) INFO ****" << '\n';
-  }
+  LOG("\n**** READ LOCAL (GLOBAL) INFO ****\n");
   std::string title0;
 
   // EPU assumes IDS are always passed through the API as 64-bit ints.
@@ -696,12 +701,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     std::vector<INT> global_node_map;
     build_reverse_node_map(local_node_to_global, local_mesh, &global, part_count, global_node_map);
 
-    if (debug_level & 1) {
-      std::cout << time_stamp(tsFormat);
-    }
-    if (rank == 0) {
-      std::cout << "Finished reading/writing Global Info\n";
-    }
+    LOG("Finished reading/writing Global Info\n");
     if (interface.output_shared_nodes()) {
       // Get list of all shared nodes...
       std::vector<std::vector<INT>> shared(part_count);
@@ -750,12 +750,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     /************************************************************************/
     // Get Side sets
     if (!interface.omit_sidesets()) {
-      if (debug_level & 1) {
-        std::cout << time_stamp(tsFormat);
-      }
-      if (rank == 0) {
-        std::cout << "\n**** GET SIDE SETS *****\n";
-      }
+      LOG("\n**** GET SIDE SETS *****\n");
       get_sideset_metadata(part_count, sidesets, glob_ssets);
       if (global.count(SSET) != glob_ssets.size()) {
         std::cerr << "\nWARNING: Invalid sidesets will not be written to output database.\n";
@@ -766,12 +761,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     /************************************************************************/
     // Get Node sets
     if (!interface.omit_nodesets()) {
-      if (debug_level & 1) {
-        std::cout << time_stamp(tsFormat);
-      }
-      if (rank == 0) {
-        std::cout << "\n**** GET NODE SETS *****\n";
-      }
+      LOG("\n**** GET NODE SETS *****\n");
       get_nodesets(part_count, global.nodeCount, local_node_to_global, nodesets, glob_nsets,
                    float_or_double);
       if (global.count(NSET) != glob_nsets.size()) {
@@ -783,12 +773,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     /************************************************************************/
     // Start writing the output file...
 
-    if (debug_level & 1) {
-      std::cout << time_stamp(tsFormat);
-    }
-    if (rank == 0) {
-      std::cout << "\n**** BEGIN WRITING OUTPUT FILE *****\n";
-    }
+    LOG("\n**** BEGIN WRITING OUTPUT FILE *****\n");
     CommunicationMetaData comm_data;
 
     // Create the output file...
@@ -832,12 +817,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
       // c.2.  Write Global Node Number Map
       if (global.needNodeMap) {
-        if (debug_level & 1) {
-          std::cout << time_stamp(tsFormat);
-        }
-        if (rank == 0) {
-          std::cout << "Writing global node number map...\n";
-        }
+	LOG("Writing global node number map...\n");
         error = ex_put_id_map(ExodusFile::output(), EX_NODE_MAP, TOPTR(global_node_map));
         if (error < 0) {
           exodus_error(__LINE__);
@@ -845,12 +825,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       }
 
       if (global.needElementMap) {
-        if (debug_level & 1) {
-          std::cout << time_stamp(tsFormat);
-        }
-        if (rank == 0) {
-          std::cout << "Writing out master global elements information...\n";
-        }
+	LOG("Writing out master global elements information...\n");
         if (!global_element_map.empty()) {
           error = ex_put_id_map(ExodusFile::output(), EX_ELEM_MAP, TOPTR(global_element_map));
           if (error < 0) {
@@ -871,31 +846,16 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   // ************************************************************************
   // 2. Get Coordinate Info.
   if (!interface.append()) {
-    if (debug_level & 1) {
-      std::cout << time_stamp(tsFormat);
-    }
-    if (rank == 0) {
-      std::cout << "\n\n**** GET COORDINATE INFO ****\n";
-    }
+    LOG("\n\n**** GET COORDINATE INFO ****\n");
     get_put_coordinates(global, part_count, local_mesh, local_node_to_global, (T)0.0);
-
-    if (debug_level & 1) {
-      std::cout << time_stamp(tsFormat);
-    }
-    if (rank == 0) {
-      std::cout << "Wrote coordinate information...\n";
-    }
+    LOG("Wrote coordinate information...\n");
   }
+
   // ####################TRANSIENT DATA SECTION###########################
   // ***********************************************************************
   // 9. Get Variable Information and names
+  LOG("\n**** GET VARIABLE INFORMATION AND NAMES ****\n");
 
-  if (debug_level & 1) {
-    std::cout << time_stamp(tsFormat);
-  }
-  if (rank == 0) {
-    std::cout << "\n**** GET VARIABLE INFORMATION AND NAMES ****" << '\n';
-  }
   //  I. read number of variables for each type.
   //  NOTE: it is assumed that every processor has the same global, nodal,
   //        and element lists
@@ -987,12 +947,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   int time_step;
   int num_time_steps = 0;
 
-  if (debug_level & 1) {
-    std::cout << time_stamp(tsFormat);
-  }
-  if (rank == 0) {
-    std::cout << "\n**** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****\n";
-  }
+  LOG("\n**** GET TRANSIENT NODAL, GLOBAL, AND ELEMENT DATA VALUES ****\n");
   // Stage I: Get the number_of_time_steps information
 
   bool differ = false;
@@ -1398,14 +1353,9 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     std::cout << time_stamp(tsFormat);
   }
   if (subcycles > 2) {
-    if (rank == 0) {
-      std::cout << cycle + 1 << "/" << subcycles << " ";
-    }
+    std::cout << cycle + 1 << "/" << subcycles << " ";
   }
-
-  if (rank == 0) {
-    std::cout << "******* END *******\n";
-  }
+  std::cout << "******* END *******\n";
   return (0);
 }
 
@@ -1569,7 +1519,7 @@ namespace {
     if (error < 0) {
       exodus_error(__LINE__);
     }
-    std::cout << "Wrote coordinate names..." << '\n';
+    LOG("Wrote coordinate names...\n");
 
     free_name_array(coordinate_names, dimensionality);
   }
@@ -1682,14 +1632,15 @@ namespace {
   void get_element_blocks(int part_count, const std::vector<Mesh> &local_mesh, const Mesh &global,
                           std::vector<std::vector<Block>> &blocks, std::vector<Block> &glob_blocks)
   {
-    std::cout << "\n\n**** GET BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n";
-    ;
+    LOG("\n\n**** GET BLOCK INFORMATION (INCL. ELEMENT ATTRIBUTES) ****\n");
 
     for (int ip = 0; ip < part_count; ip++) {
       blocks[ip].resize(local_mesh[ip].count(EBLK));
     }
 
-    std::cout << "Global block count = " << global.count(EBLK) << '\n';
+    if (rank == 0) {
+      std::cout << "Global block count = " << global.count(EBLK) << '\n';
+    }
 
     ExodusIdVector block_id(global.count(EBLK));
 
@@ -1718,7 +1669,7 @@ namespace {
       }
       else {
         if (p == 0) {
-          std::cout << "\nGetting element block info.\n";
+	  LOG("\nGetting element block info.\n");
         }
       }
 
@@ -1814,10 +1765,7 @@ namespace {
     auto linkage    = new INT *[global_num_blocks];
     auto attributes = new T *[global_num_blocks];
 
-    if (debug_level & 1) {
-      std::cout << time_stamp(tsFormat);
-    }
-    std::cout << "\nReading and Writing element connectivity & attributes\n";
+    LOG("\nReading and Writing element connectivity & attributes\n");
 
     for (int b = 0; b < global_num_blocks; b++) {
 
@@ -2004,7 +1952,9 @@ namespace {
     // at global_element_map.size() == global_element_map.size();
     bool is_contiguous = global_element_map.empty() ||
                          ((size_t)global_element_map.back() == global_element_map.size());
-    std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
+    if (rank == 0) {
+      std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
+    }
 
     // Create the map that maps from a local processor element to the
     // global map. This combines the mapping local processor element to
@@ -2173,7 +2123,9 @@ namespace {
     // at global_node_map.size() == global_node_map.size();
     bool is_contiguous =
         global_node_map.empty() || ((size_t)global_node_map.back() == global_node_map.size());
-    std::cout << "Node map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
+    if (rank == 0) {
+      std::cout << "Node map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
+    }
 
     // Create the map the maps from a local processor node to the
     // global map. This combines the mapping local processor node to
@@ -2254,8 +2206,8 @@ namespace {
         nfield = 1;
       }
 
-      std::cout << "Found " << vars.count(OUT) << " " << vars.label() << " variables.\n";
-      {
+      if (rank == 0) {
+	std::cout << "Found " << vars.count(OUT) << " " << vars.label() << " variables.\n";
         int i    = 0;
         int ifld = 1;
         std::cout << "\t";
@@ -2397,6 +2349,7 @@ namespace {
   {
     // Write out Global info
 
+    if (rank == 0) {
     std::cout << " Title: " << global.title.c_str() << "\n\n";
     std::cout << " Number of coordinates per node       =" << std::setw(12) << global.dimensionality
               << "\n";
@@ -2410,7 +2363,7 @@ namespace {
               << "\n";
     std::cout << " Number of element side sets          =" << std::setw(12) << global.count(SSET)
               << "\n\n";
-
+    }
     int id_out = ExodusFile::output();
     get_put_qa(ExodusFile(0), id_out);
   }
