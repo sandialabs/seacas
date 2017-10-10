@@ -50,7 +50,6 @@ inline const std::string IOSS_VECTOR_2D() { return std::string("vector_2d"); }
 inline const std::string IOSS_VECTOR_3D() { return std::string("vector_3d"); }
 inline const std::string IOSS_SYM_TENSOR() { return std::string("sym_tensor_33"); }
 
-
 #if defined(SIERRA_PARALLEL_MPI)
 #define SEACAS_HAVE_MPI
 #define NO_DATAWAREHOUSE_SUPPORT
@@ -116,4 +115,4 @@ using Kokkos_Complex = Kokkos::complex<double>;
 #endif
 #endif
 
-#define IOSS_DEBUG_OUTPUT 1
+#define IOSS_DEBUG_OUTPUT 0
