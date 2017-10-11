@@ -1,7 +1,6 @@
 # SEACAS  [[Documentation](http://gsjaardema.github.io/seacas/)]
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
-[![Documentation](https://codedocs.xyz/gsjaardema/seacas.svg)](https://codedocs.xyz/gsjaardema/seacas/)
 
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
