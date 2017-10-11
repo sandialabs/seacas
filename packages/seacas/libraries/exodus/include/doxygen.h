@@ -181,14 +181,16 @@ exoid = ex_create( EX_TEST_FILENAME,
 The constants related to the integer size (32-bit or 64-bit)
 specification are:
 
-- EX_MAPS_INT64_DB   -- entity map data
-- EX_IDS_INT64_DB    -- mesh entity ids
-- EX_BULK_INT64_DB   -- bulk data
-- EX_ALL_INT64_DB    -- (the above 3 or'd together)
-- EX_MAPS_INT64_API  -- entity map data
-- EX_IDS_INT64_API   -- mesh entity ids
-- EX_BULK_INT64_API  -- bulk data
-- EX_ALL_INT64_API   -- (the above 3 or'd together)
+|   Constant Name    | Which data are 64-bit
+---------------------|----------------------
+| EX_MAPS_INT64_DB   | entity map data
+| EX_IDS_INT64_DB    | mesh entity ids
+| EX_BULK_INT64_DB   | bulk data
+| EX_ALL_INT64_DB    | (the above 3 or'd together)
+| EX_MAPS_INT64_API  | entity map data
+| EX_IDS_INT64_API   | mesh entity ids
+| EX_BULK_INT64_API  | bulk data
+| EX_ALL_INT64_API   | (the above 3 or'd together)
 
 The constants that end with "_DB" specify that that particular integer
 data is stored on the database as 64-bit integers; the constants that
