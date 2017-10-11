@@ -52,8 +52,6 @@
 #include "netcdf.h"       // for NC_NOERR, nc_close, etc
 #include <stdio.h>
 
-extern char *ret_string; /* cf ex_utils.c */
-
 /*!
 
 The function ex_close() updates and then closes an open exodus file.
