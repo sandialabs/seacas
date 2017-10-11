@@ -619,8 +619,6 @@ Functions</h2></td></tr>
 <tr class="separator:a1081b59c3c29c0136ae88ca96566c2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa1d828867b436631e99a63fd5ddbf05"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#afa1d828867b436631e99a63fd5ddbf05">ex_put_var</a> (int exoid, int time_step, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> obj_id, int64_t num_entries_this_obj, const void *var_vals)</td></tr>
 <tr class="separator:afa1d828867b436631e99a63fd5ddbf05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab327ecdeb725ad27002ad22e3bc21790"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ab327ecdeb725ad27002ad22e3bc21790">ex_put_var_varid</a> (int exoid, int time_step, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_id, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> obj_id, int64_t num_entries_this_obj, const void *var_vals)</td></tr>
-<tr class="separator:ab327ecdeb725ad27002ad22e3bc21790"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4acbccad7c694a50b2c5ecdc904fa5e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga4acbccad7c694a50b2c5ecdc904fa5e8">ex_put_partial_var</a> (int exoid, int time_step, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> obj_id, int64_t start_index, int64_t num_entities, const void *var_vals)</td></tr>
 <tr class="separator:ga4acbccad7c694a50b2c5ecdc904fa5e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga200c0e240277523c735987a7bb69cf20"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ResultsData.html#ga200c0e240277523c735987a7bb69cf20">ex_get_var</a> (int exoid, int time_step, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> var_type, int var_index, <a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a> obj_id, int64_t num_entry_this_obj, void *var_vals)</td></tr>
@@ -13455,64 +13453,6 @@ Variables</h2></td></tr>
           <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>var_index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#ac03e735ba54b290660f8424399684450">ex_entity_id</a>&#160;</td>
-          <td class="paramname"><em>obj_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_entries_this_obj</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>var_vals</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab327ecdeb725ad27002ad22e3bc21790"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab327ecdeb725ad27002ad22e3bc21790">&#9670;&nbsp;</a></span>ex_put_var_varid()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int ex_put_var_varid </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>exoid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>time_step</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a>&#160;</td>
-          <td class="paramname"><em>var_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>var_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

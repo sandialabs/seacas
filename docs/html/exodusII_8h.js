@@ -425,7 +425,6 @@ var exodusII_8h =
     [ "ex_put_var_names", "group__ResultsData.html#gafbd39f5aca69cb3290549efce1ae20d8", null ],
     [ "ex_put_var_param", "group__ResultsData.html#ga18448b8dc46181c45af2abf82f1ec590", null ],
     [ "ex_put_var_tab", "group__ResultsData.html#ga4f86c43fd1fa75b2e994271851b59d7a", null ],
-    [ "ex_put_var_varid", "exodusII_8h.html#ab327ecdeb725ad27002ad22e3bc21790", null ],
     [ "ex_put_variable_name", "group__ResultsData.html#ga223eafff4a08dd9b2264a82df11050b3", null ],
     [ "ex_put_variable_names", "group__ResultsData.html#gae487ed3a7cd9dcef6eca2ca6dac0f48b", null ],
     [ "ex_put_variable_param", "group__ResultsData.html#gac8b76bb57f2ab1e4cbca7aef29b6ae91", null ],
