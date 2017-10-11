@@ -249,7 +249,7 @@ bool SystemInterface::parse_options(int argc, char **argv)
   {
     const char *temp = options_.retrieve("output");
     if (temp != nullptr) {
-      outputName_      = temp;
+      outputName_ = temp;
     }
   }
 
