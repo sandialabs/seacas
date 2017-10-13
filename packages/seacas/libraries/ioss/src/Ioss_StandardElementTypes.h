@@ -37,6 +37,7 @@
 #include <Ioss_Bar3.h>
 #include <Ioss_Edge2.h>
 #include <Ioss_Edge3.h>
+#include <Ioss_Hex16.h>
 #include <Ioss_Hex20.h>
 #include <Ioss_Hex27.h>
 #include <Ioss_Hex8.h>
@@ -48,6 +49,7 @@
 #include <Ioss_Pyramid19.h>
 #include <Ioss_Pyramid5.h>
 #include <Ioss_Quad4.h>
+#include <Ioss_Quad6.h>
 #include <Ioss_Quad8.h>
 #include <Ioss_Quad9.h>
 #include <Ioss_Shell4.h>
