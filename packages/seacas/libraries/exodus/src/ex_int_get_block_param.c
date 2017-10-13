@@ -217,6 +217,14 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[4] = 4;
       elem_blk_parm->num_nodes_per_side[5] = 4;
     }
+    else if (elem_blk_parm->num_nodes_per_elem == 16) { /* Localization Element */
+      elem_blk_parm->num_nodes_per_side[0] = 6;
+      elem_blk_parm->num_nodes_per_side[1] = 6;
+      elem_blk_parm->num_nodes_per_side[2] = 6;
+      elem_blk_parm->num_nodes_per_side[3] = 6;
+      elem_blk_parm->num_nodes_per_side[4] = 8;
+      elem_blk_parm->num_nodes_per_side[5] = 8;
+    }
     else if (elem_blk_parm->num_nodes_per_elem == 20) { /* 20-node bricks */
       elem_blk_parm->num_nodes_per_side[0] = 8;
       elem_blk_parm->num_nodes_per_side[1] = 8;
@@ -278,6 +286,13 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[2] = 4;
       elem_blk_parm->num_nodes_per_side[3] = 3;
       elem_blk_parm->num_nodes_per_side[4] = 3;
+    }
+    else if (elem_blk_parm->num_nodes_per_elem == 12) {
+      elem_blk_parm->num_nodes_per_side[0] = 6; /* 6-node quad faces */
+      elem_blk_parm->num_nodes_per_side[1] = 6;
+      elem_blk_parm->num_nodes_per_side[2] = 6;
+      elem_blk_parm->num_nodes_per_side[3] = 6; /* 6-node tri faces */
+      elem_blk_parm->num_nodes_per_side[4] = 6;
     }
     else if (elem_blk_parm->num_nodes_per_elem == 15) {
       elem_blk_parm->num_nodes_per_side[0] = 8;
