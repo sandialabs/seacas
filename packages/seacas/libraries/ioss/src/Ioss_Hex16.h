@@ -30,74 +30,58 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_CodeTypes.h>
-#include <Ioss_StandardElementTypes.h>
-#if defined IOSS_THREADSAFE
-#include <mutex>
+#ifndef IOSS_Ioss_Hex16_h
+#define IOSS_Ioss_Hex16_h
+
+#include <Ioss_CodeTypes.h>       // for IntVector
+#include <Ioss_ElementTopology.h> // for ElementTopology
+
+// STL Includes
+
+namespace Ioss {
+  class Hex16 : public Ioss::ElementTopology
+  {
+
+  public:
+    static constexpr auto name = "hex16";
+
+    static void factory();
+    ~Hex16() override;
+
+    ElementShape shape() const override { return ElementShape::HEX; }
+    int          spatial_dimension() const override;
+    int          parametric_dimension() const override;
+    bool         is_element() const override { return true; }
+    int          order() const override;
+
+    bool edges_similar() const override { return false; } // true if all edges have same topology
+    bool faces_similar() const override { return false; } // true if all faces have same topology
+
+    int number_corner_nodes() const override;
+    int number_nodes() const override;
+    int number_edges() const override;
+    int number_faces() const override;
+
+    int number_nodes_edge(int edge = 0) const override;
+    int number_nodes_face(int face = 0) const override;
+    int number_edges_face(int face = 0) const override;
+
+    Ioss::IntVector edge_connectivity(int edge_number) const override;
+    Ioss::IntVector face_connectivity(int face_number) const override;
+    Ioss::IntVector element_connectivity() const override;
+
+    Ioss::IntVector face_edge_connectivity(int face_number) const override;
+
+    Ioss::ElementTopology *face_type(int face_number = 0) const override;
+    Ioss::ElementTopology *edge_type(int edge_number = 0) const override;
+
+  protected:
+    Hex16();
+
+  private:
+    static Hex16 instance_;
+
+    Hex16(const Hex16 &) = delete;
+  };
+} // namespace Ioss
 #endif
-
-Ioss::Initializer::Initializer()
-{
-  // List all storage types here with a call to their factory method.
-  // This is Used to get the linker to pull in all needed libraries.
-  Ioss::Sphere::factory();
-
-  Ioss::Edge2::factory();
-  Ioss::Edge3::factory();
-
-  Ioss::Bar2::factory();
-  Ioss::Bar3::factory();
-  Ioss::ShellLine2D2::factory();
-  Ioss::ShellLine2D3::factory();
-
-  Ioss::Hex8::factory();
-  Ioss::Hex16::factory();
-  Ioss::Hex20::factory();
-  Ioss::Hex27::factory();
-
-  Ioss::Node::factory();
-
-  Ioss::Pyramid5::factory();
-  Ioss::Pyramid13::factory();
-  Ioss::Pyramid14::factory();
-  Ioss::Pyramid18::factory();
-  Ioss::Pyramid19::factory();
-
-  Ioss::Quad4::factory();
-  Ioss::Quad6::factory();
-  Ioss::Quad8::factory();
-  Ioss::Quad9::factory();
-
-  Ioss::Shell4::factory();
-  Ioss::Shell8::factory();
-  Ioss::Shell9::factory();
-
-  Ioss::Tet4::factory();
-
-  Ioss::Tet8::factory();
-  Ioss::Tet10::factory();
-  Ioss::Tet11::factory();
-  Ioss::Tet14::factory();
-  Ioss::Tet15::factory();
-
-  Ioss::Tri3::factory();
-  Ioss::Tri4::factory();
-  Ioss::Tri6::factory();
-  Ioss::Tri7::factory();
-
-  Ioss::TriShell3::factory();
-  Ioss::TriShell4::factory();
-  Ioss::TriShell6::factory();
-  Ioss::TriShell7::factory();
-
-  Ioss::Unknown::factory();
-
-  Ioss::Wedge6::factory();
-  Ioss::Wedge15::factory();
-  Ioss::Wedge16::factory();
-  Ioss::Wedge18::factory();
-  Ioss::Wedge20::factory();
-  Ioss::Wedge21::factory();
-
-  Ioss::Super::factory();
-}
