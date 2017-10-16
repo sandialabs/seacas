@@ -74,6 +74,7 @@
 #include <Ioss_TriShell6.h>
 #include <Ioss_TriShell7.h>
 #include <Ioss_Unknown.h>
+#include <Ioss_Wedge12.h>
 #include <Ioss_Wedge15.h>
 #include <Ioss_Wedge16.h>
 #include <Ioss_Wedge18.h>
