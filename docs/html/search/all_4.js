@@ -996,5 +996,5 @@ var searchData=
   ['expvtt',['EXPVTT',['../exo__jack-windows_8c.html#ad5e89de4e36ecd3c6e7eb42a79bde237',1,'exo_jack-windows.c']]],
   ['extra_5flist',['extra_list',['../structex__set.html#a3b7e3f4d6a16d5bf8b45b75e97bd8fb1',1,'ex_set']]],
   ['exupda',['EXUPDA',['../exo__jack-windows_8c.html#ad26a4999e7c866b9b3829d8875fc852a',1,'exo_jack-windows.c']]],
-  ['exodusii_20api_20documentation',['ExodusII API Documentation',['../index.html',1,'']]]
+  ['exodus_20api_20documentation',['Exodus API Documentation',['../index.html',1,'']]]
 ];

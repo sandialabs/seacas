@@ -1,12 +1,12 @@
 var NAVTREE =
 [
   [ "Exodus", "index.html", [
-    [ "ExodusII API Documentation", "index.html", [
+    [ "Exodus API Documentation", "index.html", [
       [ "Introduction", "index.html#intro", null ],
       [ "License and Availability", "index.html#avail", null ],
       [ "Development of EXODUS", "index.html#devel", null ],
       [ "Description of Data Objects", "index.html#descrip", null ],
-      [ "Integer Bulkdata Storage Details", "index.html#int64", [
+      [ "Integer Bulkdata Storage Details (32-bit and 64-bit integers)", "index.html#int64", [
         [ "Fortran API", "index.html#int64_fortran_api", null ],
         [ "Fortran Implementation", "index.html#int64_fortran_imp", null ]
       ] ],
