@@ -37,67 +37,26 @@
 # ************************************************************************
 # @HEADER
 
-INCLUDE(CMakeParseArguments)
-INCLUDE(PrintNonemptyVar)
-
 #
-# Finds the absolute path for a program given optionally just the program name
+# @FUNCTION: TRIBITS_STANDARDIZE_ABS_PATHS()
 #
-#  Input keyword arguments:
+# Function uses GET_FILENAME_COMPONENT() to standardize a list of paths to be
+# absolute paths.
 #
-#    NAMES name1 name2 ...
-#     List of default names that will be search
+# Usage::
 #
-#    PATHS path1 path2 ...
-#      List of paths
+#   TRIBITS_STANDARDIZE_ABS_PATHS(<pathsListvar> <path0> <path1> ...)
 #
-#    DOC docStr
-#      Documentation string
+# On output, ``<pathsListLvar>`` will be set to the list of paths
 #
-
-FUNCTION(FIND_PROGRAM_PLUS PROG_VAR)
-
-  CMAKE_PARSE_ARGUMENTS(
-    #prefix
-    PARSE
-    #options
-    ""
-    #one_value_keywords
-    ""
-    #multi_value_keywords
-    "NAMES;PATHS;DOC"
-    ${ARGN}
-    )
-
-  TRIBITS_CHECK_FOR_UNPARSED_ARGUMENTS()
-
-  PRINT_NONEMPTY_VAR(${PROG_VAR})
-
-  IF (IS_ABSOLUTE ${PROG_VAR})
-    #MESSAGE(STATUS "Is Absoute")
-    SET(NAMES_ARGS ${PARSE_NAMES})
-  ELSE()
-    #MESSAGE(STATUS "Is Not Absolute")
-    SET(NAMES_ARGS ${${PROG_VAR}} ${PARSE_NAMES})
-    SET(${PROG_VAR} "${PROG_VAR}-NOTFOUND" CACHE FILEPATH "" FORCE)
-  ENDIF()
-  #PRINT_VAR(NAMES_ARGS)
-
-  SET(DOC "${PARSE_DOC}  Can be full path or just exec name.")
-
-  # Look for program in given paths first!
-  FIND_PROGRAM( ${PROG_VAR}
-    NAMES ${NAMES_ARGS}
-    PATHS ${PARSE_PATHS}
-    DOC ${DOC}
-    NO_DEFAULT_PATH
-    )
-  FIND_PROGRAM( ${PROG_VAR}
-    NAMES ${NAMES_ARGS}
-    DOC ${DOC}
-    )
-  MARK_AS_ADVANCED(${PROG_VAR})
-
-  PRINT_NONEMPTY_VAR(${PROG_VAR})
-
+FUNCTION(TRIBITS_STANDARDIZE_ABS_PATHS  PATHS_LIST_VAR_OUT)
+  SET(PATHS_LIST)
+  FOREACH(PATH_I ${ARGN})
+    #PRINT_VAR(PATH_I)
+    GET_FILENAME_COMPONENT(STD_ABS_PATH_I "${PATH_I}" ABSOLUTE)
+    #PRINT_VAR(STD_ABS_PATH_I)
+    LIST(APPEND PATHS_LIST "${STD_ABS_PATH_I}")
+  ENDFOREACH()
+  SET(${PATHS_LIST_VAR_OUT} ${PATHS_LIST} PARENT_SCOPE)
 ENDFUNCTION()
+

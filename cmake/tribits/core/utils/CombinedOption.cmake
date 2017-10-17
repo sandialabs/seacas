@@ -80,6 +80,8 @@ FUNCTION(COMBINED_OPTION  COMBINED_OPTION_NAME)
     ${ARGN}
     )
 
+  TRIBITS_CHECK_FOR_UNPARSED_ARGUMENTS()
+
   # ToDo: Assert that the right input was passed in!
 
   SET(DEFAULT_VAL ON)
