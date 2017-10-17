@@ -80,7 +80,7 @@ ENDIF()
 
 ADD_SUBDIRECTORY(src)
 
-TRIBITS_ADD_TEST_DIRECTORIES(src/driver)
+# TRIBITS_ADD_TEST_DIRECTORIES(src/driver)
 
 IF(ZOLTAN_BUILD_ZFDRIVE)
   # CMAKE version > 2.6.4 is needed; earlier versions use C++ compiler to link
