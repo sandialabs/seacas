@@ -2,7 +2,8 @@
 EXTRA_ARGS=$@
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
-MPI=OFF
+MPI="${MPI:-OFF}"
+echo "MPI set to ${MPI}"
 
 ### Switch for Debug or Release build:
 #BUILD_TYPE=Release
@@ -30,16 +31,28 @@ INSTALL_PATH=${ACCESS}
 ### Make sure these point to the locations to find the libraries and includes in lib and include
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
-HAVE_NETCDF=ON
-HAVE_MATIO=ON
-HAVE_CGNS=OFF
-HAVE_DATAWAREHOUSE=OFF
-
 NETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
 DATAWAREHOUSE_PATH=${ACCESS}
+
+if [ -e "${NETCDF_PATH}/include/netcdf.h" ]
+then
+    HAVE_NETCDF=ON
+fi
+   
+if [ -e "${MATIO_PATH}/include/matio.h" ]
+then
+    HAVE_MATIO=ON
+fi
+   
+if [ -e "${CGNS_PATH}/include/cgnslib.h" ]
+then
+    HAVE_CGNS=ON
+fi
+   
+HAVE_DATAWAREHOUSE=OFF
 
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
@@ -154,3 +167,13 @@ ${DW_SYMBOLS} \
 \
 $EXTRA_ARGS \
 ..
+
+echo ""
+echo "     ACCESS: ${ACCESS}"
+echo "   COMPILER: ${COMPILER}"
+echo "        MPI: ${MPI}"
+echo "HAVE_NETCDF: ${HAVE_NETCDF}"
+echo " HAVE_MATIO: ${HAVE_MATIO}"
+echo "  HAVE_CGNS: ${HAVE_CGNS}"
+echo "     KOKKOS: ${KOKKOS}"
+echo ""
