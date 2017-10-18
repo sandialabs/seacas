@@ -474,7 +474,7 @@ namespace SEAMS {
     /// Constants.
     enum {
       yyeof_     = 0,
-      yylast_    = 1224, ///< Last index in yytable_.
+      yylast_    = 1222, ///< Last index in yytable_.
       yynnts_    = 7,    ///< Number of nonterminal symbols.
       yyfinal_   = 2,    ///< Termination state number.
       yyterror_  = 1,

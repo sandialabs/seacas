@@ -151,6 +151,11 @@ namespace SEAMS {
   const char *do_str_elseif(char *string);
   const char *do_delete(char *string);
 
+#if !defined(NO_EXODUSII)
+  const char *do_exodus_info(char *filename, char *prefix);
+  const char *do_exodus_meta(char *filename);
+#endif
+
   array *do_csv_array(const char *filename, double skip);
   array *do_csv_array1(const char *filename);
   array *do_csv_array2(const char *filename, const char *comment);

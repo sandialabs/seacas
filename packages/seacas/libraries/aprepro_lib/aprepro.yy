@@ -320,6 +320,12 @@ sexp:     QSTRING		{ $$ = $1;				}
 	  else
 	    $$ = (char*)"";
 	}
+        | SFNCT LPAR sexp COMMA sexp RPAR {
+	  if (arg_check($1, $1->value.strfnct_cc == NULL))
+	    $$ = (char*)(*($1->value.strfnct_cc))($3, $5);
+	  else
+	    $$ = (char*)"";
+	}
         | bool QUEST sexp COLON sexp  { $$ = ($1) ? ($3) : ($5);              }
 
 exp:	  NUM			{ $$ = $1; 				}

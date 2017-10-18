@@ -1063,143 +1063,156 @@ namespace SEAMS {
           case 61:
 #line 323 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.string) = ((yystack_[4].value.val)) ? ((yystack_[2].value.string))
-                                                             : ((yystack_[0].value.string));
+            if (arg_check((yystack_[5].value.tptr),
+                          (yystack_[5].value.tptr)->value.strfnct_cc == NULL))
+              (yylhs.value.string) = (char *)(*((yystack_[5].value.tptr)->value.strfnct_cc))(
+                  (yystack_[3].value.string), (yystack_[1].value.string));
+            else
+              (yylhs.value.string) = (char *)"";
           }
-#line 1079 "apr_parser.cc" // lalr1.cc:859
+#line 1084 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 62:
-#line 325 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 329 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[0].value.val);
+            (yylhs.value.string) = ((yystack_[4].value.val)) ? ((yystack_[2].value.string))
+                                                             : ((yystack_[0].value.string));
           }
-#line 1085 "apr_parser.cc" // lalr1.cc:859
+#line 1090 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 63:
-#line 326 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 331 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[0].value.val) + 1;
+            (yylhs.value.val) = (yystack_[0].value.val);
           }
-#line 1091 "apr_parser.cc" // lalr1.cc:859
+#line 1096 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 64:
-#line 327 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 332 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[0].value.val) - 1;
+            (yylhs.value.val) = (yystack_[0].value.val) + 1;
           }
-#line 1097 "apr_parser.cc" // lalr1.cc:859
+#line 1102 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 65:
-#line 328 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 333 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
+            (yylhs.value.val) = (yystack_[0].value.val) - 1;
           }
-#line 1103 "apr_parser.cc" // lalr1.cc:859
+#line 1108 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 66:
-#line 329 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 334 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
           }
-#line 1109 "apr_parser.cc" // lalr1.cc:859
+#line 1114 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 67:
-#line 330 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 335 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = ++((yystack_[0].value.tptr)->value.var);
+            (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
           }
-#line 1115 "apr_parser.cc" // lalr1.cc:859
+#line 1120 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 68:
-#line 331 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 336 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = --((yystack_[0].value.tptr)->value.var);
+            (yylhs.value.val) = ++((yystack_[0].value.tptr)->value.var);
           }
-#line 1121 "apr_parser.cc" // lalr1.cc:859
+#line 1126 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 69:
-#line 332 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 337 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = ((yystack_[1].value.tptr)->value.var)++;
+            (yylhs.value.val) = --((yystack_[0].value.tptr)->value.var);
           }
-#line 1127 "apr_parser.cc" // lalr1.cc:859
+#line 1132 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 70:
-#line 333 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 338 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = ((yystack_[1].value.tptr)->value.var)--;
+            (yylhs.value.val) = ((yystack_[1].value.tptr)->value.var)++;
           }
-#line 1133 "apr_parser.cc" // lalr1.cc:859
+#line 1138 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 71:
-#line 334 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 339 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = ((yystack_[1].value.tptr)->value.var)--;
+          }
+#line 1144 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 72:
+#line 340 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val)                   = (yystack_[0].value.val);
             (yystack_[2].value.tptr)->value.var = (yystack_[0].value.val);
             redefined_warning(aprepro, (yystack_[2].value.tptr));
           }
-#line 1140 "apr_parser.cc" // lalr1.cc:859
+#line 1151 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 72:
-#line 336 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 73:
+#line 342 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val)                   = (yystack_[0].value.val);
             (yystack_[2].value.tptr)->value.var = (yystack_[0].value.val);
             redefined_warning(aprepro, (yystack_[2].value.tptr));
             set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
           }
-#line 1148 "apr_parser.cc" // lalr1.cc:859
+#line 1159 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 73:
-#line 339 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 74:
+#line 345 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var += (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
           }
-#line 1154 "apr_parser.cc" // lalr1.cc:859
+#line 1165 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 74:
-#line 340 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 75:
+#line 346 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var -= (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
           }
-#line 1160 "apr_parser.cc" // lalr1.cc:859
+#line 1171 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 75:
-#line 341 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 76:
+#line 347 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var *= (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
           }
-#line 1166 "apr_parser.cc" // lalr1.cc:859
+#line 1177 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 76:
-#line 342 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 77:
+#line 348 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var /= (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
           }
-#line 1172 "apr_parser.cc" // lalr1.cc:859
+#line 1183 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 77:
-#line 343 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 78:
+#line 349 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             reset_error();
             (yystack_[2].value.tptr)->value.var =
@@ -1207,227 +1220,227 @@ namespace SEAMS {
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             SEAMS::math_error(aprepro, "Power");
           }
-#line 1182 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 78:
-#line 348 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[0].value.tptr));
-          }
-#line 1188 "apr_parser.cc" // lalr1.cc:859
+#line 1193 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 79:
-#line 349 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 354 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[0].value.tptr));
           }
-#line 1194 "apr_parser.cc" // lalr1.cc:859
+#line 1199 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 80:
-#line 350 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 355 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[1].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[1].value.tptr));
+            (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[0].value.tptr));
           }
-#line 1200 "apr_parser.cc" // lalr1.cc:859
+#line 1205 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 81:
-#line 351 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 356 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[1].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[1].value.tptr));
           }
-#line 1206 "apr_parser.cc" // lalr1.cc:859
+#line 1211 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 82:
-#line 352 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 357 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[2].value.tptr));
+            (yylhs.value.val) = (yystack_[1].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[1].value.tptr));
           }
-#line 1212 "apr_parser.cc" // lalr1.cc:859
+#line 1217 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 83:
-#line 353 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            immutable_modify(aprepro, (yystack_[2].value.tptr));
-            YYERROR;
-          }
-#line 1218 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 84:
-#line 354 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[2].value.tptr));
-          }
-#line 1224 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 85:
-#line 355 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[2].value.tptr));
-          }
-#line 1230 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 86:
-#line 356 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[2].value.tptr));
-          }
-#line 1236 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 87:
-#line 357 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
-            immutable_modify(aprepro, (yystack_[2].value.tptr));
-          }
-#line 1242 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 88:
 #line 358 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             immutable_modify(aprepro, (yystack_[2].value.tptr));
           }
-#line 1248 "apr_parser.cc" // lalr1.cc:859
+#line 1223 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 84:
+#line 359 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            immutable_modify(aprepro, (yystack_[2].value.tptr));
+            YYERROR;
+          }
+#line 1229 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 85:
+#line 360 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[2].value.tptr));
+          }
+#line 1235 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 86:
+#line 361 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[2].value.tptr));
+          }
+#line 1241 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 87:
+#line 362 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[2].value.tptr));
+          }
+#line 1247 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 88:
+#line 363 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[2].value.tptr));
+          }
+#line 1253 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 89:
-#line 360 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 364 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
+            immutable_modify(aprepro, (yystack_[2].value.tptr));
+          }
+#line 1259 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 90:
+#line 366 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[0].value.tptr)->value.var;
             undefined_error(aprepro, (yystack_[0].value.tptr)->name);
           }
-#line 1255 "apr_parser.cc" // lalr1.cc:859
+#line 1266 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 90:
-#line 362 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 91:
+#line 368 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = ++((yystack_[0].value.tptr)->value.var);
             set_type(aprepro, (yystack_[0].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[0].value.tptr)->name);
           }
-#line 1263 "apr_parser.cc" // lalr1.cc:859
+#line 1274 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 91:
-#line 365 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 92:
+#line 371 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = --((yystack_[0].value.tptr)->value.var);
             set_type(aprepro, (yystack_[0].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[0].value.tptr)->name);
           }
-#line 1271 "apr_parser.cc" // lalr1.cc:859
+#line 1282 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 92:
-#line 368 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 93:
+#line 374 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = ((yystack_[1].value.tptr)->value.var)++;
             set_type(aprepro, (yystack_[1].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[1].value.tptr)->name);
           }
-#line 1279 "apr_parser.cc" // lalr1.cc:859
+#line 1290 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 93:
-#line 371 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 94:
+#line 377 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = ((yystack_[1].value.tptr)->value.var)--;
             set_type(aprepro, (yystack_[1].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[1].value.tptr)->name);
           }
-#line 1287 "apr_parser.cc" // lalr1.cc:859
+#line 1298 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 94:
-#line 374 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 95:
+#line 380 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val)                   = (yystack_[0].value.val);
             (yystack_[2].value.tptr)->value.var = (yystack_[0].value.val);
             set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
           }
-#line 1294 "apr_parser.cc" // lalr1.cc:859
+#line 1305 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 95:
-#line 376 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 96:
+#line 382 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var += (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[2].value.tptr)->name);
           }
-#line 1302 "apr_parser.cc" // lalr1.cc:859
+#line 1313 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 96:
-#line 379 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 97:
+#line 385 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var -= (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[2].value.tptr)->name);
           }
-#line 1310 "apr_parser.cc" // lalr1.cc:859
+#line 1321 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 97:
-#line 382 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 98:
+#line 388 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var *= (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
             undefined_error(aprepro, (yystack_[2].value.tptr)->name);
           }
-#line 1318 "apr_parser.cc" // lalr1.cc:859
+#line 1329 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 98:
-#line 385 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 99:
+#line 391 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yystack_[2].value.tptr)->value.var /= (yystack_[0].value.val);
             (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
             set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
-            undefined_error(aprepro, (yystack_[2].value.tptr)->name);
-          }
-#line 1326 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 99:
-#line 388 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            reset_error();
-            (yystack_[2].value.tptr)->value.var =
-                std::pow((yystack_[2].value.tptr)->value.var, (yystack_[0].value.val));
-            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
-            set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
-            SEAMS::math_error(aprepro, "Power");
             undefined_error(aprepro, (yystack_[2].value.tptr)->name);
           }
 #line 1337 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 100:
-#line 395 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 394 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            reset_error();
+            (yystack_[2].value.tptr)->value.var =
+                std::pow((yystack_[2].value.tptr)->value.var, (yystack_[0].value.val));
+            (yylhs.value.val) = (yystack_[2].value.tptr)->value.var;
+            set_type(aprepro, (yystack_[2].value.tptr), token::VAR);
+            SEAMS::math_error(aprepro, "Power");
+            undefined_error(aprepro, (yystack_[2].value.tptr)->name);
+          }
+#line 1348 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 101:
+#line 401 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[2].value.tptr),
                           (yystack_[2].value.tptr)->value.fnctptr == NULL))
@@ -1435,11 +1448,11 @@ namespace SEAMS {
             else
               (yylhs.value.val) = 0.0;
           }
-#line 1348 "apr_parser.cc" // lalr1.cc:859
+#line 1359 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 101:
-#line 402 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 102:
+#line 408 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[3].value.tptr),
                           (yystack_[3].value.tptr)->value.fnctptr_d == NULL))
@@ -1448,11 +1461,11 @@ namespace SEAMS {
             else
               (yylhs.value.val) = 0.0;
           }
-#line 1359 "apr_parser.cc" // lalr1.cc:859
+#line 1370 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 102:
-#line 409 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 103:
+#line 415 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[3].value.tptr),
                           (yystack_[3].value.tptr)->value.fnctptr_c == NULL))
@@ -1461,11 +1474,11 @@ namespace SEAMS {
             else
               (yylhs.value.val) = 0.0;
           }
-#line 1370 "apr_parser.cc" // lalr1.cc:859
+#line 1381 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 103:
-#line 416 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 104:
+#line 422 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[3].value.tptr),
                           (yystack_[3].value.tptr)->value.fnctptr_a == NULL))
@@ -1474,11 +1487,11 @@ namespace SEAMS {
             else
               (yylhs.value.val) = 0.0;
           }
-#line 1381 "apr_parser.cc" // lalr1.cc:859
+#line 1392 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 104:
-#line 423 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 105:
+#line 429 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[5].value.tptr),
                           (yystack_[5].value.tptr)->value.fnctptr_cd == NULL))
@@ -1487,11 +1500,11 @@ namespace SEAMS {
             else
               (yylhs.value.val) = 0.0;
           }
-#line 1392 "apr_parser.cc" // lalr1.cc:859
+#line 1403 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 105:
-#line 430 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 106:
+#line 436 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[5].value.tptr),
                           (yystack_[5].value.tptr)->value.fnctptr_dc == NULL))
@@ -1500,29 +1513,16 @@ namespace SEAMS {
             else
               (yylhs.value.val) = 0.0;
           }
-#line 1403 "apr_parser.cc" // lalr1.cc:859
+#line 1414 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 106:
-#line 437 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 107:
+#line 443 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[5].value.tptr),
                           (yystack_[5].value.tptr)->value.fnctptr_cc == NULL))
               (yylhs.value.val) = (*((yystack_[5].value.tptr)->value.fnctptr_cc))(
                   (yystack_[3].value.string), (yystack_[1].value.string));
-            else
-              (yylhs.value.val) = 0.0;
-          }
-#line 1414 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 107:
-#line 444 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            if (arg_check((yystack_[5].value.tptr),
-                          (yystack_[5].value.tptr)->value.fnctptr_dd == NULL))
-              (yylhs.value.val) = (*((yystack_[5].value.tptr)->value.fnctptr_dd))(
-                  (yystack_[3].value.val), (yystack_[1].value.val));
             else
               (yylhs.value.val) = 0.0;
           }
@@ -1532,10 +1532,10 @@ namespace SEAMS {
           case 108:
 #line 450 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            if (arg_check((yystack_[7].value.tptr),
-                          (yystack_[7].value.tptr)->value.fnctptr_ddd == NULL))
-              (yylhs.value.val) = (*((yystack_[7].value.tptr)->value.fnctptr_ddd))(
-                  (yystack_[5].value.val), (yystack_[3].value.val), (yystack_[1].value.val));
+            if (arg_check((yystack_[5].value.tptr),
+                          (yystack_[5].value.tptr)->value.fnctptr_dd == NULL))
+              (yylhs.value.val) = (*((yystack_[5].value.tptr)->value.fnctptr_dd))(
+                  (yystack_[3].value.val), (yystack_[1].value.val));
             else
               (yylhs.value.val) = 0.0;
           }
@@ -1546,9 +1546,9 @@ namespace SEAMS {
 #line 456 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if (arg_check((yystack_[7].value.tptr),
-                          (yystack_[7].value.tptr)->value.fnctptr_ccd == NULL))
-              (yylhs.value.val) = (*((yystack_[7].value.tptr)->value.fnctptr_ccd))(
-                  (yystack_[5].value.string), (yystack_[3].value.string), (yystack_[1].value.val));
+                          (yystack_[7].value.tptr)->value.fnctptr_ddd == NULL))
+              (yylhs.value.val) = (*((yystack_[7].value.tptr)->value.fnctptr_ddd))(
+                  (yystack_[5].value.val), (yystack_[3].value.val), (yystack_[1].value.val));
             else
               (yylhs.value.val) = 0.0;
           }
@@ -1558,11 +1558,10 @@ namespace SEAMS {
           case 110:
 #line 462 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            if (arg_check((yystack_[9].value.tptr),
-                          (yystack_[9].value.tptr)->value.fnctptr_dddd == NULL))
-              (yylhs.value.val) = (*((yystack_[9].value.tptr)->value.fnctptr_dddd))(
-                  (yystack_[7].value.val), (yystack_[5].value.val), (yystack_[3].value.val),
-                  (yystack_[1].value.val));
+            if (arg_check((yystack_[7].value.tptr),
+                          (yystack_[7].value.tptr)->value.fnctptr_ccd == NULL))
+              (yylhs.value.val) = (*((yystack_[7].value.tptr)->value.fnctptr_ccd))(
+                  (yystack_[5].value.string), (yystack_[3].value.string), (yystack_[1].value.val));
             else
               (yylhs.value.val) = 0.0;
           }
@@ -1586,11 +1585,11 @@ namespace SEAMS {
           case 112:
 #line 474 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            if (arg_check((yystack_[11].value.tptr),
-                          (yystack_[11].value.tptr)->value.fnctptr_ddddc == NULL))
-              (yylhs.value.val) = (*((yystack_[11].value.tptr)->value.fnctptr_ddddc))(
-                  (yystack_[9].value.val), (yystack_[7].value.val), (yystack_[5].value.val),
-                  (yystack_[3].value.val), (yystack_[1].value.string));
+            if (arg_check((yystack_[9].value.tptr),
+                          (yystack_[9].value.tptr)->value.fnctptr_dddd == NULL))
+              (yylhs.value.val) = (*((yystack_[9].value.tptr)->value.fnctptr_dddd))(
+                  (yystack_[7].value.val), (yystack_[5].value.val), (yystack_[3].value.val),
+                  (yystack_[1].value.val));
             else
               (yylhs.value.val) = 0.0;
           }
@@ -1600,11 +1599,11 @@ namespace SEAMS {
           case 113:
 #line 480 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            if (arg_check((yystack_[13].value.tptr),
-                          (yystack_[13].value.tptr)->value.fnctptr_dddddd == NULL))
-              (yylhs.value.val) = (*((yystack_[13].value.tptr)->value.fnctptr_dddddd))(
-                  (yystack_[11].value.val), (yystack_[9].value.val), (yystack_[7].value.val),
-                  (yystack_[5].value.val), (yystack_[3].value.val), (yystack_[1].value.val));
+            if (arg_check((yystack_[11].value.tptr),
+                          (yystack_[11].value.tptr)->value.fnctptr_ddddc == NULL))
+              (yylhs.value.val) = (*((yystack_[11].value.tptr)->value.fnctptr_ddddc))(
+                  (yystack_[9].value.val), (yystack_[7].value.val), (yystack_[5].value.val),
+                  (yystack_[3].value.val), (yystack_[1].value.string));
             else
               (yylhs.value.val) = 0.0;
           }
@@ -1614,29 +1613,43 @@ namespace SEAMS {
           case 114:
 #line 486 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[2].value.val) + (yystack_[0].value.val);
+            if (arg_check((yystack_[13].value.tptr),
+                          (yystack_[13].value.tptr)->value.fnctptr_dddddd == NULL))
+              (yylhs.value.val) = (*((yystack_[13].value.tptr)->value.fnctptr_dddddd))(
+                  (yystack_[11].value.val), (yystack_[9].value.val), (yystack_[7].value.val),
+                  (yystack_[5].value.val), (yystack_[3].value.val), (yystack_[1].value.val));
+            else
+              (yylhs.value.val) = 0.0;
           }
-#line 1497 "apr_parser.cc" // lalr1.cc:859
+#line 1502 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 115:
-#line 487 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 492 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[2].value.val) - (yystack_[0].value.val);
+            (yylhs.value.val) = (yystack_[2].value.val) + (yystack_[0].value.val);
           }
-#line 1503 "apr_parser.cc" // lalr1.cc:859
+#line 1508 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 116:
-#line 488 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 493 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[2].value.val) * (yystack_[0].value.val);
+            (yylhs.value.val) = (yystack_[2].value.val) - (yystack_[0].value.val);
           }
-#line 1509 "apr_parser.cc" // lalr1.cc:859
+#line 1514 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 117:
-#line 489 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 494 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[2].value.val) * (yystack_[0].value.val);
+          }
+#line 1520 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 118:
+#line 495 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if ((yystack_[0].value.val) == 0.) {
               yyerror(aprepro, "Zero divisor");
@@ -1645,11 +1658,11 @@ namespace SEAMS {
             else
               (yylhs.value.val) = (yystack_[2].value.val) / (yystack_[0].value.val);
           }
-#line 1521 "apr_parser.cc" // lalr1.cc:859
+#line 1532 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 118:
-#line 496 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 119:
+#line 502 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             if ((yystack_[0].value.val) == 0.) {
               yyerror(aprepro, "Zero divisor");
@@ -1658,45 +1671,45 @@ namespace SEAMS {
             else
               (yylhs.value.val) = (int)(yystack_[2].value.val) % (int)(yystack_[0].value.val);
           }
-#line 1533 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 119:
-#line 503 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = -(yystack_[0].value.val);
-          }
-#line 1539 "apr_parser.cc" // lalr1.cc:859
+#line 1544 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 120:
-#line 504 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 509 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.val) = (yystack_[0].value.val);
+            (yylhs.value.val) = -(yystack_[0].value.val);
           }
-#line 1545 "apr_parser.cc" // lalr1.cc:859
+#line 1550 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 121:
-#line 505 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 510 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[0].value.val);
+          }
+#line 1556 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 122:
+#line 511 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             reset_error();
             (yylhs.value.val) = std::pow((yystack_[2].value.val), (yystack_[0].value.val));
             SEAMS::math_error(aprepro, "Power");
           }
-#line 1553 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 122:
-#line 508 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = (yystack_[1].value.val);
-          }
-#line 1559 "apr_parser.cc" // lalr1.cc:859
+#line 1564 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 123:
-#line 509 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 514 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = (yystack_[1].value.val);
+          }
+#line 1570 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 124:
+#line 515 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             reset_error();
             (yylhs.value.val) =
@@ -1704,46 +1717,46 @@ namespace SEAMS {
                                                      : floor((yystack_[1].value.val)));
             SEAMS::math_error(aprepro, "floor (int)");
           }
-#line 1567 "apr_parser.cc" // lalr1.cc:859
-          break;
-
-          case 124:
-#line 512 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
-          {
-            (yylhs.value.val) = ((yystack_[0].value.val)) ? 1 : 0;
-          }
-#line 1573 "apr_parser.cc" // lalr1.cc:859
+#line 1578 "apr_parser.cc" // lalr1.cc:859
           break;
 
           case 125:
-#line 513 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+#line 518 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          {
+            (yylhs.value.val) = ((yystack_[0].value.val)) ? 1 : 0;
+          }
+#line 1584 "apr_parser.cc" // lalr1.cc:859
+          break;
+
+          case 126:
+#line 519 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) =
                 ((yystack_[4].value.val)) ? ((yystack_[2].value.val)) : ((yystack_[0].value.val));
           }
-#line 1579 "apr_parser.cc" // lalr1.cc:859
+#line 1590 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 126:
-#line 514 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 127:
+#line 520 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) =
                 array_value((yystack_[3].value.tptr)->value.avar, (yystack_[1].value.val), 0);
           }
-#line 1585 "apr_parser.cc" // lalr1.cc:859
+#line 1596 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 127:
-#line 515 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 128:
+#line 521 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = array_value((yystack_[5].value.tptr)->value.avar,
                                             (yystack_[3].value.val), (yystack_[1].value.val));
           }
-#line 1591 "apr_parser.cc" // lalr1.cc:859
+#line 1602 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 128:
-#line 517 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 129:
+#line 523 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[0].value.val);
             array *arr        = (yystack_[5].value.tptr)->value.avar;
@@ -1766,11 +1779,11 @@ namespace SEAMS {
               yyerrok;
             }
           }
-#line 1617 "apr_parser.cc" // lalr1.cc:859
+#line 1628 "apr_parser.cc" // lalr1.cc:859
           break;
 
-          case 129:
-#line 539 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
+          case 130:
+#line 545 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
             (yylhs.value.val) = (yystack_[0].value.val);
             array *arr        = (yystack_[7].value.tptr)->value.avar;
@@ -1791,10 +1804,10 @@ namespace SEAMS {
               yyerrok;
             }
           }
-#line 1641 "apr_parser.cc" // lalr1.cc:859
+#line 1652 "apr_parser.cc" // lalr1.cc:859
           break;
 
-#line 1645 "apr_parser.cc" // lalr1.cc:859
+#line 1656 "apr_parser.cc" // lalr1.cc:859
           default: break;
           }
         }
@@ -2020,41 +2033,40 @@ namespace SEAMS {
   const signed char Parser::yytable_ninf_ = -1;
 
   const short int Parser::yypact_[] = {
-      -34,  2,    -34,  -3,   260,  -34,  -34,  -34,  -34,  -34,  -13,  572,  4,    602,  28,
-      45,   44,   46,   53,   419,  419,  -34,  419,  374,  419,  111,  179,  48,   -16,  38,
-      1068, 374,  419,  419,  419,  419,  419,  -34,  -34,  419,  419,  419,  419,  419,  419,
-      -34,  -34,  419,  419,  419,  419,  419,  419,  419,  -34,  -34,  419,  419,  374,  314,
-      359,  374,  632,  52,   419,  93,   1099, 806,  1020, 18,   -34,  18,   18,   -34,  -34,
-      -34,  -34,  -34,  -34,  -34,  -34,  419,  419,  419,  -34,  374,  374,  419,  374,  -34,
-      419,  419,  419,  419,  419,  419,  419,  -34,  419,  419,  419,  419,  419,  419,  419,
-      419,  419,  419,  419,  374,  419,  419,  -33,  1099, 1118, 1134, 1134, 1134, 1134, 1134,
-      1099, 1134, 1134, 1134, 1134, 1134, 1134, 1099, 1134, 1099, 1134, 1134, 1134, 1134, 1134,
-      1134, 1099, 1134, 571,  -33,  1118, -34,  50,   99,   601,  -34,  209,  178,  631,  218,
-      184,  661,  419,  18,   -34,  -34,  419,  -34,  311,  1085, 49,   1134, -34,  1,    1,
-      1150, -34,  1150, 39,   39,   39,   39,   39,   39,   -34,  1165, 1179, 247,  247,  247,
-      247,  247,  247,  255,  255,  18,   -34,  18,   18,   18,   419,  70,   -34,  419,  -34,
-      419,  -34,  -34,  419,  -34,  419,  -34,  -34,  419,  -34,  419,  -34,  1134, 18,   419,
-      419,  1045, 419,  435,  833,  206,  542,  131,  405,  860,  468,  887,  914,  1099, 1134,
-      71,   1134, 419,  -34,  -34,  -34,  419,  -34,  419,  419,  419,  -34,  -34,  -34,  -34,
-      419,  941,  691,  750,  490,  445,  1134, -34,  419,  -34,  419,  -34,  419,  -34,  721,
-      968,  462,  419,  -34,  -34,  419,  496,  779,  518,  -34,  419,  -34,  995,  -34};
+      -34,  2,    -34,  -3,   260,  -34,  -34,  -34,  -34, -34,  -13,  587,  4,    617,  28,   45,
+      44,   46,   53,   420,  420,  -34,  420,  375,  420, 111,  179,  48,   -16,  38,   1083, 375,
+      420,  420,  420,  420,  420,  -34,  -34,  420,  420, 420,  420,  420,  420,  -34,  -34,  420,
+      420,  420,  420,  420,  420,  420,  -34,  -34,  420, 420,  375,  315,  360,  375,  647,  52,
+      420,  93,   312,  821,  1035, 18,   -34,  18,   18,  -34,  -34,  -34,  -34,  -34,  -34,  -34,
+      -34,  420,  420,  420,  -34,  375,  375,  420,  375, -34,  420,  420,  420,  420,  420,  420,
+      420,  -34,  420,  420,  420,  420,  420,  420,  420, 420,  420,  420,  420,  375,  420,  420,
+      -33,  312,  1116, 1132, 1132, 1132, 1132, 1132, 312, 1132, 1132, 1132, 1132, 1132, 1132, 312,
+      1132, 312,  1132, 1132, 1132, 1132, 1132, 1132, 312, 1132, 586,  -33,  1116, -34,  50,   99,
+      616,  -34,  212,  178,  646,  218,  184,  676,  420, 18,   -34,  -34,  420,  -34,  207,  1100,
+      49,   1132, -34,  1,    1,    1148, -34,  1148, 39,  39,   39,   39,   39,   39,   -34,  1163,
+      1177, 247,  247,  247,  247,  247,  247,  255,  255, 18,   -34,  18,   18,   18,   420,  70,
+      -34,  420,  -34,  420,  -34,  -34,  420,  -34,  420, -34,  -34,  420,  -34,  420,  -34,  1132,
+      18,   420,  420,  1060, 420,  436,  848,  477,  557, 446,  131,  875,  499,  902,  929,  312,
+      1132, 71,   1132, 420,  -34,  -34,  -34,  420,  -34, 420,  420,  -34,  420,  -34,  -34,  -34,
+      -34,  420,  956,  706,  765,  505,  471,  1132, -34, 420,  -34,  420,  -34,  420,  -34,  736,
+      983,  406,  420,  -34,  -34,  420,  527,  794,  533, -34,  420,  -34,  1010, -34};
 
   const unsigned char Parser::yydefact_[] = {
-      2,  0,  1,  0,   0,   4,   3,   9,   62,  44,  89,  65,  45,  66,  46,  28,  0,   0,
-      0,  0,  0,  8,   0,   0,   0,   0,   0,   124, 0,   0,   0,   0,   0,   0,   0,   0,
-      0,  92, 93, 0,   0,   0,   0,   0,   0,   69,  70,  0,   0,   0,   0,   0,   0,   0,
-      80, 81, 0,  0,   0,   0,   0,   0,   89,  0,   0,   124, 0,   0,   0,   120, 38,  119,
-      12, 63, 90, 67,  78,  64,  91,  68,  79,  0,   0,   0,   7,   0,   0,   0,   0,   6,
-      0,  0,  0,  0,   0,   0,   0,   5,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-      0,  0,  0,  0,   36,  47,  94,  95,  96,  97,  98,  99,  49,  71,  73,  74,  75,  76,
-      77, 48, 72, 51,  82,  84,  85,  86,  87,  88,  50,  83,  0,   35,  0,   100, 0,   0,
-      0,  53, 0,  0,   0,   0,   0,   0,   0,   119, 21,  122, 0,   123, 0,   0,   19,  0,
-      20, 37, 39, 41,  43,  40,  22,  23,  24,  25,  26,  27,  56,  17,  18,  10,  11,  13,
-      14, 15, 16, 114, 115, 117, 42,  116, 118, 121, 0,   126, 103, 0,   102, 0,   101, 55,
-      0,  52, 0,  54,  34,  0,   29,  0,   33,  94,  116, 0,   0,   0,   0,   0,   0,   0,
-      0,  0,  0,  0,   0,   0,   0,   61,  125, 127, 128, 0,   106, 104, 105, 0,   107, 0,
-      0,  0,  57, 31,  30,  32,  0,   0,   0,   0,   0,   0,   129, 109, 0,   108, 0,   60,
-      0,  59, 0,  0,   0,   0,   111, 110, 0,   0,   0,   0,   112, 0,   58,  0,   113};
+      2,  0,  1,  0,   0,   4,   3,  9,   63,  44,  90,  66,  45,  67,  46,  28,  0,   0,
+      0,  0,  0,  8,   0,   0,   0,  0,   0,   125, 0,   0,   0,   0,   0,   0,   0,   0,
+      0,  93, 94, 0,   0,   0,   0,  0,   0,   70,  71,  0,   0,   0,   0,   0,   0,   0,
+      81, 82, 0,  0,   0,   0,   0,  0,   90,  0,   0,   125, 0,   0,   0,   121, 38,  120,
+      12, 64, 91, 68,  79,  65,  92, 69,  80,  0,   0,   0,   7,   0,   0,   0,   0,   6,
+      0,  0,  0,  0,   0,   0,   0,  5,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+      0,  0,  0,  0,   36,  47,  95, 96,  97,  98,  99,  100, 49,  72,  74,  75,  76,  77,
+      78, 48, 73, 51,  83,  85,  86, 87,  88,  89,  50,  84,  0,   35,  0,   101, 0,   0,
+      0,  53, 0,  0,   0,   0,   0,  0,   0,   120, 21,  123, 0,   124, 0,   0,   19,  0,
+      20, 37, 39, 41,  43,  40,  22, 23,  24,  25,  26,  27,  56,  17,  18,  10,  11,  13,
+      14, 15, 16, 115, 116, 118, 42, 117, 119, 122, 0,   127, 104, 0,   103, 0,   102, 55,
+      0,  52, 0,  54,  34,  0,   29, 0,   33,  95,  117, 0,   0,   0,   0,   0,   0,   0,
+      0,  0,  0,  0,   0,   0,   0,  62,  126, 128, 129, 0,   107, 105, 106, 0,   108, 0,
+      0,  61, 0,  57,  31,  30,  32, 0,   0,   0,   0,   0,   0,   130, 110, 0,   109, 0,
+      60, 0,  59, 0,   0,   0,   0,  112, 111, 0,   0,   0,   0,   113, 0,   58,  0,   114};
 
   const signed char Parser::yypgoto_[] = {-34, -34, -34, -18, 95, 81, -4};
 
@@ -2065,134 +2077,134 @@ namespace SEAMS {
       71,  72,  4,   85,  86,  87,  88,  47,  114, 115, 116, 117, 118, 119, 37,  38,  121, 122, 123,
       124, 125, 126, 87,  88,  128, 130, 131, 132, 133, 134, 135, 56,  5,   137, 138, 140, 144, 148,
       151, 89,  59,  153, 60,  57,  111, 160, 162, 192, 58,  61,  57,  90,  91,  92,  93,  94,  95,
-      81,  159, 82,  83,  83,  140, 140, 165, 167, 29,  96,  96,  85,  86,  87,  88,  212, 240, 175,
+      81,  159, 82,  83,  83,  140, 140, 165, 167, 29,  96,  96,  85,  86,  87,  88,  212, 241, 175,
       176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 187, 188, 189, 0,   154, 0,   0,   113, 193,
       73,  194, 74,  75,  70,  76,  120, 81,  0,   82,  83,  0,   112, 0,   127, 129, 0,   90,  91,
-      92,  93,  94,  95,  136, 0,   0,   143, 147, 150, 0,   0,   234, 0,   96,  207, 0,   0,   0,
+      92,  93,  94,  95,  136, 0,   0,   143, 147, 150, 0,   0,   236, 0,   96,  207, 0,   0,   0,
       208, 139, 142, 146, 149, 0,   0,   0,   0,   0,   158, 90,  91,  92,  93,  94,  95,  0,   0,
       168, 169, 170, 171, 172, 173, 174, 0,   96,  163, 164, 77,  166, 78,  79,  211, 80,  0,   214,
       0,   216, 198, 0,   199, 0,   219, 0,   203, 221, 204, 222, 0,   0,   186, 0,   224, 0,   226,
-      0,   90,  91,  92,  93,  94,  95,  90,  91,  92,  93,  94,  95,  230, 241, 0,   197, 96,  242,
-      0,   243, 0,   0,   96,  113, 202, 0,   246, 0,   90,  91,  92,  93,  94,  95,  254, 0,   255,
-      85,  86,  87,  88,  0,   0,   262, 96,  0,   85,  86,  87,  88,  0,   267, 0,   8,   9,   10,
+      0,   90,  91,  92,  93,  94,  95,  90,  91,  92,  93,  94,  95,  0,   242, 0,   0,   96,  243,
+      197, 244, 0,   0,   96,  113, 202, 0,   209, 247, 0,   90,  91,  92,  93,  94,  95,  255, 0,
+      256, 0,   0,   85,  86,  87,  88,  263, 96,  85,  86,  87,  88,  0,   0,   268, 8,   9,   10,
       11,  12,  13,  14,  15,  16,  17,  18,  213, 19,  215, 20,  0,   217, 21,  218, 0,   0,   220,
       106, 107, 108, 156, 110, 223, 0,   111, 0,   0,   108, 156, 110, 22,  23,  111, 0,   0,   0,
-      24,  0,   25,  26,  0,   0,   0,   0,   0,   0,   0,   244, 245, 8,   9,   10,  11,  12,  13,
-      14,  15,  16,  17,  18,  0,   19,  141, 20,  0,   256, 0,   0,   0,   0,   261, 0,   209, 263,
-      0,   90,  91,  92,  93,  94,  95,  0,   0,   0,   22,  23,  0,   0,   0,   0,   24,  96,  25,
-      26,  8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  0,   19,  145, 20,  8,   9,   10,
-      11,  12,  13,  14,  15,  16,  17,  18,  0,   19,  0,   20,  0,   0,   0,   0,   0,   22,  23,
-      0,   0,   0,   0,   24,  0,   25,  26,  0,   0,   0,   0,   0,   22,  23,  0,   0,   0,   0,
-      24,  235, 25,  26,  8,   9,   62,  11,  12,  13,  14,  63,  16,  17,  0,   0,   19,  0,   20,
-      90,  91,  92,  93,  94,  95,  0,   0,   0,   0,   0,   0,   227, 0,   228, 0,   96,  0,   0,
-      0,   22,  64,  252, 0,   253, 0,   24,  0,   25,  26,  90,  91,  92,  93,  94,  95,  0,   0,
-      0,   260, 90,  91,  92,  93,  94,  95,  96,  237, 0,   0,   0,   0,   0,   0,   0,   0,   96,
-      90,  91,  92,  93,  94,  95,  90,  91,  92,  93,  94,  95,  251, 0,   0,   0,   96,  0,   264,
-      0,   0,   0,   96,  0,   0,   0,   0,   0,   90,  91,  92,  93,  94,  95,  90,  91,  92,  93,
-      94,  95,  266, 0,   0,   0,   96,  0,   0,   0,   0,   0,   96,  0,   0,   0,   0,   0,   90,
-      91,  92,  93,  94,  95,  231, 0,   232, 0,   0,   0,   0,   233, 0,   0,   96,  0,   0,   0,
-      0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 190, 0,   111, 0,
-      191, 0,   0,   0,   0,   39,  40,  41,  42,  43,  44,  0,   98,  99,  100, 101, 102, 103, 104,
-      105, 106, 107, 108, 156, 110, 0,   195, 111, 196, 45,  46,  0,   0,   0,   0,   48,  49,  50,
-      51,  52,  53,  0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 0,   200,
-      111, 201, 54,  55,  0,   0,   0,   0,   152, 32,  33,  34,  35,  36,  0,   98,  99,  100, 101,
-      102, 103, 104, 105, 106, 107, 108, 109, 110, 0,   205, 111, 206, 37,  38,  0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-      110, 0,   248, 111, 249, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,
-      99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 0,   257, 111, 258, 0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106,
-      107, 108, 156, 110, 250, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-      0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 265, 0,   111, 0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105,
-      106, 107, 108, 156, 110, 155, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-      98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 229, 0,   111, 0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108,
-      156, 110, 236, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100,
-      101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 238, 0,   111, 0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 239,
-      0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103,
-      104, 105, 106, 107, 108, 156, 110, 247, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 259, 0,   111, 0,
-      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106,
-      107, 108, 156, 110, 268, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,
-      99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 157, 0,   111, 0,   0,   0,   0,
-      0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 225,
-      0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105,
-      106, 107, 108, 156, 110, 97,  0,   111, 0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101,
-      102, 103, 104, 105, 106, 107, 108, 109, 110, 0,   0,   111, 210, 98,  99,  100, 101, 102, 103,
-      104, 105, 106, 107, 108, 156, 110, 0,   0,   111, 90,  91,  92,  93,  94,  95,  0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   96,  98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108,
-      109, 110, 0,   0,   111, 98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 0,
-      0,   111, 98,  99,  100, 101, 102, 103, 104, 105, 0,   0,   0,   0,   110, 0,   0,   111, 99,
-      100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 0,   0,   111, 100, 101, 102, 103, 104,
-      105, 106, 107, 108, 156, 110, 0,   0,   111};
+      24,  0,   25,  26,  0,   0,   0,   0,   0,   0,   0,   245, 0,   246, 8,   9,   10,  11,  12,
+      13,  14,  15,  16,  17,  18,  0,   19,  141, 20,  0,   257, 0,   0,   0,   0,   262, 0,   0,
+      264, 0,   90,  91,  92,  93,  94,  95,  0,   0,   0,   22,  23,  0,   0,   0,   0,   24,  96,
+      25,  26,  8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  0,   19,  145, 20,  8,   9,
+      10,  11,  12,  13,  14,  15,  16,  17,  18,  0,   19,  0,   20,  0,   0,   0,   0,   0,   22,
+      23,  0,   0,   0,   0,   24,  0,   25,  26,  0,   0,   0,   0,   0,   22,  23,  0,   0,   0,
+      0,   24,  261, 25,  26,  8,   9,   62,  11,  12,  13,  14,  63,  16,  17,  0,   0,   19,  0,
+      20,  90,  91,  92,  93,  94,  95,  0,   0,   0,   0,   0,   0,   227, 0,   228, 0,   96,  0,
+      0,   0,   22,  64,  234, 0,   235, 0,   24,  0,   25,  26,  90,  91,  92,  93,  94,  95,  0,
+      0,   0,   0,   90,  91,  92,  93,  94,  95,  96,  253, 0,   254, 0,   0,   0,   0,   0,   230,
+      96,  0,   0,   0,   0,   0,   0,   0,   0,   90,  91,  92,  93,  94,  95,  90,  91,  92,  93,
+      94,  95,  238, 0,   0,   0,   96,  0,   252, 0,   0,   0,   96,  0,   0,   0,   0,   0,   90,
+      91,  92,  93,  94,  95,  90,  91,  92,  93,  94,  95,  265, 0,   0,   0,   96,  0,   267, 0,
+      0,   0,   96,  0,   0,   0,   0,   0,   90,  91,  92,  93,  94,  95,  90,  91,  92,  93,  94,
+      95,  231, 0,   232, 0,   96,  0,   0,   233, 0,   0,   96,  0,   0,   0,   0,   0,   98,  99,
+      100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 190, 0,   111, 0,   191, 0,   0,   0,
+      0,   39,  40,  41,  42,  43,  44,  0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108,
+      156, 110, 0,   195, 111, 196, 45,  46,  0,   0,   0,   0,   48,  49,  50,  51,  52,  53,  0,
+      98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 0,   200, 111, 201, 54,  55,
+      0,   0,   0,   0,   152, 32,  33,  34,  35,  36,  0,   98,  99,  100, 101, 102, 103, 104, 105,
+      106, 107, 108, 109, 110, 0,   205, 111, 206, 37,  38,  0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 0,   249, 111,
+      250, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102,
+      103, 104, 105, 106, 107, 108, 156, 110, 0,   258, 111, 259, 0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110,
+      251, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100,
+      101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 266, 0,   111, 0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156,
+      110, 155, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101,
+      102, 103, 104, 105, 106, 107, 108, 156, 110, 229, 0,   111, 0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 237, 0,
+      111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104,
+      105, 106, 107, 108, 156, 110, 239, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+      0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 240, 0,   111, 0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107,
+      108, 156, 110, 248, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,
+      100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 260, 0,   111, 0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110,
+      269, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102,
+      103, 104, 105, 106, 107, 108, 156, 110, 157, 0,   111, 0,   0,   0,   0,   0,   0,   0,   0,
+      0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 225, 0,   111, 0,   0,
+      0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156,
+      110, 97,  0,   111, 0,   0,   0,   0,   0,   0,   0,   98,  99,  100, 101, 102, 103, 104, 105,
+      106, 107, 108, 109, 110, 0,   0,   111, 210, 98,  99,  100, 101, 102, 103, 104, 105, 106, 107,
+      108, 156, 110, 0,   0,   111, 98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+      0,   0,   111, 98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 156, 110, 0,   0,   111,
+      98,  99,  100, 101, 102, 103, 104, 105, 0,   0,   0,   0,   110, 0,   0,   111, 99,  100, 101,
+      102, 103, 104, 105, 106, 107, 108, 156, 110, 0,   0,   111, 100, 101, 102, 103, 104, 105, 106,
+      107, 108, 156, 110, 0,   0,   111};
 
   const short int Parser::yycheck_[] = {
-      4,   19,  0,   1,   20,  38,  39,  40,  41,  22,  23,  24,  25,  26,  27,  19,  20,  20, 22,
-      23,  24,  19,  38,  39,  40,  41,  22,  31,  32,  33,  34,  35,  36,  46,  47,  39,  40, 41,
-      42,  43,  44,  40,  41,  47,  48,  49,  50,  51,  52,  53,  22,  49,  56,  57,  58,  59, 60,
-      61,  20,  15,  64,  15,  17,  45,  82,  83,  16,  22,  15,  17,  32,  33,  34,  35,  36, 37,
-      28,  81,  30,  31,  31,  85,  86,  87,  88,  4,   48,  48,  38,  39,  40,  41,  22,  22, 98,
-      99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, -1,  16,  -1,  -1,  31, 14,
-      3,   16,  5,   6,   23,  8,   39,  28,  -1,  30,  31,  -1,  31,  -1,  47,  48,  -1,  32, 33,
-      34,  35,  36,  37,  56,  -1,  -1,  59,  60,  61,  -1,  -1,  14,  -1,  48,  152, -1,  -1, -1,
-      156, 58,  59,  60,  61,  -1,  -1,  -1,  -1,  -1,  81,  32,  33,  34,  35,  36,  37,  -1, -1,
-      90,  91,  92,  93,  94,  95,  96,  -1,  48,  85,  86,  3,   88,  5,   6,   190, 8,   -1, 193,
-      -1,  195, 14,  -1,  16,  -1,  200, -1,  14,  203, 16,  205, -1,  -1,  109, -1,  210, -1, 212,
-      -1,  32,  33,  34,  35,  36,  37,  32,  33,  34,  35,  36,  37,  16,  227, -1,  16,  48, 231,
-      -1,  233, -1,  -1,  48,  152, 16,  -1,  240, -1,  32,  33,  34,  35,  36,  37,  248, -1, 250,
-      38,  39,  40,  41,  -1,  -1,  257, 48,  -1,  38,  39,  40,  41,  -1,  265, -1,  3,   4,  5,
-      6,   7,   8,   9,   10,  11,  12,  13,  193, 15,  195, 17,  -1,  198, 20,  200, -1,  -1, 203,
-      38,  39,  40,  41,  42,  209, -1,  45,  -1,  -1,  40,  41,  42,  38,  39,  45,  -1,  -1, -1,
-      44,  -1,  46,  47,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  234, 235, 3,   4,   5,   6,   7,  8,
-      9,   10,  11,  12,  13,  -1,  15,  16,  17,  -1,  252, -1,  -1,  -1,  -1,  257, -1,  29, 260,
-      -1,  32,  33,  34,  35,  36,  37,  -1,  -1,  -1,  38,  39,  -1,  -1,  -1,  -1,  44,  48, 46,
-      47,  3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  -1,  15,  16,  17,  3,   4,  5,
-      6,   7,   8,   9,   10,  11,  12,  13,  -1,  15,  -1,  17,  -1,  -1,  -1,  -1,  -1,  38, 39,
-      -1,  -1,  -1,  -1,  44,  -1,  46,  47,  -1,  -1,  -1,  -1,  -1,  38,  39,  -1,  -1,  -1, -1,
-      44,  14,  46,  47,  3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  -1,  -1,  15,  -1, 17,
-      32,  33,  34,  35,  36,  37,  -1,  -1,  -1,  -1,  -1,  -1,  14,  -1,  16,  -1,  48,  -1, -1,
-      -1,  38,  39,  14,  -1,  16,  -1,  44,  -1,  46,  47,  32,  33,  34,  35,  36,  37,  -1, -1,
-      -1,  14,  32,  33,  34,  35,  36,  37,  48,  16,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 48,
-      32,  33,  34,  35,  36,  37,  32,  33,  34,  35,  36,  37,  16,  -1,  -1,  -1,  48,  -1, 16,
-      -1,  -1,  -1,  48,  -1,  -1,  -1,  -1,  -1,  32,  33,  34,  35,  36,  37,  32,  33,  34, 35,
-      36,  37,  16,  -1,  -1,  -1,  48,  -1,  -1,  -1,  -1,  -1,  48,  -1,  -1,  -1,  -1,  -1, 32,
-      33,  34,  35,  36,  37,  14,  -1,  16,  -1,  -1,  -1,  -1,  21,  -1,  -1,  48,  -1,  -1, -1,
-      -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  14,  -1,  45, -1,
-      18,  -1,  -1,  -1,  -1,  22,  23,  24,  25,  26,  27,  -1,  30,  31,  32,  33,  34,  35, 36,
-      37,  38,  39,  40,  41,  42,  -1,  14,  45,  16,  46,  47,  -1,  -1,  -1,  -1,  22,  23, 24,
-      25,  26,  27,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  -1, 14,
-      45,  16,  46,  47,  -1,  -1,  -1,  -1,  22,  23,  24,  25,  26,  27,  -1,  30,  31,  32, 33,
-      34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  14,  45,  16,  46,  47,  -1,  -1,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40, 41,
-      42,  -1,  14,  45,  16,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 30,
-      31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  14,  45,  16,  -1,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37, 38,
-      39,  40,  41,  42,  14,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, -1,
-      -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  14,  -1,  45,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36, 37,
-      38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, -1,
-      30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39, 40,
-      41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31, 32,
-      33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42, 16,
-      -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34, 35,
-      36,  37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, -1,
-      -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,  45, -1,
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37, 38,
-      39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 30,
-      31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  18,  -1,  45,  -1,  -1,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42, 18,
-      -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36, 37,
-      38,  39,  40,  41,  42,  20,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32, 33,
-      34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  -1,  45,  29,  30,  31,  32,  33,  34, 35,
-      36,  37,  38,  39,  40,  41,  42,  -1,  -1,  45,  32,  33,  34,  35,  36,  37,  -1,  -1, -1,
-      -1,  -1,  -1,  -1,  -1,  -1,  -1,  48,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39, 40,
-      41,  42,  -1,  -1,  45,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42, -1,
-      -1,  45,  30,  31,  32,  33,  34,  35,  36,  37,  -1,  -1,  -1,  -1,  42,  -1,  -1,  45, 31,
-      32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  -1,  45,  32,  33,  34,  35, 36,
-      37,  38,  39,  40,  41,  42,  -1,  -1,  45};
+      4,   19,  0,   1,   20,  38,  39,  40,  41,  22,  23,  24,  25,  26,  27,  19,  20,  20,  22,
+      23,  24,  19,  38,  39,  40,  41,  22,  31,  32,  33,  34,  35,  36,  46,  47,  39,  40,  41,
+      42,  43,  44,  40,  41,  47,  48,  49,  50,  51,  52,  53,  22,  49,  56,  57,  58,  59,  60,
+      61,  20,  15,  64,  15,  17,  45,  82,  83,  16,  22,  15,  17,  32,  33,  34,  35,  36,  37,
+      28,  81,  30,  31,  31,  85,  86,  87,  88,  4,   48,  48,  38,  39,  40,  41,  22,  22,  98,
+      99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, -1,  16,  -1,  -1,  31,  14,
+      3,   16,  5,   6,   23,  8,   39,  28,  -1,  30,  31,  -1,  31,  -1,  47,  48,  -1,  32,  33,
+      34,  35,  36,  37,  56,  -1,  -1,  59,  60,  61,  -1,  -1,  14,  -1,  48,  152, -1,  -1,  -1,
+      156, 58,  59,  60,  61,  -1,  -1,  -1,  -1,  -1,  81,  32,  33,  34,  35,  36,  37,  -1,  -1,
+      90,  91,  92,  93,  94,  95,  96,  -1,  48,  85,  86,  3,   88,  5,   6,   190, 8,   -1,  193,
+      -1,  195, 14,  -1,  16,  -1,  200, -1,  14,  203, 16,  205, -1,  -1,  109, -1,  210, -1,  212,
+      -1,  32,  33,  34,  35,  36,  37,  32,  33,  34,  35,  36,  37,  -1,  227, -1,  -1,  48,  231,
+      16,  233, -1,  -1,  48,  152, 16,  -1,  29,  241, -1,  32,  33,  34,  35,  36,  37,  249, -1,
+      251, -1,  -1,  38,  39,  40,  41,  258, 48,  38,  39,  40,  41,  -1,  -1,  266, 3,   4,   5,
+      6,   7,   8,   9,   10,  11,  12,  13,  193, 15,  195, 17,  -1,  198, 20,  200, -1,  -1,  203,
+      38,  39,  40,  41,  42,  209, -1,  45,  -1,  -1,  40,  41,  42,  38,  39,  45,  -1,  -1,  -1,
+      44,  -1,  46,  47,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  234, -1,  236, 3,   4,   5,   6,   7,
+      8,   9,   10,  11,  12,  13,  -1,  15,  16,  17,  -1,  253, -1,  -1,  -1,  -1,  258, -1,  -1,
+      261, -1,  32,  33,  34,  35,  36,  37,  -1,  -1,  -1,  38,  39,  -1,  -1,  -1,  -1,  44,  48,
+      46,  47,  3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  -1,  15,  16,  17,  3,   4,
+      5,   6,   7,   8,   9,   10,  11,  12,  13,  -1,  15,  -1,  17,  -1,  -1,  -1,  -1,  -1,  38,
+      39,  -1,  -1,  -1,  -1,  44,  -1,  46,  47,  -1,  -1,  -1,  -1,  -1,  38,  39,  -1,  -1,  -1,
+      -1,  44,  14,  46,  47,  3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  -1,  -1,  15,  -1,
+      17,  32,  33,  34,  35,  36,  37,  -1,  -1,  -1,  -1,  -1,  -1,  14,  -1,  16,  -1,  48,  -1,
+      -1,  -1,  38,  39,  14,  -1,  16,  -1,  44,  -1,  46,  47,  32,  33,  34,  35,  36,  37,  -1,
+      -1,  -1,  -1,  32,  33,  34,  35,  36,  37,  48,  14,  -1,  16,  -1,  -1,  -1,  -1,  -1,  16,
+      48,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  32,  33,  34,  35,  36,  37,  32,  33,  34,  35,
+      36,  37,  16,  -1,  -1,  -1,  48,  -1,  16,  -1,  -1,  -1,  48,  -1,  -1,  -1,  -1,  -1,  32,
+      33,  34,  35,  36,  37,  32,  33,  34,  35,  36,  37,  16,  -1,  -1,  -1,  48,  -1,  16,  -1,
+      -1,  -1,  48,  -1,  -1,  -1,  -1,  -1,  32,  33,  34,  35,  36,  37,  32,  33,  34,  35,  36,
+      37,  14,  -1,  16,  -1,  48,  -1,  -1,  21,  -1,  -1,  48,  -1,  -1,  -1,  -1,  -1,  30,  31,
+      32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  14,  -1,  45,  -1,  18,  -1,  -1,  -1,
+      -1,  22,  23,  24,  25,  26,  27,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,
+      41,  42,  -1,  14,  45,  16,  46,  47,  -1,  -1,  -1,  -1,  22,  23,  24,  25,  26,  27,  -1,
+      30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  14,  45,  16,  46,  47,
+      -1,  -1,  -1,  -1,  22,  23,  24,  25,  26,  27,  -1,  30,  31,  32,  33,  34,  35,  36,  37,
+      38,  39,  40,  41,  42,  -1,  14,  45,  16,  46,  47,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  14,  45,
+      16,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,
+      35,  36,  37,  38,  39,  40,  41,  42,  -1,  14,  45,  16,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,
+      14,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,
+      33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  14,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,
+      42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,
+      34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,
+      45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,
+      37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,
+      40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,
+      32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  16,  -1,  45,  -1,  -1,  -1,  -1,  -1,
+      -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,
+      16,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,
+      35,  36,  37,  38,  39,  40,  41,  42,  18,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  18,  -1,  45,  -1,  -1,
+      -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,
+      42,  20,  -1,  45,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  30,  31,  32,  33,  34,  35,  36,  37,
+      38,  39,  40,  41,  42,  -1,  -1,  45,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,
+      40,  41,  42,  -1,  -1,  45,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,
+      -1,  -1,  45,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  -1,  45,
+      30,  31,  32,  33,  34,  35,  36,  37,  -1,  -1,  -1,  -1,  42,  -1,  -1,  45,  31,  32,  33,
+      34,  35,  36,  37,  38,  39,  40,  41,  42,  -1,  -1,  45,  32,  33,  34,  35,  36,  37,  38,
+      39,  40,  41,  42,  -1,  -1,  45};
 
   const unsigned char Parser::yystos_[] = {
       0,  51, 0,  1,  19, 49, 52, 20, 3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 15, 17, 20, 38,
@@ -2205,23 +2217,23 @@ namespace SEAMS {
       56, 53, 54, 54, 56, 54, 56, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 56,
       56, 56, 54, 56, 56, 56, 14, 18, 16, 14, 16, 14, 16, 16, 14, 16, 14, 16, 16, 14, 16, 14, 16,
       56, 56, 29, 29, 56, 22, 55, 56, 55, 56, 55, 55, 56, 55, 56, 56, 55, 56, 18, 56, 14, 16, 16,
-      16, 14, 16, 21, 14, 14, 16, 16, 16, 16, 22, 56, 56, 56, 55, 55, 56, 16, 14, 16, 14, 16, 14,
-      16, 56, 56, 55, 14, 16, 16, 14, 55, 56, 55, 16, 14, 16, 56, 16};
+      16, 14, 16, 21, 14, 16, 14, 16, 16, 16, 16, 22, 56, 56, 56, 55, 55, 56, 16, 14, 16, 14, 16,
+      14, 16, 56, 56, 55, 14, 16, 16, 14, 55, 56, 55, 16, 14, 16, 56, 16};
 
   const unsigned char Parser::yyr1_[] = {
       0,  50, 51, 51, 52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53,
       53, 53, 53, 53, 53, 53, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,
-      55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56, 56,
+      55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56,
       56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
       56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
-      56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56};
+      56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56};
 
   const unsigned char Parser::yyr2_[] = {
-      0, 2, 0, 2, 1, 3, 3,  3,  2,  2,  3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-      3, 3, 1, 4, 6, 6, 6,  4,  4,  3,  3, 3, 2, 3, 3, 3, 3, 3, 1, 1, 1, 3, 3, 3, 3, 3,
-      4, 3, 4, 4, 3, 6, 12, 8,  8,  5,  1, 2, 2, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
-      2, 2, 2, 2, 3, 3, 3,  3,  3,  3,  3, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4,
-      6, 6, 6, 6, 8, 8, 10, 10, 12, 14, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 1, 5, 4, 6, 6, 8};
+      0, 2, 0, 2,  1,  3,  3,  3, 2, 2, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+      3, 1, 4, 6,  6,  6,  4,  4, 3, 3, 3, 2, 3, 3, 3, 3, 3, 1, 1, 1, 3, 3, 3, 3, 3, 4, 3,
+      4, 4, 3, 6,  12, 8,  8,  6, 5, 1, 2, 2, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 2,
+      2, 2, 3, 3,  3,  3,  3,  3, 3, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 6, 6, 6,
+      6, 8, 8, 10, 10, 12, 14, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 1, 5, 4, 6, 6, 8};
 
   // YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
   // First, the terminals, then, starting at \a yyntokens_, nonterminals.
@@ -2289,10 +2301,10 @@ namespace SEAMS {
       0,   146, 146, 147, 150, 151, 158, 162, 163, 164, 167, 168, 169, 170, 171, 172, 173, 174, 175,
       176, 177, 178, 181, 182, 183, 184, 185, 186, 188, 189, 195, 201, 207, 213, 219, 225, 228, 230,
       238, 240, 248, 249, 250, 251, 260, 261, 262, 263, 265, 268, 272, 273, 274, 280, 286, 292, 298,
-      299, 305, 311, 317, 323, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 336, 339, 340, 341,
-      342, 343, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 360, 362, 365, 368, 371, 374,
-      376, 379, 382, 385, 388, 395, 402, 409, 416, 423, 430, 437, 444, 450, 456, 462, 468, 474, 480,
-      486, 487, 488, 489, 496, 503, 504, 505, 508, 509, 512, 513, 514, 515, 516, 538};
+      299, 305, 311, 317, 323, 329, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 345, 346,
+      347, 348, 349, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 366, 368, 371, 374, 377,
+      380, 382, 385, 388, 391, 394, 401, 408, 415, 422, 429, 436, 443, 450, 456, 462, 468, 474, 480,
+      486, 492, 493, 494, 495, 502, 509, 510, 511, 514, 515, 518, 519, 520, 521, 522, 544};
 
   // Print the state stack on the debug stream.
   void Parser::yystack_print_()
@@ -2347,7 +2359,7 @@ namespace SEAMS {
   }
 
 } // SEAMS
-#line 2417 "apr_parser.cc" // lalr1.cc:1167
-#line 561 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:1168
+#line 2431 "apr_parser.cc" // lalr1.cc:1167
+#line 567 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:1168
 
 void SEAMS::Parser::error(const std::string &m) { aprepro.error(m); }
