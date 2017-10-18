@@ -131,9 +131,10 @@ namespace SEAMS {
   };
 
   struct init_c arith_c_fncts[] = {
-      {"strtod", do_strtod, "strtod(svar)", "Returns a double-precision floating-point number "
-                                            "equal to the value represented by the character "
-                                            "string pointed to by svar."},
+      {"strtod", do_strtod, "strtod(svar)",
+       "Returns a double-precision floating-point number "
+       "equal to the value represented by the character "
+       "string pointed to by svar."},
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
   };
 
@@ -172,18 +173,22 @@ namespace SEAMS {
   };
 
   struct str_c_init string_c_fncts[] = {
-      {"tolower", do_tolower, "tolower(svar)", "Translates all uppercase characters in svar to "
-                                               "lowercase. It modifies svar and returns the "
-                                               "resulting string.  "},
-      {"toupper", do_toupper, "toupper(svar)", "Translates all lowercase character in svar to "
-                                               "uppercase. It modifies svar and returns the "
-                                               "resulting string. "},
-      {"to_lower", do_tolower, "to_lower(svar)", "Translates all uppercase characters in svar to "
-                                                 "lowercase. It modifies svar and returns the "
-                                                 "resulting string.  "},
-      {"to_upper", do_toupper, "toupper(svar)", "Translates all lowercase character in svar to "
-                                                "uppercase. It modifies svar and returns the "
-                                                "resulting string. "},
+      {"tolower", do_tolower, "tolower(svar)",
+       "Translates all uppercase characters in svar to "
+       "lowercase. It modifies svar and returns the "
+       "resulting string.  "},
+      {"toupper", do_toupper, "toupper(svar)",
+       "Translates all lowercase character in svar to "
+       "uppercase. It modifies svar and returns the "
+       "resulting string. "},
+      {"to_lower", do_tolower, "to_lower(svar)",
+       "Translates all uppercase characters in svar to "
+       "lowercase. It modifies svar and returns the "
+       "resulting string.  "},
+      {"to_upper", do_toupper, "toupper(svar)",
+       "Translates all lowercase character in svar to "
+       "uppercase. It modifies svar and returns the "
+       "resulting string. "},
       {"getenv", do_getenv, "getenv(svar)",
        "Returns a string containing the value of the environment variable svar. If the environment "
        "variable is not defined, an empty string is returned. "},
@@ -193,20 +198,23 @@ namespace SEAMS {
        "Outputs the string svar to stderr and then terminates the code with an error exit status."},
       {"execute", do_execute, "execute(svar)",
        "svar is parsed and executed as if it were a line read from the input file."},
-      {"output", do_output, "output(filename)", "Creates the file specified by filename and sends "
-                                                "all subsequent output from aprepro to that file."},
+      {"output", do_output, "output(filename)",
+       "Creates the file specified by filename and sends "
+       "all subsequent output from aprepro to that file."},
       {"output_append", do_append, "output_append(fn)",
        "If file with name fn exists, append output to it; otherwise create the file and send all "
        "subsequent output from aprepro to that file."},
-      {"rescan", do_rescan, "rescan(svar)", "The difference between execute(sv1) and rescan(sv2) "
-                                            "is that sv1 must be a valid expression, but sv2 can "
-                                            "contain zero or more expressions. "},
+      {"rescan", do_rescan, "rescan(svar)",
+       "The difference between execute(sv1) and rescan(sv2) "
+       "is that sv1 must be a valid expression, but sv2 can "
+       "contain zero or more expressions. "},
       {"include_path", do_include_path, "include_path(path)",
        "Specify an optional path to be prepended to a filename when opening a file. Can also be "
        "specified via the -I command line option when executing aprepro."},
-      {"Units", do_Units, "Units(svar)", "See manual. svar is one of the defined units "
-                                         "systems:\n\t\t\t'si', 'cgs', 'cgs-ev', 'shock', 'swap', "
-                                         "'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s'"},
+      {"Units", do_Units, "Units(svar)",
+       "See manual. svar is one of the defined units "
+       "systems:\n\t\t\t'si', 'cgs', 'cgs-ev', 'shock', 'swap', "
+       "'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s'"},
       {"delete", do_delete, "delete(var_name)", "Delete the variable with name 'var_name'."},
       {"if", do_str_if, "if(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
@@ -216,14 +224,22 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid expression; nonzero is true"},
       {"Elseif", do_str_elseif, "Elseif(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
-      {"ifdef", do_str_if, "ifdef(x)", "Handles the if statements. x can be any valid expression; "
-                                       "nonzero is true (deprecated, use if)"},
-      {"Ifdef", do_str_if, "Ifdef(x)", "Handles the if statements. x can be any valid expression; "
-                                       "nonzero is true (deprecated, use if)"},
-      {"ifndef", do_str_notif, "ifndef(x)", "Handles the if statements. x can be any valid "
-                                            "expression; nonzero is true (deprecated, use if)"},
-      {"Ifndef", do_str_notif, "Ifndef(x)", "Handles the if statements. x can be any valid "
-                                            "expression; nonzero is true (deprecated, use if)"},
+      {"ifdef", do_str_if, "ifdef(x)",
+       "Handles the if statements. x can be any valid expression; "
+       "nonzero is true (deprecated, use if)"},
+      {"Ifdef", do_str_if, "Ifdef(x)",
+       "Handles the if statements. x can be any valid expression; "
+       "nonzero is true (deprecated, use if)"},
+      {"ifndef", do_str_notif, "ifndef(x)",
+       "Handles the if statements. x can be any valid "
+       "expression; nonzero is true (deprecated, use if)"},
+      {"Ifndef", do_str_notif, "Ifndef(x)",
+       "Handles the if statements. x can be any valid "
+       "expression; nonzero is true (deprecated, use if)"},
+#if !defined(NO_EXODUSII)
+      {"exodus_meta", do_exodus_meta, "exodus_meta(ex_fn)",
+       "Creates several variables related to the exodus metadata in the specified file. "},
+#endif
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
@@ -241,18 +257,22 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid expression; nonzero is true"},
       {"Elseif", do_elseif, "Elseif(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
-      {"_ifdef", do_if, "ifdef(x)", "Handles the if statements. x can be any valid expression; "
-                                    "nonzero is true. Eats leading whitespace. (deprecated, use "
-                                    "if)"},
-      {"_ifndef", do_notif, "ifndef(x)", "Handles the if statements. x can be any valid "
-                                         "expression; nonzero is true. Eats leading whitespace. "
-                                         "(deprecated, use if)"},
-      {"switch", do_switch, "switch(x)", "Switch statement. Select from the following case "
-                                         "statements which matches 'x' and execute that one. End "
-                                         "with endswitch"},
-      {"Switch", do_switch, "Switch(x)", "Switch statement. Select from the following case "
-                                         "statements which matches 'x' and execute that one. End "
-                                         "with endswitch"},
+      {"_ifdef", do_if, "ifdef(x)",
+       "Handles the if statements. x can be any valid expression; "
+       "nonzero is true. Eats leading whitespace. (deprecated, use "
+       "if)"},
+      {"_ifndef", do_notif, "ifndef(x)",
+       "Handles the if statements. x can be any valid "
+       "expression; nonzero is true. Eats leading whitespace. "
+       "(deprecated, use if)"},
+      {"switch", do_switch, "switch(x)",
+       "Switch statement. Select from the following case "
+       "statements which matches 'x' and execute that one. End "
+       "with endswitch"},
+      {"Switch", do_switch, "Switch(x)",
+       "Switch statement. Select from the following case "
+       "statements which matches 'x' and execute that one. End "
+       "with endswitch"},
       {"case", do_case, "case(x)",
        "Switch statement. A case used in a containing switch statement."},
       {"Case", do_case, "Case(x)",
@@ -272,6 +292,14 @@ namespace SEAMS {
        "Return substring [b,e). 'b' is included; 'e' is not. If 'b' not found, return empty; If "
        "'e' not found, return rest of string. If 'b' empty, start at beginning; if 'e' empty, "
        "return rest of string."},
+      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
+  };
+
+  struct str_cc_init string_cc_fncts[] = {
+#if !defined(NO_EXODUSII)
+      {"exodus_info", do_exodus_info, "exodus_info(ex_fn, prefix)",
+       "Parses the info records that begin with 'prefix' extracted from the exodus file 'ex_fn'"},
+#endif
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
@@ -441,6 +469,13 @@ namespace SEAMS {
       ptr->value.strfnct_ccc = string_ccc_fncts[i].fnct;
       ptr->info              = string_ccc_fncts[i].description;
       ptr->syntax            = string_ccc_fncts[i].syntax;
+    }
+
+    for (int i = 0; string_cc_fncts[i].fname != nullptr; i++) {
+      symrec *ptr           = putsym(string_cc_fncts[i].fname, STRING_FUNCTION, true);
+      ptr->value.strfnct_cc = string_cc_fncts[i].fnct;
+      ptr->info             = string_cc_fncts[i].description;
+      ptr->syntax           = string_cc_fncts[i].syntax;
     }
 
     for (int i = 0; string_a_fncts[i].fname != nullptr; i++) {

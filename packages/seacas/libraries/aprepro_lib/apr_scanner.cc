@@ -1646,8 +1646,8 @@ YY_DECL
         else {
           if (aprepro.ap_options.debugging)
             fprintf(stderr,
-                    "DEBUG SWITCH: 'default' not executing since a previous case already ran at "
-                    "line %d\n",
+                    "DEBUG SWITCH: 'default' not executing since a previous case already "
+                    "ran at line %d\n",
                     aprepro.ap_file_list.top().lineno);
 
           /* Need to skip all code until end of case */
@@ -3596,8 +3596,8 @@ namespace SEAMS {
     else {
       if (aprepro.ap_options.debugging) {
         fprintf(stderr,
-                "DEBUG SWITCH: 'case' condition = %g does not match switch condition = %g (or case "
-                "already matched) at line %d\n",
+                "DEBUG SWITCH: 'case' condition = %g does not match switch condition = %g "
+                "(or case already matched) at line %d\n",
                 x, switch_condition, aprepro.ap_file_list.top().lineno);
       }
 

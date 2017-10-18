@@ -49,7 +49,7 @@
 
 namespace {
   const unsigned int HASHSIZE       = 5939;
-  const char *       version_string = "4.36 (2017/09/06)";
+  const char *       version_string = "5.00 (2017/10/18)";
 
   unsigned hash_symbol(const char *symbol)
   {
@@ -318,12 +318,12 @@ namespace SEAMS {
     int  parser_type = 0;
     bool is_function = false;
     switch (sym_type) {
-    case VARIABLE: parser_type                  = Parser::token::VAR; break;
-    case STRING_VARIABLE: parser_type           = Parser::token::SVAR; break;
-    case ARRAY_VARIABLE: parser_type            = Parser::token::AVAR; break;
-    case IMMUTABLE_VARIABLE: parser_type        = Parser::token::IMMVAR; break;
+    case VARIABLE: parser_type = Parser::token::VAR; break;
+    case STRING_VARIABLE: parser_type = Parser::token::SVAR; break;
+    case ARRAY_VARIABLE: parser_type = Parser::token::AVAR; break;
+    case IMMUTABLE_VARIABLE: parser_type = Parser::token::IMMVAR; break;
     case IMMUTABLE_STRING_VARIABLE: parser_type = Parser::token::IMMSVAR; break;
-    case UNDEFINED_VARIABLE: parser_type        = Parser::token::UNDVAR; break;
+    case UNDEFINED_VARIABLE: parser_type = Parser::token::UNDVAR; break;
     case FUNCTION:
       parser_type = Parser::token::FNCT;
       is_function = true;
@@ -348,7 +348,7 @@ namespace SEAMS {
       symrec *ptr = getsym(sym_name.c_str());
       if (ptr != nullptr) {
         if (ptr->type != parser_type) {
-          std::string err = "Overloaded function " + sym_name + "does not return same type";
+          std::string err = "Overloaded function '" + sym_name + "' does not return same type";
           error(err, false);
           throw std::runtime_error(err);
         }
@@ -357,6 +357,14 @@ namespace SEAMS {
         // Note that the info and syntax fields will contain the
         // latest values, not the firstt...
         return ptr;
+      }
+    }
+    else {
+      symrec *ptr = getsym(sym_name.c_str());
+      if (ptr != nullptr) {
+        std::string err = "Internal Error: Variable '" + sym_name + "' is already defined.";
+        error(err, false);
+        throw std::runtime_error(err);
       }
     }
 

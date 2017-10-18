@@ -39,6 +39,7 @@ SET(SOURCES
  apr_scanner.cc  
  apr_getline_int.c
  ${BISON_LIB_SOURCE}
+ apr_exodus.cc
  apr_array.cc
 )
 
