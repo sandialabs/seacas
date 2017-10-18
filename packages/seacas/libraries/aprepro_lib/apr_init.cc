@@ -236,7 +236,7 @@ namespace SEAMS {
       {"Ifndef", do_str_notif, "Ifndef(x)",
        "Handles the if statements. x can be any valid "
        "expression; nonzero is true (deprecated, use if)"},
-#if !defined(NO_EXODUSII)
+#if defined(EXODUS_SUPPORT)
       {"exodus_meta", do_exodus_meta, "exodus_meta(ex_fn)",
        "Creates several variables related to the exodus metadata in the specified file. "},
 #endif
@@ -296,7 +296,7 @@ namespace SEAMS {
   };
 
   struct str_cc_init string_cc_fncts[] = {
-#if !defined(NO_EXODUSII)
+#if defined(EXODUS_SUPPORT)
       {"exodus_info", do_exodus_info, "exodus_info(ex_fn, prefix)",
        "Parses the info records that begin with 'prefix' extracted from the exodus file 'ex_fn'"},
 #endif
