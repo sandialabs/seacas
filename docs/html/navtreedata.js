@@ -3,7 +3,8 @@ var NAVTREE =
   [ "Exodus", "index.html", [
     [ "Exodus API Documentation", "index.html", [
       [ "Introduction", "index.html#intro", null ],
-      [ "License and Availability", "index.html#avail", null ],
+      [ "Availability", "index.html#avail", null ],
+      [ "License", "index.html#license", null ],
       [ "Development of EXODUS", "index.html#devel", null ],
       [ "Description of Data Objects", "index.html#descrip", null ],
       [ "Integer Bulkdata Storage Details (32-bit and 64-bit integers)", "index.html#int64", [
@@ -48,7 +49,7 @@ var NAVTREEINDEX =
 "exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca3afda90d93e6c1a2fabe6c64632f0f2d",
 "exodusII__int_8h.html#a656d25c04e7a27144de9ed5644182ede",
 "globals_m.html",
-"structex__block.html#a16eaf07c0b9ee1ea671863e3b41092c6"
+"structex__block.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

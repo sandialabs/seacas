@@ -18,7 +18,20 @@ load application, specification of material types.
     - Visualization -- model verification, results postprocessing, data interrogation, and analysis
 tracking.
 
-\section avail License and Availability
+\section avail Availability
+
+The Exodus library source code is available on Github at
+https://github.com/gsjaardema/seacas
+
+For bug reports, documentation errors, and enhancement suggestions, contact:
+- Gregory D. Sjaardema
+- WEB:   https://github.com/gsjaardema/seacas/issues
+- EMAIL: gdsjaar@sandia.gov
+- EMAIL: gsjaardema@gmail.com
+- PHONE: (505) 844-2701 (office)
+- PHONE: (505) 999-8991 (cell)
+
+\section license License
 The EXODUS library is licensed under the BSD open source license.
 
      Copyright (c) 2005-2017 National Technology & Engineering Solutions
@@ -52,17 +65,6 @@ The EXODUS library is licensed under the BSD open source license.
      THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
      (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
      OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-The Exodus library source code is available on Github at
-https://github.com/gsjaardema/seacas
-
-For bug reports, documentation errors, and enhancement suggestions, contact:
-- Gregory D. Sjaardema
-- WEB:   https://github.com/gsjaardema/seacas/issues
-- EMAIL: gdsjaar@sandia.gov
-- EMAIL: gsjaardema@gmail.com
-- PHONE: (505) 844-2701 (office)
-- PHONE: (505) 999-8991 (cell)
 
 \section devel Development of EXODUS
 
