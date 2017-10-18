@@ -151,7 +151,7 @@ namespace SEAMS {
   const char *do_str_elseif(char *string);
   const char *do_delete(char *string);
 
-#if !defined(NO_EXODUSII)
+#if defined(EXODUS_SUPPORT)
   const char *do_exodus_info(char *filename, char *prefix);
   const char *do_exodus_meta(char *filename);
 #endif

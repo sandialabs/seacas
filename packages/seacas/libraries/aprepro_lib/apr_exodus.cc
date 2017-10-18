@@ -33,7 +33,7 @@
  *
  */
 
-#if !defined(NO_EXODUSII)
+#if defined(EXODUS_SUPPORT)
 #include "aprepro.h"
 #include "exodusII.h"
 
@@ -79,52 +79,39 @@ namespace SEAMS {
 
   const char *do_exodus_info(char *filename, char *prefix)
   {
-    int   exoid;
-    int   size = 0;
-    int   count;
-    int   i;
     char *ret_string = NULL;
 
     /*
      * Open the specified exodusII file, read the info records
      * then parse them as input to aprepro.
      */
-    exoid = open_exodus_file(filename);
+    int exoid = open_exodus_file(filename);
     if (exoid < 0)
       return "";
 
-    ex_inquire(exoid, EX_INQ_INFO, &count, (float *)NULL, (char *)NULL);
+    int count = ex_inquire_int(exoid, EX_INQ_INFO);
 
     if (count > 0) {
       auto info = new char *[count];
-      for (i = 0; i < count; i++) {
+      for (int i = 0; i < count; i++) {
         info[i] = new char[MAX_LINE_LENGTH + 1];
         memset(info[i], '\0', MAX_LINE_LENGTH + 1);
       }
 
       ex_get_info(exoid, info);
 
-      /* Count total size of info records.. */
-      for (i = 0; i < count; i++) {
+      std::string lines;
+      for (int i = 0; i < count; i++) {
         if (matches_prefix(prefix, info[i])) {
-          size += strlen(info[i]);
-        }
-      }
-      size += count - 1; /* newlines */
-      std::vector<char> lines(size + 1);
-      lines[0] = '\0';
-
-      for (i = 0; i < count; i++) {
-        if (matches_prefix(prefix, info[i])) {
-          strcat(lines.data(), info[i]);
-          strcat(lines.data(), "\n");
+          lines += info[i];
+          lines += "\n";
         }
       }
 
-      new_string(lines.data(), &ret_string);
+      new_string(lines.c_str(), &ret_string);
 
       if (count > 0) {
-        for (i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
           delete[] info[i];
         }
         delete[] info;
@@ -142,8 +129,7 @@ namespace SEAMS {
   {
     int            exoid;
     int            ndim, nnodes, nelems, nblks, nnsets, nssets;
-    char *         title;
-    SEAMS::symrec *ptr;
+    SEAMS::symrec *ptr = nullptr;
 
     /*
      * Open the specified exodusII file, read the metadata and set
@@ -155,7 +141,7 @@ namespace SEAMS {
       return "";
 
     /* read database paramters */
-    title = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char *));
+    char *title = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);
 
     ptr             = aprepro->putsym("ex_title", Aprepro::STRING_VARIABLE, 0);
