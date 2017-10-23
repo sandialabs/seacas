@@ -101,9 +101,10 @@ namespace SEAMS {
       ex_get_info(exoid, info);
 
       std::string lines;
+      size_t      prefix_len = strlen(prefix);
       for (int i = 0; i < count; i++) {
         if (matches_prefix(prefix, info[i])) {
-          lines += info[i];
+          lines += std::string(info[i]).substr(prefix_len);
           lines += "\n";
         }
       }
