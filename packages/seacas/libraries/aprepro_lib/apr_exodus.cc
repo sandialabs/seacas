@@ -40,7 +40,7 @@
 #include "apr_util.h"
 #include "aprepro_parser.h"
 
-#include <ctype.h>
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 
