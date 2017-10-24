@@ -41,19 +41,9 @@
 #include "aprepro_parser.h"
 
 #include <ctype.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* A format string for outputting size_t ... */
-#if defined(__STDC_VERSION__)
-#if (__STDC_VERSION__ >= 199901L)
-#define ST_ZU "zu"
-#else
-#define ST_ZU "lu"
-#endif
-#else
-#define ST_ZU "lu"
-#endif
 
 namespace {
   void LowerCaseTrim(char *name);
@@ -76,15 +66,23 @@ namespace SEAMS {
 
     exo = ex_open(filename, EX_READ | EX_ALL_INT64_API, &cpu, &io, &version);
     if (exo < 0) {
-      yyerror(*aprepro, "Error opening exodusII file.");
-    }
-    else {
-      SEAMS::symrec *ptr = aprepro->getsym("ex_version");
-      if (!ptr) {
-        ptr = aprepro->putsym("ex_version", Aprepro::VARIABLE, 0);
+      /* If there is an include path specified, try opening file there */
+      std::string file_path(aprepro->ap_options.include_path);
+      if (!file_path.empty()) {
+        file_path += "/";
+        file_path += filename;
+        exo = ex_open(file_path.c_str(), EX_READ | EX_ALL_INT64_API, &cpu, &io, &version);
       }
-      ptr->value.var = version;
+      if (exo < 0) {
+        yyerror(*aprepro, "Error opening exodusII file.");
+      }
     }
+
+    SEAMS::symrec *ptr = aprepro->getsym("ex_version");
+    if (!ptr) {
+      ptr = aprepro->putsym("ex_version", Aprepro::VARIABLE, 0);
+    }
+    ptr->value.var = version;
     return exo;
   }
 
@@ -224,10 +222,10 @@ namespace SEAMS {
     ptr            = aprepro->putsym("ex_block_count", Aprepro::VARIABLE, 0);
     ptr->value.var = nblks;
 
-    ptr            = aprepro->putsym("ex_nset_count", Aprepro::VARIABLE, 0);
+    ptr            = aprepro->putsym("ex_nodeset_count", Aprepro::VARIABLE, 0);
     ptr->value.var = nnsets;
 
-    ptr            = aprepro->putsym("ex_sset_count", Aprepro::VARIABLE, 0);
+    ptr            = aprepro->putsym("ex_sideset_count", Aprepro::VARIABLE, 0);
     ptr->value.var = nssets;
 
     { /* Nemesis Information */
@@ -301,7 +299,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "block_%" ST_ZU, ids[i]);
+          sprintf(name, "block_%" PRId64, ids[i]);
         }
 
         if (i > 0) {
@@ -351,7 +349,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_NODE_SET, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "nodeset_%" ST_ZU, ids[i]);
+          sprintf(name, "nodeset_%" PRId64, ids[i]);
         }
 
         if (i > 0) {
@@ -392,7 +390,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "sideset_%" ST_ZU, ids[i]);
+          sprintf(name, "sideset_%" PRId64, ids[i]);
         }
 
         if (i > 0) {
