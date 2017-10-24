@@ -83,10 +83,21 @@ struct ex_file_item *ex_find_file_item(int exoid)
 
 void ex_check_valid_file_id(int exoid, const char *func)
 {
+  int error = 0;
+  if (exoid <= 0) {
+    error = 1;
+  }
 #if !defined EXODUS_IN_SIERRA
-  struct ex_file_item *file = ex_find_file_item(exoid);
+  else {
+    struct ex_file_item *file = ex_find_file_item(exoid);
 
-  if (!file) {
+    if (!file) {
+      error = 1;
+    }
+  }
+#endif
+
+  if (error) {
     ex_opts(EX_ABORT | EX_VERBOSE);
     char errmsg[MAX_ERR_LENGTH];
     snprintf(errmsg, MAX_ERR_LENGTH,
@@ -97,7 +108,6 @@ void ex_check_valid_file_id(int exoid, const char *func)
              func, exoid);
     ex_err(__func__, errmsg, EX_BADFILEID);
   }
-#endif
 }
 
 int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsize,
