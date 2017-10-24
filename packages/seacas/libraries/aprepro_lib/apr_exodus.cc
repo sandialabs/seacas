@@ -126,6 +126,61 @@ namespace SEAMS {
     }
   }
 
+  const char *do_exodus_info_range(char *filename, char *beg, char *end)
+  {
+    char *ret_string = NULL;
+
+    /*
+     * Open the specified exodusII file, read the info records
+     * then parse them as input to aprepro.
+     */
+    int exoid = open_exodus_file(filename);
+    if (exoid < 0)
+      return "";
+
+    int count = ex_inquire_int(exoid, EX_INQ_INFO);
+
+    if (count > 0) {
+      auto info = new char *[count];
+      for (int i = 0; i < count; i++) {
+        info[i] = new char[MAX_LINE_LENGTH + 1];
+        memset(info[i], '\0', MAX_LINE_LENGTH + 1);
+      }
+
+      ex_get_info(exoid, info);
+
+      bool        in_range = false;
+      std::string lines;
+      for (int i = 0; i < count; i++) {
+        if (in_range && strcmp(info[i], end) == 0) {
+          in_range = false;
+        }
+        if (in_range) {
+          lines += std::string(info[i]);
+          lines += "\n";
+        }
+        if (!in_range && strcmp(info[i], beg) == 0) {
+          in_range = true;
+        }
+      }
+
+      new_string(lines.c_str(), &ret_string);
+
+      if (count > 0) {
+        for (int i = 0; i < count; i++) {
+          delete[] info[i];
+        }
+        delete[] info;
+      }
+      ex_close(exoid);
+      return ret_string;
+    }
+    else {
+      ex_close(exoid);
+      return "";
+    }
+  }
+
   const char *do_exodus_meta(char *filename)
   {
     int            exoid;
