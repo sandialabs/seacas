@@ -44,6 +44,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* A format string for outputting size_t ... */
+#if defined(__STDC_VERSION__)
+#if (__STDC_VERSION__ >= 199901L)
+#define ST_ZU "zu"
+#else
+#define ST_ZU "lu"
+#endif
+#else
+#define ST_ZU "lu"
+#endif
+
 namespace {
   void LowerCaseTrim(char *name);
 
@@ -290,7 +301,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "block_%lld", ids[i]);
+          sprintf(name, "block_%" ST_ZU, ids[i]);
         }
 
         if (i > 0) {
@@ -340,7 +351,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_NODE_SET, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "nodeset_%lld", ids[i]);
+          sprintf(name, "nodeset_%" ST_ZU, ids[i]);
         }
 
         if (i > 0) {
@@ -381,7 +392,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "sideset_%lld", ids[i]);
+          sprintf(name, "sideset_%" ST_ZU, ids[i]);
         }
 
         if (i > 0) {
