@@ -292,6 +292,10 @@ namespace SEAMS {
        "Return substring [b,e). 'b' is included; 'e' is not. If 'b' not found, return empty; If "
        "'e' not found, return rest of string. If 'b' empty, start at beginning; if 'e' empty, "
        "return rest of string."},
+#if defined(EXODUS_SUPPORT)
+      {"exodus_info", do_exodus_info_range, "exodus_info(ex_fn, beg, end)",
+       "Parses the info records starting after 'beg' and ending before 'end'"},
+#endif
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
