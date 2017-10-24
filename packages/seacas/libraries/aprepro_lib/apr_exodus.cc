@@ -63,7 +63,7 @@ namespace SEAMS {
     int   exo;
     float version;
 
-    exo = ex_open(filename, EX_READ, &cpu, &io, &version);
+    exo = ex_open(filename, EX_READ | EX_ALL_INT64_API, &cpu, &io, &version);
     if (exo < 0) {
       yyerror(*aprepro, "Error opening exodusII file.");
     }
@@ -183,25 +183,23 @@ namespace SEAMS {
 
   const char *do_exodus_meta(char *filename)
   {
-    int            exoid;
-    int            ndim, nnodes, nelems, nblks, nnsets, nssets;
-    SEAMS::symrec *ptr = nullptr;
 
     /*
      * Open the specified exodusII file, read the metadata and set
      * variables for each item.
      * Examples include "node_count", "element_count", ...
      */
-    exoid = open_exodus_file(filename);
+    int exoid = open_exodus_file(filename);
     if (exoid < 0)
       return "";
 
     /* read database paramters */
-    char *title = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
+    char *  title = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
+    int64_t ndim, nnodes, nelems, nblks, nnsets, nssets;
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);
 
-    ptr             = aprepro->putsym("ex_title", Aprepro::STRING_VARIABLE, 0);
-    ptr->value.svar = title;
+    SEAMS::symrec *ptr = aprepro->putsym("ex_title", Aprepro::STRING_VARIABLE, 0);
+    ptr->value.svar    = title;
 
     ptr            = aprepro->putsym("ex_dimension", Aprepro::VARIABLE, 0);
     ptr->value.var = ndim;
@@ -226,16 +224,15 @@ namespace SEAMS {
       int  proc_in_file;
       char file_type[MAX_STR_LENGTH + 1];
 
-      int global_nodes;
-      int global_elements;
-      int global_blocks;
-      int global_nsets;
-      int global_ssets;
-      int error;
-
-      error = ex_get_init_info(exoid, &proc_count, &proc_in_file, file_type);
+      ex_get_init_info(exoid, &proc_count, &proc_in_file, file_type);
 
       if (proc_count > 1) {
+        int64_t global_nodes;
+        int64_t global_elements;
+        int64_t global_blocks;
+        int64_t global_nsets;
+        int64_t global_ssets;
+
         ptr            = aprepro->putsym("ex_processor_count", Aprepro::VARIABLE, 0);
         ptr->value.var = proc_count;
 
@@ -271,19 +268,19 @@ namespace SEAMS {
       auto array_data       = new array(nblks, 1);
       auto array_block_info = new array(nblks, 4);
 
-      std::vector<int> ids(nblks);
+      std::vector<int64_t> ids(nblks);
       ex_get_ids(exoid, EX_ELEM_BLOCK, ids.data());
 
-      char type[MAX_STR_LENGTH + 1];
-      int  nel;
-      int  nnel;
-      int  natr;
+      char    type[MAX_STR_LENGTH + 1];
+      int64_t nel;
+      int64_t nnel;
+      int64_t natr;
 
       std::string names;
       std::string topology;
 
-      int idx = 0;
-      for (int i = 0; i < nblks; i++) {
+      int64_t idx = 0;
+      for (int64_t i = 0; i < nblks; i++) {
         ex_get_block(exoid, EX_ELEM_BLOCK, ids[i], type, &nel, &nnel, 0, 0, &natr);
         array_data->data[i]           = ids[i];
         array_block_info->data[idx++] = ids[i];
@@ -293,7 +290,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "block_%d", ids[i]);
+          sprintf(name, "block_%lld", ids[i]);
         }
 
         if (i > 0) {
@@ -327,14 +324,14 @@ namespace SEAMS {
       auto array_data     = new array(nnsets, 1);
       auto array_set_info = new array(nnsets, 3);
 
-      std::vector<int> ids(nnsets);
+      std::vector<int64_t> ids(nnsets);
       ex_get_ids(exoid, EX_NODE_SET, ids.data());
 
       std::string names;
-      int         idx = 0;
-      for (int i = 0; i < nnsets; i++) {
-        int num_entry;
-        int num_dist;
+      int64_t     idx = 0;
+      for (int64_t i = 0; i < nnsets; i++) {
+        int64_t num_entry;
+        int64_t num_dist;
         ex_get_set_param(exoid, EX_NODE_SET, ids[i], &num_entry, &num_dist);
         array_data->data[i]         = ids[i];
         array_set_info->data[idx++] = ids[i];
@@ -343,7 +340,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_NODE_SET, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "nodeset_%d", ids[i]);
+          sprintf(name, "nodeset_%lld", ids[i]);
         }
 
         if (i > 0) {
@@ -368,14 +365,14 @@ namespace SEAMS {
       auto array_data     = new array(nssets, 1);
       auto array_set_info = new array(nssets, 3);
 
-      std::vector<int> ids(nssets);
+      std::vector<int64_t> ids(nssets);
       ex_get_ids(exoid, EX_SIDE_SET, ids.data());
 
       std::string names;
-      int         idx = 0;
-      for (int i = 0; i < nssets; i++) {
-        int num_entry;
-        int num_dist;
+      int64_t     idx = 0;
+      for (int64_t i = 0; i < nssets; i++) {
+        int64_t num_entry;
+        int64_t num_dist;
         ex_get_set_param(exoid, EX_SIDE_SET, ids[i], &num_entry, &num_dist);
         array_data->data[i]         = ids[i];
         array_set_info->data[idx++] = ids[i];
@@ -384,7 +381,7 @@ namespace SEAMS {
 
         ex_get_name(exoid, EX_SIDE_SET, ids[i], name);
         if (name[0] == '\0') {
-          sprintf(name, "sideset_%d", ids[i]);
+          sprintf(name, "sideset_%lld", ids[i]);
         }
 
         if (i > 0) {
@@ -406,16 +403,16 @@ namespace SEAMS {
 
     {
       /* Get timestep count */
-      int ts_count   = ex_inquire_int(exoid, EX_INQ_TIME);
-      ptr            = aprepro->putsym("ex_timestep_count", Aprepro::VARIABLE, 0);
-      ptr->value.var = ts_count;
+      int64_t ts_count = ex_inquire_int(exoid, EX_INQ_TIME);
+      ptr              = aprepro->putsym("ex_timestep_count", Aprepro::VARIABLE, 0);
+      ptr->value.var   = ts_count;
 
       if (ts_count > 0) {
         std::vector<double> timesteps(ts_count);
         ex_get_all_times(exoid, timesteps.data());
 
         auto ts_array_data = new array(ts_count, 1);
-        for (int i = 0; i < ts_count; i++) {
+        for (int64_t i = 0; i < ts_count; i++) {
           ts_array_data->data[i] = timesteps[i];
         }
         ptr             = aprepro->putsym("ex_timestep_times", Aprepro::ARRAY_VARIABLE, 0);
