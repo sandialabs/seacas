@@ -269,7 +269,8 @@ namespace SEAMS {
 
     std::stack<std::ostream *> outputStream;
 
-    SEAMS::symrec *getsym(const char * /*sym_name*/) const;
+    SEAMS::symrec *getsym(const char *sym_name) const;
+    SEAMS::symrec *getsym(const std::string &sym_name) const;
     SEAMS::symrec *putsym(const std::string &sym_name, SYMBOL_TYPE sym_type, bool is_internal);
 
     void add_variable(const std::string &sym_name, const std::string &sym_value,

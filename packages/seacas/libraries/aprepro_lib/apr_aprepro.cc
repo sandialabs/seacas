@@ -345,7 +345,7 @@ namespace SEAMS {
     // retrn that pointer instead of creating a new symrec.
 
     if (is_function) {
-      symrec *ptr = getsym(sym_name.c_str());
+      symrec *ptr = getsym(sym_name);
       if (ptr != nullptr) {
         if (ptr->type != parser_type) {
           std::string err = "Overloaded function '" + sym_name + "' does not return same type";
@@ -360,7 +360,7 @@ namespace SEAMS {
       }
     }
     else {
-      symrec *ptr = getsym(sym_name.c_str());
+      symrec *ptr = getsym(sym_name);
       if (ptr != nullptr) {
         std::string err = "Internal Error: Variable '" + sym_name + "' is already defined.";
         error(err, false);
@@ -513,8 +513,16 @@ namespace SEAMS {
   {
     if (check_valid_var(sym_name.c_str())) {
       SYMBOL_TYPE type = immutable ? IMMUTABLE_STRING_VARIABLE : STRING_VARIABLE;
-      symrec *    var  = putsym(sym_name, type, false);
-      char *      tmp  = nullptr;
+      symrec *    var  = getsym(sym_name);
+      if (var == nullptr) {
+        var = putsym(sym_name, type, false);
+      }
+      else {
+        if (var->type != type) {
+          var->type = type;
+        }
+      }
+      char *tmp = nullptr;
       new_string(sym_value.c_str(), &tmp);
       var->value.svar = tmp;
     }
@@ -527,8 +535,16 @@ namespace SEAMS {
   {
     if (check_valid_var(sym_name.c_str())) {
       SYMBOL_TYPE type = immutable ? IMMUTABLE_VARIABLE : VARIABLE;
-      symrec *    var  = putsym(sym_name, type, false);
-      var->value.var   = sym_value;
+      symrec *    var  = getsym(sym_name);
+      if (var == nullptr) {
+        var = putsym(sym_name, type, false);
+      }
+      else {
+        if (var->type != type) {
+          var->type = type;
+        }
+      }
+      var->value.var = sym_value;
     }
     else {
       warning("Invalid variable name syntax '" + sym_name + "'. Variable not defined.\n", false);
@@ -567,7 +583,7 @@ namespace SEAMS {
 
   void Aprepro::remove_variable(const std::string &sym_name)
   {
-    symrec *ptr = getsym(sym_name.c_str());
+    symrec *ptr = getsym(sym_name);
     bool    is_valid_variable =
         (ptr != nullptr) && (!ptr->isInternal) &&
         ((ptr->type == Parser::token::VAR) || (ptr->type == Parser::token::SVAR) ||
@@ -621,6 +637,8 @@ namespace SEAMS {
     }
     return nullptr;
   }
+
+  symrec *Aprepro::getsym(const std::string &sym_name) const { return getsym(sym_name.c_str()); }
 
   void Aprepro::dumpsym(const char *type, bool doInternal) const
   {
