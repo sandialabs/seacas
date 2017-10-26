@@ -91,6 +91,13 @@ IO(x)               &  Convert x to an integer and then to a string. Can be used
 Units(svar)         &  See Chapter~\ref{ch:units}. \var{svar} is one of the defined units systems: 'si', 'cgs', 'cgs-ev', 'shock', 'swap', 'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s' \\
 error(svar)         &  Outputs the string \var{svar} to stderr and then terminates the code with an error exit status. \\
 execute(svar)       &  \var{svar} is parsed and executed as if it were a line read from the input file. \\
+exodus\_info(filename, prefix) & Open the \exo{} file and return a
+string which is the concatenation of all \exo{} info lines that begin
+with ``prefix''. The prefix is stripped from the line. \\
+exodus\_info(filename, begin, end) & Open the \exo{} file and return a
+string which is the concatenation of all \exo{} info lines following
+the line that matches ``begin'' up to the line that matches ``end''. \\
+exodus\_meta(filename) & Open the \exo{} file and create several variables based on the metadata in the \exo{} file. \\
 extract(s, b, e)    &  Return substring \var{[b,e)}. \var{b} is included; \var{e} is not. If \var{b} not found, return empty; If \var{e} not found, return rest of string. If \var{b} empty, start at beginning; if \var{e} empty, return rest of string. \\
 file\_to\_string(fn)&  Opens the file specified by \var{fn} and returns the contents as a multi-line string. \\
 get\_date()         &  Returns a string representing the current date in the form YYYY/MM/DD. \\
@@ -338,3 +345,146 @@ closed. An error message is written and the code terminates if the
 file cannot be opened. If \cmd{output("\file{stdout}")} is specified,
 then the current output file is closed and output is again written to
 the standard output which is where output is written by default.
+
+\subsection{\exo{} Metadata Extraction} \aprepro{} can parse the
+metadata from a binary \exo{}~\cite{exodus} file and create several
+variables which can then be used for calculations or decisions.  The
+function syntax is \cmd{exodus\_meta(filename)}. The
+argument to the function is a string containing the filename of the
+Exouds file.  If the file does not exist in the current directory,
+\aprepro{} will prepend the path specified by the \cmd{--include} or
+\cmd{-I} command line option.
+
+The following scalar variables will be defined:
+
+\begin{longtable}{lp{4.0in}}
+\caption{\exo{} Scalar Variables}\\
+Variable              & Description \\
+\hline
+\endhead
+ex\_dimension        & Spatial dimension \\
+ex\_node\_count      & Number of nodes \\
+ex\_element\_count   & Number of elements \\
+ex\_block\_count     & Number of element blocks \\
+ex\_sideset\_count   & Number of sidesets \\
+ex\_nodeset\_count   & Number of nodesets \\
+ex\_timestep\_count  & Number of timesteps \\
+ex\_version          & Version of the \exo{} database \\
+\hline 
+\end{longtable}
+
+The following string variables will be defined if the model contains
+one or more of the specific entity type.  The strings will be a
+comma-separated concatenation of the names of the entity.  The
+\cmd{get\_word} function can be used to extract a specific sub-string.
+
+\begin{longtable}{lp{4.0in}}
+\caption{\exo{} String Variables}\\
+Variable              & Description \\
+\hline
+\endhead
+ex\_title            & The title of the database \\
+ex\_block\_names     & Element Block names.  Will be ``block\_'' +
+block id if no names on the database. \\
+ex\_block\_topology  & The topology of the element blocks.  Converted
+to all lowercase. \\
+ex\_sideset\_names   & Sideset names.  Will be ``sideset\_'' + sideset
+id if no names on the database. \\
+ex\_nodeset\_names   & Nodeset names.  Will be ``nodeset\_'' + nodeset
+id if no names on the databse. \\
+\hline 
+\end{longtable}
+
+The following array variables will be defined if the model contains
+one or more of the specific entity type.  
+
+\begin{longtable}{lccp{4.0in}}
+\caption{\exo{} Array Variables}\\
+Variable              & Rows  & Columns & Description \\
+\hline
+\endhead
+ex\_block\_ids	      & ex\_block\_count & 1 & Element Block Ids. \\
+ex\_block\_info	      & ex\_block\_count & 4 & Element Block info:
+id, number of elements in block, number of nodes per element, number
+of attributes. \\
+ex\_sideset\_ids      & ex\_sideset\_count & 1 & Sideset Ids. \\
+ex\_sideset\_info     & ex\_sideset\_count & 3 & Sideset info: id,
+number of faces in sideset, number of distribution factors. \\
+ex\_nodeset\_ids      & ex\_nodeset\_count & 1 & Nodeset Ids. \\
+ex\_nodeset\_info     & ex\_nodeset\_count & 3 & Nodeset info: id,
+number of nodes in nodeset, number of distribution factors. \\
+ex\_timestep\_times   & ex\_timestep\_count & 1 & Timestep times. \\
+\hline 
+\end{longtable}
+
+The following shows an example of the variables which are defined:
+
+\begin{apinp}
+  {exodus\_meta("filename.e")}
+  {DUMP()}
+  Element Block IDs:
+  {print\_array(transpose(ex\_block\_ids))}
+  
+  Element Block Info: (id, num, nnpe, nattrib)
+  {print\_array(ex\_block\_info)}
+\end{apinp}
+
+\begin{apout}
+$   Variable    = Value
+$  {ex\_block\_count	= 8}
+$  {ex\_nodeset\_ids	 (array) rows = 6, cols = 1}
+$  {ex\_block\_names	= "block\_8,block\_7,block\_6,block\_5,block\_4,block\_3,block\_2,block\_1"}
+$  {ex\_block\_topology	= "hex,hex,hex,hex,hex,hex,hex,hex"}
+$  {ex\_nodeset\_info	 (array) rows = 6, cols = 3}
+$  {ex\_sideset\_count	= 0}
+$  {ex\_dimension	= 3}
+$  {ex\_element\_count	= 64}
+$  {ex\_nodeset\_names	= "nodeset\_10,nodeset\_100,nodeset\_20,nodeset\_200,nodeset\_30,nodeset\_300"}
+$  {ex\_nodeset\_count	= 6}
+$  {ex\_block\_ids	 (array) rows = 8, cols = 1}
+$  {ex\_block\_info	 (array) rows = 8, cols = 4}
+$  {ex\_timestep\_times	 (array) rows = 11, cols = 1}
+$  {ex\_version	= 2.029999971}
+$  {ex\_timestep\_count	= 11}
+$  {ex\_title  	= "Sierra output: dummy title"}
+$  {ex\_node\_count	= 125}
+
+Element Block IDs:
+	8	7	6	5	4	3	2	1
+
+Element Block Info: (id, num, nnpe, nattrib)
+	8	8	8	0
+	7	8	8	0
+	6	8	8	0
+	5	8	8	0
+	4	8	8	0
+	3	8	8	0
+	2	8	8	0
+	1	8	8	0
+\end{apout}
+
+\subsection{\exo{} Info Records Extraction} \aprepro{} can extract all
+or a portion of the ``information records'' from a binary \exo{} file
+and return the results as a string variable. 
+
+There are two forms of the function.  The first function has the
+syntax:  \cmd{exodus\_info(filename, prefix)}.  This will read
+the information records from the \exo{} database specified by the
+string variable \var{filename} and search for lines
+that begin with the specified \var{prefix}.  If a line is found, the
+\var{prefix} will be stripped from the line and the remaining
+characters on the line will be concatenated onto the return string
+followed by a newline character.
+
+The second function has the syntax: \cmd{exodus\_info(filename, begin, end)}.
+This will read the information records from the \exo{} database
+specified by the string variable \var{filename} and search for a line
+that matches the string variable \var{begin}.  It will then append all
+subsequent information lines onto the return string until a line that
+matches the string variable \var{end} or it reaches the end of the
+information records.  If there is another line matching \var{begin},
+it will resume appending lines to the return string.
+
+The returned string can then be operated on as a normal \aprepro{}
+variable.
+
