@@ -38,14 +38,14 @@ Timestep Info:
         Count = 7
         Times = 	0	1	2	3	4	5	6
 
-NOTE: Array index are 0-based by default; get_word is 1-based... 0
+NOTE: Array index are 0-based by default; get_word is 1-based...
 Element block 1 named 'inner_core' has topology 'hex8'
 Element block 2 named 'Shell-MinX' has topology 'shell4'
 Element block 3 named 'Shell-MaxY' has topology 'shell4'
 Element block 4 named 'Shell-MinZ' has topology 'shell4'
 
 {loop(10)}
-{a_++^2}
+{_a++^2}
 {endloop}
 
 0
