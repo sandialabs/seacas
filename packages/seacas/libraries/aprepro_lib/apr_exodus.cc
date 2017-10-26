@@ -41,9 +41,14 @@
 #include "aprepro_parser.h"
 
 #include <ctype.h>
-#include <inttypes.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+
+#define __STDC_FORMAT_MACROS
+#include <cinttypes>
+#ifndef PRId64
+#error "PRId64 not defined"
+#endif
 
 namespace {
   void LowerCaseTrim(char *name);
