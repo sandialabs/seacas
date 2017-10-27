@@ -276,7 +276,6 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
   CGERR(cg_descriptor_write("Information", "IOSS: CGNS Writer version -1"));
 
   // Output the sidesets as Family_t nodes
-
   const auto &sidesets = region.get_sidesets();
   for (const auto &ss : sidesets) {
     int fam = 0;
@@ -328,14 +327,40 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     CGERR(cg_grid_write(file_ptr, base, zone, "GridCoordinates", &grid_idx));
 
     // Transfer boundary condition nodes...
+
+    // The bc.m_ownerRange argument needs to be the union of the size on all processors
+    // Instead of requiring that of the caller, do the union in this routine.
+    // TODO: Calculate it outside of the loop...
+    std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
+    size_t idx = 0;
+    for (const auto &bc : sb->m_boundaryConditions) {
+      for (size_t i=0; i < 3; i++) {
+	bc_range[idx++] = -bc.m_rangeBeg[i];
+      }
+      for (size_t i=0; i < 3; i++) {
+	bc_range[idx++] = bc.m_rangeEnd[i];
+      }
+    }
+
+    region.get_database()->util().global_array_minmax(bc_range, Ioss::ParallelUtils::DO_MAX);
+
+    idx = 0;
+    for (idx = 0; idx < bc_range.size(); idx += 6) {
+      bc_range[idx+0] = -bc_range[idx+0];
+      bc_range[idx+1] = -bc_range[idx+1];
+      bc_range[idx+2] = -bc_range[idx+2];
+    }
+
+    idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
       int bc_idx = 0;
       CGERR(cg_boco_write(file_ptr, base, zone, bc.m_bcName.c_str(), CG_FamilySpecified,
-                          CG_PointRange, 2, &bc.m_ownerRange[0], &bc_idx));
+                          CG_PointRange, 2, &bc_range[idx], &bc_idx));
       CGERR(cg_goto(file_ptr, base, sb->name().c_str(), 0, "ZoneBC_t", 1, bc.m_bcName.c_str(), 0,
                     "end"));
       CGERR(cg_famname_write(bc.m_bcName.c_str()));
       CGERR(cg_boco_gridlocation_write(file_ptr, base, zone, bc_idx, CG_Vertex));
+      idx += 6;
     }
 
     // Transfer Zone Grid Connectivity...
