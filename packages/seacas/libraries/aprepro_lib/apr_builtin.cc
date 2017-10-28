@@ -37,7 +37,6 @@
 #include <cerrno>
 #include <cfenv>
 #include <cmath>
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -809,6 +808,24 @@ namespace SEAMS {
   const char *do_dumpvar()
   {
     aprepro->dumpsym(SEAMS::Parser::token::VAR, true);
+    return (nullptr);
+  }
+
+  const char *do_dumpsym1(char *pre)
+  {
+    aprepro->dumpsym(SEAMS::Parser::token::VAR, pre, false);
+    return (nullptr);
+  }
+
+  const char *do_dumpfunc1(char *pre)
+  {
+    aprepro->dumpsym(SEAMS::Parser::token::FNCT, pre, true);
+    return (nullptr);
+  }
+
+  const char *do_dumpvar1(char *pre)
+  {
+    aprepro->dumpsym(SEAMS::Parser::token::VAR, pre, true);
     return (nullptr);
   }
 

@@ -305,6 +305,7 @@ namespace SEAMS {
 
     void dumpsym(const char *type, bool doInternal) const;
     void dumpsym(int type, bool doInternal) const;
+    void dumpsym(int type, const char *pre, bool doInternal) const;
 
   private:
     void                  init_table(const char *comment);
