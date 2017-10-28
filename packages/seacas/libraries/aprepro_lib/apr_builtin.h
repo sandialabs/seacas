@@ -105,6 +105,9 @@ namespace SEAMS {
   const char *do_get_time();
   const char *do_get_temp_filename();
 
+  const char *do_dumpsym1(char *pre);
+  const char *do_dumpfunc1(char *pre);
+  const char *do_dumpvar1(char *pre);
   const char *do_tolower(char *string);
   const char *do_toupper(char *string);
   const char *do_Units(char *type);

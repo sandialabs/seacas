@@ -173,6 +173,13 @@ namespace SEAMS {
   };
 
   struct str_c_init string_c_fncts[] = {
+      {"DUMP", do_dumpsym1, "DUMP(str)",
+       "Output a list of all defined variables and their value if name contains 'str'."},
+      {"DUMP_FUNC", do_dumpfunc1, "DUMP_FUNC()",
+       "Output a list of all double and string functions recognized by aprepro if name contains "
+       "'str'."},
+      {"DUMP_PREVAR", do_dumpvar1, "DUMP_PREVAR()",
+       "Output a list of all predefined variables and their value if name contains 'str'."},
       {"tolower", do_tolower, "tolower(svar)",
        "Translates all uppercase characters in svar to "
        "lowercase. It modifies svar and returns the "
