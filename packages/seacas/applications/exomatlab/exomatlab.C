@@ -77,13 +77,13 @@ namespace {
       OUTPUT << "\t" << field_name << "\t" << var_type->name() << '\n';
     }
   }
-}
+} // namespace
 // ========================================================================
 
 namespace {
   std::string codename;
   std::string version = "1.0";
-}
+} // namespace
 
 int main(int argc, char *argv[])
 {
@@ -301,4 +301,4 @@ namespace {
            << " timesteps.\n";
     return true;
   }
-}
+} // namespace

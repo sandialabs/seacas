@@ -37,7 +37,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_get_partial_side_set() instead
+ * \deprecated Use ex_get_partial_side_set()(exoid, EX_SIDE_SET, side_set_id, start_side_num,
+ num_sides, side_set_elem_list, side_set_side_list) instead
  */
 
 int ex_get_n_side_set(int exoid, ex_entity_id side_set_id, int64_t start_side_num,

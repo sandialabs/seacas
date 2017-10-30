@@ -292,7 +292,7 @@ namespace {
       Ioss::MeshCopyOptions options{};
       options.memory_statistics = interface.memory_statistics;
       options.debug             = interface.debug;
-      options.verbose           = true;
+      options.verbose           = false;
       options.ints_64_bit       = interface.ints_64_bit;
       options.delete_timesteps  = interface.delete_timesteps;
       options.minimum_time      = interface.minimum_time;

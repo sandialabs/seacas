@@ -62,7 +62,8 @@
 /*!
 \ingroup ResultsData
 
- * \deprecated use ex_get_partial_var()
+ * \deprecated use ex_get_partial_var()(exoid, time_step, EX_ELEM_BLOCK, elem_var_index,
+elem_blk_id, start_elem_num, num_elem, elem_var_vals)
  */
 
 /*

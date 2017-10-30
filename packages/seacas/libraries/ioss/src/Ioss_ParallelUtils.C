@@ -337,6 +337,8 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
   return minmax;
 }
 
+template void Ioss::ParallelUtils::global_array_minmax(unsigned long*, unsigned long, MinMax) const;
+
 template <typename T>
 void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,
                                               Ioss::ParallelUtils::MinMax which) const

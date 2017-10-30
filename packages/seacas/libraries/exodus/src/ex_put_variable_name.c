@@ -91,20 +91,20 @@ int ex_put_variable_name(int exoid, ex_entity_type obj_type, int var_num, const 
   default:
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: Invalid variable type (%d) given for file id %d",
              obj_type, exoid);
-    ex_err("ex_put_variable_name", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
   if ((status = nc_inq_varid(exoid, vname, &varid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "Warning: no %s variables names stored in file id %d",
              ex_name_of_object(obj_type), exoid);
-    ex_err("ex_put_variable_name", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_WARN);
   }
 
   /* write EXODUS variable name */
-  status = ex_put_name_internal(exoid, varid, var_num - 1, var_name, obj_type, "variable",
-                                "ex_put_variable_name");
+  status =
+      ex_put_name_internal(exoid, varid, var_num - 1, var_name, obj_type, "variable", __func__);
 
   EX_FUNC_LEAVE(status);
 }

@@ -468,6 +468,7 @@ static void gl_init(void)
         gl_setwidth(w);
     }
     hist_init();
+    gl_completion_proc = gl_local_filename_completion_proc;
   }
   if (isatty(0) == 0 || isatty(1) == 0)
     gl_error("\n*** Error: getline(): not interactive, use stdio.\n");

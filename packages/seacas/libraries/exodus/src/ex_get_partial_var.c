@@ -103,13 +103,13 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "Warning: no %s variables for NULL block %" PRId64 " in file id %d",
                  ex_name_of_object(var_type), obj_id, exoid);
-        ex_err("ex_get_partial_var", errmsg, EX_NULLENTITY);
+        ex_err(__func__, errmsg, EX_NULLENTITY);
         EX_FUNC_LEAVE(EX_WARN);
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate %s id %" PRId64 " in id variable in file id %d",
                ex_name_of_object(var_type), obj_id, exoid);
-      ex_err("ex_get_partial_var", errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -120,7 +120,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                              &varid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s %" PRId64 " var %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
-    ex_err("ex_get_partial_var", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -132,7 +132,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
                "ERROR: time_step is out-of-range. Value = %d, valid "
                "range is 1 to %d in file id %d",
                time_step, num_time_steps, exoid);
-      ex_err("ex_get_partial_var", errmsg, EX_BADPARAM);
+      ex_err(__func__, errmsg, EX_BADPARAM);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -155,7 +155,7 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to get %s %" PRId64 " variable %d in file id %d",
              ex_name_of_object(var_type), obj_id, var_index, exoid);
-    ex_err("ex_get_partial_var", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
   EX_FUNC_LEAVE(EX_NOERR);

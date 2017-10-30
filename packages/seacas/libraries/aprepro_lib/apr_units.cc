@@ -43,15 +43,15 @@
 namespace SEAMS {
 
   extern Aprepro *aprepro;
-  extern int      echo;
+  extern bool     echo;
 
   const char *do_Units(char *type);
-  void load_conversion(struct var_init *base, struct svar_init *label);
+  void        load_conversion(struct var_init *base, struct svar_init *label);
 
 #define DEFINE_VAR(name, val, label)                                                               \
   do {                                                                                             \
     if ((ptr = aprepro->getsym((name))) == nullptr)                                                \
-      ptr          = aprepro->putsym((name), SEAMS::Aprepro::VARIABLE, 1);                         \
+      ptr = aprepro->putsym((name), SEAMS::Aprepro::VARIABLE, 1);                                  \
     ptr->value.var = (val);                                                                        \
     if (echo) {                                                                                    \
       *(aprepro->infoStream) << comment << " 1 " << std::left << std::setw(10) << name             \

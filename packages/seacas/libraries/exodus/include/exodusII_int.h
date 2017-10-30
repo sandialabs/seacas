@@ -707,6 +707,7 @@ struct ex_file_item
   nc_type netcdf_type_code;
   int     int64_status;
   int     maximum_name_length;
+  int     time_varid; /* Store to avoid lookup each timestep */
   unsigned int
                compression_level : 4; /* 0 (disabled) to 9 (maximum) compression level; netcdf-4 only */
   unsigned int user_compute_wordsize : 1; /* 0 for 4 byte or 1 for 8 byte reals */

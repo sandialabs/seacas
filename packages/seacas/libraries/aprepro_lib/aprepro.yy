@@ -56,7 +56,7 @@ namespace {
 }
 
 namespace SEAMS {
-   extern int echo;
+   extern bool echo;
  }
 
  %}
@@ -320,6 +320,12 @@ sexp:     QSTRING		{ $$ = $1;				}
 	  else
 	    $$ = (char*)"";
 	}
+        | SFNCT LPAR sexp COMMA sexp RPAR {
+	  if (arg_check($1, $1->value.strfnct_cc == NULL))
+	    $$ = (char*)(*($1->value.strfnct_cc))($3, $5);
+	  else
+	    $$ = (char*)"";
+	}
         | bool QUEST sexp COLON sexp  { $$ = ($1) ? ($3) : ($5);              }
 
 exp:	  NUM			{ $$ = $1; 				}
@@ -511,7 +517,30 @@ exp:	  NUM			{ $$ = $1; 				}
 				  SEAMS::math_error(aprepro, "floor (int)");		}
         | bool                   { $$ = ($1) ? 1 : 0; }
         | bool QUEST exp COLON exp   { $$ = ($1) ? ($3) : ($5);              }
+        | AVAR LBRACK exp RBRACK { $$ = array_value($1->value.avar, $3, 0); }
         | AVAR LBRACK exp COMMA exp RBRACK { $$ = array_value($1->value.avar, $3, $5); }
+        | AVAR LBRACK exp RBRACK EQUAL exp 
+                                  { $$ = $6;
+                                    array *arr = $1->value.avar;
+                                    int cols = arr->cols;
+				    if (cols > 1) {
+                                      yyerror(aprepro, "Cannot use [index] array access with multi-column array"); 
+                                      yyerrok;
+				    }
+                                    int rows = arr->rows;
+				    int row = $3;
+				    if (aprepro.ap_options.one_based_index) {
+				      row--;
+				    }
+				    if (row < rows) {
+                                      int offset = row*cols;
+                                      $1->value.avar->data[offset] = $6;
+                                    }
+                                    else {
+                                      yyerror(aprepro, "Row or Column index out of range"); 
+                                      yyerrok;
+                                    }
+                                  }
         | AVAR LBRACK exp COMMA exp RBRACK EQUAL exp 
                                   { $$ = $8;
                                     array *arr = $1->value.avar;
