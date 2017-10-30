@@ -52,6 +52,7 @@ var searchData=
   ['entitylist_5fmap',['entitylist_map',['../classIoss_1_1SetDecompositionData.html#a7e825c234e104bff1c828639b99d814a',1,'Ioss::SetDecompositionData']]],
   ['entityname',['entityName',['../classIoss_1_1GroupingEntity.html#a59f3d5d80280d8cd8d4606d46057edea',1,'Ioss::GroupingEntity']]],
   ['entitystate',['entityState',['../classIoss_1_1GroupingEntity.html#ae37e01064b2af644a6d08d7894cf2597',1,'Ioss::GroupingEntity']]],
+  ['entitytypecount',['entityTypeCount',['../namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5',1,'Ioss']]],
   ['errors_5f',['errors_',['../classJson_1_1Reader.html#a1bbce45dc4df753bed60c129f4b5147c',1,'Json::Reader']]],
   ['exception',['Exception',['../namespaceJson.html#a96b32289deff8add31164e5fbd00b281',1,'Json']]],
   ['exists_5f',['exists_',['../classIoss_1_1FileInfo.html#a8d40a0ba199199bfdcc61829aeb09823',1,'Ioss::FileInfo']]],

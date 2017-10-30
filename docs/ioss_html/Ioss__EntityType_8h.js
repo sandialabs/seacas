@@ -17,5 +17,6 @@ var Ioss__EntityType_8h =
       [ "SUPERELEMENT", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa7e7608e3d8189473c938f84727320ad0", null ],
       [ "STRUCTUREDBLOCK", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa7db886d86650c36bc3b07d56b9e01246", null ],
       [ "INVALID_TYPE", "Ioss__EntityType_8h.html#afc1c64ae70b8e805a24de65bafc9c89fa1c2adf489d13d10b19540a3ced3782a0", null ]
-    ] ]
+    ] ],
+    [ "entityTypeCount", "Ioss__EntityType_8h.html#a60ba379fdd8679588ac7c40b32490dc5", null ]
 ];

@@ -109,11 +109,10 @@ $(document).ready(function(){initNavTree('Ioss__Region_8C.html','');});
 <code>#include &lt;<a class="el" href="Ioss__PropertyManager_8h_source.html">Ioss_PropertyManager.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__SideBlock_8h_source.html">Ioss_SideBlock.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__SideSet_8h_source.html">Ioss_SideSet.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="Ioss__SmartAssert_8h_source.html">Ioss_SmartAssert.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__State_8h_source.html">Ioss_State.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="Ioss__StructuredBlock_8h_source.html">Ioss_StructuredBlock.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Ioss__Utils_8h_source.html">Ioss_Utils.h</a>&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cctype&gt;</code><br />
 <code>#include &lt;climits&gt;</code><br />
 <code>#include &lt;cstddef&gt;</code><br />
@@ -147,6 +146,15 @@ Functions</h2></td></tr>
 <tr class="separator:acd06ef87eff981abc4c9d7cfb0a4f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab86bae2d3a1a39742b09e2f68fa0772c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab86bae2d3a1a39742b09e2f68fa0772c">anonymous_namespace{Ioss_Region.C}::check_for_duplicate_names</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *entity)</td></tr>
 <tr class="separator:ab86bae2d3a1a39742b09e2f68fa0772c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa7df9904c197f8f00d2ff2658583d09"><td class="memItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#aaa7df9904c197f8f00d2ff2658583d09">anonymous_namespace{Ioss_Region.C}::numberOfBits</a> (unsigned x)</td></tr>
+<tr class="separator:aaa7df9904c197f8f00d2ff2658583d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d7548cad0b378d45209993e0171957c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4d7548cad0b378d45209993e0171957c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a4d7548cad0b378d45209993e0171957c">anonymous_namespace{Ioss_Region.C}::compute_hashes</a> (const std::vector&lt; T &gt; &amp;entities, std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; hashes, <a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a> type)</td></tr>
+<tr class="separator:a4d7548cad0b378d45209993e0171957c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a475364de00ddda5e28b3450235941499"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a475364de00ddda5e28b3450235941499">anonymous_namespace{Ioss_Region.C}::check_hashes</a> (const std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; &amp;min_hash, const std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; &amp;max_hash, <a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a> type)</td></tr>
+<tr class="separator:a475364de00ddda5e28b3450235941499"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9344721c6bb9a51318aa50e16f4d525"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab9344721c6bb9a51318aa50e16f4d525">anonymous_namespace{Ioss_Region.C}::check_parallel_consistency</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region)</td></tr>
+<tr class="separator:ab9344721c6bb9a51318aa50e16f4d525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae03421eda60874ac48b485e68558e7e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#aae03421eda60874ac48b485e68558e7e">anonymous_namespace{Ioss_Region.C}::is_input_or_appending_output</a> (const <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *iodatabase)</td></tr>
 <tr class="separator:aae03421eda60874ac48b485e68558e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>

@@ -105,6 +105,7 @@ var searchData=
   ['entityset',['EntitySet',['../structIodw_1_1meta_1_1EntitySet.html',1,'Iodw::meta::EntitySet'],['../classIoss_1_1EntitySet.html',1,'Ioss::EntitySet'],['../classIoss_1_1EntitySet.html#af374291b8e942095a28f42a537bd7df9',1,'Ioss::EntitySet::EntitySet(DatabaseIO *io_database, const std::string &amp;my_name, size_t entity_cnt)'],['../classIoss_1_1EntitySet.html#a1caa46cec635853620bbbdd3cf8669fd',1,'Ioss::EntitySet::EntitySet(const EntitySet &amp;)=delete']]],
   ['entitystate',['entityState',['../classIoss_1_1GroupingEntity.html#ae37e01064b2af644a6d08d7894cf2597',1,'Ioss::GroupingEntity']]],
   ['entitytype',['EntityType',['../namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f',1,'Ioss']]],
+  ['entitytypecount',['entityTypeCount',['../namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5',1,'Ioss']]],
   ['erase',['erase',['../classIoss_1_1FieldManager.html#aae5f5c6ff4c0eebc35fc7d08f651c0ce',1,'Ioss::FieldManager::erase()'],['../classIoss_1_1PropertyManager.html#ac490089dd45fae7672fe50bb5355dad1',1,'Ioss::PropertyManager::erase()']]],
   ['error',['error',['../structAssert.html#a3dc75476b093134b70c2397bd8e8fd28',1,'Assert']]],
   ['error_5fmessage',['error_message',['../namespaceanonymous__namespace_02Ioss__Field_8C_03.html#a2727026122707bf63a8d0df10075625a',1,'anonymous_namespace{Ioss_Field.C}::error_message()'],['../namespaceanonymous__namespace_02Ioss__Property_8C_03.html#a7e9f404cf974920b115b502313608c02',1,'anonymous_namespace{Ioss_Property.C}::error_message()']]],

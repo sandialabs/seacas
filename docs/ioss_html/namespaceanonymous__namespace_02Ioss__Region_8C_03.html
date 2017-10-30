@@ -101,6 +101,15 @@ Functions</h2></td></tr>
 <tr class="separator:acd06ef87eff981abc4c9d7cfb0a4f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab86bae2d3a1a39742b09e2f68fa0772c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab86bae2d3a1a39742b09e2f68fa0772c">check_for_duplicate_names</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> *region, const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *entity)</td></tr>
 <tr class="separator:ab86bae2d3a1a39742b09e2f68fa0772c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa7df9904c197f8f00d2ff2658583d09"><td class="memItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#aaa7df9904c197f8f00d2ff2658583d09">numberOfBits</a> (unsigned x)</td></tr>
+<tr class="separator:aaa7df9904c197f8f00d2ff2658583d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d7548cad0b378d45209993e0171957c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4d7548cad0b378d45209993e0171957c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a4d7548cad0b378d45209993e0171957c">compute_hashes</a> (const std::vector&lt; T &gt; &amp;entities, std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; hashes, <a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a> type)</td></tr>
+<tr class="separator:a4d7548cad0b378d45209993e0171957c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a475364de00ddda5e28b3450235941499"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#a475364de00ddda5e28b3450235941499">check_hashes</a> (const std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; &amp;min_hash, const std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; &amp;max_hash, <a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a> type)</td></tr>
+<tr class="separator:a475364de00ddda5e28b3450235941499"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9344721c6bb9a51318aa50e16f4d525"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#ab9344721c6bb9a51318aa50e16f4d525">check_parallel_consistency</a> (const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;region)</td></tr>
+<tr class="separator:ab9344721c6bb9a51318aa50e16f4d525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae03421eda60874ac48b485e68558e7e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02Ioss__Region_8C_03.html#aae03421eda60874ac48b485e68558e7e">is_input_or_appending_output</a> (const <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *iodatabase)</td></tr>
 <tr class="separator:aae03421eda60874ac48b485e68558e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -122,6 +131,94 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">const <a class="el" href="classIoss_1_1GroupingEntity.html">Ioss::GroupingEntity</a> *&#160;</td>
           <td class="paramname"><em>entity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a475364de00ddda5e28b3450235941499"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a475364de00ddda5e28b3450235941499">&#9670;&nbsp;</a></span>check_hashes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool anonymous_namespace{Ioss_Region.C}::check_hashes </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>min_hash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>max_hash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a>&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9344721c6bb9a51318aa50e16f4d525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9344721c6bb9a51318aa50e16f4d525">&#9670;&nbsp;</a></span>check_parallel_consistency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool anonymous_namespace{Ioss_Region.C}::check_parallel_consistency </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classIoss_1_1Region.html">Ioss::Region</a> &amp;&#160;</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d7548cad0b378d45209993e0171957c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d7548cad0b378d45209993e0171957c">&#9670;&nbsp;</a></span>compute_hashes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void anonymous_namespace{Ioss_Region.C}::compute_hashes </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>entities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; size_t, <a class="el" href="namespaceIoss.html#a60ba379fdd8679588ac7c40b32490dc5">Ioss::entityTypeCount</a> &gt;&#160;</td>
+          <td class="paramname"><em>hashes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceIoss.html#afc1c64ae70b8e805a24de65bafc9c89f">Ioss::EntityType</a>&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -178,6 +275,24 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classIoss_1_1DatabaseIO.html">Ioss::DatabaseIO</a> *&#160;</td>
           <td class="paramname"><em>iodatabase</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa7df9904c197f8f00d2ff2658583d09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa7df9904c197f8f00d2ff2658583d09">&#9670;&nbsp;</a></span>numberOfBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr unsigned anonymous_namespace{Ioss_Region.C}::numberOfBits </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
