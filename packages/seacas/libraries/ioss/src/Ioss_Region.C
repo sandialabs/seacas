@@ -94,11 +94,11 @@ namespace {
         std::ostringstream errmsg;
         int64_t            id1 = 0;
         int64_t            id2 = 0;
-        if (entity->property_exists("id")) {
-          id1 = entity->get_property("id").get_int();
+        if (entity->property_exists(id_str())) {
+          id1 = entity->get_property(id_str()).get_int();
         }
-        if (old_ge->property_exists("id")) {
-          id2 = old_ge->get_property("id").get_int();
+        if (old_ge->property_exists(id_str())) {
+          id2 = old_ge->get_property(id_str()).get_int();
         }
         errmsg << "ERROR: There are multiple blocks or sets with the same name "
                << "defined in the exodus file '" << filename << "'.\n"
@@ -114,17 +114,18 @@ namespace {
 
   template <typename T>
   void compute_hashes(const std::vector<T> &entities,
-                      std::array<size_t, Ioss::entityTypeCount> hashes, Ioss::EntityType type)
+                      std::array<size_t, Ioss::entityTypeCount> &hashes, Ioss::EntityType type)
   {
-    auto index = numberOfBits(type);
+    auto index = numberOfBits(type) - 1;
     SMART_ASSERT(index < hashes.size())(type)(index)(hashes.size());
 
+    size_t which = 1;
     for (const auto &entity : entities) {
       // Can add more properties and or fields later.  For now just do
       // name and optional id.
       hashes[index] += entity->hash();
-      if (entity->property_exists("id")) {
-        hashes[index] += entity->get_property("id").get_int();
+      if (entity->property_exists(id_str())) {
+        hashes[index] += which++ * entity->get_property(id_str()).get_int();
       }
     }
   }
@@ -132,9 +133,12 @@ namespace {
   bool check_hashes(const std::array<size_t, Ioss::entityTypeCount> &min_hash, 
 		    const std::array<size_t, Ioss::entityTypeCount> &max_hash, Ioss::EntityType type)
   {
-    auto index = numberOfBits(type);
+    auto index = numberOfBits(type) - 1;
     SMART_ASSERT(index < min_hash.size())(type)(index)(min_hash.size());
 
+    if (min_hash[index] != max_hash[index]) {
+      std::cerr << "Hash mismatch at index " << index << "\n";
+    }
     return (min_hash[index] == max_hash[index]);
   }
 
@@ -151,7 +155,7 @@ namespace {
     // Hash the name and multiply it by position in list and add id+1.
     // Do this for each type separately...  Then verify that they
     // match on all processors...
-    std::array<size_t, Ioss::entityTypeCount> hashes;
+    std::array<size_t, Ioss::entityTypeCount> hashes{};
 
     compute_hashes(region.get_node_blocks(), hashes, Ioss::NODEBLOCK);
     compute_hashes(region.get_edge_blocks(), hashes, Ioss::EDGEBLOCK);
@@ -171,17 +175,17 @@ namespace {
     region.get_database()->util().global_array_minmax(max_hash.data(), max_hash.size(), Ioss::ParallelUtils::DO_MAX);
 
     bool differ = false;
-    differ |= check_hashes(min_hash, max_hash, Ioss::NODEBLOCK);
-    differ |= check_hashes(min_hash, max_hash, Ioss::EDGEBLOCK);
-    differ |= check_hashes(min_hash, max_hash, Ioss::FACEBLOCK);
-    differ |= check_hashes(min_hash, max_hash, Ioss::ELEMENTBLOCK);
-    differ |= check_hashes(min_hash, max_hash, Ioss::NODESET);
-    differ |= check_hashes(min_hash, max_hash, Ioss::EDGESET);
-    differ |= check_hashes(min_hash, max_hash, Ioss::FACESET);
-    differ |= check_hashes(min_hash, max_hash, Ioss::ELEMENTSET);
-    differ |= check_hashes(min_hash, max_hash, Ioss::SIDESET);
-    differ |= check_hashes(min_hash, max_hash, Ioss::COMMSET);
-    differ |= check_hashes(min_hash, max_hash, Ioss::STRUCTUREDBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::NODEBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::EDGEBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::FACEBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::ELEMENTBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::NODESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::EDGESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::FACESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::ELEMENTSET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::SIDESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::COMMSET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::STRUCTUREDBLOCK);
     return !differ;
   }
 
