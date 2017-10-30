@@ -57,7 +57,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_put_partial_attr() instead.
+ * \deprecated Use ex_put_partial_attr()(exoid, EX_ELEM_BLOCK, elem_blk_id, start_elem_num,
+ * num_elems, attrib) instead.
  */
 
 /*

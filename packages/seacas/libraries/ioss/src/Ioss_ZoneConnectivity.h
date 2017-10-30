@@ -58,18 +58,18 @@ namespace Ioss {
                      const Ioss::IJK_t range_end, const Ioss::IJK_t donor_beg,
                      const Ioss::IJK_t donor_end, bool owns_nodes, bool intra_block = false)
         : m_connectionName(std::move(name)), m_donorName(std::move(donor_name)),
-          m_transform(std::move(p_transform)), m_rangeBeg(std::move(range_beg)),
-          m_rangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
+          m_transform(std::move(p_transform)), m_ownerRangeBeg(std::move(range_beg)),
+          m_ownerRangeEnd(std::move(range_end)), m_donorRangeBeg(std::move(donor_beg)),
           m_donorRangeEnd(std::move(donor_end)), m_ownerZone(owner_zone), m_donorZone(donor_zone),
           m_ownsSharedNodes(owns_nodes), m_intraBlock(intra_block)
     {
       if (!m_intraBlock) {
-        m_ownerRange[0] = m_rangeBeg[0];
-        m_ownerRange[1] = m_rangeBeg[1];
-        m_ownerRange[2] = m_rangeBeg[2];
-        m_ownerRange[3] = m_rangeEnd[0];
-        m_ownerRange[4] = m_rangeEnd[1];
-        m_ownerRange[5] = m_rangeEnd[2];
+        m_ownerRange[0] = m_ownerRangeBeg[0];
+        m_ownerRange[1] = m_ownerRangeBeg[1];
+        m_ownerRange[2] = m_ownerRangeBeg[2];
+        m_ownerRange[3] = m_ownerRangeEnd[0];
+        m_ownerRange[4] = m_ownerRangeEnd[1];
+        m_ownerRange[5] = m_ownerRangeEnd[2];
 
         m_donorRange[0] = m_donorRangeBeg[0];
         m_donorRange[1] = m_donorRangeBeg[1];
@@ -87,7 +87,7 @@ namespace Ioss {
     {
       size_t snc = 1;
       for (int i = 0; i < 3; i++) {
-        snc *= (std::abs(m_rangeEnd[i] - m_rangeBeg[i]) + 1);
+        snc *= (std::abs(m_ownerRangeEnd[i] - m_ownerRangeBeg[i]) + 1);
       }
       return snc;
     }
@@ -117,11 +117,15 @@ namespace Ioss {
     // decomposition splits the connection.  In a serial run, they are the same.
     //
     // 1 of ijk should be the same for rangeBeg and rangeEnd defining a surface.
-    Ioss::IJK_t m_rangeBeg;      // ijk triplet defining beginning of range on this zone
-    Ioss::IJK_t m_rangeEnd;      // ijk triplet defining end of range on this zone
-    Ioss::IJK_t m_donorRangeBeg; // ijk triplet defining beginning of range on the connected zone
-    Ioss::IJK_t m_donorRangeEnd; // ijk triplet defining end of range on the connected zone
-
+    Ioss::IJK_t m_ownerRangeBeg{};      // ijk triplet defining beginning of range on this zone
+    Ioss::IJK_t m_ownerRangeEnd{};      // ijk triplet defining end of range on this zone
+    Ioss::IJK_t m_ownerOffset{};        // ijk triplet with offset of this zone.  Used to convert
+                                   // rangeBeg and rangeEnd global indices to local indices
+    Ioss::IJK_t m_donorRangeBeg{}; // ijk triplet defining beginning of range on the connected zone
+    Ioss::IJK_t m_donorRangeEnd{}; // ijk triplet defining end of range on the connected zone
+    Ioss::IJK_t m_donorOffset{};   // ijk triplet with offset of the donor zone.  Used to convert
+                                 // donorRangeBeg and End global indices to local indices
+    
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int    m_ownerZone{};        // "id" of zone that owns this connection
     int    m_donorZone{};        // "id" of zone that is donor (or other side) of this connection

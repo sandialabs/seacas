@@ -39,7 +39,8 @@
 /*!
 \ingroup ResultsData
 
- * \deprecated Use ex_get_partial_var() instead
+ * \deprecated Use ex_get_partial_var()(exoid, time_step, EX_ELEM_BLOCK, elem_var_index,
+elem_blk_id, start_elem_num, num_elem, elem_var_vals) instead
  */
 
 int ex_get_n_elem_var(int exoid, int time_step, int elem_var_index, ex_entity_id elem_blk_id,

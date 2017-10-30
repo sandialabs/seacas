@@ -1,0 +1,165 @@
+#!/bin/sh
+EXTRA_ARGS=$@
+
+### Set to ON for parallel compile; otherwise OFF for serial (default)
+MPI="${MPI:-OFF}"
+
+### Switch for Debug or Release build:
+BUILD_TYPE="${BUILD_TYPE:-Release}"
+#BUILD_TYPE=Debug
+
+### Define to YES to *disable* all exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
+### The following assumes you are building in a subdirectory of ACCESS Root
+### If not, then define "ACCESS" to point to the root of the SEACAS source code.
+ACCESS=$(cd ..; pwd)
+
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then change the "ON"
+### below to "OFF". It will disable blot and fastq
+HAVE_X11=ON
+
+### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
+THREADSAFE_IO_LIBS=OFF
+
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${ACCESS}
+
+### TPLs -- 
+### Using SEMS (Software Engineering Maintenance & Support) provided libraries...
+### https://sems.sandia.gov/
+module purge
+module load sems-env
+module load sems-gcc
+module load sems-cmake
+module load sems-doxygen
+module load sems-zlib/1.2.8/base
+
+if [ "$MPI" == "ON" ]
+then
+  module load sems-openmpi/1.10.1
+  module load sems-hdf5/1.8.12/parallel
+  module load sems-netcdf/4.4.1/exo_parallel
+  module load sems-parmetis/4.0.3/64bit_parallel
+else
+  module load sems-hdf5/1.8.12/base
+  module load sems-netcdf/4.4.1/exo
+fi
+
+HAVE_NETCDF=ON
+
+# NOTE: CGNS, MATIO, PNETCDF, and DATAWAREHOUSE TPLs  are currently not supported by SEMS.
+#       To use them you will need to install them following the directions in 
+#       README.md, enable them below, and add the appropriate defines below:
+#
+# -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
+# -D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
+# -D CGNS_ROOT:PATH=${CGNS_PATH} \
+
+HAVE_MATIO=OFF
+HAVE_CGNS=OFF
+HAVE_DATAWAREHOUSE=OFF
+
+NETCDF_PATH=${SEMS_NETCDF_ROOT}
+HDF5_PATH=${SEMS_HDF5_ROOT}
+
+### Define to NO to *enable* exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
+### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
+KOKKOS=OFF
+
+### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
+CUDA=OFF
+
+### Change this to point to the compilers you want to use
+COMPILER="gnu"
+#COMPILER="clang"
+if [ "$MPI" == "ON" ]
+then
+  MPI_EXEC=`which mpiexec`
+  MPI_BIN=`dirname $MPI_EXEC`
+
+  CXX=mpicxx
+  CC=mpicc
+  FC=mpif77
+
+else
+  CXX=g++
+  CC=gcc
+  FC=gfortran
+fi
+
+if [ "$KOKKOS" == "ON" ]
+then
+  if [ "$CUDA" == "ON" ]
+  then
+    export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
+    export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D TPL_ENABLE_CUDA:Bool=ON \
+                    -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
+  else
+    export OMPI_CXX=`which gcc`
+    unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
+  fi
+else
+  KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
+fi
+
+if [ "HAVE_DATAWAREHOUSE" == "ON" ]
+then
+    DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
+                -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
+                -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
+fi
+    
+rm -f CMakeCache.txt
+
+###------------------------------------------------------------------------
+cmake  \
+-D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
+-D CMAKE_MACOSX_RPATH:BOOL=ON \
+-D CMAKE_INSTALL_RPATH:PATH=${LD_LIBRARY_PATH} \
+-D CMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=TRUE \
+-D CMAKE_SKIP_BUILD_RPATH:BOOL=FALSE \
+-D CMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=TRUE \
+-D BUILD_SHARED_LIBS:BOOL=OFF \
+-D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
+-D SEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
+-D SEACASProj_ENABLE_ALL_OPTIONAL_PACKAGES:BOOL=ON \
+-D SEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
+-D SEACASProj_ENABLE_TESTS=ON \
+-D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
+-D CMAKE_C_COMPILER:FILEPATH=${CC} \
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
+-D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
+-D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
+\
+-D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
+-D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
+-D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
+-D TPL_ENABLE_MPI:BOOL=${MPI} \
+-D TPL_ENABLE_Pamgen:BOOL=OFF \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
+\
+${KOKKOS_SYMBOLS} \
+${DW_SYMBOLS} \
+\
+-D MPI_BIN_DIR:PATH=${MPI_BIN} \
+-D NetCDF_ROOT:PATH=${NETCDF_PATH} \
+-D HDF5_ROOT:PATH=${HDF5_PATH} \
+-D HDF5_NO_SYSTEM_PATHS=ON \
+\
+$EXTRA_ARGS \
+..

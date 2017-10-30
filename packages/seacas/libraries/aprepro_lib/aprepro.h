@@ -99,6 +99,7 @@ namespace SEAMS {
       const char *(*strfnct_d)(double);
       const char *(*strfnct_a)(const array *);
       const char *(*strfnct_dd)(double, double);
+      const char *(*strfnct_cc)(char *, char *);
       const char *(*strfnct_ccc)(char *, char *, char *);
       const char *(*strfnct_dcc)(double, char *, char *);
       const char *(*strfnct_dcccc)(double, char *, char *, char *, char *);
@@ -116,9 +117,9 @@ namespace SEAMS {
             fnctptr_ccd(nullptr), fnctptr_dddd(nullptr), fnctptr_ddddc(nullptr),
             fnctptr_dddddd(nullptr), fnctptr_a(nullptr), svar(nullptr), strfnct(nullptr),
             strfnct_c(nullptr), strfnct_d(nullptr), strfnct_a(nullptr), strfnct_dd(nullptr),
-            strfnct_ccc(nullptr), strfnct_dcc(nullptr), strfnct_dcccc(nullptr), avar(nullptr),
-            arrfnct_c(nullptr), arrfnct_cc(nullptr), arrfnct_cd(nullptr), arrfnct_dd(nullptr),
-            arrfnct_d(nullptr), arrfnct_a(nullptr)
+            strfnct_cc(nullptr), strfnct_ccc(nullptr), strfnct_dcc(nullptr), strfnct_dcccc(nullptr),
+            avar(nullptr), arrfnct_c(nullptr), arrfnct_cc(nullptr), arrfnct_cd(nullptr),
+            arrfnct_dd(nullptr), arrfnct_d(nullptr), arrfnct_a(nullptr)
       {
       }
     } value;
@@ -268,7 +269,8 @@ namespace SEAMS {
 
     std::stack<std::ostream *> outputStream;
 
-    SEAMS::symrec *getsym(const char * /*sym_name*/) const;
+    SEAMS::symrec *getsym(const char *sym_name) const;
+    SEAMS::symrec *getsym(const std::string &sym_name) const;
     SEAMS::symrec *putsym(const std::string &sym_name, SYMBOL_TYPE sym_type, bool is_internal);
 
     void add_variable(const std::string &sym_name, const std::string &sym_value,
@@ -303,6 +305,7 @@ namespace SEAMS {
 
     void dumpsym(const char *type, bool doInternal) const;
     void dumpsym(int type, bool doInternal) const;
+    void dumpsym(int type, const char *pre, bool doInternal) const;
 
   private:
     void                  init_table(const char *comment);

@@ -375,7 +375,8 @@ namespace Ioss {
     virtual void set_maximum_symbol_length(int /* requested_symbol_size */) {
     } // Default does nothing...
 
-    char get_field_separator() const;
+    char get_field_separator() const { return fieldSeparator; }
+
     void set_field_separator(char separator);
     void set_lower_case_variable_names(bool true_false) const
     {
@@ -699,6 +700,7 @@ namespace Ioss {
   private:
 #endif
     Region *region_;
+    char    fieldSeparator{'_'};
     bool    isInput;
     bool    isParallelConsistent; // True if application will make field data get/put calls parallel
                                   // consistently.

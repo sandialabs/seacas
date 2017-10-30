@@ -57,7 +57,8 @@
 #include <stdint.h> // for int64_t
 
 /*!
- * \deprecated Use ex_put_partial_set_dist_fact()
+ * \deprecated Use ex_put_partial_set_dist_fact()(exoid, EX_NODE_SET, node_set_id, start_num,
+ num_df_to_get, node_set_dist_fact)
  */
 
 int ex_put_n_node_set_df(int exoid, ex_entity_id node_set_id, int64_t start_num,

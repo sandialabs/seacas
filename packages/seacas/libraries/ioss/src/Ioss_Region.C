@@ -52,12 +52,12 @@
 #include <Ioss_PropertyManager.h>
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_State.h>
 #include <Ioss_StructuredBlock.h>
-#include <Ioss_Utils.h>
+
 
 #include <algorithm>
-#include <cassert>
 #include <cctype>
 #include <climits>
 #include <cstddef>
@@ -94,11 +94,11 @@ namespace {
         std::ostringstream errmsg;
         int64_t            id1 = 0;
         int64_t            id2 = 0;
-        if (entity->property_exists("id")) {
-          id1 = entity->get_property("id").get_int();
+        if (entity->property_exists(id_str())) {
+          id1 = entity->get_property(id_str()).get_int();
         }
-        if (old_ge->property_exists("id")) {
-          id2 = old_ge->get_property("id").get_int();
+        if (old_ge->property_exists(id_str())) {
+          id2 = old_ge->get_property(id_str()).get_int();
         }
         errmsg << "ERROR: There are multiple blocks or sets with the same name "
                << "defined in the exodus file '" << filename << "'.\n"
@@ -108,6 +108,85 @@ namespace {
         IOSS_ERROR(errmsg);
       }
     }
+  }
+
+  constexpr unsigned numberOfBits(unsigned x) { return x < 2 ? x : 1 + numberOfBits(x >> 1); }
+
+  template <typename T>
+  void compute_hashes(const std::vector<T> &entities,
+                      std::array<size_t, Ioss::entityTypeCount> &hashes, Ioss::EntityType type)
+  {
+    auto index = numberOfBits(type) - 1;
+    SMART_ASSERT(index < hashes.size())(type)(index)(hashes.size());
+
+    size_t which = 1;
+    for (const auto &entity : entities) {
+      // Can add more properties and or fields later.  For now just do
+      // name and optional id.
+      hashes[index] += entity->hash();
+      if (entity->property_exists(id_str())) {
+        hashes[index] += which++ * entity->get_property(id_str()).get_int();
+      }
+    }
+  }
+
+  bool check_hashes(const std::array<size_t, Ioss::entityTypeCount> &min_hash, 
+		    const std::array<size_t, Ioss::entityTypeCount> &max_hash, Ioss::EntityType type)
+  {
+    auto index = numberOfBits(type) - 1;
+    SMART_ASSERT(index < min_hash.size())(type)(index)(min_hash.size());
+
+    if (min_hash[index] != max_hash[index]) {
+      std::cerr << "Hash mismatch at index " << index << "\n";
+    }
+    return (min_hash[index] == max_hash[index]);
+  }
+
+  bool check_parallel_consistency(const Ioss::Region &region)
+  {
+    if (!region.get_database()->is_parallel()) {
+      return true;
+    }
+
+    // Want a good approximate test that the grouping entity lists on
+    // all processor contain the same entities in the same order.
+    // We will say an entity is the same if the name and optional id match.
+    //
+    // Hash the name and multiply it by position in list and add id+1.
+    // Do this for each type separately...  Then verify that they
+    // match on all processors...
+    std::array<size_t, Ioss::entityTypeCount> hashes{};
+
+    compute_hashes(region.get_node_blocks(), hashes, Ioss::NODEBLOCK);
+    compute_hashes(region.get_edge_blocks(), hashes, Ioss::EDGEBLOCK);
+    compute_hashes(region.get_face_blocks(), hashes, Ioss::FACEBLOCK);
+    compute_hashes(region.get_element_blocks(), hashes, Ioss::ELEMENTBLOCK);
+    compute_hashes(region.get_nodesets(), hashes, Ioss::NODESET);
+    compute_hashes(region.get_edgesets(), hashes, Ioss::EDGESET);
+    compute_hashes(region.get_facesets(), hashes, Ioss::FACESET);
+    compute_hashes(region.get_elementsets(), hashes, Ioss::ELEMENTSET);
+    compute_hashes(region.get_sidesets(), hashes, Ioss::SIDESET);
+    compute_hashes(region.get_commsets(), hashes, Ioss::COMMSET);
+    compute_hashes(region.get_structured_blocks(), hashes, Ioss::STRUCTUREDBLOCK);
+
+    auto min_hash = hashes;
+    auto max_hash = hashes;
+    region.get_database()->util().global_array_minmax(min_hash.data(), min_hash.size(), Ioss::ParallelUtils::DO_MIN);
+    region.get_database()->util().global_array_minmax(max_hash.data(), max_hash.size(), Ioss::ParallelUtils::DO_MAX);
+
+    bool differ = false;
+    differ |= !check_hashes(min_hash, max_hash, Ioss::NODEBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::EDGEBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::FACEBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::ELEMENTBLOCK);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::NODESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::EDGESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::FACESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::ELEMENTSET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::SIDESET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::COMMSET);
+    differ |= !check_hashes(min_hash, max_hash, Ioss::STRUCTUREDBLOCK);
+    return !differ;
   }
 
   bool is_input_or_appending_output(const Ioss::DatabaseIO *iodatabase)
@@ -134,7 +213,7 @@ namespace Ioss {
       : GroupingEntity(iodatabase, my_name, 1), currentState(-1), stateCount(0),
         modelDefined(false), transientDefined(false)
   {
-    assert(iodatabase != nullptr);
+    SMART_ASSERT(iodatabase != nullptr);
     iodatabase->set_region(this);
 
     if (iodatabase->usage() != Ioss::WRITE_HEARTBEAT &&
@@ -246,7 +325,7 @@ namespace Ioss {
     if (!structuredBlocks.empty()) {
       return MeshType::STRUCTURED;
     }
-    assert(!elementBlocks.empty());
+    SMART_ASSERT(!elementBlocks.empty());
     return MeshType::UNSTRUCTURED;
   }
 
@@ -258,7 +337,7 @@ namespace Ioss {
     case MeshType::STRUCTURED: return "Structured";
     case MeshType::UNSTRUCTURED: return "Unstructured";
     }
-    assert(1 == 0 && "Program Error");
+    SMART_ASSERT(1 == 0 && "Program Error");
     return "Invalid";
   }
 
@@ -455,8 +534,8 @@ namespace Ioss {
 	// name...
 	auto lessOffset = [](const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2)
 	  {
-	    assert(b1->property_exists(orig_block_order()));
-	    assert(b2->property_exists(orig_block_order()));
+	    SMART_ASSERT(b1->property_exists(orig_block_order()));
+	    SMART_ASSERT(b2->property_exists(orig_block_order()));
 	    int64_t b1_orderInt = b1->get_property(orig_block_order()).get_int();
 	    int64_t b2_orderInt = b2->get_property(orig_block_order()).get_int();
 	    return ((b1_orderInt == b2_orderInt) ? (b1->name() < b2->name()) : (b1_orderInt < b2_orderInt));
@@ -489,6 +568,10 @@ namespace Ioss {
           }
         }
       }
+
+      // In parallel and debug, check consistency of all grouping entities...
+      SMART_ASSERT(check_parallel_consistency(*this));
+
       modelDefined = true;
     }
     else if (current_state == STATE_DEFINE_TRANSIENT) {
@@ -536,7 +619,7 @@ namespace Ioss {
     if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
         get_database()->usage() == WRITE_RESTART) {
       stateTimes.push_back(time);
-      assert((int)stateTimes.size() == stateCount + 1);
+      SMART_ASSERT((int)stateTimes.size() == stateCount + 1)(stateTimes.size())(stateCount);
     }
     else {
 
@@ -576,13 +659,13 @@ namespace Ioss {
           IOSS_ERROR(errmsg);
         }
         else {
-          assert((int)stateTimes.size() >= currentState);
+          SMART_ASSERT((int)stateTimes.size() >= currentState)(stateTimes.size())(currentState);
 
           time = stateTimes[currentState - 1];
         }
       }
       else {
-        assert(!stateTimes.empty());
+        SMART_ASSERT(!stateTimes.empty());
         time = stateTimes[0];
       }
     }
@@ -596,11 +679,11 @@ namespace Ioss {
     else {
       if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
           get_database()->usage() == WRITE_RESTART) {
-        assert((int)stateTimes.size() >= state);
+        SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
         time = stateTimes[state - 1];
       }
       else {
-        assert(!stateTimes.empty());
+        SMART_ASSERT(!stateTimes.empty());
         time = stateTimes[0];
       }
     }
@@ -702,14 +785,14 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
     else {
-      assert(state <= stateCount);
+      SMART_ASSERT(state <= stateCount)(state)(stateCount);
       if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
           get_database()->usage() == WRITE_RESTART) {
-        assert((int)stateTimes.size() >= state);
+        SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
         time = stateTimes[state - 1];
       }
       else {
-        assert(!stateTimes.empty());
+        SMART_ASSERT(!stateTimes.empty());
         time = stateTimes[0];
       }
       currentState   = state;
@@ -738,11 +821,11 @@ namespace Ioss {
     double      time = 0.0;
     if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
         get_database()->usage() == WRITE_RESTART) {
-      assert((int)stateTimes.size() >= state);
+      SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
       time = stateTimes[state - 1];
     }
     else {
-      assert(!stateTimes.empty());
+      SMART_ASSERT(!stateTimes.empty());
       time = stateTimes[0];
     }
     db->end_state(this, state, time);
@@ -857,7 +940,7 @@ namespace Ioss {
           offset = elementBlocks[nblocks - 1]->get_offset() +
                    elementBlocks[nblocks - 1]->entity_count();
         }
-        assert(offset >= 0);
+        SMART_ASSERT(offset >= 0)(offset);
         element_block->set_offset(offset);
       }
       else {
@@ -1257,8 +1340,9 @@ namespace Ioss {
         aliases_.insert(std::make_pair(uname, canon));
       }
 
-      std::pair<AliasMap::iterator, bool> result = aliases_.insert(std::make_pair(alias, canon));
-      return result.second;
+      bool result;
+      std::tie(std::ignore, result) = aliases_.insert(std::make_pair(alias, canon));
+      return result;
     }
     std::ostringstream errmsg;
     errmsg << "\n\nERROR: The entity named '" << db_name << "' which is being aliased to '" << alias

@@ -83,22 +83,7 @@ C   --   o The plots on the specified graphics device.
 C   --   o A GRAFAID neutral file on unit 20.
 C   --   o A GROPE listing file on unit 21.
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                    ISSUED BY SANDIA LABORATORIES,                   *
-*                      A PRIME CONTRACTOR TO THE                      *
-*                  UNITED STATES DEPARTMENT OF ENERGY                 *
-* * * * * * * * * * * * * *   N O T I C E   * * * * * * * * * * * * * *
-* This program was prepared as an account of work sponsored by the    *
-* United States Government.  Neither the United States nor the United *
-* States Department of Energy nor any of their employees, nor any of  *
-* their contractors, subcontractors, or their employees, makes any    *
-* warranty, express or implied, or assumes any legal liability or     *
-* responsibility for the accuracy, completeness or usefulness of any  *
-* information, apparatus, product or process disclosed, or represents *
-* that its use would not infringe privately owned rights.             *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-C   --Developed at Sandia-2017 National Laboratories.
+C   --Developed at Sandia National Laboratories.
 C   --
 C   --Current author and code sponsor: John Glick
 C   --

@@ -1,6 +1,5 @@
 var ex__ne__util_8c =
 [
-    [ "ex_catstrn12", "ex__ne__util_8c.html#a71268a1f2f7c28e89e7460811d135670", null ],
     [ "ex_get_file_type", "ex__ne__util_8c.html#a3e1c283ff36891ac4019c85fcab52bc7", null ],
     [ "ex_get_idx", "ex__ne__util_8c.html#ad9efac3df1091721626eb2d92c7373b4", null ],
     [ "ex_leavedef", "ex__ne__util_8c.html#ab86e9f8fb7fe52a0ae98204946e77f35", null ],

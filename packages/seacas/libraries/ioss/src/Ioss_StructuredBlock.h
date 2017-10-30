@@ -63,13 +63,6 @@ namespace Ioss {
         : m_bcName(std::move(name)), m_rangeBeg(std::move(range_beg)),
           m_rangeEnd(std::move(range_end))
     {
-      m_ownerRange[0] = m_rangeBeg[0];
-      m_ownerRange[1] = m_rangeBeg[1];
-      m_ownerRange[2] = m_rangeBeg[2];
-      m_ownerRange[3] = m_rangeEnd[0];
-      m_ownerRange[4] = m_rangeEnd[1];
-      m_ownerRange[5] = m_rangeEnd[2];
-
 #ifndef NDEBUG
       int same_count = (m_rangeBeg[0] == m_rangeEnd[0] ? 1 : 0) +
                        (m_rangeBeg[1] == m_rangeEnd[1] ? 1 : 0) +
@@ -106,11 +99,6 @@ namespace Ioss {
     }
 
     std::string m_bcName;
-
-    // The "original" owner range -- that is, is has not been subsetted
-    // due to block decompositions in a parallel run.  It should be the same on
-    // all processors...  Primarily used to make parallel collective output easier...
-    std::array<INT, 6> m_ownerRange{};
 
     // These are potentially subsetted due to parallel decompositions...
     Ioss::IJK_t m_rangeBeg;

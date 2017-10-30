@@ -151,6 +151,14 @@ struct str_dcc_init
   const char *description;
 };
 
+struct str_cc_init
+{
+  const char *fname;
+  const char *(*fnct)(char *, char *);
+  const char *syntax;
+  const char *description;
+};
+
 struct str_ccc_init
 {
   const char *fname;

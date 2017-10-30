@@ -57,9 +57,9 @@ namespace {
     Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
     Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
 
-    Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
-    Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
-    Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
+    Range gc_i(zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeEnd[0]);
+    Range gc_j(zgc.m_ownerRangeBeg[1], zgc.m_ownerRangeEnd[1]);
+    Range gc_k(zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[2]);
 
     return overlaps(z_i, gc_i) && overlaps(z_j, gc_j) && overlaps(z_k, gc_k);
   }
@@ -95,9 +95,9 @@ namespace {
       Range z_j(1 + zone->m_offset[1], zone->m_ordinal[1] + zone->m_offset[1] + 1);
       Range z_k(1 + zone->m_offset[2], zone->m_ordinal[2] + zone->m_offset[2] + 1);
 
-      Range gc_i(zgc.m_rangeBeg[0], zgc.m_rangeEnd[0]);
-      Range gc_j(zgc.m_rangeBeg[1], zgc.m_rangeEnd[1]);
-      Range gc_k(zgc.m_rangeBeg[2], zgc.m_rangeEnd[2]);
+      Range gc_i(zgc.m_ownerRangeBeg[0], zgc.m_ownerRangeEnd[0]);
+      Range gc_j(zgc.m_ownerRangeBeg[1], zgc.m_ownerRangeEnd[1]);
+      Range gc_k(zgc.m_ownerRangeBeg[2], zgc.m_ownerRangeEnd[2]);
 
       Range gc_ii = subset_range(z_i, gc_i);
       Range gc_jj = subset_range(z_j, gc_j);
@@ -113,24 +113,25 @@ namespace {
       range_end[2] = gc_kk.end();
 
       if (zgc.m_sameRange) {
-        zgc.m_rangeBeg      = range_beg;
-        zgc.m_rangeEnd      = range_end;
-        zgc.m_donorRangeBeg = zgc.m_rangeBeg;
-        zgc.m_donorRangeEnd = zgc.m_rangeEnd;
+        zgc.m_ownerRangeBeg = range_beg;
+        zgc.m_ownerRangeEnd = range_end;
+        zgc.m_donorRangeBeg = zgc.m_ownerRangeBeg;
+        zgc.m_donorRangeEnd = zgc.m_ownerRangeEnd;
       }
       else {
         auto d_range_beg    = zgc.transform(range_beg);
         zgc.m_donorRangeEnd = zgc.transform(range_end);
         zgc.m_donorRangeBeg = d_range_beg;
-        zgc.m_rangeBeg      = range_beg;
-        zgc.m_rangeEnd      = range_end;
+        zgc.m_ownerRangeBeg = range_beg;
+        zgc.m_ownerRangeEnd = range_end;
       }
+      zgc.m_ownerOffset = {{zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]}};
     }
     else {
       // This zgc does not overlap on this zone, so set all ranges to 0.
       // Still need it in list so can write block out correctly in parallel...
-      zgc.m_rangeBeg      = {{0, 0, 0}};
-      zgc.m_rangeEnd      = {{0, 0, 0}};
+      zgc.m_ownerRangeBeg = {{0, 0, 0}};
+      zgc.m_ownerRangeEnd = {{0, 0, 0}};
       zgc.m_donorRangeBeg = {{0, 0, 0}};
       zgc.m_donorRangeEnd = {{0, 0, 0}};
       zgc.m_isActive      = false;
@@ -167,16 +168,17 @@ namespace {
     if (zgc.m_sameRange) {
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
-      zgc.m_rangeEnd      = zgc.m_donorRangeEnd;
-      zgc.m_rangeBeg      = zgc.m_donorRangeBeg;
+      zgc.m_ownerRangeEnd      = zgc.m_donorRangeEnd;
+      zgc.m_ownerRangeBeg      = zgc.m_donorRangeBeg;
     }
     else {
       auto range_beg      = zgc.inverse_transform(d_range_beg);
-      zgc.m_rangeEnd      = zgc.inverse_transform(d_range_end);
-      zgc.m_rangeBeg      = range_beg;
+      zgc.m_ownerRangeEnd      = zgc.inverse_transform(d_range_end);
+      zgc.m_ownerRangeBeg      = range_beg;
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
     }
+    zgc.m_donorOffset = {{don_zone->m_offset[0], don_zone->m_offset[1], don_zone->m_offset[2]}};
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
@@ -238,14 +240,21 @@ namespace {
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
                                         donor_range_end, c1->m_zone < c2->m_zone, true);
-    c1->m_zoneConnectivity.back().m_sameRange = true;
+    auto &zgc1 = c1->m_zoneConnectivity.back();
+    zgc1.m_sameRange = true;
+    zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
+    zgc1.m_donorOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
+
     // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
     // OUTPUT << c1->m_zoneConnectivity.back() << "\n";
 
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
                                         range_end, c2->m_zone < c1->m_zone, true);
-    c2->m_zoneConnectivity.back().m_sameRange = true;
+    auto &zgc2 = c2->m_zoneConnectivity.back();
+    zgc2.m_sameRange = true;
+    zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
+    zgc2.m_donorOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
     // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }
@@ -382,7 +391,7 @@ namespace Iocgns {
             // Need to add at least one copy of this zgc even if no overlap
             // so can maintain the original (un parallel decomposed) ranges
             // for use in output...
-            c1_zgc.m_rangeBeg = c1_zgc.m_rangeEnd = {{0, 0, 0}};
+            c1_zgc.m_ownerRangeBeg = c1_zgc.m_ownerRangeEnd = {{0, 0, 0}};
             c1_zgc.m_donorRangeBeg = c1_zgc.m_donorRangeEnd = {{0, 0, 0}};
             new_zgc.push_back(c1_zgc);
           }

@@ -37,7 +37,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated Use ex_get_partial_one_attr() instead.
+ * \deprecated Use ex_get_partial_one_attr()(exoid, obj_type, obj_id, start_num, num_ent,
+ * attrib_index, attrib) instead.
  *
  * reads the specified attribute for a subsect of a block
  * \param      exoid         exodus file id

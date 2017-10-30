@@ -89,7 +89,7 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
   if ((status = nc_inq_dimid(exoid, ex_dim_num_objects(set_type), &dimid)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: no %ss defined in file id %d",
              ex_name_of_object(set_type), exoid);
-    ex_err("ex_put_partial_set", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -103,13 +103,13 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
         snprintf(errmsg, MAX_ERR_LENGTH,
                  "Warning: no data allowed for NULL %s %" PRId64 " in file id %d",
                  ex_name_of_object(set_type), set_id, exoid);
-        ex_err("ex_put_partial_set", errmsg, EX_NULLENTITY);
+        ex_err(__func__, errmsg, EX_NULLENTITY);
         EX_FUNC_LEAVE(EX_WARN);
       }
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate %s id %" PRId64 " in VAR_*S_IDS array in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_put_partial_set", errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -140,7 +140,7 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to locate entry list for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_put_partial_set", errmsg, status);
+    ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
@@ -163,7 +163,7 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to store entry list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_put_partial_set", errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -174,7 +174,7 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to locate extra list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_put_partial_set", errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
 
@@ -194,7 +194,7 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
       snprintf(errmsg, MAX_ERR_LENGTH,
                "ERROR: failed to store extra list for %s %" PRId64 " in file id %d",
                ex_name_of_object(set_type), set_id, exoid);
-      ex_err("ex_put_partial_set", errmsg, status);
+      ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
@@ -204,7 +204,7 @@ int ex_put_partial_set(int exoid, ex_entity_type set_type, ex_entity_id set_id, 
     snprintf(errmsg, MAX_ERR_LENGTH,
              "Warning: extra list was ignored for %s %" PRId64 " in file id %d",
              ex_name_of_object(set_type), set_id, exoid);
-    ex_err("ex_put_partial_set", errmsg, EX_BADPARAM);
+    ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_WARN);
   }
 

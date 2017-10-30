@@ -789,7 +789,9 @@ MACRO(TRIBITS_CTEST_SUBMIT_DRIVER)
   # If using a recent enough ctest with RETRY_COUNT, use it to overcome
   # failed submits:
   SET(retry_args "")
-  SET(retry_args RETRY_COUNT 25 RETRY_DELAY 120)
+  SET(retry_args
+    RETRY_COUNT ${CTEST_SUBMIT_RETRY_COUNT}
+    RETRY_DELAY ${CTEST_SUBMIT_RETRY_DELAY})
   MESSAGE("info: using retry_args='${retry_args}' for _ctest_submit call")
 
   # Call the original CTEST_SUBMIT and pay attention to its RETURN_VALUE:
@@ -1462,7 +1464,16 @@ MACRO(TRIBITS_CTEST_ALL_AT_ONCE)
   ENDIF()
 
   #
-  # G) Determine final pass/fail by gathering list of failing packages
+  # G) Submit the update results to trigger the CDash notification email ...
+  #
+
+  IF (CTEST_DO_SUBMIT)
+    MESSAGE("\nSubmit the update file that will trigger the notification email ...\n")
+    TRIBITS_CTEST_SUBMIT( PARTS update )
+  ENDIF()
+
+  #
+  # H) Determine final pass/fail by gathering list of failing packages
   #
 
   IF (NOT AAO_CONFIGURE_PASSED)

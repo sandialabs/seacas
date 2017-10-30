@@ -56,7 +56,8 @@
 #include <stdint.h>   // for int64_t
 
 /*!
- * \deprecated use ex_get_partial_set()
+ * \deprecated use ex_get_partial_set()(exoid, EX_NODE_SET, node_set_id, start_node_num, num_nodes,
+                            node_set_node_list, NULL)
  */
 
 /*

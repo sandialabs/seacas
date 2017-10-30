@@ -62,6 +62,8 @@ else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
 
+BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
+
 echo "THREAD_SAFE = ${THREAD_SAFE}"
 if [ "$THREAD_SAFE" == "ON" ]
 then
@@ -74,8 +76,9 @@ cmake \
   -DTPL_ENABLE_MPI=${MPI} \
   ${MPI_SYMBOLS} \
   -DBUILD_SHARED_LIBS:BOOL=ON \
-  -DCMAKE_CXX_FLAGS="-Wall -pedantic -pthread" \
-  -DCMAKE_C_FLAGS="-Wall -pedantic" \
+  -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+  -DCMAKE_CXX_FLAGS="-Wall -pedantic -pthread ${SANITIZER}" \
+  -DCMAKE_C_FLAGS="-Wall -pedantic ${SANITIZER}" \
   -DHDF5_ROOT:PATH=/usr/ \
   -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
   -DSEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
