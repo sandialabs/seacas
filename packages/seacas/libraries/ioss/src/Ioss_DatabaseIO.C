@@ -79,12 +79,12 @@ namespace {
       return true;
     }
 
-    const std::string &ge_name    = ge->name();
     const std::string &field_name = field.get_name();
-    unsigned int       hash_code  = Ioss::Utils::hash(ge_name) + Ioss::Utils::hash(field_name);
+    unsigned int       hash_code  = ge->hash() + Ioss::Utils::hash(field_name);
     unsigned int       max_hash   = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MAX);
     unsigned int       min_hash   = util.global_minmax(hash_code, Ioss::ParallelUtils::DO_MIN);
     if (max_hash != min_hash) {
+      const std::string &ge_name    = ge->name();
       std::string errmsg = "Parallel inconsistency detected for ";
       errmsg += in_out == 0 ? "writing" : "reading";
       errmsg += " field '";
