@@ -112,6 +112,17 @@ namespace {
 
   constexpr unsigned numberOfBits(unsigned x) { return x < 2 ? x : 1 + numberOfBits(x >> 1); }
 
+  size_t compute_hash(Ioss::GroupingEntity *entity, size_t which)
+  {
+    // Can add more properties and or fields later.  For now just do
+    // name and optional id.
+    size_t hash = entity->hash();
+    if (entity->property_exists(id_str())) {
+      hash += which * entity->get_property(id_str()).get_int();
+    }
+    return hash;
+  }
+
   template <typename T>
   void compute_hashes(const std::vector<T> &entities,
                       std::array<size_t, Ioss::entityTypeCount> &hashes, Ioss::EntityType type)
@@ -121,12 +132,7 @@ namespace {
 
     size_t which = 1;
     for (const auto &entity : entities) {
-      // Can add more properties and or fields later.  For now just do
-      // name and optional id.
-      hashes[index] += entity->hash();
-      if (entity->property_exists(id_str())) {
-        hashes[index] += which++ * entity->get_property(id_str()).get_int();
-      }
+      hashes[index] += compute_hash(entity, which++);
     }
   }
 
@@ -135,11 +141,49 @@ namespace {
   {
     auto index = numberOfBits(type) - 1;
     SMART_ASSERT(index < min_hash.size())(type)(index)(min_hash.size());
-
-    if (min_hash[index] != max_hash[index]) {
-      std::cerr << "Hash mismatch at index " << index << "\n";
-    }
     return (min_hash[index] == max_hash[index]);
+  }
+
+  template <typename T>
+  void report_inconsistency(const std::vector<T> &entities, Ioss::ParallelUtils &util)
+  {
+    // Know that there is some mismatch in name or (optional)id.  Let user know where...
+    std::vector<size_t> hashes;
+
+    size_t which = 1;
+    for (const auto &entity : entities) {
+      hashes.push_back(compute_hash(entity, which++));
+    }
+
+    std::ostringstream errmsg;
+    errmsg << "IOSS: ERROR: Parallel Consistency Error.\n\t\t";
+
+    auto min_hash = hashes;
+    auto max_hash = hashes;
+    // Now find mismatched location...
+    util.global_array_minmax(min_hash, Ioss::ParallelUtils::DO_MIN);
+    util.global_array_minmax(max_hash, Ioss::ParallelUtils::DO_MAX);
+ 
+    if (util.parallel_rank() == 0) {
+    int count = 0;
+    for (size_t i=0; i < hashes.size(); i++) {
+      if (min_hash[i] != max_hash[i]) {
+	auto ge = entities[i];
+	if (count == 0) {
+	  errmsg << ge->type_string() << "(s) ";
+	}
+	else {
+	  errmsg << ", ";
+	}
+	errmsg << "'" << ge->name() << "'";
+	count++;
+      }
+    }
+    errmsg << (count == 1 ? " is " : " are ");
+    errmsg << "not consistently defined on all processors.\n\t\t"
+	   << "Check that names and ids match across processors.\n";
+    std::cerr << errmsg.str();
+    }
   }
 
   bool check_parallel_consistency(const Ioss::Region &region)
@@ -169,23 +213,57 @@ namespace {
     compute_hashes(region.get_commsets(), hashes, Ioss::COMMSET);
     compute_hashes(region.get_structured_blocks(), hashes, Ioss::STRUCTUREDBLOCK);
 
+    auto util = region.get_database()->util();
     auto min_hash = hashes;
     auto max_hash = hashes;
-    region.get_database()->util().global_array_minmax(min_hash.data(), min_hash.size(), Ioss::ParallelUtils::DO_MIN);
-    region.get_database()->util().global_array_minmax(max_hash.data(), max_hash.size(), Ioss::ParallelUtils::DO_MAX);
+    util.global_array_minmax(min_hash.data(), min_hash.size(), Ioss::ParallelUtils::DO_MIN);
+    util.global_array_minmax(max_hash.data(), max_hash.size(), Ioss::ParallelUtils::DO_MAX);
 
     bool differ = false;
-    differ |= !check_hashes(min_hash, max_hash, Ioss::NODEBLOCK);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::EDGEBLOCK);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::FACEBLOCK);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::ELEMENTBLOCK);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::NODESET);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::EDGESET);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::FACESET);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::ELEMENTSET);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::SIDESET);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::COMMSET);
-    differ |= !check_hashes(min_hash, max_hash, Ioss::STRUCTUREDBLOCK);
+    if (!check_hashes(min_hash, max_hash, Ioss::NODEBLOCK)) {
+      report_inconsistency(region.get_node_blocks(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::EDGEBLOCK)) {
+      report_inconsistency(region.get_edge_blocks(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::FACEBLOCK)) {
+      report_inconsistency(region.get_face_blocks(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::ELEMENTBLOCK)) {
+      report_inconsistency(region.get_element_blocks(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::NODESET)) {
+      report_inconsistency(region.get_nodesets(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::EDGESET)) {
+      report_inconsistency(region.get_edgesets(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::FACESET)) {
+      report_inconsistency(region.get_facesets(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::ELEMENTSET)) {
+      report_inconsistency(region.get_elementsets(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::SIDESET)) {
+      report_inconsistency(region.get_sidesets(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::COMMSET)) {
+      report_inconsistency(region.get_commsets(), util);
+      differ = true;
+    }
+    if (!check_hashes(min_hash, max_hash, Ioss::STRUCTUREDBLOCK)) {
+      report_inconsistency(region.get_structured_blocks(), util);
+      differ = true;
+    }
     return !differ;
   }
 
@@ -570,8 +648,17 @@ namespace Ioss {
       }
 
       // In parallel and debug, check consistency of all grouping entities...
+#ifndef NDEBUG
       SMART_ASSERT(check_parallel_consistency(*this));
-
+#else
+      if (get_database()->props().exists("CHECK_PARALLEL_CONSISTENCY")) {
+	bool ok = check_parallel_consistency(*this);
+	if (!ok) {
+	  std::ostringstream errmsg{"ERROR: Parallel Consistency Failure."};
+	  IOSS_ERROR(errmsg);
+	}
+      }
+#endif
       modelDefined = true;
     }
     else if (current_state == STATE_DEFINE_TRANSIENT) {

@@ -466,8 +466,8 @@ namespace Ioss {
 
     void set_time_scale_factor(double factor) { timeScaleFactor = factor; }
 
-    const Ioss::ParallelUtils &util() const { return util_; }
-
+    const Ioss::ParallelUtils &  util() const { return util_; }
+    const Ioss::PropertyManager &props() const { return properties; }
     /** \brief Get the processor that this mesh database is on.
      *
      *  \returns The processor that this mesh database is on.

@@ -382,6 +382,7 @@ void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,
 template void Ioss::ParallelUtils::global_array_minmax(std::vector<int> &, MinMax) const;
 template void Ioss::ParallelUtils::global_array_minmax(std::vector<int64_t> &, MinMax) const;
 template void Ioss::ParallelUtils::global_array_minmax(std::vector<double> &, MinMax) const;
+template void Ioss::ParallelUtils::global_array_minmax(std::vector<unsigned long> &, MinMax) const;
 
 template <typename T>
 void Ioss::ParallelUtils::global_array_minmax(std::vector<T> &local_minmax, MinMax which) const
