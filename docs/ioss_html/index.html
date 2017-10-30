@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IOSS: Main Page</title>
+<title>IOSS: IOSS API Documentation</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -81,10 +81,155 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">IOSS Documentation</div>  </div>
+<div class="title">IOSS API Documentation </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><h1><a class="anchor" id="intro"></a>
+Introduction</h1>
+<h2>General Properties</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>LOGGING </td><td>on/[off] </td><td>enable/disable logging of field input/output </td></tr>
+<tr>
+<td>LOWER_CASE_VARIABLE_NAMES </td><td>[on]/off </td><td>Convert all variable names on database to lowercase; replace ' ' with '_' </td></tr>
+<tr>
+<td>USE_GENERIC_CANONICAL_NAMES </td><td>on/[off] </td><td>use <code>block_{id}</code> as canonical name of an element block instead of the name (if any) stored on the database. The database name will be an alias. </td></tr>
+</table>
+<h2>Auto-Decomposition-Related Properties</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>MODEL_DECOMPOSITION_METHOD </td><td>{method} </td><td>Decompose a DB with type <code>MODEL</code> using <code>method</code> </td></tr>
+<tr>
+<td>RESTART_DECOMPOSITION_METHOD </td><td>{method} </td><td>Decompose a DB with type <code>RESTART_IN</code> using <code>method</code> </td></tr>
+<tr>
+<td>DECOMPOSITION_METHOD </td><td>{method} </td><td>Decompose all input DB using <code>method</code> </td></tr>
+<tr>
+<td>PARALLEL_CONSISTENCY </td><td>[on]/off </td><td>On if the client will call <a class="el" href="namespaceIoss.html" title="The main namespace for the Ioss library. ">Ioss</a> functions consistently on all processors. If off, then the auto-decomp and auto-join cannot be used. </td></tr>
+<tr>
+<td>RETAIN_FREE_NODES </td><td>[on]/off </td><td>In auto-decomp, will nodes not connected to any elements be retained. </td></tr>
+<tr>
+<td>LOAD_BALANCE_THRESHOLD </td><td>{real} [1.4] </td><td>CGNS-Structured only &ndash; Load imbalance permitted Load on Proc / Avg Load </td></tr>
+</table>
+<h3>Valid values for Decomposition Method</h3>
+<table class="doxtable">
+<tr>
+<th>Method </th><th>Description  </th></tr>
+<tr>
+<td>rcb </td><td>recursive coordinate bisection </td></tr>
+<tr>
+<td>rib </td><td>recursive inertial bisection </td></tr>
+<tr>
+<td>hsfc </td><td>hilbert space-filling curve </td></tr>
+<tr>
+<td>metis_sfc </td><td>metis space-filling-curve </td></tr>
+<tr>
+<td>kway </td><td>metis kway graph-based </td></tr>
+<tr>
+<td>kway_geom </td><td>metis kway graph-based method with geometry speedup </td></tr>
+<tr>
+<td>linear </td><td>elements in order first n/p to proc 0, next to proc 1. </td></tr>
+<tr>
+<td>cyclic </td><td>elements handed out to id % proc_count </td></tr>
+<tr>
+<td>random </td><td>elements assigned randomly to processors in a way that preserves balance (do not use for a real run) </td></tr>
+<tr>
+<td>external </td><td>Files are decomposed externally into a file-per-processor in a parallel run. </td></tr>
+</table>
+<h2>Output File Composition &ndash; Single File output from parallel run instead of file-per-processor</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value  </th></tr>
+<tr>
+<td>COMPOSE_RESTART </td><td>on/[off] </td></tr>
+<tr>
+<td>COMPOSE_RESULTS </td><td>on/[off] </td></tr>
+<tr>
+<td>PARALLEL_IO_MODE </td><td>mpiio, pnetcdf </td></tr>
+</table>
+<h2>Properties Related to byte size of reals and integers</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>INTEGER_SIZE_DB </td><td>[4] / 8 </td><td>byte size of integers stored on the database. </td></tr>
+<tr>
+<td>INTEGER_SIZE_API </td><td>[4] / 8 </td><td>byte size of integers used in api functions. </td></tr>
+<tr>
+<td>REAL_SIZE_DB </td><td>4 / [8] </td><td>byte size of floating point stored on the database. </td></tr>
+<tr>
+<td>REAL_SIZE_API </td><td>4 / [8] </td><td>byte size of floating point used in api functions. </td></tr>
+</table>
+<h2>Properties related to underlying file type (exodus only)</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>FILE_TYPE </td><td>[netcdf], netcdf4, netcdf-4, hdf5 </td><td>Underlying file type (bits on disk format) </td></tr>
+<tr>
+<td>COMPRESSION_LEVEL </td><td>[0]-9 </td><td>In the range [0..9]. A value of 0 indicates no compression, will automatically set <code>file_type=netcdf4</code>, recommend &lt;=4 </td></tr>
+<tr>
+<td>COMPRESSION_SHUFFLE </td><td>on/[off] </td><td>to enable/disable hdf5's shuffle compression algorithm. </td></tr>
+<tr>
+<td>MAXIMUM_NAME_LENGTH </td><td>[32] </td><td>Maximum length of names that will be returned/passed via api call. </td></tr>
+<tr>
+<td>APPEND_OUTPUT </td><td>on/[off] </td><td>Append output to end of existing output database </td></tr>
+<tr>
+<td>APPEND_OUTPUT_AFTER_STEP </td><td>{step}</td><td>Max step to read from an input db or a db being appended to (typically used with APPEND_OUTPUT) </td></tr>
+<tr>
+<td>APPEND_OUTPUT_AFTER_TIME </td><td>{time}</td><td>Max time to read from an input db or a db being appended to (typically used with APPEND_OUTPUT) </td></tr>
+</table>
+<h2>Properties for the heartbeat output</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>FLUSH_INTERVAL </td><td>int </td><td>Minimum time interval between flushing heartbeat data to disk. Default is 10 seconds </td></tr>
+<tr>
+<td>TIME_STAMP_FORMAT </td><td>[H:M:S] </td><td>Format used to format time stamp. See strftime man page </td></tr>
+<tr>
+<td>SHOW_TIME_STAMP </td><td>on/off </td><td>Should the output lines be preceded by the timestamp </td></tr>
+<tr>
+<td>PRECISION </td><td>0..16 [5] </td><td>Precision used for floating point output. </td></tr>
+<tr>
+<td>FIELD_WIDTH </td><td>0.. </td><td>Width of an output field. If 0, then use natural width. </td></tr>
+<tr>
+<td>SHOW_LABELS </td><td>on/[off] </td><td>Should each field be preceded by its name (ke=1.3e9, ie=2.0e9) </td></tr>
+<tr>
+<td>SHOW_LEGEND </td><td>[on]/off </td><td>Should a legend be printed at the beginning of the output showing the field names for each column of data. </td></tr>
+<tr>
+<td>SHOW_TIME_FIELD </td><td>on/[off] </td><td>Should the current analysis time be output as the first field. </td></tr>
+</table>
+<h2>Experimental</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>MEMORY_READ </td><td>on/[off] </td><td>experimental </td></tr>
+<tr>
+<td>MEMORY_WRITE </td><td>on/[off] </td><td>experimental </td></tr>
+<tr>
+<td>ENABLE_FILE_GROUPS </td><td>on/[off] </td><td>experimental </td></tr>
+</table>
+<h2>Debugging / Profiling</h2>
+<table class="doxtable">
+<tr>
+<th>Property </th><th>Value </th><th>Description  </th></tr>
+<tr>
+<td>LOGGING </td><td>on/[off] </td><td>enable/disable logging of field input/output </td></tr>
+<tr>
+<td>DECOMP_SHOW_PROGRESS </td><td>on/[off] </td><td>show memory and elapsed time during autodecomp. </td></tr>
+<tr>
+<td>DECOMP_SHOW_HWM </td><td>on/[off] </td><td>show high-water memory during autodecomp </td></tr>
+<tr>
+<td>IOSS_TIME_FILE_OPEN_CLOSE </td><td>on/[off] </td><td>show elapsed time during parallel-io file open/close/create </td></tr>
+<tr>
+<td>CHECK_PARALLEL_CONSISTENCY </td><td>ignored </td><td>check <a class="el" href="classIoss_1_1GroupingEntity.html" title="Base class for all &#39;grouping&#39; entities. The following derived classes are typical: ...">Ioss::GroupingEntity</a> parallel consistency </td></tr>
+</table>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

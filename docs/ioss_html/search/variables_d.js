@@ -76,7 +76,7 @@ var searchData=
   ['m_5fownerguid',['m_ownerGUID',['../structIoss_1_1ZoneConnectivity.html#a7e79aca235bd419c64c299681723d94b',1,'Ioss::ZoneConnectivity']]],
   ['m_5fowneroffset',['m_ownerOffset',['../structIoss_1_1ZoneConnectivity.html#a630bb353c8733f7f18354f869bfa464f',1,'Ioss::ZoneConnectivity']]],
   ['m_5fownerprocessor',['m_ownerProcessor',['../structIoss_1_1ZoneConnectivity.html#a8f70e214cf6dab2cf72975e7630af651',1,'Ioss::ZoneConnectivity']]],
-  ['m_5fownerrange',['m_ownerRange',['../structIoss_1_1BoundaryCondition.html#a311d417b393ddf597dda880d5630079a',1,'Ioss::BoundaryCondition::m_ownerRange()'],['../structIoss_1_1ZoneConnectivity.html#a8efca4b6106e6b8a4cb179013fe55b18',1,'Ioss::ZoneConnectivity::m_ownerRange()']]],
+  ['m_5fownerrange',['m_ownerRange',['../structIoss_1_1ZoneConnectivity.html#a8efca4b6106e6b8a4cb179013fe55b18',1,'Ioss::ZoneConnectivity']]],
   ['m_5fownerrangebeg',['m_ownerRangeBeg',['../structIoss_1_1ZoneConnectivity.html#ad954e7da92f4a54de61a3e30d411b939',1,'Ioss::ZoneConnectivity']]],
   ['m_5fownerrangeend',['m_ownerRangeEnd',['../structIoss_1_1ZoneConnectivity.html#aeeccabbd5aeb8c6f113c69aac4ed1b7f',1,'Ioss::ZoneConnectivity']]],
   ['m_5fownerzone',['m_ownerZone',['../structIoss_1_1ZoneConnectivity.html#a97465761a1294ec39670641dc33743bc',1,'Ioss::ZoneConnectivity']]],

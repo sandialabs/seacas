@@ -249,6 +249,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1ec93a9a1076ca2983c728a7f89028c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd988f56b93ac669b2e504a8e471b321"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classIoss_1_1ParallelUtils.html">Ioss::ParallelUtils</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#acd988f56b93ac669b2e504a8e471b321">util</a> () const</td></tr>
 <tr class="separator:acd988f56b93ac669b2e504a8e471b321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a378c773f438aba6a1d2e64f1808e7d0c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a378c773f438aba6a1d2e64f1808e7d0c">props</a> () const</td></tr>
+<tr class="separator:a378c773f438aba6a1d2e64f1808e7d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f9d85da0afe95a1291480aeb79571fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a5f9d85da0afe95a1291480aeb79571fd">parallel_rank</a> () const</td></tr>
 <tr class="memdesc:a5f9d85da0afe95a1291480aeb79571fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the processor that this mesh database is on.  <a href="#a5f9d85da0afe95a1291480aeb79571fd">More...</a><br /></td></tr>
 <tr class="separator:a5f9d85da0afe95a1291480aeb79571fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -262,7 +264,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ac424982f766c762292b823a270982f08"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ac424982f766c762292b823a270982f08">DatabaseIO</a> (<a class="el" href="classIoss_1_1Region.html">Region</a> *region, std::string filename, <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f">Ioss::DatabaseUsage</a> db_usage, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> communicator, const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;props)</td></tr>
+<tr class="memitem:ac424982f766c762292b823a270982f08"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#ac424982f766c762292b823a270982f08">DatabaseIO</a> (<a class="el" href="classIoss_1_1Region.html">Region</a> *region, std::string filename, <a class="el" href="namespaceIoss.html#a4ec41517502e82a7291184cd7b68b34f">Ioss::DatabaseUsage</a> db_usage, <a class="el" href="Ioss__CodeTypes_8h.html#a161d2f0d69c09838316e4ea9a74f02d7">MPI_Comm</a> communicator, const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a> &amp;<a class="el" href="classIoss_1_1DatabaseIO.html#a378c773f438aba6a1d2e64f1808e7d0c">props</a>)</td></tr>
 <tr class="separator:ac424982f766c762292b823a270982f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f7ffe6187feb373a5b37ea874228c6a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1DatabaseIO.html#a8f7ffe6187feb373a5b37ea874228c6a">set_common_side_topology</a> () const</td></tr>
 <tr class="separator:a8f7ffe6187feb373a5b37ea874228c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3317,6 +3319,31 @@ template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">int Ioss::DatabaseIO::parallel_size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a378c773f438aba6a1d2e64f1808e7d0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a378c773f438aba6a1d2e64f1808e7d0c">&#9670;&nbsp;</a></span>props()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classIoss_1_1PropertyManager.html">Ioss::PropertyManager</a>&amp; Ioss::DatabaseIO::props </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
