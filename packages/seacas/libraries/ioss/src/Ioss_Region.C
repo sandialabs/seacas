@@ -655,7 +655,7 @@ namespace Ioss {
 #else
       bool check_consistency = false;
 #endif
-      Ioss::Utils::check_set_bool_property(get_database()->props(), "CHECK_PARALLEL_CONSISTENCY", check_consistency);
+      Ioss::Utils::check_set_bool_property(get_database()->get_property_manager(), "CHECK_PARALLEL_CONSISTENCY", check_consistency);
       if (check_consistency) {
 	bool ok = check_parallel_consistency(*this);
 	if (!ok) {
