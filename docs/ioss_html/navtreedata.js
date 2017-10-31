@@ -2,7 +2,9 @@ var NAVTREE =
 [
   [ "IOSS", "index.html", [
     [ "IOSS API Documentation", "index.html", [
-      [ "Introduction", "index.html#intro", null ]
+      [ "Availability", "index.html#avail", null ],
+      [ "Properties", "index.html#properties", null ],
+      [ "License", "index.html#license", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
     [ "Deprecated List", "deprecated.html", null ],
@@ -71,12 +73,12 @@ var NAVTREEINDEX =
 "classJson_1_1Reader.html#aaf736937912f5c9b8d221e57f209e3e0",
 "classJson_1_1ValueIterator.html#aeceedf6e1a7d48a588516ce2b1983d6f",
 "cth__pressure__map_8C.html#a942dd80db4df4d9a913f101b3cca94d4",
-"json_8h.html#a4fc417c23905b2ae9e2c47d197a45351",
-"namespacemembers_e.html",
-"structIoex_1_1ElemSet.html#a404be89c8fc211591903d9e6e6d926b2",
-"structIoxf_1_1Block.html#aebadfcd7fe72c6679dc50a7cb8593d0d",
-"structanonymous__namespace_02Ioss__Quad8_8C_03_1_1Constants.html#aba297043112609f08cf3a2967b7d94c0",
-"structanonymous__namespace_02Ioss__Wedge12_8C_03_1_1Constants.html"
+"json_8h.html#a474bdd38a6f0d733485d831d9d99faa2",
+"namespacemembers_c.html",
+"structIoex_1_1ElemSet.html#a1899eb0c9409172e7e15fe1ceefc7c29",
+"structIoxf_1_1Block.html#adaf023283ca323b1aa15f9ed74a9af85",
+"structanonymous__namespace_02Ioss__Quad8_8C_03_1_1Constants.html",
+"structanonymous__namespace_02Ioss__Unknown_8C_03_1_1Constants.html#aaa46b7ce5c5789b7759afe1a1697282a"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -128,9 +128,11 @@ var NAVTREEINDEX23 =
 "globals_type.html":[5,1,3],
 "globals_vars.html":[5,1,2],
 "hierarchy.html":[4,2],
-"index.html":[0],
 "index.html":[],
-"index.html#intro":[0,0],
+"index.html":[0],
+"index.html#avail":[0,0],
+"index.html#license":[0,2],
+"index.html#properties":[0,1],
 "info__interface_8C.html":[5,0,0,9,1],
 "info__interface_8h.html":[5,0,0,9,2],
 "info__interface_8h_source.html":[5,0,0,9,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "json_8h.html#a22cc6fcbbb1f2f705c7888b615e43582":[5,0,0,14,0,1,0,0,0,1,60],
 "json_8h.html#a27613326e9e36bbfe04a905ac90caa91":[5,0,0,14,0,1,0,0,0,1,61],
 "json_8h.html#a32ef47886b186f98d3f8225a513c3495":[5,0,0,14,0,1,0,0,0,1,42],
-"json_8h.html#a3a512184f0bbdd531fe1298f0a490ffe":[5,0,0,14,0,1,0,0,0,1,43],
-"json_8h.html#a474bdd38a6f0d733485d831d9d99faa2":[5,0,0,14,0,1,0,0,0,1,29],
-"json_8h.html#a48e81f641ee4bf786daa3fe6090aac9e":[5,0,0,14,0,1,0,0,0,1,39]
+"json_8h.html#a3a512184f0bbdd531fe1298f0a490ffe":[5,0,0,14,0,1,0,0,0,1,43]
 };
