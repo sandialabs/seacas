@@ -1,3 +1,5 @@
+/* clang-format off */
+
 /*!  \mainpage Exodus API Documentation
 
 \section intro Introduction
@@ -338,3 +340,5 @@ element attributes, node sets, side sets, and object properties.
 
 
 */
+
+/* clang-format on */
