@@ -493,6 +493,7 @@ namespace Ioex {
     std::string block_name = "nodeblock_1";
     auto        block      = new Ioss::NodeBlock(this, block_name, nodeCount, spatialDimension);
     block->property_add(Ioss::Property("id", 1));
+    block->property_add(Ioss::Property("guid", util().generate_guid(1)));
     // Check for results variables.
 
     int num_attr = 0;

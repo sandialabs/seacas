@@ -375,6 +375,7 @@ namespace Ioex {
     idset->insert(std::make_pair(static_cast<int>(type), id));
     Ioss::GroupingEntity *new_entity = const_cast<Ioss::GroupingEntity *>(entity);
     new_entity->property_add(Ioss::Property(id_prop, id));
+    new_entity->property_update("guid", entity->get_database()->util().generate_guid(id));
     return id;
   }
 

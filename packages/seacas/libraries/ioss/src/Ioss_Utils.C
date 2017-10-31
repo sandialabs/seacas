@@ -1491,6 +1491,7 @@ void Ioss::Utils::generate_history_mesh(Ioss::Region *region)
     // Element Block
     Ioss::ElementBlock *eb = new Ioss::ElementBlock(db, "e1", "sphere", 1);
     eb->property_add(Ioss::Property("id", 1));
+    eb->property_add(Ioss::Property("guid", 1));
     region->add(eb);
     region->end_mode(Ioss::STATE_DEFINE_MODEL);
 

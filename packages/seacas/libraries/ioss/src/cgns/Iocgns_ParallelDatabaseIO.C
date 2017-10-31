@@ -88,12 +88,6 @@ namespace {
 #endif
   }
 
-  size_t generate_guid(size_t zone, size_t proc, size_t lpow2)
-  {
-    assert(zone > 0);
-    assert(proc >= 0);
-    return (zone << lpow2) + proc;
-  }
 } // namespace
 
 namespace Iocgns {
@@ -275,8 +269,6 @@ namespace Iocgns {
     // Will treat these as sidesets if they are of the type "FamilyBC_t"
     Utils::add_sidesets(cgnsFilePtr, this);
 
-    size_t pow2 = Ioss::Utils::log_power_2(util().parallel_size());
-
     // ========================================================================
     // Get the number of zones (element blocks) in the mesh...
     int base = 1;
@@ -287,15 +279,13 @@ namespace Iocgns {
       eblock->property_add(Ioss::Property("base", base));
       eblock->property_add(Ioss::Property("zone", block.zone()));
       eblock->property_add(Ioss::Property("id", block.zone()));
-      int64_t guid = generate_guid(block.zone(), util().parallel_rank(), pow2);
-      eblock->property_add(Ioss::Property("guid", guid));
+      eblock->property_add(Ioss::Property("guid", util().generate_guid(block.zone())));
       eblock->property_add(Ioss::Property("section", block.section()));
       eblock->property_add(Ioss::Property("original_block_order", i++));
       get_region()->add(eblock);
 #if IOSS_DEBUG_OUTPUT
       std::cout << "Added block " << block.name() << ":, IOSS topology = '" << element_topo
-                << "' with " << block.ioss_count() << " elements.  GUID = " << guid << "   " << pow2
-                << "\n";
+                << "' with " << block.ioss_count() << " elements.\n";
 #endif
     }
 
@@ -321,6 +311,7 @@ namespace Iocgns {
         Ioss::SideBlock *sblk =
             new Ioss::SideBlock(this, block_name, face_topo, parent_topo, sset.ioss_count());
         sblk->property_add(Ioss::Property("id", id));
+        sblk->property_add(Ioss::Property("guid", util().generate_guid(id)));
         sblk->property_add(Ioss::Property("base", 1));
         sblk->property_add(Ioss::Property("zone", sset.zone()));
         sblk->property_add(Ioss::Property("section", sset.section()));
@@ -342,14 +333,14 @@ namespace Iocgns {
     Ioss::CommSet *commset =
         new Ioss::CommSet(this, "commset_node", "node", decomp->get_commset_node_size());
     commset->property_add(Ioss::Property("id", 1));
+    commset->property_add(Ioss::Property("guid", util().generate_guid(1)));
+
     get_region()->add(commset);
   }
 
   // TODO: See if code can be used for parallel node resolution...
   size_t ParallelDatabaseIO::finalize_structured_blocks()
   {
-    size_t pow2 = Ioss::Utils::log_power_2(util().parallel_size());
-
     // If there are any Structured blocks, need to iterate them and their 1-to-1 connections
     // and update the donor_zone id for zones that had not yet been processed at the time of
     // definition...
@@ -362,7 +353,7 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
-        conn.m_donorGUID = generate_guid(conn.m_donorZone, conn.m_donorProcessor, pow2);
+        conn.m_donorGUID = util().generate_guid(conn.m_donorZone);
         conn.m_ownerGUID = guid;
       }
     }
@@ -388,8 +379,6 @@ namespace Iocgns {
     // Iterate all structured blocks and set the intervals to zero
     // if the m_proc field does not match current processor...
     const auto &zones = decomp->m_structuredZones;
-
-    size_t pow2               = Ioss::Utils::log_power_2(util().parallel_size());
 
     for (auto &zone : zones) {
       if (zone->m_adam == zone) {
@@ -436,8 +425,7 @@ namespace Iocgns {
         block->property_add(Ioss::Property("base", base));
         block->property_add(Ioss::Property("zone", zone->m_adam->m_zone));
         block->property_add(Ioss::Property("id", zone->m_adam->m_zone));
-        int64_t guid =
-            generate_guid(zone->m_adam->m_zone, util().parallel_rank(), pow2); // globally-unique id
+        int64_t guid = util().generate_guid(zone->m_adam->m_zone);
         block->property_add(Ioss::Property("guid", guid));
 
 #if IOSS_DEBUG_OUTPUT
@@ -1578,6 +1566,7 @@ namespace Iocgns {
         CGCHECK(cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
         eb->property_update("zone", zone);
         eb->property_update("id", zone);
+        eb->property_update("guid", util().generate_guid(zone));
         eb->property_update("section", 1);
         eb->property_update("base", base);
 

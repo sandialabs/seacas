@@ -93,6 +93,13 @@ namespace Ioss {
      */
     void attribute_reduction(int length, char buffer[]) const;
 
+    /*!
+     * Generate a "globally unique id" which is unique over all entities
+     * of a specific type over all processors.
+     * Used by some applications for uniquely identifying an entity.
+     */
+    int64_t generate_guid(size_t id) const;
+
     /*! Return min, max, average memory used by any process */
     void memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
 

@@ -205,6 +205,23 @@ void Ioss::ParallelUtils::hwm_memory_stats(int64_t &min, int64_t &max, int64_t &
 #endif
 }
 
+// Generate a "globally unique id" which is unique over all entities
+// of a specific type over all processors.
+// Used by some applications for uniquely identifying an entity.
+int64_t Ioss::ParallelUtils::generate_guid(size_t id) const
+  {
+#ifdef SEACAS_HAVE_MPI
+    static size_t lpow2 = 0;
+    if (lpow2 == 0) {
+      lpow2 = Ioss::Utils::log_power_2(parallel_size());
+    }
+    assert(id > 0);
+    return (id << lpow2) + parallel_rank();
+#else
+    return id;
+#endif
+  }
+
 void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) const
 {
 #ifdef SEACAS_HAVE_MPI

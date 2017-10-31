@@ -476,6 +476,8 @@ namespace Ioss {
           sbnew->property_add(Property("set_offset", entity_count));
           sbnew->property_add(Property("set_df_offset", df_count));
           sbnew->property_add(Property("id", id));
+          sbnew->property_add(Property("id", id));
+	  sbnew->property_add(Property("guid", util().generate_guid(id)));
 
           new_set->add(sbnew);
 

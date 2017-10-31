@@ -1374,6 +1374,7 @@ namespace Iocgns {
               cg_zone_write(cgnsFilePtr, base, eb->name().c_str(), size, CG_Unstructured, &zone));
           eb->property_update("zone", zone);
           eb->property_update("id", zone);
+          eb->property_update("guid", zone);
           eb->property_update("section", 1);
           eb->property_update("base", base);
 
