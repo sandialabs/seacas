@@ -520,6 +520,7 @@ namespace Iofx {
         // Element Block
         Ioss::ElementBlock *eb = new Ioss::ElementBlock(this, "e1", "sphere", 1);
         eb->property_add(Ioss::Property("id", 1));
+	eb->property_add(Ioss::Property("guid", util().generate_guid(1)));
         get_region()->add(eb);
         get_step_times__();
         add_region_fields();
@@ -1273,6 +1274,7 @@ namespace Iofx {
       }
 
       block->property_add(Ioss::Property("id", id)); // Do before adding for better error messages.
+      block->property_add(Ioss::Property("guid", util().generate_guid(id)));
       if (db_has_name) {
         std::string *db_name = &block_name;
         if (get_use_generic_canonical_name()) {
@@ -1287,18 +1289,7 @@ namespace Iofx {
       block->property_add(Ioss::Property("original_block_order", used_blocks++));
 
       if (save_type != "null" && save_type != "") {
-        if (block->property_exists("original_topology_type")) {
-          if (block->get_property("original_topology_type").get_string() != save_type) {
-            block->property_erase("original_topology_type");
-            block->property_add(Ioss::Property("original_topology_type", save_type));
-          }
-        }
-        else {
-          if (block->get_property("topology_type").get_string() != save_type) {
-            // Maintain original X type on output database if possible.
-            block->property_add(Ioss::Property("original_topology_type", save_type));
-          }
-        }
+	block->property_update("original_topology_type", save_type);
       }
 
       block->property_add(Ioss::Property("global_entity_count", global_X_count[iblk]));
@@ -1725,6 +1716,7 @@ namespace Iofx {
           int64_t id = Ioex::extract_id(fs_name);
           if (id > 0) {
             side_set->property_add(Ioss::Property("id", id));
+	    side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
           }
         }
       }
@@ -1770,6 +1762,7 @@ namespace Iofx {
             }
             side_set = new Ioss::SideSet(this, side_set_name);
             side_set->property_add(Ioss::Property("id", id));
+	    side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
             if (db_has_name) {
               std::string *db_name = &side_set_name;
               if (get_use_generic_canonical_name()) {
@@ -2016,6 +2009,7 @@ namespace Iofx {
             // sideset might have the same id.
             assert(side_block != nullptr);
             side_block->property_add(Ioss::Property("id", id));
+	    side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
             // If splitting by element block, need to set the
             // element block member on this side block.
@@ -2180,6 +2174,7 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
         auto Xset  = new T(this, Xset_name, set_params[ins].num_entry);
         Xsets[ins] = Xset;
         Xset->property_add(Ioss::Property("id", id));
+	Xset->property_add(Ioss::Property("guid", util().generate_guid(id)));
         if (db_has_name) {
           std::string *db_name = &Xset_name;
           if (get_use_generic_canonical_name()) {
@@ -2299,10 +2294,12 @@ void DatabaseIO::get_commsets()
     // Create a single node commset and a single element commset
     Ioss::CommSet *commset = new Ioss::CommSet(this, "commset_node", "node", my_node_count);
     commset->property_add(Ioss::Property("id", 1));
+    commset->property_add(Ioss::Property("guid", util().generate_guid(1)));
     get_region()->add(commset);
 
     commset = new Ioss::CommSet(this, "commset_side", "side", elem_count);
     commset->property_add(Ioss::Property("id", 1));
+    commset->property_add(Ioss::Property("guid", util().generate_guid(1)));
     get_region()->add(commset);
   }
 }
@@ -5533,11 +5530,9 @@ void DatabaseIO::write_meta_data()
       // If combining sideblocks into sidesets on output, then
       // the id of the sideblock must be the same as the sideset
       // id.
-      if (new_block->property_exists("id")) {
-        new_block->property_erase("id");
-      }
-      new_block->property_add(Ioss::Property("id", id));
-
+      new_block->property_update("id", id);
+      new_block->property_update("guid", util().generate_guid(1));
+      
       entity_count += side_block->entity_count();
       df_count += side_block->get_property("distribution_factor_count").get_int();
     }

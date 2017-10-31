@@ -312,3 +312,18 @@ void Ioss::GroupingEntity::property_update(const std::string &property, int64_t 
     nge->property_add(Ioss::Property(property, value));
   }
 }
+
+void Ioss::GroupingEntity::property_update(const std::string &property, const std::string &value) const
+{
+  if (property_exists(property)) {
+    if (get_property(property).get_string() != value) {
+      auto *nge = const_cast<Ioss::GroupingEntity *>(this);
+      nge->property_erase(property);
+      nge->property_add(Ioss::Property(property, value));
+    }
+  }
+  else {
+    auto *nge = const_cast<Ioss::GroupingEntity *>(this);
+    nge->property_add(Ioss::Property(property, value));
+  }
+}

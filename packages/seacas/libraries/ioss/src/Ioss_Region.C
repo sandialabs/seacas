@@ -2220,13 +2220,7 @@ namespace Ioss {
           // See if there is an 'id' property...
           if (ge->property_exists(id_str())) {
             int64_t id = ge->get_property(id_str()).get_int();
-
-            if (this_ge->property_exists(id_str())) {
-              // Remove the old property...
-              this_ge->property_erase(id_str());
-            }
-            // Set the new property
-            this_ge->property_add(Property(id_str(), id));
+            this_ge->property_update(id_str(), id);
           }
           else {
             // No id, make sure the base name matches in both databases...
@@ -2239,35 +2233,21 @@ namespace Ioss {
           // See if there is an 'db_name' property...
           if (ge->property_exists(db_name_str())) {
             std::string db_name = ge->get_property(db_name_str()).get_string();
-
-            if (this_ge->property_exists(db_name_str())) {
-              // Remove the old property...
-              this_ge->property_erase(db_name_str());
-            }
             // Set the new property
-            this_ge->property_add(Property(db_name_str(), db_name));
+            this_ge->property_update(db_name_str(), db_name);
           }
 
           // See if there is a 'original_topology_type' property...
           if (ge->property_exists(orig_topo_str())) {
             std::string oes = ge->get_property(orig_topo_str()).get_string();
-
-            // Set the new property (erase if already exists; original file
-            // trumps...)
-            if (this_ge->property_exists(orig_topo_str())) {
-              this_ge->property_erase(orig_topo_str());
-            }
-            this_ge->property_add(Property(orig_topo_str(), oes));
+            this_ge->property_update(orig_topo_str(), oes);
           }
 
           // Specific to entity blocks. Transfer the "original_block_order"
           // property.
           if (ge->property_exists(orig_block_order())) {
             int64_t offset = ge->get_property(orig_block_order()).get_int();
-            if (this_ge->property_exists(orig_block_order())) {
-              this_ge->property_erase(orig_block_order());
-            }
-            this_ge->property_add(Property(orig_block_order(), offset));
+            this_ge->property_update(orig_block_order(), offset);
           }
 
           if (sync_attribute_field_names) {

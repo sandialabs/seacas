@@ -607,6 +607,7 @@ void Iocgns::Utils::add_sidesets(int cgnsFilePtr, Ioss::DatabaseIO *db)
 
       auto *ss = new Ioss::SideSet(db, ss_name);
       ss->property_add(Ioss::Property("id", family));
+      ss->property_add(Ioss::Property("guid", db->util().generate_guid(family)));
       ss->property_add(Ioss::Property("bc_type", bocotype));
       db->get_region()->add(ss);
     }
@@ -851,7 +852,8 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
                << block->name() << "'.\n";
         IOSS_ERROR(errmsg);
       }
-      sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...
+      sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...8
+      sset->property_add(Ioss::Property("guid", db->util().generate_guid(ibc+1)));
       db->get_region()->add(sset);
     }
 
@@ -878,6 +880,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
       sb->property_add(Ioss::Property("zone", zone));
       sb->property_add(Ioss::Property("section", ibc + 1));
       sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
+      sb->property_add(Ioss::Property("guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
 
       // Set a property on the sideset specifying the boundary condition type (bocotype)
       // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.
