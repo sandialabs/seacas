@@ -1,5 +1,6 @@
 var NAVTREEINDEX20 =
 {
+"classIoxf_1_1DatabaseIO.html#a0b4f1d1297ab03c330bc23629df8bf76":[4,0,72,3,51],
 "classIoxf_1_1DatabaseIO.html#a0f3ce5ce384fcb59ddaf12e6b602c4e0":[4,0,72,3,76],
 "classIoxf_1_1DatabaseIO.html#a0fb8147b30bd5af8a425c72de247e64c":[4,0,72,3,97],
 "classIoxf_1_1DatabaseIO.html#a12c67f629e604a91b6c05e8393a1d5d5":[4,0,72,3,40],
@@ -248,6 +249,5 @@ var NAVTREEINDEX20 =
 "classJson_1_1Reader.html#aa35e6ab574dc399a0a645ad98ed66bc9ae4fcf05c3b1ce462bacd34af0ccac32b":[4,0,73,6,7,12],
 "classJson_1_1Reader.html#aa35e6ab574dc399a0a645ad98ed66bc9af2c235e8da86f11ffb1a1243e49ed1fa":[4,0,73,6,7,10],
 "classJson_1_1Reader.html#aa9984ff8f519b5541346157b7aebf97b":[4,0,73,6,55],
-"classJson_1_1Reader.html#aae51e8f5bab3f067261c842a3ef858e5":[4,0,73,6,4],
-"classJson_1_1Reader.html#aaea3bd62d12ffb6117a61476c0685049":[4,0,73,6,10]
+"classJson_1_1Reader.html#aae51e8f5bab3f067261c842a3ef858e5":[4,0,73,6,4]
 };
