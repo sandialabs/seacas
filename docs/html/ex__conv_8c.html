@@ -296,6 +296,9 @@ Variables</h2></td></tr>
     <tr><td class="paramname">io_wordsize</td><td>the desired floating point word size for a netCDF file. For an existing file, if this parameter doesn't match the word size of data already stored in the file, a fatal error is generated. a value of 0 for an existing file indicates that the word size of the file was not known a priori, so use whatever is in the file. a value of 0 for a new file means to use the default size, an NC_FLOAT (4 bytes). when a value of 0 is specified the actual value used is returned in io_wordsize.</td></tr>
     <tr><td class="paramname">file_wordsize</td><td>floating point word size in an existing netCDF file. a value of 0 should be passed in for a new netCDF file.</td></tr>
     <tr><td class="paramname">int64_status</td><td>the flags specifying how integer values should be stored on the database and how they should be passes through the api functions. See #FileVars for more information.</td></tr>
+    <tr><td class="paramname">is_parallel</td><td>1 if parallel file; 0 if serial</td></tr>
+    <tr><td class="paramname">is_mpiio</td><td>1 if parallel netcdf-4 mode; 0 if not.</td></tr>
+    <tr><td class="paramname">is_pnetcdf</td><td>1 if parallel PNetCDF file; 0 if not.</td></tr>
   </table>
   </dd>
 </dl>

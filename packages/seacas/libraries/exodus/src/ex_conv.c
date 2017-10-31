@@ -148,6 +148,12 @@ int ex_conv_ini(int exoid, int *comp_wordsize, int *io_wordsize, int file_wordsi
    *                      passes through the api functions.
    *                      See #FileVars for more information.
    *
+   * \param is_parallel   1 if parallel file; 0 if serial
+   *
+   * \param is_mpiio      1 if parallel netcdf-4 mode; 0 if not.
+   *
+   * \param is_pnetcdf    1 if parallel PNetCDF file; 0 if not.
+   *
    * word size parameters are specified in bytes. valid values are 0, 4, and 8:
    */
 
