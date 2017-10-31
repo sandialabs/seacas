@@ -301,7 +301,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
       colelems.push_back(*rit);
       rit++;
     }
-    colelems.push_back(cur_elem);
+    colelems.push_back(i);
 
     typename std::vector<INT>::iterator it = below_list.begin();
     while (it != below_list.end()) {
