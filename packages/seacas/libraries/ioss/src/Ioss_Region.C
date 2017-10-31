@@ -165,24 +165,24 @@ namespace {
     util.global_array_minmax(max_hash, Ioss::ParallelUtils::DO_MAX);
  
     if (util.parallel_rank() == 0) {
-    int count = 0;
-    for (size_t i=0; i < hashes.size(); i++) {
-      if (min_hash[i] != max_hash[i]) {
-	auto ge = entities[i];
-	if (count == 0) {
-	  errmsg << ge->type_string() << "(s) ";
+      int count = 0;
+      for (size_t i=0; i < hashes.size(); i++) {
+	if (min_hash[i] != max_hash[i]) {
+	  auto ge = entities[i];
+	  if (count == 0) {
+	    errmsg << ge->type_string() << "(s) ";
+	  }
+	  else {
+	    errmsg << ", ";
+	  }
+	  errmsg << "'" << ge->name() << "'";
+	  count++;
 	}
-	else {
-	  errmsg << ", ";
-	}
-	errmsg << "'" << ge->name() << "'";
-	count++;
       }
-    }
-    errmsg << (count == 1 ? " is " : " are ");
-    errmsg << "not consistently defined on all processors.\n\t\t"
-	   << "Check that names and ids match across processors.\n";
-    std::cerr << errmsg.str();
+      errmsg << (count == 1 ? " is " : " are ");
+      errmsg << "not consistently defined on all processors.\n\t\t"
+	     << "Check that name and id matches across processors.\n";
+      std::cerr << errmsg.str();
     }
   }
 
@@ -647,18 +647,26 @@ namespace Ioss {
         }
       }
 
-      // In parallel and debug, check consistency of all grouping entities...
+      // GroupingEntity consistency check:
+      // -- debug and parallel     -- default to true; can disable via environment variable
+      // -- non-debug and parallel -- default to false; can enable via environment variable
 #ifndef NDEBUG
-      SMART_ASSERT(check_parallel_consistency(*this));
+      bool check_consistency = true;
 #else
-      if (get_database()->props().exists("CHECK_PARALLEL_CONSISTENCY")) {
+      bool check_consistency = false;
+#endif
+      Ioss::Utils::check_set_bool_property(get_database()->props(), "CHECK_PARALLEL_CONSISTENCY", check_consistency);
+      if (check_consistency) {
 	bool ok = check_parallel_consistency(*this);
 	if (!ok) {
-	  std::ostringstream errmsg{"ERROR: Parallel Consistency Failure."};
+	  std::ostringstream errmsg;
+	  errmsg << "ERROR: Parallel Consistency Failure for "
+		 << (get_database()->is_input() ? "input" : "ouput") << " database " 
+		 << "'" << get_database()->get_filename() << "'.";
 	  IOSS_ERROR(errmsg);
 	}
       }
-#endif
+
       modelDefined = true;
     }
     else if (current_state == STATE_DEFINE_TRANSIENT) {
