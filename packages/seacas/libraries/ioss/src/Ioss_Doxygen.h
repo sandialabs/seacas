@@ -1,3 +1,5 @@
+// clang-format off
+
 /*!  \mainpage IOSS API Documentation
 
 \section avail Availability
@@ -145,3 +147,5 @@ The IOSS library is licensed under the BSD open source license.
      OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
+// clang-format on
