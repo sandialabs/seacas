@@ -229,7 +229,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         */
         fprintf(stderr,
                 "EXODUS: ERROR: Attempting to open the netcdf-4 "
-                "file:\n\t'%s'\n\t. Either the netcdf library does not "
+                "file:\n\t'%s'\n\tEither the netcdf library does not "
                 "support netcdf-4 or there is a filesystem or some "
                 "other issue \n",
                 path);
@@ -254,15 +254,36 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         */
         fprintf(stderr,
                 "EXODUS: ERROR: Attempting to open the CDF5 "
-                "file:\n\t'%s'\n\t. Either the netcdf library does not "
+                "file:\n\t'%s'\n\tEither the netcdf library does not "
                 "support CDF5 or there is a filesystem or some "
                 "other issue \n",
                 path);
 
 #endif
       }
+      else if (type == 1 || type == 2) {
+#if NC_HAS_PNETCDF
+        fprintf(stderr,
+                "EXODUS: ERROR: Attempting to open the classic NetCDF "
+                "file:\n\t'%s'\n\t failed. The netcdf library supports "
+                "PNetCDF files as required for parallel readinf of this "
+                "file type, so there must be a filesystem or some other "
+                "issue \n",
+                path);
+#else
+        /* This is an normal NetCDF format file, for parallel reading, the PNetCDF
+           library is required but that is not compiled into this version.
+        */
+        fprintf(stderr,
+                "EXODUS: ERROR: Attempting to open the NetCDF "
+                "file:\n\t'%s'\n\tThe NetCDF library was not "
+                "built with PNetCDF support as required for parallel access to this file.\n",
+                path);
 
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s read only", path);
+#endif
+      }
+
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s of type %d read only", path, type);
       ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
     }
