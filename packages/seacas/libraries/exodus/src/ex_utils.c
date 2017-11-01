@@ -89,6 +89,7 @@ int ex_check_file_type(const char *path, int *type)
 Type is set to:
 1 if this is a netcdf classic file,
 2 if this is a netcdf 64-bit offset file,
+4 pnetcdf cdf5 file.
 5 if this is an hdf5 file
 */
 
