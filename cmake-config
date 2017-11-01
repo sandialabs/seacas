@@ -37,21 +37,20 @@ HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
 DATAWAREHOUSE_PATH=${ACCESS}
 
-if [ -e "${NETCDF_PATH}/include/netcdf.h" ]
-then
-    HAVE_NETCDF=ON
-fi
-   
-if [ -e "${MATIO_PATH}/include/matio.h" ]
-then
-    HAVE_MATIO=ON
-fi
-   
-if [ -e "${CGNS_PATH}/include/cgnslib.h" ]
-then
-    HAVE_CGNS=ON
-fi
-   
+function check_enable()
+{
+    local path=$1
+    if [ -e "${path}" ]
+    then
+	echo "ON"
+    else
+	echo "OFF"
+    fi
+}
+
+HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
+HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
+HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
 HAVE_DATAWAREHOUSE=OFF
 
 ### Define to NO to *enable* exodus deprecated functions
