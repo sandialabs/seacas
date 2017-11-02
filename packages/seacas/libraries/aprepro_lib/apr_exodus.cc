@@ -371,23 +371,48 @@ namespace SEAMS {
       aprepro->add_variable("ex_sideset_info", array_set_info);
     }
 
-    {
-      /* Get timestep count */
-      int64_t ts_count = ex_inquire_int(exoid, EX_INQ_TIME);
-      aprepro->add_variable("ex_timestep_count", ts_count);
+    /* Get timestep count */
+    int64_t ts_count = ex_inquire_int(exoid, EX_INQ_TIME);
+    aprepro->add_variable("ex_timestep_count", ts_count);
 
-      if (ts_count > 0) {
-        std::vector<double> timesteps(ts_count);
-        ex_get_all_times(exoid, timesteps.data());
+    if (ts_count > 0) {
+      std::vector<double> timesteps(ts_count);
+      ex_get_all_times(exoid, timesteps.data());
 
-        auto ts_array_data = new array(ts_count, 1);
-        for (int64_t i = 0; i < ts_count; i++) {
-          ts_array_data->data[i] = timesteps[i];
-        }
-        aprepro->add_variable("ex_timestep_times", ts_array_data);
+      auto ts_array_data = new array(ts_count, 1);
+      for (int64_t i = 0; i < ts_count; i++) {
+        ts_array_data->data[i] = timesteps[i];
       }
+      aprepro->add_variable("ex_timestep_times", ts_array_data);
     }
 
+    // See if any global variables on file...
+    int num_global = 0;
+    ex_get_variable_param(exoid, EX_GLOBAL, &num_global);
+    if (num_global > 0) {
+      std::string names;
+      for (int i = 0; i < num_global; i++) {
+        ex_get_variable_name(exoid, EX_GLOBAL, i + 1, name);
+        if (i > 0) {
+          names += ",";
+        }
+        names += name;
+      }
+      aprepro->add_variable("ex_global_var_names", names);
+
+      auto                glo_array_data = new array(ts_count, num_global);
+      std::vector<double> globals(num_global);
+      int                 index = 0;
+      for (int64_t i = 0; i < ts_count; i++) {
+        ex_get_var(exoid, i + 1, EX_GLOBAL, 0, 0, num_global, globals.data());
+        for (int j = 0; j < num_global; j++) {
+          glo_array_data->data[index++] = globals[j];
+        }
+      }
+      aprepro->add_variable("ex_global_var_value", glo_array_data);
+    }
+
+    delete[] name;
     ex_close(exoid);
     return "";
   }
