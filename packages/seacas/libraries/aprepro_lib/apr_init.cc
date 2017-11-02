@@ -413,6 +413,7 @@ namespace SEAMS {
     internal_init_table(string_dcc_fncts,   strfnct_dcc,    STRING_FUNCTION);
     internal_init_table(string_ccc_fncts,   strfnct_ccc,    STRING_FUNCTION);
     internal_init_table(string_cc_fncts,    strfnct_cc,     STRING_FUNCTION);
+    internal_init_table(string_a_fncts,     strfnct_a,      STRING_FUNCTION);
 
     internal_init_table(array_c_fncts,      arrfnct_c,      ARRAY_FUNCTION);
     internal_init_table(array_cc_fncts,     arrfnct_cc,     ARRAY_FUNCTION);
