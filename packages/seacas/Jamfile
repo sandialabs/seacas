@@ -1611,6 +1611,7 @@ exe epu
     exodus
     /tpl/netcdf//netcdf
   : <include>$(seacas-root)/applications/epu
+    <define>DISABLE_PARALLEL_EPU
     <tag>@utility-exec-tag
   ;
 

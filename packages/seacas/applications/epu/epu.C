@@ -59,7 +59,14 @@
 #include <utility>
 #include <vector>
 
+#include <exodusII.h>
 #ifdef PARALLEL_AWARE_EXODUS
+#ifndef DISABLE_PARALLEL_EPU
+#define ENABLE_PARALLEL_EPU 1
+#endif
+#endif
+
+#if ENABLE_PARALLEL_EPU
 #include <mpi.h>
 #endif
 
@@ -82,8 +89,6 @@ using StringVector = std::vector<std::string>;
 #include "EP_Variables.h"
 #include "EP_Version.h"
 
-#include <exodusII.h>
-
 #if EX_API_VERS_NODOT <= 467
 #error "Requires exodusII version 4.68 or later"
 #endif
@@ -105,7 +110,7 @@ namespace {
   std::string format_time(double seconds);
   int         get_width(int max_value);
 
-  void LOG(const std::string message) 
+  void LOG(const std::string message)
   {
     if (debug_level & 1) {
       std::cout << time_stamp(tsFormat);
@@ -132,7 +137,6 @@ namespace {
     vec.shrink_to_fit();
     SMART_ASSERT(vec.capacity() == 0);
   }
-
 
   ex_entity_type exodus_object_type(Excn::ObjectType &epu_type)
   {
@@ -328,7 +332,7 @@ using namespace Excn;
 int main(int argc, char *argv[])
 {
   int epu_proc_count = 1;
-#ifdef PARALLEL_AWARE_EXODUS
+#if ENABLE_PARALLEL_EPU
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &epu_proc_count);
@@ -341,6 +345,13 @@ int main(int argc, char *argv[])
   try {
     time_t begin_time = time(nullptr);
     SystemInterface::show_version(rank);
+    if (rank == 0) {
+#if ENABLE_PARALLEL_EPU
+      std::cout << "\tParallel Capability Enabled.\n";
+#else
+      std::cout << "\tParallel Capability Not Enabled.\n";
+#endif
+    }
 
     SystemInterface interface(rank);
     bool            ok = interface.parse_options(argc, argv);
@@ -418,7 +429,7 @@ int main(int argc, char *argv[])
       }
 
       ExodusFile::close_all();
-#ifdef PARALLEL_AWARE_EXODUS
+#if ENABLE_PARALLEL_EPU
       MPI_Barrier(MPI_COMM_WORLD);
 #endif
     }
@@ -565,7 +576,7 @@ int main(int argc, char *argv[])
       add_to_log(argv[0], static_cast<int>(end_time - begin_time));
     }
 #endif
-#ifdef PARALLEL_AWARE_EXODUS
+#if ENABLE_PARALLEL_EPU
     MPI_Finalize();
 #endif
     return (error);
@@ -817,7 +828,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
       // c.2.  Write Global Node Number Map
       if (global.needNodeMap) {
-	LOG("Writing global node number map...\n");
+        LOG("Writing global node number map...\n");
         error = ex_put_id_map(ExodusFile::output(), EX_NODE_MAP, TOPTR(global_node_map));
         if (error < 0) {
           exodus_error(__LINE__);
@@ -825,7 +836,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       }
 
       if (global.needElementMap) {
-	LOG("Writing out master global elements information...\n");
+        LOG("Writing out master global elements information...\n");
         if (!global_element_map.empty()) {
           error = ex_put_id_map(ExodusFile::output(), EX_ELEM_MAP, TOPTR(global_element_map));
           if (error < 0) {
@@ -1669,7 +1680,7 @@ namespace {
       }
       else {
         if (p == 0) {
-	  LOG("\nGetting element block info.\n");
+          LOG("\nGetting element block info.\n");
         }
       }
 
@@ -2207,7 +2218,7 @@ namespace {
       }
 
       if (rank == 0) {
-	std::cout << "Found " << vars.count(OUT) << " " << vars.label() << " variables.\n";
+        std::cout << "Found " << vars.count(OUT) << " " << vars.label() << " variables.\n";
         int i    = 0;
         int ifld = 1;
         std::cout << "\t";
@@ -2350,19 +2361,19 @@ namespace {
     // Write out Global info
 
     if (rank == 0) {
-    std::cout << " Title: " << global.title.c_str() << "\n\n";
-    std::cout << " Number of coordinates per node       =" << std::setw(12) << global.dimensionality
-              << "\n";
-    std::cout << " Number of nodes                      =" << std::setw(12) << global.nodeCount
-              << "\n";
-    std::cout << " Number of elements                   =" << std::setw(12) << global.elementCount
-              << "\n";
-    std::cout << " Number of element blocks             =" << std::setw(12) << global.count(EBLK)
-              << "\n\n";
-    std::cout << " Number of nodal point sets           =" << std::setw(12) << global.count(NSET)
-              << "\n";
-    std::cout << " Number of element side sets          =" << std::setw(12) << global.count(SSET)
-              << "\n\n";
+      std::cout << " Title: " << global.title.c_str() << "\n\n";
+      std::cout << " Number of coordinates per node       =" << std::setw(12)
+                << global.dimensionality << "\n";
+      std::cout << " Number of nodes                      =" << std::setw(12) << global.nodeCount
+                << "\n";
+      std::cout << " Number of elements                   =" << std::setw(12) << global.elementCount
+                << "\n";
+      std::cout << " Number of element blocks             =" << std::setw(12) << global.count(EBLK)
+                << "\n\n";
+      std::cout << " Number of nodal point sets           =" << std::setw(12) << global.count(NSET)
+                << "\n";
+      std::cout << " Number of element side sets          =" << std::setw(12) << global.count(SSET)
+                << "\n\n";
     }
     int id_out = ExodusFile::output();
     get_put_qa(ExodusFile(0), id_out);
