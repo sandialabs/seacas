@@ -358,20 +358,22 @@ namespace SEAMS {
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
+  // clang-format off
   struct var_init variables[] = {
-      {"DEG", 57.29577951308232087680},  /* 180/pi, degrees per radian */
-      {"RAD", 0.01745329251994329576},   /* pi/180, radians per degree */
-      {"E", 2.71828182845904523536},     /* e, base of natural log     */
-      {"GAMMA", 0.57721566490153286060}, /* euler-mascheroni constant  */
-      {"PHI", 1.61803398874989484820},   /* golden ratio               */
-      {"TAU", 6.28318530717958623200},   /* 2*PI see Tau Manifesto, http://tauday.com */
-      {"PI", 3.14159265358979323846},    /* pi                         */
-      {"PI_2", 1.57079632679489661923},  /* pi / 2			 */
-      {"SQRT2", 1.41421356237309504880}, /* square root of 2		 */
-      {"TRUE", 1},
+      {"DEG",  57.29577951308232087680},  /* 180/pi, degrees per radian */
+      {"RAD",   0.01745329251994329576},  /* pi/180, radians per degree */
+      {"E",     2.71828182845904523536},  /* e, base of natural log     */
+      {"GAMMA", 0.57721566490153286060},  /* euler-mascheroni constant  */
+      {"PHI",   1.61803398874989484820},  /* golden ratio               */
+      {"TAU",   6.28318530717958623200},  /* 2*PI see Tau Manifesto, http://tauday.com */
+      {"PI",    3.14159265358979323846},  /* pi                         */
+      {"PI_2",  1.57079632679489661923},  /* pi / 2			 */
+      {"SQRT2", 1.41421356237309504880},  /* square root of 2		 */
+      {"TRUE",  1},
       {"FALSE", 0},
       {nullptr, 0} /* Last line must be 0, 0 */
   };
+  // clang-format on
 
   struct svar_init svariables[] = {
       {"_FORMAT", "%.10g"}, /* Default output format */
@@ -382,161 +384,43 @@ namespace SEAMS {
    *	 initialize is differently than the other string variables.
    */
 
+#define internal_init_table(functions, func_type, sym_type)                                        \
+  do {                                                                                             \
+    for (int i = 0; functions[i].fname != nullptr; i++) {                                          \
+      symrec *ptr          = putsym(functions[i].fname, sym_type, true);                           \
+      ptr->value.func_type = functions[i].fnct;                                                    \
+      ptr->info            = functions[i].description;                                             \
+      ptr->syntax          = functions[i].syntax;                                                  \
+    }                                                                                              \
+  } while (0)
+
   void Aprepro::init_table(const char *comment)
   {
-    for (int i = 0; arith_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(arith_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_d = arith_fncts[i].fnct;
-      ptr->info            = arith_fncts[i].description;
-      ptr->syntax          = arith_fncts[i].syntax;
-    }
+    // clang-format off
+    internal_init_table(arith_fncts,        fnctptr_d,      FUNCTION);
+    internal_init_table(arith_dd_fncts,     fnctptr_dd,     FUNCTION);
+    internal_init_table(arith_a_fncts,      fnctptr_a,      FUNCTION);
+    internal_init_table(arith_dddd_fncts,   fnctptr_dddd,   FUNCTION);
+    internal_init_table(arith_cc_fncts,     fnctptr_cc,     FUNCTION);
+    internal_init_table(arith_c_fncts,      fnctptr_c,      FUNCTION);
+    internal_init_table(arith_cd_fncts,     fnctptr_cd,     FUNCTION);
+    internal_init_table(arith_ddd_fncts,    fnctptr_ddd,    FUNCTION);
+    internal_init_table(arith_dddddd_fncts, fnctptr_dddddd, FUNCTION);
 
-    for (int i = 0; arith_dd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(arith_dd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_dd = arith_dd_fncts[i].fnct;
-      ptr->info             = arith_dd_fncts[i].description;
-      ptr->syntax           = arith_dd_fncts[i].syntax;
-    }
+    internal_init_table(string_fncts,       strfnct,        STRING_FUNCTION);
+    internal_init_table(string_c_fncts,     strfnct_c,      STRING_FUNCTION);
+    internal_init_table(string_d_fncts,     strfnct_d,      STRING_FUNCTION);
+    internal_init_table(string_dcc_fncts,   strfnct_dcc,    STRING_FUNCTION);
+    internal_init_table(string_ccc_fncts,   strfnct_ccc,    STRING_FUNCTION);
+    internal_init_table(string_cc_fncts,    strfnct_cc,     STRING_FUNCTION);
 
-    for (int i = 0; arith_a_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(arith_a_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_a = arith_a_fncts[i].fnct;
-      ptr->info            = arith_a_fncts[i].description;
-      ptr->syntax          = arith_a_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_dddd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr             = putsym(arith_dddd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_dddd = arith_dddd_fncts[i].fnct;
-      ptr->info               = arith_dddd_fncts[i].description;
-      ptr->syntax             = arith_dddd_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_cc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(arith_cc_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_cc = arith_cc_fncts[i].fnct;
-      ptr->info             = arith_cc_fncts[i].description;
-      ptr->syntax           = arith_cc_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_c_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(arith_c_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_c = arith_c_fncts[i].fnct;
-      ptr->info            = arith_c_fncts[i].description;
-      ptr->syntax          = arith_c_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_cd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(arith_cd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_cd = arith_cd_fncts[i].fnct;
-      ptr->info             = arith_cd_fncts[i].description;
-      ptr->syntax           = arith_cd_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_ddd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr            = putsym(arith_ddd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_ddd = arith_ddd_fncts[i].fnct;
-      ptr->info              = arith_ddd_fncts[i].description;
-      ptr->syntax            = arith_ddd_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_dddddd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr               = putsym(arith_dddddd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_dddddd = arith_dddddd_fncts[i].fnct;
-      ptr->info                 = arith_dddddd_fncts[i].description;
-      ptr->syntax               = arith_dddddd_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_fncts[i].fname != nullptr; i++) {
-      symrec *ptr        = putsym(string_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct = string_fncts[i].fnct;
-      ptr->info          = string_fncts[i].description;
-      ptr->syntax        = string_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_c_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(string_c_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_c = string_c_fncts[i].fnct;
-      ptr->info            = string_c_fncts[i].description;
-      ptr->syntax          = string_c_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_d_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(string_d_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_d = string_d_fncts[i].fnct;
-      ptr->info            = string_d_fncts[i].description;
-      ptr->syntax          = string_d_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_dcc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr            = putsym(string_dcc_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_dcc = string_dcc_fncts[i].fnct;
-      ptr->info              = string_dcc_fncts[i].description;
-      ptr->syntax            = string_dcc_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_ccc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr            = putsym(string_ccc_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_ccc = string_ccc_fncts[i].fnct;
-      ptr->info              = string_ccc_fncts[i].description;
-      ptr->syntax            = string_ccc_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_cc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(string_cc_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_cc = string_cc_fncts[i].fnct;
-      ptr->info             = string_cc_fncts[i].description;
-      ptr->syntax           = string_cc_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_a_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(string_a_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_a = string_a_fncts[i].fnct;
-      ptr->info            = string_a_fncts[i].description;
-      ptr->syntax          = string_a_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_c_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(array_c_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_c = array_c_fncts[i].fnct;
-      ptr->info            = array_c_fncts[i].description;
-      ptr->syntax          = array_c_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_cc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(array_cc_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_cc = array_cc_fncts[i].fnct;
-      ptr->info             = array_cc_fncts[i].description;
-      ptr->syntax           = array_cc_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_cd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(array_cd_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_cd = array_cd_fncts[i].fnct;
-      ptr->info             = array_cd_fncts[i].description;
-      ptr->syntax           = array_cd_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_dd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(array_dd_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_dd = array_dd_fncts[i].fnct;
-      ptr->info             = array_dd_fncts[i].description;
-      ptr->syntax           = array_dd_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_d_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(array_d_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_d = array_d_fncts[i].fnct;
-      ptr->info            = array_d_fncts[i].description;
-      ptr->syntax          = array_d_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_a_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(array_a_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_a = array_a_fncts[i].fnct;
-      ptr->info            = array_a_fncts[i].description;
-      ptr->syntax          = array_a_fncts[i].syntax;
-    }
+    internal_init_table(array_c_fncts,      arrfnct_c,      ARRAY_FUNCTION);
+    internal_init_table(array_cc_fncts,     arrfnct_cc,     ARRAY_FUNCTION);
+    internal_init_table(array_cd_fncts,     arrfnct_cd,     ARRAY_FUNCTION);
+    internal_init_table(array_dd_fncts,     arrfnct_dd,     ARRAY_FUNCTION);
+    internal_init_table(array_d_fncts,      arrfnct_d,      ARRAY_FUNCTION);
+    internal_init_table(array_a_fncts,      arrfnct_a,      ARRAY_FUNCTION);
+    // clang-format on
 
     for (int i = 0; variables[i].vname != nullptr; i++) {
       // These should be immutable, but possible user is using them for some other purpose...
