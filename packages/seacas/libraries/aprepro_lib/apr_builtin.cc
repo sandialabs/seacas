@@ -669,7 +669,7 @@ namespace SEAMS {
 
     SEAMS::symrec *format;
     format = aprepro->getsym("_FORMAT");
-    (void)sprintf(tmpstr, format->value.svar, x);
+    (void)sprintf(tmpstr, format->value.svar.c_str(), x);
     new_string(tmpstr, &tmp);
     return (tmp);
   }

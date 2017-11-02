@@ -1963,7 +1963,7 @@ YY_DECL
               pt = yytext;
             }
             else {
-              pt = (char *)s->value.svar;
+              pt = (char *)s->value.svar.c_str();
             }
           }
           else {
@@ -2203,8 +2203,7 @@ YY_DECL
 #line 663 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.ll"
       {
         // Check if we need to save the substitution history first.
-        if (aprepro.ap_options.keep_history &&
-            (aprepro.ap_file_list.top().name != "_string_")) {
+        if (aprepro.ap_options.keep_history && (aprepro.ap_file_list.top().name != "_string_")) {
           if (curr_index > (size_t)yyleng)
             hist_start = curr_index - yyleng;
           else

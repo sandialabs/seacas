@@ -151,7 +151,7 @@ line:	  '\n'			{ if (echo) aprepro.lexer->LexerOutput("\n", 1); }
 	| LBRACE exp RBRACE 	{ if (echo) {
 	                             static char tmpstr[512];
 				     SEAMS::symrec *format = aprepro.getsym("_FORMAT");
-				     int len = sprintf(tmpstr, format->value.svar, $2);
+				     int len = sprintf(tmpstr, format->value.svar.c_str(), $2);
 				     aprepro.lexer->LexerOutput(tmpstr, len);
 				   }
                                 }
@@ -258,8 +258,8 @@ aexp:   AVAR                    { $$ = $1->value.avar;}
 				}
 
 sexp:     QSTRING		{ $$ = $1;				}
-        | SVAR			{ $$ = (char*)$1->value.svar;			}
-        | IMMSVAR		{ $$ = (char*)$1->value.svar;			}
+        | SVAR			{ $$ = (char*)$1->value.svar.c_str();			}
+        | IMMSVAR		{ $$ = (char*)$1->value.svar.c_str();			}
     	| UNDVAR EQUAL sexp	{ $$ = $3; $1->value.svar = $3;
 		                  set_type(aprepro, $1, Parser::token::SVAR);	}
         | SVAR EQUAL sexp	{ $$ = $3; 
@@ -269,7 +269,7 @@ sexp:     QSTRING		{ $$ = $1;				}
 				  $1->value.svar= $3;
 				  redefined_warning(aprepro, $1);          
 		                  set_type(aprepro, $1, token::SVAR);		}
-	| IMMSVAR EQUAL sexp	{ $$ = (char*)$1->value.svar; immutable_modify(aprepro, $1); }
+	| IMMSVAR EQUAL sexp	{ $$ = (char*)$1->value.svar.c_str(); immutable_modify(aprepro, $1); }
         | IMMVAR EQUAL sexp	{ immutable_modify(aprepro, $1); YYERROR; }
         | SFNCT LPAR sexp RPAR	{
 	  if (arg_check($1, $1->value.strfnct_c == NULL))
