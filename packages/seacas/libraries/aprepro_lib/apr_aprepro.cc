@@ -468,9 +468,7 @@ namespace SEAMS {
       }
       symrec *ptr = getsym("_C_");
       if (ptr != nullptr) {
-        char *tmp = nullptr;
-        new_string(comment, &tmp);
-        ptr->value.svar = tmp;
+        ptr->value.svar = comment;
       }
     }
 
@@ -509,35 +507,34 @@ namespace SEAMS {
   }
 
   void Aprepro::add_variable(const std::string &sym_name, const std::string &sym_value,
-                             bool immutable)
+                             bool immutable, bool internal)
   {
     if (check_valid_var(sym_name.c_str())) {
       SYMBOL_TYPE type = immutable ? IMMUTABLE_STRING_VARIABLE : STRING_VARIABLE;
       symrec *    var  = getsym(sym_name);
       if (var == nullptr) {
-        var = putsym(sym_name, type, false);
+        var = putsym(sym_name, type, internal);
       }
       else {
         if (var->type != type) {
           var->type = type;
         }
       }
-      char *tmp = nullptr;
-      new_string(sym_value, &tmp);
-      var->value.svar = tmp;
+      var->value.svar = sym_value;
     }
     else {
       warning("Invalid variable name syntax '" + sym_name + "'. Variable not defined.\n", false);
     }
   }
 
-  void Aprepro::add_variable(const std::string &sym_name, double sym_value, bool immutable)
+  void Aprepro::add_variable(const std::string &sym_name, double sym_value, bool immutable,
+                             bool internal)
   {
     if (check_valid_var(sym_name.c_str())) {
       SYMBOL_TYPE type = immutable ? IMMUTABLE_VARIABLE : VARIABLE;
       symrec *    var  = getsym(sym_name);
       if (var == nullptr) {
-        var = putsym(sym_name, type, false);
+        var = putsym(sym_name, type, internal);
       }
       else {
         if (var->type != type) {
@@ -545,6 +542,26 @@ namespace SEAMS {
         }
       }
       var->value.var = sym_value;
+    }
+    else {
+      warning("Invalid variable name syntax '" + sym_name + "'. Variable not defined.\n", false);
+    }
+  }
+
+  void Aprepro::add_variable(const std::string &sym_name, array *value)
+  {
+    if (check_valid_var(sym_name.c_str())) {
+      SYMBOL_TYPE type = ARRAY_VARIABLE;
+      symrec *    var  = getsym(sym_name);
+      if (var == nullptr) {
+        var = putsym(sym_name, type, false);
+      }
+      else {
+        if (var->type != type) {
+          var->type = type;
+        }
+      }
+      var->value.avar = value;
     }
     else {
       warning("Invalid variable name syntax '" + sym_name + "'. Variable not defined.\n", false);
@@ -654,7 +671,7 @@ namespace SEAMS {
 
   void Aprepro::dumpsym(int type, const char *pre, bool doInternal) const
   {
-    const char *comment = getsym("_C_")->value.svar;
+    std::string comment = getsym("_C_")->value.svar;
     int         width   = 10; // controls spacing/padding for the variable names
     std::string spre;
 
@@ -679,8 +696,8 @@ namespace SEAMS {
                               << "}\t(immutable)" << '\n';
               }
               else if (ptr->type == Parser::token::SVAR) {
-                if (index(ptr->value.svar, '\n') != nullptr ||
-                    index(ptr->value.svar, '"') != nullptr) {
+                if (index(ptr->value.svar.c_str(), '\n') != nullptr ||
+                    index(ptr->value.svar.c_str(), '"') != nullptr) {
                   (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
                                 << "\t= '" << ptr->value.svar << "'}" << '\n';
                 }
@@ -690,8 +707,8 @@ namespace SEAMS {
                 }
               }
               else if (ptr->type == Parser::token::IMMSVAR) {
-                if (index(ptr->value.svar, '\n') != nullptr ||
-                    index(ptr->value.svar, '"') != nullptr) {
+                if (index(ptr->value.svar.c_str(), '\n') != nullptr ||
+                    index(ptr->value.svar.c_str(), '"') != nullptr) {
                   (*infoStream) << comment << "  {" << std::left << std::setw(width) << ptr->name
                                 << "\t= '" << ptr->value.svar << "'}\t(immutable)" << '\n';
                 }

@@ -50,9 +50,7 @@ namespace SEAMS {
 
 #define DEFINE_VAR(name, val, label)                                                               \
   do {                                                                                             \
-    if ((ptr = aprepro->getsym((name))) == nullptr)                                                \
-      ptr = aprepro->putsym((name), SEAMS::Aprepro::VARIABLE, 1);                                  \
-    ptr->value.var = (val);                                                                        \
+    aprepro->add_variable(name, val, true);                                                        \
     if (echo) {                                                                                    \
       *(aprepro->infoStream) << comment << " 1 " << std::left << std::setw(10) << name             \
                              << "\t= " << std::setw(14) << std::setprecision(7) << val << "  "     \
@@ -327,7 +325,6 @@ struct unit_systems systems[] =
 const char *do_Units(char *type)
 {
   int i, j;
-  SEAMS::symrec *ptr;
   SEAMS::conv_string(type);
   
   for (i = 0; systems[i].name != nullptr; i++) {
@@ -338,17 +335,11 @@ const char *do_Units(char *type)
   if (systems[i].name != nullptr) {
     /* Found a match */
     for (j = 0; systems[i].label[j].vname != nullptr; j++) {
-      if ((ptr = aprepro->getsym(systems[i].label[j].vname)) == nullptr) {
-	ptr = aprepro->putsym(systems[i].label[j].vname, SEAMS::Aprepro::STRING_VARIABLE, true);
-      }
-      ptr->value.svar = systems[i].label[j].value;
+      aprepro->add_variable(systems[i].label[j].vname, systems[i].label[j].value, true);
     }
 
     for (j = 0; systems[i].base[j].vname != nullptr; j++) {
-      if ((ptr = aprepro->getsym(systems[i].base[j].vname)) == nullptr) {
-	ptr = aprepro->putsym(systems[i].base[j].vname, SEAMS::Aprepro::VARIABLE, true);
-      }
-      ptr->value.var = systems[i].base[j].value;
+      aprepro->add_variable(systems[i].base[j].vname, systems[i].base[j].value, true);
     }
 
     load_conversion(systems[i].base, systems[i].label);
@@ -361,8 +352,6 @@ const char *do_Units(char *type)
 
 void load_conversion(struct var_init *base, struct svar_init *label)
 {
-  SEAMS::symrec *ptr;
-
   const char *tout = label[ 0].value;
   const char *lout = label[ 1].value;
   const char *aout = label[ 2].value;
@@ -386,7 +375,7 @@ void load_conversion(struct var_init *base, struct svar_init *label)
   double foot = m * 0.3048;
   double inch = foot / 12.0;
 
-  const char* comment = aprepro->getsym("_C_")->value.svar;
+  std::string comment = aprepro->getsym("_C_")->value.svar;
   std::string title_prefix = "\n";
   for(size_t i = 0; i < 3; i++) {
     title_prefix += comment;

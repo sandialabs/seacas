@@ -494,7 +494,7 @@ namespace SEAMS {
             if (echo) {
               static char    tmpstr[512];
               SEAMS::symrec *format = aprepro.getsym("_FORMAT");
-              int            len    = sprintf(tmpstr, format->value.svar, (yystack_[1].value.val));
+              int len = sprintf(tmpstr, format->value.svar.c_str(), (yystack_[1].value.val));
               aprepro.lexer->LexerOutput(tmpstr, len);
             }
           }
@@ -884,7 +884,7 @@ namespace SEAMS {
           case 45:
 #line 261 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.string) = (char *)(yystack_[0].value.tptr)->value.svar;
+            (yylhs.value.string) = (char *)(yystack_[0].value.tptr)->value.svar.c_str();
           }
 #line 937 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -892,7 +892,7 @@ namespace SEAMS {
           case 46:
 #line 262 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.string) = (char *)(yystack_[0].value.tptr)->value.svar;
+            (yylhs.value.string) = (char *)(yystack_[0].value.tptr)->value.svar.c_str();
           }
 #line 943 "apr_parser.cc" // lalr1.cc:859
           break;
@@ -931,7 +931,7 @@ namespace SEAMS {
           case 50:
 #line 272 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:859
           {
-            (yylhs.value.string) = (char *)(yystack_[2].value.tptr)->value.svar;
+            (yylhs.value.string) = (char *)(yystack_[2].value.tptr)->value.svar.c_str();
             immutable_modify(aprepro, (yystack_[2].value.tptr));
           }
 #line 973 "apr_parser.cc" // lalr1.cc:859

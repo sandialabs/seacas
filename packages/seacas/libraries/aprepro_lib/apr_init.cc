@@ -539,23 +539,19 @@ namespace SEAMS {
     }
 
     for (int i = 0; variables[i].vname != nullptr; i++) {
-      symrec *ptr    = putsym(variables[i].vname, VARIABLE, true);
-      ptr->value.var = variables[i].value;
+      // These should be immutable, but possible user is using them for some other purpose...
+      // For backward compatability, keep as mutable.
+      add_variable(variables[i].vname, variables[i].value, false, true);
     }
 
     for (int i = 0; svariables[i].vname != nullptr; i++) {
-      symrec *ptr     = putsym(svariables[i].vname, STRING_VARIABLE, true);
-      ptr->value.svar = svariables[i].value;
+      add_variable(svariables[i].vname, svariables[i].value, false, true);
     }
 
-    symrec *ptr     = putsym("_C_", STRING_VARIABLE, true);
-    ptr->value.svar = comment;
+    add_variable("_C_", comment, false, true);
 
     if (aprepro) {
-      std::strncpy(vers_string, aprepro->version().c_str(), 32);
-      vers_string[31] = '\0';
-      ptr             = putsym("VERSION", STRING_VARIABLE, true);
-      ptr->value.svar = vers_string;
+      add_variable("VERSION", aprepro->version(), true, true);
     }
   }
 } // namespace SEAMS

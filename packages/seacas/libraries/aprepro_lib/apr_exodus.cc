@@ -40,6 +40,7 @@
 #include "apr_util.h"
 #include "aprepro_parser.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -51,7 +52,7 @@
 #endif
 
 namespace {
-  void LowerCaseTrim(char *name);
+  std::string LowerCase(std::string name);
 
   bool matches_prefix(const char *pre, const char *str)
   {
@@ -83,11 +84,7 @@ namespace SEAMS {
       }
     }
 
-    SEAMS::symrec *ptr = aprepro->getsym("ex_version");
-    if (!ptr) {
-      ptr = aprepro->putsym("ex_version", Aprepro::VARIABLE, 0);
-    }
-    ptr->value.var = version;
+    aprepro->add_variable("ex_version", version);
     return exo;
   }
 
@@ -208,30 +205,17 @@ namespace SEAMS {
       return "";
 
     /* read database paramters */
-    static char    title[MAX_LINE_LENGTH + 1];
-    int64_t ndim, nnodes, nelems, nblks, nnsets, nssets;
+    static char title[MAX_LINE_LENGTH + 1];
+    int64_t     ndim, nnodes, nelems, nblks, nnsets, nssets;
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);
 
-    SEAMS::symrec *ptr = aprepro->putsym("ex_title", Aprepro::STRING_VARIABLE, 0);
-    ptr->value.svar    = title;
-
-    ptr            = aprepro->putsym("ex_dimension", Aprepro::VARIABLE, 0);
-    ptr->value.var = ndim;
-
-    ptr            = aprepro->putsym("ex_node_count", Aprepro::VARIABLE, 0);
-    ptr->value.var = nnodes;
-
-    ptr            = aprepro->putsym("ex_element_count", Aprepro::VARIABLE, 0);
-    ptr->value.var = nelems;
-
-    ptr            = aprepro->putsym("ex_block_count", Aprepro::VARIABLE, 0);
-    ptr->value.var = nblks;
-
-    ptr            = aprepro->putsym("ex_nodeset_count", Aprepro::VARIABLE, 0);
-    ptr->value.var = nnsets;
-
-    ptr            = aprepro->putsym("ex_sideset_count", Aprepro::VARIABLE, 0);
-    ptr->value.var = nssets;
+    aprepro->add_variable("ex_title", title);
+    aprepro->add_variable("ex_dimension", ndim);
+    aprepro->add_variable("ex_node_count", nnodes);
+    aprepro->add_variable("ex_element_count", nelems);
+    aprepro->add_variable("ex_block_count", nblks);
+    aprepro->add_variable("ex_nodeset_count", nnsets);
+    aprepro->add_variable("ex_sideset_count", nssets);
 
     { /* Nemesis Information */
       int  proc_count;
@@ -247,17 +231,13 @@ namespace SEAMS {
         int64_t global_nsets;
         int64_t global_ssets;
 
-        ptr            = aprepro->putsym("ex_processor_count", Aprepro::VARIABLE, 0);
-        ptr->value.var = proc_count;
+        aprepro->add_variable("ex_processor_count", proc_count);
 
         ex_get_init_global(exoid, &global_nodes, &global_elements, &global_blocks, &global_nsets,
                            &global_ssets);
 
-        ptr            = aprepro->putsym("ex_node_count_global", Aprepro::VARIABLE, 0);
-        ptr->value.var = global_nodes;
-
-        ptr            = aprepro->putsym("ex_element_count_global", Aprepro::VARIABLE, 0);
-        ptr->value.var = global_elements;
+        aprepro->add_variable("ex_node_count_global", global_nodes);
+        aprepro->add_variable("ex_element_count_global", global_elements);
       }
     }
 
@@ -276,7 +256,6 @@ namespace SEAMS {
     int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
     ex_set_max_name_length(exoid, max_name_length);
     char *name = new char[max_name_length + 1];
-    char *tmp  = nullptr;
 
     if (nblks > 0) {
       auto array_data       = new array(nblks, 1);
@@ -315,22 +294,11 @@ namespace SEAMS {
         names += name;
       }
 
-      ptr = aprepro->putsym("ex_block_topology", Aprepro::STRING_VARIABLE, 0);
-
-      new_string(topology, &tmp);
-      /* lowercase the string */
-      LowerCaseTrim(tmp);
-      ptr->value.svar = tmp;
-
-      ptr = aprepro->putsym("ex_block_names", Aprepro::STRING_VARIABLE, 0);
-      new_string(names, &tmp);
-      ptr->value.svar = tmp;
-
-      ptr             = aprepro->putsym("ex_block_ids", Aprepro::ARRAY_VARIABLE, 0);
-      ptr->value.avar = array_data;
-
-      ptr             = aprepro->putsym("ex_block_info", Aprepro::ARRAY_VARIABLE, 0);
-      ptr->value.avar = array_block_info;
+      topology = LowerCase(topology);
+      aprepro->add_variable("ex_block_topology", topology);
+      aprepro->add_variable("ex_block_names", names);
+      aprepro->add_variable("ex_block_ids", array_data);
+      aprepro->add_variable("ex_block_info", array_block_info);
     }
 
     // Nodesets...
@@ -363,15 +331,9 @@ namespace SEAMS {
         names += name;
       }
 
-      ptr = aprepro->putsym("ex_nodeset_names", Aprepro::STRING_VARIABLE, 0);
-      new_string(names, &tmp);
-      ptr->value.svar = tmp;
-
-      ptr             = aprepro->putsym("ex_nodeset_ids", Aprepro::ARRAY_VARIABLE, 0);
-      ptr->value.avar = array_data;
-
-      ptr             = aprepro->putsym("ex_nodeset_info", Aprepro::ARRAY_VARIABLE, 0);
-      ptr->value.avar = array_set_info;
+      aprepro->add_variable("ex_nodeset_names", names);
+      aprepro->add_variable("ex_nodeset_ids", array_data);
+      aprepro->add_variable("ex_nodeset_info", array_set_info);
     }
 
     // Sidesets...
@@ -404,22 +366,15 @@ namespace SEAMS {
         names += name;
       }
 
-      ptr = aprepro->putsym("ex_sideset_names", Aprepro::STRING_VARIABLE, 0);
-      new_string(names, &tmp);
-      ptr->value.svar = tmp;
-
-      ptr             = aprepro->putsym("ex_sideset_ids", Aprepro::ARRAY_VARIABLE, 0);
-      ptr->value.avar = array_data;
-
-      ptr             = aprepro->putsym("ex_sideset_info", Aprepro::ARRAY_VARIABLE, 0);
-      ptr->value.avar = array_set_info;
+      aprepro->add_variable("ex_sideset_names", names);
+      aprepro->add_variable("ex_sideset_ids", array_data);
+      aprepro->add_variable("ex_sideset_info", array_set_info);
     }
 
     {
       /* Get timestep count */
       int64_t ts_count = ex_inquire_int(exoid, EX_INQ_TIME);
-      ptr              = aprepro->putsym("ex_timestep_count", Aprepro::VARIABLE, 0);
-      ptr->value.var   = ts_count;
+      aprepro->add_variable("ex_timestep_count", ts_count);
 
       if (ts_count > 0) {
         std::vector<double> timesteps(ts_count);
@@ -429,8 +384,7 @@ namespace SEAMS {
         for (int64_t i = 0; i < ts_count; i++) {
           ts_array_data->data[i] = timesteps[i];
         }
-        ptr             = aprepro->putsym("ex_timestep_times", Aprepro::ARRAY_VARIABLE, 0);
-        ptr->value.avar = ts_array_data;
+        aprepro->add_variable("ex_timestep_times", ts_array_data);
       }
     }
 
@@ -440,30 +394,11 @@ namespace SEAMS {
 } // namespace SEAMS
 
 namespace {
-  void LowerCaseTrim(char *name)
+  inline int  to_lower(int c) { return std::tolower(c); }
+  std::string LowerCase(std::string name)
   {
-    /*
-     * Convert all characters to lowercase. Strip leading whitespace and
-     * trim string at first 'whitespace' character (after the leading)
-     */
-
-    char *p = name;
-    char *o = name;
-    while (*p != '\0' && isspace(*p))
-      ++p;
-
-    while (*p != '\0') {
-      if (isspace(*p)) {
-        *o = '\0';
-        return;
-      }
-      else {
-        *o = tolower(*p);
-      }
-      o++;
-      p++;
-    }
-    *o = '\0';
+    std::transform(name.begin(), name.end(), name.begin(), to_lower);
+    return name;
   }
 } // namespace
 #endif
