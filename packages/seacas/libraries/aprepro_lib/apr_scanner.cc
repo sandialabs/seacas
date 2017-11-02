@@ -2204,7 +2204,7 @@ YY_DECL
       {
         // Check if we need to save the substitution history first.
         if (aprepro.ap_options.keep_history &&
-            strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) != 0) {
+            (aprepro.ap_file_list.top().name != "_string_")) {
           if (curr_index > (size_t)yyleng)
             hist_start = curr_index - yyleng;
           else
@@ -3384,7 +3384,7 @@ namespace SEAMS {
           delete yyin;
           yyin = nullptr;
 
-          if (strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) != 0) {
+          if (aprepro.ap_file_list.top().name != "_string_") {
             if (!aprepro.ap_options.debugging) {
               remove(aprepro.ap_file_list.top().name.c_str()); /* Delete file if temporary */
             }
@@ -3613,8 +3613,9 @@ namespace SEAMS {
       return;
 
     // Don't do it if the file is the one used by execute and rescan.
-    if (strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) == 0)
+    if (aprepro.ap_file_list.top().name == "_string_") {
       return;
+    }
 
     size_t hist_end = curr_index;
     size_t len      = hist_end - hist_start;

@@ -123,7 +123,7 @@ namespace SEAMS {
         }
       }
 
-      new_string(lines.c_str(), &ret_string);
+      new_string(lines, &ret_string);
 
       if (count > 0) {
         for (int i = 0; i < count; i++) {
@@ -178,7 +178,7 @@ namespace SEAMS {
         }
       }
 
-      new_string(lines.c_str(), &ret_string);
+      new_string(lines, &ret_string);
 
       if (count > 0) {
         for (int i = 0; i < count; i++) {
@@ -208,7 +208,7 @@ namespace SEAMS {
       return "";
 
     /* read database paramters */
-    char    title[MAX_LINE_LENGTH + 1];
+    static char    title[MAX_LINE_LENGTH + 1];
     int64_t ndim, nnodes, nelems, nblks, nnsets, nssets;
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);
 
@@ -317,13 +317,13 @@ namespace SEAMS {
 
       ptr = aprepro->putsym("ex_block_topology", Aprepro::STRING_VARIABLE, 0);
 
-      new_string(topology.c_str(), &tmp);
+      new_string(topology, &tmp);
       /* lowercase the string */
       LowerCaseTrim(tmp);
       ptr->value.svar = tmp;
 
       ptr = aprepro->putsym("ex_block_names", Aprepro::STRING_VARIABLE, 0);
-      new_string(names.c_str(), &tmp);
+      new_string(names, &tmp);
       ptr->value.svar = tmp;
 
       ptr             = aprepro->putsym("ex_block_ids", Aprepro::ARRAY_VARIABLE, 0);
@@ -364,7 +364,7 @@ namespace SEAMS {
       }
 
       ptr = aprepro->putsym("ex_nodeset_names", Aprepro::STRING_VARIABLE, 0);
-      new_string(names.c_str(), &tmp);
+      new_string(names, &tmp);
       ptr->value.svar = tmp;
 
       ptr             = aprepro->putsym("ex_nodeset_ids", Aprepro::ARRAY_VARIABLE, 0);
@@ -405,7 +405,7 @@ namespace SEAMS {
       }
 
       ptr = aprepro->putsym("ex_sideset_names", Aprepro::STRING_VARIABLE, 0);
-      new_string(names.c_str(), &tmp);
+      new_string(names, &tmp);
       ptr->value.svar = tmp;
 
       ptr             = aprepro->putsym("ex_sideset_ids", Aprepro::ARRAY_VARIABLE, 0);

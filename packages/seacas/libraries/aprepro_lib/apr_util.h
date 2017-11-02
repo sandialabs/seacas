@@ -41,6 +41,7 @@
 namespace SEAMS {
   bool        arg_check(SEAMS::symrec *symbol, bool is_null);
   void        conv_string(char *string);
+  void        new_string(const std::string &from, char **to);
   void        new_string(const char *from, char **to);
   void        concat_string(const char *from1, const char *from2, char **to);
   const char *get_temp_filename();

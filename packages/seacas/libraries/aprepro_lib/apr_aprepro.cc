@@ -469,7 +469,7 @@ namespace SEAMS {
       symrec *ptr = getsym("_C_");
       if (ptr != nullptr) {
         char *tmp = nullptr;
-        new_string(comment.c_str(), &tmp);
+        new_string(comment, &tmp);
         ptr->value.svar = tmp;
       }
     }
@@ -523,7 +523,7 @@ namespace SEAMS {
         }
       }
       char *tmp = nullptr;
-      new_string(sym_value.c_str(), &tmp);
+      new_string(sym_value, &tmp);
       var->value.svar = tmp;
     }
     else {

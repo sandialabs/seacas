@@ -744,7 +744,7 @@ namespace SEAMS {
 
     if (tokens.size() >= in) {
       char *word = nullptr;
-      new_string(tokens[in - 1].c_str(), &word);
+      new_string(tokens[in - 1], &word);
       return word;
     }
 
@@ -763,7 +763,7 @@ namespace SEAMS {
         lines << line << '\n';
       }
 
-      new_string(lines.str().c_str(), &ret_string);
+      new_string(lines.str(), &ret_string);
     }
     return ret_string;
   }
@@ -1032,7 +1032,7 @@ namespace SEAMS {
         }
       }
       char *ret_string;
-      new_string(lines.str().c_str(), &ret_string);
+      new_string(lines.str(), &ret_string);
       return ret_string;
     }
 
