@@ -208,7 +208,7 @@ namespace SEAMS {
       return "";
 
     /* read database paramters */
-    char *  title = (char *)calloc((MAX_LINE_LENGTH + 1), sizeof(char));
+    char    title[MAX_LINE_LENGTH + 1];
     int64_t ndim, nnodes, nelems, nblks, nnsets, nssets;
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);
 
