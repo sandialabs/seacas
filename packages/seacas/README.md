@@ -64,15 +64,18 @@ support, you do not have to build hdf5.
 The most recent released version is recommended. For use with Exodus, some local modifications to the netcdf.h include file are required.  See [NetCDF-Mapping.md](NetCDF-Mapping.md) for an explanation of why these modifications are required (or highly recommended)
 
  * Download the latest netcdf-c release from http://www.unidata.ucar.edu/downloads/netcdf/index.jsp
- * `tar zxvf netcdf-4.4.0.tar.gz`  (or whatever the latest version is)
- * Modify the following defines in netcdf-4.4.0/include/netcdf.h.
+ * `tar zxvf netcdf-4.5.0.tar.gz`  (or whatever the latest version is)
+ * If the version is *prior* to 4.5.1, then you need to modify the
+   following defines in
+   seacas/TPL/netcdf/netcdf-4.5.0/include/netcdf.h.  Versions *4.5.1 or
+   later* do not check these limits and can be run unmodified.
 
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
     #define NC_MAX_VARS     524288   /* max variables per file */
     ```
 
- * `cd netcdf-4.4.0` and enter the command:
+ * `cd netcdf-4.5.0` and enter the command:
     * serial
     ```
     CFLAGS="-I${WHERE_TO_INSTALL}/include" \
@@ -180,5 +183,5 @@ There are a few unit tests for exodus, and aprepro that can be run via `make tes
 
 ## Contact information
 
- Greg Sjaardema  (gsjaardema@gmail.com, gdsjaar@sandia.gov)
+ Greg Sjaardema  (<gsjaardema@gmail.com>, <gdsjaar@sandia.gov>)
       
