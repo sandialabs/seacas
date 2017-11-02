@@ -1,5 +1,7 @@
 # Mapping of exodus entities onto NetCDF
 
+If you are using NetCDF-4.5.1 or later, then you can ignore the information in this file.
+
 The distributed version of netcdf sets the following limits
 on dimensions and variables:
  * `#define NC_MAX_DIMS	1024`
@@ -60,7 +62,7 @@ Then there would be about:
  `10 + 5*(2+1) + 4*(2) + 3*(2) + 1 + 1 + 1 = 42` Dimensions
 
 There would be about:
- `5*(1+2*2+4) + 4*(2+3) + 3*(3+2) + 3*(5+4+3) + 3 + 1 = 120` Varibles.
+ `5*(1+2*2+4) + 4*(2+3) + 3*(3+2) + 3*(5+4+3) + 3 + 1 = 120` Variables.
 
 From this, you can see that a moderately complicated model would
 quickly overflow the standard values for `NC_MAX_DIMS` and `NC_MAX_VARS`.
