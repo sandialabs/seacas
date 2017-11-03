@@ -90,3 +90,4 @@ ENABLE_FILE_GROUPS | on/[off]   | experimental
  DECOMP_SHOW_PROGRESS | on/[off] | show memory and elapsed time during autodecomp.
  DECOMP_SHOW_HWM      | on/[off] | show high-water memory during autodecomp
  IOSS_TIME_FILE_OPEN_CLOSE | on/[off] | show elapsed time during parallel-io file open/close/create
+ CHECK_PARALLEL_CONSISTENCY | ignored | check Ioss::GroupingEntity parallel consistency

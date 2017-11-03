@@ -36,6 +36,7 @@ and `REALTYPEWIDTH` to 64
   * Download http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-1.8.1.tar.gz
   * `cd TPL/pnetcdf`
   * `tar zxvf parallel-netcdf-1.8.1.tar.gz`
+  * NOTE: If using version 1.9.0 or later, the changes below are not required.
   * Make the same modifications to the defines in `src/lib/pnetcdf.h` that are modified for NetCDF:
   
     ```

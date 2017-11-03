@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['readedgeface',['ReadEdgeFace',['../exodusII__test_8h.html#a8744fdd063c547550670b2cfc7087d93',1,'exodusII_test.h']]],
-  ['real',['real',['../exo__jack-windows_8c.html#a5f5a64ef503db0fc824df8320929b126',1,'real():&#160;exo_jack-windows.c'],['../exo__jack_8c.html#a5f5a64ef503db0fc824df8320929b126',1,'real():&#160;exo_jack.c']]],
-  ['results_20data',['Results Data',['../group__ResultsData.html',1,'']]],
-  ['ret_5fstring',['ret_string',['../ex__close_8c.html#a20fff68df15c3bd947963036e87e8b0c',1,'ret_string():&#160;ex_close.c'],['../ex__utils_8c.html#ae67741a50448c3f9dc8ef28f9c1dc6e6',1,'ret_string():&#160;ex_utils.c']]]
+  ['put_5fside',['put_side',['../ex__cvt__nodes__to__sides_8c.html#a88c35113a2d94581320b4f4563c3581c',1,'ex_cvt_nodes_to_sides.c']]],
+  ['put_5ftruth_5ftable',['put_truth_table',['../ex__put__all__var__param__ext_8c.html#a277936583873e2bae7094286341f050a',1,'ex_put_all_var_param_ext.c']]]
 ];

@@ -106,6 +106,198 @@
 	<TR VALIGN=TOP>
 	  <th colspan="2">
 	    <CENTER>
+	      <a name="libraries"><font color="white">Libraries</font></a>
+	    </center>
+	  </th>
+        </tr>
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP><A NAME="exodusII" HREF="exodusII-new.pdf">Exodus</a><br><br>
+		  <a href="html/index.html">Doxygen API Documentation</a><br><br>
+		      <a href="exodusII.pdf">Original Doc (not current)</a></TH>
+
+	  <TD>EXODUS is a model developed to store and retrieve
+	  data for finite element analyses. It is used for
+	  preprocessing (problem definition), postprocessing (results
+	  visualization), as well as code to code data transfer. An
+	  EXODUS data file is a random access, machine independent,
+	  binary file that is written and read via C, C++, or Fortran
+	  library routines which comprise the Application Programming
+	  Interface. (exodus is based on netcdf)<p>
+	    
+          <b>Draft documentation of the "new" API is found <a
+          href="exodusII-new.pdf">here.</a> The new version includes
+          support for names, nodeset variables, sideset variables,
+          named attributes, coordinate frames, concatenated element
+          block definition, optional multiple named node and element
+          maps, and other cleanups.</b><p>
+
+          Documentation of the modifications needed to use the
+          <b>"large-file"</b> modifications which permit storage of
+          models with more than ~30 million elements is found <a
+          href="ExodusLargeModel.html">here</a>.<p>
+
+	  In addition to the above API extensions, the API has also
+	  been modified to store the full model topology
+	  nodes->edges->faces->elements including blocks and sets of
+	  all entities. The API extensions are documented in Chapter 4
+	  of SAND2007-0525, <a href="ExodusII-Addendum.pdf">A data
+	  storage model for novel partial differential equation
+	  discretizations.</a> <p>
+
+	  The API was modified in 2012 to permit the storage of more
+	  than 2.1 Billion nodes and/or elements. The changes are
+	  documented in <a href="64-bit-integer.txt">64-bit
+	  integers</a><p>
+
+	  The API now supports names longer (or shorter) than 32
+	  characters. The names include variable names and entity
+	  names. The changes are documented in <a
+	  href="Exodus-Long-Names.txt">Long Names</a><p>
+
+          Polyhedral elements can be stored in exodus. The documentation for this
+	  is in <a href="doc.poly.txt">Polyhedral Element Storage</a><p>
+
+	  All nemesis functions have been added to the exodus api. In most cases, the 
+          name of the exodus function is the same as the original nemesis function except 
+          that the leading <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are a few 
+          exceptions.  See <a href="nemesis-to-exodus-api-mapping.md">Nemesis-To-Exodus-API-Mapping</a> 
+          for a complete list of functions.<p>
+	</TD>
+
+	</TR>
+
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP><A NAME="exodus.py" HREF="exodus.html">Exodus Python Interface</a><br><br>
+
+	  <TD>A python interface to the EXODUS library.</TD>
+	</TR>
+
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP><A name="ioss" HREF="IOSystem.pdf">IO System (IOSS)</a><br><br>
+		  <a href="ioss_html/index.html">Doxygen API Documentation</a></th>
+
+	  <TD>The documentation below is a medium- to low-level view
+	  of the IO system (IOSS) targeted at developers who will be
+	  adding or modifying the database IO portion of the
+	  system. It should give enough detail that a new database
+	  type could be added by reading this document and looking at
+	  an existing database class. It is also helpful to have the
+	  doxygen-generated documentation for the Ioss class hierarchy
+	  available.  The IO Subsystem has been designed to support
+	  multiple database formats simultaneously. It is possible to
+	  have the finite element model read from an Exodus database;
+	  two results files being written to an Exodus file with a
+	  third results file being written to an XDMF file; and the
+	  restart file being written to yet another Exodus file. Each
+	  of these output databases can have a different schedule for
+	  when to write and what data is to be written. The document <a HREF="Ioss-exodus-mapping.pdf">Ioss-exodus-mapping.pdf</a> describes how an Exodus model is mapped into the IOSS representation.
+	</TD>
+
+	</TR>
+
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP><A NAME="chaco" HREF="chaco.pdf">Chaco</a></TH>
+
+	  <TD>Graph partitioning is a fundamental problem in many
+	  scientific contexts This document describes the capabilities
+	  and operation of Chaco 2.0, a software package designed to
+	  partition graphs. Chaco 2.0 allows for recursive application
+	  of several methods for finding small edge separators in
+	  weighted graphs These methods include inertial, spectral,
+	  Kernighan-Lin, and multilevel methods in addition to several
+	  simpler strategies Each of these approaches can be used to
+	  partition the graph into two, four, or eight pieces at each
+	  level of recursion In addition, the Kernighan-Lin method can
+	  be used to improve partitions generated by any of the other
+	  algorithms. Brief descriptions of these methods are provided
+	  along with references to relevant literature. Chaco 2.0 can
+	  also be used to address various graph sequencing problems,
+	  and this capability is briefly described. The user interface
+	  input/output formats and appropriate settings for a variety
+	  of code parameters are discussed in detail and some
+	  suggestions on algorithm selection are offered.<p>
+		  
+		  <font color="red">NOTE:</font> The <tt>short *assignment</tt> argument to the interface function
+		has been changed to <tt>int *assignment</tt> to permit decompositions
+                with more than 32,768 processors.<p>There are also now a <tt>CHACO_VERSION_MAJOR</tt>, 
+		<tt>CHACO_VERSION_MINOR</tt>, <tt>CHACO_VERSION_PATCH</tt> defines in chaco.h.
+	</TD>
+
+	</TR>
+
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP>Netcdf</TH>
+
+	  <TD>The NetCDF software functions as an I/O library,
+	  callable from C or FORTRAN, which stores and retrieves data
+	  in self-describing, machine-independent files. Each NetCDF
+	  file can contain an unlimited number of multi-dimensional,
+	  named variables (with differing types that include integers,
+	  reals, characters, bytes, etc.), and each variable may be
+	  accompanied by ancillary data, such as units of measure or
+	  descriptive text. The interface includes a method for
+	  appending data to existing NetCDF files in prescribed ways,
+	  functionality that is not unlike a (fixed length) record
+	  structure. However, the NetCDF library also allows
+	  direct-access storage and retrieval of data by variable name
+	  and index and therefore is useful only for disk-resident (or
+	  memory-resident) files.<p> 
+
+	  Netcdf information is available from <a
+	  href="http://www.unidata.ucar.edu/software/netcdf/docs/">Unidata</a>.<p>
+	  Man pages for the ncgen and ncdump utilities are also
+	  available. (These can be used to convert an exodus file
+	  from/to a text representation.)</TD>
+
+	</TR>
+
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP><A name="nemesis"
+	  HREF="Nemesis_Users_Guide.pdf">Nemesis</a></TH>
+
+	  <TD>NEMESIS I is an enhancement to the EXODUS finite
+	  element database model used to store and retrieve data for
+	  unstructured parallel finite element analyses. NEMESIS I
+	  adds data structures which facilitate the partitioning of a
+	  scalar (standard serial) EXODUS file onto parallel disk
+	  systems found on many parallel computers. Since the NEMESIS
+	  I application programming interface (API) can be used to
+	  append information to an existing EXODUS database, any
+	  existing software that reads EXODUS files can be used on
+	  files which contain NEMESIS I information. The NEMESIS I
+	  information is written and read via C or C++ callable
+	  functions which compromise the NEMESIS I API.<br>
+	  <a HREF="nemesis-fortran-api.html">Fortran to C Function Mapping</a><p>
+
+	  All nemesis functions have been added to the exodus api. In
+	  most cases, the name of the exodus function is the same as
+	  the original nemesis function except that the leading
+	  <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are
+	  a few exceptions.  See <a
+	  href="nemesis-to-exodus-api-mapping.md">Nemesis-To-Exodus-API-Mapping</a>
+	  for a complete list of functions.<p>
+	</TD>
+
+	</TR>
+	<TR VALIGN=TOP>
+	  <TH VALIGN=TOP><A name="supes"
+	  HREF="supes.pdf">SUPES</a></TH>
+
+	  <TD>SUPES is a collection of subprograms which perform
+	  frequently used non-numerical services for the engineering
+	  applications programmer using FORTRAN-77. The three
+	  functional categories of SUPES are: (1) input command
+	  parsing, (2) dynamic memory management, and (3) system
+	  dependent utilities. The subprograms in categories one and
+	  two are written in standard FORTRAN-77, while the
+	  subprograms in category three are written to provide a
+	  standardized FORTRAN interface to several system dependent
+	  features.</TD>
+
+	</TR>
+	<TR VALIGN=TOP>
+	  <th colspan="2">
+	    <CENTER>
 	      <a name="support"><font color="white">Support (Preprocessing, Postprocessing, Manipulation) Codes</font></a>
 	    </center>
 	    </th>
@@ -419,7 +611,7 @@
 	  <TD>MAPVAR is designed to transfer solution results from one
 	  finite element mesh to another. MAPVAR draws heavily from
 	  the structure and coding of MERLIN II, but it employs a new
-	  finite element data base, EXODUS II [3], and offers enhanced
+	  finite element data base, EXODUS [3], and offers enhanced
 	  speed and new capabilities not available in MERLIN II. In
 	  keeping with the MERLIN II documentation, the computational
 	  algorithms used in MAPVAR are described. User instructions
@@ -441,11 +633,11 @@
 	  <TH VALIGN=TOP><A name="mat2exo" HREF="mat2exo.pdf">Mat2Exo</a></TH>
 
 	  <TD>MAT2EXO is a program which translates mesh data from
-	  Matlab mat-file format to Exodus II format. This tool is the
+	  Matlab mat-file format to Exodus format. This tool is the
 	  inverse of the commonly used tool exo2mat which translates
-	  Exodus II data to the Matlab mat-file format. These tools
-	  provide a means for preprocessing an Exodus II model file or
-	  post-processing an Exodus II results file using Matlab.</TD>
+	  Exodus data to the Matlab mat-file format. These tools
+	  provide a means for preprocessing an Exodus model file or
+	  post-processing an Exodus results file using Matlab.</TD>
 	</TR>
 
 	<TR VALIGN=TOP>
@@ -461,7 +653,7 @@
 	  HREF="nem_slice.pdf">nem_slice</a></TH>
 
 	  <TD><p>nem_slice reads in a FEM description of the geometry of
-	  a problem from an ExodusII file and generates
+	  a problem from an Exodus file and generates
 	  either a nodal or elemental graph of the problem, calls
 	  Chaco to load balance the graph, and outputs a NemesisI
 	  load-balance file which can be read by <A href="#nem_spread>nem_spread</a>.</p>
@@ -475,7 +667,7 @@
 	  HREF="nem_spread.pdf">nem_spread</a></TH>
 
 	  <TD>nem_spread reads it's input command file (default name
-	  nem_spread.inp), takes the named ExodusII and spreads out
+	  nem_spread.inp), takes the named Exodus and spreads out
 	  the geometry (and optionally results) contained in that file
 	  out to a parallel disk system. The decomposition is taken
 	  from a scalar Nemesis load balance file generated by the
@@ -505,198 +697,6 @@
 	  exodus files to/from text.)</td>
 	</TR>
 
-	<TR VALIGN=TOP>
-	  <th colspan="2">
-	    <CENTER>
-	      <a name="libraries"><font color="white">Libraries</font></a>
-	    </center>
-	  </th>
-        </tr>
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A NAME="exodusII" HREF="exodusII-new.pdf">ExodusII</a><br><br>
-		  <a href="html/index.html">Doxygen API Documentation</a><br><br>
-		      <a href="exodusII.pdf">Original Doc (not current)</a></TH>
-
-	  <TD>EXODUS II is a model developed to store and retrieve
-	  data for finite element analyses. It is used for
-	  preprocessing (problem definition), postprocessing (results
-	  visualization), as well as code to code data transfer. An
-	  EXODUS II data file is a random access, machine independent,
-	  binary file that is written and read via C, C++, or Fortran
-	  library routines which comprise the Application Programming
-	  Interface. (exodusII is based on netcdf)<p>
-	    
-          <b>Draft documentation of the "new" API is found <a
-          href="exodusII-new.pdf">here.</a> The new version includes
-          support for names, nodeset variables, sideset variables,
-          named attributes, coordinate frames, concatenated element
-          block definition, optional multiple named node and element
-          maps, and other cleanups.</b><p>
-
-          Documentation of the modifications needed to use the
-          <b>"large-file"</b> modifications which permit storage of
-          models with more than ~30 million elements is found <a
-          href="ExodusLargeModel.html">here</a>.<p>
-
-	  In addition to the above API extensions, the API has also
-	  been modified to store the full model topology
-	  nodes->edges->faces->elements including blocks and sets of
-	  all entities. The API extensions are documented in Chapter 4
-	  of SAND2007-0525, <a href="ExodusII-Addendum.pdf">A data
-	  storage model for novel partial differential equation
-	  discretizations.</a> <p>
-
-	  The API was modified in 2012 to permit the storage of more
-	  than 2.1 Billion nodes and/or elements. The changes are
-	  documented in <a href="64-bit-integer.txt">64-bit
-	  integers</a><p>
-
-	  The API now supports names longer (or shorter) than 32
-	  characters. The names include variable names and entity
-	  names. The changes are documented in <a
-	  href="Exodus-Long-Names.txt">Long Names</a><p>
-
-          Polyhedral elements can be stored in exodus. The documentation for this
-	  is in <a href="doc.poly.txt">Polyhedral Element Storage</a><p>
-
-	  All nemesis functions have been added to the exodus api. In most cases, the 
-          name of the exodus function is the same as the original nemesis function except 
-          that the leading <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are a few 
-          exceptions.  See <a href="nemesis-to-exodus-api-mapping.md">Nemesis-To-Exodus-API-Mapping</a> 
-          for a complete list of functions.<p>
-	</TD>
-
-	</TR>
-
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A NAME="exodus.py" HREF="exodus.html">Exodus Python Interface</a><br><br>
-
-	  <TD>A python interface to the EXODUS II library.</TD>
-	</TR>
-
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A NAME="chaco" HREF="chaco.pdf">Chaco</a></TH>
-
-	  <TD>Graph partitioning is a fundamental problem in many
-	  scientific contexts This document describes the capabilities
-	  and operation of Chaco 2.0, a software package designed to
-	  partition graphs. Chaco 2.0 allows for recursive application
-	  of several methods for finding small edge separators in
-	  weighted graphs These methods include inertial, spectral,
-	  Kernighan-Lin, and multilevel methods in addition to several
-	  simpler strategies Each of these approaches can be used to
-	  partition the graph into two, four, or eight pieces at each
-	  level of recursion In addition, the Kernighan-Lin method can
-	  be used to improve partitions generated by any of the other
-	  algorithms. Brief descriptions of these methods are provided
-	  along with references to relevant literature. Chaco 2.0 can
-	  also be used to address various graph sequencing problems,
-	  and this capability is briefly described. The user interface
-	  input/output formats and appropriate settings for a variety
-	  of code parameters are discussed in detail and some
-	  suggestions on algorithm selection are offered.<p>
-		  
-		  <font color="red">NOTE:</font> The <tt>short *assignment</tt> argument to the interface function
-		has been changed to <tt>int *assignment</tt> to permit decompositions
-                with more than 32,768 processors.<p>There are also now a <tt>CHACO_VERSION_MAJOR</tt>, 
-		<tt>CHACO_VERSION_MINOR</tt>, <tt>CHACO_VERSION_PATCH</tt> defines in chaco.h.
-	</TD>
-
-	</TR>
-
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP>Netcdf</TH>
-
-	  <TD>The NetCDF software functions as an I/O library,
-	  callable from C or FORTRAN, which stores and retrieves data
-	  in self-describing, machine-independent files. Each NetCDF
-	  file can contain an unlimited number of multi-dimensional,
-	  named variables (with differing types that include integers,
-	  reals, characters, bytes, etc.), and each variable may be
-	  accompanied by ancillary data, such as units of measure or
-	  descriptive text. The interface includes a method for
-	  appending data to existing NetCDF files in prescribed ways,
-	  functionality that is not unlike a (fixed length) record
-	  structure. However, the NetCDF library also allows
-	  direct-access storage and retrieval of data by variable name
-	  and index and therefore is useful only for disk-resident (or
-	  memory-resident) files.<p> 
-
-	  Netcdf information is available from <a
-	  href="http://www.unidata.ucar.edu/software/netcdf/docs/">Unidata</a>.<p>
-	  Man pages for the ncgen and ncdump utilities are also
-	  available. (These can be used to convert an exodusII file
-	  from/to a text representation.)</TD>
-
-	</TR>
-
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A name="nemesis"
-	  HREF="Nemesis_Users_Guide.pdf">Nemesis</a></TH>
-
-	  <TD>NEMESIS I is an enhancement to the EXODUS II finite
-	  element database model used to store and retrieve data for
-	  unstructured parallel finite element analyses. NEMESIS I
-	  adds data structures which facilitate the partitioning of a
-	  scalar (standard serial) EXODUS II file onto parallel disk
-	  systems found on many parallel computers. Since the NEMESIS
-	  I application programming interface (API) can be used to
-	  append information to an existing EXODUS II database, any
-	  existing software that reads EXODUS II files can be used on
-	  files which contain NEMESIS I information. The NEMESIS I
-	  information is written and read via C or C++ callable
-	  functions which compromise the NEMESIS I API.<br>
-	  <a HREF="nemesis-fortran-api.html">Fortran to C Function Mapping</a><p>
-
-	  All nemesis functions have been added to the exodus api. In
-	  most cases, the name of the exodus function is the same as
-	  the original nemesis function except that the leading
-	  <tt>ne_</tt> has been replaced with <tt>ex_</tt>.  There are
-	  a few exceptions.  See <a
-	  href="nemesis-to-exodus-api-mapping.md">Nemesis-To-Exodus-API-Mapping</a>
-	  for a complete list of functions.<p>
-	</TD>
-
-	</TR>
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A name="ioss"
-	  HREF="IOSystem.pdf">IO System (IOSS)</a></TH>
-
-	  <TD>The documentation below is a medium- to low-level view
-	  of the IO system (IOSS) targeted at developers who will be
-	  adding or modifying the database IO portion of the
-	  system. It should give enough detail that a new database
-	  type could be added by reading this document and looking at
-	  an existing database class. It is also helpful to have the
-	  doxygen-generated documentation for the Ioss class hierarchy
-	  available.  The IO Subsystem has been designed to support
-	  multiple database formats simultaneously. It is possible to
-	  have the finite element model read from an ExodusII database;
-	  two results files being written to an ExodusII file with a
-	  third results file being written to an XDMF file; and the
-	  restart file being written to yet another ExodusII file. Each
-	  of these output databases can have a different schedule for
-	  when to write and what data is to be written. The document <a HREF="Ioss-exodus-mapping.pdf">Ioss-exodus-mapping.pdf</a> describes how an Exodus model is mapped into the IOSS representation.
-	</TD>
-
-	</TR>
-
-	<TR VALIGN=TOP>
-	  <TH VALIGN=TOP><A name="supes"
-	  HREF="supes.pdf">SUPES</a></TH>
-
-	  <TD>SUPES is a collection of subprograms which perform
-	  frequently used non-numerical services for the engineering
-	  applications programmer using FORTRAN-77. The three
-	  functional categories of SUPES are: (1) input command
-	  parsing, (2) dynamic memory management, and (3) system
-	  dependent utilities. The subprograms in categories one and
-	  two are written in standard FORTRAN-77, while the
-	  subprograms in category three are written to provide a
-	  standardized FORTRAN interface to several system dependent
-	  features.</TD>
-
-	</TR>
       </TABLE>
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">

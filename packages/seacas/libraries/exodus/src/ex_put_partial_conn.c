@@ -263,7 +263,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
 
     if (status != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get edge connectivity array for %s %" PRId64 " in file id %d",
+               "ERROR: failed to put edge connectivity array for %s %" PRId64 " in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
       ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
@@ -291,7 +291,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
 
     if (status != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get face connectivity array for %s %" PRId64 " in file id %d",
+               "ERROR: failed to put face connectivity array for %s %" PRId64 " in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
       ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);
@@ -319,7 +319,7 @@ int ex_put_partial_conn(int exoid, ex_entity_type blk_type, ex_entity_id blk_id,
 
     if (status != NC_NOERR) {
       snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: failed to get connectivity array for %s %" PRId64 " in file id %d",
+               "ERROR: failed to put connectivity array for %s %" PRId64 " in file id %d",
                ex_name_of_object(blk_type), blk_id, exoid);
       ex_err(__func__, errmsg, status);
       EX_FUNC_LEAVE(EX_FATAL);

@@ -37,7 +37,6 @@
 #include <cerrno>
 #include <cfenv>
 #include <cmath>
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -670,7 +669,7 @@ namespace SEAMS {
 
     SEAMS::symrec *format;
     format = aprepro->getsym("_FORMAT");
-    (void)sprintf(tmpstr, format->value.svar, x);
+    (void)sprintf(tmpstr, format->value.svar.c_str(), x);
     new_string(tmpstr, &tmp);
     return (tmp);
   }
@@ -745,7 +744,7 @@ namespace SEAMS {
 
     if (tokens.size() >= in) {
       char *word = nullptr;
-      new_string(tokens[in - 1].c_str(), &word);
+      new_string(tokens[in - 1], &word);
       return word;
     }
 
@@ -764,7 +763,7 @@ namespace SEAMS {
         lines << line << '\n';
       }
 
-      new_string(lines.str().c_str(), &ret_string);
+      new_string(lines.str(), &ret_string);
     }
     return ret_string;
   }
@@ -809,6 +808,24 @@ namespace SEAMS {
   const char *do_dumpvar()
   {
     aprepro->dumpsym(SEAMS::Parser::token::VAR, true);
+    return (nullptr);
+  }
+
+  const char *do_dumpsym1(char *pre)
+  {
+    aprepro->dumpsym(SEAMS::Parser::token::VAR, pre, false);
+    return (nullptr);
+  }
+
+  const char *do_dumpfunc1(char *pre)
+  {
+    aprepro->dumpsym(SEAMS::Parser::token::FNCT, pre, true);
+    return (nullptr);
+  }
+
+  const char *do_dumpvar1(char *pre)
+  {
+    aprepro->dumpsym(SEAMS::Parser::token::VAR, pre, true);
     return (nullptr);
   }
 
@@ -1015,7 +1032,7 @@ namespace SEAMS {
         }
       }
       char *ret_string;
-      new_string(lines.str().c_str(), &ret_string);
+      new_string(lines.str(), &ret_string);
       return ret_string;
     }
 

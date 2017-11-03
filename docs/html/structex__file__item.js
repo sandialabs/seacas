@@ -15,5 +15,6 @@ var structex__file__item =
     [ "netcdf_type_code", "structex__file__item.html#a794acdad84fea4dd8ff98188e5a039b2", null ],
     [ "next", "structex__file__item.html#a09295e775759f474df268009e0f8e11d", null ],
     [ "shuffle", "structex__file__item.html#a2cdb2f05d6cfa080c5ec294bffde2cc8", null ],
+    [ "time_varid", "structex__file__item.html#af6708f18dd02db1f097743c46727e447", null ],
     [ "user_compute_wordsize", "structex__file__item.html#ad0c8858ccb2325f12fa528747efa4ce7", null ]
 ];

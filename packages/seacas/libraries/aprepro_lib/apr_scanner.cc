@@ -1646,8 +1646,8 @@ YY_DECL
         else {
           if (aprepro.ap_options.debugging)
             fprintf(stderr,
-                    "DEBUG SWITCH: 'default' not executing since a previous case already ran at "
-                    "line %d\n",
+                    "DEBUG SWITCH: 'default' not executing since a previous case already "
+                    "ran at line %d\n",
                     aprepro.ap_file_list.top().lineno);
 
           /* Need to skip all code until end of case */
@@ -1963,7 +1963,7 @@ YY_DECL
               pt = yytext;
             }
             else {
-              pt = (char *)s->value.svar;
+              pt = (char *)s->value.svar.c_str();
             }
           }
           else {
@@ -2203,8 +2203,7 @@ YY_DECL
 #line 663 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.ll"
       {
         // Check if we need to save the substitution history first.
-        if (aprepro.ap_options.keep_history &&
-            strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) != 0) {
+        if (aprepro.ap_options.keep_history && (aprepro.ap_file_list.top().name != "_string_")) {
           if (curr_index > (size_t)yyleng)
             hist_start = curr_index - yyleng;
           else
@@ -3384,7 +3383,7 @@ namespace SEAMS {
           delete yyin;
           yyin = nullptr;
 
-          if (strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) != 0) {
+          if (aprepro.ap_file_list.top().name != "_string_") {
             if (!aprepro.ap_options.debugging) {
               remove(aprepro.ap_file_list.top().name.c_str()); /* Delete file if temporary */
             }
@@ -3596,8 +3595,8 @@ namespace SEAMS {
     else {
       if (aprepro.ap_options.debugging) {
         fprintf(stderr,
-                "DEBUG SWITCH: 'case' condition = %g does not match switch condition = %g (or case "
-                "already matched) at line %d\n",
+                "DEBUG SWITCH: 'case' condition = %g does not match switch condition = %g "
+                "(or case already matched) at line %d\n",
                 x, switch_condition, aprepro.ap_file_list.top().lineno);
       }
 
@@ -3613,8 +3612,9 @@ namespace SEAMS {
       return;
 
     // Don't do it if the file is the one used by execute and rescan.
-    if (strcmp("_string_", aprepro.ap_file_list.top().name.c_str()) == 0)
+    if (aprepro.ap_file_list.top().name == "_string_") {
       return;
+    }
 
     size_t hist_end = curr_index;
     size_t len      = hist_end - hist_start;

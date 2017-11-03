@@ -1,12 +1,13 @@
 var NAVTREE =
 [
   [ "Exodus", "index.html", [
-    [ "ExodusII API Documentation", "index.html", [
+    [ "Exodus API Documentation", "index.html", [
       [ "Introduction", "index.html#intro", null ],
-      [ "License and Availability", "index.html#avail", null ],
+      [ "Availability", "index.html#avail", null ],
+      [ "License", "index.html#license", null ],
       [ "Development of EXODUS", "index.html#devel", null ],
       [ "Description of Data Objects", "index.html#descrip", null ],
-      [ "Integer Bulkdata Storage Details", "index.html#int64", [
+      [ "Integer Bulkdata Storage Details (32-bit and 64-bit integers)", "index.html#int64", [
         [ "Fortran API", "index.html#int64_fortran_api", null ],
         [ "Fortran Implementation", "index.html#int64_fortran_imp", null ]
       ] ],
@@ -41,14 +42,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "addrwrap_8F.html",
-"ex__get__elem__attr__names_8c.html",
-"ex__put__all__var__param__ext_8c.html#a277936583873e2bae7094286341f050a",
-"ex__put__variable__param_8c.html#ac8b76bb57f2ab1e4cbca7aef29b6ae91",
-"exo__jack_8c.html#a1497d8e87336c24886ede748e5ec3571",
-"exodusII_8h.html#a414580b024f2d4d7f2e22e3a14260f87",
-"exodusII_8h.html#aeab6d47d696474c59b1e324eb46f9a36",
-"exodusII__int_8h.html#a9f0f3d2a2569802e323780685b8599e2",
-"group__FileVars.html#ga08ec3f9021c3104ae2342253700a3b01"
+"ex__get__partial__set__dist__fact_8c.html",
+"ex__put__partial__conn_8c.html",
+"exo__jack-windows_8c.html#a91ffdef840b1b551603bd56f4b3aac0b",
+"exodusII_8h.html#a0a4dab0afa672ee7ad4d416b7d227bb5",
+"exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca3afda90d93e6c1a2fabe6c64632f0f2d",
+"exodusII__int_8h.html#a656d25c04e7a27144de9ed5644182ede",
+"globals_m.html",
+"structex__block.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

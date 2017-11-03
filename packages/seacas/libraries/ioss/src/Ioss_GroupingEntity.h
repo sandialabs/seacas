@@ -182,6 +182,7 @@ namespace Ioss {
     /** Add a property, or change its value if it already exists with
         a different value */
     void property_update(const std::string &property, int64_t value) const;
+    void property_update(const std::string &property, const std::string &value) const;
 
     // ========================================================================
     //                                FIELDS
@@ -249,7 +250,7 @@ namespace Ioss {
 
     unsigned int hash() const { return hash_; }
 
-    int64_t entity_count() const {return get_property("entity_count").get_int();}
+    int64_t entity_count() const { return get_property("entity_count").get_int(); }
 
   protected:
     void count_attributes() const;

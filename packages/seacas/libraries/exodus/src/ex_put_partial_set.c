@@ -64,6 +64,8 @@
  * \param   exoid                   exodus file id
  * \param   set_type                set type
  * \param   set_id                  set id
+ * \param   offset                  The initial entity (1-based) to be output
+ * \param   num_to_put              The number of entities to output
  * \param  *set_entry_list          array of entries in set. Set to NULL to not
  * write.
  * \param  *set_extra_list          array of extras in set. Set to NULL to not

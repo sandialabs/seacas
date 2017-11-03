@@ -125,7 +125,7 @@ namespace {
         zgc.m_ownerRangeBeg = range_beg;
         zgc.m_ownerRangeEnd = range_end;
       }
-      zgc.m_ownerOffset = {zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]};
+      zgc.m_ownerOffset = {{zone->m_offset[0], zone->m_offset[1], zone->m_offset[2]}};
     }
     else {
       // This zgc does not overlap on this zone, so set all ranges to 0.
@@ -178,7 +178,7 @@ namespace {
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
     }
-    zgc.m_donorOffset = {don_zone->m_offset[0], don_zone->m_offset[1], don_zone->m_offset[2]};
+    zgc.m_donorOffset = {{don_zone->m_offset[0], don_zone->m_offset[1], don_zone->m_offset[2]}};
   }
 
   void propogate_zgc(Iocgns::StructuredZoneData *parent, Iocgns::StructuredZoneData *child,
@@ -242,8 +242,8 @@ namespace {
                                         donor_range_end, c1->m_zone < c2->m_zone, true);
     auto &zgc1 = c1->m_zoneConnectivity.back();
     zgc1.m_sameRange = true;
-    zgc1.m_ownerOffset = {c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]};
-    zgc1.m_donorOffset = {c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]};
+    zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
+    zgc1.m_donorOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
 
     // OUTPUT << "Adding c1 " << c1_base << "--" << c2_base << "\n";
     // OUTPUT << c1->m_zoneConnectivity.back() << "\n";
@@ -253,8 +253,8 @@ namespace {
                                         range_end, c2->m_zone < c1->m_zone, true);
     auto &zgc2 = c2->m_zoneConnectivity.back();
     zgc2.m_sameRange = true;
-    zgc2.m_ownerOffset = {c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]};
-    zgc2.m_donorOffset = {c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]};
+    zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
+    zgc2.m_donorOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
     // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";
     // OUTPUT << c2->m_zoneConnectivity.back() << "\n";
   }

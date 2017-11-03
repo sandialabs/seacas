@@ -371,8 +371,8 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
        */
       if ((status = nc_inq_dimlen(exoid, dimid, &nie)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to find length of dimesion \"%s\" in file ID %d", DIM_NUM_INT_ELEMS,
-                 exoid);
+                 "ERROR: failed to find length of dimension \"%s\" in file ID %d",
+                 DIM_NUM_INT_ELEMS, exoid);
         ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }
@@ -440,8 +440,8 @@ int ex_get_loadbal_param(int exoid, void_int *num_int_nodes, void_int *num_bor_n
        */
       if ((status = nc_inq_dimlen(exoid, dimid, &nbe)) != NC_NOERR) {
         snprintf(errmsg, MAX_ERR_LENGTH,
-                 "ERROR: failed to find length of dimesion \"%s\" in file ID %d", DIM_NUM_BOR_ELEMS,
-                 exoid);
+                 "ERROR: failed to find length of dimension \"%s\" in file ID %d",
+                 DIM_NUM_BOR_ELEMS, exoid);
         ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
       }

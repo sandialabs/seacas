@@ -105,6 +105,9 @@ namespace SEAMS {
   const char *do_get_time();
   const char *do_get_temp_filename();
 
+  const char *do_dumpsym1(char *pre);
+  const char *do_dumpfunc1(char *pre);
+  const char *do_dumpvar1(char *pre);
   const char *do_tolower(char *string);
   const char *do_toupper(char *string);
   const char *do_Units(char *type);
@@ -150,6 +153,12 @@ namespace SEAMS {
   const char *do_str_notif(char *string);
   const char *do_str_elseif(char *string);
   const char *do_delete(char *string);
+
+#if defined(EXODUS_SUPPORT)
+  const char *do_exodus_info_range(char *filename, char *beg, char *end);
+  const char *do_exodus_info(char *filename, char *prefix);
+  const char *do_exodus_meta(char *filename);
+#endif
 
   array *do_csv_array(const char *filename, double skip);
   array *do_csv_array1(const char *filename);

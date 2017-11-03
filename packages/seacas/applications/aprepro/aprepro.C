@@ -79,11 +79,9 @@ int main(int argc, char *argv[])
 
   if (input_files.empty()) {
     if (!quiet) {
-      const char *comment = aprepro.getsym("_C_")->value.svar;
-      if (comment != nullptr) {
-        std::cout << comment << " Algebraic Preprocessor -- Aprepro, version " << aprepro.version()
-                  << "\n";
-      }
+      auto comment = aprepro.getsym("_C_")->value.svar;
+      std::cout << comment << " Algebraic Preprocessor -- Aprepro, version " << aprepro.version()
+                << "\n";
     }
     aprepro.ap_options.interactive = true;
     try {
@@ -110,7 +108,7 @@ int main(int argc, char *argv[])
         if (input_files.size() > 1) {
           std::ofstream ofile(input_files[1].c_str());
           if (!quiet) {
-            const char *comment = aprepro.getsym("_C_")->value.svar;
+            auto comment = aprepro.getsym("_C_")->value.svar;
             ofile << comment << " Algebraic Preprocessor (Aprepro) version " << aprepro.version()
                   << "\n";
           }
@@ -118,7 +116,7 @@ int main(int argc, char *argv[])
         }
         else {
           if (!quiet) {
-            const char *comment = aprepro.getsym("_C_")->value.svar;
+            auto comment = aprepro.getsym("_C_")->value.svar;
             std::cout << comment << " Algebraic Preprocessor (Aprepro) version "
                       << aprepro.version() << "\n";
           }

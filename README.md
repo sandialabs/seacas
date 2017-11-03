@@ -1,7 +1,6 @@
 # SEACAS  [[Documentation](http://gsjaardema.github.io/seacas/)]
 [![Build Status](https://travis-ci.org/gsjaardema/seacas.svg?branch=master)](https://travis-ci.org/gsjaardema/seacas)
 [![Analysis Status](https://scan.coverity.com/projects/2205/badge.svg?flat=1)](https://scan.coverity.com/projects/gsjaardema-seacas)
-[![Documentation](https://codedocs.xyz/gsjaardema/seacas.svg)](https://codedocs.xyz/gsjaardema/seacas/)
 
 * [Get the sources](#get-the-sources)
 * [Build instructions](#build-instructions)
@@ -65,8 +64,11 @@ The most recent released version is recommended. For use with Exodus, some local
 
  * Download the latest netcdf-c release from <http://www.unidata.ucar.edu/downloads/netcdf/index.jsp> and put it inside `seacas/TPL/netcdf`
  * `cd TPL/netcdf`
- * `tar zxvf netcdf-4.4.1.1.tar.gz`
- * Modify the following defines in seacas/TPL/netcdf/netcdf-4.4.1.1/include/netcdf.h.
+ * `tar zxvf netcdf-4.5.0.tar.gz`
+ * If the version is *prior* to 4.5.1, then you need to modify the
+   following defines in
+   seacas/TPL/netcdf/netcdf-4.5.0/include/netcdf.h.  Versions *4.5.1 or
+   later* do not check these limits and can be run unmodified.
 
     ```
     #define NC_MAX_DIMS     65536    /* max dimensions per file */
@@ -74,7 +76,7 @@ The most recent released version is recommended. For use with Exodus, some local
     ```
 
  * If you did *not* build HDF5, then you will need to edit the runcmake.sh script and remove all lines mentioning HDF5 and also set `ENABLE_NETCDF_4` to `OFF`
- * `cd netcdf-4.4.1.1` and enter the command:
+ * `cd netcdf-4.5.0` and enter the command:
 
     ```
     mkdir build

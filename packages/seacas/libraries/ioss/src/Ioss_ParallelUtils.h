@@ -93,6 +93,13 @@ namespace Ioss {
      */
     void attribute_reduction(int length, char buffer[]) const;
 
+    /*!
+     * Generate a "globally unique id" which is unique over all entities
+     * of a specific type over all processors.
+     * Used by some applications for uniquely identifying an entity.
+     */
+    int64_t generate_guid(size_t id) const;
+
     /*! Return min, max, average memory used by any process */
     void memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
 
@@ -131,6 +138,7 @@ namespace Ioss {
   inline MPI_Datatype mpi_type(long int /*dummy*/) { return MPI_LONG_LONG_INT; }
   inline MPI_Datatype mpi_type(long long int /*dummy*/) { return MPI_LONG_LONG_INT; }
   inline MPI_Datatype mpi_type(unsigned int /*dummy*/) { return MPI_UNSIGNED; }
+  inline MPI_Datatype mpi_type(unsigned long int /*dummy*/) { return MPI_UNSIGNED_LONG; }
 
   template <typename T>
   int MY_Alltoallv64(const std::vector<T> &sendbuf, const std::vector<int64_t> &sendcounts,

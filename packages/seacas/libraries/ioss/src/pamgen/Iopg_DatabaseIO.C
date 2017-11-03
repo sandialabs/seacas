@@ -450,6 +450,7 @@ namespace Iopg {
     std::string      block_name = "nodeblock_1";
     Ioss::NodeBlock *block = new Ioss::NodeBlock(this, block_name, nodeCount, spatialDimension);
     block->property_add(Ioss::Property("id", 1));
+    block->property_add(Ioss::Property("guid", util().generate_guid(1)));
 
     get_region()->add(block);
   }
@@ -560,6 +561,7 @@ namespace Iopg {
       block = new Ioss::ElementBlock(this, block_name, type, local_element_count[iblk]);
 
       block->property_add(Ioss::Property("id", id));
+      block->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
       // Maintain block order on output database...
       block->property_add(Ioss::Property("original_block_order", used_blocks++));
@@ -618,6 +620,7 @@ namespace Iopg {
         std::string    nodeset_name = Ioss::Utils::encode_entity_name("nodelist", id);
         Ioss::NodeSet *nodeset      = new Ioss::NodeSet(this, nodeset_name, number_nodes);
         nodeset->property_add(Ioss::Property("id", id));
+	nodeset->property_add(Ioss::Property("guid", util().generate_guid(id)));
         get_region()->add(nodeset);
 
         get_region()->add_alias(nodeset_name, Ioss::Utils::encode_entity_name("nodelist", id));
@@ -677,10 +680,12 @@ namespace Iopg {
       // Create a single node commset and a single element commset
       Ioss::CommSet *commset = new Ioss::CommSet(this, "commset_node", "node", my_node_count);
       commset->property_add(Ioss::Property("id", 1));
+      commset->property_add(Ioss::Property("guid", util().generate_guid(1)));
       get_region()->add(commset);
 
       commset = new Ioss::CommSet(this, "commset_side", "side", elem_count);
       commset->property_add(Ioss::Property("id", 1));
+      commset->property_add(Ioss::Property("guid", util().generate_guid(1)));
       get_region()->add(commset);
     }
   }
@@ -732,6 +737,7 @@ namespace Iopg {
         Ioss::SideSet *side_set = new Ioss::SideSet(this, side_set_name);
         get_region()->add(side_set);
         side_set->property_add(Ioss::Property("id", id));
+	side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
         get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("surface", id));
         get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id));
@@ -915,6 +921,7 @@ namespace Iopg {
             // sideset might have the same id.
             assert(side_block != nullptr);
             side_block->property_add(Ioss::Property("id", id));
+	    side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
             // If splitting by element block, need to set the
             // element block member on this side block.

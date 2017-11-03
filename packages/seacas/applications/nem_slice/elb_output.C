@@ -47,7 +47,6 @@
 #include <exodusII.h> // for ex_close, ex_opts, etc
 #include <iostream>
 #include <vector> // for vector
-#include <vector> // for vector
 
 namespace {
   const std::string remove_extension(const std::string &filename)
@@ -248,7 +247,7 @@ int write_nemesis(std::string &nemI_out_file, Machine_Description *machine,
     return 0;
   }
 
-  /* Set up dummy arrays for ouput */
+  /* Set up dummy arrays for output */
   std::vector<INT> num_nmap_cnts(machine->num_procs);
   std::vector<INT> num_emap_cnts(machine->num_procs);
 

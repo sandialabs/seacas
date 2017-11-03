@@ -131,9 +131,10 @@ namespace SEAMS {
   };
 
   struct init_c arith_c_fncts[] = {
-      {"strtod", do_strtod, "strtod(svar)", "Returns a double-precision floating-point number "
-                                            "equal to the value represented by the character "
-                                            "string pointed to by svar."},
+      {"strtod", do_strtod, "strtod(svar)",
+       "Returns a double-precision floating-point number "
+       "equal to the value represented by the character "
+       "string pointed to by svar."},
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
   };
 
@@ -172,18 +173,29 @@ namespace SEAMS {
   };
 
   struct str_c_init string_c_fncts[] = {
-      {"tolower", do_tolower, "tolower(svar)", "Translates all uppercase characters in svar to "
-                                               "lowercase. It modifies svar and returns the "
-                                               "resulting string.  "},
-      {"toupper", do_toupper, "toupper(svar)", "Translates all lowercase character in svar to "
-                                               "uppercase. It modifies svar and returns the "
-                                               "resulting string. "},
-      {"to_lower", do_tolower, "to_lower(svar)", "Translates all uppercase characters in svar to "
-                                                 "lowercase. It modifies svar and returns the "
-                                                 "resulting string.  "},
-      {"to_upper", do_toupper, "toupper(svar)", "Translates all lowercase character in svar to "
-                                                "uppercase. It modifies svar and returns the "
-                                                "resulting string. "},
+      {"DUMP", do_dumpsym1, "DUMP(str)",
+       "Output a list of all defined variables and their value if name contains 'str'."},
+      {"DUMP_FUNC", do_dumpfunc1, "DUMP_FUNC()",
+       "Output a list of all double and string functions recognized by aprepro if name contains "
+       "'str'."},
+      {"DUMP_PREVAR", do_dumpvar1, "DUMP_PREVAR()",
+       "Output a list of all predefined variables and their value if name contains 'str'."},
+      {"tolower", do_tolower, "tolower(svar)",
+       "Translates all uppercase characters in svar to "
+       "lowercase. It modifies svar and returns the "
+       "resulting string.  "},
+      {"toupper", do_toupper, "toupper(svar)",
+       "Translates all lowercase character in svar to "
+       "uppercase. It modifies svar and returns the "
+       "resulting string. "},
+      {"to_lower", do_tolower, "to_lower(svar)",
+       "Translates all uppercase characters in svar to "
+       "lowercase. It modifies svar and returns the "
+       "resulting string.  "},
+      {"to_upper", do_toupper, "toupper(svar)",
+       "Translates all lowercase character in svar to "
+       "uppercase. It modifies svar and returns the "
+       "resulting string. "},
       {"getenv", do_getenv, "getenv(svar)",
        "Returns a string containing the value of the environment variable svar. If the environment "
        "variable is not defined, an empty string is returned. "},
@@ -193,20 +205,23 @@ namespace SEAMS {
        "Outputs the string svar to stderr and then terminates the code with an error exit status."},
       {"execute", do_execute, "execute(svar)",
        "svar is parsed and executed as if it were a line read from the input file."},
-      {"output", do_output, "output(filename)", "Creates the file specified by filename and sends "
-                                                "all subsequent output from aprepro to that file."},
+      {"output", do_output, "output(filename)",
+       "Creates the file specified by filename and sends "
+       "all subsequent output from aprepro to that file."},
       {"output_append", do_append, "output_append(fn)",
        "If file with name fn exists, append output to it; otherwise create the file and send all "
        "subsequent output from aprepro to that file."},
-      {"rescan", do_rescan, "rescan(svar)", "The difference between execute(sv1) and rescan(sv2) "
-                                            "is that sv1 must be a valid expression, but sv2 can "
-                                            "contain zero or more expressions. "},
+      {"rescan", do_rescan, "rescan(svar)",
+       "The difference between execute(sv1) and rescan(sv2) "
+       "is that sv1 must be a valid expression, but sv2 can "
+       "contain zero or more expressions. "},
       {"include_path", do_include_path, "include_path(path)",
        "Specify an optional path to be prepended to a filename when opening a file. Can also be "
        "specified via the -I command line option when executing aprepro."},
-      {"Units", do_Units, "Units(svar)", "See manual. svar is one of the defined units "
-                                         "systems:\n\t\t\t'si', 'cgs', 'cgs-ev', 'shock', 'swap', "
-                                         "'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s'"},
+      {"Units", do_Units, "Units(svar)",
+       "See manual. svar is one of the defined units "
+       "systems:\n\t\t\t'si', 'cgs', 'cgs-ev', 'shock', 'swap', "
+       "'ft-lbf-s', 'ft-lbm-s', 'in-lbf-s'"},
       {"delete", do_delete, "delete(var_name)", "Delete the variable with name 'var_name'."},
       {"if", do_str_if, "if(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
@@ -216,14 +231,22 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid expression; nonzero is true"},
       {"Elseif", do_str_elseif, "Elseif(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
-      {"ifdef", do_str_if, "ifdef(x)", "Handles the if statements. x can be any valid expression; "
-                                       "nonzero is true (deprecated, use if)"},
-      {"Ifdef", do_str_if, "Ifdef(x)", "Handles the if statements. x can be any valid expression; "
-                                       "nonzero is true (deprecated, use if)"},
-      {"ifndef", do_str_notif, "ifndef(x)", "Handles the if statements. x can be any valid "
-                                            "expression; nonzero is true (deprecated, use if)"},
-      {"Ifndef", do_str_notif, "Ifndef(x)", "Handles the if statements. x can be any valid "
-                                            "expression; nonzero is true (deprecated, use if)"},
+      {"ifdef", do_str_if, "ifdef(x)",
+       "Handles the if statements. x can be any valid expression; "
+       "nonzero is true (deprecated, use if)"},
+      {"Ifdef", do_str_if, "Ifdef(x)",
+       "Handles the if statements. x can be any valid expression; "
+       "nonzero is true (deprecated, use if)"},
+      {"ifndef", do_str_notif, "ifndef(x)",
+       "Handles the if statements. x can be any valid "
+       "expression; nonzero is true (deprecated, use if)"},
+      {"Ifndef", do_str_notif, "Ifndef(x)",
+       "Handles the if statements. x can be any valid "
+       "expression; nonzero is true (deprecated, use if)"},
+#if defined(EXODUS_SUPPORT)
+      {"exodus_meta", do_exodus_meta, "exodus_meta(ex_fn)",
+       "Creates several variables related to the exodus metadata in the specified file. "},
+#endif
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
@@ -241,18 +264,22 @@ namespace SEAMS {
        "Handles the if statements. x can be any valid expression; nonzero is true"},
       {"Elseif", do_elseif, "Elseif(x)",
        "Handles the if statements. x can be any valid expression; nonzero is true"},
-      {"_ifdef", do_if, "ifdef(x)", "Handles the if statements. x can be any valid expression; "
-                                    "nonzero is true. Eats leading whitespace. (deprecated, use "
-                                    "if)"},
-      {"_ifndef", do_notif, "ifndef(x)", "Handles the if statements. x can be any valid "
-                                         "expression; nonzero is true. Eats leading whitespace. "
-                                         "(deprecated, use if)"},
-      {"switch", do_switch, "switch(x)", "Switch statement. Select from the following case "
-                                         "statements which matches 'x' and execute that one. End "
-                                         "with endswitch"},
-      {"Switch", do_switch, "Switch(x)", "Switch statement. Select from the following case "
-                                         "statements which matches 'x' and execute that one. End "
-                                         "with endswitch"},
+      {"_ifdef", do_if, "ifdef(x)",
+       "Handles the if statements. x can be any valid expression; "
+       "nonzero is true. Eats leading whitespace. (deprecated, use "
+       "if)"},
+      {"_ifndef", do_notif, "ifndef(x)",
+       "Handles the if statements. x can be any valid "
+       "expression; nonzero is true. Eats leading whitespace. "
+       "(deprecated, use if)"},
+      {"switch", do_switch, "switch(x)",
+       "Switch statement. Select from the following case "
+       "statements which matches 'x' and execute that one. End "
+       "with endswitch"},
+      {"Switch", do_switch, "Switch(x)",
+       "Switch statement. Select from the following case "
+       "statements which matches 'x' and execute that one. End "
+       "with endswitch"},
       {"case", do_case, "case(x)",
        "Switch statement. A case used in a containing switch statement."},
       {"Case", do_case, "Case(x)",
@@ -272,6 +299,18 @@ namespace SEAMS {
        "Return substring [b,e). 'b' is included; 'e' is not. If 'b' not found, return empty; If "
        "'e' not found, return rest of string. If 'b' empty, start at beginning; if 'e' empty, "
        "return rest of string."},
+#if defined(EXODUS_SUPPORT)
+      {"exodus_info", do_exodus_info_range, "exodus_info(ex_fn, beg, end)",
+       "Parses the info records starting after 'beg' and ending before 'end'"},
+#endif
+      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
+  };
+
+  struct str_cc_init string_cc_fncts[] = {
+#if defined(EXODUS_SUPPORT)
+      {"exodus_info", do_exodus_info, "exodus_info(ex_fn, prefix)",
+       "Parses the info records that begin with 'prefix' extracted from the exodus file 'ex_fn'"},
+#endif
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
@@ -319,20 +358,22 @@ namespace SEAMS {
       {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
   };
 
+  // clang-format off
   struct var_init variables[] = {
-      {"DEG", 57.29577951308232087680},  /* 180/pi, degrees per radian */
-      {"RAD", 0.01745329251994329576},   /* pi/180, radians per degree */
-      {"E", 2.71828182845904523536},     /* e, base of natural log     */
-      {"GAMMA", 0.57721566490153286060}, /* euler-mascheroni constant  */
-      {"PHI", 1.61803398874989484820},   /* golden ratio               */
-      {"TAU", 6.28318530717958623200},   /* 2*PI see Tau Manifesto, http://tauday.com */
-      {"PI", 3.14159265358979323846},    /* pi                         */
-      {"PI_2", 1.57079632679489661923},  /* pi / 2			 */
-      {"SQRT2", 1.41421356237309504880}, /* square root of 2		 */
-      {"TRUE", 1},
+      {"DEG",  57.29577951308232087680},  /* 180/pi, degrees per radian */
+      {"RAD",   0.01745329251994329576},  /* pi/180, radians per degree */
+      {"E",     2.71828182845904523536},  /* e, base of natural log     */
+      {"GAMMA", 0.57721566490153286060},  /* euler-mascheroni constant  */
+      {"PHI",   1.61803398874989484820},  /* golden ratio               */
+      {"TAU",   6.28318530717958623200},  /* 2*PI see Tau Manifesto, http://tauday.com */
+      {"PI",    3.14159265358979323846},  /* pi                         */
+      {"PI_2",  1.57079632679489661923},  /* pi / 2			 */
+      {"SQRT2", 1.41421356237309504880},  /* square root of 2		 */
+      {"TRUE",  1},
       {"FALSE", 0},
       {nullptr, 0} /* Last line must be 0, 0 */
   };
+  // clang-format on
 
   struct svar_init svariables[] = {
       {"_FORMAT", "%.10g"}, /* Default output format */
@@ -343,173 +384,59 @@ namespace SEAMS {
    *	 initialize is differently than the other string variables.
    */
 
+#define internal_init_table(functions, func_type, sym_type)                                        \
+  do {                                                                                             \
+    for (int i = 0; functions[i].fname != nullptr; i++) {                                          \
+      symrec *ptr          = putsym(functions[i].fname, sym_type, true);                           \
+      ptr->value.func_type = functions[i].fnct;                                                    \
+      ptr->info            = functions[i].description;                                             \
+      ptr->syntax          = functions[i].syntax;                                                  \
+    }                                                                                              \
+  } while (0)
+
   void Aprepro::init_table(const char *comment)
   {
-    for (int i = 0; arith_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(arith_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_d = arith_fncts[i].fnct;
-      ptr->info            = arith_fncts[i].description;
-      ptr->syntax          = arith_fncts[i].syntax;
-    }
+    // clang-format off
+    internal_init_table(arith_fncts,        fnctptr_d,      FUNCTION);
+    internal_init_table(arith_dd_fncts,     fnctptr_dd,     FUNCTION);
+    internal_init_table(arith_a_fncts,      fnctptr_a,      FUNCTION);
+    internal_init_table(arith_dddd_fncts,   fnctptr_dddd,   FUNCTION);
+    internal_init_table(arith_cc_fncts,     fnctptr_cc,     FUNCTION);
+    internal_init_table(arith_c_fncts,      fnctptr_c,      FUNCTION);
+    internal_init_table(arith_cd_fncts,     fnctptr_cd,     FUNCTION);
+    internal_init_table(arith_ddd_fncts,    fnctptr_ddd,    FUNCTION);
+    internal_init_table(arith_dddddd_fncts, fnctptr_dddddd, FUNCTION);
 
-    for (int i = 0; arith_dd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(arith_dd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_dd = arith_dd_fncts[i].fnct;
-      ptr->info             = arith_dd_fncts[i].description;
-      ptr->syntax           = arith_dd_fncts[i].syntax;
-    }
+    internal_init_table(string_fncts,       strfnct,        STRING_FUNCTION);
+    internal_init_table(string_c_fncts,     strfnct_c,      STRING_FUNCTION);
+    internal_init_table(string_d_fncts,     strfnct_d,      STRING_FUNCTION);
+    internal_init_table(string_dcc_fncts,   strfnct_dcc,    STRING_FUNCTION);
+    internal_init_table(string_ccc_fncts,   strfnct_ccc,    STRING_FUNCTION);
+    internal_init_table(string_cc_fncts,    strfnct_cc,     STRING_FUNCTION);
+    internal_init_table(string_a_fncts,     strfnct_a,      STRING_FUNCTION);
 
-    for (int i = 0; arith_a_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(arith_a_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_a = arith_a_fncts[i].fnct;
-      ptr->info            = arith_a_fncts[i].description;
-      ptr->syntax          = arith_a_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_dddd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr             = putsym(arith_dddd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_dddd = arith_dddd_fncts[i].fnct;
-      ptr->info               = arith_dddd_fncts[i].description;
-      ptr->syntax             = arith_dddd_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_cc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(arith_cc_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_cc = arith_cc_fncts[i].fnct;
-      ptr->info             = arith_cc_fncts[i].description;
-      ptr->syntax           = arith_cc_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_c_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(arith_c_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_c = arith_c_fncts[i].fnct;
-      ptr->info            = arith_c_fncts[i].description;
-      ptr->syntax          = arith_c_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_cd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(arith_cd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_cd = arith_cd_fncts[i].fnct;
-      ptr->info             = arith_cd_fncts[i].description;
-      ptr->syntax           = arith_cd_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_ddd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr            = putsym(arith_ddd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_ddd = arith_ddd_fncts[i].fnct;
-      ptr->info              = arith_ddd_fncts[i].description;
-      ptr->syntax            = arith_ddd_fncts[i].syntax;
-    }
-
-    for (int i = 0; arith_dddddd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr               = putsym(arith_dddddd_fncts[i].fname, FUNCTION, true);
-      ptr->value.fnctptr_dddddd = arith_dddddd_fncts[i].fnct;
-      ptr->info                 = arith_dddddd_fncts[i].description;
-      ptr->syntax               = arith_dddddd_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_fncts[i].fname != nullptr; i++) {
-      symrec *ptr        = putsym(string_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct = string_fncts[i].fnct;
-      ptr->info          = string_fncts[i].description;
-      ptr->syntax        = string_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_c_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(string_c_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_c = string_c_fncts[i].fnct;
-      ptr->info            = string_c_fncts[i].description;
-      ptr->syntax          = string_c_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_d_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(string_d_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_d = string_d_fncts[i].fnct;
-      ptr->info            = string_d_fncts[i].description;
-      ptr->syntax          = string_d_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_dcc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr            = putsym(string_dcc_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_dcc = string_dcc_fncts[i].fnct;
-      ptr->info              = string_dcc_fncts[i].description;
-      ptr->syntax            = string_dcc_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_ccc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr            = putsym(string_ccc_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_ccc = string_ccc_fncts[i].fnct;
-      ptr->info              = string_ccc_fncts[i].description;
-      ptr->syntax            = string_ccc_fncts[i].syntax;
-    }
-
-    for (int i = 0; string_a_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(string_a_fncts[i].fname, STRING_FUNCTION, true);
-      ptr->value.strfnct_a = string_a_fncts[i].fnct;
-      ptr->info            = string_a_fncts[i].description;
-      ptr->syntax          = string_a_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_c_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(array_c_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_c = array_c_fncts[i].fnct;
-      ptr->info            = array_c_fncts[i].description;
-      ptr->syntax          = array_c_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_cc_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(array_cc_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_cc = array_cc_fncts[i].fnct;
-      ptr->info             = array_cc_fncts[i].description;
-      ptr->syntax           = array_cc_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_cd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(array_cd_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_cd = array_cd_fncts[i].fnct;
-      ptr->info             = array_cd_fncts[i].description;
-      ptr->syntax           = array_cd_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_dd_fncts[i].fname != nullptr; i++) {
-      symrec *ptr           = putsym(array_dd_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_dd = array_dd_fncts[i].fnct;
-      ptr->info             = array_dd_fncts[i].description;
-      ptr->syntax           = array_dd_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_d_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(array_d_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_d = array_d_fncts[i].fnct;
-      ptr->info            = array_d_fncts[i].description;
-      ptr->syntax          = array_d_fncts[i].syntax;
-    }
-
-    for (int i = 0; array_a_fncts[i].fname != nullptr; i++) {
-      symrec *ptr          = putsym(array_a_fncts[i].fname, ARRAY_FUNCTION, true);
-      ptr->value.arrfnct_a = array_a_fncts[i].fnct;
-      ptr->info            = array_a_fncts[i].description;
-      ptr->syntax          = array_a_fncts[i].syntax;
-    }
+    internal_init_table(array_c_fncts,      arrfnct_c,      ARRAY_FUNCTION);
+    internal_init_table(array_cc_fncts,     arrfnct_cc,     ARRAY_FUNCTION);
+    internal_init_table(array_cd_fncts,     arrfnct_cd,     ARRAY_FUNCTION);
+    internal_init_table(array_dd_fncts,     arrfnct_dd,     ARRAY_FUNCTION);
+    internal_init_table(array_d_fncts,      arrfnct_d,      ARRAY_FUNCTION);
+    internal_init_table(array_a_fncts,      arrfnct_a,      ARRAY_FUNCTION);
+    // clang-format on
 
     for (int i = 0; variables[i].vname != nullptr; i++) {
-      symrec *ptr    = putsym(variables[i].vname, VARIABLE, true);
-      ptr->value.var = variables[i].value;
+      // These should be immutable, but possible user is using them for some other purpose...
+      // For backward compatability, keep as mutable.
+      add_variable(variables[i].vname, variables[i].value, false, true);
     }
 
     for (int i = 0; svariables[i].vname != nullptr; i++) {
-      symrec *ptr     = putsym(svariables[i].vname, STRING_VARIABLE, true);
-      ptr->value.svar = svariables[i].value;
+      add_variable(svariables[i].vname, svariables[i].value, false, true);
     }
 
-    symrec *ptr     = putsym("_C_", STRING_VARIABLE, true);
-    ptr->value.svar = comment;
+    add_variable("_C_", comment, false, true);
 
     if (aprepro) {
-      std::strncpy(vers_string, aprepro->version().c_str(), 32);
-      vers_string[31] = '\0';
-      ptr             = putsym("VERSION", STRING_VARIABLE, true);
-      ptr->value.svar = vers_string;
+      add_variable("VERSION", aprepro->version(), true, true);
     }
   }
 } // namespace SEAMS

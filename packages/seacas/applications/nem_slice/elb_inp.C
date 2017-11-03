@@ -95,7 +95,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
                        Problem_Description *    prob,   /* Structure for various problem params */
                        Solver_Description *     solver, /* Structure for eigen solver params */
                        Weight_Description<INT> *weight  /* Structure for weighting graph */
-                       )
+)
 {
   int   opt_let, iret, el_blk, wgt, max_dim = 0, i;
   char *sub_opt = nullptr, *value = nullptr, *cptr = nullptr, *cptr2 = nullptr;
@@ -134,12 +134,12 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
     /* case over the option letter */
     switch (opt_let) {
     case 'v':
-      /* Should an ouput visualization file be output */
+      /* Should an output visualization file be output */
       prob->vis_out = 1;
       break;
 
     case 'y':
-      /* Should an ouput visualization file be output */
+      /* Should an output visualization file be output */
       prob->vis_out = 2;
       break;
 
@@ -391,7 +391,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
             machine->type = HCUBE;
             max_dim       = 1;
           }
-        /* fall thru */
+          /* fall thru */
 
         case MESH:
           if (machine->type < 0) {
@@ -401,7 +401,7 @@ int cmd_line_arg_parse(int argc, char *argv[],                  /* Args as passe
 
           cptr = value; /* want to set this for both mesh and hcube */
 
-        /* fall thru */
+          /* fall thru */
 
         case CLUSTER:
           if (machine->type < 0) /* so, get the number of boxes */
@@ -884,8 +884,9 @@ int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
               }
             }
             else {
-              sprintf(ctemp, "FATAL: unknown LB method \"%s\" specified in command"
-                             " file",
+              sprintf(ctemp,
+                      "FATAL: unknown LB method \"%s\" specified in command"
+                      " file",
                       cptr);
               Gen_Error(0, ctemp);
               return 0;
@@ -1316,8 +1317,9 @@ int read_cmd_file(std::string &ascii_inp_file, std::string &exoII_inp_file,
         /* Generate an error, but continue reading for an unknown key */
         strip_string(inp_copy, " #\t");
         if (strlen(inp_copy) > 5) {
-          sprintf(ctemp, "WARNING: don't know how to process line: \n%s\nin command"
-                         " file, ignored",
+          sprintf(ctemp,
+                  "WARNING: don't know how to process line: \n%s\nin command"
+                  " file, ignored",
                   inp_copy);
           Gen_Error(1, ctemp);
         }
@@ -1714,8 +1716,9 @@ int check_inp_specs(std::string &exoII_inp_file, std::string &nemI_out_file,
      * not exist in the specified file.
      */
     if (weight->exo_vindx <= 0) {
-      sprintf(ctemp, "FATAL: requested weighting variable %s not found in ExodusII"
-                     " file",
+      sprintf(ctemp,
+              "FATAL: requested weighting variable %s not found in ExodusII"
+              " file",
               weight->exo_varname.c_str());
       Gen_Error(0, ctemp);
       return 0;

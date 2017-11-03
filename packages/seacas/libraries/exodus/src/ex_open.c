@@ -45,7 +45,7 @@
  *       int     exoid                   exodus file id
  *       int*    comp_ws                 computer word size
  *       int*    io_ws                   storage word size
- *       float*  version                 EXODUSII interface version number
+ *       float*  version                 EXODUS interface version number
  *
  * revision history -
  *
