@@ -30,7 +30,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Ioss_Region.h>
 #include <Ioss_CommSet.h>
 #include <Ioss_CoordinateFrame.h>
 #include <Ioss_DBUsage.h>
@@ -50,12 +49,12 @@
 #include <Ioss_NodeSet.h>
 #include <Ioss_Property.h>
 #include <Ioss_PropertyManager.h>
+#include <Ioss_Region.h>
 #include <Ioss_SideBlock.h>
 #include <Ioss_SideSet.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_State.h>
 #include <Ioss_StructuredBlock.h>
-
 
 #include <algorithm>
 #include <cctype>
@@ -124,7 +123,7 @@ namespace {
   }
 
   template <typename T>
-  void compute_hashes(const std::vector<T> &entities,
+  void compute_hashes(const std::vector<T> &                     entities,
                       std::array<size_t, Ioss::entityTypeCount> &hashes, Ioss::EntityType type)
   {
     auto index = numberOfBits(type) - 1;
@@ -136,8 +135,9 @@ namespace {
     }
   }
 
-  bool check_hashes(const std::array<size_t, Ioss::entityTypeCount> &min_hash, 
-		    const std::array<size_t, Ioss::entityTypeCount> &max_hash, Ioss::EntityType type)
+  bool check_hashes(const std::array<size_t, Ioss::entityTypeCount> &min_hash,
+                    const std::array<size_t, Ioss::entityTypeCount> &max_hash,
+                    Ioss::EntityType                                 type)
   {
     auto index = numberOfBits(type) - 1;
     SMART_ASSERT(index < min_hash.size())(type)(index)(min_hash.size());
@@ -163,25 +163,25 @@ namespace {
     // Now find mismatched location...
     util.global_array_minmax(min_hash, Ioss::ParallelUtils::DO_MIN);
     util.global_array_minmax(max_hash, Ioss::ParallelUtils::DO_MAX);
- 
+
     if (util.parallel_rank() == 0) {
       int count = 0;
-      for (size_t i=0; i < hashes.size(); i++) {
-	if (min_hash[i] != max_hash[i]) {
-	  auto ge = entities[i];
-	  if (count == 0) {
-	    errmsg << ge->type_string() << "(s) ";
-	  }
-	  else {
-	    errmsg << ", ";
-	  }
-	  errmsg << "'" << ge->name() << "'";
-	  count++;
-	}
+      for (size_t i = 0; i < hashes.size(); i++) {
+        if (min_hash[i] != max_hash[i]) {
+          auto ge = entities[i];
+          if (count == 0) {
+            errmsg << ge->type_string() << "(s) ";
+          }
+          else {
+            errmsg << ", ";
+          }
+          errmsg << "'" << ge->name() << "'";
+          count++;
+        }
       }
       errmsg << (count == 1 ? " is " : " are ");
       errmsg << "not consistently defined on all processors.\n\t\t"
-	     << "Check that name and id matches across processors.\n";
+             << "Check that name and id matches across processors.\n";
       std::cerr << errmsg.str();
     }
   }
@@ -213,7 +213,7 @@ namespace {
     compute_hashes(region.get_commsets(), hashes, Ioss::COMMSET);
     compute_hashes(region.get_structured_blocks(), hashes, Ioss::STRUCTUREDBLOCK);
 
-    auto util = region.get_database()->util();
+    auto util     = region.get_database()->util();
     auto min_hash = hashes;
     auto max_hash = hashes;
     util.global_array_minmax(min_hash.data(), min_hash.size(), Ioss::ParallelUtils::DO_MIN);
@@ -608,16 +608,16 @@ namespace Ioss {
 
     if (current_state == STATE_DEFINE_MODEL) {
       if (!is_input_or_appending_output(get_database())) {
-	// Sort the element blocks based on the idOffset field, followed by
-	// name...
-	auto lessOffset = [](const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2)
-	  {
-	    SMART_ASSERT(b1->property_exists(orig_block_order()));
-	    SMART_ASSERT(b2->property_exists(orig_block_order()));
-	    int64_t b1_orderInt = b1->get_property(orig_block_order()).get_int();
-	    int64_t b2_orderInt = b2->get_property(orig_block_order()).get_int();
-	    return ((b1_orderInt == b2_orderInt) ? (b1->name() < b2->name()) : (b1_orderInt < b2_orderInt));
-	  };
+        // Sort the element blocks based on the idOffset field, followed by
+        // name...
+        auto lessOffset = [](const Ioss::EntityBlock *b1, const Ioss::EntityBlock *b2) {
+          SMART_ASSERT(b1->property_exists(orig_block_order()));
+          SMART_ASSERT(b2->property_exists(orig_block_order()));
+          int64_t b1_orderInt = b1->get_property(orig_block_order()).get_int();
+          int64_t b2_orderInt = b2->get_property(orig_block_order()).get_int();
+          return ((b1_orderInt == b2_orderInt) ? (b1->name() < b2->name())
+                                               : (b1_orderInt < b2_orderInt));
+        };
 
         std::sort(elementBlocks.begin(), elementBlocks.end(), lessOffset);
         std::sort(faceBlocks.begin(), faceBlocks.end(), lessOffset);
@@ -647,24 +647,25 @@ namespace Ioss {
         }
       }
 
-      // GroupingEntity consistency check:
-      // -- debug and parallel     -- default to true; can disable via environment variable
-      // -- non-debug and parallel -- default to false; can enable via environment variable
+        // GroupingEntity consistency check:
+        // -- debug and parallel     -- default to true; can disable via environment variable
+        // -- non-debug and parallel -- default to false; can enable via environment variable
 #ifndef NDEBUG
       bool check_consistency = true;
 #else
       bool check_consistency = false;
 #endif
-      Ioss::Utils::check_set_bool_property(get_database()->get_property_manager(), "CHECK_PARALLEL_CONSISTENCY", check_consistency);
+      Ioss::Utils::check_set_bool_property(get_database()->get_property_manager(),
+                                           "CHECK_PARALLEL_CONSISTENCY", check_consistency);
       if (check_consistency) {
-	bool ok = check_parallel_consistency(*this);
-	if (!ok) {
-	  std::ostringstream errmsg;
-	  errmsg << "ERROR: Parallel Consistency Failure for "
-		 << (get_database()->is_input() ? "input" : "ouput") << " database " 
-		 << "'" << get_database()->get_filename() << "'.";
-	  IOSS_ERROR(errmsg);
-	}
+        bool ok = check_parallel_consistency(*this);
+        if (!ok) {
+          std::ostringstream errmsg;
+          errmsg << "ERROR: Parallel Consistency Failure for "
+                 << (get_database()->is_input() ? "input" : "output") << " database "
+                 << "'" << get_database()->get_filename() << "'.";
+          IOSS_ERROR(errmsg);
+        }
       }
 
       modelDefined = true;
@@ -1032,8 +1033,8 @@ namespace Ioss {
         size_t  nblocks = elementBlocks.size();
         int64_t offset  = 0;
         if (nblocks > 0) {
-          offset = elementBlocks[nblocks - 1]->get_offset() +
-                   elementBlocks[nblocks - 1]->entity_count();
+          offset =
+              elementBlocks[nblocks - 1]->get_offset() + elementBlocks[nblocks - 1]->entity_count();
         }
         SMART_ASSERT(offset >= 0)(offset);
         element_block->set_offset(offset);
@@ -1085,8 +1086,7 @@ namespace Ioss {
         size_t  nblocks = faceBlocks.size();
         int64_t offset  = 0;
         if (nblocks > 0) {
-          offset = faceBlocks[nblocks - 1]->get_offset() +
-                   faceBlocks[nblocks - 1]->entity_count();
+          offset = faceBlocks[nblocks - 1]->get_offset() + faceBlocks[nblocks - 1]->entity_count();
         }
         face_block->set_offset(offset);
       }
@@ -1137,8 +1137,7 @@ namespace Ioss {
         size_t  nblocks = edgeBlocks.size();
         int64_t offset  = 0;
         if (nblocks > 0) {
-          offset = edgeBlocks[nblocks - 1]->get_offset() +
-                   edgeBlocks[nblocks - 1]->entity_count();
+          offset = edgeBlocks[nblocks - 1]->get_offset() + edgeBlocks[nblocks - 1]->entity_count();
         }
         edge_block->set_offset(offset);
       }

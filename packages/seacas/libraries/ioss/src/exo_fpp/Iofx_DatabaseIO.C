@@ -176,7 +176,7 @@ namespace Iofx {
       }
       else {
         std::ostringstream errmsg;
-        errmsg << "ERROR: Procssor id and processor count are specified via the "
+        errmsg << "ERROR: Processor id and processor count are specified via the "
                << "'processor_count' and 'processor_id' properties which indicates that this "
                   "database is "
                << "being run in 'serial-parallel' mode, but the database constructor was passed an "
@@ -520,7 +520,7 @@ namespace Iofx {
         // Element Block
         Ioss::ElementBlock *eb = new Ioss::ElementBlock(this, "e1", "sphere", 1);
         eb->property_add(Ioss::Property("id", 1));
-	eb->property_add(Ioss::Property("guid", util().generate_guid(1)));
+        eb->property_add(Ioss::Property("guid", util().generate_guid(1)));
         get_region()->add(eb);
         get_step_times__();
         add_region_fields();
@@ -687,7 +687,7 @@ namespace Iofx {
           return;
         }
 
-        // For an exodusII file, timesteps are global and are stored in the region.
+        // For an exodus file, timesteps are global and are stored in the region.
         // A history file only stores that last time / step
         // Read the timesteps and add them to the region.
         // Since we can't access the Region's stateCount directly, we just add
@@ -727,7 +727,7 @@ namespace Iofx {
           return;
         }
 
-        // For an exodusII file, timesteps are global and are stored in the region.
+        // For an exodus file, timesteps are global and are stored in the region.
         // Read the timesteps and add to the region
         tsteps.resize(timestep_count);
         int error = ex_get_all_times(get_file_pointer(), TOPTR(tsteps));
@@ -1086,7 +1086,7 @@ namespace Iofx {
     // NOTE: This routine may be called multiple times on a single database.
     //       make sure it is not dependent on being called one time only...
 
-    // Get exodusII X block metadata
+    // Get exodus X block metadata
     if (m_groupCount[entity_type] == 0) {
       return;
     }
@@ -1207,7 +1207,7 @@ namespace Iofx {
       std::string type =
           Ioss::Utils::fixup_type(X_type, nodes_per_X, spatialDimension - rank_offset);
       if (local_X_count[iblk] == 0 && type == "") {
-        // For an empty block, exodusII does not store the X
+        // For an empty block, exodus does not store the X
         // type information and returns "nullptr" If there are no
         // Xs on any processors for this block, it will have
         // an empty type which is invalid and will throw an
@@ -1289,7 +1289,7 @@ namespace Iofx {
       block->property_add(Ioss::Property("original_block_order", used_blocks++));
 
       if (save_type != "null" && save_type != "") {
-	block->property_update("original_topology_type", save_type);
+        block->property_update("original_topology_type", save_type);
       }
 
       block->property_add(Ioss::Property("global_entity_count", global_X_count[iblk]));
@@ -1666,7 +1666,7 @@ namespace Iofx {
     if (m_groupCount[EX_SIDE_SET] > 0) {
       check_side_topology();
 
-      // Get exodusII sideset metadata
+      // Get exodus sideset metadata
 
       // Get the names (may not exist) of all sidesets and see if they are actually
       // side "blocks" (perhaps written by IO system for a restart).  In that case,
@@ -1716,7 +1716,7 @@ namespace Iofx {
           int64_t id = Ioex::extract_id(fs_name);
           if (id > 0) {
             side_set->property_add(Ioss::Property("id", id));
-	    side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
           }
         }
       }
@@ -1762,7 +1762,7 @@ namespace Iofx {
             }
             side_set = new Ioss::SideSet(this, side_set_name);
             side_set->property_add(Ioss::Property("id", id));
-	    side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
             if (db_has_name) {
               std::string *db_name = &side_set_name;
               if (get_use_generic_canonical_name()) {
@@ -2009,7 +2009,7 @@ namespace Iofx {
             // sideset might have the same id.
             assert(side_block != nullptr);
             side_block->property_add(Ioss::Property("id", id));
-	    side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
             // If splitting by element block, need to set the
             // element block member on this side block.
@@ -2092,7 +2092,7 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
   // In a parallel execution, it is possible that a Xset will have
   // no Xs or distribution factors on a particular processor...
 
-  // Get exodusII Xset metadata
+  // Get exodus Xset metadata
   if (count > 0) {
     Ioss::Int64Vector Xset_ids(count);
     Ioss::IntVector   attributes(count);
@@ -2174,7 +2174,7 @@ void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string 
         auto Xset  = new T(this, Xset_name, set_params[ins].num_entry);
         Xsets[ins] = Xset;
         Xset->property_add(Ioss::Property("id", id));
-	Xset->property_add(Ioss::Property("guid", util().generate_guid(id)));
+        Xset->property_add(Ioss::Property("guid", util().generate_guid(id)));
         if (db_has_name) {
           std::string *db_name = &Xset_name;
           if (get_use_generic_canonical_name()) {
@@ -2352,7 +2352,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
 
         else if (field.get_name() == "mesh_model_coordinates") {
           // Data required by upper classes store x0, y0, z0, ... xn,
-          // yn, zn. Data stored in exodusII file is x0, ..., xn, y0,
+          // yn, zn. Data stored in exodus file is x0, ..., xn, y0,
           // ..., yn, z0, ..., zn so we have to allocate some scratch
           // memory to read in the data and then map into supplied
           // 'data'
@@ -2523,7 +2523,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
-        // Handle the MESH fields required for an ExodusII file model.
+        // Handle the MESH fields required for an Exodus file model.
         // (The 'genesis' portion)
 
         if (field.get_name() == "connectivity") {
@@ -2684,7 +2684,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
       Ioss::Field::RoleType role          = field.get_role();
 
       if (role == Ioss::Field::MESH) {
-        // Handle the MESH fields required for an ExodusII file model.
+        // Handle the MESH fields required for an Exodus file model.
         // (The 'genesis' portion)
 
         if (field.get_name() == "connectivity") {
@@ -2765,7 +2765,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
       Ioss::Field::RoleType role          = field.get_role();
 
       if (role == Ioss::Field::MESH) {
-        // Handle the MESH fields required for an ExodusII file model.
+        // Handle the MESH fields required for an Exodus file model.
         // (The 'genesis' portion)
 
         if (field.get_name() == "connectivity") {
@@ -3224,7 +3224,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
     Ioss::Field::RoleType role = field.get_role();
     if (role == Ioss::Field::MESH) {
 
-      // In exodusII, we may have split the sideset into multiple
+      // In exodus, we may have split the sideset into multiple
       // side blocks if there are multiple side topologies in the
       // sideset.  Because of this, the passed in 'data' may not be
       // large enough to hold the data residing in the sideset and we
@@ -3269,7 +3269,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
       }
 
       else if (field.get_name() == "ids") {
-        // In exodusII, the 'side set' is stored as a sideset.  A
+        // In exodus, the 'side set' is stored as a sideset.  A
         // sideset has a list of elements and a corresponding local
         // element side (1-based) The side id is: side_id =
         // 10*element_id + local_side_number This assumes that all
@@ -3318,7 +3318,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
         }
       }
       else if (field.get_name() == "element_side") {
-        // In exodusII, the 'side set' is stored as a sideset.  A sideset
+        // In exodus, the 'side set' is stored as a sideset.  A sideset
         // has a list of elements and a corresponding local element side
         // (1-based)
 
@@ -3401,7 +3401,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
         }
       }
       else if (field.get_name() == "element_side_raw") {
-        // In exodusII, the 'side set' is stored as a sideset.  A sideset
+        // In exodus, the 'side set' is stored as a sideset.  A sideset
         // has a list of elements and a corresponding local element side
         // (1-based)
 
@@ -3657,7 +3657,7 @@ int64_t DatabaseIO::read_transient_field(ex_entity_type               type,
 {
   const Ioss::VariableType *var_type = field.raw_storage();
 
-  // Read into a double variable since that is all ExodusII can store...
+  // Read into a double variable since that is all Exodus can store...
   size_t              num_entity = ge->entity_count();
   std::vector<double> temp(num_entity);
 
@@ -3957,7 +3957,7 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
     Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
   }
 
-  // Another easy situation (and common for exodusII) is if the input
+  // Another easy situation (and common for exodus) is if the input
   // distribution factors are all the same value (typically 1).  In
   // that case, we only have to fill in the output array with that
   // value.
@@ -4120,7 +4120,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
 
         else if (field.get_name() == "mesh_model_coordinates") {
           // Data required by upper classes store x0, y0, z0, ... xn, yn, zn
-          // Data stored in exodusII file is x0, ..., xn, y0, ..., yn, z0, ..., zn
+          // Data stored in exodus file is x0, ..., xn, y0, ..., yn, z0, ..., zn
           // so we have to allocate some scratch memory to read in the data
           // and then map into supplied 'data'
           std::vector<double> x;
@@ -4213,7 +4213,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::ElementBlock *eb, const Ioss:
       Ioss::Field::RoleType role             = field.get_role();
 
       if (role == Ioss::Field::MESH) {
-        // Handle the MESH fields required for an ExodusII file model.
+        // Handle the MESH fields required for an Exodus file model.
         // (The 'genesis' portion)
         if (field.get_name() == "connectivity") {
           if (my_element_count > 0) {
@@ -4376,7 +4376,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
       Ioss::Field::RoleType role          = field.get_role();
 
       if (role == Ioss::Field::MESH) {
-        // Handle the MESH fields required for an ExodusII file model.
+        // Handle the MESH fields required for an Exodus file model.
         // (The 'genesis' portion)
         if (field.get_name() == "connectivity") {
           if (my_face_count > 0) {
@@ -4450,7 +4450,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
       Ioss::Field::RoleType role          = field.get_role();
 
       if (role == Ioss::Field::MESH) {
-        // Handle the MESH fields required for an ExodusII file model. (The 'genesis' portion)
+        // Handle the MESH fields required for an Exodus file model. (The 'genesis' portion)
         if (field.get_name() == "connectivity") {
           if (my_edge_count > 0) {
             // Map edge connectivity from global node id to local node id.
@@ -5224,7 +5224,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
         }
       }
       else if (field.get_name() == "element_side") {
-        // In exodusII, the 'side block' is stored as a sideset.  A
+        // In exodus, the 'side block' is stored as a sideset.  A
         // sideset has a list of elements and a corresponding local
         // element side (1-based)
 
@@ -5278,7 +5278,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::SideBlock *fb, const Ioss::Fi
         }
       }
       else if (field.get_name() == "element_side_raw") {
-        // In exodusII, the 'side block' is stored as a sideset.  A
+        // In exodus, the 'side block' is stored as a sideset.  A
         // sideset has a list of elements and a corresponding local
         // element side (1-based)
 
@@ -5532,7 +5532,7 @@ void DatabaseIO::write_meta_data()
       // id.
       new_block->property_update("id", id);
       new_block->property_update("guid", util().generate_guid(1));
-      
+
       entity_count += side_block->entity_count();
       df_count += side_block->get_property("distribution_factor_count").get_int();
     }
@@ -5559,7 +5559,7 @@ void DatabaseIO::write_meta_data()
       put_info();
     }
 
-    // Write the metadata to the exodusII file...
+    // Write the metadata to the exodus file...
     Ioex::Internals data(get_file_pointer(), maximumNameLength, util());
     int             ierr = data.write_meta_data(mesh);
 
