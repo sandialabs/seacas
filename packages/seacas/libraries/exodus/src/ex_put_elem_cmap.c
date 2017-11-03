@@ -205,7 +205,7 @@ int ex_put_elem_cmap(int exoid, ex_entity_id map_id, void_int *elem_ids, void_in
     status = nc_put_vara_int(exoid, varid, start, count, side_ids);
   }
   if (status != NC_NOERR) {
-    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to ouput variable \"%s\" in file ID %d",
+    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to output variable \"%s\" in file ID %d",
              VAR_E_COMM_SIDS, exoid);
     ex_err(__func__, errmsg, status);
     EX_FUNC_LEAVE(EX_FATAL);

@@ -247,7 +247,7 @@ ignored.  For example:
 \end{apinp}
 
 \subsection{Switch Statements}
-The \cmd{switch} statement is a control construct which allows the value of a variable or expression to change the control flow via a multiway branch.
+The \cmd{switch} statement is a control construct which allows the value of a variable or expression to change the control flow via a multi-way branch.
 The construct is begun with a \cmd{switch(expression)} statement followed by one or more \cmd{case(expression)} statements and an optional \cmd{default} statement. The construct is ended with an \cmd{endswitch} statement.  The expression in the \cmd{switch(expression)} statement is evaluated and compared to each \cmd{case(expression)} statement in order.  If the values of the two expressions are equal, then the code following that \cmd{case(expression)} is evaluated up to the next \cmd{case()} or \cmd{default} statement. If the expressions in more than one \cmd{case()} match the initial \cmd{switch()} expression, only the first one will be activated.  If none of the \cmd{case()} expressions match the \cmd{switch()} expression, then the code following the \cmd{default} command will be evaluated. An example of the syntax is:
 
 \begin{apinp}
@@ -351,7 +351,7 @@ metadata from a binary \exo{}~\cite{exodus} file and create several
 variables which can then be used for calculations or decisions.  The
 function syntax is \cmd{exodus\_meta(filename)}. The
 argument to the function is a string containing the filename of the
-Exouds file.  If the file does not exist in the current directory,
+Exodus file.  If the file does not exist in the current directory,
 \aprepro{} will prepend the path specified by the \cmd{--include} or
 \cmd{-I} command line option.
 
@@ -391,7 +391,7 @@ to all lowercase. \\
 ex\_sideset\_names   & Sideset names.  Will be ``sideset\_'' + sideset
 id if no names on the database. \\
 ex\_nodeset\_names   & Nodeset names.  Will be ``nodeset\_'' + nodeset
-id if no names on the databse. \\
+id if no names on the database. \\
 \hline 
 \end{longtable}
 

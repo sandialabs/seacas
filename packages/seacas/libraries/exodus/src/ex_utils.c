@@ -1354,14 +1354,14 @@ int ex_large_model(int exoid)
     if (option != NULL) {
       if (option[0] == 'n' || option[0] == 'N') {
         if (!message_output) {
-          fprintf(stderr, "EXODUSII: Small model size selected via "
+          fprintf(stderr, "EXODUS: Small model size selected via "
                           "EXODUS_LARGE_MODEL environment variable\n");
           message_output = EX_TRUE;
         }
         EX_FUNC_LEAVE(0);
       }
       if (!message_output) {
-        fprintf(stderr, "EXODUSII: Large model size selected via "
+        fprintf(stderr, "EXODUS: Large model size selected via "
                         "EXODUS_LARGE_MODEL environment variable\n");
         message_output = EX_TRUE;
       }
