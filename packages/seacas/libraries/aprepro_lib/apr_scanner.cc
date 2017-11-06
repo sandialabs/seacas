@@ -3608,8 +3608,9 @@ namespace SEAMS {
 
   void Scanner::save_history_string()
   {
-    if (!aprepro.ap_options.keep_history)
+    if (!aprepro.ap_options.keep_history) {
       return;
+    }
 
     // Don't do it if the file is the one used by execute and rescan.
     if (aprepro.ap_file_list.top().name == "_string_") {
