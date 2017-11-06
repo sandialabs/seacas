@@ -67,11 +67,8 @@ namespace SEAMS {
   bool     echo = true;
 
   Aprepro::Aprepro()
-      : lexer(nullptr), infoStream(&std::cout), sym_table(HASHSIZE), stringInteractive(false),
-        stringScanner(nullptr), errorStream(&std::cerr), warningStream(&std::cerr),
-        parseErrorCount(0), stateImmutable(false), doLoopSubstitution(true),
-        doIncludeSubstitution(true), isCollectingLoop(false), inIfdefGetvar(false)
   {
+    sym_table.resize(HASHSIZE);
     ap_file_list.push(file_rec());
     init_table("$");
     aprepro = this;
@@ -318,21 +315,21 @@ namespace SEAMS {
     int  parser_type = 0;
     bool is_function = false;
     switch (sym_type) {
-    case VARIABLE: parser_type = Parser::token::VAR; break;
-    case STRING_VARIABLE: parser_type = Parser::token::SVAR; break;
-    case ARRAY_VARIABLE: parser_type = Parser::token::AVAR; break;
-    case IMMUTABLE_VARIABLE: parser_type = Parser::token::IMMVAR; break;
-    case IMMUTABLE_STRING_VARIABLE: parser_type = Parser::token::IMMSVAR; break;
-    case UNDEFINED_VARIABLE: parser_type = Parser::token::UNDVAR; break;
-    case FUNCTION:
+    case SYMBOL_TYPE::VARIABLE: parser_type = Parser::token::VAR; break;
+    case SYMBOL_TYPE::STRING_VARIABLE: parser_type = Parser::token::SVAR; break;
+    case SYMBOL_TYPE::ARRAY_VARIABLE: parser_type = Parser::token::AVAR; break;
+    case SYMBOL_TYPE::IMMUTABLE_VARIABLE: parser_type = Parser::token::IMMVAR; break;
+    case SYMBOL_TYPE::IMMUTABLE_STRING_VARIABLE: parser_type = Parser::token::IMMSVAR; break;
+    case SYMBOL_TYPE::UNDEFINED_VARIABLE: parser_type = Parser::token::UNDVAR; break;
+    case SYMBOL_TYPE::FUNCTION:
       parser_type = Parser::token::FNCT;
       is_function = true;
       break;
-    case STRING_FUNCTION:
+    case SYMBOL_TYPE::STRING_FUNCTION:
       parser_type = Parser::token::SFNCT;
       is_function = true;
       break;
-    case ARRAY_FUNCTION:
+    case SYMBOL_TYPE::ARRAY_FUNCTION:
       parser_type = Parser::token::AFNCT;
       is_function = true;
       break;
@@ -510,14 +507,15 @@ namespace SEAMS {
                              bool immutable, bool internal)
   {
     if (check_valid_var(sym_name.c_str())) {
-      SYMBOL_TYPE type = immutable ? IMMUTABLE_STRING_VARIABLE : STRING_VARIABLE;
-      symrec *    var  = getsym(sym_name);
+      SYMBOL_TYPE type =
+          immutable ? SYMBOL_TYPE::IMMUTABLE_STRING_VARIABLE : SYMBOL_TYPE::STRING_VARIABLE;
+      symrec *var = getsym(sym_name);
       if (var == nullptr) {
         var = putsym(sym_name, type, internal);
       }
       else {
-        if (var->type != type) {
-          var->type = type;
+        if (var->type != (int)type) {
+          var->type = (int)type;
         }
       }
       var->value.svar = sym_value;
@@ -531,14 +529,14 @@ namespace SEAMS {
                              bool internal)
   {
     if (check_valid_var(sym_name.c_str())) {
-      SYMBOL_TYPE type = immutable ? IMMUTABLE_VARIABLE : VARIABLE;
+      SYMBOL_TYPE type = immutable ? SYMBOL_TYPE::IMMUTABLE_VARIABLE : SYMBOL_TYPE::VARIABLE;
       symrec *    var  = getsym(sym_name);
       if (var == nullptr) {
         var = putsym(sym_name, type, internal);
       }
       else {
-        if (var->type != type) {
-          var->type = type;
+        if (var->type != (int)type) {
+          var->type = (int)type;
         }
       }
       var->value.var = sym_value;
@@ -551,14 +549,14 @@ namespace SEAMS {
   void Aprepro::add_variable(const std::string &sym_name, array *value)
   {
     if (check_valid_var(sym_name.c_str())) {
-      SYMBOL_TYPE type = ARRAY_VARIABLE;
+      SYMBOL_TYPE type = SYMBOL_TYPE::ARRAY_VARIABLE;
       symrec *    var  = getsym(sym_name);
       if (var == nullptr) {
         var = putsym(sym_name, type, false);
       }
       else {
-        if (var->type != type) {
-          var->type = type;
+        if (var->type != (int)type) {
+          var->type = (int)type;
         }
       }
       var->value.avar = value;

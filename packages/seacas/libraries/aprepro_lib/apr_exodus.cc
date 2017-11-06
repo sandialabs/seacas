@@ -1,37 +1,35 @@
-/*
- * Copyright (c) 2014-2017 National Technology & Engineering Solutions
- * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
- * NTESS, the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of NTESS nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+// Copyright (c) 2014-2017 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     * Redistributions in binary form must reproduce the above
+//       copyright notice, this list of conditions and the following
+//       disclaimer in the documentation and/or other materials provided
+//       with the distribution.
+//
+//     * Neither the name of NTESS nor the names of its
+//       contributors may be used to endorse or promote products derived
+//       from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
 #if defined(EXODUS_SUPPORT)
 #include "aprepro.h"
@@ -72,7 +70,7 @@ namespace SEAMS {
 
     exo = ex_open(filename, EX_READ | EX_ALL_INT64_API, &cpu, &io, &version);
     if (exo < 0) {
-      /* If there is an include path specified, try opening file there */
+      // If there is an include path specified, try opening file there
       std::string file_path(aprepro->ap_options.include_path);
       if (!file_path.empty()) {
         file_path += "/";
@@ -92,10 +90,8 @@ namespace SEAMS {
   {
     char *ret_string = NULL;
 
-    /*
-     * Open the specified exodusII file, read the info records
-     * then parse them as input to aprepro.
-     */
+    // Open the specified exodusII file, read the info records
+    // then parse them as input to aprepro.
     int exoid = open_exodus_file(filename);
     if (exoid < 0)
       return "";
@@ -141,10 +137,8 @@ namespace SEAMS {
   {
     char *ret_string = NULL;
 
-    /*
-     * Open the specified exodusII file, read the info records
-     * then parse them as input to aprepro.
-     */
+    // Open the specified exodusII file, read the info records
+    // then parse them as input to aprepro.
     int exoid = open_exodus_file(filename);
     if (exoid < 0)
       return "";
@@ -195,16 +189,14 @@ namespace SEAMS {
   const char *do_exodus_meta(char *filename)
   {
 
-    /*
-     * Open the specified exodusII file, read the metadata and set
-     * variables for each item.
-     * Examples include "node_count", "element_count", ...
-     */
+    // Open the specified exodusII file, read the metadata and set
+    // variables for each item.
+    // Examples include "node_count", "element_count", ...
     int exoid = open_exodus_file(filename);
     if (exoid < 0)
       return "";
 
-    /* read database paramters */
+    // read database paramters
     static char title[MAX_LINE_LENGTH + 1];
     int64_t     ndim, nnodes, nelems, nblks, nnsets, nssets;
     ex_get_init(exoid, title, &ndim, &nnodes, &nelems, &nblks, &nnsets, &nssets);
@@ -217,7 +209,7 @@ namespace SEAMS {
     aprepro->add_variable("ex_nodeset_count", nnsets);
     aprepro->add_variable("ex_sideset_count", nssets);
 
-    { /* Nemesis Information */
+    { // Nemesis Information
       int  proc_count;
       int  proc_in_file;
       char file_type[MAX_STR_LENGTH + 1];
@@ -241,18 +233,15 @@ namespace SEAMS {
       }
     }
 
-    /*
-     * Read The Element Blocks, Node Sets, and Side Sets and set variables for each of these.
-     * The Scheme Is:
-     * -- 'ex_block_ids' Is an array of the element block ids. (ex_block_count, 1)
-     * -- 'ex_block_info' is an array of the element block info (id, num_elem, num_node_per_element,
-     * num_attrib) for each block (ex_block_count,4)
-     * -- 'ex_nodeset_ids'
-     * -- 'ex_nodeset_info'
-     * -- 'ex_sideset_ids'
-     * -- 'ex_sideset_info'
-     */
-
+    // Read The Element Blocks, Node Sets, and Side Sets and set variables for each of these.
+    // The Scheme Is:
+    // -- 'ex_block_ids' Is an array of the element block ids. (ex_block_count, 1)
+    // -- 'ex_block_info' is an array of the element block info (id, num_elem, num_node_per_element,
+    // num_attrib) for each block (ex_block_count,4)
+    // -- 'ex_nodeset_ids'
+    // -- 'ex_nodeset_info'
+    // -- 'ex_sideset_ids'
+    // -- 'ex_sideset_info'
     int max_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
     ex_set_max_name_length(exoid, max_name_length);
     char *name = new char[max_name_length + 1];
@@ -371,7 +360,7 @@ namespace SEAMS {
       aprepro->add_variable("ex_sideset_info", array_set_info);
     }
 
-    /* Get timestep count */
+    // Get timestep count
     int64_t ts_count = ex_inquire_int(exoid, EX_INQ_TIME);
     aprepro->add_variable("ex_timestep_count", ts_count);
 

@@ -592,7 +592,7 @@ integer {D}+({E})?
            symrec *s;
 			     s = aprepro.getsym(yytext);
 			     if (s == nullptr)
-			       s = aprepro.putsym (yytext, SEAMS::Aprepro::UNDEFINED_VARIABLE, 0);
+			       s = aprepro.putsym (yytext, SEAMS::Aprepro::SYMBOL_TYPE::UNDEFINED_VARIABLE, 0);
 			     yylval->tptr = s;
 			     return((token::yytokentype)s->type);
 			   }

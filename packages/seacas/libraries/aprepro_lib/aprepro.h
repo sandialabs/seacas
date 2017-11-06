@@ -1,48 +1,45 @@
-/*
- * Copyright (c) 2014-2017 National Technology & Engineering Solutions
- * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
- * NTESS, the U.S. Government retains certain rights in this software.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- *     * Neither the name of NTESS nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-/** \file aprepro.h Declaration of the SEAMS::Aprepro class. */
+// Copyright (c) 2014-2017 National Technology & Engineering Solutions
+// of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
+// NTESS, the U.S. Government retains certain rights in this software.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     * Redistributions in binary form must reproduce the above
+//       copyright notice, this list of conditions and the following
+//       disclaimer in the documentation and/or other materials provided
+//       with the distribution.
+//
+//     * Neither the name of NTESS nor the names of its
+//       contributors may be used to endorse or promote products derived
+//       from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 
-/* Might be good to add a callback function which would be called
-   when there was output -- In LexerOutput for example.  Default
-   could be to just write to std::cout or to resultsOutput stringstream...
-*/
+// Might be good to add a callback function which would be called
+// when there was output -- In LexerOutput for example.  Default
+// could be to just write to std::cout or to resultsOutput stringstream...
 
 #ifndef SEAMS_DRIVER_H
 #define SEAMS_DRIVER_H
 
 #include <cstdlib>
+#include <iostream>
 #include <ostream>
 #include <sstream>
 #include <stack>
@@ -58,7 +55,6 @@
  * SEAMS::Parser, SEAMS::Scanner and SEAMS::Aprepro */
 namespace SEAMS {
 
-  /* Array structure */
   struct array
   {
     std::vector<double> data;
@@ -184,7 +180,7 @@ namespace SEAMS {
     Aprepro();
     ~Aprepro();
 
-    enum SYMBOL_TYPE {
+    enum class SYMBOL_TYPE {
       VARIABLE                  = 1,
       STRING_VARIABLE           = 2,
       UNDEFINED_VARIABLE        = 5,
@@ -274,7 +270,7 @@ namespace SEAMS {
 
     /** Pointer to the current lexer instance, this is used to connect the
      * parser to the scanner. It is used in the yylex macro. */
-    class Scanner *lexer;
+    class Scanner *lexer{nullptr};
 
     /** Error handling. */
     int get_error_count() const
@@ -287,7 +283,7 @@ namespace SEAMS {
 
     // The info stream. To only print out info messages if the -M option was
     // specified, use info(...) instead.
-    std::ostream *infoStream;
+    std::ostream *infoStream{&std::cout};
 
     void set_error_streams(std::ostream *c_error, std::ostream *c_warning, std::ostream *c_info);
 
@@ -303,40 +299,40 @@ namespace SEAMS {
     // Input stream used with parse_string_interactive
     std::istringstream stringInput;
 
-    bool           stringInteractive;
-    class Scanner *stringScanner;
+    bool           stringInteractive{false};
+    class Scanner *stringScanner{nullptr};
 
     // For error handling
-    std::ostream *errorStream;
-    std::ostream *warningStream;
+    std::ostream *errorStream{&std::cerr};
+    std::ostream *warningStream{&std::cerr};
 
     // For substitution history.
     std::vector<history_data> history;
 
-    mutable int parseErrorCount;
+    mutable int parseErrorCount{0};
 
   public:
-    bool stateImmutable;
+    bool stateImmutable{false};
 
     // Flag to do Aprepro substitutions within loops. Default value is true. If set to
     // false, content within the loop will be treated as verbatim text.
-    bool doLoopSubstitution;
+    bool doLoopSubstitution{true};
 
     // Flag to do Aprepro substitutions when including a file. Default value is true.
     // If set to false, content within the file will be treated as verbatim text that
     // needs to be sent through Aprepro again later.
-    bool doIncludeSubstitution;
+    bool doIncludeSubstitution{true};
 
     // Flag to inidicate whether Aprepro is in the middle of collecting lines for a
     // loop.
-    bool isCollectingLoop;
+    bool isCollectingLoop{false};
 
     // Record the substitution of the current Aprepro statement. This function will also
     // reset the historyString and add an entry to the substitution map.
     void add_history(const std::string &original, const std::string &substitution);
 
     // Used to avoid undefined variable warnings in old ifdef/ifndef construct
-    mutable bool inIfdefGetvar;
+    mutable bool inIfdefGetvar{false};
 
     const std::vector<history_data> &get_history();
     void                             clear_history();
