@@ -44,12 +44,7 @@
 #include <string>         // for string
 
 namespace SEAMS {
-  extern SEAMS::Aprepro *aprepro;
-
-  void init_table(const char *comment);
-  char vers_string[32];
-
-  struct init_d arith_fncts[] = {
+  init_d arith_fncts[] = {
       {"abs", do_fabs, "abs(x)", "Absolute value of x. |x|."},
       {"acos", do_acos, "acos(x)", "Inverse cosine of x, returns radians."},
       {"acosd", do_acosd, "acosd(x)", "Inverse cosine of x, returns degrees."},
@@ -84,16 +79,14 @@ namespace SEAMS {
       {"tan", do_tan, "tan(x)", "Tangent of x, with x in radians. "},
       {"tand", do_tand, "tand(x)", "Tangent of x, with x in radians. "},
       {"tanh", do_tanh, "tanh(x)", "Hyperbolic tangent of x. "},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_a arith_a_fncts[] = {
+  init_a arith_a_fncts[] = {
       {"rows", do_rows, "rows(array)", "Returns the number of rows in the array. "},
       {"cols", do_cols, "cols(array)", "Returns the number of columns in the array. "},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_dd arith_dd_fncts[] = {
+  init_dd arith_dd_fncts[] = {
       {"atan2", do_atan2, "atan2(x,y)", "Inverse tangent of y/x, returns radians."},
       {"atan2d", do_atan2d, "atan2d(x,y)", "Inverse tangent of y/x, returns degrees."},
       {"dim", do_dim, "dim(x,y)", "x - min(x,y)"},
@@ -111,50 +104,41 @@ namespace SEAMS {
       {"rand_weibull", do_rand_weibull, "rand_weibull(a, b)",
        "Random value with weibull distribution with alpha=a and beta=b. "},
       {"sign", do_sign, "sign(x,y)", "x * sgn(y)"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_dddd arith_dddd_fncts[] = {
+  init_dddd arith_dddd_fncts[] = {
       {"Vangle", do_angle, "Vangle(x1,y1,x2,y2)",
        "Angle (radians) between vector x1_i+y1_j and x2_i+y2_j."},
       {"Vangled", do_angled, "Vangled(x1,y1,x2,y2)",
        "Angle (degrees) between vector x1_i+y1_j and x2_i+y2_j."},
       {"dist", do_dist, "dist(x1,y1, x2,y2)", "sqrt((x1-x2)^2 + (y1-y2)^2)"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_cc arith_cc_fncts[] = {
+  init_cc arith_cc_fncts[] = {
       {"word_count", do_word_count, "word_count(svar,del)",
        "Number of words in svar. Words are separated by one or more of the characters in the "
        "string variable 'del'."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_c arith_c_fncts[] = {
-      {"strtod", do_strtod, "strtod(svar)",
-       "Returns a double-precision floating-point number "
-       "equal to the value represented by the character "
-       "string pointed to by svar."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0 */
-  };
+  init_c arith_c_fncts[] = {{"strtod", do_strtod, "strtod(svar)",
+                             "Returns a double-precision floating-point number "
+                             "equal to the value represented by the character "
+                             "string pointed to by svar."},
+                            {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_cd arith_cd_fncts[] = {
-      {"option", do_option, "option(?,?)", "Internal"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0*/
-  };
+  init_cd arith_cd_fncts[] = {{"option", do_option, "option(?,?)", "Internal"},
+                              {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_ddd arith_ddd_fncts[] = {
+  init_ddd arith_ddd_fncts[] = {
       {"julday", do_julday, "julday(mm, dd, yy)", "Julian day corresponding to mm/dd/yy. "},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0*/
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct init_dddddd arith_dddddd_fncts[] = {
-      {"juldayhms", do_juldayhms, "juldayhms(mm, dd, yy, hh, mm, ss)",
-       "Julian day corresponding to mm/dd/yy at hh:mm:ss "},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0*/
-  };
+  init_dddddd arith_dddddd_fncts[] = {{"juldayhms", do_juldayhms,
+                                       "juldayhms(mm, dd, yy, hh, mm, ss)",
+                                       "Julian day corresponding to mm/dd/yy at hh:mm:ss "},
+                                      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_init string_fncts[] = {
+  str_init string_fncts[] = {
       {"DUMP", do_dumpsym, "DUMP()", "Output a list of all defined variables and their value."},
       {"DUMP_FUNC", do_dumpfunc, "DUMP_FUNC()",
        "Output a list of all double and string functions recognized by aprepro."},
@@ -169,10 +153,9 @@ namespace SEAMS {
       {"get_temp_filename", do_get_temp_filename, "get_temp_filename()",
        "Returns a string which can be used for a temporary filename without conflicting with any "
        "other filenames."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_c_init string_c_fncts[] = {
+  str_c_init string_c_fncts[] = {
       {"DUMP", do_dumpsym1, "DUMP(str)",
        "Output a list of all defined variables and their value if name contains 'str'."},
       {"DUMP_FUNC", do_dumpfunc1, "DUMP_FUNC()",
@@ -247,10 +230,9 @@ namespace SEAMS {
       {"exodus_meta", do_exodus_meta, "exodus_meta(ex_fn)",
        "Creates several variables related to the exodus metadata in the specified file. "},
 #endif
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_d_init string_d_fncts[] = {
+  str_d_init string_d_fncts[] = {
       {"IO", do_intout, "IO(x)", "Convert x to an integer and then to a string. "},
       {"to_string", do_tostring, "to_string(x)",
        "Returns a string representation of the numerical variable x. The variable x is unchanged."},
@@ -284,17 +266,15 @@ namespace SEAMS {
        "Switch statement. A case used in a containing switch statement."},
       {"Case", do_case, "Case(x)",
        "Switch statement. A case used in a containing switch statement."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_dcc_init string_dcc_fncts[] = {
+  str_dcc_init string_dcc_fncts[] = {
       {"get_word", do_get_word, "get_word(n,svar,del)",
        "Returns a string containing the nth word of svar. The words are separated by one or more "
        "of the characters in the string variable del "},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_ccc_init string_ccc_fncts[] = {
+  str_ccc_init string_ccc_fncts[] = {
       {"extract", do_extract, "extract(s, b, e)",
        "Return substring [b,e). 'b' is included; 'e' is not. If 'b' not found, return empty; If "
        "'e' not found, return rest of string. If 'b' empty, start at beginning; if 'e' empty, "
@@ -303,63 +283,53 @@ namespace SEAMS {
       {"exodus_info", do_exodus_info_range, "exodus_info(ex_fn, beg, end)",
        "Parses the info records starting after 'beg' and ending before 'end'"},
 #endif
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_cc_init string_cc_fncts[] = {
+  str_cc_init string_cc_fncts[] = {
 #if defined(EXODUS_SUPPORT)
       {"exodus_info", do_exodus_info, "exodus_info(ex_fn, prefix)",
        "Parses the info records that begin with 'prefix' extracted from the exodus file 'ex_fn'"},
 #endif
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct str_a_init string_a_fncts[] = {
+  str_a_init string_a_fncts[] = {
       {"print_array", do_print_array, "print_array(array)", "Prints the data in the array."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct array_c_init array_c_fncts[] = {
-      {"csv_array", do_csv_array1, "csv_array(filename)",
-       "Create a 2D array from the data in a csv file."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+  array_c_init array_c_fncts[] = {{"csv_array", do_csv_array1, "csv_array(filename)",
+                                   "Create a 2D array from the data in a csv file."},
+                                  {nullptr, nullptr, nullptr, nullptr}};
 
-  struct array_cd_init array_cd_fncts[] = {
+  array_cd_init array_cd_fncts[] = {
       {"csv_array", do_csv_array, "csv_array(filename, [skip])",
        "Create a 2D array from the data in a csv file optionally skipping rows."
        " If skip is integer skip that many rows; if skip is a character, skip lines beginning with "
        "that character"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct array_cc_init array_cc_fncts[] = {
+  array_cc_init array_cc_fncts[] = {
       {"csv_array", do_csv_array2, "csv_array(filename, [skip])",
        "Create a 2D array from the data in a csv file optionally skipping rows."
        " If skip is integer skip that many rows; if skip is a character, skip lines beginning with "
        "that character"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct array_dd_init array_dd_fncts[] = {
+  array_dd_init array_dd_fncts[] = {
       {"make_array", do_make_array, "make_array(rows, cols)",
        "Create a 2D array of size 'rows' by 'cols' initialized to zero."},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct array_d_init array_d_fncts[] = {
+  array_d_init array_d_fncts[] = {
       {"identity", do_identity, "identity(size)",
        "Create a 2D identity array with 'size' rows and columns. Diagonal = 1.0"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
-  struct array_a_init array_a_fncts[] = {
+  array_a_init array_a_fncts[] = {
       {"transpose", do_transpose, "transpose(array)", "Return the transpose of input array"},
-      {nullptr, nullptr, nullptr, nullptr} /* Last line must be 0, 0, 0, 0 */
-  };
+      {nullptr, nullptr, nullptr, nullptr}};
 
   // clang-format off
-  struct var_init variables[] = {
+  var_init variables[] = {
       {"DEG",  57.29577951308232087680},  /* 180/pi, degrees per radian */
       {"RAD",   0.01745329251994329576},  /* pi/180, radians per degree */
       {"E",     2.71828182845904523536},  /* e, base of natural log     */
@@ -371,14 +341,12 @@ namespace SEAMS {
       {"SQRT2", 1.41421356237309504880},  /* square root of 2		 */
       {"TRUE",  1},
       {"FALSE", 0},
-      {nullptr, 0} /* Last line must be 0, 0 */
+      {nullptr, 0}
   };
   // clang-format on
 
-  struct svar_init svariables[] = {
-      {"_FORMAT", "%.10g"}, /* Default output format */
-      {nullptr, nullptr}    /* Last line must be 0, 0 */
-  };
+  svar_init svariables[] = {{"_FORMAT", "%.10g"}, /* Default output format */
+                            {nullptr, nullptr}};
   /* NOTE: The current comment is stored in "_C_"
    *	 Since it can be changed by user on command line, we
    *	 initialize is differently than the other string variables.
@@ -394,33 +362,35 @@ namespace SEAMS {
     }                                                                                              \
   } while (0)
 
+  extern SEAMS::Aprepro *aprepro;
+
   void Aprepro::init_table(const char *comment)
   {
     // clang-format off
-    internal_init_table(arith_fncts,        fnctptr_d,      FUNCTION);
-    internal_init_table(arith_dd_fncts,     fnctptr_dd,     FUNCTION);
-    internal_init_table(arith_a_fncts,      fnctptr_a,      FUNCTION);
-    internal_init_table(arith_dddd_fncts,   fnctptr_dddd,   FUNCTION);
-    internal_init_table(arith_cc_fncts,     fnctptr_cc,     FUNCTION);
-    internal_init_table(arith_c_fncts,      fnctptr_c,      FUNCTION);
-    internal_init_table(arith_cd_fncts,     fnctptr_cd,     FUNCTION);
-    internal_init_table(arith_ddd_fncts,    fnctptr_ddd,    FUNCTION);
-    internal_init_table(arith_dddddd_fncts, fnctptr_dddddd, FUNCTION);
+    internal_init_table(arith_fncts,        fnctptr_d,      SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_dd_fncts,     fnctptr_dd,     SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_a_fncts,      fnctptr_a,      SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_dddd_fncts,   fnctptr_dddd,   SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_cc_fncts,     fnctptr_cc,     SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_c_fncts,      fnctptr_c,      SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_cd_fncts,     fnctptr_cd,     SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_ddd_fncts,    fnctptr_ddd,    SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_dddddd_fncts, fnctptr_dddddd, SYMBOL_TYPE::FUNCTION);
 
-    internal_init_table(string_fncts,       strfnct,        STRING_FUNCTION);
-    internal_init_table(string_c_fncts,     strfnct_c,      STRING_FUNCTION);
-    internal_init_table(string_d_fncts,     strfnct_d,      STRING_FUNCTION);
-    internal_init_table(string_dcc_fncts,   strfnct_dcc,    STRING_FUNCTION);
-    internal_init_table(string_ccc_fncts,   strfnct_ccc,    STRING_FUNCTION);
-    internal_init_table(string_cc_fncts,    strfnct_cc,     STRING_FUNCTION);
-    internal_init_table(string_a_fncts,     strfnct_a,      STRING_FUNCTION);
+    internal_init_table(string_fncts,       strfnct,        SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_c_fncts,     strfnct_c,      SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_d_fncts,     strfnct_d,      SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_dcc_fncts,   strfnct_dcc,    SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_ccc_fncts,   strfnct_ccc,    SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_cc_fncts,    strfnct_cc,     SYMBOL_TYPE::STRING_FUNCTION);
+    internal_init_table(string_a_fncts,     strfnct_a,      SYMBOL_TYPE::STRING_FUNCTION);
 
-    internal_init_table(array_c_fncts,      arrfnct_c,      ARRAY_FUNCTION);
-    internal_init_table(array_cc_fncts,     arrfnct_cc,     ARRAY_FUNCTION);
-    internal_init_table(array_cd_fncts,     arrfnct_cd,     ARRAY_FUNCTION);
-    internal_init_table(array_dd_fncts,     arrfnct_dd,     ARRAY_FUNCTION);
-    internal_init_table(array_d_fncts,      arrfnct_d,      ARRAY_FUNCTION);
-    internal_init_table(array_a_fncts,      arrfnct_a,      ARRAY_FUNCTION);
+    internal_init_table(array_c_fncts,      arrfnct_c,      SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_cc_fncts,     arrfnct_cc,     SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_cd_fncts,     arrfnct_cd,     SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_dd_fncts,     arrfnct_dd,     SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_d_fncts,      arrfnct_d,      SYMBOL_TYPE::ARRAY_FUNCTION);
+    internal_init_table(array_a_fncts,      arrfnct_a,      SYMBOL_TYPE::ARRAY_FUNCTION);
     // clang-format on
 
     for (int i = 0; variables[i].vname != nullptr; i++) {

@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   SEAMS::Aprepro aprepro;
 
   // EXAMPLE: Add a function to aprepro...
-  SEAMS::symrec *ptr   = aprepro.putsym("succ", SEAMS::Aprepro::FUNCTION, false);
+  SEAMS::symrec *ptr   = aprepro.putsym("succ", SEAMS::Aprepro::SYMBOL_TYPE::FUNCTION, false);
   ptr->value.fnctptr_d = succ;
   ptr->info            = "Return the successor to d";
   ptr->syntax          = "succ(d)";
