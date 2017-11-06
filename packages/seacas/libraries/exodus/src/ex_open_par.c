@@ -60,7 +60,7 @@
 #include <mpi.h>          // for MPI_Comm, MPI_Info, etc
 #include <stddef.h>       // for size_t
 #include <stdio.h>
-
+#include <string.h>
 /*!
 
 The function ex_open() opens an existing exodus file and returns
@@ -128,6 +128,15 @@ exoid = ex_open ("test.exo",     \co{filename path}
  */
 
 static int warning_output = 0;
+
+struct ncvar /* variable */
+{
+  char    name[MAX_VAR_NAME_LENGTH];
+  nc_type type;
+  int     ndims;
+  int     dims[NC_MAX_VAR_DIMS];
+  int     natts;
+};
 
 int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float *version,
                     MPI_Comm comm, MPI_Info info, int run_version)
@@ -336,6 +345,41 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
                  exoid);
         ex_err(__func__, errmsg, status);
         EX_FUNC_LEAVE(EX_FATAL);
+      }
+    }
+
+    /* If this is a parallel execution and the file type is netcdf-4 and we are appending, then we
+     * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
+     * they will be being extended.
+     */
+    if (is_mpiio) {
+      int ndims;    /* number of dimensions */
+      int nvars;    /* number of variables */
+      int ngatts;   /* number of global attributes */
+      int recdimid; /* id of unlimited dimension */
+
+      int varid;
+
+      /* Determine number of variables on the database... */
+      nc_inq(exoid, &ndims, &nvars, &ngatts, &recdimid);
+
+      for (varid = 0; varid < nvars; varid++) {
+        struct ncvar var;
+        nc_inq_var(exoid, varid, var.name, &var.type, &var.ndims, var.dims, &var.natts);
+
+        if ((strcmp(var.name, VAR_GLO_VAR) == 0) ||
+            (strncmp(var.name, "vals_elset_var", 14) == 0) ||
+            (strncmp(var.name, "vals_sset_var", 13) == 0) ||
+            (strncmp(var.name, "vals_fset_var", 13) == 0) ||
+            (strncmp(var.name, "vals_eset_var", 13) == 0) ||
+            (strncmp(var.name, "vals_nset_var", 13) == 0) ||
+            (strncmp(var.name, "vals_nod_var", 12) == 0) ||
+            (strncmp(var.name, "vals_edge_var", 13) == 0) ||
+            (strncmp(var.name, "vals_face_var", 13) == 0) ||
+            (strncmp(var.name, "vals_elem_var", 13) == 0) ||
+            (strcmp(var.name, VAR_WHOLE_TIME) == 0)) {
+          nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+        }
       }
     }
   }
