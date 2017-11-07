@@ -48,10 +48,10 @@
  * step to the database; assume the first time step and variable index
  * are 1
  * \param      exoid           exodus file id
- * \param      time_step       time step number
+ * \param      time_step       time step number (1-based)
  * \param      var_type        type (edge block, face block, edge set, ... )
- * \param      var_index       element variable index
- * \param      obj_id          element block id
+ * \param      var_index       entity variable index (1-based)
+ * \param      obj_id          entity id
  * \param      start_index     index of first entity in block to write (1-based)
  * \param      num_entities    number of entries in this block/set
  * \param      var_vals        the values to be written
@@ -73,6 +73,19 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
   EX_FUNC_ENTER();
 
   ex_check_valid_file_id(exoid, __func__);
+
+  /* Verify that time_step is within bounds */
+  {
+    int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
+    if (time_step <= 0 || time_step > num_time_steps) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: time_step is out-of-range. Value = %d, valid "
+               "range is 1 to %d in file id %d",
+               time_step, num_time_steps, exoid);
+      ex_err(__func__, errmsg, EX_BADPARAM);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
+  }
 
 #define EX_LOOK_UP_VAR(VOBJID, VVAR, VOBJTAB, DNUMOBJ, DNUMOBJVAR)                                 \
   /* Determine index of obj_id in VOBJID array */                                                  \
