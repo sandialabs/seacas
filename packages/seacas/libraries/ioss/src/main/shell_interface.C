@@ -158,6 +158,8 @@ void IOShell::Interface::enroll_options()
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
                   nullptr);
 
+  options_.enroll("minimize_open_files", Ioss::GetLongOption::NoValue, "close output file after each timestep", nullptr);
+
   options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
 
   options_.enroll("statistics", Ioss::GetLongOption::NoValue,
@@ -338,6 +340,10 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("external") != nullptr) {
     decomp_method = "EXTERNAL";
+  }
+
+  if (options_.retrieve("minimize_open_files") != nullptr) {
+    minimize_open_files = true;
   }
 
   if (options_.retrieve("debug") != nullptr) {

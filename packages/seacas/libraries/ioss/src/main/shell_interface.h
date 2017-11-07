@@ -87,6 +87,7 @@ namespace IOShell {
     bool                     in_memory_write{false};
     bool                     lower_case_variable_names{true};
     bool                     delete_timesteps{false};
+    bool                     minimize_open_files{false};
     char                     fieldSuffixSeparator{'_'};
   };
 } // namespace IOShell

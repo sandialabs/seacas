@@ -262,6 +262,10 @@ namespace {
         properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND));
       }
 
+      if (interface.minimize_open_files) {
+        properties.add(Ioss::Property("MINIMIZE_OPEN_FILES", "ON"));
+      }
+
       Ioss::DatabaseIO *dbo =
           Ioss::IOFactory::create(interface.outFiletype, interface.outputFile, Ioss::WRITE_RESTART,
                                   (MPI_Comm)MPI_COMM_WORLD, properties);
