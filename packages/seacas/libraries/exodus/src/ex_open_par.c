@@ -152,7 +152,8 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   int     pariomode    = NC_MPIPOSIX;
   int     is_mpiio     = 0;
   int     is_pnetcdf   = 0;
-
+  int     in_redef     = 0;
+  
   char errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
@@ -298,61 +299,76 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
     }
   }
   else /* (mode & EX_WRITE) READ/WRITE */
-  {
-    if ((status = nc_open_par(path, NC_WRITE | NC_SHARE | pariomode, comm, info, &exoid)) !=
-        NC_NOERR) {
+    {
+      if ((status = nc_open_par(path, NC_WRITE | NC_SHARE | pariomode, comm, info, &exoid)) !=
+	  NC_NOERR) {
 #if defined(NC_HAVE_META_H)
 #if (NC_HAS_PARALLEL == 0) && (NC_HAS_PNETCDF == 0)
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: The underyling netcdf library was not compiled "
-               "with parallel support!\n");
+	snprintf(errmsg, MAX_ERR_LENGTH,
+		 "ERROR: The underyling netcdf library was not compiled "
+		 "with parallel support!\n");
 #endif
 #endif
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only", path);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-
-    /* turn off automatic filling of netCDF variables */
-    if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-
-    stat_att = nc_inq_att(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
-    stat_dim = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
-    if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
-      if ((status = nc_redef(exoid)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
-        ex_err(__func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-      if (stat_att != NC_NOERR) {
-        int max_so_far = 32;
-        nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far);
+	snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to open %s write only", path);
+	ex_err(__func__, errmsg, status);
+	EX_FUNC_LEAVE(EX_FATAL);
       }
 
-      /* If the DIM_STR_NAME variable does not exist on the database, we need to
-       * add it now. */
-      if (stat_dim != NC_NOERR) {
-        /* Not found; set to default value of 32+1. */
-        int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
-        nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name);
+      /* turn off automatic filling of netCDF variables */
+      if (is_pnetcdf) {
+	if ((status = nc_redef(exoid)) != NC_NOERR) {
+	  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
+	  ex_err(__func__, errmsg, status);
+	  EX_FUNC_LEAVE(EX_FATAL);
+	}
+	in_redef = 1;
       }
-      if ((status = nc_enddef(exoid)) != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
-                 exoid);
-        ex_err(__func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
-    }
 
-    /* If this is a parallel execution and the file type is netcdf-4 and we are appending, then we
-     * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
-     * they will be being extended.
-     */
-    if (is_mpiio) {
+      if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
+	snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
+	ex_err(__func__, errmsg, status);
+	EX_FUNC_LEAVE(EX_FATAL);
+      }
+
+      stat_att = nc_inq_att(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &att_type, &att_len);
+      stat_dim = nc_inq_dimid(exoid, DIM_STR_NAME, &dim_str_name);
+      if (stat_att != NC_NOERR || stat_dim != NC_NOERR) {
+	if (!in_redef) {
+	  if ((status = nc_redef(exoid)) != NC_NOERR) {
+	    snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put file id %d into define mode", exoid);
+	    ex_err(__func__, errmsg, status);
+	    EX_FUNC_LEAVE(EX_FATAL);
+	  }
+	  in_redef = 1;
+	}
+	if (stat_att != NC_NOERR) {
+	  int max_so_far = 32;
+	  nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &max_so_far);
+	}
+
+	/* If the DIM_STR_NAME variable does not exist on the database, we need to
+	 * add it now. */
+	if (stat_dim != NC_NOERR) {
+	  /* Not found; set to default value of 32+1. */
+	  int max_name = ex_default_max_name_length < 32 ? 32 : ex_default_max_name_length;
+	  nc_def_dim(exoid, DIM_STR_NAME, max_name + 1, &dim_str_name);
+	}
+      }
+
+      if (in_redef) {
+	if ((status = nc_enddef(exoid)) != NC_NOERR) {
+	  snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to complete definition in file id %d",
+		   exoid);
+	  ex_err(__func__, errmsg, status);
+	  EX_FUNC_LEAVE(EX_FATAL);
+	}
+	in_redef = 0;
+      }
+
+      /* If this is a parallel execution and we are appending, then we
+       * need to set the parallel access method for all transient variables to NC_COLLECTIVE since
+       * they will be being extended.
+       */
       int ndims;    /* number of dimensions */
       int nvars;    /* number of variables */
       int ngatts;   /* number of global attributes */
@@ -382,7 +398,6 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
         }
       }
     }
-  }
 
   /* determine version of EXODUS file, and the word size of
    * floating point and integer values stored in the file
