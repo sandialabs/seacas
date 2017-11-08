@@ -122,7 +122,7 @@ namespace {
   }
 
   typedef std::set<std::pair<Ioss::EntityType, int64_t>> EntityIdSet;
-  EntityIdSet id_set;
+  EntityIdSet                                            id_set;
 
   void set_id(Ioss::GroupingEntity *old_ge, Ioss::GroupingEntity *new_ge)
   {
@@ -680,6 +680,10 @@ namespace {
           }
         }
         ons->put_field_data("ids", nodelist);
+
+        // Output distribution factors -- set all to 1.0
+        std::vector<double> factors(nodelist.size(), 1.0);
+        ons->put_field_data("distribution_factors", factors);
       }
     }
   }
@@ -703,8 +707,7 @@ namespace {
         Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
         SMART_ASSERT(nb != nullptr);
 
-        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() ==
-                     nb->entity_count());
+        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() == nb->entity_count());
 
         Ioss::NameList fields;
         nb->field_describe(Ioss::Field::TRANSIENT, &fields);
@@ -867,8 +870,7 @@ namespace {
           std::vector<INT> connectivity;
           ieb->get_field_data("connectivity", connectivity);
 
-          SMART_ASSERT(ieb->entity_count() ==
-                       oeb->entity_count());
+          SMART_ASSERT(ieb->entity_count() == oeb->entity_count());
           for (size_t i = 0; i < connectivity.size(); i++) {
 
             // connectivity is in part-global node ids.
@@ -914,8 +916,7 @@ namespace {
             ons  = output_region.get_nodeset(name);
           }
           SMART_ASSERT(ons != nullptr)(name);
-          SMART_ASSERT(in->entity_count() ==
-                       ons->entity_count());
+          SMART_ASSERT(in->entity_count() == ons->entity_count());
 
           // This needs to make sure that the nodelist comes back as local id (1..numnodes)
           for (size_t i = 0; i < nodelist.size(); i++) {
@@ -965,8 +966,7 @@ namespace {
             SMART_ASSERT((eb->name() == (*II)->name()) ||
                          (part_mesh[p]->name() + "_" + eb->name() == (*II)->name()))
             (eb->name())((*II)->name());
-            SMART_ASSERT(eb->entity_count() ==
-                         (*II)->entity_count());
+            SMART_ASSERT(eb->entity_count() == (*II)->entity_count());
             std::vector<INT> elem_side_list;
             eb->get_field_data("element_side_raw", elem_side_list);
 
@@ -1061,8 +1061,7 @@ namespace {
         Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
         SMART_ASSERT(nb != nullptr);
 
-        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() ==
-                     nb->entity_count());
+        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() == nb->entity_count());
 
         // NOTE: The node order in the output nodeset 'ons' was
         // defined as the same node order in the input nodeblock 'nb',
