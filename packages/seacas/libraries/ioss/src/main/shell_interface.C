@@ -154,6 +154,14 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 #endif
 
+  options_.enroll("split_times", Ioss::GetLongOption::MandatoryValue,
+                  "If non-zero, then put <$val> timesteps in each file. Then close file and start new file.",
+                  nullptr);
+
+  options_.enroll("split_cyclic", Ioss::GetLongOption::MandatoryValue,
+                  "If non-zero, then the `split_times` timesteps will be put into <$val> files and then recycle filenames.",
+                  nullptr);
+
   options_.enroll("external", Ioss::GetLongOption::NoValue,
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
                   nullptr);
@@ -337,6 +345,23 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
   }
 
 #endif
+
+  {
+    const char *temp = options_.retrieve("split_times");
+    if (temp != nullptr) {
+      split_times = std::strtol(temp, nullptr, 10);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("split_cyclic");
+    if (temp != nullptr) {
+      split_cyclic = std::strtol(temp, nullptr, 10);
+      if (split_cyclic > 26) {
+	split_cyclic = 26;
+      }
+    }
+  }
 
   if (options_.retrieve("external") != nullptr) {
     decomp_method = "EXTERNAL";
