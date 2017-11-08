@@ -270,6 +270,11 @@ namespace Iopx {
         // Append to file if it already exists -- See if the file exists.
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();
+	if (fileExists) {
+          std::ostringstream errmsg;
+          errmsg << "ERROR: Cannot reliably append to an existing database in parallel single-file output mode. File '" << get_filename() << "'";
+          IOSS_ERROR(errmsg);
+	}
       }
     }
   }
@@ -2838,6 +2843,7 @@ int64_t DatabaseIO::write_attribute_field(ex_entity_type type, const Ioss::Field
     for (int i = 0; i < comp_count; i++) {
       std::vector<double> file_data;
       file_data.reserve(file_count);
+      assert(nodeOwningProcessor.size() >= (size_t)file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data, i, comp_count);
       int ierr = ex_put_partial_one_attr(get_file_pointer(), type, id, proc_offset + 1, file_count,
                                          offset + i, TOPTR(file_data));
@@ -3457,6 +3463,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       double *            rdata = static_cast<double *>(data);
       std::vector<double> file_data;
       file_data.reserve(file_count);
+      assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
 
       int ierr = ex_put_partial_coord(get_file_pointer(), proc_offset + 1, file_count, rdata,
@@ -3470,6 +3477,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       double *            rdata = static_cast<double *>(data);
       std::vector<double> file_data;
       file_data.reserve(file_count);
+      assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
       int ierr = ex_put_partial_coord(get_file_pointer(), proc_offset + 1, file_count, nullptr,
                                       rdata, nullptr);
@@ -3482,6 +3490,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       double *            rdata = static_cast<double *>(data);
       std::vector<double> file_data;
       file_data.reserve(file_count);
+      assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
       int ierr = ex_put_partial_coord(get_file_pointer(), proc_offset + 1, file_count, nullptr,
                                       nullptr, rdata);
@@ -3499,16 +3508,17 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       std::vector<double> y;
       std::vector<double> z;
 
-      x.reserve(num_to_get);
+      x.reserve(file_count);
       if (spatialDimension > 1) {
-        y.reserve(num_to_get);
+        y.reserve(file_count);
       }
       if (spatialDimension == 3) {
-        z.reserve(num_to_get);
+        z.reserve(file_count);
       }
 
       // Cast 'data' to correct size -- double
       double *rdata = static_cast<double *>(data);
+      assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, x, 0, spatialDimension);
       if (spatialDimension > 1) {
         map_data(nodeOwningProcessor, myProcessor, rdata, y, 1, spatialDimension);
@@ -4168,6 +4178,7 @@ void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Io
 
       std::vector<double> file_temp;
       file_temp.reserve(file_count);
+      assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, TOPTR(temp), file_temp);
       int ierr = ex_put_partial_var(get_file_pointer(), step, EX_NODE_BLOCK, var_index, 0,
                                     proc_offset + 1, file_count, TOPTR(file_temp));
@@ -4279,19 +4290,16 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
         ierr          = ex_put_partial_var(get_file_pointer(), step, type, var_index, id,
                                   proc_offset + offset + 1, count, TOPTR(temp));
       }
+      else if (type == EX_NODE_SET) {
+	std::vector<double> file_data;
+	file_data.reserve(file_count);
+	map_nodeset_data(nodesetOwnedNodes[ge], TOPTR(temp), file_data);
+	ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
+				  file_count, TOPTR(file_data));
+      }
       else {
-        // Write the variable...
-        if (type == EX_NODE_SET) {
-          std::vector<double> file_data;
-          file_data.reserve(file_count);
-          map_nodeset_data(nodesetOwnedNodes[ge], TOPTR(temp), file_data);
-          ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
-                                    file_count, TOPTR(file_data));
-        }
-        else {
-          ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
-                                    file_count, TOPTR(temp));
-        }
+	ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
+				  file_count, TOPTR(temp));
       }
 
       if (ierr < 0) {
@@ -4339,6 +4347,7 @@ int64_t DatabaseIO::put_Xset_field_internal(ex_entity_type type, const Ioss::Ent
         nodesetOwnedNodes[ns].reserve(file_count);
         if (int_byte_size_api() == 4) {
           i32data.reserve(file_count);
+	  assert(nodeOwningProcessor.size() >= file_count);
           map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                               reinterpret_cast<int *>(data), num_to_get, i32data);
           assert(i32data.size() == file_count);
@@ -4348,6 +4357,7 @@ int64_t DatabaseIO::put_Xset_field_internal(ex_entity_type type, const Ioss::Ent
         }
         else {
           i64data.reserve(file_count);
+	  assert(nodeOwningProcessor.size() >= file_count);
           map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                               reinterpret_cast<int64_t *>(data), num_to_get, i64data);
           assert(i64data.size() == file_count);
@@ -4977,6 +4987,7 @@ void DatabaseIO::output_node_map() const
     if (int_byte_size_api() == 4) {
       std::vector<int> file_ids;
       file_ids.reserve(locally_owned_count);
+      assert(nodeOwningProcessor.size() >= locally_owned_count);
       map_data(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
       ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
                                    locally_owned_count, TOPTR(file_ids));
@@ -4984,6 +4995,7 @@ void DatabaseIO::output_node_map() const
     else {
       std::vector<int64_t> file_ids;
       file_ids.reserve(locally_owned_count);
+      assert(nodeOwningProcessor.size() >= locally_owned_count);
       map_data(nodeOwningProcessor, myProcessor, &nodeMap.map()[1], file_ids);
       ierr = ex_put_partial_id_map(get_file_pointer(), EX_NODE_MAP, processor_offset + 1,
                                    locally_owned_count, TOPTR(file_ids));
