@@ -182,10 +182,10 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   }
 
   if (mode & EX_WRITE) {
-    nc_mode = (NC_WRITE | NC_SHARE | NC_MPIPOSIX);
+    nc_mode = (NC_WRITE | NC_SHARE | NC_MPIIO);
   }
   else {
-    nc_mode = (NC_NOWRITE | NC_SHARE | NC_MPIPOSIX);
+    nc_mode = (NC_NOWRITE | NC_SHARE | NC_MPIIO);
   }
   if ((status = nc_open_par(path, nc_mode, comm, info, &exoid)) != NC_NOERR) {
     /* It is possible that the user is trying to open a netcdf4
