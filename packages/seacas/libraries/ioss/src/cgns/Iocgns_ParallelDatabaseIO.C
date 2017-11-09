@@ -311,7 +311,7 @@ namespace Iocgns {
         Ioss::SideBlock *sblk =
             new Ioss::SideBlock(this, block_name, face_topo, parent_topo, sset.ioss_count());
         sblk->property_add(Ioss::Property("id", id));
-        sblk->property_add(Ioss::Property("guid", util().generate_guid(id)));
+        sblk->property_add(Ioss::Property("guid", util().generate_guid(id + 1)));
         sblk->property_add(Ioss::Property("base", 1));
         sblk->property_add(Ioss::Property("zone", sset.zone()));
         sblk->property_add(Ioss::Property("section", sset.section()));
