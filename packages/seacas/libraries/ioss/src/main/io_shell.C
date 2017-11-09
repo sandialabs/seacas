@@ -345,6 +345,7 @@ namespace {
         ts_count = times.size();
 
         int splits = (ts_count + interface.split_times - 1) / interface.split_times;
+        int width  = std::to_string(splits).length();
         for (int split = 0; split < splits; split++) {
           int step_min = split * interface.split_times;
           int step_max = step_min + interface.split_times - 1;
@@ -360,10 +361,23 @@ namespace {
             filename += "." + suffix.substr(split % interface.split_cyclic, 1);
           }
           else {
-            filename += "_" + std::to_string(split + 1);
+            std::ostringstream filen;
+            filen << filename << "_" << std::setw(width) << std::setfill('0')
+                  << std::to_string(split + 1);
+            filename = filen.str();
           }
-          std::cout << "Writing steps " << std::setw(3) << step_min + 1 << "---" << step_max + 1
-                    << " to " << filename << "\n";
+
+          if (rank == 0 && !interface.quiet) {
+            if (step_min == step_max) {
+              std::cerr << "\tWriting step " << std::setw(width) << step_min + 1 << " to "
+                        << filename << "\n";
+            }
+            else {
+              std::cerr << "\tWriting steps " << std::setw(width) << step_min + 1 << ".."
+                        << std::setw(width) << step_max + 1 << " to " << filename << "\n";
+            }
+          }
+
           Ioss::DatabaseIO *dbo =
               Ioss::IOFactory::create(interface.outFiletype, filename, Ioss::WRITE_RESTART,
                                       (MPI_Comm)MPI_COMM_WORLD, properties);
@@ -381,6 +395,7 @@ namespace {
           if (mem_stats) {
             dbo->release_memory();
           }
+          options.verbose = false;
         }
       }
       if (mem_stats) {
