@@ -126,7 +126,9 @@ int main(int argc, char *argv[])
 
   double begin = Ioss::Utils::timer();
   file_copy(interface, rank);
+#ifdef SEACAS_HAVE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
+#endif
   double end = Ioss::Utils::timer();
 
   if (rank == 0) {
@@ -181,7 +183,7 @@ namespace {
       // INPUT Database...
       //========================================================================
       Ioss::DatabaseIO *dbi = Ioss::IOFactory::create(
-						      interface.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
+          interface.inFiletype, inpfile, Ioss::READ_MODEL, (MPI_Comm)MPI_COMM_WORLD, properties);
       if (dbi == nullptr || !dbi->ok(true)) {
         std::exit(EXIT_FAILURE);
       }
@@ -222,8 +224,8 @@ namespace {
 
       if (region.mesh_type() == Ioss::MeshType::HYBRID) {
         std::cerr
-	  << "\nERROR: io_shell does not support '" << region.mesh_type_string()
-	  << "' meshes.  Only 'Unstructured' or 'Structured' mesh is supported at this time.\n";
+            << "\nERROR: io_shell does not support '" << region.mesh_type_string()
+            << "' meshes.  Only 'Unstructured' or 'Structured' mesh is supported at this time.\n";
         return;
       }
 
@@ -279,103 +281,105 @@ namespace {
       options.delay             = interface.timestep_delay;
 
       size_t ts_count = 0;
-      if (region.property_exists("state_count") && region.get_property("state_count").get_int() > 0) {
-	ts_count = region.get_property("state_count").get_int();
+      if (region.property_exists("state_count") &&
+          region.get_property("state_count").get_int() > 0) {
+        ts_count = region.get_property("state_count").get_int();
       }
 
       if (interface.split_times == 0 || interface.delete_timesteps || ts_count == 0 || append ||
-	  interface.inputFile.size() > 1) {
-	Ioss::DatabaseIO *dbo =
-	  Ioss::IOFactory::create(interface.outFiletype, interface.outputFile, Ioss::WRITE_RESTART,
-				  (MPI_Comm)MPI_COMM_WORLD, properties);
-	if (dbo == nullptr || !dbo->ok(true)) {
-	  std::exit(EXIT_FAILURE);
-	}
-	
-	// NOTE: 'output_region' owns 'dbo' pointer at this time
-	Ioss::Region output_region(dbo, "region_2");
-	// Set the qa information...
-	output_region.property_add(Ioss::Property(std::string("code_name"), codename));
-	output_region.property_add(Ioss::Property(std::string("code_version"), version));
-	
-	if (interface.inputFile.size() > 1) {
-	  properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
-	  
-	  if (!first) {
-	    // Putting each file into its own output group...
-	    // The name of the group will be the basename portion of the filename...
-	    Ioss::FileInfo file(inpfile);
-	    dbo->create_subgroup(file.tailname());
-	  }
-	  else {
-	    first = false;
-	  }
-	}
+          interface.inputFile.size() > 1) {
+        Ioss::DatabaseIO *dbo =
+            Ioss::IOFactory::create(interface.outFiletype, interface.outputFile,
+                                    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+        if (dbo == nullptr || !dbo->ok(true)) {
+          std::exit(EXIT_FAILURE);
+        }
 
-	// Do normal copy...
-	Ioss::Utils::copy_database(region, output_region, options);
-	if (mem_stats) {
-	  dbo->release_memory();
-	}
+        // NOTE: 'output_region' owns 'dbo' pointer at this time
+        Ioss::Region output_region(dbo, "region_2");
+        // Set the qa information...
+        output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+        output_region.property_add(Ioss::Property(std::string("code_version"), version));
+
+        if (interface.inputFile.size() > 1) {
+          properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
+
+          if (!first) {
+            // Putting each file into its own output group...
+            // The name of the group will be the basename portion of the filename...
+            Ioss::FileInfo file(inpfile);
+            dbo->create_subgroup(file.tailname());
+          }
+          else {
+            first = false;
+          }
+        }
+
+        // Do normal copy...
+        Ioss::Utils::copy_database(region, output_region, options);
+        if (mem_stats) {
+          dbo->release_memory();
+        }
       }
       else {
-	// We are splitting out the timesteps into separate files.
-	// Each file will contain `split_times` timesteps. If
-	// 'split_cyclic` is > 0, then recycle filenames
-	// (A,B,C,A,B,C,...) otherwise
-	// keep creating new filenames (0001, 0002, 0003, ...) 
+        // We are splitting out the timesteps into separate files.
+        // Each file will contain `split_times` timesteps. If
+        // 'split_cyclic` is > 0, then recycle filenames
+        // (A,B,C,A,B,C,...) otherwise
+        // keep creating new filenames (0001, 0002, 0003, ...)
 
-	// Get list of all times on input database...
-	std::vector<double> times;
-	for (size_t step=0; step < ts_count; step++) {
-	  double time = region.get_state_time(step+1);
-	  if (time < interface.minimum_time) {
-	    continue;
-	  }
-	  if (time > interface.maximum_time) {
-	    break;
-	  }
-	  times.push_back(time);
-	}
-	ts_count = times.size();
+        // Get list of all times on input database...
+        std::vector<double> times;
+        for (size_t step = 0; step < ts_count; step++) {
+          double time = region.get_state_time(step + 1);
+          if (time < interface.minimum_time) {
+            continue;
+          }
+          if (time > interface.maximum_time) {
+            break;
+          }
+          times.push_back(time);
+        }
+        ts_count = times.size();
 
-	int splits = (ts_count + interface.split_times - 1) / interface.split_times;
-	for (int split = 0; split < splits; split++) {
-	  int step_min = split * interface.split_times;
-	  int step_max = step_min + interface.split_times - 1;
-	  if (step_max >= times.size()) {
-	    step_max = times.size()-1;
-	  }
-	  options.minimum_time = times[step_min];
-	  options.maximum_time = times[step_max];
+        int splits = (ts_count + interface.split_times - 1) / interface.split_times;
+        for (int split = 0; split < splits; split++) {
+          int step_min = split * interface.split_times;
+          int step_max = step_min + interface.split_times - 1;
+          if (step_max >= times.size()) {
+            step_max = times.size() - 1;
+          }
+          options.minimum_time = times[step_min];
+          options.maximum_time = times[step_max];
 
-	  std::string filename = interface.outputFile;
-	  if (interface.split_cyclic > 0) {
-	    static const std::string suffix{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-	    filename += "." + suffix.substr(split % interface.split_cyclic, 1);
-	  }
-	  else {
-	    filename += "_" + std::to_string(split+1);
-	  }
-	  std::cout << "Writing steps " << std::setw(3) << step_min+1 << "---" << step_max+1 << " to " << filename << "\n";
-	  Ioss::DatabaseIO *dbo =
-	    Ioss::IOFactory::create(interface.outFiletype, filename, Ioss::WRITE_RESTART,
-				    (MPI_Comm)MPI_COMM_WORLD, properties);
-	  if (dbo == nullptr || !dbo->ok(true)) {
-	    std::exit(EXIT_FAILURE);
-	  }
-	  
-	  // NOTE: 'output_region' owns 'dbo' pointer at this time
-	  Ioss::Region output_region(dbo, "region_2");
-	  // Set the qa information...
-	  output_region.property_add(Ioss::Property(std::string("code_name"), codename));
-	  output_region.property_add(Ioss::Property(std::string("code_version"), version));
-	  
-	  Ioss::Utils::copy_database(region, output_region, options);
-	  if (mem_stats) {
-	    dbo->release_memory();
-	  }
-	}
+          std::string filename = interface.outputFile;
+          if (interface.split_cyclic > 0) {
+            static const std::string suffix{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+            filename += "." + suffix.substr(split % interface.split_cyclic, 1);
+          }
+          else {
+            filename += "_" + std::to_string(split + 1);
+          }
+          std::cout << "Writing steps " << std::setw(3) << step_min + 1 << "---" << step_max + 1
+                    << " to " << filename << "\n";
+          Ioss::DatabaseIO *dbo =
+              Ioss::IOFactory::create(interface.outFiletype, filename, Ioss::WRITE_RESTART,
+                                      (MPI_Comm)MPI_COMM_WORLD, properties);
+          if (dbo == nullptr || !dbo->ok(true)) {
+            std::exit(EXIT_FAILURE);
+          }
+
+          // NOTE: 'output_region' owns 'dbo' pointer at this time
+          Ioss::Region output_region(dbo, "region_2");
+          // Set the qa information...
+          output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+          output_region.property_add(Ioss::Property(std::string("code_version"), version));
+
+          Ioss::Utils::copy_database(region, output_region, options);
+          if (mem_stats) {
+            dbo->release_memory();
+          }
+        }
       }
       if (mem_stats) {
         dbi->util().progress("Prior to Memory Released... ");
