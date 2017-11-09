@@ -69,7 +69,7 @@ namespace {
   };
 
   std::string codename;
-  std::string version = "4.7";
+  std::string version = "5.0";
 
   bool mem_stats = false;
 
@@ -99,6 +99,8 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
+  codename = interface.options_.basename(argv[0]);
+
   Ioss::SerializeIO::setGroupFactor(interface.serialize_io_size);
   mem_stats = interface.memory_statistics;
 
@@ -110,7 +112,7 @@ int main(int argc, char *argv[])
   std::string in_file  = interface.inputFile[0];
   std::string out_file = interface.outputFile;
 
-  if (rank == 0) {
+  if (rank == 0 && !interface.quiet) {
     std::cerr << "Input:    '" << in_file << "', Type: " << interface.inFiletype << '\n';
     std::cerr << "Output:   '" << out_file << "', Type: " << interface.outFiletype << '\n';
     std::cerr << '\n';
@@ -131,7 +133,7 @@ int main(int argc, char *argv[])
 #endif
   double end = Ioss::Utils::timer();
 
-  if (rank == 0) {
+  if (rank == 0 && !interface.quiet) {
     std::cerr << "\n\tTotal Execution time = " << end - begin << " seconds.\n";
   }
   if (mem_stats) {
@@ -270,9 +272,9 @@ namespace {
       }
 
       Ioss::MeshCopyOptions options{};
+      options.verbose           = !interface.quiet;
       options.memory_statistics = interface.memory_statistics;
       options.debug             = interface.debug;
-      options.verbose           = false;
       options.ints_64_bit       = interface.ints_64_bit;
       options.delete_timesteps  = interface.delete_timesteps;
       options.minimum_time      = interface.minimum_time;
@@ -346,8 +348,8 @@ namespace {
         for (int split = 0; split < splits; split++) {
           int step_min = split * interface.split_times;
           int step_max = step_min + interface.split_times - 1;
-          if (step_max >= times.size()) {
-            step_max = times.size() - 1;
+          if (step_max >= (int)times.size()) {
+            step_max = (int)times.size() - 1;
           }
           options.minimum_time = times[step_min];
           options.maximum_time = times[step_max];
