@@ -57,25 +57,27 @@
 #include <stdlib.h>       // for free, malloc
 #include <string.h>       // for strlen
 
-static void write_dummy_names(int exoid, ex_entity_type obj_type)
+static void write_dummy_names(int exoid, ex_entity_type obj_type, int num)
 {
-  size_t start[2], count[2];
-  char * text = "";
-  int    varid;
-  size_t num_entity;
-  size_t i;
+  if (num > 0) {
+    size_t start[2], count[2];
+    char * text = "";
+    int    varid;
+    size_t num_entity;
+    size_t i;
 
-  ex_get_dimension(exoid, ex_dim_num_objects(obj_type), ex_name_of_object(obj_type), &num_entity,
-                   &varid, __func__);
+    ex_get_dimension(exoid, ex_dim_num_objects(obj_type), ex_name_of_object(obj_type), &num_entity,
+		     &varid, __func__);
 
-  for (i = 0; i < num_entity; i++) {
-    start[0] = i;
-    count[0] = 1;
+    for (i = 0; i < num_entity; i++) {
+      start[0] = i;
+      count[0] = 1;
 
-    start[1] = 0;
-    count[1] = strlen(text) + 1;
+      start[1] = 0;
+      count[1] = strlen(text) + 1;
 
-    nc_put_vara_text(exoid, varid, start, count, text);
+      nc_put_vara_text(exoid, varid, start, count, text);
+    }
   }
 }
 
@@ -289,7 +291,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
   if ((status = nc_def_dim(exoid, DIM_TIME, NC_UNLIMITED, &timedim)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to define time dimension in file id %d", exoid);
     ex_err(__func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
+    goto error_ret;
   }
 
   dim[0] = timedim;
@@ -297,7 +299,7 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: failed to define whole time step variable in file id %d", exoid);
     ex_err(__func__, errmsg, status);
-    EX_FUNC_LEAVE(EX_FATAL);
+    goto error_ret;
   }
   {
     struct ex_file_item *file = ex_find_file_item(exoid);
@@ -599,42 +601,18 @@ int ex_put_init_ext(int exoid, const ex_init_params *model)
 
   /* Write dummy values to the names arrays to avoid corruption issues on some
    * platforms */
-  if (model->num_elem_blk > 0) {
-    write_dummy_names(exoid, EX_ELEM_BLOCK);
-  }
-  if (model->num_edge_blk > 0) {
-    write_dummy_names(exoid, EX_EDGE_BLOCK);
-  }
-  if (model->num_face_blk > 0) {
-    write_dummy_names(exoid, EX_FACE_BLOCK);
-  }
-  if (model->num_node_sets > 0) {
-    write_dummy_names(exoid, EX_NODE_SET);
-  }
-  if (model->num_edge_sets > 0) {
-    write_dummy_names(exoid, EX_EDGE_SET);
-  }
-  if (model->num_face_sets > 0) {
-    write_dummy_names(exoid, EX_FACE_SET);
-  }
-  if (model->num_side_sets > 0) {
-    write_dummy_names(exoid, EX_SIDE_SET);
-  }
-  if (model->num_elem_sets > 0) {
-    write_dummy_names(exoid, EX_ELEM_SET);
-  }
-  if (model->num_node_maps > 0) {
-    write_dummy_names(exoid, EX_NODE_MAP);
-  }
-  if (model->num_edge_maps > 0) {
-    write_dummy_names(exoid, EX_EDGE_MAP);
-  }
-  if (model->num_face_maps > 0) {
-    write_dummy_names(exoid, EX_FACE_MAP);
-  }
-  if (model->num_elem_maps > 0) {
-    write_dummy_names(exoid, EX_ELEM_MAP);
-  }
+  write_dummy_names(exoid, EX_ELEM_BLOCK, model->num_elem_blk);
+  write_dummy_names(exoid, EX_EDGE_BLOCK, model->num_edge_blk);
+  write_dummy_names(exoid, EX_FACE_BLOCK, model->num_face_blk);
+  write_dummy_names(exoid, EX_NODE_SET, model->num_node_sets);
+  write_dummy_names(exoid, EX_EDGE_SET, model->num_edge_sets);
+  write_dummy_names(exoid, EX_FACE_SET, model->num_face_sets);
+  write_dummy_names(exoid, EX_SIDE_SET, model->num_side_sets);
+  write_dummy_names(exoid, EX_ELEM_SET, model->num_elem_sets);
+  write_dummy_names(exoid, EX_NODE_MAP, model->num_node_maps);
+  write_dummy_names(exoid, EX_EDGE_MAP, model->num_edge_maps);
+  write_dummy_names(exoid, EX_FACE_MAP, model->num_face_maps);
+  write_dummy_names(exoid, EX_ELEM_MAP, model->num_elem_maps);
 
   EX_FUNC_LEAVE(EX_NOERR);
 
