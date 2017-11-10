@@ -371,14 +371,6 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
     mode_name = "NOCLOBBER";
   }
 
-#if defined NC_IGNORE_MAX_DIMS
-  nc_mode |= NC_IGNORE_MAX_DIMS;
-#endif
-
-#if defined NC_IGNORE_MAX_VARS
-  nc_mode |= NC_IGNORE_MAX_VARS;
-#endif
-
 #if NC_HAS_DISKLESS
   if (my_mode & EX_DISKLESS) {
     nc_mode |= NC_DISKLESS;
@@ -405,7 +397,6 @@ int ex_create_int(const char *path, int cmode, int *comp_ws, int *io_ws, int run
   }
 
   /* turn off automatic filling of netCDF variables */
-
   if ((status = nc_set_fill(exoid, NC_NOFILL, &old_fill)) != NC_NOERR) {
     snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to set nofill mode in file id %d", exoid);
     ex_err(__func__, errmsg, status);
