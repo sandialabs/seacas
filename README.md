@@ -27,10 +27,22 @@ cd seacas && export ACCESS=`pwd`
 
 ## Build instructions
 
-### Download and build dependencies
+### Automatically download and build dependencies (Third-Party Libraries)
 
-There are a few externally developed third-party libraries (TPL) that are required to
-build SEACAS. 
+There are a few externally developed third-party libraries (TPL) that
+are required to build SEACAS. You can build the libraries manually as
+detailed in the following section, or you can use the `install-tpl.sh` script which will
+download and install the HDF5, NetCDF, CGNS, MatIO, and (if MPI set)
+PNetCDF libraries.
+
+ * To use the script, simply type `./install-tpl.sh`
+
+### Download and build dependencies (Third-Party Libraries)
+
+There are a few externally developed third-party libraries (TPL) that
+are required to build SEACAS. You can build the libraries manually as
+detailed below, or you can use the `install-tpl.sh` script as
+described in the previous section.
 
  * [Zoltan](#zoltan) -- required, supplied
  * [HDF5](#hdf5) -- optional
@@ -101,7 +113,7 @@ The MatIO library is used in the exo2mat and mat2exo programs which convert an e
  
     ```
     ./autogen.sh
-	sh ../runconfigure.sh
+    sh ../runconfigure.sh
     ```
     
  * `make && make install`
@@ -116,7 +128,7 @@ GNU Parallel is a shell tool for executing jobs in parallel using one or more co
     cd TPL/parallel
     tar jxvf /path/to/parallel-latest.tar.bz2
     cd parallel-20150522
-	 sh ../runconfigure.sh
+    sh ../runconfigure.sh
     ```
 
  *  `make && make install`
