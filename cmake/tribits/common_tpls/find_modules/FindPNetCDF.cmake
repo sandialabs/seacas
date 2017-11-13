@@ -68,7 +68,7 @@ if ( PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS )
 
 else(PNetCDF_LIBRARIES AND PNetCDF_INCLUDE_DIRS)
 
-    # If NetCDF_ROOT was defined in the environment, use it.
+    # If PNetCDF_ROOT was defined in the environment, use it.
     # Definition from the command line will take precedence.
     if (NOT PNetCDF_ROOT AND NOT $ENV{PNetCDF_ROOT} STREQUAL "")
       set(PNetCDF_ROOT $ENV{PNetCDF_ROOT})
