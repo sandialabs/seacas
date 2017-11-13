@@ -21,9 +21,9 @@ matrix:
     - compiler: gcc
       env: MPI=ON
     - compiler: gcc
-      env: THREAD_SAFE=ON
+      env: THREADSAFE=ON
     - compiler: clang
-      env: MPI=ON THREAD_SAFE=ON
+      env: MPI=ON THREADSAFE=ON
     - compiler: gcc
       env: KOKKOS=ON
     - compiler: gcc
@@ -67,6 +67,6 @@ addons:
 
     build_command_prepend: 
 
-    build_command: "THREAD_SAFE=ON ./cmake-travis.sh coverity"
+    build_command: "THREADSAFE=ON ./cmake-travis.sh coverity"
 
     branch_pattern: coverity_scan

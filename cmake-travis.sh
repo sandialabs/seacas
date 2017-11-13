@@ -1,23 +1,30 @@
 #! /usr/bin/env bash
 
-BUILDDIR=${1:-build}
-KOKKOS=${KOKKOS:-OFF}
-MPI=${MPI:-OFF}
-CGNS=${CGNS:-ON}
-MATIO=${MATIO:-ON}
-FORTRAN=${FORTRAN:-ON}
-ACCESS=`pwd`
-THREAD_SAFE=${THREAD_SAFE:-OFF}
+### Set to ON for parallel compile; otherwise OFF for serial (default)
+MPI="${MPI:-OFF}"
+echo "MPI set to ${MPI}"
+
+### Switch for Debug or Release build:
+BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
+
+### The following assumes you are building in a subdirectory of ACCESS Root
+### If not, then define "ACCESS" to point to the root of the SEACAS source code.
+ACCESS=$(cd ..; pwd)
+
+### If you do not have the X11 developer package on your system
+### which provides X11/Xlib.h and the libX11, then change the "ON"
+### below to "OFF". It will disable blot and fastq
+HAVE_X11=ON
+
+### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
+THREADSAFES=${THREADSAFE:-OFF}
 
 # ==================== CONFIGURE SEACAS ====================
+BUILDDIR=${1:-build}
 mkdir $BUILDDIR && cd $BUILDDIR
 
-if [ "${MPI}" == "ON" ]
-then
-   MPI_EXEC=`which mpiexec`
-   MPI_BIN=`dirname "${MPI_EXEC}"`
-   MPI_SYMBOLS="-DCMAKE_CXX_COMPILER:FILEPATH=mpicxx -DCMAKE_C_COMPILER:FILEPATH=mpicc -DCMAKE_Fortran_COMPILER:FILEPATH=mpif77 -DMPI_BIN_DIR:PATH=${MPI_BIN}"
-fi
+### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
+INSTALL_PATH=${ACCESS}
 
 ### TPLs -- 
 ### Make sure these point to the locations to find the libraries and includes in lib and include
@@ -42,7 +49,6 @@ function check_enable()
 }
 
 HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
-HAVE_PNETCDF=`check_enable "${PNETCDF_PATH}/include/pnetcdf.h"`
 HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
 HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
 HAVE_DATAWAREHOUSE=OFF
@@ -50,37 +56,56 @@ HAVE_DATAWAREHOUSE=OFF
 ### Define to NO to *enable* exodus deprecated functions
 OMIT_DEPRECATED_CODE="NO"
 
+### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
+KOKKOS=${KOKKOS:-OFF}
+
 CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 
-### Set to ON for CUDA compile; otherwise OFF (default)
-CUDA="OFF"
+### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
+CUDA=${CUDA:-OFF}
+
+if [ "${MPI}" == "ON" ]
+then
+   MPI_EXEC=`which mpiexec`
+   MPI_BIN=`dirname "${MPI_EXEC}"`
+   CXX=mpicxx
+   CC=mpicc
+   FC=mpif77
+fi
 
 if [ "$KOKKOS" == "ON" ]
 then
   if [ "$CUDA" == "ON" ]
   then
+    export "OMPI_CXX=${SEACAS_SRC_DIR}/packages/kokkos/config/nvcc_wrapper"
     export CUDA_MANAGED_FORCE_DEVICE_ALLOC=1
-    KOKKOS_SYMBOLS="-DTPL_ENABLE_CUDA:Bool=ON -DCUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} -DTPL_ENABLE_Pthread:Bool=OFF"
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D TPL_ENABLE_CUDA:Bool=ON \
+                    -D CUDA_TOOLKIT_ROOT_DIR:PATH=${CUDA_PATH} \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   else
+    export OMPI_CXX=`which gcc`
     unset CUDA_MANAGED_FORCE_DEVICE_ALLOC
-    KOKKOS_SYMBOLS="-DSEACASProj_ENABLE_OpenMP:Bool=ON -DTPL_ENABLE_Pthread:Bool=OFF"
+    KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=ON \
+                    -D SEACASProj_ENABLE_OpenMP:Bool=ON \
+                    -D Kokkos_ENABLE_Pthread:BOOL=OFF"
   fi
 else
   KOKKOS_SYMBOLS="-D SEACASProj_ENABLE_Kokkos:BOOL=OFF"
 fi
 
-BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
-
-if [ "$THREAD_SAFE" == "ON" ]
+if [ "HAVE_DATAWAREHOUSE" == "ON" ]
 then
-  TS_SYMBOLS="-D TPL_ENABLE_Pthread:BOOL=ON -D SEACASExodus_ENABLE_THREADSAFE:BOOL=ON -D SEACASIoss_ENABLE_THREADSAFE:BOOL=ON"
-else
-  TS_SYMBOLS="-D SEACASExodus_ENABLE_THREADSAFE:BOOL=OFF -D SEACASIoss_ENABLE_THREADSAFE:BOOL=OFF"
+    DW_SYMBOLS="-DTPL_ENABLE_DATAWAREHOUSE:BOOL=${HAVE_DATAWAREHOUSE} \
+                -DDataWarehouse_LIBRARY_DIRS:PATH=${DATAWAREHOUSE_PATH}/lib \
+                -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
 
 ###------------------------------------------------------------------------
 cmake  \
-${MPI_SYMBOLS} \
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
+-D CMAKE_C_COMPILER:FILEPATH=${CC} \
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
@@ -123,7 +148,7 @@ $EXTRA_ARGS \
 echo ""
 echo "     ACCESS: ${ACCESS}"
 echo "        MPI: ${MPI}"
-echo "THREAD_SAFE: ${THREAD_SAFE}"
+echo " THREADSAFE: ${THREADSAFE}"
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
 echo " HAVE_MATIO: ${HAVE_MATIO}"
 echo "  HAVE_CGNS: ${HAVE_CGNS}"
