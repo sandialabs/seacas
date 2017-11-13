@@ -39,11 +39,12 @@ before_install:
   - sudo apt-get -y install gfortran
   - sudo apt-get -y install libmatio-dev
   - sudo apt-get -y install libz-dev
+  - if [ -z "$MPI" ]; then sudo apt-get -y install libhdf5-dev; fi
   - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
   - if [ -z "$MPI" ]; then sudo apt-get -y install netcdf-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
-  - if [ -n "$CGNS" ]; then ./cgns-travis.sh; fi
+  - if [ X"$CGNS" != "XOFF" ]; then ./cgns-travis.sh; fi
 
 before_script:
 
