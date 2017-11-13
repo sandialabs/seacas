@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+SUDO=${SUDO:-}
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
 ACCESS=`pwd`
@@ -12,7 +13,7 @@ wget https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar
 tar -jxf hdf5-${hdf_version}.tar.bz2
 cd hdf5-${hdf_version}
 MPI=${MPI} bash ../runconfigure.sh
-make && sudo make install
+make && ${SUDO} make install
 
 cd $ACCESS
 
@@ -28,7 +29,7 @@ wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-
 tar -xzf parallel-netcdf-${pnet_version}.tar.gz
 cd parallel-netcdf-${pnet_version}
 bash ../runconfigure.sh
-make && sudo make install
+make && ${SUDO} make install
 
 cd $ACCESS
 fi
@@ -37,8 +38,10 @@ fi
 cd TPL/netcdf
 git clone https://github.com/Unidata/netcdf-c netcdf-c
 cd netcdf-c
-MPI=${MPI} bash ../runconfigure.sh
-make && sudo make install
+mkdir build
+cd build
+MPI=${MPI} bash ../../runcmake.sh
+make && ${SUDO} make install
 
 cd $ACCESS
 
@@ -52,7 +55,7 @@ cd CGNS
 mkdir build
 cd build
 MPI=${MPI} bash ../../runconfigure.sh
-make && sudo make install
+make && ${SUDO} make install
 
 cd $ACCESS
 
@@ -67,7 +70,7 @@ git clone https://github.com/tbeu/matio.git
 cd matio
 ./autogen.sh
 sh ../runconfigure.sh
-make && sudo make install
+make && ${SUDO} make install
 
 cd $ACCESS
 fi
