@@ -44,7 +44,11 @@ build SEACAS.
 A snapshot of [zoltan_distrib\_v3.83.tar.gz](http://www.cs.sandia.gov/Zoltan/Zoltan_download.html) is provided in seacas/packages/zoltan.  This will be built automatically as part of the SEACAS build process.
 
 #### HDF5
-If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library. 
+If you are using the netcdf-4 capability in the netcdf library or are using the MatIO library for conversion of exodus to/from matlab format, then you will need the hdf5 library.  
+
+**
+It is recommended at this time that you do *not* use the hdf5-1.10.X release series.  Please use the hdf5-1.8.X releases.
+**
 
 The hdf5 library is used for the netcdf4 capability in netcdf which in
 turn is used by exodus.  The netcdf4 capability is typically used for
