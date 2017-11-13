@@ -22,6 +22,7 @@ fi
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
 NETCDF_PATH=${ACCESS}
+PNETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
@@ -39,6 +40,7 @@ function check_enable()
 }
 
 HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
+HAVE_PNETCDF=`check_enable "${PNETCDF_PATH}/include/pnetcdf.h"`
 HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
 HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
 HAVE_DATAWAREHOUSE=OFF
