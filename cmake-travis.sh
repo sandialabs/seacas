@@ -9,7 +9,7 @@ BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
-ACCESS=$(cd ..; pwd)
+ACCESS=`pwd`
 
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
