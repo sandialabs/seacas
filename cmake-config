@@ -57,10 +57,10 @@ HAVE_DATAWAREHOUSE=OFF
 OMIT_DEPRECATED_CODE="NO"
 
 ### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
-KOKKOS=OFF
+KOKKOS=${KOKKOS:-OFF}
 
 ### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
-CUDA=OFF
+CUDA=${CUDA:-OFF}
 
 ### Change this to point to the compilers you want to use
 COMPILER="gnu"
