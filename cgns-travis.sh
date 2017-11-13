@@ -4,5 +4,5 @@ cd CGNS
 # git checkout develop
 mkdir build
 cd build
-MPI=${MPI} ACCESS="/usr/local" bash ../../runconfigure.sh HDF5_ROOT=/usr/lib/x86_64-linux-gnu/
+MPI=${MPI} ACCESS="/usr/local" bash ../../runconfigure.sh HDF5_LIBRARIES=/usr/lib/x86_64-linux-gnu/libhdf5.so
 make && sudo make install
