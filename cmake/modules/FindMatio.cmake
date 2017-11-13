@@ -25,6 +25,13 @@ include(FindPackageHandleStandardArgs)
 # MSTK CMake functions see <root>/cmake/modules for source
 include(AddPackageDependency)
 
+# Matio_DIR is DEPRECATED WARN THE USER if it is set
+  if (NOT Matio_ROOT AND Matio_DIR )
+    message(WARNING "The configuration parameter Matio_DIR is deprecated."
+                    " Please use Matio_ROOT instead to define the MatIO installation")
+      set(Matio_ROOT ${Matio_DIR})
+    endif()
+
 if ( Matio_LIBRARIES AND Matio_INCLUDE_DIRS )
 
     # Do nothing. Variables are set. No need to search again
@@ -32,8 +39,8 @@ if ( Matio_LIBRARIES AND Matio_INCLUDE_DIRS )
 else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
 
     # Cache variables
-    if(Matio_DIR)
-        set(Matio_DIR "${Matio_DIR}" CACHE PATH "Path to search for Matio include and library files")
+    if(Matio_ROOT)
+        set(Matio_ROOT "${Matio_ROOT}" CACHE PATH "Path to search for Matio include and library files")
     endif()
 
     if(Matio_INCLUDE_DIR)
@@ -48,7 +55,7 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
     # Search for include files
     # Search order preference:
     #  (1) Matio_INCLUDE_DIR - check existence of path AND if the include files exist
-    #  (2) Matio_DIR/<include>
+    #  (2) Matio_ROOT/<include>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     set(matio_inc_names "matio.h")
@@ -73,18 +80,18 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
     else() 
 
         set(matio_inc_suffixes "include")
-        if(Matio_DIR)
+        if(Matio_ROOT)
 
-            if (EXISTS "${Matio_DIR}" )
+            if (EXISTS "${Matio_ROOT}" )
 
                 find_path(Matio_INCLUDE_DIR
                           NAMES ${matio_inc_names}
-                          HINTS ${Matio_DIR}/include
+                          HINTS ${Matio_ROOT}/include
                           PATH_SUFFIXES ${matio_inc_suffixes}
                           NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "Matio_DIR=${Matio_DIR} does not exist")
+                 message(SEND_ERROR "Matio_ROOT=${Matio_ROOT} does not exist")
                  set(Matio_INCLUDE_DIR "Matio_INCLUDE_DIR-NOTFOUND")
             endif()    
 
@@ -107,7 +114,7 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
     # Search for libraries 
     # Search order preference:
     #  (1) Matio_LIBRARY_DIR - check existence of path AND if the include files exist
-    #  (2) Matio_DIR/<lib,Lib>
+    #  (2) Matio_ROOT/<lib,Lib>
     #  (3) Default CMake paths See cmake --html-help=out.html file for more information.
     #
     if (Matio_LIBRARY_DIR)
@@ -126,18 +133,18 @@ else(Matio_LIBRARIES AND Matio_INCLUDE_DIRS)
 
     else() 
 
-        if(Matio_DIR)
+        if(Matio_ROOT)
 
-            if (EXISTS "${Matio_DIR}" )
+            if (EXISTS "${Matio_ROOT}" )
 
                 find_library(Matio_LIBRARY
                              NAMES matio
-                             HINTS ${Matio_DIR}
+                             HINTS ${Matio_ROOT}
                              PATH_SUFFIXES "lib" "Lib"
                              NO_DEFAULT_PATH)
 
             else()
-                 message(SEND_ERROR "Matio_DIR=${Matio_DIR} does not exist")
+                 message(SEND_ERROR "Matio_ROOT=${Matio_ROOT} does not exist")
                  set(Matio_LIBRARY "Matio_LIBRARY-NOTFOUND")
             endif()    
 
