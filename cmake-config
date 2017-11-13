@@ -6,11 +6,7 @@ MPI="${MPI:-OFF}"
 echo "MPI set to ${MPI}"
 
 ### Switch for Debug or Release build:
-#BUILD_TYPE=Release
-BUILD_TYPE=Debug
-
-### Define to YES to *disable* all exodus deprecated functions
-OMIT_DEPRECATED_CODE="NO"
+BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
@@ -22,7 +18,7 @@ ACCESS=$(cd ..; pwd)
 HAVE_X11=ON
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFE_IO_LIBS=OFF
+THREADSAFES=${THREADSAFE:-OFF}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -70,16 +66,9 @@ then
   MPI_EXEC=`which mpiexec`
   MPI_BIN=`dirname $MPI_EXEC`
 
-  if [ "$COMPILER" == "gnu" ]
-  then
-      CXX=mpicxx
-      CC=mpicc
-      FC=mpif77
-  else
-      CXX=mpicxx
-      CC=mpicc
-      FC=mpif77
-  fi
+  CXX=mpicxx
+  CC=mpicc
+  FC=mpif77
 else
   if [ "$COMPILER" == "gnu" ]
   then
@@ -125,6 +114,9 @@ rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
 cmake  \
+-D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
+-D CMAKE_C_COMPILER:FILEPATH=${CC} \
+-D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_MACOSX_RPATH:BOOL=ON \
@@ -136,9 +128,6 @@ cmake  \
 -D SEACASProj_ENABLE_SECONDARY_TESTED_CODE:BOOL=ON \
 -D SEACASProj_ENABLE_TESTS=ON \
 -D CMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH} \
--D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
--D CMAKE_C_COMPILER:FILEPATH=${CC} \
--D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
@@ -147,9 +136,9 @@ cmake  \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
 -D TPL_ENABLE_MPI:BOOL=${MPI} \
 -D TPL_ENABLE_Pamgen:BOOL=OFF \
--D TPL_ENABLE_Pthread:BOOL=${THREADSAFE_IO_LIBS} \
--D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
--D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE_IO_LIBS} \
+-D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
+-D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
+-D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
@@ -161,8 +150,8 @@ ${DW_SYMBOLS} \
 -D HDF5_ROOT:PATH=${HDF5_PATH} \
 -D HDF5_NO_SYSTEM_PATHS=ON \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
--D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
--D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
+-D Matio_ROOT:PATH=${MATIO_PATH} \
+-D PNetCDF_ROOT:PATH=${PNETCDF_PATH} \
 \
 $EXTRA_ARGS \
 ..
@@ -171,6 +160,7 @@ echo ""
 echo "     ACCESS: ${ACCESS}"
 echo "   COMPILER: ${COMPILER}"
 echo "        MPI: ${MPI}"
+echo " THREADSAFE: ${THREADSAFE}"
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
 echo " HAVE_MATIO: ${HAVE_MATIO}"
 echo "  HAVE_CGNS: ${HAVE_CGNS}"
