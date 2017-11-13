@@ -39,12 +39,10 @@ before_install:
   - sudo apt-get -y install gfortran
   - sudo apt-get -y install libz-dev
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
+  - ./install-tpl.sh 
 
 before_script:
 
-begore_install:
-  - ./install-tpl.sh 
-  
 install:
   - ./cmake-travis.sh
 
