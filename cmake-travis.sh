@@ -2,10 +2,12 @@
 
 BUILDDIR=${1:-build}
 KOKKOS=${KOKKOS:-OFF}
+MPI=${MPI:-OFF}
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
 FORTRAN=${FORTRAN:-ON}
 ACCESS=`pwd`
+THREAD_SAFE=${THREAD_SAFE:-OFF}
 
 # ==================== CONFIGURE SEACAS ====================
 mkdir $BUILDDIR && cd $BUILDDIR
@@ -114,13 +116,13 @@ ${DW_SYMBOLS} \
 -D CGNS_ROOT:PATH=${CGNS_PATH} \
 -D Matio_LIBRARY_DIRS:PATH=${MATIO_PATH}/lib \
 -D TPL_Matio_INCLUDE_DIRS:PATH=${MATIO_PATH}/include \
+-D MATIO_ROOT:PATH=${MATIO_PATH}
 \
 $EXTRA_ARGS \
 ..
 
 echo ""
 echo "     ACCESS: ${ACCESS}"
-echo "   COMPILER: ${COMPILER}"
 echo "        MPI: ${MPI}"
 echo "THREAD_SAFE: ${THREAD_SAFE}"
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
