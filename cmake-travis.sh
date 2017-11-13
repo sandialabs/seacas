@@ -17,6 +17,35 @@ then
    MPI_SYMBOLS="-DCMAKE_CXX_COMPILER:FILEPATH=mpicxx -DCMAKE_C_COMPILER:FILEPATH=mpicc -DCMAKE_Fortran_COMPILER:FILEPATH=mpif77 -DMPI_BIN_DIR:PATH=${MPI_BIN}"
 fi
 
+### TPLs -- 
+### Make sure these point to the locations to find the libraries and includes in lib and include
+### subdirectories of the specified paths.
+### For example, netcdf.h should be in ${NETCDF_PATH}/include
+NETCDF_PATH=${ACCESS}
+MATIO_PATH=${ACCESS}
+HDF5_PATH=${ACCESS}
+CGNS_PATH=${ACCESS}
+DATAWAREHOUSE_PATH=${ACCESS}
+
+function check_enable()
+{
+    local path=$1
+    if [ -e "${path}" ]
+    then
+	echo "ON"
+    else
+	echo "OFF"
+    fi
+}
+
+HAVE_NETCDF=`check_enable "${NETCDF_PATH}/include/netcdf.h"`
+HAVE_MATIO=`check_enable "${MATIO_PATH}/include/matio.h"`
+HAVE_CGNS=`check_enable "${CGNS_PATH}/include/cgnslib.h"`
+HAVE_DATAWAREHOUSE=OFF
+
+### Define to NO to *enable* exodus deprecated functions
+OMIT_DEPRECATED_CODE="NO"
+
 CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
 
 ### Set to ON for CUDA compile; otherwise OFF (default)
