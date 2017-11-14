@@ -52,7 +52,7 @@ namespace {
     double val = strtod(str_val.c_str(), &endptr);
 
     if (errno == ERANGE) {
-      ERROR(" Overflow or underflow occured when trying"
+      ERROR(" Overflow or underflow occurred when trying"
             << " to parse command line tolerance.  Aborting...\n");
       exit(1);
     }
