@@ -1,8 +1,8 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-# Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
 	dh $@ --buildsystem=cmake --parallel
@@ -12,6 +12,7 @@ export DH_VERBOSE=1
 override_dh_auto_configure:
 	dh_auto_configure -- \
   -DBUILD_SHARED_LIBS:BOOL=ON \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON \
   -DHDF5_ROOT:PATH=/usr/ \
   -DSEACASProj_ENABLE_ALL_PACKAGES:BOOL=ON \
   -DSEACASProj_ENABLE_TESTS:BOOL=OFF \

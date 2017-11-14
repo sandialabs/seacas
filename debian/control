@@ -1,5 +1,5 @@
 Source: seacas
-Priority: extra
+Priority: optional
 Maintainer: Nico Schlömer <nico.schloemer@gmail.com>
 Build-Depends: debhelper (>= 9),
   cmake (>= 2.8.12),
@@ -19,33 +19,33 @@ Section: libdevel
 Architecture: any
 Depends: libseacas0 (= ${binary:Version}), ${misc:Depends}
 Description: processing tools and applications for finite element analysis
-  The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
-  preprocessing, postprocessing, translation, and utility applications
-  supporting finite element analysis software using the ExodusII database file
-  format.
-  .
-  This package contains development headers.
+ The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
+ preprocessing, postprocessing, translation, and utility applications
+ supporting finite element analysis software using the ExodusII database file
+ format.
+ .
+ This package contains development headers.
 
 Package: libseacas0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: processing tools and applications for finite element analysis
-  The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
-  preprocessing, postprocessing, translation, and utility applications
-  supporting finite element analysis software using the ExodusII database file
-  format.
-  .
-  This package contains the libraries.
+ The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
+ preprocessing, postprocessing, translation, and utility applications
+ supporting finite element analysis software using the ExodusII database file
+ format.
+ .
+ This package contains the libraries.
 
 Package: seacas-bin
 Section: libs
 Architecture: any
 Depends: libseacas0, ${misc:Depends}
 Description: processing tools and applications for finite element analysis
-  The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
-  preprocessing, postprocessing, translation, and utility applications
-  supporting finite element analysis software using the ExodusII database file
-  format.
-  .
-  This package contains executables.
+ The Sandia Engineering Analysis Code Access System (SEACAS) is a suite of
+ preprocessing, postprocessing, translation, and utility applications
+ supporting finite element analysis software using the ExodusII database file
+ format.
+ .
+ This package contains executables.
