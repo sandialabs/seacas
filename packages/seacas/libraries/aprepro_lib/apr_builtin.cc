@@ -64,7 +64,8 @@
 #endif
 
 namespace {
-  std::mt19937_64 rng;
+  std::random_device rd;
+  std::mt19937_64    rng(rd());
 
   void reset_error()
   {
