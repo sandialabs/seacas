@@ -478,7 +478,7 @@ int main(int argc, char *argv[])
         // Sanity check...
         if (part_count < 1) {
           std::cerr << "ERROR: (EPU) The subcycle specification results in less than 1 part per "
-                       "cycle which is not allowd.\n";
+                       "cycle which is not allowed.\n";
           exit(EXIT_FAILURE);
         }
         interface.subcycle((processor_count + part_count - 1) / part_count);
