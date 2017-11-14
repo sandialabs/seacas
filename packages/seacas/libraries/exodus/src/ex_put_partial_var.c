@@ -114,7 +114,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
   if ((status = nc_inq_varid(exoid, VVAR(var_index, obj_id_ndx), &varid)) != NC_NOERR) {           \
     if (status == NC_ENOTVAR) /* variable doesn't exist, create it! */                             \
     {                                                                                              \
-      /* check for the existance of an TNAME variable truth table */                               \
+      /* check for the existence of an TNAME variable truth table */                               \
       if (nc_inq_varid(exoid, VOBJTAB, &varid) == NC_NOERR) {                                      \
         /* find out number of TNAMEs and TNAME variables */                                        \
         status = ex_get_dimension(exoid, DNUMOBJ, ex_name_of_object(var_type), &num_obj, &dimid,   \
