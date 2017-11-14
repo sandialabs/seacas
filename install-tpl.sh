@@ -6,6 +6,11 @@ MATIO=${MATIO:-ON}
 ACCESS=`pwd`
 pwd
 
+if [ "$MPI" == "ON" ]
+then
+  CC=/usr/bin/mpicc; export CC
+fi
+
 # =================== INSTALL HDF5 ===============
 hdf_version="1.8.19"
 
