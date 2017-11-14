@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+BUILDDIR=${1:-build}
+mkdir $BUILDDIR && cd $BUILDDIR
+
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 MPI="${MPI:-OFF}"
 echo "MPI set to ${MPI}"
@@ -9,7 +12,7 @@ BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 ### If not, then define "ACCESS" to point to the root of the SEACAS source code.
-ACCESS=`pwd`
+ACCESS=$(cd ..; pwd)
 
 ### If you do not have the X11 developer package on your system
 ### which provides X11/Xlib.h and the libX11, then change the "ON"
@@ -18,10 +21,6 @@ HAVE_X11=ON
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFES=${THREADSAFE:-OFF}
-
-# ==================== CONFIGURE SEACAS ====================
-BUILDDIR=${1:-build}
-mkdir $BUILDDIR && cd $BUILDDIR
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -101,6 +100,8 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
 
+rm -f CMakeCache.txt
+
 ###------------------------------------------------------------------------
 cmake  \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
@@ -147,6 +148,9 @@ $EXTRA_ARGS \
 
 echo ""
 echo "     ACCESS: ${ACCESS}"
+echo "         CC: ${CC}"
+echo "        CXX: ${CXX}"
+echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
 echo " THREADSAFE: ${THREADSAFE}"
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
