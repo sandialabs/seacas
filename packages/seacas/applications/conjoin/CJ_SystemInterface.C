@@ -308,7 +308,7 @@ void Excn::SystemInterface::show_version()
 {
   std::cout
       << qainfo[0] << "\n"
-      << "\t(A code for sequentially appending Exodus II databases. Supercedes conex and conex2.)\n"
+      << "\t(A code for sequentially appending Exodus II databases. Supersedes conex and conex2.)\n"
       << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
 }
 
