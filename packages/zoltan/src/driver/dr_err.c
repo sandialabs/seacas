@@ -119,7 +119,7 @@ void error_add(int level, const char *message, const char *filename, int line_no
   /* Store the line number info */
   (error_info+error_cnt)->line_no = line_no;
 
-  /* Store the name of the file in which the error occured */
+  /* Store the name of the file in which the error occurred */
   (error_info+error_cnt)->filename =
                           (char *) malloc((strlen(filename)+1)*sizeof(char));
   if(!((error_info+error_cnt)->filename))

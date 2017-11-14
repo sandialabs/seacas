@@ -124,7 +124,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_params(
 
   /* get the time, and the variable names */
   if (read_var_param(exoid, max_name_length) < 0) {
-    fprintf(stderr, "%s: Error occured while reading variable parameters\n", yo);
+    fprintf(stderr, "%s: Error occurred while reading variable parameters\n", yo);
     exit(1);
   }
 
@@ -447,7 +447,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_data()
     if (read_vars(exoid, Restart_Info.Time_Idx[time_idx], TOPTR(eb_ids_global),
                   TOPTR(eb_cnts_global), eb_map_ptr, eb_cnts_local, TOPTR(ss_ids_global),
                   TOPTR(ss_cnts_global), TOPTR(ns_ids_global), TOPTR(ns_cnts_global)) < 0) {
-      fprintf(stderr, "%s: Error occured while reading variables\n", yo);
+      fprintf(stderr, "%s: Error occurred while reading variables\n", yo);
       exit(1);
     }
     double end_t = second() - start_t;

@@ -1066,7 +1066,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         return 1;
       }
 
-      /* if this is the duplicated node, then find the next occurence */
+      /* if this is the duplicated node, then find the next occurrence */
       if (dup) {
         for (int i = 0; i < dup; i++) {
           if (connect[0] == side_nodes[location[i]]) {
@@ -1093,7 +1093,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         return 2;
       }
 
-      /* if this is the duplicated node, then find the next occurence */
+      /* if this is the duplicated node, then find the next occurrence */
       if (dup) {
         for (int i = 0; i < dup; i++) {
           if (connect[1] == side_nodes[location[i]]) {
@@ -1120,7 +1120,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         return 3;
       }
 
-      /* if this is the duplicated node, then find the next occurence */
+      /* if this is the duplicated node, then find the next occurrence */
       if (dup) {
         for (int i = 0; i < dup; i++) {
           if (connect[2] == side_nodes[location[i]]) {
@@ -1147,7 +1147,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         return 4;
       }
 
-      /* if this is the duplicated node, then find the next occurence */
+      /* if this is the duplicated node, then find the next occurrence */
       if (dup) {
         for (int i = 0; i < dup; i++) {
           if (connect[3] == side_nodes[location[i]]) {
@@ -1174,7 +1174,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         return 5;
       }
 
-      /* if this is the duplicated node, then find the next occurence */
+      /* if this is the duplicated node, then find the next occurrence */
       if (dup) {
         for (int i = 0; i < dup; i++) {
           if (connect[0] == side_nodes[location[i]]) {
@@ -1201,7 +1201,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
         return 6;
       }
 
-      /* if this is the duplicated node, then find the next occurence */
+      /* if this is the duplicated node, then find the next occurrence */
       if (dup) {
         for (int i = 0; i < dup; i++) {
           if (connect[4] == side_nodes[location[i]]) {

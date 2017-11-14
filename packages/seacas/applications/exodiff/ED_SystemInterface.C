@@ -52,7 +52,7 @@ namespace {
     double val = strtod(str_val.c_str(), &endptr);
 
     if (errno == ERANGE) {
-      ERROR(" Overflow or underflow occured when trying"
+      ERROR(" Overflow or underflow occurred when trying"
             << " to parse command line tolerance.  Aborting...\n");
       exit(1);
     }
@@ -479,7 +479,7 @@ void SystemInterface::enroll_options()
                   "\t\tThis option allows the maximum number to be changed.",
                   "1000");
   options_.enroll("use_old_floor", GetLongOption::NoValue,
-                  "use the older defintion of the floor tolerance.\n"
+                  "use the older definition of the floor tolerance.\n"
                   "\t\tOLD: ignore if |a-b| < floor.\n"
                   "\t\tNEW: ignore if |a| < floor && |b| < floor.",
                   nullptr);
