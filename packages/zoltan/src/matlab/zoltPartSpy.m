@@ -4,7 +4,7 @@
 % colored based on the partition that owns them.
 %
 % The function takes 3 arguments: the filename of a matrix in matrix market 
-% format, the name of the zoltan output file containg partition info, and
+% format, the name of the zoltan output file containing partition info, and
 % the type of partitioning ('1DRow', '1DColumn', '1.5DRow', '1.5DColumn'). 
 %
 % Written by Michael Wolf
