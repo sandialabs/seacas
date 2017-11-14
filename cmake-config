@@ -127,6 +127,8 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+FC=${FC:-gfortran}
+
 rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
