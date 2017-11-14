@@ -84,7 +84,7 @@ int refine_part(struct vtx_data **graph,        /* graph data structure */
   int               dist      = -1;         /* architectural distance between two sets */
   int               nsets_tot = 0;          /* total number of processors */
   int               change;                 /* did change occur in this pass? */
-  int               any_change = FALSE;     /* has any change occured? */
+  int               any_change = FALSE;     /* has any change occurred? */
   int               error;                  /* out of space? */
   int               size;                   /* array spacing */
   int               i, j, k;                /* loop counters */

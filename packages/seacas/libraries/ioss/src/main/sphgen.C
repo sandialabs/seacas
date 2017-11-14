@@ -184,7 +184,7 @@ namespace {
            << "...or: " << prog << " command_file\n"
            << "       version: " << version << "\n\n"
            << "\tConverts all HEX element blocks to SPHERE element blocks\n"
-           << "\tand creates a nodeset for each element block containg the node at the center of "
+           << "\tand creates a nodeset for each element block containing the node at the center of "
               "the sphere.\n"
            << "\tignores all other element block types and deletes all existing nodesets.\n"
            << "Options:\n"

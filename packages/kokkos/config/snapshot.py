@@ -283,7 +283,7 @@ if (__name__ == "__main__"):
     options = parse_cmdline(__doc__)
     main(options)
   except RuntimeError, e:
-    print "Error occured:", e
+    print "Error occurred:", e
     if "--debug" in sys.argv:
       traceback.print_exc()
     sys.exit(1)

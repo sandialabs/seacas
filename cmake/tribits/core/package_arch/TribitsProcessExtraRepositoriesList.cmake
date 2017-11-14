@@ -443,7 +443,7 @@ ENDMACRO()
 
 
 #
-# Assert the existance and the order of the list of extra repositories in
+# Assert the existence and the order of the list of extra repositories in
 # ${PROJECT_NAME}_PRE_REPOSITORIES listed in
 # ${PROJECT_NAME}_EXTRA_REPOSITORIES according to the list read in from the
 # extra repos file as determined by the varaible

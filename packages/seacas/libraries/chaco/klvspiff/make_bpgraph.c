@@ -128,7 +128,7 @@ void make_bpgraph(struct vtx_data **graph,      /* list of graph info for each v
       for (j = 1; j < graph[vtx]->nedges; j++) {
         neighbor = graph[vtx]->edges[j];
         if (sets[neighbor] == set_match) {
-          if (graph[neighbor]->edges[0] == -1) { /* First occurence. */
+          if (graph[neighbor]->edges[0] == -1) { /* First occurrence. */
             loc2glob[k] = neighbor;
             vwgts[k]    = graph[neighbor]->vwgt;
             /* Use edges[0] as a seen flag and as a glob2loc value. */

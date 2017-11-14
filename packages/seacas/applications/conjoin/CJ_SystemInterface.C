@@ -46,7 +46,7 @@ void Excn::SystemInterface::enroll_options()
                   "\t\tUse the 'alive_value' option to set conjoin's alive value",
                   "");
   options_.enroll("element_status_variable", GetLongOption::MandatoryValue,
-                  "Name to use as element existance status variable;\n"
+                  "Name to use as element existence status variable;\n"
                   "\t\tmust not exist on input files. If NONE, then not created.\n"
                   "\t\tDefault = elem_status",
                   "elem_status");
@@ -308,7 +308,7 @@ void Excn::SystemInterface::show_version()
 {
   std::cout
       << qainfo[0] << "\n"
-      << "\t(A code for sequentially appending Exodus II databases. Supercedes conex and conex2.)\n"
+      << "\t(A code for sequentially appending Exodus II databases. Supersedes conex and conex2.)\n"
       << "\t(Version: " << qainfo[2] << ") Modified: " << qainfo[1] << '\n';
 }
 
