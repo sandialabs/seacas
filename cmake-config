@@ -1,9 +1,38 @@
-#!/bin/sh
-EXTRA_ARGS=$@
+#! /usr/bin/env bash
+
+if [ "${TRAVIS}" == "true" ]
+then
+  BUILDDIR=${1:-build}
+  mkdir $BUILDDIR && cd $BUILDDIR
+else
+  EXTRA_ARGS=$@
+fi
 
 ### Set to ON for parallel compile; otherwise OFF for serial (default)
 MPI="${MPI:-OFF}"
 echo "MPI set to ${MPI}"
+
+if [ "${MPI}" == "OFF" ]
+then
+  ### Change this to point to the compilers you want to use
+    ## Travis build (and others) set this to EXTERNAL to set
+    ## CXX, CC, and FC externally.
+  COMPILER=${COMPILER:-gnu}
+
+  if [ "$COMPILER" == "gnu" ]
+  then
+      CXX=g++
+      CC=gcc
+      FC=gfortran
+  fi
+  
+  if [ "$COMPILER" == "clang" ]
+  then
+      CXX=clang++
+      CC=clang
+      FC=gfortran-mp-4.9
+  fi
+fi
 
 ### Switch for Debug or Release build:
 BUILD_TYPE="${BUILD_TYPE:-RELEASE}"
@@ -18,7 +47,7 @@ ACCESS=$(cd ..; pwd)
 HAVE_X11=ON
 
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
-THREADSAFES=${THREADSAFE:-OFF}
+THREADSAFE=${THREADSAFE:-OFF}
 
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
@@ -28,6 +57,7 @@ INSTALL_PATH=${ACCESS}
 ### subdirectories of the specified paths.
 ### For example, netcdf.h should be in ${NETCDF_PATH}/include
 NETCDF_PATH=${ACCESS}
+PNETCDF_PATH=${ACCESS}
 MATIO_PATH=${ACCESS}
 HDF5_PATH=${ACCESS}
 CGNS_PATH=${ACCESS}
@@ -55,31 +85,18 @@ OMIT_DEPRECATED_CODE="NO"
 ### Set to ON to use Kokkos in the Ioss library; otherwise OFF (default)
 KOKKOS=${KOKKOS:-OFF}
 
+CUDA_PATH=${CUDA_ROOT} #Set this to the appropriate path
+
 ### Set to ON for CUDA compile; otherwise OFF (default) (only used if KOKKOS=ON
 CUDA=${CUDA:-OFF}
 
-### Change this to point to the compilers you want to use
-COMPILER="gnu"
-#COMPILER="clang"
-if [ "$MPI" == "ON" ]
+if [ "${MPI}" == "ON" ]
 then
-  MPI_EXEC=`which mpiexec`
-  MPI_BIN=`dirname $MPI_EXEC`
-
-  CXX=mpicxx
-  CC=mpicc
-  FC=mpif77
-else
-  if [ "$COMPILER" == "gnu" ]
-  then
-      CXX=g++
-      CC=gcc
-      FC=gfortran
-  else
-      CXX=clang++
-      CC=clang
-      FC=gfortran-mp-4.9
-  fi
+   MPI_EXEC=`which mpiexec`
+   MPI_BIN=`dirname "${MPI_EXEC}"`
+   CXX=mpicxx
+   CC=mpicc
+   FC=mpif77
 fi
 
 if [ "$KOKKOS" == "ON" ]
@@ -158,11 +175,22 @@ $EXTRA_ARGS \
 
 echo ""
 echo "     ACCESS: ${ACCESS}"
-echo "   COMPILER: ${COMPILER}"
+echo "  "
+echo "         CC: ${CC}"
+echo "        CXX: ${CXX}"
+echo "         FC: ${FC}"
 echo "        MPI: ${MPI}"
 echo " THREADSAFE: ${THREADSAFE}"
+echo "  "
 echo "HAVE_NETCDF: ${HAVE_NETCDF}"
 echo " HAVE_MATIO: ${HAVE_MATIO}"
 echo "  HAVE_CGNS: ${HAVE_CGNS}"
 echo "     KOKKOS: ${KOKKOS}"
 echo ""
+
+if [ "${TRAVIS}" == "true" ]
+then
+  make -j2
+  cd ${ACCESS}
+fi
+
