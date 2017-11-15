@@ -120,6 +120,12 @@ namespace SEAMS {
        "string variable 'del'."},
       {nullptr, nullptr, nullptr, nullptr}};
 
+  init_ccc arith_ccc_fncts[] = {{"find_word", do_find_word, "find_word(word,svar,del)",
+                                 "Find the 1-based index of 'word' in 'svar'. Words are separated "
+                                 "by one or more of the characters in the "
+                                 "string variable 'del'. Returns 0 if not found."},
+                                {nullptr, nullptr, nullptr, nullptr}};
+
   init_c arith_c_fncts[] = {{"strtod", do_strtod, "strtod(svar)",
                              "Returns a double-precision floating-point number "
                              "equal to the value represented by the character "
@@ -371,6 +377,7 @@ namespace SEAMS {
     internal_init_table(arith_dd_fncts,     fnctptr_dd,     SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_a_fncts,      fnctptr_a,      SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_dddd_fncts,   fnctptr_dddd,   SYMBOL_TYPE::FUNCTION);
+    internal_init_table(arith_ccc_fncts,    fnctptr_ccc,    SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_cc_fncts,     fnctptr_cc,     SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_c_fncts,      fnctptr_c,      SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_cd_fncts,     fnctptr_cd,     SYMBOL_TYPE::FUNCTION);

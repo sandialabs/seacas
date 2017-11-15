@@ -447,6 +447,13 @@ exp:	  NUM			{ $$ = $1; 				}
 	      $$ = 0.0;
 	  }
 
+        | FNCT LPAR sexp COMMA sexp COMMA sexp RPAR  {
+	  if (arg_check($1, $1->value.fnctptr_ccc == NULL))
+	    $$ = (*($1->value.fnctptr_ccc))($3,$5,$7);
+	  else
+	    yyerrok;
+	}
+
         | FNCT LPAR exp COMMA exp RPAR {
 	    if (arg_check($1, $1->value.fnctptr_dd == NULL))
 	      $$ = (*($1->value.fnctptr_dd))($3, $5);

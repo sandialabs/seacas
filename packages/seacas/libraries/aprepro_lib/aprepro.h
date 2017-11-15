@@ -84,6 +84,7 @@ namespace SEAMS {
       double (*fnctptr_cc)(char *, char *){nullptr};
       double (*fnctptr_dd)(double, double){nullptr};
       double (*fnctptr_ddd)(double, double, double){nullptr};
+      double (*fnctptr_ccc)(char *, char *, char *){nullptr};
       double (*fnctptr_ccd)(char *, char *, double){nullptr};
       double (*fnctptr_dddd)(double, double, double, double){nullptr};
       double (*fnctptr_ddddc)(double, double, double, double, char *){nullptr};

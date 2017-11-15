@@ -38,3 +38,18 @@ Element block {ex_block_ids[_i]} named '{get_word(++_i,ex_block_names,",")}' has
 
 {info2 = exodus_info("exodus.g", "PRE: ")}
 {rescan(info2)}
+
+{_i=0}
+{loop(ex_block_count)}
+{_name = get_word(++_i,ex_block_names,",")}
+{_indx = find_word(_name, ex_block_names, ",")}
+{if(_indx != _i)}
+ERROR found in get_word() find_word() symmetry -- {_i} {_indx} {_name}
+{endif}
+{endloop}
+
+Check for name not in list:
+{indx = find_word("Greg", ex_block_names, ",")}
+{if (indx != 0)}
+ERROR: Incorrect return from find_word() function
+{endif}

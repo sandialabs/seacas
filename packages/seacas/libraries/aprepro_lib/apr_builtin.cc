@@ -689,6 +689,19 @@ namespace SEAMS {
     return static_cast<double>(tokens.size());
   }
 
+  double do_find_word(char *word, char *string, char *delm)
+  {
+    std::string sword{word};
+    std::string temp{string};
+    auto        tokens = tokenize(temp, delm);
+    for (size_t i = 0; i < tokens.size(); i++) {
+      if (tokens[i] == sword) {
+        return i + 1;
+      }
+    }
+    return 0;
+  }
+
   const char *do_get_word(double n, char *string, char *delm)
   {
     size_t      in     = static_cast<size_t>(n);

@@ -87,6 +87,14 @@ struct init_dddddd
   const char *description;
 };
 
+struct init_ccc
+{
+  const char *fname;
+  double (*fnct)(char *, char *, char *);
+  const char *syntax;
+  const char *description;
+};
+
 struct init_cc
 {
   const char *fname;
