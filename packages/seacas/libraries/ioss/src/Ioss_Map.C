@@ -222,14 +222,18 @@ void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
   }
 }
 
-template void Ioss::Map::set_map(int *ids, size_t count, size_t offset);
-template void Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset);
+template bool Ioss::Map::set_map(int *ids, size_t count, size_t offset);
+template bool Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset);
 
-template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t offset)
+template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset)
 {
   IOSS_FUNC_ENTER(m_);
+  bool changed = false; // True if redefining an entry
   for (size_t i = 0; i < count; i++) {
     ssize_t local_id = offset + i + 1;
+    if (m_map[local_id] > 0) {
+      changed = true;
+    }
     m_map[local_id]  = ids[i];
     if (local_id != ids[i]) {
       m_map[0] = 1;
@@ -242,6 +246,7 @@ template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t o
       IOSS_ERROR(errmsg);
     }
   }
+  return changed;
 }
 
 void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
