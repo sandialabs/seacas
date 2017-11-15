@@ -4536,6 +4536,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
    */
   assert(num_to_get == nodeCount);
 
+  bool change = false;
   if (dbState == Ioss::STATE_MODEL) {
     if (nodeMap.map().empty()) {
       nodeMap.map().resize(nodeCount + 1);
@@ -4544,10 +4545,10 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
 
     if (nodeMap.map()[0] == -1) {
       if (int_byte_size_api() == 4) {
-        nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
+        change = nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
       }
       else {
-        nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0);
+        change = nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0);
       }
     }
 
@@ -4566,7 +4567,9 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
     }
   }
 
-  nodeMap.build_reorder_map(0, num_to_get);
+  if (change) {
+    nodeMap.build_reorder_map(0, num_to_get);
+  }
   return num_to_get;
 }
 
@@ -4635,11 +4638,12 @@ namespace {
 
     int64_t eb_offset = eb->get_offset();
 
+    bool redefine = false;
     if (int_byte_size == 4) {
-      entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset);
+      redefine = entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset);
     }
     else {
-      entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset);
+      redefine = entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset);
     }
 
     // Now, if the state is Ioss::STATE_MODEL, update the reverseEntityMap
@@ -4656,7 +4660,9 @@ namespace {
     // the current topologies local order to the local order
     // stored in the database...  This is 0-based and used for
     // remapping output and input TRANSIENT fields.
-    entity_map.build_reorder_map(eb_offset, num_to_get);
+    if (redefine) {
+      entity_map.build_reorder_map(eb_offset, num_to_get);
+    }
     return num_to_get;
   }
 } // namespace
