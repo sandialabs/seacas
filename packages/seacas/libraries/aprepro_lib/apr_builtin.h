@@ -90,6 +90,7 @@ namespace SEAMS {
   double do_strtod(char *string);
   double do_option(char *option, double value);
   double do_word_count(char *string, char *delm);
+  double do_find_word(char *word, char *string, char *delm);
   double do_lgamma(double val);
   double do_juldayhms(double mon, double day, double year, double h, double mi, double se);
   double do_julday(double mon, double day, double year);

@@ -78,3 +78,16 @@ Element block 4 named 'Shell-MinZ' has topology 'shell4'
 60 mph = 26.8224 meter/sec
 88 fps = 26.8224 meter/sec
 
+
+0
+inner_core
+1
+Shell-MinX
+2
+Shell-MaxY
+3
+Shell-MinZ
+4
+
+Check for name not in list:
+0

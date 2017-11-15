@@ -111,7 +111,7 @@ namespace SEAMS {
 #ifndef YYSTYPE
     /// Symbol semantic values.
     union semantic_type {
-#line 90 "/scratch/gdsjaar/seacas-parallel/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:377
+#line 90 "/scratch/gdsjaar/seacas/packages/seacas/libraries/aprepro_lib/aprepro.yy" // lalr1.cc:377
 
       double         val;    /* For returning numbers.		*/
       struct symrec *tptr;   /* For returning symbol-table pointers	*/
@@ -474,7 +474,7 @@ namespace SEAMS {
     /// Constants.
     enum {
       yyeof_     = 0,
-      yylast_    = 1222, ///< Last index in yytable_.
+      yylast_    = 1237, ///< Last index in yytable_.
       yynnts_    = 7,    ///< Number of nonterminal symbols.
       yyfinal_   = 2,    ///< Termination state number.
       yyterror_  = 1,
