@@ -296,6 +296,16 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
   }
 
+  if (interface.use_netcdf4()) {
+    properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+  }
+
+  if (interface.compression_level() > 0) {
+    properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level()));
+    properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
+  }
+
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
       "exodusII", interface.outputName_, Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
   if (dbo == nullptr || !dbo->ok(true)) {

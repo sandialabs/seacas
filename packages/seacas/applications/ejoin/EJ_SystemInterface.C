@@ -5,7 +5,6 @@
 #include <SL_tokenize.h> // for tokenize
 #include <algorithm>     // for sort, find, transform
 #include <cctype>        // for tolower
-#include <climits>       // for INT_MAX
 #include <cstddef>       // for size_t
 #include <cstdlib>       // for exit, strtod, strtoul, abs, etc
 #include <cstring>       // for strchr, strlen
@@ -38,9 +37,6 @@ namespace {
 } // namespace
 
 SystemInterface::SystemInterface()
-    : outputName_(), debugLevel_(0), stepMin_(1), stepMax_(INT_MAX), stepInterval_(1),
-      omitNodesets_(false), omitSidesets_(false), matchNodeIds_(false), matchNodeXYZ_(false),
-      matchElemIds_(false), disableFieldRecognition_(false), ints64bit_(false), tolerance_(0.0)
 {
   offset_.x = 0.0;
   offset_.y = 0.0;
@@ -152,8 +148,18 @@ void SystemInterface::enroll_options()
       "\t\tIf 'all' specified, then transfer all information records",
       nullptr, "NONE");
 
+  options_.enroll("netcdf4", GetLongOption::NoValue,
+                  "Create output database using the HDF5-based "
+                  "netcdf which allows for up to 2.1 GB "
+                  "nodes/elements",
+                  nullptr);
+
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
+
+  options_.enroll("compress", GetLongOption::MandatoryValue,
+                  "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
+                  nullptr);
 
   options_.enroll("disable_field_recognition", GetLongOption::NoValue,
                   "Do not try to combine scalar fields into higher-order fields such as\n"
@@ -369,8 +375,19 @@ bool SystemInterface::parse_options(int argc, char **argv)
     disableFieldRecognition_ = false;
   }
 
+  if (options_.retrieve("netcdf4") != nullptr) {
+    useNetcdf4_ = true;
+  }
+
   if (options_.retrieve("64-bit") != nullptr) {
     ints64bit_ = true;
+  }
+
+  {
+    const char *temp = options_.retrieve("compress");
+    if (temp != nullptr) {
+      compressionLevel_ = std::strtol(temp, nullptr, 10);
+    }
   }
 
   if (options_.retrieve("match_node_ids") != nullptr) {
