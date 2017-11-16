@@ -35,7 +35,7 @@
 #include "EJ_CodeTypes.h" // for StringIdVector, Omissions, etc
 #include "EJ_vector3d.h"  // for vector3d
 #include "GetLongOpt.h"   // for GetLongOption
-#include <climits>       // for INT_MAX
+#include <climits>        // for INT_MAX
 #include <string>         // for string
 #include <vector>         // for vector
 
@@ -55,11 +55,11 @@ public:
   bool   match_elem_ids() const { return matchElemIds_; }
   bool   omit_nodesets() const { return omitNodesets_; }
   bool   omit_sidesets() const { return omitSidesets_; }
-  bool convert_nodes_to_nodesets(int part_number) const;
-  bool disable_field_recognition() const { return disableFieldRecognition_; }
-  bool ints64bit() const { return ints64bit_; }
-  bool use_netcdf4() const { return useNetcdf4_; }
-  bool ignore_element_ids() const { return ignoreElementIds_; }
+  bool   convert_nodes_to_nodesets(int part_number) const;
+  bool   disable_field_recognition() const { return disableFieldRecognition_; }
+  bool   ints64bit() const { return ints64bit_; }
+  bool   use_netcdf4() const { return useNetcdf4_; }
+  bool   ignore_element_ids() const { return ignoreElementIds_; }
 
   int compression_level() const { return compressionLevel_; }
   int step_min() const { return stepMin_; }
@@ -117,7 +117,7 @@ private:
   bool ints64bit_{false};
   bool useNetcdf4_{false};
   bool ignoreElementIds_{false};
-  
+
   std::string elementStatusVariable_;
   std::string nodalStatusVariable_;
 
