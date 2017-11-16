@@ -93,8 +93,7 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map,
-			   bool ignore_element_ids);
+                           const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
   void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
                       const std::vector<INT> &local_node_map);
@@ -136,6 +135,13 @@ namespace {
       }
     }
   }
+
+  struct my_numpunct : std::numpunct<char>
+  {
+  protected:
+    char        do_thousands_sep() const override { return ','; }
+    std::string do_grouping() const override { return "\3"; }
+  };
 } // namespace
 
 namespace {
@@ -171,11 +177,14 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
 #endif
 
+  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
+  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
+
 #if defined(__LIBCATAMOUNT__)
   setlinebuf(stderr);
 #endif
   try {
-    time_t begin_time = time(nullptr);
+    double begin = Ioss::Utils::timer();
     SystemInterface::show_version();
     Ioss::Init::Initializer io;
 
@@ -271,12 +280,14 @@ int main(int argc, char *argv[])
       delete part_mesh[p];
     }
 
-    time_t end_time = time(nullptr);
-    add_to_log(argv[0], static_cast<int>(end_time - begin_time));
+    double end = Ioss::Utils::timer();
+    add_to_log(argv[0], static_cast<int>(end - begin));
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
 #endif
+
+    std::cerr << "\nTotal Execution time = " << end - begin << " seconds.\n\n";
 
     return (error);
   }
@@ -441,7 +452,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
 
   output_nodeblock(output_region, part_mesh, local_node_map, global_node_map);
   output_elementblock(output_region, part_mesh, local_node_map, local_element_map,
-		      interface.ignore_element_ids());
+                      interface.ignore_element_ids());
   output_nodal_nodeset(output_region, part_mesh, interface, local_node_map);
 
   if (!interface.omit_nodesets()) {
@@ -846,8 +857,7 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map,
-			   bool ignore_element_ids)
+                           const std::vector<INT> &local_element_map, bool ignore_element_ids)
   {
 
     Ioss::ElementBlockContainer ebs = output_region.get_element_blocks();
