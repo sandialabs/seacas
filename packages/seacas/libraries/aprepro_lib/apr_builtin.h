@@ -97,6 +97,7 @@ namespace SEAMS {
   double do_log1p(double x);
   double do_rows(const array *arr);
   double do_cols(const array *arr);
+  double do_time();
 
   const char *do_dumpsym();
   const char *do_dumpfunc();
