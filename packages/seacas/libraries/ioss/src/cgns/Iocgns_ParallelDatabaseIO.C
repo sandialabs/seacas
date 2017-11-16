@@ -353,7 +353,7 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
-        conn.m_donorGUID = util().generate_guid(conn.m_donorZone);
+        conn.m_donorGUID = util().generate_guid(conn.m_donorZone, conn.m_donorProcessor);
         conn.m_ownerGUID = guid;
       }
     }
