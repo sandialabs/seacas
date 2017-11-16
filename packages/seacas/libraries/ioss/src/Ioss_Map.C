@@ -167,6 +167,9 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 
   // Build a vector containing the current ids...
   IOSS_FUNC_ENTER(m_);
+  if (m_map[0] != 1) {
+    return;
+  }
   ReverseMapContainer new_ids(num_to_get);
   for (int64_t i = 0; i < num_to_get; i++) {
     int64_t local_id = offset + i + 1;
