@@ -97,8 +97,9 @@ namespace Ioss {
      * Generate a "globally unique id" which is unique over all entities
      * of a specific type over all processors.
      * Used by some applications for uniquely identifying an entity.
+     * If `rank` == -1, then use parallel_rank; otherwise use rank
      */
-    int64_t generate_guid(size_t id) const;
+    int64_t generate_guid(size_t id, int rank = -1) const;
 
     /*! Return min, max, average memory used by any process */
     void memory_stats(int64_t &min, int64_t &max, int64_t &avg) const;
