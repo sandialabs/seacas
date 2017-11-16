@@ -713,8 +713,7 @@ namespace SEAMS {
       new_string(tokens[in - 1], &word);
       return word;
     }
-
-    return nullptr;
+    return "";
   }
 
   const char *do_file_to_string(char *filename)
