@@ -93,7 +93,8 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map);
+                           const std::vector<INT> &local_element_map,
+			   bool ignore_element_ids);
   template <typename INT>
   void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
                       const std::vector<INT> &local_node_map);
@@ -439,7 +440,8 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   output_region.begin_mode(Ioss::STATE_MODEL);
 
   output_nodeblock(output_region, part_mesh, local_node_map, global_node_map);
-  output_elementblock(output_region, part_mesh, local_node_map, local_element_map);
+  output_elementblock(output_region, part_mesh, local_node_map, local_element_map,
+		      interface.ignore_element_ids());
   output_nodal_nodeset(output_region, part_mesh, interface, local_node_map);
 
   if (!interface.omit_nodesets()) {
@@ -844,7 +846,8 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map)
+                           const std::vector<INT> &local_element_map,
+			   bool ignore_element_ids)
   {
 
     Ioss::ElementBlockContainer ebs = output_region.get_element_blocks();
@@ -852,9 +855,14 @@ namespace {
     size_t           element_count = output_region.get_property("element_count").get_int();
     std::vector<INT> ids(element_count);
 
-    // Try to maintain the original element ids if possible...
-    generate_element_ids(part_mesh, local_element_map, ids);
-
+    if (ignore_element_ids) {
+      // Just generate 1..numel ids (much faster for large models)
+      std::iota(ids.begin(), ids.end(), 1);
+    }
+    else {
+      // Try to maintain the original element ids if possible...
+      generate_element_ids(part_mesh, local_element_map, ids);
+    }
     size_t element_offset = 0;
     for (auto eb : ebs) {
       eb->put_field_data("ids", &ids[element_offset], ids.size() * sizeof(int));

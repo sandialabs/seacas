@@ -148,6 +148,11 @@ void SystemInterface::enroll_options()
       "\t\tIf 'all' specified, then transfer all information records",
       nullptr, "NONE");
 
+  options_.enroll("ignore_element_ids", GetLongOption::NoValue,
+		  "Ignore the element id maps on the input database and just use a 1..#elements id map on output.\n"
+		  "\t\tMuch faster for large models if do not need specific element global ids",
+		  nullptr);
+		  
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Create output database using the HDF5-based "
                   "netcdf which allows for up to 2.1 GB "
@@ -377,6 +382,10 @@ bool SystemInterface::parse_options(int argc, char **argv)
 
   if (options_.retrieve("netcdf4") != nullptr) {
     useNetcdf4_ = true;
+  }
+
+  if (options_.retrieve("ignore_element_ids") != nullptr) {
+    ignoreElementIds_ = true;
   }
 
   if (options_.retrieve("64-bit") != nullptr) {
