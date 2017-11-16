@@ -315,6 +315,7 @@ void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local
   // index came first which causes really screwy element maps.
   // Instead, lets sort a vector containing pairs of <id, index> where
   // the index will always? increase for increasing part numbers...
+  if (has_map) {
   std::vector<std::pair<INT, INT>> index(global_element_map.size());
   for (size_t i = 0; i < index.size(); i++) {
     index[i] = std::make_pair(global_element_map[i], (INT)i);
@@ -335,6 +336,11 @@ void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local
     else {
       beg = i;
     }
+  }
+  }
+  else {
+    INT one = 1;
+    std::iota(global_element_map.begin(), global_element_map.end(), one);
   }
 }
 

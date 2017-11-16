@@ -878,17 +878,16 @@ namespace {
         }
         if (oeb != nullptr) {
           std::vector<INT> connectivity;
-          ieb->get_field_data("connectivity", connectivity);
+          ieb->get_field_data("connectivity_raw", connectivity);
 
           SMART_ASSERT(ieb->entity_count() == oeb->entity_count());
           for (size_t i = 0; i < connectivity.size(); i++) {
 
-            // connectivity is in part-global node ids.
-            // loc_node = the position of part-global node 'connectivity[i]' in the local
-            // [0..num_node)
+            // connectivity is in part-local node ids [1..num_node]
+            // loc_node = the position of node in the local [0..num_node)
             // local_node_map[node_offset+loc_node] gives the position of this node in the global
             // list
-            size_t loc_node = part_mesh[p]->node_global_to_local(connectivity[i], true) - 1;
+            size_t loc_node = connectivity[i] - 1;
             SMART_ASSERT(node_offset + loc_node < local_node_map.size());
             ssize_t gpos = local_node_map[node_offset + loc_node];
             if (gpos >= 0) {
