@@ -102,6 +102,12 @@ namespace SEAMS {
 #define LOG1P(x) std::log(1.0 + (x))
 #endif
 
+  double do_time()
+  {
+    time_t timer = time(nullptr);
+    return timer;
+  }
+
   // DO_INT:  Calculate integer nearest to zero from value
   double do_int(double x)
   {

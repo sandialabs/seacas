@@ -44,6 +44,9 @@
 #include <string>         // for string
 
 namespace SEAMS {
+  init arith_0_fncts[] = {{"time", do_time, "time(x)", "Seconds since epoch (useful for srand())."},
+                          {nullptr, nullptr, nullptr, nullptr}};
+
   init_d arith_fncts[] = {
       {"abs", do_fabs, "abs(x)", "Absolute value of x. |x|."},
       {"acos", do_acos, "acos(x)", "Inverse cosine of x, returns radians."},
@@ -373,6 +376,7 @@ namespace SEAMS {
   void Aprepro::init_table(const char *comment)
   {
     // clang-format off
+    internal_init_table(arith_0_fncts,      fnctptr,        SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_fncts,        fnctptr_d,      SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_dd_fncts,     fnctptr_dd,     SYMBOL_TYPE::FUNCTION);
     internal_init_table(arith_a_fncts,      fnctptr_a,      SYMBOL_TYPE::FUNCTION);
