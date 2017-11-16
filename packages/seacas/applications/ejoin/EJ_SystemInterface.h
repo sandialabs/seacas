@@ -59,6 +59,7 @@ public:
   bool disable_field_recognition() const { return disableFieldRecognition_; }
   bool ints64bit() const { return ints64bit_; }
   bool use_netcdf4() const { return useNetcdf4_; }
+  bool ignore_element_ids() const { return ignoreElementIds_; }
 
   int compression_level() const { return compressionLevel_; }
   int step_min() const { return stepMin_; }
@@ -115,6 +116,7 @@ private:
   bool disableFieldRecognition_{false};
   bool ints64bit_{false};
   bool useNetcdf4_{false};
+  bool ignoreElementIds_{false};
   
   std::string elementStatusVariable_;
   std::string nodalStatusVariable_;
