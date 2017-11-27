@@ -41,6 +41,7 @@
 #include <iostream>              // for operator<<, basic_ostream, etc
 #include <smart_assert.h>        // for SMART_ASSERT
 #include <utility>               // for make_pair, pair
+#include <numeric>
 
 namespace {
   bool entity_is_omitted(Ioss::GroupingEntity *block)
