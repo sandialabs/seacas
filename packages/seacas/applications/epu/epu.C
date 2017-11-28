@@ -131,7 +131,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int         get_width(int max_value);
+  int get_width(int max_value);
 
   void LOG(const std::string message)
   {
@@ -787,6 +787,35 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     LOG("\n**** BEGIN WRITING OUTPUT FILE *****\n");
     CommunicationMetaData comm_data;
 
+    if (!interface.int64()) {
+      // Check whether output mesh requires 64-bit integers...
+      if (global.nodeCount >= std::numeric_limits<int>::max() ||
+          global.elementCount >= std::numeric_limits<int>::max()) {
+        std::cerr
+            << "\nINFO: Output file requires 64-bit integers. Setting this automatically.\n\n";
+        interface.set_int64();
+      }
+
+      if (!interface.use_netcdf4()) {
+        // Check size required to store coordinates and connectivity
+        if (global.nodeCount * global.dimensionality * 8 >= std::numeric_limits<int>::max()) {
+          std::cerr
+              << "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n";
+          interface.set_use_netcdf4();
+        }
+
+        for (auto block : glob_blocks) {
+          int64_t element_count = block.entity_count();
+          int64_t nnpe          = block.nodesPerElement;
+          if (element_count * nnpe * 4 >= std::numeric_limits<int>::max()) {
+            std::cerr
+                << "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n";
+            interface.set_use_netcdf4();
+            break;
+          }
+        }
+      }
+    }
     // Create the output file...
     ExodusFile::create_output(interface, cycle);
 
@@ -1967,13 +1996,13 @@ namespace {
       std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
     }
 
-    // Create the map that maps from a local processor element to the
-    // global map. This combines the mapping local processor element to
-    // 'global id' and then 'global id' to global position. The
-    // mapping is now a direct lookup instead of a lookup followed by
-    // a reverse map.
-    //
-    // If the map is contiguous, then the global_id to global_position map is 1->1
+  // Create the map that maps from a local processor element to the
+  // global map. This combines the mapping local processor element to
+  // 'global id' and then 'global id' to global position. The
+  // mapping is now a direct lookup instead of a lookup followed by
+  // a reverse map.
+  //
+  // If the map is contiguous, then the global_id to global_position map is 1->1
   REMAP:
     if (is_contiguous && map_ids) {
       auto   cur_pos = global_element_map.begin();
@@ -3101,10 +3130,10 @@ namespace {
 
   void add_info_record(char *info_record, int size)
   {
-  // Add 'uname' output to the passed in character string.
-  // Maximum size of string is 'size' (not including terminating nullptr)
-  // This is used as information data in the concatenated results file
-  // to help in tracking when/where/... the file was created
+// Add 'uname' output to the passed in character string.
+// Maximum size of string is 'size' (not including terminating nullptr)
+// This is used as information data in the concatenated results file
+// to help in tracking when/where/... the file was created
 
 #ifdef _WIN32
     std::string info                                      = "EPU: ";
