@@ -215,7 +215,6 @@ int64_t Ioss::ParallelUtils::generate_guid(size_t id, int rank) const
     if (lpow2 == 0) {
       lpow2 = Ioss::Utils::log_power_2(parallel_size());
     }
-    assert(id > 0);
     if (rank == -1) {
       rank = parallel_rank();
     }
