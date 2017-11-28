@@ -39,10 +39,10 @@
 #include "EP_SystemInterface.h"
 #include "smart_assert.h"
 #include <climits>
-#include <cstdlib>
-
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -79,8 +79,9 @@ Excn::ExodusFile::ExodusFile(int processor) : myProcessor_(processor)
     fileids_[processor] =
         ex_open(filenames_[processor].c_str(), mode, &cpu_word_size, &io_word_size_var, &version);
     if (fileids_[processor] < 0) {
-      std::cerr << "Cannot open file '" << filenames_[processor] << "' - exiting" << '\n';
-      exit(1);
+      std::ostringstream errmsg;
+      errmsg << "Cannot open file '" << filenames_[processor] << "' - exiting" << '\n';
+      throw std::runtime_error(errmsg.str());
     }
     ex_set_max_name_length(fileids_[processor], maximumNameLength_);
 
