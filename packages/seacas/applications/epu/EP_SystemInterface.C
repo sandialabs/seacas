@@ -42,9 +42,11 @@
 #include <cstdlib>       // for strtol, abs, exit, strtoul, etc
 #include <cstring>       // for strchr, strlen
 #include <iostream>      // for operator<<, basic_ostream, etc
-#include <string>        // for string, char_traits, etc
-#include <utility>       // for pair, make_pair
-#include <vector>        // for vector
+#include <sstream>
+#include <stdexcept>
+#include <string>  // for string, char_traits, etc
+#include <utility> // for pair, make_pair
+#include <vector>  // for vector
 
 namespace {
   int case_strcmp(const std::string &s1, const std::string &s2)
@@ -237,7 +239,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
 
   int option_index = options_.parse(argc, argv);
   if (option_index < 1) {
-    return false;
+    throw std::runtime_error("ERROR: (EPU) No arguments specified.");
   }
 
   if (options_.retrieve("help") != nullptr) {
@@ -249,12 +251,12 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
                 << "\t\troot(#o+#p)%#r/sub/basename.suf.#p.#p\n";
       std::cout << "\n\t->->-> Send email to gdsjaar@sandia.gov for epu support.<-<-<-\n";
     }
-    exit(EXIT_SUCCESS);
+    return false;
   }
 
   if (options_.retrieve("version") != nullptr) {
     // Version is printed up front, just exit...
-    exit(0);
+    return false;
   }
 
   {
@@ -503,7 +505,7 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
                 << "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
                 << "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
     }
-    exit(EXIT_SUCCESS);
+    return false;
   }
 
   // Parse remaining options as directory paths.
@@ -516,18 +518,17 @@ bool Excn::SystemInterface::parse_options(int argc, char **argv)
       // in the form: "/directory/sub/basename.ext.#proc.34"
       bool success = decompose_filename(basename_);
       if (!success) {
-        std::cerr
-            << "\nERROR: (EPU) If the '-auto' option is specified, the basename must specify an "
-               "existing filename.\n"
-            << "       The entered basename does not contain an extension or processor count.\n";
-        return false;
+        std::ostringstream errmsg;
+        errmsg << "\nERROR: (EPU) If the '-auto' option is specified, the basename must specify an "
+                  "existing filename.\n"
+               << "       The entered basename does not contain an extension or processor count.\n";
+        throw std::runtime_error(errmsg.str());
       }
       auto_ = true;
     }
   }
   else {
-    std::cerr << "\nERROR: (EPU) basename not specified\n\n";
-    return false;
+    throw std::runtime_error("\nERROR: (EPU) basename not specified\n");
   }
   return true;
 }
