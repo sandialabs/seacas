@@ -313,7 +313,8 @@ void Ioss::GroupingEntity::property_update(const std::string &property, int64_t 
   }
 }
 
-void Ioss::GroupingEntity::property_update(const std::string &property, const std::string &value) const
+void Ioss::GroupingEntity::property_update(const std::string &property,
+                                           const std::string &value) const
 {
   if (property_exists(property)) {
     if (get_property(property).get_string() != value) {
