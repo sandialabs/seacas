@@ -428,7 +428,7 @@ namespace Ioss {
   {
     IOSS_FUNC_ENTER(m_);
     strm << "\n Database: " << get_database()->get_filename() << "\n";
-    strm << "Mesh Type = " << mesh_type_string() << "\n";
+    strm << " Mesh Type = " << mesh_type_string() << "\n";
     strm << "\n Number of coordinates per node   =" << std::setw(12)
          << get_property("spatial_dimension").get_int() << "\n";
     strm << " Number of nodes                  =" << std::setw(12)
