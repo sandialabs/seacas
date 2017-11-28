@@ -788,9 +788,12 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     CommunicationMetaData comm_data;
 
     if (!interface.int64()) {
+      int64_t twoBill = 1;
+      twoBill <<= 31;
+      int64_t fourBill = 1;
+      fourBill <<= 32;
       // Check whether output mesh requires 64-bit integers...
-      if (global.nodeCount >= std::numeric_limits<int>::max() ||
-          global.elementCount >= std::numeric_limits<int>::max()) {
+      if (global.nodeCount >= twoBill || global.elementCount >= twoBill) {
         std::cerr
             << "\nINFO: Output file requires 64-bit integers. Setting this automatically.\n\n";
         interface.set_int64();
@@ -798,7 +801,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
 
       if (!interface.use_netcdf4()) {
         // Check size required to store coordinates and connectivity
-        if (global.nodeCount * global.dimensionality * 8 >= std::numeric_limits<int>::max()) {
+        if (global.nodeCount * 8 >= fourBill) {
           std::cerr
               << "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n";
           interface.set_use_netcdf4();
@@ -807,7 +810,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
         for (auto block : glob_blocks) {
           int64_t element_count = block.entity_count();
           int64_t nnpe          = block.nodesPerElement;
-          if (element_count * nnpe * 4 >= std::numeric_limits<int>::max()) {
+          if (element_count * nnpe * 4 >= fourBill) {
             std::cerr
                 << "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n";
             interface.set_use_netcdf4();
