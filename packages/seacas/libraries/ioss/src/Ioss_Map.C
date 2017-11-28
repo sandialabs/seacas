@@ -149,9 +149,7 @@ void Ioss::Map::release_memory()
 
 void Ioss::Map::build_reverse_map()
 {
-  if (m_map[0] == 1) {
-    build_reverse_map(m_map.size() - 1, 0);
-  }
+  build_reverse_map(m_map.size() - 1, 0);
 }
 
 void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
@@ -170,10 +168,23 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
   if (m_map[0] != 1) {
     return;
   }
-  ReverseMapContainer new_ids(num_to_get);
+
+  ReverseMapContainer new_ids;
+  new_ids.reserve(num_to_get);
+  if (m_reverse.empty() && offset > 0) {
+    // Need to handle all previous entries which were 1-to-1 
+    // now that we have some non 1-to-1 entries...
+    new_ids.reserve(num_to_get + offset);
+    
+    for (int64_t i = 0; i < offset; i++) {
+      assert(m_map[i+1] == i+1);
+      new_ids.emplace_back(i+1, i+1);
+    }
+  }
+
   for (int64_t i = 0; i < num_to_get; i++) {
     int64_t local_id = offset + i + 1;
-    new_ids[i]       = std::make_pair(m_map[local_id], local_id);
+    new_ids.emplace_back(m_map[local_id], local_id);
 
     if (m_map[local_id] <= 0) {
       std::ostringstream errmsg;
