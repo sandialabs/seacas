@@ -97,6 +97,19 @@ using StringVector = std::vector<std::string>;
 #include "add_to_log.h"
 #endif
 
+#if ENABLE_PARALLEL_EPU 
+#define FINALIZE(err_code) \
+  do { \
+    MPI_Finalize(); \
+    exit(err_code);} \
+  while (0)
+#else
+#define FINALIZE(err_code)                                                                         \
+  do {                                                                                             \
+    exit(err_code);                                                                                \
+  } while (0) 
+#endif
+
 using ExodusIdVector = std::vector<ex_entity_id>;
 
 extern double seacas_timer();
@@ -128,7 +141,7 @@ namespace {
 
     ex_err(nullptr, nullptr, EX_PRTLASTMSG);
     std::cerr << errmsg.str() << "\n";
-    exit(EXIT_FAILURE);
+    FINALIZE(EXIT_FAILURE);
   }
 
   template <typename T> void clear(std::vector<T> &vec)
@@ -358,7 +371,7 @@ int main(int argc, char *argv[])
 
     if (!ok) {
       std::cerr << "\nERROR: (EPU) Problems parsing command line arguments.\n\n";
-      exit(EXIT_FAILURE);
+      FINALIZE(EXIT_FAILURE);
     }
 
     //   1 -- time stamp
@@ -384,7 +397,7 @@ int main(int argc, char *argv[])
     int part_count = interface.part_count();
     if (part_count <= 1) {
       std::cout << "INFO: Only one processor or part, no concatenation needed.\n";
-      exit(EXIT_SUCCESS);
+      FINALIZE(EXIT_SUCCESS);
     }
 
     int error = 0;
@@ -407,7 +420,7 @@ int main(int argc, char *argv[])
 
       if (!ExodusFile::initialize(interface, start_part, part_count, rank, false)) {
         std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
-        exit(EXIT_FAILURE);
+        FINALIZE(EXIT_FAILURE);
       }
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
@@ -479,7 +492,7 @@ int main(int argc, char *argv[])
         if (part_count < 1) {
           std::cerr << "ERROR: (EPU) The subcycle specification results in less than 1 part per "
                        "cycle which is not allowed.\n";
-          exit(EXIT_FAILURE);
+          FINALIZE(EXIT_FAILURE);
         }
         interface.subcycle((processor_count + part_count - 1) / part_count);
 
@@ -502,7 +515,7 @@ int main(int argc, char *argv[])
 
         if (!ExodusFile::initialize(interface, start_part, part_count, cycle, false)) {
           std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
-          exit(EXIT_FAILURE);
+          FINALIZE(EXIT_FAILURE);
         }
 
         if (ExodusFile::io_word_size() == 4) { // Reals are floats
@@ -544,7 +557,7 @@ int main(int argc, char *argv[])
 
       if (!ExodusFile::initialize(interface, start_part, part_count, 0, true)) {
         std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
-        exit(EXIT_FAILURE);
+        FINALIZE(EXIT_FAILURE);
       }
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
@@ -814,7 +827,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
       if (!matches) {
         std::cerr << "\n\nERROR: (EPU) Current mesh dimensions do not match "
                   << "the mesh dimensions in the file being appended to.\n\n";
-        exit(EXIT_FAILURE);
+        FINALIZE(EXIT_FAILURE);
       }
     }
     else {
@@ -1359,7 +1372,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   deallocate_master_values(nodeset_vars, global, master_nodeset_values);
 
   /*************************************************************************/
-  // EXIT program
+  // FINALIZE program
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
@@ -1670,7 +1683,10 @@ namespace {
           if (blocks[0][b].id != block_id[b]) {
             std::cerr << "ERROR: (EPU) The internal element block id ordering for part " << p
                       << "\n       is not consistent with the ordering for part 0." << '\n';
-            exit(EXIT_FAILURE);
+#if ENABLE_PARALLEL_EPU
+	    MPI_Finalize();
+#endif
+            FINALIZE(EXIT_FAILURE);
           }
         }
       }
@@ -2072,7 +2088,10 @@ namespace {
             std::cerr << "Block " << b << ", Id = " << glob_blocks[b].id
                       << " min/max id = " << min_id + 1 << "/" << max_id + 1
                       << " size = " << glob_blocks[b].entity_count() << "\n";
-            exit(EXIT_FAILURE);
+#if ENABLE_PARALLEL_EPU
+	    MPI_Finalize();
+#endif
+            FINALIZE(EXIT_FAILURE);
           }
         }
       }
@@ -2336,7 +2355,7 @@ namespace {
         }
         if (!found) {
           std::cerr << "ERROR: (EPU) Variable '" << elem.first << "' is not valid." << '\n';
-          exit(EXIT_FAILURE);
+          FINALIZE(EXIT_FAILURE);
         }
       }
       // Count non-zero entries in var_index;
@@ -2976,14 +2995,14 @@ namespace {
         if (block == -1) {
           std::cerr << "ERROR: (EPU) User-specified block id of " << variable_name.second
                     << " for variable '" << variable_name.first << "' does not exist.\n";
-          exit(EXIT_FAILURE);
+          FINALIZE(EXIT_FAILURE);
         }
 
         int truth_table_loc = block * vars.count(OUT) + out_position;
         if (global.truthTable[vars.objectType][truth_table_loc] == 0) {
           std::cerr << "ERROR: (EPU) Variable '" << variable_name.first
                     << "' does not exist on block " << variable_name.second << ".\n";
-          exit(EXIT_FAILURE);
+          FINALIZE(EXIT_FAILURE);
         }
         else {
           global.truthTable[vars.objectType][truth_table_loc] = 1;
