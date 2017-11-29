@@ -15,62 +15,68 @@
 The following table shows the element types supported in the Exodus
 library, the IOSS library, nem_slice, and nem_spread.
 
- Element|Exodus| IOSS  | nem_slice | nem_spread |
- -------|:----:|:-----:|:---------:|:----------:|
- |circle |  X   |    X  |    X      |  X |
- |sphere |  X   |    X  |    X      |  X |
- |      |      |       |           |    |
- |beam2  |  X   |    X  |    X      |  X |
- |beam3  |  X   |    X  |    X      |  X |
- |      |      |       |           |    |
- quad4  |  X   |    X  |    X      |  X |
- quad5  |  X   |       |           |    |
- quad9  |  X   |    X  |    X      |  X |
- |      |      |       |           |    |
- tri3 (2D)|  X   |    X  |    X      |  X |
- tri4 (2D)|  X   |    X  |    X      |  X |
- tri6 (2D)|  X   |    X  |    X      |  X |
- tri7 (2D)|  X   |    X  |    X      |  X |
- |        |      |       |           |    |
- tri3 (3D)|  X   |    X  |    X      |  X |
- tri4 (3D)|  X   |    X  |    X      |  X |
- tri6 (3D)|  X   |    X  |    X      |  X |
- tri7 (3D)|  X   |    X  |    X      |  X |
- |       |      |       |           |    |
- shell2 |  X   |    X  |    X      |  X |
- shell3 |      |    X  |    X      |  X |
- shell4 |  X   |    X  |    X      |  X |
- shell8 |  X   |    X  |    X      |  X |
- shell9 |  X   |    X  |    X      |  X |
- |       |      |       |           |    |
- tet4   |  X   |    X  |    X      |  X |
- tet5   |  X   |       |           |    |
- tet7   |      |    X  |           |    |
- tet8   |  X   |    X  |    X      |  X |
- tet10  |  X   |    X  |    X      |  X |
- tet11  |  X   |    X  |           |    |
- tet14  |  X   |    X  |    X      |  X |
- tet15  |  X   |    X  |    X      |  X |
- |       |      |       |           |    |
- pyramid5 | X  |    X  |    X      |  X |
- pyramid13| X  |    X  |    X      |  X |
- pyramid14| X  |    X  |    X      |  X |
- pyramid18| X  |    X  |    X      |  X |
- pyramid19| X  |    X  |    X      |  X |
- |         |    |       |           |    |
- wedge6 |  X   |    X  |    X      |  X |
- wedge12|  X   |    X  |           |    |
- wedge15|  X   |    X  |    X      |  X |
- wedge16|  X   |    X  |    X      |  X |
- wedge18|  X   |    X  |           |    |
- wedge20|  X   |    X  |    X      |  X |
- wedge21|  X   |    X  |    X      |  X |
- |       |      |       |           |    |
- hex8   |  X   |    X  |    X      |  X |
- hex9   |  X   |       |           |    |
- hex16  |  X   |    X  |           |    |
- hex20  |  X   |    X  |    X      |  X |
- hex27  |  X   |    X  |    X      |  X |
+ Element|Nodes|Exodus| IOSS  | nem_slice | nem_spread |
+ -------|:---:|:----:|:-----:|:---------:|:----------:|
+ |circle|  1  |  X   |    X  |    X      |  X |
+ |sphere|  1  |  X   |    X  |    X      |  X |
+ |      |     |      |       |           |    |
+ |beam  |  2  |  X   |    X  |    X      |  X |
+ |beam  |  3  |  X   |    X  |    X      |  X |
+ |      |     |      |       |           |    |
+ quad   |  4  |  X   |    X  |    X      |  X |
+ quad   |  5  |  X   |       |           |    |
+ quad   |  9  |  X   |    X  |    X      |  X |
+ |      |     |      |       |           |    |
+ tri (2D)| 3  |  X   |    X  |    X      |  X |
+ tri (2D)| 4  |  X   |    X  |    X      |  X |
+ tri (2D)| 6  |  X   |    X  |    X      |  X |
+ tri (2D)| 7  |  X   |    X  |    X      |  X |
+ |        |   |      |       |           |    |
+ tri (3D)| 3  |  X   |    X  |    X      |  X |
+ tri (3D)| 4  |  X   |    X  |    X      |  X |
+ tri (3D)| 6  |  X   |    X  |    X      |  X |
+ tri (3D)| 7  |  X   |    X  |    X      |  X |
+ |       |    |      |       |           |    |
+ shell   |  2 |  X   |    X  |    X      |  X |
+ shell   |  3 |      |    X  |    X      |  X |
+ shell   |  4 |  X   |    X  |    X      |  X |
+ shell   |  8 |  X   |    X  |    X      |  X |
+ shell   |  9 |  X   |    X  |    X      |  X |
+ |       |    |      |       |           |    |
+ tet     |  4 |  X   |    X  |    X      |  X |
+ tet     |  5 |  X   |       |           |    |
+ tet     |  7 |      |    X  |           |    |
+ tet     |  8 |  X   |    X  |    X      |  X |
+ tet     | 10 |  X   |    X  |    X      |  X |
+ tet     | 11 |  X   |    X  |           |    |
+ tet     | 14 |  X   |    X  |    X      |  X |
+ tet     | 15 |  X   |    X  |    X      |  X |
+ |       |    |      |       |           |    |
+ pyramid |  5 |  X   |    X  |    X      |  X |
+ pyramid | 13 |  X   |    X  |    X      |  X |
+ pyramid | 14 |  X   |    X  |    X      |  X |
+ pyramid | 18 |  X   |    X  |    X      |  X |
+ pyramid | 19 |  X   |    X  |    X      |  X |
+ |       |    |      |       |           |    |
+ wedge   |  6 |  X   |    X  |    X      |  X |
+ wedge   | 12 |  X   |    X  |           |    |
+ wedge   | 15 |  X   |    X  |    X      |  X |
+ wedge   | 16 |  X   |    X  |    X      |  X |
+ wedge   | 18 |  X   |    X  |           |    |
+ wedge   | 20 |  X   |    X  |    X      |  X |
+ wedge   | 21 |  X   |    X  |    X      |  X |
+ |       |    |      |       |           |    |
+ hex     | 8  |  X   |    X  |    X      |  X |
+ hex     | 9  |  X   |       |           |    |
+ hex     | 16 |  X   |    X  |           |    |
+ hex     | 20 |  X   |    X  |    X      |  X |
+ hex     | 27 |  X   |    X  |    X      |  X |
+
+Only the base topology name is required for the element type. For example, all 
+elements of a `hex` toplogy can be referred to by the name `hex` no
+matter how many nodes there are.  However, it is also correct to
+append the node count to the topology type for the element name.  For
+example, a 20-node hex could be named `hex20`.
 
 The IOSS library, nem_slice, and nem_spread cannot correctly handle a
 mesh unless it contains elements of a known type.
@@ -129,7 +135,7 @@ The side numbering for a tri element is shown below.  For a triangular shell, th
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
  TRI (3D)     | 1     | 1, 2, 3    |
- }            | 2     | 1, 3, 2    |
+ |            | 2     | 1, 3, 2    |
  (Edges)      | 3     | 1, 2       |
  |            | 4     | 2, 3       |
  |            | 5     | 3, 1       |
@@ -194,11 +200,11 @@ The side numbering for a pyramidal element type is shown below.
 
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
-PYRAMID|1 | 1, 2, 5 |
-|       | 2 | 2, 3, 5 |
-|       | 3 | 3, 4, 5 |
-|       | 4 | 4, 1, 5 |
-|       | 5 | 1, 4, 3, 2 |
+PYRAMID| 1 | 1, 2, 5 |
+|      | 2 | 2, 3, 5 |
+|      | 3 | 3, 4, 5 |
+|      | 4 | 4, 1, 5 |
+|      | 5 | 1, 4, 3, 2 |
 
 ![Pyramid-Number](packages/seacas/doc-source/exodus/topology/pyramid-face-numbering.png)
 
@@ -222,10 +228,10 @@ occurred.
  Element Type |Side \#|Node Order  | Patran Side |
 --------------|:-----:|:----------:|:-----------:|
 WEDGE         | 1     | 1, 2, 5, 4 | 3           |
-|              | 2     | 2, 3, 6, 5 | 5           |
-|              | 3     | 1, 4, 6, 3 | 4           |
-|              | 4     | 1, 3, 2    | 1           |
-|              | 5     | 4, 5, 6    | 2           |
+|             | 2     | 2, 3, 6, 5 | 5           |
+|             | 3     | 1, 4, 6, 3 | 4           |
+|             | 4     | 1, 3, 2    | 1           |
+|             | 5     | 4, 5, 6    | 2           |
 
 ![Wedge-Number](packages/seacas/doc-source/exodus/topology/wedge-face-numbering.png)
 
@@ -241,10 +247,10 @@ The side numbering for a hexahedral element type is shown below.
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
 HEX           | 1     | 1, 2, 6, 5 |
-|              | 2     | 2, 3, 7, 6 |
-|              | 3     | 3, 4, 8, 7 |
-|              | 4     | 1, 5, 8, 4 |
-|              | 5     | 1, 4, 3, 2 |
-|              | 6     | 5, 6, 7, 8 |
+|             | 2     | 2, 3, 7, 6 |
+|             | 3     | 3, 4, 8, 7 |
+|             | 4     | 1, 5, 8, 4 |
+|             | 5     | 1, 4, 3, 2 |
+|             | 6     | 5, 6, 7, 8 |
 
 ![Hex-Number](packages/seacas/doc-source/exodus/topology/hex-face-numbering.png)
