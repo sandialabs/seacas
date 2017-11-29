@@ -54,7 +54,9 @@ library, the IOSS library, nem_slice, and nem_spread.
         |      |       |           |    |
  pyramid5 | X  |    X  |    X      |  X |
  pyramid13| X  |    X  |    X      |  X |
- pyramid14| X  |    X  |           |    |
+ pyramid14| X  |    X  |    X      |  X |
+ pyramid18| X  |    X  |    X      |  X |
+ pyramid19| X  |    X  |    X      |  X |
           |    |       |           |    |
  wedge6 |  X   |    X  |    X      |  X |
  wedge15|  X   |    X  |    X      |  X |
@@ -80,7 +82,7 @@ will not:
  * convert side set nodes to sides or vice versa.
 
 If none of the above functions are required, then an element unknown
-to the exodus library can can be written and read to/from an exodus
+to the exodus library can can be written to and read from an exodus
 file with no loss of information.
 
     
