@@ -17,16 +17,16 @@ library, the IOSS library, nem_slice, and nem_spread.
 
  Element|Exodus| IOSS  | nem_slice | nem_spread |
  -------|:----:|:-----:|:---------:|:----------:|
- circle |  X   |    X  |    X      |  X |
- sphere |  X   |    X  |    X      |  X |
--       |      |       |           |    |
- beam2  |  X   |    X  |    X      |  X |
- beam3  |  X   |    X  |    X      |  X |
--       |      |       |           |    |
+ |circle |  X   |    X  |    X      |  X |
+ |sphere |  X   |    X  |    X      |  X |
+ |      |      |       |           |    |
+ |beam2  |  X   |    X  |    X      |  X |
+ |beam3  |  X   |    X  |    X      |  X |
+ |      |      |       |           |    |
  quad4  |  X   |    X  |    X      |  X |
  quad5  |  X   |       |           |    |
  quad9  |  X   |    X  |    X      |  X |
--       |      |       |           |    |
+ |      |      |       |           |    |
  tri3 (2D)|  X   |    X  |    X      |  X |
  tri4 (2D)|  X   |    X  |    X      |  X |
  tri6 (2D)|  X   |    X  |    X      |  X |
