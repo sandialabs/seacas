@@ -16,7 +16,7 @@ The following table shows the element types supported in the Exodus
 library, the IOSS library, nem_slice, and nem_spread.
 
  Element|Exodus| IOSS  | nem_slice | nem_spread |
- -------|------|-------|-----------|------------|
+ -------|:----:|:-----:|:---------:|:----------:|
  circle |  X   |    X  |    X      |  X |
  sphere |  X   |    X  |    X      |  X |
         |      |       |           |    |
@@ -59,6 +59,7 @@ library, the IOSS library, nem_slice, and nem_spread.
  pyramid19| X  |    X  |    X      |  X |
           |    |       |           |    |
  wedge6 |  X   |    X  |    X      |  X |
+ wedge12|  X   |    X  |           |    |
  wedge15|  X   |    X  |    X      |  X |
  wedge16|  X   |    X  |    X      |  X |
  wedge18|  X   |    X  |           |    |
@@ -67,6 +68,7 @@ library, the IOSS library, nem_slice, and nem_spread.
         |      |       |           |    |
  hex8   |  X   |    X  |    X      |  X |
  hex9   |  X   |       |           |    |
+ hex16  |  X   |    X  |           |    |
  hex20  |  X   |    X  |    X      |  X |
  hex27  |  X   |    X  |    X      |  X |
 
@@ -119,13 +121,13 @@ These are usable in 2D or 3D meshes.  In a 3D mesh, they would represent triangu
 The side numbering for a tri element is shown below.  For a triangular shell, there are five sides. Side 1 is the "top" of the triangle given by nodes 1-2-3 and side 2 is the "bottom" of the triangle given by nodes 3-2-1.  Sides 3,4,5 correspond to sides 1,2,3 of the 2D triangle.
 
  Element Type |Side \#|Node Order  |
- -------------|-------|------------|
+ -------------|:-----:|:----------:|
  TRI (2D)     | 1     | 1, 2       |
               | 2     | 2, 3       |
               | 3     | 3, 1       |
 
  Element Type |Side \#|Node Order  |
---------------|-------|------------|
+--------------|:-----:|:----------:|
  TRI (3D)     | 1     | 1, 2, 3    |
               | 2     | 1, 3, 2    |
  (Edges)      | 3     | 1, 2       |
@@ -145,7 +147,7 @@ These are usable in 2D or 3D meshes.  In a 3D mesh, they represent a quadrilater
 The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell element are shown below.
 
  Element Type |Side \#|Node Order  |
- -------------|-------|------------|
+ -------------|:-----:|:----------:|
  QUAD (2D)    | 1     | 1, 2       |
               | 2     | 2, 3       |
               | 3     | 3, 4       |
@@ -154,7 +156,7 @@ The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell e
 ![Quad-Number](packages/seacas/doc-source/exodus/topology/quad-face-numbering.png)
 
  Element Type |Side \#|Node Order  |
---------------|-------|------------|
+--------------|:-----:|:----------:|
  SHELL (3D)   | 1     | 1, 2, 3, 4 |
               | 2     | 1, 4, 3, 2 |
  (Edges)      | 3     | 1, 2       |
@@ -177,7 +179,7 @@ The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell e
 The side numbering for a tetrahedral element type is shown below.
 
  Element Type |Side \#|Node Order  |
---------------|-------|------------|
+--------------|:-----:|:----------:|
 TETRA         | 1     | 1, 2, 4    |
               | 2     | 2, 3, 4    |
               | 3     | 1, 4, 3    |
@@ -191,7 +193,7 @@ TETRA         | 1     | 1, 2, 4    |
 The side numbering for a pyramidal element type is shown below.
 
  Element Type |Side \#|Node Order  |
---------------|-------|------------|
+--------------|:-----:|:----------:|
 PYRAMID|1 | 1, 2, 5 |
        | 2 | 2, 3, 5 |
        | 3 | 3, 4, 5 |
@@ -203,6 +205,7 @@ PYRAMID|1 | 1, 2, 5 |
 
 ### Wedge Element Types
 ![Wedge6](packages/seacas/doc-source/exodus/topology/wedge06.png)
+![Wedge12](packages/seacas/doc-source/exodus/topology/wedge12.png)
 ![Wedge15](packages/seacas/doc-source/exodus/topology/wedge15.png)
 ![Wedge16](packages/seacas/doc-source/exodus/topology/wedge16.png)
 ![Wedge20](packages/seacas/doc-source/exodus/topology/wedge20.png)
@@ -217,7 +220,7 @@ occurred.
 
 
  Element Type |Side \#|Node Order  | Patran Side |
---------------|-------|------------|-------------|
+--------------|:-----:|:----------:|:-----------:|
 WEDGE         | 1     | 1, 2, 5, 4 | 3           |
               | 2     | 2, 3, 6, 5 | 5           |
               | 3     | 1, 4, 6, 3 | 4           |
@@ -229,13 +232,14 @@ WEDGE         | 1     | 1, 2, 5, 4 | 3           |
 ### Hexahedral Element Types
 ![Hex8](packages/seacas/doc-source/exodus/topology/hex08.png)
 ![Hex9](packages/seacas/doc-source/exodus/topology/hex09.png)
+![Hex16](packages/seacas/doc-source/exodus/topology/hex16.png)
 ![Hex20](packages/seacas/doc-source/exodus/topology/hex20.png)
 ![Hex27](packages/seacas/doc-source/exodus/topology/hex27.png)
 
 The side numbering for a hexahedral element type is shown below.
 
  Element Type |Side \#|Node Order  |
---------------|-------|------------|
+--------------|:-----:|:----------:|
 HEX           | 1     | 1, 2, 6, 5 |
               | 2     | 2, 3, 7, 6 |
               | 3     | 3, 4, 8, 7 |
@@ -244,4 +248,3 @@ HEX           | 1     | 1, 2, 6, 5 |
               | 6     | 5, 6, 7, 8 |
 
 ![Hex-Number](packages/seacas/doc-source/exodus/topology/hex-face-numbering.png)
-`
