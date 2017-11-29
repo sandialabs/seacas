@@ -15,62 +15,62 @@
 The following table shows the element types supported in the Exodus
 library, the IOSS library, nem_slice, and nem_spread.
 
- Element|Nodes|Exodus| IOSS  | nem_slice | nem_spread |
- -------|:---:|:----:|:-----:|:---------:|:----------:|
- |circle|  1  |  X   |    X  |    X      |  X |
- |sphere|  1  |  X   |    X  |    X      |  X |
- |      |     |      |       |           |    |
- |beam  |  2  |  X   |    X  |    X      |  X |
- |beam  |  3  |  X   |    X  |    X      |  X |
- |      |     |      |       |           |    |
- quad   |  4  |  X   |    X  |    X      |  X |
- quad   |  5  |  X   |       |           |    |
- quad   |  9  |  X   |    X  |    X      |  X |
- |      |     |      |       |           |    |
- tri (2D)| 3  |  X   |    X  |    X      |  X |
- tri (2D)| 4  |  X   |    X  |    X      |  X |
- tri (2D)| 6  |  X   |    X  |    X      |  X |
- tri (2D)| 7  |  X   |    X  |    X      |  X |
- |        |   |      |       |           |    |
- tri (3D)| 3  |  X   |    X  |    X      |  X |
- tri (3D)| 4  |  X   |    X  |    X      |  X |
- tri (3D)| 6  |  X   |    X  |    X      |  X |
- tri (3D)| 7  |  X   |    X  |    X      |  X |
- |       |    |      |       |           |    |
- shell   |  2 |  X   |    X  |    X      |  X |
- shell   |  3 |      |    X  |    X      |  X |
- shell   |  4 |  X   |    X  |    X      |  X |
- shell   |  8 |  X   |    X  |    X      |  X |
- shell   |  9 |  X   |    X  |    X      |  X |
- |       |    |      |       |           |    |
- tet     |  4 |  X   |    X  |    X      |  X |
- tet     |  5 |  X   |       |           |    |
- tet     |  7 |      |    X  |           |    |
- tet     |  8 |  X   |    X  |    X      |  X |
- tet     | 10 |  X   |    X  |    X      |  X |
- tet     | 11 |  X   |    X  |           |    |
- tet     | 14 |  X   |    X  |    X      |  X |
- tet     | 15 |  X   |    X  |    X      |  X |
- |       |    |      |       |           |    |
- pyramid |  5 |  X   |    X  |    X      |  X |
- pyramid | 13 |  X   |    X  |    X      |  X |
- pyramid | 14 |  X   |    X  |    X      |  X |
- pyramid | 18 |  X   |    X  |    X      |  X |
- pyramid | 19 |  X   |    X  |    X      |  X |
- |       |    |      |       |           |    |
- wedge   |  6 |  X   |    X  |    X      |  X |
- wedge   | 12 |  X   |    X  |           |    |
- wedge   | 15 |  X   |    X  |    X      |  X |
- wedge   | 16 |  X   |    X  |    X      |  X |
- wedge   | 18 |  X   |    X  |           |    |
- wedge   | 20 |  X   |    X  |    X      |  X |
- wedge   | 21 |  X   |    X  |    X      |  X |
- |       |    |      |       |           |    |
- hex     | 8  |  X   |    X  |    X      |  X |
- hex     | 9  |  X   |       |           |    |
- hex     | 16 |  X   |    X  |           |    |
- hex     | 20 |  X   |    X  |    X      |  X |
- hex     | 27 |  X   |    X  |    X      |  X |
+ Element |Nodes|Exodus| IOSS  | nem_slice | nem_spread |
+ --------|:---:|:----:|:-----:|:---------:|:----------:|
+ |circle |  1  |  X   |    X  |    X      |  X |
+ |sphere |  1  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ |beam   |  2  |  X   |    X  |    X      |  X |
+ |       |  3  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ quad    |  4  |  X   |    X  |    X      |  X |
+ |       |  5  |  X   |       |           |    |
+ |       |  9  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ tri (2D)|  3  |  X   |    X  |    X      |  X |
+ |       |  4  |  X   |    X  |    X      |  X |
+ |       |  6  |  X   |    X  |    X      |  X |
+ |       |  7  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ tri (3D)|  3  |  X   |    X  |    X      |  X |
+ |       |  4  |  X   |    X  |    X      |  X |
+ |       |  6  |  X   |    X  |    X      |  X |
+ |       |  7  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ shell   |  2  |  X   |    X  |    X      |  X |
+ |       |  3  |      |    X  |    X      |  X |
+ |       |  4  |  X   |    X  |    X      |  X |
+ |       |  8  |  X   |    X  |    X      |  X |
+ |       |  9  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ tet     |  4  |  X   |    X  |    X      |  X |
+ |       |  5  |  X   |       |           |    |
+ |       |  7  |      |    X  |           |    |
+ |       |  8  |  X   |    X  |    X      |  X |
+ |       | 10  |  X   |    X  |    X      |  X |
+ |       | 11  |  X   |    X  |           |    |
+ |       | 14  |  X   |    X  |    X      |  X |
+ |       | 15  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ pyramid |  5  |  X   |    X  |    X      |  X |
+ |       | 13  |  X   |    X  |    X      |  X |
+ |       | 14  |  X   |    X  |    X      |  X |
+ |       | 18  |  X   |    X  |    X      |  X |
+ |       | 19  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ wedge   |  6  |  X   |    X  |    X      |  X |
+ |       | 12  |  X   |    X  |    X      |  X |
+ |       | 15  |  X   |    X  |    X      |  X |
+ |       | 16  |  X   |    X  |    X      |  X |
+ |       | 18  |  X   |    X  |           |    |
+ |       | 20  |  X   |    X  |    X      |  X |
+ |       | 21  |  X   |    X  |    X      |  X |
+ |       |     |      |       |           |    |
+ hex     | 8   |  X   |    X  |    X      |  X |
+ |       | 9   |  X   |       |           |    |
+ |       | 16  |  X   |    X  |    X      |  X |
+ |       | 20  |  X   |    X  |    X      |  X |
+ |       | 27  |  X   |    X  |    X      |  X |   
 
 Only the base topology name is required for the element type. For example, all 
 elements of a `hex` toplogy can be referred to by the name `hex` no
