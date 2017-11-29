@@ -1753,8 +1753,8 @@ int ss_to_node_list(const E_Type etype,          /* The element type */
       {1, 2, 5, 6, 11, 10, 15, 0, 0}, // side 1 (tri)
       {2, 3, 5, 7, 12, 11, 16, 0, 0}, // side 2 (tri)
       {3, 4, 5, 8, 13, 12, 17, 0, 0}, // side 3 (tri)
-      {1, 5, 4, 10, 13, 9, 18, 0, 0}, // side 4 (tri)
-      {1, 4, 3, 2, 9, 8, 7, 6, 15}    // side 5 (quad)
+      {4, 1, 5, 9, 10, 13, 18, 0, 0}, // side 4 (tri)
+      {1, 4, 3, 2, 9, 8, 7, 6, 14}    // side 5 (quad)
   };
 
   static int bar_table[1][3] = {{1, 2, 3}};
