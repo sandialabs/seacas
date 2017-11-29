@@ -31,18 +31,18 @@ library, the IOSS library, nem_slice, and nem_spread.
  tri4 (2D)|  X   |    X  |    X      |  X |
  tri6 (2D)|  X   |    X  |    X      |  X |
  tri7 (2D)|  X   |    X  |    X      |  X |
-        |      |       |           |    |
+ |        |      |       |           |    |
  tri3 (3D)|  X   |    X  |    X      |  X |
  tri4 (3D)|  X   |    X  |    X      |  X |
  tri6 (3D)|  X   |    X  |    X      |  X |
  tri7 (3D)|  X   |    X  |    X      |  X |
-        |      |       |           |    |
+ |       |      |       |           |    |
  shell2 |  X   |    X  |    X      |  X |
  shell3 |      |    X  |    X      |  X |
  shell4 |  X   |    X  |    X      |  X |
  shell8 |  X   |    X  |    X      |  X |
  shell9 |  X   |    X  |    X      |  X |
-        |      |       |           |    |
+ |       |      |       |           |    |
  tet4   |  X   |    X  |    X      |  X |
  tet5   |  X   |       |           |    |
  tet7   |      |    X  |           |    |
@@ -51,13 +51,13 @@ library, the IOSS library, nem_slice, and nem_spread.
  tet11  |  X   |    X  |           |    |
  tet14  |  X   |    X  |    X      |  X |
  tet15  |  X   |    X  |    X      |  X |
-        |      |       |           |    |
+ |       |      |       |           |    |
  pyramid5 | X  |    X  |    X      |  X |
  pyramid13| X  |    X  |    X      |  X |
  pyramid14| X  |    X  |    X      |  X |
  pyramid18| X  |    X  |    X      |  X |
  pyramid19| X  |    X  |    X      |  X |
-          |    |       |           |    |
+ |         |    |       |           |    |
  wedge6 |  X   |    X  |    X      |  X |
  wedge12|  X   |    X  |           |    |
  wedge15|  X   |    X  |    X      |  X |
@@ -65,7 +65,7 @@ library, the IOSS library, nem_slice, and nem_spread.
  wedge18|  X   |    X  |           |    |
  wedge20|  X   |    X  |    X      |  X |
  wedge21|  X   |    X  |    X      |  X |
-        |      |       |           |    |
+ |       |      |       |           |    |
  hex8   |  X   |    X  |    X      |  X |
  hex9   |  X   |       |           |    |
  hex16  |  X   |    X  |           |    |
@@ -123,16 +123,16 @@ The side numbering for a tri element is shown below.  For a triangular shell, th
  Element Type |Side \#|Node Order  |
  -------------|:-----:|:----------:|
  TRI (2D)     | 1     | 1, 2       |
-              | 2     | 2, 3       |
-              | 3     | 3, 1       |
+ |            | 2     | 2, 3       |
+ |            | 3     | 3, 1       |
 
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
  TRI (3D)     | 1     | 1, 2, 3    |
-              | 2     | 1, 3, 2    |
+ }            | 2     | 1, 3, 2    |
  (Edges)      | 3     | 1, 2       |
-              | 4     | 2, 3       |
-              | 5     | 3, 1       |
+ |            | 4     | 2, 3       |
+ |            | 5     | 3, 1       |
 
 ![Tri-Number](packages/seacas/doc-source/exodus/topology/triangle-face-numbering.png)
 
@@ -149,20 +149,20 @@ The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell e
  Element Type |Side \#|Node Order  |
  -------------|:-----:|:----------:|
  QUAD (2D)    | 1     | 1, 2       |
-              | 2     | 2, 3       |
-              | 3     | 3, 4       |
-              | 4     | 4, 1       |
+ |            | 2     | 2, 3       |
+ |            | 3     | 3, 4       |
+ |            | 4     | 4, 1       |
 
 ![Quad-Number](packages/seacas/doc-source/exodus/topology/quad-face-numbering.png)
 
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
  SHELL (3D)   | 1     | 1, 2, 3, 4 |
-              | 2     | 1, 4, 3, 2 |
+ |            | 2     | 1, 4, 3, 2 |
  (Edges)      | 3     | 1, 2       |
-              | 4     | 2, 3       |
-              | 5     | 3, 4       |
-              | 6     | 4, 1       |
+ |            | 4     | 2, 3       |
+ |            | 5     | 3, 4       |
+ |             | 6     | 4, 1       |
 
 ![Shell-Number](packages/seacas/doc-source/exodus/topology/shell-face-numbering.png)
 
@@ -181,9 +181,9 @@ The side numbering for a tetrahedral element type is shown below.
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
 TETRA         | 1     | 1, 2, 4    |
-              | 2     | 2, 3, 4    |
-              | 3     | 1, 4, 3    |
-              | 4     | 1, 3, 2    |
+|	      | 2     | 2, 3, 4    |
+|             | 3     | 1, 4, 3    |
+|             | 4     | 1, 3, 2    |
 
 ![Tet-Number](packages/seacas/doc-source/exodus/topology/tet-face-numbering.png)
 
@@ -195,10 +195,10 @@ The side numbering for a pyramidal element type is shown below.
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
 PYRAMID|1 | 1, 2, 5 |
-       | 2 | 2, 3, 5 |
-       | 3 | 3, 4, 5 |
-       | 4 | 4, 1, 5 |
-       | 5 | 1, 4, 3, 2 |
+|       | 2 | 2, 3, 5 |
+|       | 3 | 3, 4, 5 |
+|       | 4 | 4, 1, 5 |
+|       | 5 | 1, 4, 3, 2 |
 
 ![Pyramid-Number](packages/seacas/doc-source/exodus/topology/pyramid-face-numbering.png)
 
@@ -222,10 +222,10 @@ occurred.
  Element Type |Side \#|Node Order  | Patran Side |
 --------------|:-----:|:----------:|:-----------:|
 WEDGE         | 1     | 1, 2, 5, 4 | 3           |
-              | 2     | 2, 3, 6, 5 | 5           |
-              | 3     | 1, 4, 6, 3 | 4           |
-              | 4     | 1, 3, 2    | 1           |
-              | 5     | 4, 5, 6    | 2           |
+|              | 2     | 2, 3, 6, 5 | 5           |
+|              | 3     | 1, 4, 6, 3 | 4           |
+|              | 4     | 1, 3, 2    | 1           |
+|              | 5     | 4, 5, 6    | 2           |
 
 ![Wedge-Number](packages/seacas/doc-source/exodus/topology/wedge-face-numbering.png)
 
@@ -241,10 +241,10 @@ The side numbering for a hexahedral element type is shown below.
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
 HEX           | 1     | 1, 2, 6, 5 |
-              | 2     | 2, 3, 7, 6 |
-              | 3     | 3, 4, 8, 7 |
-              | 4     | 1, 5, 8, 4 |
-              | 5     | 1, 4, 3, 2 |
-              | 6     | 5, 6, 7, 8 |
+|              | 2     | 2, 3, 7, 6 |
+|              | 3     | 3, 4, 8, 7 |
+|              | 4     | 1, 5, 8, 4 |
+|              | 5     | 1, 4, 3, 2 |
+|              | 6     | 5, 6, 7, 8 |
 
 ![Hex-Number](packages/seacas/doc-source/exodus/topology/hex-face-numbering.png)
