@@ -133,6 +133,7 @@ rm -f CMakeCache.txt
 
 ###------------------------------------------------------------------------
 cmake  \
+-D SEACASProj_VERBOSE_CONFIGURE=ON \
 -D CMAKE_CXX_COMPILER:FILEPATH=${CXX} \
 -D CMAKE_C_COMPILER:FILEPATH=${CC} \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
