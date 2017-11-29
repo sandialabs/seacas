@@ -84,6 +84,12 @@ ENDIF ()
 
 IF (TPL_ENABLE_Pthread)
    find_package(Threads REQUIRED)
+   if(THREADS_HAVE_PTHREAD_ARG)
+     MESSAGE(STATUS "have-pthread-arg is defined")
+   endif()
+   if(CMAKE_THREAD_LIBS_INIT)
+     MESSAGE(STATUS "CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT}")
+   endif()
 ENDIF()
 
 # C) Add the libraries, tests, and examples
