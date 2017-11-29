@@ -20,7 +20,7 @@ wget https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-${hdf_version}.tar
 tar -jxf hdf5-${hdf_version}.tar.bz2
 cd hdf5-${hdf_version}
 MPI=${MPI} bash ../runconfigure.sh
-make && ${SUDO} make install
+make -j2 && ${SUDO} make install
 
 # =================== INSTALL PNETCDF (if mpi) ===============
 if [ "$MPI" == "ON" ]
@@ -35,7 +35,7 @@ wget http://cucis.ece.northwestern.edu/projects/PnetCDF/Release/parallel-netcdf-
 tar -xzf parallel-netcdf-${pnet_version}.tar.gz
 cd parallel-netcdf-${pnet_version}
 bash ../runconfigure.sh
-make && ${SUDO} make install
+make -j2 && ${SUDO} make install
 fi
 
 # =================== INSTALL NETCDF ===============
@@ -46,7 +46,7 @@ cd netcdf-c
 mkdir build
 cd build
 MPI=${MPI} bash ../../runcmake.sh
-make && ${SUDO} make install
+make -j2 && ${SUDO} make install
 
 # =================== INSTALL CGNS ===============
 if [ "$CGNS" == "ON" ]
@@ -59,7 +59,7 @@ cd CGNS
 mkdir build
 cd build
 MPI=${MPI} bash ../../runconfigure.sh
-make && ${SUDO} make install
+make -j2 && ${SUDO} make install
 
 fi
 
@@ -73,7 +73,7 @@ git clone https://github.com/tbeu/matio.git
 cd matio
 ./autogen.sh
 bash ../runconfigure.sh
-make && ${SUDO} make install
+make -j2 && ${SUDO} make install
 
 fi
 

@@ -329,12 +329,26 @@ int ex_int_get_block_param(int exoid, ex_entity_id id, int ndim,
       elem_blk_parm->num_nodes_per_side[3] = 3;
       elem_blk_parm->num_nodes_per_side[4] = 4;
     }
-    else if (elem_blk_parm->num_nodes_per_elem == 13 || elem_blk_parm->num_nodes_per_elem == 14) {
+    else if (elem_blk_parm->num_nodes_per_elem == 13) {
       elem_blk_parm->num_nodes_per_side[0] = 6;
       elem_blk_parm->num_nodes_per_side[1] = 6;
       elem_blk_parm->num_nodes_per_side[2] = 6;
       elem_blk_parm->num_nodes_per_side[3] = 6;
       elem_blk_parm->num_nodes_per_side[4] = 8;
+    }
+    else if (elem_blk_parm->num_nodes_per_elem == 14) {
+      elem_blk_parm->num_nodes_per_side[0] = 6;
+      elem_blk_parm->num_nodes_per_side[1] = 6;
+      elem_blk_parm->num_nodes_per_side[2] = 6;
+      elem_blk_parm->num_nodes_per_side[3] = 6;
+      elem_blk_parm->num_nodes_per_side[4] = 9;
+    }
+    else if (elem_blk_parm->num_nodes_per_elem == 18 || elem_blk_parm->num_nodes_per_elem == 19) {
+      elem_blk_parm->num_nodes_per_side[0] = 7;
+      elem_blk_parm->num_nodes_per_side[1] = 7;
+      elem_blk_parm->num_nodes_per_side[2] = 7;
+      elem_blk_parm->num_nodes_per_side[3] = 7;
+      elem_blk_parm->num_nodes_per_side[4] = 9;
     }
     else {
       EX_FUNC_LEAVE(el_node_count_error(*elem_blk_parm));

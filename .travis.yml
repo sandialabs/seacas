@@ -21,8 +21,6 @@ matrix:
     - compiler: gcc
       env: MPI=ON
     - compiler: clang
-      env: THREADSAFE=ON
-    - compiler: clang
       env: MPI=ON THREADSAFE=ON
     - compiler: gcc
       env: KOKKOS=ON
