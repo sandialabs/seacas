@@ -82,16 +82,6 @@ IF (SEACASIoss_ENABLE_THREADSAFE AND NOT TPL_ENABLE_Pthread)
   MESSAGE(FATAL_ERROR "You set SEACASIoss_ENABLE_THREADSAFE=ON, but TriBITs support for Pthread(s) is not enabled (TPL_ENABLE_Pthread=OFF).  This is not allowed.  Please enable Pthreads before attempting to enable the thread-safe IOSS support.")
 ENDIF ()
 
-IF (TPL_ENABLE_Pthread)
-   find_package(Threads REQUIRED)
-   if(THREADS_HAVE_PTHREAD_ARG)
-     MESSAGE(STATUS "have-pthread-arg is defined")
-   endif()
-   if(CMAKE_THREAD_LIBS_INIT)
-     MESSAGE(STATUS "CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT}")
-   endif()
-ENDIF()
-
 # C) Add the libraries, tests, and examples
 #- Add executable that will be installed in bin dir...
 #
