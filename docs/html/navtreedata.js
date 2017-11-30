@@ -25,6 +25,22 @@ var NAVTREE =
       [ "Wedge Element Types", "element_types.html#wedge", null ],
       [ "Hexahedral Element Types", "element_types.html#hex", null ]
     ] ],
+    [ "Exodus Formats", "exodus_formats.html", [
+      [ "Large Model (64-bit offset)", "exodus_formats.html#large", null ],
+      [ "Normal, or Classic", "exodus_formats.html#normal", null ],
+      [ "Netcdf-4 Classic", "exodus_formats.html#nc4", null ],
+      [ "Netcdf-4 Non-Classic", "exodus_formats.html#nc4nc", null ],
+      [ "CDF5", "exodus_formats.html#cdf5", null ]
+    ] ],
+    [ "Mapping of nemesis API functions to Exodus API functions", "nemesis-mapping.html", [
+      [ "Initial Information Routines", "nemesis-mapping.html#initial", null ],
+      [ "Loadbalance Parameter Routines", "nemesis-mapping.html#lb", null ],
+      [ "Nodeset, Sideset & Element Block Global Parameter Routines", "nemesis-mapping.html#param", null ],
+      [ "Nodeset, Sideset & Element Block Subset Routines", "nemesis-mapping.html#subset", null ],
+      [ "Variable Routines", "nemesis-mapping.html#variable", null ],
+      [ "Number Map Routines", "nemesis-mapping.html#map", null ],
+      [ "Communications Maps Routines", "nemesis-mapping.html#comm", null ]
+    ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Undocumented", "undoc.html", null ],
     [ "Modules", "modules.html", "modules" ],
@@ -60,8 +76,8 @@ var NAVTREEINDEX =
 "exo__jack_8c.html#aff280e28a5ac453ac7eb9ab4f9cf5a5c",
 "exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca079cdef781a8514d65c9427ac7786d82",
 "exodusII__int_8h.html#a5f1ca6f5cacf9121350ccd385d1c6acd",
-"globals_func_p.html",
-"pages.html"
+"globals_func_g.html",
+"index.html#int64"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
