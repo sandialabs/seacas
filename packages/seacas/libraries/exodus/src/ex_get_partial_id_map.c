@@ -119,7 +119,10 @@ int ex_get_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
 
   start[0] = start_entity_num - 1;
   count[0] = num_entities;
-
+  if (count[0] == 0) {
+    start[0] = 0;
+  }
+  
   /* read in the id map  */
   if (ex_int64_status(exoid) & EX_MAPS_INT64_API) {
     status = nc_get_vara_longlong(exoid, mapid, start, count, map);
