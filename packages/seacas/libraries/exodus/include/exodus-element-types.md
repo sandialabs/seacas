@@ -1,4 +1,4 @@
-\page types Exodus Element Types
+\page element_types Exodus Element Types
 
 \tableofcontents
 
