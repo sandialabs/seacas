@@ -1,1 +1,1 @@
-See packages/seacas/src/exodus/include/exodus-element-types.md
+See [Exodus Element Types] (packages/seacas/libraries/exodus/include/exodus-element-types.md)
