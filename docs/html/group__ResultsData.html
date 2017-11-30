@@ -1555,10 +1555,10 @@ Functions</h2></td></tr>
 <p>writes the values of a single variable for a partial block at one time step to the database; assume the first time step and variable index are 1 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
-    <tr><td class="paramname">time_step</td><td>time step number </td></tr>
+    <tr><td class="paramname">time_step</td><td>time step number (1-based) </td></tr>
     <tr><td class="paramname">var_type</td><td>type (edge block, face block, edge set, ... ) </td></tr>
-    <tr><td class="paramname">var_index</td><td>element variable index </td></tr>
-    <tr><td class="paramname">obj_id</td><td>element block id </td></tr>
+    <tr><td class="paramname">var_index</td><td>entity variable index (1-based) </td></tr>
+    <tr><td class="paramname">obj_id</td><td>entity id </td></tr>
     <tr><td class="paramname">start_index</td><td>index of first entity in block to write (1-based) </td></tr>
     <tr><td class="paramname">num_entities</td><td>number of entries in this block/set </td></tr>
     <tr><td class="paramname">var_vals</td><td>the values to be written </td></tr>

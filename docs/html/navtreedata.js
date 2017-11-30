@@ -13,6 +13,18 @@ var NAVTREE =
       ] ],
       [ "Options (Compression, Name Length, File Type)", "index.html#Database", null ]
     ] ],
+    [ "Exodus Element Types", "types.html", [
+      [ "Element Types", "types.html#types", null ],
+      [ "Exodus Node Ordering Convention", "types.html#ordering", null ],
+      [ "Circle and Sphere Element Types", "types.html#circle", null ],
+      [ "Bar, Truss, Beam Element Types", "types.html#bar", null ],
+      [ "Triangular Element Types", "types.html#tri", null ],
+      [ "Quadrilateral Element Types", "types.html#quad", null ],
+      [ "Tetrahedral Element Types", "types.html#tet", null ],
+      [ "Pyramidal Element Types", "types.html#pyr", null ],
+      [ "Wedge Element Types", "types.html#wedge", null ],
+      [ "Hexahedral Element Types", "types.html#hex", null ]
+    ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Undocumented", "undoc.html", null ],
     [ "Modules", "modules.html", "modules" ],

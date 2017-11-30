@@ -122,8 +122,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aaa898869534e6938d6314ffd57663c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9586fd428d22a560e93a42a6c7813d77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a9586fd428d22a560e93a42a6c7813d77">attribute_reduction</a> (int length, char buffer[]) const</td></tr>
 <tr class="separator:a9586fd428d22a560e93a42a6c7813d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abed87b01bdfd223ba27a430f12e25d87"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#abed87b01bdfd223ba27a430f12e25d87">generate_guid</a> (size_t id) const</td></tr>
-<tr class="separator:abed87b01bdfd223ba27a430f12e25d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1873fe2e3b0b00be685bf0354b400103"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a1873fe2e3b0b00be685bf0354b400103">generate_guid</a> (size_t id, int rank=-1) const</td></tr>
+<tr class="separator:a1873fe2e3b0b00be685bf0354b400103"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a147cd6844f6459221bb5bb84109af46c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a147cd6844f6459221bb5bb84109af46c">memory_stats</a> (int64_t &amp;min, int64_t &amp;max, int64_t &amp;avg) const</td></tr>
 <tr class="separator:a147cd6844f6459221bb5bb84109af46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a8a9b80f8e2d0838c18925d19f87839"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIoss_1_1ParallelUtils.html#a9a8a9b80f8e2d0838c18925d19f87839">hwm_memory_stats</a> (int64_t &amp;min, int64_t &amp;max, int64_t &amp;avg) const</td></tr>
@@ -403,8 +403,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="abed87b01bdfd223ba27a430f12e25d87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abed87b01bdfd223ba27a430f12e25d87">&#9670;&nbsp;</a></span>generate_guid()</h2>
+<a id="a1873fe2e3b0b00be685bf0354b400103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1873fe2e3b0b00be685bf0354b400103">&#9670;&nbsp;</a></span>generate_guid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -413,12 +413,22 @@ template&lt;typename T &gt; </div>
           <td class="memname">int64_t Ioss::ParallelUtils::generate_guid </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>id</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Generate a "globally unique id" which is unique over all entities of a specific type over all processors. Used by some applications for uniquely identifying an entity. </p>
+<p>Generate a "globally unique id" which is unique over all entities of a specific type over all processors. Used by some applications for uniquely identifying an entity. If <code>rank</code> == -1, then use parallel_rank; otherwise use rank </p>
 
 </div>
 </div>
