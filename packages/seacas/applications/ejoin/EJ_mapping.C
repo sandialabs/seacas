@@ -317,27 +317,27 @@ void generate_element_ids(RegionVector &part_mesh, const std::vector<INT> &local
   // Instead, lets sort a vector containing pairs of <id, index> where
   // the index will always? increase for increasing part numbers...
   if (has_map) {
-  std::vector<std::pair<INT, INT>> index(global_element_map.size());
-  for (size_t i = 0; i < index.size(); i++) {
-    index[i] = std::make_pair(global_element_map[i], (INT)i);
-  }
-
-  std::sort(index.begin(), index.end());
-
-  INT max_id = index[index.size() - 1].first + 1;
-
-  size_t beg = 0;
-  for (size_t i = 1; i < index.size(); i++) {
-    if (index[beg].first == index[i].first) {
-      // Duplicate found... Assign it a new id greater than any
-      // existing id...  (What happens if we exceed INT_MAX?)
-      global_element_map[index[i].second] = max_id++;
-      // Keep 'beg' the same in case multiple duplicate of this value.
+    std::vector<std::pair<INT, INT>> index(global_element_map.size());
+    for (size_t i = 0; i < index.size(); i++) {
+      index[i] = std::make_pair(global_element_map[i], (INT)i);
     }
-    else {
-      beg = i;
+
+    std::sort(index.begin(), index.end());
+
+    INT max_id = index[index.size() - 1].first + 1;
+
+    size_t beg = 0;
+    for (size_t i = 1; i < index.size(); i++) {
+      if (index[beg].first == index[i].first) {
+        // Duplicate found... Assign it a new id greater than any
+        // existing id...  (What happens if we exceed INT_MAX?)
+        global_element_map[index[i].second] = max_id++;
+        // Keep 'beg' the same in case multiple duplicate of this value.
+      }
+      else {
+        beg = i;
+      }
     }
-  }
   }
   else {
     INT one = 1;

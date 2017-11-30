@@ -104,4 +104,5 @@ var menudata={children:[
 {text:"r",url:"globals_defs_r.html#index_r"},
 {text:"s",url:"globals_defs_s.html#index_s"},
 {text:"t",url:"globals_defs_t.html#index_t"},
-{text:"v",url:"globals_defs_v.html#index_v"}]}]}]}]}
+{text:"v",url:"globals_defs_v.html#index_v"}]}]}]},
+{text:"Examples",url:"examples.html"}]}

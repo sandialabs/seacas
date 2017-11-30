@@ -72,8 +72,8 @@ Ioss::NodeBlock::NodeBlock(Ioss::DatabaseIO *io_database, const std::string &my_
                          Ioss::Field::MESH, node_count));
 
   // Permit access 1-coordinate at a time
-  fields.add(Ioss::Field("mesh_model_coordinates_x", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::MESH,
-                         node_count));
+  fields.add(Ioss::Field("mesh_model_coordinates_x", Ioss::Field::REAL, IOSS_SCALAR(),
+                         Ioss::Field::MESH, node_count));
   if (degrees_of_freedom > 1) {
     fields.add(Ioss::Field("mesh_model_coordinates_y", Ioss::Field::REAL, IOSS_SCALAR(),
                            Ioss::Field::MESH, node_count));
@@ -94,8 +94,8 @@ Ioss::NodeBlock::NodeBlock(Ioss::DatabaseIO *io_database, const std::string &my_
   fields.add(
       Ioss::Field("implicit_ids", field_int_type(), IOSS_SCALAR(), Ioss::Field::MESH, node_count));
 
-  fields.add(
-      Ioss::Field("owning_processor", Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MESH, node_count));
+  fields.add(Ioss::Field("owning_processor", Ioss::Field::INT32, IOSS_SCALAR(), Ioss::Field::MESH,
+                         node_count));
 }
 
 Ioss::NodeBlock::~NodeBlock() = default;

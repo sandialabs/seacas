@@ -20,8 +20,6 @@ matrix:
       env: SANITIZER="-fsanitize=undefined -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF
     - compiler: gcc
       env: MPI=ON
-    - compiler: gcc
-      env: THREADSAFE=ON
     - compiler: clang
       env: MPI=ON THREADSAFE=ON
     - compiler: gcc

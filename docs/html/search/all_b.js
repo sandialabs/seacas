@@ -7,6 +7,7 @@ var searchData=
   ['ne_5fcheck_5ffile_5fversion',['ne_check_file_version',['../exodusII__int_8h.html#a5fc0f33c92c66e1814484732cf49e173',1,'ne_check_file_version(int neid):&#160;ex_ne_util.c'],['../ex__ne__util_8c.html#afc38e37ae28f3909fe08bc566ea3a662',1,'ne_check_file_version(int exoid):&#160;ex_ne_util.c']]],
   ['ne_5fid_5flkup',['ne_id_lkup',['../exodusII__int_8h.html#a2c69b0e0815ba6422012897d0a1adee8',1,'ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id):&#160;ex_ne_util.c'],['../ex__ne__util_8c.html#a2c69b0e0815ba6422012897d0a1adee8',1,'ne_id_lkup(int exoid, const char *ne_var_name, int64_t *idx, ex_entity_id ne_var_id):&#160;ex_ne_util.c']]],
   ['ne_5fret_5fstring',['ne_ret_string',['../ex__ne__util_8c.html#a65cf2d853fd81dda86ef0eb9ab83c6f5',1,'ex_ne_util.c']]],
+  ['nemesis_2dto_2dexodus_2dapi_2dmapping_2emd',['nemesis-to-exodus-api-mapping.md',['../nemesis-to-exodus-api-mapping_8md.html',1,'']]],
   ['nemesis_5fapi_5fversion',['NEMESIS_API_VERSION',['../exodusII_8h.html#a931e965a07b4cab183cd07a96a8026c8',1,'exodusII.h']]],
   ['nemesis_5fapi_5fversion_5fnodot',['NEMESIS_API_VERSION_NODOT',['../exodusII_8h.html#a291efdb1234ed9adc27df6e46384579a',1,'exodusII.h']]],
   ['nemesis_5ffile_5fversion',['NEMESIS_FILE_VERSION',['../exodusII_8h.html#a8c33048e27dc3baf49a0299e3df033b2',1,'exodusII.h']]],
