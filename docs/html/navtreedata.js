@@ -41,6 +41,9 @@ var NAVTREE =
       [ "Number Map Routines", "nemesis-mapping.html#map", null ],
       [ "Communications Maps Routines", "nemesis-mapping.html#comm", null ]
     ] ],
+    [ "Polyhedral Element Support", "polyhedra.html", [
+      [ "Storage of 3D arbitrary polyhedra elements in Exodus.", "polyhedra.html#poly", null ]
+    ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Undocumented", "undoc.html", null ],
     [ "Modules", "modules.html", "modules" ],
