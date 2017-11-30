@@ -125,6 +125,9 @@ int ex_get_partial_nodal_var_int(int exoid, int time_step, int nodal_var_index, 
 
     count[0] = 1;
     count[1] = num_nodes;
+    if (count[1] == 0) {
+      start[1] = 0;
+    }
   }
 
   if (ex_comp_ws(exoid) == 4) {
