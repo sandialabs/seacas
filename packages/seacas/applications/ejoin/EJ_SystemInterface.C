@@ -149,10 +149,11 @@ void SystemInterface::enroll_options()
       nullptr, "NONE");
 
   options_.enroll("ignore_element_ids", GetLongOption::NoValue,
-		  "Ignore the element id maps on the input database and just use a 1..#elements id map on output.\n"
-		  "\t\tMuch faster for large models if do not need specific element global ids",
-		  nullptr);
-		  
+                  "Ignore the element id maps on the input database and just use a 1..#elements id "
+                  "map on output.\n"
+                  "\t\tMuch faster for large models if do not need specific element global ids",
+                  nullptr);
+
   options_.enroll("netcdf4", GetLongOption::NoValue,
                   "Create output database using the HDF5-based "
                   "netcdf which allows for up to 2.1 GB "
@@ -162,9 +163,10 @@ void SystemInterface::enroll_options()
   options_.enroll("64-bit", GetLongOption::NoValue,
                   "True if forcing the use of 64-bit integers for the output file", nullptr);
 
-  options_.enroll("compress", GetLongOption::MandatoryValue,
-                  "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
-                  nullptr);
+  options_.enroll(
+      "compress", GetLongOption::MandatoryValue,
+      "Specify the hdf5 (netcdf4) compression level [0..9] to be used on the output file.",
+      nullptr);
 
   options_.enroll("disable_field_recognition", GetLongOption::NoValue,
                   "Do not try to combine scalar fields into higher-order fields such as\n"

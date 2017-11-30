@@ -87,6 +87,7 @@ namespace Excn {
     bool add_processor_id_field() const { return addProcessorId_; }
     bool sum_shared_nodes() const { return sumSharedNodes_; }
     bool use_netcdf4() const { return useNetcdf4_; }
+    void set_use_netcdf4() const { useNetcdf4_ = true; }
     bool append() const { return append_; }
     bool map_element_ids() const { return mapIds_; }
     bool omit_nodesets() const { return omitNodesets_; }
@@ -163,7 +164,7 @@ namespace Excn {
     bool         mapIds_{true};
     bool         omitNodesets_{false};
     bool         omitSidesets_{false};
-    bool         useNetcdf4_{false};
+    mutable bool useNetcdf4_{false};
     bool         append_{false};
     mutable bool intIs64Bit_{false};
     bool         subcycleJoin_{false};

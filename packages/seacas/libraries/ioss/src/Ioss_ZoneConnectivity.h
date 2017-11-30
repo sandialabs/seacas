@@ -117,15 +117,15 @@ namespace Ioss {
     // decomposition splits the connection.  In a serial run, they are the same.
     //
     // 1 of ijk should be the same for rangeBeg and rangeEnd defining a surface.
-    Ioss::IJK_t m_ownerRangeBeg{};      // ijk triplet defining beginning of range on this zone
-    Ioss::IJK_t m_ownerRangeEnd{};      // ijk triplet defining end of range on this zone
-    Ioss::IJK_t m_ownerOffset{};        // ijk triplet with offset of this zone.  Used to convert
+    Ioss::IJK_t m_ownerRangeBeg{}; // ijk triplet defining beginning of range on this zone
+    Ioss::IJK_t m_ownerRangeEnd{}; // ijk triplet defining end of range on this zone
+    Ioss::IJK_t m_ownerOffset{};   // ijk triplet with offset of this zone.  Used to convert
                                    // rangeBeg and rangeEnd global indices to local indices
     Ioss::IJK_t m_donorRangeBeg{}; // ijk triplet defining beginning of range on the connected zone
     Ioss::IJK_t m_donorRangeEnd{}; // ijk triplet defining end of range on the connected zone
     Ioss::IJK_t m_donorOffset{};   // ijk triplet with offset of the donor zone.  Used to convert
-                                 // donorRangeBeg and End global indices to local indices
-    
+                                   // donorRangeBeg and End global indices to local indices
+
     // NOTE: Shared nodes are "owned" by the zone with the lowest zone id.
     int    m_ownerZone{};        // "id" of zone that owns this connection
     int    m_donorZone{};        // "id" of zone that is donor (or other side) of this connection

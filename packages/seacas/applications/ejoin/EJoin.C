@@ -93,8 +93,7 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map,
-			   bool ignore_element_ids);
+                           const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
   void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
                       const std::vector<INT> &local_node_map);
@@ -136,6 +135,13 @@ namespace {
       }
     }
   }
+
+  struct my_numpunct : std::numpunct<char>
+  {
+  protected:
+    char        do_thousands_sep() const override { return ','; }
+    std::string do_grouping() const override { return "\3"; }
+  };
 } // namespace
 
 namespace {
@@ -161,7 +167,7 @@ std::string tsFormat = "[%H:%M:%S] ";
 // prototypes
 
 template <typename INT>
-int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT dummy);
+double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT dummy);
 
 unsigned int debug_level = 0;
 
@@ -171,11 +177,13 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
 #endif
 
+  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
+  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
+
 #if defined(__LIBCATAMOUNT__)
   setlinebuf(stderr);
 #endif
   try {
-    time_t begin_time = time(nullptr);
     SystemInterface::show_version();
     Ioss::Init::Initializer io;
 
@@ -260,19 +268,20 @@ int main(int argc, char *argv[])
     process_nset_omissions(part_mesh, interface.nset_omissions());
     process_sset_omissions(part_mesh, interface.sset_omissions());
 
+    double time = 0.0;
+
     if (int_byte_size == 4) {
-      ejoin(interface, part_mesh, 0);
+      time = ejoin(interface, part_mesh, 0);
     }
     else {
-      ejoin(interface, part_mesh, static_cast<int64_t>(0));
+      time = ejoin(interface, part_mesh, static_cast<int64_t>(0));
     }
 
     for (size_t p = 0; p < interface.inputFiles_.size(); p++) {
       delete part_mesh[p];
     }
 
-    time_t end_time = time(nullptr);
-    add_to_log(argv[0], static_cast<int>(end_time - begin_time));
+    add_to_log(argv[0], time);
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
@@ -286,8 +295,9 @@ int main(int argc, char *argv[])
 }
 
 template <typename INT>
-int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
+double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
 {
+  double begin      = Ioss::Utils::timer();
   size_t part_count = interface.inputFiles_.size();
   SMART_ASSERT(part_count == part_mesh.size());
 
@@ -441,7 +451,7 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
 
   output_nodeblock(output_region, part_mesh, local_node_map, global_node_map);
   output_elementblock(output_region, part_mesh, local_node_map, local_element_map,
-		      interface.ignore_element_ids());
+                      interface.ignore_element_ids());
   output_nodal_nodeset(output_region, part_mesh, interface, local_node_map);
 
   if (!interface.omit_nodesets()) {
@@ -529,6 +539,8 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   ts_max = ts_max < num_steps ? ts_max : num_steps;
 
   std::ios::fmtflags f(std::cout.flags());
+  double             ts_begin = Ioss::Utils::timer();
+  int                steps    = 0;
   for (int step = ts_min - 1; step < ts_max; step += ts_step) {
     int ostep = output_region.add_state(global_times[step]);
     output_region.begin_state(ostep);
@@ -536,7 +548,9 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
     std::cout << "\rWrote step " << std::setw(4) << step + 1 << "/" << global_times.size()
               << ", time " << std::scientific << std::setprecision(4) << global_times[step];
     output_region.end_state(ostep);
+    steps++;
   }
+  double end = Ioss::Utils::timer();
   std::cout << "\n";
   std::cout.flags(f);
   output_region.end_mode(Ioss::STATE_TRANSIENT);
@@ -548,7 +562,10 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   }
   output_region.output_summary(std::cout);
   std::cout << "******* END *******\n";
-  return (0);
+  std::cerr << "\nTotal Execution time     = " << end - begin << " seconds.\n";
+  std::cerr << "Transient Execution time = " << (end - ts_begin) / (double)(steps)
+            << " seconds / step.\n\n";
+  return (end - begin);
 }
 
 namespace {
@@ -846,8 +863,7 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map,
-			   bool ignore_element_ids)
+                           const std::vector<INT> &local_element_map, bool ignore_element_ids)
   {
 
     Ioss::ElementBlockContainer ebs = output_region.get_element_blocks();

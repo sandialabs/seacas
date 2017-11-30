@@ -31,11 +31,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Ioss_BoundingBox.h>  // for AxisAlignedBoundingBox
-#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_DatabaseIO.h>   // for DatabaseIO
 #include <Ioss_Field.h>        // for Field, etc
+#include <Ioss_FieldManager.h> // for FieldManager
 #include <Ioss_Hex8.h>
-#include <Ioss_Property.h>     // for Property
+#include <Ioss_Property.h> // for Property
 #include <Ioss_Region.h>
 #include <Ioss_SmartAssert.h>
 #include <Ioss_StructuredBlock.h>
@@ -161,8 +161,8 @@ namespace Ioss {
     else if (index_dim == 3) {
       vector_name = IOSS_VECTOR_3D();
     }
-    fields.add(
-        Ioss::Field("cell_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH, cell_count));
+    fields.add(Ioss::Field("cell_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
+                           cell_count));
 
     fields.add(Ioss::Field("cell_node_ids", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
                            node_count));

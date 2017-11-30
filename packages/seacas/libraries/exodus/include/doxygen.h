@@ -338,7 +338,57 @@ coordinates, element order map, element connectivity arrays,
 element attributes, node sets, side sets, and object properties.
   @}
 
-
+@example ../test/CreateEdgeFace.c
+@example ../test/ExoIICTests.cxx
+@example ../test/MakeTestData.c
+@example ../test/ReadEdgeFace.c
+@example ../test/create_mesh.c
+@example ../test/oned.c
+@example ../test/rd_wt_mesh.c
+@example ../test/test-empty.c
+@example ../test/test.exo_c
+@example ../test/test_nemesis.c
+@example ../test/test_ts_errval.c
+@example ../test/test_ts_files.c
+@example ../test/test_ts_nvar.c
+@example ../test/test_ts_nvar_rd.c
+@example ../test/test_ts_partial_nvar.c
+@example ../test/test_ts_partial_nvar_rd.c
+@example ../test/testcp.c
+@example ../test/testcp_nl.c
+@example ../test/testcpd.c
+@example ../test/testrd-groups.c
+@example ../test/testrd-long-name.c
+@example ../test/testrd-nfaced.c
+@example ../test/testrd-nsided.c
+@example ../test/testrd.c
+@example ../test/testrd1.c
+@example ../test/testrd_nc.c
+@example ../test/testrd_par.c
+@example ../test/testrd_ss.c
+@example ../test/testrdd.c
+@example ../test/testrdwt.c
+@example ../test/testwt-compress.c
+@example ../test/testwt-groups.c
+@example ../test/testwt-localization.C
+@example ../test/testwt-long-name.c
+@example ../test/testwt-nface-nside.c
+@example ../test/testwt-nfaced.c
+@example ../test/testwt-nsided.c
+@example ../test/testwt-one-attrib.c
+@example ../test/testwt-partial.c
+@example ../test/testwt-zeroe.c
+@example ../test/testwt-zeron.c
+@example ../test/testwt.c
+@example ../test/testwt1.c
+@example ../test/testwt2.c
+@example ../test/testwt_clb.c
+@example ../test/testwt_nc.c
+@example ../test/testwt_nossnsdf.c
+@example ../test/testwt_ss.c
+@example ../test/testwtd.c
+@example ../test/testwtm.c
+@example ../test/twod.c
 */
 
 /* clang-format on */
