@@ -196,6 +196,8 @@ TETRA         | 1     | 1, 2, 4    |
 ### Pyramidal Element Types
 ![Pyramid](packages/seacas/doc-source/exodus/topology/pyramid.png)
 
+The `pyramid18` adds mid-face nodes to the triangular faces and the `pyramid19` adds a mid-volume node.
+
 The side numbering for a pyramidal element type is shown below.
 
  Element Type |Side \#|Node Order  |
