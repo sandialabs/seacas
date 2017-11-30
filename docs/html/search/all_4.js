@@ -13,6 +13,7 @@ var searchData=
   ['elem_5ftype',['elem_type',['../structex__block__params.html#ac1fc7406e27041ff77edaf5a51d7e29e',1,'ex_block_params::elem_type()'],['../structelem__blk__parm.html#a175c37b250fdc5c6d0839d26d1ba5131',1,'elem_blk_parm::elem_type()']]],
   ['elem_5ftype_5fval',['elem_type_val',['../structelem__blk__parm.html#afc66c9e809f69751f5612899e64e913d',1,'elem_blk_parm']]],
   ['elem_5fvar_5ftab',['elem_var_tab',['../structex__var__params.html#a3e5b9f83f76ebf523353078d008580e2',1,'ex_var_params']]],
+  ['exodus_20element_20types',['Exodus Element Types',['../element_types.html',1,'']]],
   ['els_5fctr_5flist',['els_ctr_list',['../ex__utils_8c.html#a7429fd926ddecc1a7efa097966c3192d',1,'ex_utils.c']]],
   ['elset_5fvar_5ftab',['elset_var_tab',['../structex__var__params.html#a3ce250987144045b701f78a15bb6bd63',1,'ex_var_params']]],
   ['em_5fctr_5flist',['em_ctr_list',['../ex__utils_8c.html#a3b905aa37fa32fb21a5231c72fe2baa7',1,'ex_utils.c']]],
@@ -997,6 +998,5 @@ var searchData=
   ['expvtt',['EXPVTT',['../exo__jack-windows_8c.html#ad5e89de4e36ecd3c6e7eb42a79bde237',1,'exo_jack-windows.c']]],
   ['extra_5flist',['extra_list',['../structex__set.html#a3b7e3f4d6a16d5bf8b45b75e97bd8fb1',1,'ex_set']]],
   ['exupda',['EXUPDA',['../exo__jack-windows_8c.html#ad26a4999e7c866b9b3829d8875fc852a',1,'exo_jack-windows.c']]],
-  ['exodus_20api_20documentation',['Exodus API Documentation',['../index.html',1,'']]],
-  ['exodus_20element_20types',['Exodus Element Types',['../types.html',1,'']]]
+  ['exodus_20api_20documentation',['Exodus API Documentation',['../index.html',1,'']]]
 ];

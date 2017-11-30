@@ -13,17 +13,17 @@ var NAVTREE =
       ] ],
       [ "Options (Compression, Name Length, File Type)", "index.html#Database", null ]
     ] ],
-    [ "Exodus Element Types", "types.html", [
-      [ "Element Types", "types.html#types", null ],
-      [ "Exodus Node Ordering Convention", "types.html#ordering", null ],
-      [ "Circle and Sphere Element Types", "types.html#circle", null ],
-      [ "Bar, Truss, Beam Element Types", "types.html#bar", null ],
-      [ "Triangular Element Types", "types.html#tri", null ],
-      [ "Quadrilateral Element Types", "types.html#quad", null ],
-      [ "Tetrahedral Element Types", "types.html#tet", null ],
-      [ "Pyramidal Element Types", "types.html#pyr", null ],
-      [ "Wedge Element Types", "types.html#wedge", null ],
-      [ "Hexahedral Element Types", "types.html#hex", null ]
+    [ "Exodus Element Types", "element_types.html", [
+      [ "Element Types", "element_types.html#types", null ],
+      [ "Exodus Node Ordering Convention", "element_types.html#ordering", null ],
+      [ "Circle and Sphere Element Types", "element_types.html#circle", null ],
+      [ "Bar, Truss, Beam Element Types", "element_types.html#bar", null ],
+      [ "Triangular Element Types", "element_types.html#tri", null ],
+      [ "Quadrilateral Element Types", "element_types.html#quad", null ],
+      [ "Tetrahedral Element Types", "element_types.html#tet", null ],
+      [ "Pyramidal Element Types", "element_types.html#pyr", null ],
+      [ "Wedge Element Types", "element_types.html#wedge", null ],
+      [ "Hexahedral Element Types", "element_types.html#hex", null ]
     ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Undocumented", "undoc.html", null ],
@@ -54,14 +54,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "addrwrap_8F.html",
-"ex__get__partial__set__dist__fact_8c.html",
-"ex__put__partial__conn_8c.html",
-"exo__jack-windows_8c.html#a91ffdef840b1b551603bd56f4b3aac0b",
-"exodusII_8h.html#a0a4dab0afa672ee7ad4d416b7d227bb5",
-"exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca3afda90d93e6c1a2fabe6c64632f0f2d",
-"exodusII__int_8h.html#a656d25c04e7a27144de9ed5644182ede",
-"globals_m.html",
-"structex__block.html"
+"ex__get__partial__node__num__map_8c.html#a955bae7df8792fd9e9be9ef49ce13c83",
+"ex__put__nset__var_8c.html#a6a77dfd667724e43394129e93eb1408e",
+"exo__jack-windows_8c.html#a824af4e9f800f9404a821b08d2da9323",
+"exo__jack_8c.html#aff280e28a5ac453ac7eb9ab4f9cf5a5c",
+"exodusII_8h.html#adc9d1455c2876b67d008e02c1e9df8dca079cdef781a8514d65c9427ac7786d82",
+"exodusII__int_8h.html#a5f1ca6f5cacf9121350ccd385d1c6acd",
+"globals_func_p.html",
+"pages.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
