@@ -174,8 +174,10 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
     new_ids.reserve(num_to_get + offset);
 
     for (int64_t i = 0; i < offset; i++) {
-      SMART_ASSERT(m_map[i + 1] == i + 1)(m_map[i + 1])(i + 1);
-      new_ids.emplace_back(i + 1, i + 1);
+      if (m_map[i + 1] != 0) {
+	SMART_ASSERT(m_map[i + 1] == i + 1)(m_map[i + 1])(i + 1);
+	new_ids.emplace_back(i + 1, i + 1);
+      }
     }
   }
 
