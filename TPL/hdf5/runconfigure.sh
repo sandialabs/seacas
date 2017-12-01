@@ -5,7 +5,6 @@ echo "MPI set to ${MPI}"
 
 COMPILER="${COMPILER:-gnu}"
 echo "COMPILER set to ${COMPILER}"
-#COMPILER="clang"
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
@@ -16,18 +15,15 @@ fi
 if [ "$MPI" == "ON" ]
 then
   PARALLEL_ON_OFF="--enable-parallel"
-  if [ "$COMPILER" == "gnu" ]
-  then
-      export CC=mpicc
-  else
-      export CC=mpicc-openmpi-clang38
-  fi
+  export CC=mpicc
 else
   PARALLEL_ON_OFF="--disable-parallel"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc
-  else
+  fi
+  if [ "$COMPILER" == "clang" ]
+  then
       export CC=clang
   fi
 fi
@@ -42,7 +38,7 @@ F90=''; export F90
 
 SHARED="--enable-shared"
 
-./configure --prefix=${ACCESS} ${SHARED} ${PARALLEL_ON_OFF} --enable-asserts --enable-build-mode=debug --enable-static-exec $1
+./configure --prefix=${ACCESS} ${SHARED} ${PARALLEL_ON_OFF} --enable-asserts --enable-debug=all --enable-static-exec $1
 
 echo ""
 echo "     MPI: ${MPI}"

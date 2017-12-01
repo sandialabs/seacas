@@ -79,9 +79,10 @@ void IOShell::Interface::enroll_options()
                   "Use 32-bit floating point values on output database; default is 64-bits",
                   nullptr);
 
-  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue, "Output database will be a netcdf4 "
-                                                           "hdf5-based file instead of the "
-                                                           "classical netcdf file format",
+  options_.enroll("netcdf4", Ioss::GetLongOption::NoValue,
+                  "Output database will be a netcdf4 "
+                  "hdf5-based file instead of the "
+                  "classical netcdf file format",
                   nullptr);
 
   options_.enroll("netcdf5", Ioss::GetLongOption::NoValue,
@@ -154,11 +155,26 @@ void IOShell::Interface::enroll_options()
                   nullptr);
 #endif
 
+  options_.enroll(
+      "split_times", Ioss::GetLongOption::MandatoryValue,
+      "If non-zero, then put <$val> timesteps in each file. Then close file and start new file.",
+      nullptr);
+
+  options_.enroll("split_cyclic", Ioss::GetLongOption::MandatoryValue,
+                  "If non-zero, then the `split_times` timesteps will be put into <$val> files and "
+                  "then recycle filenames.",
+                  nullptr);
+
   options_.enroll("external", Ioss::GetLongOption::NoValue,
                   "Files are decomposed externally into a file-per-processor in a parallel run.",
                   nullptr);
 
+  options_.enroll("minimize_open_files", Ioss::GetLongOption::NoValue,
+                  "close output file after each timestep", nullptr);
+
   options_.enroll("debug", Ioss::GetLongOption::NoValue, "turn on debugging output", nullptr);
+
+  options_.enroll("quiet", Ioss::GetLongOption::NoValue, "minimize output", nullptr);
 
   options_.enroll("statistics", Ioss::GetLongOption::NoValue,
                   "output parallel io timing statistics", nullptr);
@@ -336,12 +352,37 @@ bool IOShell::Interface::parse_options(int argc, char **argv)
 
 #endif
 
+  {
+    const char *temp = options_.retrieve("split_times");
+    if (temp != nullptr) {
+      split_times = std::strtol(temp, nullptr, 10);
+    }
+  }
+
+  {
+    const char *temp = options_.retrieve("split_cyclic");
+    if (temp != nullptr) {
+      split_cyclic = std::strtol(temp, nullptr, 10);
+      if (split_cyclic > 26) {
+        split_cyclic = 26;
+      }
+    }
+  }
+
   if (options_.retrieve("external") != nullptr) {
     decomp_method = "EXTERNAL";
   }
 
+  if (options_.retrieve("minimize_open_files") != nullptr) {
+    minimize_open_files = true;
+  }
+
   if (options_.retrieve("debug") != nullptr) {
     debug = true;
+  }
+
+  if (options_.retrieve("quiet") != nullptr) {
+    quiet = true;
   }
 
   if (options_.retrieve("statistics") != nullptr) {

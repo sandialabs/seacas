@@ -60,7 +60,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
     return 0;
   }
 
-  /* check for the existance of a readable FEM file */
+  /* check for the existence of a readable FEM file */
   int mode = EX_READ | int64api;
   if ((exid = ex_open(ExoFile, mode, &icpu_ws, &iio_ws, &vers)) < 0) {
     fprintf(stderr, "%s: fatal - unable to open input FEM file, %s.\n", yo, ExoFile);
@@ -74,7 +74,7 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
     return 0;
   }
 
-  /* check for the existance of a readable load balance file */
+  /* check for the existence of a readable load balance file */
   icpu_ws = 0;
   iio_ws  = 0;
   if ((exid = ex_open(Exo_LB_File, mode, &icpu_ws, &iio_ws, &vers)) < 0) {

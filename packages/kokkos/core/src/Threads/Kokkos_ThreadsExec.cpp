@@ -665,7 +665,7 @@ void ThreadsExec::initialize( unsigned thread_count ,
     memory_fence();
 
     if ( ! thread_spawn_failed ) {
-      // Bind process to the core on which it was located before spawning occured
+      // Bind process to the core on which it was located before spawning occurred
       if (hwloc_can_bind) {
         Kokkos::hwloc::bind_this_thread( proc_coord );
       }

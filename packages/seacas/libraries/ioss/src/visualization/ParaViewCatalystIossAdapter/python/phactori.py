@@ -8982,7 +8982,7 @@ def HandleOperationShortcuts2(inBlockName, inJson, ioOperationBlocks, inCount):
     myDebugPrint3('HandleOperationShortcuts returning\n', 100)
 
 #go through imageset json, and locate operation shortcuts.  If found, create
-#json defintion of operations and add them to the structure for later
+#json definition of operations and add them to the structure for later
 #creation, and add reference to the new operations in the imageblock json
 def HandleOperationShortcuts(ioImagesetBlocks, ioOperationBlocks):
   if PhactoriDbg(100):
@@ -9557,7 +9557,7 @@ def CreateViewSetFromPhactoriViewMapC(inViewMapC):
     myDebugPrint3("  " + str(textannotationBlocks) + "\n")
 
   #go through imageset json, and locate operation shortcuts.  If found, create
-  #json defintion of operations and add them to the structure for later
+  #json definition of operations and add them to the structure for later
   #creation, and add reference to the new operations in the imageblock json
   HandleOperationShortcuts(imagesetBlocks, operationBlocks)
 

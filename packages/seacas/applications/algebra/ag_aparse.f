@@ -129,7 +129,7 @@ C         --Convert number string and store
                IJUST = 32 - (IRIGHT - ILEFT + 1) + 1
                CONVER(IJUST:32) = LINE(ILEFT:IRIGHT)
 
-               READ (CONVER, '(E32.0)', IOSTAT=ITRANS) RNUM
+               READ (CONVER, '(F32.0)', IOSTAT=ITRANS) RNUM
                IF (ITRANS .EQ. 0) THEN
                   RFIELD(NUMFLD) = RNUM
                   ITYPE(NUMFLD) = 1

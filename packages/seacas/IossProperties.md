@@ -5,6 +5,7 @@
  LOGGING   | on/[off] | enable/disable logging of field input/output
  LOWER_CASE_VARIABLE_NAMES | [on]/off | Convert all variable names on database to lowercase; replace ' ' with '_'
  USE_GENERIC_CANONICAL_NAMES | on/[off]  | use `block_{id}` as canonical name of an element block instead of the name (if any) stored on the database. The database name will be an alias.
+ MINIMIZE_OPEN_FILES | on/[off] | If on, then close file after each timestep and then reopen on next output
 
 ## Auto-Decomposition-Related Properties
  

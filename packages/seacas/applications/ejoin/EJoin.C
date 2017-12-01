@@ -93,7 +93,7 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map);
+                           const std::vector<INT> &local_element_map, bool ignore_element_ids);
   template <typename INT>
   void output_nodeset(Ioss::Region &output_region, RegionVector &part_mesh,
                       const std::vector<INT> &local_node_map);
@@ -122,7 +122,7 @@ namespace {
   }
 
   typedef std::set<std::pair<Ioss::EntityType, int64_t>> EntityIdSet;
-  EntityIdSet id_set;
+  EntityIdSet                                            id_set;
 
   void set_id(Ioss::GroupingEntity *old_ge, Ioss::GroupingEntity *new_ge)
   {
@@ -135,6 +135,13 @@ namespace {
       }
     }
   }
+
+  struct my_numpunct : std::numpunct<char>
+  {
+  protected:
+    char        do_thousands_sep() const override { return ','; }
+    std::string do_grouping() const override { return "\3"; }
+  };
 } // namespace
 
 namespace {
@@ -160,7 +167,7 @@ std::string tsFormat = "[%H:%M:%S] ";
 // prototypes
 
 template <typename INT>
-int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT dummy);
+double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT dummy);
 
 unsigned int debug_level = 0;
 
@@ -170,11 +177,13 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
 #endif
 
+  std::cout.imbue(std::locale(std::locale(), new my_numpunct));
+  std::cerr.imbue(std::locale(std::locale(), new my_numpunct));
+
 #if defined(__LIBCATAMOUNT__)
   setlinebuf(stderr);
 #endif
   try {
-    time_t begin_time = time(nullptr);
     SystemInterface::show_version();
     Ioss::Init::Initializer io;
 
@@ -259,19 +268,20 @@ int main(int argc, char *argv[])
     process_nset_omissions(part_mesh, interface.nset_omissions());
     process_sset_omissions(part_mesh, interface.sset_omissions());
 
+    double time = 0.0;
+
     if (int_byte_size == 4) {
-      ejoin(interface, part_mesh, 0);
+      time = ejoin(interface, part_mesh, 0);
     }
     else {
-      ejoin(interface, part_mesh, static_cast<int64_t>(0));
+      time = ejoin(interface, part_mesh, static_cast<int64_t>(0));
     }
 
     for (size_t p = 0; p < interface.inputFiles_.size(); p++) {
       delete part_mesh[p];
     }
 
-    time_t end_time = time(nullptr);
-    add_to_log(argv[0], static_cast<int>(end_time - begin_time));
+    add_to_log(argv[0], time);
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Finalize();
@@ -285,8 +295,9 @@ int main(int argc, char *argv[])
 }
 
 template <typename INT>
-int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
+double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, INT /*dummy*/)
 {
+  double begin      = Ioss::Utils::timer();
   size_t part_count = interface.inputFiles_.size();
   SMART_ASSERT(part_count == part_mesh.size());
 
@@ -294,6 +305,16 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   if (sizeof(INT) == 8) {
     properties.add(Ioss::Property("INTEGER_SIZE_DB", 8));
     properties.add(Ioss::Property("INTEGER_SIZE_API", 8));
+  }
+
+  if (interface.use_netcdf4()) {
+    properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+  }
+
+  if (interface.compression_level() > 0) {
+    properties.add(Ioss::Property("FILE_TYPE", "netcdf4"));
+    properties.add(Ioss::Property("COMPRESSION_LEVEL", interface.compression_level()));
+    properties.add(Ioss::Property("COMPRESSION_SHUFFLE", true));
   }
 
   Ioss::DatabaseIO *dbo = Ioss::IOFactory::create(
@@ -429,7 +450,8 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   output_region.begin_mode(Ioss::STATE_MODEL);
 
   output_nodeblock(output_region, part_mesh, local_node_map, global_node_map);
-  output_elementblock(output_region, part_mesh, local_node_map, local_element_map);
+  output_elementblock(output_region, part_mesh, local_node_map, local_element_map,
+                      interface.ignore_element_ids());
   output_nodal_nodeset(output_region, part_mesh, interface, local_node_map);
 
   if (!interface.omit_nodesets()) {
@@ -517,6 +539,8 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   ts_max = ts_max < num_steps ? ts_max : num_steps;
 
   std::ios::fmtflags f(std::cout.flags());
+  double             ts_begin = Ioss::Utils::timer();
+  int                steps    = 0;
   for (int step = ts_min - 1; step < ts_max; step += ts_step) {
     int ostep = output_region.add_state(global_times[step]);
     output_region.begin_state(ostep);
@@ -524,7 +548,9 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
     std::cout << "\rWrote step " << std::setw(4) << step + 1 << "/" << global_times.size()
               << ", time " << std::scientific << std::setprecision(4) << global_times[step];
     output_region.end_state(ostep);
+    steps++;
   }
+  double end = Ioss::Utils::timer();
   std::cout << "\n";
   std::cout.flags(f);
   output_region.end_mode(Ioss::STATE_TRANSIENT);
@@ -536,7 +562,10 @@ int ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh, IN
   }
   output_region.output_summary(std::cout);
   std::cout << "******* END *******\n";
-  return (0);
+  std::cerr << "\nTotal Execution time     = " << end - begin << " seconds.\n";
+  std::cerr << "Transient Execution time = " << (end - ts_begin) / (double)(steps)
+            << " seconds / step.\n\n";
+  return (end - begin);
 }
 
 namespace {
@@ -680,6 +709,10 @@ namespace {
           }
         }
         ons->put_field_data("ids", nodelist);
+
+        // Output distribution factors -- set all to 1.0
+        std::vector<double> factors(nodelist.size(), 1.0);
+        ons->put_field_data("distribution_factors", factors);
       }
     }
   }
@@ -703,8 +736,7 @@ namespace {
         Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
         SMART_ASSERT(nb != nullptr);
 
-        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() ==
-                     nb->entity_count());
+        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() == nb->entity_count());
 
         Ioss::NameList fields;
         nb->field_describe(Ioss::Field::TRANSIENT, &fields);
@@ -831,7 +863,7 @@ namespace {
   template <typename INT>
   void output_elementblock(Ioss::Region &output_region, RegionVector &part_mesh,
                            const std::vector<INT> &local_node_map,
-                           const std::vector<INT> &local_element_map)
+                           const std::vector<INT> &local_element_map, bool ignore_element_ids)
   {
 
     Ioss::ElementBlockContainer ebs = output_region.get_element_blocks();
@@ -839,9 +871,14 @@ namespace {
     size_t           element_count = output_region.get_property("element_count").get_int();
     std::vector<INT> ids(element_count);
 
-    // Try to maintain the original element ids if possible...
-    generate_element_ids(part_mesh, local_element_map, ids);
-
+    if (ignore_element_ids) {
+      // Just generate 1..numel ids (much faster for large models)
+      std::iota(ids.begin(), ids.end(), 1);
+    }
+    else {
+      // Try to maintain the original element ids if possible...
+      generate_element_ids(part_mesh, local_element_map, ids);
+    }
     size_t element_offset = 0;
     for (auto eb : ebs) {
       eb->put_field_data("ids", &ids[element_offset], ids.size() * sizeof(int));
@@ -865,18 +902,16 @@ namespace {
         }
         if (oeb != nullptr) {
           std::vector<INT> connectivity;
-          ieb->get_field_data("connectivity", connectivity);
+          ieb->get_field_data("connectivity_raw", connectivity);
 
-          SMART_ASSERT(ieb->entity_count() ==
-                       oeb->entity_count());
+          SMART_ASSERT(ieb->entity_count() == oeb->entity_count());
           for (size_t i = 0; i < connectivity.size(); i++) {
 
-            // connectivity is in part-global node ids.
-            // loc_node = the position of part-global node 'connectivity[i]' in the local
-            // [0..num_node)
+            // connectivity is in part-local node ids [1..num_node]
+            // loc_node = the position of node in the local [0..num_node)
             // local_node_map[node_offset+loc_node] gives the position of this node in the global
             // list
-            size_t loc_node = part_mesh[p]->node_global_to_local(connectivity[i], true) - 1;
+            size_t loc_node = connectivity[i] - 1;
             SMART_ASSERT(node_offset + loc_node < local_node_map.size());
             ssize_t gpos = local_node_map[node_offset + loc_node];
             if (gpos >= 0) {
@@ -914,8 +949,7 @@ namespace {
             ons  = output_region.get_nodeset(name);
           }
           SMART_ASSERT(ons != nullptr)(name);
-          SMART_ASSERT(in->entity_count() ==
-                       ons->entity_count());
+          SMART_ASSERT(in->entity_count() == ons->entity_count());
 
           // This needs to make sure that the nodelist comes back as local id (1..numnodes)
           for (size_t i = 0; i < nodelist.size(); i++) {
@@ -965,8 +999,7 @@ namespace {
             SMART_ASSERT((eb->name() == (*II)->name()) ||
                          (part_mesh[p]->name() + "_" + eb->name() == (*II)->name()))
             (eb->name())((*II)->name());
-            SMART_ASSERT(eb->entity_count() ==
-                         (*II)->entity_count());
+            SMART_ASSERT(eb->entity_count() == (*II)->entity_count());
             std::vector<INT> elem_side_list;
             eb->get_field_data("element_side_raw", elem_side_list);
 
@@ -1061,8 +1094,7 @@ namespace {
         Ioss::NodeBlock *nb = part_mesh[p]->get_node_blocks()[0];
         SMART_ASSERT(nb != nullptr);
 
-        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() ==
-                     nb->entity_count());
+        SMART_ASSERT(part_mesh[p]->get_property("node_count").get_int() == nb->entity_count());
 
         // NOTE: The node order in the output nodeset 'ons' was
         // defined as the same node order in the input nodeblock 'nb',

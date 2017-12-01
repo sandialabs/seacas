@@ -311,7 +311,7 @@ namespace Iocgns {
         Ioss::SideBlock *sblk =
             new Ioss::SideBlock(this, block_name, face_topo, parent_topo, sset.ioss_count());
         sblk->property_add(Ioss::Property("id", id));
-        sblk->property_add(Ioss::Property("guid", util().generate_guid(id)));
+        sblk->property_add(Ioss::Property("guid", util().generate_guid(id + 1)));
         sblk->property_add(Ioss::Property("base", 1));
         sblk->property_add(Ioss::Property("zone", sset.zone()));
         sblk->property_add(Ioss::Property("section", sset.section()));
@@ -353,7 +353,7 @@ namespace Iocgns {
           assert(donor_iter != m_zoneNameMap.end());
           conn.m_donorZone = (*donor_iter).second;
         }
-        conn.m_donorGUID = util().generate_guid(conn.m_donorZone);
+        conn.m_donorGUID = util().generate_guid(conn.m_donorZone, conn.m_donorProcessor);
         conn.m_ownerGUID = guid;
       }
     }

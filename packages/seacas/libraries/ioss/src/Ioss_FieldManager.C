@@ -76,8 +76,8 @@ bool Ioss::FieldManager::exists(const std::string &field_name) const
 Ioss::Field Ioss::FieldManager::get(const std::string &field_name) const
 {
   IOSS_FUNC_ENTER(m_);
-  const std::string key = Ioss::Utils::lowercase(field_name);
-  auto iter = fields.find(key);
+  const std::string key  = Ioss::Utils::lowercase(field_name);
+  auto              iter = fields.find(key);
   assert(iter != fields.end());
   return (*iter).second;
 }
@@ -91,8 +91,8 @@ Ioss::Field Ioss::FieldManager::get(const std::string &field_name) const
 const Ioss::Field &Ioss::FieldManager::getref(const std::string &field_name) const
 {
   IOSS_FUNC_ENTER(m_);
-  const std::string key = Ioss::Utils::lowercase(field_name);
-  auto iter = fields.find(key);
+  const std::string key  = Ioss::Utils::lowercase(field_name);
+  auto              iter = fields.find(key);
   assert(iter != fields.end());
   return (*iter).second;
 }
@@ -107,8 +107,8 @@ void Ioss::FieldManager::erase(const std::string &field_name)
 {
   assert(exists(field_name));
   IOSS_FUNC_ENTER(m_);
-  const std::string key = Ioss::Utils::lowercase(field_name);
-  auto iter = fields.find(key);
+  const std::string key  = Ioss::Utils::lowercase(field_name);
+  auto              iter = fields.find(key);
   if (iter != fields.end()) {
     fields.erase(iter);
   }

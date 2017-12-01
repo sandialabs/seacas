@@ -32,10 +32,10 @@
 
 #include <Ioss_Field.h> // for Field, etc
 #include <Ioss_Map.h>
+#include <Ioss_SmartAssert.h>
 #include <Ioss_Sort.h>
 #include <Ioss_Utils.h> // for IOSS_ERROR
 #include <algorithm>    // for adjacent_find, lower_bound, etc
-#include <cassert>      // for assert
 #include <cstddef>      // for size_t
 #include <iterator>     // for insert_iterator, inserter
 #include <sstream>      // for operator<<, basic_ostream, etc
@@ -147,12 +147,7 @@ void Ioss::Map::release_memory()
   ReverseMapContainer().swap(m_reverse);
 }
 
-void Ioss::Map::build_reverse_map()
-{
-  if (m_map[0] == 1) {
-    build_reverse_map(m_map.size() - 1, 0);
-  }
-}
+void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
 
 void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 {
@@ -167,10 +162,28 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 
   // Build a vector containing the current ids...
   IOSS_FUNC_ENTER(m_);
-  ReverseMapContainer new_ids(num_to_get);
+  if (m_map[0] != 1) {
+    return;
+  }
+
+  ReverseMapContainer new_ids;
+  new_ids.reserve(num_to_get);
+  if (m_reverse.empty() && offset > 0) {
+    // Need to handle all previous entries which were 1-to-1
+    // now that we have some non 1-to-1 entries...
+    new_ids.reserve(num_to_get + offset);
+
+    for (int64_t i = 0; i < offset; i++) {
+      if (m_map[i + 1] != 0) {
+	SMART_ASSERT(m_map[i + 1] == i + 1)(m_map[i + 1])(i + 1);
+	new_ids.emplace_back(i + 1, i + 1);
+      }
+    }
+  }
+
   for (int64_t i = 0; i < num_to_get; i++) {
     int64_t local_id = offset + i + 1;
-    new_ids[i]       = std::make_pair(m_map[local_id], local_id);
+    new_ids.emplace_back(m_map[local_id], local_id);
 
     if (m_map[local_id] <= 0) {
       std::ostringstream errmsg;
@@ -193,7 +206,7 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
     // Copy reverseElementMap to old_ids, empty reverseElementMap.
     ReverseMapContainer old_ids;
     old_ids.swap(m_reverse);
-    assert(m_reverse.empty());
+    SMART_ASSERT(m_reverse.empty());
 
     // Merge old_ids and new_ids to reverseElementMap.
     m_reverse.reserve(old_ids.size() + new_ids.size());
@@ -222,15 +235,19 @@ void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
   }
 }
 
-template void Ioss::Map::set_map(int *ids, size_t count, size_t offset);
-template void Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset);
+template bool Ioss::Map::set_map(int *ids, size_t count, size_t offset);
+template bool Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset);
 
-template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t offset)
+template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset)
 {
   IOSS_FUNC_ENTER(m_);
+  bool changed = false; // True if redefining an entry
   for (size_t i = 0; i < count; i++) {
     ssize_t local_id = offset + i + 1;
-    m_map[local_id]  = ids[i];
+    if (m_map[local_id] > 0) {
+      changed = true;
+    }
+    m_map[local_id] = ids[i];
     if (local_id != ids[i]) {
       m_map[0] = 1;
     }
@@ -242,12 +259,13 @@ template <typename INT> void Ioss::Map::set_map(INT *ids, size_t count, size_t o
       IOSS_ERROR(errmsg);
     }
   }
+  return changed;
 }
 
 void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
 {
   IOSS_FUNC_ENTER(m_);
-  assert(!m_map.empty());
+  SMART_ASSERT(!m_map.empty());
   if (!is_sequential(m_map)) {
     if (field.get_type() == Ioss::Field::INTEGER) {
       int *connect = static_cast<int *>(data);
@@ -322,7 +340,7 @@ size_t Ioss::Map::map_field_to_db_scalar_order(T *variables, std::vector<double>
       // Map to storage location.
       ssize_t where = m_reorder[k++] - offset;
       if (where >= 0) {
-        assert(where < (ssize_t)count);
+        SMART_ASSERT(where < (ssize_t)count)(where)(count);
         db_var[where] = variables[j];
         num_out++;
       }
@@ -370,7 +388,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
 
       // The reordering should only be a permutation of the original
       // ordering within this entity block...
-      assert(orig_local_id >= start && orig_local_id <= my_end);
+      SMART_ASSERT(orig_local_id >= start && orig_local_id <= my_end)(orig_local_id)(start)(my_end);
       if (i != orig_local_id) {
         need_reorder_map = true;
         break;
@@ -400,7 +418,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
 
     // The reordering should only be a permutation of the original
     // ordering within this entity block...
-    assert(orig_local_id >= start && orig_local_id <= my_end);
+    SMART_ASSERT(orig_local_id >= start && orig_local_id <= my_end)(orig_local_id)(start)(my_end);
     m_reorder[i] = orig_local_id;
   }
 }

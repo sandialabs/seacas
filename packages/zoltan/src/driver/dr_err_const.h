@@ -77,7 +77,7 @@ extern
 void error_add(
   int   level,
   const char *message,	/* The message to add to the error list */
-  const char *filename,	/* The filename in which the error occured */
+  const char *filename,	/* The filename in which the error occurred */
   int   line		/* The line number in filename where the error
                          * was reported */
   );

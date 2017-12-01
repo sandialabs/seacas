@@ -1,3 +1,5 @@
+/* -*- Mode: c++ -*- */
+
 /*
  * Copyright (c) 2014-2017 National Technology & Engineering Solutions
  * of Sandia, LLC (NTESS).  Under the terms of Contract DE-NA0003525 with
@@ -33,7 +35,6 @@
  * 
  */
 
-/* -*- Mode: c++ -*- */
 
 %{
 
@@ -567,7 +568,7 @@ integer {D}+({E})?
       if (s == nullptr || (s->type != token::SVAR && s->type != token::IMMSVAR)) {
 	pt = yytext;
       } else {
-	pt = (char*)s->value.svar;
+	pt = (char*)s->value.svar.c_str();
       }
     } else {
       pt = yytext;
@@ -592,7 +593,7 @@ integer {D}+({E})?
            symrec *s;
 			     s = aprepro.getsym(yytext);
 			     if (s == nullptr)
-			       s = aprepro.putsym (yytext, SEAMS::Aprepro::UNDEFINED_VARIABLE, 0);
+			       s = aprepro.putsym (yytext, SEAMS::Aprepro::SYMBOL_TYPE::UNDEFINED_VARIABLE, 0);
 			     yylval->tptr = s;
 			     return((token::yytokentype)s->type);
 			   }
@@ -696,7 +697,7 @@ integer {D}+({E})?
 "\n"                       { if (echo && !suppress_nl) ECHO; suppress_nl = false;
                              aprepro.ap_file_list.top().lineno++;}
 
-% %
+%%
 
     /* When the scanner receives an end-of-file indication from YY_INPUT, it then
      * checks the yywrap() function. If yywrap() returns false (zero), then it is

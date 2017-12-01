@@ -69,7 +69,7 @@ namespace {
   };
 
   std::string codename;
-  std::string version = "4.7";
+  std::string version = "5.0";
 
   bool mem_stats = false;
 
@@ -99,6 +99,8 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
+  codename = interface.options_.basename(argv[0]);
+
   Ioss::SerializeIO::setGroupFactor(interface.serialize_io_size);
   mem_stats = interface.memory_statistics;
 
@@ -110,7 +112,7 @@ int main(int argc, char *argv[])
   std::string in_file  = interface.inputFile[0];
   std::string out_file = interface.outputFile;
 
-  if (rank == 0) {
+  if (rank == 0 && !interface.quiet) {
     std::cerr << "Input:    '" << in_file << "', Type: " << interface.inFiletype << '\n';
     std::cerr << "Output:   '" << out_file << "', Type: " << interface.outFiletype << '\n';
     std::cerr << '\n';
@@ -126,9 +128,12 @@ int main(int argc, char *argv[])
 
   double begin = Ioss::Utils::timer();
   file_copy(interface, rank);
+#ifdef SEACAS_HAVE_MPI
+  MPI_Barrier(MPI_COMM_WORLD);
+#endif
   double end = Ioss::Utils::timer();
 
-  if (rank == 0) {
+  if (rank == 0 && !interface.quiet) {
     std::cerr << "\n\tTotal Execution time = " << end - begin << " seconds.\n";
   }
   if (mem_stats) {
@@ -262,37 +267,14 @@ namespace {
         properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND));
       }
 
-      Ioss::DatabaseIO *dbo =
-          Ioss::IOFactory::create(interface.outFiletype, interface.outputFile, Ioss::WRITE_RESTART,
-                                  (MPI_Comm)MPI_COMM_WORLD, properties);
-      if (dbo == nullptr || !dbo->ok(true)) {
-        std::exit(EXIT_FAILURE);
-      }
-
-      // NOTE: 'output_region' owns 'dbo' pointer at this time
-      Ioss::Region output_region(dbo, "region_2");
-      // Set the qa information...
-      output_region.property_add(Ioss::Property(std::string("code_name"), codename));
-      output_region.property_add(Ioss::Property(std::string("code_version"), version));
-
-      if (interface.inputFile.size() > 1) {
-        properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
-
-        if (!first) {
-          // Putting each file into its own output group...
-          // The name of the group will be the basename portion of the filename...
-          Ioss::FileInfo file(inpfile);
-          dbo->create_subgroup(file.tailname());
-        }
-        else {
-          first = false;
-        }
+      if (interface.minimize_open_files) {
+        properties.add(Ioss::Property("MINIMIZE_OPEN_FILES", "ON"));
       }
 
       Ioss::MeshCopyOptions options{};
+      options.verbose           = !interface.quiet;
       options.memory_statistics = interface.memory_statistics;
       options.debug             = interface.debug;
-      options.verbose           = false;
       options.ints_64_bit       = interface.ints_64_bit;
       options.delete_timesteps  = interface.delete_timesteps;
       options.minimum_time      = interface.minimum_time;
@@ -300,13 +282,125 @@ namespace {
       options.data_storage_type = interface.data_storage_type;
       options.delay             = interface.timestep_delay;
 
-      // Actually do the work...
-      Ioss::Utils::copy_database(region, output_region, options);
+      size_t ts_count = 0;
+      if (region.property_exists("state_count") &&
+          region.get_property("state_count").get_int() > 0) {
+        ts_count = region.get_property("state_count").get_int();
+      }
 
+      if (interface.split_times == 0 || interface.delete_timesteps || ts_count == 0 || append ||
+          interface.inputFile.size() > 1) {
+        Ioss::DatabaseIO *dbo =
+            Ioss::IOFactory::create(interface.outFiletype, interface.outputFile,
+                                    Ioss::WRITE_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
+        if (dbo == nullptr || !dbo->ok(true)) {
+          std::exit(EXIT_FAILURE);
+        }
+
+        // NOTE: 'output_region' owns 'dbo' pointer at this time
+        Ioss::Region output_region(dbo, "region_2");
+        // Set the qa information...
+        output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+        output_region.property_add(Ioss::Property(std::string("code_version"), version));
+
+        if (interface.inputFile.size() > 1) {
+          properties.add(Ioss::Property("APPEND_OUTPUT", Ioss::DB_APPEND_GROUP));
+
+          if (!first) {
+            // Putting each file into its own output group...
+            // The name of the group will be the basename portion of the filename...
+            Ioss::FileInfo file(inpfile);
+            dbo->create_subgroup(file.tailname());
+          }
+          else {
+            first = false;
+          }
+        }
+
+        // Do normal copy...
+        Ioss::Utils::copy_database(region, output_region, options);
+        if (mem_stats) {
+          dbo->release_memory();
+        }
+      }
+      else {
+        // We are splitting out the timesteps into separate files.
+        // Each file will contain `split_times` timesteps. If
+        // 'split_cyclic` is > 0, then recycle filenames
+        // (A,B,C,A,B,C,...) otherwise
+        // keep creating new filenames (0001, 0002, 0003, ...)
+
+        // Get list of all times on input database...
+        std::vector<double> times;
+        for (size_t step = 0; step < ts_count; step++) {
+          double time = region.get_state_time(step + 1);
+          if (time < interface.minimum_time) {
+            continue;
+          }
+          if (time > interface.maximum_time) {
+            break;
+          }
+          times.push_back(time);
+        }
+        ts_count = times.size();
+
+        int splits = (ts_count + interface.split_times - 1) / interface.split_times;
+        int width  = std::to_string(splits).length();
+        for (int split = 0; split < splits; split++) {
+          int step_min = split * interface.split_times;
+          int step_max = step_min + interface.split_times - 1;
+          if (step_max >= (int)times.size()) {
+            step_max = (int)times.size() - 1;
+          }
+          options.minimum_time = times[step_min];
+          options.maximum_time = times[step_max];
+
+          std::string filename = interface.outputFile;
+          if (interface.split_cyclic > 0) {
+            static const std::string suffix{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+            filename += "." + suffix.substr(split % interface.split_cyclic, 1);
+          }
+          else {
+            std::ostringstream filen;
+            filen << filename << "_" << std::setw(width) << std::setfill('0')
+                  << std::to_string(split + 1);
+            filename = filen.str();
+          }
+
+          if (rank == 0 && !interface.quiet) {
+            if (step_min == step_max) {
+              std::cerr << "\tWriting step " << std::setw(width) << step_min + 1 << " to "
+                        << filename << "\n";
+            }
+            else {
+              std::cerr << "\tWriting steps " << std::setw(width) << step_min + 1 << ".."
+                        << std::setw(width) << step_max + 1 << " to " << filename << "\n";
+            }
+          }
+
+          Ioss::DatabaseIO *dbo =
+              Ioss::IOFactory::create(interface.outFiletype, filename, Ioss::WRITE_RESTART,
+                                      (MPI_Comm)MPI_COMM_WORLD, properties);
+          if (dbo == nullptr || !dbo->ok(true)) {
+            std::exit(EXIT_FAILURE);
+          }
+
+          // NOTE: 'output_region' owns 'dbo' pointer at this time
+          Ioss::Region output_region(dbo, "region_2");
+          // Set the qa information...
+          output_region.property_add(Ioss::Property(std::string("code_name"), codename));
+          output_region.property_add(Ioss::Property(std::string("code_version"), version));
+
+          Ioss::Utils::copy_database(region, output_region, options);
+          if (mem_stats) {
+            dbo->release_memory();
+          }
+          options.verbose = false;
+        }
+      }
       if (mem_stats) {
         dbi->util().progress("Prior to Memory Released... ");
         dbi->release_memory();
-        dbo->release_memory();
         dbi->util().progress("Memory Released... ");
       }
     } // loop over input files

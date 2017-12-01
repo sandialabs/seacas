@@ -209,6 +209,7 @@ namespace Ioss {
     // based on the property value.  Either "TRUE", "YES", "ON", or 1 for true;
     // or "FALSE", "NO", "OFF", or not equal to 1 for false.
     // Returns true/false depending on whether property found and value set.
+    // Does not set 'prop_val' if 'prop_name' does not exist.
     static bool check_set_bool_property(const Ioss::PropertyManager &properties,
                                         const std::string &prop_name, bool &prop_value);
 

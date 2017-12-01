@@ -208,19 +208,21 @@ void Ioss::ParallelUtils::hwm_memory_stats(int64_t &min, int64_t &max, int64_t &
 // Generate a "globally unique id" which is unique over all entities
 // of a specific type over all processors.
 // Used by some applications for uniquely identifying an entity.
-int64_t Ioss::ParallelUtils::generate_guid(size_t id) const
-  {
+int64_t Ioss::ParallelUtils::generate_guid(size_t id, int rank) const
+{
 #ifdef SEACAS_HAVE_MPI
-    static size_t lpow2 = 0;
-    if (lpow2 == 0) {
-      lpow2 = Ioss::Utils::log_power_2(parallel_size());
-    }
-    assert(id > 0);
-    return (id << lpow2) + parallel_rank();
-#else
-    return id;
-#endif
+  static size_t lpow2 = 0;
+  if (lpow2 == 0) {
+    lpow2 = Ioss::Utils::log_power_2(parallel_size());
   }
+  if (rank == -1) {
+    rank = parallel_rank();
+  }
+  return (id << lpow2) + rank;
+#else
+  return id;
+#endif
+}
 
 void Ioss::ParallelUtils::attribute_reduction(const int length, char buffer[]) const
 {
@@ -354,7 +356,8 @@ T Ioss::ParallelUtils::global_minmax(T local_minmax, Ioss::ParallelUtils::MinMax
   return minmax;
 }
 
-template void Ioss::ParallelUtils::global_array_minmax(unsigned long*, unsigned long, MinMax) const;
+template void Ioss::ParallelUtils::global_array_minmax(unsigned long *, unsigned long,
+                                                       MinMax) const;
 
 template <typename T>
 void Ioss::ParallelUtils::global_array_minmax(T *local_minmax, size_t count,

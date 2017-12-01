@@ -74,8 +74,23 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
   EX_FUNC_ENTER();
 
+#if !defined(PARALLEL_AWARE_EXODUS)
   if (num_entities == 0) {
     EX_FUNC_LEAVE(status);
+  }
+#endif
+
+  /* Verify that time_step is within bounds */
+  {
+    int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
+    if (time_step <= 0 || time_step > num_time_steps) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: time_step is out-of-range. Value = %d, valid "
+               "range is 1 to %d in file id %d",
+               time_step, num_time_steps, exoid);
+      ex_err(__func__, errmsg, EX_BADPARAM);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
   }
 
   if (var_type == EX_NODAL) {
@@ -124,25 +139,15 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  /* Verify that time_step is within bounds */
-  {
-    int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
-    if (time_step <= 0 || time_step > num_time_steps) {
-      snprintf(errmsg, MAX_ERR_LENGTH,
-               "ERROR: time_step is out-of-range. Value = %d, valid "
-               "range is 1 to %d in file id %d",
-               time_step, num_time_steps, exoid);
-      ex_err(__func__, errmsg, EX_BADPARAM);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-  }
-
   /* read values of element variable */
   start[0] = --time_step;
   start[1] = start_index - 1;
 
   count[0] = 1;
   count[1] = num_entities;
+  if (count[1] == 0) {
+    start[1] = 0;
+  }
 
   if (ex_comp_ws(exoid) == 4) {
     status = nc_get_vara_float(exoid, varid, start, count, var_vals);

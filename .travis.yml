@@ -1,5 +1,4 @@
 sudo: required
-dist: trusty
 
 language: c++
 
@@ -8,13 +7,10 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get -y install cmake
   - sudo apt-get -y install gfortran
-  - sudo apt-get -y install libmatio-dev
   - sudo apt-get -y install libz-dev
-  - if [ -z "$MPI" ]; then sudo apt-get -y install libnetcdf-dev; fi
-  - if [ -z "$MPI" ]; then sudo apt-get -y install netcdf-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
-  - if [ -n "$MPI" ]; then sudo apt-get -y install libhdf5-mpi-dev; fi
-  - if [ -n "CGNS" ]; then ./cgns-travis.sh; fi
+  - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
+  - ./install-tpl.sh 
 
 before_script:
 
@@ -24,6 +20,8 @@ script: true
 
 env:
   global:
+   - COMPILER=EXTERNAL
+
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "MrWZZDYlZlDQH7hP/3dZRdMns2Fo/MJRQ8yHLv7L3BEK+lO5m1vP3P4SDJ1vCs2DQOms3OAseqLg9/Wx6x7oytGmTMYq3qY865u8eiUC062523J8esi5oHzT7ofoPvYdomdE+rb6jaYyHsvAg2Tehm3f256QNheZFa9BKYenmfjQ4CUjcBWe22Fyhi9rmAdxxqhIiYfALEWk3c+pxcbO/k0Yk4uRaO0jZdHvPeX18s6t/NJFadbmziQkjt11EnQwofw1qJ+QhY+vfWruE3o1ZrYgHXm9c6g4GLHcaxpocX4XkfAilRWto07FKN2g8qqqQl6nLpKuAnjUa0lZnSNRSLVGtAlzb8mgCYEKqhcszmRKWGBKJM+vesvQBulLdLLWTvd6yCr7YEZgvQvQJ9EU6a+O07heanhK4GnMoGnpoyC4N6bycCCyJHXEmU9KC8oFzJq0V+q2SSCtSbdA8TpqKngXb/Kq42ntbYT+h7pX7K9dN/y2Vjo5F3UXNfV0bIkZ5v8kIqsRGtrRrg8vVbx1pm4VaMtLDZnRT5tWOgA9sIUntEg9hiiItYplfmsMdFz/WwDW0lota3L+9HNX8viIzyHtbZhnCzEKCeZ9f2V78ZW/IVLgwk+dtg78fCVweMNdyQwTdbENb1WFnyUgfv8hh4q5g+jWggdTTqubFQmTzAk="

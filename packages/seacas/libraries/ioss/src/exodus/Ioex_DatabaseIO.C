@@ -138,15 +138,18 @@ namespace Ioex {
     }
 
     if (!is_input()) {
+      if (util().get_environment("EX_MODE", exodusMode, isParallel)) {
+        std::cerr << "IOEX: Exodus create mode set to " << exodusMode
+                  << " from value of EX_MODE environment variable.\n";
+      }
+
       if (util().get_environment("EX_MINIMIZE_OPEN_FILES", isParallel)) {
         std::cerr << "IOEX: Minimizing open files because EX_MINIMIZE_OPEN_FILES environment "
                      "variable is set.\n";
         minimizeOpenFiles = true;
       }
-
-      if (util().get_environment("EX_MODE", exodusMode, isParallel)) {
-        std::cerr << "IOEX: Exodus create mode set to " << exodusMode
-                  << " from value of EX_MODE environment variable.\n";
+      else {
+	Ioss::Utils::check_set_bool_property(properties, "MINIMIZE_OPEN_FILES", minimizeOpenFiles);
       }
     }
 

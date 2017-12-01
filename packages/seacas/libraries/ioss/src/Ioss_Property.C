@@ -61,11 +61,7 @@ namespace {
 
 /** \brief Create an explicit, empty property having no name, INVALID type
  */
-Ioss::Property::Property()
-    : name_(""), type_(INVALID), isImplicit_(false)
-{
-  data_.pval = nullptr;
-}
+Ioss::Property::Property() : name_(""), type_(INVALID), isImplicit_(false) { data_.pval = nullptr; }
 
 /** \brief Create a property with a specified type.
  *
@@ -74,8 +70,7 @@ Ioss::Property::Property()
  *  \param[in] data The property value.
  *  \param[in] is_it_implicit True if the property is calculated, rather than stored directly
  */
-Ioss::Property::Property(std::string name, const BasicType type, 
-                         void *data, bool is_it_implicit)
+Ioss::Property::Property(std::string name, const BasicType type, void *data, bool is_it_implicit)
     : name_(std::move(name)), type_(type), isImplicit_(is_it_implicit)
 {
   data_.pval = data;

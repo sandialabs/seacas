@@ -35,6 +35,12 @@
 // concatenates EXODUS/GENESIS output from parallel processors to a single file
 
 #include <algorithm>
+#include <cfloat>
+#include <climits>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <exception>
 #include <iomanip>
 #include <iostream>
@@ -46,18 +52,7 @@
 #include <utility>
 #include <vector>
 
-#include <cfloat>
-#include <climits>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-
 #include "smart_assert.h"
-
-#include <string>
-#include <utility>
-#include <vector>
 
 #include <exodusII.h>
 #ifdef PARALLEL_AWARE_EXODUS
@@ -97,6 +92,34 @@ using StringVector = std::vector<std::string>;
 #include "add_to_log.h"
 #endif
 
+// The main program templated to permit float/double transfer.
+template <typename T, typename INT>
+int epu(Excn::SystemInterface &interface, int start_part, int part_count, int cycle, T /* dummy */,
+        INT int_size_dummy);
+
+class mpi
+{
+public:
+  mpi(int argc, char *argv[])
+  {
+#if ENABLE_PARALLEL_EPU
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &epu_proc_count);
+#endif
+  }
+
+  ~mpi()
+  {
+#if ENABLE_PARALLEL_EPU
+    MPI_Finalize();
+#endif
+  }
+
+  int rank{0};
+  int epu_proc_count{1};
+};
+
 using ExodusIdVector = std::vector<ex_entity_id>;
 
 extern double seacas_timer();
@@ -108,7 +131,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int         get_width(int max_value);
+  int get_width(int max_value);
 
   void LOG(const std::string message)
   {
@@ -127,8 +150,7 @@ namespace {
            << " in file epu.C. Please report to gdsjaar@sandia.gov if you need help.";
 
     ex_err(nullptr, nullptr, EX_PRTLASTMSG);
-    std::cerr << errmsg.str() << "\n";
-    exit(EXIT_FAILURE);
+    throw std::runtime_error(errmsg.str());
   }
 
   template <typename T> void clear(std::vector<T> &vec)
@@ -197,16 +219,7 @@ namespace {
     }
     return pos;
   }
-} // namespace
 
-// prototypes
-
-// The main program templated to permit float/double transfer.
-template <typename T, typename INT>
-int epu(Excn::SystemInterface &interface, int start_part, int part_count, int cycle, T /* dummy */,
-        INT int_size_dummy);
-
-namespace {
   void compress_white_space(char *str);
   void add_info_record(char *info_record, int size);
   void put_global_info(const Excn::Mesh &global);
@@ -331,16 +344,8 @@ using namespace Excn;
 
 int main(int argc, char *argv[])
 {
-  int epu_proc_count = 1;
-#if ENABLE_PARALLEL_EPU
-  MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &epu_proc_count);
-#endif
-
-#if defined(__LIBCATAMOUNT__)
-  setlinebuf(stderr);
-#endif
+  mpi my_mpi(argc, argv);
+  rank = my_mpi.rank;
 
   try {
     time_t begin_time = time(nullptr);
@@ -354,13 +359,13 @@ int main(int argc, char *argv[])
     }
 
     SystemInterface interface(rank);
-    bool            ok = interface.parse_options(argc, argv);
+    bool            execute = interface.parse_options(argc, argv);
 
-    if (!ok) {
-      std::cerr << "\nERROR: (EPU) Problems parsing command line arguments.\n\n";
-      exit(EXIT_FAILURE);
+    if (!execute) {
+      return EXIT_SUCCESS;
     }
 
+    // Debug Options: (can be or'd together)
     //   1 -- time stamp
     //   2 -- check nodal variable consistency
     //   4 -- Element Blocks
@@ -368,7 +373,6 @@ int main(int argc, char *argv[])
     //  16 -- Sidesets
     //  32 -- Nodesets
     //  64 -- exodus verbose.
-
     debug_level = interface.debug();
 
     if ((debug_level & 64) != 0u) {
@@ -384,15 +388,15 @@ int main(int argc, char *argv[])
     int part_count = interface.part_count();
     if (part_count <= 1) {
       std::cout << "INFO: Only one processor or part, no concatenation needed.\n";
-      exit(EXIT_SUCCESS);
+      return (EXIT_SUCCESS);
     }
 
     int error = 0;
-    if (epu_proc_count > 1) {
-      interface.subcycle(epu_proc_count);
+    if (my_mpi.epu_proc_count > 1) {
+      interface.subcycle(my_mpi.epu_proc_count);
 
-      int per_proc = processor_count / epu_proc_count;
-      int extra    = processor_count % epu_proc_count;
+      int per_proc = processor_count / my_mpi.epu_proc_count;
+      int extra    = processor_count % my_mpi.epu_proc_count;
 
       part_count = per_proc + (rank < extra ? 1 : 0);
 
@@ -406,8 +410,7 @@ int main(int argc, char *argv[])
       SMART_ASSERT(start_part + part_count <= processor_count);
 
       if (!ExodusFile::initialize(interface, start_part, part_count, rank, false)) {
-        std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("ERROR: (EPU) Problem initializing input and/or output files.\n");
       }
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
@@ -477,9 +480,9 @@ int main(int argc, char *argv[])
 
         // Sanity check...
         if (part_count < 1) {
-          std::cerr << "ERROR: (EPU) The subcycle specification results in less than 1 part per "
-                       "cycle which is not allowd.\n";
-          exit(EXIT_FAILURE);
+          throw std::runtime_error(
+              "ERROR: (EPU) The subcycle specification results in less than 1 part per "
+              "cycle which is not allowed.\n");
         }
         interface.subcycle((processor_count + part_count - 1) / part_count);
 
@@ -501,8 +504,8 @@ int main(int argc, char *argv[])
         SMART_ASSERT(start_part + part_count <= processor_count);
 
         if (!ExodusFile::initialize(interface, start_part, part_count, cycle, false)) {
-          std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
-          exit(EXIT_FAILURE);
+          throw std::runtime_error(
+              "ERROR: (EPU) Problem initializing input and/or output files.\n");
         }
 
         if (ExodusFile::io_word_size() == 4) { // Reals are floats
@@ -543,8 +546,7 @@ int main(int argc, char *argv[])
       interface.step_interval(1);
 
       if (!ExodusFile::initialize(interface, start_part, part_count, 0, true)) {
-        std::cerr << "ERROR: (EPU) Problem initializing input and/or output files.\n";
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("ERROR: (EPU) Problem initializing input and/or output files.\n");
       }
 
       if (ExodusFile::io_word_size() == 4) { // Reals are floats
@@ -576,13 +578,11 @@ int main(int argc, char *argv[])
       add_to_log(argv[0], static_cast<int>(end_time - begin_time));
     }
 #endif
-#if ENABLE_PARALLEL_EPU
-    MPI_Finalize();
-#endif
     return (error);
   }
   catch (std::exception &e) {
-    std::cerr << "ERROR: (EPU) Standard exception: " << e.what() << '\n';
+    std::cerr << e.what() << '\n';
+    return EXIT_FAILURE;
   }
 }
 
@@ -787,6 +787,38 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     LOG("\n**** BEGIN WRITING OUTPUT FILE *****\n");
     CommunicationMetaData comm_data;
 
+    if (!interface.int64()) {
+      int64_t twoBill = 1;
+      twoBill <<= 31;
+      int64_t fourBill = 1;
+      fourBill <<= 32;
+      // Check whether output mesh requires 64-bit integers...
+      if (global.nodeCount >= twoBill || global.elementCount >= twoBill) {
+        std::cerr
+            << "\nINFO: Output file requires 64-bit integers. Setting this automatically.\n\n";
+        interface.set_int64();
+      }
+
+      if (!interface.use_netcdf4()) {
+        // Check size required to store coordinates and connectivity
+        if (global.nodeCount * 8 >= fourBill) {
+          std::cerr
+              << "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n";
+          interface.set_use_netcdf4();
+        }
+
+        for (auto block : glob_blocks) {
+          int64_t element_count = block.entity_count();
+          int64_t nnpe          = block.nodesPerElement;
+          if (element_count * nnpe * 4 >= fourBill) {
+            std::cerr
+                << "\nINFO: Output file requires NetCDF-4 format. Setting this automatically.\n\n";
+            interface.set_use_netcdf4();
+            break;
+          }
+        }
+      }
+    }
     // Create the output file...
     ExodusFile::create_output(interface, cycle);
 
@@ -812,9 +844,8 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
     if (interface.append()) {
       bool matches = exodus.check_meta_data(global, glob_blocks, glob_nsets, glob_ssets, comm_data);
       if (!matches) {
-        std::cerr << "\n\nERROR: (EPU) Current mesh dimensions do not match "
-                  << "the mesh dimensions in the file being appended to.\n\n";
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("\n\nERROR: (EPU) Current mesh dimensions do not match "
+                                 "the mesh dimensions in the file being appended to.\n\n");
       }
     }
     else {
@@ -1359,7 +1390,7 @@ int epu(SystemInterface &interface, int start_part, int part_count, int cycle, T
   deallocate_master_values(nodeset_vars, global, master_nodeset_values);
 
   /*************************************************************************/
-  // EXIT program
+  // FINALIZE program
   if (debug_level & 1) {
     std::cout << time_stamp(tsFormat);
   }
@@ -1668,9 +1699,10 @@ namespace {
       if (p > 0) {
         for (size_t b = 0; b < global.count(EBLK); b++) {
           if (blocks[0][b].id != block_id[b]) {
-            std::cerr << "ERROR: (EPU) The internal element block id ordering for part " << p
-                      << "\n       is not consistent with the ordering for part 0." << '\n';
-            exit(EXIT_FAILURE);
+            std::ostringstream errmsg;
+            errmsg << "ERROR: (EPU) The internal element block id ordering for part " << p
+                   << "\n       is not consistent with the ordering for part 0." << '\n';
+            throw std::runtime_error(errmsg.str());
           }
         }
       }
@@ -1967,13 +1999,13 @@ namespace {
       std::cout << "Element id map " << (is_contiguous ? "is" : "is not") << " contiguous.\n";
     }
 
-    // Create the map that maps from a local processor element to the
-    // global map. This combines the mapping local processor element to
-    // 'global id' and then 'global id' to global position. The
-    // mapping is now a direct lookup instead of a lookup followed by
-    // a reverse map.
-    //
-    // If the map is contiguous, then the global_id to global_position map is 1->1
+  // Create the map that maps from a local processor element to the
+  // global map. This combines the mapping local processor element to
+  // 'global id' and then 'global id' to global position. The
+  // mapping is now a direct lookup instead of a lookup followed by
+  // a reverse map.
+  //
+  // If the map is contiguous, then the global_id to global_position map is 1->1
   REMAP:
     if (is_contiguous && map_ids) {
       auto   cur_pos = global_element_map.begin();
@@ -2067,12 +2099,13 @@ namespace {
             goto REMAP;
           }
           else {
-            std::cerr << "ERROR: (EPU) The element ids for element block " << glob_blocks[b].id
-                      << " are not consistent." << '\n';
-            std::cerr << "Block " << b << ", Id = " << glob_blocks[b].id
-                      << " min/max id = " << min_id + 1 << "/" << max_id + 1
-                      << " size = " << glob_blocks[b].entity_count() << "\n";
-            exit(EXIT_FAILURE);
+            std::ostringstream errmsg;
+            errmsg << "ERROR: (EPU) The element ids for element block " << glob_blocks[b].id
+                   << " are not consistent." << '\n'
+                   << "Block " << b << ", Id = " << glob_blocks[b].id
+                   << " min/max id = " << min_id + 1 << "/" << max_id + 1
+                   << " size = " << glob_blocks[b].entity_count() << "\n";
+            throw std::runtime_error(errmsg.str());
           }
         }
       }
@@ -2335,8 +2368,9 @@ namespace {
           }
         }
         if (!found) {
-          std::cerr << "ERROR: (EPU) Variable '" << elem.first << "' is not valid." << '\n';
-          exit(EXIT_FAILURE);
+          std::ostringstream errmsg;
+          errmsg << "ERROR: (EPU) Variable '" << elem.first << "' is not valid." << '\n';
+          throw std::runtime_error(errmsg.str());
         }
       }
       // Count non-zero entries in var_index;
@@ -2974,16 +3008,18 @@ namespace {
         }
 
         if (block == -1) {
-          std::cerr << "ERROR: (EPU) User-specified block id of " << variable_name.second
-                    << " for variable '" << variable_name.first << "' does not exist.\n";
-          exit(EXIT_FAILURE);
+          std::ostringstream errmsg;
+          errmsg << "ERROR: (EPU) User-specified block id of " << variable_name.second
+                 << " for variable '" << variable_name.first << "' does not exist.\n";
+          throw std::runtime_error(errmsg.str());
         }
 
         int truth_table_loc = block * vars.count(OUT) + out_position;
         if (global.truthTable[vars.objectType][truth_table_loc] == 0) {
-          std::cerr << "ERROR: (EPU) Variable '" << variable_name.first
-                    << "' does not exist on block " << variable_name.second << ".\n";
-          exit(EXIT_FAILURE);
+          std::ostringstream errmsg;
+          errmsg << "ERROR: (EPU) Variable '" << variable_name.first << "' does not exist on block "
+                 << variable_name.second << ".\n";
+          throw std::runtime_error(errmsg.str());
         }
         else {
           global.truthTable[vars.objectType][truth_table_loc] = 1;
@@ -3097,10 +3133,10 @@ namespace {
 
   void add_info_record(char *info_record, int size)
   {
-  // Add 'uname' output to the passed in character string.
-  // Maximum size of string is 'size' (not including terminating nullptr)
-  // This is used as information data in the concatenated results file
-  // to help in tracking when/where/... the file was created
+// Add 'uname' output to the passed in character string.
+// Maximum size of string is 'size' (not including terminating nullptr)
+// This is used as information data in the concatenated results file
+// to help in tracking when/where/... the file was created
 
 #ifdef _WIN32
     std::string info                                      = "EPU: ";
