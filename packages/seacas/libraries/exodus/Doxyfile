@@ -857,7 +857,7 @@ EXAMPLE_PATH           = test \
 # *.h) to filter out the source-files in the directories. If left blank all
 # files are included.
 
-EXAMPLE_PATTERNS       = *.c *.F *.h *.f
+EXAMPLE_PATTERNS       = *.cxx *.C *.c *.F *.h *.f
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude commands
