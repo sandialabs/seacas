@@ -87,14 +87,14 @@ $(document).ready(function(){initNavTree('element_types.html','');});
 <div class="toc"><h3>Table of Contents</h3>
 <ul><li class="level1"><a href="#types">Element Types</a></li>
 <li class="level1"><a href="#ordering">Exodus Node Ordering Convention</a></li>
-<li class="level1"><a href="#circle">Circle and Sphere Element Types</a></li>
-<li class="level1"><a href="#bar">Bar, Truss, Beam Element Types</a></li>
-<li class="level1"><a href="#tri">Triangular Element Types</a></li>
-<li class="level1"><a href="#quad">Quadrilateral Element Types</a></li>
-<li class="level1"><a href="#tet">Tetrahedral Element Types</a></li>
-<li class="level1"><a href="#pyr">Pyramidal Element Types</a></li>
-<li class="level1"><a href="#wedge">Wedge Element Types</a></li>
-<li class="level1"><a href="#hex">Hexahedral Element Types</a></li>
+<li class="level1"><a href="#circle">Circle and Sphere</a></li>
+<li class="level1"><a href="#bar">Bar, Truss, Beam</a></li>
+<li class="level1"><a href="#tri">Triangular</a></li>
+<li class="level1"><a href="#quad">Quadrilateral</a></li>
+<li class="level1"><a href="#tet">Tetrahedral</a></li>
+<li class="level1"><a href="#pyr">Pyramidal</a></li>
+<li class="level1"><a href="#wedge">Wedge</a></li>
+<li class="level1"><a href="#hex">Hexahedral</a></li>
 </ul>
 </div>
 <div class="textblock"><h1><a class="anchor" id="types"></a>
@@ -224,8 +224,9 @@ Element Types</h1>
 <h1><a class="anchor" id="ordering"></a>
 Exodus Node Ordering Convention</h1>
 <p>Node ordering follows the conventions illustrated in the figures below. The node ordering conventions follow the element topology used in PATRAN. Thus, for higher-order elements than those illustrated, use the ordering prescribed in the PATRAN Element Library Manual Manual <a href="https://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finite%2520Element%2520Modeling/elem_lib_topics.16.1.html#ww33606">https://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finite%2520Element%2520Modeling/elem_lib_topics.16.1.html#ww33606</a>.</p>
-<h1><a class="anchor" id="circle"></a>
-Circle and Sphere Element Types</h1>
+<hr/>
+ <h1><a class="anchor" id="circle"></a>
+Circle and Sphere</h1>
 <p>For elements of type circle or sphere, the topology is one node at the center of the circle or sphere element. A circle or sphere element has no sides.</p>
 <div class="image">
 <img src="../topology/circle.png" alt="Circle"/>
@@ -233,8 +234,9 @@ Circle and Sphere Element Types</h1>
  <div class="image">
 <img src="../topology/sphere.png" alt="Sphere"/>
 </div>
-<h1><a class="anchor" id="bar"></a>
-Bar, Truss, Beam Element Types</h1>
+ <hr/>
+ <h1><a class="anchor" id="bar"></a>
+Bar, Truss, Beam</h1>
 <p>The element name for this element type can be "bar", "beam", "truss"</p>
 <div class="image">
 <img src="../topology/bar2.png" alt="Bar2"/>
@@ -242,8 +244,9 @@ Bar, Truss, Beam Element Types</h1>
  <div class="image">
 <img src="../topology/bar3.png" alt="Bar3"/>
 </div>
-<h1><a class="anchor" id="tri"></a>
-Triangular Element Types</h1>
+ <hr/>
+ <h1><a class="anchor" id="tri"></a>
+Triangular</h1>
 <p>These are usable in 2D or 3D meshes. In a 3D mesh, they would represent triangular shells. The element name is "triangle" or "tri" in either case.</p>
 <div class="image">
 <img src="../topology/tri3.png" alt="Tri3"/>
@@ -285,8 +288,9 @@ Triangular Element Types</h1>
 <div class="image">
 <img src="../topology/triangle-face-numbering.png" alt="Tri-Number"/>
 </div>
-<h1><a class="anchor" id="quad"></a>
-Quadrilateral Element Types</h1>
+ <hr/>
+ <h1><a class="anchor" id="quad"></a>
+Quadrilateral</h1>
 <p>These are usable in 2D or 3D meshes. In a 3D mesh, they represent a quadrilateral shell element and the element name is "shell"; in a 2D mesh, the element name is "quad".</p>
 <div class="image">
 <img src="../topology/quad4.png" alt="Quad4"/>
@@ -335,8 +339,9 @@ Quadrilateral Element Types</h1>
 <div class="image">
 <img src="../topology/shell-face-numbering.png" alt="Shell-Number"/>
 </div>
-<h1><a class="anchor" id="tet"></a>
-Tetrahedral Element Types</h1>
+<hr/>
+ <h1><a class="anchor" id="tet"></a>
+Tetrahedral</h1>
 <div class="image">
 <img src="../topology/tet04.png" alt="Tet4"/>
 </div>
@@ -371,8 +376,9 @@ Tetrahedral Element Types</h1>
 <div class="image">
 <img src="../topology/tet-face-numbering.png" alt="Tet-Number"/>
 </div>
-<h1><a class="anchor" id="pyr"></a>
-Pyramidal Element Types</h1>
+ <hr/>
+ <h1><a class="anchor" id="pyr"></a>
+Pyramidal</h1>
 <div class="image">
 <img src="../topology/pyramid.png" alt="Pyramid"/>
 </div>
@@ -395,8 +401,9 @@ Pyramidal Element Types</h1>
 <div class="image">
 <img src="../topology/pyramid-face-numbering.png" alt="Pyramid-Number"/>
 </div>
-<h1><a class="anchor" id="wedge"></a>
-Wedge Element Types</h1>
+<hr/>
+ <h1><a class="anchor" id="wedge"></a>
+Wedge</h1>
 <div class="image">
 <img src="../topology/wedge06.png" alt="Wedge6"/>
 </div>
@@ -433,8 +440,9 @@ Wedge Element Types</h1>
 <div class="image">
 <img src="../topology/wedge-face-numbering.png" alt="Wedge-Number"/>
 </div>
-<h1><a class="anchor" id="hex"></a>
-Hexahedral Element Types</h1>
+ <hr/>
+ <h1><a class="anchor" id="hex"></a>
+Hexahedral</h1>
 <div class="image">
 <img src="../topology/hex08.png" alt="Hex8"/>
 </div>

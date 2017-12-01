@@ -16,14 +16,14 @@ var NAVTREE =
     [ "Exodus Element Types", "element_types.html", [
       [ "Element Types", "element_types.html#types", null ],
       [ "Exodus Node Ordering Convention", "element_types.html#ordering", null ],
-      [ "Circle and Sphere Element Types", "element_types.html#circle", null ],
-      [ "Bar, Truss, Beam Element Types", "element_types.html#bar", null ],
-      [ "Triangular Element Types", "element_types.html#tri", null ],
-      [ "Quadrilateral Element Types", "element_types.html#quad", null ],
-      [ "Tetrahedral Element Types", "element_types.html#tet", null ],
-      [ "Pyramidal Element Types", "element_types.html#pyr", null ],
-      [ "Wedge Element Types", "element_types.html#wedge", null ],
-      [ "Hexahedral Element Types", "element_types.html#hex", null ]
+      [ "Circle and Sphere", "element_types.html#circle", null ],
+      [ "Bar, Truss, Beam", "element_types.html#bar", null ],
+      [ "Triangular", "element_types.html#tri", null ],
+      [ "Quadrilateral", "element_types.html#quad", null ],
+      [ "Tetrahedral", "element_types.html#tet", null ],
+      [ "Pyramidal", "element_types.html#pyr", null ],
+      [ "Wedge", "element_types.html#wedge", null ],
+      [ "Hexahedral", "element_types.html#hex", null ]
     ] ],
     [ "Exodus Formats", "exodus_formats.html", [
       [ "Large Model (64-bit offset)", "exodus_formats.html#large", null ],
