@@ -94,20 +94,23 @@ the ordering prescribed in the PATRAN Element Library Manual Manual
 https://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finite%2520Element%2520Modeling/elem_lib_topics.16.1.html#ww33606.
 
 
-\section circle Circle and Sphere Element Types
+-------------------------
+\section circle Circle and Sphere 
 For elements of type circle or sphere, the topology is one node at the center of the circle or sphere element.
 A circle or sphere element has no sides.
 
 ![Circle](../topology/circle.png)
 ![Sphere](../topology/sphere.png)
 
-\section bar Bar, Truss, Beam Element Types
+-------------------------
+\section bar Bar, Truss, Beam 
 The element name for this element type can be "bar", "beam", "truss"
 
 ![Bar2](../topology/bar2.png)
 ![Bar3](../topology/bar3.png)
 
-\section tri Triangular Element Types
+-------------------------
+\section tri Triangular 
 These are usable in 2D or 3D meshes.  In a 3D mesh, they would represent triangular shells.  The element name is "triangle" or "tri" in either case.
 
 ![Tri3](../topology/tri3.png)
@@ -133,7 +136,8 @@ The side numbering for a tri element is shown below.  For a triangular shell, th
 
 ![Tri-Number](../topology/triangle-face-numbering.png)
 
-\section quad Quadrilateral Element Types
+-------------------------
+\section quad Quadrilateral 
 These are usable in 2D or 3D meshes.  In a 3D mesh, they represent a quadrilateral shell element and the element name is "shell"; in a 2D mesh, the element name is "quad".
 
 ![Quad4](../topology/quad4.png)
@@ -165,7 +169,8 @@ The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell e
 
 
 
-\section tet Tetrahedral Element Types
+-------------------------
+\section tet Tetrahedral 
 ![Tet4](../topology/tet04.png)
 ![Tet5](../topology/tet05.png)
 ![Tet10](../topology/tet10.png)
@@ -184,7 +189,8 @@ TETRA         | 1     | 1, 2, 4    |
 
 ![Tet-Number](../topology/tet-face-numbering.png)
 
-\section pyr Pyramidal Element Types
+-------------------------
+\section pyr Pyramidal 
 ![Pyramid](../topology/pyramid.png)
 
 The `pyramid18` adds mid-face nodes to the triangular faces and the `pyramid19` adds a mid-volume node.
@@ -202,7 +208,8 @@ PYRAMID| 1 | 1, 2, 5 |
 ![Pyramid-Number](../topology/pyramid-face-numbering.png)
 
 
-\section wedge Wedge Element Types
+-------------------------
+\section wedge Wedge 
 ![Wedge6](../topology/wedge06.png)
 ![Wedge12](../topology/wedge12.png)
 ![Wedge15](../topology/wedge15.png)
@@ -228,7 +235,8 @@ WEDGE         | 1     | 1, 2, 5, 4 | 3           |
 
 ![Wedge-Number](../topology/wedge-face-numbering.png)
 
-\section hex Hexahedral Element Types
+-------------------------
+\section hex Hexahedral 
 ![Hex8](../topology/hex08.png)
 ![Hex9](../topology/hex09.png)
 ![Hex16](../topology/hex16.png)
