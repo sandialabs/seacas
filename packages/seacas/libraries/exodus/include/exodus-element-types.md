@@ -98,22 +98,22 @@ https://web.mscsoftware.com/training_videos/patran/reverb3/index.html#page/Finit
 For elements of type circle or sphere, the topology is one node at the center of the circle or sphere element.
 A circle or sphere element has no sides.
 
-![Circle](../doc/topology/circle.png)
-![Sphere](../doc/topology/sphere.png)
+![Circle](../topology/circle.png)
+![Sphere](../topology/sphere.png)
 
 \section bar Bar, Truss, Beam Element Types
 The element name for this element type can be "bar", "beam", "truss"
 
-![Bar2](../doc/topology/bar2.png)
-![Bar3](../doc/topology/bar3.png)
+![Bar2](../topology/bar2.png)
+![Bar3](../topology/bar3.png)
 
 \section tri Triangular Element Types
 These are usable in 2D or 3D meshes.  In a 3D mesh, they would represent triangular shells.  The element name is "triangle" or "tri" in either case.
 
-![Tri3](../doc/topology/tri3.png)
-![Tri4](../doc/topology/tri4.png)
-![Tri6](../doc/topology/tri6.png)
-![Tri7](../doc/topology/tri7.png)
+![Tri3](../topology/tri3.png)
+![Tri4](../topology/tri4.png)
+![Tri6](../topology/tri6.png)
+![Tri7](../topology/tri7.png)
 
 The side numbering for a tri element is shown below.  For a triangular shell, there are five sides. Side 1 is the "top" of the triangle given by nodes 1-2-3 and side 2 is the "bottom" of the triangle given by nodes 3-2-1.  Sides 3,4,5 correspond to sides 1,2,3 of the 2D triangle.
 
@@ -131,15 +131,15 @@ The side numbering for a tri element is shown below.  For a triangular shell, th
  |            | 4     | 2, 3       |
  |            | 5     | 3, 1       |
 
-![Tri-Number](../doc/topology/triangle-face-numbering.png)
+![Tri-Number](../topology/triangle-face-numbering.png)
 
 \section quad Quadrilateral Element Types
 These are usable in 2D or 3D meshes.  In a 3D mesh, they represent a quadrilateral shell element and the element name is "shell"; in a 2D mesh, the element name is "quad".
 
-![Quad4](../doc/topology/quad4.png)
-![Quad5](../doc/topology/quad5.png)
-![Quad8](../doc/topology/quad8.png)
-![Quad9](../doc/topology/quad9.png)
+![Quad4](../topology/quad4.png)
+![Quad5](../topology/quad5.png)
+![Quad8](../topology/quad8.png)
+![Quad9](../topology/quad9.png)
 
 The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell element are shown below.
 
@@ -150,7 +150,7 @@ The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell e
  |            | 3     | 3, 4       |
  |            | 4     | 4, 1       |
 
-![Quad-Number](../doc/topology/quad-face-numbering.png)
+![Quad-Number](../topology/quad-face-numbering.png)
 
  Element Type |Side \#|Node Order  |
 --------------|:-----:|:----------:|
@@ -161,17 +161,17 @@ The side numbering for a 2D quadrilateral element and a 3D quadrilateral shell e
  |            | 5     | 3, 4       |
  |             | 6     | 4, 1       |
 
-![Shell-Number](../doc/topology/shell-face-numbering.png)
+![Shell-Number](../topology/shell-face-numbering.png)
 
 
 
 \section tet Tetrahedral Element Types
-![Tet4](../doc/topology/tet04.png)
-![Tet5](../doc/topology/tet05.png)
-![Tet10](../doc/topology/tet10.png)
-![Tet11](../doc/topology/tet11.png)
-![Tet14](../doc/topology/tet14.png)
-![Tet15](../doc/topology/tet15.png)
+![Tet4](../topology/tet04.png)
+![Tet5](../topology/tet05.png)
+![Tet10](../topology/tet10.png)
+![Tet11](../topology/tet11.png)
+![Tet14](../topology/tet14.png)
+![Tet15](../topology/tet15.png)
 
 The side numbering for a tetrahedral element type is shown below.
 
@@ -182,10 +182,10 @@ TETRA         | 1     | 1, 2, 4    |
 |             | 3     | 1, 4, 3    |
 |             | 4     | 1, 3, 2    |
 
-![Tet-Number](../doc/topology/tet-face-numbering.png)
+![Tet-Number](../topology/tet-face-numbering.png)
 
 \section pyr Pyramidal Element Types
-![Pyramid](../doc/topology/pyramid.png)
+![Pyramid](../topology/pyramid.png)
 
 The `pyramid18` adds mid-face nodes to the triangular faces and the `pyramid19` adds a mid-volume node.
 
@@ -199,16 +199,16 @@ PYRAMID| 1 | 1, 2, 5 |
 |      | 4 | 4, 1, 5 |
 |      | 5 | 1, 4, 3, 2 |
 
-![Pyramid-Number](../doc/topology/pyramid-face-numbering.png)
+![Pyramid-Number](../topology/pyramid-face-numbering.png)
 
 
 \section wedge Wedge Element Types
-![Wedge6](../doc/topology/wedge06.png)
-![Wedge12](../doc/topology/wedge12.png)
-![Wedge15](../doc/topology/wedge15.png)
-![Wedge16](../doc/topology/wedge16.png)
-![Wedge20](../doc/topology/wedge20.png)
-![Wedge21](../doc/topology/wedge21.png)
+![Wedge6](../topology/wedge06.png)
+![Wedge12](../topology/wedge12.png)
+![Wedge15](../topology/wedge15.png)
+![Wedge16](../topology/wedge16.png)
+![Wedge20](../topology/wedge20.png)
+![Wedge21](../topology/wedge21.png)
 
 The side numbering for a wedge element type is shown below. Note that
 the face mapping for this element does not match the MSC/Patran face
@@ -226,14 +226,14 @@ WEDGE         | 1     | 1, 2, 5, 4 | 3           |
 |             | 4     | 1, 3, 2    | 1           |
 |             | 5     | 4, 5, 6    | 2           |
 
-![Wedge-Number](../doc/topology/wedge-face-numbering.png)
+![Wedge-Number](../topology/wedge-face-numbering.png)
 
 \section hex Hexahedral Element Types
-![Hex8](../doc/topology/hex08.png)
-![Hex9](../doc/topology/hex09.png)
-![Hex16](../doc/topology/hex16.png)
-![Hex20](../doc/topology/hex20.png)
-![Hex27](../doc/topology/hex27.png)
+![Hex8](../topology/hex08.png)
+![Hex9](../topology/hex09.png)
+![Hex16](../topology/hex16.png)
+![Hex20](../topology/hex20.png)
+![Hex27](../topology/hex27.png)
 
 The side numbering for a hexahedral element type is shown below.
 
@@ -246,4 +246,4 @@ HEX           | 1     | 1, 2, 6, 5 |
 |             | 5     | 1, 4, 3, 2 |
 |             | 6     | 5, 6, 7, 8 |
 
-![Hex-Number](../doc/topology/hex-face-numbering.png)
+![Hex-Number](../topology/hex-face-numbering.png)
