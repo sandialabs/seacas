@@ -159,6 +159,9 @@ int ex_get_partial_num_map(int exoid, ex_entity_type map_type, ex_entity_id map_
   /* read in the map */
   start[0] = ent_start - 1;
   count[0] = ent_count;
+  if (count[0] == 0) {
+    start[0] = 0;
+  }
 
   if (ex_int64_status(exoid) & EX_MAPS_INT64_API) {
     status = nc_get_vara_longlong(exoid, var_id, start, count, map);

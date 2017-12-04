@@ -291,6 +291,22 @@ int elem_info(int info, int ielem_type, int supp)
     }
     break;
 
+  case HEX16:        /* localization element */
+    switch (info) { 
+    case NNODES: answer  = 16; break;
+    case NDIM: answer    = 3; break;
+    case NN_SIDE:
+      switch (supp) {
+      case 5:
+      case 6: answer  = 8; break;
+      default: answer = 6; break;
+      }
+      break;
+
+    default: fprintf(stderr, "%sERROR: Unknown quantity\n", yo); exit(1);
+    }
+    break;
+
   case HEX20:       /* serendipity triquadratic hexahedron */
     switch (info) { /* select type of information required */
     case NNODES: answer  = 20; break;
@@ -366,6 +382,15 @@ int elem_info(int info, int ielem_type, int supp)
       }
       break;
 
+    default: fprintf(stderr, "%sERROR: Unknown quantity\n", yo); exit(1);
+    }
+    break;
+
+  case WEDGE12:
+    switch (info) {
+    case NNODES: answer = 12; break;
+    case NDIM: answer   = 3; break;
+    case NN_SIDE: answer = 6; break;
     default: fprintf(stderr, "%sERROR: Unknown quantity\n", yo); exit(1);
     }
     break;
@@ -706,6 +731,7 @@ int get_type(char string[], int nodes, int num_dim)
     else if (strncmp(string, "hex", 3) == 0) { /* select element shape */
       switch (nodes) {                         /* select number of nodes in this element */
       case 8: /* trilinear hexahedron */ answer                 = HEX8; break;
+      case 16: /* localization element */ answer                = HEX16; break;
       case 20: /* serendipity triquadratic hexahedron */ answer = HEX20; break;
       case 27: /* triquadratic hexahedron */ answer             = HEX27; break;
       default:
@@ -734,6 +760,7 @@ int get_type(char string[], int nodes, int num_dim)
     if (strncmp(string, "wedge", 5) == 0) { /* select element shape */
       switch (nodes) {                      /* select number of nodes in this element */
       case 6: /* trilinear wedge */ answer     = WEDGE6; break;
+      case 12: /* localization element */ answer = WEDGE12; break;
       case 15: /* triquadratic wedge */ answer = WEDGE15; break;
       case 16: /* triquadratic wedge */ answer = WEDGE16; break;
       default:

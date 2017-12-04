@@ -75,8 +75,8 @@ const char *elem_name_from_enum(const E_Type elem_type)
   static const char *elem_names[NULL_EL] = {
       "SPHERE",    "BAR2",    "BAR3",    "QUAD4",    "QUAD8",     "QUAD9",     "SHELL4",
       "SHELL8",    "SHELL9",  "TRI3",    "TRI4",     "TRI6",      "TRI7",      "TSHELL3",
-      "TSHELL4",   "TSHELL6", "TSHELL7", "HEX8",     "HEX20",     "HEX27",     "HEXSHELL",
-      "TET4",      "TET10",   "TET8",    "TET14",    "TET15",     "WEDGE6",    "WEDGE15",
+      "TSHELL4",   "TSHELL6", "TSHELL7", "HEX8",     "HEX16",     "HEX20",     "HEX27",     "HEXSHELL",
+      "TET4",      "TET10",   "TET8",    "TET14",    "TET15",     "WEDGE6",    "WEDGE12",   "WEDGE15",
       "WEDGE16",   "WEDGE20", "WEDGE21", "PYRAMID5", "PYRAMID13", "PYRAMID14", "PYRAMID18",
       "PYRAMID19", "SHELL2",  "SHELL3"};
   return elem_names[elem_type];
@@ -93,6 +93,7 @@ E_Type get_elem_type(const char *elem_name, const int num_nodes, const int num_d
       switch (num_nodes) {
       case 8: answer  = HEX8; break;
       case 12: answer = HEXSHELL; break;
+      case 16: answer = HEX16; break;
       case 20: answer = HEX20; break;
       case 27: answer = HEX27; break;
       default:
@@ -261,6 +262,7 @@ E_Type get_elem_type(const char *elem_name, const int num_nodes, const int num_d
     if (strncasecmp(elem_name, "WEDGE", 5) == 0) {
       switch (num_nodes) {
       case 6: answer  = WEDGE6; break;
+      case 12: answer = WEDGE12; break;
       case 15: answer = WEDGE15; break;
       case 16: answer = WEDGE16; break;
       case 20: answer = WEDGE20; break;
@@ -616,6 +618,19 @@ int get_elem_info(const int req, const E_Type etype)
     }
     break;
 
+  case HEX16:     /* localization element NSNODES is not consistent... */
+    switch (req)
+    {
+    case NNODES: /* number of nodes */ answer             = 16; break;
+    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    case NSIDES: answer                                   = 6; break;
+    default:
+      Gen_Error(0, "fatal: unknown quantity");
+      error_report();
+      exit(1);
+    }
+    break;
+
   case HEX20:    /* serendipity triquadratic hexahedron */
     switch (req) /* select type of information required */
     {
@@ -731,6 +746,18 @@ int get_elem_info(const int req, const E_Type etype)
   case WEDGE6:
     switch (req) {
     case NNODES: answer                                   = 6; break;
+    case NSIDES: answer                                   = 5; break;
+    case NDIM: /* number of physical dimensions */ answer = 3; break;
+    default:
+      Gen_Error(0, "fatal: unknown quantity");
+      error_report();
+      exit(1);
+    }
+    break;
+
+  case WEDGE12:
+    switch (req) {
+    case NNODES: answer                                   = 12; break;
     case NSIDES: answer                                   = 5; break;
     case NDIM: /* number of physical dimensions */ answer = 3; break;
     default:
@@ -1048,6 +1075,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
     break;
 
   case HEX8:
+  case HEX16:
   case HEX20:
   case HEX27:
   case HEXSHELL: /* this should be the same as a HEX element */
@@ -1270,6 +1298,7 @@ int get_side_id(const E_Type etype, const INT *connect, const int nsnodes, INT s
     break;
 
   case WEDGE6:
+  case WEDGE12:
   case WEDGE15:
   case WEDGE16:
   case WEDGE20:
@@ -1503,6 +1532,7 @@ int get_side_id_hex_tet(const E_Type etype,        /* The element type */
     break;
 
   case HEX8:
+  case HEX16:
   case HEX20:
   case HEX27:
     /* SIDE 1 */
@@ -1701,6 +1731,15 @@ int ss_to_node_list(const E_Type etype,          /* The element type */
       {4, 5, 6, 0}  /* Side 5 nodes -- triangle */
   };
 
+  /* wedge 12 */
+  static int wedge12_table[5][6] = {
+    {1, 2, 5,  4,  7, 10}, /* Side 1 nodes -- quad4     */
+    {2, 3, 6,  5,  8, 11}, /* Side 2 nodes -- quad4     */
+    {3, 1, 4,  6,  9, 12}, /* Side 3 nodes -- quad4     */
+    {1, 3, 2,  9,  8,  7}, /* Side 4 nodes -- triangle6 */
+    {4, 5, 6, 10, 11, 12}  /* Side 5 nodes -- triangle6 */
+  };
+
   /* wedge 15 or 16 */
   static int wedge15_table[5][8] = {
       {1, 2, 5, 4, 7, 11, 13, 10}, /* Side 1 nodes -- quad     */
@@ -1738,6 +1777,16 @@ int ss_to_node_list(const E_Type etype,          /* The element type */
       {5, 6, 7, 8, 17, 18, 19, 20, 23}  /* side 6 */
   };
 
+  /* hex16 */
+  static int hex16_table[6][9] = {
+    {1, 2, 6, 5, 9, 13, 0, 0},  /* side 1 */
+    {2, 3, 7, 6, 10, 14, 0, 0}, /* side 2 */
+    {3, 4, 8, 7, 11, 15, 0, 0}, /* side 3 */
+    {4, 1, 5, 8, 4, 12, 16, 0}, /* side 4 */
+    {1, 4, 3, 2, 12, 11, 10, 9}, /* side 5 */
+    {5, 6, 7, 8, 13, 14, 15, 16} /* side 6 */
+  };
+
   /* hexshell */
   static int hexshell_table[6][6] = {
       {1, 2, 6, 5, 10, 9},  // side 1
@@ -1753,8 +1802,8 @@ int ss_to_node_list(const E_Type etype,          /* The element type */
       {1, 2, 5, 6, 11, 10, 15, 0, 0}, // side 1 (tri)
       {2, 3, 5, 7, 12, 11, 16, 0, 0}, // side 2 (tri)
       {3, 4, 5, 8, 13, 12, 17, 0, 0}, // side 3 (tri)
-      {1, 5, 4, 10, 13, 9, 18, 0, 0}, // side 4 (tri)
-      {1, 4, 3, 2, 9, 8, 7, 6, 15}    // side 5 (quad)
+      {4, 1, 5, 9, 10, 13, 18, 0, 0}, // side 4 (tri)
+      {1, 4, 3, 2, 9, 8, 7, 6, 14}    // side 5 (quad)
   };
 
   static int bar_table[1][3] = {{1, 2, 3}};
@@ -1920,6 +1969,23 @@ int ss_to_node_list(const E_Type etype,          /* The element type */
     }
     break;
 
+  case HEX16:
+    switch (side_num) {
+    case 4:
+    case 5:
+      for (i = 0; i < 8; i++) {
+	ss_node_list[i] = connect[(hex16_table[side_num][i] - 1)];
+      }
+      break;
+
+    default:
+      for (i = 0; i < 6; i++) {
+	ss_node_list[i] = connect[(hex16_table[side_num][i] - 1)];
+      }
+      break;
+    }
+    break;
+
   case HEX20:
     for (i = 0; i < 8; i++) {
       ss_node_list[i] = connect[(hex_table[side_num][i] - 1)];
@@ -1971,6 +2037,12 @@ int ss_to_node_list(const E_Type etype,          /* The element type */
         ss_node_list[i] = connect[(wedge6_table[side_num][i] - 1)];
       }
       break;
+    }
+    break;
+
+  case WEDGE12:
+    for (i = 0; i < 6; i++) {
+      ss_node_list[i] = connect[(wedge12_table[side_num][i] - 1)];
     }
     break;
 
@@ -2326,6 +2398,22 @@ int get_ss_mirror(const E_Type etype,             /* The element type */
     }
     break;
 
+  case HEX16:
+    switch (side_num) {
+    case 4:
+    case 5:
+      for (i = 0; i < 8; i++) {
+	mirror_node_list[i] = ss_node_list[sqr_table[i]];
+      }
+      break;
+
+    default:
+      for (i = 0; i < 6; i++) {
+	mirror_node_list[i] = ss_node_list[sqr_table[i]];
+      }
+    }
+    break;
+
   case HEX27:
     for (i = 0; i < 9; i++) {
       mirror_node_list[i] = ss_node_list[sqr_table[i]];
@@ -2377,6 +2465,12 @@ int get_ss_mirror(const E_Type etype,             /* The element type */
         mirror_node_list[i] = ss_node_list[sqr_table[i]];
       }
       break;
+    }
+    break;
+
+  case WEDGE12:
+    for (i = 0; i < 6; i++) {
+      mirror_node_list[i] = ss_node_list[tri_table[i]];
     }
     break;
 
