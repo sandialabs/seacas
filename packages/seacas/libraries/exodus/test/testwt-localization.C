@@ -201,15 +201,15 @@ int main(int argc, char **argv)
                                 18, 20, 30, 19, 26, 25, 10, 12, 18, 11, 22, 17}};
   std::array<int, 16> connect2{{12, 14, 20, 18, 13, 23, 19, 22}};
 
-  for (int i = 0; i < 32; i++) {
+  for (int i = 0; i < blocks[0].num_entry * blocks[0].num_nodes_per_entry / 2; i++) {
     connect0[i + 32] = connect0[i] + 32;
   }
 
-  for (int i = 0; i < 24; i++) {
+  for (int i = 0; i < blocks[1].num_entry * blocks[1].num_nodes_per_entry / 2; i++) {
     connect1[i + 24] = connect1[i] + 32;
   }
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < blocks[2].num_entry * blocks[2].num_nodes_per_entry / 2; i++) {
     connect2[i + 8] = connect2[i] + 32;
   }
 
