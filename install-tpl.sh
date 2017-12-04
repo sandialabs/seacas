@@ -12,7 +12,7 @@ then
 fi
 
 # =================== INSTALL HDF5 ===============
-hdf_version="1.8.19"
+hdf_version="1.8.20"
 
 cd $ACCESS
 cd TPL/hdf5

@@ -93,9 +93,12 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   EX_FUNC_ENTER();
   ex_check_valid_file_id(exoid, __func__);
 
+#if !defined(PARALLEL_AWARE_EXODUS)
   if (num_ent == 0) {
     EX_FUNC_LEAVE(EX_NOERR);
   }
+#endif
+
   /* Determine index of obj_id in vobjids array */
   if (obj_type != EX_NODAL) {
     obj_id_ndx = ex_id_lkup(exoid, obj_type, obj_id);
@@ -219,6 +222,9 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
   stride[0] = 1;
   stride[1] = num_attr;
 
+  if (count[0] == 0) {
+    start[0] = 0;
+  }
   if (ex_comp_ws(exoid) == 4) {
     status = nc_get_vars_float(exoid, attrid, start, count, stride, attrib);
   }

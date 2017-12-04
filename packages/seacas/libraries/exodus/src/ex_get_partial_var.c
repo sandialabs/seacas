@@ -74,9 +74,11 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
   EX_FUNC_ENTER();
 
+#if !defined(PARALLEL_AWARE_EXODUS)
   if (num_entities == 0) {
     EX_FUNC_LEAVE(status);
   }
+#endif
 
   /* Verify that time_step is within bounds */
   {
@@ -143,6 +145,9 @@ int ex_get_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
   count[0] = 1;
   count[1] = num_entities;
+  if (count[1] == 0) {
+    start[1] = 0;
+  }
 
   if (ex_comp_ws(exoid) == 4) {
     status = nc_get_vara_float(exoid, varid, start, count, var_vals);

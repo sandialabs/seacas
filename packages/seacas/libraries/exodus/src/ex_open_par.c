@@ -182,7 +182,7 @@ int ex_open_par_int(const char *path, int mode, int *comp_ws, int *io_ws, float 
   }
 
   if (mode & EX_WRITE) {
-    nc_mode = (NC_WRITE | NC_SHARE | NC_MPIIO);
+    nc_mode = (NC_WRITE | NC_MPIIO);
   }
   else {
     nc_mode = (NC_NOWRITE | NC_SHARE | NC_MPIIO);

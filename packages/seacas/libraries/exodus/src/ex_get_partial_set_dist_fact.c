@@ -126,6 +126,9 @@ int ex_get_partial_set_dist_fact(int exoid, ex_entity_type set_type, ex_entity_i
   /* read in the distribution factors array */
   start[0] = offset - 1;
   count[0] = num_to_put;
+  if (count[0] == 0) {
+    start[0] = 0;
+  }
   if (ex_comp_ws(exoid) == 4) {
     status = nc_get_vara_float(exoid, dist_id, start, count, set_dist_fact);
   }

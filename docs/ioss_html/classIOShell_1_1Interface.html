@@ -121,9 +121,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a814d5360635bb26392a21c0a99a6c4df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bebac52793526e98227e21ae44a0c14"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a0bebac52793526e98227e21ae44a0c14">compose_output</a> {&quot;none&quot;}</td></tr>
 <tr class="separator:a0bebac52793526e98227e21ae44a0c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86bb8fd7ae5f8fbbb620dd85828f62fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a86bb8fd7ae5f8fbbb620dd85828f62fc">maximum_time</a> {0.0}</td></tr>
+<tr class="memitem:a86bb8fd7ae5f8fbbb620dd85828f62fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a86bb8fd7ae5f8fbbb620dd85828f62fc">maximum_time</a> {std::numeric_limits&lt;double&gt;::max()}</td></tr>
 <tr class="separator:a86bb8fd7ae5f8fbbb620dd85828f62fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a10ad18ee801b25d10f49fa136e8c32"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a6a10ad18ee801b25d10f49fa136e8c32">minimum_time</a> {0.0}</td></tr>
+<tr class="memitem:a6a10ad18ee801b25d10f49fa136e8c32"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a6a10ad18ee801b25d10f49fa136e8c32">minimum_time</a> {-std::numeric_limits&lt;double&gt;::max()}</td></tr>
 <tr class="separator:a6a10ad18ee801b25d10f49fa136e8c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2e198f4889ee580ae0515615c062e34"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#ac2e198f4889ee580ae0515615c062e34">append_time</a> {std::numeric_limits&lt;double&gt;::max()}</td></tr>
 <tr class="separator:ac2e198f4889ee580ae0515615c062e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,6 +139,11 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a9485b29e8885ea8d21fbec90569b0b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0560116a65c386339b750984552dde3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#af0560116a65c386339b750984552dde3">serialize_io_size</a> {0}</td></tr>
 <tr class="separator:af0560116a65c386339b750984552dde3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07d33285a42685b05117805847929080"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a07d33285a42685b05117805847929080">split_times</a> {0}</td></tr>
+<tr class="separator:a07d33285a42685b05117805847929080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fb4ae578b6249727d1e3c787475dd45"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a6fb4ae578b6249727d1e3c787475dd45">split_cyclic</a> {0}</td></tr>
+<tr class="memdesc:a6fb4ae578b6249727d1e3c787475dd45"><td class="mdescLeft">&#160;</td><td class="mdescRight">If non-zero, then the <code>split_times</code> timesteps will be put into.  <a href="#a6fb4ae578b6249727d1e3c787475dd45">More...</a><br /></td></tr>
+<tr class="separator:a6fb4ae578b6249727d1e3c787475dd45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4c5a5a945d9c380bb65d94bb133e10b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#ae4c5a5a945d9c380bb65d94bb133e10b">shuffle</a> {false}</td></tr>
 <tr class="separator:ae4c5a5a945d9c380bb65d94bb133e10b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca48d73739f4fc9c6fc6524784e773d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#aca48d73739f4fc9c6fc6524784e773d2">debug</a> {false}</td></tr>
@@ -159,6 +164,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a4a34a8493c19286b91e772b9eb250929"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacbb19a0041034880a62897a34cfc2d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#aacbb19a0041034880a62897a34cfc2d6">netcdf5</a> {false}</td></tr>
 <tr class="separator:aacbb19a0041034880a62897a34cfc2d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a023c4c822e3a231cc204e9611f7da1fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a023c4c822e3a231cc204e9611f7da1fd">quiet</a> {false}</td></tr>
+<tr class="separator:a023c4c822e3a231cc204e9611f7da1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7be79eb41cadadc45e794f87920512d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a7be79eb41cadadc45e794f87920512d9">in_memory_read</a> {false}</td></tr>
 <tr class="separator:a7be79eb41cadadc45e794f87920512d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad801a53439deed1c043fef207ab50b4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#ad801a53439deed1c043fef207ab50b4a">in_memory_write</a> {false}</td></tr>
@@ -167,6 +174,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ad8414e8c24596433dd4d729047b28a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14b0660c39361257f0c2c80d9fc07b71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a14b0660c39361257f0c2c80d9fc07b71">delete_timesteps</a> {false}</td></tr>
 <tr class="separator:a14b0660c39361257f0c2c80d9fc07b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41b743a44174e47e46baa9d5e1b46f8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a41b743a44174e47e46baa9d5e1b46f8d">minimize_open_files</a> {false}</td></tr>
+<tr class="separator:a41b743a44174e47e46baa9d5e1b46f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dd20bf7388c5c19368fafd741d10f86"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIOShell_1_1Interface.html#a0dd20bf7388c5c19368fafd741d10f86">fieldSuffixSeparator</a> {'_'}</td></tr>
 <tr class="separator:a0dd20bf7388c5c19368fafd741d10f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -521,7 +530,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double IOShell::Interface::maximum_time {0.0}</td>
+          <td class="memname">double IOShell::Interface::maximum_time {std::numeric_limits&lt;double&gt;::max()}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -542,6 +551,20 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a41b743a44174e47e46baa9d5e1b46f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41b743a44174e47e46baa9d5e1b46f8d">&#9670;&nbsp;</a></span>minimize_open_files</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool IOShell::Interface::minimize_open_files {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a6a10ad18ee801b25d10f49fa136e8c32"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6a10ad18ee801b25d10f49fa136e8c32">&#9670;&nbsp;</a></span>minimum_time</h2>
 
@@ -549,7 +572,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double IOShell::Interface::minimum_time {0.0}</td>
+          <td class="memname">double IOShell::Interface::minimum_time {-std::numeric_limits&lt;double&gt;::max()}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -626,6 +649,20 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a023c4c822e3a231cc204e9611f7da1fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a023c4c822e3a231cc204e9611f7da1fd">&#9670;&nbsp;</a></span>quiet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool IOShell::Interface::quiet {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ad80846c7766d700187ed72bdbd3d3d0f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad80846c7766d700187ed72bdbd3d3d0f">&#9670;&nbsp;</a></span>reals_32_bit</h2>
 
@@ -665,6 +702,37 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6fb4ae578b6249727d1e3c787475dd45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fb4ae578b6249727d1e3c787475dd45">&#9670;&nbsp;</a></span>split_cyclic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int IOShell::Interface::split_cyclic {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If non-zero, then the <code>split_times</code> timesteps will be put into. </p>
+
+</div>
+</div>
+<a id="a07d33285a42685b05117805847929080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07d33285a42685b05117805847929080">&#9670;&nbsp;</a></span>split_times</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int IOShell::Interface::split_times {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>If non-zero, then put <code>split_times</code> timesteps in each file. Then close file and start new file. </p>
 
 </div>
 </div>

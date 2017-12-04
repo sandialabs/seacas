@@ -21,8 +21,6 @@ matrix:
     - compiler: gcc
       env: MPI=ON
     - compiler: clang
-      env: THREADSAFE=ON
-    - compiler: clang
       env: MPI=ON THREADSAFE=ON
     - compiler: gcc
       env: KOKKOS=ON
@@ -34,8 +32,11 @@ matrix:
       env: FORTRAN=OFF
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get -y install cmake
+  # C++14
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+  - sudo apt-get -y install g++-6
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - sudo apt-get -y install gfortran
   - sudo apt-get -y install libz-dev
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi

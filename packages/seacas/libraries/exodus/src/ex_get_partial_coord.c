@@ -142,6 +142,9 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
 
       count[0] = 1;
       count[1] = num_nodes;
+      if (count[1] == 0) {
+	start[1] = 0;
+      }
 
       if (i == 0 && x_coor != NULL) {
         which = "X";
@@ -218,7 +221,10 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
 
       start[0] = start_node_num;
       count[0] = num_nodes;
-
+      if (count[0] == 0) {
+	start[0] = 0;
+      }
+      
       if (i == 0) {
         coor    = x_coor;
         which   = "X";
