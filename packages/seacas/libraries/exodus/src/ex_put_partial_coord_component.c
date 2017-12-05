@@ -59,7 +59,7 @@ int ex_put_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
 
   int     numnoddim, ndimdim;
   int64_t num_nod;
-  size_t  i, num_dim, start[2], count[2];
+  size_t  num_dim, start[2], count[2];
   char    errmsg[MAX_ERR_LENGTH];
 
   EX_FUNC_ENTER();
@@ -110,8 +110,7 @@ int ex_put_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
 
   if (component > num_dim) {
     snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: Component (%d) is larger than number of dimensions (%" PRId64
-             ") in file id %d",
+             "ERROR: Component (%d) is larger than number of dimensions (%" ST_ZU ") in file id %d",
              component, num_dim, exoid);
     ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
