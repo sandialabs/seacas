@@ -29,7 +29,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Exodus
-   &#160;<span id="projectnumber">7.09</span>
+   &#160;<span id="projectnumber">7.10</span>
    </div>
   </td>
  </tr>
@@ -116,9 +116,9 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.09f</td></tr>
+<tr class="memitem:aa18e08d59faa100114b77fe55900ec49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a>&#160;&#160;&#160;7.10f</td></tr>
 <tr class="separator:aa18e08d59faa100114b77fe55900ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;709</td></tr>
+<tr class="memitem:a54e92e59ab8df2901302fd50bc103fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a54e92e59ab8df2901302fd50bc103fbf">EX_API_VERS_NODOT</a>&#160;&#160;&#160;710</td></tr>
 <tr class="separator:a54e92e59ab8df2901302fd50bc103fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a2d5e98bf5604721ad61b71685b68ef7e">EX_VERS</a>&#160;&#160;&#160;<a class="el" href="exodusII_8h.html#aa18e08d59faa100114b77fe55900ec49">EX_API_VERS</a></td></tr>
 <tr class="separator:a2d5e98bf5604721ad61b71685b68ef7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -407,6 +407,8 @@ Functions</h2></td></tr>
 <tr class="separator:a200a95bc7ca0bd76e1ccbf8ec94aeb56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33f70370ef0908a896957b676e7a919f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a33f70370ef0908a896957b676e7a919f">ex_get_coord</a> (int exoid, void *x_coor, void *y_coor, void *z_coor)</td></tr>
 <tr class="separator:a33f70370ef0908a896957b676e7a919f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c3ddda5721f323660a109fb130481b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a3c3ddda5721f323660a109fb130481b1">ex_get_partial_coord_component</a> (int exoid, int64_t start_node_num, int64_t num_nodes, int component, void *coor)</td></tr>
+<tr class="separator:a3c3ddda5721f323660a109fb130481b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac568bff3e007e0cd14df74cbc65a65c9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ac568bff3e007e0cd14df74cbc65a65c9">ex_get_partial_coord</a> (int exoid, int64_t start_node_num, int64_t num_nodes, void *x_coor, void *y_coor, void *z_coor)</td></tr>
 <tr class="separator:ac568bff3e007e0cd14df74cbc65a65c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1f33f5a3b24a7e8bc700053aff4c7d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#ad1f33f5a3b24a7e8bc700053aff4c7d1">ex_get_ids</a> (int exoid, <a class="el" href="exodusII_8h.html#a1f649ed288d305ab55773ffd1d220490">ex_entity_type</a> obj_type, <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *ids)</td></tr>
@@ -469,6 +471,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5aa680de654224107fa67a0e019b6bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b04e195e3fa979ba07470b860d70145"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a7b04e195e3fa979ba07470b860d70145">ex_put_coord</a> (int exoid, const void *x_coor, const void *y_coor, const void *z_coor)</td></tr>
 <tr class="separator:a7b04e195e3fa979ba07470b860d70145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55e7ca571ec29f68054f7087d3b76c79"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a55e7ca571ec29f68054f7087d3b76c79">ex_put_partial_coord_component</a> (int exoid, int64_t start_node_num, int64_t num_nodes, int component, const void *coor)</td></tr>
+<tr class="separator:a55e7ca571ec29f68054f7087d3b76c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af218308aa23e0723e1a1e4e5a42652e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#af218308aa23e0723e1a1e4e5a42652e5">ex_put_partial_coord</a> (int exoid, int64_t start_node_num, int64_t num_nodes, const void *x_coor, const void *y_coor, const void *z_coor)</td></tr>
 <tr class="separator:af218308aa23e0723e1a1e4e5a42652e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ceec0317e895d0d2a435321a0188475"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exodusII_8h.html#a5ceec0317e895d0d2a435321a0188475">ex_put_map</a> (int exoid, const <a class="el" href="exodusII_8h.html#a393bfb7fb8f56a222e639df9736bb797">void_int</a> *elem_map)</td></tr>
@@ -943,7 +947,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.09f</td>
+          <td class="memname">#define EX_API_VERS&#160;&#160;&#160;7.10f</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -957,7 +961,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;709</td>
+          <td class="memname">#define EX_API_VERS_NODOT&#160;&#160;&#160;710</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -5743,6 +5747,62 @@ Variables</h2></td></tr>
 </dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="_2test_2test_ts_partial_nvar_rd_8c-example.html#a2">/test/test_ts_partial_nvar_rd.c</a>.</dd>
 </dl>
+</div>
+</div>
+<a id="a3c3ddda5721f323660a109fb130481b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c3ddda5721f323660a109fb130481b1">&#9670;&nbsp;</a></span>ex_get_partial_coord_component()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_get_partial_coord_component </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_node_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>component</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>coor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>reads the coordinates of some of the nodes in the model for the specified component Memory must be allocated for the coordinate array (coor) before this call is made. The length of the array is at least <code>num_nodes</code> Because the coordinates are floating point values, the application code must declare the array passed to be the appropriate type "float" or "double" to match the compute word size passed in <a class="el" href="exodusII_8h.html#a37c928f7e30c333ee7c704d04f7e3a87">ex_create()</a> or <a class="el" href="exodusII_8h.html#a9a940cd55241b5c5e7960a123d79c94c">ex_open()</a> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">start_node_num</td><td>the starting index of the coordinates to be returned. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_nodes</td><td>the number of nodes to read coordinates for. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">component</td><td>which component (1=X, 2=Y, 3=Z) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">coor</td><td>Returned coordinate of the nodes for the specified component. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a85e2001c034b283e85fd16b6d41f73c3"></a>
@@ -11835,6 +11895,62 @@ Variables</h2></td></tr>
 </dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="_2test_2test_ts_partial_nvar_8c-example.html#a2">/test/test_ts_partial_nvar.c</a>, and <a class="el" href="_2test_2testwt-partial_8c-example.html#a9">/test/testwt-partial.c</a>.</dd>
 </dl>
+</div>
+</div>
+<a id="a55e7ca571ec29f68054f7087d3b76c79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55e7ca571ec29f68054f7087d3b76c79">&#9670;&nbsp;</a></span>ex_put_partial_coord_component()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ex_put_partial_coord_component </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exoid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>start_node_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>num_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>component</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>coor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>writes the coordinates of some of the nodes in the model for the specified component </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exoid</td><td>exodus file id </td></tr>
+    <tr><td class="paramname">start_node_num</td><td>the starting index (1-based) of the coordinates to be written </td></tr>
+    <tr><td class="paramname">num_nodes</td><td>the number of nodes to write coordinates for. </td></tr>
+    <tr><td class="paramname">component</td><td>which component (1=X, 2=Y, 3=Z) </td></tr>
+    <tr><td class="paramname">coor</td><td>coord array </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a45b7f5da6992a1e5917a0022d6b03247"></a>
