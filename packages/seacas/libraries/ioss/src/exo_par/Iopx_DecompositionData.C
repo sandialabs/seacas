@@ -176,15 +176,19 @@ namespace Iopx {
 
     if (m_decomposition.needs_centroids()) {
       // Get my coordinate data using direct exodus calls
-      std::vector<double> x(decomp_node_count());
-      ;
+      size_t size = decomp_node_count();
+      if (size == 0) {
+	size = 1;  // Workaround for ambiguity in ex_get_partial_coord
+      }
+
+      std::vector<double> x(size);
       std::vector<double> y;
       std::vector<double> z;
       if (m_decomposition.m_spatialDimension > 1) {
-        y.resize(decomp_node_count());
+        y.resize(size);
       }
       if (m_decomposition.m_spatialDimension > 2) {
-        z.resize(decomp_node_count());
+        z.resize(size);
       }
 
       m_decomposition.show_progress("\tex_get_partial_coord");
@@ -767,8 +771,8 @@ namespace Iopx {
     int ierr = 0;
     if (field.get_name() == "mesh_model_coordinates_x") {
       m_decomposition.show_progress("\tex_get_partial_coord X");
-      ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
-                                  TOPTR(tmp), nullptr, nullptr);
+      ierr = ex_get_partial_coord_component(filePtr, decomp_node_offset() + 1, decomp_node_count(), 1,
+					    TOPTR(tmp));
       if (ierr >= 0) {
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
       }
@@ -776,8 +780,7 @@ namespace Iopx {
 
     else if (field.get_name() == "mesh_model_coordinates_y") {
       m_decomposition.show_progress("\tex_get_partial_coord Y");
-      ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), nullptr,
-                                  TOPTR(tmp), nullptr);
+      ierr = ex_get_partial_coord_component(filePtr, decomp_node_offset() + 1, decomp_node_count(), 2, TOPTR(tmp));
       if (ierr >= 0) {
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
       }
@@ -785,8 +788,7 @@ namespace Iopx {
 
     else if (field.get_name() == "mesh_model_coordinates_z") {
       m_decomposition.show_progress("\tex_get_partial_coord Z");
-      ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(), nullptr,
-                                  nullptr, TOPTR(tmp));
+      ierr = ex_get_partial_coord_component(filePtr, decomp_node_offset() + 1, decomp_node_count(), 3, TOPTR(tmp));
       if (ierr >= 0) {
         communicate_node_data(TOPTR(tmp), ioss_data, 1);
       }
@@ -813,12 +815,9 @@ namespace Iopx {
       // function does 3 reads internally.
 
       for (int d = 0; d < m_decomposition.m_spatialDimension; d++) {
-        double *coord[3];
-        coord[0] = coord[1] = coord[2] = nullptr;
-        coord[d]                       = TOPTR(tmp);
         m_decomposition.show_progress("\tex_get_partial_coord XYZ");
-        ierr = ex_get_partial_coord(filePtr, decomp_node_offset() + 1, decomp_node_count(),
-                                    coord[0], coord[1], coord[2]);
+        ierr = ex_get_partial_coord_component(filePtr, decomp_node_offset() + 1, decomp_node_count(), d+1, 
+					      tmp.data());
         if (ierr < 0) {
           return ierr;
         }

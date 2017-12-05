@@ -3466,8 +3466,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
 
-      int ierr = ex_put_partial_coord(get_file_pointer(), proc_offset + 1, file_count, rdata,
-                                      nullptr, nullptr);
+      int ierr = ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 1, rdata);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -3479,8 +3478,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       file_data.reserve(file_count);
       assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
-      int ierr = ex_put_partial_coord(get_file_pointer(), proc_offset + 1, file_count, nullptr,
-                                      rdata, nullptr);
+      int ierr = ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 2, rdata);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -3492,8 +3490,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       file_data.reserve(file_count);
       assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
-      int ierr = ex_put_partial_coord(get_file_pointer(), proc_offset + 1, file_count, nullptr,
-                                      nullptr, rdata);
+      int ierr = ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 3, rdata);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -3508,12 +3505,12 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       std::vector<double> y;
       std::vector<double> z;
 
-      x.reserve(file_count);
+      x.reserve(file_count > 0 ? file_count : 1);
       if (spatialDimension > 1) {
-        y.reserve(file_count);
+        y.reserve(file_count > 0 ? file_count : 1);
       }
       if (spatialDimension == 3) {
-        z.reserve(file_count);
+        z.reserve(file_count > 0 ? file_count : 1);
       }
 
       // Cast 'data' to correct size -- double
