@@ -157,7 +157,6 @@ int ex_get_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
   else {
     /* write out the coordinates  */
     {
-      void *coor  = NULL;
       char *which = NULL;
       char *comp  = NULL;
 
