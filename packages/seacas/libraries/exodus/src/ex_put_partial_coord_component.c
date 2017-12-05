@@ -32,27 +32,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/*****************************************************************************
- *
- * expcor - ex_put_partial_coord
- *
- * entry conditions -
- *   input parameters:
- *       int     exoid                   exodus file id
- *       int     start_node_num          starting index (1-based) of coordinates
- *to be written.
- *       int     num_nodes               number of nodes to write coordinates
- *for.
- *       float*  x_coord                 X coord array
- *       float*  y_coord                 y coord array
- *       float*  z_coord                 z coord array
- *
- * exit conditions -
- *
- * revision history -
- *
- *
- *****************************************************************************/
 
 #include "exodusII.h"     // for ex_err, etc
 #include "exodusII_int.h" // for EX_FATAL, ex_comp_ws, etc
@@ -63,23 +42,20 @@
 #include <sys/types.h> // for int64_t
 
 /*!
- * writes the coordinates of some of the nodes in the model
- * Only writes the 'non-null' arrays.
+ * writes the coordinates of some of the nodes in the model for the specified component
  * \param   exoid           exodus file id
  * \param   start_node_num  the starting index (1-based) of the coordinates to
  * be written
  * \param   num_nodes       the number of nodes to write coordinates for.
- * \param   x_coor          x coord array
- * \param   y_coor          y coord array
- * \param   z_coor          z coord array
+ * \param   component       which component (1=X, 2=Y, 3=Z)
+ * \param   coor            coord array
  */
 
-int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, const void *x_coor,
-                         const void *y_coor, const void *z_coor)
+int ex_put_partial_coord_component(int exoid, int64_t start_node_num, int64_t num_nodes,
+                                   int component, const void *coor)
 {
   int status;
   int coordid;
-  int coordidx, coordidy, coordidz;
 
   int     numnoddim, ndimdim;
   int64_t num_nod;
@@ -132,47 +108,21 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  --start_node_num;
+  if (component > num_dim) {
+    snprintf(errmsg, MAX_ERR_LENGTH,
+             "ERROR: Component (%d) is larger than number of dimensions (%" PRId64
+             ") in file id %d",
+             component, num_dim, exoid);
+    ex_err(__func__, errmsg, EX_BADPARAM);
+    EX_FUNC_LEAVE(EX_FATAL);
+  }
+  --component;
 
   /* write out the coordinates  */
-  if (num_dim > 0) {
-    if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate x nodal coordinates in file id %d",
-               exoid);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-  }
-  else {
-    coordidx = 0;
-  }
-  if (num_dim > 1) {
-    if ((status = nc_inq_varid(exoid, VAR_COORD_Y, &coordidy)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate y nodal coordinates in file id %d",
-               exoid);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-  }
-  else {
-    coordidy = 0;
-  }
-  if (num_dim > 2) {
-    if ((status = nc_inq_varid(exoid, VAR_COORD_Z, &coordidz)) != NC_NOERR) {
-      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate z nodal coordinates in file id %d",
-               exoid);
-      ex_err(__func__, errmsg, status);
-      EX_FUNC_LEAVE(EX_FATAL);
-    }
-  }
-  else {
-    coordidz = 0;
-  }
-
-  /* write out the coordinates  */
-  for (i = 0; i < num_dim; i++) {
+  {
     const void *coor  = NULL;
     char *      which = NULL;
+    char *      comp  = NULL;
 
     start[0] = start_node_num;
     count[0] = num_nodes;
@@ -180,36 +130,38 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
       start[0] = 0;
     }
 
-    if (i == 0) {
-      coor    = x_coor;
-      which   = "X";
-      coordid = coordidx;
+    if (component == 0) {
+      which = "X";
+      comp  = VAR_COORD_X;
     }
-    else if (i == 1) {
-      coor    = y_coor;
-      which   = "Y";
-      coordid = coordidy;
+    else if (component == 1) {
+      which = "Y";
+      comp  = VAR_COORD_Y;
     }
-    else if (i == 2) {
-      coor    = z_coor;
-      which   = "Z";
-      coordid = coordidz;
+    else if (component == 2) {
+      which = "Z";
+      comp  = VAR_COORD_Z;
     }
 
-    if (coor != NULL && coordid != 0) {
-      if (ex_comp_ws(exoid) == 4) {
-        status = nc_put_vara_float(exoid, coordid, start, count, coor);
-      }
-      else {
-        status = nc_put_vara_double(exoid, coordid, start, count, coor);
-      }
+    if ((status = nc_inq_varid(exoid, comp, &coordid)) != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to locate %s nodal coordinates in file id %d",
+               which, exoid);
+      ex_err(__func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
+    }
 
-      if (status != NC_NOERR) {
-        snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put %s coord array in file id %d", which,
-                 exoid);
-        ex_err(__func__, errmsg, status);
-        EX_FUNC_LEAVE(EX_FATAL);
-      }
+    if (ex_comp_ws(exoid) == 4) {
+      status = nc_put_vara_float(exoid, coordid, start, count, coor);
+    }
+    else {
+      status = nc_put_vara_double(exoid, coordid, start, count, coor);
+    }
+
+    if (status != NC_NOERR) {
+      snprintf(errmsg, MAX_ERR_LENGTH, "ERROR: failed to put %s coord array in file id %d", which,
+               exoid);
+      ex_err(__func__, errmsg, status);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
   }
   EX_FUNC_LEAVE(EX_NOERR);
