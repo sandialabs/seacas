@@ -119,9 +119,8 @@ int ex_put_partial_coord_component(int exoid, int64_t start_node_num, int64_t nu
 
   /* write out the coordinates  */
   {
-    const void *coor  = NULL;
-    char *      which = NULL;
-    char *      comp  = NULL;
+    char *which = NULL;
+    char *comp  = NULL;
 
     start[0] = start_node_num;
     count[0] = num_nodes;
