@@ -132,8 +132,6 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  --start_node_num;
-
   /* write out the coordinates  */
   if (num_dim > 0) {
     if ((status = nc_inq_varid(exoid, VAR_COORD_X, &coordidx)) != NC_NOERR) {
