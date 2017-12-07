@@ -44,8 +44,9 @@
 #include <string>         // for string
 
 namespace SEAMS {
-  init arith_0_fncts[] = {{"time", do_time, "time(x)", "Seconds since epoch (useful for srand())."},
-                          {nullptr, nullptr, nullptr, nullptr}};
+  init arith_0_fncts[] = {
+      {"seconds", do_time, "seconds()", "Seconds since epoch (useful for srand())."},
+      {nullptr, nullptr, nullptr, nullptr}};
 
   init_d arith_fncts[] = {
       {"abs", do_fabs, "abs(x)", "Absolute value of x. |x|."},
