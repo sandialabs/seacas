@@ -80,8 +80,9 @@ namespace {
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
     bool one2one = true;
+    INT map_offset = num_to_get > 0 ? ids[0] - 1 : 0;
     for (size_t i=0; i < num_to_get; i++) {
-      if ((size_t)ids[i] != i + offset + 1) {
+      if ((size_t)ids[i] != i + offset + 1 + map_offset) {
 	one2one = false;
 	break;
       }
@@ -188,7 +189,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     // This is first time that the m_reverse map is being built..
     // m_map is no longer  1-to-1.
     // Just iterate m_map and add all values that are non-zero
-    new_ids.reserve(m_map.size());
+    new_ids.reserve(m_map.size() - 1);
 
     for (size_t i = 1; i < m_map.size(); i++) {
       if (m_map[i] != 0) {
@@ -277,6 +278,11 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
       // that can be done, need to build a reverseMap of the current
       // one-to-one data...
       build_reverse_map__(m_map.size() - 1, 0);
+      m_offset = 0;
+    }
+    else {
+      // Map is sequential beginning at ids[0]
+      m_offset = count > 0 ? ids[0] - 1 : 0;
     }
   }
 
@@ -288,7 +294,7 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
       changed = true;
     }
     m_map[local_id] = ids[i];
-    if (local_id != ids[i]) {
+    if (local_id != ids[i] - (INT)m_offset) {
       m_map[0] = 1;
     }
     if (ids[i] <= 0) {
@@ -335,6 +341,20 @@ void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t co
       }
     }
   }
+  else if (m_offset != 0) {
+    if (field.get_type() == Ioss::Field::INTEGER) {
+      int *connect = static_cast<int *>(data);
+      for (size_t i = 0; i < count; i++) {
+        connect[i] -= m_offset;
+      }
+    }
+    else {
+      int64_t *connect = static_cast<int64_t *>(data);
+      for (size_t i = 0; i < count; i++) {
+        connect[i] -= m_offset;
+      }
+    }
+  }
 }
 
 void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
@@ -351,6 +371,20 @@ void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) con
       int64_t *datum = static_cast<int64_t *>(data);
       for (size_t i = 0; i < count; i++) {
         datum[i] = m_map[datum[i]];
+      }
+    }
+  }
+  else if (m_offset != 0) {
+    if (field.get_type() == Ioss::Field::INTEGER) {
+      int *datum = static_cast<int *>(data);
+      for (size_t i = 0; i < count; i++) {
+        datum[i] = m_map[datum[i] - m_offset];
+      }
+    }
+    else {
+      int64_t *datum = static_cast<int64_t *>(data);
+      for (size_t i = 0; i < count; i++) {
+        datum[i] = m_map[datum[i] - m_offset];
       }
     }
   }
@@ -507,6 +541,9 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
   else if (!must_exist && global > static_cast<int64_t>(m_map.size()) - 1) {
     local = 0;
   }
+  else {
+    local = global - m_offset;
+  }
   if (local > static_cast<int64_t>(m_map.size()) - 1 || (local <= 0 && must_exist)) {
     std::ostringstream errmsg;
     errmsg << "ERROR: Ioss Mapping routines detected " << m_entityType
@@ -516,5 +553,6 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
            << "This should not happen, please report.\n";
     IOSS_ERROR(errmsg);
   }
+  SMART_ASSERT(m_map[local] == global)(m_map[0])(m_offset)(m_map[local])(global);
   return local;
 }

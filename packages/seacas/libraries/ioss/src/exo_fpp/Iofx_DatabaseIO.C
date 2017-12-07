@@ -4551,9 +4551,6 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
   
   if (in_define) {
     // Only a single nodeblock and all set
-    if (num_to_get == nodeCount) {
-      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
-    }
     assert(get_region()->get_property("node_block_count").get_int() == 1);
 
     // Write to the database...
