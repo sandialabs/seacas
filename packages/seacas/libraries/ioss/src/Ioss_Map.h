@@ -54,7 +54,7 @@ namespace Ioss {
     Map() = default;
     Map(std::string entity_type, std::string file_name, int processor)
         : m_entityType(std::move(entity_type)), m_filename(std::move(file_name)),
-      m_myProcessor(processor)
+          m_myProcessor(processor)
     {
     }
     Map(const Map &from) = delete;
@@ -85,11 +85,11 @@ namespace Ioss {
 
     void build_reorder_map(int64_t start, int64_t count);
 
-    const MapContainer &       map() const { return m_map; }
-    MapContainer &             map() { return m_map; }
-    const ReverseMapContainer &reverse() const { return m_reverse; }
-    bool                       defined() const { return m_defined; }
-    void                       set_defined(bool yes_no) { m_defined = yes_no; }
+    const MapContainer &map() const { return m_map; }
+    MapContainer &      map() { return m_map; }
+
+    bool defined() const { return m_defined; }
+    void set_defined(bool yes_no) { m_defined = yes_no; }
 
   private:
     int64_t global_to_local__(int64_t global, bool must_exist = true) const;
@@ -102,10 +102,10 @@ namespace Ioss {
     MapContainer        m_map;
     MapContainer        m_reorder;
     ReverseMapContainer m_reverse;
-    std::string         m_entityType{"unknown"};  // node, element, edge, face
-    std::string         m_filename{"undefined"};    // For error messages only.
-    size_t              m_offset{0};      // local to global offset if m_map is sequential.
-    int                 m_myProcessor{0}; // For error messages...
+    std::string         m_entityType{"unknown"}; // node, element, edge, face
+    std::string         m_filename{"undefined"}; // For error messages only.
+    size_t              m_offset{0};             // local to global offset if m_map is sequential.
+    int                 m_myProcessor{0};        // For error messages...
     bool m_defined{false}; // For use by some clients; not all, so don't read too much into value...
   };
 } // namespace Ioss
