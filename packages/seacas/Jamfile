@@ -1477,7 +1477,9 @@ lib aprepro_lib
             [ glob $(seacas-root)/libraries/aprepro_lib/apr_test.cc ]
         ]
     ]
-  :
+    exodus
+    /tpl/netcdf//netcdf
+  : <define>EXODUS_SUPPORT
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
@@ -1489,7 +1491,7 @@ lib aprepro_lib
         <file>$(sierra-root)/seacas/lib/libaprepro_lib.a
     ]
   :
-  :
+  : <define>EXODUS_SUPPORT
     [ ifdevbuild
     # Any parameters within this 'ifdevbuild' block apply to development
     # builds only and will not be present for user builds.
@@ -1611,7 +1613,6 @@ exe epu
     exodus
     /tpl/netcdf//netcdf
   : <include>$(seacas-root)/applications/epu
-    <define>DISABLE_PARALLEL_EPU
     <tag>@utility-exec-tag
   ;
 
