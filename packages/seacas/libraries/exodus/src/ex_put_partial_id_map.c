@@ -123,18 +123,14 @@ int ex_put_partial_id_map(int exoid, ex_entity_type map_type, int64_t start_enti
      * parallel run that there is no error; otherwise if in serial and
      * num_entities != 0, there is an error.
      */
-#if !defined(PARALLEL_AWARE_EXODUS)
-    if (num_entities == 0) { 
-      EX_FUNC_LEAVE(EX_NOERR);
+    if (num_entities != 0) {
+      snprintf(errmsg, MAX_ERR_LENGTH,
+               "ERROR: The %s count is %" PRId64
+               ", but the %s dimension is not defined on file id %d.",
+               tname, num_entities, dnumentries, exoid);
+      ex_err(__func__, errmsg, EX_BADPARAM);
+      EX_FUNC_LEAVE(EX_FATAL);
     }
-#endif
-
-    snprintf(errmsg, MAX_ERR_LENGTH,
-             "ERROR: The %s count is %" PRId64
-             ", but the %s dimension is not defined on file id %d.",
-             tname, num_entities, dnumentries, exoid);
-    ex_err(__func__, errmsg, EX_BADPARAM);
-    EX_FUNC_LEAVE(EX_FATAL);
   }
 
   /* define the map if it doesn't already exist... */

@@ -12,7 +12,6 @@ bin
 etc
 inc
 share
-doc/html
 /lib
 /include
 SEACAS-Test/*.g3
@@ -243,4 +242,3 @@ SNTools.project
 *.settings
 *ioss.doxygen.warn
 *ioss.tags
-*html

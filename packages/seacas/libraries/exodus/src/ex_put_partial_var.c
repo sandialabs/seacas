@@ -74,6 +74,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
 
   ex_check_valid_file_id(exoid, __func__);
 
+#if !defined EXODUS_IN_SIERRA
   /* Verify that time_step is within bounds */
   {
     int num_time_steps = ex_inquire_int(exoid, EX_INQ_TIME);
@@ -86,6 +87,7 @@ int ex_put_partial_var(int exoid, int time_step, ex_entity_type var_type, int va
       EX_FUNC_LEAVE(EX_FATAL);
     }
   }
+#endif
 
 #define EX_LOOK_UP_VAR(VOBJID, VVAR, VOBJTAB, DNUMOBJ, DNUMOBJVAR)                                 \
   /* Determine index of obj_id in VOBJID array */                                                  \

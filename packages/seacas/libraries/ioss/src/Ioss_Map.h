@@ -63,7 +63,8 @@ namespace Ioss {
 
     int64_t global_to_local(int64_t global, bool must_exist = true) const;
 
-    template <typename INT> bool set_map(INT *ids, size_t count, size_t offset);
+    template <typename INT>
+    bool set_map(INT *ids, size_t count, size_t offset, bool in_define_mode = true);
 
     void build_reverse_map();
     void build_reverse_map(int64_t num_to_get, int64_t offset);
@@ -92,6 +93,9 @@ namespace Ioss {
 
   private:
     int64_t global_to_local__(int64_t global, bool must_exist = true) const;
+    void    build_reorder_map__(int64_t start, int64_t count);
+    void    build_reverse_map__(int64_t num_to_get, int64_t offset);
+
 #if defined(IOSS_THREADSAFE)
     mutable std::mutex m_;
 #endif

@@ -122,7 +122,8 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if (start_node_num + num_nodes - 1 > num_nod) {
+  --start_node_num;
+  if (start_node_num + num_nodes > num_nod) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + node count (%" PRId64
              ") is larger than total number of nodes (%" PRId64 ") in file id %d",
@@ -130,8 +131,6 @@ int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, c
     ex_err(__func__, errmsg, EX_BADPARAM);
     EX_FUNC_LEAVE(EX_FATAL);
   }
-
-  --start_node_num;
 
   /* write out the coordinates  */
   if (num_dim > 0) {

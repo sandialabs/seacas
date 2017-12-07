@@ -68,8 +68,8 @@
 #endif
 
 /* EXODUS version number */
-#define EX_API_VERS 7.09f
-#define EX_API_VERS_NODOT 709
+#define EX_API_VERS 7.10f
+#define EX_API_VERS_NODOT 710
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT EX_API_VERS_NODOT
@@ -451,6 +451,9 @@ EXODUS_EXPORT int ex_get_coord_names(int exoid, char **coord_names);
 
 EXODUS_EXPORT int ex_get_coord(int exoid, void *x_coor, void *y_coor, void *z_coor);
 
+EXODUS_EXPORT int ex_get_partial_coord_component(int exoid, int64_t start_node_num,
+                                                 int64_t num_nodes, int component, void *coor);
+
 EXODUS_EXPORT int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes,
                                        void *x_coor, void *y_coor, void *z_coor);
 
@@ -546,6 +549,10 @@ EXODUS_EXPORT int ex_put_coord_names(int exoid, char *coord_names[]);
 
 EXODUS_EXPORT int ex_put_coord(int exoid, const void *x_coor, const void *y_coor,
                                const void *z_coor);
+
+EXODUS_EXPORT int ex_put_partial_coord_component(int exoid, int64_t start_node_num,
+                                                 int64_t num_nodes, int component,
+                                                 const void *coor);
 
 EXODUS_EXPORT int ex_put_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes,
                                        const void *x_coor, const void *y_coor, const void *z_coor);
