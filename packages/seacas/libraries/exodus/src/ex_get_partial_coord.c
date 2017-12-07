@@ -110,7 +110,8 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if (start_node_num + num_nodes - 1 > num_nod) {
+  --start_node_num;
+  if (start_node_num + num_nodes > num_nod) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + node count (%" PRId64
              ") is larger than total number of nodes (%" ST_ZU ") in file id %d",
@@ -123,8 +124,6 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
       NC_NOERR) {
     EX_FUNC_LEAVE(EX_FATAL);
   }
-
-  --start_node_num;
 
   /* read in the coordinates  */
   if (ex_large_model(exoid) == 0) {
@@ -143,7 +142,7 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
       count[0] = 1;
       count[1] = num_nodes;
       if (count[1] == 0) {
-	start[1] = 0;
+        start[1] = 0;
       }
 
       if (i == 0 && x_coor != NULL) {
@@ -222,9 +221,9 @@ int ex_get_partial_coord(int exoid, int64_t start_node_num, int64_t num_nodes, v
       start[0] = start_node_num;
       count[0] = num_nodes;
       if (count[0] == 0) {
-	start[0] = 0;
+        start[0] = 0;
       }
-      
+
       if (i == 0) {
         coor    = x_coor;
         which   = "X";
