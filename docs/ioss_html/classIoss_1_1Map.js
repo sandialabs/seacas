@@ -1,6 +1,6 @@
 var classIoss_1_1Map =
 [
-    [ "Map", "classIoss_1_1Map.html#a494097d13f075f2877cbe6b351c43a0f", null ],
+    [ "Map", "classIoss_1_1Map.html#a5ac44643525eb91ba4d3a03c5d990169", null ],
     [ "Map", "classIoss_1_1Map.html#a27a8baac2814c46e8251b759cea058f5", null ],
     [ "Map", "classIoss_1_1Map.html#ab9de22cb7b63981543690959f2cce802", null ],
     [ "~Map", "classIoss_1_1Map.html#aebc0031c61351949dce12318225fecc8", null ],
@@ -19,7 +19,6 @@ var classIoss_1_1Map =
     [ "map_implicit_data", "classIoss_1_1Map.html#ae73021d9e20d26adb2af9e9e87c951f5", null ],
     [ "operator=", "classIoss_1_1Map.html#a0151ae510acb19999b84118ffd0edab4", null ],
     [ "release_memory", "classIoss_1_1Map.html#a4620c2cbe27be00361eda198387e66da", null ],
-    [ "reverse", "classIoss_1_1Map.html#acc5e217ff943d6710d2eff58f8ea6b93", null ],
     [ "reverse_map_data", "classIoss_1_1Map.html#a4e757e282fd3350ffaea92ca57080c77", null ],
     [ "set_defined", "classIoss_1_1Map.html#a1f454b21053cbe3708f224fd707b0d29", null ],
     [ "set_map", "classIoss_1_1Map.html#a2e65d0ea8d6b141ed17a929e4c610b41", null ],
@@ -29,6 +28,7 @@ var classIoss_1_1Map =
     [ "m_filename", "classIoss_1_1Map.html#a6d4e799d4c1c50944d325a41b1a8e0f8", null ],
     [ "m_map", "classIoss_1_1Map.html#a768c2438a76bc78540e8413367f9c185", null ],
     [ "m_myProcessor", "classIoss_1_1Map.html#a63182a82bee2ce298a020be4875f9492", null ],
+    [ "m_offset", "classIoss_1_1Map.html#ac86d88449543c085095949af9134fd48", null ],
     [ "m_reorder", "classIoss_1_1Map.html#a7c7591aa2a2708fa5115304e4ee37db2", null ],
     [ "m_reverse", "classIoss_1_1Map.html#a5bafcea1ae4463dfcc531a1f9dc8cd43", null ]
 ];

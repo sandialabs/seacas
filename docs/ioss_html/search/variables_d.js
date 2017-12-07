@@ -68,7 +68,7 @@ var searchData=
   ['m_5fnodedist',['m_nodeDist',['../classIoss_1_1Decomposition.html#a8231a14745275d2fb33afb4c1254ac49',1,'Ioss::Decomposition']]],
   ['m_5fnodeglobaloffset',['m_nodeGlobalOffset',['../classIoss_1_1StructuredBlock.html#a0b529faa115aef68472d06dd3dc45924',1,'Ioss::StructuredBlock']]],
   ['m_5fnodeoffset',['m_nodeOffset',['../classIocgns_1_1ZoneData.html#af7ef10c6139da7668ef6101757d86268',1,'Iocgns::ZoneData::m_nodeOffset()'],['../classIoss_1_1Decomposition.html#a730e3ef708fe829cc12e5b090c0b399a',1,'Ioss::Decomposition::m_nodeOffset()'],['../classIoss_1_1StructuredBlock.html#a65aa028d1be0096f5b465c91c0a74757',1,'Ioss::StructuredBlock::m_nodeOffset()']]],
-  ['m_5foffset',['m_offset',['../classIocgns_1_1StructuredZoneData.html#a157d10b2bbcbbcf97d895cbab98273a4',1,'Iocgns::StructuredZoneData']]],
+  ['m_5foffset',['m_offset',['../classIocgns_1_1StructuredZoneData.html#a157d10b2bbcbbcf97d895cbab98273a4',1,'Iocgns::StructuredZoneData::m_offset()'],['../classIoss_1_1Map.html#ac86d88449543c085095949af9134fd48',1,'Ioss::Map::m_offset()']]],
   ['m_5foffseti',['m_offsetI',['../classIoss_1_1StructuredBlock.html#a4cfd746f594c789df110494f3b9cffd5',1,'Ioss::StructuredBlock']]],
   ['m_5foffsetj',['m_offsetJ',['../classIoss_1_1StructuredBlock.html#a7ec7934861bb6912217dc8d8f845fe1a',1,'Ioss::StructuredBlock']]],
   ['m_5foffsetk',['m_offsetK',['../classIoss_1_1StructuredBlock.html#ae4e9af04cb45131fb45ad037a0b7f035',1,'Ioss::StructuredBlock']]],
