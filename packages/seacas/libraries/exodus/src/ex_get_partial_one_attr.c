@@ -182,7 +182,7 @@ int ex_get_partial_one_attr(int exoid, ex_entity_type obj_type, ex_entity_id obj
     EX_FUNC_LEAVE(EX_FATAL);
   }
 
-  if (start_num + num_ent - 1 > num_entries_this_obj) {
+  if (start_num + num_ent - 1 > num_entries_this_obj && num_ent > 0) {
     snprintf(errmsg, MAX_ERR_LENGTH,
              "ERROR: start index (%" PRId64 ") + count (%" PRId64
              ") is larger than total number of entities (%" ST_ZU ") in file id %d",
