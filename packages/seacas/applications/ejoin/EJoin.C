@@ -563,9 +563,11 @@ double ejoin(SystemInterface &interface, std::vector<Ioss::Region *> &part_mesh,
   output_region.output_summary(std::cout);
   std::cout << "******* END *******\n";
   std::cerr << "\nTotal Execution time     = " << end - begin << " seconds.\n";
-  std::cerr << "\tMesh = " << (ts_begin - begin)
-            << " seconds; Timesteps = " << (end - ts_begin) / (double)(steps)
-            << " seconds / step.\n\n";
+  if (steps > 0) {
+    std::cerr << "\tMesh = " << (ts_begin - begin)
+              << " seconds; Timesteps = " << (end - ts_begin) / (double)(steps)
+              << " seconds / step.\n\n";
+  }
   return (end - begin);
 }
 
