@@ -2039,20 +2039,17 @@ namespace Iocgns {
         nodeMap.map()[0] = -1;
       }
 
+      bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
       if (nodeMap.map()[0] == -1) {
         if (int_byte_size_api() == 4) {
-          nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
+          nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0, in_define);
         }
         else {
-          nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0);
+          nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0, in_define);
         }
       }
 
-      nodeMap.build_reverse_map();
-      nodeMap.build_reorder_map(0, num_to_get);
-
       // Only a single nodeblock and all set
-      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)num_to_get);
       assert(get_region()->get_property("node_block_count").get_int() == 1);
       nodeMap.set_defined(true);
     }
