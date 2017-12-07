@@ -3878,7 +3878,7 @@ int64_t DatabaseIO::put_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
   return num_to_get;
 }
 
-int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t /*offset*/,
+int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t /* offset */,
                                     size_t /*count*/) const
 {
   /*!
@@ -3918,128 +3918,22 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t /*offs
    * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
    *       should be in the orginal order...
    */
-  if (dbState == Ioss::STATE_MODEL || dbState == Ioss::STATE_DEFINE_MODEL) {
-    if (!nodeMap.defined()) {
-      if (nodeMap.map().empty()) {
-        nodeMap.map().resize(num_to_get + 1);
-        nodeMap.map()[0] = -1;
-      }
-
-      if (nodeMap.map()[0] == -1) {
-        if (int_byte_size_api() == 4) {
-          nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
-        }
-        else {
-          nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0);
-        }
-      }
-
-      nodeMap.build_reverse_map();
-      nodeMap.build_reorder_map(0, num_to_get);
-
-      // Only a single nodeblock and all set
-      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)num_to_get);
-      assert(get_region()->get_property("node_block_count").get_int() == 1);
-      nodeMap.set_defined(true);
-    }
+  if (nodeMap.map().empty()) {
+    nodeMap.map().resize(num_to_get + 1);
+    nodeMap.map()[0] = -1;
   }
+
+  bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+  if (int_byte_size_api() == 4) {
+    nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0, in_define);
+  }
+  else {
+    nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0, in_define);
+  }
+
+  nodeMap.set_defined(true);
   return num_to_get;
 }
-
-namespace {
-  size_t handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
-                          Ioss::State db_state, Ioss::Map &entity_map, void *ids,
-                          size_t int_byte_size, size_t num_to_get, size_t offset, size_t count,
-                          int file_pointer)
-  {
-    /*!
-     * NOTE: "element" is generic for "element", "face", or "edge"
-     *
-     * There are two modes we need to support in this routine:
-     * 1. Initial definition of element map (local->global) and
-     * elemMap.reverse (global->local).
-     * 2. Redefinition of element map via 'reordering' of the original
-     * map when the elements on this processor are the same, but their
-     * order is changed.
-     *
-     * So, there will be two maps the 'elemMap.map' map is a 'direct lookup'
-     * map which maps current local position to global id and the
-     * 'elemMap.reverse' is an associative lookup which maps the
-     * global id to 'original local'.  There is also a
-     * 'elemMap.reorder' which is direct lookup and maps current local
-     * position to original local.
-
-     * The ids coming in are the global ids; their position is the
-     * local id -1 (That is, data[0] contains the global id of local
-     * element 1 in this element block).  The 'model-local' id is
-     * given by eb_offset + 1 + position:
-     *
-     * int local_position = elemMap.reverse[ElementMap[i+1]]
-     * (the elemMap.map and elemMap.reverse are 1-based)
-     *
-     * But, this assumes 1..numel elements are being output at the same
-     * time; we are actually outputting a blocks worth of elements at a
-     * time, so we need to consider the block offsets.
-     * So... local-in-block position 'i' is index 'eb_offset+i' in
-     * 'elemMap.map' and the 'local_position' within the element
-     * blocks data arrays is 'local_position-eb_offset'.  With this, the
-     * position within the data array of this element block is:
-     *
-     * int eb_position =
-     * elemMap.reverse[elemMap.map[eb_offset+i+1]]-eb_offset-1
-     *
-     * To determine which map to update on a call to this function, we
-     * use the following hueristics:
-     * -- If the database state is 'Ioss::STATE_MODEL:', then update the
-     *    'elemMap.reverse'.
-     * -- If the database state is not Ioss::STATE_MODEL, then leave
-     *    the 'elemMap.reverse' alone since it corresponds to the
-     *    information already written to the database. [May want to add
-     *    a Ioss::STATE_REDEFINE_MODEL]
-     * -- Always update elemMap.map to match the passed in 'ids'
-     *    array.
-     *
-     * NOTE: the maps are built an element block at a time...
-     * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
-     *       should be in the orginal order...
-     */
-
-    // Overwrite this portion of the 'elemMap.map', but keep other
-    // parts as they were.  We are adding elements starting at position
-    // 'eb_offset+offset' and ending at
-    // 'eb_offset+offset+num_to_get'. If the entire block is being
-    // processed, this reduces to the range 'eb_offset..eb_offset+my_element_count'
-
-    int64_t eb_offset = eb->get_offset();
-
-    bool redefine = false;
-    if (int_byte_size == 4) {
-      redefine = entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset);
-    }
-    else {
-      redefine = entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset);
-    }
-
-    // Now, if the state is Ioss::STATE_MODEL, update the reverseEntityMap
-    if (db_state == Ioss::STATE_MODEL) {
-      entity_map.build_reverse_map(num_to_get, eb_offset);
-
-      // Output this portion of the entity number map
-      int ierr = ex_put_partial_id_map(file_pointer, map_type, offset + 1, count, ids);
-      if (ierr < 0) {
-        Ioex::exodus_error(file_pointer, __LINE__, __func__, __FILE__);
-      }
-    }
-    // Build the reorderEntityMap which does a direct mapping from
-    // the current topologies local order to the local order
-    // stored in the database...  This is 0-based and used for
-    // remapping output and input TRANSIENT fields.
-    if (redefine) {
-      entity_map.build_reorder_map(eb_offset, num_to_get);
-    }
-    return num_to_get;
-  }
-} // namespace
 
 int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get,
                                        size_t offset, size_t count) const
@@ -4063,8 +3957,7 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, 
     elemMap.map().resize(elementCount + 1);
     elemMap.map()[0] = -1;
   }
-  return handle_block_ids(eb, EX_ELEM_MAP, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
-                          offset, count, get_file_pointer());
+  return handle_block_ids(eb, EX_ELEM_MAP, elemMap, ids, num_to_get, offset, count);
 }
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
@@ -4073,8 +3966,7 @@ int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t
     faceMap.map().resize(faceCount + 1);
     faceMap.map()[0] = -1;
   }
-  return handle_block_ids(eb, EX_FACE_MAP, dbState, faceMap, ids, int_byte_size_api(), num_to_get,
-                          0, 0, get_file_pointer());
+  return handle_block_ids(eb, EX_FACE_MAP, faceMap, ids, num_to_get, 0, 0);
 }
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
@@ -4083,8 +3975,7 @@ int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t
     edgeMap.map().resize(edgeCount + 1);
     edgeMap.map()[0] = -1;
   }
-  return handle_block_ids(eb, EX_EDGE_MAP, dbState, edgeMap, ids, int_byte_size_api(), num_to_get,
-                          0, 0, get_file_pointer());
+  return handle_block_ids(eb, EX_EDGE_MAP, edgeMap, ids, num_to_get, 0, 0);
 }
 
 void DatabaseIO::write_nodal_transient_field(ex_entity_type /* type */, const Ioss::Field &field,

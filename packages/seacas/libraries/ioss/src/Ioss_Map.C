@@ -38,6 +38,7 @@
 #include <algorithm>    // for adjacent_find, lower_bound, etc
 #include <cstddef>      // for size_t
 #include <iterator>     // for insert_iterator, inserter
+#include <numeric>
 #include <sstream>      // for operator<<, basic_ostream, etc
 #include <string>       // for char_traits, operator<<, etc
 #include <sys/types.h>  // for ssize_t
@@ -74,6 +75,18 @@ namespace {
     }
     new_map[0] = -1;
     return true;
+  }
+
+  template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
+  {
+    bool one2one = true;
+    for (int i=0; i < num_to_get; i++) {
+      if (ids[i] != i + offset + 1) {
+	one2one = false;
+	break;
+      }
+    }
+    return one2one;
   }
 
   // map global to local ids
@@ -148,8 +161,13 @@ void Ioss::Map::release_memory()
 }
 
 void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
-
 void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
+{
+  IOSS_FUNC_ENTER(m_);
+  build_reverse_map__(num_to_get, offset);
+}
+
+void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
 {
   // Stored as a sorted vector of <global_id, local_id> pairs...
   // To build incrementally:
@@ -161,45 +179,49 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
   // 5. Check for duplicate global_ids...
 
   // Build a vector containing the current ids...
-  IOSS_FUNC_ENTER(m_);
   if (m_map[0] != 1) {
     return;
   }
 
   ReverseMapContainer new_ids;
-  new_ids.reserve(num_to_get);
-  if (m_reverse.empty() && offset > 0) {
-    // Need to handle all previous entries which were 1-to-1
-    // now that we have some non 1-to-1 entries...
-    new_ids.reserve(num_to_get + offset);
+  if (m_reverse.empty()) {
+    // This is first time that the m_reverse map is being built..
+    // m_map is no longer  1-to-1.
+    // Just iterate m_map and add all values that are non-zero
+    new_ids.reserve(m_map.size());
 
-    for (int64_t i = 0; i < offset; i++) {
-      if (m_map[i + 1] != 0) {
-	SMART_ASSERT(m_map[i + 1] == i + 1)(m_map[i + 1])(i + 1);
-	new_ids.emplace_back(i + 1, i + 1);
+    for (int64_t i = 1; i < m_map.size(); i++) {
+      if (m_map[i] != 0) {
+	new_ids.emplace_back(m_map[i], i);
+      }
+    }
+  }
+  else {
+    new_ids.reserve(num_to_get);
+    for (int64_t i = 0; i < num_to_get; i++) {
+      int64_t local_id = offset + i + 1;
+      new_ids.emplace_back(m_map[local_id], local_id);
+
+      if (m_map[local_id] <= 0) {
+	std::ostringstream errmsg;
+	errmsg << "\nERROR: " << m_entityType << " map detected non-positive global id "
+	       << m_map[local_id] << " for " << m_entityType << " with local id " << local_id
+	       << " on processor " << m_myProcessor << ".\n";
+	IOSS_ERROR(errmsg);
       }
     }
   }
 
-  for (int64_t i = 0; i < num_to_get; i++) {
-    int64_t local_id = offset + i + 1;
-    new_ids.emplace_back(m_map[local_id], local_id);
-
-    if (m_map[local_id] <= 0) {
-      std::ostringstream errmsg;
-      errmsg << "\nERROR: " << m_entityType << " map detected non-positive global id "
-             << m_map[local_id] << " for " << m_entityType << " with local id " << local_id
-             << " on processor " << m_myProcessor << ".\n";
-      IOSS_ERROR(errmsg);
-    }
-  }
-
-  // Sort that vector...
+  // new_ids is a vector of pairs <global_id, local_id>
   Ioss::qsort(new_ids);
 
   int64_t new_id_min = new_ids.empty() ? 0 : new_ids.front().first;
   int64_t old_id_max = m_reverse.empty() ? 0 : m_reverse.back().first;
-  if (new_id_min > old_id_max) {
+  if (new_ids.size() + 1 == m_map.size()) {
+    SMART_ASSERT(m_reverse.empty() || m_reverse.size() + 1 == m_map.size());
+    new_ids.swap(m_reverse);
+  }
+  else if (new_id_min > old_id_max) {
     m_reverse.insert(m_reverse.end(), new_ids.begin(), new_ids.end());
   }
   else {
@@ -207,12 +229,13 @@ void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
     ReverseMapContainer old_ids;
     old_ids.swap(m_reverse);
     SMART_ASSERT(m_reverse.empty());
-
+    
     // Merge old_ids and new_ids to reverseElementMap.
     m_reverse.reserve(old_ids.size() + new_ids.size());
     std::merge(old_ids.begin(), old_ids.end(), new_ids.begin(), new_ids.end(),
-               std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
+	       std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
   }
+
 // Check for duplicate ids...
 #ifndef NDEBUG
   verify_no_duplicate_ids(m_reverse);
@@ -235,16 +258,33 @@ void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
   }
 }
 
-template bool Ioss::Map::set_map(int *ids, size_t count, size_t offset);
-template bool Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset);
+template bool Ioss::Map::set_map(int *ids, size_t count, size_t offset, bool in_define_mode);
+template bool Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset, bool in_define_mode);
 
-template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset)
+template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mode)
 {
   IOSS_FUNC_ENTER(m_);
+  if (in_define_mode && m_map[0] != 1) {
+    // If the current map is one-to-one, check whether it will be one-to-one
+    // after adding these ids...
+    bool one2one = is_one2one(ids, count, offset);
+    if (!one2one) {
+      // Up to this point, the id map has been one-to-one.  Once we
+      // apply these `ids` to `m_map`, the map will no
+      // longer be one-to-one. The main consequence of this is that we
+      // now need an explicit reverseMap.  The reverseMap is built
+      // incrementally with the current range of 'ids', but before
+      // that can be done, need to build a reverseMap of the current
+      // one-to-one data...
+      build_reverse_map__(m_map.size() - 1, 0);
+    }
+  }
+
   bool changed = false; // True if redefining an entry
   for (size_t i = 0; i < count; i++) {
     ssize_t local_id = offset + i + 1;
-    if (m_map[local_id] > 0) {
+    SMART_ASSERT(local_id < m_map.size())(local_id)(m_map.size());
+    if (m_map[local_id] > 0 && m_map[local_id] != ids[i]) {
       changed = true;
     }
     m_map[local_id] = ids[i];
@@ -258,6 +298,19 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
              << ", filename '" << m_filename << "'.\n";
       IOSS_ERROR(errmsg);
     }
+  }
+
+  if (in_define_mode) {
+    build_reverse_map__(count, offset);
+  }
+  else if (changed) {
+    // Build the reorderEntityMap which does a direct mapping from
+    // the current topologies local order to the local order
+    // stored in the database if these two orders are different, that
+    // is if the ids order was redefined after the STATE_MODEL
+    // phase... This is 0-based and used for
+    // remapping output and input TRANSIENT fields.
+    build_reorder_map__(offset, count);
   }
   return changed;
 }
@@ -359,6 +412,12 @@ size_t Ioss::Map::map_field_to_db_scalar_order(T *variables, std::vector<double>
 
 void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
 {
+  IOSS_FUNC_ENTER(m_);
+  build_reorder_map__(start, count);
+}
+
+void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
+{
   // This routine builds a map that relates the current node id order
   // to the original node ordering in affect at the time the file was
   // created. That is, the node map used to define the topology of the
@@ -377,7 +436,6 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
   //
   // start is based on a 0-based array -- start of the reorderMap to build.
 
-  IOSS_FUNC_ENTER(m_);
   if (m_reorder.empty()) {
     // See if actually need a reorder map first...
     bool    need_reorder_map = false;
@@ -400,11 +458,7 @@ void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
       // If building a partial reorder map, assume all entries
       // are a direct 1-1 and then let the partial fills overwrite
       // if needed.
-      if (start > 0 || my_end < map_size) {
-        for (size_t i = 0; i < m_reorder.size(); i++) {
-          m_reorder[i] = i;
-        }
-      }
+      std::iota(m_reorder.begin(), m_reorder.end(), 0);
     }
     else {
       return;
@@ -437,7 +491,11 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
 {
   int64_t local = global;
-  if (m_map[0] == 1) {
+  if (m_map[0] == 1 && !m_reverse.empty()) {
+    // Possible for m_map[0] == 1 which means non-one-to-one, but
+    // reverseMap is empty (which implied one-to-one) if the ORIGINAL mapping defined
+    // during dbState == STATE_MODEL was one-to-one, but there is a
+    // reordering which is due to new id ordering defined after STATE_MODEL...
     auto iter = std::lower_bound(m_reverse.begin(), m_reverse.end(), global, IdPairCompare());
     if (iter != m_reverse.end() && iter->first == global) {
       local = iter->second;

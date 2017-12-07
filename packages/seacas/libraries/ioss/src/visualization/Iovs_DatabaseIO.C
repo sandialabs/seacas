@@ -839,34 +839,27 @@ namespace Iovs {
      */
     assert(num_to_get == nodeCount);
 
-    if (dbState == Ioss::STATE_MODEL) {
-      if (nodeMap.map().empty()) {
-        // std::cerr << "DatabaseIO::handle_node_ids nodeMap was empty, resizing and tagging
-        // serial\n";
-        nodeMap.map().resize(nodeCount + 1);
-        nodeMap.map()[0] = -1;
-      }
+    if (nodeMap.map().empty()) {
+      nodeMap.map().resize(nodeCount + 1);
+      nodeMap.map()[0] = -1;
+    }
 
-      if (nodeMap.map()[0] == -1) {
-        // std::cerr << "DatabaseIO::handle_node_ids nodeMap tagged serial, doing mapping\n";
-        if (int_byte_size_api() == 4) {
-          nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0);
-        }
-        else {
-          nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0);
-        }
-      }
+    // std::cerr << "DatabaseIO::handle_node_ids nodeMap tagged serial, doing mapping\n";
+    bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    if (int_byte_size_api() == 4) {
+      nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0, in_define);
+    }
+    else {
+      nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0, in_define);
+    }
 
-      nodeMap.build_reverse_map();
-
+    if (in_define) {
       // Only a single nodeblock and all set
       if (num_to_get == nodeCount) {
         assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
       }
       assert(get_region()->get_property("node_block_count").get_int() == 1);
     }
-
-    nodeMap.build_reorder_map(0, num_to_get);
     return num_to_get;
   }
 
@@ -935,24 +928,13 @@ namespace Iovs {
 
     int64_t eb_offset = eb->get_offset();
 
+    bool in_define = (db_state == Ioss::STATE_MODEL) || (db_state == Ioss::STATE_DEFINE_MODEL);
     if (int_byte_size == 4) {
-      entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset);
+      entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset, in_define);
     }
     else {
-      entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset);
+      entity_map.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset, in_define);
     }
-
-    // Now, if the state is Ioss::STATE_MODEL, update the reverseEntityMap
-    if (db_state == Ioss::STATE_MODEL) {
-      entity_map.build_reverse_map(num_to_get, eb_offset);
-    }
-
-    // Build the reorderEntityMap which does a direct mapping from
-    // the current topologies local order to the local order
-    // stored in the database...  This is 0-based and used for
-    // remapping output and input TRANSIENT fields.
-    entity_map.build_reorder_map(eb_offset, num_to_get);
-    // std::cerr << "DatabaseIO::handle_block_ids returning\n";
     return num_to_get;
   }
 
