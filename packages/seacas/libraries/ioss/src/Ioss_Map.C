@@ -80,8 +80,8 @@ namespace {
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
     bool one2one = true;
-    for (int i=0; i < num_to_get; i++) {
-      if (ids[i] != i + offset + 1) {
+    for (size_t i=0; i < num_to_get; i++) {
+      if ((size_t)ids[i] != i + offset + 1) {
 	one2one = false;
 	break;
       }
@@ -190,7 +190,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     // Just iterate m_map and add all values that are non-zero
     new_ids.reserve(m_map.size());
 
-    for (int64_t i = 1; i < m_map.size(); i++) {
+    for (size_t i = 1; i < m_map.size(); i++) {
       if (m_map[i] != 0) {
 	new_ids.emplace_back(m_map[i], i);
       }
@@ -282,8 +282,8 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
 
   bool changed = false; // True if redefining an entry
   for (size_t i = 0; i < count; i++) {
-    ssize_t local_id = offset + i + 1;
-    SMART_ASSERT(local_id < m_map.size())(local_id)(m_map.size());
+    int64_t local_id = offset + i + 1;
+    SMART_ASSERT((size_t)local_id < m_map.size())(local_id)(m_map.size());
     if (m_map[local_id] > 0 && m_map[local_id] != ids[i]) {
       changed = true;
     }
