@@ -490,7 +490,7 @@ namespace Iogn {
     std::vector<ShellLocation> shellBlocks;
     std::vector<ShellLocation> nodesets;
     std::vector<ShellLocation> sidesets;
-    double                     rotmat[3][3]{};
+    double                     rotmat[3][3];
     size_t                     numX, numY, numZ;
     size_t                     myNumZ, myStartZ;
 
