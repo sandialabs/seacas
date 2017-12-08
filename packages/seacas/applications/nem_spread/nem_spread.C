@@ -142,8 +142,9 @@ int main(int argc, char *argv[])
   // needed to instantiate the templates...
   if (read_mesh_file_name(salsa_cmd_file) < 0) {
     static char yo[] = "nem_spread";
-    fprintf(stderr, "%s ERROR: Could not read in the the I/O command file"
-                    " \"%s\"!\n",
+    fprintf(stderr,
+            "%s ERROR: Could not read in the the I/O command file"
+            " \"%s\"!\n",
             yo, salsa_cmd_file);
     exit(1);
   }
@@ -232,8 +233,9 @@ int nem_spread(NemSpread<T, INT> &spreader, const char *salsa_cmd_file, int subc
    */
   printf("Reading the command file, %s\n", salsa_cmd_file);
   if (read_pexoII_info(spreader, salsa_cmd_file) < 0) {
-    fprintf(stderr, "%s ERROR: Could not read in the the I/O command file"
-                    " \"%s\"!\n",
+    fprintf(stderr,
+            "%s ERROR: Could not read in the the I/O command file"
+            " \"%s\"!\n",
             yo, salsa_cmd_file);
     exit(1);
   }

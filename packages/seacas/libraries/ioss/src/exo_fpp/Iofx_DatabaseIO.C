@@ -4548,7 +4548,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
   else {
     nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0, in_define);
   }
-  
+
   if (in_define) {
     // Only a single nodeblock and all set
     assert(get_region()->get_property("node_block_count").get_int() == 1);

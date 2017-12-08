@@ -133,7 +133,7 @@ void lanczos_SO(struct vtx_data **A,            /* sparse matrix in row linked l
                 int               mediantype,   /* which partitioning strategy to use */
                 double *          goal,         /* desired set sizes */
                 int               vwgt_max      /* largest vertex weight */
-                )
+)
 {
   extern FILE *     Output_File;              /* output file or null */
   extern int        LANCZOS_SO_INTERVAL;      /* interval between orthogonalizations */

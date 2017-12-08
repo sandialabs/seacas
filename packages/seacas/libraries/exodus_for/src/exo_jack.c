@@ -526,10 +526,10 @@ void F2C(exginf, EXGINF)(int *idexo, char *info, int *ierr, int infolen)
     return;
   }
   for (i = 0; i < num_info; i++) { /* Put pointers to the info records in ptr
-                                  * array */
+                                    * array */
     *(aptr + i) = sptr + i * (slen + 1);
   }                /* put ptr in string ptr
-                                                            * array */
+                    * array */
   *(aptr + i) = 0; /* null out last pointer */
 
   /* Do exodus call to get info records */
@@ -712,7 +712,7 @@ void F2C(expclb, EXPCLB)(int *idexo, void_int *elem_blk_id, char *elem_type,
   int num_elem_blk;
 
   char **aptr; /* ptr to temp staging space for string array
-                        * ptrs */
+                * ptrs */
   char * sptr; /* ptr to temp staging space for strings */
   int    i;
   size_t slen;
@@ -1250,10 +1250,10 @@ void F2C(exgpn, EXGPN)(int *idexo, int *obj_type, char *prop_names, int *ierr, i
   }
   switch ((ex_entity_type)*obj_type) {
   case EX_ELEM_BLOCK: inq_code = EX_INQ_EB_PROP; break;
-  case EX_NODE_SET: inq_code   = EX_INQ_NS_PROP; break;
-  case EX_SIDE_SET: inq_code   = EX_INQ_SS_PROP; break;
-  case EX_ELEM_MAP: inq_code   = EX_INQ_EM_PROP; break;
-  case EX_NODE_MAP: inq_code   = EX_INQ_NM_PROP; break;
+  case EX_NODE_SET: inq_code = EX_INQ_NS_PROP; break;
+  case EX_SIDE_SET: inq_code = EX_INQ_SS_PROP; break;
+  case EX_ELEM_MAP: inq_code = EX_INQ_EM_PROP; break;
+  case EX_NODE_MAP: inq_code = EX_INQ_NM_PROP; break;
   default:
     exerrval = EX_BADPARAM;
     *ierr    = EX_BADPARAM;
@@ -1291,7 +1291,7 @@ void F2C(exgpn, EXGPN)(int *idexo, int *obj_type, char *prop_names, int *ierr, i
   for (i = 0; i < num_props; i++) {
     *(aptr + i) = sptr + i * (slen + 1);
   }                /* put ptrs to staging space
-                                                            * into ptr array */
+                    * into ptr array */
   *(aptr + i) = 0; /* set last pointer to null */
 
   /* do Exodus C call to get property name records */

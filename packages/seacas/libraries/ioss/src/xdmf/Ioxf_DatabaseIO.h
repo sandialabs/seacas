@@ -64,7 +64,7 @@ namespace Ioss {
   class NodeSet;
   class SideSet;
   class CommSet;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the xdmf database format.
  */
@@ -73,15 +73,15 @@ namespace Ioxf {
 
   // Used for variable name index mapping
   typedef std::map<std::string, int, std::less<std::string>> VariableNameMap;
-  typedef VariableNameMap::value_type VNMValuePair;
+  typedef VariableNameMap::value_type                        VNMValuePair;
 
   // Used to store reduction variables
   typedef std::vector<double> ValueContainer;
 
   // Use to store element block info for XML
-  typedef std::vector<std::ostringstream *> XmlContainer;
+  typedef std::vector<std::ostringstream *>                  XmlContainer;
   typedef std::map<std::string, int, std::less<std::string>> IndexNameMap;
-  typedef IndexNameMap::value_type BINMValuePair;
+  typedef IndexNameMap::value_type                           BINMValuePair;
 
   // Used for persistent entity IDs
   // The set contains a pair of <char, int>. The 'char' denotes the entity type:
@@ -112,7 +112,7 @@ namespace Ioxf {
     void WriteXmlFile(int niterations);
     void WriteHdfDataset(const std::string &FinalName, XdmfArray *ScalarArray, int lineno) const;
     std::string decode_proc_filename(const std::string &filename, int processor);
-    void MergeXmlFiles();
+    void        MergeXmlFiles();
 
     // Check capabilities of input/output database...  Returns an
     // unsigned int with the supported Ioss::EntityTypes or'ed
@@ -261,8 +261,8 @@ namespace Ioxf {
     int handle_node_ids(int *ids, int num_to_get);
     int handle_element_ids(const Ioss::ElementBlock *eb, int *ids, int num_to_get);
 
-    int add_results_fields(char const *type, Ioss::GroupingEntity *entity, int count,
-                           int id = 0) const;
+    int         add_results_fields(char const *type, Ioss::GroupingEntity *entity, int count,
+                                   int id = 0) const;
     Ioss::Field get_next_field(char **names, int *index, int num_names, int count,
                                int *optional_truth_table) const;
     int get_side_connectivity(const Ioss::EntityBlock *fb, int id, int side_count, int *fconnect,
@@ -356,5 +356,5 @@ namespace Ioxf {
 
     mutable bool fileExists; // False if file has never been opened/created
   };
-}
+} // namespace Ioxf
 #endif

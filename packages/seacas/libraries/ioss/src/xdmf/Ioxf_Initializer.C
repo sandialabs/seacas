@@ -60,6 +60,6 @@ namespace Ioxf {
     catch (...) {
     }
   }
-}
+} // namespace Ioxf
 
 #endif

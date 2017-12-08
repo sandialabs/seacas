@@ -87,7 +87,7 @@ static const char *Version = "2009/08/18";
 // ========================================================================
 namespace {
   bool set_id(const Ioss::GroupingEntity *entity, const char *type, Ioxf::EntityIdSet *idset);
-  int get_id(const Ioss::GroupingEntity *entity, char type, Ioxf::EntityIdSet *idset);
+  int  get_id(const Ioss::GroupingEntity *entity, char type, Ioxf::EntityIdSet *idset);
   void xdmf_error(const std::string &msg, int lineno, int processor)
   {
     std::ostringstream errmsg;
@@ -121,7 +121,7 @@ namespace {
 #ifndef NDEBUG
   bool check_block_order(const Ioss::ElementBlockContainer &blocks);
 #endif
-}
+} // namespace
 
 namespace Ioxf {
   // ========================================================================
@@ -1335,9 +1335,9 @@ namespace Ioxf {
           // initialize all to '1', then zero out the nodes in 'entities'.
           // Iterate through array again and consolidate all '1's
           std::vector<int> internal(nodeCount);
-          for (j        = 0; j < nodeCount; j++)
+          for (j = 0; j < nodeCount; j++)
             internal[j] = 1;
-          for (j                      = 0; j < entity_count; j++)
+          for (j = 0; j < entity_count; j++)
             internal[entities[j] - 1] = 0;
 
           int b = 0;
@@ -1412,9 +1412,9 @@ namespace Ioxf {
         // initialize all to '1', then zero out the elements in 'entities'.
         // Iterate through array again and consolidate all '1's
         std::vector<int> internal(elementCount);
-        for (j        = 0; j < elementCount; j++)
+        for (j = 0; j < elementCount; j++)
           internal[j] = 1;
-        for (j                      = 0; j < entity_count; j++)
+        for (j = 0; j < entity_count; j++)
           internal[entities[j] - 1] = 0;
 
         int b = 0;
@@ -2231,7 +2231,7 @@ namespace Ioxf {
   void DatabaseIO::MergeXmlFiles()
   {
     Ioss::FileInfo filename(get_filename() + ".xmf");
-// std::ostringstream *XML = nullptr;
+    // std::ostringstream *XML = nullptr;
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Barrier(util().communicator());
@@ -2745,7 +2745,7 @@ namespace Ioxf {
       local_step %= cycleCount;
     return local_step + 1;
   }
-}
+} // namespace Ioxf
 
 namespace {
   bool set_id(const Ioss::GroupingEntity *entity, const char *type, Ioxf::EntityIdSet *idset)
@@ -2900,4 +2900,4 @@ namespace {
     return true;
   }
 #endif
-}
+} // namespace

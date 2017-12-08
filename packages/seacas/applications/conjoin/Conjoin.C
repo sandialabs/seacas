@@ -2295,7 +2295,7 @@ namespace {
 
         // Populate the global sideset elements and sides...
         for (size_t i = 0; i < elem_side.size(); i++) {
-	  std::tie(glob_ssets[ss].elems[i], glob_ssets[ss].sides[i]) = elem_side[i];
+          std::tie(glob_ssets[ss].elems[i], glob_ssets[ss].sides[i]) = elem_side[i];
         }
 
         if (need_sideset_map) {

@@ -133,8 +133,9 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
 
   /* check that there is a list of disks, or a number of raids */
   if ((PIO_Info.Dsk_List_Cnt <= 0) && (PIO_Info.Num_Dsk_Ctrlrs <= 0)) {
-    fprintf(stderr, "%s: fatal - must specify a number of raids, or a disk"
-                    " list.\n",
+    fprintf(stderr,
+            "%s: fatal - must specify a number of raids, or a disk"
+            " list.\n",
             yo);
     return 0;
   }
@@ -145,15 +146,17 @@ template <typename T, typename INT> int NemSpread<T, INT>::check_inp()
   }
 
   if (strlen(PIO_Info.Par_Dsk_Root) <= 0) {
-    fprintf(stderr, "%s: Error - Root directory for parallel files must"
-                    " be specified.\n",
+    fprintf(stderr,
+            "%s: Error - Root directory for parallel files must"
+            " be specified.\n",
             yo);
     return 0;
   }
 
   if (strlen(PIO_Info.Par_Dsk_SubDirec) <= 0) {
-    fprintf(stderr, "%s: Error - Subdirectory for parallel files must"
-                    " be specified.\n",
+    fprintf(stderr,
+            "%s: Error - Subdirectory for parallel files must"
+            " be specified.\n",
             yo);
     return 0;
   }

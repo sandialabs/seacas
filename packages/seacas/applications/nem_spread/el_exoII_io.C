@@ -288,14 +288,16 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
   /* Check for a problem which has too many processors for a given mesh */
 
   if (globals.Num_Node / Proc_Info[0] < 1) {
-    fprintf(stderr, "%sERROR: Problem divided among too many "
-                    "processors.\n",
+    fprintf(stderr,
+            "%sERROR: Problem divided among too many "
+            "processors.\n",
             yo);
     exit(1);
   }
   else if (globals.Num_Elem / Proc_Info[0] < 1) {
-    fprintf(stderr, "%sERROR: Problem divided among too many "
-                    "processors.\n",
+    fprintf(stderr,
+            "%sERROR: Problem divided among too many "
+            "processors.\n",
             yo);
     exit(1);
   }
@@ -413,7 +415,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::load_mesh()
     Elem_Blk_Ids       = Num_Attr_Per_Elem + globals.Num_Elem_Blk;
     Elem_Blk_Types     = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
                                           MAX_STR_LENGTH + 1, sizeof(char));
-    Elem_Blk_Names = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
+    Elem_Blk_Names     = (char **)array_alloc(__FILE__, __LINE__, 2, globals.Num_Elem_Blk,
                                           max_name_length + 1, sizeof(char));
     Elem_Blk_Attr_Names =
         (char ***)array_alloc(__FILE__, __LINE__, 1, globals.Num_Elem_Blk, sizeof(char **));
@@ -1072,9 +1074,9 @@ template <typename T, typename INT> void NemSpread<T, INT>::extract_elem_blk()
 
   for (int iproc = Proc_Info[4]; iproc < Proc_Info[4] + Proc_Info[5]; iproc++) {
 
-    proc_elem_blk = (INT *)array_alloc(__FILE__, __LINE__, 1, globals.Num_Internal_Elems[iproc] +
-                                                                  globals.Num_Border_Elems[iproc],
-                                       sizeof(INT));
+    proc_elem_blk = (INT *)array_alloc(
+        __FILE__, __LINE__, 1, globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc],
+        sizeof(INT));
 
     /* Find out which element block each element in this processor belongs to.
      * Fill this information into the temporary vector, proc_elem_blk.  Also,
@@ -1259,7 +1261,7 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_elem_blk(int ex
         (INT *)array_alloc(__FILE__, __LINE__, 1, iconnect_length, sizeof(INT));
 
 #ifdef DEBUG
-    for (size_t i                         = 0; i < iconnect_length; i++)
+    for (size_t i = 0; i < iconnect_length; i++)
       globals.Proc_Elem_Connect[iproc][i] = -1111111;
 #endif
 
@@ -1906,8 +1908,9 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
       }
       if (!found) {
         fprintf(stderr, "find_elem_block: Error!:\n");
-        fprintf(stderr, "\tElement " ST_ZU " not found in any element "
-                        "block.\n",
+        fprintf(stderr,
+                "\tElement " ST_ZU " not found in any element "
+                "block.\n",
                 (size_t)i);
         exit(1);
       }
@@ -1943,8 +1946,9 @@ void NemSpread<T, INT>::find_elem_block(INT *proc_elem_blk, int iproc, int /*pro
       }
       if (!found) {
         fprintf(stderr, "find_elem_block: Error!:\n");
-        fprintf(stderr, "\tElement " ST_ZU " not found in any element "
-                        "block.\n",
+        fprintf(stderr,
+                "\tElement " ST_ZU " not found in any element "
+                "block.\n",
                 (size_t)i);
         exit(1);
       }
@@ -2921,10 +2925,11 @@ void NemSpread<T, INT>::read_side_sets(int exoid, INT *num_elem_in_ssets, INT *n
        * globals.Proc_Num_Side_Sets[] due to the fact that nullptr entities are
        * stored on processors not having a particular side set.
        */
-      globals.Proc_SS_Ids[iproc] = (INT *)array_alloc(
-          __FILE__, __LINE__, 1, (3 * globals.Num_Side_Set + 3 * globals.Proc_Num_Side_Sets[iproc] +
-                                  2 * elem_list_length[iproc] + 1),
-          sizeof(INT));
+      globals.Proc_SS_Ids[iproc] =
+          (INT *)array_alloc(__FILE__, __LINE__, 1,
+                             (3 * globals.Num_Side_Set + 3 * globals.Proc_Num_Side_Sets[iproc] +
+                              2 * elem_list_length[iproc] + 1),
+                             sizeof(INT));
       globals.Proc_SS_Elem_Count[iproc] = globals.Proc_SS_Ids[iproc] + globals.Num_Side_Set;
       globals.Proc_SS_Elem_Pointers[iproc] =
           globals.Proc_SS_Elem_Count[iproc] + globals.Num_Side_Set;

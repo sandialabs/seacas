@@ -56,7 +56,7 @@ void bucketsort1(struct vtx_data **graph,       /* graph data structure */
                  int               nsets,       /* number of sets being divided into */
                  int (*hops)[MAXSETS],          /* hop cost between sets */
                  int using_ewgts                /* are edge weights being used? */
-                 )
+)
 {
   extern double  CUT_TO_HOP_COST; /* if term_prop, cut/hop importance */
   struct bilist *lptr  = NULL;    /* pointer to an element in listspace */

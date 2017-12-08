@@ -168,13 +168,13 @@ namespace {
     if (zgc.m_sameRange) {
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
-      zgc.m_ownerRangeEnd      = zgc.m_donorRangeEnd;
-      zgc.m_ownerRangeBeg      = zgc.m_donorRangeBeg;
+      zgc.m_ownerRangeEnd = zgc.m_donorRangeEnd;
+      zgc.m_ownerRangeBeg = zgc.m_donorRangeBeg;
     }
     else {
       auto range_beg      = zgc.inverse_transform(d_range_beg);
-      zgc.m_ownerRangeEnd      = zgc.inverse_transform(d_range_end);
-      zgc.m_ownerRangeBeg      = range_beg;
+      zgc.m_ownerRangeEnd = zgc.inverse_transform(d_range_end);
+      zgc.m_ownerRangeBeg = range_beg;
       zgc.m_donorRangeBeg = d_range_beg;
       zgc.m_donorRangeEnd = d_range_end;
     }
@@ -240,8 +240,8 @@ namespace {
     c1->m_zoneConnectivity.emplace_back(c1_base + "--" + c2_base, c1->m_zone, adam_name, c2->m_zone,
                                         transform, range_beg, range_end, donor_range_beg,
                                         donor_range_end, c1->m_zone < c2->m_zone, true);
-    auto &zgc1 = c1->m_zoneConnectivity.back();
-    zgc1.m_sameRange = true;
+    auto &zgc1         = c1->m_zoneConnectivity.back();
+    zgc1.m_sameRange   = true;
     zgc1.m_ownerOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
     zgc1.m_donorOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
 
@@ -251,8 +251,8 @@ namespace {
     c2->m_zoneConnectivity.emplace_back(c2_base + "--" + c1_base, c2->m_zone, adam_name, c1->m_zone,
                                         transform, donor_range_beg, donor_range_end, range_beg,
                                         range_end, c2->m_zone < c1->m_zone, true);
-    auto &zgc2 = c2->m_zoneConnectivity.back();
-    zgc2.m_sameRange = true;
+    auto &zgc2         = c2->m_zoneConnectivity.back();
+    zgc2.m_sameRange   = true;
     zgc2.m_ownerOffset = {{c2->m_offset[0], c2->m_offset[1], c2->m_offset[2]}};
     zgc2.m_donorOffset = {{c1->m_offset[0], c1->m_offset[1], c1->m_offset[2]}};
     // OUTPUT << "Adding c2 " << c2_base << "--" << c1_base << "\n";

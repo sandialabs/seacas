@@ -66,7 +66,7 @@ int nway_kl(struct vtx_data **graph,       /* data structure for graph */
             int     using_ewgts,           /* are edge weights being used? */
             int **  bndy_list,             /* list of vertices on boundary (0 ends) */
             double *startweight            /* sum of vweights in each set (in and out) */
-            )
+)
 
 /* Suaris and Kedem algorithm for quadrisection, generalized to an */
 /* arbitrary number of sets, with intra-set cost function specified by hops. */

@@ -85,7 +85,9 @@ mat_t *mat_file = nullptr; /* file for binary .mat input */
 
 /**********************************************************************/
 static const char *qainfo[] = {
-    "mat2exo", "2017/09/25", "4.02",
+    "mat2exo",
+    "2017/09/25",
+    "4.02",
 };
 
 /**********************************************************************/
@@ -97,11 +99,11 @@ void get_put_vars(int exo_file, ex_entity_type type, const std::vector<int> &ids
                   const char *mname);
 
 std::vector<std::string> matGetStr(const char *name);
-int matGetDbl(const char *name, size_t n1, size_t n2, std::vector<double> &data);
-int matGetInt(const char *name, size_t n1, size_t n2, std::vector<int> &data);
-int matGetInt(const char *name);
-int matArrNRow(const char *name);
-int matArrNCol(const char *name);
+int  matGetDbl(const char *name, size_t n1, size_t n2, std::vector<double> &data);
+int  matGetInt(const char *name, size_t n1, size_t n2, std::vector<int> &data);
+int  matGetInt(const char *name);
+int  matArrNRow(const char *name);
+int  matArrNCol(const char *name);
 void del_arg(int *argc, char *argv[], int j);
 
 /**********************************************************************/
@@ -225,8 +227,8 @@ int main(int argc, char *argv[])
       ex_put_set(exo_file, EX_SIDE_SET, ids[i], TOPTR(elem_list), TOPTR(side_list));
 
       if (nssdfac[i] > 0) {
-	sprintf(name, "ssfac%02d", i + 1);
-	matGetDbl(name, nssdfac[i], 1, dist_fact);
+        sprintf(name, "ssfac%02d", i + 1);
+        matGetDbl(name, nssdfac[i], 1, dist_fact);
         ex_put_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(dist_fact));
       }
     }
@@ -256,8 +258,8 @@ int main(int argc, char *argv[])
       ex_put_set(exo_file, EX_NODE_SET, ids[i], TOPTR(node_list), nullptr);
 
       if (ndfac[i] > 0) {
-	sprintf(name, "nsfac%02d", i + 1);
-	matGetDbl(name, ndfac[i], 1, dist_fact);
+        sprintf(name, "nsfac%02d", i + 1);
+        matGetDbl(name, ndfac[i], 1, dist_fact);
         ex_put_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fact));
       }
     }

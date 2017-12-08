@@ -825,8 +825,7 @@ namespace {
       std::vector<std::vector<INT>>    pns_nodes(proc_count);
       std::vector<std::vector<double>> pns_df(proc_count);
       for (size_t p = 0; p < proc_count; p++) {
-        size_t node_count =
-            proc_region[p]->get_nodesets()[s]->entity_count();
+        size_t node_count = proc_region[p]->get_nodesets()[s]->entity_count();
         pns_nodes[p].reserve(node_count);
         pns_df[p].reserve(node_count);
       }

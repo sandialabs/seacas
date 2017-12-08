@@ -74,7 +74,7 @@ namespace {
 
     IOSS_ERROR(errmsg);
   }
-}
+} // namespace
 
 namespace Iodw {
   // ========================================================================
@@ -286,4 +286,4 @@ namespace Iodw {
   {
     return -1;
   }
-}
+} // namespace Iodw

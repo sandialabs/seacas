@@ -100,7 +100,7 @@ void lanczos_FO(struct vtx_data **A,      /* graph data structure */
                 double *          vwsqrt, /* square root of vertex weights */
                 double            maxdeg, /* maximum degree of graph */
                 int               version /* 1 = standard mode, 2 = inverse operator mode */
-                )
+)
 
 {
   extern FILE *    Output_File;         /* output file or NULL */

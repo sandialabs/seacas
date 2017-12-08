@@ -51,7 +51,7 @@ void input_queries(FILE **fin,           /* input file */
                    int *  rqi_flag,      /* should I use multilevel eigensolver? */
                    int *  vmax,          /* if so, how far should I coarsen? */
                    int *  ndims          /* number of divisions at each stage */
-                   )
+)
 {
   extern int SEQUENCE;      /* sequence instead of partition graph? */
   extern int ARCHITECTURE;  /* 0=> hypercube, d=> d-dimensional mesh */

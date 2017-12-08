@@ -67,7 +67,7 @@ static void write_dummy_names(int exoid, ex_entity_type obj_type, int num)
     size_t i;
 
     ex_get_dimension(exoid, ex_dim_num_objects(obj_type), ex_name_of_object(obj_type), &num_entity,
-		     &varid, __func__);
+                     &varid, __func__);
 
     for (i = 0; i < num_entity; i++) {
       start[0] = i;

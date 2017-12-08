@@ -46,7 +46,7 @@ void checkbp(struct vtx_data **graph, /* graph data structure for vertex weights
              double *          dists, /* distances that separate sets */
              int               nvtxs, /* number of vertices */
              int               ndims  /* number of dimensions for division */
-             )
+)
 {
   int    signs[MAXDIMS];     /* signs for coordinates of target points */
   int    sizes[MAXSETS];     /* size of each set */

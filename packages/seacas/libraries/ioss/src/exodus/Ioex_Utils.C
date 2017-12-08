@@ -118,7 +118,7 @@ namespace Ioex {
 
   void update_last_time_attribute(int exodusFilePtr, double value)
   {
-    char        errmsg[MAX_ERR_LENGTH];
+    char errmsg[MAX_ERR_LENGTH];
 
     double tmp    = 0.0;
     int    rootid = static_cast<unsigned>(exodusFilePtr) & EX_FILE_ID_MASK;
@@ -155,7 +155,7 @@ namespace Ioex {
         found  = true;
       }
       else {
-        char        errmsg[MAX_ERR_LENGTH];
+        char errmsg[MAX_ERR_LENGTH];
         ex_opts(EX_VERBOSE);
         sprintf(errmsg, "Error: failed to read last_written_time attribute from file id %d",
                 exodusFilePtr);
@@ -202,7 +202,7 @@ namespace Ioex {
         }
       }
       else {
-        char        errmsg[MAX_ERR_LENGTH];
+        char errmsg[MAX_ERR_LENGTH];
         ex_opts(EX_VERBOSE);
         sprintf(errmsg, "Error: failed to read processor info attribute from file id %d",
                 exodusFilePtr);

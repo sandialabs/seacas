@@ -104,7 +104,7 @@ namespace {
   const size_t max_line_length = MAX_LINE_LENGTH;
 
   const std::string SEP() { return std::string("@"); } // Separator for attribute offset storage
-  const char *complex_suffix[] = {".re", ".im"};
+  const char *      complex_suffix[] = {".re", ".im"};
 
   int get_parallel_io_mode(const Ioss::PropertyManager &properties)
   {
@@ -270,11 +270,13 @@ namespace Iopx {
         // Append to file if it already exists -- See if the file exists.
         Ioss::FileInfo file = Ioss::FileInfo(get_filename());
         fileExists          = file.exists();
-	if (fileExists) {
+        if (fileExists) {
           std::ostringstream errmsg;
-          errmsg << "ERROR: Cannot reliably append to an existing database in parallel single-file output mode. File '" << get_filename() << "'";
+          errmsg << "ERROR: Cannot reliably append to an existing database in parallel single-file "
+                    "output mode. File '"
+                 << get_filename() << "'";
           IOSS_ERROR(errmsg);
-	}
+        }
       }
     }
   }
@@ -1060,7 +1062,7 @@ namespace Iopx {
           io_block = eblock;
           io_block->property_add(Ioss::Property("id", id));
           io_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
-	  
+
           if (db_has_name) {
             std::string *db_name = &block_name;
             if (get_use_generic_canonical_name()) {
@@ -1127,7 +1129,7 @@ namespace Iopx {
         io_block->property_add(Ioss::Property("original_block_order", iblk));
 
         if (save_type != "null" && save_type != "") {
-	  io_block->property_update("original_topology_type", save_type);
+          io_block->property_update("original_topology_type", save_type);
         }
 
         io_block->property_add(Ioss::Property(
@@ -1530,7 +1532,7 @@ namespace Iopx {
           int64_t id = Ioex::extract_id(fs_name);
           if (id > 0) {
             side_set->property_add(Ioss::Property("id", id));
-	    side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
           }
         }
       }
@@ -1574,7 +1576,7 @@ namespace Iopx {
             }
             side_set = new Ioss::SideSet(this, side_set_name);
             side_set->property_add(Ioss::Property("id", id));
-	    side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
             if (db_has_name) {
               std::string *db_name = &side_set_name;
               if (get_use_generic_canonical_name()) {
@@ -1605,8 +1607,8 @@ namespace Iopx {
           if (int_byte_size_api() == 4) {
             Ioss::Field side_field("sides", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
                                    number_sides);
-            Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, IOSS_SCALAR(), Ioss::Field::MESH,
-                                   number_sides);
+            Ioss::Field elem_field("ids_raw", Ioss::Field::INTEGER, IOSS_SCALAR(),
+                                   Ioss::Field::MESH, number_sides);
 
             Ioss::IntVector e32(number_sides);
             decomp->get_set_mesh_var(get_file_pointer(), EX_SIDE_SET, id, side_field, TOPTR(e32));
@@ -1809,7 +1811,7 @@ namespace Iopx {
                                                    elem_topo->name(), my_side_count);
             assert(side_block != nullptr);
             side_block->property_add(Ioss::Property("id", id));
-	    side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
             side_set->add(side_block);
 
             // Note that all sideblocks within a specific
@@ -1877,7 +1879,7 @@ namespace Iopx {
       }
     }
   }
-}
+} // namespace Iopx
 
 template <typename T>
 void DatabaseIO::get_sets(ex_entity_type type, int64_t count, const std::string &base,
@@ -3277,8 +3279,8 @@ int64_t DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int64_t id
     return 0;
   }
 
-  std::string storage = "Real[" + std::to_string(nfnodes) + "]";
-  Ioss::Field field("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH,
+  std::string         storage = "Real[" + std::to_string(nfnodes) + "]";
+  Ioss::Field         field("distribution_factors", Ioss::Field::REAL, storage, Ioss::Field::MESH,
                     number_distribution_factors / nfnodes);
   std::vector<double> dist(number_distribution_factors);
   decomp->get_set_mesh_double(get_file_pointer(), EX_SIDE_SET, id, field, TOPTR(dist));
@@ -3466,7 +3468,8 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
 
-      int ierr = ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 1, rdata);
+      int ierr =
+          ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 1, rdata);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -3478,7 +3481,8 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       file_data.reserve(file_count);
       assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
-      int ierr = ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 2, rdata);
+      int ierr =
+          ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 2, rdata);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -3490,7 +3494,8 @@ int64_t DatabaseIO::put_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
       file_data.reserve(file_count);
       assert(nodeOwningProcessor.size() >= file_count);
       map_data(nodeOwningProcessor, myProcessor, rdata, file_data);
-      int ierr = ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 3, rdata);
+      int ierr =
+          ex_put_partial_coord_component(get_file_pointer(), proc_offset + 1, file_count, 3, rdata);
       if (ierr < 0) {
         Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
       }
@@ -4182,15 +4187,15 @@ void DatabaseIO::write_entity_transient_field(ex_entity_type type, const Ioss::F
                                   proc_offset + offset + 1, count, TOPTR(temp));
       }
       else if (type == EX_NODE_SET) {
-	std::vector<double> file_data;
-	file_data.reserve(file_count);
-	map_nodeset_data(nodesetOwnedNodes[ge], TOPTR(temp), file_data);
-	ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
-				  file_count, TOPTR(file_data));
+        std::vector<double> file_data;
+        file_data.reserve(file_count);
+        map_nodeset_data(nodesetOwnedNodes[ge], TOPTR(temp), file_data);
+        ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
+                                  file_count, TOPTR(file_data));
       }
       else {
-	ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
-				  file_count, TOPTR(temp));
+        ierr = ex_put_partial_var(get_file_pointer(), step, type, var_index, id, proc_offset + 1,
+                                  file_count, TOPTR(temp));
       }
 
       if (ierr < 0) {
@@ -4238,7 +4243,7 @@ int64_t DatabaseIO::put_Xset_field_internal(ex_entity_type type, const Ioss::Ent
         nodesetOwnedNodes[ns].reserve(file_count);
         if (int_byte_size_api() == 4) {
           i32data.reserve(file_count);
-	  assert(nodeOwningProcessor.size() >= file_count);
+          assert(nodeOwningProcessor.size() >= file_count);
           map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                               reinterpret_cast<int *>(data), num_to_get, i32data);
           assert(i32data.size() == file_count);
@@ -4248,7 +4253,7 @@ int64_t DatabaseIO::put_Xset_field_internal(ex_entity_type type, const Ioss::Ent
         }
         else {
           i64data.reserve(file_count);
-	  assert(nodeOwningProcessor.size() >= file_count);
+          assert(nodeOwningProcessor.size() >= file_count);
           map_nodeset_id_data(nodeOwningProcessor, nodesetOwnedNodes[ns], myProcessor,
                               reinterpret_cast<int64_t *>(data), num_to_get, i64data);
           assert(i64data.size() == file_count);
@@ -4735,7 +4740,7 @@ void DatabaseIO::write_meta_data()
         // the id of the sideblock must be the same as the sideset
         // id.
         new_block->property_update("id", id);
-	new_block->property_update("guid", util().generate_guid(id));
+        new_block->property_update("guid", util().generate_guid(id));
 
         entity_count += block->entity_count();
         df_count += block->get_property("distribution_factor_count").get_int();

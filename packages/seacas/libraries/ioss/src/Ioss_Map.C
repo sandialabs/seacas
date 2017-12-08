@@ -39,11 +39,11 @@
 #include <cstddef>      // for size_t
 #include <iterator>     // for insert_iterator, inserter
 #include <numeric>
-#include <sstream>      // for operator<<, basic_ostream, etc
-#include <string>       // for char_traits, operator<<, etc
-#include <sys/types.h>  // for ssize_t
-#include <utility>      // for pair, make_pair
-#include <vector>       // for vector, vector<>::iterator, etc
+#include <sstream>     // for operator<<, basic_ostream, etc
+#include <string>      // for char_traits, operator<<, etc
+#include <sys/types.h> // for ssize_t
+#include <utility>     // for pair, make_pair
+#include <vector>      // for vector, vector<>::iterator, etc
 
 namespace {
   // Determines whether the input map is sequential (m_map[i] == i)
@@ -79,12 +79,12 @@ namespace {
 
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
-    bool one2one = true;
-    INT map_offset = num_to_get > 0 ? ids[0] - 1 : 0;
-    for (size_t i=0; i < num_to_get; i++) {
+    bool one2one    = true;
+    INT  map_offset = num_to_get > 0 ? ids[0] - 1 : 0;
+    for (size_t i = 0; i < num_to_get; i++) {
       if ((size_t)ids[i] != i + offset + 1 + map_offset) {
-	one2one = false;
-	break;
+        one2one = false;
+        break;
       }
     }
     return one2one;
@@ -193,7 +193,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
 
     for (size_t i = 1; i < m_map.size(); i++) {
       if (m_map[i] != 0) {
-	new_ids.emplace_back(m_map[i], i);
+        new_ids.emplace_back(m_map[i], i);
       }
     }
   }
@@ -204,11 +204,11 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
       new_ids.emplace_back(m_map[local_id], local_id);
 
       if (m_map[local_id] <= 0) {
-	std::ostringstream errmsg;
-	errmsg << "\nERROR: " << m_entityType << " map detected non-positive global id "
-	       << m_map[local_id] << " for " << m_entityType << " with local id " << local_id
-	       << " on processor " << m_myProcessor << ".\n";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "\nERROR: " << m_entityType << " map detected non-positive global id "
+               << m_map[local_id] << " for " << m_entityType << " with local id " << local_id
+               << " on processor " << m_myProcessor << ".\n";
+        IOSS_ERROR(errmsg);
       }
     }
   }
@@ -230,11 +230,11 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     ReverseMapContainer old_ids;
     old_ids.swap(m_reverse);
     SMART_ASSERT(m_reverse.empty());
-    
+
     // Merge old_ids and new_ids to reverseElementMap.
     m_reverse.reserve(old_ids.size() + new_ids.size());
     std::merge(old_ids.begin(), old_ids.end(), new_ids.begin(), new_ids.end(),
-	       std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
+               std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
   }
 
 // Check for duplicate ids...
@@ -262,7 +262,8 @@ void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
 template bool Ioss::Map::set_map(int *ids, size_t count, size_t offset, bool in_define_mode);
 template bool Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset, bool in_define_mode);
 
-template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mode)
+template <typename INT>
+bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mode)
 {
   IOSS_FUNC_ENTER(m_);
   if (in_define_mode && m_map[0] != 1) {
@@ -283,7 +284,7 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
     else {
       // Map is sequential beginning at ids[0]
       if (count > 0) {
-	m_offset = ids[0] - 1;
+        m_offset = ids[0] - 1;
       }
     }
   }
