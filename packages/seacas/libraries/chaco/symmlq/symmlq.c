@@ -552,9 +552,9 @@ L10:
   /*     See if msolve is symmetric. */
   if (*checka && *precon) {
     msolve_(n, &y[1], &r2[1]);
-    s = ch_ddot_(n, &y[1], &c__1, &y[1], &c__1);
-    t = ch_ddot_(n, &r1[1], &c__1, &r2[1], &c__1);
-    z = (d__1 = s - t, abs(d__1));
+    s    = ch_ddot_(n, &y[1], &c__1, &y[1], &c__1);
+    t    = ch_ddot_(n, &r1[1], &c__1, &r2[1], &c__1);
+    z    = (d__1 = s - t, abs(d__1));
     epsa = (s + eps) * pow_dd(&eps, &c_b18);
     if (z > epsa) {
       *istop = 7;
@@ -582,9 +582,9 @@ L10:
   aprod_(n, &v[1], &y[1], a, &vwsqrt[1], &work[1], orthlist);
   if (*checka) {
     aprod_(n, &y[1], &r2[1], a, &vwsqrt[1], &work[1], orthlist);
-    s = ch_ddot_(n, &y[1], &c__1, &y[1], &c__1);
-    t = ch_ddot_(n, &v[1], &c__1, &r2[1], &c__1);
-    z = (d__1 = s - t, abs(d__1));
+    s    = ch_ddot_(n, &y[1], &c__1, &y[1], &c__1);
+    t    = ch_ddot_(n, &v[1], &c__1, &r2[1], &c__1);
+    z    = (d__1 = s - t, abs(d__1));
     epsa = (s + eps) * pow_dd(&eps, &c_b18);
     if (z > epsa) {
       *istop = 6;

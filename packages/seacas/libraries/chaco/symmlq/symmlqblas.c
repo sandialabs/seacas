@@ -98,9 +98,9 @@ int chdaxpy_(integer *n, doublereal *da, doublereal *dx, integer *incx, doublere
   }
   return 0;
 
-/*        code for both increments equal to 1 */
+  /*        code for both increments equal to 1 */
 
-/*        clean-up loop */
+  /*        clean-up loop */
 
 L20:
   m = *n % 4;
@@ -173,9 +173,9 @@ int chdcopy_(integer *n, doublereal *dx, integer *incx, doublereal *dy, integer 
   }
   return 0;
 
-/*        code for both increments equal to 1 */
+  /*        code for both increments equal to 1 */
 
-/*        clean-up loop */
+  /*        clean-up loop */
 
 L20:
   m = *n % 7;
@@ -257,9 +257,9 @@ doublereal ch_ddot_(integer *n, doublereal *dx, integer *incx, doublereal *dy, i
   ret_val = dtemp;
   return ret_val;
 
-/*        code for both increments equal to 1 */
+  /*        code for both increments equal to 1 */
 
-/*        clean-up loop */
+  /*        clean-up loop */
 
 L20:
   m = *n % 5;
@@ -346,7 +346,7 @@ doublereal chdnrm2_(integer *n, doublereal *dx, integer *incx)
   /*     from the environmental parameters listed in the imsl converter */
   /*     document the limiting values are as follows.. */
   /*     cutlo, s.p.   u/eps = 2**(-102) for  honeywell.  close seconds are
-  */
+   */
   /*                   univac and dec at 2**(-103) */
   /*                   thus cutlo = 2**(-51) = 4.44089e-16 */
   /*     cuthi, s.p.   v = 2**127 for univac, honeywell, and dec. */
@@ -383,7 +383,7 @@ L30:
   next = 1;
   xmax = zero;
 
-/*                        phase 1.  sum is zero */
+  /*                        phase 1.  sum is zero */
 
 L50:
   if (dx[i] == zero) {
@@ -397,7 +397,7 @@ L50:
   next = 2;
   goto L105;
 
-/*                                prepare for phase 4. */
+  /*                                prepare for phase 4. */
 
 L100:
   i    = j;
@@ -407,17 +407,17 @@ L105:
   xmax = (d__1 = dx[i], abs(d__1));
   goto L115;
 
-/*                   phase 2.  sum is small. */
-/*                             scale to avoid destructive underflow. */
+  /*                   phase 2.  sum is small. */
+  /*                             scale to avoid destructive underflow. */
 
 L70:
   if ((d__1 = dx[i], abs(d__1)) > cutlo) {
     goto L75;
   }
 
-/*                     common code for phases 2 and 4. */
-/*                     in phase 4 sum is large.  scale to avoid overflow.
-*/
+  /*                     common code for phases 2 and 4. */
+  /*                     in phase 4 sum is large.  scale to avoid overflow.
+   */
 
 L110:
   if ((d__1 = dx[i], abs(d__1)) <= xmax) {
@@ -435,13 +435,13 @@ L115:
   sum += d__1 * d__1;
   goto L200;
 
-/*                  prepare for phase 3. */
+  /*                  prepare for phase 3. */
 
 L75:
   sum = sum * xmax * xmax;
 
-/*     for real or d.p. set hitest = cuthi/n */
-/*     for complex      set hitest = cuthi/(2*n) */
+  /*     for real or d.p. set hitest = cuthi/n */
+  /*     for complex      set hitest = cuthi/(2*n) */
 
 L85:
   hitest = cuthi / (real)(*n);

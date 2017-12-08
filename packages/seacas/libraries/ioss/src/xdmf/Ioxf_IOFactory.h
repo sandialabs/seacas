@@ -56,5 +56,5 @@ namespace Ioxf {
     Ioss::DatabaseIO *make_IO(const std::string &filename, Ioss::DatabaseUsage db_usage,
                               MPI_Comm communicator, const Ioss::PropertyManager &properties) const;
   };
-}
+} // namespace Ioxf
 #endif // IOSS_Ioxf_IOFactory_h

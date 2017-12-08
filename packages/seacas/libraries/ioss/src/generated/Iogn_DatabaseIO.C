@@ -833,7 +833,7 @@ namespace Iogn {
             new Ioss::SideBlock(this, ef_block_name, side_topo_name, elem_topo_name, number_faces);
         sideset->add(ef_block);
         ef_block->property_add(Ioss::Property("id", ifs + 1));
-	ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
+        ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
 
         std::string storage = "Real[";
         storage += std::to_string(4);
@@ -857,7 +857,7 @@ namespace Iogn {
                                               number_faces);
           sideset->add(ef_block);
           ef_block->property_add(Ioss::Property("id", ifs + 1));
-	  ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
+          ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
 
           std::string storage = "Real[";
           storage += std::to_string(4);

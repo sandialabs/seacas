@@ -58,7 +58,7 @@ void coarsen(
     int               nstep,       /* number of coarsenings between RQI steps */
     int               step,        /* current step number */
     int               give_up      /* has coarsening bogged down? */
-    )
+)
 {
   extern FILE *     Output_File;            /* output file or null */
   extern int        DEBUG_COARSEN;          /* debug flag for coarsening */

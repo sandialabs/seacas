@@ -58,4 +58,4 @@ namespace Ioxf {
   }
 
   void IOFactory::finalize() { DatabaseIO::finalize(); }
-}
+} // namespace Ioxf

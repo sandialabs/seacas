@@ -60,7 +60,7 @@ void divide(struct vtx_data **graph,         /* graph data structure */
             int (*hop_mtx)[MAXSETS],         /* between-set hop costs for KL */
             int nsets,                       /* number of sets to partition into */
             int striping                     /* partition by striping into pieces? */
-            )
+)
 {
   extern int           DEBUG_TRACE;        /* trace main execution path? */
   extern int           DEBUG_CONNECTED;    /* debug flag for connected components */

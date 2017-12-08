@@ -62,7 +62,7 @@ void bucketsorts_bi(struct vtx_data **graph,       /* graph data structure */
                     int  list_length,              /* number of values in bspace to work with */
                     int  npass,                    /* which pass through KL is this? */
                     int  using_ewgts               /* are edge weights being used? */
-                    )
+)
 {
   extern int      KL_RANDOM;       /* use randomness in KL? */
   extern int      KL_UNDO_LIST;    /* only sort vertices who have moved. */

@@ -149,7 +149,7 @@ namespace Ioex {
         minimizeOpenFiles = true;
       }
       else {
-	Ioss::Utils::check_set_bool_property(properties, "MINIMIZE_OPEN_FILES", minimizeOpenFiles);
+        Ioss::Utils::check_set_bool_property(properties, "MINIMIZE_OPEN_FILES", minimizeOpenFiles);
       }
     }
 
@@ -544,8 +544,8 @@ namespace Ioex {
 
   // common
   size_t DatabaseIO::handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
-				      Ioss::Map &entity_map, void *ids,
-				      size_t num_to_get, size_t offset, size_t count) const
+                                      Ioss::Map &entity_map, void *ids, size_t num_to_get,
+                                      size_t offset, size_t count) const
   {
     /*!
      * NOTE: "element" is generic for "element", "face", or "edge"
@@ -605,7 +605,7 @@ namespace Ioex {
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+my_element_count'
 
-    bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     int64_t eb_offset = eb->get_offset();
     if (int_byte_size_api() == 4) {
       entity_map.set_map(static_cast<int *>(ids), num_to_get, eb_offset, in_define);
@@ -1694,18 +1694,18 @@ namespace Ioex {
                                        Ioss::Field::ATTRIBUTE, my_element_count, index++));
 
           if (spatialDimension == 2 && attribute_count >= 3) {
-            block->field_add(Ioss::Field("i", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
-                                         my_element_count, index++));
-            block->field_add(Ioss::Field("j", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
-                                         my_element_count, index++));
+            block->field_add(Ioss::Field("i", Ioss::Field::REAL, IOSS_SCALAR(),
+                                         Ioss::Field::ATTRIBUTE, my_element_count, index++));
+            block->field_add(Ioss::Field("j", Ioss::Field::REAL, IOSS_SCALAR(),
+                                         Ioss::Field::ATTRIBUTE, my_element_count, index++));
           }
           else if (spatialDimension == 3 && attribute_count >= 7) {
-            block->field_add(Ioss::Field("i1", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
-                                         my_element_count, index++));
-            block->field_add(Ioss::Field("i2", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
-                                         my_element_count, index++));
-            block->field_add(Ioss::Field("j", Ioss::Field::REAL, IOSS_SCALAR(), Ioss::Field::ATTRIBUTE,
-                                         my_element_count, index++));
+            block->field_add(Ioss::Field("i1", Ioss::Field::REAL, IOSS_SCALAR(),
+                                         Ioss::Field::ATTRIBUTE, my_element_count, index++));
+            block->field_add(Ioss::Field("i2", Ioss::Field::REAL, IOSS_SCALAR(),
+                                         Ioss::Field::ATTRIBUTE, my_element_count, index++));
+            block->field_add(Ioss::Field("j", Ioss::Field::REAL, IOSS_SCALAR(),
+                                         Ioss::Field::ATTRIBUTE, my_element_count, index++));
             block->field_add(Ioss::Field("reference_axis", Ioss::Field::REAL, IOSS_VECTOR_3D(),
                                          Ioss::Field::ATTRIBUTE, my_element_count, index));
             index += 3;

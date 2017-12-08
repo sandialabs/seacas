@@ -83,7 +83,9 @@ static mat_t *mat_file = nullptr; /* file for binary .mat output */
 static bool   debug    = false;
 
 static const char *qainfo[] = {
-    "exo2mat", "2017/09/25", "4.04",
+    "exo2mat",
+    "2017/09/25",
+    "4.04",
 };
 
 std::string time_stamp(const std::string &format)
@@ -709,12 +711,12 @@ std::vector<int> handle_node_sets(int exo_file, int num_sets, bool use_cell_arra
         PutInt(str, node_list.size(), 1, TOPTR(node_list));
 
         /* distribution-factors list */
-	if (num_df[i] > 0) {
-	  std::vector<double> dist_fac(num_df[i]);
-	  ex_get_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fac));
-	  sprintf(str, "nsfac%02d", i + 1);
-	  PutDbl(str, dist_fac.size(), 1, TOPTR(dist_fac));
-	}
+        if (num_df[i] > 0) {
+          std::vector<double> dist_fac(num_df[i]);
+          ex_get_set_dist_fact(exo_file, EX_NODE_SET, ids[i], TOPTR(dist_fac));
+          sprintf(str, "nsfac%02d", i + 1);
+          PutDbl(str, dist_fac.size(), 1, TOPTR(dist_fac));
+        }
       }
     }
 
@@ -893,12 +895,12 @@ std::vector<int> handle_side_sets(int exo_file, int num_sets, bool use_cell_arra
         PutInt(str, n2, 1, TOPTR(side_nodes));
 
         /* distribution-factors list */
-	if (has_ss_dfac) {
-	  ssdfac.resize(n2);
+        if (has_ss_dfac) {
+          ssdfac.resize(n2);
           ex_get_set_dist_fact(exo_file, EX_SIDE_SET, ids[i], TOPTR(ssdfac));
-	  sprintf(str, "ssfac%02d", i + 1);
-	  PutDbl(str, n2, 1, TOPTR(ssdfac));
-	}
+          sprintf(str, "ssfac%02d", i + 1);
+          PutDbl(str, n2, 1, TOPTR(ssdfac));
+        }
 
         /* element and side list for side sets (dgriffi) */
         elem_list.resize(n1);

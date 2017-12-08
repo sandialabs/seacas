@@ -73,7 +73,7 @@ namespace Iopg {
 
   using TopologyMap =
       std::map<std::pair<std::string, const Ioss::ElementTopology *>, int, TopologyMapCompare>;
-}
+} // namespace Iopg
 
 namespace {
   // Output a message that the operation is unsupported and die...
@@ -83,8 +83,8 @@ namespace {
     std::abort();
   }
 
-  const size_t      max_string_length = MAX_STR_LENGTH;
-  const size_t      max_line_length   = MAX_LINE_LENGTH;
+  const size_t max_string_length = MAX_STR_LENGTH;
+  const size_t max_line_length   = MAX_LINE_LENGTH;
 
   void separate_surface_element_sides(Ioss::IntVector &element, Ioss::IntVector &sides,
                                       Ioss::Region *region, Iopg::TopologyMap &topo_map,
@@ -104,7 +104,7 @@ namespace {
 
     IOSS_ERROR(errmsg);
   }
-}
+} // namespace
 
 namespace Iopg {
   // ========================================================================
@@ -620,7 +620,7 @@ namespace Iopg {
         std::string    nodeset_name = Ioss::Utils::encode_entity_name("nodelist", id);
         Ioss::NodeSet *nodeset      = new Ioss::NodeSet(this, nodeset_name, number_nodes);
         nodeset->property_add(Ioss::Property("id", id));
-	nodeset->property_add(Ioss::Property("guid", util().generate_guid(id)));
+        nodeset->property_add(Ioss::Property("guid", util().generate_guid(id)));
         get_region()->add(nodeset);
 
         get_region()->add_alias(nodeset_name, Ioss::Utils::encode_entity_name("nodelist", id));
@@ -737,7 +737,7 @@ namespace Iopg {
         Ioss::SideSet *side_set = new Ioss::SideSet(this, side_set_name);
         get_region()->add(side_set);
         side_set->property_add(Ioss::Property("id", id));
-	side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
+        side_set->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
         get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("surface", id));
         get_region()->add_alias(side_set_name, Ioss::Utils::encode_entity_name("sideset", id));
@@ -812,7 +812,7 @@ namespace Iopg {
               if (par_dim == 2 || par_dim == 3) {
                 int my_side_count = block->topology()->number_boundaries();
                 for (int ii = 0; ii < my_side_count; ii++) {
-                  const Ioss::ElementTopology *topo = block->topology()->boundary_type(ii + 1);
+                  const Ioss::ElementTopology *topo    = block->topology()->boundary_type(ii + 1);
                   topo_map[std::make_pair(name, topo)] = 0;
                   side_map[std::make_pair(name, topo)] = 0;
                 }
@@ -921,7 +921,7 @@ namespace Iopg {
             // sideset might have the same id.
             assert(side_block != nullptr);
             side_block->property_add(Ioss::Property("id", id));
-	    side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
+            side_block->property_add(Ioss::Property("guid", util().generate_guid(id)));
 
             // If splitting by element block, need to set the
             // element block member on this side block.
@@ -974,7 +974,7 @@ namespace Iopg {
       }
     }
   }
-}
+} // namespace Iopg
 
 bool DatabaseIO::begin__(Ioss::State /* state */) { return true; }
 
@@ -1460,7 +1460,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeSet *ns, const Ioss::Fiel
         // Not supported by pamgen.  Fill data with '1'
         double *rdata = static_cast<double *>(data);
         for (size_t i = 0; i < num_to_get; i++)
-          rdata[i]    = 1.0;
+          rdata[i] = 1.0;
       }
       else {
         num_to_get = Ioss::Utils::field_warning(ns, field, "input");
@@ -1674,7 +1674,7 @@ void DatabaseIO::compute_block_adjacencies() const
   if (isParallel) {
     // Get contributions from other processors...
     // Get the communication map...
-    Ioss::CommSet *css = get_region()->get_commset("commset_node");
+    Ioss::CommSet *                  css = get_region()->get_commset("commset_node");
     std::vector<std::pair<int, int>> proc_node;
     {
       std::vector<int> entity_processor;
@@ -2010,13 +2010,13 @@ int DatabaseIO::get_side_distributions(const Ioss::SideBlock *fb, int id, int my
   // NOTE: In pamgen, all distribution factors are 1.0
   const Ioss::ElementTopology *ftopo   = fb->topology();
   int                          nfnodes = ftopo->number_nodes();
-  for (int i     = 0; i < nfnodes * my_side_count; i++)
+  for (int i = 0; i < nfnodes * my_side_count; i++)
     dist_fact[i] = 1.0;
   return 0;
 }
 
 //------------------------------------------------------------------------
-}
+} // namespace Iopg
 namespace {
   void separate_surface_element_sides(Ioss::IntVector &element, Ioss::IntVector &sides,
                                       Ioss::Region *region, Iopg::TopologyMap &topo_map,
@@ -2039,7 +2039,7 @@ namespace {
           // nullptr if hetero sides on element
           common_ftopo = block->topology()->boundary_type(0);
           if (common_ftopo != nullptr)
-            topo       = common_ftopo;
+            topo = common_ftopo;
           current_side = -1;
         }
 
@@ -2071,4 +2071,4 @@ namespace {
       }
     }
   }
-}
+} // namespace

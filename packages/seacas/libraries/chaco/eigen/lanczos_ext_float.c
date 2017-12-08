@@ -52,7 +52,7 @@ int lanczos_ext_float(struct vtx_data **A,       /* sparse matrix in row linked 
                       double *          gvec, /* the rhs n-vector in the extended eigen problem */
                       double            sigma /* specifies the norm constraint on extended
                                                  eigenvector */
-                      )
+)
 {
   extern FILE *           Output_File;         /* output file or null */
   extern int              LANCZOS_SO_INTERVAL; /* interval between orthogonalizations */

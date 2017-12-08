@@ -115,8 +115,9 @@ template <typename T, typename INT> void NemSpread<T, INT>::read_restart_params(
    */
   if (strcmp(ExoFile, Exo_Res_File) != 0) {
     if (!compare_mesh_param(exoid)) {
-      fprintf(stderr, "%s: Mesh parameters in mesh and result files"
-                      " differ\n",
+      fprintf(stderr,
+              "%s: Mesh parameters in mesh and result files"
+              " differ\n",
               yo);
       exit(1);
     }

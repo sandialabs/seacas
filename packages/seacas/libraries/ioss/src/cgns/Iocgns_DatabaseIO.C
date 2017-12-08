@@ -357,8 +357,8 @@ namespace Iocgns {
     }
     num_node = offset;
 
-    size_t num_elem = size[1];
-    m_zoneOffset[zone]    = m_zoneOffset[zone - 1] + num_elem;
+    size_t num_elem    = size[1];
+    m_zoneOffset[zone] = m_zoneOffset[zone - 1] + num_elem;
 
     // NOTE: A Zone will have a single set of nodes, but can have
     //       multiple sections each with their own element type...
@@ -1361,7 +1361,7 @@ namespace Iocgns {
             }
           }
           Ioss::Utils::uniquify(nodes, true);
-	  assert(nodes[0] == 1);
+          assert(nodes[0] == 1);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;

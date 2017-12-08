@@ -68,7 +68,7 @@ double Tevec(double *alpha, /* vector of Lanczos scalars */
              int     j,     /* number of Lanczos iterations taken */
              double  ritz,  /* approximate eigenvalue  of T */
              double *s      /* approximate eigenvector of T */
-             )
+)
 {
   extern double SRESTOL;            /* limit on relative residual tol for evec of T */
   extern double DOUBLE_MAX;         /* maximum double precision value */

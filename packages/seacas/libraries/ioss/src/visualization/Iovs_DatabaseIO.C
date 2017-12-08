@@ -88,7 +88,7 @@ namespace { // Internal helper functions
   }
 
   int64_t get_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset);
-  bool set_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset);
+  bool    set_id(const Ioss::GroupingEntity *entity, Iovs::EntityIdSet *idset);
   int64_t extract_id(const std::string &name_id);
 
   void build_catalyst_plugin_paths(std::string &      plugin_library_path,
@@ -102,8 +102,8 @@ namespace Iovs {
   void *      globalCatalystIossDlHandle = nullptr;
   int         DatabaseIO::useCount       = 0;
   std::string DatabaseIO::paraview_script_filename;
-  int field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
-                    const std::string &inout);
+  int         field_warning(const Ioss::GroupingEntity *ge, const Ioss::Field &field,
+                            const std::string &inout);
 
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,

@@ -551,8 +551,8 @@ namespace {
                               Ioss::Field::RoleType role)
   {
     {
-      auto   nb         = output_region.get_node_blocks()[0];
-      size_t node_count = region.get_node_blocks()[0]->entity_count();
+      auto                nb         = output_region.get_node_blocks()[0];
+      size_t              node_count = region.get_node_blocks()[0]->entity_count();
       std::vector<double> node_data(node_count);
       std::vector<double> data;
 

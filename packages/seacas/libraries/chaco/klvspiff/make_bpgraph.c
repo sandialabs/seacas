@@ -51,7 +51,7 @@ void make_bpgraph(struct vtx_data **graph,      /* list of graph info for each v
                   int *             pnleft,     /* number of nodes in left half */
                   int *             pnright,    /* number of nodes in right half */
                   int               using_vwgts /* are vertices weighted? */
-                  )
+)
 {
   int *loc2glob = NULL; /* maps bp number to full graph */
   int *pointers = NULL; /* start/stop of adjacency lists */

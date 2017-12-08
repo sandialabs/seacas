@@ -332,13 +332,13 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
     // Instead of requiring that of the caller, do the union in this routine.
     // TODO: Calculate it outside of the loop...
     std::vector<cgsize_t> bc_range(sb->m_boundaryConditions.size() * 6);
-    size_t idx = 0;
+    size_t                idx = 0;
     for (const auto &bc : sb->m_boundaryConditions) {
-      for (size_t i=0; i < 3; i++) {
-	bc_range[idx++] = -bc.m_rangeBeg[i];
+      for (size_t i = 0; i < 3; i++) {
+        bc_range[idx++] = -bc.m_rangeBeg[i];
       }
-      for (size_t i=0; i < 3; i++) {
-	bc_range[idx++] = bc.m_rangeEnd[i];
+      for (size_t i = 0; i < 3; i++) {
+        bc_range[idx++] = bc.m_rangeEnd[i];
       }
     }
 
@@ -346,9 +346,9 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
 
     idx = 0;
     for (idx = 0; idx < bc_range.size(); idx += 6) {
-      bc_range[idx+0] = -bc_range[idx+0];
-      bc_range[idx+1] = -bc_range[idx+1];
-      bc_range[idx+2] = -bc_range[idx+2];
+      bc_range[idx + 0] = -bc_range[idx + 0];
+      bc_range[idx + 1] = -bc_range[idx + 1];
+      bc_range[idx + 2] = -bc_range[idx + 2];
     }
 
     idx = 0;
@@ -853,7 +853,7 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
         IOSS_ERROR(errmsg);
       }
       sset->property_add(Ioss::Property("id", ibc + 1)); // Not sure this is unique id...8
-      sset->property_add(Ioss::Property("guid", db->util().generate_guid(ibc+1)));
+      sset->property_add(Ioss::Property("guid", db->util().generate_guid(ibc + 1)));
       db->get_region()->add(sset);
     }
 
@@ -872,15 +872,17 @@ void Iocgns::Utils::add_structured_boundary_conditions(int                    cg
 
       bc_subset_range(block, bc);
       block->m_boundaryConditions.push_back(bc);
-      auto sb = new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
-                                    block->m_boundaryConditions.back().get_face_count());
+      auto sb =
+          new Ioss::SideBlock(block->get_database(), name, Ioss::Quad4::name, Ioss::Hex8::name,
+                              block->m_boundaryConditions.back().get_face_count());
       sb->set_parent_block(block);
       sset->add(sb);
       sb->property_add(Ioss::Property("base", base));
       sb->property_add(Ioss::Property("zone", zone));
       sb->property_add(Ioss::Property("section", ibc + 1));
       sb->property_add(Ioss::Property("id", sset->get_property("id").get_int()));
-      sb->property_add(Ioss::Property("guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
+      sb->property_add(Ioss::Property(
+          "guid", block->get_database()->util().generate_guid(sset->get_property("id").get_int())));
 
       // Set a property on the sideset specifying the boundary condition type (bocotype)
       // In CGNS, the bocotype is an enum; we store it as the integer value of the enum.

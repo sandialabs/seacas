@@ -67,8 +67,8 @@
 
 namespace {
   template <typename INT> void skinner(Skinner::Interface &interface, INT /*dummy*/);
-  std::string codename;
-  std::string version = "0.6";
+  std::string                  codename;
+  std::string                  version = "0.6";
 } // namespace
 
 int main(int argc, char *argv[])

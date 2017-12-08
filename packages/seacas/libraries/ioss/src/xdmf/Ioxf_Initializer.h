@@ -50,5 +50,5 @@ namespace Ioxf {
   private:
     static int useCount;
   };
-}
+} // namespace Ioxf
 #endif

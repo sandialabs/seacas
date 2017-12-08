@@ -50,7 +50,7 @@ namespace Ioss {
   class ElementBlock;
   class NodeSet;
   class SideBlock;
-}
+} // namespace Ioss
 namespace Ioxf {
   struct Block
   {
@@ -154,5 +154,5 @@ namespace Ioxf {
   private:
     CommunicationMetaData(const CommunicationMetaData &);
   };
-}
+} // namespace Ioxf
 #endif /* IOSS_Ioxf_Internals_h */

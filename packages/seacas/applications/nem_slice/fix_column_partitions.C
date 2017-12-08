@@ -119,7 +119,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
 
     float elcoord[8][3];
     for (int j = 0; j < nelnodes; j++)
-      for (int d      = 0; d < 3; d++)
+      for (int d = 0; d < 3; d++)
         elcoord[j][d] = mesh->coords[elnodes[j] + d * nnod];
 
     int top_side0 = 0, bot_side0 = 0;
@@ -168,7 +168,7 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
         }
 
         // cross product to get normal corner
-        for (int d  = 0; d < 3; d++)
+        for (int d = 0; d < 3; d++)
           normal[d] = v0[(d + 1) % 3] * v1[(d + 2) % 3] - v0[(d + 2) % 3] * v1[(d + 1) % 3];
       }
       else {
@@ -333,9 +333,9 @@ int fix_column_partitions(LB_Description<INT> *lb, Mesh_Description<INT> const *
     }
 
     // Which processor has a dominant presence in this column?
-    int max_procid = -1;
-    int max_elems  = 0;
-    std::map<int, int>::iterator itmap = procid_elcount.begin();
+    int                          max_procid = -1;
+    int                          max_elems  = 0;
+    std::map<int, int>::iterator itmap      = procid_elcount.begin();
     while (itmap != procid_elcount.end()) {
       if (itmap->second > max_elems) {
         max_procid = itmap->first;

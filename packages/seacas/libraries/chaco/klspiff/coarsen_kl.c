@@ -69,7 +69,7 @@ void coarsen_kl(
     int **  pbndy_list,             /* pointer to returned boundary list */
     double *weights,                /* weights of vertices in each set */
     int     give_up                 /* has coarsening bogged down? */
-    )
+)
 {
   extern FILE *        Output_File;            /* output file or null */
   extern int           DEBUG_TRACE;            /* trace the execution of the code */

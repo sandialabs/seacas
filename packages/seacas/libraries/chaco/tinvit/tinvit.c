@@ -96,13 +96,13 @@ int tinvit_(integer *nm, integer *n, doublereal *d, doublereal *e, doublereal *e
   /*        m is the number of specified eigenvalues. */
 
   /*        w contains the m eigenvalues in ascending or descending order.
-  */
+   */
 
   /*        ind contains in its first m positions the submatrix indices */
   /*          associated with the corresponding eigenvalues in w -- */
   /*          1 for eigenvalues belonging to the first submatrix from */
   /*          the top, 2 for those belonging to the second submatrix, etc.
-  */
+   */
 
   /*     on output */
 
@@ -122,12 +122,12 @@ int tinvit_(integer *nm, integer *n, doublereal *d, doublereal *e, doublereal *e
 
   /*     questions and comments should be directed to burton s. garbow, */
   /*     mathematics and computer science div, argonne national laboratory
-  */
+   */
 
   /*     this version dated august 1983. */
 
   /*     ------------------------------------------------------------------
-  */
+   */
 
   /* Parameter adjustments */
   --rv6;
@@ -190,7 +190,7 @@ L140:
     goto L870;
   L490:
     norm = (d__1 = d[p], abs(d__1));
-    ip = p + 1;
+    ip   = p + 1;
 
     i__2 = q;
     for (i = ip; i <= i__2; ++i) {
@@ -366,7 +366,7 @@ L140:
 
     ++its;
     goto L600;
-  /*     .......... set error -- non-converged eigenvector .......... */
+    /*     .......... set error -- non-converged eigenvector .......... */
 
   L830:
     *ierr = -r;

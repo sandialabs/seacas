@@ -604,16 +604,16 @@ bool SystemInterface::parse_options(int argc, char **argv)
       }
       else {
         // Check for additional unknown arguments...
-	std::ostringstream out;
+        std::ostringstream out;
         out << "\nexodiff: ERROR: Too many file arguments specified."
-	    << "\n         Probably caused by options following filenames which is no longer "
-	  "allowed."
-	    << "\n         Unknown options are: ";
+            << "\n         Probably caused by options following filenames which is no longer "
+               "allowed."
+            << "\n         Unknown options are: ";
         while (option_index < argc) {
           out << "'" << argv[option_index++] << "' ";
         }
         out << "\n\n";
-	ERR_OUT(out);
+        ERR_OUT(out);
         return false;
       }
     }
@@ -1622,9 +1622,10 @@ namespace {
         if (idx >= max_names) {
           ERROR("Number of names in tabbed list is larger "
                 "than current limit of "
-                << max_names << ".  To increase, use \"-maxnames <int>\" on the "
-                                "command line or \"MAX NAMES <int>\" in the command "
-                                "file.  Aborting...\n");
+                << max_names
+                << ".  To increase, use \"-maxnames <int>\" on the "
+                   "command line or \"MAX NAMES <int>\" in the command "
+                   "file.  Aborting...\n");
           exit(1);
         }
 
