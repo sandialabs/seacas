@@ -282,7 +282,9 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
     }
     else {
       // Map is sequential beginning at ids[0]
-      m_offset = count > 0 ? ids[0] - 1 : 0;
+      if (count > 0) {
+	m_offset = ids[0] - 1;
+      }
     }
   }
 
