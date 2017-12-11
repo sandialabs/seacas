@@ -556,6 +556,5 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
            << "This should not happen, please report.\n";
     IOSS_ERROR(errmsg);
   }
-  SMART_ASSERT((m_map[local] == global) || !must_exist)(m_map[0])(m_offset)(m_map[local])(global);
   return local;
 }
