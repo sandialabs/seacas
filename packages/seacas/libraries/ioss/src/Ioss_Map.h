@@ -61,6 +61,9 @@ namespace Ioss {
     Map &operator=(const Map &from) = delete;
     ~Map()                          = default;
 
+    // Determines whether the input map is sequential (m_map[i] == i)
+    bool is_sequential() const;
+
     int64_t global_to_local(int64_t global, bool must_exist = true) const;
 
     template <typename INT>

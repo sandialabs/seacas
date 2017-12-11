@@ -46,37 +46,6 @@
 #include <vector>      // for vector, vector<>::iterator, etc
 
 namespace {
-  // Determines whether the input map is sequential (m_map[i] == i)
-  bool is_sequential(const Ioss::MapContainer &the_map)
-  {
-    // Assumes the_map runs from [1..size) Slot zero will contain -1 if the
-    // vector is sequential; 1 if not sequential, and 0 if it has not
-    // yet been determined...
-    // Once the the_map has been determined to be sequential/not-sequential,
-    // slot zero is set appropriately.
-    // 'sequential' is defined here to mean i==the_map[i] for all
-    // 0<i<the_map.size()
-
-    // Check slot zero...
-    if (the_map[0] == -1) {
-      return true;
-    }
-    if (the_map[0] == 1) {
-      return false;
-    }
-
-    Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(the_map);
-    size_t              size    = the_map.size();
-    for (size_t i = 1; i < size; i++) {
-      if (the_map[i] != static_cast<int64_t>(i)) {
-        new_map[0] = 1;
-        return false;
-      }
-    }
-    new_map[0] = -1;
-    return true;
-  }
-
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
     bool one2one    = true;
@@ -135,11 +104,11 @@ namespace {
 
   template <typename INT>
   void map_implicit_data_internal(INT *ids, size_t count, const Ioss::MapContainer &map,
-                                  size_t offset)
+                                  size_t offset, bool is_sequential)
   {
     // Map the "local" ids (offset+1..offset+count) to the global ids. The local
     // ids are implicit
-    if (is_sequential(map)) {
+    if (is_sequential) {
       for (size_t i = 0; i < count; i++) {
         ids[i] = offset + 1 + i;
       }
@@ -159,6 +128,37 @@ void Ioss::Map::release_memory()
   MapContainer().swap(m_map);
   MapContainer().swap(m_reorder);
   ReverseMapContainer().swap(m_reverse);
+}
+
+// Determines whether the input map is sequential (m_map[i] == i)
+bool Ioss::Map::is_sequential() const
+{
+  // Assumes the_map runs from [1..size) Slot zero will contain -1 if the
+  // vector is sequential; 1 if not sequential, and 0 if it has not
+  // yet been determined...
+  // Once the the_map has been determined to be sequential/not-sequential,
+  // slot zero is set appropriately.
+  // 'sequential' is defined here to mean i==the_map[i] for all
+  // 0<i<the_map.size()
+
+  // Check slot zero...
+  if (m_map[0] == -1) {
+    return true;
+  }
+  if (m_map[0] == 1) {
+    return false;
+  }
+  
+  Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(m_map);
+  size_t size    = m_map.size();
+  for (int64_t i = 1; i < (int64_t)size; i++) {
+    if (m_map[i] != i) {
+      new_map[0] = 1;
+      return false;
+    }
+  }
+  new_map[0] = -1;
+  return true;
 }
 
 void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
@@ -328,7 +328,7 @@ void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t co
 {
   IOSS_FUNC_ENTER(m_);
   SMART_ASSERT(!m_map.empty());
-  if (!is_sequential(m_map)) {
+  if (!is_sequential()) {
     if (field.get_type() == Ioss::Field::INTEGER) {
       int *connect = static_cast<int *>(data);
       for (size_t i = 0; i < count; i++) {
@@ -363,7 +363,7 @@ void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t co
 void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
 {
   IOSS_FUNC_ENTER(m_);
-  if (!is_sequential(m_map)) {
+  if (!is_sequential()) {
     if (field.get_type() == Ioss::Field::INTEGER) {
       int *datum = static_cast<int *>(data);
       for (size_t i = 0; i < count; i++) {
@@ -398,10 +398,10 @@ void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t c
 {
   IOSS_FUNC_ENTER(m_);
   if (field.get_type() == Ioss::Field::INTEGER) {
-    map_implicit_data_internal(static_cast<int *>(data), count, m_map, offset);
+    map_implicit_data_internal(static_cast<int *>(data), count, m_map, offset, is_sequential());
   }
   else {
-    map_implicit_data_internal(static_cast<int64_t *>(data), count, m_map, offset);
+    map_implicit_data_internal(static_cast<int64_t *>(data), count, m_map, offset, is_sequential());
   }
 }
 
