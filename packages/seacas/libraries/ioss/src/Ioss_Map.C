@@ -49,7 +49,7 @@ namespace {
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
     bool one2one    = true;
-    INT  map_offset = num_to_get > 0 ? ids[0] - 1 : 0;
+    INT  map_offset = num_to_get > 0 ? ids[0] - 1 - offset: 0;
     for (size_t i = 0; i < num_to_get; i++) {
       if ((size_t)ids[i] != i + offset + 1 + map_offset) {
         one2one = false;
@@ -270,6 +270,15 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     // If the current map is one-to-one, check whether it will be one-to-one
     // after adding these ids...
     bool one2one = is_one2one(ids, count, offset);
+    if (one2one) {
+      // Further checks on how ids fit into previously set m_map entries (if any)
+      if (m_offset > 0) {
+	if (ids[0] - 1 - offset != m_offset) {
+	  one2one = false;
+	}
+      }
+    }
+
     if (!one2one) {
       // Up to this point, the id map has been one-to-one.  Once we
       // apply these `ids` to `m_map`, the map will no
@@ -284,7 +293,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     else {
       // Map is sequential beginning at ids[0]
       if (count > 0) {
-        m_offset = ids[0] - 1;
+        m_offset = ids[0] - 1 - offset;
       }
     }
   }
