@@ -4,6 +4,41 @@
 #include <numeric>
 #include <vector>
 
+void test_global_to_local(const Ioss::Map &my_map, const std::vector<int> &init)
+{
+  size_t count = my_map.map().size() - 1;
+  SMART_ASSERT(count == init.size());
+
+  for (size_t i = 0; i < count; i++) {
+    int global = init[i];
+    SMART_ASSERT((size_t)my_map.global_to_local(global) == i + 1);
+  }
+}
+
+void test_random()
+{
+  Ioss::Map my_map;
+  
+  size_t count = 128;
+  my_map.map().resize(count + 1);
+  my_map.map()[0] = -1;
+
+  std::vector<int> init(count);
+  std::iota(init.begin(), init.end(), 2511);
+  std::random_shuffle(init.begin(), init.end());
+  for (auto &e : init) {
+    e = 11 * e;
+  }
+
+  my_map.set_map(init.data(), init.size(), 0, true);
+
+  auto mmap = my_map.map();
+
+  SMART_ASSERT(mmap[0] == 1);
+
+  test_global_to_local(my_map, init);
+}
+
 void test_one2one(Ioss::Map &my_map, size_t offset)
 {
   size_t count = 128;
@@ -15,13 +50,8 @@ void test_one2one(Ioss::Map &my_map, size_t offset)
 
   my_map.set_map(init.data(), init.size(), 0, true);
 
-  auto mmap = my_map.map();
-
-  SMART_ASSERT(mmap[0] == -1);
-
-  for (size_t i = 0; i < count; i++) {
-    SMART_ASSERT(my_map.global_to_local(init[i]) == i + 1);
-  }
+  SMART_ASSERT(my_map.is_sequential());
+  test_global_to_local(my_map, init);
 }
 
 void test_reorder(Ioss::Map &my_map, size_t offset)
@@ -40,7 +70,7 @@ void test_reorder(Ioss::Map &my_map, size_t offset)
 
   // Check that we get the *original* ordering back from global_to_local.
   for (size_t i = 0; i < count; i++) {
-    SMART_ASSERT(my_map.global_to_local(init[i]) == init[i] - offset)(i)(init[i]);
+    SMART_ASSERT(my_map.global_to_local(init[i]) == int(init[i] - offset))(i)(init[i]);
   }
 
   // Check that we get the the `reordered` vector has been put into `db` order.
@@ -67,17 +97,67 @@ void test_segment(Ioss::Map &my_map, size_t segments, size_t offset)
     my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
   }
 
-  auto mmap = my_map.map();
+  SMART_ASSERT(my_map.is_sequential());
+  test_global_to_local(my_map, init);
+}
 
-  SMART_ASSERT(mmap[0] == -1);
+void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
+{
+  size_t count    = 128;
+  size_t seg_size = count / segments;
+  SMART_ASSERT(count % segments == 0)(count)(segments);
 
-  for (size_t i = 0; i < count; i++) {
-    SMART_ASSERT(my_map.global_to_local(init[i]) == i + 1);
+  my_map.map().resize(count + 1);
+  my_map.map()[0] = -1;
+
+  std::vector<int> init(count);
+  std::iota(init.begin(), init.end(), offset + 1);
+
+  for (size_t j = 0; j < segments; j++) {
+    size_t i = segments - j - 1;
+    my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
   }
+
+  SMART_ASSERT(my_map.is_sequential());
+  test_global_to_local(my_map, init);
+}
+
+void test_segment_gap()
+{
+  size_t segments = 4;
+  size_t offset   = 123;
+  size_t count    = 128;
+  size_t seg_size = count / segments;
+  SMART_ASSERT(count % segments == 0)(count)(segments);
+
+  Ioss::Map my_map;
+  my_map.map().resize(count + 1);
+  my_map.map()[0] = -1;
+
+  std::vector<int> init(count);
+  for (size_t j = 0; j < segments; j++) {
+    size_t seg_begin = j * seg_size;
+    size_t seg_end   = seg_begin + seg_size;
+    
+    for (size_t i = seg_begin; i < seg_end; i++) {
+      init[i] = i + j + offset;
+    }
+  }
+
+  for (size_t j = 0; j < segments; j++) {
+    size_t i = segments - j - 1;
+    my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
+  }
+
+  SMART_ASSERT(!my_map.is_sequential());
+  test_global_to_local(my_map, init);
 }
 
 int main()
 {
+  // Non-sequential, random
+  test_random();
+
   {
     // Simple case -- ids 1..count
     Ioss::Map my_map;
@@ -105,4 +185,14 @@ int main()
     Ioss::Map my_map;
     test_segment(my_map, 4, 200);
   }
+
+  {
+    // Build incrementally -- ids 1+offset..count+offset in 4 segments
+    // Do segment order 3, 2, 1, 0
+    Ioss::Map my_map;
+    test_reverse_segment(my_map, 4, 200);
+  }
+
+  // Each segment is one-to-one, but gap between segments...
+  test_segment_gap();
 }
