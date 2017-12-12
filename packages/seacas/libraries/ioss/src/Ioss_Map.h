@@ -33,6 +33,7 @@
 #ifndef IOSS_Ioss_Map_h
 #define IOSS_Ioss_Map_h
 
+#include <Ioss_CodeTypes.h>
 #include <cstddef> // for size_t
 #include <cstdint> // for int64_t
 #include <string>  // for string
@@ -61,13 +62,7 @@ namespace Ioss {
     Map &operator=(const Map &from) = delete;
     ~Map()                          = default;
 
-    void set_size(size_t entity_count)
-    {
-      if (m_map.empty()) {
-        m_map.resize(entity_count + 1);
-        m_map[0] = -1;
-      }
-    }
+    void set_size(size_t entity_count);
 
     // Determines whether the input map is sequential (m_map[i] == i)
     bool is_sequential(bool check_all = false) const;

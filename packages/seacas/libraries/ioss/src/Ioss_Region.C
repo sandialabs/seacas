@@ -694,7 +694,6 @@ namespace Ioss {
   int Region::add_state(double time)
   {
     static bool warning_output = false;
-    IOSS_FUNC_ENTER(m_);
 
     // NOTE:  For restart input databases, it is possible that the time
     //        is not monotonically increasing...
