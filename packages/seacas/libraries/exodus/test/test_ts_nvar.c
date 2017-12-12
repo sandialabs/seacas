@@ -160,5 +160,5 @@ int main(int argc, char *argv[])
   ex_close(exoid);
 
   /* Last thing that main() should do */
-  pthread_exit(NULL);
+
 }
