@@ -2028,10 +2028,7 @@ namespace Iocgns {
      *       should be in the orginal order...
      */
     if (!nodeMap.defined()) {
-      if (nodeMap.map().empty()) {
-        nodeMap.map().resize(num_to_get + 1);
-        nodeMap.map()[0] = -1;
-      }
+      nodeMap.set_size(num_to_get);
 
       bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
       if (nodeMap.map()[0] == -1) {

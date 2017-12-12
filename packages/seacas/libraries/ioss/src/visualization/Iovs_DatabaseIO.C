@@ -839,10 +839,7 @@ namespace Iovs {
      */
     assert(num_to_get == nodeCount);
 
-    if (nodeMap.map().empty()) {
-      nodeMap.map().resize(nodeCount + 1);
-      nodeMap.map()[0] = -1;
-    }
+    nodeMap.set_size(nodeCount);
 
     // std::cerr << "DatabaseIO::handle_node_ids nodeMap tagged serial, doing mapping\n";
     bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
@@ -938,12 +935,7 @@ namespace Iovs {
   int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get)
   {
     // std::cerr << "DatabaseIO::handle_element_ids executing num_to_get: " << num_to_get << "\n";
-    if (elemMap.map().empty()) {
-      // std::cerr << "DatabaseIO::handle_element_ids elementMap was empty; allocating and marking
-      // as sequential\nelmenetCount: " << elementCount << "\n";
-      elemMap.map().resize(elementCount + 1);
-      elemMap.map()[0] = -1;
-    }
+    elemMap.set_size(elementCount);
     // std::cerr << "DatabaseIO::handle_element_ids elementMap size: " << elementMap.size() << "\n";
     return handle_block_ids(eb, dbState, elemMap, ids, int_byte_size_api(), num_to_get,
                             /*get_file_pointer(),*/ myProcessor);
@@ -957,14 +949,12 @@ namespace Iovs {
     if (nodeMap.map().empty()) {
       // std::cerr << "DatabaseIO::get_node_map  nodeMap was empty, resizing and tagging
       // sequential\n";
-      nodeMap.map().resize(nodeCount + 1);
+      nodeMap.set_size(nodeCount);
 
       // Output database; nodeMap not set yet... Build a default map.
       for (int64_t i = 1; i < nodeCount + 1; i++) {
         nodeMap.map()[i] = i;
       }
-      // Sequential map
-      nodeMap.map()[0] = -1;
     }
     return nodeMap;
   }
@@ -976,14 +966,12 @@ namespace Iovs {
     // Allocate space for elemente number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (elemMap.map().empty()) {
-      elemMap.map().resize(elementCount + 1);
+      elemMap.map().set_size(elementCount);
 
       // Output database; elementMap not set yet... Build a default map.
       for (int64_t i = 1; i < elementCount + 1; i++) {
         elemMap.map()[i] = i;
       }
-      // Sequential map
-      elemMap.map()[0] = -1;
     }
     return elemMap;
   }

@@ -3917,10 +3917,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get, size_t /* off
    * NOTE: The mapping is done on TRANSIENT fields only; MODEL fields
    *       should be in the orginal order...
    */
-  if (nodeMap.map().empty()) {
-    nodeMap.map().resize(num_to_get + 1);
-    nodeMap.map()[0] = -1;
-  }
+  nodeMap.set_size(num_to_get);
 
   bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
   if (int_byte_size_api() == 4) {
@@ -3952,28 +3949,19 @@ int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, 
     }
   }
 
-  if (elemMap.map().empty()) {
-    elemMap.map().resize(elementCount + 1);
-    elemMap.map()[0] = -1;
-  }
+  elemMap.set_size(elementCount);
   return handle_block_ids(eb, EX_ELEM_MAP, elemMap, ids, num_to_get, offset, count);
 }
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (faceMap.map().empty()) {
-    faceMap.map().resize(faceCount + 1);
-    faceMap.map()[0] = -1;
-  }
+  faceMap.set_size(faceCount);
   return handle_block_ids(eb, EX_FACE_MAP, faceMap, ids, num_to_get, 0, 0);
 }
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (edgeMap.map().empty()) {
-    edgeMap.map().resize(edgeCount + 1);
-    edgeMap.map()[0] = -1;
-  }
+  edgeMap.set_size(edgeCount);
   return handle_block_ids(eb, EX_EDGE_MAP, edgeMap, ids, num_to_get, 0, 0);
 }
 

@@ -1536,8 +1536,7 @@ const Ioss::Map &DatabaseIO::get_node_map() const
   // Allocate space for node number map and read it in...
   // Can be called multiple times, allocate 1 time only
   if (nodeMap.map().empty()) {
-    nodeMap.map().resize(nodeCount + 1);
-    nodeMap.map()[0] = -1;
+    nodeMap.set_size(nodeCount);
 
     if (is_input()) {
       std::vector<int> node_map(nodeMap.map().size());
@@ -1561,8 +1560,7 @@ const Ioss::Map &DatabaseIO::get_element_map() const
   // Allocate space for elemente number map and read it in...
   // Can be called multiple times, allocate 1 time only
   if (elemMap.map().empty()) {
-    elemMap.map().resize(elementCount + 1);
-    elemMap.map()[0] = -1;
+    elemMap.set_size(elementCount);
 
     if (is_input()) {
       std::vector<int> elem_map(elemMap.map().size());
