@@ -152,7 +152,7 @@ bool Ioss::Map::is_sequential() const
   Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(m_map);
   size_t size    = m_map.size();
   for (int64_t i = 1; i < (int64_t)size; i++) {
-    if (m_map[i] != i) {
+    if (m_map[i] != i + m_offset) {
       new_map[0] = 1;
       return false;
     }

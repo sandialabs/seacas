@@ -75,7 +75,6 @@ namespace Ioss {
     void release_memory(); //! Release memory for all maps.
 
     void reverse_map_data(void *data, const Ioss::Field &field, size_t count) const;
-    void verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map);
 
     void map_data(void *data, const Ioss::Field &field, size_t count) const;
 
@@ -96,6 +95,7 @@ namespace Ioss {
     int64_t global_to_local__(int64_t global, bool must_exist = true) const;
     void    build_reorder_map__(int64_t start, int64_t count);
     void    build_reverse_map__(int64_t num_to_get, int64_t offset);
+    void    verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map);
 
 #if defined(IOSS_THREADSAFE)
     mutable std::mutex m_;
