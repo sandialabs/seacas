@@ -1,4 +1,7 @@
 #include <Ioss_Map.h>
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
 #include <Ioss_SmartAssert.h>
 #include <algorithm>
 #include <numeric>
@@ -130,7 +133,7 @@ void test_segment_gap()
   for (size_t j = 0; j < segments; j++) {
     size_t seg_begin = j * seg_size;
     size_t seg_end   = seg_begin + seg_size;
-    
+
     for (size_t i = seg_begin; i < seg_end; i++) {
       init[i] = i + j + offset;
     }
