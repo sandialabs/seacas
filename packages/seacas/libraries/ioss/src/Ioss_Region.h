@@ -208,6 +208,7 @@ namespace Ioss {
     bool        add_alias(const std::string &db_name, const std::string &alias);
     bool        add_alias(const GroupingEntity *ge);
     std::string get_alias(const std::string &alias) const;
+    std::string get_alias__(const std::string &alias) const; // Not locked by mutex
 
     const AliasMap &get_alias_map() const;
 
@@ -267,9 +268,8 @@ namespace Ioss {
     // Add the name 'alias' as an alias for the database entity with the
     // name 'db_name'. Returns true if alias added; false if problems
     // adding alias. Not protected by mutex -- call internally only.
-    bool        add_alias__(const std::string &db_name, const std::string &alias);
-    bool        add_alias__(const GroupingEntity *ge);
-    std::string get_alias__(const std::string &alias) const;
+    bool add_alias__(const std::string &db_name, const std::string &alias);
+    bool add_alias__(const GroupingEntity *ge);
 
     bool begin_mode__(State new_state);
     bool end_mode__(State current_state);
