@@ -61,6 +61,14 @@ namespace Ioss {
     Map &operator=(const Map &from) = delete;
     ~Map()                          = default;
 
+    void set_size(size_t entity_count)
+    {
+      if (m_map.empty()) {
+        m_map.resize(entity_count + 1);
+        m_map[0] = -1;
+      }
+    }
+
     // Determines whether the input map is sequential (m_map[i] == i)
     bool is_sequential() const;
 

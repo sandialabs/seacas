@@ -676,8 +676,7 @@ namespace Iogn {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (nodeMap.map().empty()) {
-      nodeMap.map().resize(nodeCount + 1);
-      nodeMap.map()[0] = -1;
+      nodeMap.set_size(nodeCount);
       std::vector<int64_t> map;
       m_generatedMesh->node_map(map);
       nodeMap.set_map(map.data(), map.size(), 0, true);
@@ -690,8 +689,7 @@ namespace Iogn {
     // Allocate space for elemente number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (elemMap.map().empty()) {
-      elemMap.map().resize(elementCount + 1);
-      elemMap.map()[0] = -1;
+      elemMap.set_size(elementCount);
       std::vector<int64_t> map;
       m_generatedMesh->element_map(map);
       elemMap.set_map(map.data(), map.size(), 0, true);

@@ -20,8 +20,7 @@ void test_random()
   Ioss::Map my_map;
   
   size_t count = 128;
-  my_map.map().resize(count + 1);
-  my_map.map()[0] = -1;
+  my_map.set_size(count);
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), 2511);
@@ -39,8 +38,7 @@ void test_random()
 void test_one2one(Ioss::Map &my_map, size_t offset)
 {
   size_t count = 128;
-  my_map.map().resize(count + 1);
-  my_map.map()[0] = -1;
+  my_map.set_size(count);
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), offset + 1);
@@ -82,8 +80,7 @@ void test_segment(Ioss::Map &my_map, size_t segments, size_t offset)
   size_t seg_size = count / segments;
   SMART_ASSERT(count % segments == 0)(count)(segments);
 
-  my_map.map().resize(count + 1);
-  my_map.map()[0] = -1;
+  my_map.set_size(count);
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), offset + 1);
@@ -105,8 +102,7 @@ void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
   size_t seg_size = count / segments;
   SMART_ASSERT(count % segments == 0)(count)(segments);
 
-  my_map.map().resize(count + 1);
-  my_map.map()[0] = -1;
+  my_map.set_size(count);
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), offset + 1);
@@ -129,8 +125,7 @@ void test_segment_gap()
   SMART_ASSERT(count % segments == 0)(count)(segments);
 
   Ioss::Map my_map;
-  my_map.map().resize(count + 1);
-  my_map.map()[0] = -1;
+  my_map.set_size(count);
 
   std::vector<int> init(count);
   for (size_t j = 0; j < segments; j++) {
