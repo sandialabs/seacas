@@ -86,8 +86,6 @@ namespace Ioss {
                                         size_t begin_offset, size_t count, size_t stride,
                                         size_t offset);
 
-    void build_reorder_map(int64_t start, int64_t count);
-
     const MapContainer &map() const { return m_map; }
     MapContainer &      map() { return m_map; }
 

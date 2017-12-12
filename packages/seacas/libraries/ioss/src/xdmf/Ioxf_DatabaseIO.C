@@ -726,24 +726,16 @@ namespace Ioxf {
 
     assert(num_to_get == nodeCount);
 
-    if (dbState == Ioss::STATE_MODEL) {
-      if (nodeMap.map().empty()) {
-        nodeMap.map().resize(nodeCount + 1);
-        nodeMap.map()[0] = -1;
-      }
+    if (nodeMap.map().empty()) {
+      nodeMap.map().resize(nodeCount + 1);
+      nodeMap.map()[0] = -1;
+    }
 
-      if (nodeMap.map()[0] == -1) {
-        nodeMap.set_map(ids, num_to_get, 0);
-      }
+    bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    nodeMap.set_map(ids, num_to_get, 0, in_define);
 
-      nodeMap.build_reverse_map();
-
-      // Only a single nodeblock and all set
-      if (num_to_get == nodeCount) {
-        assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
-      }
+    if (in_define) {
       assert(get_region()->get_property("node_block_count").get_int() == 1);
-
       XdmfArray *ScalarArray = new XdmfArray();
 
       ScalarArray->SetNumberType(XDMF_INT32_TYPE);
@@ -757,7 +749,6 @@ namespace Ioxf {
       delete ScalarArray;
     }
 
-    nodeMap.build_reorder_map(0, num_to_get);
     return num_to_get;
   }
 
@@ -818,6 +809,7 @@ namespace Ioxf {
     // 'eb_offset+offset' and ending at
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+element_count'
+
     if (elemMap.map().empty()) {
       elemMap.map().resize(elementCount + 1);
       elemMap.map()[0] = -1;
@@ -825,13 +817,11 @@ namespace Ioxf {
 
     assert(static_cast<int>(elemMap.map().size()) == elementCount + 1);
 
-    int eb_offset = eb->get_offset();
-    elemMap.set_map(ids, num_to_get, eb_offset);
+    bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    int  eb_offset = eb->get_offset();
+    elemMap.set_map(ids, num_to_get, eb_offset, in_define);
 
-    // Now, if the state is Ioss::STATE_MODEL, update the reverseElementMap
-    if (dbState == Ioss::STATE_MODEL) {
-      elemMap.build_reverse_map(num_to_get, eb_offset);
-
+    if (in_define) {
       // Output this portion of the element number map
       std::ostringstream *XML        = nullptr;
       std::string         block_name = eb->name();
@@ -870,11 +860,6 @@ namespace Ioxf {
       WriteHdfDataset(FinalName, ScalarArray, __LINE__);
       delete ScalarArray;
     }
-    // Build the reorderElementMap which does a direct mapping from
-    // the current topologies local order to the local order stored in
-    // the database...  This is 0-based and used for remapping output
-    // TRANSIENT fields. (Will also need one on input once we read fields)
-    elemMap.build_reorder_map(eb_offset, num_to_get);
     return num_to_get;
   }
 

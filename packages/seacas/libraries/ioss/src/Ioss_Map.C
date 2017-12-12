@@ -456,12 +456,6 @@ size_t Ioss::Map::map_field_to_db_scalar_order(T *variables, std::vector<double>
   return num_out;
 }
 
-void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
-{
-  IOSS_FUNC_ENTER(m_);
-  build_reorder_map__(start, count);
-}
-
 void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
 {
   // This routine builds a map that relates the current node id order
