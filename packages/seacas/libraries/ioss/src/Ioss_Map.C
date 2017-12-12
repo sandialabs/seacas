@@ -104,13 +104,13 @@ namespace {
 
   template <typename INT>
   void map_implicit_data_internal(INT *ids, size_t count, const Ioss::MapContainer &map,
-                                  size_t offset, bool is_sequential)
+                                  int64_t map_offset, size_t offset, bool is_sequential)
   {
     // Map the "local" ids (offset+1..offset+count) to the global ids. The local
     // ids are implicit
     if (is_sequential) {
       for (size_t i = 0; i < count; i++) {
-        ids[i] = offset + 1 + i;
+        ids[i] = map_offset + offset + 1 + i;
       }
     }
     else {
@@ -285,7 +285,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     if (one2one) {
       // Further checks on how ids fit into previously set m_map entries (if any)
       if (m_offset > 0) {
-	if (ids[0] - 1 - offset != m_offset) {
+	if (ids[0] - 1 - offset != (size_t)m_offset) {
 	  one2one = false;
 	}
       }
@@ -318,7 +318,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
       changed = true;
     }
     m_map[local_id] = ids[i];
-    if (local_id != ids[i] - (INT)m_offset) {
+    if (local_id != ids[i] - m_offset) {
       m_map[0] = 1;
     }
     if (ids[i] <= 0) {
@@ -429,10 +429,10 @@ void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t c
 {
   IOSS_FUNC_ENTER(m_);
   if (field.get_type() == Ioss::Field::INTEGER) {
-    map_implicit_data_internal(static_cast<int *>(data), count, m_map, offset, is_sequential());
+    map_implicit_data_internal(static_cast<int *>(data), count, m_map, m_offset, offset, is_sequential());
   }
   else {
-    map_implicit_data_internal(static_cast<int64_t *>(data), count, m_map, offset, is_sequential());
+    map_implicit_data_internal(static_cast<int64_t *>(data), count, m_map, m_offset, offset, is_sequential());
   }
 }
 
