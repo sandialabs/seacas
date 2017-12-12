@@ -110,7 +110,7 @@ namespace Ioss {
     ReverseMapContainer m_reverse;
     std::string         m_entityType{"unknown"}; // node, element, edge, face
     std::string         m_filename{"undefined"}; // For error messages only.
-    size_t              m_offset{0};             // local to global offset if m_map is sequential.
+    int64_t             m_offset{0};             // local to global offset if m_map is sequential.
     int                 m_myProcessor{0};        // For error messages...
     bool m_defined{false}; // For use by some clients; not all, so don't read too much into value...
   };
