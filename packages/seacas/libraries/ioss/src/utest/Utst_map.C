@@ -4,7 +4,7 @@
 #include <numeric>
 #include <vector>
 
-void test_global_to_local(const Ioss::Map &my_map, const std::vector<int> &init)
+void verify_global_to_local(const Ioss::Map &my_map, const std::vector<int> &init)
 {
   size_t count = my_map.map().size() - 1;
   SMART_ASSERT(count == init.size());
@@ -32,11 +32,8 @@ void test_random()
 
   my_map.set_map(init.data(), init.size(), 0, true);
 
-  auto mmap = my_map.map();
-
-  SMART_ASSERT(mmap[0] == 1);
-
-  test_global_to_local(my_map, init);
+  SMART_ASSERT(!my_map.is_sequential());
+  verify_global_to_local(my_map, init);
 }
 
 void test_one2one(Ioss::Map &my_map, size_t offset)
@@ -51,7 +48,7 @@ void test_one2one(Ioss::Map &my_map, size_t offset)
   my_map.set_map(init.data(), init.size(), 0, true);
 
   SMART_ASSERT(my_map.is_sequential());
-  test_global_to_local(my_map, init);
+  verify_global_to_local(my_map, init);
 }
 
 void test_reorder(Ioss::Map &my_map, size_t offset)
@@ -64,9 +61,7 @@ void test_reorder(Ioss::Map &my_map, size_t offset)
 
   my_map.set_map(init.data(), init.size(), 0, false);
 
-  auto mmap = my_map.map();
-
-  SMART_ASSERT(mmap[0] == 1);
+  SMART_ASSERT(!my_map.is_sequential());
 
   // Check that we get the *original* ordering back from global_to_local.
   for (size_t i = 0; i < count; i++) {
@@ -98,7 +93,7 @@ void test_segment(Ioss::Map &my_map, size_t segments, size_t offset)
   }
 
   SMART_ASSERT(my_map.is_sequential());
-  test_global_to_local(my_map, init);
+  verify_global_to_local(my_map, init);
 }
 
 void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
@@ -119,7 +114,7 @@ void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
   }
 
   SMART_ASSERT(my_map.is_sequential());
-  test_global_to_local(my_map, init);
+  verify_global_to_local(my_map, init);
 }
 
 void test_segment_gap()
@@ -150,7 +145,7 @@ void test_segment_gap()
   }
 
   SMART_ASSERT(!my_map.is_sequential());
-  test_global_to_local(my_map, init);
+  verify_global_to_local(my_map, init);
 }
 
 int main()
