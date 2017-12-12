@@ -1537,6 +1537,7 @@ const Ioss::Map &DatabaseIO::get_node_map() const
   // Can be called multiple times, allocate 1 time only
   if (nodeMap.map().empty()) {
     nodeMap.map().resize(nodeCount + 1);
+    nodeMap.map()[0] = -1;
 
     if (is_input()) {
       std::vector<int> node_map(nodeMap.map().size());
@@ -1546,18 +1547,7 @@ const Ioss::Map &DatabaseIO::get_node_map() const
         Ioss::MapContainer().swap(nodeMap.map());
         pamgen_error(get_file_pointer(), __LINE__, myProcessor);
       }
-      std::copy(node_map.begin(), node_map.end(), nodeMap.map().begin());
-      // Check for sequential node map.
-      // If not, build the reverse G2L node map...
-      nodeMap.map()[0] = -1;
-      for (int i = 1; i < nodeCount + 1; i++) {
-        if (i != nodeMap.map()[i]) {
-          nodeMap.map()[0] = 1;
-          break;
-        }
-      }
-
-      nodeMap.build_reverse_map();
+      nodeMap.set_map(node_map.data(), node_map.size(), 0, true);
     }
     else {
       unsupported("output nodal id map");
@@ -1572,6 +1562,7 @@ const Ioss::Map &DatabaseIO::get_element_map() const
   // Can be called multiple times, allocate 1 time only
   if (elemMap.map().empty()) {
     elemMap.map().resize(elementCount + 1);
+    elemMap.map()[0] = -1;
 
     if (is_input()) {
       std::vector<int> elem_map(elemMap.map().size());
@@ -1581,19 +1572,7 @@ const Ioss::Map &DatabaseIO::get_element_map() const
         Ioss::MapContainer().swap(elemMap.map());
         pamgen_error(get_file_pointer(), __LINE__, myProcessor);
       }
-      std::copy(elem_map.begin(), elem_map.end(), elemMap.map().begin());
-
-      // Check for sequential element map.
-      // If not, build the reverse G2L element map...
-      elemMap.map()[0] = -1;
-      for (int i = 1; i < elementCount + 1; i++) {
-        if (i != elemMap.map()[i]) {
-          elemMap.map()[0] = 1;
-          break;
-        }
-      }
-
-      elemMap.build_reverse_map();
+      elemMap.set_map(elem_map.data(), elem_map.size(), 0, true);
     }
     else {
       unsupported("output element map");

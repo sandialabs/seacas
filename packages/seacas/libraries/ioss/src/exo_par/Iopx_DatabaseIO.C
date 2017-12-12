@@ -947,14 +947,8 @@ namespace Iopx {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.map()[0] = -1;
-        for (int64_t i = 1; i < entityCount + 1; i++) {
-          if (i != entity_map.map()[i]) {
-            entity_map.map()[0] = 1;
-            break;
-          }
-        }
-
+        entity_map.map()[0] = 0;
+	entity_map.is_sequential();
         entity_map.build_reverse_map();
       }
       else {

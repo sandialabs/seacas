@@ -93,6 +93,9 @@ void test_segment(Ioss::Map &my_map, size_t segments, size_t offset)
   }
 
   SMART_ASSERT(my_map.is_sequential());
+  my_map.map()[0] = 0;
+  SMART_ASSERT(my_map.is_sequential());
+
   verify_global_to_local(my_map, init);
 }
 
