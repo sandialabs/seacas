@@ -966,7 +966,7 @@ namespace Iovs {
     // Allocate space for elemente number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (elemMap.map().empty()) {
-      elemMap.map().set_size(elementCount);
+      elemMap.set_size(elementCount);
 
       // Output database; elementMap not set yet... Build a default map.
       for (int64_t i = 1; i < elementCount + 1; i++) {

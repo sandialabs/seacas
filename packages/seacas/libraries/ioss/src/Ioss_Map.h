@@ -70,12 +70,14 @@ namespace Ioss {
     }
 
     // Determines whether the input map is sequential (m_map[i] == i)
-    bool is_sequential() const;
+    bool is_sequential(bool check_all = false) const;
 
     int64_t global_to_local(int64_t global, bool must_exist = true) const;
 
     template <typename INT>
     bool set_map(INT *ids, size_t count, size_t offset, bool in_define_mode = true);
+
+    void set_default(size_t count, size_t offset = 0);
 
     void build_reverse_map();
     void build_reverse_map(int64_t num_to_get, int64_t offset);

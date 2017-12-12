@@ -131,7 +131,7 @@ void Ioss::Map::release_memory()
 }
 
 // Determines whether the input map is sequential (m_map[i] == i)
-bool Ioss::Map::is_sequential() const
+bool Ioss::Map::is_sequential(bool check_all) const
 {
   // Assumes the_map runs from [1..size) Slot zero will contain -1 if the
   // vector is sequential; 1 if not sequential, and 0 if it has not
@@ -141,12 +141,14 @@ bool Ioss::Map::is_sequential() const
   // 'sequential' is defined here to mean i==the_map[i] for all
   // 0<i<the_map.size()
 
-  // Check slot zero...
-  if (m_map[0] == -1) {
-    return true;
-  }
-  if (m_map[0] == 1) {
-    return false;
+  if (!check_all) {
+    // Check slot zero...
+    if (m_map[0] == -1) {
+      return true;
+    }
+    if (m_map[0] == 1) {
+      return false;
+    }
   }
   
   Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(m_map);
@@ -331,6 +333,15 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     build_reorder_map__(offset, count);
   }
   return changed;
+}
+
+void Ioss::Map::set_default(size_t count, size_t offset)
+{
+  m_map.resize(count+1);
+  for (size_t i = 1; i <= count; i++) {
+    m_map[i] = i + offset;
+  }
+  m_map[0] = -1;
 }
 
 void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const

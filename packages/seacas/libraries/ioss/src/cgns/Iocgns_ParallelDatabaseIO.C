@@ -786,17 +786,12 @@ namespace Iocgns {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-        entity_map.map()[0] = 0;
-	entity_map.is_sequential();
+	entity_map.is_sequential(true);
         entity_map.build_reverse_map();
       }
       else {
         // Output database; entity_map.map not set yet... Build a default map.
-        for (int64_t i = 1; i < entityCount + 1; i++) {
-          entity_map.map()[i] = i;
-        }
-        // Sequential map
-        entity_map.map()[0] = -1;
+	entity_map.set_default(entityCount);
       }
     }
     return entity_map;
