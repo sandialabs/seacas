@@ -17,10 +17,7 @@ void verify_global_to_local(const Ioss::Map &my_map, const std::vector<int> &ini
 
 void test_random()
 {
-  Ioss::Map my_map;
-  
   size_t count = 128;
-  my_map.set_size(count);
 
   std::vector<int> init(count);
   std::iota(init.begin(), init.end(), 2511);
@@ -29,6 +26,8 @@ void test_random()
     e = 11 * e;
   }
 
+  Ioss::Map my_map;
+  my_map.set_size(count);
   my_map.set_map(init.data(), init.size(), 0, true);
 
   SMART_ASSERT(!my_map.is_sequential());

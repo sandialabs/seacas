@@ -151,6 +151,7 @@ bool Ioss::Map::is_sequential(bool check_all) const
     }
   }
   
+  IOSS_FUNC_ENTER(m_);
   Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(m_map);
   size_t size    = m_map.size();
   for (int64_t i = 1; i < (int64_t)size; i++) {
@@ -161,6 +162,15 @@ bool Ioss::Map::is_sequential(bool check_all) const
   }
   new_map[0] = -1;
   return true;
+}
+
+void Ioss::Map::set_size(size_t entity_count)
+{
+  IOSS_FUNC_ENTER(m_);
+  if (m_map.empty()) {
+    m_map.resize(entity_count + 1);
+    m_map[0] = -1;
+  }
 }
 
 void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
@@ -337,6 +347,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
 
 void Ioss::Map::set_default(size_t count, size_t offset)
 {
+  IOSS_FUNC_ENTER(m_);
   m_map.resize(count+1);
   for (size_t i = 1; i <= count; i++) {
     m_map[i] = i + offset;
