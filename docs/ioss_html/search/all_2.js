@@ -49,7 +49,6 @@ var searchData=
   ['build_5fcatalyst_5fplugin_5fpaths',['build_catalyst_plugin_paths',['../namespaceanonymous__namespace_02Iovs__DatabaseIO_8C_03.html#ad09f768f9fd49b2c6d9ea1717f6b219d',1,'anonymous_namespace{Iovs_DatabaseIO.C}']]],
   ['build_5fglobal_5fto_5flocal_5felem_5fmap',['build_global_to_local_elem_map',['../classIocgns_1_1DecompositionData.html#acfbc0f358b68b31b5246077de3e0c97a',1,'Iocgns::DecompositionData::build_global_to_local_elem_map()'],['../classIopx_1_1DecompositionData.html#a8c87798460f7262a743e72073971f1db',1,'Iopx::DecompositionData::build_global_to_local_elem_map()'],['../classIoss_1_1Decomposition.html#a20814db08f4690ab383cf1e9f113ff60',1,'Ioss::Decomposition::build_global_to_local_elem_map()']]],
   ['build_5fnode_5fmap',['build_node_map',['../classIogn_1_1GeneratedMesh.html#aa79480f29286ba894936d3953f117356',1,'Iogn::GeneratedMesh']]],
-  ['build_5freorder_5fmap',['build_reorder_map',['../classIoss_1_1Map.html#a0ab0e7a84601350aa8e15e7fa7038a69',1,'Ioss::Map']]],
   ['build_5freorder_5fmap_5f_5f',['build_reorder_map__',['../classIoss_1_1Map.html#a6beaa47fcc121b78706481a0e783577a',1,'Ioss::Map']]],
   ['build_5freverse_5fmap',['build_reverse_map',['../classIoss_1_1Map.html#a5b69ebb0e2961bc505b871da01af8971',1,'Ioss::Map::build_reverse_map()'],['../classIoss_1_1Map.html#a6d87aa40f3e8701e9976a07e2785d9bb',1,'Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)']]],
   ['build_5freverse_5fmap_5f_5f',['build_reverse_map__',['../classIoss_1_1Map.html#adc60962a0f5d1b2b5873486829c06a84',1,'Ioss::Map']]],
