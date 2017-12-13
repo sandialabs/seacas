@@ -284,7 +284,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     bool one2one = is_one2one(ids, count, offset);
     if (one2one) {
       // Further checks on how ids fit into previously set m_map entries (if any)
-      if (m_offset > 0) {
+      if (count > 0 && m_offset >= 0) {
 	if (ids[0] - 1 - offset != (size_t)m_offset) {
 	  one2one = false;
 	}
@@ -299,6 +299,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
       // incrementally with the current range of 'ids', but before
       // that can be done, need to build a reverseMap of the current
       // one-to-one data...
+      m_map[0] = 1;
       build_reverse_map__(m_map.size() - 1, 0);
       m_offset = 0;
     }

@@ -118,10 +118,10 @@ void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
   verify_global_to_local(my_map, init);
 }
 
-void test_segment_gap()
+void test_segment_gap(size_t offset)
 {
+  std::cerr << "testing segment gap with offset = " << offset << "\n";
   size_t segments = 4;
-  size_t offset   = 123;
   size_t count    = 128;
   size_t seg_size = count / segments;
   SMART_ASSERT(count % segments == 0)(count)(segments);
@@ -135,7 +135,7 @@ void test_segment_gap()
     size_t seg_end   = seg_begin + seg_size;
 
     for (size_t i = seg_begin; i < seg_end; i++) {
-      init[i] = i + j + offset;
+      init[i] = i + j + offset + 1;
     }
   }
 
@@ -143,6 +143,24 @@ void test_segment_gap()
     size_t i = segments - j - 1;
     my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
   }
+
+  SMART_ASSERT(!my_map.is_sequential());
+  verify_global_to_local(my_map, init);
+}
+
+void test_small_reverse()
+{
+  size_t count    = 2;
+
+  Ioss::Map my_map;
+  my_map.set_size(count);
+
+  std::vector<int> init(2);
+
+  init[0] = 1;
+  init[1] = 3;
+  my_map.set_map(&init[1], 1, 1, true);
+  my_map.set_map(&init[0], 1, 0, true);
 
   SMART_ASSERT(!my_map.is_sequential());
   verify_global_to_local(my_map, init);
@@ -189,5 +207,9 @@ int main()
   }
 
   // Each segment is one-to-one, but gap between segments...
-  test_segment_gap();
+  test_segment_gap(123);
+  test_segment_gap(0);
+
+  // Test small reverse build..
+  test_small_reverse();
 }

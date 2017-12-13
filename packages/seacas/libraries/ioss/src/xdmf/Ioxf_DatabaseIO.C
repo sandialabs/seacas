@@ -721,7 +721,7 @@ namespace Ioxf {
     // node 1)
 
     assert(num_to_get == nodeCount);
-    nodeMap.resize(nodeCount);
+    nodeMap.set_size(nodeCount);
 
     bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     nodeMap.set_map(ids, num_to_get, 0, in_define);
@@ -805,7 +805,7 @@ namespace Ioxf {
 
     bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
     int  eb_offset = eb->get_offset();
-    elemMap.resize(elementCount);
+    elemMap.set_size(elementCount);
     elemMap.set_map(ids, num_to_get, eb_offset, in_define);
 
     if (in_define) {
