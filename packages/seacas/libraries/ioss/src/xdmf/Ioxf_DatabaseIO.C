@@ -107,8 +107,6 @@ namespace {
     IOSS_ERROR(errmsg);
   }
 
-  // Determines whether the input map is sequential (map[i] == i)
-  // Assumes that map is '1-based', size stored in [0]
   bool find_displacement_field(Ioss::NameList &fields, const Ioss::GroupingEntity *block, int ndim,
                                std::string *disp_name);
 

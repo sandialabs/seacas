@@ -9,6 +9,7 @@
 
 void verify_global_to_local(const Ioss::Map &my_map, const std::vector<int> &init)
 {
+  std::cerr << "Verify... " << __func__ << "\n";
   size_t count = my_map.map().size() - 1;
   SMART_ASSERT(count == init.size());
 
@@ -20,6 +21,7 @@ void verify_global_to_local(const Ioss::Map &my_map, const std::vector<int> &ini
 
 void test_random()
 {
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t count = 128;
 
   std::vector<int> init(count);
@@ -39,6 +41,7 @@ void test_random()
 
 void test_one2one(Ioss::Map &my_map, size_t offset)
 {
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t count = 128;
   my_map.set_size(count);
 
@@ -53,6 +56,7 @@ void test_one2one(Ioss::Map &my_map, size_t offset)
 
 void test_reorder(Ioss::Map &my_map, size_t offset)
 {
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t count = my_map.map().size() - 1;
 
   std::vector<int> init(count);
@@ -78,6 +82,7 @@ void test_reorder(Ioss::Map &my_map, size_t offset)
 
 void test_segment(Ioss::Map &my_map, size_t segments, size_t offset)
 {
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t count    = 128;
   size_t seg_size = count / segments;
   SMART_ASSERT(count % segments == 0)(count)(segments);
@@ -100,6 +105,7 @@ void test_segment(Ioss::Map &my_map, size_t segments, size_t offset)
 
 void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
 {
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t count    = 128;
   size_t seg_size = count / segments;
   SMART_ASSERT(count % segments == 0)(count)(segments);
@@ -120,7 +126,7 @@ void test_reverse_segment(Ioss::Map &my_map, size_t segments, size_t offset)
 
 void test_segment_gap(size_t offset)
 {
-  std::cerr << "testing segment gap with offset = " << offset << "\n";
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t segments = 4;
   size_t count    = 128;
   size_t seg_size = count / segments;
@@ -150,6 +156,7 @@ void test_segment_gap(size_t offset)
 
 void test_small_reverse()
 {
+  std::cerr << "Testing: " << __func__ << "\n";
   size_t count    = 2;
 
   Ioss::Map my_map;
