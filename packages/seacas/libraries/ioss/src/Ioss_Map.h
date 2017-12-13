@@ -64,6 +64,8 @@ namespace Ioss {
 
     void set_size(size_t entity_count);
 
+    void set_is_sequential(bool yesno) { m_map[0] = yesno ? -1 : 1; }
+
     // Determines whether the input map is sequential (m_map[i] == i)
     bool is_sequential(bool check_all = false) const;
 

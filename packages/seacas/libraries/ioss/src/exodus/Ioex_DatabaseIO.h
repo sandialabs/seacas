@@ -306,9 +306,6 @@ namespace Ioex {
 
     //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
     //               sierra side.   global = nodeMap[local]
-    // nodeMap[0] contains: -1 if sequential, 0 if ordering unknown, 1
-    // if nonsequential
-
     mutable Ioss::Map nodeMap;
     mutable Ioss::Map edgeMap;
     mutable Ioss::Map faceMap;

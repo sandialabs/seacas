@@ -169,7 +169,7 @@ void Ioss::Map::set_size(size_t entity_count)
   IOSS_FUNC_ENTER(m_);
   if (m_map.empty()) {
     m_map.resize(entity_count + 1);
-    m_map[0] = -1;
+    set_is_sequential(true);
   }
 }
 
@@ -192,7 +192,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
   // 5. Check for duplicate global_ids...
 
   // Build a vector containing the current ids...
-  if (m_map[0] != 1) {
+  if (is_sequential()) {
     return;
   }
 
@@ -278,7 +278,7 @@ template <typename INT>
 bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mode)
 {
   IOSS_FUNC_ENTER(m_);
-  if (in_define_mode && m_map[0] != 1) {
+  if (in_define_mode && is_sequential()) {
     // If the current map is one-to-one, check whether it will be one-to-one
     // after adding these ids...
     bool one2one = is_one2one(ids, count, offset);
@@ -299,7 +299,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
       // incrementally with the current range of 'ids', but before
       // that can be done, need to build a reverseMap of the current
       // one-to-one data...
-      m_map[0] = 1;
+      set_is_sequential(false);
       build_reverse_map__(m_map.size() - 1, 0);
       m_offset = 0;
     }
@@ -320,7 +320,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     }
     m_map[local_id] = ids[i];
     if (local_id != ids[i] - m_offset) {
-      m_map[0] = 1;
+      set_is_sequential(false);
     }
     if (ids[i] <= 0) {
       std::ostringstream errmsg;
@@ -353,7 +353,7 @@ void Ioss::Map::set_default(size_t count, size_t offset)
   for (size_t i = 1; i <= count; i++) {
     m_map[i] = i + offset;
   }
-  m_map[0] = -1;
+  set_is_sequential(true);
 }
 
 void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
@@ -554,8 +554,8 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
 {
   int64_t local = global;
-  if (m_map[0] == 1 && !m_reverse.empty()) {
-    // Possible for m_map[0] == 1 which means non-one-to-one, but
+  if (!is_sequential() && !m_reverse.empty()) {
+    // Possible for !is_sequential() which means non-one-to-one, but
     // reverseMap is empty (which implied one-to-one) if the ORIGINAL mapping defined
     // during dbState == STATE_MODEL was one-to-one, but there is a
     // reordering which is due to new id ordering defined after STATE_MODEL...

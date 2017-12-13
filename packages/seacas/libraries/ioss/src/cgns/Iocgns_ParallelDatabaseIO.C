@@ -2026,7 +2026,7 @@ namespace Iocgns {
       nodeMap.set_size(num_to_get);
 
       bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
-      if (nodeMap.map()[0] == -1) {
+      if (nodeMap.is_sequential()) {
         if (int_byte_size_api() == 4) {
           nodeMap.set_map(static_cast<int *>(ids), num_to_get, 0, in_define);
         }
