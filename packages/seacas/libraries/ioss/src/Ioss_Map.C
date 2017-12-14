@@ -348,7 +348,7 @@ void Ioss::Map::reverse_map_data(INT *data, size_t count) const
   IOSS_FUNC_ENTER(m_);
   if (!is_sequential()) {
     for (size_t i = 0; i < count; i++) {
-      int global_id = data[i];
+      INT global_id = data[i];
       data[i]    = global_to_local__(global_id, true);
     }
   }
