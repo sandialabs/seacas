@@ -19,6 +19,13 @@ void verify_global_to_local(const Ioss::Map &my_map, const std::vector<int> &ini
 
 void test_reorder(Ioss::Map &my_map, std::vector<int> &init, size_t offset)
 {
+  // The map coming in has already been defined using 'init' and is
+  // sequential from 'offset+1' to 'offset+count+1'
+  //
+  // Redefine the map with a shuffle of the original ids -- reorder
+  // Then map the shuffled ordering back to the original order
+  // using the `map_field_to_db_scalar_order` function and verify.
+  
   std::random_shuffle(init.begin(), init.end());
   my_map.set_map(init.data(), init.size(), 0, false);
   REQUIRE(!my_map.is_sequential());
@@ -39,6 +46,7 @@ void test_reorder(Ioss::Map &my_map, std::vector<int> &init, size_t offset)
 
 TEST_CASE("test random ids", "[random_ids]") 
 {
+  // Create a map of random ids and make verify global to local works.
   size_t count = 128;
   Ioss::Map my_map;
   my_map.set_size(count);
@@ -59,6 +67,9 @@ TEST_CASE("test random ids", "[random_ids]")
 
 TEST_CASE("test sequential map with offset", "[sequential offset]")
 {
+  // Simple sequential map 'offset+1 .. offset+1+count'
+  // Should verify that reverseMap and reorderMap are empty, but 
+  // not possible with current API...
   size_t count = 128;
   Ioss::Map my_map;
   my_map.set_size(count);
@@ -198,7 +209,7 @@ TEST_CASE("test segment gap", "[segment gap]")
 
 TEST_CASE("test small reverse", "[small reverse]")
 {
-  std::vector<int> init{1, 3}
+  std::vector<int> init{1, 3};
 
   size_t count    = init.size();
   Ioss::Map my_map;
