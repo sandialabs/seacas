@@ -102,24 +102,6 @@ namespace {
 
   using RMapI = std::vector<Ioss::IdPair>::const_iterator;
 
-  template <typename INT>
-  void map_implicit_data_internal(INT *ids, size_t count, const Ioss::MapContainer &map,
-                                  int64_t map_offset, size_t offset, bool is_sequential)
-  {
-    // Map the "local" ids (offset+1..offset+count) to the global ids. The local
-    // ids are implicit
-    if (is_sequential) {
-      for (size_t i = 0; i < count; i++) {
-        ids[i] = map_offset + offset + 1 + i;
-      }
-    }
-    else {
-      for (size_t i = 0; i < count; i++) {
-        ids[i] = map[offset + 1 + i];
-      }
-    }
-  }
-
 } // namespace
 
 void Ioss::Map::release_memory()
@@ -357,84 +339,97 @@ void Ioss::Map::set_default(size_t count, size_t offset)
   set_is_sequential(true);
 }
 
-void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
+template void Ioss::Map::reverse_map_data(int *data, size_t count) const;
+template void Ioss::Map::reverse_map_data(int64_t *data, size_t count) const;
+
+template <typename INT>
+void Ioss::Map::reverse_map_data(INT *data, size_t count) const
 {
   IOSS_FUNC_ENTER(m_);
-  SMART_ASSERT(!m_map.empty());
   if (!is_sequential()) {
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *connect = static_cast<int *>(data);
-      for (size_t i = 0; i < count; i++) {
-        int global_id = connect[i];
-        connect[i]    = global_to_local__(global_id, true);
-      }
-    }
-    else {
-      int64_t *connect = static_cast<int64_t *>(data);
-      for (size_t i = 0; i < count; i++) {
-        int64_t global_id = connect[i];
-        connect[i]        = global_to_local__(global_id, true);
-      }
+    for (size_t i = 0; i < count; i++) {
+      int global_id = data[i];
+      data[i]    = global_to_local__(global_id, true);
     }
   }
   else if (m_offset != 0) {
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *connect = static_cast<int *>(data);
-      for (size_t i = 0; i < count; i++) {
-        connect[i] -= m_offset;
-      }
+    for (size_t i = 0; i < count; i++) {
+      data[i] -= m_offset;
     }
-    else {
-      int64_t *connect = static_cast<int64_t *>(data);
-      for (size_t i = 0; i < count; i++) {
-        connect[i] -= m_offset;
-      }
+  }
+}
+
+void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
+{
+  if (field.get_type() == Ioss::Field::INTEGER) {
+    int *connect = static_cast<int *>(data);
+    reverse_map_data(connect, count);
+  }
+  else {
+    int64_t *connect = static_cast<int64_t *>(data);
+    reverse_map_data(connect, count);
+  }
+}
+
+template void Ioss::Map::map_data(int *data, size_t count) const;
+template void Ioss::Map::map_data(int64_t *data, size_t count) const;
+
+template <typename INT> void Ioss::Map::map_data(INT *data, size_t count) const
+{
+  IOSS_FUNC_ENTER(m_);
+  if (!is_sequential()) {
+    for (size_t i = 0; i < count; i++) {
+      data[i] = m_map[data[i]];
+    }
+  }
+  else if (m_offset != 0) {
+    for (size_t i = 0; i < count; i++) {
+      data[i] += m_offset;
     }
   }
 }
 
 void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
 {
-  IOSS_FUNC_ENTER(m_);
-  if (!is_sequential()) {
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *datum = static_cast<int *>(data);
-      for (size_t i = 0; i < count; i++) {
-        datum[i] = m_map[datum[i]];
-      }
-    }
-    else {
-      int64_t *datum = static_cast<int64_t *>(data);
-      for (size_t i = 0; i < count; i++) {
-        datum[i] = m_map[datum[i]];
-      }
+  if (field.get_type() == Ioss::Field::INTEGER) {
+    int *datum = static_cast<int *>(data);
+    map_data(datum, count);
+  }
+  else {
+    int64_t *datum = static_cast<int64_t *>(data);
+    map_data(datum, count);
+  }
+}
+
+template void Ioss::Map::map_implicit_data(int *data, size_t count, size_t offset) const;
+template void Ioss::Map::map_implicit_data(int64_t *data, size_t count, size_t offset) const;
+
+template <typename INT>
+void Ioss::Map::map_implicit_data(INT *ids, size_t count, size_t offset) const
+{
+  // Map the "local" ids (offset+1..offset+count) to the global ids. The local
+  // ids are implicit
+  if (is_sequential()) {
+    for (size_t i = 0; i < count; i++) {
+      ids[i] = m_offset + offset + 1 + i;
     }
   }
-  else if (m_offset != 0) {
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *datum = static_cast<int *>(data);
-      for (size_t i = 0; i < count; i++) {
-        datum[i] = m_map[datum[i] - m_offset];
-      }
-    }
-    else {
-      int64_t *datum = static_cast<int64_t *>(data);
-      for (size_t i = 0; i < count; i++) {
-        datum[i] = m_map[datum[i] - m_offset];
-      }
+  else {
+    for (size_t i = 0; i < count; i++) {
+      ids[i] = m_map[offset + 1 + i];
     }
   }
 }
 
 void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t count,
-                                  size_t offset) const
+					size_t offset) const
 {
   IOSS_FUNC_ENTER(m_);
   if (field.get_type() == Ioss::Field::INTEGER) {
-    map_implicit_data_internal(static_cast<int *>(data), count, m_map, m_offset, offset, is_sequential());
+    map_implicit_data(static_cast<int *>(data), count, offset);
   }
   else {
-    map_implicit_data_internal(static_cast<int64_t *>(data), count, m_map, m_offset, offset, is_sequential());
+    map_implicit_data(static_cast<int64_t *>(data), count, offset);
   }
 }
 
