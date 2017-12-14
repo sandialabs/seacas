@@ -284,8 +284,9 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     bool one2one = is_one2one(ids, count, offset);
     if (one2one) {
       // Further checks on how ids fit into previously set m_map entries (if any)
-      if (count > 0 && m_offset >= 0) {
-	if (ids[0] - 1 - offset != (size_t)m_offset) {
+      if (count > 0) {
+	INT tmp_offset = ids[0] - 1 - offset;
+	if (tmp_offset < 0 || (m_offset >= 0 && tmp_offset != m_offset)) {
 	  one2one = false;
 	}
       }

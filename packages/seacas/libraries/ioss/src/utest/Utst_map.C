@@ -158,6 +158,8 @@ TEST_CASE("test reverse segmented map creation", "[reverse segment]")
 
 TEST_CASE("test segment gap", "[segment gap]")
 {
+  // Each segement is sequential, but there is a gap between each segment.
+  // Make sure mapping can detect the gap...
   size_t segments = 4;
   size_t count    = 128;
   size_t seg_size = count / segments;
@@ -196,16 +198,32 @@ TEST_CASE("test segment gap", "[segment gap]")
 
 TEST_CASE("test small reverse", "[small reverse]")
 {
-  size_t count    = 2;
+  std::vector<int> init{1, 3}
+
+  size_t count    = init.size();
   Ioss::Map my_map;
   my_map.set_size(count);
 
-  std::vector<int> init(2);
-
-  init[0] = 1;
-  init[1] = 3;
   my_map.set_map(&init[1], 1, 1, true);
   my_map.set_map(&init[0], 1, 0, true);
+
+  REQUIRE(!my_map.is_sequential());
+  REQUIRE(!my_map.is_sequential(true));
+  REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+}
+
+TEST_CASE("test small swap front back", "[swap front back]")
+{
+  size_t count    = 16;
+  Ioss::Map my_map;
+  my_map.set_size(count);
+
+  // Two segments each sequential 0..7  8..15
+  std::vector<int> init{9,10,11,12,13,14,15,16,  1,2,3,4,5,6,7,8};
+
+  // Build map with segment 2 first and then segment 1.
+  my_map.set_map(&init[8], 8, 8, true);
+  my_map.set_map(&init[0], 8, 0, true);
 
   REQUIRE(!my_map.is_sequential());
   REQUIRE(!my_map.is_sequential(true));
