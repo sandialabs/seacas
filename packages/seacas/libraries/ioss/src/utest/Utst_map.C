@@ -1,7 +1,8 @@
-#define CATCH_CONFIG_MAIN 
-#include <catch.hpp>
+#define CATCH_CONFIG_MAIN
+#include <Ioss_Field.h>
 #include <Ioss_Map.h>
 #include <algorithm>
+#include <catch.hpp>
 #include <exception>
 #include <numeric>
 #include <vector>
@@ -25,11 +26,11 @@ void test_reorder(Ioss::Map &my_map, std::vector<int> &init, size_t offset)
   // Redefine the map with a shuffle of the original ids -- reorder
   // Then map the shuffled ordering back to the original order
   // using the `map_field_to_db_scalar_order` function and verify.
-  
+
   std::random_shuffle(init.begin(), init.end());
   my_map.set_map(init.data(), init.size(), 0, false);
   REQUIRE(!my_map.is_sequential());
-  
+
   // Check that we get the *original* ordering back from global_to_local.
   size_t count = init.size();
   for (size_t i = 0; i < count; i++) {
@@ -44,10 +45,10 @@ void test_reorder(Ioss::Map &my_map, std::vector<int> &init, size_t offset)
   }
 }
 
-TEST_CASE("test random ids", "[random_ids]") 
+TEST_CASE("test random ids", "[random_ids]")
 {
   // Create a map of random ids and make verify global to local works.
-  size_t count = 128;
+  size_t    count = 128;
   Ioss::Map my_map;
   my_map.set_size(count);
 
@@ -68,18 +69,19 @@ TEST_CASE("test random ids", "[random_ids]")
 TEST_CASE("test sequential map with offset", "[sequential offset]")
 {
   // Simple sequential map 'offset+1 .. offset+1+count'
-  // Should verify that reverseMap and reorderMap are empty, but 
+  // Should verify that reverseMap and reorderMap are empty, but
   // not possible with current API...
-  size_t count = 128;
+  size_t    count = 128;
   Ioss::Map my_map;
   my_map.set_size(count);
 
-  std::vector<int> init(count);
-  std::vector<size_t> offsets{0, 123};
+  std::vector<int>         init(count);
+  std::vector<size_t>      offsets{0, 123};
   std::vector<std::string> sections{"offset0", "offset123"};
 
-  for (size_t i=0; i < offsets.size(); i++) {
-    SECTION(sections[i]) {
+  for (size_t i = 0; i < offsets.size(); i++) {
+    SECTION(sections[i])
+    {
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), offset + 1);
 
@@ -89,12 +91,11 @@ TEST_CASE("test sequential map with offset", "[sequential offset]")
       REQUIRE(my_map.is_sequential(true));
       REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
 
-      SECTION("Reorder-1") {
-	test_reorder(my_map, init, offset);
+      SECTION("Reorder-1")
+      {
+        test_reorder(my_map, init, offset);
 
-	SECTION("Reorder-2") {
-	  test_reorder(my_map, init, offset);
-	}
+        SECTION("Reorder-2") { test_reorder(my_map, init, offset); }
       }
     }
   }
@@ -103,9 +104,9 @@ TEST_CASE("test sequential map with offset", "[sequential offset]")
 TEST_CASE("test segmented map creation", "[segment]")
 {
   Ioss::Map my_map;
-  size_t segments = 4;
+  size_t    segments = 4;
 
-  size_t count    = 128;
+  size_t count = 128;
   my_map.set_size(count);
 
   size_t seg_size = count / segments;
@@ -113,20 +114,22 @@ TEST_CASE("test segmented map creation", "[segment]")
 
   std::vector<int> init(count);
 
-  std::vector<size_t> offsets{0, 123};
+  std::vector<size_t>      offsets{0, 123};
   std::vector<std::string> sections{"offset0", "offset123"};
 
-  for (size_t i=0; i < offsets.size(); i++) {
-    SECTION(sections[i]) {
+  for (size_t i = 0; i < offsets.size(); i++) {
+    SECTION(sections[i])
+    {
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), offset + 1);
 
       for (size_t i = 0; i < segments; i++) {
-	my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
-	my_map.set_map(&init[i * seg_size], 0, i * seg_size, true); // make sure handles empty segments
+        my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
+        my_map.set_map(&init[i * seg_size], 0, i * seg_size,
+                       true); // make sure handles empty segments
       }
 
-      REQUIRE(my_map.is_sequential()); // Based on m_map[0] setting.
+      REQUIRE(my_map.is_sequential());     // Based on m_map[0] setting.
       REQUIRE(my_map.is_sequential(true)); // Based on checking all values.
       REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
     }
@@ -136,9 +139,9 @@ TEST_CASE("test segmented map creation", "[segment]")
 TEST_CASE("test reverse segmented map creation", "[reverse segment]")
 {
   Ioss::Map my_map;
-  size_t segments = 4;
+  size_t    segments = 4;
 
-  size_t count    = 128;
+  size_t count = 128;
   my_map.set_size(count);
 
   size_t seg_size = count / segments;
@@ -146,18 +149,20 @@ TEST_CASE("test reverse segmented map creation", "[reverse segment]")
 
   std::vector<int> init(count);
 
-  std::vector<size_t> offsets{0, 123};
+  std::vector<size_t>      offsets{0, 123};
   std::vector<std::string> sections{"offset0", "offset123"};
 
-  for (size_t i=0; i < offsets.size(); i++) {
-    SECTION(sections[i]) {
+  for (size_t i = 0; i < offsets.size(); i++) {
+    SECTION(sections[i])
+    {
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), offset + 1);
 
       for (size_t j = 0; j < segments; j++) {
-	size_t i = segments - j - 1;
-	my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
-	my_map.set_map(&init[i * seg_size], 0, i * seg_size, true); // make sure handles empty segments
+        size_t i = segments - j - 1;
+        my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
+        my_map.set_map(&init[i * seg_size], 0, i * seg_size,
+                       true); // make sure handles empty segments
       }
 
       REQUIRE(my_map.is_sequential());
@@ -181,24 +186,25 @@ TEST_CASE("test segment gap", "[segment gap]")
 
   std::vector<int> init(count);
 
-  std::vector<size_t> offsets{0, 123};
+  std::vector<size_t>      offsets{0, 123};
   std::vector<std::string> sections{"offset0", "offset123"};
 
-  for (size_t i=0; i < offsets.size(); i++) {
-    SECTION(sections[i]) {
+  for (size_t i = 0; i < offsets.size(); i++) {
+    SECTION(sections[i])
+    {
       std::size_t offset = offsets[i];
       for (size_t j = 0; j < segments; j++) {
-	size_t seg_begin = j * seg_size;
-	size_t seg_end   = seg_begin + seg_size;
+        size_t seg_begin = j * seg_size;
+        size_t seg_end   = seg_begin + seg_size;
 
-	for (size_t i = seg_begin; i < seg_end; i++) {
-	  init[i] = i + j + offset + 1;
-	}
+        for (size_t i = seg_begin; i < seg_end; i++) {
+          init[i] = i + j + offset + 1;
+        }
       }
 
       for (size_t j = 0; j < segments; j++) {
-	size_t i = segments - j - 1;
-	my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
+        size_t i = segments - j - 1;
+        my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
       }
       REQUIRE(!my_map.is_sequential());
       REQUIRE(!my_map.is_sequential(true));
@@ -211,7 +217,7 @@ TEST_CASE("test small reverse", "[small reverse]")
 {
   std::vector<int> init{1, 3};
 
-  size_t count    = init.size();
+  size_t    count = init.size();
   Ioss::Map my_map;
   my_map.set_size(count);
 
@@ -225,12 +231,12 @@ TEST_CASE("test small reverse", "[small reverse]")
 
 TEST_CASE("test small swap front back", "[swap front back]")
 {
-  size_t count    = 16;
+  size_t    count = 16;
   Ioss::Map my_map;
   my_map.set_size(count);
 
   // Two segments each sequential 0..7  8..15
-  std::vector<int> init{9,10,11,12,13,14,15,16,  1,2,3,4,5,6,7,8};
+  std::vector<int> init{9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8};
 
   // Build map with segment 2 first and then segment 1.
   my_map.set_map(&init[8], 8, 8, true);
@@ -239,4 +245,105 @@ TEST_CASE("test small swap front back", "[swap front back]")
   REQUIRE(!my_map.is_sequential());
   REQUIRE(!my_map.is_sequential(true));
   REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+}
+
+TEST_CASE("test map_data sequential", "[map_data_seq]")
+{
+  size_t    count = 128;
+  Ioss::Map my_map;
+  my_map.set_size(count);
+
+  std::vector<int>         init(count);
+  std::vector<size_t>      offsets{0, 123};
+  std::vector<std::string> sections{"offset0", "offset123"};
+
+  for (size_t i = 0; i < offsets.size(); i++) {
+    SECTION(sections[i])
+    {
+      std::size_t offset = offsets[i];
+      std::iota(init.begin(), init.end(), offset + 1);
+
+      my_map.set_map(init.data(), init.size(), 0, true);
+
+      REQUIRE(my_map.is_sequential());
+      REQUIRE(my_map.is_sequential(true));
+      REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+
+      SECTION("explicit map")
+      {
+        // Now try 'map_data' call which is basically a bulk local-global.
+        // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
+        std::vector<int> local(count);
+        std::iota(local.begin(), local.end(), 1);
+        my_map.map_data(local.data(), count);
+        REQUIRE(init == local);
+
+        SECTION("reverse_map")
+        {
+          // If now reverse 'local', should get the original 1..count back
+          my_map.reverse_map_data(local.data(), count);
+          std::vector<int> seq(count);
+          std::iota(seq.begin(), seq.end(), 1);
+          REQUIRE(local == seq);
+        }
+      }
+
+      SECTION("implicit map")
+      {
+        // Now try 'map_data' call which is basically a bulk local-global.
+        // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
+        std::vector<int> local(count);
+        my_map.map_implicit_data(local.data(), count, 0);
+        REQUIRE(init == local);
+      }
+    }
+  }
+}
+
+TEST_CASE("test map_data random", "[map_data_ran]")
+{
+  size_t    count = 128;
+  Ioss::Map my_map;
+  my_map.set_size(count);
+
+  std::vector<int> init(count);
+  std::iota(init.begin(), init.end(), 2511);
+  std::random_shuffle(init.begin(), init.end());
+  for (auto &e : init) {
+    e = 11 * e;
+  }
+
+  my_map.set_map(init.data(), init.size(), 0, true);
+
+  REQUIRE(!my_map.is_sequential());
+  REQUIRE(!my_map.is_sequential(true));
+  REQUIRE_NOTHROW(verify_global_to_local(my_map, init));
+
+  SECTION("explicit map")
+  {
+    // Now try 'map_data' call which is basically a bulk local-global.
+    // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
+    std::vector<int> local(count);
+    std::iota(local.begin(), local.end(), 1);
+    my_map.map_data(local.data(), count);
+    REQUIRE(init == local);
+
+    SECTION("reverse_map")
+    {
+      // If now reverse 'local', should get the original 1..count back
+      my_map.reverse_map_data(local.data(), count);
+      std::vector<int> seq(count);
+      std::iota(seq.begin(), seq.end(), 1);
+      REQUIRE(local == seq);
+    }
+  }
+
+  SECTION("implicit map")
+  {
+    // Now try 'map_data' call which is basically a bulk local-global.
+    // Pass in local ids, returns global ids.  So if pass in 1..count, should get back 'init'
+    std::vector<int> local(count);
+    my_map.map_implicit_data(local.data(), count, 0);
+    REQUIRE(init == local);
+  }
 }
