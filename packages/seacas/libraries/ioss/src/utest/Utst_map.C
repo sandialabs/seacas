@@ -123,9 +123,9 @@ TEST_CASE("test segmented map creation", "[segment]")
       std::size_t offset = offsets[i];
       std::iota(init.begin(), init.end(), offset + 1);
 
-      for (size_t i = 0; i < segments; i++) {
-        my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
-        my_map.set_map(&init[i * seg_size], 0, i * seg_size,
+      for (size_t j = 0; j < segments; j++) {
+        my_map.set_map(&init[j * seg_size], seg_size, j * seg_size, true);
+        my_map.set_map(&init[j * seg_size], 0, j * seg_size,
                        true); // make sure handles empty segments
       }
 
@@ -159,9 +159,9 @@ TEST_CASE("test reverse segmented map creation", "[reverse segment]")
       std::iota(init.begin(), init.end(), offset + 1);
 
       for (size_t j = 0; j < segments; j++) {
-        size_t i = segments - j - 1;
-        my_map.set_map(&init[i * seg_size], seg_size, i * seg_size, true);
-        my_map.set_map(&init[i * seg_size], 0, i * seg_size,
+        size_t k = segments - j - 1;
+        my_map.set_map(&init[k * seg_size], seg_size, k * seg_size, true);
+        my_map.set_map(&init[k * seg_size], 0, k * seg_size,
                        true); // make sure handles empty segments
       }
 
@@ -189,10 +189,10 @@ TEST_CASE("test segment gap", "[segment gap]")
   std::vector<size_t>      offsets{0, 123};
   std::vector<std::string> sections{"offset0", "offset123"};
 
-  for (size_t i = 0; i < offsets.size(); i++) {
-    SECTION(sections[i])
+  for (size_t ii = 0; ii < offsets.size(); ii++) {
+    SECTION(sections[ii])
     {
-      std::size_t offset = offsets[i];
+      std::size_t offset = offsets[ii];
       for (size_t j = 0; j < segments; j++) {
         size_t seg_begin = j * seg_size;
         size_t seg_end   = seg_begin + seg_size;
@@ -257,10 +257,10 @@ TEST_CASE("test map_data sequential", "[map_data_seq]")
   std::vector<size_t>      offsets{0, 123};
   std::vector<std::string> sections{"offset0", "offset123"};
 
-  for (size_t i = 0; i < offsets.size(); i++) {
-    SECTION(sections[i])
+  for (size_t ii = 0; ii < offsets.size(); ii++) {
+    SECTION(sections[ii])
     {
-      std::size_t offset = offsets[i];
+      std::size_t offset = offsets[ii];
       std::iota(init.begin(), init.end(), offset + 1);
 
       my_map.set_map(init.data(), init.size(), 0, true);
