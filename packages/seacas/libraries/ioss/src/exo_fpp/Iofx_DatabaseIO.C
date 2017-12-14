@@ -969,13 +969,13 @@ namespace Iofx {
     }
   }
 
-  const Ioss::Map &DatabaseIO::get_map(Ioss::Map &entity_map, int64_t entityCount,
+  const Ioss::Map &DatabaseIO::get_map(Ioss::Map &entity_map, int64_t entity_count,
                                        ex_entity_type entity_type, ex_inquiry inquiry_type) const
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (entity_map.map().empty()) {
-      entity_map.map().resize(entityCount + 1);
+      entity_map.set_size(entity_count);
 
       if (is_input() || open_create_behavior() == Ioss::DB_APPEND) {
 
@@ -994,24 +994,21 @@ namespace Iofx {
           if (map_count == 1 && Ioss::Utils::case_strcmp(names[0], "original_global_id_map") == 0) {
             int error = 0;
             if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, &entity_map.map()[1]);
+              Ioss::Int64Vector tmp_map(entity_map.size());
+              error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
+              if (error >= 0) {
+                entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+		map_read = true;
+              }
             }
             else {
               // Ioss stores as 64-bit, read as 32-bit and copy over...
-              Ioss::IntVector tmp_map(entity_map.map().size());
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, &tmp_map[1]);
+              Ioss::IntVector tmp_map(entity_map.size());
+              error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
               if (error >= 0) {
-                std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map().begin());
+                entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+		map_read = true;
               }
-            }
-            if (error >= 0) {
-              map_read = true;
-            }
-            else {
-              // Clear out the vector...
-              Ioss::MapContainer().swap(entity_map.map());
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-              map_read = false;
             }
           }
           Ioss::Utils::delete_name_array(names, map_count);
@@ -1020,31 +1017,25 @@ namespace Iofx {
         if (!map_read) {
           int error = 0;
           if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-            error = ex_get_id_map(get_file_pointer(), entity_type, &entity_map.map()[1]);
+            Ioss::Int64Vector tmp_map(entity_map.size());
+            error = ex_get_id_map(get_file_pointer(), entity_type, tmp_map.data());
+            if (error >= 0) {
+              entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+            }
           }
           else {
             // Ioss stores as 64-bit, read as 32-bit and copy over...
-            Ioss::IntVector tmp_map(entity_map.map().size());
-            error = ex_get_id_map(get_file_pointer(), entity_type, &tmp_map[1]);
+            Ioss::IntVector tmp_map(entity_map.size());
+            error = ex_get_id_map(get_file_pointer(), entity_type, tmp_map.data());
             if (error >= 0) {
-              std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map().begin());
+              entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
             }
           }
-          if (error < 0) {
-            // Clear out the vector...
-            Ioss::MapContainer().swap(entity_map.map());
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
         }
-
-        // Check for sequential node map.
-        // If not, build the reverse G2L node map...
-	entity_map.is_sequential(true);
-        entity_map.build_reverse_map();
       }
       else {
         // Output database; entity_map.map not set yet... Build a default map.
-	entity_map.set_default(nodeCount);
+	entity_map.set_default(entity_count);
       }
     }
     return entity_map;

@@ -875,14 +875,14 @@ namespace Iopx {
     }
   }
 
-  const Ioss::Map &DatabaseIO::get_map(Ioss::Map &entity_map, int64_t entityCount,
+  const Ioss::Map &DatabaseIO::get_map(Ioss::Map &entity_map, int64_t entity_count,
                                        int64_t file_offset, int64_t file_count,
                                        ex_entity_type entity_type, ex_inquiry inquiry_type) const
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (entity_map.map().empty()) {
-      entity_map.map().resize(entityCount + 1);
+      entity_map.set_size(entity_count);
 
       if (is_input()) {
         Ioss::MapContainer file_data(file_count);
@@ -952,7 +952,7 @@ namespace Iopx {
       }
       else {
         // Output database; entity_map.map() not set yet... Build a default map.
-	entity_map.set_default(entityCount);
+	entity_map.set_default(entity_count);
       }
     }
     return entity_map;

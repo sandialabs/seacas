@@ -545,7 +545,7 @@ namespace Iocgns {
 
       // Flag all nodes used by this block...
       std::vector<size_t> I_nodes(node_count);
-      for (size_t i = 0; i < I_map->map().size() - 1; i++) {
+      for (size_t i = 0; i < I_map->size(); i++) {
         auto global     = I_map->map()[i + 1] - 1;
         I_nodes[global] = i + 1;
       }
@@ -554,7 +554,7 @@ namespace Iocgns {
         const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
         std::vector<cgsize_t> point_list;
         std::vector<cgsize_t> point_list_donor;
-        for (size_t i = 0; i < J_map->map().size() - 1; i++) {
+        for (size_t i = 0; i < J_map->size(); i++) {
           auto global = J_map->map()[i + 1] - 1;
           if (I_nodes[global] > 0) {
             // Have a match between nodes used by two different blocks,
@@ -1346,7 +1346,7 @@ namespace Iocgns {
 
           Ioss::MapContainer nodes;
           nodes.reserve(element_nodes * num_to_get + 1);
-          nodes.push_back(1); // Non-one-to-one map
+          nodes.push_back(0); // Unknown whether one-to-one map.
 
           if (field.get_type() == Ioss::Field::INT32) {
             auto *idata = reinterpret_cast<int *>(data);
@@ -1361,7 +1361,7 @@ namespace Iocgns {
             }
           }
           Ioss::Utils::uniquify(nodes, true);
-          assert(nodes[0] == 1);
+          assert(nodes[0] == 0);
 
           // Now, we have the node count and cell count so we can create a zone...
           int      base    = 1;
@@ -1511,11 +1511,11 @@ namespace Iocgns {
             // else.
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
-            std::vector<double> x(block_map->map().size() - 1);
-            std::vector<double> y(block_map->map().size() - 1);
-            std::vector<double> z(block_map->map().size() - 1);
+            std::vector<double> x(block_map->size());
+            std::vector<double> y(block_map->size());
+            std::vector<double> z(block_map->size());
 
-            for (size_t i = 0; i < block_map->map().size() - 1; i++) {
+            for (size_t i = 0; i < block_map->size(); i++) {
               auto global = block_map->map()[i + 1] - 1;
               x[i]        = rdata[global * spatial_dim + 0];
               if (spatial_dim > 1) {
@@ -1551,9 +1551,9 @@ namespace Iocgns {
             // else.
             //       'block_map' is 1-based.
             const auto &        block_map = block.second;
-            std::vector<double> xyz(block_map->map().size() - 1);
+            std::vector<double> xyz(block_map->size());
 
-            for (size_t i = 0; i < block_map->map().size() - 1; i++) {
+            for (size_t i = 0; i < block_map->size(); i++) {
               auto global = block_map->map()[i + 1] - 1;
               xyz[i]      = rdata[global];
             }
@@ -1590,13 +1590,13 @@ namespace Iocgns {
         // First entry is for something else.  'block_map' is
         // 1-based.
         const auto &        block_map = block.second;
-        std::vector<double> blk_data(block_map->map().size() - 1);
+        std::vector<double> blk_data(block_map->size());
 
         auto var_type   = field.transformed_storage();
         int  comp_count = var_type->component_count();
 
         if (comp_count == 1) {
-          for (size_t j = 0; j < block_map->map().size() - 1; j++) {
+          for (size_t j = 0; j < block_map->size(); j++) {
             auto global = block_map->map()[j + 1] - 1;
             blk_data[j] = rdata[global];
           }
@@ -1609,7 +1609,7 @@ namespace Iocgns {
           char field_suffix_separator = get_field_separator();
 
           for (int i = 0; i < comp_count; i++) {
-            for (size_t j = 0; j < block_map->map().size() - 1; j++) {
+            for (size_t j = 0; j < block_map->size(); j++) {
               auto global = block_map->map()[j + 1] - 1;
               blk_data[j] = rdata[comp_count * global + i];
             }
