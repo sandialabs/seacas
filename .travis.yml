@@ -43,8 +43,6 @@ before_install:
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
   - ./install-tpl.sh 
-  - cat include/netcdf_meta.h
-  - tail -20 include/netcdf.h
 
 before_script:
 
