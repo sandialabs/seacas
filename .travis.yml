@@ -19,15 +19,15 @@ matrix:
     - compiler: clang
       env: SANITIZER="-fsanitize=address -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
-      env: MPI=ON FC=gfortran-6
+      env: MPI=ON
     - compiler: clang
-      env: MPI=ON THREADSAFE=ON FC=gfortran-6
+      env: MPI=ON THREADSAFE=ON
     - compiler: gcc
-      env: KOKKOS=ON FC=gfortran-6
+      env: KOKKOS=ON
     - compiler: gcc
-      env: KOKKOS=ON MPI=ON FC=gfortran-6
+      env: KOKKOS=ON MPI=ON
     - compiler: gcc
-      env: CGNS=OFF MPI=ON FC=gfortran-6
+      env: CGNS=OFF MPI=ON
     - compiler: gcc
       env: FORTRAN=OFF
 
@@ -38,6 +38,7 @@ before_install:
   - sudo apt-get -y install g++-6
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - sudo apt-get -y install gfortran-6
+  - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-6 90
   - sudo apt-get -y install libz-dev
   - if [ -n "$MPI" ]; then sudo apt-get -y install openmpi-bin; fi
   - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
