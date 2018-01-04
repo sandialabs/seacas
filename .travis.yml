@@ -44,8 +44,7 @@ before_install:
   - if [ -n "$MPI" ]; then sudo apt-get -y install libopenmpi-dev; fi
   - ./install-tpl.sh 
   - cat include/netcdf_meta.h
-  - grep NC_HAVE_META_H include/netcdf.h
-  - ls /usr/include
+  - cat include/netcdf.h
 
 before_script:
 
