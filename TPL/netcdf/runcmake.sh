@@ -35,6 +35,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DENABLE_MMAP:BOOL=ON \
          -DENABLE_DAP:BOOL=OFF \
          -DENABLE_V2_API:BOOL=ON \
+	 -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
          -DHDF5_C_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} \
          -DHDF5_HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.${LD_EXT} \
          -DHDF5_INCLUDE_DIR:PATH=${ACCESS}/include
