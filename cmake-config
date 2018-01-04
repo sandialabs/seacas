@@ -28,8 +28,8 @@ then
   
   if [ "$COMPILER" == "clang" ]
   then
-      CXX=clang++
-      CC=clang
+      CXX=clang++-mp-4.0
+      CC=clang-mp-4.0
       FC=gfortran-mp-4.9
   fi
 fi
@@ -127,6 +127,12 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+if [ "$OS" == "Darwin" ] ; then
+  DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include"
+else
+  DARWIN_OPT=""
+fi
+
 FC=${FC:-gfortran}
 
 rm -f CMakeCache.txt
@@ -138,7 +144,6 @@ cmake  \
 -D CMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -D CMAKE_CXX_FLAGS="-Wall -Wunused -pedantic" \
 -D CMAKE_C_FLAGS="-Wall -Wunused -pedantic" \
--D CMAKE_MACOSX_RPATH:BOOL=ON \
 -D CMAKE_INSTALL_RPATH:PATH=${INSTALL_PATH}/lib \
 -D BUILD_SHARED_LIBS:BOOL=OFF \
 -D CMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -158,11 +163,11 @@ cmake  \
 -D TPL_ENABLE_Pthread:BOOL=${THREADSAFE} \
 -D SEACASExodus_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
 -D SEACASIoss_ENABLE_THREADSAFE:BOOL=${THREADSAFE} \
--D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include \
 -D TPL_ENABLE_X11:BOOL=${HAVE_X11} \
 \
 ${KOKKOS_SYMBOLS} \
 ${DW_SYMBOLS} \
+${DARWIN_OPT} \
 \
 -D MPI_BIN_DIR:PATH=${MPI_BIN} \
 -D NetCDF_ROOT:PATH=${NETCDF_PATH} \
