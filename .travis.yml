@@ -17,17 +17,17 @@ matrix:
     - os: osx
   include:
     - compiler: clang
-      env: SANITIZER="-fsanitize=address -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF
+      env: SANITIZER="-fsanitize=address -fsanitize=memory -fno-omit-frame-pointer -fPIC" FORTRAN=OFF BUILD_TYPE=DEBUG CGNS=OFF FC=gfortran-6
     - compiler: gcc
-      env: MPI=ON
+      env: MPI=ON FC=gfortran-6
     - compiler: clang
-      env: MPI=ON THREADSAFE=ON
+      env: MPI=ON THREADSAFE=ON FC=gfortran-6
     - compiler: gcc
-      env: KOKKOS=ON
+      env: KOKKOS=ON FC=gfortran-6
     - compiler: gcc
-      env: KOKKOS=ON MPI=ON
+      env: KOKKOS=ON MPI=ON FC=gfortran-6
     - compiler: gcc
-      env: CGNS=OFF MPI=ON
+      env: CGNS=OFF MPI=ON FC=gfortran-6
     - compiler: gcc
       env: FORTRAN=OFF
 
