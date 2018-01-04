@@ -131,7 +131,7 @@ namespace {
 
   std::string time_stamp(const std::string &format);
   std::string format_time(double seconds);
-  int get_width(int max_value);
+  int         get_width(int max_value);
 
   void LOG(const std::string message)
   {
@@ -3133,10 +3133,10 @@ namespace {
 
   void add_info_record(char *info_record, int size)
   {
-// Add 'uname' output to the passed in character string.
-// Maximum size of string is 'size' (not including terminating nullptr)
-// This is used as information data in the concatenated results file
-// to help in tracking when/where/... the file was created
+  // Add 'uname' output to the passed in character string.
+  // Maximum size of string is 'size' (not including terminating nullptr)
+  // This is used as information data in the concatenated results file
+  // to help in tracking when/where/... the file was created
 
 #ifdef _WIN32
     std::string info                                      = "EPU: ";

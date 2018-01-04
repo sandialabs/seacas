@@ -50,7 +50,7 @@ int bisect(double *alpha,        /* vector of Lanczos scalars */
            double  tol,          /* tolerance on bracket width */
            double *ritz_sav,     /* space to copy ritzvals for debugging */
            int     max_steps     /* maximum number of bisection steps allowed */
-           )
+)
 {
   extern int    DEBUG_EVECS;  /* debug flag for eigen computation */
   extern double DOUBLE_MAX;   /* largest double value */

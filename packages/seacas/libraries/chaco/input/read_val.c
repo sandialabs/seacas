@@ -47,7 +47,7 @@ static void flush_line();
 
 double read_val(FILE *infile,  /* file to read value from */
                 int * end_flag /* 0 => OK, 1 => EOL, -1 => EOF */
-                )
+)
 {
   double val;         /* return value */
   char * ptr;         /* ptr to next string to read */
@@ -142,7 +142,7 @@ double read_val(FILE *infile,  /* file to read value from */
 
 int read_int(FILE *infile,  /* file to read value from */
              int * end_flag /* 0 => OK, 1 => EOL, -1 => EOF */
-             )
+)
 {
   int   val;         /* return value */
   char *ptr;         /* ptr to next string to read */

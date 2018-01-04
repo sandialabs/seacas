@@ -108,13 +108,13 @@ static void ex_fcdcpy(char *fstring, /* output string to be blank-filled */
     if (len > fslen)
       len = fslen;
 
-    for (i           = 0; i < len; i++)
+    for (i = 0; i < len; i++)
       *(fstring + i) = *(sstring + i);
-    for (i           = len; i < fslen; i++)
+    for (i = len; i < fslen; i++)
       *(fstring + i) = ' ';
   }
   else {
-    for (i           = 0; i < fslen; i++)
+    for (i = 0; i < fslen; i++)
       *(fstring + i) = ' ';
   }
 }
@@ -142,7 +142,7 @@ static void ex_nstrncpy(char *target, /* space to be copied into */
 { /* maximum length of *source */
   while (maxlen-- && *source != ' ')
     *target++ = *source++;
-  *target     = '\0';
+  *target = '\0';
 }
 
 /* Above are utility functions used below                                   */
@@ -876,9 +876,9 @@ void F2C(EXGEAN)(int *idexo, entity_id *elem_blk_id, int *num_attr, char *names,
     free(aptr); /* Free up string ptr array */
     return;
   }
-  for (i        = 0; i < *num_attr; i++)
+  for (i = 0; i < *num_attr; i++)
     *(aptr + i) = sptr + i * (slen + 1); /* put address into ptr array */
-  *(aptr + i)   = 0;                     /* null out last ptr */
+  *(aptr + i) = 0;                       /* null out last ptr */
 
   *ierr = 0;
   if (ex_get_elem_attr_names(*idexo, *elem_blk_id, aptr) == EX_FATAL) {
@@ -1010,9 +1010,9 @@ void F2C(EXGNAMS)(int *idexo, int *type, int *num_obj, char *names, int *ierr, i
     free(aptr); /* Free up string ptr array */
     return;
   }
-  for (i        = 0; i < *num_obj; i++)
+  for (i = 0; i < *num_obj; i++)
     *(aptr + i) = sptr + i * (slen + 1); /* put address into ptr array */
-  *(aptr + i)   = 0;                     /* null out last ptr */
+  *(aptr + i) = 0;                       /* null out last ptr */
 
   /* do ExodusII C call to read results variables names */
   if (ex_get_names(*idexo, (ex_entity_type)*type, aptr) == EX_FATAL) {
@@ -1101,10 +1101,10 @@ void F2C(EXGPN)(int *idexo, int *obj_type, char *prop_names, int *ierr, int prop
   }
   switch ((ex_entity_type)*obj_type) {
   case EX_ELEM_BLOCK: inq_code = EX_INQ_EB_PROP; break;
-  case EX_NODE_SET: inq_code   = EX_INQ_NS_PROP; break;
-  case EX_SIDE_SET: inq_code   = EX_INQ_SS_PROP; break;
-  case EX_ELEM_MAP: inq_code   = EX_INQ_EM_PROP; break;
-  case EX_NODE_MAP: inq_code   = EX_INQ_NM_PROP; break;
+  case EX_NODE_SET: inq_code = EX_INQ_NS_PROP; break;
+  case EX_SIDE_SET: inq_code = EX_INQ_SS_PROP; break;
+  case EX_ELEM_MAP: inq_code = EX_INQ_EM_PROP; break;
+  case EX_NODE_MAP: inq_code = EX_INQ_NM_PROP; break;
   default:
     exerrval = EX_BADPARAM;
     *ierr    = EX_BADPARAM;
@@ -1134,7 +1134,7 @@ void F2C(EXGPN)(int *idexo, int *obj_type, char *prop_names, int *ierr, int prop
   }
   memset(sptr, 0, num_props * (slen + 1));
 
-  for (i        = 0; i < num_props; i++)
+  for (i = 0; i < num_props; i++)
     *(aptr + i) = sptr + i * (slen + 1); /* put ptrs to staging space
                                           * into ptr array */
   *(aptr + i) = 0;                       /* set last pointer to null */
@@ -1704,9 +1704,9 @@ void F2C(EXGVAN)(int *idexo, char *var_type, int *num_vars, char *var_names, int
     free(aptr); /* Free up string ptr array */
     return;
   }
-  for (i        = 0; i < *num_vars; i++)
+  for (i = 0; i < *num_vars; i++)
     *(aptr + i) = sptr + i * (slen + 1); /* put address into ptr array */
-  *(aptr + i)   = 0;                     /* null out last ptr */
+  *(aptr + i) = 0;                       /* null out last ptr */
 
   /* do ExodusII C call to read results variables names */
   if (ex_get_var_names(*idexo, var_type, *num_vars, aptr) == EX_FATAL) {

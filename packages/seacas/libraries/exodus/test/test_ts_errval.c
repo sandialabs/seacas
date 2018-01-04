@@ -104,7 +104,4 @@ int main(int argc, char *argv[])
   for (t = 0; t < NUM_THREADS; t++) {
     pthread_join(threads[t], NULL);
   }
-
-  /* Last thing that main() should do */
-  pthread_exit(NULL);
 }

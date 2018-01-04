@@ -260,9 +260,8 @@ namespace {
           for (int i = 0; i < nnodes; i++) {
             INT entry = mesh->connect[elem][i];
 
-            if (ncnt != (size_t)entry &&
-                in_list(entry, graph->adj.size() - graph->start[ncnt],
-                        &graph->adj[graph->start[ncnt]]) < 0) {
+            if (ncnt != (size_t)entry && in_list(entry, graph->adj.size() - graph->start[ncnt],
+                                                 &graph->adj[graph->start[ncnt]]) < 0) {
               graph->adj.push_back(entry);
               graph->nadj++;
             }
@@ -427,7 +426,7 @@ namespace {
 
                 nelem = 0; /* reset this in case no intersections are needed */
 
-/* copy the first array into temp storage */
+                /* copy the first array into temp storage */
 
 #if 0
 		/* nhold is the number of elements touching node 0 on

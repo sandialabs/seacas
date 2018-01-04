@@ -969,13 +969,13 @@ namespace Iofx {
     }
   }
 
-  const Ioss::Map &DatabaseIO::get_map(Ioss::Map &entity_map, int64_t entityCount,
+  const Ioss::Map &DatabaseIO::get_map(Ioss::Map &entity_map, int64_t entity_count,
                                        ex_entity_type entity_type, ex_inquiry inquiry_type) const
   {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (entity_map.map().empty()) {
-      entity_map.map().resize(entityCount + 1);
+      entity_map.set_size(entity_count);
 
       if (is_input() || open_create_behavior() == Ioss::DB_APPEND) {
 
@@ -994,24 +994,21 @@ namespace Iofx {
           if (map_count == 1 && Ioss::Utils::case_strcmp(names[0], "original_global_id_map") == 0) {
             int error = 0;
             if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, &entity_map.map()[1]);
+              Ioss::Int64Vector tmp_map(entity_map.size());
+              error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
+              if (error >= 0) {
+                entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+		map_read = true;
+              }
             }
             else {
               // Ioss stores as 64-bit, read as 32-bit and copy over...
-              Ioss::IntVector tmp_map(entity_map.map().size());
-              error = ex_get_num_map(get_file_pointer(), entity_type, 1, &tmp_map[1]);
+              Ioss::IntVector tmp_map(entity_map.size());
+              error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
               if (error >= 0) {
-                std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map().begin());
+                entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+		map_read = true;
               }
-            }
-            if (error >= 0) {
-              map_read = true;
-            }
-            else {
-              // Clear out the vector...
-              Ioss::MapContainer().swap(entity_map.map());
-              Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-              map_read = false;
             }
           }
           Ioss::Utils::delete_name_array(names, map_count);
@@ -1020,42 +1017,25 @@ namespace Iofx {
         if (!map_read) {
           int error = 0;
           if ((ex_int64_status(get_file_pointer()) & EX_BULK_INT64_API) != 0) {
-            error = ex_get_id_map(get_file_pointer(), entity_type, &entity_map.map()[1]);
+            Ioss::Int64Vector tmp_map(entity_map.size());
+            error = ex_get_id_map(get_file_pointer(), entity_type, tmp_map.data());
+            if (error >= 0) {
+              entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
+            }
           }
           else {
             // Ioss stores as 64-bit, read as 32-bit and copy over...
-            Ioss::IntVector tmp_map(entity_map.map().size());
-            error = ex_get_id_map(get_file_pointer(), entity_type, &tmp_map[1]);
+            Ioss::IntVector tmp_map(entity_map.size());
+            error = ex_get_id_map(get_file_pointer(), entity_type, tmp_map.data());
             if (error >= 0) {
-              std::copy(tmp_map.begin(), tmp_map.end(), entity_map.map().begin());
+              entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
             }
           }
-          if (error < 0) {
-            // Clear out the vector...
-            Ioss::MapContainer().swap(entity_map.map());
-            Ioex::exodus_error(get_file_pointer(), __LINE__, __func__, __FILE__);
-          }
         }
-
-        // Check for sequential node map.
-        // If not, build the reverse G2L node map...
-        entity_map.map()[0] = -1;
-        for (int64_t i = 1; i < entityCount + 1; i++) {
-          if (i != entity_map.map()[i]) {
-            entity_map.map()[0] = 1;
-            break;
-          }
-        }
-
-        entity_map.build_reverse_map();
       }
       else {
         // Output database; entity_map.map not set yet... Build a default map.
-        for (int64_t i = 1; i < nodeCount + 1; i++) {
-          entity_map.map()[i] = i;
-        }
-        // Sequential map
-        entity_map.map()[0] = -1;
+	entity_map.set_default(entity_count);
       }
     }
     return entity_map;
@@ -4536,10 +4516,7 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
    */
   assert(num_to_get == nodeCount);
 
-  if (nodeMap.map().empty()) {
-    nodeMap.map().resize(nodeCount + 1);
-    nodeMap.map()[0] = -1;
-  }
+  nodeMap.set_size(nodeCount);
 
   bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
   if (int_byte_size_api() == 4) {
@@ -4548,12 +4525,9 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
   else {
     nodeMap.set_map(static_cast<int64_t *>(ids), num_to_get, 0, in_define);
   }
-  
+
   if (in_define) {
     // Only a single nodeblock and all set
-    if (num_to_get == nodeCount) {
-      assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
-    }
     assert(get_region()->get_property("node_block_count").get_int() == 1);
 
     // Write to the database...
@@ -4567,30 +4541,21 @@ int64_t DatabaseIO::handle_node_ids(void *ids, int64_t num_to_get) const
 int64_t DatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids,
                                        size_t num_to_get) const
 {
-  if (elemMap.map().empty()) {
-    elemMap.map().resize(elementCount + 1);
-    elemMap.map()[0] = -1;
-  }
+  elemMap.set_size(elementCount);
   size_t offset = eb->get_offset();
   return handle_block_ids(eb, EX_ELEM_MAP, elemMap, ids, num_to_get, offset, 0);
 }
 
 int64_t DatabaseIO::handle_face_ids(const Ioss::FaceBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (faceMap.map().empty()) {
-    faceMap.map().resize(faceCount + 1);
-    faceMap.map()[0] = -1;
-  }
+  faceMap.set_size(faceCount);
   size_t offset = eb->get_offset();
   return handle_block_ids(eb, EX_FACE_MAP, faceMap, ids, num_to_get, offset, 0);
 }
 
 int64_t DatabaseIO::handle_edge_ids(const Ioss::EdgeBlock *eb, void *ids, size_t num_to_get) const
 {
-  if (edgeMap.map().empty()) {
-    edgeMap.map().resize(edgeCount + 1);
-    edgeMap.map()[0] = -1;
-  }
+  edgeMap.set_size(edgeCount);
   size_t offset = eb->get_offset();
   return handle_block_ids(eb, EX_EDGE_MAP, edgeMap, ids, num_to_get, offset, 0);
 }

@@ -215,7 +215,6 @@ void Ioss::GroupingEntity::field_add(const Ioss::Field &new_field)
 int Ioss::GroupingEntity::get_field_data(const std::string &field_name, void *data,
                                          size_t data_size) const
 {
-  IOSS_FUNC_ENTER(m_);
   verify_field_exists(field_name, "input");
 
   Ioss::Field field  = get_field(field_name);
@@ -240,7 +239,6 @@ int Ioss::GroupingEntity::get_field_data(const std::string &field_name, void *da
 int Ioss::GroupingEntity::put_field_data(const std::string &field_name, void *data,
                                          size_t data_size) const
 {
-  IOSS_FUNC_ENTER(m_);
   verify_field_exists(field_name, "input");
 
   Ioss::Field field = get_field(field_name);

@@ -39,51 +39,21 @@
 #include <cstddef>      // for size_t
 #include <iterator>     // for insert_iterator, inserter
 #include <numeric>
-#include <sstream>      // for operator<<, basic_ostream, etc
-#include <string>       // for char_traits, operator<<, etc
-#include <sys/types.h>  // for ssize_t
-#include <utility>      // for pair, make_pair
-#include <vector>       // for vector, vector<>::iterator, etc
+#include <sstream>     // for operator<<, basic_ostream, etc
+#include <string>      // for char_traits, operator<<, etc
+#include <sys/types.h> // for ssize_t
+#include <utility>     // for pair, make_pair
+#include <vector>      // for vector, vector<>::iterator, etc
 
 namespace {
-  // Determines whether the input map is sequential (m_map[i] == i)
-  bool is_sequential(const Ioss::MapContainer &the_map)
-  {
-    // Assumes the_map runs from [1..size) Slot zero will contain -1 if the
-    // vector is sequential; 1 if not sequential, and 0 if it has not
-    // yet been determined...
-    // Once the the_map has been determined to be sequential/not-sequential,
-    // slot zero is set appropriately.
-    // 'sequential' is defined here to mean i==the_map[i] for all
-    // 0<i<the_map.size()
-
-    // Check slot zero...
-    if (the_map[0] == -1) {
-      return true;
-    }
-    if (the_map[0] == 1) {
-      return false;
-    }
-
-    Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(the_map);
-    size_t              size    = the_map.size();
-    for (size_t i = 1; i < size; i++) {
-      if (the_map[i] != static_cast<int64_t>(i)) {
-        new_map[0] = 1;
-        return false;
-      }
-    }
-    new_map[0] = -1;
-    return true;
-  }
-
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
-    bool one2one = true;
-    for (int i=0; i < num_to_get; i++) {
-      if (ids[i] != i + offset + 1) {
-	one2one = false;
-	break;
+    bool one2one    = true;
+    INT  map_offset = num_to_get > 0 ? ids[0] - 1 - offset: 0;
+    for (size_t i = 0; i < num_to_get; i++) {
+      if ((size_t)ids[i] != i + offset + 1 + map_offset) {
+        one2one = false;
+        break;
       }
     }
     return one2one;
@@ -132,24 +102,6 @@ namespace {
 
   using RMapI = std::vector<Ioss::IdPair>::const_iterator;
 
-  template <typename INT>
-  void map_implicit_data_internal(INT *ids, size_t count, const Ioss::MapContainer &map,
-                                  size_t offset)
-  {
-    // Map the "local" ids (offset+1..offset+count) to the global ids. The local
-    // ids are implicit
-    if (is_sequential(map)) {
-      for (size_t i = 0; i < count; i++) {
-        ids[i] = offset + 1 + i;
-      }
-    }
-    else {
-      for (size_t i = 0; i < count; i++) {
-        ids[i] = map[offset + 1 + i];
-      }
-    }
-  }
-
 } // namespace
 
 void Ioss::Map::release_memory()
@@ -158,6 +110,49 @@ void Ioss::Map::release_memory()
   MapContainer().swap(m_map);
   MapContainer().swap(m_reorder);
   ReverseMapContainer().swap(m_reverse);
+}
+
+// Determines whether the input map is sequential (m_map[i] == i)
+bool Ioss::Map::is_sequential(bool check_all) const
+{
+  // Assumes the_map runs from [1..size) Slot zero will contain -1 if the
+  // vector is sequential; 1 if not sequential, and 0 if it has not
+  // yet been determined...
+  // Once the the_map has been determined to be sequential/not-sequential,
+  // slot zero is set appropriately.
+  // 'sequential' is defined here to mean i==the_map[i] for all
+  // 0<i<the_map.size()
+
+  if (!check_all) {
+    // Check slot zero...
+    if (m_map[0] == -1) {
+      return true;
+    }
+    if (m_map[0] == 1) {
+      return false;
+    }
+  }
+  
+  IOSS_FUNC_ENTER(m_);
+  Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(m_map);
+  size_t size    = m_map.size();
+  for (int64_t i = 1; i < (int64_t)size; i++) {
+    if (m_map[i] != i + m_offset) {
+      new_map[0] = 1;
+      return false;
+    }
+  }
+  new_map[0] = -1;
+  return true;
+}
+
+void Ioss::Map::set_size(size_t entity_count)
+{
+  IOSS_FUNC_ENTER(m_);
+  if (m_map.empty()) {
+    m_map.resize(entity_count + 1);
+    set_is_sequential(true);
+  }
 }
 
 void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
@@ -179,7 +174,7 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
   // 5. Check for duplicate global_ids...
 
   // Build a vector containing the current ids...
-  if (m_map[0] != 1) {
+  if (is_sequential()) {
     return;
   }
 
@@ -188,11 +183,11 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     // This is first time that the m_reverse map is being built..
     // m_map is no longer  1-to-1.
     // Just iterate m_map and add all values that are non-zero
-    new_ids.reserve(m_map.size());
+    new_ids.reserve(m_map.size() - 1);
 
-    for (int64_t i = 1; i < m_map.size(); i++) {
+    for (size_t i = 1; i < m_map.size(); i++) {
       if (m_map[i] != 0) {
-	new_ids.emplace_back(m_map[i], i);
+        new_ids.emplace_back(m_map[i], i);
       }
     }
   }
@@ -203,11 +198,11 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
       new_ids.emplace_back(m_map[local_id], local_id);
 
       if (m_map[local_id] <= 0) {
-	std::ostringstream errmsg;
-	errmsg << "\nERROR: " << m_entityType << " map detected non-positive global id "
-	       << m_map[local_id] << " for " << m_entityType << " with local id " << local_id
-	       << " on processor " << m_myProcessor << ".\n";
-	IOSS_ERROR(errmsg);
+        std::ostringstream errmsg;
+        errmsg << "\nERROR: " << m_entityType << " map detected non-positive global id "
+               << m_map[local_id] << " for " << m_entityType << " with local id " << local_id
+               << " on processor " << m_myProcessor << ".\n";
+        IOSS_ERROR(errmsg);
       }
     }
   }
@@ -229,11 +224,11 @@ void Ioss::Map::build_reverse_map__(int64_t num_to_get, int64_t offset)
     ReverseMapContainer old_ids;
     old_ids.swap(m_reverse);
     SMART_ASSERT(m_reverse.empty());
-    
+
     // Merge old_ids and new_ids to reverseElementMap.
     m_reverse.reserve(old_ids.size() + new_ids.size());
     std::merge(old_ids.begin(), old_ids.end(), new_ids.begin(), new_ids.end(),
-	       std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
+               std::inserter(m_reverse, m_reverse.begin()), IdPairCompare());
   }
 
 // Check for duplicate ids...
@@ -261,13 +256,24 @@ void Ioss::Map::verify_no_duplicate_ids(std::vector<Ioss::IdPair> &reverse_map)
 template bool Ioss::Map::set_map(int *ids, size_t count, size_t offset, bool in_define_mode);
 template bool Ioss::Map::set_map(int64_t *ids, size_t count, size_t offset, bool in_define_mode);
 
-template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mode)
+template <typename INT>
+bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mode)
 {
   IOSS_FUNC_ENTER(m_);
-  if (in_define_mode && m_map[0] != 1) {
+  if (in_define_mode && is_sequential()) {
     // If the current map is one-to-one, check whether it will be one-to-one
     // after adding these ids...
     bool one2one = is_one2one(ids, count, offset);
+    if (one2one) {
+      // Further checks on how ids fit into previously set m_map entries (if any)
+      if (count > 0) {
+	INT tmp_offset = ids[0] - 1 - offset;
+	if (tmp_offset < 0 || (m_offset >= 0 && tmp_offset != m_offset)) {
+	  one2one = false;
+	}
+      }
+    }
+
     if (!one2one) {
       // Up to this point, the id map has been one-to-one.  Once we
       // apply these `ids` to `m_map`, the map will no
@@ -276,20 +282,28 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
       // incrementally with the current range of 'ids', but before
       // that can be done, need to build a reverseMap of the current
       // one-to-one data...
+      set_is_sequential(false);
       build_reverse_map__(m_map.size() - 1, 0);
+      m_offset = 0;
+    }
+    else {
+      // Map is sequential beginning at ids[0]
+      if (count > 0) {
+        m_offset = ids[0] - 1 - offset;
+      }
     }
   }
 
   bool changed = false; // True if redefining an entry
   for (size_t i = 0; i < count; i++) {
-    ssize_t local_id = offset + i + 1;
-    SMART_ASSERT(local_id < m_map.size())(local_id)(m_map.size());
+    int64_t local_id = offset + i + 1;
+    SMART_ASSERT((size_t)local_id < m_map.size())(local_id)(m_map.size());
     if (m_map[local_id] > 0 && m_map[local_id] != ids[i]) {
       changed = true;
     }
     m_map[local_id] = ids[i];
-    if (local_id != ids[i]) {
-      m_map[0] = 1;
+    if (local_id != ids[i] - m_offset) {
+      set_is_sequential(false);
     }
     if (ids[i] <= 0) {
       std::ostringstream errmsg;
@@ -315,56 +329,107 @@ template <typename INT> bool Ioss::Map::set_map(INT *ids, size_t count, size_t o
   return changed;
 }
 
-void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
+void Ioss::Map::set_default(size_t count, size_t offset)
 {
   IOSS_FUNC_ENTER(m_);
-  SMART_ASSERT(!m_map.empty());
-  if (!is_sequential(m_map)) {
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *connect = static_cast<int *>(data);
-      for (size_t i = 0; i < count; i++) {
-        int global_id = connect[i];
-        connect[i]    = global_to_local__(global_id, true);
-      }
+  m_map.resize(count+1);
+  for (size_t i = 1; i <= count; i++) {
+    m_map[i] = i + offset;
+  }
+  set_is_sequential(true);
+}
+
+template void Ioss::Map::reverse_map_data(int *data, size_t count) const;
+template void Ioss::Map::reverse_map_data(int64_t *data, size_t count) const;
+
+template <typename INT>
+void Ioss::Map::reverse_map_data(INT *data, size_t count) const
+{
+  IOSS_FUNC_ENTER(m_);
+  if (!is_sequential()) {
+    for (size_t i = 0; i < count; i++) {
+      INT global_id = data[i];
+      data[i]    = global_to_local__(global_id, true);
     }
-    else {
-      int64_t *connect = static_cast<int64_t *>(data);
-      for (size_t i = 0; i < count; i++) {
-        int64_t global_id = connect[i];
-        connect[i]        = global_to_local__(global_id, true);
-      }
+  }
+  else if (m_offset != 0) {
+    for (size_t i = 0; i < count; i++) {
+      data[i] -= m_offset;
+    }
+  }
+}
+
+void Ioss::Map::reverse_map_data(void *data, const Ioss::Field &field, size_t count) const
+{
+  if (field.get_type() == Ioss::Field::INTEGER) {
+    int *connect = static_cast<int *>(data);
+    reverse_map_data(connect, count);
+  }
+  else {
+    int64_t *connect = static_cast<int64_t *>(data);
+    reverse_map_data(connect, count);
+  }
+}
+
+template void Ioss::Map::map_data(int *data, size_t count) const;
+template void Ioss::Map::map_data(int64_t *data, size_t count) const;
+
+template <typename INT> void Ioss::Map::map_data(INT *data, size_t count) const
+{
+  IOSS_FUNC_ENTER(m_);
+  if (!is_sequential()) {
+    for (size_t i = 0; i < count; i++) {
+      data[i] = m_map[data[i]];
+    }
+  }
+  else if (m_offset != 0) {
+    for (size_t i = 0; i < count; i++) {
+      data[i] += m_offset;
     }
   }
 }
 
 void Ioss::Map::map_data(void *data, const Ioss::Field &field, size_t count) const
 {
-  IOSS_FUNC_ENTER(m_);
-  if (!is_sequential(m_map)) {
-    if (field.get_type() == Ioss::Field::INTEGER) {
-      int *datum = static_cast<int *>(data);
-      for (size_t i = 0; i < count; i++) {
-        datum[i] = m_map[datum[i]];
-      }
+  if (field.get_type() == Ioss::Field::INTEGER) {
+    int *datum = static_cast<int *>(data);
+    map_data(datum, count);
+  }
+  else {
+    int64_t *datum = static_cast<int64_t *>(data);
+    map_data(datum, count);
+  }
+}
+
+template void Ioss::Map::map_implicit_data(int *data, size_t count, size_t offset) const;
+template void Ioss::Map::map_implicit_data(int64_t *data, size_t count, size_t offset) const;
+
+template <typename INT>
+void Ioss::Map::map_implicit_data(INT *ids, size_t count, size_t offset) const
+{
+  // Map the "local" ids (offset+1..offset+count) to the global ids. The local
+  // ids are implicit
+  if (is_sequential()) {
+    for (size_t i = 0; i < count; i++) {
+      ids[i] = m_offset + offset + 1 + i;
     }
-    else {
-      int64_t *datum = static_cast<int64_t *>(data);
-      for (size_t i = 0; i < count; i++) {
-        datum[i] = m_map[datum[i]];
-      }
+  }
+  else {
+    for (size_t i = 0; i < count; i++) {
+      ids[i] = m_map[offset + 1 + i];
     }
   }
 }
 
 void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t count,
-                                  size_t offset) const
+					size_t offset) const
 {
   IOSS_FUNC_ENTER(m_);
   if (field.get_type() == Ioss::Field::INTEGER) {
-    map_implicit_data_internal(static_cast<int *>(data), count, m_map, offset);
+    map_implicit_data(static_cast<int *>(data), count, offset);
   }
   else {
-    map_implicit_data_internal(static_cast<int64_t *>(data), count, m_map, offset);
+    map_implicit_data(static_cast<int64_t *>(data), count, offset);
   }
 }
 
@@ -408,12 +473,6 @@ size_t Ioss::Map::map_field_to_db_scalar_order(T *variables, std::vector<double>
     num_out = count;
   }
   return num_out;
-}
-
-void Ioss::Map::build_reorder_map(int64_t start, int64_t count)
-{
-  IOSS_FUNC_ENTER(m_);
-  build_reorder_map__(start, count);
 }
 
 void Ioss::Map::build_reorder_map__(int64_t start, int64_t count)
@@ -491,8 +550,8 @@ int64_t Ioss::Map::global_to_local(int64_t global, bool must_exist) const
 int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
 {
   int64_t local = global;
-  if (m_map[0] == 1 && !m_reverse.empty()) {
-    // Possible for m_map[0] == 1 which means non-one-to-one, but
+  if (!is_sequential() && !m_reverse.empty()) {
+    // Possible for !is_sequential() which means non-one-to-one, but
     // reverseMap is empty (which implied one-to-one) if the ORIGINAL mapping defined
     // during dbState == STATE_MODEL was one-to-one, but there is a
     // reordering which is due to new id ordering defined after STATE_MODEL...
@@ -506,6 +565,9 @@ int64_t Ioss::Map::global_to_local__(int64_t global, bool must_exist) const
   }
   else if (!must_exist && global > static_cast<int64_t>(m_map.size()) - 1) {
     local = 0;
+  }
+  else {
+    local = global - m_offset;
   }
   if (local > static_cast<int64_t>(m_map.size()) - 1 || (local <= 0 && must_exist)) {
     std::ostringstream errmsg;

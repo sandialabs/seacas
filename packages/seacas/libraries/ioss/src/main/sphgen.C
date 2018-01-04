@@ -33,8 +33,8 @@
 #include <Ionit_Initializer.h>
 #include <Ioss_CodeTypes.h>
 #include <Ioss_Hex8.h>
-#include <Ioss_Wedge6.h>
 #include <Ioss_Utils.h>
+#include <Ioss_Wedge6.h>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>

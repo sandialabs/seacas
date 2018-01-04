@@ -360,11 +360,11 @@ namespace Ioex {
         : id(the_id), entityCount(count), type(the_type)
     {
     }
-    bool operator==(const CommunicationMap & /*other*/) const;
-    bool operator!=(const CommunicationMap &other) const { return !(*this == other); }
-    entity_id                               id;
-    int64_t                                 entityCount;
-    char                                    type; // 'n' for node, 'e' for element
+    bool      operator==(const CommunicationMap & /*other*/) const;
+    bool      operator!=(const CommunicationMap &other) const { return !(*this == other); }
+    entity_id id;
+    int64_t   entityCount;
+    char      type; // 'n' for node, 'e' for element
   };
 
   struct CommunicationMetaData

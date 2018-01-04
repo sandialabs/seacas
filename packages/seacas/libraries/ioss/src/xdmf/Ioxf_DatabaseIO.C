@@ -87,7 +87,7 @@ static const char *Version = "2009/08/18";
 // ========================================================================
 namespace {
   bool set_id(const Ioss::GroupingEntity *entity, const char *type, Ioxf::EntityIdSet *idset);
-  int get_id(const Ioss::GroupingEntity *entity, char type, Ioxf::EntityIdSet *idset);
+  int  get_id(const Ioss::GroupingEntity *entity, char type, Ioxf::EntityIdSet *idset);
   void xdmf_error(const std::string &msg, int lineno, int processor)
   {
     std::ostringstream errmsg;
@@ -107,8 +107,6 @@ namespace {
     IOSS_ERROR(errmsg);
   }
 
-  // Determines whether the input map is sequential (map[i] == i)
-  // Assumes that map is '1-based', size stored in [0]
   bool find_displacement_field(Ioss::NameList &fields, const Ioss::GroupingEntity *block, int ndim,
                                std::string *disp_name);
 
@@ -121,7 +119,7 @@ namespace {
 #ifndef NDEBUG
   bool check_block_order(const Ioss::ElementBlockContainer &blocks);
 #endif
-}
+} // namespace
 
 namespace Ioxf {
   // ========================================================================
@@ -261,7 +259,7 @@ namespace Ioxf {
       // Cast away the 'const'.  Conceptually, this is a const operation
       // since it doesn't change the clients view of the database.
       DatabaseIO *new_this = const_cast<DatabaseIO *>(this);
-      new_this->nodeMap.map().resize(nodeCount + 1);
+      new_this->nodeMap.set_size(nodeCount);
 
       if (is_input()) {
         output_only();
@@ -271,8 +269,6 @@ namespace Ioxf {
         for (int i = 1; i < nodeCount + 1; i++) {
           new_this->nodeMap.map()[i] = i;
         }
-        // Sequential map
-        new_this->nodeMap.map()[0] = -1;
       }
     }
     return nodeMap;
@@ -286,7 +282,7 @@ namespace Ioxf {
       // Cast away the 'const'.  Conceptually, this is a const operation
       // since it doesn't change the clients view of the database.
       DatabaseIO *new_this = const_cast<DatabaseIO *>(this);
-      new_this->elemMap.map().resize(elementCount + 1);
+      new_this->elemMap.set_size(elementCount);
 
       if (is_input()) {
         output_only();
@@ -296,8 +292,6 @@ namespace Ioxf {
         for (int i = 1; i < elementCount + 1; i++) {
           new_this->elemMap.map()[i] = i;
         }
-        // Sequential map
-        new_this->elemMap.map()[0] = -1;
       }
     }
     return elemMap;
@@ -725,25 +719,13 @@ namespace Ioxf {
     // node 1)
 
     assert(num_to_get == nodeCount);
+    nodeMap.set_size(nodeCount);
 
-    if (dbState == Ioss::STATE_MODEL) {
-      if (nodeMap.map().empty()) {
-        nodeMap.map().resize(nodeCount + 1);
-        nodeMap.map()[0] = -1;
-      }
+    bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    nodeMap.set_map(ids, num_to_get, 0, in_define);
 
-      if (nodeMap.map()[0] == -1) {
-        nodeMap.set_map(ids, num_to_get, 0);
-      }
-
-      nodeMap.build_reverse_map();
-
-      // Only a single nodeblock and all set
-      if (num_to_get == nodeCount) {
-        assert(nodeMap.map()[0] == -1 || nodeMap.reverse().size() == (size_t)nodeCount);
-      }
+    if (in_define) {
       assert(get_region()->get_property("node_block_count").get_int() == 1);
-
       XdmfArray *ScalarArray = new XdmfArray();
 
       ScalarArray->SetNumberType(XDMF_INT32_TYPE);
@@ -757,7 +739,6 @@ namespace Ioxf {
       delete ScalarArray;
     }
 
-    nodeMap.build_reorder_map(0, num_to_get);
     return num_to_get;
   }
 
@@ -818,20 +799,14 @@ namespace Ioxf {
     // 'eb_offset+offset' and ending at
     // 'eb_offset+offset+num_to_get'. If the entire block is being
     // processed, this reduces to the range 'eb_offset..eb_offset+element_count'
-    if (elemMap.map().empty()) {
-      elemMap.map().resize(elementCount + 1);
-      elemMap.map()[0] = -1;
-    }
 
-    assert(static_cast<int>(elemMap.map().size()) == elementCount + 1);
 
-    int eb_offset = eb->get_offset();
-    elemMap.set_map(ids, num_to_get, eb_offset);
+    bool in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    int  eb_offset = eb->get_offset();
+    elemMap.set_size(elementCount);
+    elemMap.set_map(ids, num_to_get, eb_offset, in_define);
 
-    // Now, if the state is Ioss::STATE_MODEL, update the reverseElementMap
-    if (dbState == Ioss::STATE_MODEL) {
-      elemMap.build_reverse_map(num_to_get, eb_offset);
-
+    if (in_define) {
       // Output this portion of the element number map
       std::ostringstream *XML        = nullptr;
       std::string         block_name = eb->name();
@@ -870,11 +845,6 @@ namespace Ioxf {
       WriteHdfDataset(FinalName, ScalarArray, __LINE__);
       delete ScalarArray;
     }
-    // Build the reorderElementMap which does a direct mapping from
-    // the current topologies local order to the local order stored in
-    // the database...  This is 0-based and used for remapping output
-    // TRANSIENT fields. (Will also need one on input once we read fields)
-    elemMap.build_reorder_map(eb_offset, num_to_get);
     return num_to_get;
   }
 
@@ -1335,9 +1305,9 @@ namespace Ioxf {
           // initialize all to '1', then zero out the nodes in 'entities'.
           // Iterate through array again and consolidate all '1's
           std::vector<int> internal(nodeCount);
-          for (j        = 0; j < nodeCount; j++)
+          for (j = 0; j < nodeCount; j++)
             internal[j] = 1;
-          for (j                      = 0; j < entity_count; j++)
+          for (j = 0; j < entity_count; j++)
             internal[entities[j] - 1] = 0;
 
           int b = 0;
@@ -1412,9 +1382,9 @@ namespace Ioxf {
         // initialize all to '1', then zero out the elements in 'entities'.
         // Iterate through array again and consolidate all '1's
         std::vector<int> internal(elementCount);
-        for (j        = 0; j < elementCount; j++)
+        for (j = 0; j < elementCount; j++)
           internal[j] = 1;
-        for (j                      = 0; j < entity_count; j++)
+        for (j = 0; j < entity_count; j++)
           internal[entities[j] - 1] = 0;
 
         int b = 0;
@@ -2231,7 +2201,7 @@ namespace Ioxf {
   void DatabaseIO::MergeXmlFiles()
   {
     Ioss::FileInfo filename(get_filename() + ".xmf");
-// std::ostringstream *XML = nullptr;
+    // std::ostringstream *XML = nullptr;
 
 #ifdef SEACAS_HAVE_MPI
     MPI_Barrier(util().communicator());
@@ -2745,7 +2715,7 @@ namespace Ioxf {
       local_step %= cycleCount;
     return local_step + 1;
   }
-}
+} // namespace Ioxf
 
 namespace {
   bool set_id(const Ioss::GroupingEntity *entity, const char *type, Ioxf::EntityIdSet *idset)
@@ -2900,4 +2870,4 @@ namespace {
     return true;
   }
 #endif
-}
+} // namespace

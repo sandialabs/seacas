@@ -473,8 +473,8 @@ namespace {
     int inquiry = 0;
     switch (exo_type) {
     case EX_ELEM_BLOCK: inquiry = EX_INQ_ELEM_BLK; break;
-    case EX_NODE_SET: inquiry   = EX_INQ_NODE_SETS; break;
-    case EX_SIDE_SET: inquiry   = EX_INQ_SIDE_SETS; break;
+    case EX_NODE_SET: inquiry = EX_INQ_NODE_SETS; break;
+    case EX_SIDE_SET: inquiry = EX_INQ_SIDE_SETS; break;
     default: ERROR("Invalid entity type in get_num_entities\n"); exit(1);
     }
     SMART_ASSERT(inquiry > 0);

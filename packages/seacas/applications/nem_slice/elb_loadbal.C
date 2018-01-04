@@ -338,7 +338,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
   }
 
   switch (lb->type) {
-  case MULTIKL: glob_method  = 1; break;
+  case MULTIKL: glob_method = 1; break;
   case SPECTRAL: glob_method = 2; break;
   case INERTIAL: glob_method = 3; break;
   case ZPINCH:
@@ -349,10 +349,10 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     glob_method = 999; /* Chaco methods don't apply to ZPINCH, BRICK
                           ZOLTAN_RCB, ZOLTAN_RIB, ZOLTAN_HSFC */
     break;
-  case LINEAR: glob_method    = 4; break;
-  case RANDOM: glob_method    = 5; break;
+  case LINEAR: glob_method = 4; break;
+  case RANDOM: glob_method = 5; break;
   case SCATTERED: glob_method = 6; break;
-  case INFILE: glob_method    = 7; break;
+  case INFILE: glob_method = 7; break;
   }
 
   /* check if Chaco is supposed to make sure that the domains are connected */
@@ -768,7 +768,7 @@ int generate_loadbal(Machine_Description *machine, Problem_Description *problem,
     switch (mesh->num_dims) {
     case 1:
       free(y_node_ptr);
-      y_node_ptr                         = nullptr; /* fall through */
+      y_node_ptr = nullptr; /* fall through */
     case 2: free(z_node_ptr); z_node_ptr = nullptr;
     }
   }
@@ -1730,8 +1730,9 @@ namespace {
                   }
                   nelem = ncnt3;
                   if (!dflag && nelem > 2) {
-                    fprintf(stderr, "Possible corrupted mesh detected at element " ST_ZU
-                                    ", strange connectivity.\n",
+                    fprintf(stderr,
+                            "Possible corrupted mesh detected at element " ST_ZU
+                            ", strange connectivity.\n",
                             ecnt);
                   }
                 }
@@ -2272,7 +2273,7 @@ namespace {
                     float *              y,    /* y-coordinates */
                     float *              z,    /* z-coordinates */
                     int *                part  /* Output:  partition assignments for each element */
-                    )
+  )
   {
     /* Routine to generate a partition of a cylinder.
      * Assumptions:
@@ -2414,7 +2415,7 @@ namespace {
                double *             delta,     /* Output:  dmax - dmin */
                std::vector<double> &slices_d /* Output:  maximum d for each slice in dimension using
                                     uniform partition of dmax - dmin */
-               )
+  )
   {
     /* Compute the min, max, delta and slices values for a single dimension. */
     /* KDDKDD Note:  This routine could also be used by ZPINCH in the z-direction,
@@ -2451,7 +2452,7 @@ namespace {
                         double               delta,     /* dmax - dmin */
                         std::vector<double> &slices_d /* Maximum d for each slice in dimension using
                                             uniform partition of dmax - dmin */
-                        )
+  )
   {
     /* Function returning in which slice a coordinate d lies. */
     /* KDDKDD Note:  This routine could also be used by ZPINCH in the z-direction,
@@ -2486,7 +2487,7 @@ namespace {
                    float *              y,    /* y-coordinates */
                    float *              z,    /* z-coordinates */
                    int *                part  /* Output:  partition assignments for each element */
-                   )
+  )
   {
     /* Routine to generate a partition of an axis-aligned hexahedral domain.
      * Assumptions:
@@ -2650,7 +2651,7 @@ namespace {
                     int *       part,      /* Output:  partition assignments for each element */
                     int         argc,      /* Fields needed by MPI_Init */
                     char *      argv[]     /* Fields needed by MPI_Init */
-                    )
+  )
   {
     /* Function to allow Zoltan to compute decomposition using RCB.
      * Assuming running Zoltan in serial (as nem_slice is serial).
@@ -2787,7 +2788,7 @@ namespace {
                      int *                wgt,  /* element weights; can be nullptr if no weights  */
                      size_t               ndot, /* Length of x, y, z, and part (== # of elements) */
                      int *                part  /* Partition assignments for each element */
-                     )
+  )
   {
     /* Routine to print some info about the ZPINCH, BRICK or ZOLTAN_RCB
        decompositions */

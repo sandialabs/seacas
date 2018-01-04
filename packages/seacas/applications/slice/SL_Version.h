@@ -34,7 +34,9 @@
 #define SEACAS_Version_h
 
 static char const *qainfo[] = {
-    "slice", "2016/11/03", "0.9.8",
+    "slice",
+    "2016/11/03",
+    "0.9.8",
 };
 
 #endif // SEACAS_Version_h

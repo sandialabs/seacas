@@ -53,8 +53,8 @@ namespace Ioss {
 namespace {
   std::string check_decomposition_property(MPI_Comm comm, const Ioss::PropertyManager &properties,
                                            Ioss::DatabaseUsage db_usage);
-  bool check_composition_property(MPI_Comm comm, const Ioss::PropertyManager &properties,
-                                  Ioss::DatabaseUsage db_usage);
+  bool        check_composition_property(MPI_Comm comm, const Ioss::PropertyManager &properties,
+                                         Ioss::DatabaseUsage db_usage);
 } // namespace
 #endif
 

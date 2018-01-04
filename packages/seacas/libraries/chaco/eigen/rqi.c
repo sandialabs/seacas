@@ -59,7 +59,7 @@ void rqi(struct vtx_data **A,     /* matrix/graph being analyzed */
          double *         goal,         /* desired set sizes */
          int              vwgt_max,     /* largest vertex weight */
          int              ndims         /* dimensionality of partition */
-         )
+)
 {
   extern int DEBUG_EVECS;           /* debug flag for eigen computation */
   extern int DEBUG_TRACE;           /* trace main execution path */

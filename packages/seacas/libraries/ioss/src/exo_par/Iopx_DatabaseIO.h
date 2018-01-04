@@ -77,7 +77,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the decompose-on-the-fly version of the
  *  parallel exodus database format.
@@ -187,7 +187,7 @@ namespace Iopx {
     int free_file_pointer() const override;
 
     int64_t read_nodal_coordinates();
-    void read_elements(const Ioss::ElementBlock &block);
+    void    read_elements(const Ioss::ElementBlock &block);
 
     void create_implicit_global_map() const;
     void output_node_map() const;
@@ -287,5 +287,5 @@ namespace Iopx {
 
     mutable bool metaDataWritten;
   };
-}
+} // namespace Iopx
 #endif

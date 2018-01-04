@@ -1163,7 +1163,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   }
   eblocks = nullptr;
   if (num_elmt_blocks > 0) {
-    eblocks = new Exo_Block<INT>[ num_elmt_blocks ];
+    eblocks = new Exo_Block<INT>[num_elmt_blocks];
     SMART_ASSERT(eblocks != nullptr);
     std::vector<INT> ids(num_elmt_blocks);
 
@@ -1212,7 +1212,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   }
   nsets = nullptr;
   if (num_node_sets > 0) {
-    nsets = new Node_Set<INT>[ num_node_sets ];
+    nsets = new Node_Set<INT>[num_node_sets];
     SMART_ASSERT(nsets != nullptr);
     std::vector<INT> ids(num_node_sets);
 
@@ -1239,7 +1239,7 @@ template <typename INT> void ExoII_Read<INT>::Get_Init_Data()
   }
   ssets = nullptr;
   if (num_side_sets) {
-    ssets = new Side_Set<INT>[ num_side_sets ];
+    ssets = new Side_Set<INT>[num_side_sets];
     SMART_ASSERT(ssets != nullptr);
     std::vector<INT> ids(num_side_sets);
 
@@ -1368,18 +1368,17 @@ namespace {
         SMART_ASSERT(varnames[vg] != nullptr);
         if (std::strlen(varnames[vg]) == 0 ||
             static_cast<int>(std::strlen(varnames[vg])) > name_size) {
-	  std::ostringstream out;
-          out << "exodiff: ERROR: " << type
-                    << " variable names appear corrupt\n"
-                    << "                A length is 0 or greater than "
-                    << "name_size(" << name_size << ")\n"
-                    << "                Here are the names that I received from"
-                    << " a call to ex_get_var_names(...):\n";
+          std::ostringstream out;
+          out << "exodiff: ERROR: " << type << " variable names appear corrupt\n"
+              << "                A length is 0 or greater than "
+              << "name_size(" << name_size << ")\n"
+              << "                Here are the names that I received from"
+              << " a call to ex_get_var_names(...):\n";
           for (int k = 1; k <= num_vars; ++k) {
             out << "\t\t" << k << ") \"" << varnames[k - 1] << "\"\n";
           }
           out << "                 Aborting...\n";
-	  DIFF_OUT(out);
+          DIFF_OUT(out);
           exit(1);
         }
 

@@ -292,8 +292,6 @@ namespace Iovs {
     // database global ids/names
     // Maps internal (1..num_entity) ids to global ids used on the
     //               sierra side.   global = XXXMap.map[local]
-    // XXXMap.map[0] contains: -1 if sequential, 0 if ordering unknown, 1
-    // if nonsequential
     mutable Ioss::Map nodeMap;
     mutable Ioss::Map elemMap;
   };

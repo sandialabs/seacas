@@ -74,7 +74,7 @@ void coarsen_klv(
     int **  pbndy_list,             /* pointer to returned boundary list */
     double *weights,                /* weights of vertices in each set */
     int     give_up                 /* has coarsening bogged down? */
-    )
+)
 {
   extern FILE *     Output_File;            /* output file or null */
   extern int        DEBUG_TRACE;            /* trace the execution of the code */
@@ -387,7 +387,7 @@ void coarsen_klv(
 }
 
 void print_sep_size(int *list, struct vtx_data **graph /* array of vtx data for graph */
-                    )
+)
 {
   int sep_size, sep_weight;
   int i;

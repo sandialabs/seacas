@@ -53,6 +53,6 @@ namespace Ioss {
       // Copy constructor
       // Assignment operator
     };
-  }
-}
+  } // namespace Init
+} // namespace Ioss
 #endif

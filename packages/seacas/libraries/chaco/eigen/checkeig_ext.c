@@ -44,7 +44,7 @@ double checkeig_ext(double *err, double *work, /* work vector of length n */
                     double *gvec, double eigtol,
                     int warnings /* don't want to see warning messages in one of the
                                     contexts this is called */
-                    )
+)
 {
   extern FILE *Output_File;   /* output file or null */
   extern int   DEBUG_EVECS;   /* print debugging output? */

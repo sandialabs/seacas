@@ -676,24 +676,10 @@ namespace Iogn {
     // Allocate space for node number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (nodeMap.map().empty()) {
-      nodeMap.map().resize(nodeCount + 1);
+      nodeMap.set_size(nodeCount);
       std::vector<int64_t> map;
       m_generatedMesh->node_map(map);
-
-      // Map needed for Ioss starts at position 1 since the
-      // sequential/non-sequential flag is at position 0...
-      std::copy(map.begin(), map.end(), &nodeMap.map()[1]);
-
-      // Check for sequential node map.
-      // If not, build the reverse G2L node map...
-      nodeMap.map()[0] = -1;
-      for (int64_t i = 1; i < nodeCount + 1; i++) {
-        if (i != nodeMap.map()[i]) {
-          nodeMap.map()[0] = 1;
-          break;
-        }
-      }
-      nodeMap.build_reverse_map();
+      nodeMap.set_map(map.data(), map.size(), 0, true);
     }
     return nodeMap;
   }
@@ -703,27 +689,10 @@ namespace Iogn {
     // Allocate space for elemente number map and read it in...
     // Can be called multiple times, allocate 1 time only
     if (elemMap.map().empty()) {
-      elemMap.map().resize(elementCount + 1);
+      elemMap.set_size(elementCount);
       std::vector<int64_t> map;
       m_generatedMesh->element_map(map);
-
-      // Map needed for Ioss starts at position 1 since the
-      // sequential/non-sequential flag is at position 0...
-      std::copy(map.begin(), map.end(), &elemMap.map()[1]);
-
-      // Check for sequential element map.
-      // If not, build the reverse G2L element map...
-      elemMap.map()[0] = -1;
-      for (int64_t i = 1; i < elementCount + 1; i++) {
-        if (i != elemMap.map()[i]) {
-          elemMap.map()[0] = 1;
-          break;
-        }
-      }
-
-      if (elemMap.map()[0] == 1) {
-        elemMap.build_reverse_map();
-      }
+      elemMap.set_map(map.data(), map.size(), 0, true);
     }
     return elemMap;
   }
@@ -833,7 +802,7 @@ namespace Iogn {
             new Ioss::SideBlock(this, ef_block_name, side_topo_name, elem_topo_name, number_faces);
         sideset->add(ef_block);
         ef_block->property_add(Ioss::Property("id", ifs + 1));
-	ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
+        ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
 
         std::string storage = "Real[";
         storage += std::to_string(4);
@@ -857,7 +826,7 @@ namespace Iogn {
                                               number_faces);
           sideset->add(ef_block);
           ef_block->property_add(Ioss::Property("id", ifs + 1));
-	  ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
+          ef_block->property_add(Ioss::Property("guid", util().generate_guid(ifs + 1)));
 
           std::string storage = "Real[";
           storage += std::to_string(4);

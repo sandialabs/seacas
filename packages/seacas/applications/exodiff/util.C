@@ -70,7 +70,7 @@ namespace {
     static bool is_term = isatty(fileno(stderr));
     return is_term;
   }
-}
+} // namespace
 
 void ERR_OUT(std::ostringstream &buf)
 {
@@ -101,4 +101,3 @@ void DIFF_OUT(const char *buf, trmclr::Style color)
     std::cout << buf << '\n';
   }
 }
-

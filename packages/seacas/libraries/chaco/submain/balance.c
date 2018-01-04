@@ -59,7 +59,7 @@ void balance(struct vtx_data **graph,         /* data structure for graph */
              int               ndims,         /* number of eigenvectors (2^d sets) */
              double            eigtol,        /* tolerance on eigenvectors */
              int (*hops)[MAXSETS]             /* between-set hop cost for KL */
-             )
+)
 {
   extern int        TERM_PROP;                      /* invoking terminal propogation? */
   extern int        DEBUG_TRACE;                    /* trace the execution of the code */

@@ -81,7 +81,7 @@ namespace {
     const std::string &name = entity->name();
 
     // See if any alias with this name...
-    std::string alias = region->get_alias(name);
+    std::string alias = region->get_alias__(name);
 
     if (!alias.empty()) {
       // There is an entity with this name...
@@ -694,7 +694,6 @@ namespace Ioss {
   int Region::add_state(double time)
   {
     static bool warning_output = false;
-    IOSS_FUNC_ENTER(m_);
 
     // NOTE:  For restart input databases, it is possible that the time
     //        is not monotonically increasing...
@@ -859,7 +858,6 @@ namespace Ioss {
    */
   double Region::begin_state(int state)
   {
-    IOSS_FUNC_ENTER(m_);
     double time = 0.0;
     if (get_database()->is_input() && stateCount == 0) {
       std::ostringstream errmsg;
@@ -881,17 +879,21 @@ namespace Ioss {
       IOSS_ERROR(errmsg);
     }
     else {
-      SMART_ASSERT(state <= stateCount)(state)(stateCount);
-      if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
-          get_database()->usage() == WRITE_RESTART) {
-        SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
-        time = stateTimes[state - 1];
+      {
+	IOSS_FUNC_ENTER(m_);
+
+	SMART_ASSERT(state <= stateCount)(state)(stateCount);
+	if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
+	    get_database()->usage() == WRITE_RESTART) {
+	  SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
+	  time = stateTimes[state - 1];
+	}
+	else {
+	  SMART_ASSERT(!stateTimes.empty());
+	  time = stateTimes[0];
+	}
+	currentState   = state;
       }
-      else {
-        SMART_ASSERT(!stateTimes.empty());
-        time = stateTimes[0];
-      }
-      currentState   = state;
       DatabaseIO *db = get_database();
       db->begin_state(this, state, time);
     }
@@ -905,7 +907,6 @@ namespace Ioss {
    */
   double Region::end_state(int state)
   {
-    IOSS_FUNC_ENTER(m_);
     if (state != currentState) {
       std::ostringstream errmsg;
       errmsg << "ERROR: The current database state (" << currentState
@@ -915,14 +916,17 @@ namespace Ioss {
     }
     DatabaseIO *db   = get_database();
     double      time = 0.0;
-    if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
-        get_database()->usage() == WRITE_RESTART) {
-      SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
-      time = stateTimes[state - 1];
-    }
-    else {
-      SMART_ASSERT(!stateTimes.empty());
-      time = stateTimes[0];
+    {
+      IOSS_FUNC_ENTER(m_);
+      if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
+	  get_database()->usage() == WRITE_RESTART) {
+	SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
+	time = stateTimes[state - 1];
+      }
+      else {
+	SMART_ASSERT(!stateTimes.empty());
+	time = stateTimes[0];
+      }
     }
     db->end_state(this, state, time);
     currentState = -1;

@@ -135,8 +135,9 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
 
   if (ex_put_init_global(mesh_exoid, globals.Num_Node, globals.Num_Elem, globals.Num_Elem_Blk,
                          globals.Num_Node_Set, globals.Num_Side_Set) < 0) {
-    fprintf(stderr, "[%s]: ERROR, Unable to put global initial "
-                    "information in parallel mesh file!\n",
+    fprintf(stderr,
+            "[%s]: ERROR, Unable to put global initial "
+            "information in parallel mesh file!\n",
             yo);
     exit(1);
   }
@@ -827,9 +828,9 @@ void NemSpread<T, INT>::write_parExo_data(int mesh_exoid, int max_name_length, i
      * Allocate memory for the elemental map. Currently this map is assigned
      * as a linear array since it is not really used.
      */
-    INT *iElem_Map = (INT *)array_alloc(__FILE__, __LINE__, 1, globals.Num_Internal_Elems[iproc] +
-                                                                   globals.Num_Border_Elems[iproc],
-                                        sizeof(INT));
+    INT *iElem_Map = (INT *)array_alloc(
+        __FILE__, __LINE__, 1, globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc],
+        sizeof(INT));
     for (INT i1 = 0; i1 < globals.Num_Internal_Elems[iproc] + globals.Num_Border_Elems[iproc];
          i1++) {
       iElem_Map[i1] = globals.GElems[iproc][i1] + 1;

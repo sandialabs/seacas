@@ -62,7 +62,7 @@ namespace Ioss {
   class SideBlock;
   class SideSet;
   class StructuredBlock;
-}
+} // namespace Ioss
 
 /** \brief A namespace for the pamgen database format.
  */
@@ -242,5 +242,5 @@ namespace Iodw {
     mutable bool blockAdjacenciesCalculated; // True if the lazy creation of
     // block adjacencies has been calculated.
   };
-}
+} // namespace Iodw
 #endif // Iodw_DatabaseIO_h
