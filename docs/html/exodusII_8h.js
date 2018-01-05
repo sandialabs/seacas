@@ -55,6 +55,7 @@ var exodusII_8h =
     [ "MAX_LINE_LENGTH", "group__StringLengths.html#gaf0f2173e3b202ddf5756531b4471dcb2", null ],
     [ "MAX_NAME_LENGTH", "group__StringLengths.html#ga0c397a708cec89c74029582574516b30", null ],
     [ "MAX_STR_LENGTH", "group__StringLengths.html#gaaa695591372841e2c5580e4ed0f3620f", null ],
+    [ "NC_HAVE_META_H", "exodusII_8h.html#af5aeb509bb9ac704f563622a00d0c11e", null ],
     [ "NEMESIS_API_VERSION", "exodusII_8h.html#a931e965a07b4cab183cd07a96a8026c8", null ],
     [ "NEMESIS_API_VERSION_NODOT", "exodusII_8h.html#a291efdb1234ed9adc27df6e46384579a", null ],
     [ "NEMESIS_FILE_VERSION", "exodusII_8h.html#a8c33048e27dc3baf49a0299e3df033b2", null ],
