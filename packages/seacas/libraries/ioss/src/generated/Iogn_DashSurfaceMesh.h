@@ -78,7 +78,7 @@ namespace Iogn {
     const std::vector<int> globalIdsOfLocalElements;
     const std::vector<int> globalIdsOfLocalNodes;
 
-    std::vector<SharedNode> *sharedNodes;
+    std::vector<SharedNode> sharedNodes;
 
     // A sideset' is basically an exodus sideset.  A
     // sideset has a list of elements and a corresponding local
@@ -88,6 +88,7 @@ namespace Iogn {
     std::vector<std::vector<int>>         sidesetConnectivity;
     std::vector<std::vector<std::string>> sidesetTouchingBlocks;
 
+    ExodusData() : globalNumberOfNodes(0) {}
     ExodusData(const std::vector<double>           coords,
                const std::vector<std::vector<int>> elemBlockConnectivity,
                const std::vector<int>              globalNumOfElemsInBlock,
@@ -102,7 +103,7 @@ namespace Iogn {
           globalNumberOfElementsInBlock(globalNumOfElemsInBlock),
           localNumberOfElementsInBlock(localNumOfElemsInBlock), blockTopologicalData(blockTopoData),
           globalNumberOfNodes(globalNumNodes), globalIdsOfLocalElements(globalIdsOfLocalElems),
-          globalIdsOfLocalNodes(globalIdsLocalNodes), sharedNodes(nullptr),
+          globalIdsOfLocalNodes(globalIdsLocalNodes),
           sidesetConnectivity(std::move(sidesetConn)),
           sidesetTouchingBlocks(std::move(sidesetBlocks))
     {
@@ -111,9 +112,9 @@ namespace Iogn {
 
   struct DashSurfaceData
   {
-    const std::vector<double> &coordinates;
-    const std::vector<int> &   surfaceAConnectivity;
-    const std::vector<int> &   surfaceBConnectivity;
+    const std::vector<double> coordinates;
+    const std::vector<int>    surfaceAConnectivity;
+    const std::vector<int>    surfaceBConnectivity;
 
     int globalNumberOfNodes{};
     int globalNumberOfElements{};
@@ -124,12 +125,12 @@ namespace Iogn {
     std::vector<int> globalIdsOfLocalElements;
     std::vector<int> globalIdsOfLocalNodes;
 
-    std::vector<SharedNode> *sharedNodes;
+    std::vector<SharedNode> sharedNodes;
 
     DashSurfaceData(const std::vector<double> &coords, const std::vector<int> &connectivity1,
                     const std::vector<int> &connectivity2)
         : coordinates(coords), surfaceAConnectivity(connectivity1),
-          surfaceBConnectivity(connectivity2), sharedNodes(nullptr)
+          surfaceBConnectivity(connectivity2)
     {
       this->setSerialDefaults();
     }
@@ -208,7 +209,7 @@ namespace Iogn {
     void element_map(std::vector<int> &map) const override;
 
   private:
-    DashSurfaceData &mDashSurfaceData;
+    DashSurfaceData mDashSurfaceData;
   };
 
   class ExodusMesh : public GeneratedMesh
