@@ -49,6 +49,8 @@ HAVE_X11=ON
 ### Set to ON to enable the building of a thread-safe version of the Exodus and IOSS libraries.
 THREADSAFE=${THREADSAFE:-OFF}
 
+FORTRAN=${FORTRAN:-ON}
+
 ### The SEACAS code will install in ${INSTALL_PATH}/bin, ${INSTALL_PATH}/lib, and ${INSTALL_PATH}/include.
 INSTALL_PATH=${ACCESS}
 
@@ -155,6 +157,7 @@ cmake  \
 -D SEACASProj_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON \
 -D SEACASProj_HIDE_DEPRECATED_CODE:BOOL=${OMIT_DEPRECATED_CODE} \
 \
+-D SEACASProj_ENABLE_Fortran=${FORTRAN} \
 -D TPL_ENABLE_Netcdf:BOOL=${HAVE_NETCDF} \
 -D TPL_ENABLE_Matio:BOOL=${HAVE_MATIO} \
 -D TPL_ENABLE_CGNS:BOOL=${HAVE_CGNS} \
