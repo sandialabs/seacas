@@ -1382,7 +1382,7 @@ namespace Iocgns {
           m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
           m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
           m_globalToBlockLocalNodeMap[zone]->map().swap(nodes);
-          m_globalToBlockLocalNodeMap[zone]->build_reverse_map();
+          m_globalToBlockLocalNodeMap[zone]->build_reverse_map_no_lock();
 
           // Need to map global nodes to block-local node connectivity
           const auto &block_map = m_globalToBlockLocalNodeMap[zone];

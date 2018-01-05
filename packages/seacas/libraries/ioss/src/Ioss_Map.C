@@ -156,6 +156,7 @@ void Ioss::Map::set_size(size_t entity_count)
 }
 
 void Ioss::Map::build_reverse_map() { build_reverse_map(m_map.size() - 1, 0); }
+void Ioss::Map::build_reverse_map_no_lock() { build_reverse_map__(m_map.size() - 1, 0); }
 void Ioss::Map::build_reverse_map(int64_t num_to_get, int64_t offset)
 {
   IOSS_FUNC_ENTER(m_);

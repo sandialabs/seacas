@@ -78,6 +78,7 @@ namespace Ioss {
     void set_default(size_t count, size_t offset = 0);
 
     void build_reverse_map();
+    void build_reverse_map_no_lock();
     void build_reverse_map(int64_t num_to_get, int64_t offset);
 
     void release_memory(); //! Release memory for all maps.
