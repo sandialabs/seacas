@@ -2,6 +2,8 @@
 
 MPI="${MPI:-OFF}"
 echo "MPI set to ${MPI}"
+COMPILER="${COMPILER:-gnu}"
+echo "COMPILER set to ${COMPILER}"
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
