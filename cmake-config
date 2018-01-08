@@ -129,6 +129,7 @@ then
                 -DDataWarehouse_INCLUDE_DIRS:PATH=${DATAWAREHOUSE_PATH}/include"
 fi
     
+OS=`uname -s`
 if [ "$OS" == "Darwin" ] ; then
   DARWIN_OPT="-D CMAKE_MACOSX_RPATH:BOOL=ON -D TPL_X11_INCLUDE_DIRS:PATH=/opt/local/include"
 else
