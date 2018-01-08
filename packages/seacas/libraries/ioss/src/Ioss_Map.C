@@ -49,7 +49,7 @@ namespace {
   template <typename INT> bool is_one2one(INT *ids, size_t num_to_get, size_t offset)
   {
     bool one2one    = true;
-    INT  map_offset = num_to_get > 0 ? ids[0] - 1 - offset: 0;
+    INT  map_offset = num_to_get > 0 ? ids[0] - 1 - offset : 0;
     for (size_t i = 0; i < num_to_get; i++) {
       if ((size_t)ids[i] != i + offset + 1 + map_offset) {
         one2one = false;
@@ -132,11 +132,11 @@ bool Ioss::Map::is_sequential(bool check_all) const
       return false;
     }
   }
-  
+
   IOSS_FUNC_ENTER(m_);
-  Ioss::MapContainer &new_map = const_cast<Ioss::MapContainer &>(m_map);
-  size_t size    = m_map.size();
-  for (int64_t i = 1; i < (int64_t)size; i++) {
+  Ioss::MapContainer &new_map  = const_cast<Ioss::MapContainer &>(m_map);
+  size_t              map_size = m_map.size();
+  for (int64_t i = 1; i < (int64_t)map_size; i++) {
     if (m_map[i] != i + m_offset) {
       new_map[0] = 1;
       return false;
@@ -268,10 +268,10 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
     if (one2one) {
       // Further checks on how ids fit into previously set m_map entries (if any)
       if (count > 0) {
-	INT tmp_offset = ids[0] - 1 - offset;
-	if (tmp_offset < 0 || (m_offset >= 0 && tmp_offset != m_offset)) {
-	  one2one = false;
-	}
+        INT tmp_offset = ids[0] - 1 - offset;
+        if (tmp_offset < 0 || (m_offset >= 0 && tmp_offset != m_offset)) {
+          one2one = false;
+        }
       }
     }
 
@@ -333,7 +333,7 @@ bool Ioss::Map::set_map(INT *ids, size_t count, size_t offset, bool in_define_mo
 void Ioss::Map::set_default(size_t count, size_t offset)
 {
   IOSS_FUNC_ENTER(m_);
-  m_map.resize(count+1);
+  m_map.resize(count + 1);
   for (size_t i = 1; i <= count; i++) {
     m_map[i] = i + offset;
   }
@@ -343,14 +343,13 @@ void Ioss::Map::set_default(size_t count, size_t offset)
 template void Ioss::Map::reverse_map_data(int *data, size_t count) const;
 template void Ioss::Map::reverse_map_data(int64_t *data, size_t count) const;
 
-template <typename INT>
-void Ioss::Map::reverse_map_data(INT *data, size_t count) const
+template <typename INT> void Ioss::Map::reverse_map_data(INT *data, size_t count) const
 {
   IOSS_FUNC_ENTER(m_);
   if (!is_sequential()) {
     for (size_t i = 0; i < count; i++) {
       INT global_id = data[i];
-      data[i]    = global_to_local__(global_id, true);
+      data[i]       = global_to_local__(global_id, true);
     }
   }
   else if (m_offset != 0) {
@@ -423,7 +422,7 @@ void Ioss::Map::map_implicit_data(INT *ids, size_t count, size_t offset) const
 }
 
 void Ioss::Map::map_implicit_data(void *data, const Ioss::Field &field, size_t count,
-					size_t offset) const
+                                  size_t offset) const
 {
   IOSS_FUNC_ENTER(m_);
   if (field.get_type() == Ioss::Field::INTEGER) {
