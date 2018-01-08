@@ -32,13 +32,14 @@ CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 
 rm -f config.cache
 
+
 ### SEACAS does not use the Fortran, F90, or C++ versions of hdf5 library
 FC=''; export FC
 F90=''; export F90
 
 SHARED="--enable-shared"
 
-./configure --prefix=${ACCESS} ${SHARED} ${PARALLEL_ON_OFF} --enable-asserts --enable-debug=all --enable-static-exec $1
+./configure --prefix=${ACCESS} ${SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
 
 echo ""
 echo "     MPI: ${MPI}"
