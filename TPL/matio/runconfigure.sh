@@ -1,24 +1,23 @@
 #! /usr/bin/env bash
 
-MPI="${MPI:-OFF}"
-echo "MPI set to ${MPI}"
-COMPILER="${COMPILER:-gnu}"
-echo "COMPILER set to ${COMPILER}"
-
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
 
+MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
   export CC=mpicc
 else
+  COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc
-  else
+  fi
+  if [ "$COMPILER" == "clang" ]
+  then
       export CC=clang
   fi
 fi

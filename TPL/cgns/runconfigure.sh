@@ -18,7 +18,15 @@ if [ "$MPI" == "ON" ]
 then
   export CC=mpicc
 else
-  export CC=gcc
+  COMPILER="${COMPILER:-gnu}"
+  if [ "$COMPILER" == "gnu" ]
+  then
+      export CC=gcc
+  fi
+  if [ "$COMPILER" == "clang" ]
+  then
+      export CC=clang
+  fi
 fi
 
 CFLAGS="-I${ACCESS}/include"; export CFLAGS

@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-COMPILER="${COMPILER:-gnu}"
-echo "COMPILER set to ${COMPILER}"
-
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
@@ -16,14 +13,13 @@ then
 fi
    
 MPI="${MPI:-OFF}"
-echo "MPI set to ${MPI}"
-
 if [ "$MPI" == "ON" ]
 then
   PARALLEL_ON_OFF="--enable-parallel"
   export CC=mpicc
 else
   PARALLEL_ON_OFF="--disable-parallel"
+  COMPILER="${COMPILER:-gnu}"
   if [ "$COMPILER" == "gnu" ]
   then
       export CC=gcc
@@ -49,6 +45,6 @@ SHARED="--enable-shared"
 
 echo ""
 echo "     MPI: ${MPI}"
-echo "COMPILER: ${COMPILER}"
+echo "COMPILER: ${CC}"
 echo "  ACCESS: ${ACCESS}"
 echo ""

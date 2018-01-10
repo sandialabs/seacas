@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 
+export COMPILER=${COMPILER:-gnu}
 SUDO=${SUDO:-}
 CGNS=${CGNS:-ON}
 MATIO=${MATIO:-ON}
+GNU_PARALLEL=${GNU_PARALLEL:-ON}
 JOBS=${JOBS:-2}
 ACCESS=`pwd`
 pwd
@@ -141,7 +143,28 @@ then
     fi
 fi
 
+# =================== INSTALL PARALLEL  ===============
+if [ "$GNU_PARALLEL" == "ON" ]
+then
+    cd $ACCESS
+    cd TPL/parallel
+    if [ "$DOWNLOAD" == "YES" ]
+    then
+	rm -rf parallel-*
+	wget --no-check-certificate ftp://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
+    fi
+    
+    if [ "$INSTALL" == "YES" ]
+    then
+	tar -jxf parallel-latest.tar.bz2
+	cd parallel-*
+	bash ../runconfigure.sh
+	make -j${JOBS} && ${SUDO} make install
+    fi
+fi
+
 # ==================================
 cd $ACCESS
 ls -l include
+ls -l bin
 ls -l lib

@@ -35,8 +35,24 @@ detailed in the following section, or you can use the `install-tpl.sh` script wh
 download and install the HDF5, NetCDF, CGNS, MatIO, and (if MPI set)
 PNetCDF libraries.
 
- * To use the script, simply type `./install-tpl.sh`
+* To use the script, simply type `./install-tpl.sh`
+* The default behavior can be modified via a few environment variables:
+ 
+| Variable | Values | Default | Description |
+|----------|:------:|:-------:|-------------|
+| COMPILER | clang, gnu | gnu | What compiler should be used for non-parallel build |
+| JOBS     | {count}|  2      | Number of "jobs" used for simultaneous compiles |
+| DOWNLOAD | YES, NO | YES |  Should TPLs be downloaded. |
+| INSTALL  | YES, NO | YES | Should TPLs be built and installed. |
+| MPI      | ON, OFF | OFF | If ON, then build parallel capability |
+| NEEDS_ZLIB| YES, NO| NO. | If system does not have zlib installed, download and install it. |
+| CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
+| MATIO    | YES, NO | YES | Should matio TPL be built. |
+| GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
 
+* NOTE: The `DOWNLOAD` and `INSTALL` options can be used to download all TPL source; move to a system with no outside internet access and then build/install the TPLs.
+* The arguments can either be set in the environment as: `export COMPILER=gnu`, or passed on the script invocation line: `COMPILER=gnu ./install-tpl.sh`
+ 
 ### Download and build dependencies (Third-Party Libraries)
 
 There are a few externally developed third-party libraries (TPL) that
