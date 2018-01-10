@@ -1,9 +1,5 @@
 #! /usr/bin/env bash
 
-MPI="${MPI:-OFF}"
-echo "MPI set to ${MPI}"
-
-
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../../..; pwd)
@@ -23,11 +19,20 @@ then
    LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${ACCESS}/include -DZLIB_LIBRARY:FILEPATH=${ACCESS}/lib/libz.${LD_EXT}"
 fi
 
+MPI="${MPI:-OFF}"
 if [ "$MPI" == "ON" ]
 then
   export CC=mpicc
 else
-  export CC=gcc
+  COMPILER="${COMPILER:-gnu}"
+  if [ "$COMPILER" == "gnu" ]
+  then
+      export CC=gcc
+  fi
+  if [ "$COMPILER" == "clang" ]
+  then
+      export CC=clang
+  fi
 fi
 
 rm -f config.cache

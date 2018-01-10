@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
@@ -6,12 +6,20 @@ if [ "X$ACCESS" == "X" ] ; then
   echo "ACCESS set to ${ACCESS}"
 fi
 
-rm -f config.cache
-CC='gcc'; export CC
+COMPILER="${COMPILER:-gnu}"
+if [ "$COMPILER" == "gnu" ]
+then
+    export CC=gcc
+fi
+if [ "$COMPILER" == "clang" ]
+then
+    export CC=clang
+fi
 CFLAGS="-I${ACCESS}/include"; export CFLAGS
 CPPFLAGS='-DNDEBUG'; export CPPFLAGS
 LDFLAGS="-L${ACCESS}/lib"; export LDFLAGS
 
+rm -f config.cache
 ./configure --prefix=${ACCESS} $1
 
 echo ""
