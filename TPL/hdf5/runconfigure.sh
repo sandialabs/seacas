@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-MPI="${MPI:-OFF}"
-echo "MPI set to ${MPI}"
-
 COMPILER="${COMPILER:-gnu}"
 echo "COMPILER set to ${COMPILER}"
 
@@ -11,6 +8,15 @@ if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../..; pwd)
   echo "ACCESS set to ${ACCESS}"
 fi
+
+NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
+if [ "$NEEDS_ZLIB" == "YES" ]
+then
+   ZLIB_ON_OFF="--with-zlib=${ACCESS}"
+fi
+   
+MPI="${MPI:-OFF}"
+echo "MPI set to ${MPI}"
 
 if [ "$MPI" == "ON" ]
 then
@@ -39,7 +45,7 @@ F90=''; export F90
 
 SHARED="--enable-shared"
 
-./configure --prefix=${ACCESS} ${SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
+./configure --prefix=${ACCESS} ${ZLIB_ON_OFF} ${SHARED} ${PARALLEL_ON_OFF} --enable-static-exec $1
 
 echo ""
 echo "     MPI: ${MPI}"

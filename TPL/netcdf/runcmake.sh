@@ -3,6 +3,7 @@
 MPI="${MPI:-OFF}"
 echo "MPI set to ${MPI}"
 
+
 ### The following assumes you are building in a subdirectory of ACCESS Root
 if [ "X$ACCESS" == "X" ] ; then
   ACCESS=$(cd ../../../..; pwd)
@@ -14,6 +15,12 @@ if [ "$OS" = "Darwin" ] ; then
 LD_EXT="dylib"
 else
 LD_EXT="so"
+fi
+
+NEEDS_ZLIB="${NEEDS_ZLIB:-NO}"
+if [ "$NEEDS_ZLIB" == "YES" ]
+then
+   LOCAL_ZLIB="-DZLIB_INCLUDE_DIR:PATH=${ACCESS}/include -DZLIB_LIBRARY:FILEPATH=${ACCESS}/lib/libz.${LD_EXT}"
 fi
 
 if [ "$MPI" == "ON" ]
@@ -35,6 +42,7 @@ cmake .. -DCMAKE_C_COMPILER:FILEPATH=${CC} \
          -DENABLE_MMAP:BOOL=ON \
          -DENABLE_DAP:BOOL=OFF \
          -DENABLE_V2_API:BOOL=ON \
+	 ${LOCAL_ZLIB} \
 	 -DENABLE_CONVERSION_WARNINGS:BOOL=OFF \
          -DHDF5_C_LIBRARY:PATH=${ACCESS}/lib/libhdf5.${LD_EXT} \
          -DHDF5_HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.${LD_EXT} \
