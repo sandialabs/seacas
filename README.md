@@ -45,7 +45,7 @@ PNetCDF libraries.
 | DOWNLOAD | YES, NO | YES |  Should TPLs be downloaded. |
 | INSTALL  | YES, NO | YES | Should TPLs be built and installed. |
 | MPI      | ON, OFF | OFF | If ON, then build parallel capability |
-| NEEDS_ZLIB| YES, NO| NO. | If system does not have zlib installed, download and install it. |
+| NEEDS_ZLIB| YES, NO| NO  | If system does not have zlib installed, download and install it. |
 | CGNS     | YES, NO | YES | Should CGNS TPL be built.  |
 | MATIO    | YES, NO | YES | Should matio TPL be built. |
 | GNU_PARALLEL | YES, NO | YES | Should GNU parallel script be built. |
