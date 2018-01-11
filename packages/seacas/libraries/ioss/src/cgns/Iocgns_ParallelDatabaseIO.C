@@ -690,7 +690,11 @@ namespace Iocgns {
 #endif
   }
 
-  bool ParallelDatabaseIO::begin__(Ioss::State /* state */) { return true; }
+  bool ParallelDatabaseIO::begin__(Ioss::State state)
+  {
+    dbState = state;
+    return true;
+  }
 
   bool ParallelDatabaseIO::end__(Ioss::State state)
   {
