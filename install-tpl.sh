@@ -62,8 +62,8 @@ fi
 if [ "$MPI" == "ON" ]
 then
     
-    pnet_version="1.8.1"
-    #pnet_version="1.9.0.pre1"
+#    pnet_version="1.8.1"
+    pnet_version="1.9.0"
     
     cd $ACCESS
     cd TPL/pnetcdf
