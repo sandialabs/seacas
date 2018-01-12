@@ -118,10 +118,6 @@ namespace Ioex {
     bool ok__(bool write_message = false, std::string *error_message = nullptr,
               int *bad_count = nullptr) const override = 0;
 
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    void release_memory__() override;
-
     bool open_group__(const std::string &group_name) override;
     bool create_subgroup__(const std::string &group_name) override;
 
@@ -298,18 +294,6 @@ namespace Ioex {
     Ioss::Int64Vector elemCmapElemCnts;
     int64_t           commsetNodeCount;
     int64_t           commsetElemCount;
-
-    // Bulk Data
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
-    //               sierra side.   global = nodeMap[local]
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map edgeMap;
-    mutable Ioss::Map faceMap;
-    mutable Ioss::Map elemMap;
 
     // --- Nodal/Element/Attribute Variable Names -- Maps from sierra
     // field names to index of nodal/element/attribute variable in

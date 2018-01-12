@@ -178,16 +178,6 @@ namespace Iocgns {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
                              int64_t file_count, entity_type type) const;
 
-    // Bulk Data
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
-    //               sierra side.   global = nodeMap[local]
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
-
     mutable int cgnsFilePtr;
     size_t      nodeCount;
     size_t      elementCount;

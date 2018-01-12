@@ -153,8 +153,7 @@ namespace Iogn {
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), m_generatedMesh(nullptr),
         spatialDimension(3), nodeCount(0), elementCount(0), elementBlockCount(0), nodesetCount(0),
-        sidesetCount(0), nodeMap("node", filename, myProcessor),
-        elemMap("elem", filename, myProcessor), m_useVariableDf(true)
+        sidesetCount(0), m_useVariableDf(true)
   {
     if (is_input()) {
       dbState = Ioss::STATE_UNKNOWN;
@@ -170,12 +169,6 @@ namespace Iogn {
   }
 
   DatabaseIO::~DatabaseIO() { delete m_generatedMesh; }
-
-  void DatabaseIO::release_memory__()
-  {
-    nodeMap.release_memory();
-    elemMap.release_memory();
-  }
 
   void DatabaseIO::read_meta_data__()
   {

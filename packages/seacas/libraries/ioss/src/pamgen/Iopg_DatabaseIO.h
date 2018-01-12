@@ -108,20 +108,6 @@ namespace Iopg {
                                   std::vector<std::string> &block_membership) const;
 
   private:
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
-
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    void release_memory__() override;
-
     void read_meta_data__() override;
 
     bool begin__(Ioss::State state) override;
@@ -258,12 +244,6 @@ namespace Iopg {
     Ioss::IntVector elemCmapElemCnts;
     int             commsetNodeCount;
     int             commsetElemCount;
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
 
     mutable std::vector<std::vector<bool>> blockAdjacency;
 
