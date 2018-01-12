@@ -243,16 +243,6 @@ namespace Iopx {
                              int64_t file_count, ex_entity_type entity_type,
                              ex_inquiry inquiry_type) const;
 
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
-
     // Internal data handling
     int64_t handle_node_ids(void *ids, int64_t num_to_get, size_t offset, size_t count) const;
     int64_t handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get,

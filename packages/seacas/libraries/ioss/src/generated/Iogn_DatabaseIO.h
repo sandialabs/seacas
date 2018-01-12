@@ -111,20 +111,6 @@ namespace Iogn {
     const std::vector<std::string> &get_sideset_names() const { return m_sideset_names; }
 
   private:
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
-
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    void release_memory__() override;
-
     void read_meta_data__() override;
 
     bool begin__(Ioss::State state) override;
@@ -215,14 +201,6 @@ namespace Iogn {
     int elementBlockCount;
     int nodesetCount;
     int sidesetCount;
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
-    //               sierra side.   global = nodeMap[local]
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
 
     bool m_useVariableDf;
   };

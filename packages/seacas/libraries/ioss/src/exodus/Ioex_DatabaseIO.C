@@ -113,9 +113,7 @@ namespace Ioex {
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), exodusFilePtr(-1),
         exodusMode(EX_CLOBBER), dbRealWordSize(8), maximumNameLength(32), spatialDimension(0),
         nodeCount(0), edgeCount(0), faceCount(0), elementCount(0), commsetNodeCount(0),
-        commsetElemCount(0), nodeMap("node", filename, myProcessor),
-        edgeMap("edge", filename, myProcessor), faceMap("face", filename, myProcessor),
-        elemMap("element", filename, myProcessor), timeLastFlush(0), fileExists(false),
+        commsetElemCount(0), timeLastFlush(0), fileExists(false),
         minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
         nodeConnectivityStatusCalculated(false)
   {
@@ -257,15 +255,6 @@ namespace Ioex {
     }
     catch (...) {
     }
-  }
-
-  // common
-  void DatabaseIO::release_memory__()
-  {
-    nodeMap.release_memory();
-    edgeMap.release_memory();
-    faceMap.release_memory();
-    elemMap.release_memory();
   }
 
   // common

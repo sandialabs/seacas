@@ -228,12 +228,6 @@ namespace Iovs {
     }
   }
 
-  void DatabaseIO::release_memory__()
-  {
-    nodeMap.release_memory();
-    elemMap.release_memory();
-  }
-
   std::string DatabaseIO::create_output_file_path(const std::string &          input_deck_name,
                                                   const Ioss::PropertyManager &properties)
   {

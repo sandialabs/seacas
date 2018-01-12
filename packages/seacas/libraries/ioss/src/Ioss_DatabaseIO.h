@@ -35,9 +35,10 @@
 
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
-#include <Ioss_DBUsage.h>         // for DatabaseUsage, etc
-#include <Ioss_DataSize.h>        // for DataSize
-#include <Ioss_EntityType.h>      // for EntityType
+#include <Ioss_DBUsage.h>    // for DatabaseUsage, etc
+#include <Ioss_DataSize.h>   // for DataSize
+#include <Ioss_EntityType.h> // for EntityType
+#include <Ioss_Map.h>
 #include <Ioss_ParallelUtils.h>   // for ParallelUtils
 #include <Ioss_PropertyManager.h> // for PropertyManager
 #include <Ioss_State.h>           // for State, State::STATE_INVALID
@@ -587,6 +588,13 @@ namespace Ioss {
     std::vector<std::string> informationRecords;
     std::vector<std::string> qaRecords;
 
+    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
+    //               application side.   global = nodeMap[local]
+    mutable Ioss::Map nodeMap{"node", DBFilename, myProcessor};
+    mutable Ioss::Map edgeMap{"edge", DBFilename, myProcessor};
+    mutable Ioss::Map faceMap{"face", DBFilename, myProcessor};
+    mutable Ioss::Map elemMap{"element", DBFilename, myProcessor};
+
   private:
     virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
     {
@@ -596,10 +604,24 @@ namespace Ioss {
       return dbState != Ioss::STATE_INVALID;
     }
 
-    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const = 0;
-    virtual int64_t element_global_to_local__(int64_t global) const               = 0;
+    virtual int64_t node_global_to_local__(int64_t global, bool must_exist) const
+    {
+      return nodeMap.global_to_local(global, must_exist);
+    }
 
-    virtual void release_memory__() {}
+    virtual int64_t element_global_to_local__(int64_t global) const
+    {
+      return elemMap.global_to_local(global);
+    }
+
+    virtual void release_memory__()
+    {
+      nodeMap.release_memory();
+      edgeMap.release_memory();
+      faceMap.release_memory();
+      elemMap.release_memory();
+    }
+
     virtual void openDatabase__() const {}
     virtual void closeDatabase__() const {}
     virtual void flush_database__() const {}

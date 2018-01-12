@@ -125,22 +125,6 @@ namespace Ioxf {
 
     int int_byte_size_db() const override { return 4; }
 
-    /*!
-     * Determine the local position of the node with the global id
-     * 'global'.  If 'must_exist' is false, then the global id possibly
-     * does not exist in the map; otherwise, it must exist and will
-     * throw an exception if not found.
-     */
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
-
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 
@@ -324,16 +308,6 @@ namespace Ioxf {
     int *elementTruthTable;
     int *nodesetTruthTable;
     int *sidesetTruthTable;
-
-    // Bulk Data
-
-    // MAPS -- Used to convert from local exodusII ids/names to Sierra
-    // database global ids/names
-
-    //---Node Map -- Maps internal (1..NUMNP) ids to global ids used on the
-    //               sierra side.   global = nodeMap[local]
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
 
     // --- Nodal/Element/Attribute Variable Names -- Maps from sierra
     // field names to index of nodal/element/attribute variable in

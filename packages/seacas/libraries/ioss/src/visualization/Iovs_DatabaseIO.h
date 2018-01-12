@@ -88,26 +88,6 @@ namespace Iovs {
     int int_byte_size_db() const override { return int_byte_size_api(); }
 
   private:
-    // Eliminate as much memory as possible, but still retain meta data information
-    // Typically, eliminate the maps...
-    void release_memory__() override;
-
-    /*!
-     * Determine the local position of the node with the global id
-     * 'global'.  If 'must_exist' is false, then the global id possibly
-     * does not exist in the map; otherwise, it must exist and will
-     * throw an exception if not found.
-     */
-    int64_t node_global_to_local__(int64_t global, bool must_exist) const override
-    {
-      return nodeMap.global_to_local(global, must_exist);
-    }
-
-    int64_t element_global_to_local__(int64_t global) const override
-    {
-      return elemMap.global_to_local(global);
-    }
-
     bool begin__(Ioss::State state) override;
     bool end__(Ioss::State state) override;
 
@@ -285,15 +265,6 @@ namespace Iovs {
     mutable bool                     globalNodeAndElementIDsCreated;
     void                             create_global_node_and_element_ids() const;
     mutable EntityIdSet              ids_;
-
-    // Bulk Data
-
-    // MAPS -- Used to convert from local exodusII ids/names to Ioss
-    // database global ids/names
-    // Maps internal (1..num_entity) ids to global ids used on the
-    //               sierra side.   global = XXXMap.map[local]
-    mutable Ioss::Map nodeMap;
-    mutable Ioss::Map elemMap;
   };
 } // namespace Iovs
 

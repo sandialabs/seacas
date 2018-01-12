@@ -130,7 +130,6 @@ namespace Iopg {
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), spatialDimension(3),
         nodeCount(0), elementCount(0), nodeBlockCount(0), elementBlockCount(0), nodesetCount(0),
         sidesetCount(0), commsetNodeCount(0), commsetElemCount(0),
-        nodeMap("node", filename, myProcessor), elemMap("edge", filename, myProcessor),
         blockAdjacenciesCalculated(false)
   {
     if (is_input()) {
@@ -144,12 +143,6 @@ namespace Iopg {
   }
 
   DatabaseIO::~DatabaseIO() { Delete_Pamgen_Mesh(); }
-
-  void DatabaseIO::release_memory__()
-  {
-    nodeMap.release_memory();
-    elemMap.release_memory();
-  }
 
   std::string massagePamgenInputString(std::string sinput, int &dimension)
   {

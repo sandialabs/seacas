@@ -131,7 +131,6 @@ namespace Ioxf {
         nodesetCount(0), sidesetCount(0), nodeCmapIds(nullptr), nodeCmapNodeCnts(nullptr),
         elemCmapIds(nullptr), elemCmapElemCnts(nullptr), commsetNodeCount(0), commsetElemCount(0),
         elementTruthTable(nullptr), nodesetTruthTable(nullptr), sidesetTruthTable(nullptr),
-        nodeMap("node", filename, myProcessor), elemMap("elem", filename, myProcessor),
         fileExists(false)
   {
     // A history file is only written on processor 0...
