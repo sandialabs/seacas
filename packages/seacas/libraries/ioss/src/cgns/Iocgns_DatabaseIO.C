@@ -514,7 +514,7 @@ namespace Iocgns {
     m_bcOffset.resize(num_zones + 1);   // use 1-based zones...
     m_zoneOffset.resize(num_zones + 1); // use 1-based zones...
 
-    Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
+    elementCount = Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset, false);
   }
 
   void DatabaseIO::get_step_times__()
