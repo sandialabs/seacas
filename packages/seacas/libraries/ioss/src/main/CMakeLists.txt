@@ -77,6 +77,47 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES skinner.C skinner_interface.C
   )
 
+if (TPL_ENABLE_MPI)
+  set(DECOMP_ARG "--rcb")
+  set(JOIN_ARG   "--compose=mpiio")
+  set(PJOIN_ARG   "--compose=pnetcdf")
+endif()
+
+TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32.g
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1-4
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block32.g
+  COMM mpi serial
+  )
+
+TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus64
+   TEST_0 EXEC io_shell ARGS -64 ${DECOMP_ARG} ${JOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1-4
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+  COMM mpi serial
+  )
+
+TRIBITS_ADD_ADVANCED_TEST(exodus32_to_exodus32_pnetcdf
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} ${PJOIN_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1-4
+   TEST_1 CMND ../../../../applications/exodiff/exodiff ARGS -pedantic ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.g
+  COMM mpi serial
+  )
+
+TRIBITS_ADD_ADVANCED_TEST(exodus64_to_unstructured_cgns
+   TEST_0 EXEC io_shell ARGS ${DECOMP_ARG} --64 --out_type cgns ${CMAKE_CURRENT_SOURCE_DIR}/test/8-block.g 8-block64.cgns
+     NOEXEPREFIX NOEXESUFFIX
+     NUM_MPI_PROCS 1
+   TEST_1 CMND ${CGNS_CGNSLIST_BINARY} ARGS -ld 8-block64.cgns
+     OUTPUT_FILE exodus64_to_unstructured_cgns.out
+   TEST_2 CMND diff ARGS ${CMAKE_CURRENT_SOURCE_DIR}/test/exodus_to_unstructured_cgns.gold exodus64_to_unstructured_cgns.out
+  COMM mpi serial
+  )
+
+
 IF (SEACASIoss_ENABLE_THREADSAFE)
   TRIBITS_ADD_EXECUTABLE(
     io_shell_ts
