@@ -88,6 +88,12 @@ namespace {
 #endif
   }
 
+  void map_local_to_global_implicit(Iocgns::CGNSIntVector &data, ssize_t count, const Iocgns::CGNSIntVector &global_implicit_map)
+  {
+    for (ssize_t i = 0; i < count; i++) {
+      data[i] = global_implicit_map[data[i] - 1];
+    }
+  }
 } // namespace
 
 namespace Iocgns {
@@ -612,7 +618,7 @@ namespace Iocgns {
     m_bcOffset.resize(num_zones + 1);   // use 1-based zones...
     m_zoneOffset.resize(num_zones + 1); // use 1-based zones...
 
-    Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset);
+    elementCount = Utils::common_write_meta_data(cgnsFilePtr, *get_region(), m_zoneOffset, true);
   }
 
   void ParallelDatabaseIO::get_step_times__()
@@ -622,7 +628,7 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::write_adjacency_data()
   {
-#if 0
+#if 1
     // Determine adjacency information between unstructured blocks.
     // Could save this information from the input mesh, but then
     // could not read an exodus mesh and write a cgns mesh.
@@ -636,6 +642,10 @@ namespace Iocgns {
     size_t node_count = get_region()->get_property("node_count").get_int();
 
     const auto &blocks = get_region()->get_element_blocks();
+    if (blocks.size() <= 1) {
+      return; // No adjacent blocks if only one block...
+    }
+
     for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
@@ -664,16 +674,18 @@ namespace Iocgns {
         }
 
         // If point_list non_empty, then output this adjacency node...
-        if (!point_list.empty()) {
+	int non_empty = point_list.empty() ? 0 : 1;
+        MPI_Allreduce(MPI_IN_PLACE, &non_empty, 1, Ioss::mpi_type(non_empty), MPI_SUM, util().communicator());
+        if (non_empty > 0) {
           int         gc_idx = 0;
           std::string name   = (*I)->name();
           name += "_to_";
           name += (*J)->name();
           const auto &d1_name = (*J)->name();
 	  CGCHECK(cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
-                            CG_PointList, point_list.size(), TOPTR(point_list), d1_name.c_str(),
-                            CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-				point_list_donor.size(), TOPTR(point_list_donor), &gc_idx));
+				CG_PointList, point_list.size(), point_list.data(), d1_name.c_str(),
+				CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
+				point_list_donor.size(), point_list_donor.data(), &gc_idx));
 
           name = (*J)->name();
           name += "_to_";
@@ -681,9 +693,9 @@ namespace Iocgns {
           const auto &d2_name = (*I)->name();
 
           CGCHECK(cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
-                               CG_PointList, point_list_donor.size(), TOPTR(point_list_donor),
-                               d2_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-				point_list.size(), TOPTR(point_list), &gc_idx));
+				CG_PointList, point_list_donor.size(), point_list_donor.data(),
+				d2_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
+				point_list.size(), point_list.data(), &gc_idx));
         }
       }
     }
@@ -1265,6 +1277,36 @@ namespace Iocgns {
     return num_to_get;
   }
 
+  int64_t ParallelDatabaseIO::handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get,
+						 size_t offset, size_t count) const
+  {
+    bool    in_define = (dbState == Ioss::STATE_MODEL) || (dbState == Ioss::STATE_DEFINE_MODEL);
+    if (in_define) {
+      if (m_elemGlobalImplicitMap.empty()) {
+	m_elemGlobalImplicitMap.resize(elementCount);
+      }
+      // Build the implicit_global map used to map an elements
+      // local-implicit position to the global-implicit
+      // position. Primarily used for sideset elements.  
+      // Elements starting at 'eb_offset' map to the global implicit
+      // position of 'offset'
+      int64_t eb_offset = eb->get_offset();
+      for (size_t i = 0; i < count; i++) {
+	m_elemGlobalImplicitMap[eb_offset + i] = offset + i + 1;
+      }
+    }
+    
+    elemMap.set_size(elementCount);
+    int64_t eb_offset = eb->get_offset();
+    if (int_byte_size_api() == 4) {
+      elemMap.set_map(static_cast<int *>(ids), num_to_get, eb_offset, in_define);
+    }
+    else {
+      elemMap.set_map(static_cast<int64_t *>(ids), num_to_get, eb_offset, in_define);
+    }
+    return num_to_get;
+  }
+
   int64_t ParallelDatabaseIO::put_field_internal(const Ioss::Region *region,
                                                  const Ioss::Field &field, void *data,
                                                  size_t data_size) const
@@ -1502,7 +1544,11 @@ namespace Iocgns {
     if (role == Ioss::Field::MESH) {
       // Handle the MESH fields required for a CGNS file model.
       // (The 'genesis' portion)
-      if (field.get_name() == "connectivity") {
+      if (field.get_name() == "ids") {
+	size_t proc_offset     = eb->get_property("proc_offset").get_int();
+	handle_element_ids(eb, data, num_to_get, proc_offset, num_to_get);
+      }
+      else if (field.get_name() == "connectivity") {
         // This blocks zone has not been defined.
         // Get the "node block" for this element block...
         size_t element_nodes = eb->topology()->number_nodes();
@@ -1929,22 +1975,21 @@ namespace Iocgns {
           int *  idata = reinterpret_cast<int *>(data);
           size_t j     = 0;
           for (ssize_t i = 0; i < num_to_get; i++) {
-            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+            parent[num_to_get * 0 + i] = elemMap.global_to_local(idata[j++]); // Element
             parent[num_to_get * 2 + i] = idata[j++];
           }
-          // Adjust face numbers to IOSS convention instead of CGNS convention...
-          Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
         }
         else {
           int64_t *idata = reinterpret_cast<int64_t *>(data);
           size_t   j     = 0;
           for (ssize_t i = 0; i < num_to_get; i++) {
-            parent[num_to_get * 0 + i] = idata[j++] - offset; // Element
+            parent[num_to_get * 0 + i] = elemMap.global_to_local(idata[j++]); // Element
             parent[num_to_get * 2 + i] = idata[j++];
           }
-          // Adjust face numbers to IOSS convention instead of CGNS convention...
-          Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
         }
+	// Adjust face numbers to IOSS convention instead of CGNS convention...
+	Utils::map_ioss_face_to_cgns(sb->parent_element_topology(), num_to_get, parent);
+	map_local_to_global_implicit(parent, num_to_get, m_elemGlobalImplicitMap);
 
         int64_t local_face_count  = num_to_get;
         int64_t local_face_offset = 0;

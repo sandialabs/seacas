@@ -257,8 +257,8 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
            field.get_name() == "cell_node_ids"); // Default to cell field...
 }
 
-void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
-                                           std::vector<size_t> &zone_offset)
+size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
+					     std::vector<size_t> &zone_offset, bool is_parallel)
 {
   // Make sure mesh is not hybrid...
   if (region.mesh_type() == Ioss::MeshType::HYBRID) {
@@ -302,6 +302,20 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
 
   // NOTE: Element Block zone write is deferred to put_field_internal so can
   // generate the node count based on connectivity traversal...
+  // Just getting processor element count here...
+  const auto &element_blocks = region.get_element_blocks();
+  size_t element_count = 0;
+  for (const auto &eb : element_blocks) {
+    int64_t local_count = eb->entity_count();
+    if (is_parallel) {
+      int64_t start = 0;
+      MPI_Exscan(&local_count, &start, 1, Ioss::mpi_type(start), MPI_SUM, region.get_database()->util().communicator());
+      // Of the cells/elements in this zone, this proc handles
+      // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
+      eb->property_update("proc_offset", start);
+    }
+    element_count += (size_t)local_count;
+  }
 
   const auto &structured_blocks = region.get_structured_blocks();
   for (const auto &sb : structured_blocks) {
@@ -379,6 +393,7 @@ void Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &reg
       }
     }
   }
+  return element_count;
 }
 
 std::string Iocgns::Utils::map_cgns_to_topology_type(CG_ElementType_t type)
