@@ -1198,7 +1198,7 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
   bool   diff       = false;
   size_t warn_count = 0;
 
-  if (node_map != nullptr) {
+  if (node_map != nullptr && !interface.dump_mapping) {
     // There is a map between file1 and file2, but all nodes are
     // used in both files.
     for (size_t i = 0; i < num_nodes1; i++) {
@@ -1239,7 +1239,7 @@ bool Compare_Maps(ExoII_Read<INT> &file1, ExoII_Read<INT> &file2, const INT *nod
   }
 
   warn_count = 0;
-  if (elmt_map != nullptr) {
+  if (elmt_map != nullptr && !interface.dump_mapping) {
     // There is a map between file1 and file2, but all elements are
     // used in both files.
     for (size_t i = 0; i < num_elmts1; i++) {
