@@ -191,18 +191,19 @@ namespace Iogn {
 
     void add_transient_fields(Ioss::GroupingEntity *entity);
 
-    GeneratedMesh *          m_generatedMesh;
+    GeneratedMesh *          m_generatedMesh{nullptr};
     std::vector<std::string> m_sideset_names;
 
-    int     spatialDimension;
-    int64_t nodeCount;
-    int64_t elementCount;
+    double  currentTime{0.0};
+    int64_t nodeCount{0};
+    int64_t elementCount{0};
+    int     spatialDimension{3};
 
-    int elementBlockCount;
-    int nodesetCount;
-    int sidesetCount;
+    int elementBlockCount{0};
+    int nodesetCount{0};
+    int sidesetCount{0};
 
-    bool m_useVariableDf;
+    bool m_useVariableDf{true};
   };
 } // namespace Iogn
 #endif // IOSS_Iogn_DatabaseIO_h
