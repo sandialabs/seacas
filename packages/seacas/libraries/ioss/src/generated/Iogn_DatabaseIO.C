@@ -86,36 +86,36 @@ namespace {
 
   template <typename INT>
   void fill_transient_data(const Ioss::GroupingEntity *entity, size_t component_count, double *data,
-                           INT *ids, size_t count)
+                           INT *ids, size_t count, double offset = 0.0)
   {
     double *rdata = static_cast<double *>(data);
     if (component_count == 1) {
       for (size_t i = 0; i < count; i++) {
-        rdata[i] = std::sqrt((double)ids[i]);
+        rdata[i] = std::sqrt((double)ids[i]) + offset;
       }
     }
     else {
       for (size_t i = 0; i < count; i++) {
         for (size_t j = 0; j < component_count; j++) {
-          rdata[i * component_count + j] = j + std::sqrt((double)ids[i]);
+          rdata[i * component_count + j] = j + std::sqrt((double)ids[i]) + offset;
         }
       }
     }
   }
 
   void fill_transient_data(const Ioss::GroupingEntity *entity, const Ioss::Field &field, void *data,
-                           void *id_data, size_t count)
+                           void *id_data, size_t count, double offset = 0.0)
   {
     const Ioss::Field &ids = entity->get_fieldref("ids");
     if (ids.is_type(Ioss::Field::INTEGER)) {
       fill_transient_data(entity, field.raw_storage()->component_count(),
                           reinterpret_cast<double *>(data), reinterpret_cast<int *>(id_data),
-                          count);
+                          count, offset);
     }
     else {
       fill_transient_data(entity, field.raw_storage()->component_count(),
                           reinterpret_cast<double *>(data), reinterpret_cast<int64_t *>(id_data),
-                          count);
+                          count, offset);
     }
   }
 
@@ -151,9 +151,7 @@ namespace Iogn {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), m_generatedMesh(nullptr),
-        spatialDimension(3), nodeCount(0), elementCount(0), elementBlockCount(0), nodesetCount(0),
-        sidesetCount(0), m_useVariableDf(true)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     if (is_input()) {
       dbState = Ioss::STATE_UNKNOWN;
@@ -216,8 +214,9 @@ namespace Iogn {
 
   bool DatabaseIO::end__(Ioss::State /* state */) { return true; }
 
-  bool DatabaseIO::begin_state__(Ioss::Region * /*region*/, int /* state */, double /*time*/)
+  bool DatabaseIO::begin_state__(Ioss::Region * /*region*/, int /* state */, double time)
   {
+    currentTime = time;
     return true;
   }
 
@@ -266,7 +265,7 @@ namespace Iogn {
     const Ioss::Field &id_fld = nb->get_fieldref("ids");
     std::vector<char>  ids(id_fld.get_size());
     get_field_internal(nb, id_fld, ids.data(), id_fld.get_size());
-    fill_transient_data(nb, field, data, ids.data(), num_to_get);
+    fill_transient_data(nb, field, data, ids.data(), num_to_get, currentTime);
 
     return num_to_get;
   }
@@ -343,7 +342,7 @@ namespace Iogn {
       const Ioss::Field &id_fld = eb->get_fieldref("ids");
       std::vector<char>  ids(id_fld.get_size());
       get_field_internal(eb, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(eb, field, data, ids.data(), num_to_get);
+      fill_transient_data(eb, field, data, ids.data(), num_to_get, currentTime + id);
     }
     else if (role == Ioss::Field::REDUCTION) {
       num_to_get = Ioss::Utils::field_warning(eb, field, "input reduction");
@@ -437,7 +436,7 @@ namespace Iogn {
       const Ioss::Field &id_fld = ef_blk->get_fieldref("ids");
       std::vector<char>  ids(id_fld.get_size());
       get_field_internal(ef_blk, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(ef_blk, field, data, ids.data(), num_to_get);
+      fill_transient_data(ef_blk, field, data, ids.data(), num_to_get, currentTime + id);
     }
     return num_to_get;
   }
@@ -486,7 +485,7 @@ namespace Iogn {
       const Ioss::Field &id_fld = ns->get_fieldref("ids");
       std::vector<char>  ids(id_fld.get_size());
       get_field_internal(ns, id_fld, ids.data(), id_fld.get_size());
-      fill_transient_data(ns, field, data, ids.data(), num_to_get);
+      fill_transient_data(ns, field, data, ids.data(), num_to_get, currentTime + id);
     }
     return num_to_get;
   }
