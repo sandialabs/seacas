@@ -1496,35 +1496,28 @@ namespace Iocgns {
 
         cgsize_t range_min[1] = {(cgsize_t)node_offset[zone - 1] + 1};
         cgsize_t range_max[1] = {range_min[0] + (cgsize_t)node_count[zone - 1] - 1};
-        int      cgns_field   = 0;
 
-        if (comp_count > 1) {
-          char field_suffix_separator = get_field_separator();
+	char field_suffix_separator = get_field_separator();
 
-          for (size_t i = 0; i < comp_count; i++) {
-            for (size_t j = 0; j < block_map->size(); j++) {
-              auto global = block_map->map()[j + 1] - 1;
-              blk_data[j] = rdata[comp_count * global + i];
-            }
-            std::string var_name =
-                var_type->label_name(field.get_name(), i + 1, field_suffix_separator);
-            CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                    CG_RealDouble, var_name.c_str(), &cgns_field));
+	for (size_t i = 0; i < comp_count; i++) {
+	  for (size_t j = 0; j < block_map->size(); j++) {
+	    auto global = block_map->map()[j + 1];
+	    auto local  = nodeMap.global_to_local(global) - 1;
+	    assert(local >= 0 && local < (int64_t)num_to_get);
+	    blk_data[j] = rdata[local * comp_count + i];
+	  }
+	  std::string var_name = (comp_count > 1) ? 
+	    var_type->label_name(field.get_name(), i + 1, field_suffix_separator) :
+	    field.get_name();
+	  int      cgns_field   = 0;
+	  CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
+				  CG_RealDouble, var_name.c_str(), &cgns_field));
 
-            CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                         cgns_field, range_min, range_max, blk_data.data()));
-            if (i == 0)
-              Utils::set_field_index(field, cgns_field, CG_Vertex);
-          }
-        }
-        else {
-          CGCHECK(cgp_field_write(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                  CG_RealDouble, field.get_name().c_str(), &cgns_field));
-
-          CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
-                                       cgns_field, range_min, range_max, rdata));
-          Utils::set_field_index(field, cgns_field, CG_CellCenter);
-        }
+	  CGCHECK(cgp_field_write_data(cgnsFilePtr, base, zone, m_currentVertexSolutionIndex,
+				       cgns_field, range_min, range_max, blk_data.data()));
+	  if (i == 0)
+	    Utils::set_field_index(field, cgns_field, CG_Vertex);
+	}
       }
     }
     else {
@@ -1968,7 +1961,6 @@ namespace Iocgns {
 
         sb->property_update("section", sect);
 
-        size_t        offset = m_zoneOffset[zone - 1];
         CGNSIntVector parent(4 * num_to_get);
 
         if (field.get_type() == Ioss::Field::INT32) {

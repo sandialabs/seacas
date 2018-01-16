@@ -2101,6 +2101,11 @@ namespace {
         transfer_properties(fb, block);
         transfer_fields(fb, block, Ioss::Field::MESH);
         transfer_fields(fb, block, Ioss::Field::ATTRIBUTE);
+	if (fb->parent_block() != nullptr) {
+	  auto fb_name = fb->parent_block()->name();
+	  Ioss::EntityBlock *parent = dynamic_cast<Ioss::EntityBlock*>(output_region.get_entity(fb_name));
+	  block->set_parent_block(parent);
+	}
       }
       transfer_properties(ss, surf);
       transfer_fields(ss, surf, Ioss::Field::MESH);
