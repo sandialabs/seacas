@@ -329,6 +329,8 @@ namespace Iocgns {
 
     Ioss::NodeBlock *nblock =
         new Ioss::NodeBlock(this, "nodeblock_1", decomp->ioss_node_count(), 3);
+    nodeCount = decomp->ioss_node_count();
+    
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
 
