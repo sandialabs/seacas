@@ -384,7 +384,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
   size_t num_nodes1 = file1.Num_Nodes();
   size_t num_elmts1 = file1.Num_Elmts();
 
-  // size_t num_nodes2 = file2.Num_Nodes();
+  size_t num_nodes2 = file2.Num_Nodes();
   size_t num_elmts2 = file2.Num_Elmts();
   int    dim        = file1.Dimension();
   SMART_ASSERT(dim == file2.Dimension());
@@ -642,7 +642,7 @@ void Compute_Partial_Maps(INT *&node_map, INT *&elmt_map, ExoII_Read<INT> &file1
     std::cout << "\nPartial Map selected -- " << unmatched << " elements unmatched\n";
   }
   else {
-    if (num_elmts1 == num_elmts2) {
+    if (num_elmts1 == num_elmts2 && num_nodes1 == num_nodes2) {
       std::cout
           << "exodiff: INFO .. Partial Map was specfied, but not needed.  All elements matched.\n";
     }
