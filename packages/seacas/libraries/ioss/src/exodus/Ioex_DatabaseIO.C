@@ -520,7 +520,7 @@ namespace Ioex {
     int blk_position = eb->get_property("original_block_order").get_int();
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(check_block_order(element_blocks));
+    assert(Ioss::Utils::check_block_order(element_blocks));
     for (const auto &leb : element_blocks) {
       int lblk_position = leb->get_property("original_block_order").get_int();
 
@@ -553,29 +553,29 @@ namespace Ioex {
     std::vector<int64_t>          node_used(nodeCount);
     std::vector<std::vector<int>> inv_con(nodeCount);
     Ioss::ElementBlockContainer   element_blocks = get_region()->get_element_blocks();
-    assert(Ioex::check_block_order(element_blocks));
+    assert(Ioss::Utils::check_block_order(element_blocks));
 
     {
       Ioss::SerializeIO serializeIO__(this);
       for (Ioss::ElementBlock *eb : element_blocks) {
         int     blk_position     = eb->get_property("original_block_order").get_int();
         int64_t my_element_count = eb->entity_count();
+	if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
+	  std::vector<int64_t> conn;
+	  eb->get_field_data("connectivity_raw", conn);
+	  for (auto node : conn) {
+	    node_used[node - 1] = blk_position + 1;
+	  }
+	}
+	else {
+	  std::vector<int> conn;
+	  eb->get_field_data("connectivity_raw", conn);
+	  for (auto node : conn) {
+	    node_used[node - 1] = blk_position + 1;
+	  }
+	}
+	
         if (my_element_count > 0) {
-	  if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
-            std::vector<int64_t> conn;
-	    eb->get_field_data("connectivity_raw", conn);
-	    for (auto node : conn) {
-	      node_used[node - 1] = blk_position + 1;
-	    }
-          }
-          else {
-            std::vector<int> conn;
-	    eb->get_field_data("connectivity_raw", conn);
-	    for (auto node : conn) {
-	      node_used[node - 1] = blk_position + 1;
-	    }
-          }
-
           for (int64_t i = 0; i < nodeCount; i++) {
             if (node_used[i] == blk_position + 1) {
               inv_con[i].push_back(blk_position);
@@ -914,7 +914,7 @@ namespace Ioex {
     }
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(check_block_order(element_blocks));
+    assert(Ioss::Utils::check_block_order(element_blocks));
 
     for (int i = 0; i < m_groupCount[EX_ELEM_BLOCK]; i++) {
       if (block_ids[i] == 1) {
