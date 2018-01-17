@@ -729,8 +729,6 @@ namespace Iogn {
       block->property_add(Ioss::Property("id", i + 1));
       block->property_add(Ioss::Property("guid", util().generate_guid(i + 1)));
 
-      // Maintain block order on output database...
-      block->property_add(Ioss::Property("original_block_order", i));
       block->property_add(
           Ioss::Property("global_entity_count", m_generatedMesh->element_count(i + 1)));
 
