@@ -1342,12 +1342,9 @@ namespace Iocgns {
         // The ids coming in are the global ids; their position is the
         // local id -1 (That is, data[0] contains the global id of local
         // node 1)
-
-        // Another 'const-cast' since we are modifying the database just
-        // for efficiency; which the client does not see...
         handle_node_ids(data, num_to_get);
       }
-      if (field.get_name() == "mesh_model_coordinates" ||
+      else if (field.get_name() == "mesh_model_coordinates" ||
           field.get_name() == "mesh_model_coordinates_x" ||
           field.get_name() == "mesh_model_coordinates_y" ||
           field.get_name() == "mesh_model_coordinates_z") {
@@ -1674,7 +1671,7 @@ namespace Iocgns {
 
         // Now we have a valid zone so can update some data structures...
         m_zoneOffset[zone]                = m_zoneOffset[zone - 1] + size[1];
-        m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("element", "unknown", myProcessor);
+        m_globalToBlockLocalNodeMap[zone] = new Ioss::Map("node", get_filename()+"::"+eb->name(), myProcessor);
         m_globalToBlockLocalNodeMap[zone]->map().reserve(nodes.size() + 1);
         m_globalToBlockLocalNodeMap[zone]->map().push_back(1); // Non one-to-one map
         for (auto i : nodes) {
