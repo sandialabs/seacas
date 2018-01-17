@@ -225,7 +225,7 @@ namespace Ioex {
     void put_qa();
     void put_info();
 
-    virtual void compute_block_adjacencies() const = 0;
+    void compute_block_adjacencies() const;
 
     template <typename T>
     void internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
