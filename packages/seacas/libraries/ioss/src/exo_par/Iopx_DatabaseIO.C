@@ -1179,7 +1179,7 @@ namespace Iopx {
     nodeConnectivityStatus.resize(nodeCount);
 
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-    assert(Ioex::check_block_order(element_blocks));
+    assert(Ioss::Utils::check_block_order(element_blocks));
 
     for (Ioss::ElementBlock *block : element_blocks) {
       unsigned char status = 2;
@@ -1426,7 +1426,7 @@ namespace Iopx {
             // pairs so we are sure that all processors have the same
             // starting topo_map (size and order).
             Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
-            assert(Ioex::check_block_order(element_blocks));
+            assert(Ioss::Utils::check_block_order(element_blocks));
 
             for (Ioss::ElementBlock *block : element_blocks) {
               if (!Ioss::Utils::block_is_omitted(block)) {
@@ -4302,7 +4302,7 @@ void DatabaseIO::write_meta_data()
   // Edge Blocks --
   {
     Ioss::EdgeBlockContainer edge_blocks = region->get_edge_blocks();
-    assert(Ioex::check_block_order(edge_blocks));
+    assert(Ioss::Utils::check_block_order(edge_blocks));
     for (auto &edge_block : edge_blocks) {
       Ioex::set_id(edge_block, EX_EDGE_BLOCK, &ids_);
     }
@@ -4321,7 +4321,7 @@ void DatabaseIO::write_meta_data()
   // Face Blocks --
   {
     Ioss::FaceBlockContainer face_blocks = region->get_face_blocks();
-    assert(Ioex::check_block_order(face_blocks));
+    assert(Ioss::Utils::check_block_order(face_blocks));
     // Set ids of all entities that have "id" property...
     for (auto &face_block : face_blocks) {
       Ioex::set_id(face_block, EX_FACE_BLOCK, &ids_);
@@ -4341,7 +4341,7 @@ void DatabaseIO::write_meta_data()
   // Element Blocks --
   {
     Ioss::ElementBlockContainer element_blocks = region->get_element_blocks();
-    assert(Ioex::check_block_order(element_blocks));
+    assert(Ioss::Utils::check_block_order(element_blocks));
     // Set ids of all entities that have "id" property...
     for (auto &element_block : element_blocks) {
       Ioex::set_id(element_block, EX_ELEM_BLOCK, &ids_);
