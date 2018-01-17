@@ -82,7 +82,16 @@ namespace {
     return id;
   }
 
+  Ioss::PropertyManager set_properties(const Info::Interface &interface)
+  {
+    Ioss::PropertyManager properties;
+    if (!interface.decomp_method().empty()) {
+      properties.add(Ioss::Property("DECOMPOSITION_METHOD", interface.decomp_method()));
+    }
+    return properties;
+  }
 } // namespace
+
 void hex_volume(Ioss::ElementBlock *block, const std::vector<double> &coordinates);
 
 namespace {
@@ -145,8 +154,10 @@ namespace {
     // INPUT ...
     // NOTE: The "READ_RESTART" mode ensures that the node and element ids will be mapped.
     //========================================================================
+    Ioss::PropertyManager properties = set_properties(interface);
+
     Ioss::DatabaseIO *dbi =
-        Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD);
+      Ioss::IOFactory::create(input_type, inpfile, Ioss::READ_RESTART, (MPI_Comm)MPI_COMM_WORLD, properties);
 
     Ioss::io_info_set_db_properties(interface, dbi);
 
