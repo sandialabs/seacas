@@ -644,15 +644,32 @@ namespace Ioss {
       compute_block_adjacencies();
     }
 
-    // Extract the computed block adjacency information for this
-    // element block:
-    // Debug print...
-    int blk_position = eb->get_property("original_block_order").get_int();
-
     Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
+
+    // Extract the computed block adjacency information for this
+    // element block:
+    int blk_position = 0;
+    if (eb->property_exists("original_block_order")) {
+      blk_position = eb->get_property("original_block_order").get_int();
+    }
+    else {
+      for (const auto &leb : element_blocks) {
+	if (leb == eb) {
+	  break;
+	}
+	blk_position++;
+      }
+    }
+    
+    int lblk_position = -1;
     for (const auto &leb : element_blocks) {
-      int lblk_position = leb->get_property("original_block_order").get_int();
+      if (leb->property_exists("original_block_order")) {
+	lblk_position = leb->get_property("original_block_order").get_int();
+      }
+      else {
+	lblk_position++;
+      }
 
       if (blk_position != lblk_position &&
           static_cast<int>(blockAdjacency[blk_position][lblk_position]) == 1) {
@@ -688,8 +705,14 @@ namespace Ioss {
 
     {
       Ioss::SerializeIO serializeIO__(this);
+      int blk_position = -1;
       for (Ioss::ElementBlock *eb : element_blocks) {
-        int     blk_position     = eb->get_property("original_block_order").get_int();
+	if (eb->property_exists("original_block_order")) {
+	  blk_position     = eb->get_property("original_block_order").get_int();
+	}
+	else {
+	  blk_position++;
+	}
         int64_t my_element_count = eb->entity_count();
 	if (int_byte_size_api() == 8) {
 	  std::vector<int64_t> conn;

@@ -968,6 +968,7 @@ namespace Ioss {
         structured_block->set_cell_global_offset(global_num_cell);
       }
 
+      structured_block->property_add(Ioss::Property(orig_block_order(), (int)structuredBlocks.size()));
       structuredBlocks.push_back(structured_block);
       // Add name as alias to itself to simplify later uses...
       add_alias__(structured_block);
@@ -1043,23 +1044,7 @@ namespace Ioss {
         SMART_ASSERT(offset >= 0)(offset);
         element_block->set_offset(offset);
       }
-      else {
-        // Check whether the "original_block_order" property exists on
-        // this element block. If it isn't there, then add it with a
-        // large value. If this is an element block read from the input
-        // mesh, then the value will be updated during the
-        // 'synchronize_id_and_name' function; if it is a block created
-        // by the application during execution, then this value will
-        // persist.  Add the property with a very large number such that
-        // it will later be sorted after all "original" blocks.  Note
-        // that it doesn't matter if two of the "new" blocks have the
-        // same value since there is no ordering of new blocks that must
-        // be preserved. (Use int_MAX/2 just to avoid some paranoia
-        // about strange issue that might arise from int_MAX)
-        if (!element_block->property_exists(orig_block_order())) {
-          element_block->property_add(Property(orig_block_order(), INT_MAX / 2));
-        }
-      }
+      element_block->property_add(Ioss::Property(orig_block_order(), (int)elementBlocks.size()));
       elementBlocks.push_back(element_block);
       return true;
     }
@@ -1094,23 +1079,7 @@ namespace Ioss {
         }
         face_block->set_offset(offset);
       }
-      else {
-        // Check whether the "original_block_order" property exists on
-        // this face block. If it isn't there, then add it with a
-        // large value. If this is an face block read from the input
-        // mesh, then the value will be updated during the
-        // 'synchronize_id_and_name' function; if it is a block created
-        // by the application during execution, then this value will
-        // persist.  Add the property with a very large number such that
-        // it will later be sorted after all "original" blocks.  Note
-        // that it doesn't matter if two of the "new" blocks have the
-        // same value since there is no ordering of new blocks that must
-        // be preserved. (Use int_MAX/2 just to avoid some paranoia
-        // about strange issue that might arise from int_MAX)
-        if (!face_block->property_exists(orig_block_order())) {
-          face_block->property_add(Property(orig_block_order(), INT_MAX / 2));
-        }
-      }
+      face_block->property_add(Ioss::Property(orig_block_order(), (int)faceBlocks.size()));
       faceBlocks.push_back(face_block);
       return true;
     }
@@ -1145,23 +1114,7 @@ namespace Ioss {
         }
         edge_block->set_offset(offset);
       }
-      else {
-        // Check whether the "original_block_order" property exists on
-        // this edge block. If it isn't there, then add it with a
-        // large value. If this is an edge block read from the input
-        // mesh, then the value will be updated during the
-        // 'synchronize_id_and_name' function; if it is a block created
-        // by the application during execution, then this value will
-        // persist.  Add the property with a very large number such that
-        // it will later be sorted after all "original" blocks.  Note
-        // that it doesn't matter if two of the "new" blocks have the
-        // same value since there is no ordering of new blocks that must
-        // be preserved. (Use int_MAX/2 just to avoid some paranoia
-        // about strange issue that might arise from int_MAX)
-        if (!edge_block->property_exists(orig_block_order())) {
-          edge_block->property_add(Property(orig_block_order(), INT_MAX / 2));
-        }
-      }
+      edge_block->property_add(Ioss::Property(orig_block_order(), (int)edgeBlocks.size()));
       edgeBlocks.push_back(edge_block);
       return true;
     }

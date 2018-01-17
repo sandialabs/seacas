@@ -101,9 +101,6 @@ namespace Iopg {
     std::string title() const { return databaseTitle; }
     int         maximum_symbol_length() const override { return 32; }
 
-    void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                               std::vector<std::string> &block_adjacency) const;
-
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const;
 
@@ -132,8 +129,6 @@ namespace Iopg {
 
     const Ioss::Map &get_node_map() const;
     const Ioss::Map &get_element_map() const;
-
-    void compute_block_adjacencies() const;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const;
@@ -242,11 +237,6 @@ namespace Iopg {
     Ioss::IntVector elemCmapElemCnts;
     int             commsetNodeCount;
     int             commsetElemCount;
-
-    mutable std::vector<std::vector<bool>> blockAdjacency;
-
-    mutable bool blockAdjacenciesCalculated; // True if the lazy creation of
-    // block adjacencies has been calculated.
   };
 } // namespace Iopg
 #endif // SIERRA_Iopg_DatabaseIO_h

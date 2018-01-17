@@ -104,9 +104,6 @@ namespace Iodw {
     int         nodeset_count() const { return nodesetCount; }
     int         maximum_symbol_length() const override { return 32; }
 
-    void get_block_adjacencies(const Ioss::ElementBlock *eb,
-                               std::vector<std::string> &block_adjacency) const;
-
     void compute_block_membership(Ioss::SideBlock *         efblock,
                                   std::vector<std::string> &block_membership) const;
 
@@ -142,8 +139,6 @@ namespace Iodw {
 
     const Ioss::Map &get_node_map() const;
     const Ioss::Map &get_element_map() const;
-
-    void compute_block_adjacencies() const;
 
     int64_t get_field_internal(const Ioss::Region *reg, const Ioss::Field &field, void *data,
                                size_t data_size) const override;
@@ -214,11 +209,6 @@ namespace Iodw {
     Ioss::IntVector elemCmapElemCnts;
     int             commsetNodeCount;
     int             commsetElemCount;
-
-    mutable std::vector<std::vector<bool>> blockAdjacency;
-
-    mutable bool blockAdjacenciesCalculated; // True if the lazy creation of
-    // block adjacencies has been calculated.
   };
 } // namespace Iodw
 #endif // Iodw_DatabaseIO_h

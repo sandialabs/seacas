@@ -1265,9 +1265,6 @@ namespace Iofx {
         }
       }
 
-      // Maintain block order on output database...
-      block->property_add(Ioss::Property("original_block_order", used_blocks++));
-
       if (save_type != "null" && save_type != "") {
         block->property_update("original_topology_type", save_type);
       }
