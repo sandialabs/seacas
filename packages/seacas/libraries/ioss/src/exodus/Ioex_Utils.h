@@ -88,8 +88,6 @@ namespace Ioex {
 
   void exodus_error(int exoid, int lineno, const char *function, const char *filename);
 
-  void check_non_null(void *ptr, const char *type, const std::string &name);
-
   int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
                      size_t name_length);
 

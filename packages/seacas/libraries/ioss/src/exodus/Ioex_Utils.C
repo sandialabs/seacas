@@ -484,17 +484,6 @@ namespace Ioex {
     IOSS_ERROR(errmsg);
   }
 
-  // common
-  void check_non_null(void *ptr, const char *type, const std::string &name)
-  {
-    if (ptr == nullptr) {
-      std::ostringstream errmsg;
-      errmsg << "INTERNAL ERROR: Could not find " << type << " '" << name << "'."
-             << " Something is wrong in the Ioex::DatabaseIO class. Please report.\n";
-      IOSS_ERROR(errmsg);
-    }
-  }
-
   int add_map_fields(int exoid, Ioss::ElementBlock *block, int64_t my_element_count,
                      size_t name_length)
   {

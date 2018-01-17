@@ -1300,7 +1300,7 @@ namespace Iopx {
             in_fs_map            = true;
             std::string efs_name = (*FSM).second;
             side_set             = get_region()->get_sideset(efs_name);
-            Ioex::check_non_null(side_set, "sideset", efs_name);
+	    Ioss::Utils::check_non_null(side_set, "sideset", efs_name, __func__);
           }
           else {
             if (get_use_generic_canonical_name()) {
