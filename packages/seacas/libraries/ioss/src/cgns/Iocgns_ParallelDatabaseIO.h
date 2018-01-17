@@ -188,10 +188,8 @@ namespace Iocgns {
     void resolve_zone_shared_nodes(const CGNSIntVector &nodes, CGNSIntVector &connectivity_map,
                                    size_t &owned_node_count, size_t &owned_node_offset) const;
 
-    mutable int   cgnsFilePtr;
-    size_t        nodeCount;
-    size_t        elementCount;
-    CG_ZoneType_t m_zoneType;
+    mutable int   cgnsFilePtr{-1};
+    CG_ZoneType_t m_zoneType{CG_ZoneTypeNull};
 
     mutable std::unique_ptr<DecompositionDataBase> decomp;
 

@@ -201,8 +201,6 @@ namespace Iodw {
     std::string databaseTitle;
 
     int spatialDimension;
-    int nodeCount;
-    int elementCount;
 
     int nodeBlockCount;
     int elementBlockCount;

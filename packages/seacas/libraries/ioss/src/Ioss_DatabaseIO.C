@@ -32,14 +32,24 @@
 
 #include <Ioss_BoundingBox.h>
 #include <Ioss_CodeTypes.h>
+#include <Ioss_CommSet.h>
+#include <Ioss_DBUsage.h>
 #include <Ioss_DatabaseIO.h>
 #include <Ioss_ElementTopology.h>
 #include <Ioss_EntityBlock.h>
+#include <Ioss_Field.h>
 #include <Ioss_FileInfo.h>
+#include <Ioss_GroupingEntity.h>
 #include <Ioss_NodeBlock.h>
 #include <Ioss_ParallelUtils.h>
+#include <Ioss_Property.h>
 #include <Ioss_Region.h>
+#include <Ioss_SerializeIO.h>
+#include <Ioss_SideBlock.h>
+#include <Ioss_SideSet.h>
+#include <Ioss_State.h>
 #include <Ioss_StructuredBlock.h>
+#include <Ioss_SurfaceSplit.h>
 #include <Ioss_Utils.h>
 #include <algorithm>
 #include <cassert>
@@ -55,16 +65,6 @@
 #include <tokenize.h>
 #include <utility>
 #include <vector>
-
-#include <Ioss_DBUsage.h>
-#include <Ioss_Field.h>
-#include <Ioss_GroupingEntity.h>
-#include <Ioss_Property.h>
-#include <Ioss_SerializeIO.h>
-#include <Ioss_SideBlock.h>
-#include <Ioss_SideSet.h>
-#include <Ioss_State.h>
-#include <Ioss_SurfaceSplit.h>
 
 namespace {
   void log_field(const char *symbol, const Ioss::GroupingEntity *entity, const Ioss::Field &field,
@@ -635,6 +635,292 @@ namespace Ioss {
       std::copy(side_topo.cbegin(), side_topo.cend(), std::back_inserter(new_this->sideTopology));
     }
     assert(!sideTopology.empty());
+  }
+
+  void DatabaseIO::get_block_adjacencies__(const Ioss::ElementBlock *eb,
+                                           std::vector<std::string> &block_adjacency) const
+  {
+    if (!blockAdjacenciesCalculated) {
+      compute_block_adjacencies();
+    }
+
+    // Extract the computed block adjacency information for this
+    // element block:
+    // Debug print...
+    int blk_position = eb->get_property("original_block_order").get_int();
+
+    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
+    assert(Ioss::Utils::check_block_order(element_blocks));
+    for (const auto &leb : element_blocks) {
+      int lblk_position = leb->get_property("original_block_order").get_int();
+
+      if (blk_position != lblk_position &&
+          static_cast<int>(blockAdjacency[blk_position][lblk_position]) == 1) {
+        block_adjacency.push_back(leb->name());
+      }
+    }
+  }
+
+  // common
+  void DatabaseIO::compute_block_adjacencies() const
+  {
+    // Add a field to each element block specifying which other element
+    // blocks the block is adjacent to (defined as sharing nodes).
+    // This is only calculated on request...
+
+    blockAdjacenciesCalculated = true;
+
+    Ioss::ElementBlockContainer   element_blocks = get_region()->get_element_blocks();
+    assert(Ioss::Utils::check_block_order(element_blocks));
+
+    if (element_blocks.size() == 1) {
+      blockAdjacency.resize(1);
+      blockAdjacency[0].resize(1);
+      blockAdjacency[0][0] = false;
+      return;
+    }
+
+    // Each processor first calculates the adjacencies on their own
+    // processor...
+
+    std::vector<int64_t>          node_used(nodeCount);
+    std::vector<std::vector<int>> inv_con(nodeCount);
+
+    {
+      Ioss::SerializeIO serializeIO__(this);
+      for (Ioss::ElementBlock *eb : element_blocks) {
+        int     blk_position     = eb->get_property("original_block_order").get_int();
+        int64_t my_element_count = eb->entity_count();
+	if (int_byte_size_api() == 8) {
+	  std::vector<int64_t> conn;
+	  eb->get_field_data("connectivity_raw", conn);
+	  for (auto node : conn) {
+	    node_used[node - 1] = blk_position + 1;
+	  }
+	}
+	else {
+	  std::vector<int> conn;
+	  eb->get_field_data("connectivity_raw", conn);
+	  for (auto node : conn) {
+	    node_used[node - 1] = blk_position + 1;
+	  }
+	}
+	
+        if (my_element_count > 0) {
+          for (int64_t i = 0; i < nodeCount; i++) {
+            if (node_used[i] == blk_position + 1) {
+              inv_con[i].push_back(blk_position);
+            }
+          }
+        }
+      }
+    }
+
+#ifdef SEACAS_HAVE_MPI
+    if (isParallel) {
+      // Get contributions from other processors...
+      // Get the communication map...
+      Ioss::CommSet *css = get_region()->get_commset("commset_node");
+      Ioss::Utils::check_non_null(css, "communication map", "commset_node", __func__);
+      std::vector<std::pair<int, int>> proc_node;
+      {
+        std::vector<int> entity_processor;
+        css->get_field_data("entity_processor", entity_processor);
+        proc_node.reserve(entity_processor.size() / 2);
+        size_t j = 0;
+        for (size_t i = 0; i < entity_processor.size(); j++, i += 2) {
+          proc_node.emplace_back(entity_processor[i + 1], entity_processor[i]);
+        }
+      }
+
+      // Now sort by increasing processor number.
+      std::sort(proc_node.begin(), proc_node.end());
+
+      // Pack the data: global_node_id, bits for each block, ...
+      // Use 'int' as basic type...
+      size_t                id_size   = 1;
+      size_t                word_size = sizeof(int) * 8;
+      size_t                bits_size = (element_blocks.size() + word_size - 1) / word_size;
+      std::vector<unsigned> send(proc_node.size() * (id_size + bits_size));
+      std::vector<unsigned> recv(proc_node.size() * (id_size + bits_size));
+
+      std::vector<int> procs(util().parallel_size());
+      size_t           offset = 0;
+      for (const auto &pn : proc_node) {
+        int64_t glob_id = pn.second;
+        int     proc    = pn.first;
+        procs[proc]++;
+        send[offset++] = glob_id;
+        int64_t loc_id = nodeMap.global_to_local(glob_id, true) - 1;
+        for (int jblk : inv_con[loc_id]) {
+          size_t wrd_off = jblk / word_size;
+          size_t bit     = jblk % word_size;
+          send[offset + wrd_off] |= (1 << bit);
+        }
+        offset += bits_size;
+      }
+
+      // Count nonzero entries in 'procs' array -- count of
+      // sends/receives
+      size_t non_zero = util().parallel_size() - std::count(procs.begin(), procs.end(), 0);
+
+      // Post all receives...
+      MPI_Request              request_null = MPI_REQUEST_NULL;
+      std::vector<MPI_Request> request(non_zero, request_null);
+      std::vector<MPI_Status>  status(non_zero);
+
+      int    result  = MPI_SUCCESS;
+      size_t req_cnt = 0;
+      offset         = 0;
+      for (int i = 0; result == MPI_SUCCESS && i < util().parallel_size(); i++) {
+        if (procs[i] > 0) {
+          const unsigned size     = procs[i] * (id_size + bits_size);
+          void *const    recv_buf = &recv[offset];
+          result = MPI_Irecv(recv_buf, size, MPI_INT, i, 10101, util().communicator(),
+                             &request[req_cnt]);
+          req_cnt++;
+          offset += size;
+        }
+      }
+      assert(result != MPI_SUCCESS || non_zero == req_cnt);
+
+      if (result != MPI_SUCCESS) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: MPI_Irecv error on processor " << util().parallel_rank()
+               << " in " << __func__;
+        std::cerr << errmsg.str();
+      }
+
+      int local_error  = (MPI_SUCCESS == result) ? 0 : 1;
+      int global_error = util().global_minmax(local_error, Ioss::ParallelUtils::DO_MAX);
+
+      if (global_error != 0) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: MPI_Irecv error on some processor "
+               << "in " << __func__;
+        IOSS_ERROR(errmsg);
+      }
+
+      result  = MPI_SUCCESS;
+      req_cnt = 0;
+      offset  = 0;
+      for (int i = 0; result == MPI_SUCCESS && i < util().parallel_size(); i++) {
+        if (procs[i] > 0) {
+          const unsigned size     = procs[i] * (id_size + bits_size);
+          void *const    send_buf = &send[offset];
+          result = MPI_Rsend(send_buf, size, MPI_INT, i, 10101, util().communicator());
+          req_cnt++;
+          offset += size;
+        }
+      }
+      assert(result != MPI_SUCCESS || non_zero == req_cnt);
+
+      if (result != MPI_SUCCESS) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: MPI_Rsend error on processor " << util().parallel_rank()
+               << " in " << __func__;
+        std::cerr << errmsg.str();
+      }
+
+      local_error  = (MPI_SUCCESS == result) ? 0 : 1;
+      global_error = util().global_minmax(local_error, Ioss::ParallelUtils::DO_MAX);
+
+      if (global_error != 0) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: MPI_Rsend error on some processor "
+               << "in " << __func__;
+        IOSS_ERROR(errmsg);
+      }
+
+      result = MPI_Waitall(req_cnt, TOPTR(request), TOPTR(status));
+
+      if (result != MPI_SUCCESS) {
+        std::ostringstream errmsg;
+        errmsg << "ERROR: MPI_Waitall error on processor " << util().parallel_rank()
+               << " in " << __func__;
+        std::cerr << errmsg.str();
+      }
+
+      // Unpack the data and update the inv_con arrays for boundary
+      // nodes...
+      offset = 0;
+      for (size_t i = 0; i < proc_node.size(); i++) {
+        int64_t glob_id = recv[offset++];
+        int64_t loc_id  = nodeMap.global_to_local(glob_id, true) - 1;
+        for (size_t iblk = 0; iblk < element_blocks.size(); iblk++) {
+          size_t wrd_off = iblk / word_size;
+          size_t bit     = iblk % word_size;
+          if (recv[offset + wrd_off] & (1 << bit)) {
+            inv_con[loc_id].push_back(iblk); // May result in duplicates, but that is OK.
+          }
+        }
+        offset += bits_size;
+      }
+    }
+#endif
+
+    // Convert from inv_con arrays to block adjacency...
+    blockAdjacency.resize(element_blocks.size());
+    for (auto &block : blockAdjacency) {
+      block.resize(element_blocks.size());
+    }
+
+    for (int64_t i = 0; i < nodeCount; i++) {
+      for (size_t j = 0; j < inv_con[i].size(); j++) {
+        int jblk = inv_con[i][j];
+        for (size_t k = j + 1; k < inv_con[i].size(); k++) {
+          int kblk                   = inv_con[i][k];
+          blockAdjacency[jblk][kblk] = true;
+          blockAdjacency[kblk][jblk] = true;
+        }
+      }
+    }
+
+#ifdef SEACAS_HAVE_MPI
+    if (isParallel) {
+      // Sync across all processors...
+      size_t word_size = sizeof(int) * 8;
+      size_t bits_size = (element_blocks.size() + word_size - 1) / word_size;
+
+      std::vector<unsigned> data(element_blocks.size() * bits_size);
+      int64_t               offset = 0;
+      for (size_t jblk = 0; jblk < element_blocks.size(); jblk++) {
+        for (size_t iblk = 0; iblk < element_blocks.size(); iblk++) {
+          if (blockAdjacency[jblk][iblk] == 1) {
+            size_t wrd_off = iblk / word_size;
+            size_t bit     = iblk % word_size;
+            data[offset + wrd_off] |= (1 << bit);
+          }
+        }
+        offset += bits_size;
+      }
+
+      std::vector<unsigned> out_data(element_blocks.size() * bits_size);
+      MPI_Allreduce((void *)TOPTR(data), TOPTR(out_data), static_cast<int>(data.size()),
+                    MPI_UNSIGNED, MPI_BOR, util().communicator());
+
+      offset = 0;
+      for (size_t jblk = 0; jblk < element_blocks.size(); jblk++) {
+        for (size_t iblk = 0; iblk < element_blocks.size(); iblk++) {
+          if (blockAdjacency[jblk][iblk] == 0) {
+            size_t wrd_off = iblk / word_size;
+            size_t bit     = iblk % word_size;
+            if (out_data[offset + wrd_off] & (1 << bit)) {
+              blockAdjacency[jblk][iblk] = 1;
+            }
+          }
+        }
+        offset += bits_size;
+      }
+    }
+#endif
+
+    // Make it symmetric...
+    for (size_t iblk = 0; iblk < element_blocks.size(); iblk++) {
+      for (size_t jblk = iblk; jblk < element_blocks.size(); jblk++) {
+        blockAdjacency[jblk][iblk] = blockAdjacency[iblk][jblk];
+      }
+    }
   }
 
   AxisAlignedBoundingBox DatabaseIO::get_bounding_box(const Ioss::ElementBlock *eb) const
