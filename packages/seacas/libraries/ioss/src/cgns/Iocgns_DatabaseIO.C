@@ -88,8 +88,7 @@ namespace Iocgns {
   DatabaseIO::DatabaseIO(Ioss::Region *region, const std::string &filename,
                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), cgnsFilePtr(-1),
-        nodeCount(0), elementCount(0)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     dbState = Ioss::STATE_UNKNOWN;
 

@@ -112,7 +112,7 @@ namespace Iovs {
                          communicator, props),
         isInput(false), singleProcOnly(false), doLogging(false), enableLogging(0), debugLevel(0),
         underscoreVectors(0), applyDisplacements(0), createSideSets(0), createNodeSets(0),
-        nodeCount(0), elementCount(0), nodeBlockCount(0), elementBlockCount(0)
+        nodeBlockCount(0), elementBlockCount(0)
   {
 
     std::ostringstream errmsg;

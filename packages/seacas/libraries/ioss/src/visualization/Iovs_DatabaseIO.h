@@ -253,9 +253,6 @@ namespace Iovs {
     static int         useCount;
     static int         uniqueID;
 
-    int64_t nodeCount;
-    int64_t elementCount;
-
     int nodeBlockCount;
     int elementBlockCount;
 

@@ -178,9 +178,7 @@ namespace Iocgns {
     const Ioss::Map &get_map(Ioss::Map &entity_map, int64_t entityCount, int64_t file_offset,
                              int64_t file_count, entity_type type) const;
 
-    mutable int cgnsFilePtr;
-    size_t      nodeCount;
-    size_t      elementCount;
+    mutable int cgnsFilePtr{-1};
 
     int m_currentVertexSolutionIndex     = 0;
     int m_currentCellCenterSolutionIndex = 0;

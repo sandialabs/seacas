@@ -538,6 +538,9 @@ namespace Ioss {
     bool isParallel;  //!< true if running in parallel
     int  myProcessor; //!< number of processor this database is for
 
+    int64_t nodeCount{0};
+    int64_t elementCount{0};
+    
     /*!
      * Check the topology of all face/element pairs in the model and
      * fill the "TopoContainer faceTopology" variable with the
@@ -595,6 +598,7 @@ namespace Ioss {
     mutable Ioss::Map faceMap{"face", DBFilename, myProcessor};
     mutable Ioss::Map elemMap{"element", DBFilename, myProcessor};
 
+    mutable std::vector<std::vector<bool>> blockAdjacency;
   private:
     virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
     {
@@ -637,15 +641,16 @@ namespace Ioss {
     virtual bool begin_state__(Region *region, int state, double time);
     virtual bool end_state__(Region *region, int state, double time);
 
-    virtual void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                         std::vector<std::string> &block_adjacency) const
-    {
-    }
+    void get_block_adjacencies__(const Ioss::ElementBlock *eb,
+				 std::vector<std::string> &block_adjacency) const;
+
     virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
                                             std::vector<std::string> &block_membership) const
     {
     }
 
+    void compute_block_adjacencies() const;
+    
     void verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const;
 
     virtual int64_t get_field_internal(const Region *reg, const Field &field, void *data,
@@ -736,6 +741,8 @@ namespace Ioss {
     // given on the mesh file e.g. "fireset".  Both names are still aliases.
     bool ignoreDatabaseNames; // True if "block_{id}" used as canonical name; ignore any names on
                               // database.
+    mutable bool blockAdjacenciesCalculated{false}; // True if the lazy creation of
+    // block adjacencies has been calculated.
   };
 } // namespace Ioss
 #endif

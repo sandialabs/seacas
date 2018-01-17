@@ -139,9 +139,6 @@ namespace Ioex {
       }
     }
 
-    void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-                                 std::vector<std::string> &block_adjacency) const override;
-
     size_t handle_block_ids(const Ioss::EntityBlock *eb, ex_entity_type map_type,
                             Ioss::Map &entity_map, void *ids, size_t num_to_get, size_t offset,
                             size_t count) const;
@@ -225,8 +222,6 @@ namespace Ioex {
     void put_qa();
     void put_info();
 
-    void compute_block_adjacencies() const;
-
     template <typename T>
     void internal_write_results_metadata(ex_entity_type type, std::vector<T *> entities,
                                          int &glob_index);
@@ -280,10 +275,8 @@ namespace Ioex {
     mutable int maximumNameLength;
     int         spatialDimension;
 
-    int64_t nodeCount;
     int64_t edgeCount;
     int64_t faceCount;
-    int64_t elementCount;
 
     mutable std::map<ex_entity_type, int> m_groupCount;
 
@@ -308,7 +301,6 @@ namespace Ioex {
 
     mutable ValueContainer globalValues;
 
-    mutable std::vector<std::vector<bool>> blockAdjacency;
     mutable std::vector<unsigned char>     nodeConnectivityStatus;
 
     // For a database with omitted blocks, this map contains the indices of the

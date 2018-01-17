@@ -195,8 +195,6 @@ namespace Iogn {
     std::vector<std::string> m_sideset_names;
 
     double  currentTime{0.0};
-    int64_t nodeCount{0};
-    int64_t elementCount{0};
     int     spatialDimension{3};
 
     int elementBlockCount{0};

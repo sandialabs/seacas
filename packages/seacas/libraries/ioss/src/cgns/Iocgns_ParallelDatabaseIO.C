@@ -101,8 +101,7 @@ namespace Iocgns {
   ParallelDatabaseIO::ParallelDatabaseIO(Ioss::Region *region, const std::string &filename,
                                          Ioss::DatabaseUsage db_usage, MPI_Comm communicator,
                                          const Ioss::PropertyManager &props)
-      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), cgnsFilePtr(-1),
-        nodeCount(0), elementCount(0), m_zoneType(CG_ZoneTypeNull)
+      : Ioss::DatabaseIO(region, filename, db_usage, communicator, props)
   {
     usingParallelIO = true;
     dbState         = Ioss::STATE_UNKNOWN;
