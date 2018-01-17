@@ -109,8 +109,6 @@ namespace Iopx {
 
     void get_step_times__() override;
 
-    void compute_block_adjacencies() const override;
-
     bool open_input_file(bool write_message, std::string *error_msg, int *bad_count,
                          bool abort_if_error) const;
     bool handle_output_file(bool write_message, std::string *error_msg, int *bad_count,
