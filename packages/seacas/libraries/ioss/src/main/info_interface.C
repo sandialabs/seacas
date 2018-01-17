@@ -31,6 +31,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "Ioss_CodeTypes.h"
 #include "Ioss_GetLongOpt.h" // for GetLongOption, etc
 #include "info_interface.h"
 #include <cstddef>  // for nullptr
@@ -39,9 +40,6 @@
 #include <string>   // for char_traits, string
 
 Info::Interface::Interface()
-    : checkNodeStatus_(false), computeVolume_(false), adjacencies_(false), ints64Bit_(false),
-      computeBBox_(false), listGroups_(false), useGenericNames_(false), fieldSuffixSeparator_('_'),
-      summary_(0), surfaceSplitScheme_(1), filetype_("exodus")
 {
   enroll_options();
 }
@@ -98,6 +96,57 @@ void Info::Interface::enroll_options()
 
   options_.enroll("copyright", Ioss::GetLongOption::NoValue, "Show copyright and license data.",
                   nullptr);
+
+#if defined(PARALLEL_AWARE_EXODUS)
+  options_.enroll(
+      "rcb", Ioss::GetLongOption::NoValue,
+      "Use recursive coordinate bisection method to decompose the input mesh in a parallel run.",
+      nullptr);
+  options_.enroll(
+      "rib", Ioss::GetLongOption::NoValue,
+      "Use recursive inertial bisection method to decompose the input mesh in a parallel run.",
+      nullptr);
+
+  options_.enroll(
+      "hsfc", Ioss::GetLongOption::NoValue,
+      "Use hilbert space-filling curve method to decompose the input mesh in a parallel run.",
+      nullptr);
+
+  options_.enroll(
+      "metis_sfc", Ioss::GetLongOption::NoValue,
+      "Use the metis space-filling-curve method to decompose the input mesh in a parallel run.",
+      nullptr);
+
+  options_.enroll(
+      "kway", Ioss::GetLongOption::NoValue,
+      "Use the metis kway graph-based method to decompose the input mesh in a parallel run.",
+      nullptr);
+
+  options_.enroll("kway_geom", Ioss::GetLongOption::NoValue,
+                  "Use the metis kway graph-based method with geometry speedup to decompose the "
+                  "input mesh in a parallel run.",
+                  nullptr);
+
+  options_.enroll("linear", Ioss::GetLongOption::NoValue,
+                  "Use the linear method to decompose the input mesh in a parallel run. "
+                  "elements in order first n/p to proc 0, next to proc 1.",
+                  nullptr);
+
+  options_.enroll("cyclic", Ioss::GetLongOption::NoValue,
+                  "Use the cyclic method to decompose the input mesh in a parallel run. "
+                  "elements handed out to id % proc_count",
+                  nullptr);
+
+  options_.enroll("random", Ioss::GetLongOption::NoValue,
+                  "Use the random method to decompose the input mesh in a parallel run."
+                  "elements assigned randomly to processors in a way that preserves balance (do "
+                  "not use for a real run)",
+                  nullptr);
+  options_.enroll("serialize_io_size", Ioss::GetLongOption::MandatoryValue,
+                  "Number of processors that can perform simulataneous IO operations in "
+                  "a parallel run; 0 to disable",
+                  nullptr);
+#endif
 }
 
 bool Info::Interface::parse_options(int argc, char **argv)
@@ -187,6 +236,44 @@ bool Info::Interface::parse_options(int argc, char **argv)
       fieldSuffixSeparator_ = temp[0];
     }
   }
+
+#if defined(PARALLEL_AWARE_EXODUS)
+  if (options_.retrieve("rcb") != nullptr) {
+    decompMethod_ = "RCB";
+  }
+
+  if (options_.retrieve("rib") != nullptr) {
+    decompMethod_ = "RIB";
+  }
+
+  if (options_.retrieve("hsfc") != nullptr) {
+    decompMethod_ = "HSFC";
+  }
+
+  if (options_.retrieve("metis_sfc") != nullptr) {
+    decompMethod_ = "METIS_SFC";
+  }
+
+  if (options_.retrieve("kway") != nullptr) {
+    decompMethod_ = "KWAY";
+  }
+
+  if (options_.retrieve("kway_geom") != nullptr) {
+    decompMethod_ = "KWAY_GEOM";
+  }
+
+  if (options_.retrieve("linear") != nullptr) {
+    decompMethod_ = "LINEAR";
+  }
+
+  if (options_.retrieve("cyclic") != nullptr) {
+    decompMethod_ = "CYCLIC";
+  }
+
+  if (options_.retrieve("random") != nullptr) {
+    decompMethod_ = "RANDOM";
+  }
+#endif
 
   if (options_.retrieve("copyright") != nullptr) {
     std::cerr << "\n"

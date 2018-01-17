@@ -61,6 +61,7 @@ namespace Info {
     char field_suffix_separator() const { return fieldSuffixSeparator_; }
     bool use_generic_names() const { return useGenericNames_; }
 
+    std::string decomp_method() const { return decompMethod_;}
     std::string filename() const { return filename_; }
     std::string type() const { return filetype_; }
     std::string groupname() const { return groupname_; }
@@ -71,22 +72,23 @@ namespace Info {
     void enroll_options();
 
     Ioss::GetLongOption options_;
-
-    bool checkNodeStatus_;
-    bool computeVolume_;
-    bool adjacencies_;
-    bool ints64Bit_;
-    bool computeBBox_;
-    bool listGroups_;
-    bool useGenericNames_;
-    char fieldSuffixSeparator_;
-
-    int summary_;
-    int surfaceSplitScheme_;
-
-    std::string filetype_;
+    std::string filetype_{"exodus"};
     std::string filename_;
     std::string groupname_;
+    std::string decompMethod_;
+    
+    bool checkNodeStatus_{false};
+    bool computeVolume_{false};
+    bool adjacencies_{false};
+    bool ints64Bit_{false};
+    bool computeBBox_{false};
+    bool listGroups_{false};
+    bool useGenericNames_{false};
+    char fieldSuffixSeparator_{'_'};
+
+    int summary_{0};
+    int surfaceSplitScheme_{1};
+
   };
 } // namespace Info
 #endif
