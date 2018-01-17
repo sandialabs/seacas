@@ -718,6 +718,7 @@ namespace Ioss {
 	  std::vector<int64_t> conn;
 	  eb->get_field_data("connectivity_raw", conn);
 	  for (auto node : conn) {
+	    assert(node > 0 && node-1 < nodeCount);
 	    node_used[node - 1] = blk_position + 1;
 	  }
 	}
@@ -725,6 +726,7 @@ namespace Ioss {
 	  std::vector<int> conn;
 	  eb->get_field_data("connectivity_raw", conn);
 	  for (auto node : conn) {
+	    assert(node > 0 && node-1 < nodeCount);
 	    node_used[node - 1] = blk_position + 1;
 	  }
 	}
@@ -938,7 +940,7 @@ namespace Ioss {
     }
 #endif
 
-    // Make it symmetric...
+    // Make it symmetric... (TODO: this probably isn't needed...)
     for (size_t iblk = 0; iblk < element_blocks.size(); iblk++) {
       for (size_t jblk = iblk; jblk < element_blocks.size(); jblk++) {
         blockAdjacency[jblk][iblk] = blockAdjacency[iblk][jblk];
