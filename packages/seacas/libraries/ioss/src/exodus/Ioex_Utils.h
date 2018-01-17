@@ -94,17 +94,6 @@ namespace Ioex {
   void add_coordinate_frames(int exoid, Ioss::Region *region);
   void write_coordinate_frames(int exoid, const Ioss::CoordinateFrameContainer &frames);
 
-  inline int exodus_byte_size_api(int exoid)
-  {
-    // Check byte-size of integers stored on the database...
-    int mode = ex_int64_status(exoid) & EX_ALL_INT64_API;
-    if (mode != 0) {
-      return 8;
-    }
-
-    return 4;
-  }
-
   bool find_displacement_field(Ioss::NameList &fields, const Ioss::GroupingEntity *block, int ndim,
                                std::string *disp_name);
 

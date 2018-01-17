@@ -560,7 +560,7 @@ namespace Ioex {
       for (Ioss::ElementBlock *eb : element_blocks) {
         int     blk_position     = eb->get_property("original_block_order").get_int();
         int64_t my_element_count = eb->entity_count();
-	if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
+	if (int_byte_size_api() == 8) {
 	  std::vector<int64_t> conn;
 	  eb->get_field_data("connectivity_raw", conn);
 	  for (auto node : conn) {
