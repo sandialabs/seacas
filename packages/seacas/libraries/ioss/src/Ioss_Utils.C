@@ -260,6 +260,16 @@ void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t len
   time_string[8] = '\0';
 }
 
+void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string &name, const std::string &func)
+{
+  if (ptr == nullptr) {
+    std::ostringstream errmsg;
+    errmsg << "INTERNAL ERROR: Could not find " << type << " '" << name << "'."
+	   << " Something is wrong in " << func << ". Please report.\n";
+    IOSS_ERROR(errmsg);
+  }
+}
+
 std::string Ioss::Utils::decode_filename(const std::string &filename, int processor,
                                          int num_processors)
 {

@@ -249,6 +249,8 @@ namespace Ioss {
     static std::string uppercase(std::string name);
     static std::string lowercase(std::string name);
 
+    static void check_non_null(void *ptr, const char *type, const std::string &name, const std::string &func);
+
     static int case_strcmp(const std::string &s1, const std::string &s2);
 
     // Return a string containing information about the current :

@@ -590,7 +590,7 @@ namespace Ioex {
       // Get contributions from other processors...
       // Get the communication map...
       Ioss::CommSet *css = get_region()->get_commset("commset_node");
-      Ioex::check_non_null(css, "communication map", "commset_node");
+      Ioss::Utils::check_non_null(css, "communication map", "commset_node", __func__);
       std::vector<std::pair<int, int>> proc_node;
       {
         std::vector<int> entity_processor;
