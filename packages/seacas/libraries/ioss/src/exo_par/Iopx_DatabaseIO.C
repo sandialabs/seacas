@@ -142,10 +142,10 @@ namespace {
   }
 
   void get_connectivity_data(int exoid, void *data, ex_entity_type type, ex_entity_id id,
-                             int position)
+                             int position, int int_size_api)
   {
     int ierr = 0;
-    if (Ioex::exodus_byte_size_api(exoid) == 8) {
+    if (int_size_api == 8) {
       int64_t *conn[3];
       conn[0]        = nullptr;
       conn[1]        = nullptr;
@@ -899,7 +899,7 @@ namespace Iopx {
           }
 
           if (map_count == 1 && Ioss::Utils::case_strcmp(names[0], "original_global_id_map") == 0) {
-            if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
+            if (int_byte_size_api() == 8) {
               error = ex_get_partial_num_map(get_file_pointer(), entity_type, 1, file_offset + 1,
                                              file_count, TOPTR(file_data));
             }
@@ -918,7 +918,7 @@ namespace Iopx {
         }
 
         if (!map_read) {
-          if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
+          if (int_byte_size_api() == 8) {
             error = ex_get_partial_id_map(get_file_pointer(), entity_type, file_offset + 1,
                                           file_count, TOPTR(file_data));
           }
@@ -1191,7 +1191,7 @@ namespace Iopx {
       int     element_nodes    = block->get_property("topology_node_count").get_int();
       int64_t my_element_count = block->entity_count();
       int     order            = block->get_property("original_block_order").get_int();
-      if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
+      if (int_byte_size_api() == 8) {
         std::vector<int64_t> conn(my_element_count * element_nodes);
         decomp->get_block_connectivity(get_file_pointer(), TOPTR(conn), id, order, element_nodes);
         for (auto node : conn) {
@@ -1786,7 +1786,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
 	idata[i] = myProcessor;
       }
 
-      if (Ioex::exodus_byte_size_api(get_file_pointer()) == 8) {
+      if (int_byte_size_api() == 8) {
         std::vector<int64_t> ent_proc;
         css->get_field_data("entity_processor_raw", ent_proc);
         for (size_t i = 0; i < ent_proc.size(); i += 2) {
@@ -1865,7 +1865,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           // The connectivity is stored in a 1D array.
           // The element_face index varies fastest
           if (my_element_count > 0) {
-            get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 2);
+            get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 2, int_byte_size_api());
             get_map(EX_FACE_BLOCK).map_data(data, field, num_to_get*face_count);
           }
         }
@@ -1875,7 +1875,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
           // The connectivity is stored in a 1D array.
           // The element_edge index varies fastest
           if (my_element_count > 0) {
-            get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 1);
+            get_connectivity_data(get_file_pointer(), data, EX_ELEM_BLOCK, id, 1, int_byte_size_api());
             get_map(EX_EDGE_BLOCK).map_data(data, field, num_to_get*edge_count);
           }
         }
@@ -1975,7 +1975,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
       // The connectivity is stored in a 1D array.
       // The face_node index varies fastet
       if (my_face_count > 0) {
-        get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
+        get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0, int_byte_size_api());
         get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * face_nodes);
       }
     }
@@ -1985,7 +1985,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
       // The connectivity is stored in a 1D array.
       // The face_edge index varies fastest
       if (my_face_count > 0) {
-        get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 1);
+        get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 1, int_byte_size_api());
         get_map(EX_EDGE_BLOCK).map_data(data, field, num_to_get * edge_count);
       }
     }
@@ -1997,7 +1997,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::FaceBlock *eb, const Ioss::Fi
       // The connectivity is stored in a 1D array.
       // The face_node index varies fastet
       if (my_face_count > 0) {
-        get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0);
+        get_connectivity_data(get_file_pointer(), data, EX_FACE_BLOCK, id, 0, int_byte_size_api());
       }
     }
     else if (field.get_name() == "ids") {
@@ -2049,7 +2049,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
       // The connectivity is stored in a 1D array.
       // The edge_node index varies fastet
       if (my_edge_count > 0) {
-        get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0);
+        get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0, int_byte_size_api());
         get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * edge_nodes);
       }
     }
@@ -2061,7 +2061,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::EdgeBlock *eb, const Ioss::Fi
       // The connectivity is stored in a 1D array.
       // The edge_node index varies fastet
       if (my_edge_count > 0) {
-        get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0);
+        get_connectivity_data(get_file_pointer(), data, EX_EDGE_BLOCK, id, 0, int_byte_size_api());
       }
     }
     else if (field.get_name() == "ids") {
