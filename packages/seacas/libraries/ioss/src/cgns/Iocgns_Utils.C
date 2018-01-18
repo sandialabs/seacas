@@ -191,9 +191,9 @@ void Iocgns::Utils::cgns_error(int cgnsid, const char *file, const char *functio
   errmsg << ". Please report to gdsjaar@sandia.gov if you need help.";
   if (cgnsid > 0) {
 #if CG_BUILD_PARALLEL
-    cgp_close(cgnsid);
+  //    cgp_close(cgnsid);
 #else
-    cg_close(cgnsid);
+  //    cg_close(cgnsid);
 #endif
   }
   IOSS_ERROR(errmsg);
@@ -258,7 +258,7 @@ bool Iocgns::Utils::is_cell_field(const Ioss::Field &field)
 }
 
 size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &region,
-					     std::vector<size_t> &zone_offset, bool is_parallel)
+                                             std::vector<size_t> &zone_offset, bool is_parallel)
 {
   // Make sure mesh is not hybrid...
   if (region.mesh_type() == Ioss::MeshType::HYBRID) {
@@ -304,12 +304,13 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   // generate the node count based on connectivity traversal...
   // Just getting processor element count here...
   const auto &element_blocks = region.get_element_blocks();
-  size_t element_count = 0;
+  size_t      element_count  = 0;
   for (const auto &eb : element_blocks) {
     int64_t local_count = eb->entity_count();
     if (is_parallel) {
       int64_t start = 0;
-      MPI_Exscan(&local_count, &start, 1, Ioss::mpi_type(start), MPI_SUM, region.get_database()->util().communicator());
+      MPI_Exscan(&local_count, &start, 1, Ioss::mpi_type(start), MPI_SUM,
+                 region.get_database()->util().communicator());
       // Of the cells/elements in this zone, this proc handles
       // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
       eb->property_update("proc_offset", start);

@@ -112,9 +112,8 @@ namespace Ioex {
                          const Ioss::PropertyManager &props)
       : Ioss::DatabaseIO(region, filename, db_usage, communicator, props), exodusFilePtr(-1),
         exodusMode(EX_CLOBBER), dbRealWordSize(8), maximumNameLength(32), spatialDimension(0),
-        edgeCount(0), faceCount(0), commsetNodeCount(0),
-        commsetElemCount(0), timeLastFlush(0), fileExists(false),
-        minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
+        edgeCount(0), faceCount(0), commsetNodeCount(0), commsetElemCount(0), timeLastFlush(0),
+        fileExists(false), minimizeOpenFiles(false), blockAdjacenciesCalculated(false),
         nodeConnectivityStatusCalculated(false)
   {
     m_groupCount[EX_GLOBAL]     = 1; // To make some common code work more cleanly.

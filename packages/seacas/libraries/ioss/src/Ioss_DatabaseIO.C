@@ -655,20 +655,20 @@ namespace Ioss {
     }
     else {
       for (const auto &leb : element_blocks) {
-	if (leb == eb) {
-	  break;
-	}
-	blk_position++;
+        if (leb == eb) {
+          break;
+        }
+        blk_position++;
       }
     }
-    
+
     int lblk_position = -1;
     for (const auto &leb : element_blocks) {
       if (leb->property_exists("original_block_order")) {
-	lblk_position = leb->get_property("original_block_order").get_int();
+        lblk_position = leb->get_property("original_block_order").get_int();
       }
       else {
-	lblk_position++;
+        lblk_position++;
       }
 
       if (blk_position != lblk_position &&
@@ -687,7 +687,7 @@ namespace Ioss {
 
     blockAdjacenciesCalculated = true;
 
-    Ioss::ElementBlockContainer   element_blocks = get_region()->get_element_blocks();
+    Ioss::ElementBlockContainer element_blocks = get_region()->get_element_blocks();
     assert(Ioss::Utils::check_block_order(element_blocks));
 
     if (element_blocks.size() == 1) {
@@ -705,32 +705,32 @@ namespace Ioss {
 
     {
       Ioss::SerializeIO serializeIO__(this);
-      int blk_position = -1;
+      int               blk_position = -1;
       for (Ioss::ElementBlock *eb : element_blocks) {
-	if (eb->property_exists("original_block_order")) {
-	  blk_position     = eb->get_property("original_block_order").get_int();
-	}
-	else {
-	  blk_position++;
-	}
+        if (eb->property_exists("original_block_order")) {
+          blk_position = eb->get_property("original_block_order").get_int();
+        }
+        else {
+          blk_position++;
+        }
         int64_t my_element_count = eb->entity_count();
-	if (int_byte_size_api() == 8) {
-	  std::vector<int64_t> conn;
-	  eb->get_field_data("connectivity_raw", conn);
-	  for (auto node : conn) {
-	    assert(node > 0 && node-1 < nodeCount);
-	    node_used[node - 1] = blk_position + 1;
-	  }
-	}
-	else {
-	  std::vector<int> conn;
-	  eb->get_field_data("connectivity_raw", conn);
-	  for (auto node : conn) {
-	    assert(node > 0 && node-1 < nodeCount);
-	    node_used[node - 1] = blk_position + 1;
-	  }
-	}
-	
+        if (int_byte_size_api() == 8) {
+          std::vector<int64_t> conn;
+          eb->get_field_data("connectivity_raw", conn);
+          for (auto node : conn) {
+            assert(node > 0 && node - 1 < nodeCount);
+            node_used[node - 1] = blk_position + 1;
+          }
+        }
+        else {
+          std::vector<int> conn;
+          eb->get_field_data("connectivity_raw", conn);
+          for (auto node : conn) {
+            assert(node > 0 && node - 1 < nodeCount);
+            node_used[node - 1] = blk_position + 1;
+          }
+        }
+
         if (my_element_count > 0) {
           for (int64_t i = 0; i < nodeCount; i++) {
             if (node_used[i] == blk_position + 1) {
@@ -811,8 +811,8 @@ namespace Ioss {
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Irecv error on processor " << util().parallel_rank()
-               << " in " << __func__;
+        errmsg << "ERROR: MPI_Irecv error on processor " << util().parallel_rank() << " in "
+               << __func__;
         std::cerr << errmsg.str();
       }
 
@@ -842,8 +842,8 @@ namespace Ioss {
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Rsend error on processor " << util().parallel_rank()
-               << " in " << __func__;
+        errmsg << "ERROR: MPI_Rsend error on processor " << util().parallel_rank() << " in "
+               << __func__;
         std::cerr << errmsg.str();
       }
 
@@ -861,8 +861,8 @@ namespace Ioss {
 
       if (result != MPI_SUCCESS) {
         std::ostringstream errmsg;
-        errmsg << "ERROR: MPI_Waitall error on processor " << util().parallel_rank()
-               << " in " << __func__;
+        errmsg << "ERROR: MPI_Waitall error on processor " << util().parallel_rank() << " in "
+               << __func__;
         std::cerr << errmsg.str();
       }
 
