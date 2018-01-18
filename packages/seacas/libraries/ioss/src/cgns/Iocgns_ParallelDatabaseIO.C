@@ -328,8 +328,7 @@ namespace Iocgns {
     }
 
     Ioss::NodeBlock *nblock =
-        new Ioss::NodeBlock(this, "nodeblock_1", decomp->ioss_node_count(), 3);
-    nodeCount = decomp->ioss_node_count();
+        new Ioss::NodeBlock(this, "nodeblock_1", nodeCount, 3);
     
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
@@ -627,7 +626,6 @@ namespace Iocgns {
 
   void ParallelDatabaseIO::write_adjacency_data()
   {
-#if 1
     // Determine adjacency information between unstructured blocks.
     // Could save this information from the input mesh, but then
     // could not read an exodus mesh and write a cgns mesh.
@@ -638,13 +636,118 @@ namespace Iocgns {
     // least 1 "side" (face 3D or edge 2D).
     // Currently, assuming they are adjacent if they share at least one node...
 
-    size_t node_count = get_region()->get_property("node_count").get_int();
+    // There is a "global" node id in which all nodes have a unique id
+    // and if a node is contiguous between two or more zones, it will
+    // have the same "global" id on each zone.
+    //
+    // There is also a "zone-global" id which is 1-based and is
+    // basically a count of all nodes (shared or not) in the model.
+    // Zone 1 will have ids 1..node_count_zone1,
+    // Zone 2 will have ids node_count_zone1+1..node_count_zone1+node_count_zone2,
+
+    // global ids are always resolved such that the id in the
+    // lower-numbered zone wins.  Therefore, the global ids in zone 1
+    // will match the zone-global ids.
+    // A node in zone 2 can only potentially match a node in zone 1 if
+    // its id is less than node_count_zone1.
+    // ... to be continued
 
     const auto &blocks = get_region()->get_element_blocks();
     if (blocks.size() <= 1) {
       return; // No adjacent blocks if only one block...
     }
 
+#if 1
+    // NEW VERSION...
+    std::vector<int64_t> zone_min_id(blocks.size()+1, std::numeric_limits<int64_t>::max());
+    std::vector<int64_t> zone_max_id(blocks.size()+1, std::numeric_limits<int64_t>::min());
+
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
+      int zone = (*I)->get_property("zone").get_int();
+      assert(zone < blocks.size()+1);
+      
+      const auto &I_map = m_globalToBlockLocalNodeMap[zone];
+
+      // Get min and max global node id for each zone...
+      if (I_map->size() > 0) {
+	auto min_max =
+	  std::minmax_element(std::next(I_map->map().begin()), I_map->map().end());
+	zone_min_id[zone] = *(min_max.first);
+	zone_max_id[zone] = *(min_max.second);
+      }
+    }
+
+    // Get min/max over all processors for each zone...
+    util().global_array_minmax(zone_min_id, Ioss::ParallelUtils::DO_MIN);
+    util().global_array_minmax(zone_max_id, Ioss::ParallelUtils::DO_MAX);
+    
+    // Now iterate the blocks again.  If the node ranges overlap, then
+    // there is a possibility that there are contiguous nodes; if the
+    // ranges don't overlap, then no possibility...
+    for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
+      int zone = (*I)->get_property("zone").get_int();
+
+      // See how many zone I nodes Proc x has that can potentially
+      // overlap with the zones I+1 to end.  This will be all nodes
+      // with id > min(zone_min_id[I+1..])
+      auto min_I = std::min_element(&zone_min_id[zone+1], &zone_min_id[blocks.size()]);
+      
+      const auto &I_map = m_globalToBlockLocalNodeMap[zone];
+      std::vector<std::pair<int,int>> I_nodes;
+      for (size_t i = 0; i < I_map->size(); i++) {
+	auto global_id = I_map->map()[i + 1];
+	if (global_id >= *min_I) {
+	  I_nodes.emplace_back((int)global_id, (int)i+1);
+	}
+      }
+
+      std::vector<int> recv_count;
+      util().gather(2*(int)I_nodes.size(), recv_count);
+      std::vector<int> recv_off(recv_count);
+
+      auto count = std::accumulate(recv_count.begin(), recv_count.end(), 0);
+      if (myProcessor == 0) {
+	I_nodes.resize(count/2);
+	Ioss::Utils::generate_index(recv_off);
+      }
+      
+      MPI_Gatherv(I_nodes.data(), (int)I_nodes.size()*2, MPI_INT,
+		  I_nodes.data(), recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
+
+      for (auto J = I + 1; J != blocks.end(); J++) {
+        cgsize_t              dzone = (*J)->get_property("zone").get_int();
+	
+	if (zone_min_id[dzone] <= zone_max_id[zone] &&
+	    zone_max_id[dzone] >= zone_min_id[zone]) {
+	  // Now gather all zone J nodes that can potentially overlap
+	  // with zone I to processor 0...
+	  const auto &J_map = m_globalToBlockLocalNodeMap[dzone];
+	  std::vector<std::pair<int,int>> J_nodes;
+	  for (size_t i = 0; i < J_map->size(); i++) {
+	    auto global_id = J_map->map()[i + 1];
+	    if (global_id >= zone_min_id[zone] && global_id <= zone_max_id[zone]) {
+	      J_nodes.emplace_back((int)global_id, (int)i+1);
+	    }
+	  }
+
+	  util().gather(2*(int)J_nodes.size(), recv_count);
+	  recv_off = recv_count;
+	  count = std::accumulate(recv_count.begin(), recv_count.end(), 0);
+	  if (myProcessor == 0) {
+	    J_nodes.resize(count/2);
+	    Ioss::Utils::generate_index(recv_off);
+	  }
+      
+	  MPI_Gatherv(J_nodes.data(), (int)J_nodes.size()*2, MPI_INT,
+		      J_nodes.data(), recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
+
+	  std::cout << "J_nodes\n";
+	  // Now match up I_nodes with J_nodes...
+	}
+      }
+    }
+#else
+    // OLD CODE... 
     for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
@@ -2005,11 +2108,31 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet * /* cs */,
-                                                 const Ioss::Field & /* field */, void * /* data */,
-                                                 size_t /* data_size */) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet *cs,
+                                                 const Ioss::Field &field, void *data,
+                                                 size_t data_size) const
   {
-    return -1;
+    Ioss::Field::RoleType role = field.get_role();
+    size_t num_to_get = field.verify(data_size);
+
+    if (role == Ioss::Field::COMMUNICATION) {
+      if (field.get_name() == "entity_processor") {
+	m_sharedNodes.reserve(num_to_get);
+        if (int_byte_size_api() == 8) {
+	  int64_t *idata = static_cast<int64_t*>(data);
+	  for (size_t i=0; i < num_to_get; i++) {
+	    m_sharedNodes.emplace_back(idata[2*i], idata[2*i+1]);
+	  }
+	}
+	else {
+	  int *idata = static_cast<int*>(data);
+	  for (size_t i=0; i < num_to_get; i++) {
+	    m_sharedNodes.emplace_back(idata[2*i], idata[2*i+1]);
+	  }
+	}
+      }
+    }
+    return num_to_get;
   }
 
   void ParallelDatabaseIO::write_results_meta_data() {}
