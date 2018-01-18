@@ -301,7 +301,7 @@ namespace Ioex {
 
     mutable ValueContainer globalValues;
 
-    mutable std::vector<unsigned char>     nodeConnectivityStatus;
+    mutable std::vector<unsigned char> nodeConnectivityStatus;
 
     // For a database with omitted blocks, this map contains the indices of the
     // active nodes for each nodeset.  If the nodeset is not reduced in size,

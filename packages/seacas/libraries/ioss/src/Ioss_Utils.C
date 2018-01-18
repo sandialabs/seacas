@@ -260,12 +260,13 @@ void Ioss::Utils::time_and_date(char *time_string, char *date_string, size_t len
   time_string[8] = '\0';
 }
 
-void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string &name, const std::string &func)
+void Ioss::Utils::check_non_null(void *ptr, const char *type, const std::string &name,
+                                 const std::string &func)
 {
   if (ptr == nullptr) {
     std::ostringstream errmsg;
     errmsg << "INTERNAL ERROR: Could not find " << type << " '" << name << "'."
-	   << " Something is wrong in " << func << ". Please report.\n";
+           << " Something is wrong in " << func << ". Please report.\n";
     IOSS_ERROR(errmsg);
   }
 }
@@ -2111,11 +2112,12 @@ namespace {
         transfer_properties(fb, block);
         transfer_fields(fb, block, Ioss::Field::MESH);
         transfer_fields(fb, block, Ioss::Field::ATTRIBUTE);
-	if (fb->parent_block() != nullptr) {
-	  auto fb_name = fb->parent_block()->name();
-	  Ioss::EntityBlock *parent = dynamic_cast<Ioss::EntityBlock*>(output_region.get_entity(fb_name));
-	  block->set_parent_block(parent);
-	}
+        if (fb->parent_block() != nullptr) {
+          auto               fb_name = fb->parent_block()->name();
+          Ioss::EntityBlock *parent =
+              dynamic_cast<Ioss::EntityBlock *>(output_region.get_entity(fb_name));
+          block->set_parent_block(parent);
+        }
       }
       transfer_properties(ss, surf);
       transfer_fields(ss, surf, Ioss::Field::MESH);

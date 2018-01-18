@@ -859,23 +859,23 @@ namespace Iocgns {
             }
           }
 
-	  // Now need to map block-local node connectivity to global nodes...
-	  // This is done for both connectivity and connectivity_raw
-	  // since the "global id" is the same as the "local id"
-	  // The connectivities we currently have are "block local"
-	  const auto &block_map = m_blockLocalNodeMap[zone];
-	  if (field.get_type() == Ioss::Field::INT32) {
-	    int *idata = static_cast<int *>(data);
-	    for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-	      idata[i] = block_map[idata[i] - 1] + 1;
-	    }
-	  }
-	  else {
-	    int64_t *idata = static_cast<int64_t *>(data);
-	    for (size_t i = 0; i < element_nodes * num_to_get; i++) {
-	      idata[i] = block_map[idata[i] - 1] + 1;
-	    }
-	  }
+          // Now need to map block-local node connectivity to global nodes...
+          // This is done for both connectivity and connectivity_raw
+          // since the "global id" is the same as the "local id"
+          // The connectivities we currently have are "block local"
+          const auto &block_map = m_blockLocalNodeMap[zone];
+          if (field.get_type() == Ioss::Field::INT32) {
+            int *idata = static_cast<int *>(data);
+            for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+              idata[i] = block_map[idata[i] - 1] + 1;
+            }
+          }
+          else {
+            int64_t *idata = static_cast<int64_t *>(data);
+            for (size_t i = 0; i < element_nodes * num_to_get; i++) {
+              idata[i] = block_map[idata[i] - 1] + 1;
+            }
+          }
         }
         else if (field.get_name() == "ids") {
           // Map the local ids in this element block

@@ -187,27 +187,27 @@ namespace Ioss {
     }
 
     template <typename T> static bool check_block_order(const std::vector<T *> &blocks)
-      {
+    {
 #ifndef NDEBUG
-	// Verify that element blocks are defined in sorted offset order...
-	typename std::vector<T *>::const_iterator I;
-	
-	int64_t eb_offset = -1;
-	for (I = blocks.begin(); I != blocks.end(); ++I) {
-	  int64_t this_off = (*I)->get_offset();
-	  if (this_off < eb_offset) {
-	    {
-	      {
-		return false;
-	      }
-	    }
-	  }
-	  eb_offset = this_off;
-	}
-#endif
-	return true;
+      // Verify that element blocks are defined in sorted offset order...
+      typename std::vector<T *>::const_iterator I;
+
+      int64_t eb_offset = -1;
+      for (I = blocks.begin(); I != blocks.end(); ++I) {
+        int64_t this_off = (*I)->get_offset();
+        if (this_off < eb_offset) {
+          {
+            {
+              return false;
+            }
+          }
+        }
+        eb_offset = this_off;
       }
-    
+#endif
+      return true;
+    }
+
     static int log_power_2(uint64_t value);
 
     static char **get_name_array(size_t count, int size);
@@ -249,7 +249,8 @@ namespace Ioss {
     static std::string uppercase(std::string name);
     static std::string lowercase(std::string name);
 
-    static void check_non_null(void *ptr, const char *type, const std::string &name, const std::string &func);
+    static void check_non_null(void *ptr, const char *type, const std::string &name,
+                               const std::string &func);
 
     static int case_strcmp(const std::string &s1, const std::string &s2);
 

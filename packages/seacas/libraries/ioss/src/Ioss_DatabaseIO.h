@@ -540,7 +540,7 @@ namespace Ioss {
 
     int64_t nodeCount{0};
     int64_t elementCount{0};
-    
+
     /*!
      * Check the topology of all face/element pairs in the model and
      * fill the "TopoContainer faceTopology" variable with the
@@ -599,6 +599,7 @@ namespace Ioss {
     mutable Ioss::Map elemMap{"element", DBFilename, myProcessor};
 
     mutable std::vector<std::vector<bool>> blockAdjacency;
+
   private:
     virtual bool ok__(bool write_message, std::string *error_message, int *bad_count) const
     {
@@ -642,7 +643,7 @@ namespace Ioss {
     virtual bool end_state__(Region *region, int state, double time);
 
     void get_block_adjacencies__(const Ioss::ElementBlock *eb,
-				 std::vector<std::string> &block_adjacency) const;
+                                 std::vector<std::string> &block_adjacency) const;
 
     virtual void compute_block_membership__(Ioss::SideBlock *         efblock,
                                             std::vector<std::string> &block_membership) const
@@ -650,7 +651,7 @@ namespace Ioss {
     }
 
     void compute_block_adjacencies() const;
-    
+
     void verify_and_log(const GroupingEntity *ge, const Field &field, int in_out) const;
 
     virtual int64_t get_field_internal(const Region *reg, const Field &field, void *data,

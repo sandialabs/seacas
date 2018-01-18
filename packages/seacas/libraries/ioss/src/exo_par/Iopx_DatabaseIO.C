@@ -947,12 +947,12 @@ namespace Iopx {
 
         // Check for sequential node map.
         // If not, build the reverse G2L node map...
-	entity_map.is_sequential(true);
+        entity_map.is_sequential(true);
         entity_map.build_reverse_map();
       }
       else {
         // Output database; entity_map.map() not set yet... Build a default map.
-	entity_map.set_default(entity_count);
+        entity_map.set_default(entity_count);
       }
     }
     return entity_map;
@@ -1297,7 +1297,7 @@ namespace Iopx {
             in_fs_map            = true;
             std::string efs_name = (*FSM).second;
             side_set             = get_region()->get_sideset(efs_name);
-	    Ioss::Utils::check_non_null(side_set, "sideset", efs_name, __func__);
+            Ioss::Utils::check_non_null(side_set, "sideset", efs_name, __func__);
           }
           else {
             if (get_use_generic_canonical_name()) {
@@ -1778,9 +1778,9 @@ int64_t DatabaseIO::get_field_internal(const Ioss::NodeBlock *nb, const Ioss::Fi
     else if (field.get_name() == "owning_processor") {
       // If parallel, then set the "locally_owned" property on the nodeblocks.
       Ioss::CommSet *css = get_region()->get_commset("commset_node");
-      int *idata = static_cast<int*>(data); // Owning processor field is 4-byte int always
+      int *idata         = static_cast<int *>(data); // Owning processor field is 4-byte int always
       for (int64_t i = 0; i < nodeCount; i++) {
-	idata[i] = myProcessor;
+        idata[i] = myProcessor;
       }
 
       if (int_byte_size_api() == 8) {
@@ -1852,7 +1852,7 @@ int64_t DatabaseIO::get_field_internal(const Ioss::ElementBlock *eb, const Ioss:
 
       decomp->get_block_connectivity(get_file_pointer(), data, id, order, element_nodes);
       if (field.get_name() == "connectivity") {
-	get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * element_nodes);
+        get_map(EX_NODE_BLOCK).map_data(data, field, num_to_get * element_nodes);
       }
     }
 #if 0

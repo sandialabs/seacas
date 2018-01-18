@@ -880,19 +880,19 @@ namespace Ioss {
     }
     else {
       {
-	IOSS_FUNC_ENTER(m_);
+        IOSS_FUNC_ENTER(m_);
 
-	SMART_ASSERT(state <= stateCount)(state)(stateCount);
-	if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
-	    get_database()->usage() == WRITE_RESTART) {
-	  SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
-	  time = stateTimes[state - 1];
-	}
-	else {
-	  SMART_ASSERT(!stateTimes.empty());
-	  time = stateTimes[0];
-	}
-	currentState   = state;
+        SMART_ASSERT(state <= stateCount)(state)(stateCount);
+        if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
+            get_database()->usage() == WRITE_RESTART) {
+          SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
+          time = stateTimes[state - 1];
+        }
+        else {
+          SMART_ASSERT(!stateTimes.empty());
+          time = stateTimes[0];
+        }
+        currentState = state;
       }
       DatabaseIO *db = get_database();
       db->begin_state(this, state, time);
@@ -919,13 +919,13 @@ namespace Ioss {
     {
       IOSS_FUNC_ENTER(m_);
       if (get_database()->is_input() || get_database()->usage() == WRITE_RESULTS ||
-	  get_database()->usage() == WRITE_RESTART) {
-	SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
-	time = stateTimes[state - 1];
+          get_database()->usage() == WRITE_RESTART) {
+        SMART_ASSERT((int)stateTimes.size() >= state)(stateTimes.size())(state);
+        time = stateTimes[state - 1];
       }
       else {
-	SMART_ASSERT(!stateTimes.empty());
-	time = stateTimes[0];
+        SMART_ASSERT(!stateTimes.empty());
+        time = stateTimes[0];
       }
     }
     db->end_state(this, state, time);
@@ -968,7 +968,8 @@ namespace Ioss {
         structured_block->set_cell_global_offset(global_num_cell);
       }
 
-      structured_block->property_add(Ioss::Property(orig_block_order(), (int)structuredBlocks.size()));
+      structured_block->property_add(
+          Ioss::Property(orig_block_order(), (int)structuredBlocks.size()));
       structuredBlocks.push_back(structured_block);
       // Add name as alias to itself to simplify later uses...
       add_alias__(structured_block);

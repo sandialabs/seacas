@@ -998,7 +998,7 @@ namespace Iofx {
               error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
               if (error >= 0) {
                 entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
-		map_read = true;
+                map_read = true;
               }
             }
             else {
@@ -1007,7 +1007,7 @@ namespace Iofx {
               error = ex_get_num_map(get_file_pointer(), entity_type, 1, tmp_map.data());
               if (error >= 0) {
                 entity_map.set_map(tmp_map.data(), tmp_map.size(), 0, true);
-		map_read = true;
+                map_read = true;
               }
             }
           }
@@ -1035,7 +1035,7 @@ namespace Iofx {
       }
       else {
         // Output database; entity_map.map not set yet... Build a default map.
-	entity_map.set_default(entity_count);
+        entity_map.set_default(entity_count);
       }
     }
     return entity_map;
@@ -1467,7 +1467,7 @@ namespace Iofx {
             in_fs_map            = true;
             std::string efs_name = (*FSM).second;
             side_set             = get_region()->get_sideset(efs_name);
-	    Ioss::Utils::check_non_null(side_set, "sideset", efs_name, __func__);
+            Ioss::Utils::check_non_null(side_set, "sideset", efs_name, __func__);
           }
           else {
             if (get_use_generic_canonical_name()) {

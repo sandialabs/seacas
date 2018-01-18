@@ -182,7 +182,7 @@ namespace Iocgns {
                              int64_t file_count, entity_type type) const;
 
     int64_t handle_element_ids(const Ioss::ElementBlock *eb, void *ids, size_t num_to_get,
-			       size_t offset, size_t count) const;
+                               size_t offset, size_t count) const;
 
     // Bulk Data
     void resolve_zone_shared_nodes(const CGNSIntVector &nodes, CGNSIntVector &connectivity_map,
@@ -207,7 +207,8 @@ namespace Iocgns {
     std::vector<CGNSIntVector>         m_blockLocalNodeMap;
     std::map<std::string, int>         m_zoneNameMap;
     mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
-    mutable CGNSIntVector              m_elemGlobalImplicitMap; // Position of this element in the global-implicit ordering
+    mutable CGNSIntVector
+        m_elemGlobalImplicitMap; // Position of this element in the global-implicit ordering
   };
 } // namespace Iocgns
 #endif
