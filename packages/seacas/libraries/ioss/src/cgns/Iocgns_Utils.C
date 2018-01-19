@@ -307,6 +307,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
   size_t      element_count  = 0;
   for (const auto &eb : element_blocks) {
     int64_t local_count = eb->entity_count();
+#ifdef SEACAS_HAVE_MPI
     if (is_parallel) {
       int64_t start = 0;
       MPI_Exscan(&local_count, &start, 1, Ioss::mpi_type(start), MPI_SUM,
@@ -315,6 +316,7 @@ size_t Iocgns::Utils::common_write_meta_data(int file_ptr, const Ioss::Region &r
       // those starting at 'proc_offset+1' to 'proc_offset+num_entity'
       eb->property_update("proc_offset", start);
     }
+#endif
     element_count += (size_t)local_count;
   }
 
