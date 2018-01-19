@@ -782,7 +782,7 @@ namespace Iocgns {
           std::cerr << "Zone " << zone << " shares " << npnts << " nodes with " << donorname
                     << "\n";
 #endif
-	  // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
+          // The 'ids' in 'points' and 'donors' will be zone-local 1-based.
           std::vector<cgsize_t> points(npnts);
           std::vector<cgsize_t> donors(npnts);
 
@@ -790,9 +790,9 @@ namespace Iocgns {
                                 TOPTR(donors)));
 
           for (int j = 0; j < npnts; j++) {
-	    // Convert to 0-based global id by subtracting 1 and adding zone.m_nodeOffset
+            // Convert to 0-based global id by subtracting 1 and adding zone.m_nodeOffset
             cgsize_t point = points[j] - 1 + m_zones[zone].m_nodeOffset;
-	    // If node is potentially on this processor...
+            // If node is potentially on this processor...
             if (point >= min_node && point <= max_node) {
               cgsize_t donor = donors[j] - 1 + m_zones[dz].m_nodeOffset;
 

@@ -328,9 +328,8 @@ namespace Iocgns {
       id++; // Really just index into m_sideSets list.
     }
 
-    Ioss::NodeBlock *nblock =
-        new Ioss::NodeBlock(this, "nodeblock_1", nodeCount, 3);
-    
+    Ioss::NodeBlock *nblock = new Ioss::NodeBlock(this, "nodeblock_1", nodeCount, 3);
+
     nblock->property_add(Ioss::Property("base", base));
     get_region()->add(nblock);
 
@@ -660,28 +659,27 @@ namespace Iocgns {
 
 #if 1
     // NEW VERSION...
-    std::vector<int64_t> zone_min_id(blocks.size()+1, std::numeric_limits<int64_t>::max());
-    std::vector<int64_t> zone_max_id(blocks.size()+1, std::numeric_limits<int64_t>::min());
+    std::vector<int64_t> zone_min_id(blocks.size() + 1, std::numeric_limits<int64_t>::max());
+    std::vector<int64_t> zone_max_id(blocks.size() + 1, std::numeric_limits<int64_t>::min());
 
     for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int zone = (*I)->get_property("zone").get_int();
-      assert(zone < blocks.size()+1);
-      
+      assert(zone < blocks.size() + 1);
+
       const auto &I_map = m_globalToBlockLocalNodeMap[zone];
 
       // Get min and max global node id for each zone...
       if (I_map->size() > 0) {
-	auto min_max =
-	  std::minmax_element(std::next(I_map->map().begin()), I_map->map().end());
-	zone_min_id[zone] = *(min_max.first);
-	zone_max_id[zone] = *(min_max.second);
+        auto min_max = std::minmax_element(std::next(I_map->map().begin()), I_map->map().end());
+        zone_min_id[zone] = *(min_max.first);
+        zone_max_id[zone] = *(min_max.second);
       }
     }
 
     // Get min/max over all processors for each zone...
     util().global_array_minmax(zone_min_id, Ioss::ParallelUtils::DO_MIN);
     util().global_array_minmax(zone_max_id, Ioss::ParallelUtils::DO_MAX);
-    
+
     // Now iterate the blocks again.  If the node ranges overlap, then
     // there is a possibility that there are contiguous nodes; if the
     // ranges don't overlap, then no possibility...
@@ -691,64 +689,63 @@ namespace Iocgns {
       // See how many zone I nodes Proc x has that can potentially
       // overlap with the zones I+1 to end.  This will be all nodes
       // with id > min(zone_min_id[I+1..])
-      auto min_I = std::min_element(&zone_min_id[zone+1], &zone_min_id[blocks.size()]);
-      
-      const auto &I_map = m_globalToBlockLocalNodeMap[zone];
-      std::vector<std::pair<int,int>> I_nodes;
+      auto min_I = std::min_element(&zone_min_id[zone + 1], &zone_min_id[blocks.size()]);
+
+      const auto &                     I_map = m_globalToBlockLocalNodeMap[zone];
+      std::vector<std::pair<int, int>> I_nodes;
       for (size_t i = 0; i < I_map->size(); i++) {
-	auto global_id = I_map->map()[i + 1];
-	if (global_id >= *min_I) {
-	  I_nodes.emplace_back((int)global_id, (int)i+1);
-	}
+        auto global_id = I_map->map()[i + 1];
+        if (global_id >= *min_I) {
+          I_nodes.emplace_back((int)global_id, (int)i + 1);
+        }
       }
 
       std::vector<int> recv_count;
-      util().gather(2*(int)I_nodes.size(), recv_count);
+      util().gather(2 * (int)I_nodes.size(), recv_count);
       std::vector<int> recv_off(recv_count);
 
       auto count = std::accumulate(recv_count.begin(), recv_count.end(), 0);
       if (myProcessor == 0) {
-	I_nodes.resize(count/2);
-	Ioss::Utils::generate_index(recv_off);
+        I_nodes.resize(count / 2);
+        Ioss::Utils::generate_index(recv_off);
       }
-      
-      MPI_Gatherv(I_nodes.data(), (int)I_nodes.size()*2, MPI_INT,
-		  I_nodes.data(), recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
+
+      MPI_Gatherv(I_nodes.data(), (int)I_nodes.size() * 2, MPI_INT, I_nodes.data(),
+                  recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
 
       for (auto J = I + 1; J != blocks.end(); J++) {
-        cgsize_t              dzone = (*J)->get_property("zone").get_int();
-	
-	if (zone_min_id[dzone] <= zone_max_id[zone] &&
-	    zone_max_id[dzone] >= zone_min_id[zone]) {
-	  // Now gather all zone J nodes that can potentially overlap
-	  // with zone I to processor 0...
-	  const auto &J_map = m_globalToBlockLocalNodeMap[dzone];
-	  std::vector<std::pair<int,int>> J_nodes;
-	  for (size_t i = 0; i < J_map->size(); i++) {
-	    auto global_id = J_map->map()[i + 1];
-	    if (global_id >= zone_min_id[zone] && global_id <= zone_max_id[zone]) {
-	      J_nodes.emplace_back((int)global_id, (int)i+1);
-	    }
-	  }
+        cgsize_t dzone = (*J)->get_property("zone").get_int();
 
-	  util().gather(2*(int)J_nodes.size(), recv_count);
-	  recv_off = recv_count;
-	  count = std::accumulate(recv_count.begin(), recv_count.end(), 0);
-	  if (myProcessor == 0) {
-	    J_nodes.resize(count/2);
-	    Ioss::Utils::generate_index(recv_off);
-	  }
-      
-	  MPI_Gatherv(J_nodes.data(), (int)J_nodes.size()*2, MPI_INT,
-		      J_nodes.data(), recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
+        if (zone_min_id[dzone] <= zone_max_id[zone] && zone_max_id[dzone] >= zone_min_id[zone]) {
+          // Now gather all zone J nodes that can potentially overlap
+          // with zone I to processor 0...
+          const auto &                     J_map = m_globalToBlockLocalNodeMap[dzone];
+          std::vector<std::pair<int, int>> J_nodes;
+          for (size_t i = 0; i < J_map->size(); i++) {
+            auto global_id = J_map->map()[i + 1];
+            if (global_id >= zone_min_id[zone] && global_id <= zone_max_id[zone]) {
+              J_nodes.emplace_back((int)global_id, (int)i + 1);
+            }
+          }
 
-	  std::cout << "J_nodes\n";
-	  // Now match up I_nodes with J_nodes...
-	}
+          util().gather(2 * (int)J_nodes.size(), recv_count);
+          recv_off = recv_count;
+          count    = std::accumulate(recv_count.begin(), recv_count.end(), 0);
+          if (myProcessor == 0) {
+            J_nodes.resize(count / 2);
+            Ioss::Utils::generate_index(recv_off);
+          }
+
+          MPI_Gatherv(J_nodes.data(), (int)J_nodes.size() * 2, MPI_INT, J_nodes.data(),
+                      recv_count.data(), recv_off.data(), MPI_INT, 0, util().communicator());
+
+          std::cout << "J_nodes\n";
+          // Now match up I_nodes with J_nodes...
+        }
       }
     }
 #else
-    // OLD CODE... 
+    // OLD CODE...
     for (auto I = blocks.cbegin(); I != blocks.cend(); I++) {
       int base = (*I)->get_property("base").get_int();
       int zone = (*I)->get_property("zone").get_int();
@@ -762,8 +759,8 @@ namespace Iocgns {
         I_nodes[global] = i + 1;
       }
       for (auto J = I + 1; J != blocks.end(); J++) {
-        cgsize_t              dzone = (*J)->get_property("zone").get_int();
-        const auto &          J_map = m_globalToBlockLocalNodeMap[dzone];
+        cgsize_t      dzone = (*J)->get_property("zone").get_int();
+        const auto &  J_map = m_globalToBlockLocalNodeMap[dzone];
         CGNSIntVector point_list;
         CGNSIntVector point_list_donor;
         for (size_t i = 0; i < J_map->size(); i++) {
@@ -777,18 +774,19 @@ namespace Iocgns {
         }
 
         // If point_list non_empty, then output this adjacency node...
-	int non_empty = point_list.empty() ? 0 : 1;
-        MPI_Allreduce(MPI_IN_PLACE, &non_empty, 1, Ioss::mpi_type(non_empty), MPI_SUM, util().communicator());
+        int non_empty = point_list.empty() ? 0 : 1;
+        MPI_Allreduce(MPI_IN_PLACE, &non_empty, 1, Ioss::mpi_type(non_empty), MPI_SUM,
+                      util().communicator());
         if (non_empty > 0) {
           int         gc_idx = 0;
           std::string name   = (*I)->name();
           name += "_to_";
           name += (*J)->name();
           const auto &d1_name = (*J)->name();
-	  CGCHECK(cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
-				CG_PointList, point_list.size(), point_list.data(), d1_name.c_str(),
-				CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-				point_list_donor.size(), point_list_donor.data(), &gc_idx));
+          CGCHECK(cg_conn_write(cgnsFilePtr, base, zone, name.c_str(), CG_Vertex, CG_Abutting1to1,
+                                CG_PointList, point_list.size(), point_list.data(), d1_name.c_str(),
+                                CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
+                                point_list_donor.size(), point_list_donor.data(), &gc_idx));
 
           name = (*J)->name();
           name += "_to_";
@@ -796,9 +794,9 @@ namespace Iocgns {
           const auto &d2_name = (*I)->name();
 
           CGCHECK(cg_conn_write(cgnsFilePtr, base, dzone, name.c_str(), CG_Vertex, CG_Abutting1to1,
-				CG_PointList, point_list_donor.size(), point_list_donor.data(),
-				d2_name.c_str(), CG_Unstructured, CG_PointListDonor, CG_DataTypeNull,
-				point_list.size(), point_list.data(), &gc_idx));
+                                CG_PointList, point_list_donor.size(), point_list_donor.data(),
+                                d2_name.c_str(), CG_Unstructured, CG_PointListDonor,
+                                CG_DataTypeNull, point_list.size(), point_list.data(), &gc_idx));
         }
       }
     }
@@ -2111,28 +2109,27 @@ namespace Iocgns {
   {
     return -1;
   }
-  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet *cs,
-                                                 const Ioss::Field &field, void *data,
-                                                 size_t data_size) const
+  int64_t ParallelDatabaseIO::put_field_internal(const Ioss::CommSet *cs, const Ioss::Field &field,
+                                                 void *data, size_t data_size) const
   {
-    Ioss::Field::RoleType role = field.get_role();
-    size_t num_to_get = field.verify(data_size);
+    Ioss::Field::RoleType role       = field.get_role();
+    size_t                num_to_get = field.verify(data_size);
 
     if (role == Ioss::Field::COMMUNICATION) {
       if (field.get_name() == "entity_processor") {
-	m_sharedNodes.reserve(num_to_get);
+        m_sharedNodes.reserve(num_to_get);
         if (int_byte_size_api() == 8) {
-	  int64_t *idata = static_cast<int64_t*>(data);
-	  for (size_t i=0; i < num_to_get; i++) {
-	    m_sharedNodes.emplace_back(idata[2*i], idata[2*i+1]);
-	  }
-	}
-	else {
-	  int *idata = static_cast<int*>(data);
-	  for (size_t i=0; i < num_to_get; i++) {
-	    m_sharedNodes.emplace_back(idata[2*i], idata[2*i+1]);
-	  }
-	}
+          int64_t *idata = static_cast<int64_t *>(data);
+          for (size_t i = 0; i < num_to_get; i++) {
+            m_sharedNodes.emplace_back(idata[2 * i], idata[2 * i + 1]);
+          }
+        }
+        else {
+          int *idata = static_cast<int *>(data);
+          for (size_t i = 0; i < num_to_get; i++) {
+            m_sharedNodes.emplace_back(idata[2 * i], idata[2 * i + 1]);
+          }
+        }
       }
     }
     return num_to_get;
