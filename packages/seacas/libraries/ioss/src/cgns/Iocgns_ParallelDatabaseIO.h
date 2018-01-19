@@ -208,8 +208,9 @@ namespace Iocgns {
     mutable std::vector<double>        m_timesteps; // Should be able to get this from region?
     std::map<std::string, int>         m_zoneNameMap;
     mutable std::map<int, Ioss::Map *> m_globalToBlockLocalNodeMap;
-    mutable std::vector<std::pair<int64_t,int>> m_sharedNodes;
-    mutable CGNSIntVector              m_elemGlobalImplicitMap; // Position of this element in the global-implicit ordering
+    mutable std::vector<std::pair<int64_t, int>> m_sharedNodes;
+    mutable CGNSIntVector
+        m_elemGlobalImplicitMap; // Position of this element in the global-implicit ordering
   };
 } // namespace Iocgns
 #endif
